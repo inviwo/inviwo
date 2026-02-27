@@ -148,6 +148,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/selectioncolor.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/shading.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/structs.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/trafo.glsl
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

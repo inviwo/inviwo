@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2025-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,29 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include "utils/structs.glsl"
+#include "utils/shading.glsl"
+#include "utils/pickingutils.glsl"
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/layerport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/datastructures/geometry/geometrytype.h>
+uniform LightParameters lighting;
+uniform CameraParameters camera;
 
-namespace inviwo {
+in RibbonGeom {
+    vec3 worldPosition;
+    vec4 color;
+    vec3 normal;
+    flat uint pickID;
+} fragment;
 
-class IVW_MODULE_BASE_API VolumeSliceToLayer : public Processor {
-public:
-    enum class SlicePosition : unsigned char { Index, Minimum, Centered, Maximum };
+void main() {
+    vec3 cameraDir = camera.position - fragment.worldPosition;
 
-    explicit VolumeSliceToLayer();
+    vec3 normal = orientedShadingNormal(normalize(fragment.normal), fragment.worldPosition);
 
-    virtual void process() override;
+    vec4 fragColor = fragment.color;
+    fragColor.rgb = APPLY_LIGHTING(lighting, fragColor.rgb, fragColor.rgb, vec3(1.0f), 
+                                   fragment.worldPosition, normal, normalize(cameraDir));
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    VolumeInport inport_;
-    LayerOutport outport_;
-
-    OptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
-    OptionProperty<SlicePosition> slicePosition_;
-    IntSizeTProperty sliceNumber_;
-};
-
-}  // namespace inviwo
+    FragData0 = fragColor;
+    PickingData = vec4(pickingIndexToColor(fragment.pickID), fragment.pickID == 0 ? 0.0 : 1.0);
+}

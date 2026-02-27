@@ -61,11 +61,24 @@ VolumeSliceToLayer::VolumeSliceToLayer()
                        {"y", "Y axis", CartesianCoordinateAxis::Y},
                        {"z", "Z axis", CartesianCoordinateAxis::Z}},
                       0)
+    , slicePosition_{"slicePosition",
+                     "Slice Positioning",
+                     R"(Adjusts the model matrix of the resulting Layer such that it is positioned
+within the original volume and the slice is moved along the current slice axis to
+ * _Slice Position_ the current position of the slice, that is its index
+ * _Minimum Position_ the start of the slice axis, that is slice position 1
+ * _Centered_ the middle of the slice axis
+ * _Maximum Position_ the end of the slice axis
+                        )"_unindentHelp,
+                     {{"index", "Slice Position", SlicePosition::Index},
+                      {"minimum", "Minimum Position", SlicePosition::Minimum},
+                      {"centered", "Centered", SlicePosition::Centered},
+                      {"maximum", "Maximum Position", SlicePosition::Maximum}}}
     , sliceNumber_("sliceNumber", "Slice", "Position of the slice"_help, 128,
                    {1, ConstraintBehavior::Immutable}, {256, ConstraintBehavior::Mutable}, 1) {
 
     addPorts(inport_, outport_);
-    addProperties(sliceAlongAxis_, sliceNumber_);
+    addProperties(sliceAlongAxis_, slicePosition_, sliceNumber_);
 }
 
 namespace {
@@ -121,11 +134,25 @@ mat3 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     }
 }
 
-vec3 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis, size_t slice) {
+vec3 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis,
+               VolumeSliceToLayer::SlicePosition position, size_t slice) {
     const size3_t dims = v->getDimensions();
     const vec3 offset = v->getOwner()->getOffset();
     const mat3 basis = v->getOwner()->getBasis();
-    const vec3 t = vec3{static_cast<float>(slice)} / vec3{dims - size3_t{1}};
+    const auto t = [&]() {
+        using enum VolumeSliceToLayer::SlicePosition;
+        switch (position) {
+            case Minimum:
+                return vec3{0.0f};
+            case Centered:
+                return vec3{0.5f};
+            case Maximum:
+                return vec3{1.0f};
+            case Index:
+            default:
+                return vec3{static_cast<float>(slice)} / vec3{dims - size3_t{1}};
+        }
+    }();
 
     switch (axis) {
         default:
@@ -140,7 +167,8 @@ vec3 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis, size
 
 template <typename T>
 std::shared_ptr<Layer> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
-                                    CartesianCoordinateAxis axis, size_t slice) {
+                                    CartesianCoordinateAxis axis,
+                                    VolumeSliceToLayer::SlicePosition position, size_t slice) {
     const T* voldata = vrprecision->getDataTyped();
     const auto& voldim = vrprecision->getDimensions();
 
@@ -156,7 +184,7 @@ std::shared_ptr<Layer> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
 
     auto layer = std::make_shared<Layer>(layerram);
     layer->setBasis(getBasis(vrprecision, axis));
-    layer->setOffset(getOffset(vrprecision, axis, slice));
+    layer->setOffset(getOffset(vrprecision, axis, position, slice));
     layer->dataMap = vrprecision->getOwner()->dataMap;
     layer->axes = getAxes(vrprecision, axis);
 
@@ -227,12 +255,13 @@ void VolumeSliceToLayer::process() {
             break;
     }
 
-    auto layer =
-        vol->getRepresentation<VolumeRAM>()
-            ->dispatch<std::shared_ptr<Layer>, dispatching::filter::All>(
-                [&]<typename T>(const VolumeRAMPrecision<T>* vrprecision) {
-                    return extractSlice(vrprecision, sliceAlongAxis_, sliceNumber_.get() - 1);
-                });
+    auto layer = vol->getRepresentation<VolumeRAM>()
+                     ->dispatch<std::shared_ptr<Layer>, dispatching::filter::All>(
+                         [&]<typename T>(const VolumeRAMPrecision<T>* vrprecision) {
+                             return extractSlice(vrprecision, sliceAlongAxis_, slicePosition_,
+                                                 sliceNumber_.get() - 1);
+                         });
+    layer->setWorldMatrix(vol->getWorldMatrix());
     outport_.setData(layer);
 }
 

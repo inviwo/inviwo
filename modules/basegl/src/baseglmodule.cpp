@@ -98,6 +98,7 @@
 #include <modules/basegl/processors/raycasting/texturedisosurfacerenderer.h>
 #include <modules/basegl/processors/raycasting/texturedvolumeraycaster.h>
 #include <modules/basegl/processors/redgreenprocessor.h>
+#include <modules/basegl/processors/ribbonrenderer.h>
 #include <modules/basegl/processors/sphererenderer.h>
 #include <modules/basegl/processors/splitimage.h>
 #include <modules/basegl/processors/tuberendering.h>
@@ -203,6 +204,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<LayerRenderer>();
     registerProcessor<LayerShader>();
     registerProcessor<LightVolumeRaycaster>();
+    registerProcessor<RibbonRenderer>();
     registerProcessor<RowLayout>();
     registerProcessor<GridLayout>();
 

@@ -59,7 +59,7 @@ void main() {
     vertex.scalar = in_TexCoord.x;  // TODO: specify source of scalar value
 #endif
     vertex.worldPosition = geometry.dataToWorld * in_Vertex;
-    vertex.normal = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
+    vertex.normal = geometry.dataToWorldNormalMatrix * in_Normal;
     vertex.position = camera.worldToClip * vertex.worldPosition;
     gl_Position = vertex.position;
 }

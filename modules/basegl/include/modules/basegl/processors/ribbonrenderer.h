@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2025-2026 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,34 +29,58 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/layerport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/interaction/cameratrackball.h>
+
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API VolumeSliceToLayer : public Processor {
+class IVW_MODULE_BASEGL_API RibbonRenderer : public Processor {
 public:
-    enum class SlicePosition : unsigned char { Index, Minimum, Centered, Maximum };
-
-    explicit VolumeSliceToLayer();
+    RibbonRenderer();
 
     virtual void process() override;
+
+    virtual void initializeResources() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    VolumeInport inport_;
-    LayerOutport outport_;
+    void configureShader(Shader& shader) const;
 
-    OptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
-    OptionProperty<SlicePosition> slicePosition_;
-    IntSizeTProperty sliceNumber_;
+    MeshFlatMultiInport inport_;
+    ImageInport backgroundInport_;
+    ImageOutport outport_;
+
+    CompositeProperty ribbonProperties_;
+    IntProperty subdivisions_;
+    FloatProperty widthScaling_;
+    BoolProperty forceWidth_;
+    FloatProperty defaultWidth_;
+    BoolProperty forceColor_;
+    FloatVec4Property defaultColor_;
+    BoolProperty useMetaColor_;
+    TransferFunctionProperty metaColor_;
+
+    CameraProperty camera_;
+    CameraTrackball trackball_;
+    SimpleLightingProperty lighting_;
+    std::vector<std::pair<ShaderType, std::string>> shaderItems_;
+    std::vector<MeshShaderCache::Requirement> shaderRequirements_;
+    MeshShaderCache adjacencyShaders_;
+    MeshShaderCache shaders_;
 };
 
 }  // namespace inviwo

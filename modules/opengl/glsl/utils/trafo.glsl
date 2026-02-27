@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2025-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,59 @@
  *
  *********************************************************************************/
 
-#pragma once
+#ifndef IVW_TRAFO_GLSL
+#define IVW_TRAFO_GLSL
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/layerport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/datastructures/geometry/geometrytype.h>
+mat4 rotate(vec3 axis, float angle) {
+  vec3 a = normalize(axis);
+  float s = sin(angle);
+  float c = cos(angle);
+  float oc = 1.0 - c;
 
-namespace inviwo {
+  return mat4(
+    oc*a.x*a.x + c,      oc*a.y*a.x + a.z*s,  oc*a.z*a.x - a.y*s,  0.0,
+    oc*a.x*a.y - a.z*s,  oc*a.y*a.y + c,      oc*a.z*a.y + a.x*s,  0.0,
+    oc*a.x*a.z + a.y*s,  oc*a.y*a.z - a.x*s,  oc*a.z*a.z + c,      0.0,
+    0.0,                 0.0,                 0.0,                 1.0
+  );
+}
 
-class IVW_MODULE_BASE_API VolumeSliceToLayer : public Processor {
-public:
-    enum class SlicePosition : unsigned char { Index, Minimum, Centered, Maximum };
+mat4 rotate(vec3 from, vec3 to) {
+    vec3 v1 = normalize(from);
+    vec3 w1 = normalize(to);
+    float cosTheta = dot(v1, w1);
 
-    explicit VolumeSliceToLayer();
+    if (cosTheta > 1.0 - 1e-6) { // vectors are the same 
+        return mat4(1.0);
+    }
 
-    virtual void process() override;
+    if (cosTheta < -1.0 + 1e-6) { // vectors are opposite
+        vec3 orthogonal = abs(v1.x) < 0.1 ? vec3(1, 0, 0) : vec3(0, 1, 0);
+        return rotate(cross(v1, orthogonal), 3.14159265);
+    }
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    // General case
+    vec3 axis = cross(v1, w1);
+    float angle = acos(clamp(cosTheta, -1.0, 1.0));
+    return rotate(axis, angle);
+}
 
-private:
-    VolumeInport inport_;
-    LayerOutport outport_;
+mat4 scale(vec3 scale) {
+  return mat4(
+    scale.x, 0.0, 0.0, 0.0,
+    0.0, scale.y, 0.0, 0.0,
+    0.0, 0.0, scale.z, 0.0,
+    0.0, 0.0, 0.0,     1.0
+  );
+}
 
-    OptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
-    OptionProperty<SlicePosition> slicePosition_;
-    IntSizeTProperty sliceNumber_;
-};
+mat4 translate(vec3 dist) {
+  return mat4(
+    1.0, 0.0, 0.0, dist.x,
+    0.0, 1.0, 0.0, dist.y,
+    0.0, 0.0, 1.0, dist.z,
+    0.0, 0.0, 0.0, 1.0
+  );
+}
 
-}  // namespace inviwo
+#endif // IVW_TRAFO_GLSL

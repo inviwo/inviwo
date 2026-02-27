@@ -1,0 +1,1003 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<InviwoWorkspace version="3">
+    <InviwoSetup>
+        <Modules>
+            <Module name="Base" version="12">
+                <Processors>
+                    <Processor content="org.inviwo.MeshCreator"/>
+                </Processors>
+            </Module>
+            <Module name="OpenGL" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CanvasGL"/>
+                </Processors>
+            </Module>
+            <Module name="BaseGL" version="12">
+                <Processors>
+                    <Processor content="org.inviwo.Background"/>
+                    <Processor content="org.inviwo.LineRenderer"/>
+                    <Processor content="org.inviwo.RibbonRenderer"/>
+                </Processors>
+            </Module>
+        </Modules>
+    </InviwoSetup>
+    <ProcessorNetwork>
+        <ProcessorNetworkVersion content="21"/>
+        <Processors>
+            <Processor type="org.inviwo.Background" identifier="Background2" displayName="Background">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="backgroundStyle">
+                        <selectedIdentifier content="uniformColor"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatVec4Property" identifier="bgColor1">
+                        <value x="0.31764707" y="0.30980393" z="0.39215687" w="1"/>
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="blendMode">
+                        <selectedIdentifier content="alphamixing"/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-1300" y="650"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.LineRenderer" identifier="LineRenderer2" displayName="Line Renderer">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.LineSettingsProperty" identifier="lineSettings">
+                        <Properties>
+                            <Property type="org.inviwo.BoolCompositeProperty" identifier="useMetaColor">
+                                <Properties>
+                                    <Property type="org.inviwo.TransferFunctionProperty" identifier="metaColor"/>
+                                </Properties>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType">
+                                <selectedIdentifier content="OrthographicCamera"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-996" y="-0.996" z="-1.004"/>
+                                <maxvalue x="1004" y="1.004" z="0.996"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-4" y="-0.004" z="-0.012"/>
+                                <maxvalue x="12" y="0.012" z="0.004"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="far">
+                                <maxvalue content="10080"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="OrthographicCamera">
+                            <lookFrom x="4" y="0.004" z="-2.524"/>
+                            <lookTo x="4" y="0.004" z="-0.004"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.504"/>
+                            <far content="1008"/>
+                            <aspectRatio content="1"/>
+                            <width content="8.4"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-825" y="600"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.CanvasGL" identifier="subdivision" displayName="Subdivision">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
+                        <Properties>
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
+                                <readonly content="1"/>
+                                <value x="300" y="300"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                        <displayName content="Color Layer ID"/>
+                        <semantics semantics="Default"/>
+                        <visible content="0"/>
+                        <readonly content="0"/>
+                        <minConstraint content="2"/>
+                        <maxConstraint content="1"/>
+                        <minvalue content="0"/>
+                        <maxvalue content="0"/>
+                        <increment content="1"/>
+                        <value content="0"/>
+                    </Property>
+                    <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
+                        <absolutePath content=""/>
+                        <workspaceRelativePath content=""/>
+                        <ivwdataRelativePath content=""/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-625" y="700"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                        <position x="1537" y="843"/>
+                        <dimensions x="300" y="300"/>
+                        <visibility content="1"/>
+                        <fullScreen content="0"/>
+                        <onTop content="1"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.Background" identifier="Background3" displayName="Background">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="backgroundStyle">
+                        <selectedIdentifier content="uniformColor"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatVec4Property" identifier="bgColor1">
+                        <value x="0.31764707" y="0.30980393" z="0.39215687" w="1"/>
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="blendMode">
+                        <selectedIdentifier content="alphamixing"/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-825" y="650"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.RibbonRenderer" identifier="RibbonRenderer" displayName="Ribbon Renderer">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="ribbonProperties">
+                        <Properties>
+                            <Property type="org.inviwo.IntProperty" identifier="subdivisions">
+                                <value content="5"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="defaultWidth">
+                                <value content="0.5083021"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec4Property" identifier="defaultColor">
+                                <MetaDataMap>
+                                    <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState"/>
+                                </MetaDataMap>
+                            </Property>
+                            <Property type="org.inviwo.TransferFunctionProperty" identifier="metaColor"/>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType">
+                                <selectedIdentifier content="OrthographicCamera"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-0.97109926" y="-0.97889924" z="-971.09924"/>
+                                <maxvalue x="0.97889924" y="0.97109926" z="978.8993"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-0.003899997" y="-0.011699991" z="-3.899997"/>
+                                <maxvalue x="0.011699991" y="0.003899997" z="11.699991"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="far">
+                                <maxvalue content="9827.992"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="OrthographicCamera">
+                            <lookFrom x="4" y="0.004" z="-2.524"/>
+                            <lookTo x="4" y="0.004" z="-0.004"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.504"/>
+                            <far content="1008"/>
+                            <aspectRatio content="1"/>
+                            <width content="8.316312"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-1275" y="525"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.RibbonRenderer" identifier="RibbonRenderer2" displayName="Ribbon Renderer">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="ribbonProperties">
+                        <Properties>
+                            <Property type="org.inviwo.FloatProperty" identifier="defaultWidth">
+                                <value content="0.5083021"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec4Property" identifier="defaultColor">
+                                <MetaDataMap>
+                                    <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState"/>
+                                </MetaDataMap>
+                            </Property>
+                            <Property type="org.inviwo.TransferFunctionProperty" identifier="metaColor"/>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType">
+                                <selectedIdentifier content="OrthographicCamera"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-0.97109926" y="-0.97889924" z="-971.09924"/>
+                                <maxvalue x="0.97889924" y="0.97109926" z="978.8993"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-0.003899997" y="-0.011699991" z="-3.899997"/>
+                                <maxvalue x="0.011699991" y="0.003899997" z="11.699991"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="far">
+                                <maxvalue content="9827.992"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="OrthographicCamera">
+                            <lookFrom x="4" y="0.004" z="-2.524"/>
+                            <lookTo x="4" y="0.004" z="-0.004"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.504"/>
+                            <far content="1008"/>
+                            <aspectRatio content="1"/>
+                            <width content="8.4"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-800" y="525"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.LineRenderer" identifier="LineRenderer" displayName="Line Renderer">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.LineSettingsProperty" identifier="lineSettings">
+                        <Properties>
+                            <Property type="org.inviwo.BoolCompositeProperty" identifier="useMetaColor">
+                                <Properties>
+                                    <Property type="org.inviwo.TransferFunctionProperty" identifier="metaColor"/>
+                                </Properties>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType">
+                                <selectedIdentifier content="OrthographicCamera"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-996" y="-0.996" z="-1.004"/>
+                                <maxvalue x="1004" y="1.004" z="0.996"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-4" y="-0.004" z="-0.012"/>
+                                <maxvalue x="12" y="0.012" z="0.004"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="far">
+                                <maxvalue content="10080"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="OrthographicCamera">
+                            <lookFrom x="4" y="0.004" z="-2.524"/>
+                            <lookTo x="4" y="0.004" z="-0.004"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.504"/>
+                            <far content="1008"/>
+                            <aspectRatio content="1"/>
+                            <width content="8.316312"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-1300" y="600"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.RibbonRenderer" identifier="RibbonRenderer3" displayName="Ribbon Renderer">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="ribbonProperties">
+                        <Properties>
+                            <Property type="org.inviwo.IntProperty" identifier="subdivisions">
+                                <value content="10"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="defaultWidth">
+                                <value content="0.5083021"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec4Property" identifier="defaultColor">
+                                <MetaDataMap>
+                                    <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState"/>
+                                </MetaDataMap>
+                            </Property>
+                            <Property type="org.inviwo.TransferFunctionProperty" identifier="metaColor"/>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType">
+                                <selectedIdentifier content="OrthographicCamera"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-0.97109926" y="-0.97889924" z="-971.09924"/>
+                                <maxvalue x="0.97889924" y="0.97109926" z="978.8993"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-0.003899997" y="-0.011699991" z="-3.899997"/>
+                                <maxvalue x="0.011699991" y="0.003899997" z="11.699991"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="far">
+                                <maxvalue content="9827.992"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="OrthographicCamera">
+                            <lookFrom x="4" y="0.004" z="-2.524"/>
+                            <lookTo x="4" y="0.004" z="-0.004"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.504"/>
+                            <far content="1008"/>
+                            <aspectRatio content="1"/>
+                            <width content="8.4"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-600" y="525"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.MeshCreator" identifier="LineRibbon4" displayName="Mesh Creator">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyEnumUChar" identifier="meshType">
+                        <selectedIdentifier content="rotatingLineAdjacency"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatVec3Property" identifier="position2">
+                        <value x="8" y="0" z="0"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="rotationAngle">
+                        <value content="560"/>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties/>
+                        <collapsed content="1"/>
+                        <Camera type="PerspectiveCamera">
+                            <lookFrom x="0" y="0" z="2"/>
+                            <lookTo x="0" y="0" z="0"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.1"/>
+                            <far content="100"/>
+                            <aspectRatio content="1"/>
+                            <fov content="38"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-825" y="450"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.LineRenderer" identifier="LineRenderer3" displayName="Line Renderer">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.LineSettingsProperty" identifier="lineSettings">
+                        <Properties>
+                            <Property type="org.inviwo.BoolCompositeProperty" identifier="useMetaColor">
+                                <Properties>
+                                    <Property type="org.inviwo.TransferFunctionProperty" identifier="metaColor"/>
+                                </Properties>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType">
+                                <selectedIdentifier content="OrthographicCamera"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-0.97109914" y="-0.9788991" z="-971.0991"/>
+                                <maxvalue x="0.9788991" y="0.97109914" z="978.8992"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-0.0038999966" y="-0.011699989" z="-3.8999965"/>
+                                <maxvalue x="0.011699989" y="0.0038999966" z="11.699989"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="far">
+                                <maxvalue content="9827.992"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="OrthographicCamera">
+                            <lookFrom x="4" y="0.004" z="-2.524"/>
+                            <lookTo x="4" y="0.004" z="-0.004"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.504"/>
+                            <far content="1008"/>
+                            <aspectRatio content="1"/>
+                            <width content="8.316312"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-1100" y="600"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.RibbonRenderer" identifier="RibbonRenderer4" displayName="Ribbon Renderer">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="ribbonProperties">
+                        <Properties>
+                            <Property type="org.inviwo.IntProperty" identifier="subdivisions">
+                                <value content="5"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="defaultWidth">
+                                <value content="0.5083021"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec4Property" identifier="defaultColor">
+                                <MetaDataMap>
+                                    <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState"/>
+                                </MetaDataMap>
+                            </Property>
+                            <Property type="org.inviwo.TransferFunctionProperty" identifier="metaColor"/>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType">
+                                <selectedIdentifier content="OrthographicCamera"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-0.97109926" y="-0.97889924" z="-971.09924"/>
+                                <maxvalue x="0.97889924" y="0.97109926" z="978.8993"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-0.003899997" y="-0.011699991" z="-3.899997"/>
+                                <maxvalue x="0.011699991" y="0.003899997" z="11.699991"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="far">
+                                <maxvalue content="9827.992"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="OrthographicCamera">
+                            <lookFrom x="4" y="0.004" z="-2.524"/>
+                            <lookTo x="4" y="0.004" z="-0.004"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.504"/>
+                            <far content="1008"/>
+                            <aspectRatio content="1"/>
+                            <width content="8.316312"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-1075" y="525"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.Background" identifier="Background4" displayName="Background">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="backgroundStyle">
+                        <selectedIdentifier content="uniformColor"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatVec4Property" identifier="bgColor1">
+                        <value x="0.31764707" y="0.30980393" z="0.39215687" w="1"/>
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="blendMode">
+                        <selectedIdentifier content="alphamixing"/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-1100" y="650"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.MeshCreator" identifier="LineRibbon2" displayName="Mesh Creator">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyEnumUChar" identifier="meshType">
+                        <selectedIdentifier content="rotatingLine"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatVec3Property" identifier="position2">
+                        <value x="8" y="0" z="0"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="rotationAngle">
+                        <value content="560"/>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties/>
+                        <collapsed content="1"/>
+                        <Camera type="PerspectiveCamera">
+                            <lookFrom x="0" y="0" z="2"/>
+                            <lookTo x="0" y="0" z="0"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.1"/>
+                            <far content="100"/>
+                            <aspectRatio content="1"/>
+                            <fov content="38"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-1100" y="450"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.CanvasGL" identifier="line" displayName="Line">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
+                        <Properties>
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
+                                <readonly content="1"/>
+                                <value x="300" y="300"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                        <displayName content="Color Layer ID"/>
+                        <semantics semantics="Default"/>
+                        <visible content="0"/>
+                        <readonly content="0"/>
+                        <minConstraint content="2"/>
+                        <maxConstraint content="1"/>
+                        <minvalue content="0"/>
+                        <maxvalue content="0"/>
+                        <increment content="1"/>
+                        <value content="0"/>
+                    </Property>
+                    <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
+                        <absolutePath content=""/>
+                        <workspaceRelativePath content=""/>
+                        <ivwdataRelativePath content=""/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-1100" y="700"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                        <position x="901" y="834"/>
+                        <dimensions x="300" y="300"/>
+                        <visibility content="1"/>
+                        <fullScreen content="0"/>
+                        <onTop content="1"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.MeshCreator" identifier="LineRibbon3" displayName="Mesh Creator">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyEnumUChar" identifier="meshType">
+                        <selectedIdentifier content="rotatingLineAdjacency"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatVec3Property" identifier="position2">
+                        <value x="8" y="0" z="0"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="rotationAngle">
+                        <value content="560"/>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties/>
+                        <collapsed content="1"/>
+                        <Camera type="PerspectiveCamera">
+                            <lookFrom x="0" y="0" z="2"/>
+                            <lookTo x="0" y="0" z="0"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.1"/>
+                            <far content="100"/>
+                            <aspectRatio content="1"/>
+                            <fov content="38"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-625" y="450"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.LineRenderer" identifier="LineRenderer4" displayName="Line Renderer">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.LineSettingsProperty" identifier="lineSettings">
+                        <Properties>
+                            <Property type="org.inviwo.BoolCompositeProperty" identifier="useMetaColor">
+                                <Properties>
+                                    <Property type="org.inviwo.TransferFunctionProperty" identifier="metaColor"/>
+                                </Properties>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType">
+                                <selectedIdentifier content="OrthographicCamera"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-0.9710992" y="-0.9788992" z="-971.0992"/>
+                                <maxvalue x="0.9788992" y="0.9710992" z="978.89923"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-0.0038999969" y="-0.01169999" z="-3.8999968"/>
+                                <maxvalue x="0.01169999" y="0.0038999969" z="11.69999"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="far">
+                                <maxvalue content="9827.992"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="OrthographicCamera">
+                            <lookFrom x="4" y="0.004" z="-2.524"/>
+                            <lookTo x="4" y="0.004" z="-0.004"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.504"/>
+                            <far content="1008"/>
+                            <aspectRatio content="1"/>
+                            <width content="8.4"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-625" y="600"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.CanvasGL" identifier="lineadjacency" displayName="Adjacency">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
+                        <Properties>
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
+                                <readonly content="1"/>
+                                <value x="300" y="300"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                        <displayName content="Color Layer ID"/>
+                        <semantics semantics="Default"/>
+                        <visible content="0"/>
+                        <readonly content="0"/>
+                        <minConstraint content="2"/>
+                        <maxConstraint content="1"/>
+                        <minvalue content="0"/>
+                        <maxvalue content="0"/>
+                        <increment content="1"/>
+                        <value content="0"/>
+                    </Property>
+                    <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
+                        <absolutePath content=""/>
+                        <workspaceRelativePath content=""/>
+                        <ivwdataRelativePath content=""/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-1300" y="700"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                        <position x="587" y="832"/>
+                        <dimensions x="300" y="300"/>
+                        <visibility content="1"/>
+                        <fullScreen content="0"/>
+                        <onTop content="1"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.CanvasGL" identifier="nosubdivision" displayName="No Subdivision">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
+                        <Properties>
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
+                                <readonly content="1"/>
+                                <value x="300" y="300"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                        <displayName content="Color Layer ID"/>
+                        <semantics semantics="Default"/>
+                        <visible content="0"/>
+                        <readonly content="0"/>
+                        <minConstraint content="2"/>
+                        <maxConstraint content="1"/>
+                        <minvalue content="0"/>
+                        <maxvalue content="0"/>
+                        <increment content="1"/>
+                        <value content="0"/>
+                    </Property>
+                    <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
+                        <absolutePath content=""/>
+                        <workspaceRelativePath content=""/>
+                        <ivwdataRelativePath content=""/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-825" y="700"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                        <position x="1222" y="841"/>
+                        <dimensions x="300" y="300"/>
+                        <visibility content="1"/>
+                        <fullScreen content="0"/>
+                        <onTop content="1"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.Background" identifier="Background5" displayName="Background">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="backgroundStyle">
+                        <selectedIdentifier content="uniformColor"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatVec4Property" identifier="bgColor1">
+                        <value x="0.31764707" y="0.30980393" z="0.39215687" w="1"/>
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="blendMode">
+                        <selectedIdentifier content="alphamixing"/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-625" y="650"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.MeshCreator" identifier="MeshCreator" displayName="Mesh Creator">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyEnumUChar" identifier="meshType">
+                        <selectedIdentifier content="rotatingLineAdjacency"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatVec3Property" identifier="position2">
+                        <value x="8" y="0" z="0"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="rotationAngle">
+                        <value content="560"/>
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType">
+                                <selectedIdentifier content="OrthographicCamera"/>
+                            </Property>
+                        </Properties>
+                        <collapsed content="1"/>
+                        <Camera type="OrthographicCamera">
+                            <lookFrom x="4" y="0.004" z="-2.524"/>
+                            <lookTo x="4" y="0.004" z="-0.004"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.504"/>
+                            <far content="1008"/>
+                            <aspectRatio content="1"/>
+                            <width content="8.316312"/>
+                        </Camera>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-1300" y="450"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+        </Processors>
+        <Connections>
+            <Connection src="RibbonRenderer.outport" dst="LineRenderer.imageInport"/>
+            <Connection src="Background2.outport" dst="lineadjacency.inport"/>
+            <Connection src="LineRenderer.image" dst="Background2.inport"/>
+            <Connection src="RibbonRenderer2.outport" dst="LineRenderer2.imageInport"/>
+            <Connection src="Background3.outport" dst="nosubdivision.inport"/>
+            <Connection src="LineRenderer2.image" dst="Background3.inport"/>
+            <Connection src="Background4.outport" dst="line.inport"/>
+            <Connection src="LineRenderer3.image" dst="Background4.inport"/>
+            <Connection src="RibbonRenderer4.outport" dst="LineRenderer3.imageInport"/>
+            <Connection src="Background5.outport" dst="subdivision.inport"/>
+            <Connection src="LineRenderer4.image" dst="Background5.inport"/>
+            <Connection src="RibbonRenderer3.outport" dst="LineRenderer4.imageInport"/>
+            <Connection src="MeshCreator.outport" dst="RibbonRenderer.mesh"/>
+            <Connection src="MeshCreator.outport" dst="LineRenderer.geometry"/>
+            <Connection src="LineRibbon2.outport" dst="RibbonRenderer4.mesh"/>
+            <Connection src="LineRibbon2.outport" dst="LineRenderer3.geometry"/>
+            <Connection src="LineRibbon4.outport" dst="LineRenderer2.geometry"/>
+            <Connection src="LineRibbon4.outport" dst="RibbonRenderer2.mesh"/>
+            <Connection src="LineRibbon3.outport" dst="RibbonRenderer3.mesh"/>
+            <Connection src="LineRibbon3.outport" dst="LineRenderer4.geometry"/>
+        </Connections>
+        <PropertyLinks>
+            <PropertyLink src="LineRibbon2.position2" dst="LineRibbon4.position2"/>
+            <PropertyLink src="RibbonRenderer.camera" dst="LineRenderer.camera"/>
+            <PropertyLink src="LineRenderer.camera" dst="RibbonRenderer4.camera"/>
+            <PropertyLink src="LineRenderer2.camera" dst="RibbonRenderer2.camera"/>
+            <PropertyLink src="LineRibbon3.color" dst="LineRibbon4.color"/>
+            <PropertyLink src="LineRibbon4.position1" dst="LineRibbon2.position1"/>
+            <PropertyLink src="LineRenderer.camera" dst="RibbonRenderer.camera"/>
+            <PropertyLink src="RibbonRenderer.camera" dst="MeshCreator.camera"/>
+            <PropertyLink src="RibbonRenderer3.camera" dst="LineRenderer4.camera"/>
+            <PropertyLink src="RibbonRenderer2.camera" dst="LineRenderer2.camera"/>
+            <PropertyLink src="LineRenderer2.camera" dst="RibbonRenderer3.camera"/>
+            <PropertyLink src="LineRibbon2.lineSegments" dst="LineRibbon4.lineSegments"/>
+            <PropertyLink src="lineadjacency.inputSize.dimensions" dst="line.inputSize.dimensions"/>
+            <PropertyLink src="RibbonRenderer.camera" dst="LineRenderer3.camera"/>
+            <PropertyLink src="RibbonRenderer3.camera" dst="LineRenderer2.camera"/>
+            <PropertyLink src="LineRibbon4.scale" dst="LineRibbon2.scale"/>
+            <PropertyLink src="RibbonRenderer4.camera" dst="LineRenderer.camera"/>
+            <PropertyLink src="LineRibbon3.position2" dst="LineRibbon4.position2"/>
+            <PropertyLink src="LineRenderer3.camera" dst="RibbonRenderer.camera"/>
+            <PropertyLink src="LineRenderer3.camera" dst="RibbonRenderer4.camera"/>
+            <PropertyLink src="LineRibbon4.scale" dst="LineRibbon3.scale"/>
+            <PropertyLink src="LineRibbon4.lineSegments" dst="LineRibbon2.lineSegments"/>
+            <PropertyLink src="MeshCreator.position1" dst="LineRibbon2.position1"/>
+            <PropertyLink src="RibbonRenderer4.camera" dst="LineRenderer3.camera"/>
+            <PropertyLink src="LineRibbon2.rotationAngle" dst="MeshCreator.rotationAngle"/>
+            <PropertyLink src="line.inputSize.dimensions" dst="lineadjacency.inputSize.dimensions"/>
+            <PropertyLink src="LineRenderer4.camera" dst="RibbonRenderer2.camera"/>
+            <PropertyLink src="LineRibbon2.color" dst="MeshCreator.color"/>
+            <PropertyLink src="LineRenderer4.camera" dst="RibbonRenderer3.camera"/>
+            <PropertyLink src="LineRibbon4.rotationAngle" dst="LineRibbon3.rotationAngle"/>
+            <PropertyLink src="MeshCreator.camera" dst="RibbonRenderer.camera"/>
+            <PropertyLink src="RibbonRenderer2.camera" dst="LineRenderer4.camera"/>
+            <PropertyLink src="LineRibbon2.position1" dst="MeshCreator.position1"/>
+            <PropertyLink src="LineRibbon3.position1" dst="LineRibbon4.position1"/>
+            <PropertyLink src="LineRibbon2.scale" dst="LineRibbon4.scale"/>
+            <PropertyLink src="MeshCreator.color" dst="LineRibbon2.color"/>
+            <PropertyLink src="MeshCreator.position2" dst="LineRibbon2.position2"/>
+            <PropertyLink src="LineRibbon2.position2" dst="MeshCreator.position2"/>
+            <PropertyLink src="MeshCreator.rotationAngle" dst="LineRibbon2.rotationAngle"/>
+            <PropertyLink src="MeshCreator.lineSegments" dst="LineRibbon2.lineSegments"/>
+            <PropertyLink src="LineRibbon2.lineSegments" dst="MeshCreator.lineSegments"/>
+            <PropertyLink src="LineRibbon2.rotationAngle" dst="LineRibbon4.rotationAngle"/>
+            <PropertyLink src="MeshCreator.scale" dst="LineRibbon2.scale"/>
+            <PropertyLink src="LineRibbon2.scale" dst="MeshCreator.scale"/>
+            <PropertyLink src="LineRibbon2.position1" dst="LineRibbon4.position1"/>
+            <PropertyLink src="LineRibbon4.position2" dst="LineRibbon2.position2"/>
+            <PropertyLink src="LineRibbon4.rotationAngle" dst="LineRibbon2.rotationAngle"/>
+            <PropertyLink src="LineRibbon2.color" dst="LineRibbon4.color"/>
+            <PropertyLink src="LineRibbon4.color" dst="LineRibbon2.color"/>
+            <PropertyLink src="LineRibbon4.position1" dst="LineRibbon3.position1"/>
+            <PropertyLink src="LineRibbon4.position2" dst="LineRibbon3.position2"/>
+            <PropertyLink src="LineRibbon3.rotationAngle" dst="LineRibbon4.rotationAngle"/>
+            <PropertyLink src="LineRibbon4.color" dst="LineRibbon3.color"/>
+            <PropertyLink src="LineRibbon3.scale" dst="LineRibbon4.scale"/>
+            <PropertyLink src="LineRibbon4.lineSegments" dst="LineRibbon3.lineSegments"/>
+            <PropertyLink src="LineRibbon3.lineSegments" dst="LineRibbon4.lineSegments"/>
+        </PropertyLinks>
+    </ProcessorNetwork>
+    <PortInspectors/>
+    <WorkspaceAnnotations>
+        <Properties>
+            <Property type="org.inviwo.StringProperty" identifier="author">
+                <value content="Martin Falk"/>
+            </Property>
+        </Properties>
+        <Canvases>
+            <CanvasImage>
+                <name content="Subdivision"/>
+                <size x="256" y="256"/>
+                <base64 content="/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAEAAQADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDwSiiivbICiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooo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"/>
+            </CanvasImage>
+            <CanvasImage>
+                <name content="Line"/>
+                <size x="256" y="256"/>
+                <base64 content="/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAEAAQADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDwSiiivbICiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooo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kleo4ztX5hivr/RfEVl4h0q21HTrlLqyuE3xTRngj+YIOQQeQQQeRX58V1Pgz4meIvAW9NIvvLtZJVlltZUDxSEexGVyOCVIJAHPAxzVaPPqtx3Pty9myhrkdafINcb4c/aJ8O+IYVj1Avod4zBPLnzJESWIGJAOABgksFAz3AJq/qnjnw/KPl17TG+l5Gf61wOElo0Uc/r/ACJPxry/xK0cMZaRwgz1Nb3jD4maXCs0dhJ9uucsoKKfLUg4yW4yOuNuc46jOa8s1PWrvV3zcSZUMWCKAFH+fetYUZS1eiFcq3EomlLAYHbNRUUV6MYqKsiQoooqgPU/g18ZJvAt0mmao7zaBK3B5ZrRieWUd1J5Kj6jnIb6rttVivLWOeCVJoJVDpJGwZXUjIII6gjvXwDXVeCviXrvgJ3XTLhGtZG3yWlwu+J2wRnHBB6cqRnaM5AxXLVo8+sdx3Pse/usq1fLv7Qr7/G1of8ApwT/ANGSV6donxx8O+IoI1nuTpV44w0N3wgIXJIk+7jqASQTjoMivIfjVqtprHiu2ms7qG8iFmqGSCQOoO9zjI78j86xoxlGeqGzgKKKK9AkKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/2Q=="/>
+            </CanvasImage>
+            <CanvasImage>
+                <name content="Adjacency"/>
+                <size x="256" y="256"/>
+                <base64 content="/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAEAAQADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDwSiiivbICiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAw/GOsXOi6Us1qF815BHllztBVjke/A615zceJNVuJWkfULhWPUJIUH5DAFekeLLP7dp0cfpKG/Q/41wl9oJUMR1HtXnV5PmtcpEum+P9UstqzMl5GNoxKMNgdcMO59Tmu30TxZYa35UccnlXbKWMDg5BHUA4wfXjt2615PNC0D7WqOohWlHzCx7rRXJ+E/Gn9ryx2V2m27K/LKvSQjJOR/CcDPp16cCusr0YyU1dCCiiirEFQ3l7BYQ+bcSCNMgZPOT6ADrVLWdei0gIm3z7l/uwg449Sew/n+eMQadPq9211MSS5+VTzsXso+lc9SsoaLcdhNU8W3c4KWEPkL/wA9ZAC/boOg7jv+Fcne6nrCyu5v7r5jkhZWA/AA4Fd7/wAI6QvT9KyNS0EjPH6VwSqSk7tlGPp3xD1K1lJutl7GeqlQhHXoQPp1B6dq7nRfEljrysLaQiVRuaGQYYDOM+h/AnqK8q1Cxa1cn+Gq8FxLayrLDI8Mi9HjYqR+IrSFaUd9RWPcaK5vwp4vi1tVtp/3V6qjqRiXA5I4GD1OP/r46SvRjJSV0IKKKKoQVFNdRQEB3Ck9up/Kory9NuyxxqHlYE4z90ep/wA+tS2ejSXTGWTl25PFc1WsoaLcdjLvNRu5P9QvkqO5AJP9K5vUH1GNflvLlfpK3+NekPoBCdP0rE1bQyF6fpXA5ylq2UcZYeP76wuDHqCC7iLffUBXUcdMcHvx79a7XTddsNY3C0uUmZeqcq2OOcHBxyOa861/SjEzsOxJ6VjafqVzpVyJ7SUwygFcjByD2IPBraFeUdHqhWPbKKwvC3ihPEMDh1SG7j+9ErZ3DA+Ye2c8c449a3a9CMlJXRIUUUVQBT0jaQ/KM061t2upgi/ifSur03w6QnT9K5atbk0juOxysljLsOMjjtVaKN4gwcknPc16JL4abyycdvSuO1u0+x3oQ91B/U1jRlKU9WNla0sP7RkMe3dgbsYz/nrVXUfDJCt+6/8AHa7D4aacdU124hUbiLZnx/wNB/Wux1PwhNtfEJ/75NRX+MEfMXiHw4VGRGQfpXGTwtBIyMCCPWvpLxD4NuCpxA5/4Aa8p8T+DLlZZMQOGGP4T3OB271zjOCjkaKRXRijqQyspwQR0INei+B/FLanGbG8kBuYx+7dj80q98+pH5kfQmuCbS7tW2/ZpSdob5UJ4PQ/oabFb3SSxtFFMsnDoyKQe5BH5E/hWlObg7oD22qOr6vFpMAZlMsz8RQr95z/AEA7nt+QqDwfqk/iayVI7eabUI1AeFEy0h27tyjjIIGT6d+ME9n4a+DmuarqRvtVREIQeVApJWMFc4HHJ6ZPc+wAHdOslG8dybHEaD4evNam+2XkZeVz/d4UdgPQV6Hpng8rEn7nt/d9q9R0L4ZvaQouwdPT/ZHtXTQeDTHGBtHevObvqyjxiXwuVU/uv/Ha57VvDmN37r9K+gr3wuVU/KO9cnrXhsgt8opAfMHiXw+RFJ+7/SvP7i3a2lKMCPrX0h4n8OHypOBXjvi3w88bl1AyMn+VAHHRyNFIroxR1IZWU4II6EGvUPB3ic69bPFcYF5CBuIwPMH94D+fbkeuB5cylGKnqDg1JaXc1jcx3FvIYpozlXXtWtOo6bv0Ee4VU1C+S3jaNH/0lxiNF5bJzg49Pf2qjoHiRNdsFkhhkluwyRvbxAFyxxyq5+7knr2B9K7fwX8JdTu7r7dd2zJJO6ylXySob+HOO3T8K7KlZRXu9RWMrwt4WmnYvKjyOQMs4JJ49a9G03wqViX9z/47XfeHvh9JbquY8cDsfQ11+n+CpZSiLHyTjp7V5xR4/N4aIQ/uv/Ha5rWvD5C/6v8ASvr1vgPfjSZLyQRKi+rc9PpXjvjDwi9pO0YTdjPQGgD5X8T6F8sv7v17V5XqVm1pOwKkKTX0/wCJ/C87LLiBz16Ka8a8XeErsqxW2lJBzwh9D7UAefQXEtrKssMjwyL0eNipH4ivWfDWvwa1p8OJw92qATRtgNuGAWx6EnqOOfwryttNukKg20vzfdIQ/Nxnj14qXTJLnTb23vUhlIicN8uV3DG4jPuufwNbUqjpvyEez0JHLczLDAhdz1I521Y8K6bf+M7M3OmWE7oHeN/NXbsZQhIbrjIkTHXO72OPZPBfwfudPt4zc4kn2sXc9znHpXVVrJK0WJI53wz4OZdhMJzk5JWvV/B3w4n1u5EUVszksBwme9dNpPgww7PlHc/rXqHw9uofCt0ZpI93cYHpmvPKOZ8X/A//AIRzQGnmtgjeVu5TFfHnxOsxY+I0jA2jyAf/AB5q++Pih8Q38TWTwKrKu0rz9K+GvjdD5Hi+Be5s0bH/AAOT/Cuih8Ymaf7Or3CeM78W1xNbsdOfLQuUJHmx+le2apd6ugfGrX4+ly/+NeP/ALMEPnePdRXGcaXIf/IsVe/6tYDD/L69qK/xgjyXXdU15Aduuamv0u5B/WvOfEGueJVeTb4j1hfpfSj/ANmr2TXdPBB+X17V57rmlgu/yfpXOM8W1jX/ABbzt8Va6vA6alMO/wDvVgR6743kcKPGHiD/AMGU3/xVem6loynPyD8q5yaKGOQiMDj+ICtIQc3ZAaPhXxh4l8M3VneDxFq15dQSLNm7v5pFJHBXG7oQSDjGQSK+xvAPjNvH3hy31a1vruEy5WWA3RZoZBwVOD9CM4JBBwM18S11vwz+IN78O/EkF7DI5sJXVL22A3CWLPOASBvAJKnIweOhIPdUopxtHoTc+240vcHF/d/9/wBv8aey3+OL677/APLZv8aXwjrumeLdOjvdJvYL+1bA3wsDtOA21h1VsEZU4IzyK9d8G+Ao9W8uSZB5eMkkV5uxR4ffjVFUkX94OvSdv8a47Wr3Voy2NVv1+ly/+NfW3jT4c6dZ6UZYI1yM5JUCvmrxZYJFdzKoGAe1AHi/iHWNeSN9muamv0u5B/WvLfE/iHxOu7Z4k1hOv3b+Uen+1XtPiCyBR/l/SvMvEWmhs/L69qAPENb8U+M4pnMfi3Xl5PA1KbHX/erGtPGfj68uUhj8Va8WY4/5CU3/AMVXoeraMrO5KDH096z7PTorMlkUByMZA7VrTpuo7COj8C+PPFXgt/ObxFqWqzOB5qX15NJGccgAbgRg85BBPQ8EivsTwbrE3ibQtO1WDUbtVu4UlKJeM4RurJnuVOVPuK+Iq7z4R/Em48AeJLczTO2jTv5d1AzvsjDFczBRn5lCjsSQCO+R2VKKcfd6CufZ9ql6oH+n3ZxjrO3+NdD4duJba6R57q4kUHOGlJFYGh6tZ6vZR3VldQXltJnZNbyB0bBIOGBwcEEfhWqWwMg15xR6Z41+JNqvh+WCzhjSVlA3qMEcjpXzN4p1rVZpmdNSvI8k8JO4H867jUnZ4yCxIriNciBHSgDyzxHruuoJdmt6kvX7t3IP615N4n8UeJ0U7PEmsJz/AA38o9f9qvYfEcAIl49a8q8SWYIPy9/SgDyDXfGXjKKbMfizXV9hqU3/AMVWPZeOvHl9eRW8fivXd8jBQTqU+B7n5ugrrtZ0zzJMBMn2FS6VpUWmxZCL5zcs+Bntxn04ranTdR+Qj0T4Y/FbXvh9e4m1nVdVsZiBcrdXrySkdmUk8EZPHAPfnkfXPhfxU3iDTLa+s9VnubaddySLO2CM/Xgg5BB5BBBr4Qr074QfF2XwPdpp2pO8uhyN1GWa1YnllHdT3UfUc5DdVWimrxQkz7Ptrq7IGby4P/bVv8alkursLxd3H/f1v8axdJ1SG8t4p4JkmhlUOkkbBldSMggjqCO9abTgr1rzyjL1O/vwr4vrkfSZv8a+Tv2j7m4ufHFmbieWdhp6AGVyxA8yTpmvqzUnBVq+UP2jDnxzaY/6B6f+jJK6KHxiZ0P7H1l9u+I+rp/d0aVv/I8A/rX0LrlsI3kHoTXzJ+zF8RtD+GfxAvb7xBNJbWN5pktmLhIjII3MkcgLBctg+WRwDyw4xkj6A1b4m+EtTT7Rb+JNLMcy+Yoe7RGwRkZViCp9iAR3FVXi+e9gRzutQg1wms22XatHxt8V/D+jx7YLtNVuWXKxWTh1743OPlAyMHqRkHFeJ+J/Huo+IriYLI9pZSYxbIwOBtwQWABYHk4PHPtUQoyn5Bci1/xJHfCaC2jIjJx5xOCw+nbP8q56iivRjBQVkIKKKKsR6F8IvjPqnwn1CUwxf2lpM+Wm06STYC+MB0bB2twAeCCOCOFK/pJ8E/jDofjPwpbappU/n2ko2OjELJBIAN0br/CwyOOhBBBIIJ/Jmul8EfEfxJ8OLu5uPDmqyabJcoI5gqJIkgByMo4K5HODjIyQDyc81Wip6rcdz9VfiL45imsRBAODnJ3da+dPEU32i4kf1rzzw7+1hpXiK0EfiOJ9GvUT5pYlaaCQgLnG0FlJJY7SCAB94mtzUvH3huUtt8Q6U30vYj/7NXA4Sjo0UYWuRgo1edeIIlRWZiFVQSWPAArW8Z/FPRNOjljs501S6DAeVAx2YPOfMwVxj0zzx648Z17xPf8AiKQG6dRGpysMYwinGM+p/Enqa1hRlPfRCuQ6tqX22dxGMRBjg/3ueD/9as+iivRjFRVkIKKKKoR6R8HfjFN8MLq6gntXv9Ku2RpIklKtCwOC6A/KSV6jjO1fmGK+v9F8RWXiHSrbUdOuUurK4TfFNGeCP5gg5BB5BBB5FfnxXU+DPiZ4i8Bb00i+8u1klWWW1lQPFIR7EZXI4JUgkAc8DHNVo8+q3Hc+3L2bKGuR1p8g1xvhz9onw74hhWPUC+h3jME8ufMkRJYgYkA4AGCSwUDPcAmr+qeOfD8o+XXtMb6XkZ/rXA4SWjRRz+v8iT8a8v8AErRwxlpHCDPU1veMPiZpcKzR2En265yygop8tSDjJbjI6425zjqM5ryzU9au9XfNxJlQxYIoAUf5961hRlLV6IVyrcSiaUsBgds1FRRXoxioqyJCiiiqA9T+DXxkm8C3SaZqjvNoErcHlmtGJ5ZR3UnkqPqOchvqu21WK8tY54JUmglUOkkbBldSMggjqCO9fANdV4K+Jeu+AnddMuEa1kbfJaXC74nbBGccEHpypGdozkDFctWjz6x3Hc+x7+6yrV8u/tCvv8bWh/6cE/8ARklenaJ8cfDviKCNZ7k6VeOMNDd8ICFySJPu46gEkE46DIryH41araax4rtprO6hvIhZqhkgkDqDvc4yO/I/OsaMZRnqhs4CiiivQJCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//Z"/>
+            </CanvasImage>
+            <CanvasImage>
+                <name content="No Subdivision"/>
+                <size x="256" y="256"/>
+                <base64 content="/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAEAAQADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDwSiiivbICiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooo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VCz2zNsLFc7CHwcEEnsQQTxnBH6Zfsx63pHjTwfF4g0a6W5tpMxuhwJIJR96ORc/KwBBx3BBBIIJ/Jyuz+Gnxi8Y/B6+vbvwhrkujy3sYiuFWOOaOUA5UtHIrKWHOGxkBmAIDHPPVoqeq3Hc/RD9oHWhO0sQ6Djr718seImzn8axbz9rfUfFbt/wkmkQB3ckz6YWQKuOB5bk5Oe+8cHpxzmXfxN0HVrUyrdPbsAWaGeMhxzjtkHscAnj6HHDKlOPQdzlvFJ+Wb8a8h1ywfVLgQIQuTlmP8I9a7jXfFbao7iCHyYyT8zHLEZ4+n61z/cn1raGHb1kFyjo2kQ6LZeRESxLF3c/xMcZOO3Qce1XqKK70klZEhRRRTA9W+C/xml8CXSaXqzvN4flfg4LNaMTyyjqUJ5ZR9RzkN9XfaYbyziuLeVJ4JUDxyxsGV1IyGBHBBHOa/Puut8OfFfxX4T0pdN0vV3t7FXZ1heKOUIT1271JAzzgcZJPUmuWrR53eO47n1hrByH/GvlD4r8+P8AVfrF/wCikr0jRf2ibfUIRFrtg1rcFgPtFkN0RyTklSdygDHQsTz04FeXfEbUbbVvGN/eWcyz20wiZJF6EeUn5HsQeQazowlCbuhs5qiiiu4kKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/2Q=="/>
+            </CanvasImage>
+        </Canvases>
+        <Network>
+            <name content="Network"/>
+            <size x="256" y="256"/>
+            <base64 content="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"/>
+        </Network>
+    </WorkspaceAnnotations>
+    <AnimationController>
+        <Properties>
+            <Property type="org.inviwo.CompositeProperty" identifier="PlayOptions">
+                <Properties/>
+                <collapsed content="1"/>
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="RenderOptions">
+                <Properties>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="image">
+                        <Properties>
+                            <Property type="org.inviwo.DirectoryProperty" identifier="outputDirectory">
+                                <absolutePath content=""/>
+                                <workspaceRelativePath content=""/>
+                                <ivwdataRelativePath content=""/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="ffmpeg">
+                        <Properties>
+                            <Property type="org.inviwo.FileProperty" identifier="file">
+                                <absolutePath content=""/>
+                                <workspaceRelativePath content=""/>
+                                <ivwdataRelativePath content=""/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="exporter">
+                        <Properties>
+                            <Property type="org.inviwo.DirectoryProperty" identifier="outputDirectory">
+                                <absolutePath content=""/>
+                                <workspaceRelativePath content=""/>
+                                <ivwdataRelativePath content=""/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <collapsed content="1"/>
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="controlOptions">
+                <Properties/>
+                <collapsed content="1"/>
+            </Property>
+        </Properties>
+    </AnimationController>
+    <MainAnimationIndex content="0"/>
+    <Animations>
+        <Animation>
+            <name content="Animation 1"/>
+        </Animation>
+    </Animations>
+</InviwoWorkspace>

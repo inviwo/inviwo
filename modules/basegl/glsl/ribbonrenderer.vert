@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2025-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,39 +24,53 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#pragma once
+#include "utils/structs.glsl"
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/layerport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/datastructures/geometry/geometrytype.h>
+uniform GeometryParameters geometry;
 
-namespace inviwo {
+uniform float widthScaling = 1.0;
+uniform vec4 defaultColor = vec4(0.7, 0.7, 0.7, 1);
+uniform float defaultWidth = 0.1;
+uniform sampler2D metaColor;
 
-class IVW_MODULE_BASE_API VolumeSliceToLayer : public Processor {
-public:
-    enum class SlicePosition : unsigned char { Index, Minimum, Centered, Maximum };
+out LineVert {
+    vec4 color;
+    vec3 binormal;
+    float width;
+    flat uint pickID;
+} line;
 
-    explicit VolumeSliceToLayer();
+ 
+void main() {
+#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
+    line.color = texture(metaColor, vec2(in_ScalarMeta, 0.5));
+#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
+    line.color = in_Color;
+#else
+    line.color = defaultColor;
+#endif
 
-    virtual void process() override;
+    vec3 binormal = vec3(1, 0, 0);
+#if defined(HAS_NORMAL)
+    binormal = in_Normal;
+#endif
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+#if defined(FORCE_WIDTH)
+    line.width = defaultWidth * widthScaling;
+#else
+    line.width = length(binormal) * widthScaling;
+#endif
 
-private:
-    VolumeInport inport_;
-    LayerOutport outport_;
+    line.binormal = geometry.dataToWorldNormalMatrix * normalize(binormal);
 
-    OptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
-    OptionProperty<SlicePosition> slicePosition_;
-    IntSizeTProperty sliceNumber_;
-};
+#if defined(HAS_PICKING)
+    line.pickID = in_Picking;
+#else 
+    line.pickID = 0;
+#endif
 
-}  // namespace inviwo
+    gl_Position = geometry.dataToWorld * vec4(in_Position, 1.0);
+}  
