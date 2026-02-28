@@ -1120,6 +1120,7 @@ var namespaceinviwo =
     [ "ResourceManagerObservable", "classinviwo_1_1ResourceManagerObservable.html", null ],
     [ "ResourceManagerObserver", "classinviwo_1_1ResourceManagerObserver.html", null ],
     [ "ResourceMeta", "structinviwo_1_1ResourceMeta.html", null ],
+    [ "RibbonRenderer", "classinviwo_1_1RibbonRenderer.html", "classinviwo_1_1RibbonRenderer" ],
     [ "RowLayout", "classinviwo_1_1RowLayout.html", null ],
     [ "RuntimeModuleLoading", "structinviwo_1_1RuntimeModuleLoading.html", null ],
     [ "SafeCStr", "classinviwo_1_1SafeCStr.html", null ],

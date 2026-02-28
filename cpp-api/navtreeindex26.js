@@ -1,5 +1,11 @@
 var NAVTREEINDEX26 =
 {
+"classinviwo_1_1animation_1_1KeyframeSequenceObserverble.html":[4,0,1,2,56],
+"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html":[2,0,0,0,56],
+"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html":[4,0,1,2,57],
+"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html#a0a347144cf3d149e7549af586a0d7129":[2,0,0,0,56,0],
+"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html#a0a347144cf3d149e7549af586a0d7129":[4,0,1,2,57,0],
+"classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html":[2,0,0,0,57],
 "classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html":[4,0,1,2,58],
 "classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html#ab6122d3c32bc7d89a060bc510db24eb5":[2,0,0,0,57,0],
 "classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html#ab6122d3c32bc7d89a060bc510db24eb5":[4,0,1,2,58,0],
@@ -243,11 +249,5 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1AxisRenderProcessor.html#acd6617b0ddbd2520aa27dd16b2fb7e5a":[2,0,0,15,7,0],
 "classinviwo_1_1plot_1_1AxisRenderProcessor.html#acd6617b0ddbd2520aa27dd16b2fb7e5a":[4,0,1,22,8,0],
 "classinviwo_1_1plot_1_1AxisRenderer.html":[2,0,0,15,4],
-"classinviwo_1_1plot_1_1AxisRenderer.html":[4,0,1,22,5],
-"classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[2,0,0,15,4,0],
-"classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[4,0,1,22,5,0],
-"classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[2,0,0,15,4,1],
-"classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[4,0,1,22,5,1],
-"classinviwo_1_1plot_1_1AxisRenderer3D.html":[2,0,0,15,5],
-"classinviwo_1_1plot_1_1AxisRenderer3D.html":[4,0,1,22,6]
+"classinviwo_1_1plot_1_1AxisRenderer.html":[4,0,1,22,5]
 };

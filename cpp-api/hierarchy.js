@@ -795,6 +795,7 @@ var hierarchy =
           [ "inviwo::VolumeRasterizer", "classinviwo_1_1VolumeRasterizer.html", null ]
         ] ],
         [ "inviwo::RedGreenProcessor", "classinviwo_1_1RedGreenProcessor.html", null ],
+        [ "inviwo::RibbonRenderer", "classinviwo_1_1RibbonRenderer.html", null ],
         [ "inviwo::SSAO", "classinviwo_1_1SSAO.html", null ],
         [ "inviwo::Seed3Dto4D", "classinviwo_1_1Seed3Dto4D.html", null ],
         [ "inviwo::SeedPointGenerator", "classinviwo_1_1SeedPointGenerator.html", null ],
@@ -1862,6 +1863,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< util::VolumeLaplacianPostProcessing >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< CartesianCoordinateAxis >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< OutputFormat >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< SlicePosition >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< SourceType >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< PlaybackMode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< OffsetScaling >", "classinviwo_1_1OptionProperty.html", null ],
@@ -3265,6 +3267,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< util::VolumeLaplacianPostProcessing >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< CartesianCoordinateAxis >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< OutputFormat >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< SlicePosition >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< SourceType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< PlaybackMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< OffsetScaling >", "classinviwo_1_1OptionPropertyOption.html", null ],

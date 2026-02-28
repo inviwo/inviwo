@@ -93,8 +93,9 @@ var searchData=
   ['resourcemanagerobserver_90',['ResourceManagerObserver',['../classinviwo_1_1ResourceManagerObserver.html',1,'inviwo']]],
   ['resourcemeta_91',['ResourceMeta',['../structinviwo_1_1ResourceMeta.html',1,'inviwo']]],
   ['result_92',['Result',['../structinviwo_1_1HistogramCache_1_1Result.html',1,'inviwo::HistogramCache::Result'],['../structinviwo_1_1IntegralLineTracer_1_1Result.html',1,'inviwo::IntegralLineTracer&lt; SpatialSampler, TimeDependent &gt;::Result']]],
-  ['rotateproperty_93',['RotateProperty',['../classinviwo_1_1transform_1_1RotateProperty.html',1,'inviwo::transform']]],
-  ['rowfilter_94',['RowFilter',['../structinviwo_1_1csvfilters_1_1RowFilter.html',1,'inviwo::csvfilters']]],
-  ['rowlayout_95',['RowLayout',['../classinviwo_1_1RowLayout.html',1,'inviwo']]],
-  ['runtimemoduleloading_96',['RuntimeModuleLoading',['../structinviwo_1_1RuntimeModuleLoading.html',1,'inviwo']]]
+  ['ribbonrenderer_93',['RibbonRenderer',['../classinviwo_1_1RibbonRenderer.html',1,'inviwo']]],
+  ['rotateproperty_94',['RotateProperty',['../classinviwo_1_1transform_1_1RotateProperty.html',1,'inviwo::transform']]],
+  ['rowfilter_95',['RowFilter',['../structinviwo_1_1csvfilters_1_1RowFilter.html',1,'inviwo::csvfilters']]],
+  ['rowlayout_96',['RowLayout',['../classinviwo_1_1RowLayout.html',1,'inviwo']]],
+  ['runtimemoduleloading_97',['RuntimeModuleLoading',['../structinviwo_1_1RuntimeModuleLoading.html',1,'inviwo']]]
 ];

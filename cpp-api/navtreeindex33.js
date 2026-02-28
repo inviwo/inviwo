@@ -1,5 +1,11 @@
 var NAVTREEINDEX33 =
 {
+"structinviwo_1_1amira_1_1DataSpec.html#abec473fa6b7e810e0382cb78c95a6fd2":[4,0,1,1,1,1],
+"structinviwo_1_1amira_1_1DataSpec.html#ae0b8f8d07f5f2724339eb53d0c173068":[4,0,1,1,1,0],
+"structinviwo_1_1amira_1_1DataSpecFormat.html":[4,0,1,1,2],
+"structinviwo_1_1amira_1_1Material.html":[4,0,1,1,3],
+"structinviwo_1_1animation_1_1AnimationTimeState.html":[2,0,0,0,13],
+"structinviwo_1_1animation_1_1AnimationTimeState.html":[4,0,1,2,14],
 "structinviwo_1_1animation_1_1FindDivisionsResult.html":[2,0,0,0,37],
 "structinviwo_1_1animation_1_1FindDivisionsResult.html":[4,0,1,2,38],
 "structinviwo_1_1animation_1_1KeyframeWidgetQtLock.html":[2,0,0,0,59],
@@ -243,11 +249,5 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1util_1_1RandomSphericalPointGeneration.html":[2,0,0,20,53],
 "structinviwo_1_1util_1_1RandomSphericalPointGeneration.html":[4,0,1,30,57],
 "structinviwo_1_1util_1_1SawToothOptions.html":[2,0,0,20,57],
-"structinviwo_1_1util_1_1SawToothOptions.html":[4,0,1,30,61],
-"structinviwo_1_1util_1_1SharedSequenceData.html":[2,0,0,20,59],
-"structinviwo_1_1util_1_1SharedSequenceData.html":[4,0,1,30,63],
-"structinviwo_1_1util_1_1TransformIterator.html":[2,0,0,20,62],
-"structinviwo_1_1util_1_1TransformIterator.html":[4,0,1,30,66],
-"structinviwo_1_1util_1_1alwaysTrue.html":[2,0,0,20,0],
-"structinviwo_1_1util_1_1alwaysTrue.html":[4,0,1,30,4]
+"structinviwo_1_1util_1_1SawToothOptions.html":[4,0,1,30,61]
 };

@@ -1,5 +1,11 @@
 var NAVTREEINDEX30 =
 {
+"namespaceinviwo_1_1util.html#aa15da526769c7e6cfac443da69fbeb01":[2,0,0,20,140],
+"namespaceinviwo_1_1util.html#aa18a8d1ff055cdc4871caaf9105fb714":[2,0,0,20,200],
+"namespaceinviwo_1_1util.html#aa25faca6335f85635cde61c0986c2343":[2,0,0,20,310],
+"namespaceinviwo_1_1util.html#aa2bb2a87355c0aa175f5dc794164c129":[2,0,0,20,312],
+"namespaceinviwo_1_1util.html#aa4d38c8a311e159b1bdb778697984dbe":[2,0,0,20,309],
+"namespaceinviwo_1_1util.html#aa566d97b543e2bdded79bb2a50c33bb0":[2,0,0,20,251],
 "namespaceinviwo_1_1util.html#aa58b65316e88fa13b51e3f2a3093b066":[2,0,0,20,276],
 "namespaceinviwo_1_1util.html#aa7a49c8d7b70aa04748e46e77aaa4bf3":[2,0,0,20,93],
 "namespaceinviwo_1_1util.html#aa9402f8b933d12f71410d3cc938691e9":[2,0,0,20,314],
@@ -243,11 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1DataTraits_3_01Layer_01_4.html":[2,0,0,234],
 "structinviwo_1_1DataTraits_3_01Layer_01_4.html":[4,0,1,243],
 "structinviwo_1_1DataTraits_3_01Rasterization_01_4.html":[2,0,0,235],
-"structinviwo_1_1DataTraits_3_01Rasterization_01_4.html":[4,0,1,244],
-"structinviwo_1_1DataTraits_3_01Spatial4DSampler_3_01ReturnType_01_4_01_4.html":[2,0,0,236],
-"structinviwo_1_1DataTraits_3_01Spatial4DSampler_3_01ReturnType_01_4_01_4.html":[4,0,1,245],
-"structinviwo_1_1DataTraits_3_01SpatialSampler_3_01ReturnType_01_4_01_4.html":[2,0,0,237],
-"structinviwo_1_1DataTraits_3_01SpatialSampler_3_01ReturnType_01_4_01_4.html":[4,0,1,246],
-"structinviwo_1_1DataTraits_3_01T_00_01std_1_1enable__if__t_3_01DataFormatBase_1_1typeToId_3_01T_88db01cc90e24a64181cb70f2e0412fb.html":[2,0,0,248],
-"structinviwo_1_1DataTraits_3_01T_00_01std_1_1enable__if__t_3_01DataFormatBase_1_1typeToId_3_01T_88db01cc90e24a64181cb70f2e0412fb.html":[4,0,1,257]
+"structinviwo_1_1DataTraits_3_01Rasterization_01_4.html":[4,0,1,244]
 };
