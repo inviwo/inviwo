@@ -1,0 +1,151 @@
+name: "Update vcpkg Baseline"
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # daily at 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-baseline:
+    name: "Check and update vcpkg baseline"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for vcpkg updates and create PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          VCPKG_JSON="vcpkg.json"
+
+          # Extract current baseline from vcpkg.json
+          CURRENT_BASELINE=$(python3 -c "
+          import json, sys
+          with open('$VCPKG_JSON') as f:
+              d = json.load(f)
+          print(d['vcpkg-configuration']['default-registry']['baseline'])
+          ")
+          echo "Current baseline: $CURRENT_BASELINE"
+
+          # Get latest commit SHA from microsoft/vcpkg
+          LATEST_COMMIT=$(curl -sSf \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/microsoft/vcpkg/commits/master" \
+            | python3 -c "import json,sys; print(json.load(sys.stdin)['sha'])")
+          echo "Latest vcpkg commit: $LATEST_COMMIT"
+
+          if [ "$CURRENT_BASELINE" = "$LATEST_COMMIT" ]; then
+            echo "Baseline is already up-to-date."
+            exit 0
+          fi
+
+          # Collect all dependency names from vcpkg.json
+          DEPS=$(python3 -c "
+          import json
+          with open('$VCPKG_JSON') as f:
+              d = json.load(f)
+          names = set()
+          def collect(deps):
+              for dep in deps:
+                  if isinstance(dep, str):
+                      names.add(dep)
+                  elif isinstance(dep, dict):
+                      names.add(dep['name'])
+          collect(d.get('dependencies', []))
+          for feat in d.get('features', {}).values():
+              collect(feat.get('dependencies', []))
+          print('\n'.join(sorted(names)))
+          ")
+          echo "Dependencies to check:"
+          echo "$DEPS"
+
+          # Fetch baseline.json from current and latest vcpkg commits
+          fetch_baseline() {
+            local sha="$1"
+            curl -sSf \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github.raw+json" \
+              "https://api.github.com/repos/microsoft/vcpkg/contents/versions/baseline.json?ref=${sha}"
+          }
+
+          fetch_baseline "$CURRENT_BASELINE" > /tmp/baseline_old.json
+          fetch_baseline "$LATEST_COMMIT"    > /tmp/baseline_new.json
+
+          # Write deps list to a temp file so Python can read it
+          echo "$DEPS" > /tmp/deps.txt
+
+          # Compare versions for our dependencies
+          CHANGED=$(python3 - <<'EOF'
+import json
+
+with open('/tmp/baseline_old.json') as f:
+    old = json.load(f)['default']
+with open('/tmp/baseline_new.json') as f:
+    new = json.load(f)['default']
+with open('/tmp/deps.txt') as f:
+    deps = [l.strip() for l in f if l.strip()]
+
+changed = []
+for dep in deps:
+    old_entry = old.get(dep)
+    new_entry = new.get(dep)
+    if old_entry is None and new_entry is None:
+        continue
+    if old_entry != new_entry:
+        old_ver = old_entry.get('baseline', 'N/A') if old_entry else 'N/A'
+        new_ver = new_entry.get('baseline', 'N/A') if new_entry else 'N/A'
+        changed.append(f"  {dep}: {old_ver} -> {new_ver}")
+print('\n'.join(changed))
+EOF
+          )
+
+          if [ -z "$CHANGED" ]; then
+            echo "No dependency version changes in the new baseline."
+            exit 0
+          fi
+
+          echo "Changed dependencies:"
+          echo "$CHANGED"
+
+          # Update only the baseline value in vcpkg.json (preserves original formatting)
+          sed -i "s/\"baseline\": \"${CURRENT_BASELINE}\"/\"baseline\": \"${LATEST_COMMIT}\"/" "$VCPKG_JSON"
+
+          # Create a new branch and open a PR
+          BRANCH="bot/vcpkg-baseline-${LATEST_COMMIT:0:10}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Skip if a PR for this baseline already exists
+          EXISTING_PRS=$(gh pr list --head "$BRANCH" --json number --jq 'length')
+          if [ "$EXISTING_PRS" -ne 0 ]; then
+            echo "A PR for branch $BRANCH already exists. Nothing to do."
+            exit 0
+          fi
+
+          git checkout -b "$BRANCH"
+          git add "$VCPKG_JSON"
+
+          # Write commit message to a file to avoid shell quoting issues
+          printf 'chore: update vcpkg baseline to %s\n\nChanged dependencies:\n%s\n' \
+            "${LATEST_COMMIT:0:10}" "$CHANGED" > /tmp/commit_msg.txt
+          git commit -F /tmp/commit_msg.txt
+          git push origin "$BRANCH"
+
+          printf '## vcpkg baseline update\n\nUpdated baseline from `%s` to `%s`.\n\n### Changed dependencies\n```\n%s\n```\n\nFull vcpkg commit: https://github.com/microsoft/vcpkg/commit/%s\n' \
+            "${CURRENT_BASELINE:0:10}" "${LATEST_COMMIT:0:10}" "$CHANGED" "$LATEST_COMMIT" \
+            > /tmp/pr_body.txt
+
+          gh pr create \
+            --title "chore: update vcpkg baseline to ${LATEST_COMMIT:0:10}" \
+            --body-file /tmp/pr_body.txt \
+            --base "${{ github.event.repository.default_branch }}" \
+            --head "$BRANCH" \
+            --label "dependencies"
