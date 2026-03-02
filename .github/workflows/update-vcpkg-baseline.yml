@@ -53,9 +53,8 @@ jobs:
           # Fetch baseline.json from current and latest vcpkg commits
           fetch_baseline() {
             local sha="$1"
-            gh api \
-              --header "Accept: application/vnd.github.raw+json" \
-              "repos/microsoft/vcpkg/contents/versions/baseline.json?ref=${sha}"
+            gh api "repos/microsoft/vcpkg/contents/versions/baseline.json?ref=${sha}" \
+              --jq '.content' | base64 --decode
           }
 
           fetch_baseline "$CURRENT_BASELINE" > /tmp/baseline_old.json
