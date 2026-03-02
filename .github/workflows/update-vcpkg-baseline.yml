@@ -29,6 +29,11 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Save the default-branch baseline before any branch switch so we can
+          # later compute cumulative (not just incremental) dependency changes.
+          ORIGINAL_BASELINE=$(jq -r '."vcpkg-configuration"."default-registry".baseline' "$VCPKG_JSON")
+          echo "Default-branch baseline: $ORIGINAL_BASELINE"
+
           # Check for an existing open PR at the beginning; if found, check out
           # that branch so its state is used as the baseline for comparison.
           EXISTING_PR=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty')
@@ -91,6 +96,17 @@ jobs:
           echo "Changed dependencies:"
           echo "$CHANGED"
 
+          # Compute cumulative changes from the original default-branch baseline so
+          # the PR body always shows the full impact of merging, not just the latest
+          # incremental update (which would overwrite earlier version changes).
+          if [ "$ORIGINAL_BASELINE" != "$CURRENT_BASELINE" ]; then
+            fetch_baseline "$ORIGINAL_BASELINE" > /tmp/baseline_orig.json
+            ALL_CHANGED=$(.github/scripts/compare-vcpkg-baselines.py \
+              /tmp/baseline_orig.json /tmp/baseline_new.json /tmp/deps.txt)
+          else
+            ALL_CHANGED="$CHANGED"
+          fi
+
           # Update only the baseline value in vcpkg.json (preserves original formatting)
           sed -i "s|\"baseline\": \"${CURRENT_BASELINE}\"|\"baseline\": \"${LATEST_COMMIT}\"|" "$VCPKG_JSON"
 
@@ -103,7 +119,7 @@ jobs:
           git push origin "$BRANCH"
 
           printf '## vcpkg baseline update\n\nUpdated baseline from `%s` to `%s`.\n\n### Changed dependencies\n```\n%s\n```\n\nFull vcpkg commit: https://github.com/microsoft/vcpkg/commit/%s\n' \
-            "${CURRENT_BASELINE:0:10}" "${LATEST_COMMIT:0:10}" "$CHANGED" "$LATEST_COMMIT" \
+            "${ORIGINAL_BASELINE:0:10}" "${LATEST_COMMIT:0:10}" "$ALL_CHANGED" "$LATEST_COMMIT" \
             > /tmp/pr_body.txt
 
           if [ -n "$EXISTING_PR" ]; then
