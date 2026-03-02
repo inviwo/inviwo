@@ -24,8 +24,24 @@ jobs:
           set -euo pipefail
 
           VCPKG_JSON="vcpkg.json"
+          BRANCH="bot/vcpkg-baseline-update"
 
-          # Extract current baseline from vcpkg.json
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check for an existing open PR at the beginning; if found, check out
+          # that branch so its state is used as the baseline for comparison.
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty')
+
+          if [ -n "$EXISTING_PR" ]; then
+            git fetch origin "$BRANCH"
+            git checkout -B "$BRANCH" "origin/$BRANCH"
+            echo "Checked out existing PR #${EXISTING_PR} branch: $BRANCH"
+          else
+            git checkout -b "$BRANCH"
+          fi
+
+          # Extract current baseline from the checked-out branch
           CURRENT_BASELINE=$(jq -r '."vcpkg-configuration"."default-registry".baseline' "$VCPKG_JSON")
           echo "Current baseline: $CURRENT_BASELINE"
 
@@ -75,37 +91,8 @@ jobs:
           echo "Changed dependencies:"
           echo "$CHANGED"
 
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Check for an existing open PR for a vcpkg baseline update
-          EXISTING_PR_JSON=$(gh pr list \
-            --json number,headRefName \
-            --jq '[.[] | select(.headRefName | startswith("bot/vcpkg-baseline-"))] | first | {number, headRefName} // empty')
-          EXISTING_PR_NUMBER=$(echo "$EXISTING_PR_JSON" | jq -r '.number // empty')
-          EXISTING_BRANCH=$(echo "$EXISTING_PR_JSON" | jq -r '.headRefName // empty')
-
-          if [ -n "$EXISTING_BRANCH" ]; then
-            # Build on top of the existing PR branch so the PR is updated in-place
-            git fetch origin "$EXISTING_BRANCH"
-            git checkout "$EXISTING_BRANCH"
-            BRANCH="$EXISTING_BRANCH"
-          else
-            BRANCH="bot/vcpkg-baseline-${LATEST_COMMIT:0:10}"
-            git checkout -b "$BRANCH"
-          fi
-
-          # Read the actual baseline from the checked-out branch (may differ from
-          # CURRENT_BASELINE when we are updating an existing PR branch)
-          BRANCH_BASELINE=$(jq -r '."vcpkg-configuration"."default-registry".baseline' "$VCPKG_JSON")
-
-          if [ "$BRANCH_BASELINE" = "$LATEST_COMMIT" ]; then
-            echo "Branch $BRANCH already has the latest baseline. Nothing to do."
-            exit 0
-          fi
-
           # Update only the baseline value in vcpkg.json (preserves original formatting)
-          sed -i "s|\"baseline\": \"${BRANCH_BASELINE}\"|\"baseline\": \"${LATEST_COMMIT}\"|" "$VCPKG_JSON"
+          sed -i "s|\"baseline\": \"${CURRENT_BASELINE}\"|\"baseline\": \"${LATEST_COMMIT}\"|" "$VCPKG_JSON"
 
           git add "$VCPKG_JSON"
 
@@ -119,12 +106,12 @@ jobs:
             "${CURRENT_BASELINE:0:10}" "${LATEST_COMMIT:0:10}" "$CHANGED" "$LATEST_COMMIT" \
             > /tmp/pr_body.txt
 
-          if [ -n "$EXISTING_PR_NUMBER" ]; then
+          if [ -n "$EXISTING_PR" ]; then
             # Update the existing PR title and description
-            gh pr edit "$EXISTING_PR_NUMBER" \
+            gh pr edit "$EXISTING_PR" \
               --title "chore: update vcpkg baseline to ${LATEST_COMMIT:0:10}" \
               --body-file /tmp/pr_body.txt
-            echo "Updated existing PR #${EXISTING_PR_NUMBER}"
+            echo "Updated existing PR #${EXISTING_PR}"
           else
             gh pr create \
               --title "chore: update vcpkg baseline to ${LATEST_COMMIT:0:10}" \
