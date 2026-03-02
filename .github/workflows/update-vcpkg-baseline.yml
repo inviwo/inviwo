@@ -30,11 +30,7 @@ jobs:
           echo "Current baseline: $CURRENT_BASELINE"
 
           # Get latest commit SHA from microsoft/vcpkg
-          LATEST_COMMIT=$(curl -sSf \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/microsoft/vcpkg/commits/master" \
-            | jq -r '.sha')
+          LATEST_COMMIT=$(gh api repos/microsoft/vcpkg/commits/master --jq '.sha')
           echo "Latest vcpkg commit: $LATEST_COMMIT"
 
           if [ "$CURRENT_BASELINE" = "$LATEST_COMMIT" ]; then
@@ -57,10 +53,9 @@ jobs:
           # Fetch baseline.json from current and latest vcpkg commits
           fetch_baseline() {
             local sha="$1"
-            curl -sSf \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "Accept: application/vnd.github.raw+json" \
-              "https://api.github.com/repos/microsoft/vcpkg/contents/versions/baseline.json?ref=${sha}"
+            gh api \
+              --header "Accept: application/vnd.github.raw+json" \
+              "repos/microsoft/vcpkg/contents/versions/baseline.json?ref=${sha}"
           }
 
           fetch_baseline "$CURRENT_BASELINE" > /tmp/baseline_old.json
