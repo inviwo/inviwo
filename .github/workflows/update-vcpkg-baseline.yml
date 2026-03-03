@@ -1,0 +1,129 @@
+name: "Update vcpkg Baseline"
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # daily at 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-baseline:
+    name: "Check and update vcpkg baseline"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for vcpkg updates and create PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          VCPKG_JSON="vcpkg.json"
+          BRANCH="bot/vcpkg-baseline-update"
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Capture the main-branch baseline before possibly switching to the PR
+          # branch. This is used later to compute the full diff the PR introduces
+          # vs. main, so the PR description always reflects all cumulative changes.
+          MAIN_BASELINE=$(jq -r '."vcpkg-configuration"."default-registry".baseline' "$VCPKG_JSON")
+          echo "Main branch baseline: $MAIN_BASELINE"
+
+          # Check for an existing open PR at the beginning; if found, check out
+          # that branch so its state is used as the baseline for the sed replacement.
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty')
+
+          if [ -n "$EXISTING_PR" ]; then
+            git fetch origin "$BRANCH"
+            git checkout -B "$BRANCH" "origin/$BRANCH"
+            echo "Checked out existing PR #${EXISTING_PR} branch: $BRANCH"
+          else
+            git checkout -b "$BRANCH"
+          fi
+
+          # Extract current baseline from the checked-out branch.
+          # When updating an existing PR, this may differ from MAIN_BASELINE.
+          CURRENT_BASELINE=$(jq -r '."vcpkg-configuration"."default-registry".baseline' "$VCPKG_JSON")
+          echo "Current baseline on branch: $CURRENT_BASELINE"
+
+          # Get latest commit SHA from microsoft/vcpkg
+          LATEST_COMMIT=$(gh api repos/microsoft/vcpkg/commits/master --jq '.sha')
+          echo "Latest vcpkg commit: $LATEST_COMMIT"
+
+          if [ "$CURRENT_BASELINE" = "$LATEST_COMMIT" ]; then
+            echo "Baseline is already up-to-date."
+            exit 0
+          fi
+
+          # Collect all dependency names from vcpkg.json using jq
+          # Handles both string entries and object entries with a "name" field
+          DEPS=$(jq -r '
+            [
+              (.dependencies[]? | if type == "string" then . else .name end),
+              (.features | to_entries[]? | .value.dependencies[]?
+                | if type == "string" then . else .name end)
+            ] | unique | sort[]
+          ' "$VCPKG_JSON")
+          echo "Dependencies to check:"
+          echo "$DEPS"
+
+          # Fetch baseline.json from current and latest vcpkg commits
+          fetch_baseline() {
+            local sha="$1"
+            gh api "repos/microsoft/vcpkg/contents/versions/baseline.json?ref=${sha}" \
+              --jq '.content' | base64 --decode
+          }
+
+          fetch_baseline "$MAIN_BASELINE"  > /tmp/baseline_old.json
+          fetch_baseline "$LATEST_COMMIT"  > /tmp/baseline_new.json
+
+          # Write deps list to a file for the standalone comparison script
+          echo "$DEPS" > /tmp/deps.txt
+
+          # Compare versions using the standalone script
+          CHANGED=$(.github/scripts/compare-vcpkg-baselines.py \
+            /tmp/baseline_old.json /tmp/baseline_new.json /tmp/deps.txt)
+
+          if [ -z "$CHANGED" ]; then
+            echo "No dependency version changes in the new baseline."
+            exit 0
+          fi
+
+          echo "Changed dependencies:"
+          echo "$CHANGED"
+
+          # Update only the baseline value in vcpkg.json (preserves original formatting)
+          sed -i "s|\"baseline\": \"${CURRENT_BASELINE}\"|\"baseline\": \"${LATEST_COMMIT}\"|" "$VCPKG_JSON"
+
+          git add "$VCPKG_JSON"
+
+          # Write commit message to a file to avoid shell quoting issues
+          printf 'chore: update vcpkg baseline to %s\n\nChanged dependencies:\n%s\n' \
+            "${LATEST_COMMIT:0:10}" "$CHANGED" > /tmp/commit_msg.txt
+          git commit -F /tmp/commit_msg.txt
+          git push origin "$BRANCH"
+
+          printf '## vcpkg baseline update\n\nUpdated baseline from `%s` to `%s`.\n\n### Changed dependencies\n```\n%s\n```\n\nFull vcpkg commit: https://github.com/microsoft/vcpkg/commit/%s\n' \
+            "${MAIN_BASELINE:0:10}" "${LATEST_COMMIT:0:10}" "$CHANGED" "$LATEST_COMMIT" \
+            > /tmp/pr_body.txt
+
+          if [ -n "$EXISTING_PR" ]; then
+            # Update the existing PR title and description
+            gh pr edit "$EXISTING_PR" \
+              --title "chore: update vcpkg baseline to ${LATEST_COMMIT:0:10}" \
+              --body-file /tmp/pr_body.txt
+            echo "Updated existing PR #${EXISTING_PR}"
+          else
+            gh pr create \
+              --title "chore: update vcpkg baseline to ${LATEST_COMMIT:0:10}" \
+              --body-file /tmp/pr_body.txt \
+              --base "${{ github.event.repository.default_branch }}" \
+              --head "$BRANCH" \
+              --label "dependencies"
+          fi
