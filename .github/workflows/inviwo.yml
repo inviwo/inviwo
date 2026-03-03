@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - bot/vcpkg-baseline-update
   pull_request:
   workflow_dispatch:
 
