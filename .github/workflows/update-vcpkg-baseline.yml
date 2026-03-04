@@ -16,10 +16,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Use a PAT so that commits pushed by this workflow trigger CI on the PR.
+          # The default GITHUB_TOKEN does not trigger other workflow runs.
+          token: ${{ secrets.INVIWO_TEAM_SECRET }}
 
       - name: Check for vcpkg updates and create PR
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use INVIWO_TEAM_SECRET (PAT) instead of the default GITHUB_TOKEN so
+          # that commits pushed by this scheduled workflow trigger CI on the PR.
+          GH_TOKEN: ${{ secrets.INVIWO_TEAM_SECRET }}
         run: |
           set -euo pipefail
 
