@@ -29,81 +29,81 @@
 
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
 
-#include <inviwo/core/datastructures/bitset.h>                                  // for BitSet
-#include <inviwo/core/datastructures/buffer/buffer.h>                           // for IndexBuffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>                        // for BufferRAM
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>               // for BufferRAM...
-#include <inviwo/core/datastructures/geometry/mesh.h>                           // for Mesh::Buf...
-#include <inviwo/core/datastructures/geometry/typedmesh.h>                      // for TypedMesh
-#include <inviwo/core/datastructures/image/imagetypes.h>                        // for ImageType
-#include <inviwo/core/datastructures/representationconverter.h>                 // for Represent...
-#include <inviwo/core/datastructures/representationconverterfactory.h>          // for Represent...
-#include <inviwo/core/interaction/events/pickingevent.h>                        // for PickingEvent
-#include <inviwo/core/interaction/pickingmapper.h>                              // for PickingMa...
-#include <inviwo/core/interaction/pickingstate.h>                               // for PickingPr...
-#include <inviwo/core/io/serialization/deserializer.h>                          // for Deserializer
-#include <inviwo/core/io/serialization/serializer.h>                            // for Serializer
-#include <inviwo/core/ports/datainport.h>                                       // for DataInport
-#include <inviwo/core/ports/imageport.h>                                        // for ImageOutport
-#include <inviwo/core/ports/outportiterable.h>                                  // for OutportIt...
-#include <inviwo/core/processors/processor.h>                                   // for Processor
-#include <inviwo/core/processors/processorinfo.h>                               // for Processor...
-#include <inviwo/core/processors/processorstate.h>                              // for CodeState
-#include <inviwo/core/processors/processortags.h>                               // for Tags
-#include <inviwo/core/properties/boolcompositeproperty.h>                       // for BoolCompo...
-#include <inviwo/core/properties/boolproperty.h>                                // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                              // for ButtonPro...
-#include <inviwo/core/properties/compositeproperty.h>                           // for Composite...
-#include <inviwo/core/properties/invalidationlevel.h>                           // for Invalidat...
-#include <inviwo/core/properties/minmaxproperty.h>                              // for DoubleMin...
-#include <inviwo/core/properties/optionproperty.h>                              // for OptionPro...
-#include <inviwo/core/properties/ordinalproperty.h>                             // for FloatProp...
-#include <inviwo/core/properties/property.h>                                    // for Property
-#include <inviwo/core/properties/propertysemantics.h>                           // for PropertyS...
-#include <inviwo/core/properties/marginproperty.h>                              // for MarginPro...
-#include <inviwo/core/util/glmvec.h>                                            // for vec4, vec2
-#include <inviwo/core/util/staticstring.h>                                      // for operator+
-#include <inviwo/core/util/stdextensions.h>                                     // for contains
-#include <inviwo/core/util/stringconversion.h>                                  // for toString
-#include <inviwo/core/util/typetraits.h>                                        // for alwaysTrue
-#include <inviwo/core/util/utilities.h>                                         // for stripIden...
-#include <inviwo/core/util/zip.h>                                               // for enumerate
-#include <inviwo/dataframe/properties/columnoptionproperty.h>                   // for ColumnOpt...
-#include <inviwo/dataframe/properties/dataframecolormapproperty.h>              // for DataFrame...
-#include <inviwo/dataframe/util/dataframeutil.h>                                // for createToo...
-#include <modules/brushingandlinking/datastructures/brushingaction.h>           // for BrushingT...
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>           // for BrushingA...
-#include <modules/fontrendering/properties/fontproperty.h>                      // for FontProperty
-#include <modules/fontrendering/util/fontutils.h>                               // for getFont
-#include <modules/opengl/buffer/buffergl.h>                                     // for BufferGL
-#include <modules/opengl/geometry/meshgl.h>                                     // for MeshGL
-#include <modules/opengl/openglutils.h>                                         // for GlBoolState
-#include <modules/opengl/shader/shader.h>                                       // for Shader
-#include <modules/opengl/shader/shaderobject.h>                                 // for ShaderObject
-#include <modules/opengl/texture/textureunit.h>                                 // for TextureUn...
-#include <modules/opengl/texture/textureutils.h>                                // for activateA...
-#include <modules/opengl/openglcapabilities.h>                                  // for OpenGLCap...
-#include <modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h>  // for PCPAxisSe...
-#include <modules/plottinggl/utils/axisrenderer.h>                              // for AxisRenderer
-#include <modules/userinterfacegl/glui/element.h>                               // for UIOrienta...
-#include <modules/userinterfacegl/glui/renderer.h>                              // for Renderer
-#include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>    // for DoubleMin...
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/interaction/pickingstate.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/marginproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/typetraits.h>
+#include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <inviwo/dataframe/properties/dataframecolormapproperty.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/fontrendering/properties/fontproperty.h>
+#include <modules/fontrendering/util/fontutils.h>
+#include <modules/opengl/buffer/buffergl.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/openglcapabilities.h>
+#include <modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h>
+#include <modules/plottinggl/utils/axisrenderer.h>
+#include <modules/userinterfacegl/glui/element.h>
+#include <modules/userinterfacegl/glui/renderer.h>
+#include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>
 
-#include <algorithm>      // for partition
-#include <cstdint>        // for uint32_t
-#include <iterator>       // for distance
-#include <limits>         // for numeric_l...
-#include <ostream>        // for ostringst...
-#include <tuple>          // for make_tuple
-#include <type_traits>    // for remove_ex...
-#include <unordered_set>  // for unordered...
+#include <algorithm>
+#include <cstdint>
+#include <iterator>
+#include <limits>
+#include <ostream>
+#include <tuple>
+#include <type_traits>
+#include <unordered_set>
 
-#include <fmt/core.h>         // for format_to
-#include <glm/common.hpp>     // for abs, clamp
-#include <glm/geometric.hpp>  // for dot
-#include <glm/gtx/norm.hpp>   // for length2
-#include <glm/vec2.hpp>       // for vec, vec<...
-#include <glm/vec3.hpp>       // for vec
+#include <fmt/core.h>
+#include <glm/common.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

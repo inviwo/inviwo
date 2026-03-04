@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::AllLayers
+#include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/image.h>       // IWYU pragma: kepp
 #include <inviwo/core/datastructures/image/layer.h>       // IWYU pragma: kepp
 #include <inviwo/core/datastructures/volume/volume.h>     // IWYU pragma: kepp
@@ -41,11 +41,11 @@
 #include <inviwo/core/ports/layerport.h>   // IWYU pragma: kepp
 #include <inviwo/core/ports/volumeport.h>  // IWYU pragma: kepp
 
-#include <modules/opengl/inviwoopengl.h>  // for GLenum
+#include <modules/opengl/inviwoopengl.h>
 
-#include <cstddef>      // for size_t
-#include <memory>       // for unique_ptr
-#include <string_view>  // for string_view
+#include <cstddef>
+#include <memory>
+#include <string_view>
 
 namespace inviwo {
 

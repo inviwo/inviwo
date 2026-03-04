@@ -28,13 +28,13 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>  // for IVW_MODULE_DATAFRAMEQT_API
+#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QObject>                // for Q_OBJECT
-#include <QSortFilterProxyModel>  // for QSortFilterProxyModel
-#include <Qt>                     // for UserRole
+#include <QObject>
+#include <QSortFilterProxyModel>
+#include <Qt>
 
 class QModelIndex;
 

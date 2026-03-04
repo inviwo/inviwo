@@ -29,33 +29,33 @@
 
 #include <modules/basegl/datavisualizer/volumeraycastvisualizer.h>
 
-#include <inviwo/core/common/factoryutil.h>                      // for getDataReaderFactory
-#include <inviwo/core/datastructures/light/lightingstate.h>      // for ShadingMode, ShadingMode...
-#include <inviwo/core/datastructures/volume/volume.h>            // for VolumeSequence
-#include <inviwo/core/io/datareaderfactory.h>                    // for DataReaderFactory
-#include <inviwo/core/network/processornetwork.h>                // for ProcessorNetwork
-#include <inviwo/core/ports/outport.h>                           // for Outport
-#include <inviwo/core/ports/volumeport.h>                        // for VolumeOutport
-#include <inviwo/core/processors/processor.h>                    // for Processor
-#include <inviwo/core/processors/processorutils.h>               // for makeProcessor, trySetPro...
-#include <inviwo/core/properties/optionproperty.h>               // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>              // for FloatVec4Property, Float...
-#include <inviwo/core/properties/ordinalrefproperty.h>           // for FloatVec3RefProperty
-#include <inviwo/core/properties/cameraproperty.h>               // for CameraProperty
-#include <inviwo/core/rendering/datavisualizer.h>                // for DataVisualizer
-#include <inviwo/core/util/document.h>                           // for Document, Document::Docu...
-#include <inviwo/core/util/fileextension.h>                      // for FileExtension
-#include <inviwo/core/util/glmvec.h>                             // for vec4, vec3
-#include <modules/base/processors/cubeproxygeometryprocessor.h>  // for CubeProxyGeometry
-#include <modules/base/processors/volumeboundingbox.h>           // for VolumeBoundingBox
-#include <modules/base/processors/volumesource.h>                // for VolumeSource
-#include <modules/basegl/processors/background.h>                // for Background
-#include <modules/basegl/processors/entryexitpointsprocessor.h>  // for EntryExitPoints
-#include <modules/basegl/processors/linerendererprocessor.h>     // for LineRendererProcessor
-#include <modules/basegl/processors/raycasting/standardvolumeraycaster.h>  // for StandardVolume...
-#include <modules/opengl/canvasprocessorgl.h>                              // for CanvasProcessorGL
+#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/datastructures/light/lightingstate.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/rendering/datavisualizer.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/processors/cubeproxygeometryprocessor.h>
+#include <modules/base/processors/volumeboundingbox.h>
+#include <modules/base/processors/volumesource.h>
+#include <modules/basegl/processors/background.h>
+#include <modules/basegl/processors/entryexitpointsprocessor.h>
+#include <modules/basegl/processors/linerendererprocessor.h>
+#include <modules/basegl/processors/raycasting/standardvolumeraycaster.h>
+#include <modules/opengl/canvasprocessorgl.h>
 
-#include <map>  // for map
+#include <map>
 
 namespace inviwo {
 class Inport;

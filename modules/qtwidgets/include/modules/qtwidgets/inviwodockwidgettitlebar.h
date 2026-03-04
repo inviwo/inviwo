@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <QObject>  // for Q_OBJECT, Q_PROPERTY, signals, slots
-#include <QWidget>  // for QWidget
-#include <Qt>       // for DockWidgetAreas
+#include <QObject>
+#include <QWidget>
+#include <Qt>
 
 class QEvent;
 class QShowEvent;

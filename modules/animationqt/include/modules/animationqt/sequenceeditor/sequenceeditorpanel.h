@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/animationcontrollerobserver.h>       // for AnimationControllerObserver
-#include <modules/animation/datastructures/animationobserver.h>  // for AnimationObserver
-#include <modules/animation/datastructures/trackobserver.h>      // for TrackObserver
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/animationobserver.h>
+#include <modules/animation/datastructures/trackobserver.h>
 
-#include <unordered_map>  // for unordered_map
+#include <unordered_map>
 
-#include <QScrollArea>  // for QScrollArea
+#include <QScrollArea>
 
 class QLayout;
 class QWidget;

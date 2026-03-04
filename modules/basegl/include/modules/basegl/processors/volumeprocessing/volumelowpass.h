@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BAS...
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
-#include <inviwo/core/properties/boolcompositeproperty.h>                  // for BoolCompositeP...
-#include <inviwo/core/properties/boolproperty.h>                           // for BoolProperty
-#include <inviwo/core/properties/ordinalproperty.h>                        // for FloatProperty
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
 namespace inviwo {
 class TextureUnitContainer;

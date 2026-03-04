@@ -29,25 +29,25 @@
 
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-#include <inviwo/core/datastructures/bitset.h>          // for BitSet
+#include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/datastructures/datatraits.h>
-#include <inviwo/core/io/serialization/deserializer.h>  // for Deserializer
-#include <inviwo/core/io/serialization/serializer.h>    // for Serializer
-#include <inviwo/core/network/networkutils.h>           // for getPredecessors
-#include <inviwo/core/ports/inport.h>                   // for Inport
-#include <inviwo/core/ports/outport.h>                  // for Outport
-#include <inviwo/core/ports/port.h>                     // for Port
-#include <inviwo/core/properties/invalidationlevel.h>   // for InvalidationLevel
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/network/networkutils.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/port.h>
+#include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/util/docutils.h>
-#include <inviwo/core/util/document.h>                                 // for Document, TableBui...
-#include <inviwo/core/util/statecoordinator.h>                         // for StateCoordinator
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>      // for BrushingAndLinking...
-#include <modules/brushingandlinking/datastructures/brushingaction.h>  // for BrushingAction
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/statecoordinator.h>
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
 
-#include <functional>     // for __base
-#include <unordered_map>  // for operator!=
-#include <unordered_set>  // for unordered_set, uno...
-#include <utility>        // for move, pair, tuple_...
+#include <functional>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
 
 namespace inviwo {
 

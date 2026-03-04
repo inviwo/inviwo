@@ -29,32 +29,32 @@
 
 #include <modules/userinterfacegl/glui/element.h>
 
-#include <inviwo/core/interaction/events/pickingevent.h>   // for PickingEvent
-#include <inviwo/core/interaction/pickingstate.h>          // for PickingPressItem, PickingPress...
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
-#include <inviwo/core/util/colorconversion.h>              // for hsv2rgb, rgb2hsv
-#include <inviwo/core/util/glmmat.h>                       // for mat3
-#include <inviwo/core/util/glmvec.h>                       // for ivec2, dvec2, vec2, vec4, size2_t
-#include <modules/fontrendering/textrenderer.h>            // for TextRenderer
-#include <modules/opengl/inviwoopengl.h>                   // for GL_ALWAYS, GL_ONE_MINUS_SRC_ALPHA
-#include <modules/opengl/openglutils.h>                    // for BlendModeState, DepthFuncState
-#include <modules/opengl/rendering/texturequadrenderer.h>  // for TextureQuadRenderer
-#include <modules/opengl/shader/shader.h>                  // for Shader
-#include <modules/opengl/texture/texture2d.h>              // for Texture2D
-#include <modules/userinterfacegl/glui/renderer.h>         // for Renderer
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/pickingstate.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/util/colorconversion.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/fontrendering/textrenderer.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/texturequadrenderer.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/userinterfacegl/glui/renderer.h>
 
-#include <algorithm>    // for max
-#include <cmath>        // for abs
-#include <cstdlib>      // for abs
-#include <type_traits>  // for enable_if<>::type, remove_exte...
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <type_traits>
 
-#include <flags/flags.h>                 // for operator&, flags
-#include <glm/common.hpp>                // for max
-#include <glm/ext/scalar_constants.hpp>  // for epsilon
-#include <glm/vec2.hpp>                  // for operator+, operator!=, operator*
-#include <glm/vec3.hpp>                  // for vec<>::(anonymous)
-#include <glm/vec4.hpp>                  // for vec<>::(anonymous)
+#include <flags/flags.h>
+#include <glm/common.hpp>
+#include <glm/ext/scalar_constants.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

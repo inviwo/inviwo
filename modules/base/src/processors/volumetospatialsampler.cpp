@@ -29,23 +29,23 @@
 
 #include <modules/base/processors/volumetospatialsampler.h>
 
-#include <inviwo/core/ports/dataoutport.h>          // for DataOutport
-#include <inviwo/core/ports/outportiterable.h>      // for OutportIterableImpl<>::const_iterator
-#include <inviwo/core/ports/volumeport.h>           // for VolumeInport
-#include <inviwo/core/processors/processor.h>       // for Processor
-#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>  // for CodeState, CodeState::Experimental
-#include <inviwo/core/processors/processortags.h>   // for Tags, Tags::None
-#include <inviwo/core/util/glmutils.h>              // for Vector
-#include <inviwo/core/util/spatialsampler.h>        // for SpatialSampler
-#include <inviwo/core/util/volumesampler.h>         // for VolumeDoubleSampler
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/core/util/volumesampler.h>
 
-#include <functional>   // for __base
-#include <memory>       // for make_shared, shared_ptr
-#include <string_view>  // for string_view
+#include <functional>
+#include <memory>
+#include <string_view>
 
-#include <fmt/core.h>      // for format
-#include <glm/common.hpp>  // for mix
+#include <fmt/core.h>
+#include <glm/common.hpp>
 
 namespace inviwo {
 

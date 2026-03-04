@@ -29,35 +29,35 @@
 
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 
-#include <inviwo/core/properties/fileproperty.h>                  // for FileProperty
-#include <inviwo/core/properties/property.h>                      // for Property
-#include <inviwo/core/properties/stringproperty.h>                // for StringProperty
-#include <inviwo/core/util/filedialogstate.h>                     // for AcceptMode, AcceptMode:...
-#include <inviwo/core/util/filesystem.h>                          // for ifstream, ofstream
-#include <modules/qtwidgets/codeedit.h>                           // for CodeEdit
-#include <modules/qtwidgets/editorfileobserver.h>                 // for EditorFileObserver
-#include <modules/qtwidgets/inviwofiledialog.h>                   // for InviwoFileDialog
-#include <modules/qtwidgets/inviwoqtutils.h>                      // for fromQString, toQString
-#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>  // for PropertyEditorWidgetQt
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/filesystem.h>
+#include <modules/qtwidgets/codeedit.h>
+#include <modules/qtwidgets/editorfileobserver.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
 
-#include <fstream>  // for basic_ifstream, basic_o...
-#include <vector>   // for vector
+#include <fstream>
+#include <vector>
 
-#include <QAction>         // for QAction
-#include <QFileDialog>     // for QFileDialog, QFileDialo...
-#include <QIcon>           // for QIcon
-#include <QKeySequence>    // for QKeySequence, QKeySeque...
-#include <QList>           // for QList
-#include <QMainWindow>     // for QMainWindow
-#include <QMessageBox>     // for QMessageBox, operator|
-#include <QObject>         // for QObject
-#include <QPlainTextEdit>  // for QPlainTextEdit
-#include <QSizeF>          // for QSizeF
-#include <QString>         // for operator+, QString
-#include <QStringList>     // for QStringList
-#include <QTextDocument>   // for QTextDocument
-#include <QToolBar>        // for QToolBar
-#include <Qt>              // for WidgetWithChildrenShortcut
+#include <QAction>
+#include <QFileDialog>
+#include <QIcon>
+#include <QKeySequence>
+#include <QList>
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QObject>
+#include <QPlainTextEdit>
+#include <QSizeF>
+#include <QString>
+#include <QStringList>
+#include <QTextDocument>
+#include <QToolBar>
+#include <Qt>
 
 class QCloseEvent;
 

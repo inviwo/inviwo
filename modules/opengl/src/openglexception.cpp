@@ -29,9 +29,9 @@
 
 #include <modules/opengl/openglexception.h>
 
-#include <inviwo/core/util/exception.h>  // for SourceContext, ModuleInitException
+#include <inviwo/core/util/exception.h>
 
-#include <utility>  // for move
+#include <utility>
 
 namespace inviwo {
 

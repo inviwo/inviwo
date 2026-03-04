@@ -30,13 +30,13 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BAS...
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
-#include <inviwo/core/properties/stringproperty.h>                         // for StringProperty
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
-#include <memory>  // for shared_ptr
+#include <memory>
 
 namespace inviwo {
 class StringShaderResource;

@@ -30,24 +30,24 @@
 #include <modules/openglqt/hiddencanvasqt.h>
 
 // Ensure we only include Qt OpenGL stuff, no Glew OpenGL
-#include <QApplication>       // for QApplication
-#include <QCoreApplication>   // for QCoreApplication
-#include <QOffscreenSurface>  // for QOffscreenSurface
-#include <QOpenGLContext>     // for QOpenGLContext
-#include <QThread>            // for QThread
+#include <QApplication>
+#include <QCoreApplication>
+#include <QOffscreenSurface>
+#include <QOpenGLContext>
+#include <QThread>
 
-#include <inviwo/core/common/inviwoapplication.h>  // for dispatchFront
-#include <inviwo/core/util/canvas.h>               // for Canvas, Canvas::ContextID
-#include <inviwo/core/util/rendercontext.h>        // for CanvasContextHolder, RenderContext
-#include <inviwo/core/util/stringconversion.h>     // for toString
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/threadutil.h>
-#include <modules/opengl/openglcapabilities.h>  // for OpenGLCapabilities
+#include <modules/opengl/openglcapabilities.h>
 
-#include <atomic>      // for atomic, __atomic_base
-#include <functional>  // for __base
-#include <future>      // for future
-#include <string>      // for char_traits, operator+, basic_string
-#include <thread>      // for get_id
+#include <atomic>
+#include <functional>
+#include <future>
+#include <string>
+#include <thread>
 
 #include <fmt/std.h>
 

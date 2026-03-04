@@ -29,25 +29,25 @@
 
 #include <modules/plotting/utils/statsutils.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for BufferBase
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/util/exception.h>                                 // for Exception
-#include <inviwo/core/util/formatdispatching.h>                         // for Scalars
-#include <inviwo/core/util/glmmat.h>                                    // for dmat2
-#include <inviwo/core/util/glmvec.h>                                    // for dvec2
-#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
-#include <inviwo/core/util/zip.h>                                       // for zipper, get, zip
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/zip.h>
 
-#include <stdlib.h>       // for abs
-#include <memory>         // for unique_ptr
-#include <ostream>        // for operator<<, basic...
-#include <unordered_set>  // for unordered_set
+#include <stdlib.h>
+#include <memory>
+#include <ostream>
+#include <unordered_set>
 
-#include <glm/mat2x2.hpp>  // for mat<>::col_type
-#include <glm/matrix.hpp>  // for inverse
-#include <glm/vec2.hpp>    // for vec<>::(anonymous)
+#include <glm/mat2x2.hpp>
+#include <glm/matrix.hpp>
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 namespace statsutil {

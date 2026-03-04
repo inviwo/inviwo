@@ -29,12 +29,12 @@
 
 #include <modules/qtwidgets/properties/ordinalspinboxwidget.h>
 
-#include <inviwo/core/properties/constraintbehavior.h>            // for ConstraintBehavior, Con...
-#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>  // for DoubleValueDragSpinBox
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
 
-#include <QHBoxLayout>     // for QHBoxLayout
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <QSizePolicy>     // for QSizePolicy, QSizePolic...
+#include <QHBoxLayout>
+#include <QSignalBlocker>
+#include <QSizePolicy>
 
 class QHBoxLayout;
 

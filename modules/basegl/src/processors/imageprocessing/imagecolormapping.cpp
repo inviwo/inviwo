@@ -29,23 +29,23 @@
 
 #include <modules/basegl/processors/imageprocessing/imagecolormapping.h>
 
-#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>            // for CodeState, CodeS...
-#include <inviwo/core/processors/processortags.h>             // for Tags, Tags::GL
-#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunction...
-#include <inviwo/core/util/formats.h>                         // for DataFormatBase
-#include <modules/opengl/shader/shader.h>                     // for Shader
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/formats.h>
+#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureunit.h>  // for TextureUnit
+#include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 
-#include <cstddef>        // for size_t
-#include <memory>         // for shared_ptr, uniq...
-#include <ostream>        // for operator<<, basi...
-#include <string>         // for string
-#include <string_view>    // for string_view
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
+#include <cstddef>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <unordered_set>
 
 namespace inviwo {
 

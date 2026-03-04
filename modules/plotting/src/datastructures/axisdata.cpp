@@ -29,11 +29,11 @@
 
 #include <modules/plotting/datastructures/axisdata.h>
 
-#include <inviwo/core/util/glmvec.h>                        // for dvec2, vec4
-#include <modules/plotting/datastructures/axissettings.h>   // for AxisSettings, AxisSettings::O...
-#include <modules/plotting/datastructures/majortickdata.h>  // for MajorTickData
-#include <modules/plotting/datastructures/minortickdata.h>  // for MinorTickData
-#include <modules/plotting/datastructures/plottextdata.h>   // for PlotTextData
+#include <inviwo/core/util/glmvec.h>
+#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/majortickdata.h>
+#include <modules/plotting/datastructures/minortickdata.h>
+#include <modules/plotting/datastructures/plottextdata.h>
 
 namespace inviwo {
 

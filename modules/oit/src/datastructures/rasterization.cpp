@@ -30,7 +30,7 @@
 #include <modules/oit/datastructures/rasterization.h>
 #include <modules/oit/processors/rasterizer.h>
 
-#include <inviwo/core/util/document.h>  // for Document
+#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 

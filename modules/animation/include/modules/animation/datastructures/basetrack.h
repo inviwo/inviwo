@@ -28,25 +28,25 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/core/io/serialization/deserializer.h>                  // for Deserializer, Ind...
-#include <inviwo/core/io/serialization/serializebase.h>                 // for SerializationTarget
-#include <inviwo/core/io/serialization/serializer.h>                    // for Serializer
-#include <inviwo/core/util/exception.h>                                 // for Exception
-#include <inviwo/core/util/indirectiterator.h>                          // for makeIndirectIterator
-#include <inviwo/core/util/stdextensions.h>                             // for dynamic_unique_pt...
-#include <modules/animation/datastructures/animationtime.h>             // for Seconds
-#include <modules/animation/datastructures/keyframesequenceobserver.h>  // for KeyframeSequenceO...
-#include <modules/animation/datastructures/track.h>                     // for Track
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/io/serialization/serializebase.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/indirectiterator.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/keyframesequenceobserver.h>
+#include <modules/animation/datastructures/track.h>
 
-#include <algorithm>    // for sort, upper_bound
-#include <cstddef>      // for size_t
-#include <iterator>     // for prev
-#include <memory>       // for unique_ptr, make_...
-#include <string>       // for string, operator!=
-#include <string_view>  // for string_view
-#include <type_traits>  // for is_base_of
-#include <utility>      // for move
-#include <vector>       // for vector
+#include <algorithm>
+#include <cstddef>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 

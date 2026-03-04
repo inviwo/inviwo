@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <modules/opengl/shader/shadersegment.h>  // for ShaderSegment, ShaderSegment::Placeholder
+#include <modules/opengl/shader/shadersegment.h>
 
-#include <cstddef>      // for size_t
-#include <string>       // for string, basic_string
-#include <string_view>  // for string_view
-#include <tuple>        // for tuple
-#include <vector>       // for vector
+#include <cstddef>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <vector>
 
 namespace inviwo {
 

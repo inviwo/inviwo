@@ -29,37 +29,37 @@
 
 #include <modules/animationqt/animationviewqt.h>
 
-#include <modules/animation/animationcontroller.h>            // for AnimationController
-#include <modules/animation/animationcontrollerobserver.h>    // for AnimationControllerObservable
-#include <modules/animation/datastructures/animationstate.h>  // for AnimationState
-#include <modules/animation/datastructures/animationtime.h>   // for Seconds
-#include <modules/animationqt/animationeditorqt.h>            // for AnimationEditorQt
-#include <modules/animationqt/widgets/editorconstants.h>      // for FindDivisionsResult, widthP...
+#include <modules/animation/animationcontroller.h>
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animationqt/animationeditorqt.h>
+#include <modules/animationqt/widgets/editorconstants.h>
 
-#include <cstdlib>  // for abs, size_t
-#include <cmath>    // for floor, abs
+#include <cstdlib>
+#include <cmath>
 
-#include <QColor>        // for QColor
-#include <QFlags>        // for QFlags, operator==
-#include <QFontMetrics>  // for QFontMetrics
-#include <QFrame>        // for QFrame, QFrame::NoFrame
-#include <QGridLayout>   // for QGridLayout
-#include <QKeyEvent>     // for QKeyEvent
-#include <QLineF>        // for QLineF
-#include <QMouseEvent>   // for QMouseEvent
-#include <QPainter>      // for QPainter, QPainter::Antiali...
-#include <QPen>          // for QPen
-#include <QPoint>        // for operator/, QPoint
-#include <QPointF>       // for QPointF
-#include <QRect>         // for QRect
-#include <QScrollBar>    // for QScrollBar
-#include <QString>       // for QString
-#include <QTransform>    // for QTransform
-#include <QVector>       // for QVector
-#include <QWheelEvent>   // for QWheelEvent
-#include <QWidget>       // for QWidget
-#include <Qt>            // for operator|, ControlModifier
-#include <qmath.h>       // for qPow
+#include <QColor>
+#include <QFlags>
+#include <QFontMetrics>
+#include <QFrame>
+#include <QGridLayout>
+#include <QKeyEvent>
+#include <QLineF>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPen>
+#include <QPoint>
+#include <QPointF>
+#include <QRect>
+#include <QScrollBar>
+#include <QString>
+#include <QTransform>
+#include <QVector>
+#include <QWheelEvent>
+#include <QWidget>
+#include <Qt>
+#include <qmath.h>
 
 class QKeyEvent;
 class QLineF;

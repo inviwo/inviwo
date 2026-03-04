@@ -29,17 +29,17 @@
 
 #pragma once
 
-#include <modules/glfw/glfwmoduledefine.h>  // for IVW_MODULE_GLFW_API
+#include <modules/glfw/glfwmoduledefine.h>
 
-#include <inviwo/core/util/canvas.h>              // for Canvas::ContextID, Canvas
-#include <inviwo/core/util/glmvec.h>              // for ivec2, uvec2, size2_t
-#include <modules/glfw/glfwuserdata.h>            // for GLFWUserData, GLFWwindow
-#include <modules/glfw/glfwwindoweventmanager.h>  // for GLFWWindowEventManager
-#include <modules/opengl/canvasgl.h>              // for CanvasGL
+#include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/glfw/glfwuserdata.h>
+#include <modules/glfw/glfwwindoweventmanager.h>
+#include <modules/opengl/canvasgl.h>
 
-#include <functional>  // for function
-#include <memory>      // for unique_ptr
-#include <string>      // for string
+#include <functional>
+#include <memory>
+#include <string>
 
 typedef struct GLFWwindow GLFWwindow;
 

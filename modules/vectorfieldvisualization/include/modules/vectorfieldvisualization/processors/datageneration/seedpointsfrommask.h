@@ -29,25 +29,25 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>               // for Volume
-#include <inviwo/core/ports/datainport.h>                           // for DataI...
-#include <inviwo/core/ports/outportiterable.h>                      // for Outpo...
-#include <inviwo/core/processors/processor.h>                       // for Proce...
-#include <inviwo/core/processors/processorinfo.h>                   // for Proce...
-#include <inviwo/core/properties/boolproperty.h>                    // for BoolP...
-#include <inviwo/core/properties/compositeproperty.h>               // for Compo...
-#include <inviwo/core/properties/ordinalproperty.h>                 // for IntPr...
-#include <inviwo/core/util/glmvec.h>                                // for uvec3
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>  // for SeedP...
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
-#include <random>         // for mt19937
-#include <string>         // for string
-#include <unordered_map>  // for opera...
-#include <vector>         // for vector
+#include <random>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
-#include <fmt/core.h>  // for forma...
+#include <fmt/core.h>
 
 namespace inviwo {
 

@@ -28,14 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <QLabel>  // for QLabel
-#include <QSize>   // for QSize
+#include <QLabel>
+#include <QSize>
 
-#include <chrono>  // for milliseconds
-#include <memory>  // for unique_ptr
-#include <string>  // for string
+#include <chrono>
+#include <memory>
+#include <string>
 #include <string_view>
 
 class QTimer;

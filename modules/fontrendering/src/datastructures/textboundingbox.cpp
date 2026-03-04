@@ -29,9 +29,9 @@
 
 #include <modules/fontrendering/datastructures/textboundingbox.h>
 
-#include <inviwo/core/util/glmvec.h>  // for ivec2, size2_t
+#include <inviwo/core/util/glmvec.h>
 
-#include <glm/vec2.hpp>  // for vec<>::(anonymous)
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 

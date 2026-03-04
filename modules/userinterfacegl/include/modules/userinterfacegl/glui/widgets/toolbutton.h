@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>                              // for ivec2, ivec4, size2_t
-#include <modules/opengl/rendering/texturequadrenderer.h>         // for TextureQuadRenderer
-#include <modules/userinterfacegl/glui/widgets/abstractbutton.h>  // for AbstractButton
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/rendering/texturequadrenderer.h>
+#include <modules/userinterfacegl/glui/widgets/abstractbutton.h>
 
-#include <memory>  // for shared_ptr
-#include <string>  // for string
+#include <memory>
+#include <string>
 #include <filesystem>
 
 namespace inviwo {

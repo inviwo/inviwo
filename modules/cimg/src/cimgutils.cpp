@@ -34,33 +34,33 @@
 
 #include <modules/cimg/cimgutils.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>                // for SwizzleMask, lumi...
-#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for LayerRAM
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
-#include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
-#include <inviwo/core/util/exception.h>                                 // for Exception
-#include <inviwo/core/util/filesystem.h>                                // for getFileExtension
-#include <inviwo/core/util/formatdispatching.h>                         // for dispatch, All
-#include <inviwo/core/util/formats.h>                                   // for DataFormatId, Dat...
-#include <inviwo/core/util/glmutils.h>                                  // for extent, rank
-#include <inviwo/core/util/glmvec.h>                                    // for uvec2, size3_t
-#include <inviwo/core/util/raiiutils.h>                                 // for OnScopeExit, OnSc...
-#include <inviwo/core/util/safecstr.h>                                  // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
-#include <inviwo/core/util/stringconversion.h>                          // for toLower
-#include <modules/cimg/cimgsavebuffer.h>                                // for saveCImgToBuffer
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/io/datawriterexception.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/cimg/cimgsavebuffer.h>
 
-#include <algorithm>      // for min
-#include <cstdint>        // for uint16_t, uint32_t
-#include <cstring>        // for size_t, memcpy
-#include <functional>     // for __base
-#include <ostream>        // for operator<<, basic...
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for move
+#include <algorithm>
+#include <cstdint>
+#include <cstring>
+#include <functional>
+#include <ostream>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
 
 #include <fmt/std.h>
 #if not defined(__clang__) and defined(__GNUC__)
@@ -83,14 +83,14 @@
 #pragma warning(disable : 4458)
 #pragma warning(disable : 4611)
 #endif
-#include <CImg.h>                    // for CImgException
-#include <fmt/core.h>                // for format
-#include <glm/common.hpp>            // for clamp
-#include <glm/detail/qualifier.hpp>  // for qualifier
-#include <glm/detail/setup.hpp>      // for length_t
-#include <glm/gtc/type_ptr.hpp>      // for value_ptr
-#include <glm/vec2.hpp>              // for vec<>::(anonymous)
-#include <jpeglib.h>                 // for JPEG_LIB_VERSION_...
+#include <CImg.h>
+#include <fmt/core.h>
+#include <glm/common.hpp>
+#include <glm/detail/qualifier.hpp>
+#include <glm/detail/setup.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/vec2.hpp>
+#include <jpeglib.h>
 #include <warn/pop>
 
 #include <warn/push>
@@ -105,12 +105,12 @@
 #endif
 
 #ifdef cimg_use_tiff
-#include <tiff.h>    // for SAMPLEFORMAT_COMP...
-#include <tiffio.h>  // for TIFFGetFieldDefau...
+#include <tiff.h>
+#include <tiffio.h>
 #endif
 
 #ifdef cimg_use_openexr
-#include <OpenEXRConfig.h>  // for OPENEXR_VERSION_M...
+#include <OpenEXRConfig.h>
 #endif
 
 namespace inviwo {

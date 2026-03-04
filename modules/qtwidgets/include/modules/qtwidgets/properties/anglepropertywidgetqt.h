@@ -29,19 +29,19 @@
 
 #pragma once
 
-#include <inviwo/core/properties/ordinalproperty.h>                 // for OrdinalProperty
-#include <inviwo/core/properties/property.h>                        // for Property
-#include <modules/qtwidgets/angleradiuswidget.h>                    // for AngleRadiusWidget
-#include <modules/qtwidgets/editablelabelqt.h>                      // for EditableLabelQt
-#include <modules/qtwidgets/properties/propertysettingswidgetqt.h>  // for OrdinalPropertySettin...
-#include <modules/qtwidgets/properties/propertywidgetqt.h>          // for PropertyWidgetQt
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <modules/qtwidgets/angleradiuswidget.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/properties/propertysettingswidgetqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <memory>  // for unique_ptr
+#include <memory>
 
-#include <QAction>         // for QAction
-#include <QHBoxLayout>     // for QHBoxLayout
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <Qt>              // for AlignCenter
+#include <QAction>
+#include <QHBoxLayout>
+#include <QSignalBlocker>
+#include <Qt>
 #include <QMenu>           // IWYU pragma: keep
 
 class QHBoxLayout;

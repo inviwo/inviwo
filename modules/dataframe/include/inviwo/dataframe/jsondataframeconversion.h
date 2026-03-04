@@ -28,14 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
+#include <inviwo/dataframe/dataframemoduledefine.h>
 
-#include <inviwo/core/io/datareaderexception.h>         // for DataReaderException
-#include <inviwo/core/util/exception.h>                 // for SourceContext
-#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/json/json.h>
 
-#include <string>  // for string
+#include <string>
 
 namespace inviwo {
 

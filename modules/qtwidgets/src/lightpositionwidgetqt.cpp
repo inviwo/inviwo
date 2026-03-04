@@ -29,25 +29,25 @@
 
 #include <modules/qtwidgets/lightpositionwidgetqt.h>
 
-#include <inviwo/core/util/glmvec.h>          // for dvec2, dvec3
-#include <modules/qtwidgets/inviwoqtutils.h>  // for emToPx, toGLM
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <cstdlib>  // for abs
-#include <cmath>    // for sqrt, abs
+#include <cstdlib>
+#include <cmath>
 
-#include <QColor>             // for QColor
-#include <QFlags>             // for QFlags
-#include <QMouseEvent>        // for QMouseEvent
-#include <QPainter>           // for QPainter
-#include <QPixmap>            // for QPixmap
-#include <QPoint>             // for operator*, operator+, operator-
-#include <QPointF>            // for QPointF
-#include <QRadialGradient>    // for QRadialGradient
-#include <QRectF>             // for QRectF
-#include <Qt>                 // for LeftButton, MouseButton, transparent
-#include <glm/geometric.hpp>  // for length
-#include <glm/vec2.hpp>       // for operator*, operator/, vec<>::(anonymous), vec
-#include <glm/vec3.hpp>       // for operator*, vec<>::(anonymous)
+#include <QColor>
+#include <QFlags>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPixmap>
+#include <QPoint>
+#include <QPointF>
+#include <QRadialGradient>
+#include <QRectF>
+#include <Qt>
+#include <glm/geometric.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

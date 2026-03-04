@@ -29,10 +29,10 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/processors/canvasprocessor.h>  // for CanvasProcessor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/processors/processorinfo.h>
 
 namespace inviwo {
 

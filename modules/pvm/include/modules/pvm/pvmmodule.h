@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <modules/pvm/pvmmoduledefine.h>  // for IVW_MODULE_PVM_API
+#include <modules/pvm/pvmmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 class InviwoApplication;

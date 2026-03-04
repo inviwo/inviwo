@@ -29,26 +29,26 @@
 
 #pragma once
 
-#include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/util/exception.h>          // for Exception
-#include <inviwo/core/util/formatdispatching.h>  // for Scalars, PrecisionValueType
-#include <inviwo/core/util/glmconvert.h>         // for glm_convert_normalized
-#include <inviwo/core/util/glmutils.h>           // for Vector, Matrix
-#include <inviwo/core/util/glmvec.h>             // for i64vec3, size3_t
-#include <inviwo/core/util/indexmapper.h>        // for IndexMapper
-#include <inviwo/core/util/logcentral.h>         // for LogCentral
-#include <inviwo/core/util/stringconversion.h>   // for toString
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stringconversion.h>
 
-#include <cstdlib>    // for size_t, abs
-#include <algorithm>  // for min
-#include <cmath>      // for sqrt
-#include <string>     // for operator+, basic_string, string
-#include <vector>     // for vector
+#include <cstdlib>
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <vector>
 
-#include <glm/fwd.hpp>     // for int64
-#include <glm/matrix.hpp>  // for transpose
-#include <glm/vec3.hpp>    // for vec<>::(anonymous), operator*, ope...
+#include <glm/fwd.hpp>
+#include <glm/matrix.hpp>
+#include <glm/vec3.hpp>
 
 #ifdef IVW_USE_OPENMP
 #include <thread>

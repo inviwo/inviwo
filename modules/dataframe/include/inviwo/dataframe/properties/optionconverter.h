@@ -29,10 +29,10 @@
 
 #pragma once
 
-#include <inviwo/core/properties/propertyconverter.h>          // for TemplatePropertyConverter
-#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
+#include <inviwo/core/properties/propertyconverter.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 
-#include <cstddef>  // for size_t
+#include <cstddef>
 
 namespace inviwo {
 

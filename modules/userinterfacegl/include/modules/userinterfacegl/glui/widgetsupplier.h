@@ -28,12 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <modules/userinterfacegl/glui/widgetfactory.h>  // for WidgetFactory
+#include <modules/userinterfacegl/glui/widgetfactory.h>
 
-#include <memory>  // for unique_ptr, make_unique
-#include <vector>  // for vector
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 

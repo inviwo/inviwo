@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, ConstraintBeh...
-#include <modules/qtwidgets/inviwoqtutils.h>            // for decimals
-#include <modules/qtwidgets/ordinalbasewidget.h>        // for OrdinalBaseWidget
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/ordinalbasewidget.h>
 
-#include <limits>  // for numeric_limits
+#include <limits>
 
-#include <QObject>  // for Q_OBJECT, signals
-#include <QWidget>  // for QWidget
+#include <QObject>
+#include <QWidget>
 
 namespace inviwo {
 class DoubleValueDragSpinBox;

@@ -29,19 +29,19 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
-#include <inviwo/core/processors/processor.h>                   // for Processor
-#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
-#include <inviwo/core/properties/filepatternproperty.h>         // for FilePatternProperty
-#include <modules/base/properties/basisproperty.h>              // for BasisProperty
-#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/filepatternproperty.h>
+#include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
 
-#include <memory>  // for shared_ptr
-#include <string>  // for string
+#include <memory>
+#include <string>
 
 namespace inviwo {
 

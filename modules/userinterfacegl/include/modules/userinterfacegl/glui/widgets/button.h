@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>                              // for ivec2, size2_t
-#include <modules/userinterfacegl/glui/widgets/abstractbutton.h>  // for AbstractButton
+#include <inviwo/core/util/glmvec.h>
+#include <modules/userinterfacegl/glui/widgets/abstractbutton.h>
 
-#include <string>  // for string
+#include <string>
 
 namespace inviwo {
 class Processor;

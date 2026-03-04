@@ -29,48 +29,48 @@
 
 #include <modules/basegl/rendering/splitterrenderer.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for makeBuffer, Buffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
-#include <inviwo/core/datastructures/camera/camera.h>                   // for mat4
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::Buffe...
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/interaction/events/mousebuttons.h>                // for MouseButton, Mous...
-#include <inviwo/core/interaction/events/mousecursors.h>                // for MouseCursor, Mous...
-#include <inviwo/core/interaction/events/mouseevent.h>                  // for MouseEvent
-#include <inviwo/core/interaction/events/pickingevent.h>                // for PickingEvent
-#include <inviwo/core/interaction/events/touchevent.h>                  // for TouchEvent, Touch...
-#include <inviwo/core/interaction/events/touchstate.h>                  // for TouchState, Touch...
-#include <inviwo/core/interaction/pickingmapper.h>                      // for PickingMapper
-#include <inviwo/core/interaction/pickingstate.h>                       // for PickingState, Pic...
-#include <inviwo/core/util/glmvec.h>                                    // for vec2, dvec2, vec4
-#include <modules/basegl/datastructures/splittersettings.h>             // for SplitterSettings
-#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
-#include <modules/opengl/inviwoopengl.h>                                // for GL_ALWAYS, GL_ONE
-#include <modules/opengl/openglutils.h>                                 // for BlendModeState
-#include <modules/opengl/rendering/meshdrawergl.h>                      // for MeshDrawerGL::Dra...
-#include <modules/opengl/shader/shader.h>                               // for Shader
-#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/mousecursors.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/touchstate.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/interaction/pickingstate.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/basegl/datastructures/splittersettings.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
 
-#include <cstdint>        // for uint32_t
-#include <memory>         // for unique_ptr
-#include <sstream>        // for basic_stringbuf<>...
-#include <string>         // for to_string, string
-#include <string_view>    // for string_view
-#include <tuple>          // for tuple
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for move
+#include <cstdint>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
 
-#include <flags/flags.h>                 // for operator&, operat...
-#include <glm/ext/matrix_transform.hpp>  // for rotate
-#include <glm/gtc/constants.hpp>         // for half_pi
-#include <glm/gtx/transform.hpp>         // for rotate
-#include <glm/mat4x4.hpp>                // for operator*, mat<>:...
-#include <glm/vec2.hpp>                  // for operator/, vec<>:...
-#include <glm/vec3.hpp>                  // for operator*
-#include <glm/vec4.hpp>                  // for operator*, operator+
+#include <flags/flags.h>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/constants.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

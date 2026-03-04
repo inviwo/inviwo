@@ -29,15 +29,15 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>  // for DataWriterType
-#include <inviwo/core/io/datawriter.h>                 // for DataWriterType
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/io/datawriter.h>
 
-#include <memory>       // for unique_ptr
-#include <ostream>      // for ostream
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <memory>
+#include <ostream>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

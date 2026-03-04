@@ -29,19 +29,19 @@
 
 #pragma once
 
-#include <modules/oit/oitmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
+#include <modules/oit/oitmoduledefine.h>
 
-#include <inviwo/core/ports/meshport.h>             // for MeshInport, MeshOutport
-#include <inviwo/core/processors/processor.h>       // for Processor
-#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
-#include <inviwo/core/properties/optionproperty.h>  // for OptionProperty
-#include <inviwo/core/util/staticstring.h>          // for operator+
-#include <modules/oit/algorithm/calcnormals.h>      // for CalculateMeshNormalsMode
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/oit/algorithm/calcnormals.h>
 
-#include <functional>   // for __base
-#include <string>       // for operator==, operator+
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector, ope...
+#include <functional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

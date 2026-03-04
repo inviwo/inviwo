@@ -29,18 +29,18 @@
 
 #pragma once
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>  // for IVW_MODULE_BRUSHI...
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 
-#include <inviwo/core/datastructures/bitset.h>          // for BitSet
-#include <inviwo/core/io/serialization/serializable.h>  // for Serializable
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/stringconversion.h>
 
-#include <cstddef>        // for size_t
-#include <cstdint>        // for uint32_t
-#include <string>         // for string, hash, ope...
-#include <string_view>    // for string_view
-#include <unordered_map>  // for unordered_map
-#include <vector>         // for vector
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <vector>
 
 namespace inviwo {
 class Deserializer;

@@ -29,30 +29,30 @@
 
 #include <modules/qtwidgets/numberlineedit.h>
 
-#include <modules/qtwidgets/inviwoqtutils.h>  // for emToPx
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <algorithm>      // for max, min
-#include <array>          // for array
-#include <cmath>          // for floor, log10, abs
-#include <cstdlib>        // for size_t, abs
-#include <iterator>       // for reverse_iterator
-#include <unordered_map>  // for unordered_map, __hash_map_iterator, operator==
-#include <utility>        // for pair
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdlib>
+#include <iterator>
+#include <unordered_map>
+#include <utility>
 
-#include <QAbstractSpinBox>     // for QAbstractSpinBox, QAbstractSpinBox::NoButtons
-#include <QChar>                // for operator==, QChar
-#include <QDoubleValidator>     // for QDoubleValidator
-#include <QEvent>               // for QEvent, QEvent::LocaleChange, QEvent::Style...
-#include <QFont>                // for qHash
-#include <QFontMetrics>         // for QFontMetrics
-#include <QLineEdit>            // for QLineEdit
-#include <QLocale>              // for QLocale, QLocale::NumberOptions, QLocale::O...
-#include <QRect>                // for QRect
-#include <QSignalBlocker>       // for QSignalBlocker
-#include <QStyle>               // for QStyle, QStyle::CT_SpinBox
-#include <QStyleOptionSpinBox>  // for QStyleOptionSpinBox
-#include <QTimerEvent>          // for QTimerEvent
-#include <Qt>                   // for StrongFocus
+#include <QAbstractSpinBox>
+#include <QChar>
+#include <QDoubleValidator>
+#include <QEvent>
+#include <QFont>
+#include <QFontMetrics>
+#include <QLineEdit>
+#include <QLocale>
+#include <QRect>
+#include <QSignalBlocker>
+#include <QStyle>
+#include <QStyleOptionSpinBox>
+#include <QTimerEvent>
+#include <Qt>
 
 class QFocusEvent;
 class QResizeEvent;

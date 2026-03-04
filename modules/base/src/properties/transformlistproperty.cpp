@@ -29,27 +29,27 @@
 
 #include <modules/base/properties/transformlistproperty.h>
 
-#include <inviwo/core/properties/compositeproperty.h>   // for CompositeProperty
-#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, ConstraintBeh...
-#include <inviwo/core/properties/invalidationlevel.h>   // for InvalidationLevel, InvalidationLe...
-#include <inviwo/core/properties/listproperty.h>        // for ListProperty
-#include <inviwo/core/properties/optionproperty.h>      // for OptionPropertyOption, OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>     // for FloatProperty, FloatMat4Property
-#include <inviwo/core/properties/property.h>            // for Property
-#include <inviwo/core/properties/propertysemantics.h>   // for PropertySemantics, PropertySemant...
-#include <inviwo/core/util/glm.h>                       // for filled
-#include <inviwo/core/util/glmmat.h>                    // for mat4
-#include <inviwo/core/util/glmvec.h>                    // for vec3
-#include <inviwo/core/util/staticstring.h>              // for operator+
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
 
-#include <limits>  // for numeric_limits<>::type, numeric_l...
-#include <memory>  // for unique_ptr, make_unique
+#include <limits>
+#include <memory>
 
-#include <glm/ext/matrix_transform.hpp>  // for rotate, scale, translate
-#include <glm/geometric.hpp>             // for normalize
-#include <glm/gtx/transform.hpp>         // for rotate, scale, translate
-#include <glm/trigonometric.hpp>         // for radians, degrees
-#include <glm/vec3.hpp>                  // for operator*
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/trigonometric.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

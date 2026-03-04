@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/cimg/cimgmoduledefine.h>  // for IVW_MODULE_CIMG_API
+#include <modules/cimg/cimgmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/common/inviwomodule.h>
 
-#include <memory>  // for unique_ptr
+#include <memory>
 
 namespace inviwo {
 

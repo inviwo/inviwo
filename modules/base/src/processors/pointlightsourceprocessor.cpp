@@ -29,50 +29,50 @@
 
 #include <modules/base/processors/pointlightsourceprocessor.h>
 
-#include <inviwo/core/datastructures/camera/camera.h>             // for mat4
-#include <inviwo/core/datastructures/camera/cameratools.h>        // for perspectiveZoom
-#include <inviwo/core/datastructures/light/baselightsource.h>     // for LightSource, getLightTr...
-#include <inviwo/core/datastructures/light/pointlight.h>          // for PointLight
-#include <inviwo/core/interaction/events/event.h>                 // for Event
-#include <inviwo/core/interaction/events/gestureevent.h>          // for GestureEvent
-#include <inviwo/core/interaction/events/gesturestate.h>          // for GestureType, GestureTyp...
-#include <inviwo/core/interaction/events/mousebuttons.h>          // for MouseButton, MouseButto...
-#include <inviwo/core/interaction/events/mouseevent.h>            // for MouseEvent
-#include <inviwo/core/interaction/interactionhandler.h>           // for InteractionHandler
-#include <inviwo/core/interaction/trackball.h>                    // for Trackball
-#include <inviwo/core/interaction/trackballobject.h>              // for TrackballObject::Bounded
-#include <inviwo/core/ports/dataoutport.h>                        // for DataOutport
-#include <inviwo/core/ports/outportiterable.h>                    // for OutportIterableImpl<>::...
-#include <inviwo/core/processors/processor.h>                     // for Processor
-#include <inviwo/core/processors/processorinfo.h>                 // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                // for CodeState, CodeState::E...
-#include <inviwo/core/processors/processortags.h>                 // for Tags, Tags::CPU
-#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>                // for CameraProperty
-#include <inviwo/core/properties/compositeproperty.h>             // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>             // for InvalidationLevel, Inva...
-#include <inviwo/core/properties/optionproperty.h>                // for OptionPropertyInt
-#include <inviwo/core/properties/ordinalproperty.h>               // for FloatVec2Property, Floa...
-#include <inviwo/core/properties/positionproperty.h>              // for PositionProperty, Posit...
-#include <inviwo/core/properties/propertysemantics.h>             // for PropertySemantics, Prop...
-#include <inviwo/core/util/glmvec.h>                              // for vec3, vec2
-#include <inviwo/core/util/intersection/rayplaneintersection.h>   // for rayPlaneIntersection
-#include <inviwo/core/util/intersection/raysphereintersection.h>  // for raySphereIntersection
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/camera/cameratools.h>
+#include <inviwo/core/datastructures/light/baselightsource.h>
+#include <inviwo/core/datastructures/light/pointlight.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/gesturestate.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/interactionhandler.h>
+#include <inviwo/core/interaction/trackball.h>
+#include <inviwo/core/interaction/trackballobject.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/positionproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/intersection/rayplaneintersection.h>
+#include <inviwo/core/util/intersection/raysphereintersection.h>
 
-#include <cmath>        // for sqrt
-#include <functional>   // for __base
-#include <limits>       // for numeric_limits<>::type
-#include <optional>     // for nullopt
-#include <string_view>  // for string_view
-#include <utility>      // for pair
+#include <cmath>
+#include <functional>
+#include <limits>
+#include <optional>
+#include <string_view>
+#include <utility>
 
-#include <fmt/core.h>                    // for format
-#include <glm/ext/matrix_transform.hpp>  // for translate
-#include <glm/geometric.hpp>             // for normalize, dot, length
-#include <glm/gtx/transform.hpp>         // for translate
-#include <glm/vec2.hpp>                  // for operator*, operator-, vec
-#include <glm/vec3.hpp>                  // for operator*, operator-, vec
-#include <glm/vec4.hpp>                  // for operator*, operator+
+#include <fmt/core.h>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 class Deserializer;

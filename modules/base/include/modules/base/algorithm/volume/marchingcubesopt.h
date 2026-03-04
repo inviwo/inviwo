@@ -29,17 +29,17 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>  // for size3_t, vec4
+#include <inviwo/core/util/glmvec.h>
 
-#include <array>          // for array
-#include <bitset>         // for bitset
-#include <cstddef>        // for size_t
-#include <functional>     // for function
-#include <memory>         // for shared_ptr
-#include <unordered_map>  // for unordered_map
-#include <vector>         // for vector
+#include <array>
+#include <bitset>
+#include <cstddef>
+#include <functional>
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
 namespace inviwo {
 class Mesh;

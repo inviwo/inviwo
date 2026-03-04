@@ -29,32 +29,32 @@
 
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
 
-#include <inviwo/core/datastructures/bitset.h>                         // for BitSet, BitSet::Bi...
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>      // for BufferRAMPrecision
-#include <inviwo/core/interaction/events/pickingevent.h>               // for PickingEvent
-#include <inviwo/core/ports/imageport.h>                               // for BaseImageInport
-#include <inviwo/core/processors/processor.h>                          // for Processor
-#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
-#include <inviwo/core/processors/processortags.h>                      // for Tags
-#include <inviwo/core/properties/optionproperty.h>                     // for OptionPropertyOption
-#include <inviwo/core/properties/ordinalproperty.h>                    // for FloatProperty
-#include <inviwo/core/properties/marginproperty.h>                     // for MarginProperty
-#include <inviwo/core/util/staticstring.h>                             // for operator+
-#include <inviwo/core/util/zip.h>                                      // for enumerate, zipIter...
-#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
-#include <inviwo/dataframe/properties/columnoptionproperty.h>          // for ColumnOptionProperty
-#include <inviwo/dataframe/util/dataframeutil.h>                       // for createToolTipForRow
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
-#include <modules/opengl/inviwoopengl.h>                               // for GL_ONE, GL_ONE_MIN...
-#include <modules/opengl/openglutils.h>                                // for BlendModeState
-#include <modules/opengl/texture/textureutils.h>                       // for ImageInport
-#include <modules/plotting/properties/axisproperty.h>                  // for AxisProperty
-#include <modules/plotting/properties/plottextproperty.h>              // for PlotTextProperty
-#include <modules/plottinggl/plotters/scatterplotgl.h>                 // for ScatterPlotGL, Sca...
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/marginproperty.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/plottextproperty.h>
+#include <modules/plottinggl/plotters/scatterplotgl.h>
 
-#include <type_traits>  // for remove_extent_t
-#include <utility>      // for pair
+#include <type_traits>
+#include <utility>
 
 namespace inviwo {
 

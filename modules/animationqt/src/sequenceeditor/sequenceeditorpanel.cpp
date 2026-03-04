@@ -29,24 +29,24 @@
 
 #include <modules/animationqt/sequenceeditor/sequenceeditorpanel.h>
 
-#include <inviwo/core/util/indirectiterator.h>                        // for IndirectIterator
-#include <modules/animation/animationcontroller.h>                    // for AnimationController
-#include <modules/animation/animationcontrollerobserver.h>            // for AnimationController...
-#include <modules/animation/datastructures/animation.h>               // for Animation
-#include <modules/animation/datastructures/track.h>                   // for Track
-#include <modules/animationqt/factories/sequenceeditorfactory.h>      // for SequenceEditorFactory
-#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>  // for SequenceEditorWidget
+#include <inviwo/core/util/indirectiterator.h>
+#include <modules/animation/animationcontroller.h>
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animationqt/factories/sequenceeditorfactory.h>
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
-#include <cstddef>  // for size_t
-#include <memory>   // for unique_ptr
-#include <string>   // for basic_string, string
-#include <utility>  // for pair
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <utility>
 
-#include <QFrame>       // for QFrame, QFrame::NoF...
-#include <QScrollArea>  // for QScrollArea
-#include <QVBoxLayout>  // for QVBoxLayout
-#include <QWidget>      // for QWidget
-#include <Qt>           // for ScrollBarAsNeeded
+#include <QFrame>
+#include <QScrollArea>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <Qt>
 
 class QLayout;
 

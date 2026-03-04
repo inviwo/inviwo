@@ -29,13 +29,13 @@
 
 #include <modules/userinterfacegl/glui/layout/boxlayout.h>
 
-#include <inviwo/core/util/glmvec.h>               // for ivec2, ivec4, size2_t
-#include <modules/userinterfacegl/glui/element.h>  // for Element
+#include <inviwo/core/util/glmvec.h>
+#include <modules/userinterfacegl/glui/element.h>
 
-#include <algorithm>  // for max
+#include <algorithm>
 
-#include <glm/vec2.hpp>  // for vec<>::(anonymous), operator+, operator-
-#include <glm/vec4.hpp>  // for vec<>::(anonymous)
+#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

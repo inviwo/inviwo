@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/cimg/cimgmoduledefine.h>  // for IVW_MODULE_CIMG_API
+#include <modules/cimg/cimgmoduledefine.h>
 
-#include <inviwo/core/datastructures/diskrepresentation.h>           // for DiskRepresentationLo...
-#include <inviwo/core/datastructures/volume/volume.h>                // for DataReaderType
-#include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
-#include <inviwo/core/io/datareader.h>                               // for DataReaderType
+#include <inviwo/core/datastructures/diskrepresentation.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>
+#include <inviwo/core/io/datareader.h>
 
-#include <memory>       // for shared_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <memory>
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 

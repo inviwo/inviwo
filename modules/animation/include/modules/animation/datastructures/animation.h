@@ -28,23 +28,23 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
+#include <modules/animation/animationmoduledefine.h>
 
-#include <inviwo/core/io/serialization/serializable.h>           // for Serializable
-#include <inviwo/core/properties/propertyownerobserver.h>        // for PropertyOwnerObserver
-#include <inviwo/core/util/indirectiterator.h>                   // for IndirectIterator
-#include <modules/animation/datastructures/animationobserver.h>  // for AnimationObservable
-#include <modules/animation/datastructures/animationstate.h>     // for AnimationState, Animatio...
-#include <modules/animation/datastructures/animationtime.h>      // for Seconds
-#include <modules/animation/datastructures/track.h>              // for Track
-#include <modules/animation/datastructures/trackobserver.h>      // for TrackObserver
+#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/properties/propertyownerobserver.h>
+#include <inviwo/core/util/indirectiterator.h>
+#include <modules/animation/datastructures/animationobserver.h>
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/trackobserver.h>
 
-#include <cstddef>  // for size_t
-#include <memory>   // for unique_ptr
+#include <cstddef>
+#include <memory>
 #include <ranges>
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <vector>       // for vector<>::iterator, vect...
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class Deserializer;

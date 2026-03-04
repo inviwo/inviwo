@@ -29,32 +29,32 @@
 
 #include <modules/plotting/interaction/boxselectioninteractionhandler.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for BufferBase
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/interaction/events/event.h>                       // for Event
-#include <inviwo/core/interaction/events/keyboardkeys.h>                // for KeyModifier, KeyM...
-#include <inviwo/core/interaction/events/mousebuttons.h>                // for MouseButton, Mous...
-#include <inviwo/core/interaction/events/mouseevent.h>                  // for MouseEvent
-#include <inviwo/core/interaction/interactionhandler.h>                 // for InteractionHandler
-#include <inviwo/core/util/dispatcher.h>                                // for Dispatcher
-#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
-#include <inviwo/core/util/glmvec.h>                                    // for dvec2, size2_t
-#include <inviwo/core/util/zip.h>                                       // for zipper, enumerate
-#include <modules/plotting/datastructures/boxselectionsettings.h>       // for BoxSelectionSetti...
-#include <modules/plotting/properties/boxselectionproperty.h>           // for BoxSelectionProperty
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/interactionhandler.h>
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/plotting/datastructures/boxselectionsettings.h>
+#include <modules/plotting/properties/boxselectionproperty.h>
 
-#include <cmath>          // for ceil, floor
-#include <limits>         // for numeric_limits
-#include <tuple>          // for tuple_element<>::...
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
+#include <cmath>
+#include <limits>
+#include <tuple>
+#include <type_traits>
+#include <unordered_set>
 
-#include <flags/flags.h>               // for operator&, flags
-#include <glm/common.hpp>              // for max, abs, min
-#include <glm/gtx/component_wise.hpp>  // for compMax
-#include <glm/vec2.hpp>                // for vec<>::(anonymous)
+#include <flags/flags.h>
+#include <glm/common.hpp>
+#include <glm/gtx/component_wise.hpp>
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 

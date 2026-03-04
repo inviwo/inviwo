@@ -28,13 +28,13 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMAT...
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/datastructures/keyframesequenceobserver.h>  // for KeyframeSequenceO...
+#include <modules/animation/datastructures/keyframesequenceobserver.h>
 
-#include <unordered_map>  // for unordered_map
+#include <unordered_map>
 
-#include <QWidget>  // for QWidget
+#include <QWidget>
 
 class QPaintEvent;
 class QVBoxLayout;

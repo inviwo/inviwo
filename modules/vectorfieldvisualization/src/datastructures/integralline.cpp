@@ -29,15 +29,15 @@
 
 #include <modules/vectorfieldvisualization/datastructures/integralline.h>
 
-#include <inviwo/core/util/bufferutils.h>    // for reverse
-#include <inviwo/core/util/exception.h>      // for Exception
-#include <inviwo/core/util/glmvec.h>         // for dvec3
-#include <inviwo/core/util/interpolation.h>  // for Interpolation
-#include <inviwo/core/util/sourcecontext.h>  // for SourceContext
+#include <inviwo/core/util/bufferutils.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/interpolation.h>
+#include <inviwo/core/util/sourcecontext.h>
 
-#include <algorithm>  // for reverse
+#include <algorithm>
 
-#include <glm/common.hpp>  // for mix
+#include <glm/common.hpp>
 
 namespace inviwo {
 class BufferBase;

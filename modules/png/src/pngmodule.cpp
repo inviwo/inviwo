@@ -29,15 +29,15 @@
 
 #include <inviwo/png/pngmodule.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
-#include <inviwo/core/io/datareader.h>        // for DataReader
-#include <inviwo/core/io/datawriter.h>        // for DataWriter
-#include <inviwo/core/util/logcentral.h>      // for LogCentral
-#include <inviwo/png/pngreader.h>             // for PNGLayerReader
-#include <inviwo/png/pngutils.h>              // for getLibPNGVesrion
-#include <inviwo/png/pngwriter.h>             // for PNGLayerWriter
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/png/pngreader.h>
+#include <inviwo/png/pngutils.h>
+#include <inviwo/png/pngwriter.h>
 
-#include <memory>   // for make_unique
+#include <memory>
 
 namespace inviwo {
 class InviwoApplication;

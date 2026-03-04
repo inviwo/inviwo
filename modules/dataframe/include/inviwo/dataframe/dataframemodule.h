@@ -28,9 +28,9 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
+#include <inviwo/dataframe/dataframemoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/common/inviwomodule.h>
 
 #include <modules/json/jsonsupplier.h>
 

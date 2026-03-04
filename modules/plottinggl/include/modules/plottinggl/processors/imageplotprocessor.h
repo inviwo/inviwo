@@ -29,30 +29,30 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTINGGL_API
+#include <modules/plottinggl/plottingglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>               // for Processor
-#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>       // for CompositeProperty
-#include <inviwo/core/properties/minmaxproperty.h>          // for DoubleMinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>          // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty
-#include <inviwo/core/properties/marginproperty.h>          // for MarginProperty
-#include <inviwo/core/util/glmvec.h>                        // for size2_t, ivec2, ivec4
-#include <inviwo/core/util/staticstring.h>                  // for operator+
-#include <modules/basegl/viewmanager.h>                     // for ViewManager
-#include <modules/opengl/rendering/texturequadrenderer.h>   // for TextureQuadRenderer
-#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
-#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
-#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/marginproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/basegl/viewmanager.h>
+#include <modules/opengl/rendering/texturequadrenderer.h>
+#include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
+#include <modules/plottinggl/utils/axisrenderer.h>
 
-#include <array>        // for array
-#include <functional>   // for __base
-#include <string>       // for operator==, operator+, string
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector, operator==
+#include <array>
+#include <functional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class Event;

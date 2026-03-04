@@ -29,57 +29,57 @@
 
 #include <modules/qtwidgets/tf/tfeditor.h>
 
-#include <inviwo/core/datastructures/datamapper.h>          // for DataMapper
-#include <inviwo/core/datastructures/tfprimitive.h>         // for TFPrimitive, operator==, TFPr...
-#include <inviwo/core/datastructures/tfprimitiveset.h>      // for TFPrimitiveSet, alignAlphaToB...
-#include <inviwo/core/network/networklock.h>                // for NetworkLock
-#include <inviwo/core/ports/volumeport.h>                   // for VolumeInport
-#include <inviwo/core/properties/property.h>                // for Property
-#include <inviwo/core/util/glmvec.h>                        // for dvec2, vec4
-#include <inviwo/core/util/raiiutils.h>                     // for KeepTrueWhileInScope
-#include <inviwo/core/util/stdextensions.h>                 // for contains
-#include <inviwo/core/util/transformiterator.h>             // for TransformIterator
-#include <inviwo/core/util/typetraits.h>                    // for identity
-#include <inviwo/core/util/vectoroperations.h>              // for comparePtr
-#include <inviwo/core/util/zip.h>                           // for make_sequence, sequence, sequ...
-#include <modules/qtwidgets/inviwoqtutils.h>                // for clamp, toQString
-#include <modules/qtwidgets/tf/tfcontrolpointconnection.h>  // for TFControlPointConnection
-#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>      // for TFEditorControlPoint, operator<
-#include <modules/qtwidgets/tf/tfeditorisovalue.h>          // for TFEditorIsovalue, operator<
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>         // for TFEditorPrimitive, TFEditorPr...
-#include <modules/qtwidgets/tf/tfpropertyconcept.h>         // for TFPropertyConcept
-#include <modules/qtwidgets/tf/tfutils.h>                   // for addTFColorbrewerPresetsMenu
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/transformiterator.h>
+#include <inviwo/core/util/typetraits.h>
+#include <inviwo/core/util/vectoroperations.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
+#include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>
+#include <modules/qtwidgets/tf/tfeditorisovalue.h>
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
+#include <modules/qtwidgets/tf/tfutils.h>
 #include <modules/qtwidgets/tf/tfeditormask.h>
 
-#include <algorithm>         // for stable_sort, find_if, max
-#include <array>             // for array
-#include <cmath>             // for abs
-#include <cstdlib>           // for abs, size_t
-#include <initializer_list>  // for initializer_list
-#include <iterator>          // for back_insert_iterator, back_in...
-#include <type_traits>       // for remove_extent_t
-#include <utility>           // for pair, forward
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdlib>
+#include <initializer_list>
+#include <iterator>
+#include <type_traits>
+#include <utility>
 
-#include <QAction>                         // for QAction
-#include <QFlags>                          // for QFlags, operator==
-#include <QGraphicsItem>                   // for qgraphicsitem_cast, QGraphics...
-#include <QGraphicsSceneContextMenuEvent>  // for QGraphicsSceneContextMenuEvent
-#include <QGraphicsSceneMouseEvent>        // for QGraphicsSceneMouseEvent
-#include <QGraphicsView>                   // for QGraphicsView, QGraphicsView:...
-#include <QGuiApplication>                 // for QGuiApplication
-#include <QKeyEvent>                       // for QKeyEvent
-#include <QList>                           // for QList, QList<>::iterator
-#include <QMenu>                           // for QMenu
-#include <QPoint>                          // for operator-, operator+
-#include <QRectF>                          // for QRectF
-#include <QSizeF>                          // for QSizeF
-#include <QString>                         // for QString
-#include <QTransform>                      // for QTransform
-#include <QWidget>                         // for QWidget
-#include <Qt>                              // for ControlModifier, ShiftModifier
-#include <fmt/core.h>                      // for format
-#include <glm/common.hpp>                  // for clamp
-#include <glm/vec2.hpp>                    // for vec<>::(anonymous), vec
+#include <QAction>
+#include <QFlags>
+#include <QGraphicsItem>
+#include <QGraphicsSceneContextMenuEvent>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
+#include <QGuiApplication>
+#include <QKeyEvent>
+#include <QList>
+#include <QMenu>
+#include <QPoint>
+#include <QRectF>
+#include <QSizeF>
+#include <QString>
+#include <QTransform>
+#include <QWidget>
+#include <Qt>
+#include <fmt/core.h>
+#include <glm/common.hpp>
+#include <glm/vec2.hpp>
 
 class QGraphicsSceneMouseEvent;
 class QKeyEvent;

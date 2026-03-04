@@ -47,7 +47,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/stdextensions.h>
 
-#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
 
 #include <flags/allow_flags.h>

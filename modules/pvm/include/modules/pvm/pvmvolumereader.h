@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/pvm/pvmmoduledefine.h>  // for IVW_MODULE_PVM_API
+#include <modules/pvm/pvmmoduledefine.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>  // for DataReaderType
-#include <inviwo/core/io/datareader.h>                 // for DataReaderType
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/io/datareader.h>
 
-#include <memory>       // for shared_ptr
-#include <string_view>  // for string_view
+#include <memory>
+#include <string_view>
 
 namespace inviwo {
 class MetaDataOwner;

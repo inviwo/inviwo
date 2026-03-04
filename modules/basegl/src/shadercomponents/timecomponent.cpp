@@ -29,24 +29,24 @@
 
 #include <modules/basegl/shadercomponents/timecomponent.h>
 
-#include <inviwo/core/properties/boolcompositeproperty.h>     // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>              // for BoolProperty
-#include <inviwo/core/properties/constraintbehavior.h>        // for ConstraintBehavior, Constra...
-#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
-#include <inviwo/core/properties/ordinalproperty.h>           // for IntProperty
-#include <inviwo/core/properties/propertysemantics.h>         // for PropertySemantics, Property...
-#include <inviwo/core/util/timer.h>                           // for Timer
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
-#include <modules/opengl/shader/shader.h>                     // for Shader
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/timer.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <chrono>       // for duration, duration_cast
-#include <functional>   // for __base, function
-#include <ratio>        // for milli
-#include <type_traits>  // for remove_reference, remove_re...
-#include <utility>      // for move
+#include <chrono>
+#include <functional>
+#include <ratio>
+#include <type_traits>
+#include <utility>
 
-#include <fmt/core.h>    // for format
-#include <fmt/format.h>  // for compile_string_to_view, FMT...
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 class Property;

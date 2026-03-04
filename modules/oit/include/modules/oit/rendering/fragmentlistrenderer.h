@@ -29,22 +29,22 @@
 
 #pragma once
 
-#include <modules/oit/oitmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
+#include <modules/oit/oitmoduledefine.h>
 
-#include <inviwo/core/util/dispatcher.h>         // for Dispatcher, Dispatcher<...
-#include <inviwo/core/util/glmvec.h>             // for size2_t, vec3
-#include <modules/opengl/buffer/bufferobject.h>  // for BufferObject
-#include <modules/opengl/inviwoopengl.h>         // for GLuint
-#include <modules/opengl/shader/shader.h>        // for Shader
-#include <modules/opengl/texture/texture2d.h>    // for Texture2D
-#include <modules/opengl/texture/textureunit.h>  // for TextureUnit (ptr only)
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/buffer/bufferobject.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/texture/textureunit.h>
 
-#include <array>       // for array
-#include <cstddef>     // for size_t
-#include <functional>  // for function
-#include <iosfwd>      // for ostream
+#include <array>
+#include <cstddef>
+#include <functional>
+#include <iosfwd>
 
-#include <glm/vec3.hpp>  // for vec
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 class Image;

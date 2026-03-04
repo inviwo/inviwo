@@ -29,28 +29,28 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>  // for Buffer
-#include <inviwo/core/util/exception.h>                // for Excep...
-#include <inviwo/core/util/formats.h>                  // for DataF...
-#include <inviwo/core/util/glmutils.h>                 // for same_...
-#include <inviwo/core/util/glmvec.h>                   // for dvec3
-#include <inviwo/core/util/interpolation.h>            // for Inter...
-#include <inviwo/core/util/sourcecontext.h>            // for IVW_C...
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/interpolation.h>
+#include <inviwo/core/util/sourcecontext.h>
 
-#include <cstddef>      // for size_t
-#include <cstdint>      // for uint32_t
-#include <map>          // for opera...
-#include <memory>       // for share...
-#include <sstream>      // for opera...
-#include <string>       // for string
-#include <type_traits>  // for remov...
-#include <utility>      // for pair
-#include <vector>       // for vector
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
-#include <glm/geometric.hpp>  // for distance
-#include <glm/vec3.hpp>       // for opera...
+#include <glm/geometric.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

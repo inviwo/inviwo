@@ -29,8 +29,8 @@
 
 #include <modules/animation/animationcontrollerobserver.h>
 
-#include <modules/animation/datastructures/animationstate.h>  // for AnimationState
-#include <modules/animation/datastructures/animationtime.h>   // for Seconds
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
 
 namespace inviwo {
 

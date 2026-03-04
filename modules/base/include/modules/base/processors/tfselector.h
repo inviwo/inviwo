@@ -29,22 +29,22 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>                      // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>                 // for Processor
-#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>              // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
-#include <inviwo/core/properties/eventproperty.h>             // for EventProperty
-#include <inviwo/core/properties/listproperty.h>              // for ListProperty
-#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyString
-#include <inviwo/core/properties/propertyobserver.h>          // for PropertyObserver
-#include <inviwo/core/properties/propertyownerobserver.h>     // for PropertyOwnerObserver
-#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/propertyobserver.h>
+#include <inviwo/core/properties/propertyownerobserver.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 
-#include <cstddef>  // for size_t
-#include <string>   // for string
+#include <cstddef>
+#include <string>
 
 namespace inviwo {
 class Deserializer;

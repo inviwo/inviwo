@@ -29,16 +29,16 @@
 
 #include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
 
-#include <inviwo/core/properties/ordinalproperty.h>       // for IntProperty
-#include <inviwo/core/properties/propertywidget.h>        // for PropertyWidget
-#include <inviwo/core/util/glmvec.h>                      // for dvec2, ivec2
-#include <modules/userinterfacegl/glui/element.h>         // for UIOrientation
-#include <modules/userinterfacegl/glui/widgets/slider.h>  // for Slider
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/userinterfacegl/glui/element.h>
+#include <modules/userinterfacegl/glui/widgets/slider.h>
 
-#include <cmath>       // for round
-#include <functional>  // for __base, function
+#include <cmath>
+#include <functional>
 
-#include <glm/common.hpp>  // for clamp
+#include <glm/common.hpp>
 
 namespace inviwo {
 class Processor;

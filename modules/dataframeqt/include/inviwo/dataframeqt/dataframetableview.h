@@ -28,14 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>  // for IVW_MODULE_DATAFRAMEQT_API
+#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
 
-#include <memory>  // for shared_ptr
+#include <memory>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QObject>     // for Q_OBJECT
-#include <QTableView>  // for QTableView
+#include <QObject>
+#include <QTableView>
 
 class QEvent;
 class QWidget;

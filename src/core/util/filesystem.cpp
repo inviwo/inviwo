@@ -64,8 +64,8 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <sys/uio.h>
 #include <mach-o/dyld.h>
 
-#include <sysdir.h>  // for sysdir_start_search_path_enumeration
-#include <glob.h>    // for glob needed to expand ~ to user dir
+#include <sysdir.h>
+#include <glob.h>
 
 #else
 #include <unistd.h>

@@ -29,18 +29,18 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BAS...
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
-#include <inviwo/core/properties/optionproperty.h>                         // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                        // for FloatProperty
-#include <inviwo/core/util/staticstring.h>                                 // for operator+
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
-#include <functional>   // for __base
-#include <string>       // for operator==
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=
+#include <functional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class TextureUnitContainer;

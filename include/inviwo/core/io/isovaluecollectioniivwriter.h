@@ -29,8 +29,8 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/isovaluecollection.h>  // For IsoValueCollection
-#include <inviwo/core/io/datawriter.h>                      // for DataWriterType
+#include <inviwo/core/datastructures/isovaluecollection.h>
+#include <inviwo/core/io/datawriter.h>
 
 namespace inviwo {
 

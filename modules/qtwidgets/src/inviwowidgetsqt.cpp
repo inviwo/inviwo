@@ -29,7 +29,7 @@
 
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 
-#include <QSizePolicy>  // for QSizePolicy, QSizePolicy::Minimum
+#include <QSizePolicy>
 
 class QWidget;
 

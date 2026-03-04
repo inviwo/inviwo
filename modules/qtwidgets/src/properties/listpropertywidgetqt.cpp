@@ -29,28 +29,28 @@
 
 #include <modules/qtwidgets/properties/listpropertywidgetqt.h>
 
-#include <inviwo/core/properties/listproperty.h>                     // for ListProperty, ListPr...
-#include <inviwo/core/properties/property.h>                         // for Property
-#include <inviwo/core/util/exception.h>                              // for Exception
-#include <inviwo/core/util/rendercontext.h>                          // for RenderContext
-#include <inviwo/core/util/zip.h>                                    // for enumerate, zipIterator
-#include <modules/qtwidgets/inviwoqtutils.h>                         // for toQString
-#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>  // for CompositePropertyWid...
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 
-#include <string>       // for operator+, string
-#include <string_view>  // for string_view
-#include <vector>       // for __vector_base<>::val...
+#include <string>
+#include <string_view>
+#include <vector>
 
-#include <QAction>        // for QAction
-#include <QCursor>        // for QCursor
-#include <QHBoxLayout>    // for QHBoxLayout
-#include <QLayout>        // for QLayout
-#include <QLayoutItem>    // for QLayoutItem
-#include <QMenu>          // for QMenu
-#include <QToolButton>    // for QToolButton
-#include <QVariant>       // for QVariant
-#include <QtGlobal>       // for uint
-#include <flags/flags.h>  // for operator&, flags
+#include <QAction>
+#include <QCursor>
+#include <QHBoxLayout>
+#include <QLayout>
+#include <QLayoutItem>
+#include <QMenu>
+#include <QToolButton>
+#include <QVariant>
+#include <QtGlobal>
+#include <flags/flags.h>
 
 class QHBoxLayout;
 

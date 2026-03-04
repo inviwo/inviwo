@@ -29,7 +29,7 @@
 
 #include <modules/opengl/buffer/renderbufferobject.h>
 
-#include <modules/opengl/inviwoopengl.h>  // for GL_RENDERBUFFER_EXT, glBindRenderbufferEXT, glD...
+#include <modules/opengl/inviwoopengl.h>
 
 namespace inviwo {
 

@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/properties/propertyobserver.h>          // for PropertyObserver
-#include <inviwo/core/properties/propertywidget.h>            // for PropertyWidget
-#include <inviwo/core/util/glmvec.h>                          // for ivec2
-#include <modules/userinterfacegl/glui/widgets/button.h>      // for Button
-#include <modules/userinterfacegl/glui/widgets/toolbutton.h>  // for ToolButton
+#include <inviwo/core/properties/propertyobserver.h>
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/userinterfacegl/glui/widgets/button.h>
+#include <modules/userinterfacegl/glui/widgets/toolbutton.h>
 
-#include <memory>  // for shared_ptr
-#include <string>  // for string
+#include <memory>
+#include <string>
 
 namespace inviwo {
 

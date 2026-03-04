@@ -29,17 +29,17 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/interaction/cameratrackball.h>         // for CameraTrackball
-#include <inviwo/core/ports/imageport.h>                     // for ImageInport, ImageOutport
-#include <inviwo/core/ports/meshport.h>                      // for MeshFlatMultiInport
-#include <inviwo/core/processors/processor.h>                // for Processor
-#include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>             // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>           // for CameraProperty
-#include <modules/basegl/properties/linesettingsproperty.h>  // for LineSettingsProperty
-#include <modules/basegl/rendering/linerenderer.h>           // for LineRenderer
+#include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <modules/basegl/properties/linesettingsproperty.h>
+#include <modules/basegl/rendering/linerenderer.h>
 #include <modules/basegl/util/meshbnlgl.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
 

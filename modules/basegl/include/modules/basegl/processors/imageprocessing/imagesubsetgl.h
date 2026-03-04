@@ -29,18 +29,18 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>       // for Buffer
-#include <inviwo/core/datastructures/geometry/typedmesh.h>  // for PositionsBuffer2D, TexCoordBu...
-#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>               // for Processor
-#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
-#include <inviwo/core/properties/minmaxproperty.h>          // for IntSizeTMinMaxProperty
-#include <inviwo/core/util/glmvec.h>                        // for ivec2, size2_t, dvec2, vec2
-#include <modules/opengl/shader/shader.h>                   // for Shader
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <memory>  // for shared_ptr
+#include <memory>
 
 namespace inviwo {
 class Event;

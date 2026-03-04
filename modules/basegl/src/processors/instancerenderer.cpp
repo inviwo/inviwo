@@ -29,51 +29,51 @@
 
 #include <modules/basegl/processors/instancerenderer.h>
 
-#include <inviwo/core/algorithm/markdown.h>            // for operator""_help, operator""_un...
-#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
-#include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/algorithm/markdown.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
-#include <inviwo/core/ports/imageport.h>               // for BaseImageInport, ImageInport
-#include <inviwo/core/ports/inport.h>                  // for Inport
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, Invalidatio...
-#include <inviwo/core/properties/listproperty.h>       // for ListProperty
-#include <inviwo/core/properties/ordinalproperty.h>    // for IntProperty, OrdinalProperty
-#include <inviwo/core/properties/property.h>           // for Property
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/propertyownerobserver.h>  // for PropertyOwnerObservable
-#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
-#include <inviwo/core/properties/stringproperty.h>         // for StringProperty
-#include <inviwo/core/util/assertion.h>                    // for IVW_ASSERT
-#include <inviwo/core/util/glmvec.h>                       // for vec3, vec2, vec4, uvec3
-#include <inviwo/core/util/stringconversion.h>             // for trim, htmlEncode
-#include <inviwo/core/util/utilities.h>                    // for findUniqueIdentifier
-#include <inviwo/core/util/raiiutils.h>                    // for OnScopeExit
-#include <inviwo/core/util/rendercontext.h>                // for RenderContext
-#include <inviwo/core/util/foreacharg.h>                   // for forEachArg
-#include <modules/opengl/geometry/meshgl.h>                // for MeshGL
-#include <modules/opengl/inviwoopengl.h>                   // for GL_DEPTH_TEST, GL_ONE_MINUS_SR...
-#include <modules/opengl/openglutils.h>                    // for BlendModeState, GlBoolState
-#include <modules/opengl/rendering/meshdrawergl.h>         // for MeshDrawerGL::DrawObject, Mesh...
-#include <modules/opengl/shader/shader.h>                  // for Shader, Shader::Build
-#include <modules/opengl/shader/shaderobject.h>            // for ShaderObject
-#include <modules/opengl/shader/stringshaderresource.h>    // for StringShaderResource
-#include <modules/opengl/shader/shadersegment.h>           // for ShaderSegment, ShaderSegment::...
-#include <modules/opengl/shader/shadertype.h>              // for ShaderType, ShaderType::Fragment
-#include <modules/opengl/shader/shaderutils.h>             // for addShaderDefines, setShaderUni...
-#include <modules/opengl/texture/textureutils.h>           // for activateTargetAndClearOrCopySo...
+#include <inviwo/core/properties/propertyownerobserver.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/foreacharg.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/stringshaderresource.h>
+#include <modules/opengl/shader/shadersegment.h>
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/volume/volumeutils.h>
 
-#include <algorithm>    // for for_each, min_element
-#include <string>       // for basic_string, operator==, string
-#include <string_view>  // for string_view, operator==
-#include <utility>      // for move, pair, swap
+#include <algorithm>
+#include <string>
+#include <string_view>
+#include <utility>
 #include <ranges>
 #include <numeric>
 #include <tuple>
@@ -81,7 +81,7 @@
 #include <optional>
 #include <memory>
 
-#include <fmt/format.h>  // for formatbuf<>::int_type, formatb...
+#include <fmt/format.h>
 #include <glm/common.hpp>
 
 namespace inviwo {

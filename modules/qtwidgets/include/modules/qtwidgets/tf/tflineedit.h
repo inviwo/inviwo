@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>                              // for dvec2
-#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>  // for DoubleValueDragSpinBox
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
 
-#include <QObject>  // for Q_OBJECT, signals
-#include <QSize>    // for QSize
-#include <QWidget>  // for QWidget
+#include <QObject>
+#include <QSize>
+#include <QWidget>
 
 namespace inviwo {
 

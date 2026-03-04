@@ -29,19 +29,19 @@
 
 #include <modules/base/processors/imagesnapshot.h>
 
-#include <inviwo/core/datastructures/image/image.h>  // for Image
-#include <inviwo/core/ports/imageport.h>             // for ImageOutport, ImageInport
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Experimental
-#include <inviwo/core/processors/processortags.h>    // for Tags, Tags::None
-#include <inviwo/core/properties/buttonproperty.h>   // for ButtonProperty
-#include <inviwo/core/properties/ordinalproperty.h>  // for IntProperty
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
-#include <functional>   // for __base
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_extent_t
+#include <functional>
+#include <string>
+#include <string_view>
+#include <type_traits>
 
 namespace inviwo {
 class Deserializer;

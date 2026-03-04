@@ -28,23 +28,23 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMAT...
+#include <modules/animation/animationmoduledefine.h>
 
-#include <inviwo/core/network/workspacemanager.h>  // for WorkspaceManager
-#include <inviwo/core/util/dispatcher.h>           // for Dispatcher
+#include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/util/indirectiterator.h>
-#include <modules/animation/animationcontrollerobserver.h>              // for AnimationControll...
-#include <modules/animation/datastructures/animation.h>                 // for Animation
-#include <modules/animation/datastructures/animationobserver.h>         // for AnimationObserver
-#include <modules/animation/datastructures/animationtime.h>             // for Seconds
-#include <modules/animation/datastructures/keyframeobserver.h>          // for KeyframeObserver
-#include <modules/animation/datastructures/keyframesequenceobserver.h>  // for KeyframeSequenceO...
-#include <modules/animation/datastructures/trackobserver.h>             // for TrackObserver
-#include <modules/animation/mainanimation.h>                            // for MainAnimation
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/animationobserver.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
+#include <modules/animation/datastructures/keyframesequenceobserver.h>
+#include <modules/animation/datastructures/trackobserver.h>
+#include <modules/animation/mainanimation.h>
 
-#include <cstddef>      // for size_t
-#include <string_view>  // for string_view
-#include <vector>       // for vector, vector<>:...
+#include <cstddef>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

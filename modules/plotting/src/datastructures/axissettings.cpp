@@ -29,13 +29,13 @@
 
 #include <modules/plotting/datastructures/axissettings.h>
 
-#include <inviwo/core/util/glmvec.h>                            // for dvec2, vec4
-#include <modules/plotting/datastructures/majorticksettings.h>  // for operator==, MajorTickSett...
-#include <modules/plotting/datastructures/minorticksettings.h>  // for operator==, MinorTickSett...
-#include <modules/plotting/datastructures/plottextsettings.h>   // for operator==, PlotTextSettings
+#include <inviwo/core/util/glmvec.h>
+#include <modules/plotting/datastructures/majorticksettings.h>
+#include <modules/plotting/datastructures/minorticksettings.h>
+#include <modules/plotting/datastructures/plottextsettings.h>
 
-#include <glm/vec2.hpp>  // for operator==
-#include <glm/vec4.hpp>  // for operator==
+#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

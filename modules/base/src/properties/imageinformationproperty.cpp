@@ -29,28 +29,28 @@
 
 #include <modules/base/properties/imageinformationproperty.h>
 
-#include <inviwo/core/algorithm/markdown.h>                    // for operator""_help
-#include <inviwo/core/datastructures/image/image.h>            // for Image
-#include <inviwo/core/datastructures/image/imagetypes.h>       // for ImageType, operator<<, Ima...
-#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
-#include <inviwo/core/properties/constraintbehavior.h>         // for ConstraintBehavior, Constr...
-#include <inviwo/core/properties/invalidationlevel.h>          // for InvalidationLevel, Invalid...
-#include <inviwo/core/properties/ordinalproperty.h>            // for OrdinalProperty, DoublePro...
-#include <inviwo/core/properties/propertysemantics.h>          // for PropertySemantics, Propert...
-#include <inviwo/core/properties/stringproperty.h>             // for StringProperty
-#include <inviwo/core/properties/templateproperty.h>           // for TemplateProperty
-#include <inviwo/core/properties/valuewrapper.h>               // for PropertySerializationMode
-#include <inviwo/core/util/foreacharg.h>                       // for for_each_in_tuple
-#include <inviwo/core/util/glmvec.h>                           // for size2_t
-#include <inviwo/core/util/stringconversion.h>                 // for toString
-#include <modules/base/properties/layerinformationproperty.h>  // for LayerInformationProperty
+#include <inviwo/core/algorithm/markdown.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/base/properties/layerinformationproperty.h>
 
-#include <cstddef>  // for size_t
-#include <limits>   // for numeric_limits<>::type
-#include <memory>   // for make_unique, unique_ptr
-#include <vector>   // for vector
+#include <cstddef>
+#include <limits>
+#include <memory>
+#include <vector>
 
-#include <glm/vec2.hpp>  // for vec, vec<>::(anonymous)
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 class Layer;

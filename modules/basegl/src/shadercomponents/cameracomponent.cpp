@@ -29,15 +29,15 @@
 
 #include <modules/basegl/shadercomponents/cameracomponent.h>
 
-#include <inviwo/core/properties/cameraproperty.h>            // for CameraProperty
-#include <inviwo/core/util/glmmat.h>                          // for mat4
-#include <inviwo/core/util/stringconversion.h>                // for trim
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
-#include <modules/opengl/shader/shaderutils.h>                // for addDefines, setUniforms
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#include <string>  // for string
+#include <string>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
 namespace inviwo {
 class Property;

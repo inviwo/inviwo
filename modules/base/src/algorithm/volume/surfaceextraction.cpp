@@ -29,17 +29,17 @@
 
 #include <modules/base/algorithm/volume/surfaceextraction.h>
 
-#include <inviwo/core/datastructures/buffer/bufferram.h>  // for IndexBufferRAM
-#include <inviwo/core/util/glmvec.h>                      // for vec3
-#include <modules/base/datastructures/kdtree.h>           // for K3DTree, KDNode, KDTreeGlm<>::Node
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/datastructures/kdtree.h>
 
-#include <cstdint>  // for uint32_t
+#include <cstdint>
 
-#include <glm/ext/scalar_constants.hpp>  // for epsilon
-#include <glm/fwd.hpp>                   // for vec3
-#include <glm/geometric.hpp>             // for cross, dot, normalize
-#include <glm/gtc/type_ptr.hpp>          // for value_ptr
-#include <glm/gtx/norm.hpp>              // for distance2
+#include <glm/ext/scalar_constants.hpp>
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/norm.hpp>
 
 namespace inviwo {
 namespace marching {

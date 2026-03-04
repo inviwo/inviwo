@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/cimg/cimgmoduledefine.h>  // for IVW_MODULE_CIMG_API
+#include <modules/cimg/cimgmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/layer.h>  // for DataReaderType
-#include <inviwo/core/io/datareader.h>               // for DataReaderType
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/io/datareader.h>
 
-#include <memory>       // for shared_ptr
-#include <string_view>  // for string_view
+#include <memory>
+#include <string_view>
 
 namespace inviwo {
 

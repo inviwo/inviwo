@@ -28,25 +28,25 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
+#include <modules/plotting/plottingmoduledefine.h>
 
-#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>       // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>       // for InvalidationLevel, Invalidati...
-#include <inviwo/core/properties/optionproperty.h>          // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty, FloatVec4Property
-#include <inviwo/core/properties/propertysemantics.h>       // for PropertySemantics, PropertySe...
-#include <inviwo/core/util/glmvec.h>                        // for dvec2, vec4
-#include <inviwo/core/util/staticstring.h>                  // for operator+
-#include <modules/plotting/datastructures/axissettings.h>   // for AxisSettings::Orientation
-#include <modules/plotting/datastructures/minortickdata.h>  // for MinorTickData
-#include <modules/plotting/properties/plottextproperty.h>   // for PlotTextProperty
-#include <modules/plotting/properties/tickproperty.h>       // for MajorTickProperty
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/minortickdata.h>
+#include <modules/plotting/properties/plottextproperty.h>
+#include <modules/plotting/properties/tickproperty.h>
 
-#include <functional>   // for __base
-#include <string>       // for operator==, string, operator+
-#include <string_view>  // for operator==, string_view
-#include <vector>       // for operator!=, vector, operator==
+#include <functional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

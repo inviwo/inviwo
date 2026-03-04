@@ -28,17 +28,17 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/core/properties/cameraproperty.h>                         // for CameraProperty
-#include <modules/animation/datastructures/animationstate.h>               // for AnimationState
-#include <modules/animation/datastructures/animationtime.h>                // for Seconds
-#include <modules/animation/datastructures/camerakeyframe.h>               // for CameraKeyframe
-#include <modules/animation/datastructures/propertytrack.h>                // for PropertyTrack
-#include <modules/animation/datastructures/valuekeyframesequence.h>        // for KeyframeSequen...
-#include <modules/animation/interpolation/camerasphericalinterpolation.h>  // for CameraSpherica...
-#include <modules/animation/interpolation/interpolation.h>                 // for InterpolationT...
+#include <inviwo/core/properties/cameraproperty.h>
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/camerakeyframe.h>
+#include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/datastructures/valuekeyframesequence.h>
+#include <modules/animation/interpolation/camerasphericalinterpolation.h>
+#include <modules/animation/interpolation/interpolation.h>
 
-#include <memory>  // for make_unique
-#include <vector>  // for vector
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 

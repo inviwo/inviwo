@@ -29,8 +29,8 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/isovaluecollection.h>  // For IsoValueCollection
-#include <inviwo/core/io/datareader.h>                      // for DataReaderType
+#include <inviwo/core/datastructures/isovaluecollection.h>
+#include <inviwo/core/io/datareader.h>
 
 namespace inviwo {
 

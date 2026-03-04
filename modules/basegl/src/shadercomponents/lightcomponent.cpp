@@ -29,15 +29,15 @@
 
 #include <modules/basegl/shadercomponents/lightcomponent.h>
 
-#include <inviwo/core/datastructures/light/lightingstate.h>  // for ShadingMode, ShadingMode::None
-#include <inviwo/core/properties/optionproperty.h>           // for operator!=, OptionProperty
-#include <inviwo/core/properties/simplelightingproperty.h>   // for SimpleLightingProperty
+#include <inviwo/core/datastructures/light/lightingstate.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
-#include <modules/opengl/shader/shaderutils.h>                // for addShaderDefines, setUniforms
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 #include <ranges>
 #include <fmt/core.h>
 #include <fmt/format.h>

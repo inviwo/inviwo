@@ -29,11 +29,11 @@
 
 #include <modules/qtwidgets/textlabeloverlay.h>
 
-#include <modules/qtwidgets/inviwoqtutils.h>  // for toQString
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <QTimer>   // for QTimer
-#include <QWidget>  // for QWidget
-#include <Qt>       // for operator|, AlignLeft, AlignTop, WA_NoSystem...
+#include <QTimer>
+#include <QWidget>
+#include <Qt>
 
 namespace inviwo {
 

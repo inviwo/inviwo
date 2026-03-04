@@ -29,15 +29,15 @@
 
 #include <modules/animation/factories/trackfactory.h>
 
-#include <inviwo/core/properties/property.h>                 // for Property
-#include <inviwo/core/util/exception.h>                      // for Exception
-#include <inviwo/core/util/logcentral.h>                     // for LogCentral
-#include <modules/animation/datastructures/propertytrack.h>  // for BasePropertyTrack
-#include <modules/animation/datastructures/track.h>          // for Track
-#include <modules/animation/factories/trackfactoryobject.h>  // for TrackFactoryObject
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/logcentral.h>
+#include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/factories/trackfactoryobject.h>
 
-#include <ostream>  // for operator<<
-#include <utility>  // for pair
+#include <ostream>
+#include <utility>
 
 namespace inviwo {
 namespace animation {

@@ -28,18 +28,18 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION...
+#include <modules/animation/animationmoduledefine.h>
 
-#include <inviwo/core/io/serialization/serializable.h>               // for Serializable
-#include <modules/animation/datastructures/animationstate.h>         // for AnimationState, Anim...
-#include <modules/animation/datastructures/animationtime.h>          // for Seconds
-#include <modules/animation/datastructures/trackobserver.h>          // for TrackObservable
-#include <modules/animation/datastructures/valuekeyframesequence.h>  // for KeyframeSequenceTyped
+#include <inviwo/core/io/serialization/serializable.h>
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/trackobserver.h>
+#include <modules/animation/datastructures/valuekeyframesequence.h>
 
-#include <cstddef>  // for size_t
-#include <memory>   // for unique_ptr
-#include <string>   // for string
-#include <vector>   // for vector
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace inviwo {
 class Deserializer;

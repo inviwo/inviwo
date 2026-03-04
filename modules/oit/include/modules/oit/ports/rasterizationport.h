@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/oit/oitmoduledefine.h>  // for IVW_MODULE_MESHRENDERI...
+#include <modules/oit/oitmoduledefine.h>
 
 #include <inviwo/core/util/staticstring.h>
-#include <inviwo/core/ports/datainport.h>   // for DataInport
-#include <inviwo/core/ports/dataoutport.h>  // for DataOutport
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 #include <modules/oit/datastructures/rasterization.h>
 
 namespace inviwo {

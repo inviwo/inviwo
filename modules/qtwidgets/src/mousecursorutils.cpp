@@ -29,7 +29,7 @@
 
 #include <modules/qtwidgets/mousecursorutils.h>
 
-#include <inviwo/core/interaction/events/mousecursors.h>  // for MouseCursor, MouseCursor::Arrow
+#include <inviwo/core/interaction/events/mousecursors.h>
 
 namespace inviwo {
 

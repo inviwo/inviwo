@@ -32,22 +32,22 @@
 #include <pybind11/stl.h>       // IWYU pragma: keep
 #include <pybind11/stl_bind.h>  // IWYU pragma: keep
 
-#include <inviwo/core/datastructures/datatraits.h>  // for DataTraits
-#include <inviwo/core/ports/datainport.h>           // for DataInport
-#include <inviwo/core/util/demangle.h>              // for parseTypeIdName
-#include <inviwo/core/util/exception.h>             // for Exception
-#include <inviwo/core/util/iterrange.h>             // for iter_range
-#include <inviwo/core/util/sourcecontext.h>         // for SourceContext
-#include <inviwo/core/util/stringconversion.h>      // for StrBuffer
+#include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/util/demangle.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/iterrange.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <modules/python3/polymorphictypehooks.h>
 #include <modules/python3/opaquetypes.h>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
-#include <memory>    // for shared_ptr
-#include <string>    // for string, operator+
-#include <typeinfo>  // for type_info
+#include <memory>
+#include <string>
+#include <typeinfo>
 
 namespace inviwo {
 

@@ -29,27 +29,27 @@
 
 #include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
 
-#include <inviwo/core/datastructures/transferfunction.h>      // for TransferFunction
-#include <inviwo/core/network/networklock.h>                  // for NetworkLock
-#include <inviwo/core/properties/isotfproperty.h>             // for IsoTFProperty
-#include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
-#include <inviwo/core/properties/property.h>                  // for Property
-#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
-#include <modules/qtwidgets/editablelabelqt.h>                // for EditableLabelQt
-#include <modules/qtwidgets/inviwoqtutils.h>                  // for toQPixmap
-#include <modules/qtwidgets/inviwowidgetsqt.h>                // for IvwPushButton
-#include <modules/qtwidgets/properties/propertywidgetqt.h>    // for PropertyWidgetQt
-#include <modules/qtwidgets/tf/tfpropertyconcept.h>           // for TFPropertyModel
-#include <modules/qtwidgets/tf/tfpropertydialog.h>            // for TFPropertyDialog
-#include <modules/qtwidgets/tf/tfutils.h>                     // for addTFPresetsMenu, exportToFile
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
+#include <modules/qtwidgets/tf/tfpropertydialog.h>
+#include <modules/qtwidgets/tf/tfutils.h>
 
-#include <QAction>      // for QAction
-#include <QGridLayout>  // for QGridLayout
-#include <QHBoxLayout>  // for QHBoxLayout
-#include <QMenu>        // for QMenu
-#include <QSize>        // for QSize, operator-
-#include <QSizePolicy>  // for QSizePolicy, QSizePolicy::F...
-#include <QWidget>      // for QWidget
+#include <QAction>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QMenu>
+#include <QSize>
+#include <QSizePolicy>
+#include <QWidget>
 
 class QHBoxLayout;
 

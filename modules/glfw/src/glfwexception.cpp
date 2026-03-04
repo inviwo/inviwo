@@ -29,7 +29,7 @@
 
 #include <modules/glfw/glfwexception.h>
 
-#include <inviwo/core/util/exception.h>  // for SourceContext, Exception, ModuleInitException
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 

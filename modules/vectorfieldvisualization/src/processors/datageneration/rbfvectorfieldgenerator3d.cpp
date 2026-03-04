@@ -29,45 +29,45 @@
 
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
 
-#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
-#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for BasicMesh
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/ports/meshport.h>                                 // for MeshOutport
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeOutport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
-#include <inviwo/core/properties/ordinalproperty.h>                     // for IntProperty, Ordi...
-#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
-#include <inviwo/core/util/formats.h>                                   // for DataVec3Float32
-#include <inviwo/core/util/glmmat.h>                                    // for mat3
-#include <inviwo/core/util/glmvec.h>                                    // for dvec3, size3_t, vec3
-#include <modules/base/algorithm/meshutils.h>                           // for arrow, colorsphere
-#include <modules/base/properties/gaussianproperty.h>                   // for Gaussian1DProperty
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/algorithm/meshutils.h>
+#include <modules/base/properties/gaussianproperty.h>
 
-#include <algorithm>      // for generate
-#include <cmath>          // for cos, sin, sqrt, M_PI
-#include <cstddef>        // for size_t
-#include <functional>     // for __base
-#include <limits>         // for numeric_limits
-#include <memory>         // for shared_ptr, make_...
-#include <string_view>    // for string_view
-#include <type_traits>    // for remove_extent_t
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for pair, make_pair
-#include <vector>         // for vector
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <functional>
+#include <limits>
+#include <memory>
+#include <string_view>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 #include <numbers>
 
-#include <glm/detail/setup.hpp>  // for size_t
-#include <glm/geometric.hpp>     // for distance, normalize
-#include <glm/vec3.hpp>          // for vec<>::(anonymous)
+#include <glm/detail/setup.hpp>
+#include <glm/geometric.hpp>
+#include <glm/vec3.hpp>
 
 #include <warn/push>
 #include <warn/ignore/all>

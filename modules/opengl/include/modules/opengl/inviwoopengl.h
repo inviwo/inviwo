@@ -29,17 +29,17 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
 #ifdef __APPLE__
 #define GLEW_NO_GLU
 #endif
 
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <typeinfo>     // for type_info
+#include <string>
+#include <string_view>
+#include <typeinfo>
 
-#include <GL/glew.h>  // for GLenum
+#include <GL/glew.h>
 
 namespace inviwo {
 

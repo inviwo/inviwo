@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/datastructures/animationtime.h>     // for Seconds
-#include <modules/animation/datastructures/keyframeobserver.h>  // for KeyframeObserver
-#include <modules/animationqt/widgets/editorconstants.h>        // for ItemTypes, ItemTypes::Key...
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
+#include <modules/animationqt/widgets/editorconstants.h>
 
-#include <QGraphicsItem>  // for QGraphicsItem, QGraphicsI...
-#include <QRectF>         // for QRectF
-#include <QVariant>       // for QVariant
+#include <QGraphicsItem>
+#include <QRectF>
+#include <QVariant>
 
 class QPainter;
 class QRectF;

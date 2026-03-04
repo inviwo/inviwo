@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/animationcontrollerobserver.h>       // for AnimationControllerObserver
-#include <modules/animation/datastructures/animationobserver.h>  // for AnimationObserver
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/animationobserver.h>
 
-#include <QGraphicsScene>  // for QGraphicsScene
+#include <QGraphicsScene>
 
-#include <memory>         // for unique_ptr
-#include <unordered_map>  // for unordered_map
+#include <memory>
+#include <unordered_map>
 
 class QGraphicsLineItem;
 class QGraphicsSceneDragDropEvent;

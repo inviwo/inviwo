@@ -29,9 +29,9 @@
 
 #include <modules/basegl/shadercomponents/isocomponent.h>
 
-#include <algorithm>  // for max
+#include <algorithm>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
 namespace inviwo {
 

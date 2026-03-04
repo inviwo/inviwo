@@ -29,11 +29,11 @@
 
 #include <modules/plotting/datastructures/plottextsettings.h>
 
-#include <inviwo/core/util/glmvec.h>                            // for vec2, vec4
-#include <modules/fontrendering/datastructures/fontsettings.h>  // for operator==, FontSettings
+#include <inviwo/core/util/glmvec.h>
+#include <modules/fontrendering/datastructures/fontsettings.h>
 
-#include <glm/vec2.hpp>  // for operator==
-#include <glm/vec4.hpp>  // for operator==
+#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

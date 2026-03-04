@@ -28,9 +28,9 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
+#include <modules/plotting/plottingmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>  // for vec2, vec4
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 class FontSettings;

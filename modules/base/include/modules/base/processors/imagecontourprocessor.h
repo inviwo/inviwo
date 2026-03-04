@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/processors/processor.h>  // for Processor
-#include <inviwo/core/ports/imageport.h>       // for ImageInport
-#include <inviwo/core/ports/meshport.h>        // for MeshOutport
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 

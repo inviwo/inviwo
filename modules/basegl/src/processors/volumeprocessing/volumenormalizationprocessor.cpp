@@ -29,26 +29,26 @@
 
 #include <modules/basegl/processors/volumeprocessing/volumenormalizationprocessor.h>
 
-#include <inviwo/core/ports/volumeport.h>                  // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>         // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>          // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
-#include <inviwo/core/properties/property.h>               // for Property
-#include <inviwo/core/util/formats.h>                      // for DataFormatBase, NumericType
-#include <inviwo/core/util/exception.h>                    // for Exception
-#include <modules/basegl/algorithm/volumenormalization.h>  // for VolumeNormalization
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/exception.h>
+#include <modules/basegl/algorithm/volumenormalization.h>
 
-#include <cstddef>      // for size_t
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_extent_t
-#include <vector>       // for vector
+#include <cstddef>
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <vector>
 
 namespace inviwo {
 

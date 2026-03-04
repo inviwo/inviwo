@@ -29,45 +29,45 @@
 
 #include <modules/webbrowser/webbrowserclient.h>
 
-#include <inviwo/core/common/inviwoapplication.h>  // for InviwoApplication
-#include <inviwo/core/common/inviwomodule.h>       // for InviwoModule
-#include <inviwo/core/common/modulemanager.h>      // for ModuleManager
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/modulemanager.h>
 
-#include <inviwo/core/util/exception.h>         // for Exception
-#include <inviwo/core/util/logcentral.h>        // for LogCentral, LogError
-#include <inviwo/core/util/stdextensions.h>     // for erase_remove
-#include <inviwo/core/util/stringconversion.h>  // for replaceInString, spl...
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
-#include <modules/webbrowser/renderhandlergl.h>  // for RenderHandlerGL, Ren...
-#include <modules/webbrowser/webbrowserutil.h>   // for CefString, cef_log_s...
+#include <modules/webbrowser/renderhandlergl.h>
+#include <modules/webbrowser/webbrowserutil.h>
 
 #include <modules/webbrowser/networkcefsynchronizer.h>
 
-#include <ostream>      // for operator<<, basic_os...
-#include <string_view>  // for string_view
-#include <utility>      // for pair
+#include <ostream>
+#include <string_view>
+#include <utility>
 
 #include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
-#include <fmt/core.h>                        // for format
-#include <include/base/cef_bind.h>           // for Bind
-#include <include/base/cef_logging.h>        // for COMPACT_GOOGLE_LOG_D...
-#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
-#include <include/cef_base.h>                // for CefRefPtr
-#include <include/cef_browser.h>             // for CefBrowser
-#include <include/cef_frame.h>               // for CefFrame
-#include <include/cef_life_span_handler.h>   // for CefLifeSpanHandler
-#include <include/cef_load_handler.h>        // for CefLoadHandler, CefL...
-#include <include/cef_process_message.h>     // for CefProcessMessage
-#include <include/cef_request.h>             // for CefRequest
-#include <include/cef_request_handler.h>     // for CefRequestHandler::T...
+#include <fmt/core.h>
+#include <include/base/cef_bind.h>
+#include <include/base/cef_logging.h>
+#include <include/base/cef_scoped_refptr.h>
+#include <include/cef_base.h>
+#include <include/cef_browser.h>
+#include <include/cef_frame.h>
+#include <include/cef_life_span_handler.h>
+#include <include/cef_load_handler.h>
+#include <include/cef_process_message.h>
+#include <include/cef_request.h>
+#include <include/cef_request_handler.h>
 
-#include <include/cef_resource_request_handler.h>  // for CefResourceRequestHa...
-#include <include/cef_task.h>                      // for CefCurrentlyOn
-#include <include/wrapper/cef_closure_task.h>      // for CefPostTask
-#include <include/wrapper/cef_helpers.h>           // for CEF_REQUIRE_UI_THREAD
-#include <include/wrapper/cef_resource_manager.h>  // for CefResourceManager
+#include <include/cef_resource_request_handler.h>
+#include <include/cef_task.h>
+#include <include/wrapper/cef_closure_task.h>
+#include <include/wrapper/cef_helpers.h>
+#include <include/wrapper/cef_resource_manager.h>
 #include <include/wrapper/cef_stream_resource_handler.h>
 
 #include <warn/pop>

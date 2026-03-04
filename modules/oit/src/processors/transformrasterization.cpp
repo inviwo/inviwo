@@ -29,16 +29,16 @@
 
 #include <modules/oit/processors/transformrasterization.h>
 
-#include <inviwo/core/processors/processor.h>                     // for Processor
-#include <inviwo/core/processors/processorinfo.h>                 // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                // for CodeState
-#include <inviwo/core/processors/processortags.h>                 // for Tags, Tags::GL
-#include <modules/base/properties/transformlistproperty.h>        // for TransformLi...
-#include <modules/oit/datastructures/transformedrasterization.h>  // for Transformed...
-#include <modules/oit/ports/rasterizationport.h>                  // for Rasterizati...
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <modules/base/properties/transformlistproperty.h>
+#include <modules/oit/datastructures/transformedrasterization.h>
+#include <modules/oit/ports/rasterizationport.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 

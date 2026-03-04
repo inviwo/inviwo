@@ -29,25 +29,25 @@
 
 #include <modules/python3/pythonscript.h>
 
-#include <pybind11/cast.h>  // for cast, handle::cast, object:...
+#include <pybind11/cast.h>
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 
 #include <inviwo/core/util/moduleutils.h>
-#include <inviwo/core/util/assertion.h>                       // for IVW_ASSERT
-#include <inviwo/core/util/callback.h>                        // for CallBackList, BaseCallBack
-#include <inviwo/core/util/fileobserver.h>                    // for FileObserver
-#include <inviwo/core/util/filesystem.h>                      // for ifstream
-#include <modules/python3/python3module.h>                    // for Python3Module
-#include <modules/python3/pythonexecutionoutputobservable.h>  // for PythonOutputType, PythonOut...
-#include <modules/python3/pythoninterpreter.h>                // for PythonInterpreter
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/callback.h>
+#include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/util/filesystem.h>
+#include <modules/python3/python3module.h>
+#include <modules/python3/pythonexecutionoutputobservable.h>
+#include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <fstream>   // for operator<<, basic_ostream
-#include <iterator>  // for istreambuf_iterator
-#include <utility>   // for pair
+#include <fstream>
+#include <iterator>
+#include <utility>
 
 #include <fmt/format.h>
 #include <fmt/std.h>

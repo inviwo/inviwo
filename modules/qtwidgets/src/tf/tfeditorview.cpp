@@ -27,45 +27,45 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/datamapper.h>   // for DataMapper
-#include <inviwo/core/datastructures/histogram.h>    // for HistogramMode, HistogramContainer
-#include <inviwo/core/network/networklock.h>         // for NetworkLock
-#include <inviwo/core/util/glmvec.h>                 // for dvec2
-#include <inviwo/core/util/zip.h>                    // for enumerate, zipIterator, zipper
-#include <modules/qtwidgets/tf/tfeditorview.h>       // for TFEditorView
-#include <modules/qtwidgets/tf/tfpropertyconcept.h>  // for TFPropertyConcept
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/histogram.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/qtwidgets/tf/tfeditorview.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <algorithm>    // for min, max
-#include <bitset>       // for __bitset<>::reference, bitset, bitse...
-#include <cmath>        // for log10, pow
-#include <cstddef>      // for size_t
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr, shared_ptr<>::element_type
-#include <type_traits>  // for remove_extent_t
-#include <vector>       // for vector, __vector_base<>::value_type
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstddef>
+#include <functional>
+#include <memory>
+#include <type_traits>
+#include <vector>
 
-#include <QColor>          // for QColor
-#include <QFlags>          // for QFlags
-#include <QFont>           // for QFont
-#include <QGraphicsScene>  // for QGraphicsScene
-#include <QGraphicsView>   // for QGraphicsView, QGraphicsView::CacheB...
-#include <QLineF>          // for QLineF
-#include <QList>           // for QList
-#include <QPainter>        // for QPainter, QPainter::Antialiasing
-#include <QPen>            // for QPen
-#include <QPoint>          // for operator/, QPoint
-#include <QPointF>         // for QPointF
-#include <QPolygonF>       // for QPolygonF
-#include <QRect>           // for QRect
-#include <QRectF>          // for QRectF
-#include <QString>         // for QString
-#include <QVector>         // for QVector
-#include <QWheelEvent>     // for QWheelEvent
-#include <Qt>              // for operator|, AlignRight, AlignTop, Con...
-#include <QBrush>          // for QBrush
-#include <QtGlobal>        // for operator==, QT_VERSION, QT_VERSION_C...
-#include <glm/vec2.hpp>    // for vec<>::(anonymous), vec, operator!=
+#include <QColor>
+#include <QFlags>
+#include <QFont>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QLineF>
+#include <QList>
+#include <QPainter>
+#include <QPen>
+#include <QPoint>
+#include <QPointF>
+#include <QPolygonF>
+#include <QRect>
+#include <QRectF>
+#include <QString>
+#include <QVector>
+#include <QWheelEvent>
+#include <Qt>
+#include <QBrush>
+#include <QtGlobal>
+#include <glm/vec2.hpp>
 
 class QLineF;
 class QResizeEvent;

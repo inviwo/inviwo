@@ -29,33 +29,33 @@
 
 #include <modules/qtwidgets/codeedit.h>
 
-#include <inviwo/core/util/glmvec.h>              // for vec4
-#include <modules/qtwidgets/inviwoqtutils.h>      // for toQString, toQColor, toivec3, tovec4
-#include <modules/qtwidgets/syntaxhighlighter.h>  // for SyntaxHighlighter, text
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/syntaxhighlighter.h>
 
-#include <utility>  // for move
+#include <utility>
 #include <ranges>
 
-#include <QFont>            // for QFont
-#include <QFontMetrics>     // for QFontMetrics
-#include <QKeyEvent>        // for QKeyEvent
-#include <QList>            // for QList
-#include <QPaintEvent>      // for QPaintEvent
-#include <QPainter>         // for QPainter, QPainter::TextAntialiasing
-#include <QRect>            // for QRect
-#include <QRectF>           // for QRectF
-#include <QTextBlock>       // for QTextBlock
-#include <QTextCharFormat>  // for QTextCharFormat
-#include <QTextCursor>      // for QTextCursor
-#include <QTextDocument>    // for QTextDocument
-#include <QTextEdit>        // for QTextEdit::ExtraSelection, QTextEdit
-#include <QTextFormat>      // for QTextFormat, QTextFormat::FullWidthSele...
-#include <QTextOption>      // for QTextOption, QTextOption::NoWrap
-#include <QtGlobal>         // for qMax, qreal
-#include <QBrush>           // for QBrush
-#include <Qt>               // for AlignRight, Key_Tab
-#include <fmt/core.h>       // for format
-#include <glm/vec3.hpp>     // for vec, vec<>::(anonymous)
+#include <QFont>
+#include <QFontMetrics>
+#include <QKeyEvent>
+#include <QList>
+#include <QPaintEvent>
+#include <QPainter>
+#include <QRect>
+#include <QRectF>
+#include <QTextBlock>
+#include <QTextCharFormat>
+#include <QTextCursor>
+#include <QTextDocument>
+#include <QTextEdit>
+#include <QTextFormat>
+#include <QTextOption>
+#include <QtGlobal>
+#include <QBrush>
+#include <Qt>
+#include <fmt/core.h>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

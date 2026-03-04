@@ -29,20 +29,20 @@
 
 #include <modules/basegl/processors/volumeprocessing/volumeshader.h>
 
-#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                         // for CodeState, Cod...
-#include <inviwo/core/processors/processortags.h>                          // for Tags, Tags::GL
-#include <inviwo/core/properties/invalidationlevel.h>                      // for InvalidationLevel
-#include <inviwo/core/properties/propertysemantics.h>                      // for PropertySemantics
-#include <inviwo/core/properties/stringproperty.h>                         // for StringProperty
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
-#include <modules/opengl/shader/shader.h>                                  // for Shader
-#include <modules/opengl/shader/stringshaderresource.h>                    // for StringShaderRe...
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/stringshaderresource.h>
 
-#include <functional>   // for __base
-#include <string>       // for string, basic_...
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_extent_t
+#include <functional>
+#include <string>
+#include <string_view>
+#include <type_traits>
 
 namespace inviwo {
 

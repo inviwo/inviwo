@@ -29,22 +29,22 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/geometry/plane.h>  // for Plane
-#include <inviwo/core/ports/dataoutport.h>              // for DataOutport
-#include <inviwo/core/ports/meshport.h>                 // for MeshInport, MeshOutport
-#include <inviwo/core/processors/processor.h>           // for Processor
-#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>      // for ButtonProperty
-#include <inviwo/core/properties/cameraproperty.h>      // for CameraProperty
-#include <inviwo/core/properties/ordinalproperty.h>     // for FloatVec3Property, FloatProperty
+#include <inviwo/core/datastructures/geometry/plane.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 
-#include <string>  // for operator+, string
+#include <string>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
 namespace inviwo {
 

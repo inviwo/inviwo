@@ -28,10 +28,10 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
+#include <modules/animation/animationmoduledefine.h>
 
-#include <modules/animation/datastructures/animationtime.h>  // for Seconds
-#include <modules/animation/datastructures/keyframe.h>       // for Keyframe
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/keyframe.h>
 
 namespace inviwo {
 class Deserializer;

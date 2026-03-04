@@ -29,26 +29,26 @@
 
 #include <modules/opengl/shader/shadermanager.h>
 
-#include <inviwo/core/common/inviwoapplication.h>   // for InviwoApplication
-#include <inviwo/core/properties/optionproperty.h>  // for OptionProperty
-#include <inviwo/core/util/dispatcher.h>            // for Dispatcher
-#include <inviwo/core/util/filesystem.h>            // for fileExists, directoryExists
-#include <inviwo/core/util/logcentral.h>            // for LogCentral
-#include <inviwo/core/util/stdextensions.h>         // for erase_remove, find_if
-#include <inviwo/core/util/stringconversion.h>      // for replaceInString
-#include <modules/opengl/openglmodule.h>            // for OpenGLModule
-#include <modules/opengl/openglsettings.h>          // for OpenGLSettings
-#include <modules/opengl/shader/shader.h>           // for Shader, Shader::OnError
-#include <modules/opengl/shader/shaderresource.h>   // for FileShaderResource, StringShaderResource
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/opengl/openglmodule.h>
+#include <modules/opengl/openglsettings.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/fileshaderresource.h>
 #include <modules/opengl/shader/stringshaderresource.h>
 
-#include <algorithm>    // for find
-#include <ostream>      // for operator<<
-#include <string>       // for string, operator<, basic_string, char...
-#include <type_traits>  // for remove_extent_t
+#include <algorithm>
+#include <ostream>
+#include <string>
+#include <type_traits>
 
-#include <fmt/base.h>  // for format
+#include <fmt/base.h>
 #include <fmt/std.h>
 
 namespace inviwo {

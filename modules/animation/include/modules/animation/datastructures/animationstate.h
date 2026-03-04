@@ -28,7 +28,7 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/datastructures/animationtime.h>  // for Seconds
+#include <modules/animation/datastructures/animationtime.h>
 
 namespace inviwo {
 

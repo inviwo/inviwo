@@ -29,32 +29,32 @@
 
 #include <modules/basegl/processors/imageprocessing/imagechannelcombine.h>
 
-#include <inviwo/core/datastructures/image/image.h>       // for Image
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorOnly
-#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>             // for Processor
-#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Experimental
-#include <inviwo/core/processors/processortags.h>         // for Tags, Tags::GL
-#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
-#include <inviwo/core/properties/optionproperty.h>        // for OptionPropertyOption
-#include <inviwo/core/util/exception.h>                   // for Exception
-#include <inviwo/core/util/formats.h>                     // for DataFormatBase, NumericType
-#include <inviwo/core/util/glmvec.h>                      // for size2_t
-#include <inviwo/core/util/sourcecontext.h>               // for SourceContext
-#include <modules/opengl/shader/shader.h>                 // for Shader
-#include <modules/opengl/shader/shaderutils.h>            // for setUniforms
-#include <modules/opengl/texture/textureunit.h>           // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>          // for bindAndSetUniforms, activateAnd...
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 
-#include <algorithm>    // for max
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr, make_shared
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_extent_t
+#include <algorithm>
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
 
-#include <glm/vec2.hpp>  // for operator!=
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 

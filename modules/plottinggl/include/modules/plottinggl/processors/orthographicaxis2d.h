@@ -39,9 +39,9 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 
-#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
-#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
-#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
+#include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
+#include <modules/plottinggl/utils/axisrenderer.h>
 
 namespace inviwo {
 

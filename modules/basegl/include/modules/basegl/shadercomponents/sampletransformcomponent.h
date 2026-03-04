@@ -28,14 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/properties/compositeproperty.h>         // for CompositeProperty
-#include <inviwo/core/properties/ordinalproperty.h>           // for FloatVec3Property, IntVec3P...
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
 
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class Property;

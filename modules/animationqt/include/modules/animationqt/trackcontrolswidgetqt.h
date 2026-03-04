@@ -28,11 +28,11 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/datastructures/trackobserver.h>  // for TrackObserver
+#include <modules/animation/datastructures/trackobserver.h>
 
-#include <QWidget>  // for QWidget
+#include <QWidget>
 
 class QStandardItem;
 class QHBoxLayout;

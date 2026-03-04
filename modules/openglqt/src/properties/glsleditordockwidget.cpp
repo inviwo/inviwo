@@ -29,10 +29,10 @@
 
 #include <modules/openglqt/properties/glsleditordockwidget.h>
 
-#include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
-#include <inviwo/core/common/inviwoapplicationutil.h>         // for getInviwoApplication
-#include <modules/openglqt/glslsyntaxhighlight.h>             // for setGLSLSyntaxHighlight, GLS...
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
+#include <modules/openglqt/glslsyntaxhighlight.h>
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 
 namespace inviwo {
 class Property;

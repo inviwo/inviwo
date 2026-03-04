@@ -28,29 +28,29 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION...
+#include <modules/animation/animationmoduledefine.h>
 
-#include <inviwo/core/io/serialization/deserializer.h>               // for Deserializer
-#include <inviwo/core/io/serialization/serializationexception.h>     // for SerializationException
-#include <inviwo/core/network/processornetwork.h>                    // for ProcessorNetwork
-#include <inviwo/core/properties/property.h>                         // for Property, PropertyTr...
-#include <inviwo/core/util/assertion.h>                              // for IVW_ASSERT
-#include <inviwo/core/util/exception.h>                              // for Exception
-#include <modules/animation/datastructures/animationstate.h>         // for AnimationState, Anim...
-#include <modules/animation/datastructures/animationtime.h>          // for Seconds
-#include <modules/animation/datastructures/basetrack.h>              // for BaseTrack
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/io/serialization/serializationexception.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/exception.h>
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/basetrack.h>
 #include <modules/animation/datastructures/valuekeyframe.h>          // IWYU pragma: keep
-#include <modules/animation/datastructures/valuekeyframesequence.h>  // for DefaultInterpolation...
-#include <modules/animation/interpolation/interpolation.h>           // for InterpolationTyped
+#include <modules/animation/datastructures/valuekeyframesequence.h>
+#include <modules/animation/interpolation/interpolation.h>
 
-#include <algorithm>    // for upper_bound
-#include <iterator>     // for prev
-#include <memory>       // for unique_ptr, make_unique
-#include <string>       // for operator+, string
-#include <string_view>  // for string_view
-#include <type_traits>  // for is_same, is_construc...
-#include <utility>      // for move
-#include <vector>       // for vector
+#include <algorithm>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 class Serializer;

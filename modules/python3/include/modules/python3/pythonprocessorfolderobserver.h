@@ -28,12 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
+#include <modules/python3/python3moduledefine.h>
 
-#include <inviwo/core/util/fileobserver.h>  // for FileObserver
+#include <inviwo/core/util/fileobserver.h>
 
-#include <string>  // for string
-#include <vector>  // for vector
+#include <string>
+#include <vector>
 
 namespace inviwo {
 class InviwoApplication;

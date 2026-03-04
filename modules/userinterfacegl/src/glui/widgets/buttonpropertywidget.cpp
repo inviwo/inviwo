@@ -29,13 +29,13 @@
 
 #include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>
 
-#include <inviwo/core/properties/buttonproperty.h>            // for ButtonProperty
-#include <inviwo/core/properties/propertywidget.h>            // for PropertyWidget
-#include <inviwo/core/util/glmvec.h>                          // for ivec2
-#include <modules/userinterfacegl/glui/widgets/button.h>      // for Button
-#include <modules/userinterfacegl/glui/widgets/toolbutton.h>  // for ToolButton
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/userinterfacegl/glui/widgets/button.h>
+#include <modules/userinterfacegl/glui/widgets/toolbutton.h>
 
-#include <functional>  // for __base, function
+#include <functional>
 
 namespace inviwo {
 class Processor;

@@ -29,57 +29,57 @@
 
 #include <modules/base/processors/imagestackvolumesource.h>
 
-#include <inviwo/core/common/factoryutil.h>                             // for getDataReaderFactory
-#include <inviwo/core/datastructures/image/layer.h>                     // for DataReaderType
-#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/io/datareader.h>                          // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>                 // for DataReaderException
-#include <inviwo/core/io/datareaderfactory.h>                   // for DataReaderFactory
-#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
-#include <inviwo/core/processors/processor.h>                   // for Processor
-#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>              // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>               // for Tags
-#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
-#include <inviwo/core/properties/filepatternproperty.h>         // for FilePatternProperty
-#include <inviwo/core/properties/property.h>                    // for OverwriteState
-#include <inviwo/core/util/exception.h>                         // for Exception
-#include <inviwo/core/util/fileextension.h>                     // for FileExtension
-#include <inviwo/core/util/formatdispatching.h>                 // for PrecisionValueType
-#include <inviwo/core/util/formats.h>                           // for DataFormat, DataF...
-#include <inviwo/core/util/glmconvert.h>                        // for glm_convert_norma...
-#include <inviwo/core/util/glmvec.h>                            // for vec3, dvec2, size2_t
-#include <inviwo/core/util/logcentral.h>                        // for LogCentral, LogPr...
-#include <inviwo/core/util/raiiutils.h>                         // for OnScopeExit, OnSc...
-#include <inviwo/core/util/statecoordinator.h>                  // for StateCoordinator
-#include <inviwo/core/util/zip.h>                               // for zipper, enumerate
-#include <modules/base/properties/basisproperty.h>              // for BasisProperty
-#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformation...
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/filepatternproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/statecoordinator.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
 
-#include <algorithm>      // for fill, transform
-#include <cstddef>        // for size_t
-#include <functional>     // for __base
-#include <iterator>       // for back_insert_iterator
-#include <map>            // for map, operator!=
-#include <string_view>    // for string_view
-#include <type_traits>    // for integral_constant
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for pair, move
-#include <vector>         // for vector
+#include <algorithm>
+#include <cstddef>
+#include <functional>
+#include <iterator>
+#include <map>
+#include <string_view>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
-#include <fmt/core.h>                         // for format, basic_str...
-#include <glm/ext/vector_float3.hpp>          // for vec3
-#include <glm/gtx/component_wise.hpp>         // for compMul
-#include <glm/gtx/io.hpp>                     // for operator<<
-#include <glm/gtx/matrix_operation.hpp>       // for diagonal3x3
-#include <glm/gtx/scalar_multiplication.hpp>  // for operator*
-#include <glm/vec2.hpp>                       // for operator!=
-#include <glm/vec3.hpp>                       // for operator*
+#include <fmt/core.h>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/gtx/component_wise.hpp>
+#include <glm/gtx/io.hpp>
+#include <glm/gtx/matrix_operation.hpp>
+#include <glm/gtx/scalar_multiplication.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 #include <fmt/std.h>
 

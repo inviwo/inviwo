@@ -29,14 +29,14 @@
 
 #include <inviwo/dataframeqt/dataframeqtmodule.h>
 
-#include <inviwo/core/common/inviwomodule.h>                             // for InviwoModule
-#include <inviwo/core/rendering/datavisualizer.h>                        // for DataVisualizer
-#include <inviwo/dataframeqt/dataframetableprocessorwidget.h>            // for DataFrameTablePr...
-#include <inviwo/dataframeqt/datavisualizer/dataframetablevisualizer.h>  // for DataFrameTableVi...
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/rendering/datavisualizer.h>
+#include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
+#include <inviwo/dataframeqt/datavisualizer/dataframetablevisualizer.h>
 #include <inviwo/dataframeqt/processors/dataframedocktable.h>
-#include <inviwo/dataframeqt/processors/dataframetable.h>  // for DataFrameTable
+#include <inviwo/dataframeqt/processors/dataframetable.h>
 
-#include <memory>  // for make_unique, uni...
+#include <memory>
 
 namespace inviwo {
 class InviwoApplication;

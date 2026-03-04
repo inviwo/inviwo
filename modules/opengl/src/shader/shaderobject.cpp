@@ -31,34 +31,34 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 
-#include <inviwo/core/util/assertion.h>                // for IVW_ASSERT
-#include <inviwo/core/util/dispatcher.h>               // for Dispatcher
-#include <inviwo/core/util/filesystem.h>               // for getFileExtension
-#include <inviwo/core/util/logcentral.h>               // for log, LogAudience, LogAudience::User
-#include <inviwo/core/util/sourcecontext.h>            // for SourceContext
-#include <inviwo/core/util/stdextensions.h>            // for find_if, find
-#include <inviwo/core/util/stringconversion.h>         // for forEachStringPart, splitByLast
-#include <modules/opengl/inviwoopengl.h>               // for getGLErrorString, glGetError, GLuint
-#include <modules/opengl/openglcapabilities.h>         // for OpenGLCapabilities, OpenGLCapabili...
-#include <modules/opengl/openglexception.h>            // for OpenGLException
-#include <modules/opengl/shader/linenumberresolver.h>  // for LineNumberResolver
-#include <modules/opengl/shader/shadermanager.h>       // for ShaderManager
-#include <modules/opengl/shader/shadersegment.h>       // for ShaderSegment, ShaderSegment::Plac...
-#include <modules/opengl/shader/shadertype.h>          // for ShaderType, operator==, ShaderType...
-#include <modules/opengl/shader/shaderutils.h>         // for getShaderInfoLog, findShaderResource
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/openglexception.h>
+#include <modules/opengl/shader/linenumberresolver.h>
+#include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/shader/shadersegment.h>
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#include <algorithm>    // for find, count, max, mismatch, remove_if
-#include <cctype>       // for isblank
-#include <exception>    // for exception_ptr, current_exception
-#include <fstream>      // for operator<<, basic_ostream, left
-#include <iomanip>      // for operator<<, setw
-#include <iterator>     // for back_insert_iterator, back_inserter
-#include <string>       // for string, char_traits, basic_string
-#include <tuple>        // for tie, operator<, tuple
-#include <type_traits>  // for remove_extent_t, remove_reference<...
+#include <algorithm>
+#include <cctype>
+#include <exception>
+#include <fstream>
+#include <iomanip>
+#include <iterator>
+#include <string>
+#include <tuple>
+#include <type_traits>
 
-#include <fmt/core.h>     // for format, arg, basic_string_view
-#include <boost/sml.hpp>  // for zero_wrapper, state, event, state_...
+#include <fmt/core.h>
+#include <boost/sml.hpp>
 
 namespace sml = boost::sml;
 

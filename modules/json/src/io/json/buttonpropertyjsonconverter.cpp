@@ -29,7 +29,7 @@
 
 #include <modules/json/io/json/buttonpropertyjsonconverter.h>
 
-#include <inviwo/core/properties/buttonproperty.h>  // for ButtonProperty
+#include <inviwo/core/properties/buttonproperty.h>
 
 namespace inviwo {
 

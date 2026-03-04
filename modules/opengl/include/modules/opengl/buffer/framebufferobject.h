@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/util/canvas.h>      // for Canvas, Canvas::ContextID
-#include <modules/opengl/inviwoopengl.h>  // for GLenum, GLuint, GLint, glGetIntegerv, GL_...
+#include <inviwo/core/util/canvas.h>
+#include <modules/opengl/inviwoopengl.h>
 
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class Texture2D;

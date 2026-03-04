@@ -29,24 +29,24 @@
 
 #include <modules/qtwidgets/sliderwidgetqt.h>
 
-#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, ConstraintBeh...
-#include <modules/qtwidgets/inviwoqtutils.h>            // for refSpacePx
-#include <modules/qtwidgets/numberlineedit.h>           // for NumberLineEdit
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/numberlineedit.h>
 
-#include <cmath>   // for fabs
-#include <limits>  // for numeric_limits
+#include <cmath>
+#include <limits>
 
-#include <QDoubleSpinBox>  // for QDoubleSpinBox
-#include <QEvent>          // for QEvent, QEvent::MouseButtonRelease
-#include <QHBoxLayout>     // for QHBoxLayout
-#include <QMouseEvent>     // for QMouseEvent
-#include <QPoint>          // for QPoint
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <QSizePolicy>     // for QSizePolicy, QSizePolicy::Fixed
-#include <QSlider>         // for QSlider
-#include <QStyle>          // for QStyle
-#include <QVariant>        // for QVariant
-#include <Qt>              // for ClickFocus, Horizontal, LeftButton
+#include <QDoubleSpinBox>
+#include <QEvent>
+#include <QHBoxLayout>
+#include <QMouseEvent>
+#include <QPoint>
+#include <QSignalBlocker>
+#include <QSizePolicy>
+#include <QSlider>
+#include <QStyle>
+#include <QVariant>
+#include <Qt>
 
 class QHBoxLayout;
 class QMouseEvent;

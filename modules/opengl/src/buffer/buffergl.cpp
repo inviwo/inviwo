@@ -29,13 +29,13 @@
 
 #include <modules/opengl/buffer/buffergl.h>
 
-#include <inviwo/core/datastructures/buffer/bufferrepresentation.h>  // for BufferRepresentation
-#include <inviwo/core/datastructures/geometry/geometrytype.h>        // for BufferTarget, Buffer...
-#include <inviwo/core/util/formats.h>                                // for DataFormatBase
-#include <modules/opengl/buffer/bufferobject.h>                      // for BufferObject
-#include <modules/opengl/buffer/bufferobjectarray.h>                 // for BufferObjectArray
+#include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/util/formats.h>
+#include <modules/opengl/buffer/bufferobject.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
 
-#include <type_traits>  // for remove_extent_t
+#include <type_traits>
 
 namespace inviwo {
 

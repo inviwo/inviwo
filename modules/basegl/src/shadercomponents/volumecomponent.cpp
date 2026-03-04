@@ -29,14 +29,14 @@
 
 #include <modules/basegl/shadercomponents/volumecomponent.h>
 
-#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
-#include <inviwo/core/util/stringconversion.h>                // for trim
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
-#include <modules/opengl/volume/volumeutils.h>                // for bindAndSetUniforms
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/shader/shader.h>
 
-#include <fmt/core.h>    // for format
-#include <fmt/format.h>  // for compile_string_to_view, FMT...
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 

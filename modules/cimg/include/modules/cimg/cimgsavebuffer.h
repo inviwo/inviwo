@@ -29,10 +29,10 @@
 
 #pragma once
 
-#include <inviwo/core/util/exception.h>         // for Exception
-#include <inviwo/core/util/memoryfilehandle.h>  // for MemoryFileHandle
-#include <inviwo/core/util/safecstr.h>          // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>     // for SourceContext
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/memoryfilehandle.h>
+#include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/sourcecontext.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -50,14 +50,14 @@
 #endif
 struct IUnknown;   // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was
                    // unexpected here" when using /permissive-
-#include <CImg.h>  // for strcasecmp, CImg, CImgIOException
+#include <CImg.h>
 
 #include <warn/pop>
 
-#include <cstdio>       // for FILE, size_t
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <cstdio>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

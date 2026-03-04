@@ -29,36 +29,36 @@
 
 #include <modules/base/processors/volumesubset.h>
 
-#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/network/networklock.h>                            // for NetworkLock
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport, Vol...
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/minmaxproperty.h>                      // for IntSizeTMinMaxPro...
-#include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
-#include <inviwo/core/util/glmmat.h>                                    // for mat3
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t
-#include <inviwo/core/algorithm/markdown.h>                             // for operator""_help...
-#include <modules/base/algorithm/volume/volumeramsubset.h>              // for VolumeRAMSubSet
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/algorithm/markdown.h>
+#include <modules/base/algorithm/volume/volumeramsubset.h>
 
-#include <functional>     // for __base
-#include <memory>         // for shared_ptr, share...
-#include <string>         // for string
-#include <string_view>    // for string_view
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <unordered_set>
 
-#include <glm/detail/qualifier.hpp>  // for tvec2
-#include <glm/mat3x3.hpp>            // for mat<>::col_type
-#include <glm/vec2.hpp>              // for vec<>::(anonymous)
-#include <glm/vec3.hpp>              // for operator/, operator+
+#include <glm/detail/qualifier.hpp>
+#include <glm/mat3x3.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

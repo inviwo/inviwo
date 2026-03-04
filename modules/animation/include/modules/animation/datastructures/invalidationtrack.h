@@ -30,17 +30,17 @@
 
 #include <modules/animation/animationmoduledefine.h>
 
-#include <modules/animation/datastructures/animationstate.h>  // for AnimationState, AnimationTi...
-#include <modules/animation/datastructures/animationtime.h>   // for Seconds
-#include <modules/animation/datastructures/basekeyframe.h>    // for BaseKeyframe
-#include <modules/animation/datastructures/basekeyframesequence.h>  // for BaseKeyframeSequence
-#include <modules/animation/datastructures/keyframe.h>              // for operator<
-#include <modules/animation/datastructures/basetrack.h>             // for BaseTrack<>::key_type
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/basekeyframe.h>
+#include <modules/animation/datastructures/basekeyframesequence.h>
+#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/basetrack.h>
 
-#include <functional>  // for __base
-#include <memory>      // for unique_ptr
-#include <string>      // for basic_string
-#include <vector>      // for vector
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace inviwo {
 

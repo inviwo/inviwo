@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, LayerType::Color
-#include <inviwo/core/util/canvas.h>                      // for Canvas
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/canvas.h>
 
-#include <QSurfaceFormat>  // for QSurfaceFormat
+#include <QSurfaceFormat>
 
-#include <cstddef>      // for size_t
-#include <memory>       // for unique_ptr, shared_ptr
-#include <string_view>  // for string_view
+#include <cstddef>
+#include <memory>
+#include <string_view>
 
 class QOffscreenSurface;
 class QOpenGLContext;  // Include causes: warning qopenglfunctions.h is not compatible with GLEW,

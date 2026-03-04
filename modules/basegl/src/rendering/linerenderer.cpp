@@ -29,33 +29,33 @@
 
 #include <modules/basegl/rendering/linerenderer.h>
 
-#include <inviwo/core/datastructures/geometry/geometrytype.h>          // for BufferType, Connec...
-#include <inviwo/core/datastructures/geometry/mesh.h>                  // for Mesh, Mesh::MeshInfo
-#include <inviwo/core/util/glmvec.h>                                   // for size2_t, vec2
-#include <inviwo/core/util/stringconversion.h>                         // for toString
-#include <modules/basegl/datastructures/linesettings.h>                // for LineSettings
-#include <modules/basegl/datastructures/linesettingsinterface.h>       // for LineSettingsInterface
-#include <modules/basegl/datastructures/meshshadercache.h>             // for MeshShaderCache::R...
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>  // for StipplingSettingsI...
-#include <modules/basegl/properties/stipplingproperty.h>               // for addShaderDefines
-#include <modules/opengl/geometry/meshgl.h>                            // for MeshGL
-#include <modules/opengl/inviwoopengl.h>                               // for GL_ONE, GL_ONE_MIN...
-#include <modules/opengl/openglutils.h>                                // for BlendModeState
-#include <modules/opengl/rendering/meshdrawergl.h>                     // for MeshDrawerGL::Draw...
-#include <modules/opengl/shader/shader.h>                              // for Shader
-#include <modules/opengl/shader/shaderobject.h>                        // for ShaderObject
-#include <modules/opengl/shader/shadertype.h>                          // for ShaderType, Shader...
-#include <modules/opengl/shader/shaderutils.h>                         // for setShaderUniforms
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/basegl/datastructures/linesettings.h>
+#include <modules/basegl/datastructures/linesettingsinterface.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
+#include <modules/basegl/properties/stipplingproperty.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/image/layergl.h>
 
-#include <cstddef>     // for size_t
-#include <functional>  // for __base, function
-#include <map>         // for __map_iterator, map
-#include <string>      // for string
-#include <utility>     // for pair
-#include <vector>      // for vector
+#include <cstddef>
+#include <functional>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 

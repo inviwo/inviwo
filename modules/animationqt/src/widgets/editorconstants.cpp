@@ -29,15 +29,15 @@
 
 #include <modules/animationqt/widgets/editorconstants.h>
 
-#include <stdlib.h>   // for abs, size_t
-#include <algorithm>  // for max, min
-#include <array>      // for array
-#include <cmath>      // for round, remainder, pow, abs, floor, log10
-#include <limits>     // for numeric_limits
+#include <stdlib.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <limits>
 
-#include <QApplication>  // for QApplication
-#include <QFlags>        // for QFlags
-#include <Qt>            // for AltModifier
+#include <QApplication>
+#include <QFlags>
+#include <Qt>
 
 namespace inviwo {
 

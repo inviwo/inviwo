@@ -29,14 +29,14 @@
 
 #include <modules/brushingandlinking/datastructures/indexlist.h>
 
-#include <inviwo/core/datastructures/bitset.h>          // for BitSet
-#include <inviwo/core/io/serialization/deserializer.h>  // for Deserializer
-#include <inviwo/core/io/serialization/serializer.h>    // for Serializer
-#include <inviwo/core/util/stdextensions.h>             // for map_erase_remove_if, transform
-#include <inviwo/core/util/typetraits.h>                // for identity, alwaysTrue
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/typetraits.h>
 
-#include <functional>  // for __base
-#include <utility>     // for make_pair, pair
+#include <functional>
+#include <utility>
 
 namespace inviwo {
 

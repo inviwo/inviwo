@@ -29,11 +29,11 @@
 
 #include <modules/assimp/assimpmodule.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
-#include <inviwo/core/io/datareader.h>        // for DataReader
-#include <modules/assimp/assimpreader.h>      // for AssimpReader
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/datareader.h>
+#include <modules/assimp/assimpreader.h>
 
-#include <memory>  // for make_unique
+#include <memory>
 
 namespace inviwo {
 class InviwoApplication;

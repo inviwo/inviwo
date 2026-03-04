@@ -28,9 +28,9 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <modules/qtwidgets/properties/filepropertywidgetqt.h>  // for FilePropertyWidgetQt
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
 
 namespace inviwo {
 class FileProperty;

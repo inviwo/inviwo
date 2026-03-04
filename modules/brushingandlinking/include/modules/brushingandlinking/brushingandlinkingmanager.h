@@ -29,28 +29,28 @@
 
 #pragma once
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>  // for IVW_MODULE_BRUSHI...
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 
-#include <inviwo/core/datastructures/bitset.h>                         // for BitSet
-#include <inviwo/core/io/serialization/serializable.h>                 // for Serializable
-#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
-#include <modules/brushingandlinking/datastructures/brushingaction.h>  // for BrushingTarget, hash
-#include <modules/brushingandlinking/datastructures/indexlist.h>       // for IndexList
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
+#include <modules/brushingandlinking/datastructures/indexlist.h>
 
-#include <algorithm>      // for find
-#include <array>          // for array
-#include <cstddef>        // for size_t
-#include <cstdint>        // for uint32_t
-#include <functional>     // for function
-#include <string_view>    // for string_view
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for pair
-#include <variant>        // for variant
-#include <vector>         // for vector, vector<>:...
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <string_view>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <variant>
+#include <vector>
 #include <span>
 
-#include <flags/flags.h>  // for any, flags, opera...
+#include <flags/flags.h>
 
 namespace inviwo {
 

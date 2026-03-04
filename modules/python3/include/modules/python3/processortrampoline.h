@@ -28,13 +28,13 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
+#include <modules/python3/python3moduledefine.h>
 
-#include <pybind11/trampoline_self_life_support.h>  // for trampoline_self_life_support
+#include <pybind11/trampoline_self_life_support.h>
 
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/invalidationlevel.h>
 
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>

@@ -29,21 +29,21 @@
 
 #include <modules/basegl/processors/volumeprocessing/volumemerger.h>
 
-#include <inviwo/core/ports/volumeport.h>                                  // for VolumeInport
-#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                         // for CodeState, Cod...
-#include <inviwo/core/processors/processortags.h>                          // for Tags
-#include <inviwo/core/util/formats.h>                                      // for DataFormatBase
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
-#include <modules/opengl/shader/shader.h>                                  // for Shader
-#include <modules/opengl/shader/shaderobject.h>                            // for ShaderObject
-#include <modules/opengl/volume/volumeutils.h>                             // for bindAndSetUnif...
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/util/formats.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/volume/volumeutils.h>
 
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_extent_t
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
 
 namespace inviwo {
 class TextureUnitContainer;

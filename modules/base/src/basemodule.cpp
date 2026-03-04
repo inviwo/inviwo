@@ -29,31 +29,31 @@
 
 #include <modules/base/basemodule.h>
 
-#include <inviwo/core/common/inviwomodule.h>              // for InviwoModule
-#include <inviwo/core/datastructures/buffer/buffer.h>     // for Buffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>  // for BufferRAMPre...
-#include <inviwo/core/datastructures/geometry/mesh.h>     // for Mesh
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/representationconverter.h>         // for Representati...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for Representati...
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, Data...
-#include <inviwo/core/io/datareader.h>                                  // for DataReader
-#include <inviwo/core/io/datawriter.h>                                  // for DataWriter
-#include <inviwo/core/io/serialization/ticpp.h>                         // for TxElement, Node
-#include <inviwo/core/io/serialization/versionconverter.h>              // for Kind, Identi...
-#include <inviwo/core/ports/datainport.h>                               // for MultiDataInport
-#include <inviwo/core/ports/imageport.h>                                // for ImageMultiIn...
-#include <inviwo/core/ports/meshport.h>                                 // for MeshOutport
-#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterable
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeOutport
-#include <inviwo/core/properties/optionproperty.h>                      // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                     // for OrdinalProperty
-#include <inviwo/core/rendering/datavisualizer.h>                       // for DataVisualizer
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/serialization/ticpp.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/rendering/datavisualizer.h>
 #include <inviwo/core/util/charconv.h>
-#include <inviwo/core/util/foreacharg.h>        // for for_each_type
-#include <inviwo/core/util/glmvec.h>            // for vec3, vec4
-#include <inviwo/core/util/staticstring.h>      // for operator+
-#include <inviwo/core/util/stringconversion.h>  // for dotSeperated...
+#include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <modules/base/datavisualizer/imageinformationvisualizer.h>
 #include <modules/base/datavisualizer/meshinformationvisualizer.h>

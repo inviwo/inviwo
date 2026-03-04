@@ -29,26 +29,26 @@
 
 #include <modules/basegl/processors/shadercomponentprocessorbase.h>
 
-#include <inviwo/core/ports/imageport.h>                      // for ImageOutport
-#include <inviwo/core/processors/processor.h>                 // for Processor
-#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
-#include <inviwo/core/util/exception.h>                       // for Exception
-#include <inviwo/core/util/sourcecontext.h>                   // for SourceContext
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent, ShaderComp...
-#include <modules/opengl/shader/shader.h>                     // for Shader, Shader::Build
-#include <modules/opengl/shader/shaderobject.h>               // for ShaderObject
-#include <modules/opengl/shader/shadersegment.h>              // for ShaderSegment
-#include <modules/opengl/shader/shaderutils.h>                // for setUniforms
-#include <modules/opengl/texture/textureunit.h>               // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>              // for activateAndClearTarget, dea...
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/shadersegment.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 
-#include <exception>   // for exception
-#include <functional>  // for __base
-#include <string>      // for string
-#include <tuple>       // for tuple, tuple_element<>::type
+#include <exception>
+#include <functional>
+#include <string>
+#include <tuple>
 
-#include <fmt/core.h>    // for format
-#include <fmt/format.h>  // for format_error
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 class Property;

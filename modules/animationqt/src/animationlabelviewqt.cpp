@@ -29,37 +29,37 @@
 
 #include <modules/animationqt/animationlabelviewqt.h>
 
-#include <inviwo/core/common/inviwoapplication.h>            // for InviwoApplication
-#include <inviwo/core/network/networkutils.h>                // for setSelected
-#include <inviwo/core/network/processornetwork.h>            // for ProcessorNetwork
-#include <inviwo/core/processors/processorutils.h>           // for setSelected
-#include <inviwo/core/properties/property.h>                 // for Property
-#include <inviwo/core/properties/propertyowner.h>            // for PropertyOwner
-#include <inviwo/core/util/indirectiterator.h>               // for IndirectIterator
-#include <modules/animation/animationcontroller.h>           // for AnimationController
-#include <modules/animation/animationcontrollerobserver.h>   // for AnimationControllerObservable
-#include <modules/animation/datastructures/animation.h>      // for Animation
-#include <modules/animation/datastructures/propertytrack.h>  // for BasePropertyTrack
-#include <modules/animation/datastructures/track.h>          // for Track
-#include <modules/animationqt/trackcontrolswidgetqt.h>       // for TrackControlsWidgetQt
-#include <modules/animationqt/widgets/editorconstants.h>     // for timelineHeight
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/networkutils.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/util/indirectiterator.h>
+#include <modules/animation/animationcontroller.h>
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animationqt/trackcontrolswidgetqt.h>
+#include <modules/animationqt/widgets/editorconstants.h>
 
-#include <QAbstractItemView>    // for QAbstractItemView, QAbstract...
-#include <QAction>              // for QAction
-#include <QFlags>               // for QFlags
-#include <QIcon>                // for QIcon
-#include <QItemSelection>       // for QItemSelection
-#include <QItemSelectionModel>  // for QItemSelectionModel
-#include <QKeySequence>         // for QKeySequence, QKeySequence::...
-#include <QList>                // for QList, QList<>::iterator
-#include <QModelIndex>          // for QModelIndex
-#include <QModelIndexList>      // for QModelIndexList
-#include <QSize>                // for QSize
-#include <QStandardItem>        // for QStandardItem
-#include <QStandardItemModel>   // for QStandardItemModel
-#include <QString>              // for QString
-#include <QVariant>             // for QVariant
-#include <Qt>                   // for operator|, DisplayRole, Item...
+#include <QAbstractItemView>
+#include <QAction>
+#include <QFlags>
+#include <QIcon>
+#include <QItemSelection>
+#include <QItemSelectionModel>
+#include <QKeySequence>
+#include <QList>
+#include <QModelIndex>
+#include <QModelIndexList>
+#include <QSize>
+#include <QStandardItem>
+#include <QStandardItemModel>
+#include <QString>
+#include <QVariant>
+#include <Qt>
 #include <QScrollBar>
 
 class QModelIndex;

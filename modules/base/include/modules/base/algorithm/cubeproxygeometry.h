@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>           // for size3_t, vec3
-#include <modules/base/algorithm/meshutils.h>  // for IncludeNormals
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/algorithm/meshutils.h>
 
-#include <memory>  // for shared_ptr
+#include <memory>
 
 namespace inviwo {
 

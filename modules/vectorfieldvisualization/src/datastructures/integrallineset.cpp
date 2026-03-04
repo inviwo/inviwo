@@ -29,11 +29,11 @@
 
 #include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
-#include <inviwo/core/util/glmmat.h>                                       // for mat4
-#include <modules/vectorfieldvisualization/datastructures/integralline.h>  // for IntegralLine
+#include <inviwo/core/util/glmmat.h>
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>
 
-#include <cstdint>  // for uint32_t
-#include <utility>  // for move
+#include <cstdint>
+#include <utility>
 
 namespace inviwo {
 

@@ -29,50 +29,50 @@
 
 #include <modules/plottinggl/processors/colorscalelegend.h>
 
-#include <inviwo/core/algorithm/markdown.h>                     // for operator""_help
-#include <inviwo/core/common/inviwoapplication.h>               // for InviwoApplication
-#include <inviwo/core/common/inviwoapplicationutil.h>           // for getInviwoApplication
-#include <inviwo/core/datastructures/datamapper.h>              // for DataMapper
-#include <inviwo/core/datastructures/unitsystem.h>              // for Axis
-#include <inviwo/core/ports/datainport.h>                       // for DataInport
-#include <inviwo/core/ports/imageport.h>                        // for ImageInport, ImageO...
-#include <inviwo/core/ports/volumeport.h>                       // for VolumeInport
-#include <inviwo/core/processors/processor.h>                   // for Processor
-#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>              // for CodeState, CodeStat...
-#include <inviwo/core/processors/processortags.h>               // for Tags
-#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>           // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>           // for InvalidationLevel
-#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty, Opt...
-#include <inviwo/core/properties/ordinalproperty.h>             // for IntProperty, FloatP...
-#include <inviwo/core/properties/propertywidgetfactory.h>       // for PropertyWidgetFactory
-#include <inviwo/core/properties/propertyeditorwidget.h>        // for PropertyEditorWidget
-#include <inviwo/core/interaction/events/pickingevent.h>        // for PickingEvent
-#include <inviwo/core/interaction/events/mouseevent.h>          // for MouseEvent
-#include <inviwo/core/util/glmvec.h>                            // for ivec2, vec2, vec4
-#include <modules/fontrendering/properties/fontproperty.h>      // for FontProperty
-#include <modules/opengl/inviwoopengl.h>                        // for GL_ALWAYS, GL_ONE
-#include <modules/opengl/openglutils.h>                         // for Activate, BlendMode...
-#include <modules/opengl/geometry/meshgl.h>                     // for MeshGL
-#include <modules/opengl/rendering/meshdrawergl.h>              // for MeshDrawerGL::Dra...
-#include <modules/opengl/shader/shader.h>                       // for Shader
-#include <modules/opengl/shader/shaderutils.h>                  // for setUniforms
-#include <modules/opengl/texture/textureunit.h>                 // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>                // for activateAndClearTarget
-#include <modules/plotting/datastructures/axissettings.h>       // for AxisSettings::Orien...
-#include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle, TickStyl...
-#include <modules/plotting/properties/axisproperty.h>           // for AxisProperty
-#include <modules/plotting/properties/axisstyleproperty.h>      // for AxisStyleProperty
-#include <modules/plotting/properties/plottextproperty.h>       // for PlotTextProperty
-#include <modules/plotting/properties/tickproperty.h>           // for MajorTickProperty
-#include <modules/plottinggl/utils/axisrenderer.h>              // for AxisRenderer
+#include <inviwo/core/algorithm/markdown.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/properties/propertyeditorwidget.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/fontrendering/properties/fontproperty.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/majorticksettings.h>
+#include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
+#include <modules/plotting/properties/plottextproperty.h>
+#include <modules/plotting/properties/tickproperty.h>
+#include <modules/plottinggl/utils/axisrenderer.h>
 
-#include <cmath>   // for ceil
-#include <memory>  // for shared_ptr
+#include <cmath>
+#include <memory>
 
 #include <fmt/format.h>
-#include <glm/vec2.hpp>  // for operator+, operator-
+#include <glm/vec2.hpp>
 #include <glm/gtx/vec_swizzle.hpp>
 
 namespace inviwo::plot {

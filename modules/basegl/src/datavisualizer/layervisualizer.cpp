@@ -29,20 +29,20 @@
 
 #include <modules/basegl/datavisualizer/layervisualizer.h>
 
-#include <inviwo/core/common/inviwoapplication.h>   // for InviwoApplication
-#include <inviwo/core/io/datareaderfactory.h>       // for DataReaderFactory
-#include <inviwo/core/network/processornetwork.h>   // for ProcessorNetwork
-#include <inviwo/core/ports/layerport.h>            // for MeshOutport
-#include <inviwo/core/ports/outport.h>              // for Outport
-#include <inviwo/core/processors/processor.h>       // for Processor
-#include <inviwo/core/processors/processorutils.h>  // for makeProcessor, GridPos
-#include <inviwo/core/rendering/datavisualizer.h>   // for DataVisualizer
-#include <inviwo/core/util/document.h>              // for Document, Document::Documen...
-#include <inviwo/core/util/fileextension.h>         // for FileExtension
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/ports/layerport.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/rendering/datavisualizer.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/fileextension.h>
 #include <modules/base/processors/layersource.h>
 #include <modules/basegl/processors/layerrenderer.h>
-#include <modules/basegl/processors/background.h>  // for Background
-#include <modules/opengl/canvasprocessorgl.h>      // for CanvasProcessorGL
+#include <modules/basegl/processors/background.h>
+#include <modules/opengl/canvasprocessorgl.h>
 
 namespace inviwo {
 class Inport;

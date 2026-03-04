@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/datastructures/trackobserver.h>  // for TrackObserver
+#include <modules/animation/datastructures/trackobserver.h>
 
-#include <memory>         // for unique_ptr
-#include <unordered_map>  // for unordered_map
+#include <memory>
+#include <unordered_map>
 
-#include <QGraphicsItem>  // for QGraphicsItem
-#include <QRectF>         // for QRectF
+#include <QGraphicsItem>
+#include <QRectF>
 
 class QPainter;
 class QRectF;

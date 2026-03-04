@@ -29,34 +29,34 @@
 
 #include <inviwo/dataframeqt/processors/dataframetable.h>
 
-#include <inviwo/core/io/datawriterutil.h>                 // for saveData
-#include <inviwo/core/metadata/processorwidgetmetadata.h>  // for ProcessorWidgetMet...
-#include <inviwo/core/network/networklock.h>               // for NetworkLock
+#include <inviwo/core/io/datawriterutil.h>
+#include <inviwo/core/metadata/processorwidgetmetadata.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/processors/processor.h>                          // for Processor
-#include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
-#include <inviwo/core/processors/processortags.h>                      // for Tags, Tag, Tags::CPU
-#include <inviwo/core/processors/processorwidget.h>                    // for ProcessorWidget
-#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
-#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
-#include <inviwo/core/properties/ordinalproperty.h>                    // for IntSize2Property
-#include <inviwo/core/properties/property.h>                           // for Property, Property...
-#include <inviwo/core/properties/propertysemantics.h>                  // for PropertySemantics
-#include <inviwo/core/properties/valuewrapper.h>                       // for PropertySerializat...
-#include <inviwo/core/util/exception.h>                                // for Exception
-#include <inviwo/core/util/sourcecontext.h>                            // for SourceContext
-#include <inviwo/core/util/statecoordinator.h>                         // for StateCoordinator
-#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
-#include <inviwo/dataframeqt/dataframetableprocessorwidget.h>          // for DataFrameTableProc...
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/statecoordinator.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <functional>  // for __base
-#include <limits>      // for numeric_limits
-#include <map>         // for map
-#include <utility>     // for move
+#include <functional>
+#include <limits>
+#include <map>
+#include <utility>
 
-#include <glm/vec2.hpp>  // for operator!=
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 struct FileExtension;

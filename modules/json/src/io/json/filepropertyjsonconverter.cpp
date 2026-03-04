@@ -29,12 +29,12 @@
 
 #include <modules/json/io/json/filepropertyjsonconverter.h>
 
-#include <inviwo/core/properties/fileproperty.h>  // for FileProperty
-#include <inviwo/core/util/filedialogstate.h>     // for AcceptMode, FileMode
-#include <inviwo/core/util/fileextension.h>       // for FileExtension
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/fileextension.h>
 
-#include <stdexcept>  // for out_of_range
-#include <string>     // for string, basic_string
+#include <stdexcept>
+#include <string>
 
 namespace inviwo {
 

@@ -29,33 +29,33 @@
 
 #include <modules/base/processors/imagedistancetransform.h>
 
-#include <inviwo/core/datastructures/image/image.h>                  // for Image
-#include <inviwo/core/datastructures/image/layer.h>                  // for Layer
-#include <inviwo/core/datastructures/image/layerram.h>               // for LayerRAMPrecision
-#include <inviwo/core/ports/imageport.h>                             // for ImageOutport, ImageI...
-#include <inviwo/core/processors/poolprocessor.h>                    // for Progress, PoolProcessor
-#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                   // for CodeState, CodeState...
-#include <inviwo/core/processors/processortags.h>                    // for Tags, Tags::CPU
-#include <inviwo/core/properties/boolproperty.h>                     // for BoolProperty
-#include <inviwo/core/properties/ordinalproperty.h>                  // for IntProperty, IntSize...
-#include <inviwo/core/util/formats.h>                                // for DataFormat, DataVec4...
-#include <inviwo/core/util/glmvec.h>                                 // for size2_t, size3_t
-#include <modules/base/algorithm/image/layerramdistancetransform.h>  // for layerDistanceTransform
-#include <modules/base/datastructures/imagereusecache.h>             // for ImageReuseCache
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/poolprocessor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/algorithm/image/layerramdistancetransform.h>
+#include <modules/base/datastructures/imagereusecache.h>
 #include <modules/base/algorithm/dataminmax.h>
 
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr, shared_p...
-#include <ostream>      // for operator<<
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_extent_t
+#include <functional>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <type_traits>
 
-#include <glm/common.hpp>              // for max
-#include <glm/gtx/component_wise.hpp>  // for compMax, compMul
-#include <glm/mat2x2.hpp>              // for operator*
-#include <glm/vec2.hpp>                // for operator/, vec, oper...
+#include <glm/common.hpp>
+#include <glm/gtx/component_wise.hpp>
+#include <glm/mat2x2.hpp>
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 

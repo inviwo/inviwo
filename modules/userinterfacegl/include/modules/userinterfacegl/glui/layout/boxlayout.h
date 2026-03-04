@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>                     // for ivec2, size2_t
-#include <modules/userinterfacegl/glui/layout/layout.h>  // for Layout
+#include <inviwo/core/util/glmvec.h>
+#include <modules/userinterfacegl/glui/layout/layout.h>
 
-#include <functional>  // for reference_wrapper
-#include <vector>      // for vector
+#include <functional>
+#include <vector>
 
 namespace inviwo {
 

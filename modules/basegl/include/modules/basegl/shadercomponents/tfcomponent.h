@@ -30,24 +30,24 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
-#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
-#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
-#include <modules/opengl/shader/shader.h>                     // for Shader
-#include <modules/opengl/shader/shaderobject.h>               // for ShaderObject
-#include <modules/opengl/texture/textureunit.h>               // for TextureUnit, TextureUnitCon...
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/image/layergl.h>                     // IWYU pragma: keep
 #include <modules/opengl/texture/textureutils.h>
 
-#include <algorithm>  // for max
+#include <algorithm>
 
-#include <cstddef>      // for size_t
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <cstddef>
+#include <string>
+#include <string_view>
+#include <vector>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
 namespace inviwo {
 

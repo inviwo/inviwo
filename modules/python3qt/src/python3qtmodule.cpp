@@ -28,54 +28,54 @@
  *
  *********************************************************************************/
 
-#include <modules/python3qt/python3qtmodule.h>  // for Python3QtModule
+#include <modules/python3qt/python3qtmodule.h>
 
 // Note: Need to put any python includes first since qt defines some "slots" macro
 // which python also uses from some structs
-#include <pybind11/pybind11.h>  // for class_, module_, init
+#include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/functional.h>
 
 #include <inviwo/core/common/inviwoapplication.h>      // IWYU pragma: keep
-#include <inviwo/core/common/inviwomodule.h>           // for InviwoModule
-#include <inviwo/core/properties/fileproperty.h>       // for FileProperty
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics
-#include <inviwo/core/properties/stringproperty.h>     // for StringProperty
-#include <inviwo/core/util/exception.h>                // for Exception, Exceptio...
-#include <inviwo/core/util/glmvec.h>                   // for ivec2
-#include <inviwo/core/util/settings/settings.h>        // for Settings
-#include <inviwo/core/util/sourcecontext.h>            // for SourceContext
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/settings/settings.h>
+#include <inviwo/core/util/sourcecontext.h>
 #include <inviwo/core/network/processornetwork.h>
 
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
-#include <modules/python3qt/properties/pythonfilepropertywidgetqt.h>  // for PythonFilePropertyW...
-#include <modules/python3qt/properties/pythonpropertywidgetqt.h>      // for PythonPropertyWidgetQt
-#include <modules/python3qt/pythonmenu.h>                             // for PythonMenu
-#include <modules/python3qt/pythonsyntaxhighlight.h>                  // for PythonSyntaxHighlight
+#include <modules/python3qt/properties/pythonfilepropertywidgetqt.h>
+#include <modules/python3qt/properties/pythonpropertywidgetqt.h>
+#include <modules/python3qt/pythonmenu.h>
+#include <modules/python3qt/pythonsyntaxhighlight.h>
 
-#include <modules/qtwidgets/inviwoqtutils.h>                          // for toGLM, getApplicati...
-#include <modules/qtwidgets/propertylistwidget.h>                     // for PropertyListWidget
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/propertylistwidget.h>
 
 #include <inviwo/qt/applicationbase/qtapptools.h>
 
-#include <atomic>       // for atomic
-#include <exception>    // for exception
-#include <memory>       // for make_unique, unique...
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <atomic>
+#include <exception>
+#include <memory>
+#include <string>
+#include <string_view>
 
-#include <QByteArray>        // for QByteArray
-#include <QCoreApplication>  // for QCoreApplication
-#include <QFlags>            // for QFlags
-#include <QInputDialog>      // for QInputDialog
-#include <QLineEdit>         // for QLineEdit, QLineEdi...
-#include <QMainWindow>       // for QMainWindow
-#include <QString>           // for QString
-#include <Qt>                // for MSWindowsFixedSizeD...
+#include <QByteArray>
+#include <QCoreApplication>
+#include <QFlags>
+#include <QInputDialog>
+#include <QLineEdit>
+#include <QMainWindow>
+#include <QString>
+#include <Qt>
 #include <QTimer>
-#include <glm/vec2.hpp>  // for vec<>::(anonymous)
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 

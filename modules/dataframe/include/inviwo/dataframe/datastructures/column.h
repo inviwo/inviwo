@@ -29,43 +29,43 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFR...
+#include <inviwo/dataframe/dataframemoduledefine.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, makeBuffer
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/unitsystem.h>                      // for Unit
-#include <inviwo/core/metadata/metadataowner.h>                         // for MetaDataOwner
-#include <inviwo/core/util/exception.h>                                 // for SourceContext
-#include <inviwo/core/util/fmtutils.h>                                  // for FlagFormatter
-#include <inviwo/core/util/glmconvert.h>                                // for glm_convert
-#include <inviwo/core/util/glmvec.h>                                    // for dvec2
-#include <inviwo/core/util/iterrange.h>                                 // for as_range, iter_range
-#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
-#include <inviwo/core/util/transformiterator.h>                         // for TransformIterator
-#include <modules/base/algorithm/algorithmoptions.h>                    // for IgnoreSpecialValues
-#include <modules/base/algorithm/dataminmax.h>                          // for bufferMinMax
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/metadata/metadataowner.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/fmtutils.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/iterrange.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/transformiterator.h>
+#include <modules/base/algorithm/algorithmoptions.h>
+#include <modules/base/algorithm/dataminmax.h>
 
-#include <algorithm>      // for max_element, min_...
-#include <cstddef>        // for size_t
-#include <cstdint>        // for uint32_t
-#include <functional>     // for less
-#include <limits>         // for numeric_limits
-#include <map>            // for map
-#include <memory>         // for shared_ptr, make_...
-#include <optional>       // for optional, nullopt
-#include <string>         // for string, char_traits
-#include <string_view>    // for string_view
-#include <type_traits>    // for enable_if, is_flo...
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for declval, move
-#include <vector>         // for vector, vector<>:...
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <limits>
+#include <map>
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 #include <span>
 
-#include <fmt/core.h>            // for format, formatter
-#include <glm/gtc/type_ptr.hpp>  // for value_ptr
+#include <fmt/core.h>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace inviwo {
 

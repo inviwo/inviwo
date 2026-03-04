@@ -29,10 +29,10 @@
 
 #include <modules/python3qt/properties/pythoneditordockwidget.h>
 
-#include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
-#include <inviwo/core/common/inviwoapplicationutil.h>         // for getInviwoApplication
-#include <modules/python3qt/pythonsyntaxhighlight.h>          // for setPythonSyntaxHighlight
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
+#include <modules/python3qt/pythonsyntaxhighlight.h>
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 
 namespace inviwo {
 class Property;

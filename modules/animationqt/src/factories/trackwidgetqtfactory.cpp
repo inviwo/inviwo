@@ -29,7 +29,7 @@
 
 #include <modules/animationqt/factories/trackwidgetqtfactory.h>
 
-#include <utility>  // for pair
+#include <utility>
 
 namespace inviwo {
 

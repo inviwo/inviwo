@@ -29,63 +29,63 @@
 
 #include <modules/animationqt/animationeditordockwidgetqt.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
-#include <inviwo/core/network/workspacemanager.h>                    // for WorkspaceManager
-#include <inviwo/core/properties/propertywidgetfactory.h>            // for PropertyWidgetFactory
-#include <inviwo/core/util/filedialogstate.h>                        // for FileMode, FileMode::...
-#include <inviwo/core/util/filesystem.h>                             // for cleanupPath, fileExists
-#include <inviwo/core/util/logcentral.h>                             // for LogCentral
-#include <inviwo/core/util/pathtype.h>                               // for PathType, PathType::...
-#include <inviwo/core/util/raiiutils.h>                              // for KeepTrueWhileInScope
-#include <modules/animation/animationcontroller.h>                   // for AnimationController
-#include <modules/animation/animationcontrollerobserver.h>           // for AnimationControllerO...
-#include <modules/animation/animationmanager.h>                      // for AnimationManager
-#include <modules/animation/datastructures/animation.h>              // for Animation
-#include <modules/animation/datastructures/animationstate.h>         // for AnimationState, Anim...
-#include <modules/animation/datastructures/animationtime.h>          // for Seconds
-#include <modules/animation/datastructures/controltrack.h>           // for ControlTrack
-#include <modules/animation/mainanimation.h>                         // for MainAnimation
-#include <modules/animation/workspaceanimations.h>                   // for WorkspaceAnimations
-#include <modules/animationqt/animationeditorqt.h>                   // for AnimationEditorQt
-#include <modules/animationqt/animationlabelviewqt.h>                // for AnimationLabelViewQt
-#include <modules/animationqt/animationviewqt.h>                     // for AnimationViewQt
-#include <modules/animationqt/sequenceeditor/sequenceeditorpanel.h>  // for SequenceEditorPanel
-#include <modules/animationqt/workspaceanimationsmodel.h>            // for AnimationsModel
-#include <modules/qtwidgets/inviwodockwidget.h>                      // for InviwoDockWidget
-#include <modules/qtwidgets/inviwofiledialog.h>                      // for InviwoFileDialog
-#include <modules/qtwidgets/inviwoqtutils.h>                         // for fromQString, toQString
-#include <modules/qtwidgets/properties/propertywidgetqt.h>           // for PropertyWidgetQt
-#include <modules/qtwidgets/textlabeloverlay.h>                      // for TextLabelOverlay
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/pathtype.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <modules/animation/animationcontroller.h>
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/animationmanager.h>
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/controltrack.h>
+#include <modules/animation/mainanimation.h>
+#include <modules/animation/workspaceanimations.h>
+#include <modules/animationqt/animationeditorqt.h>
+#include <modules/animationqt/animationlabelviewqt.h>
+#include <modules/animationqt/animationviewqt.h>
+#include <modules/animationqt/sequenceeditor/sequenceeditorpanel.h>
+#include <modules/animationqt/workspaceanimationsmodel.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/textlabeloverlay.h>
 
-#include <algorithm>  // for lower_bound, upper_b...
-#include <chrono>     // for duration
-#include <cmath>      // for round
-#include <exception>  // for exception
-#include <fstream>    // for operator<<, basic_if...
-#include <iterator>   // for distance, prev
-#include <utility>    // for move
-#include <vector>     // for vector
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <exception>
+#include <fstream>
+#include <iterator>
+#include <utility>
+#include <vector>
 
-#include <QAction>         // for QAction
-#include <QComboBox>       // for QComboBox, QComboBox...
-#include <QFrame>          // for QFrame, QFrame::NoFrame
-#include <QGridLayout>     // for QGridLayout
-#include <QIcon>           // for QIcon, QIcon::Normal
-#include <QLayout>         // for QLayout
-#include <QList>           // for QList
-#include <QMainWindow>     // for QMainWindow
-#include <QScrollBar>      // for QScrollBar
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <QSize>           // for QSize
-#include <QSizeF>          // for QSizeF
-#include <QSizePolicy>     // for QSizePolicy, QSizePo...
-#include <QSplitter>       // for QSplitter
-#include <QString>         // for QString
-#include <QStringList>     // for QStringList
-#include <QToolBar>        // for QToolBar
-#include <Qt>              // for operator|, WidgetWit...
-#include <QtGlobal>        // for QNonConstOverload<>::of
-#include <fmt/core.h>      // for format
+#include <QAction>
+#include <QComboBox>
+#include <QFrame>
+#include <QGridLayout>
+#include <QIcon>
+#include <QLayout>
+#include <QList>
+#include <QMainWindow>
+#include <QScrollBar>
+#include <QSignalBlocker>
+#include <QSize>
+#include <QSizeF>
+#include <QSizePolicy>
+#include <QSplitter>
+#include <QString>
+#include <QStringList>
+#include <QToolBar>
+#include <Qt>
+#include <QtGlobal>
+#include <fmt/core.h>
 #include <fmt/std.h>
 
 class QWidget;

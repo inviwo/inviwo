@@ -30,13 +30,13 @@
 #include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
 #include <modules/animation/datastructures/keyframe.h>          // IWYU pragma: keep
-#include <modules/animation/datastructures/keyframesequence.h>  // for KeyframeSequence
+#include <modules/animation/datastructures/keyframesequence.h>
 
-#include <algorithm>  // for stable_sort
-#include <utility>    // for pair
-#include <vector>     // for vector
+#include <algorithm>
+#include <utility>
+#include <vector>
 
-#include <QVBoxLayout>  // for QVBoxLayout
+#include <QVBoxLayout>
 
 namespace inviwo {
 

@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>           // for ImageOutport
-#include <inviwo/core/processors/processor.h>      // for Processor
-#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
 
 namespace inviwo {
 

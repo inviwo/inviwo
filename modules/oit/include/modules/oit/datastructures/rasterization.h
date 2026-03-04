@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/oit/oitmoduledefine.h>  // for IVW_MODULE_MESHRENDERIN...
+#include <modules/oit/oitmoduledefine.h>
 
-#include <inviwo/core/datastructures/datatraits.h>  // for DataTraits
-#include <inviwo/core/util/document.h>              // for Document
-#include <inviwo/core/util/glmmat.h>                // for mat4
-#include <inviwo/core/util/glmvec.h>                // for uvec3, ivec2
+#include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/core/properties/isotfproperty.h>
@@ -42,8 +42,8 @@
 #include <modules/oit/rasterizeevent.h>
 #include <modules/oit/raycastingstate.h>
 
-#include <functional>  // for function
-#include <string>      // for string
+#include <functional>
+#include <string>
 #include <optional>
 
 namespace inviwo {

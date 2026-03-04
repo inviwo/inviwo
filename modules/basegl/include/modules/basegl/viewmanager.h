@@ -29,18 +29,18 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>  // for ivec2, ivec4
+#include <inviwo/core/util/glmvec.h>
 
-#include <cstddef>        // for size_t
-#include <functional>     // for function
-#include <unordered_map>  // for unordered_map
-#include <utility>        // for pair
-#include <vector>         // for vector
+#include <cstddef>
+#include <functional>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
-#include <glm/vec2.hpp>  // for vec
-#include <glm/vec4.hpp>  // for vec<>::(anonymous)
+#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 #include <glm/vector_relational.hpp>
 
 namespace inviwo {

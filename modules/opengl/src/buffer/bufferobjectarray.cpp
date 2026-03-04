@@ -29,18 +29,18 @@
 
 #include <modules/opengl/buffer/bufferobjectarray.h>
 
-#include <inviwo/core/util/assertion.h>          // for assertion, IVW_ASSERT, assertions
-#include <inviwo/core/util/canvas.h>             // for Canvas, Canvas::ContextID
-#include <inviwo/core/util/exception.h>          // for RangeException, Exception
-#include <inviwo/core/util/rendercontext.h>      // for RenderContext
-#include <inviwo/core/util/sourcecontext.h>      // for SourceLocation
-#include <modules/opengl/buffer/bufferobject.h>  // for BufferObject, BufferObject::BindingType
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <modules/opengl/buffer/bufferobject.h>
 
-#include <chrono>       // for literals
-#include <string>       // for basic_string
-#include <string_view>  // for operator""sv, string_view
+#include <chrono>
+#include <string>
+#include <string_view>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
 namespace inviwo {
 

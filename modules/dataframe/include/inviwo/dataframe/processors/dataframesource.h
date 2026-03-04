@@ -29,18 +29,18 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME...
+#include <inviwo/dataframe/dataframemoduledefine.h>
 
-#include <inviwo/core/io/datareader.h>                               // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>                      // for DataReaderException
-#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
-#include <inviwo/dataframe/datastructures/dataframe.h>               // for DataFrameOutport
-#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>  // for ColumnMetaDataListPr...
-#include <modules/base/processors/datasource.h>                      // for DataSource
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
+#include <modules/base/processors/datasource.h>
 
-#include <map>     // for map, operator!=
-#include <memory>  // for shared_ptr
-#include <string>  // for string
+#include <map>
+#include <memory>
+#include <string>
 
 namespace inviwo {
 class InviwoApplication;

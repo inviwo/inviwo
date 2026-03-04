@@ -30,49 +30,49 @@
 #include <modules/oit/processors/linerasterizer.h>
 
 #include <inviwo/core/algorithm/boundingbox.h>
-#include <inviwo/core/datastructures/geometry/geometrytype.h>          // for BufferType
-#include <inviwo/core/datastructures/geometry/mesh.h>                  // for Mesh::MeshInfo
-#include <inviwo/core/ports/meshport.h>                                // for MeshFlatMul...
-#include <inviwo/core/processors/processor.h>                          // for Processor
-#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                     // for CodeState
-#include <inviwo/core/processors/processortags.h>                      // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
-#include <inviwo/core/properties/invalidationlevel.h>                  // for Invalidatio...
-#include <inviwo/core/properties/listproperty.h>                       // for ListProperty
-#include <inviwo/core/properties/ordinalproperty.h>                    // for FloatProperty
-#include <inviwo/core/properties/propertysemantics.h>                  // for PropertySem...
-#include <inviwo/core/util/document.h>                                 // for Document
-#include <inviwo/core/util/glmmat.h>                                   // for mat4
-#include <inviwo/core/util/glmutils.h>                                 // for Matrix
-#include <inviwo/core/util/glmvec.h>                                   // for vec4, vec2
-#include <inviwo/core/util/stringconversion.h>                         // for toString
-#include <modules/base/properties/transformlistproperty.h>             // for TransformLi...
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>  // for StipplingSe...
-#include <modules/basegl/properties/linesettingsproperty.h>            // for LineSetting...
-#include <modules/basegl/properties/stipplingproperty.h>               // for addShaderDe...
-#include <modules/oit/datastructures/transformedrasterization.h>       // for Transformed...
-#include <modules/oit/ports/rasterizationport.h>                       // for Rasterizati...
-#include <modules/oit/rendering/fragmentlistrenderer.h>                // for FragmentLis...
-#include <modules/opengl/geometry/meshgl.h>                            // for MeshGL
-#include <modules/opengl/inviwoopengl.h>                               // for GL_LEQUAL
-#include <modules/opengl/openglutils.h>                                // for BlendModeState
-#include <modules/opengl/rendering/meshdrawergl.h>                     // for MeshDrawerG...
-#include <modules/opengl/shader/shader.h>                              // for Shader
-#include <modules/opengl/shader/shaderobject.h>                        // for ShaderObject
-#include <modules/opengl/shader/shadertype.h>                          // for ShaderType
-#include <modules/opengl/shader/shaderutils.h>                         // for setShaderUn...
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/base/properties/transformlistproperty.h>
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
+#include <modules/basegl/properties/linesettingsproperty.h>
+#include <modules/basegl/properties/stipplingproperty.h>
+#include <modules/oit/datastructures/transformedrasterization.h>
+#include <modules/oit/ports/rasterizationport.h>
+#include <modules/oit/rendering/fragmentlistrenderer.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#include <cstddef>      // for size_t
-#include <map>          // for __map_iterator
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_exte...
-#include <utility>      // for pair
+#include <cstddef>
+#include <map>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <utility>
 
-#include <fmt/core.h>      // for format
-#include <glm/mat4x4.hpp>  // for operator*
-#include <glm/vec4.hpp>    // for operator*
+#include <fmt/core.h>
+#include <glm/mat4x4.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 class Rasterization;

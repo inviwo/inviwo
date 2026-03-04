@@ -29,19 +29,19 @@
 
 #include <modules/webbrowser/properties/propertywidgetcef.h>
 
-#include <inviwo/core/properties/property.h>           // for Property
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics
-#include <inviwo/core/properties/propertywidget.h>     // for PropertyWidget
-#include <inviwo/core/util/logcentral.h>               // for LogCentral, LogError
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/util/logcentral.h>
 #include <modules/json/json.h>
 
-#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
-#include <include/cef_base.h>                // for CefRefPtr, CefString
-#include <include/cef_frame.h>               // for CefFrame
+#include <include/base/cef_scoped_refptr.h>
+#include <include/cef_base.h>
+#include <include/cef_frame.h>
 
-#include <stdexcept>  // for out_of_range
-#include <utility>    // for move
-#include <vector>     // for vector
+#include <stdexcept>
+#include <utility>
+#include <vector>
 
 class CefBrowser;
 

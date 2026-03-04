@@ -29,20 +29,20 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
-#include <inviwo/core/datastructures/datatraits.h>                         // for DataT...
-#include <inviwo/core/ports/datainport.h>                                  // for DataI...
-#include <inviwo/core/ports/dataoutport.h>                                 // for DataO...
-#include <inviwo/core/util/document.h>                                     // for Document
-#include <inviwo/core/util/glmmat.h>                                       // for mat4
-#include <inviwo/core/util/glmvec.h>                                       // for uvec3
-#include <modules/vectorfieldvisualization/datastructures/integralline.h>  // for Integ...
+#include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>
 
-#include <cstddef>  // for size_t
-#include <sstream>  // for opera...
-#include <string>   // for char_...
-#include <vector>   // for vector
+#include <cstddef>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace inviwo {
 

@@ -29,7 +29,7 @@
 
 #include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
 
-#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>  // for Integral...
+#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 
 namespace inviwo {
 

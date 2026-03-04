@@ -28,29 +28,29 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
-#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
-#include <inviwo/core/properties/isotfproperty.h>             // for IsoTFProperty
-#include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
-#include <inviwo/core/properties/property.h>                  // for Property
-#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
-#include <inviwo/core/util/stdextensions.h>                   // for make_array
-#include <inviwo/core/util/stringconversion.h>                // for StrBuffer
-#include <inviwo/core/util/zip.h>                             // for enumerate
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
-#include <modules/opengl/shader/shader.h>                     // for Shader
-#include <modules/opengl/shader/shaderobject.h>               // for ShaderObject
-#include <modules/opengl/texture/textureunit.h>               // for TextureUnit, TextureUnitCon...
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/image/layergl.h>                     // IWYU pragma: keep
 
-#include <algorithm>    // for max
-#include <array>        // for array
-#include <cstddef>      // for size_t
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <string>
+#include <string_view>
+#include <vector>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
 namespace inviwo {
 

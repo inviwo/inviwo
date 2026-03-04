@@ -29,33 +29,33 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for CartesianCoordinateAxis
-#include <inviwo/core/interaction/cameratrackball.h>           // for CameraTrackball
-#include <inviwo/core/interaction/pickingmapper.h>             // for PickingMapper
-#include <inviwo/core/ports/imageport.h>                       // for ImageInport, ImageOutport
-#include <inviwo/core/ports/volumeport.h>                      // for VolumeInport
-#include <inviwo/core/processors/processor.h>                  // for Processor
-#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
-#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
-#include <inviwo/core/properties/minmaxproperty.h>             // for IntMinMaxProperty
-#include <inviwo/core/properties/ordinalproperty.h>            // for FloatProperty, FloatVec...
-#include <inviwo/core/properties/simplelightingproperty.h>     // for SimpleLightingProperty
-#include <inviwo/core/util/glmmat.h>                           // for mat4, mat3
-#include <inviwo/core/util/glmvec.h>                           // for vec3, ivec2
-#include <modules/opengl/shader/shader.h>                      // for Shader
-#include <modules/basegl/properties/linesettingsproperty.h>    // for LineSettingsProperty
-#include <modules/basegl/rendering/linerenderer.h>             // for LineRenderer
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/properties/linesettingsproperty.h>
+#include <modules/basegl/rendering/linerenderer.h>
 
-#include <array>    // for array
-#include <cstddef>  // for size_t
-#include <memory>   // for shared_ptr
+#include <array>
+#include <cstddef>
+#include <memory>
 
-#include <glm/mat4x4.hpp>  // for mat
-#include <glm/vec3.hpp>    // for vec
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

@@ -29,7 +29,7 @@
 
 #include <modules/base/datastructures/imagereusecache.h>
 
-#include <algorithm>  // for find_if
+#include <algorithm>
 
 namespace inviwo {
 class Image;

@@ -31,9 +31,9 @@
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/io/datawriter.h>
 
-#include <iosfwd>       // for istream
-#include <memory>       // for shared_ptr
-#include <string_view>  // for string_view
+#include <iosfwd>
+#include <memory>
+#include <string_view>
 
 namespace inviwo {
 class DataFrame;

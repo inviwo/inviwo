@@ -28,24 +28,24 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFR...
+#include <inviwo/dataframe/dataframemoduledefine.h>
 
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/util/glmvec.h>                                    // for ivec2
-#include <inviwo/core/util/zip.h>                                       // for enumerate, zipIte...
-#include <inviwo/dataframe/datastructures/column.h>                     // for CategoricalColumn
-#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/dataframe/datastructures/column.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/util/filters.h>                              // IWYU pragma: keep
 
-#include <cstddef>        // for size_t
-#include <cstdint>        // for uint32_t
-#include <memory>         // for shared_ptr, share...
-#include <string>         // for string
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
-#include <vector>         // for vector
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <unordered_set>
+#include <vector>
 
 namespace inviwo {
 class BufferBase;

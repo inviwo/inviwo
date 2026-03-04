@@ -28,18 +28,18 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
+#include <modules/plotting/plottingmoduledefine.h>
 
-#include <inviwo/core/interaction/interactionhandler.h>  // for InteractionHandler
-#include <inviwo/core/util/dispatcher.h>                 // for Dispatcher
-#include <inviwo/core/util/glmvec.h>                     // for dvec2, size2_t
+#include <inviwo/core/interaction/interactionhandler.h>
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <array>       // for array
-#include <functional>  // for function
-#include <memory>      // for shared_ptr
-#include <optional>    // for optional
-#include <string>      // for string
-#include <vector>      // for vector
+#include <array>
+#include <functional>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
 namespace inviwo {
 class BufferBase;

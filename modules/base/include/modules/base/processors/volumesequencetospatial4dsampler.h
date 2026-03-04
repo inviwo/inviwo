@@ -29,18 +29,18 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/ports/dataoutport.h>         // for DataOutport
-#include <inviwo/core/ports/volumeport.h>          // for VolumeSequenceInport
-#include <inviwo/core/processors/processor.h>      // for Processor
-#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>   // for BoolProperty
-#include <inviwo/core/util/spatial4dsampler.h>     // for Spatial4DSampler
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/util/spatial4dsampler.h>
 
-#include <string>  // for operator+, string
+#include <string>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
 namespace inviwo {
 

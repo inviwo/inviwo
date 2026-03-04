@@ -27,36 +27,36 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/pythoninterpreter.h>  // for PythonInterpreter
+#include <modules/python3/pythoninterpreter.h>
 
-#include <pybind11/cast.h>           // for object_api::operator()
-#include <pybind11/detail/common.h>  // for pybind11
-#include <pybind11/embed.h>          // for finalize_interpreter, initialize_interpreter
-#include <pybind11/eval.h>           // for exec
-#include <pybind11/pybind11.h>       // for globals, module_, module
-#include <pybind11/pytypes.h>        // for error_already_set, dict, item_accessor
+#include <pybind11/cast.h>
+#include <pybind11/detail/common.h>
+#include <pybind11/embed.h>
+#include <pybind11/eval.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/pytypes.h>
 
 #ifdef WIN32
 // For conda workaround
 #include <cstdlib>
 #endif
 
-#include <inviwo/core/util/exception.h>         // for ModuleInitException
-#include <inviwo/core/util/filesystem.h>        // for getExecutablePath, getFileDirectory
-#include <inviwo/core/util/logcentral.h>        // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>     // for SourceContext
-#include <inviwo/core/util/stringconversion.h>  // for toString
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwocommondefines.h>
-#include <modules/python3/pyutils.h>  // for addModulePath
+#include <modules/python3/pyutils.h>
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <array>        // for array
-#include <exception>    // for exception
-#include <string>       // for operator+, string, basic_string
-#include <string_view>  // for string_view
+#include <array>
+#include <exception>
+#include <string>
+#include <string_view>
 #include <ranges>
 #include <fmt/format.h>
 

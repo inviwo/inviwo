@@ -29,15 +29,15 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>       // for ivec2, vec2
-#include <modules/opengl/shader/shader.h>  // for Shader, Shader::Build
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <functional>   // for function
-#include <memory>       // for shared_ptr
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <functional>
+#include <memory>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class Image;

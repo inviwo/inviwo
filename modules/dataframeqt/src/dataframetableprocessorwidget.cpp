@@ -29,17 +29,17 @@
 
 #include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
 
-#include <inviwo/dataframeqt/dataframetableview.h>           // for DataFrameTableView
-#include <modules/qtwidgets/inviwoqtutils.h>                 // for getApplicationMainWindow
-#include <modules/qtwidgets/processors/processorwidgetqt.h>  // for ProcessorWidgetQt
+#include <inviwo/dataframeqt/dataframetableview.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/processors/processorwidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QLayout>      // for QLayout
-#include <QMainWindow>  // for QMainWindow
-#include <QVBoxLayout>  // for QVBoxLayout
-#include <QWidget>      // for QWidget
-#include <Qt>           // for WA_OpaquePaintEvent
+#include <QLayout>
+#include <QMainWindow>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <Qt>
 
 #include <warn/pop>
 

@@ -29,29 +29,29 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL...
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/datastructures/camera/camera.h>                   // for mat4
-#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for TypedMesh, Positi...
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/ports/imageport.h>                                // for ImageOutport
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/properties/boolcompositeproperty.h>               // for BoolCompositeProp...
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
-#include <inviwo/core/properties/eventproperty.h>                       // for EventProperty
-#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyInt
-#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
-#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
-#include <inviwo/core/util/glmvec.h>                                    // for vec2, size3_t, vec3
-#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <memory>         // for unique_ptr
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
+#include <memory>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace inviwo {
 class Deserializer;

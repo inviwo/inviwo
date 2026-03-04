@@ -28,18 +28,18 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
+#include <inviwo/dataframe/dataframemoduledefine.h>
 
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
-#include <inviwo/core/properties/listproperty.h>       // for ListPropertyUIFlag, ListPropertyUI...
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
 
-#include <cstddef>      // for size_t
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <cstddef>
+#include <string>
+#include <string_view>
 
-#include <flags/allow_flags.h>  // for ALLOW_FLAGS_FOR_ENUM
-#include <flags/flags.h>        // for operator|, any, flags
+#include <flags/allow_flags.h>
+#include <flags/flags.h>
 
 namespace inviwo {
 

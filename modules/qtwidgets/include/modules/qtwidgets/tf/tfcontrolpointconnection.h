@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>
 
-#include <QGraphicsItem>  // for QGraphicsItem, QGraphicsItem::UserType
-#include <QPointF>        // for QPointF
-#include <QRectF>         // for QRectF
-#include <QPainterPath>   // for QPainterPath
+#include <QGraphicsItem>
+#include <QPointF>
+#include <QRectF>
+#include <QPainterPath>
 
 class QPainter;
 class QPointF;

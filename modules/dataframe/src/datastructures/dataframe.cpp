@@ -29,24 +29,24 @@
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/unitsystem.h>                      // for Unit
-#include <inviwo/core/metadata/metadataowner.h>                         // for MetaDataOwner
-#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
-#include <inviwo/core/util/glmvec.h>                                    // for dvec2
-#include <inviwo/core/util/stdextensions.h>                             // for find_if_or_null
-#include <inviwo/core/util/zip.h>                                       // for make_sequence
-#include <inviwo/dataframe/datastructures/column.h>                     // for Column, Categoric...
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/metadata/metadataowner.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/dataframe/datastructures/column.h>
 
-#include <algorithm>      // for max, remove_if
-#include <iterator>       // for begin, end
-#include <numeric>        // for iota
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for move
+#include <algorithm>
+#include <iterator>
+#include <numeric>
+#include <unordered_set>
+#include <utility>
 
 namespace inviwo {
 

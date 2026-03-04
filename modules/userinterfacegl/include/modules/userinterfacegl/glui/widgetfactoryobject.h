@@ -28,12 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/properties/property.h>  // for PropertyTraits
+#include <inviwo/core/properties/property.h>
 
-#include <memory>  // for unique_ptr, make_unique
-#include <string>  // for string
+#include <memory>
+#include <string>
 
 namespace inviwo {
 class Processor;

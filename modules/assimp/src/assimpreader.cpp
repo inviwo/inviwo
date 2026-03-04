@@ -29,48 +29,48 @@
 
 #include <modules/assimp/assimpreader.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, IndexBuffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for Vec3BufferRAM
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, DrawType
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::Buffe...
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/io/datareader.h>                                  // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
-#include <inviwo/core/util/fileextension.h>                             // for FileExtension
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4
-#include <inviwo/core/util/logcentral.h>                                // for LogVerbosity, Log...
-#include <inviwo/core/util/stringconversion.h>                          // for splitStringView
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 
-#include <assimp/DefaultLogger.hpp>  // for DefaultLogger
-#include <assimp/Importer.hpp>       // for Importer
-#include <assimp/LogStream.hpp>      // for LogStream
-#include <assimp/Logger.hpp>         // for Logger, Logger::E...
-#include <assimp/color4.h>           // for aiColor4D
-#include <assimp/importerdesc.h>     // for aiImporterDesc
-#include <assimp/material.h>         // for aiGetMaterialColor
-#include <assimp/mesh.h>             // for aiMesh, aiFace
-#include <assimp/postprocess.h>      // for aiProcess_FindInv...
-#include <assimp/scene.h>            // for aiScene
-#include <assimp/types.h>            // for AI_SUCCESS, aiString
-#include <assimp/vector3.h>          // for aiVector3D
-#include <glm/vec4.hpp>              // for operator*, operator+
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/LogStream.hpp>
+#include <assimp/Logger.hpp>
+#include <assimp/color4.h>
+#include <assimp/importerdesc.h>
+#include <assimp/material.h>
+#include <assimp/mesh.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/types.h>
+#include <assimp/vector3.h>
+#include <glm/vec4.hpp>
 
 #include <warn/pop>
 
-#include <algorithm>      // for max
-#include <array>          // for array, array<>::v...
-#include <cstdint>        // for uint32_t
-#include <cstring>        // for strlen
-#include <ctime>          // for size_t, clock
-#include <string>         // for basic_string<>::v...
-#include <type_traits>    // for remove_extent_t
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
-#include <vector>         // for vector
+#include <algorithm>
+#include <array>
+#include <cstdint>
+#include <cstring>
+#include <ctime>
+#include <string>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 #include <fmt/format.h>
 #include <fmt/std.h>
 

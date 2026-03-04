@@ -29,21 +29,21 @@
 
 #include <inviwo/dataframe/datastructures/column.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/unitsystem.h>                      // for Unit
-#include <inviwo/core/util/exception.h>                                 // for Exception, RangeE...
-#include <inviwo/core/util/glmvec.h>                                    // for dvec2
-#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
-#include <inviwo/core/util/stdextensions.h>                             // for transform
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
 
-#include <sstream>        // for basic_stringbuf<>...
-#include <unordered_map>  // for unordered_map
+#include <sstream>
+#include <unordered_map>
 
-#include <glm/gtc/type_precision.hpp>  // for uint32_t
+#include <glm/gtc/type_precision.hpp>
 
 namespace inviwo {
 

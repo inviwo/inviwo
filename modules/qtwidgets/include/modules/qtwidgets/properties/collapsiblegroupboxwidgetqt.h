@@ -29,19 +29,19 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/processors/processor.h>               // for Processor, Processor::NameDis...
-#include <inviwo/core/properties/propertyownerobserver.h>   // for PropertyOwnerObserver
-#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/propertyownerobserver.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <cstddef>      // for size_t
-#include <memory>       // for unique_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
-#include <QSize>  // for QSize
+#include <QSize>
 
 class QCheckBox;
 class QGridLayout;

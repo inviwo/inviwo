@@ -29,40 +29,40 @@
 
 #include <modules/openglqt/processors/canvaswithpropertiesprocessor.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>                        // for LayerType
-#include <inviwo/core/interaction/events/event.h>                               // for Event
-#include <inviwo/core/io/datawriter.h>                                          // for DataWrite...
-#include <inviwo/core/io/datawriterutil.h>                                      // for saveData
-#include <inviwo/core/metadata/processorwidgetmetadata.h>                       // for Processor...
-#include <inviwo/core/ports/imageport.h>                                        // for ImageInport
-#include <inviwo/core/processors/processor.h>                                   // for Processor
-#include <inviwo/core/processors/processorinfo.h>                               // for Processor...
-#include <inviwo/core/processors/processorstate.h>                              // for CodeState
-#include <inviwo/core/processors/processortags.h>                               // for Tags, Tag...
-#include <inviwo/core/processors/processorwidget.h>                             // for Processor...
-#include <inviwo/core/properties/boolproperty.h>                                // for BoolProperty
-#include <inviwo/core/properties/constraintbehavior.h>                          // for Constrain...
-#include <inviwo/core/properties/invalidationlevel.h>                           // for Invalidat...
-#include <inviwo/core/properties/optionproperty.h>                              // for OptionPro...
-#include <inviwo/core/properties/ordinalproperty.h>                             // for IntSizeTP...
-#include <inviwo/core/properties/property.h>                                    // for Property
-#include <inviwo/core/properties/propertysemantics.h>                           // for PropertyS...
-#include <inviwo/core/properties/stringproperty.h>                              // for StringPro...
-#include <inviwo/core/properties/valuewrapper.h>                                // for PropertyS...
-#include <inviwo/core/util/canvas.h>                                            // for Canvas
-#include <inviwo/core/util/exception.h>                                         // for Exception
-#include <inviwo/core/util/glmvec.h>                                            // for ivec2
-#include <inviwo/core/util/sourcecontext.h>                                     // for SourceCon...
-#include <inviwo/core/util/statecoordinator.h>                                  // for StateCoor...
-#include <inviwo/core/util/staticstring.h>                                      // for operator+
-#include <modules/openglqt/processors/canvaswithpropertiesprocessorwidgetqt.h>  // for CanvasWit...
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterutil.h>
+#include <inviwo/core/metadata/processorwidgetmetadata.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/statecoordinator.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/openglqt/processors/canvaswithpropertiesprocessorwidgetqt.h>
 
-#include <map>          // for map
-#include <type_traits>  // for remove_ex...
-#include <utility>      // for move, pair
+#include <map>
+#include <type_traits>
+#include <utility>
 
-#include <QMainWindow>   // for QMainWindow
-#include <glm/vec2.hpp>  // for operator!=
+#include <QMainWindow>
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 struct FileExtension;

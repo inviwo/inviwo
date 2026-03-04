@@ -29,15 +29,15 @@
 
 #include <modules/opengl/rendering/meshdrawergl.h>
 
-#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType, DrawType
-#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh, Mesh::MeshInfo
-#include <inviwo/core/util/exception.h>                        // for RangeException, NullPointe...
-#include <modules/opengl/buffer/buffergl.h>                    // for BufferGL
-#include <modules/opengl/geometry/meshgl.h>                    // for MeshGL
-#include <modules/opengl/openglutils.h>                        // for Enable
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/util/exception.h>
+#include <modules/opengl/buffer/buffergl.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/openglutils.h>
 
-#include <string>       // for allocator, operator+, to_s...
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 

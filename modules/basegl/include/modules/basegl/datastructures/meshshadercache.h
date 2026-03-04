@@ -28,20 +28,20 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for BufferType
-#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh
-#include <modules/opengl/shader/shader.h>                      // for Shader
-#include <modules/opengl/shader/shadertype.h>                  // for ShaderType
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shadertype.h>
 
-#include <functional>  // for function
-#include <map>         // for map
-#include <memory>      // for shared_ptr
-#include <optional>    // for optional, nullopt
-#include <string>      // for string
-#include <utility>     // for pair
-#include <vector>      // for vector, operator<
+#include <functional>
+#include <map>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 class ShaderResource;

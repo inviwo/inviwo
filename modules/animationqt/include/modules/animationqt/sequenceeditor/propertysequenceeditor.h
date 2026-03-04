@@ -28,12 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIO...
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/datastructures/valuekeyframesequence.h>   // for ValueKeyframeSequen...
-#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>  // for SequenceEditorWidget
+#include <modules/animation/datastructures/valuekeyframesequence.h>
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
-#include <string>  // for string
+#include <string>
 
 class QComboBox;
 class QWidget;

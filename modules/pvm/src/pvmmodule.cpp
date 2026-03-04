@@ -29,14 +29,14 @@
 
 #include <modules/pvm/pvmmodule.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
-#include <inviwo/core/io/datareader.h>        // for DataReader
-#include <inviwo/core/io/datawriter.h>        // for DataWriter
-#include <modules/pvm/mpvmvolumereader.h>     // for MPVMVolumeReader
-#include <modules/pvm/pvmvolumereader.h>      // for PVMVolumeReader
-#include <modules/pvm/pvmvolumewriter.h>      // for PVMVolumeWriter
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datawriter.h>
+#include <modules/pvm/mpvmvolumereader.h>
+#include <modules/pvm/pvmvolumereader.h>
+#include <modules/pvm/pvmvolumewriter.h>
 
-#include <memory>  // for make_unique
+#include <memory>
 
 namespace inviwo {
 class InviwoApplication;

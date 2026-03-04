@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/io/datareader.h>             // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>    // for DataReaderException
-#include <inviwo/core/ports/meshport.h>            // for MeshOutport
-#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
-#include <modules/base/processors/datasource.h>    // for DataSource
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <modules/base/processors/datasource.h>
 
-#include <map>     // for map, operator!=
-#include <string>  // for string
+#include <map>
+#include <string>
 #include <filesystem>
 
 namespace inviwo {

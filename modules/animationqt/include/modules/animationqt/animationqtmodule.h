@@ -28,14 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>                      // for InviwoModule
-#include <modules/animationqt/animationqtsupplier.h>              // for AnimationQtSupplier
-#include <modules/animationqt/factories/sequenceeditorfactory.h>  // for SequenceEditorFactory
-#include <modules/animationqt/factories/trackwidgetqtfactory.h>   // for TrackWidgetQtFactory
+#include <inviwo/core/common/inviwomodule.h>
+#include <modules/animationqt/animationqtsupplier.h>
+#include <modules/animationqt/factories/sequenceeditorfactory.h>
+#include <modules/animationqt/factories/trackwidgetqtfactory.h>
 
-#include <memory>  // for unique_ptr
+#include <memory>
 
 class QMenu;
 

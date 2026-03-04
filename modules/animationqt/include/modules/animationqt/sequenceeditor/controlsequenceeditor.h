@@ -28,11 +28,11 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIO...
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>  // for SequenceEditorWidget
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
-#include <string>  // for string
+#include <string>
 
 class QWidget;
 

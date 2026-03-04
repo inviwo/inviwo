@@ -34,7 +34,7 @@
 #include <inviwo/core/properties/selectioncolorproperty.h>
 
 #include <modules/opengl/texture/buffertexture.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinkin...
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
 
 namespace inviwo {

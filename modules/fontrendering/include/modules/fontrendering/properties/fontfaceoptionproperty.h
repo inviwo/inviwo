@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/fontrendering/fontrenderingmoduledefine.h>  // for IVW_MODULE_FONTRENDERING_API
+#include <modules/fontrendering/fontrenderingmoduledefine.h>
 
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, Invalida...
-#include <inviwo/core/properties/optionproperty.h>     // for OptionPropertyString
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, Property...
-#include <modules/fontrendering/util/fontutils.h>      // for FontType, FontType::Default
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <modules/fontrendering/util/fontutils.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 #include <filesystem>
 
 namespace inviwo {

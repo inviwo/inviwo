@@ -29,20 +29,20 @@
 
 #include <modules/python3/pyutils.h>
 
-#include <pybind11/cast.h>           // for object_api::operator(), object::cast
-#include <pybind11/detail/common.h>  // for pybind11
-#include <pybind11/pybind11.h>       // for module_, module
-#include <pybind11/pytypes.h>        // for list, str_attr_accessor, object_api
+#include <pybind11/cast.h>
+#include <pybind11/detail/common.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/pytypes.h>
 
-#include <inviwo/core/util/exception.h>         // for Exception
-#include <inviwo/core/util/sourcecontext.h>     // for SourceContext
-#include <inviwo/core/util/stringconversion.h>  // for replaceInString
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <array>        // for array
-#include <string_view>  // for string_view
+#include <array>
+#include <string_view>
 #include <filesystem>
 
 namespace inviwo {

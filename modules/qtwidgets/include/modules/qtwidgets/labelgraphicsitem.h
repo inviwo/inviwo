@@ -29,15 +29,15 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/util/observer.h>  // for Observable, Observer
+#include <inviwo/core/util/observer.h>
 
-#include <vector>  // for vector
+#include <vector>
 
-#include <QGraphicsTextItem>  // for QGraphicsTextItem
-#include <QString>            // for QString
-#include <Qt>                 // for operator|, Alignment, AlignLeft
+#include <QGraphicsTextItem>
+#include <QString>
+#include <Qt>
 
 class QFocusEvent;
 class QGraphicsItem;

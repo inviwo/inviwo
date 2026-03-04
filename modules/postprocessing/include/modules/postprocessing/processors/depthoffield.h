@@ -29,24 +29,24 @@
 
 #pragma once
 
-#include <modules/postprocessing/postprocessingmoduledefine.h>  // for IVW_MODULE_POSTPROCESSING...
+#include <modules/postprocessing/postprocessingmoduledefine.h>
 
-#include <inviwo/core/datastructures/camera/camera.h>  // for Camera
-#include <inviwo/core/ports/imageport.h>               // for BaseImageInport, ImageOut...
-#include <inviwo/core/ports/meshport.h>                // for MeshInport
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>     // for CameraProperty
-#include <inviwo/core/properties/eventproperty.h>      // for EventProperty
-#include <inviwo/core/properties/ordinalproperty.h>    // for IntSizeTProperty, DoubleP...
-#include <inviwo/core/util/glmvec.h>                   // for vec2, size2_t, vec4
-#include <modules/opengl/shader/shader.h>              // for Shader
-#include <modules/opengl/shader/shaderutils.h>         // for ImageInport
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#include <cstddef>  // for size_t
-#include <memory>   // for shared_ptr, unique_ptr
-#include <vector>   // for vector
+#include <cstddef>
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 class Event;

@@ -29,18 +29,18 @@
 
 #pragma once
 
-#include <inviwo/core/datastructures/buffer/bufferram.h>  // for IndexBufferRAM
-#include <inviwo/core/datastructures/volume/volumeram.h>  // for VolumeRAM
-#include <inviwo/core/util/glmconvert.h>                  // for glm_convert
-#include <inviwo/core/util/glmvec.h>                      // for vec3, size3_t
-#include <modules/base/datastructures/kdtree.h>           // for K3DTree
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/datastructures/kdtree.h>
 
-#include <array>    // for array, array<>::value_type
-#include <cstddef>  // for size_t
-#include <vector>   // for vector
+#include <array>
+#include <cstddef>
+#include <vector>
 
-#include <glm/fwd.hpp>   // for vec3
-#include <glm/vec3.hpp>  // for vec<>::(anonymous)
+#include <glm/fwd.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 /*

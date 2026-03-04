@@ -28,13 +28,13 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 
-#include <functional>  // for function
-#include <memory>      // for shared_ptr
-#include <vector>      // for vector
+#include <functional>
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 class Property;

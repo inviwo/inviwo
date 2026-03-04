@@ -29,13 +29,13 @@
 
 #include <modules/openglqt/properties/glslfilepropertywidgetqt.h>
 
-#include <inviwo/core/properties/fileproperty.h>                // for FileProperty
-#include <inviwo/core/properties/propertysemantics.h>           // for operator==, PropertySeman...
-#include <inviwo/core/util/assertion.h>                         // for IVW_ASSERT
-#include <modules/openglqt/properties/glsleditordockwidget.h>   // for GLSLEditorDockWidget
-#include <modules/qtwidgets/properties/filepropertywidgetqt.h>  // for FilePropertyWidgetQt
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/assertion.h>
+#include <modules/openglqt/properties/glsleditordockwidget.h>
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
 
-#include <memory>  // for make_unique, unique_ptr
+#include <memory>
 
 namespace inviwo {
 

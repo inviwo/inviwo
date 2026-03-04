@@ -29,36 +29,36 @@
 
 #include <modules/pvm/mpvmvolumereader.h>
 
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, DataReade...
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for createVolumeRAM
-#include <inviwo/core/io/datareader.h>                                  // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
-#include <inviwo/core/metadata/metadata.h>                              // for StringMetaData
-#include <inviwo/core/metadata/metadataowner.h>                         // for MetaDataOwner
-#include <inviwo/core/util/fileextension.h>                             // for FileExtension
-#include <inviwo/core/util/filesystem.h>                                // for getFileDirectory
-#include <inviwo/core/util/formatconversion.h>                          // for formatBytesToString
-#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/glmvec.h>                                    // for size3_t
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
-#include <inviwo/core/util/stringconversion.h>                          // for replaceInString
-#include <modules/pvm/pvmvolumereader.h>                                // for PVMVolumeReader
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/metadata/metadata.h>
+#include <inviwo/core/metadata/metadataowner.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/formatconversion.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/pvm/pvmvolumereader.h>
 
-#include <cstddef>        // for size_t
-#include <fstream>        // for operator<<, basic...
-#include <string>         // for string, char_traits
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for move
-#include <vector>         // for vector
+#include <cstddef>
+#include <fstream>
+#include <string>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 #include <ranges>
 #include <algorithm>
 
-#include <glm/fwd.hpp>   // for mat3
-#include <glm/vec3.hpp>  // for operator+, vec<>:...
+#include <glm/fwd.hpp>
+#include <glm/vec3.hpp>
 
 #include <fmt/std.h>
 

@@ -29,28 +29,28 @@
 
 #include <modules/basegl/viewmanager.h>
 
-#include <inviwo/core/interaction/events/event.h>             // for Event
-#include <inviwo/core/interaction/events/gestureevent.h>      // for GestureEvent
-#include <inviwo/core/interaction/events/gesturestate.h>      // for GestureState, GestureState:...
-#include <inviwo/core/interaction/events/interactionevent.h>  // for InteractionEvent
-#include <inviwo/core/interaction/events/mousebuttons.h>      // for MouseButton, MouseButton::None
-#include <inviwo/core/interaction/events/mouseevent.h>        // for MouseEvent
-#include <inviwo/core/interaction/events/pickingevent.h>      // for PickingEvent
-#include <inviwo/core/interaction/events/touchevent.h>        // for TouchPoint, TouchEvent
-#include <inviwo/core/interaction/events/touchstate.h>        // for TouchState, TouchState::Fin...
-#include <inviwo/core/interaction/events/wheelevent.h>        // for WheelEvent
-#include <inviwo/core/interaction/events/contextmenuevent.h>  // for ContextMenuEvent
-#include <inviwo/core/util/exception.h>                       // for Exception
-#include <inviwo/core/util/glmvec.h>                          // for dvec2, uvec2, ivec2, dvec3
-#include <inviwo/core/util/sourcecontext.h>                   // for SourceContext
-#include <inviwo/core/util/stdextensions.h>                   // for erase_remove_if, contains
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/gesturestate.h>
+#include <inviwo/core/interaction/events/interactionevent.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/touchstate.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/interaction/events/contextmenuevent.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stdextensions.h>
 
-#include <cstddef>      // for size_t
-#include <iterator>     // for __iterator_traits_impl<>::d...
-#include <string_view>  // for string_view
+#include <cstddef>
+#include <iterator>
+#include <string_view>
 
-#include <flags/flags.h>              // for operator!=, operator==
-#include <glm/vector_relational.hpp>  // for all, greaterThanEqual, less...
+#include <flags/flags.h>
+#include <glm/vector_relational.hpp>
 
 namespace inviwo {
 class Processor;

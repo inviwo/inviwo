@@ -29,18 +29,18 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
 #include <inviwo/core/datastructures/image/image.h>  // IWYU pragma: keep
-#include <inviwo/core/datastructures/image/layer.h>  // for Layer
-#include <inviwo/core/util/formats.h>                // for DataFormat
-#include <inviwo/core/util/glmvec.h>                 // for size2_t
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <memory>       // for shared_ptr, make_shared
-#include <utility>      // for pair
-#include <vector>       // for vector
+#include <memory>
+#include <utility>
+#include <vector>
 
-#include <glm/vec2.hpp>  // for operator==
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 class LayerRAM;

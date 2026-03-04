@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>             // for ImageOutport
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/properties/buttonproperty.h>   // for ButtonProperty
-#include <inviwo/core/properties/fileproperty.h>     // for FileProperty
-#include <inviwo/core/properties/optionproperty.h>   // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>  // for IntSize2Property
-#include <inviwo/core/util/fileextension.h>          // for FileExtension, operator==, operator<<
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/fileextension.h>
 #include <modules/base/processors/datasource.h>
 
 namespace inviwo {

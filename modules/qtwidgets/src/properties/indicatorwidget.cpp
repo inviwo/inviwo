@@ -29,17 +29,17 @@
 
 #include <modules/qtwidgets/properties/indicatorwidget.h>
 
-#include <stdlib.h>   // for abs
-#include <algorithm>  // for max
-#include <cmath>      // for abs
+#include <stdlib.h>
+#include <algorithm>
+#include <cmath>
 
-#include <QColor>       // for QColor
-#include <QPaintEvent>  // for QPaintEvent
-#include <QPainter>     // for QPainter, QPainter::Antialiasing
-#include <QPen>         // for QPen
-#include <QSize>        // for QSize
-#include <Qt>           // for operator|, AbsoluteSize, FramelessWindowHint, WA_Transluc...
-#include <QBrush>       // for QBrush
+#include <QColor>
+#include <QPaintEvent>
+#include <QPainter>
+#include <QPen>
+#include <QSize>
+#include <Qt>
+#include <QBrush>
 
 class QPaintEvent;
 

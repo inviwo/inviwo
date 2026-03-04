@@ -29,18 +29,18 @@
 
 #include <modules/userinterfacegl/glui/widgets/abstractbutton.h>
 
-#include <inviwo/core/common/inviwomodule.h>        // for ModulePath, ModulePath::Images
-#include <inviwo/core/util/glmvec.h>                // for vec2, ivec2
-#include <inviwo/core/util/moduleutils.h>           // for getModulePath
-#include <modules/opengl/texture/texture2darray.h>  // for Texture2DArray
-#include <modules/userinterfacegl/glui/element.h>   // for Element::UIState, Element, Element::U...
-#include <modules/userinterfacegl/glui/renderer.h>  // for Renderer
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/moduleutils.h>
+#include <modules/opengl/texture/texture2darray.h>
+#include <modules/userinterfacegl/glui/element.h>
+#include <modules/userinterfacegl/glui/renderer.h>
 
-#include <vector>  // for vector
+#include <vector>
 
-#include <glm/common.hpp>             // for floor
-#include <glm/vec2.hpp>               // for operator+, operator*, operator/, vec
-#include <glm/vector_relational.hpp>  // for all, greaterThan
+#include <glm/common.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vector_relational.hpp>
 
 namespace inviwo {
 class Processor;

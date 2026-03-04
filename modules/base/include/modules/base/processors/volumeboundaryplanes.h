@@ -29,19 +29,19 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/geometry/plane.h>  // for Plane
-#include <inviwo/core/ports/dataoutport.h>              // for DataOutport
-#include <inviwo/core/ports/volumeport.h>               // for VolumeInport
-#include <inviwo/core/processors/processor.h>           // for Processor
-#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
+#include <inviwo/core/datastructures/geometry/plane.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
 
-#include <string>  // for operator+, string
-#include <vector>  // for vector
+#include <string>
+#include <vector>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
 namespace inviwo {
 

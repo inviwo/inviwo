@@ -29,28 +29,28 @@
 
 #include <modules/qtwidgets/angleradiuswidget.h>
 
-#include <algorithm>  // for max, min
-#include <cmath>      // for atan2, cos, sin, sqrt, std::numbers::pi
-#include <sstream>    // for stringstream, basic_ostream, fixed
+#include <algorithm>
+#include <cmath>
+#include <sstream>
 #include <numbers>
 
-#include <QChar>          // for QChar
-#include <QFontMetrics>   // for QFontMetrics
-#include <QLineF>         // for QLineF
-#include <QMouseEvent>    // for QMouseEvent
-#include <QPainter>       // for QPainter, QPainter::Antialiasing
-#include <QPalette>       // for QPalette, QPalette::Base
-#include <QPen>           // for QPen
-#include <QPoint>         // for QPoint, operator-
-#include <QPointF>        // for QPointF
-#include <QString>        // for QString, operator+
-#include <QStylePainter>  // for QStylePainter
-#include <Qt>             // for MiterJoin, SquareCap, SolidLine, DashLine, LeftButton
-#include <QBrush>         // for QBrush
-#include <QPainterPath>   // for QPainterPath
+#include <QChar>
+#include <QFontMetrics>
+#include <QLineF>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPalette>
+#include <QPen>
+#include <QPoint>
+#include <QPointF>
+#include <QString>
+#include <QStylePainter>
+#include <Qt>
+#include <QBrush>
+#include <QPainterPath>
 
-#include <glm/common.hpp>         // for clamp
-#include <glm/trigonometric.hpp>  // for degrees
+#include <glm/common.hpp>
+#include <glm/trigonometric.hpp>
 
 class QMouseEvent;
 class QPaintEvent;

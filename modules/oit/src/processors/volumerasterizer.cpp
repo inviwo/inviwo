@@ -38,13 +38,13 @@
 #include <modules/opengl/texture/texture3d.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/openglutils.h>             // for BlendModeState
-#include <modules/opengl/rendering/meshdrawergl.h>  // for MeshDrawerG...
-#include <modules/opengl/geometry/meshgl.h>         // for MeshGL
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/geometry/meshgl.h>
 #include <modules/oit/datastructures/transformedrasterization.h>
 #include <modules/oit/raycastingstate.h>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
 namespace inviwo {
 

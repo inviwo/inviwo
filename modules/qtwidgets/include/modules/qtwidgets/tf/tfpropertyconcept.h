@@ -29,20 +29,20 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/datastructures/histogram.h>  // for HistogramMode, HistogramSelection
+#include <inviwo/core/datastructures/histogram.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
-#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
+#include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>  // IWYU pragma: keep
 #include <inviwo/core/properties/isovalueproperty.h>          // IWYU pragma: keep
-#include <inviwo/core/util/glmvec.h>                          // for dvec2
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/util/detected.h>
-#include <inviwo/core/network/networklock.h>  // for NetworkLock
-#include <modules/qtwidgets/tf/tfutils.h>     // for exportToFile, importFro...
+#include <inviwo/core/network/networklock.h>
+#include <modules/qtwidgets/tf/tfutils.h>
 
-#include <utility>  // for declval
+#include <utility>
 #include <span>
 #include <array>
 

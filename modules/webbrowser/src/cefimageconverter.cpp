@@ -29,16 +29,16 @@
 
 #include <modules/webbrowser/cefimageconverter.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorPicking
-#include <inviwo/core/ports/imageport.h>                  // for BaseImageInport
-#include <inviwo/core/util/glmvec.h>                      // for vec3
-#include <modules/opengl/inviwoopengl.h>                  // for GL_ONE, GL_ONE_MINUS_SRC_ALPHA
-#include <modules/opengl/openglutils.h>                   // for BlendModeState
-#include <modules/opengl/shader/shader.h>                 // for Shader
-#include <modules/opengl/shader/shaderutils.h>            // for ImageInport
-#include <modules/opengl/texture/texture2d.h>             // for Texture2D
-#include <modules/opengl/texture/textureunit.h>           // for TextureUnit
-#include <modules/opengl/texture/textureutils.h>          // for activateAndClearTarget, activat...
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/image/layergl.h>
 

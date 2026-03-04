@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <modules/postprocessing/postprocessingmoduledefine.h>  // for IVW_MODULE_POSTPROCESSING...
+#include <modules/postprocessing/postprocessingmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 

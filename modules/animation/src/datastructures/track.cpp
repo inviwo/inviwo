@@ -29,9 +29,9 @@
 
 #include <modules/animation/datastructures/track.h>
 
-#include <modules/animation/datastructures/animationtime.h>  // for Seconds
+#include <modules/animation/datastructures/animationtime.h>
 
-#include <chrono>  // for operator<, operator<=, opera...
+#include <chrono>
 
 namespace inviwo {
 

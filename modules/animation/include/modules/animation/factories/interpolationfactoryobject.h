@@ -28,10 +28,10 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
+#include <modules/animation/animationmoduledefine.h>
 
-#include <memory>  // for unique_ptr, make_unique
-#include <string>  // for string
+#include <memory>
+#include <string>
 #include <string_view>
 
 namespace inviwo {

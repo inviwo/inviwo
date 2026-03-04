@@ -29,41 +29,41 @@
 
 #pragma once
 
-#include <inviwo/core/properties/constraintbehavior.h>              // for ConstraintBehavior
-#include <inviwo/core/properties/property.h>                        // for Property
-#include <inviwo/core/util/glmcomp.h>                               // for glmcomp
-#include <inviwo/core/util/glmutils.h>                              // for extent, flat_extent
-#include <inviwo/core/util/glmvec.h>                                // for dvec3
-#include <inviwo/core/util/stdextensions.h>                         // for make_array
-#include <modules/qtwidgets/editablelabelqt.h>                      // for EditableLabelQt
-#include <modules/qtwidgets/ordinaleditorwidget.h>                  // for OrdinalEditorWidget
-#include <modules/qtwidgets/properties/ordinalspinboxwidget.h>      // for OrdinalSpinBoxWidget
-#include <modules/qtwidgets/properties/propertysettingswidgetqt.h>  // for OrdinalLikePropertySe...
-#include <modules/qtwidgets/properties/propertywidgetqt.h>          // for PropertyWidgetQt
-#include <modules/qtwidgets/sliderwidgetqt.h>                       // for SliderWidgetQt
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/glmcomp.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/ordinaleditorwidget.h>
+#include <modules/qtwidgets/properties/ordinalspinboxwidget.h>
+#include <modules/qtwidgets/properties/propertysettingswidgetqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/sliderwidgetqt.h>
 #include <modules/qtwidgets/numberwidget.h>
 
-#include <array>        // for array
-#include <cmath>        // for sin, atan2, cos, M_PI
-#include <cstddef>      // for size_t
-#include <limits>       // for numeric_limits
-#include <memory>       // for unique_ptr
-#include <type_traits>  // for remove_reference_t
-#include <utility>      // for swap
-#include <vector>       // for vector
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <limits>
+#include <memory>
+#include <type_traits>
+#include <utility>
+#include <vector>
 #include <numbers>
 
-#include <QAction>      // for QAction
-#include <QGridLayout>  // for QGridLayout
-#include <QHBoxLayout>  // for QHBoxLayout
-#include <QLabel>       // for QLabel
-#include <QLayoutItem>  // for QLayoutItem
-#include <QSize>        // for QSize
-#include <QSizePolicy>  // for QSizePolicy, QSizePol...
-#include <QWidget>      // for QWidget
+#include <QAction>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLayoutItem>
+#include <QSize>
+#include <QSizePolicy>
+#include <QWidget>
 #include <QMenu>        // IWYU pragma: keep
 
-#include <glm/geometric.hpp>  // for length
+#include <glm/geometric.hpp>
 
 class QHBoxLayout;
 namespace inviwo {

@@ -29,49 +29,49 @@
 
 #include <inviwo/dataframe/processors/imagetodataframe.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
-#include <inviwo/core/datastructures/image/imagetypes.h>                // for LayerType, LayerT...
-#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
-#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>         // IWYU pragma: keep
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/ports/dataoutport.h>                              // for DataOutport
-#include <inviwo/core/ports/imageport.h>                                // for ImageInport
-#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterableIm...
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags
-#include <inviwo/core/properties/minmaxproperty.h>                      // for IntSizeTMinMaxPro...
-#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
-#include <inviwo/core/properties/ordinalproperty.h>                     // for IntSizeTProperty
-#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
-#include <inviwo/core/util/formats.h>                                   // for DataFormat, DataF...
-#include <inviwo/core/util/glmconvert.h>                                // for glm_convert
-#include <inviwo/core/util/glmvec.h>                                    // for size2_t, vec3, dvec4
-#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
-#include <inviwo/core/util/staticstring.h>                              // for operator+
-#include <inviwo/core/util/stringconversion.h>                          // for toString
-#include <inviwo/dataframe/datastructures/column.h>                     // for TemplateColumn
-#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/dataframe/datastructures/column.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
-#include <cmath>          // for sqrt
-#include <cstddef>        // for size_t
-#include <memory>         // for shared_ptr, uniqu...
-#include <optional>       // for optional
-#include <sstream>        // for basic_stringbuf<>...
-#include <type_traits>    // for remove_extent_t
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
+#include <cmath>
+#include <cstddef>
+#include <memory>
+#include <optional>
+#include <sstream>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
 
-#include <fmt/core.h>            // for format
-#include <glm/fwd.hpp>           // for u32
-#include <glm/geometric.hpp>     // for dot
-#include <glm/gtc/type_ptr.hpp>  // for value_ptr
-#include <glm/vec2.hpp>          // for vec<>::(anonymous)
-#include <glm/vec3.hpp>          // for operator*
+#include <fmt/core.h>
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

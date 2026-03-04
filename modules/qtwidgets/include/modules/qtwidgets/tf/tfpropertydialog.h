@@ -29,21 +29,21 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/datastructures/tfprimitive.h>               // for TFPrimitive
-#include <inviwo/core/datastructures/tfprimitiveset.h>            // for TFPrimitiveSetObserver
-#include <inviwo/core/processors/processor.h>                     // for Processor, Processor::N...
-#include <inviwo/core/properties/transferfunctionproperty.h>      // for TFPropertyObserver, Tra...
-#include <inviwo/core/util/glmvec.h>                              // for dvec2
-#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>  // for PropertyEditorWidgetQt
+#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
 
-#include <functional>  // for function
-#include <memory>      // for unique_ptr, shared_ptr
-#include <string>      // for string
-#include <vector>      // for vector
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
 
-#include <QSize>  // for QSize
+#include <QSize>
 
 class QColorDialog;
 class QComboBox;

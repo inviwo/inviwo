@@ -29,13 +29,13 @@
 
 #include <modules/vectorfieldvisualizationgl/processors/3d/vector3dcurl.h>
 
-#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                         // for CodeState, Cod...
-#include <inviwo/core/processors/processortags.h>                          // for Tags, Tags::GL
-#include <inviwo/core/util/formats.h>                                      // for DataFormat
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/util/formats.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
-#include <string>  // for string
+#include <string>
 
 namespace inviwo {
 

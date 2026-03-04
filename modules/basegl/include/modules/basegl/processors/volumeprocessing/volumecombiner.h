@@ -29,34 +29,34 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>      // for Volume
-#include <inviwo/core/ports/datainport.h>                  // for DataInport
-#include <inviwo/core/ports/outportiterable.h>             // for OutportIterable
-#include <inviwo/core/ports/volumeport.h>                  // for VolumeOutport
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
-#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>         // for ButtonProperty
-#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
-#include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>         // for OptionProperty, OptionPropertyInt
-#include <inviwo/core/properties/ordinalproperty.h>        // for FloatVec4Property
-#include <inviwo/core/properties/stringproperty.h>         // for StringProperty
-#include <inviwo/core/util/glmvec.h>                       // for uvec3
-#include <inviwo/core/util/staticstring.h>                 // for operator+
-#include <modules/opengl/buffer/framebufferobject.h>       // for FrameBufferObject
-#include <modules/opengl/shader/shader.h>                  // for Shader
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector, operator==
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
-#include <fmt/core.h>  // for format_to, basic_string_view
+#include <fmt/core.h>
 
 namespace inviwo {
 class StringShaderResource;

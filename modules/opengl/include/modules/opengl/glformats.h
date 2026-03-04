@@ -29,19 +29,19 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/util/formats.h>        // for DataFormatId, DataFormatBase, DataFormatI...
-#include <inviwo/core/util/sourcecontext.h>  // for SourceContext
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/sourcecontext.h>
 #include <inviwo/core/common/inviwocommondefines.h>
-#include <modules/opengl/inviwoopengl.h>     // for GLuint, GL_RED, GL_RG, GL_RGB, GL_RGBA
-#include <modules/opengl/openglexception.h>  // for OpenGLException
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglexception.h>
 
-#include <algorithm>    // for find_if, find
-#include <array>        // for array
-#include <cstddef>      // for size_t
-#include <string>       // for operator+, string, basic_string
-#include <string_view>  // for string_view
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 

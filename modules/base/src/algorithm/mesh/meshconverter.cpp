@@ -29,19 +29,19 @@
 
 #include <modules/base/algorithm/mesh/meshconverter.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>          // for IndexBuffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>       // for BufferRAMPrecision
-#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType, DrawType
-#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh, Mesh::IndexVector
-#include <inviwo/core/util/exception.h>                        // for Exception
-#include <inviwo/core/util/stdextensions.h>                    // for find_if
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stdextensions.h>
 
-#include <cstddef>      // for size_t
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_extent_t
-#include <utility>      // for pair
-#include <vector>       // for vector
+#include <cstddef>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 

@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior
+#include <inviwo/core/properties/constraintbehavior.h>
 
 namespace inviwo {
 

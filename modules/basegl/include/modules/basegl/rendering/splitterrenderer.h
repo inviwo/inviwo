@@ -28,17 +28,17 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>        // for Mesh
-#include <inviwo/core/interaction/pickingmapper.h>           // for PickingMapper
-#include <inviwo/core/util/glmvec.h>                         // for size2_t
-#include <modules/basegl/datastructures/splittersettings.h>  // for Direction, Direction::Vertical
-#include <modules/opengl/shader/shader.h>                    // for Shader
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/basegl/datastructures/splittersettings.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <cstddef>     // for size_t
-#include <functional>  // for function
-#include <span>        // for vector
+#include <cstddef>
+#include <functional>
+#include <span>
 
 namespace inviwo {
 

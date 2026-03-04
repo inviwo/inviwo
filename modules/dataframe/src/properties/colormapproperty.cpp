@@ -29,32 +29,32 @@
 
 #include <inviwo/dataframe/properties/colormapproperty.h>
 
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/transferfunction.h>                // for TransferFunction
-#include <inviwo/core/network/networklock.h>                            // for NetworkLock
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
-#include <inviwo/core/properties/optionproperty.h>                      // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                     // for DoubleProperty
-#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
-#include <inviwo/core/properties/templateproperty.h>                    // for TemplateProperty
-#include <inviwo/core/util/colorbrewer.h>                               // for getTransferFunction
-#include <inviwo/core/util/formatdispatching.h>                         // for Scalars
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral
-#include <inviwo/core/util/staticstring.h>                              // for operator+
-#include <inviwo/dataframe/datastructures/column.h>                     // for CategoricalColumn
-#include <modules/base/algorithm/algorithmoptions.h>                    // for IgnoreSpecialValues
-#include <modules/base/algorithm/dataminmax.h>                          // for bufferMinMax
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/util/colorbrewer.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/dataframe/datastructures/column.h>
+#include <modules/base/algorithm/algorithmoptions.h>
+#include <modules/base/algorithm/dataminmax.h>
 
-#include <memory>         // for shared_ptr, share...
-#include <ostream>        // for operator<<, basic...
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
+#include <memory>
+#include <ostream>
+#include <type_traits>
+#include <unordered_set>
 
-#include <glm/fwd.hpp>  // for uint8
+#include <glm/fwd.hpp>
 #include <fmt/core.h>
 
 namespace inviwo {

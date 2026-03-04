@@ -29,39 +29,39 @@
 
 #include <modules/openglqt/processors/canvaswithpropertiesprocessorwidgetqt.h>
 
-#include <inviwo/core/common/inviwoapplication.h>          // for InviwoApplication
-#include <inviwo/core/interaction/events/resizeevent.h>    // for ResizeEvent
-#include <inviwo/core/metadata/processormetadata.h>        // for ProcessorMetaData, ProcessorMe...
-#include <inviwo/core/network/networklock.h>               // for NetworkLock
-#include <inviwo/core/network/processornetwork.h>          // for ProcessorNetwork
-#include <inviwo/core/processors/canvasprocessorwidget.h>  // for CanvasProcessorWidget
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/util/glmvec.h>                       // for ivec2, size2_t
-#include <inviwo/core/util/logcentral.h>                   // for LogCentral
-#include <inviwo/core/util/rendercontext.h>                // for RenderContext
-#include <inviwo/core/util/stringconversion.h>             // for forEachStringPart, splitByFirst
-#include <modules/openglqt/canvasqopenglwidget.h>          // for CanvasQOpenGLWidget
-#include <modules/qtwidgets/inviwoqtutils.h>               // for setFullScreenAndOnTop, toGLM
-#include <modules/qtwidgets/propertylistwidget.h>          // for PropertyListFrame
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/metadata/processormetadata.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/canvasprocessorwidget.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/openglqt/canvasqopenglwidget.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/propertylistwidget.h>
 
-#include <cstddef>  // for size_t
-#include <ostream>  // for operator<<, basic_ostream
+#include <cstddef>
+#include <ostream>
 
-#include <QAction>                            // for QAction
-#include <QEvent>                             // for QEvent, QEvent::WindowStateChange
-#include <QFrame>                             // for QFrame, QFrame::NoFrame
-#include <QIcon>                              // for QIcon
-#include <QMenu>                              // for QMenu
-#include <QMoveEvent>                         // for QMoveEvent
-#include <QPoint>                             // for QPoint
-#include <QScrollArea>                        // for QScrollArea
-#include <QSizePolicy>                        // for QSizePolicy, QSizePolicy::Mini...
-#include <QSplitter>                          // for QSplitter
-#include <QWidget>                            // for QWidget
-#include <Qt>                                 // for ScrollBarAsNeeded, Tool, WA_Ma...
-#include <glm/fwd.hpp>                        // for vec2
-#include <glm/gtx/scalar_multiplication.hpp>  // for operator*
-#include <glm/vec2.hpp>                       // for vec<>::(anonymous)
+#include <QAction>
+#include <QEvent>
+#include <QFrame>
+#include <QIcon>
+#include <QMenu>
+#include <QMoveEvent>
+#include <QPoint>
+#include <QScrollArea>
+#include <QSizePolicy>
+#include <QSplitter>
+#include <QWidget>
+#include <Qt>
+#include <glm/fwd.hpp>
+#include <glm/gtx/scalar_multiplication.hpp>
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 

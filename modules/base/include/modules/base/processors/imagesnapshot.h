@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>             // for ImageOutport, ImageInport
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/properties/buttonproperty.h>   // for ButtonProperty
-#include <inviwo/core/properties/ordinalproperty.h>  // for IntProperty
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
-#include <memory>  // for shared_ptr
-#include <vector>  // for vector
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 class Deserializer;

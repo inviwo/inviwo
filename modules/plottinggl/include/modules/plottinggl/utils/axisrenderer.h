@@ -29,33 +29,33 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTINGGL_API
+#include <modules/plottinggl/plottingglmoduledefine.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>           // for Mesh
-#include <inviwo/core/util/glmvec.h>                            // for vec3, ivec2, size2_t, dvec2
-#include <modules/basegl/datastructures/meshshadercache.h>      // for MeshShaderCache
-#include <modules/fontrendering/textrenderer.h>                 // for TextTextureObject, TextRe...
-#include <modules/fontrendering/util/textureatlas.h>            // for TextureAtlas
-#include <modules/opengl/rendering/texturequadrenderer.h>       // for TextureQuadRenderer
-#include <modules/plotting/datastructures/axissettings.h>       // for AxisSettings
-#include <modules/plotting/datastructures/majortickdata.h>      // for MajorTickData
-#include <modules/plotting/datastructures/majorticksettings.h>  // for operator!=
-#include <modules/plotting/datastructures/minortickdata.h>      // for MinorTickData
-#include <modules/plotting/datastructures/plottextdata.h>       // for PlotTextData
-#include <modules/plotting/datastructures/plottextsettings.h>   // for operator!=, PlotTextSetti...
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/fontrendering/textrenderer.h>
+#include <modules/fontrendering/util/textureatlas.h>
+#include <modules/opengl/rendering/texturequadrenderer.h>
+#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/majortickdata.h>
+#include <modules/plotting/datastructures/majorticksettings.h>
+#include <modules/plotting/datastructures/minortickdata.h>
+#include <modules/plotting/datastructures/plottextdata.h>
+#include <modules/plotting/datastructures/plottextsettings.h>
 
-#include <cstddef>      // for size_t
-#include <functional>   // for function, reference_wrapper
-#include <limits>       // for numeric_limits
-#include <memory>       // for shared_ptr, unique_ptr
-#include <string>       // for string, operator==, opera...
-#include <type_traits>  // for is_nothrow_move_assignable_v
-#include <utility>      // for pair
-#include <vector>       // for operator!=, vector
+#include <cstddef>
+#include <functional>
+#include <limits>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
-#include <glm/vec2.hpp>  // for operator!=, vec
-#include <glm/vec3.hpp>  // for operator!=, vec
-#include <glm/vec4.hpp>  // for vec
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

@@ -29,18 +29,18 @@
 
 #include <modules/basegl/processors/imageprocessing/jacobian2d.h>
 
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
-#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>                         // for BoolProperty
-#include <inviwo/core/properties/invalidationlevel.h>                    // for InvalidationLevel
-#include <inviwo/core/util/formats.h>                                    // for DataFormat, Data...
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
-#include <modules/opengl/shader/shader.h>                                // for Shader
-#include <modules/opengl/shader/shaderobject.h>                          // for ShaderObject
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/util/formats.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 class TextureUnitContainer;

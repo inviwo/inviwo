@@ -29,20 +29,20 @@
 
 #include <modules/qtwidgets/editorfileobserver.h>
 
-#include <inviwo/core/common/inviwoapplicationutil.h>  // for getInviwoApplication
-#include <inviwo/core/util/fileobserver.h>             // for FileObserver
-#include <inviwo/core/util/filesystem.h>               // for getFileNameWithExtension
-#include <modules/qtwidgets/inviwoqtutils.h>           // for toQString
+#include <inviwo/core/common/inviwoapplicationutil.h>
+#include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/util/filesystem.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <algorithm>  // for any_of
+#include <algorithm>
 
 #include <fmt/std.h>
 
-#include <QEvent>       // for QEvent, QEvent::FocusIn
-#include <QList>        // for QList
-#include <QMessageBox>  // for QMessageBox, operator|, QMessageBo...
-#include <QWidget>      // for QWidget
-#include <Qt>           // for WindowModal
+#include <QEvent>
+#include <QList>
+#include <QMessageBox>
+#include <QWidget>
+#include <Qt>
 
 namespace inviwo {
 

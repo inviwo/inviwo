@@ -41,7 +41,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/clock.h>
-#include <inviwo/core/util/glmvec.h>  // for vec4
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/util/timer.h>
 #include <modules/opengl/shader/shader.h>

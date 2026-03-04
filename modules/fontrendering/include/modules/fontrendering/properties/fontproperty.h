@@ -29,18 +29,18 @@
 
 #pragma once
 
-#include <modules/fontrendering/fontrenderingmoduledefine.h>  // for IVW_MODULE_FONTREND...
+#include <modules/fontrendering/fontrenderingmoduledefine.h>
 
-#include <inviwo/core/properties/compositeproperty.h>                 // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>                 // for InvalidationLevel
-#include <inviwo/core/properties/ordinalproperty.h>                   // for FloatProperty, Floa...
-#include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
-#include <inviwo/core/util/glmvec.h>                                  // for vec2
-#include <modules/fontrendering/datastructures/fontsettings.h>        // for FontSettings
-#include <modules/fontrendering/properties/fontfaceoptionproperty.h>  // for FontFaceOptionProperty
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/fontrendering/datastructures/fontsettings.h>
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 

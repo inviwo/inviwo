@@ -29,7 +29,7 @@
 
 #include <modules/basegl/processors/raycasting/standardvolumeraycaster.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>  // for boundingBox
+#include <inviwo/core/algorithm/boundingbox.h>
 #include <modules/basegl/shadercomponents/shadercomponentutil.h>
 
 namespace inviwo {

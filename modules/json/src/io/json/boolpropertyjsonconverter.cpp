@@ -29,7 +29,7 @@
 
 #include <modules/json/io/json/boolpropertyjsonconverter.h>
 
-#include <inviwo/core/properties/boolproperty.h>  // for BoolProperty
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 

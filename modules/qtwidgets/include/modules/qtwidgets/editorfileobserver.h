@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/util/fileobserver.h>  // for FileObserver
+#include <inviwo/core/util/fileobserver.h>
 
-#include <functional>  // for function
+#include <functional>
 #include <filesystem>
 
-#include <QObject>  // for QObject
-#include <QString>  // for QString
+#include <QObject>
+#include <QString>
 
 class QEvent;
 class QWidget;

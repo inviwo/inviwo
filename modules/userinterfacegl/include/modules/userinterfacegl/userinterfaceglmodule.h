@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>              // for InviwoModule
-#include <modules/userinterfacegl/glui/widgetfactory.h>   // for WidgetFactory
-#include <modules/userinterfacegl/glui/widgetsupplier.h>  // for WidgetSupplier
+#include <inviwo/core/common/inviwomodule.h>
+#include <modules/userinterfacegl/glui/widgetfactory.h>
+#include <modules/userinterfacegl/glui/widgetsupplier.h>
 
 namespace inviwo {
 class InviwoApplication;

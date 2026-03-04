@@ -28,18 +28,18 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <inviwo/core/util/factory.h>                                  // for StandardFactory
+#include <inviwo/core/util/factory.h>
 #include <modules/animationqt/factories/trackwidgetqtfactoryobject.h>  // IWYU pragma: keep
 #include <modules/animationqt/widgets/trackwidgetqt.h>                 // IWYU pragma: keep
 
-#include <functional>   // for less
-#include <map>          // for map
-#include <memory>       // for unique_ptr
-#include <string>       // for string, operator<
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <functional>
+#include <map>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

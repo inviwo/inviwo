@@ -29,15 +29,15 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/interaction/pickingmapper.h>  // for PickingMapper
-#include <inviwo/core/util/glmvec.h>                // for ivec2, dvec2, size2_t
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <cstddef>     // for size_t
-#include <functional>  // for function
-#include <memory>      // for shared_ptr
-#include <string>      // for string
+#include <cstddef>
+#include <functional>
+#include <memory>
+#include <string>
 
 namespace inviwo {
 

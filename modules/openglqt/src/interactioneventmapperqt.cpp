@@ -29,49 +29,49 @@
 
 #include <modules/openglqt/interactioneventmapperqt.h>
 
-#include <inviwo/core/interaction/events/eventpropagator.h>        // for EventPropagator
-#include <inviwo/core/interaction/events/gestureevent.h>           // for GestureEvent
-#include <inviwo/core/interaction/events/gesturestate.h>           // for GestureType, GestureTy...
-#include <inviwo/core/interaction/events/keyboardevent.h>          // for KeyboardEvent
-#include <inviwo/core/interaction/events/keyboardkeys.h>           // for KeyModifier, KeyState
-#include <inviwo/core/interaction/events/mousebuttons.h>           // for MouseState, MouseButton
-#include <inviwo/core/interaction/events/mousecursors.h>           // for MouseCursor
-#include <inviwo/core/interaction/events/mouseevent.h>             // for MouseEvent
-#include <inviwo/core/interaction/events/mouseinteractionevent.h>  // for MouseInteractionEvent
-#include <inviwo/core/interaction/events/touchevent.h>             // for TouchPoint, TouchDevice
-#include <inviwo/core/interaction/events/touchstate.h>             // for TouchState, TouchState...
-#include <inviwo/core/interaction/events/wheelevent.h>             // for WheelEvent
-#include <inviwo/core/util/glm.h>                                  // for invertY
-#include <inviwo/core/util/glmvec.h>                               // for dvec2, uvec2, size2_t
-#include <inviwo/core/util/rendercontext.h>                        // for RenderContext
-#include <modules/qtwidgets/eventconverterqt.h>                    // for getModifiers, getMouse...
-#include <modules/qtwidgets/inviwoqtutils.h>                       // for fromQString, toGLM
-#include <modules/qtwidgets/mousecursorutils.h>                    // for toCursorShape
+#include <inviwo/core/interaction/events/eventpropagator.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/gesturestate.h>
+#include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/mousecursors.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/mouseinteractionevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/touchstate.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <modules/qtwidgets/eventconverterqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/mousecursorutils.h>
 
-#include <algorithm>  // for sort
-#include <map>        // for map, __map_iterator
-#include <utility>    // for pair
+#include <algorithm>
+#include <map>
+#include <utility>
 
-#include <QEvent>           // for QEvent, QEvent::Gesture
-#include <QEventPoint>      // for QEventPoint, QEventPoi...
-#include <QGestureEvent>    // for QGestureEvent
-#include <QHelpEvent>       // for QHelpEvent
-#include <QInputDevice>     // for QInputDevice, QInputDe...
-#include <QKeyEvent>        // for QKeyEvent
-#include <QList>            // for QList, QList<>::const_...
-#include <QMouseEvent>      // for QMouseEvent
-#include <QPanGesture>      // for QPanGesture
-#include <QPinchGesture>    // for QPinchGesture
-#include <QPoint>           // for QPoint, operator/
-#include <QPointF>          // for QPointF
-#include <QPointingDevice>  // for QPointingDevice
-#include <QToolTip>         // for QToolTip
-#include <QTouchEvent>      // for QTouchEvent
-#include <QWheelEvent>      // for QWheelEvent
-#include <QtGlobal>         // for QT_VERSION, QT_VERSION...
-#include <flags/flags.h>    // for flags
-#include <glm/common.hpp>   // for abs
-#include <glm/vec2.hpp>     // for operator/, vec, operator-
+#include <QEvent>
+#include <QEventPoint>
+#include <QGestureEvent>
+#include <QHelpEvent>
+#include <QInputDevice>
+#include <QKeyEvent>
+#include <QList>
+#include <QMouseEvent>
+#include <QPanGesture>
+#include <QPinchGesture>
+#include <QPoint>
+#include <QPointF>
+#include <QPointingDevice>
+#include <QToolTip>
+#include <QTouchEvent>
+#include <QWheelEvent>
+#include <QtGlobal>
+#include <flags/flags.h>
+#include <glm/common.hpp>
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 

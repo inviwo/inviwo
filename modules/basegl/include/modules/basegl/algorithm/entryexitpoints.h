@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/image.h>  // for Image
-#include <inviwo/core/util/dispatcher.h>             // for Dispatcher
-#include <inviwo/core/util/glmmat.h>                 // for mat4
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/glmmat.h>
 
-#include <functional>  // for function
-#include <memory>      // for shared_ptr, unique_ptr
+#include <functional>
+#include <memory>
 
 namespace inviwo {
 

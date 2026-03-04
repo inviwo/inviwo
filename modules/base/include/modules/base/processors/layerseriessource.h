@@ -32,11 +32,11 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/layerport.h>
-#include <inviwo/core/properties/buttonproperty.h>       // for ButtonProperty
-#include <inviwo/core/properties/filepatternproperty.h>  // for FilePatternProperty
-#include <inviwo/core/properties/ordinalproperty.h>      // for IntProperty
-#include <inviwo/core/properties/stringproperty.h>       // for StringProperty
-#include <inviwo/core/util/fileextension.h>              // for FileExtension
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/filepatternproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 

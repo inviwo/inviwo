@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/postprocessing/postprocessingmoduledefine.h>  // for IVW_MODULE_POSTP...
+#include <modules/postprocessing/postprocessingmoduledefine.h>
 
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/properties/ordinalproperty.h>                      // for FloatProperty
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 
 namespace inviwo {
 class TextureUnitContainer;

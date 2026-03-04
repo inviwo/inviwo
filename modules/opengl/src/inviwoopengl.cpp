@@ -29,10 +29,10 @@
 
 #include <modules/opengl/inviwoopengl.h>
 
-#include <inviwo/core/util/demangle.h>    // for parseTypeIdName
-#include <inviwo/core/util/logcentral.h>  // for LogCentral, LogAudience, LogAudience::Developer
+#include <inviwo/core/util/demangle.h>
+#include <inviwo/core/util/logcentral.h>
 
-#include <GL/glew.h>  // for glGetError, GL_NO_ERROR, GLenum, GLuint, GL_INV...
+#include <GL/glew.h>
 
 namespace inviwo {
 

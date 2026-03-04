@@ -29,14 +29,14 @@
 
 #include <modules/cimg/tifflayerreader.h>
 
-#include <inviwo/core/datastructures/image/layer.h>     // for Layer, DataReaderType
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>  // IWYU pragma: keep
-#include <inviwo/core/io/datareader.h>                  // for DataReaderType
-#include <inviwo/core/util/fileextension.h>             // for FileExtension
-#include <inviwo/core/util/formatdispatching.h>         // for dispatch, All
-#include <inviwo/core/util/formats.h>                   // for DataFormatBase
-#include <inviwo/core/util/glmvec.h>                    // for size2_t
-#include <modules/cimg/cimgutils.h>  // for TIFFHeader, getTIFFHeader, loadTIFFL...
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/cimg/cimgutils.h>
 
 namespace inviwo {
 

@@ -29,25 +29,25 @@
 
 #include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
 
-#include <inviwo/core/metadata/metadata.h>       // for BoolMetaData, IntVec2MetaData, IntMetaData
-#include <inviwo/core/properties/property.h>     // for Property
-#include <inviwo/core/util/glmvec.h>             // for ivec2
-#include <modules/qtwidgets/inviwodockwidget.h>  // for InviwoDockWidget
-#include <modules/qtwidgets/inviwoqtutils.h>     // for getApplicationMainWindow, toGLM, toQPoint
+#include <inviwo/core/metadata/metadata.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <utility>  // for move
+#include <utility>
 #include <algorithm>
 
-#include <QDebug>        // for operator<<
-#include <QMainWindow>   // for QMainWindow
-#include <QMoveEvent>    // for QMoveEvent
-#include <QObject>       // for QObject
-#include <QPoint>        // for QPoint
-#include <QResizeEvent>  // for QResizeEvent
-#include <QSettings>     // for QSettings
-#include <QSize>         // for QSize
-#include <QVariant>      // for QVariant
-#include <Qt>            // for DockWidgetArea, operator|, qt_getEnumMet...
+#include <QDebug>
+#include <QMainWindow>
+#include <QMoveEvent>
+#include <QObject>
+#include <QPoint>
+#include <QResizeEvent>
+#include <QSettings>
+#include <QSize>
+#include <QVariant>
+#include <Qt>
 #include <QGuiApplication>
 
 

@@ -29,25 +29,25 @@
 
 #include <modules/oit/oitmodule.h>
 
-#include <inviwo/core/common/inviwomodule.h>              // for InviwoModule, Mod...
-#include <inviwo/core/ports/outportiterable.h>            // for OutportIterableIm...
-#include <inviwo/core/util/exception.h>                   // for Exception
-#include <modules/oit/ports/rasterizationport.h>          // for RasterizationOutport
-#include <modules/oit/processors/calcnormalsprocessor.h>  // for CalcNormalsProcessor
-#include <modules/oit/processors/linerasterizer.h>        // for LineRasterizer
-#include <modules/oit/processors/meshrasterizer.h>        // for MeshRasterizer
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/util/exception.h>
+#include <modules/oit/ports/rasterizationport.h>
+#include <modules/oit/processors/calcnormalsprocessor.h>
+#include <modules/oit/processors/linerasterizer.h>
+#include <modules/oit/processors/meshrasterizer.h>
 #include <modules/oit/processors/meshvolumerenderer.h>
-#include <modules/oit/processors/rasterizationrenderer.h>  // for RasterizationRend...
+#include <modules/oit/processors/rasterizationrenderer.h>
 #include <modules/oit/processors/rasterizer.h>
-#include <modules/oit/processors/sphererasterizer.h>        // for SphereRasterizer
-#include <modules/oit/processors/transformrasterization.h>  // for TransformRasteriz...
+#include <modules/oit/processors/sphererasterizer.h>
+#include <modules/oit/processors/transformrasterization.h>
 #include <modules/oit/processors/volumerasterizer.h>
-#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
+#include <modules/opengl/shader/shadermanager.h>
 
-#include <functional>  // for __base
-#include <memory>      // for unique_ptr
+#include <functional>
+#include <memory>
 
-#include <fmt/core.h>  // for basic_string_view
+#include <fmt/core.h>
 
 namespace inviwo {
 class InviwoApplication;

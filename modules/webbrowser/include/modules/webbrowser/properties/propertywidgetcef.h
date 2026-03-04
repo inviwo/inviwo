@@ -29,21 +29,21 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
+#include <modules/webbrowser/webbrowsermoduledefine.h>
 
-#include <inviwo/core/properties/propertyobserver.h>  // for PropertyObserver
-#include <inviwo/core/properties/propertywidget.h>    // for PropertyWidget
+#include <inviwo/core/properties/propertyobserver.h>
+#include <inviwo/core/properties/propertywidget.h>
 #include <modules/json/jsonpropertyconverter.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include "include/wrapper/cef_message_router.h"
-#include <include/cef_base.h>   // for CefRefPtr, CefString
-#include <include/cef_frame.h>  // for CefFrame
+#include <include/cef_base.h>
+#include <include/cef_frame.h>
 #include <warn/pop>
 
-#include <memory>       // for unique_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <memory>
+#include <string>
+#include <string_view>
 
 class CefBrowser;
 

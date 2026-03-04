@@ -28,45 +28,45 @@
  *********************************************************************************/
 
 #pragma once
-#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOT...
+#include <modules/plottinggl/plottingglmoduledefine.h>
 
-#include <inviwo/core/datastructures/bitset.h>                            // for BitSet
-#include <inviwo/core/datastructures/buffer/buffer.h>                     // for Buffer, IndexBu...
-#include <inviwo/core/datastructures/image/image.h>                       // for Image
-#include <inviwo/core/datastructures/representationconverter.h>           // for RepresentationC...
-#include <inviwo/core/datastructures/representationconverterfactory.h>    // for RepresentationC...
-#include <inviwo/core/interaction/interactionhandler.h>                   // for InteractionHandler
-#include <inviwo/core/interaction/pickingmapper.h>                        // for PickingMapper
-#include <inviwo/core/properties/boolproperty.h>                          // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>                     // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>                     // for InvalidationLevel
-#include <inviwo/core/properties/ordinalproperty.h>                       // for FloatProperty
-#include <inviwo/core/properties/propertysemantics.h>                     // for PropertySemantics
-#include <inviwo/core/properties/selectioncolorproperty.h>                // for SelectionColorP...
-#include <inviwo/core/properties/transferfunctionproperty.h>              // for TransferFunctio...
-#include <inviwo/core/properties/marginproperty.h>                        // for MarginProperty
-#include <inviwo/core/util/dispatcher.h>                                  // for Dispatcher
-#include <inviwo/core/util/glmvec.h>                                      // for vec2, size2_t
-#include <modules/opengl/buffer/bufferobjectarray.h>                      // for BufferObjectArray
-#include <modules/opengl/shader/shader.h>                                 // for Shader
-#include <modules/opengl/texture/textureutils.h>                          // for ImageInport
-#include <modules/plotting/interaction/boxselectioninteractionhandler.h>  // for BoxSelectionInt...
-#include <modules/plotting/properties/axisproperty.h>                     // for AxisProperty
-#include <modules/plotting/properties/axisstyleproperty.h>                // for AxisStyleProperty
-#include <modules/plotting/properties/boxselectionproperty.h>             // for BoxSelectionPro...
-#include <modules/plottinggl/rendering/boxselectionrenderer.h>            // for BoxSelectionRen...
-#include <modules/plottinggl/utils/axisrenderer.h>                        // for AxisRenderer
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/interaction/interactionhandler.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/selectioncolorproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/marginproperty.h>
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/plotting/interaction/boxselectioninteractionhandler.h>
+#include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
+#include <modules/plotting/properties/boxselectionproperty.h>
+#include <modules/plottinggl/rendering/boxselectionrenderer.h>
+#include <modules/plottinggl/utils/axisrenderer.h>
 
-#include <array>          // for array
-#include <cstddef>        // for size_t
-#include <cstdint>        // for uint32_t
-#include <functional>     // for function
-#include <memory>         // for shared_ptr, uni...
-#include <string>         // for string
-#include <string_view>    // for string_view
-#include <tuple>          // for tie
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace inviwo {
 

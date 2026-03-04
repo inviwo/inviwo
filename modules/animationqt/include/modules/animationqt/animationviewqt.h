@@ -28,14 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/animationcontrollerobserver.h>    // for AnimationControllerObserver
-#include <modules/animation/datastructures/animationstate.h>  // for AnimationState
-#include <modules/animation/datastructures/animationtime.h>   // for Seconds
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
 
-#include <QGraphicsView>  // for QGraphicsView
-#include <QRectF>         // for QRectF
+#include <QGraphicsView>
+#include <QRectF>
 
 class QKeyEvent;
 class QMouseEvent;

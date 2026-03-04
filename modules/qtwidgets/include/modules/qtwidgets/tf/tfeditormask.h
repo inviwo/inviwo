@@ -32,7 +32,7 @@
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 
-#include <QGraphicsItem>  // for QGraphicsItem::UserType
+#include <QGraphicsItem>
 
 namespace inviwo {
 

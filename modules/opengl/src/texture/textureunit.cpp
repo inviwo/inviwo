@@ -29,12 +29,12 @@
 
 #include <modules/opengl/texture/textureunit.h>
 
-#include <inviwo/core/util/assertion.h>      // for IVW_ASSERT
-#include <modules/opengl/openglexception.h>  // for OpenGLException
+#include <inviwo/core/util/assertion.h>
+#include <modules/opengl/openglexception.h>
 
-#include <algorithm>    // for max
-#include <string_view>  // for string_view
-#include <utility>      // for swap, move
+#include <algorithm>
+#include <string_view>
+#include <utility>
 
 namespace inviwo {
 

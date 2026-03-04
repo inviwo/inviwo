@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>                // for Inviw...
-#include <inviwo/core/io/serialization/ticpp.h>             // for TxEle...
-#include <inviwo/core/io/serialization/versionconverter.h>  // for Versi...
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/ticpp.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
-#include <memory>  // for uniqu...
+#include <memory>
 
 namespace inviwo {
 class InviwoApplication;

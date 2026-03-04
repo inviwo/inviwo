@@ -33,7 +33,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
 
-#include <glm/matrix.hpp>  // for inverse
+#include <glm/matrix.hpp>
 
 namespace inviwo {
 

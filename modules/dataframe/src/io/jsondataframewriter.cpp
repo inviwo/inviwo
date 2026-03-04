@@ -29,15 +29,15 @@
 
 #include <inviwo/dataframe/io/jsondataframewriter.h>
 
-#include <inviwo/core/util/exception.h>                 // for FileException
-#include <inviwo/core/util/fileextension.h>             // for FileExtension
-#include <inviwo/core/util/sourcecontext.h>             // for SourceContext
-#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/jsondataframeconversion.h>   // IWYU pragma: keep
 #include <modules/json/json.h>
 
-#include <fstream>  // for basic_ifstream, ios, istream, str...
-#include <string>   // for operator==, fpos
+#include <fstream>
+#include <string>
 
 namespace inviwo {
 

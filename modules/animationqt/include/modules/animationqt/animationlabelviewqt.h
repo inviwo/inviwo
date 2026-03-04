@@ -28,12 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/animationcontrollerobserver.h>       // for AnimationControllerObserver
-#include <modules/animation/datastructures/animationobserver.h>  // for AnimationObserver
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/animationobserver.h>
 
-#include <QListView>  // for QListView
+#include <QListView>
 
 class QStandardItemModel;
 

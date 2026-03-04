@@ -29,17 +29,17 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/properties/propertyobserver.h>  // for PropertyObserver
-#include <inviwo/core/properties/propertywidget.h>    // for PropertyWidget
+#include <inviwo/core/properties/propertyobserver.h>
+#include <inviwo/core/properties/propertywidget.h>
 
-#include <functional>  // for function
-#include <memory>      // for unique_ptr
+#include <functional>
+#include <memory>
 
-#include <QPoint>   // for QPoint
-#include <QSize>    // for QSize
-#include <QWidget>  // for QWidget
+#include <QPoint>
+#include <QSize>
+#include <QWidget>
 
 class QEvent;
 class QLayout;

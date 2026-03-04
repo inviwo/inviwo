@@ -29,7 +29,7 @@
 
 #include <modules/json/io/json/stringpropertyjsonconverter.h>
 
-#include <inviwo/core/properties/stringproperty.h>  // for StringProperty
+#include <inviwo/core/properties/stringproperty.h>
 
 namespace inviwo {
 

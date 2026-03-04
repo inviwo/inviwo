@@ -29,48 +29,48 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_...
+#include <modules/plottinggl/plottingglmoduledefine.h>
 
-#include <inviwo/core/datastructures/bitset.h>                                // for BitSet
-#include <inviwo/core/datastructures/buffer/buffer.h>                         // for IndexBuffer
-#include <inviwo/core/datastructures/geometry/typedmesh.h>                    // for TypedMesh
-#include <inviwo/core/interaction/pickingmapper.h>                            // for PickingMapper
-#include <inviwo/core/ports/datainport.h>                                     // for DataInport
-#include <inviwo/core/ports/imageport.h>                                      // for ImageOutport
-#include <inviwo/core/ports/outportiterable.h>                                // for OutportIter...
-#include <inviwo/core/processors/processor.h>                                 // for Processor
-#include <inviwo/core/processors/processorinfo.h>                             // for ProcessorInfo
-#include <inviwo/core/properties/boolcompositeproperty.h>                     // for BoolComposi...
-#include <inviwo/core/properties/boolproperty.h>                              // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                            // for ButtonProperty
-#include <inviwo/core/properties/compositeproperty.h>                         // for CompositePr...
-#include <inviwo/core/properties/optionproperty.h>                            // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                           // for FloatProperty
-#include <inviwo/core/properties/stringproperty.h>                            // for StringProperty
-#include <inviwo/core/properties/marginproperty.h>                            // for MarginProperty
-#include <inviwo/core/util/glmvec.h>                                          // for vec2, size2_t
-#include <inviwo/core/util/staticstring.h>                                    // for operator+
-#include <inviwo/dataframe/properties/dataframecolormapproperty.h>            // for DataFrameCo...
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>         // for BrushingAnd...
-#include <modules/fontrendering/properties/fontproperty.h>                    // for FontProperty
-#include <modules/opengl/inviwoopengl.h>                                      // for GLsizei
-#include <modules/opengl/shader/shader.h>                                     // for Shader
-#include <modules/plottinggl/utils/axisrenderer.h>                            // for AxisRenderer
-#include <modules/userinterfacegl/glui/renderer.h>                            // for Renderer
-#include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>  // for DoubleMinMa...
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/marginproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/dataframe/properties/dataframecolormapproperty.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/fontrendering/properties/fontproperty.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/plottinggl/utils/axisrenderer.h>
+#include <modules/userinterfacegl/glui/renderer.h>
+#include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>
 
-#include <array>          // for array
-#include <cstddef>        // for size_t
-#include <cstdint>        // for uint32_t
-#include <functional>     // for __base
-#include <memory>         // for unique_ptr
-#include <string>         // for operator==
-#include <string_view>    // for operator==
-#include <unordered_map>  // for operator!=
-#include <utility>        // for pair
-#include <vector>         // for operator!=
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
-#include <fmt/core.h>  // for format_to
+#include <fmt/core.h>
 
 namespace inviwo {
 class DataFrame;

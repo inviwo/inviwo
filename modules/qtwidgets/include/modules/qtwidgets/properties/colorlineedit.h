@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/util/glmconvert.h>  // for glm_convert
-#include <inviwo/core/util/glmvec.h>      // for dvec4, ivec3, ivec4, dvec3, vec3, vec4
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <QLineEdit>     // for QLineEdit
-#include <QObject>       // for Q_OBJECT, signals, slots
-#include <glm/vec4.hpp>  // for operator*
+#include <QLineEdit>
+#include <QObject>
+#include <glm/vec4.hpp>
 
 class QEvent;
 class QFocusEvent;

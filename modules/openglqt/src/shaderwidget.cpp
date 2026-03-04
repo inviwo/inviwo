@@ -29,55 +29,55 @@
 
 #include <modules/openglqt/shaderwidget.h>
 
-#include <inviwo/core/common/inviwoapplication.h>  // for InviwoApplication
-#include <inviwo/core/util/colorconversion.h>      // for hsv2rgb, rgb2hsv
-#include <inviwo/core/util/glmvec.h>               // for vec4, vec3
-#include <inviwo/core/util/logcentral.h>           // for LogCentral
-#include <inviwo/core/util/raiiutils.h>            // for KeepTrueWhileInScope
-#include <modules/opengl/shader/shadermanager.h>   // for ShaderManager
-#include <modules/opengl/shader/shaderobject.h>    // for ShaderObject
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/colorconversion.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/stringshaderresource.h>
 #include <modules/opengl/shader/fileshaderresource.h>
-#include <modules/openglqt/glslsyntaxhighlight.h>  // for setGLSLSyntaxHighlight, GLSLSyntaxHigh...
-#include <modules/qtwidgets/codeedit.h>            // for CodeEdit
-#include <modules/qtwidgets/inviwodockwidget.h>    // for InviwoDockWidget
-#include <modules/qtwidgets/inviwoqtutils.h>       // for toQString, fromQString, emToPx
+#include <modules/openglqt/glslsyntaxhighlight.h>
+#include <modules/qtwidgets/codeedit.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <algorithm>    // for max, any_of, count
-#include <cstddef>      // for size_t
-#include <limits>       // for numeric_limits
-#include <string>       // for string, to_string, basic_string, basic...
-#include <string_view>  // for string_view, basic_string_view, hash
-#include <tuple>        // for tuple_element<>::type
-#include <type_traits>  // for add_const<>::type, remove_extent_t
-#include <utility>      // for pair
+#include <algorithm>
+#include <cstddef>
+#include <limits>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
-#include <QAction>         // for QAction
-#include <QDockWidget>     // for QDockWidget
-#include <QEvent>          // for QEvent, QEvent::FocusIn
-#include <QFlags>          // for QFlags
-#include <QIcon>           // for QIcon, QIcon::Normal, QIcon::Off, QIco...
-#include <QKeySequence>    // for QKeySequence, QKeySequence::Redo, QKey...
-#include <QList>           // for QList
-#include <QObject>         // for QObject
-#include <QPixmap>         // for QPixmap
-#include <QPlainTextEdit>  // for QPlainTextEdit
-#include <QSizeF>          // for QSizeF
-#include <QString>         // for operator+, QString
-#include <QTextDocument>   // for QTextDocument
-#include <QWidget>         // for QWidget
-#include <Qt>              // for operator|, WidgetWithChildrenShortcut
-#include <fmt/core.h>      // for format
-#include <fmt/format.h>    // for compile_string_to_view, FMT_STRING
-#include <glm/vec3.hpp>    // for vec, vec<>::(anonymous)
-#include <glm/vec4.hpp>    // for vec<>::(anonymous)
+#include <QAction>
+#include <QDockWidget>
+#include <QEvent>
+#include <QFlags>
+#include <QIcon>
+#include <QKeySequence>
+#include <QList>
+#include <QObject>
+#include <QPixmap>
+#include <QPlainTextEdit>
+#include <QSizeF>
+#include <QString>
+#include <QTextDocument>
+#include <QWidget>
+#include <Qt>
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
-#include <QMainWindow>     // for QMainWindow
-#include <QMessageBox>     // for QMessageBox, operator|, QMessageBox::Save
-#include <QScrollBar>      // for QScrollBar
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <QToolBar>        // for QToolBar
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QScrollBar>
+#include <QSignalBlocker>
+#include <QToolBar>
 
 class QCloseEvent;
 

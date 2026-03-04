@@ -29,20 +29,20 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>               // for Image...
-#include <inviwo/core/processors/processor.h>          // for Proce...
-#include <inviwo/core/processors/processorinfo.h>      // for Proce...
-#include <inviwo/core/properties/boolproperty.h>       // for BoolP...
-#include <inviwo/core/properties/compositeproperty.h>  // for Compo...
-#include <inviwo/core/properties/ordinalproperty.h>    // for IntPr...
-#include <inviwo/core/util/glmvec.h>                   // for dvec2
-#include <modules/base/properties/gaussianproperty.h>  // for Gauss...
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/properties/gaussianproperty.h>
 
-#include <random>   // for unifo...
-#include <utility>  // for pair
-#include <vector>   // for vector
+#include <random>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 class Deserializer;

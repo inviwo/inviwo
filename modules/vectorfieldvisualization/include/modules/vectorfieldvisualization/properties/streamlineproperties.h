@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
-#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>  // for Integ...
+#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 
-#include <string>       // for string
-#include <string_view>  // for strin...
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 

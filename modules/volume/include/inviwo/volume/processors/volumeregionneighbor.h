@@ -31,12 +31,12 @@
 
 #include <inviwo/volume/volumemoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>               // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/poolprocessor.h>       // for PoolProcessor
-#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
-#include <inviwo/core/properties/ordinalproperty.h>     // for OrdinalProperty
-#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrameInport
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/poolprocessor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
 

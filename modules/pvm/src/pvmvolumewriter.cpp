@@ -29,29 +29,29 @@
 
 #include <modules/pvm/pvmvolumewriter.h>
 
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, DataWrite...
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
-#include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
-#include <inviwo/core/metadata/metadata.h>                              // for MetaDataPrimitive...
-#include <inviwo/core/util/fileextension.h>                             // for FileExtension
-#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/glmmat.h>                                    // for mat3
-#include <inviwo/core/util/glmvec.h>                                    // for size3_t, vec3
-#include <inviwo/core/util/safecstr.h>                                  // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterexception.h>
+#include <inviwo/core/metadata/metadata.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/sourcecontext.h>
 
-#include <cstring>        // for strncpy, memcpy
-#include <memory>         // for allocator, unique...
-#include <string>         // for basic_string, ope...
-#include <unordered_set>  // for unordered_set
+#include <cstring>
+#include <memory>
+#include <string>
+#include <unordered_set>
 #include <filesystem>
 
-#include <glm/mat3x3.hpp>   // for mat<>::col_type
-#include <glm/vec3.hpp>     // for vec<>::(anonymous)
-#include <tidds/ddsbase.h>  // for swapbytes, writeP...
+#include <glm/mat3x3.hpp>
+#include <glm/vec3.hpp>
+#include <tidds/ddsbase.h>
 
 namespace inviwo {
 

@@ -29,14 +29,14 @@
 
 #include <modules/opengl/canvasprocessorgl.h>
 
-#include <inviwo/core/algorithm/markdown.h>         // for operator""_unindentHelp
-#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>  // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>   // for Tags, Tags::GL
+#include <inviwo/core/algorithm/markdown.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
 
-#include <memory>       // for shared_ptr, shared_ptr<>::element_type
-#include <string>       // for string
-#include <type_traits>  // for remove_extent_t
+#include <memory>
+#include <string>
+#include <type_traits>
 
 namespace inviwo {
 

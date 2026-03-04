@@ -29,7 +29,7 @@
 
 #include <modules/animationqt/widgets/controltrackwidgetqt.h>
 
-#include <modules/animationqt/widgets/trackwidgetqt.h>  // for TrackWidgetQt
+#include <modules/animationqt/widgets/trackwidgetqt.h>
 
 namespace inviwo {
 

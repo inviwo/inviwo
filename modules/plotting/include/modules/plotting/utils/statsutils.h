@@ -29,23 +29,23 @@
 
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
+#include <modules/plotting/plottingmoduledefine.h>
 
-#include <inviwo/core/util/exception.h>      // for Exception
-#include <inviwo/core/util/glm.h>            // for isnan
-#include <inviwo/core/util/glmutils.h>       // for is_floating_point
-#include <inviwo/core/util/sourcecontext.h>  // for SourceContext
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/sourcecontext.h>
 
-#include <algorithm>    // for max, sort, partition
-#include <cmath>        // for ceil
-#include <cstddef>      // for size_t
-#include <iosfwd>       // for ostream
-#include <iterator>     // for distance
-#include <stdexcept>    // for invalid_argument
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for enable_if
-#include <vector>       // for vector
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <iosfwd>
+#include <iterator>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <vector>
 
 #include <glm/common.hpp>
 

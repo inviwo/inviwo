@@ -30,20 +30,20 @@
 #include <modules/qtwidgets/filepathlineeditqt.h>
 
 #include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/filesystem.h>      // for fileExists, getFileNameWithExtension, getFi...
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/curlutils.h>
-#include <modules/qtwidgets/inviwoqtutils.h>  // for toQString, fromQString
-#include <modules/qtwidgets/lineeditqt.h>     // for LineEditQt
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/lineeditqt.h>
 
-#include <QCursor>      // for QCursor
-#include <QFocusEvent>  // for QFocusEvent
-#include <QLabel>       // for QLabel
-#include <QLineEdit>    // for QLineEdit
-#include <QPixmap>      // for QPixmap
-#include <QSize>        // for QSize
-#include <QString>      // for QString, operator!=
-#include <QStyle>       // for QStyle, QStyle::PM_DefaultFrameWidth
-#include <Qt>           // for MouseFocusReason
+#include <QCursor>
+#include <QFocusEvent>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPixmap>
+#include <QSize>
+#include <QString>
+#include <QStyle>
+#include <Qt>
 #include <QCompleter>
 #include <QFileSystemModel>
 #include <QListView>

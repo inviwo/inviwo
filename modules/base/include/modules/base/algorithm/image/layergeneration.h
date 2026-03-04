@@ -30,27 +30,27 @@
 #pragma once
 
 #include <inviwo/core/datastructures/image/layer.h>     // IWYU pragma: keep
-#include <inviwo/core/datastructures/image/layerram.h>  // for LayerRAMPrecision
-#include <inviwo/core/util/glmconvert.h>                // for glm_convert_normalized
-#include <inviwo/core/util/glmmat.h>                    // for mat3
-#include <inviwo/core/util/glmvec.h>                    // for size3_t, dvec3
-#include <inviwo/core/util/indexmapper.h>               // for IndexMapper, IndexMapper3D
-#include <modules/base/algorithm/algorithmoptions.h>  // for IgnoreSpecialValues, IgnoreSpecialV...
-#include <modules/base/algorithm/dataminmax.h>        // for dataMinMax
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <modules/base/algorithm/algorithmoptions.h>
+#include <modules/base/algorithm/dataminmax.h>
 
-#include <array>          // for array
-#include <bitset>         // for bitset, __bitset<>::reference, bits...
-#include <cmath>          // for sin
-#include <cstddef>        // for size_t
-#include <memory>         // for unique_ptr, make_shared, make_unique
-#include <unordered_map>  // for unordered_map
+#include <array>
+#include <bitset>
+#include <cmath>
+#include <cstddef>
+#include <memory>
+#include <unordered_map>
 
-#include <glm/ext/scalar_constants.hpp>  // for pi
-#include <glm/geometric.hpp>             // for length
-#include <glm/gtx/component_wise.hpp>    // for compMul
-#include <glm/gtx/norm.hpp>              // for length2
-#include <glm/mat3x3.hpp>                // for mat<>::col_type
-#include <glm/vec3.hpp>                  // for operator+, operator-, operator/, vec
+#include <glm/ext/scalar_constants.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtx/component_wise.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/mat3x3.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 template <typename T>

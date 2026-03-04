@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/image.h>       // for Image
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType
-#include <inviwo/core/ports/imageport.h>                  // for ImageInport
-#include <modules/opengl/shader/shader.h>                 // for Shader
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/ports/imageport.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <string>  // for string
+#include <string>
 
 namespace inviwo {
 

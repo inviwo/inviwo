@@ -28,14 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/animationcontrollerobserver.h>    // for AnimationControllerObserver
-#include <modules/animation/datastructures/animationstate.h>  // for AnimationState
-#include <modules/qtwidgets/inviwodockwidget.h>               // for InviwoDockWidget
+#include <modules/animation/animationcontrollerobserver.h>
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <memory>  // for unique_ptr
-#include <string>  // for string
+#include <memory>
+#include <string>
 
 class QAction;
 class QComboBox;

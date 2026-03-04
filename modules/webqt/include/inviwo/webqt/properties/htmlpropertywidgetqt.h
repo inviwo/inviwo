@@ -33,7 +33,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/filepropertywidgetqt.h>  // for FilePropertyWidgetQt
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
 
 namespace inviwo {
 

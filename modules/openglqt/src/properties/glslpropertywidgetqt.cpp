@@ -29,12 +29,12 @@
 
 #include <modules/openglqt/properties/glslpropertywidgetqt.h>
 
-#include <inviwo/core/properties/propertysemantics.h>             // for operator==, PropertySem...
-#include <inviwo/core/properties/stringproperty.h>                // for StringProperty
-#include <modules/openglqt/properties/glsleditordockwidget.h>     // for GLSLEditorDockWidget
-#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>  // for StringPropertyWidgetQt
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <modules/openglqt/properties/glsleditordockwidget.h>
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
 
-#include <memory>  // for make_unique, unique_ptr
+#include <memory>
 
 namespace inviwo {
 

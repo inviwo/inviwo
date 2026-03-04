@@ -28,17 +28,17 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/camera/camera.h>     // for mat4
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for Wrapping3D
-#include <inviwo/core/util/glmvec.h>                      // for size3_t, vec3
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <cstdint>   // for uint32_t
-#include <memory>    // for shared_ptr
-#include <optional>  // for optional
-#include <utility>   // for pair
-#include <vector>    // for vector
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 class Volume;

@@ -29,13 +29,13 @@
 
 #include <modules/userinterfacegl/glui/widgetsupplier.h>
 
-#include <inviwo/core/common/inviwoapplication.h>              // for InviwoApplication
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/moduleutils.h>
-#include <inviwo/core/util/exception.h>                        // for Exception
-#include <inviwo/core/util/sourcecontext.h>                    // for SourceContext
-#include <modules/userinterfacegl/glui/widgetfactory.h>        // for WidgetFactory
-#include <modules/userinterfacegl/glui/widgetfactoryobject.h>  // for WidgetFactoryObject
-#include <modules/userinterfacegl/userinterfaceglmodule.h>     // for UserInterfaceGLModule
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <modules/userinterfacegl/glui/widgetfactory.h>
+#include <modules/userinterfacegl/glui/widgetfactoryobject.h>
+#include <modules/userinterfacegl/userinterfaceglmodule.h>
 
 namespace inviwo {
 

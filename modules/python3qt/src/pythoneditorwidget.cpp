@@ -27,57 +27,57 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
-#include <inviwo/core/util/chronoutils.h>                     // for durationToString
-#include <inviwo/core/util/clock.h>                           // for Clock
-#include <inviwo/core/util/filedialogstate.h>                 // for FileMode, FileMode::AnyFile
-#include <inviwo/core/util/filesystem.h>                      // for ifstream, ofstream
-#include <inviwo/core/util/pathtype.h>                        // for PathType, PathType::Scripts
-#include <inviwo/core/util/raiiutils.h>                       // for OnScopeExit, OnScopeExit::E...
-#include <inviwo/core/util/stringconversion.h>                // for replaceInString
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/chronoutils.h>
+#include <inviwo/core/util/clock.h>
+#include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/pathtype.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/moduleutils.h>
-#include <modules/python3/python3module.h>                    // for Python3Module
-#include <modules/python3/pythonexecutionoutputobservable.h>  // for PythonOutputType, PythonOut...
-#include <modules/python3/pythoninterpreter.h>                // for PythonInterpreter
-#include <modules/python3/pythonscript.h>                     // for PythonScript
-#include <modules/python3qt/python3qtmodule.h>                // for Python3QtModule
-#include <modules/python3qt/pythoneditorwidget.h>             // for PythonEditorWidget
-#include <modules/python3qt/pythonsyntaxhighlight.h>          // for setPythonOutputSyntaxHighlight
-#include <modules/qtwidgets/codeedit.h>                       // for CodeEdit
-#include <modules/qtwidgets/editorfileobserver.h>             // for EditorFileObserver
-#include <modules/qtwidgets/inviwodockwidget.h>               // for InviwoDockWidget
-#include <modules/qtwidgets/inviwofiledialog.h>               // for InviwoFileDialog
-#include <modules/qtwidgets/inviwoqtutils.h>                  // for fromQString, toQString, emToPx
+#include <modules/python3/python3module.h>
+#include <modules/python3/pythonexecutionoutputobservable.h>
+#include <modules/python3/pythoninterpreter.h>
+#include <modules/python3/pythonscript.h>
+#include <modules/python3qt/python3qtmodule.h>
+#include <modules/python3qt/pythoneditorwidget.h>
+#include <modules/python3qt/pythonsyntaxhighlight.h>
+#include <modules/qtwidgets/codeedit.h>
+#include <modules/qtwidgets/editorfileobserver.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <fstream>     // for operator<<, basic_ostream
-#include <functional>  // for __base
-#include <iterator>    // for istreambuf_iterator
-#include <memory>      // for shared_ptr
-#include <string>      // for char_traits, string, operator+
-#include <vector>      // for vector
+#include <fstream>
+#include <functional>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <vector>
 
-#include <QAction>          // for QAction
-#include <QFileDialog>      // for QFileDialog, QFileDialog::D...
-#include <QFlags>           // for QFlags
-#include <QIcon>            // for QIcon, QIcon::Normal, QIcon...
-#include <QKeySequence>     // for QKeySequence, QKeySequence:...
-#include <QList>            // for QList
-#include <QMainWindow>      // for QMainWindow
-#include <QMessageBox>      // for QMessageBox, operator|, QMe...
-#include <QObject>          // for QObject
-#include <QPlainTextEdit>   // for QPlainTextEdit
-#include <QSettings>        // for QSettings
-#include <QSize>            // for QSize
-#include <QSizeF>           // for QSizeF
-#include <QSplitter>        // for QSplitter
-#include <QSplitterHandle>  // for QSplitterHandle
-#include <QStatusBar>       // for QStatusBar
-#include <QString>          // for QString
-#include <QStringList>      // for QStringList
-#include <QTextDocument>    // for QTextDocument
-#include <QToolBar>         // for QToolBar
-#include <QVariant>         // for QVariant
-#include <Qt>               // for operator|, WidgetWithChildr...
+#include <QAction>
+#include <QFileDialog>
+#include <QFlags>
+#include <QIcon>
+#include <QKeySequence>
+#include <QList>
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QObject>
+#include <QPlainTextEdit>
+#include <QSettings>
+#include <QSize>
+#include <QSizeF>
+#include <QSplitter>
+#include <QSplitterHandle>
+#include <QStatusBar>
+#include <QString>
+#include <QStringList>
+#include <QTextDocument>
+#include <QToolBar>
+#include <QVariant>
+#include <Qt>
 
 #include <fmt/format.h>
 #include <fmt/std.h>

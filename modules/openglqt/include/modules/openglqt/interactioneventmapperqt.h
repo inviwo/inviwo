@@ -28,19 +28,19 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <inviwo/core/interaction/events/touchevent.h>  // for TouchPoint
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/contextmenuaction.h>
-#include <inviwo/core/util/glmvec.h>  // for size2_t, dvec2, vec2
+#include <inviwo/core/util/glmvec.h>
 
-#include <functional>  // for function
-#include <string>      // for string
-#include <vector>      // for vector
+#include <functional>
+#include <string>
+#include <vector>
 
-#include <QObject>  // for QObject
-#include <Qt>       // for CursorShape, GestureType
+#include <QObject>
+#include <Qt>
 
 class QEvent;
 class QGestureEvent;

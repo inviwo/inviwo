@@ -29,26 +29,26 @@
 
 #include <modules/plotting/properties/categoricalaxisproperty.h>
 
-#include <inviwo/core/properties/boolproperty.h>                      // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>                 // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>                 // for InvalidationLevel
-#include <inviwo/core/properties/optionproperty.h>                    // for OptionPropertyOption
-#include <inviwo/core/properties/ordinalproperty.h>                   // for FloatProperty, Floa...
-#include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
-#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
-#include <inviwo/core/util/glmvec.h>                                  // for vec2, vec4, dvec2
-#include <inviwo/core/util/staticstring.h>                            // for operator+
-#include <modules/fontrendering/properties/fontfaceoptionproperty.h>  // for FontFaceOptionProperty
-#include <modules/fontrendering/properties/fontproperty.h>            // for FontProperty
-#include <modules/fontrendering/util/fontutils.h>                     // for getFont, FontType
-#include <modules/plotting/datastructures/axissettings.h>             // for AxisSettings::Orien...
-#include <modules/plotting/datastructures/majorticksettings.h>        // for TickStyle, TickStyl...
-#include <modules/plotting/datastructures/minortickdata.h>            // for MinorTickData
-#include <modules/plotting/properties/plottextproperty.h>             // for PlotTextProperty
-#include <modules/plotting/properties/tickproperty.h>                 // for MajorTickProperty
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>
+#include <modules/fontrendering/properties/fontproperty.h>
+#include <modules/fontrendering/util/fontutils.h>
+#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/majorticksettings.h>
+#include <modules/plotting/datastructures/minortickdata.h>
+#include <modules/plotting/properties/plottextproperty.h>
+#include <modules/plotting/properties/tickproperty.h>
 
-#include <cstddef>  // for size_t
-#include <utility>  // for move
+#include <cstddef>
+#include <utility>
 
 namespace inviwo {
 

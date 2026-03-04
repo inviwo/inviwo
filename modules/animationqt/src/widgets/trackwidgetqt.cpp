@@ -29,10 +29,10 @@
 
 #include <modules/animationqt/widgets/trackwidgetqt.h>
 
-#include <modules/animation/datastructures/track.h>                // for Track
-#include <modules/animationqt/widgets/keyframesequencewidgetqt.h>  // for KeyframeSequenceWidgetQt
+#include <modules/animation/datastructures/track.h>
+#include <modules/animationqt/widgets/keyframesequencewidgetqt.h>
 
-#include <cstddef>  // for size_t
+#include <cstddef>
 
 class QPainter;
 class QStyleOptionGraphicsItem;

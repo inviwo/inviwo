@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>  // for ivec2
+#include <inviwo/core/util/glmvec.h>
 
-#include <functional>  // for function
-#include <string>      // for string
+#include <functional>
+#include <string>
 
-#include <QObject>    // for Q_OBJECT, signals
-#include <QSplitter>  // for QSplitter
-#include <Qt>         // for Horizontal, Orientation
+#include <QObject>
+#include <QSplitter>
+#include <Qt>
 
 class QEvent;
 class QWidget;

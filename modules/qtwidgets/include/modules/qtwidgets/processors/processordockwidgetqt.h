@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/processors/processor.h>        // for Processor, Processor::NameDispatche...
-#include <inviwo/core/processors/processorwidget.h>  // for ProcessorWidget
-#include <inviwo/core/util/glmvec.h>                 // for ivec2
-#include <modules/qtwidgets/inviwodockwidget.h>      // for InviwoDockWidget
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <QObject>                  // for Q_OBJECT
-#include <QString>                  // for QString
-#include <glm/ext/vector_int2.hpp>  // for ivec2
+#include <QObject>
+#include <QString>
+#include <glm/ext/vector_int2.hpp>
 
 class QHideEvent;
 class QMoveEvent;

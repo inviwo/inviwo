@@ -29,32 +29,32 @@
 
 #include <modules/base/processors/gridplanes.h>
 
-#include <inviwo/core/algorithm/markdown.h>                             // for operator""_help
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
-#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for ColoredMesh, Type...
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/ports/meshport.h>                                 // for MeshOutport
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/minmaxproperty.h>                      // for FloatMinMaxProperty
-#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4
+#include <inviwo/core/algorithm/markdown.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <functional>     // for __base
-#include <memory>         // for shared_ptr, share...
-#include <string>         // for string
-#include <type_traits>    // for remove_extent_t
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
-#include <vector>         // for vector
+#include <functional>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
-#include <fmt/core.h>    // for format
-#include <glm/vec2.hpp>  // for vec, vec<>::(anon...
+#include <fmt/core.h>
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 

@@ -29,17 +29,17 @@
 
 #include <modules/base/algorithm/volume/volumeramdownsample.h>
 
-#include <inviwo/core/datastructures/volume/volumeram.h>  // for VolumeRAM
-#include <inviwo/core/util/formatdispatching.h>           // for PrecisionValueType
-#include <inviwo/core/util/glmutils.h>                    // for same_extent
-#include <inviwo/core/util/glmvec.h>                      // for size3_t
-#include <inviwo/core/util/indexmapper.h>                 // for IndexMapper, IndexMapper3D
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/indexmapper.h>
 
-#include <cstddef>  // for size_t
+#include <cstddef>
 
-#include <glm/vec2.hpp>  // for operator*
-#include <glm/vec3.hpp>  // for operator*, vec<>::(anonymous)
-#include <glm/vec4.hpp>  // for operator*
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 #ifdef IVW_USE_OPENMP
 #include <omp.h>
