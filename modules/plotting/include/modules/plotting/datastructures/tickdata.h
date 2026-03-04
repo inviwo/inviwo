@@ -26,41 +26,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/plotting/datastructures/plottextsettings.h>
+#include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
 
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
+namespace inviwo::plot {
 
-namespace inviwo {
+enum class TickStyle : std::uint8_t { None, Inside, Outside, Both };
 
-namespace plot {
+struct IVW_MODULE_PLOTTING_API TickData {
+    TickStyle style = TickStyle::Both;
+    vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    float length = 8.0f;
+    float width = 2.5f;
 
-PlotTextSettings::operator bool() const { return isEnabled(); }
+    bool operator==(const TickData&) const = default;
+};
 
-bool operator==(const PlotTextSettings& a, const PlotTextSettings& b) {
-    return a.isEnabled() == b.isEnabled() && a.getPlacement() == b.getPlacement() &&
-           a.getColor() == b.getColor() && a.getPosition() == b.getPosition() &&
-           a.getOffset() == b.getOffset() && a.getRotation() == b.getRotation() &&
-           a.getFont() == b.getFont();
-}
-
-bool operator!=(const PlotTextSettings& a, const PlotTextSettings& b) { return !(a == b); }
-
-LabelPlacement flip(LabelPlacement p) {
-    switch (p) {
-        case LabelPlacement::Outside:
-            return LabelPlacement::Inside;
-        case LabelPlacement::Inside:
-            return LabelPlacement::Outside;
-        default:
-            return p;
-    }
-}
-
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

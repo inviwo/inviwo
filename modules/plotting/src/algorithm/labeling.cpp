@@ -48,37 +48,22 @@ bool almostEqual(double a, double b, int factor = 50) {
     return min_a <= b && max_a >= b;
 }
 
-}  // namespace
+auto rangeView(const LinearRange& range) {
+    const auto start = util::almostEqual(range.start, 0.0) ? 0.0 : range.start;
+    const auto stop = util::almostEqual(range.stop, 0.0) ? 0.0 : range.stop;
+    const auto step = range.step;
 
-std::vector<double> linearRange(double start, double stop, double step) {
-    std::vector<double> positions;
-    if (util::almostEqual(start, 0.0)) {
-        start = 0.0;
-    }
-    if (util::almostEqual(stop, 0.0)) {
-        stop = 0.0;
-    }
+    const auto count =
+        std::max(1, static_cast<int>(std::floor((stop + 0.5 * step - start) / step)));
 
-    if (util::almostEqual(start, stop) || util::almostEqual(step, 0.0)) {
-        return {start};
-    }
+    const auto steps = ((start > stop && step > 0) || (start < stop && step < 0)) ? 0 : count + 1;
 
-    const double epsilon = step * 1.0e-3;
-
-    const auto tickCount = static_cast<int>(std::floor((stop + 0.5 * step - start) / step));
-    positions.emplace_back(start);
-    for (auto i : std::ranges::iota_view(1, tickCount)) {
-        const double pos = start + step * i;
-        positions.emplace_back(std::abs(pos) < epsilon ? 0.0 : pos);
-    }
-
-    if (std::abs(positions.back() - stop) > epsilon) {
-        positions.emplace_back(stop);
-    }
-    return positions;
+    return std::views::iota(0, steps) | std::views::transform([start, stop, step, count](int i) {
+               if (count == i) return stop;
+               const double pos = start + step * i;
+               return std::abs(pos) < step * 1.0e-3 ? 0.0 : pos;
+           });
 }
-
-namespace {
 
 // utility function for Heckbert's labeling
 double niceNumber(double value, bool round) {
@@ -111,20 +96,55 @@ double niceNumber(double value, bool round) {
 
 }  // namespace
 
-AxisLabels labelingHeckbert(double valueMin, double valueMax, int numTicks) {
-    ivwAssert(numTicks > 1, "expected numTicks > 1");
+void linearRange(const LinearRange& range, std::vector<double>& positions) {
+    positions.assign_range(rangeView(range));
+}
+
+void linearRange(const dvec2& range, const LinearRange& optRange, int minorTickFrequency,
+                 std::vector<double>& major, std::vector<double>& minor) {
+
+    const auto view = rangeView(optRange);
+    major.assign_range(view);
+
+    if (minorTickFrequency <= 1) return;
+
+    const auto minorStep = optRange.step / static_cast<double>(minorTickFrequency);
+    const auto pre =
+        static_cast<size_t>(std::floor(std::max(0.0, optRange.start - range.x) / minorStep));
+    const auto post =
+        static_cast<size_t>(std::floor(std::max(0.0, range.y - optRange.stop) / minorStep));
+
+    minor.clear();
+
+    minor.append_range(std::views::iota(0uz, pre) | std::views::transform([=](size_t i) {
+                           return optRange.start - (pre - i) * minorStep;
+                       }));
+
+    minor.append_range(view | std::views::take(std::ranges::size(view) - 1uz) |
+                       std::views::transform([&](double x) {
+                           return std::views::iota(0, minorTickFrequency - 1) |
+                                  std::views::transform([=](int i) {
+                                      return x + static_cast<double>(i + 1) * minorStep;
+                                  });
+                       }) |
+                       std::views::join);
+
+    minor.append_range(std::views::iota(0uz, post) | std::views::transform([=](size_t i) {
+                           return optRange.stop + (i + 1) * minorStep;
+                       }));
+}
+
+LinearRange labelingHeckbert(double valueMin, double valueMax, int numTicks) {
+    if (numTicks <= 1) {
+        throw Exception("expected numTicks > 1");
+    }
 
     const double adjustedExtent = niceNumber(valueMax - valueMin, false);
-    const double tickSpacing =
-        niceNumber(adjustedExtent / (static_cast<double>(numTicks) - 1.0), true);
+    const auto step = niceNumber(adjustedExtent / (static_cast<double>(numTicks) - 1.0), true);
+    const auto start = std::ceil(valueMin / step) * step;
+    const auto stop = std::floor(valueMax / step) * step;
 
-    const double start = std::ceil(valueMin / tickSpacing) * tickSpacing;
-    const double stop = std::floor(valueMax / tickSpacing) * tickSpacing;
-    return AxisLabels{.positions = linearRange(start, stop, tickSpacing),
-                      .labels = {},
-                      .start = start,
-                      .stop = stop,
-                      .step = tickSpacing};
+    return {.start = start, .stop = stop, .step = step};
 }
 
 // utility functions for the Extended Wilkinson labeling
@@ -176,8 +196,8 @@ double densityMax(int k, int m) {
 }  // namespace
 
 // NOLINTBEGIN(readability-function-cognitive-complexity)
-AxisLabels labelingExtendedWilkinson(double valueMin, double valueMax, int numTicks,
-                                     std::span<const double> Q) {
+LinearRange labelingExtendedWilkinson(double valueMin, double valueMax, int numTicks,
+                                      std::span<const double> Q) {
     // weights for simplicity, coverage, density, and legibility
     constexpr std::array<double, 4> weights{0.25, 0.2, 0.5, 0.05};
     const bool labelOutsideRange = false;
@@ -186,11 +206,8 @@ AxisLabels labelingExtendedWilkinson(double valueMin, double valueMax, int numTi
     if (std::abs(valueMax - valueMin) < std::numeric_limits<double>::epsilon() * 100.0 ||
         std::abs(valueMax - valueMin) > std::sqrt(std::numeric_limits<double>::max())) {
         const double step = (valueMax - valueMin) / static_cast<double>(numTicks - 1);
-        return AxisLabels{.positions = linearRange(valueMin, valueMax, step),
-                          .labels = {},
-                          .start = valueMin,
-                          .stop = valueMax,
-                          .step = step};
+
+        return {.start = valueMin, .stop = valueMax, .step = step};
     }
 
     auto weightedScore = [&weights](auto scores) {
@@ -200,8 +217,10 @@ AxisLabels labelingExtendedWilkinson(double valueMin, double valueMax, int numTi
     const int maxAttempts = 100000;  // +inf in the original implementation
     double bestScore = -2.0;
 
+    LinearRange result{.start = 0.0, .stop = 0.0, .step = 1.0};
+
     int j = 1;
-    AxisLabels labels{};
+
     while (j < maxAttempts) {
         for (auto&& [qIndex, q] : util::enumerate(Q)) {
             std::array<double, 4> scores{simplicityMax(static_cast<int>(qIndex), Q.size(), j), 1.0,
@@ -248,9 +267,9 @@ AxisLabels labelingExtendedWilkinson(double valueMin, double valueMax, int numTi
                         if (auto s = weightedScore(score);
                             s > bestScore && (labelMin <= valueMin && labelMax >= valueMax)) {
                             bestScore = s;
-                            labels.start = labelMin;
-                            labels.stop = labelMax;
-                            labels.step = labelStep;
+                            result.start = labelMin;
+                            result.stop = labelMax;
+                            result.step = labelStep;
                         }
                     }
                 }
@@ -260,16 +279,15 @@ AxisLabels labelingExtendedWilkinson(double valueMin, double valueMax, int numTi
     }
     if (!labelOutsideRange) {
         // adjust start and stop limits to lie within the value range
-        if (!util::almostEqual(labels.start, valueMin) && labels.start < valueMin) {
-            labels.start += labels.step;
+        if (!util::almostEqual(result.start, valueMin) && result.start < valueMin) {
+            result.start += result.step;
         }
-        if (!util::almostEqual(labels.stop, valueMax) && labels.stop > valueMax) {
-            labels.stop -= labels.step;
+        if (!util::almostEqual(result.stop, valueMax) && result.stop > valueMax) {
+            result.stop -= result.step;
         }
     }
 
-    labels.positions = linearRange(labels.start, labels.stop, labels.step);
-    return labels;
+    return result;
 }
 // NOLINTEND(readability-function-cognitive-complexity)
 
@@ -348,8 +366,9 @@ private:
 
 }  // namespace
 
-AxisLabels labelingMatplotlib(double valueMin, double valueMax, int maxTicks,
-                              std::span<const double> niceSteps, bool integerTicks, int minNTicks) {
+LinearRange labelingMatplotlib(double valueMin, double valueMax, int maxTicks,
+                               std::span<const double> niceSteps, bool integerTicks,
+                               int minNTicks) {
     ivwAssert(minNTicks > 0, "expected minNTicks > 0");
     const int nBins = maxTicks - 1;
     const bool roundNumbers = true;
@@ -395,7 +414,8 @@ AxisLabels labelingMatplotlib(double valueMin, double valueMax, int maxTicks,
     // if it provides enough ticks. If not, work backwards through
     // smaller steps until one is found that provides enough ticks.
     // for step in steps[:istep+1][::-1]:
-    AxisLabels labels{};
+
+    LinearRange result{.start = 0.0, .stop = 0.0, .step = 1.0};
     for (auto step : steps | std::views::take(iStep + 1) | std::views::reverse) {
         if (integerTicks && (std::floor(vMax) - std::ceil(vMin) >= minNTicks - 1)) {
             step = std::max(1.0, step);
@@ -416,39 +436,71 @@ AxisLabels labelingMatplotlib(double valueMin, double valueMax, int maxTicks,
             std::views::transform([step, bestVMin](auto i) { return i * step + bestVMin; }) |
             std::views::filter([vMin, vMax](double t) { return t >= vMin && t <= vMax; });
         if (std::ranges::distance(ticks) >= minNTicks) {
-            labels.start = ticks.front() + offset;
-            labels.stop = ticks.back() + offset;
-            labels.step = step;
+            result.start = ticks.front() + offset;
+            result.stop = ticks.back() + offset;
+            result.step = step;
             break;
         }
     }
 
-    labels.positions = linearRange(labels.start, labels.stop, labels.step);
-    return labels;
+    return result;
 }
 
-AxisLabels labelingLimits(double valueMin, double valueMax, bool includeZero) {
-    if (almostEqual(valueMin, valueMax)) {
-        return AxisLabels{.positions = {valueMin},
-                          .labels = {},
-                          .start = valueMin,
-                          .stop = valueMax,
-                          .step = 0.0};
-    }
+void labelingLimits(double valueMin, double valueMax, std::vector<double>& positions,
+                    bool includeZero) {
 
-    AxisLabels labels{.positions = {},
-                      .labels = {},
-                      .start = valueMin,
-                      .stop = valueMax,
-                      .step = valueMax - valueMin};
-    // include 0.0 if neither limit is zero and they have different signs
-    if (includeZero && (std::signbit(valueMin) != std::signbit(valueMax)) &&
-        !(almostEqual(valueMin, 0.0) || almostEqual(valueMax, 0.0))) {
-        labels.positions = {valueMin, 0.0, valueMax};
+    if (almostEqual(valueMin, valueMax)) {
+        positions.assign_range(std::array{valueMin});
+    } else if (includeZero && (std::signbit(valueMin) != std::signbit(valueMax)) &&
+               !(almostEqual(valueMin, 0.0) || almostEqual(valueMax, 0.0))) {
+        // include 0.0 if neither limit is zero and they have different signs
+        positions.assign_range(std::array{valueMin, 0.0, valueMax});
     } else {
-        labels.positions = {valueMin, valueMax};
+        positions.assign_range(std::array{valueMin, valueMax});
     }
-    return labels;
+}
+
+void updateLabelPositions(std::vector<double>& major, std::vector<double>& minor,
+                          LabelingAlgorithm algorithm, const dvec2& range, int maxTicks,
+                          int minorTickFrequency) {
+    switch (algorithm) {
+        using enum LabelingAlgorithm;
+        case Heckbert: {
+            const auto optRange = labelingHeckbert(range.x, range.y, maxTicks);
+            linearRange(range, optRange, minorTickFrequency, major, minor);
+            break;
+        }
+        case Matplotlib: {
+            const auto optRange = labelingMatplotlib(range.x, range.y, maxTicks);
+            linearRange(range, optRange, minorTickFrequency, major, minor);
+            break;
+        }
+        case ExtendedWilkinson: {
+            const auto optRange = labelingExtendedWilkinson(range.x, range.y, maxTicks);
+            linearRange(range, optRange, minorTickFrequency, major, minor);
+            break;
+        }
+        case Limits: {
+            minor.clear();
+            labelingLimits(range.x, range.y, major);
+            break;
+        }
+    }
+}
+
+void updateLabels(std::vector<std::string>& labels, const std::vector<double>& positions,
+                  std::string_view format) {
+    if (positions.size() != labels.size()) {
+        labels.resize(positions.size());
+    }
+    for (auto&& [pos, label] : std::views::zip(positions, labels)) {
+        label.clear();
+        fmt::format_to(std::back_inserter(label), fmt::runtime(format), pos);
+    }
+}
+
+void updateLabels(std::vector<std::string>& labels, std::span<const std::string> srcLabels) {
+    labels.assign_range(srcLabels);
 }
 
 }  // namespace inviwo::plot

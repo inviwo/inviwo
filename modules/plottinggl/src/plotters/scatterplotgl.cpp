@@ -70,7 +70,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/axisdata.h>
 #include <modules/plotting/interaction/boxselectioninteractionhandler.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
@@ -166,7 +166,7 @@ ScatterPlotGL::Properties* ScatterPlotGL::Properties::clone() const {
 ScatterPlotGL::ScatterPlotGL(Processor* processor)
     : properties_("scatterplot", "Scatterplot")
     , shader_("scatterplot.vert", "scatterplot.geom", "scatterplot.frag")
-    , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
+    , axisRenderers_({{AxisData{}, AxisData{}}})
     , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
     , partitionDirty_(true)
     , processor_(processor)
@@ -511,6 +511,9 @@ void ScatterPlotGL::renderAxis(const size2_t& dims) {
                              dims.y - 1 - properties_.margins_.getTop());
 
     const auto padding = properties_.axisMargin_.get();
+
+    properties_.xAxis_.update(axisRenderers_[0].getData());
+    properties_.yAxis_.update(axisRenderers_[1].getData());
 
     // draw horizontal axis
     axisRenderers_[0].render(dims, lowerLeft + size2_t(padding, 0),
