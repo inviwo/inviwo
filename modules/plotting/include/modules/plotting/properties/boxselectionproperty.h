@@ -37,7 +37,7 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/staticstring.h>
-#include <modules/plotting/datastructures/boxselectionsettings.h>
+#include <modules/plotting/datastructures/boxselection.h>
 
 #include <functional>
 #include <string>
@@ -49,10 +49,8 @@ namespace inviwo {
 namespace plot {
 /**
  * @brief Settings for rectangle selection/filtering
- *
  */
-class IVW_MODULE_PLOTTING_API BoxSelectionProperty : public BoxSelectionSettingsInterface,
-                                                     public CompositeProperty {
+class IVW_MODULE_PLOTTING_API BoxSelectionProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.BoxSelectionProperty"};
@@ -64,23 +62,11 @@ public:
     virtual BoxSelectionProperty* clone() const override;
     virtual ~BoxSelectionProperty() = default;
 
-    OptionProperty<BoxSelectionSettingsInterface::Mode> mode_;
+    OptionProperty<BoxSelection::Mode> mode_;
     FloatVec4Property lineColor_;
-    FloatProperty lineWidth_;  //!< Line width in pixels
+    FloatProperty lineWidth_;
 
-    // Inherited via BoxSelectionSettingsInterface
-    /*
-     * @copydoc BoxSelectionSettingsInterface::getMode
-     */
-    virtual BoxSelectionSettingsInterface::Mode getMode() const override;
-    /*
-     * @copydoc BoxSelectionSettingsInterface::getLineColor
-     */
-    virtual vec4 getLineColor() const override;
-    /*
-     * @copydoc BoxSelectionSettingsInterface::getLineWidth
-     */
-    virtual float getLineWidth() const override;
+    void update(BoxSelection& data) const;
 };
 
 }  // namespace plot

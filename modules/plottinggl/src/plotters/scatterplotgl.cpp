@@ -196,7 +196,7 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
 
                                return dvec2{pNormalized * extent + dvec2{rangeX.x, rangeY.x}};
                            })
-    , selectionRectRenderer_(properties_.boxSelectionSettings_) {
+    , selectionRectRenderer_() {
 
     if (processor_) {
         shader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
@@ -450,7 +450,9 @@ void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
         shader_.deactivate();
     }
 
-    selectionRectRenderer_.render(boxSelectionHandler_.getDragRectangle(), dims);
+    BoxSelection sel;
+    properties_.boxSelectionSettings_.update(sel);
+    selectionRectRenderer_.render(boxSelectionHandler_.getDragRectangle(), dims, sel);
     renderAxis(dims);
 }
 

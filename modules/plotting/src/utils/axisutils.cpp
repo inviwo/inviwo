@@ -78,7 +78,7 @@ std::unique_ptr<Mesh> generateAxisMesh3D(const vec3& startPos, const vec3& endPo
 std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickmarks, dvec2 axisRange,
                                         const vec3& startPos, const vec3& endPos,
                                         const vec3& tickDirection, float tickLength,
-                                        TickStyle style, const vec4& color, bool flip) {
+                                        TickData::Style style, const vec4& color, bool flip) {
     if (tickmarks.empty()) {
         return nullptr;
     }
@@ -93,13 +93,14 @@ std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickmarks, dv
 
     vec2 tickOffset;
     switch (style) {
-        case TickStyle::Inside:
+        using enum TickData::Style;
+        case Inside:
             tickOffset = vec2(0.0f, 1.0f);
             break;
-        case TickStyle::Outside:
+        case Outside:
             tickOffset = vec2(-1.0f, 0.0f);
             break;
-        case TickStyle::Both:
+        case Both:
         default:
             tickOffset = vec2(-1.0f, 1.0f);
             break;
@@ -259,16 +260,18 @@ std::pair<vec2, vec2> tickBoundingRect(const AxisData& data,
     const auto axisLength = axisRange.y - axisRange.x;
     const vec2 scaling(axisDir * static_cast<float>(screenLength / axisLength));
 
-    auto getSize = [](vec2 pos, vec2 tickDir, TickStyle style, bool flip) -> std::pair<vec2, vec2> {
+    auto getSize = [](vec2 pos, vec2 tickDir, TickData::Style style,
+                      bool flip) -> std::pair<vec2, vec2> {
         vec2 tickOffset;
         switch (style) {
-            case TickStyle::Inside:
+            using enum TickData::Style;
+            case Inside:
                 tickOffset = vec2(0.0f, 1.0f);
                 break;
-            case TickStyle::Outside:
+            case Outside:
                 tickOffset = vec2(-1.0f, 0.0f);
                 break;
-            case TickStyle::Both:
+            case Both:
             default:
                 tickOffset = vec2(-1.0f, 1.0f);
                 break;
@@ -279,7 +282,7 @@ std::pair<vec2, vec2> tickBoundingRect(const AxisData& data,
         return {pos + tickDir * tickOffset.x, pos + tickDir * tickOffset.y};
     };
 
-    if (!majorPositions.empty() && data.major.style != TickStyle::None) {
+    if (!majorPositions.empty() && data.major.style != TickData::Style::None) {
         const auto pos1 =
             startPos + scaling * static_cast<float>(majorPositions.front() - axisRange.x);
         const vec2 pos2 =
@@ -298,7 +301,7 @@ std::pair<vec2, vec2> tickBoundingRect(const AxisData& data,
         upperRight = glm::max(upperRight, start2);
         upperRight = glm::max(upperRight, end2);
     }
-    if (!minorPositions.empty() && data.minor.style != TickStyle::None) {
+    if (!minorPositions.empty() && data.minor.style != TickData::Style::None) {
         const auto pos1 =
             startPos + scaling * static_cast<float>(minorPositions.front() - axisRange.x);
         const vec2 pos2 =

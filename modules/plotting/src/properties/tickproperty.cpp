@@ -41,10 +41,10 @@ MajorTickProperty::MajorTickProperty(std::string_view identifier, std::string_vi
     : CompositeProperty(identifier, displayName, "Settings for major ticks along the axis"_help,
                         invalidationLevel, std::move(semantics))
     , style("style", "Style",
-            {{"none", "None", TickStyle::None},
-             {"inside", "Inside", TickStyle::Inside},
-             {"outside", "Outside", TickStyle::Outside},
-             {"both", "Both", TickStyle::Both}},
+            {{"none", "None", TickData::Style::None},
+             {"inside", "Inside", TickData::Style::Inside},
+             {"outside", "Outside", TickData::Style::Outside},
+             {"both", "Both", TickData::Style::Both}},
             3)
     , color("color", "Color",
             util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f)).set("Color of the ticks"_help))
@@ -86,10 +86,10 @@ MinorTickProperty::MinorTickProperty(std::string_view identifier, std::string_vi
                         "Settings for minor ticks (shown between major ticks)"_help,
                         invalidationLevel, std::move(semantics))
     , style("style", "Style",
-            {{"none", "None", TickStyle::None},
-             {"inside", "Inside", TickStyle::Inside},
-             {"outside", "Outside", TickStyle::Outside},
-             {"both", "Both", TickStyle::Both}},
+            {{"none", "None", TickData::Style::None},
+             {"inside", "Inside", TickData::Style::Inside},
+             {"outside", "Outside", TickData::Style::Outside},
+             {"both", "Both", TickData::Style::Both}},
             2)
     , fillAxis("fillAxis", "Fill Entire Axis",
                "Minor ticks will cover the entire axis range if true, otherwise they will only "

@@ -52,8 +52,8 @@ PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view
     , placement_{"placement",
                  "Placement",
                  "Allows to place the text on either the outside or inside of the axis"_help,
-                 {{"outside", "Outside", PlotTextData::LabelPlacement::Outside},
-                  {"inside", "Inside", PlotTextData::LabelPlacement::Inside}},
+                 {{"outside", "Outside", TextData::Placement::Outside},
+                  {"inside", "Inside", TextData::Placement::Inside}},
                  0}
     , color_("color", "Color",
              util::ordinalColor(vec4(vec3(0.0f), 1.0f))
@@ -98,7 +98,7 @@ PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)
 
 PlotTextProperty* PlotTextProperty::clone() const { return new PlotTextProperty(*this); }
 
-void PlotTextProperty::update(PlotTextData& data) const {
+void PlotTextProperty::update(TextData& data) const {
     data.enabled = isChecked();
     data.placement = placement_.getSelectedValue();
     data.color = color_.get();

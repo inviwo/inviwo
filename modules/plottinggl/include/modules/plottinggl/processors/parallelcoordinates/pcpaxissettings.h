@@ -36,7 +36,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <modules/plotting/datastructures/axisdata.h>
 #include <modules/plotting/datastructures/tickdata.h>
-#include <modules/plotting/datastructures/plottextdata.h>
+#include <modules/plotting/datastructures/textdata.h>
 
 #include <cstddef>
 #include <cstdint>
