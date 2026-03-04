@@ -64,6 +64,7 @@ private:
     std::vector<Item> tags_;
 };
 
+class PillDelegate;
 class IVW_QTEDITOR_API PillListView : public QListView {
 public:
     explicit PillListView(QWidget* parent = nullptr);
@@ -78,6 +79,8 @@ public:
 
 protected:
     QSize viewportSizeHint() const override;
+
+    PillDelegate* pillDelegate_;
 };
 
 }  // namespace inviwo

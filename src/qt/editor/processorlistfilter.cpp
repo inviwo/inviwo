@@ -107,7 +107,7 @@ ProcessorListFilter::ProcessorListFilter(QAbstractItemModel* model, ProcessorNet
              .global = false,
              .match =
                  [](std::string_view, const std::any& data, const Item& item) {
-                     auto* dataIds = std::any_cast<std::vector<std::string>>(&data);
+                     const auto* dataIds = std::any_cast<std::vector<std::string>>(&data);
                      if (!dataIds) return false;
                      return std::ranges::any_of(*dataIds, [&](const std::string& outportCId) {
                          return std::ranges::any_of(item.help.inports,
@@ -117,13 +117,13 @@ ProcessorListFilter::ProcessorListFilter(QAbstractItemModel* model, ProcessorNet
                      });
                  },
              .onToken = [net](std::string_view processorId) -> std::any {
-                 std::vector<std::string> dataIds;
-                 if (auto* p = net->getProcessorByIdentifier(processorId)) {
-                     for (auto port : p->getOutports()) {
-                         dataIds.emplace_back(port->getDataInfo().cid);
-                     }
+                 if (const auto* p = net->getProcessorByIdentifier(processorId)) {
+                     return p->getOutports() | std::views::transform([](const Outport* port) {
+                                return port->getDataInfo().cid;
+                            }) |
+                            std::ranges::to<std::vector>();
                  }
-                 return dataIds;
+                 return std::vector<std::string>{};
              }}}} {
     setRecursiveFilteringEnabled(true);
 

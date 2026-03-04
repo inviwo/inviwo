@@ -126,9 +126,10 @@ public:
     }
 };
 
-PillListView::PillListView(QWidget* parent) : QListView(parent) {
+PillListView::PillListView(QWidget* parent)
+    : QListView(parent), pillDelegate_{new PillDelegate(this)} {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-    setItemDelegate(new PillDelegate(this));
+    setItemDelegate(pillDelegate_);
 
     setFlow(QListView::LeftToRight);
     setWrapping(true);
@@ -147,18 +148,17 @@ int PillListView::heightForWidth(int viewWidth) const {
     QStyleOptionViewItem option;
     initViewItemOption(&option);
 
-    const auto* delegate = static_cast<PillDelegate*>(itemDelegate());
     int rows = 1;
     int rowWidth = 0;
     for (int i = 0; i < model()->rowCount(); ++i) {
-        const auto size = delegate->sizeHint(option, model()->index(i, 0));
-        if (rowWidth + size.width() + 2 >= viewWidth) { // 2 is from testing on macOS
+        const auto size = pillDelegate_->sizeHint(option, model()->index(i, 0));
+        if (rowWidth + size.width() + 2 >= viewWidth) {  // 2 is from testing on macOS
             ++rows;
             rowWidth = 0;
         }
         rowWidth += size.width();
     }
-    const auto size = delegate->sizeHint(option, model()->index(0, 0));
+    const auto size = pillDelegate_->sizeHint(option, model()->index(0, 0));
     return rows * (size.height());
 }
 
