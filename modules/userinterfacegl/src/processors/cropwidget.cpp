@@ -449,8 +449,11 @@ void CropWidget::renderAxis(const CropAxis& axis) {
                 linestrip_->setWorldMatrix(worldMatrix);
                 const mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
 
+                LineData lineData;
+                cropLineSettings_.update(lineData);
+
                 lineRenderer_.render(*linestrip_, camera_.get(), outport_.getDimensions(),
-                                     cropLineSettings_);
+                                     lineData);
             };
 
             if (drawLowerPlane) {

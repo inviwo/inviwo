@@ -26,48 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/datastructures/linedata.h>
 
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
-
-namespace inviwo {
-
-/**
- * @brief Basic implementation of the StipplingSettingsInterface
- */
-class IVW_MODULE_BASEGL_API StipplingSettings : public StipplingSettingsInterface {
-public:
-    StipplingSettings() = default;
-    StipplingSettings(const StipplingSettingsInterface* other);
-    virtual ~StipplingSettings() = default;
-
-    Mode mode = Mode::None;
-    float length = 20.f;   //!< refers to the length of one dash
-    float spacing = 10.f;  //!< spacing between two dashes
-    float offset = 0.f;    //!< offset for shifting the stipple pattern
-    float worldScale = 4.f;
-    /*
-     * @copydoc StipplingSettingsInterface::getMode
-     */
-    virtual StipplingSettingsInterface::Mode getMode() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getLength
-     */
-    virtual float getLength() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getSpacing
-     */
-    virtual float getSpacing() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getOffset
-     */
-    virtual float getOffset() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getWorldScale
-     */
-    virtual float getWorldScale() const override;
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -103,8 +103,10 @@ void LineRendererProcessor::process() {
 
 void LineRendererProcessor::drawMeshes() {
     for (const auto& mesh : inport_) {
-        lineRenderer_.renderWithUniforms(*mesh, camera_.get(), outport_.getDimensions(),
-                                         lineSettings_, bnl_);
+        LineData data;
+        lineSettings_.update(data);
+        lineRenderer_.renderWithUniforms(*mesh, camera_.get(), outport_.getDimensions(), data,
+                                         bnl_);
     }
 }
 
