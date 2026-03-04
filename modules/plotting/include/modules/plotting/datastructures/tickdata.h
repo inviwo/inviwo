@@ -34,13 +34,13 @@
 
 namespace inviwo::plot {
 
-enum class TickStyle : std::uint8_t { None, Inside, Outside, Both };
-
 struct IVW_MODULE_PLOTTING_API TickData {
-    TickStyle style = TickStyle::Both;
+    enum class Style : std::uint8_t { None, Inside, Outside, Both };
+
     vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
     float length = 8.0f;
     float width = 2.5f;
+    Style style = Style::Both;
 
     bool operator==(const TickData&) const = default;
 };

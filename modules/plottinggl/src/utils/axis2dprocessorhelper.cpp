@@ -194,10 +194,10 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
     // initialize axes
     for (auto property : {&xAxis_, &yAxis_}) {
         property->majorTicks_.width.set(1.5f);
-        property->majorTicks_.style.set(TickStyle::Outside);
+        property->majorTicks_.style.set(TickData::Style::Outside);
 
         property->minorTicks_.width.set(1.3f);
-        property->minorTicks_.style.set(TickStyle::Outside);
+        property->minorTicks_.style.set(TickData::Style::Outside);
     }
 
     auto linkAxisRanges = [this](const DoubleVec2Property& from, DoubleVec2Property& to) {

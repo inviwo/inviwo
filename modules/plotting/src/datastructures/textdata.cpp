@@ -26,29 +26,28 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/textdata.h>
 
-#include <inviwo/core/util/glmvec.h>
-#include <modules/fontrendering/datastructures/fontdata.h>
+#include <type_traits> 
 
 namespace inviwo::plot {
 
-struct IVW_MODULE_PLOTTING_API PlotTextData {
-    enum class LabelPlacement { Outside, Inside };
+static_assert(std::is_copy_constructible_v<TextData>);
+static_assert(std::is_copy_assignable_v<TextData>);
+static_assert(std::is_nothrow_move_constructible_v<TextData>);
+static_assert(std::is_nothrow_move_assignable_v<TextData>);
 
-    bool enabled = true;
-    LabelPlacement placement = LabelPlacement::Outside;
-    vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
-    float position = 0.5f;
-    vec2 offset = vec2{10.0f, 0.0f};
-    float rotation = 0.0f;
-    FontData font;
-
-    bool operator==(const PlotTextData&) const = default;
-};
-
-IVW_MODULE_PLOTTING_API PlotTextData::LabelPlacement flip(PlotTextData::LabelPlacement p);
+TextData::Placement flip(TextData::Placement p) {
+    using enum TextData::Placement;
+    switch (p) {
+        case Outside:
+            return Inside;
+        case Inside:
+            return Outside;
+        default:
+            return p;
+    }
+}
 
 }  // namespace inviwo::plot

@@ -56,7 +56,7 @@ public:
     virtual MajorTickProperty* clone() const override;
     virtual ~MajorTickProperty() = default;
 
-    OptionProperty<TickStyle> style;
+    OptionProperty<TickData::Style> style;
     FloatVec4Property color;
     FloatProperty length;
     FloatProperty width;
@@ -77,7 +77,7 @@ public:
     virtual MinorTickProperty* clone() const override;
     virtual ~MinorTickProperty() = default;
 
-    OptionProperty<TickStyle> style;
+    OptionProperty<TickData::Style> style;
     BoolProperty fillAxis;
     FloatVec4Property color;
     FloatProperty length;

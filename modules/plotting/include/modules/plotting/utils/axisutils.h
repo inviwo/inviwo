@@ -129,7 +129,8 @@ IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateAxisMesh(
  */
 IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateTicksMesh(
     const std::vector<double>& tickMarks, dvec2 axisRange, const vec3& startPos, const vec3& endPos,
-    const vec3& tickDirection, float tickLength, TickStyle style, const vec4& color, bool flip);
+    const vec3& tickDirection, float tickLength, TickData::Style style, const vec4& color,
+    bool flip);
 
 /*
 IVW_MODULE_PLOTTING_API std::pair<vec2, vec2> tickBoundingRect(const AxisData& settings,

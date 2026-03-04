@@ -51,9 +51,6 @@
 namespace inviwo {
 
 namespace plot {
-class MajorTickSettings;
-class MinorTickSettings;
-class PlotTextSettings;
 
 /**
  * @brief Axis for variables with a fixed number of possible values, e.g., categories.
@@ -65,7 +62,7 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.CategoricalAxisProperty"};
     using Orientation = AxisData::Orientation;
-    using LabelPlacement = PlotTextData::LabelPlacement;
+    using Placement = TextData::Placement;
 
     CategoricalAxisProperty(std::string_view identifier, std::string_view displayName,
                             std::vector<std::string> categories = {"Category"},

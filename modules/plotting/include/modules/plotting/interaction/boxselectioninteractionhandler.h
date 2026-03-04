@@ -79,7 +79,7 @@ public:
     virtual ~BoxSelectionInteractionHandler() = default;
 
     virtual void invokeEvent(Event* event) override;
-    
+
     /**
      * @brief Added callbacks will be called when selection changed.
      */

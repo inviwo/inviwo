@@ -238,7 +238,7 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.setCaption(title_.get());
     axis_.captionSettings_.setChecked(true);
     axis_.labelSettings_.font_.fontFace_.set(axis_.captionSettings_.font_.fontFace_.get());
-    axis_.majorTicks_.style.set(plot::TickStyle::Outside);
+    axis_.majorTicks_.style.set(plot::TickData::Style::Outside);
     axis_.setCurrentStateAsDefault();
 
     auto updateFunc = [this]() { updateTitle(volumeInport_.getData()); };

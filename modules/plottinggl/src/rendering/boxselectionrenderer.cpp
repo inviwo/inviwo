@@ -38,7 +38,7 @@
 #include <modules/basegl/datastructures/stipplingsettings.h>
 #include <modules/basegl/datastructures/stipplingsettingsinterface.h>
 #include <modules/basegl/rendering/linerenderer.h>
-#include <modules/plotting/datastructures/boxselectionsettings.h>
+#include <modules/plotting/datastructures/boxselection.h>
 #include <modules/plotting/properties/boxselectionproperty.h>
 
 #include <glm/vec2.hpp>
@@ -46,17 +46,17 @@
 
 namespace inviwo::plot {
 
-BoxSelectionRenderer::BoxSelectionRenderer(const BoxSelectionProperty& settings)
-    : settings_(settings), lineRenderer_{} {
+BoxSelectionRenderer::BoxSelectionRenderer() : lineRenderer_{} {
     lineSettings_.stippling.mode = StipplingSettingsInterface::Mode::ScreenSpace;
     lineSettings_.stippling.length = 5.f;
     lineSettings_.overrideColor = true;
 }
 
-void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, size2_t screenDim) {
-    if (dragRect && settings_.getMode() != BoxSelectionSettingsInterface::Mode::None) {
-        lineSettings_.lineWidth = settings_.getLineWidth();
-        lineSettings_.overrideColorValue = settings_.getLineColor();
+void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, size2_t screenDim,
+                                  const BoxSelection& sel) {
+    if (dragRect && sel.mode != BoxSelection::Mode::None) {
+        lineSettings_.lineWidth = sel.lineWidth;
+        lineSettings_.overrideColorValue = sel.lineColor;
 
         const auto start = vec2((*dragRect)[0]);
         const auto scale = vec2((*dragRect)[1] - (*dragRect)[0]);

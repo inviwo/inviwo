@@ -39,7 +39,7 @@
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/plotting/datastructures/axisdata.h>
 #include <modules/plotting/datastructures/tickdata.h>
-#include <modules/plotting/datastructures/plottextdata.h>
+#include <modules/plotting/datastructures/textdata.h>
 #include <modules/plotting/algorithm/labeling.h>
 #include <modules/plotting/utils/axisutils.h>
 
@@ -221,7 +221,7 @@ protected:
     Guard<vec3, MPLabel> startPos_;
     Guard<vec3, MPLabel> endPos_;
     Guard<dvec2, MPLabel> range_;
-    Guard<PlotTextData, MPAtlas, MPLabel> labelsSettings_;
+    Guard<TextData, MPAtlas, MPLabel> labelsSettings_;
     Guard<std::vector<std::string>, MPAtlas> labels_;
     Guard<std::vector<double>, MPLabel> majorPositions_;
     Guard<TickData, MPLabel> major_;
@@ -237,7 +237,7 @@ struct IVW_MODULE_PLOTTINGGL_API AxisCaption {
     AxisCaption& operator=(const AxisCaption&) = delete;
     AxisCaption& operator=(AxisCaption&&) noexcept = default;
 
-    TextTextureObject& getCaption(const std::string& caption, const PlotTextData& settings,
+    TextTextureObject& getCaption(const std::string& caption, const TextData& settings,
                                   TextRenderer& renderer) {
         caption_.check(*this, caption);
         settings_.check(*this, settings);
@@ -252,10 +252,10 @@ private:
     TextTextureObject axisCaption_;
     using MPCap = MemPtr<AxisCaption, TextTextureObject, &AxisCaption::axisCaption_>;
     Guard<std::string, MPCap> caption_;
-    Guard<PlotTextData, MPCap> settings_;
+    Guard<TextData, MPCap> settings_;
 
     static_assert(std::is_nothrow_move_assignable_v<Guard<std::string, MPCap>>);
-    static_assert(std::is_nothrow_move_assignable_v<Guard<PlotTextData, MPCap>>);
+    static_assert(std::is_nothrow_move_assignable_v<Guard<TextData, MPCap>>);
 };
 
 }  // namespace detail

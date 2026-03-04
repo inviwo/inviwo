@@ -82,7 +82,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     , labelSettings_{"labels", "Axis Labels",
                      "Settings for axis labels shown next to major ticks"_help, true}
     , majorTicks_{"majorTicks", "Major Ticks"}
-    , minorTicks_{.style = TickStyle::None} {
+    , minorTicks_{.style = TickData::Style::None} {
 
     scalingFactor_.setVisible(false);
     addProperties(visible_, color_, width_, scalingFactor_, mirrored_, orientation_);
@@ -152,11 +152,9 @@ void CategoricalAxisProperty::adjustAlignment() {
 
     auto updateAlignment = [](PlotTextProperty& p, Orientation o) {
         if (o == Orientation::Horizontal) {
-            p.font_.anchorPos_.set(
-                vec2{0.0f, (p.placement_ == LabelPlacement::Outside) ? 1.0f : -1.0f});
+            p.font_.anchorPos_.set(vec2{0.0f, (p.placement_ == Placement::Outside) ? 1.0f : -1.0f});
         } else {
-            p.font_.anchorPos_.set(
-                vec2{(p.placement_ == LabelPlacement::Outside) ? 1.0f : -1.0f, 0.0f});
+            p.font_.anchorPos_.set(vec2{(p.placement_ == Placement::Outside) ? 1.0f : -1.0f, 0.0f});
         }
     };
 

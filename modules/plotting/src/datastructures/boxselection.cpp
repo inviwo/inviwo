@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2020-2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,32 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/boxselection.h>
 
-#include <inviwo/core/util/glmvec.h>
-
-namespace inviwo {
-
-namespace plot {
-
-class IVW_MODULE_PLOTTING_API BoxSelectionSettingsInterface {
-public:
-    enum class Mode { Selection, Filtering, None };
-    BoxSelectionSettingsInterface() = default;
-    virtual ~BoxSelectionSettingsInterface() = default;
-
-    virtual Mode getMode() const = 0;
-    virtual vec4 getLineColor() const = 0;
-    virtual float getLineWidth() const = 0;
-};
-
-IVW_MODULE_PLOTTING_API bool operator==(const BoxSelectionSettingsInterface& a,
-                                        const BoxSelectionSettingsInterface& b);
-IVW_MODULE_PLOTTING_API bool operator!=(const BoxSelectionSettingsInterface& a,
-                                        const BoxSelectionSettingsInterface& b);
-
-}  // namespace plot
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

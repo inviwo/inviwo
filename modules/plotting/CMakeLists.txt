@@ -5,9 +5,9 @@ ivw_module(Plotting)
 set(HEADER_FILES
     include/modules/plotting/algorithm/labeling.h
     include/modules/plotting/datastructures/axisdata.h
-    include/modules/plotting/datastructures/boxselectionsettings.h
+    include/modules/plotting/datastructures/boxselection.h
     include/modules/plotting/datastructures/tickdata.h
-    include/modules/plotting/datastructures/plottextdata.h
+    include/modules/plotting/datastructures/textdata.h
     include/modules/plotting/interaction/boxselectioninteractionhandler.h
     include/modules/plotting/plottingmodule.h
     include/modules/plotting/plottingmoduledefine.h
@@ -27,9 +27,9 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/algorithm/labeling.cpp
     src/datastructures/axisdata.cpp
-    src/datastructures/boxselectionsettings.cpp
+    src/datastructures/boxselection.cpp
     src/datastructures/tickdata.cpp
-    src/datastructures/plottextdata.cpp
+    src/datastructures/textdata.cpp
     src/interaction/boxselectioninteractionhandler.cpp
     src/plottingmodule.cpp
     src/processors/dataframecolumntocolorvector.cpp
