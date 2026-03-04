@@ -70,7 +70,7 @@ public:
     }
 
 private:
-    std::array<char, 32> tag_;
+    std::array<char, 32> tag_{};
 };
 
 class IVW_CORE_API Tags {
@@ -123,10 +123,12 @@ public:
 
     // pre-defined platform tags
     static constexpr Tag None{};
+    static constexpr Tag CPU{"CPU"};
     static constexpr Tag GL{"GL"};
     static constexpr Tag CL{"CL"};
-    static constexpr Tag CPU{"CPU"};
     static constexpr Tag PY{"PY"};
+    static constexpr Tag VTK{"VTK"};
+    static constexpr Tag TTK{"TTK"};
 
     friend constexpr bool operator==(const Tags& lhs, const Tags& rhs) {
         return lhs.tags_ == rhs.tags_;
@@ -151,7 +153,9 @@ public:
 
 namespace util {
 
-IVW_CORE_API Tags getPlatformTags(const Tags& t);
+IVW_CORE_API Tags getPlatformTags();
+
+IVW_CORE_API Tag getPlatformTag(const Tags& t);
 
 }  // namespace util
 

@@ -419,7 +419,7 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
             queueProperties |= CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE;
 
         asyncGPUQueue_ = cl::CommandQueue(gpuContext_, gpuDevice_, queueProperties);
-        STRING_CLASS deviceExtensions = gpuDevice_.getInfo<CL_DEVICE_EXTENSIONS>();
+        auto deviceExtensions = gpuDevice_.getInfo<CL_DEVICE_EXTENSIONS>();
         size_t foundAt = deviceExtensions.find_first_of("cl_khr_gl_event");
 
         if (foundAt != std::string::npos) {

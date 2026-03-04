@@ -85,11 +85,7 @@ public:
     Grouping getGrouping() const;
 
     void setPredecessorProcessor(std::string_view identifier);
-
     void buildList();
-
-protected:
-    const QIcon* getCodeStateIcon(CodeState) const;
 
 private:
     virtual void onRegister(ProcessorFactoryObject* pfo) override;

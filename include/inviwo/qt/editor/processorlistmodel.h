@@ -107,7 +107,6 @@ public:
 
 private:
     Node* indexToNode(const QModelIndex& index) const;
-    const QIcon* getCodeStateIcon(CodeState state) const;
     static void categoryAndSort(Grouping grouping, Item& item,
                                 StringMap<std::unordered_set<Item*>>& groups,
                                 StringMap<QVariant>& groupToSort
@@ -120,11 +119,6 @@ private:
     std::unique_ptr<Node> root_;
     std::unordered_map<const Item*, Node*> itemToNode_;
     UnorderedStringMap<Item*> classIdentifierToItem_;
-
-    QIcon iconStable_;
-    QIcon iconExperimental_;
-    QIcon iconBroken_;
-    QIcon iconDeprecated_;
 };
 
 }  // namespace inviwo

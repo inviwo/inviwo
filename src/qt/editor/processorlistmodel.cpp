@@ -62,11 +62,7 @@ Document tooltip(const ProcessorListModel::Item& item) {
 ProcessorListModel::ProcessorListModel(QObject* parent)
     : QAbstractItemModel(parent)
     , grouping_{Grouping::Categorical}
-    , root_{std::make_unique<Node>()}
-    , iconStable_{":/svgicons/processor-stable.svg"}
-    , iconExperimental_{":/svgicons/processor-experimental.svg"}
-    , iconBroken_{":/svgicons/processor-broken.svg"}
-    , iconDeprecated_{":/svgicons/processor-deprecated.svg"} {}
+    , root_{std::make_unique<Node>()} {}
 
 QModelIndex ProcessorListModel::index(int row, int column, const QModelIndex& parent) const {
     Node* parentNode = indexToNode(parent);
@@ -169,21 +165,6 @@ void ProcessorListModel::setGrouping(Grouping grouping) {
 auto ProcessorListModel::indexToNode(const QModelIndex& index) const -> Node* {
     if (!index.isValid()) return root_.get();
     return static_cast<Node*>(index.internalPointer());
-}
-
-const QIcon* ProcessorListModel::getCodeStateIcon(CodeState state) const {
-    switch (state) {
-        case CodeState::Stable:
-            return &iconStable_;
-        case CodeState::Experimental:
-            return &iconExperimental_;
-        case CodeState::Deprecated:
-            return &iconDeprecated_;
-        case CodeState::Broken:
-            return &iconBroken_;
-        default:
-            return &iconExperimental_;
-    }
 }
 
 void ProcessorListModel::categoryAndSort(Grouping grouping, Item& item,

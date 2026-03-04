@@ -61,7 +61,7 @@ ProcessorListFilter::ProcessorListFilter(QAbstractItemModel* model, ProcessorNet
                                          QObject* parent)
     : QSortFilterProxyModel(parent)
     , grouping_{Grouping::Categorical}
-    , tags_{Tags::CPU | Tags::GL | Tags::CL | Tags::PY | Tag{"VTK"} | Tag{"TTK"}}
+    , tags_{util::getPlatformTags()}
     , dsl_{{{.name = "identifier",
              .shortcut = "i",
              .description = "processor class identifier",
@@ -107,14 +107,23 @@ ProcessorListFilter::ProcessorListFilter(QAbstractItemModel* model, ProcessorNet
              .global = false,
              .match =
                  [](std::string_view, const std::any& data, const Item& item) {
-                     auto* predecessor = std::any_cast<Processor*>(data);
-                     if (!predecessor) return false;
-                     return std::ranges::any_of(predecessor->getOutports(), [&](Outport* p) {
-                         return help::matchOutportToInports(p->getClassIdentifier(), item.help);
+                     auto* dataIds = std::any_cast<std::vector<std::string>*>(data);
+                     if (!dataIds) return false;
+                     return std::ranges::any_of(*dataIds, [&](const std::string& outportCId) {
+                         return std::ranges::any_of(item.help.inports,
+                                                    [&](const help::HelpInport& inport) {
+                                                        return inport.data.cid == outportCId;
+                                                    });
                      });
                  },
              .onToken = [net](std::string_view processorId) -> std::any {
-                 return net->getProcessorByIdentifier(processorId);
+                 std::vector<std::string> dataIds;
+                 if (auto* p = net->getProcessorByIdentifier(processorId)) {
+                     for (auto port : p->getOutports()) {
+                         dataIds.emplace_back(port->getDataInfo().cid);
+                     }
+                 }
+                 return dataIds;
              }}}} {
     setRecursiveFilteringEnabled(true);
 

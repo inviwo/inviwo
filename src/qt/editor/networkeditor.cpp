@@ -606,16 +606,18 @@ void NetworkEditor::addVisualizers(QMenu& menu, ProcessorOutportGraphicsItem* og
         auto* subMenu = menu.addMenu("Add Processor");
         const auto docs = mainWindow_->getDocs();
 
-        const auto outClassId = outport->getClassIdentifier();
-
-        auto items = docs->map | std::views::values |
-                     std::views::filter([&](const help::HelpProcessor& doc) {
-                         return help::matchOutportToInports(outClassId, doc);
-                     }) |
-                     std::views::transform([&](const help::HelpProcessor& doc) {
-                         return std::tuple{doc.classIdentifier, doc.displayName};
-                     }) |
-                     std::ranges::to<std::vector>();
+        const auto outDataCId = outport->getDataInfo().cid;
+        auto items =
+            docs->map | std::views::values |
+            std::views::filter([&](const help::HelpProcessor& doc) {
+                return std::ranges::any_of(doc.inports, [&](const help::HelpInport& inport) {
+                    return inport.data.cid == outDataCId;
+                });
+            }) |
+            std::views::transform([&](const help::HelpProcessor& doc) {
+                return std::tuple{doc.classIdentifier, doc.displayName};
+            }) |
+            std::ranges::to<std::vector>();
 
         std::ranges::sort(items, std::ranges::less{},
                           [](const auto& item) -> decltype(auto) { return std::get<1>(item); });
@@ -1239,17 +1241,19 @@ void NetworkEditor::drawBackground(QPainter* painter, const QRectF& rect) {
         static_cast<int>(rect.left()) - (static_cast<int>(rect.left()) % gridSpacing);
     const qreal top = static_cast<int>(rect.top()) - (static_cast<int>(rect.top()) % gridSpacing);
     QVarLengthArray<QLineF, 100> linesX;
-    painter->setPen(QColor(153, 153, 153));
 
+    // NOLINTNEXTLINE(clang-analyzer-security.FloatLoopCounter)
     for (qreal x = left; x < rect.right(); x += gridSpacing) {
         linesX.append(QLineF(x, rect.top(), x, rect.bottom()));
     }
     QVarLengthArray<QLineF, 100> linesY;
 
+    // NOLINTNEXTLINE(clang-analyzer-security.FloatLoopCounter)
     for (qreal y = top; y < rect.bottom(); y += gridSpacing) {
         linesY.append(QLineF(rect.left(), y, rect.right(), y));
     }
 
+    painter->setPen(QColor(153, 153, 153));
     painter->drawLines(linesX.data(), static_cast<int>(linesX.size()));
     painter->drawLines(linesY.data(), static_cast<int>(linesY.size()));
     painter->restore();

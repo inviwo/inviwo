@@ -51,17 +51,36 @@
 
 namespace inviwo {
 
+namespace {
+QColor colorForState(CodeState state) {
+    switch (state) {
+        case CodeState::Stable:
+            return QColor(38, 86, 115);
+        case CodeState::Experimental:
+            return QColor(141, 92, 21);
+        case CodeState::Deprecated:
+            return QColor(77, 77, 80);
+        case CodeState::Broken:
+            return QColor(115, 107, 39);
+    }
+    return QColor(0, 0, 0);
+}
+
+QColor getColor(QStyleOptionViewItem& opt, QPalette::ColorRole role) {
+    QPalette::ColorGroup cg =
+        (opt.state & QStyle::State_Enabled) ? QPalette::Normal : QPalette::Disabled;
+    if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active)) {
+        cg = QPalette::Inactive;
+    }
+    return opt.palette.color(cg, role);
+}
+
+}  // namespace
+
 class ProcessorItemDelegate : public QStyledItemDelegate {
     using QStyledItemDelegate::QStyledItemDelegate;
     using Role = ProcessorListModel::Role;
     using Item = ProcessorListModel::Item;
-
-    virtual QSize sizeHint(const QStyleOptionViewItem& option,
-                           const QModelIndex& index) const override {
-        QSize size = QStyledItemDelegate::sizeHint(option, index);
-        // size.setHeight(28);
-        return size;
-    }
 
     // Reimplementation of the paint method to draw inports and outports as colored rectangles on
     // the processor items in the list view. See private impl at
@@ -99,37 +118,14 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
         if (const auto* item = utilqt::getData(index, Role::Item).value<const Item*>()) {
             const QPainterStateGuard psg2(p);
 
-            switch (item->info.codeState) {
-                case CodeState::Stable:
-                    p->setBrush(QColor(38, 86, 115));
-                    break;
-                case CodeState::Experimental:
-                    p->setBrush(QColor(141, 92, 21));
-                    break;
-                case CodeState::Deprecated:
-                    p->setBrush(QColor(77, 77, 80));
-                    break;
-                case CodeState::Broken:
-                    p->setBrush(QColor(115, 107, 39));
-                    break;
-            }
+            p->setBrush(colorForState(item->info.codeState));
             p->setPen(QPen(borderColor, 1.0f));
             p->drawRoundedRect(iconRect, 8.0, 8.0);
 
-            auto platformTags = util::getPlatformTags(item->info.tags);
-            auto tag = platformTags.tags_.empty() ? Tags::CPU : platformTags.tags_.front();
-
-            QPalette::ColorGroup cg =
-                opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
-            if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active)) {
-                cg = QPalette::Inactive;
-            }
-            // p->setPen(opt.palette.color(cg, (opt.state & QStyle::State_Selected)
-            //                                     ? QPalette::HighlightedText
-            //                                     : QPalette::Text));
-            p->setPen(opt.palette.color(cg, QPalette::HighlightedText));
+            p->setPen(getColor(opt, QPalette::HighlightedText));
             // Make the painter draw a bold font
             p->setFont(QFont(opt.font.family(), opt.font.pointSize() - 4, QFont::Bold));
+            const auto tag = util::getPlatformTag(item->info.tags);
             p->drawText(iconRect, Qt::AlignCenter, utilqt::toQString(tag.getString()));
 
             p->setPen(QPen(borderColor, 1.0f));
@@ -144,24 +140,14 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
                 p->setBrush(utilqt::toQColor(port.colorCode));
                 p->drawRect(QRect(outportOffset + i * step, portSize));
             }
-
         } else {
             textRect = opt.rect.adjusted(padding, padding, -padding, -padding);
         }
 
         // draw the text
         if (!opt.text.isEmpty()) {
-            QPalette::ColorGroup cg =
-                opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
-            if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active)) {
-                cg = QPalette::Inactive;
-            }
-            p->setPen(opt.palette.color(cg, (opt.state & QStyle::State_Selected)
-                                                ? QPalette::HighlightedText
-                                                : QPalette::Text));
-
-            // p->setFont(QFont(opt.font.family(), opt.font.pointSize() + 2, QFont::Bold));
-
+            p->setPen(getColor(opt, (opt.state & QStyle::State_Selected) ? QPalette::HighlightedText
+                                                                         : QPalette::Text));
             const int textMargin =
                 style->pixelMetric(QStyle::PM_FocusFrameHMargin, nullptr, widget) + 1;
 

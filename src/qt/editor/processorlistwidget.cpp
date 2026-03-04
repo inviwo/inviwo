@@ -77,8 +77,7 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
     , app_{parent->getInviwoApplication()}
     , win_{parent}
     , model_{new ProcessorListModel(this)}
-    , tagModel_{new TagModel(Tags::CPU | Tags::GL | Tags::CL | Tags::PY | Tag{"VTK"} | Tag{"TTK"},
-                             this)}
+    , tagModel_{new TagModel(util::getPlatformTags(), this)}
     , filter_{new ProcessorListFilter(model_, app_->getProcessorNetwork(), this)}
     , view_{new ProcessorListView(filter_, this)}
     , helpWidget_{helpWidget} {

@@ -69,11 +69,6 @@
         <file>svgicons/composite-expand-disabled.svg</file>
         <file>svgicons/composite-create-enabled.svg</file>
         <file>svgicons/composite-create-disabled.svg</file>
-
-        <file>svgicons/processor-broken.svg</file>
-        <file>svgicons/processor-deprecated.svg</file>
-        <file>svgicons/processor-experimental.svg</file>
-        <file>svgicons/processor-stable.svg</file>
         
         <file>svgicons/timer.svg</file>
 
