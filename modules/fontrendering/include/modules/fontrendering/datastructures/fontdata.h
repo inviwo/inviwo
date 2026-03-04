@@ -31,33 +31,19 @@
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
 #include <modules/fontrendering/util/fontutils.h>
 
-#include <string>
+#include <filesystem>
 
 namespace inviwo {
 
-class IVW_MODULE_FONTRENDERING_API FontData : public FontSettings {
-public:
-    FontData() = default;
-    FontData(const FontSettings& s);
-    FontData(const FontData&) = default;
-    FontData(FontData&&) noexcept = default;
-    FontData& operator=(const FontData&) = default;
-    FontData& operator=(FontData&&) noexcept = default;
-    virtual ~FontData() = default;
-
-    // Inherited via FontSettings
-    virtual const std::filesystem::path& getFontFace() const override;
-    virtual int getFontSize() const override;
-    virtual float getLineSpacing() const override;
-    virtual vec2 getAnchorPos() const override;
-
-    std::filesystem::path fontFace = font::getFont(font::FontType::Default);
+struct IVW_MODULE_FONTRENDERING_API FontData {
+    std::filesystem::path fontFace = font::getFont(font::FontType::Default, font::FullPath::Yes);
     int fontSize = 14;
     float lineSpacing = 0.0f;
     vec2 anchorPos = vec2(-1.0f);
+
+    bool operator==(const FontData&) const = default;
 };
 
 }  // namespace inviwo

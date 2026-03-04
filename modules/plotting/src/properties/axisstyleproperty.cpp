@@ -75,8 +75,7 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
                           {"matplotlib", "Matplotlib", LabelingAlgorithm::Matplotlib},
                           {"extentedWilkinson", "Ext. Wilkinson",
                            LabelingAlgorithm::ExtendedWilkinson},
-                          {"limits", "Limits only", LabelingAlgorithm::Limits},
-                          {"customOnly", "Custom labels only", LabelingAlgorithm::CustomOnly}},
+                          {"limits", "Limits only", LabelingAlgorithm::Limits}},
                          1}
     , numberOfTicks_{"numberOfTicks", "Max Number of Ticks",
                      util::ordinalCount(6, 20).setMin(2).set(

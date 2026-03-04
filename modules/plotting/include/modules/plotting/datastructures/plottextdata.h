@@ -32,31 +32,11 @@
 
 #include <inviwo/core/util/glmvec.h>
 #include <modules/fontrendering/datastructures/fontdata.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
 
-namespace inviwo {
-class FontSettings;
+namespace inviwo::plot {
 
-namespace plot {
-
-class IVW_MODULE_PLOTTING_API PlotTextData : public PlotTextSettings {
-public:
-    PlotTextData() = default;
-    PlotTextData(const PlotTextSettings& s);
-    PlotTextData(const PlotTextData&) = default;
-    PlotTextData(PlotTextData&&) noexcept = default;
-    PlotTextData& operator=(const PlotTextData&) = default;
-    PlotTextData& operator=(PlotTextData&&) = default;
-    virtual ~PlotTextData() = default;
-
-    // Inherited via PlotTextSettings
-    virtual bool isEnabled() const override;
-    virtual LabelPlacement getPlacement() const override;
-    virtual vec4 getColor() const override;
-    virtual float getPosition() const override;
-    virtual vec2 getOffset() const override;
-    virtual float getRotation() const override;
-    virtual const FontSettings& getFont() const override;
+struct IVW_MODULE_PLOTTING_API PlotTextData {
+    enum class LabelPlacement { Outside, Inside };
 
     bool enabled = true;
     LabelPlacement placement = LabelPlacement::Outside;
@@ -65,8 +45,10 @@ public:
     vec2 offset = vec2{10.0f, 0.0f};
     float rotation = 0.0f;
     FontData font;
+
+    bool operator==(const PlotTextData&) const = default;
 };
 
-}  // namespace plot
+IVW_MODULE_PLOTTING_API PlotTextData::LabelPlacement flip(PlotTextData::LabelPlacement p);
 
-}  // namespace inviwo
+}  // namespace inviwo::plot

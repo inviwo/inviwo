@@ -135,13 +135,13 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
           {"posX", "Y +X", false},
       }}
     , axisStyle_{"axisStyle", "Global Axis Style"}
-    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help, AxisSettings::Orientation::Horizontal,
+    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help, AxisData::Orientation::Horizontal,
              false}
-    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help, AxisSettings::Orientation::Horizontal,
+    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help, AxisData::Orientation::Horizontal,
              false}
     , camera_{"camera", "Camera", std::move(getBoundingBox)}
     , trackball_{&camera_}
-    , axisRenderers_{xAxis_, yAxis_}
+    , axisRenderers_{AxisData{}, AxisData{}}
     , propertyUpdate_{false} {
 
     xAxis_.setCaption("x");
@@ -193,11 +193,11 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
 
     // initialize axes
     for (auto property : {&xAxis_, &yAxis_}) {
-        property->majorTicks_.tickWidth_.set(1.5f);
-        property->majorTicks_.style_.set(TickStyle::Outside);
+        property->majorTicks_.width.set(1.5f);
+        property->majorTicks_.style.set(TickStyle::Outside);
 
-        property->minorTicks_.tickWidth_.set(1.3f);
-        property->minorTicks_.style_.set(TickStyle::Outside);
+        property->minorTicks_.width.set(1.3f);
+        property->minorTicks_.style.set(TickStyle::Outside);
     }
 
     auto linkAxisRanges = [this](const DoubleVec2Property& from, DoubleVec2Property& to) {
@@ -233,7 +233,10 @@ void Axis2DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
     const dmat4 mInv = glm::inverse(m);
     const dmat3 nm = glm::transpose(mInv);
     // the mean length of the three basis vectors is used for a relative axis offset (%)
-    const double offset = axisOffset_.get() * xAxis_.getScalingFactor();
+    const double offset = axisOffset_.get() * xAxis_.scalingFactor_.get();
+
+    if (xAxis_.isModified()) xAxis_.update(axisRenderers_[0].getData());
+    if (yAxis_.isModified()) yAxis_.update(axisRenderers_[1].getData());
 
     const auto render = [&](const AxisParams& axis, size_t axisIdx) {
         const dvec3 center{0.5, 0.5, 0.0};

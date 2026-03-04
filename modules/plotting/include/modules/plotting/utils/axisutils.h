@@ -32,8 +32,8 @@
 #include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
-#include <modules/plotting/datastructures/axissettings.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
+#include <modules/plotting/datastructures/axisdata.h>
+#include <modules/plotting/datastructures/tickdata.h>
 
 #include <cstddef>
 #include <limits>
@@ -46,47 +46,69 @@ namespace inviwo {
 class Mesh;
 
 namespace plot {
+
+// No picking buffer will be generated id pickingId = std::numeric_limits<size_t>::max()
+IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateAxisMesh3D(
+    const vec3& startPos, const vec3& endPos, const vec4& color,
+    const size_t& pickingId = std::numeric_limits<size_t>::max());
+
+IVW_MODULE_PLOTTING_API std::vector<std::pair<double, vec2>> getLabelPositions(
+    const std::vector<double>& ticks, const AxisData& data, const vec2& startPos,
+    const vec2& endPos);
+
+IVW_MODULE_PLOTTING_API std::vector<std::pair<double, vec3>> getLabelPositions3D(
+    const std::vector<double>& positions, const AxisData& data, const vec3& startPos,
+    const vec3& endPos, const vec3& tickDirection);
+
+IVW_MODULE_PLOTTING_API vec2 getAxisCaptionPosition(const AxisData& data, const vec2& startPos,
+                                                    const vec2& endPos);
+IVW_MODULE_PLOTTING_API vec3 getAxisCaptionPosition3D(const AxisData& data, const vec3& startPos,
+                                                      const vec3& endPos,
+                                                      const vec3& tickDirection);
+
+IVW_MODULE_PLOTTING_API std::pair<vec2, vec2> tickBoundingRect(
+    const AxisData& data, const std::vector<double>& majorPositions,
+    const std::vector<double>& minorPositions, const vec2& startPos, const vec2& endPos);
+
+/*
 class MinorTickSettings;
 struct AxisLabels;
 
-IVW_MODULE_PLOTTING_API AxisLabels getAxisLabels(LabelingAlgorithm algorithm, dvec2 range,
-                                                 int numberOfTicks, std::string_view labelFormat,
-                                                 const AxisLabels& customLabels);
 
-IVW_MODULE_PLOTTING_API AxisLabels getAxisLabels(const AxisSettings& settings);
+IVW_MODULE_PLOTTING_API AxisLabels getAxisLabels(LabelingAlgorithm algorithm, dvec2 range,
+                                                 int numberOfTicks, std::string_view
+labelFormat, const AxisLabels& customLabels);
+
+IVW_MODULE_PLOTTING_API AxisLabels getAxisLabels(const AxisData& settings);
+
 
 IVW_MODULE_PLOTTING_API std::vector<double> getMinorTicks(const MinorTickSettings& tickSettings,
-                                                          const AxisLabels& axisTicks, dvec2 range);
-IVW_MODULE_PLOTTING_API std::vector<double> getMinorTicks(const AxisSettings& settings);
+                                                          const AxisLabels& axisTicks, dvec2
+range); IVW_MODULE_PLOTTING_API std::vector<double> getMinorTicks(const AxisData& settings);
 
-vec2 IVW_MODULE_PLOTTING_API getAxisCaptionPosition(const AxisSettings& settings,
-                                                    const vec2& startPos, const vec2& endPos);
+vec2 IVW_MODULE_PLOTTING_API getAxisCaptionPosition(const AxisData& settings, const vec2&
+startPos, const vec2& endPos);
 
-IVW_MODULE_PLOTTING_API std::vector<std::pair<double, vec2>> getLabelPositions(
-    const AxisLabels& ticks, const AxisSettings& property, const vec2& startPos,
-    const vec2& endPos);
 
-vec3 IVW_MODULE_PLOTTING_API getAxisCaptionPosition3D(const AxisSettings& settings,
+
+vec3 IVW_MODULE_PLOTTING_API getAxisCaptionPosition3D(const AxisData& settings,
                                                       const vec3& startPos, const vec3& endPos,
                                                       const vec3& tickDirection);
 
 IVW_MODULE_PLOTTING_API std::vector<std::pair<double, vec3>> getLabelPositions3D(
-    const AxisLabels& ticks, const AxisSettings& property, const vec3& startPos, const vec3& endPos,
+    const AxisLabels& ticks, const AxisData& property, const vec3& startPos, const vec3& endPos,
     const vec3& tickDirection);
 
-/**
- * No picking buffer will be generated if pickingId = std::numeric_limits<size_t>::max()
- */
+
+// No picking buffer will be generated if pickingId = std::numeric_limits<size_t>::max()
 IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateAxisMesh(
     const vec2& startPos, const vec2& endPos, const vec4& color,
     const size_t& pickingId = std::numeric_limits<size_t>::max());
 
-/**
- * No picking buffer will be generated id pickingId = std::numeric_limits<size_t>::max()
- */
-IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateAxisMesh3D(
-    const vec3& startPos, const vec3& endPos, const vec4& color,
-    const size_t& pickingId = std::numeric_limits<size_t>::max());
+
+
+
+*/
 
 /**
  * @brief utility function to create a mesh for a given set of tick mark positions
@@ -102,16 +124,20 @@ IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateAxisMesh3D(
  * @param flip      if true, the orientation of ticks is flipped (only affects inside/outside
  *                  ticks). This is, e.g., used for axis at the top (default tick outside
  *                  location is bottom/left)
- * @return mesh containing of ticks, each tick is represented by two positions and matching colors
+ * @return mesh containing of ticks, each tick is represented by two positions and matching
+ * colors
  */
 IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateTicksMesh(
     const std::vector<double>& tickMarks, dvec2 axisRange, const vec3& startPos, const vec3& endPos,
     const vec3& tickDirection, float tickLength, TickStyle style, const vec4& color, bool flip);
 
-IVW_MODULE_PLOTTING_API std::pair<vec2, vec2> tickBoundingRect(const AxisSettings& settings,
+/*
+IVW_MODULE_PLOTTING_API std::pair<vec2, vec2> tickBoundingRect(const AxisData& settings,
                                                                const AxisLabels& ticks,
                                                                const vec2& startPos,
                                                                const vec2& endPos);
+
+*/
 
 }  // namespace plot
 

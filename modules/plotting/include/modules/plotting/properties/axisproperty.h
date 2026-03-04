@@ -33,19 +33,16 @@
 
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttongroupproperty.h>
-#include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/staticstring.h>
-#include <modules/plotting/datastructures/axissettings.h>
+
+#include <modules/plotting/datastructures/axisdata.h>
 #include <modules/plotting/properties/plottextproperty.h>
 #include <modules/plotting/properties/tickproperty.h>
 #include <modules/plotting/algorithm/labeling.h>
 
-#include <functional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -57,10 +54,11 @@ class MajorTickSettings;
 class MinorTickSettings;
 class PlotTextSettings;
 
-class IVW_MODULE_PLOTTING_API AxisProperty : public AxisSettings, public BoolCompositeProperty {
+class IVW_MODULE_PLOTTING_API AxisProperty : public BoolCompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.AxisProperty"};
+    using Orientation = AxisData::Orientation;
 
     AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
                  Orientation orientation = Orientation::Horizontal,
@@ -125,26 +123,10 @@ public:
      */
     AxisProperty& setLineWidth(float width);
 
-    // Inherited via AxisSettings
-    virtual dvec2 getRange() const override;
+    dvec2 getRange() const;
+    Orientation getOrientation() const;
 
-    virtual bool getAxisVisible() const override;
-    virtual bool getMirrored() const override;
-    virtual vec4 getColor() const override;
-    virtual float getWidth() const override;
-    virtual float getScalingFactor() const override;
-    virtual Orientation getOrientation() const override;
-
-    virtual const std::string& getCaption() const override;
-    virtual const PlotTextSettings& getCaptionSettings() const override;
-
-    virtual LabelingAlgorithm getLabelingAlgorithm() const override;
-    virtual std::string_view getLabelFormatString() const override;
-    virtual const AxisLabels& getCustomLabels() const override;
-    virtual const PlotTextSettings& getLabelSettings() const override;
-
-    virtual const MajorTickSettings& getMajorTicks() const override;
-    virtual const MinorTickSettings& getMinorTicks() const override;
+    void update(AxisData& data) const;
 
     // general properties
     FloatVec4Property color_;
@@ -166,7 +148,6 @@ public:
 
     MajorTickProperty majorTicks_;
     MinorTickProperty minorTicks_;
-    // StringProperty config_;
 
 private:
     std::vector<ButtonGroupProperty::Button> buttons(bool hasOrientation);

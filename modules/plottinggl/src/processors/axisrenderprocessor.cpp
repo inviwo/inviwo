@@ -40,7 +40,7 @@
 #include <inviwo/core/properties/marginproperty.h>
 #include <inviwo/core/util/glmvec.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/axisdata.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plotting/properties/plottextproperty.h>
@@ -77,7 +77,7 @@ AxisRenderProcessor::AxisRenderProcessor()
     , axis1_("axis1", "Axis 1")
     , axis2_("axis2", "Axis 2", AxisProperty::Orientation::Vertical)
     , axis3_("axis3", "Axis 3")
-    , axisRenderers_{axis1_, axis2_, axis3_} {
+    , axisRenderers_{AxisData{}, AxisData{}, AxisData{}} {
 
     inport_.setOptional(true);
 
@@ -111,6 +111,10 @@ void AxisRenderProcessor::process() {
     const size2_t upperRight(dims.x - 1 - margins_.getRight(), dims.y - 1 - margins_.getTop());
 
     const auto padding = axisMargin_.get();
+
+    if (axis1_.isModified()) axis1_.update(axisRenderers_[0].getData());
+    if (axis2_.isModified()) axis2_.update(axisRenderers_[1].getData());
+    if (axis3_.isModified()) axis3_.update(axisRenderers_[2].getData());
 
     // draw horizontally
     axisRenderers_[0].render(dims, lowerLeft + size2_t(padding, 0),

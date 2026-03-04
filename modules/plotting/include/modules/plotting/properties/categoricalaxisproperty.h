@@ -38,8 +38,8 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/staticstring.h>
-#include <modules/plotting/datastructures/axissettings.h>
-#include <modules/plotting/datastructures/minortickdata.h>
+#include <modules/plotting/datastructures/axisdata.h>
+#include <modules/plotting/datastructures/tickdata.h>
 #include <modules/plotting/properties/plottextproperty.h>
 #include <modules/plotting/properties/tickproperty.h>
 
@@ -60,11 +60,12 @@ class PlotTextSettings;
  * Will set the AxisProperty::range to match the number of categories and make it read-only.
  * minorTicks will be made invisible.
  */
-class IVW_MODULE_PLOTTING_API CategoricalAxisProperty : public AxisSettings,
-                                                        public CompositeProperty {
+class IVW_MODULE_PLOTTING_API CategoricalAxisProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.CategoricalAxisProperty"};
+    using Orientation = AxisData::Orientation;
+    using LabelPlacement = PlotTextData::LabelPlacement;
 
     CategoricalAxisProperty(std::string_view identifier, std::string_view displayName,
                             std::vector<std::string> categories = {"Category"},
@@ -83,28 +84,9 @@ public:
      * Sets the categories to display at major ticks and updates the AxisProperty::range property to
      * match the number of categories.
      */
-    void setCategories(std::vector<std::string> categories);
+    void setCategories(std::span<const std::string> categories);
 
-    // Inherited via AxisSettings
-    virtual dvec2 getRange() const override;
-
-    virtual bool getAxisVisible() const override;
-    virtual bool getMirrored() const override;
-    virtual vec4 getColor() const override;
-    virtual float getWidth() const override;
-    virtual float getScalingFactor() const override;
-    virtual Orientation getOrientation() const override;
-
-    virtual const std::string& getCaption() const override;
-    virtual const PlotTextSettings& getCaptionSettings() const override;
-
-    virtual LabelingAlgorithm getLabelingAlgorithm() const override;
-    virtual std::string_view getLabelFormatString() const override;
-    virtual const AxisLabels& getCustomLabels() const override;
-    virtual const PlotTextSettings& getLabelSettings() const override;
-
-    virtual const MajorTickSettings& getMajorTicks() const override;
-    virtual const MinorTickSettings& getMinorTicks() const override;
+    void update(AxisData& data) const;
 
     // general properties
     BoolProperty visible_;
@@ -121,10 +103,10 @@ public:
     PlotTextProperty labelSettings_;
 
     MajorTickProperty majorTicks_;
-    MinorTickData minorTicks_;
+    TickData minorTicks_;
 
 private:
-    AxisLabels axisLabels_;
+    std::vector<std::string> categories_;
     void adjustAlignment();
 };
 
