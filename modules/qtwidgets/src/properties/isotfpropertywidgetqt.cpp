@@ -70,7 +70,7 @@ IsoTFPropertyWidgetQt::IsoTFPropertyWidgetQt(IsoTFProperty* property)
     setLayout(hLayout);
     IsoTFPropertyWidgetQt::updateFromProperty();
 
-    connect(btnOpenTF_, &IvwPushButton::clicked, [this, property]() {
+    connect(btnOpenTF_, &IvwPushButton::clicked, [this]() {
         if (!tfDialog_) {
             initEditor();
             tfDialog_->setVisible(true);

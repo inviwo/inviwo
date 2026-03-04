@@ -32,11 +32,9 @@
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/glmvec.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
+#include <modules/fontrendering/datastructures/fontdata.h>
 #include <modules/fontrendering/properties/fontfaceoptionproperty.h>
 
 #include <string>
@@ -49,7 +47,7 @@ namespace inviwo {
  * A composite property with the necessary parameters for font rendering like font face, font size,
  * and line spacing.
  */
-class IVW_MODULE_FONTRENDERING_API FontProperty : public FontSettings, public CompositeProperty {
+class IVW_MODULE_FONTRENDERING_API FontProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.FontProperty"};
@@ -78,11 +76,7 @@ public:
     FloatProperty lineSpacing_;
     FloatVec2Property anchorPos_;
 
-    // Inherited via FontSettings
-    virtual const std::filesystem::path& getFontFace() const override;
-    virtual int getFontSize() const override;
-    virtual float getLineSpacing() const override;
-    virtual vec2 getAnchorPos() const override;
+    void update(FontData& data) const;
 };
 
 }  // namespace inviwo

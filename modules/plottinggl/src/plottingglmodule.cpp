@@ -82,7 +82,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerDataVisualizer(std::make_unique<ScatterPlotDataFrameVisualizer>(app));
 }
 
-int PlottingGLModule::getVersion() const { return 6; }
+int PlottingGLModule::getVersion() const { return 7; }
 
 std::unique_ptr<VersionConverter> PlottingGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -414,6 +414,166 @@ bool updateV5(TxElement* root) {
     return res;
 }
 
+
+namespace detail {
+constexpr bool is_flag(char c) { return c == '+' || c == '-' || c == ' ' || c == '#' || c == '0'; }
+constexpr bool is_specifier(char c) {
+    switch (c) {
+        case 'd':
+        case 'i':
+        case 'u':
+        case 'o':
+        case 'x':
+        case 'X':
+        case 'f':
+        case 'F':
+        case 'e':
+        case 'E':
+        case 'g':
+        case 'G':
+        case 's':
+            return true;
+        default:
+            return false;
+    }
+}
+}  // namespace detail
+
+std::string printfToFmt(std::string_view input) {
+    std::string out;
+    out.reserve(input.size() + 16);
+
+    auto it = input.begin();
+    auto end = input.end();
+
+    while (it != end) {
+        if (*it != '%') {
+            out.push_back(*it++);
+            continue;
+        }
+
+        auto percent = it++;
+        if (it != end && *it == '%') {
+            out.push_back('%');
+            ++it;
+            continue;
+        }
+
+        // ---- flags ----
+        auto flags_begin = it;
+        while (it != end && detail::is_flag(*it)) ++it;
+        std::string_view flags(flags_begin, static_cast<size_t>(it - flags_begin));
+
+        // ---- width ----
+        auto width_begin = it;
+        while (it != end && std::isdigit(static_cast<unsigned char>(*it))) ++it;
+        std::string_view width{width_begin, static_cast<size_t>(it - width_begin)};
+
+        // ---- precision ----
+        std::string_view precision;
+        if (it != end && *it == '.') {
+            ++it;
+            auto prec_begin = it;
+            while (it != end && std::isdigit(static_cast<unsigned char>(*it))) ++it;
+            precision = {prec_begin, static_cast<size_t>(it - prec_begin)};
+        }
+
+        // ---- specifier ----
+        if (it == end || !detail::is_specifier(*it)) {
+            // invalid → copy literally
+            out.append(percent, it);
+            continue;
+        }
+
+        char spec = *it++;
+        out += "{:";
+
+        // ---- flags mapping ----
+        for (char f : flags) {
+            if (f == '0' && width.empty()) continue;  // zero-pad only with width
+            if (f == '-') continue;                   // ignore left-align (semantic mismatch)
+            out.push_back(f);
+        }
+
+        // ---- width ----
+        out.append(width);
+
+        // ---- precision ----
+        if (!precision.empty()) {
+            out.push_back('.');
+            out.append(precision);
+        }
+
+        // ---- type ----
+        switch (spec) {
+            case 'd':
+            case 'i':
+            case 'u':
+                break;
+            case 'o':
+            case 'x':
+            case 'X':
+                out.push_back(spec);
+                break;
+            case 'f':
+            case 'F':
+            case 'e':
+            case 'E':
+            case 'g':
+            case 'G':
+                out.push_back(static_cast<char>(std::tolower(spec)));
+                break;
+            case 's':
+                break;
+        }
+
+        out.push_back('}');
+    }
+
+    return out;
+}
+
+bool updateV6(TxElement* root) {
+    bool res = false;
+
+    TraversingVersionConverter conv{[&res](TxElement* node) -> bool {
+        if (const auto& key = node->Value(); key != "Property") return true;
+        if (const auto& type = node->GetAttribute("type"); type == "org.inviwo.AxisProperty") {
+            if (auto* elem =
+                    xml::getElement(node,
+                                    "Properties"
+                                    "/Property&type=org.inviwo.PlotTextProperty&identifier=labels"
+                                    "/Properties"
+                                    "/Property&type=org.inviwo.StringProperty&identifier=title"
+                                    "/value")) {
+                if (auto format = elem->Attribute("content").transform(printfToFmt)) {
+                    elem->SetAttribute("content", *format);
+                    res = true;
+                }
+            }
+        }
+        if (const auto& type = node->GetAttribute("type"); type == "org.inviwo.AxisStyleProperty") {
+            if (auto* elem = xml::getElement(
+                    node,
+                    "Properties"
+                    "/Property&type=org.inviwo.StringProperty&identifier=labelFormat"
+                    "/value")) {
+                if (auto format = elem->Attribute("content").transform(printfToFmt)) {
+                    elem->SetAttribute("content", *format);
+                    res = true;
+                }
+            }
+        }
+
+        return true;
+    }};
+
+    conv.convert(root);
+
+    return res;
+}
+
+
 }  // namespace
 
 bool PlottingGLModule::Converter::convert(TxElement* root) {
@@ -441,6 +601,10 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
         }
         case 5: {
             res |= updateV5(root);
+            [[fallthrough]];
+        }
+        case 6: {
+            res |= updateV6(root);
             return res;
         }
         default:

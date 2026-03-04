@@ -30,6 +30,8 @@
 
 #include <modules/plotting/plottingmoduledefine.h>
 
+#include <inviwo/core/util/glmvec.h>
+
 #include <vector>
 #include <array>
 #include <span>
@@ -42,39 +44,47 @@ enum class LabelingAlgorithm : unsigned char {
     Matplotlib,
     ExtendedWilkinson,
     Limits,
-    CustomOnly
+};
+
+struct IVW_MODULE_PLOTTING_API LinearRange {
+    double start{0.0};
+    double stop{1.0};
+    double step{1.0};
 };
 
 constexpr LabelingAlgorithm defaultLabeling = LabelingAlgorithm::Matplotlib;
+
+IVW_MODULE_PLOTTING_API void updateLabelPositions(std::vector<double>& majorPositions,
+                                                  std::vector<double>& minorPositions,
+                                                  LabelingAlgorithm algorithm, const dvec2& range,
+                                                  int maxTicks, int minorTickFrequency);
+
+IVW_MODULE_PLOTTING_API void updateLabels(std::vector<std::string>& labels,
+                                          const std::vector<double>& positions,
+                                          std::string_view format);
+
+IVW_MODULE_PLOTTING_API void updateLabels(std::vector<std::string>& labels,
+                                          std::span<const std::string> srcLabels);
 
 // set of nice numbers suggested by Talbot et al. for their labeling (Extended Wilkinson)
 constexpr std::array stepsTalbot = {1.0, 5.0, 2.0, 2.5, 4.0, 3.0};
 // set of nice numbers as used by matplotlib
 constexpr std::array stepsMatplotlib = {1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0};
 
-struct IVW_MODULE_PLOTTING_API AxisLabels {
-    std::vector<double> positions;
-    std::vector<std::string> labels;
-    double start{0.0};
-    double stop{0.0};
-    double step{0.0};
-
-    friend bool operator==(const AxisLabels& a, const AxisLabels& b) {
-        return a.start == b.start && a.stop == b.stop && a.positions == b.positions &&
-               a.labels == b.labels;
-    }
-};
-
 /**
  * Returns an inclusive linear range starting at @p start and ending at @p stop.
  *
- * @throws RangeException if start > stop and step > 0 or start < stop and step < 0
  * @param start  starting value of the range
  * @param stop   last value of the range
  * @param step   increment between each element of the range
  * @return linear range [start, start + step, ..., stop]
+ * @note it the range is invalid (start > stop and step > 0) or similar, the result is empty
  */
-IVW_MODULE_PLOTTING_API std::vector<double> linearRange(double start, double stop, double step);
+IVW_MODULE_PLOTTING_API void linearRange(const LinearRange& range, std::vector<double>& positions);
+
+IVW_MODULE_PLOTTING_API void linearRange(const dvec2& range, const LinearRange& optRange,
+                                         int minorTickFrequency, std::vector<double>& major,
+                                         std::vector<double>& minor);
 
 /**
  * Heckbert's labeling algorithm
@@ -90,7 +100,8 @@ IVW_MODULE_PLOTTING_API std::vector<double> linearRange(double start, double sto
  * @param numTicks  optimal number of ticks
  * @return computed labels and ticks positions
  */
-AxisLabels labelingHeckbert(double valueMin, double valueMax, int numTicks);
+IVW_MODULE_PLOTTING_API LinearRange labelingHeckbert(double valueMin, double valueMax,
+                                                     int numTicks);
 
 /**
  * Extended Wilkinson algorithm by Justin Talbot
@@ -109,7 +120,7 @@ AxisLabels labelingHeckbert(double valueMin, double valueMax, int numTicks);
  * @param steps     set of "nice" numbers, e.g. [1, 5, 2, 2.5, 4, 3]
  * @return computed labels and ticks positions
  */
-IVW_MODULE_PLOTTING_API AxisLabels labelingExtendedWilkinson(
+IVW_MODULE_PLOTTING_API LinearRange labelingExtendedWilkinson(
     double valueMin, double valueMax, int numTicks, std::span<const double> steps = stepsTalbot);
 
 /**
@@ -132,9 +143,9 @@ IVW_MODULE_PLOTTING_API AxisLabels labelingExtendedWilkinson(
  * @param minNTicks relax @p maxTicks and @p integerTicks constraints if necessary
  * @return computed labels and ticks positions
  */
-IVW_MODULE_PLOTTING_API AxisLabels labelingMatplotlib(
-    double valueMin, double valueMax, int maxTicks = 10,
-    std::span<const double> steps = stepsMatplotlib, bool integerTicks = false, int minNTicks = 2);
+IVW_MODULE_PLOTTING_API LinearRange labelingMatplotlib(
+    double valueMin, double valueMax, int maxTicks, std::span<const double> steps = stepsMatplotlib,
+    bool integerTicks = false, int minNTicks = 2);
 
 /**
  * Basic axis labeling showing only the limits and an optional zero.
@@ -144,7 +155,8 @@ IVW_MODULE_PLOTTING_API AxisLabels labelingMatplotlib(
  * @param includeZero  a label for 0.0 is included if true
  * @return computed labels and ticks positions
  */
-IVW_MODULE_PLOTTING_API AxisLabels labelingLimits(double valueMin, double valueMax,
-                                                  bool includeZero = true);
+IVW_MODULE_PLOTTING_API void labelingLimits(double valueMin, double valueMax,
+                                            std::vector<double>& positions,
+                                            bool includeZero = true);
 
 }  // namespace inviwo::plot

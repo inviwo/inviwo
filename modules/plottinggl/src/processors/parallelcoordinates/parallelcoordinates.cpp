@@ -416,7 +416,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
         prop->setVisible(true);
 
         // Create axis for rendering
-        auto renderer = std::make_unique<AxisRenderer>(*prop);
+        auto renderer = std::make_unique<AxisRenderer>(AxisData{});
         renderer->setAxisPickingId(axisPicking_.getPickingId(columnIndex));
 
         auto slider = std::make_unique<glui::DoubleMinMaxPropertyWidget>(
@@ -560,12 +560,10 @@ void ParallelCoordinates::partitionLines() {
 void ParallelCoordinates::drawAxis(size2_t size) {
     for (auto& axis : axes_) {
         if (!axis.pcp->isChecked()) continue;
-        const auto ap = axisPos(axis.pcp->columnId());
-        if (axis.pcp->invertRange) {
-            axis.axisRender->render(size, ap.second, ap.first);
-        } else {
-            axis.axisRender->render(size, ap.first, ap.second);
-        }
+        auto ap = axisPos(axis.pcp->columnId());
+        if (axis.pcp->isModified()) axis.pcp->update(axis.axisRender->getData());
+        if (axis.pcp->invertRange) std::swap(ap.first, ap.second);
+        axis.axisRender->render(size, ap.first, ap.second);
     }
 }
 
@@ -862,7 +860,7 @@ void ParallelCoordinates::updateBrushing() {
     };
 
     for (auto& axis : axes_) {
-        brushAxis(axis.pcp->getBrushed(), axis.pcp->getCaption());
+        brushAxis(axis.pcp->getBrushed(), axis.pcp->caption_);
     }
 }
 

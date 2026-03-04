@@ -32,14 +32,12 @@
 #include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/glmvec.h>
 #include <modules/fontrendering/properties/fontproperty.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
+#include <modules/plotting/datastructures/plottextdata.h>
 
 #include <string>
 #include <string_view>
@@ -49,11 +47,11 @@ class FontSettings;
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API PlotTextProperty : public PlotTextSettings,
-                                                 public BoolCompositeProperty {
+class IVW_MODULE_PLOTTING_API PlotTextProperty : public BoolCompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.PlotTextProperty"};
+    using LabelPlacement = PlotTextData::LabelPlacement;
 
     PlotTextProperty(std::string_view identifier, std::string_view displayName, Document help,
                      bool checked = false,
@@ -76,14 +74,7 @@ public:
                               //!  0 degrees means horizontal orientation
     FontProperty font_;
 
-    // Inherited via PlotTextSettings
-    virtual bool isEnabled() const override;
-    virtual LabelPlacement getPlacement() const override;
-    virtual vec4 getColor() const override;
-    virtual float getPosition() const override;
-    virtual vec2 getOffset() const override;
-    virtual float getRotation() const override;
-    virtual const FontSettings& getFont() const override;
+    void update(PlotTextData& data) const;
 };
 
 }  // namespace plot

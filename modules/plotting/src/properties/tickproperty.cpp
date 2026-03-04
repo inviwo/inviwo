@@ -29,16 +29,6 @@
 
 #include <modules/plotting/properties/tickproperty.h>
 
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/staticstring.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
-
 namespace inviwo::plot {
 
 std::string_view MajorTickProperty::getClassIdentifier() const { return classIdentifier; }
@@ -50,47 +40,44 @@ MajorTickProperty::MajorTickProperty(std::string_view identifier, std::string_vi
                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, "Settings for major ticks along the axis"_help,
                         invalidationLevel, std::move(semantics))
-    , style_("style", "Style",
-             {{"none", "None", TickStyle::None},
-              {"inside", "Inside", TickStyle::Inside},
-              {"outside", "Outside", TickStyle::Outside},
-              {"both", "Both", TickStyle::Both}},
-             3)
-    , color_("color", "Color",
-             util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f)).set("Color of the ticks"_help))
-    , tickLength_("tickLength", "Length",
-                  util::ordinalLength(8.0f, 20.0f).set("Length of the ticks"_help))
-    , tickWidth_("tickWidth", "Width",
-                 util::ordinalLength(2.5f, 20.0f).set("Line width of the ticks"_help))
-    , numberOfTicks_(
+    , style("style", "Style",
+            {{"none", "None", TickStyle::None},
+             {"inside", "Inside", TickStyle::Inside},
+             {"outside", "Outside", TickStyle::Outside},
+             {"both", "Both", TickStyle::Both}},
+            3)
+    , color("color", "Color",
+            util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f)).set("Color of the ticks"_help))
+    , length("tickLength", "Length",
+             util::ordinalLength(8.0f, 20.0f).set("Length of the ticks"_help))
+    , width("tickWidth", "Width",
+            util::ordinalLength(2.5f, 20.0f).set("Line width of the ticks"_help))
+    , numberOfTicks(
           "numberOfTicks", "Max Number of Ticks",
           util::ordinalCount(6, 20).setMin(2).set("Maximum number of labels/ticks."_help)) {
 
-    addProperties(style_, color_, tickLength_, tickWidth_, numberOfTicks_);
+    addProperties(style, color, length, width, numberOfTicks);
 }
 
 MajorTickProperty::MajorTickProperty(const MajorTickProperty& rhs)
     : CompositeProperty(rhs)
-    , style_(rhs.style_)
-    , color_(rhs.color_)
-    , tickLength_(rhs.tickLength_)
-    , tickWidth_(rhs.tickWidth_)
-    , numberOfTicks_(rhs.numberOfTicks_) {
+    , style(rhs.style)
+    , color(rhs.color)
+    , length(rhs.length)
+    , width(rhs.width)
+    , numberOfTicks(rhs.numberOfTicks) {
 
-    addProperties(style_, color_, tickLength_, tickWidth_, numberOfTicks_);
+    addProperties(style, color, length, width, numberOfTicks);
 }
 
 MajorTickProperty* MajorTickProperty::clone() const { return new MajorTickProperty(*this); }
 
-TickStyle MajorTickProperty::getStyle() const { return style_.getSelectedValue(); }
-
-vec4 MajorTickProperty::getColor() const { return color_.get(); }
-
-float MajorTickProperty::getTickLength() const { return tickLength_.get(); }
-
-float MajorTickProperty::getTickWidth() const { return tickWidth_.get(); }
-
-int MajorTickProperty::getNumberOfTicks() const { return numberOfTicks_.get(); }
+void MajorTickProperty::update(TickData& data) const {
+    data.style = style.getSelectedValue();
+    data.color = color.get();
+    data.length = length.get();
+    data.width = width.get();
+}
 
 MinorTickProperty::MinorTickProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
@@ -98,51 +85,46 @@ MinorTickProperty::MinorTickProperty(std::string_view identifier, std::string_vi
     : CompositeProperty(identifier, displayName,
                         "Settings for minor ticks (shown between major ticks)"_help,
                         invalidationLevel, std::move(semantics))
-    , style_("style", "Style",
-             {{"none", "None", TickStyle::None},
-              {"inside", "Inside", TickStyle::Inside},
-              {"outside", "Outside", TickStyle::Outside},
-              {"both", "Both", TickStyle::Both}},
-             2)
-    , fillAxis_("fillAxis", "Fill Entire Axis",
-                "Minor ticks will cover the entire axis range if true, otherwise they will only "
-                "appear in between major ticks."_help,
-                true)
-    , color_("color", "Color",
-             util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f)).set("Color of the ticks"_help))
-    , tickLength_("tickLength", "Length",
-                  util::ordinalLength(6.0f, 20.0f).set("Length of the ticks"_help))
-    , tickWidth_("tickWidth", "Width",
-                 util::ordinalLength(1.5f, 20.0f).set("Line width of the ticks"_help))
-    , tickFrequency_("tickFrequency_", "Frequency", 2, 1, 20) {
+    , style("style", "Style",
+            {{"none", "None", TickStyle::None},
+             {"inside", "Inside", TickStyle::Inside},
+             {"outside", "Outside", TickStyle::Outside},
+             {"both", "Both", TickStyle::Both}},
+            2)
+    , fillAxis("fillAxis", "Fill Entire Axis",
+               "Minor ticks will cover the entire axis range if true, otherwise they will only "
+               "appear in between major ticks."_help,
+               true)
+    , color("color", "Color",
+            util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f)).set("Color of the ticks"_help))
+    , length("tickLength", "Length",
+             util::ordinalLength(6.0f, 20.0f).set("Length of the ticks"_help))
+    , width("tickWidth", "Width",
+            util::ordinalLength(1.5f, 20.0f).set("Line width of the ticks"_help))
+    , frequency("tickFrequency_", "Frequency", 2, 1, 20) {
 
-    addProperties(style_, fillAxis_, color_, tickLength_, tickWidth_, tickFrequency_);
+    addProperties(style, fillAxis, color, length, width, frequency);
 }
 
 MinorTickProperty::MinorTickProperty(const MinorTickProperty& rhs)
     : CompositeProperty(rhs)
-    , style_(rhs.style_)
-    , fillAxis_(rhs.fillAxis_)
-    , color_(rhs.color_)
-    , tickLength_(rhs.tickLength_)
-    , tickWidth_(rhs.tickWidth_)
-    , tickFrequency_(rhs.tickFrequency_) {
+    , style(rhs.style)
+    , fillAxis(rhs.fillAxis)
+    , color(rhs.color)
+    , length(rhs.length)
+    , width(rhs.width)
+    , frequency(rhs.frequency) {
 
-    addProperties(style_, fillAxis_, color_, tickLength_, tickWidth_, tickFrequency_);
+    addProperties(style, fillAxis, color, length, width, frequency);
 }
 
 MinorTickProperty* MinorTickProperty::clone() const { return new MinorTickProperty(*this); }
 
-TickStyle MinorTickProperty::getStyle() const { return style_.getSelectedValue(); }
-
-bool MinorTickProperty::getFillAxis() const { return fillAxis_.get(); }
-
-vec4 MinorTickProperty::getColor() const { return color_.get(); }
-
-float MinorTickProperty::getTickLength() const { return tickLength_.get(); }
-
-float MinorTickProperty::getTickWidth() const { return tickWidth_.get(); }
-
-int MinorTickProperty::getTickFrequency() const { return tickFrequency_.get(); }
+void MinorTickProperty::update(TickData& data) const {
+    data.style = style.getSelectedValue();
+    data.color = color.get();
+    data.length = length.get();
+    data.width = width.get();
+}
 
 }  // namespace inviwo::plot

@@ -57,7 +57,7 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/axisdata.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
@@ -117,7 +117,7 @@ ImagePlotProcessor::ImagePlotProcessor()
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis", AxisProperty::Orientation::Vertical)
     , imageInteraction_("imageInteraction", "Image Interaction", true)
-    , axisRenderers_({{xAxis_, yAxis_}})
+    , axisRenderers_{AxisData{}, AxisData{}}
     , imgRenderer_{}
     , viewManager_{}
     , viewport_{0, 0, 1, 1}
@@ -187,9 +187,11 @@ void ImagePlotProcessor::process() {
     const auto padding = axisMargin_.get();
 
     // draw horizontal axis
+    if (xAxis_.isModified()) xAxis_.update(axisRenderers_[0].getData());
     axisRenderers_[0].render(dims, lowerLeft + size2_t(padding, 0),
                              size2_t(upperRight.x - padding, lowerLeft.y));
     // draw vertical axis
+    if (yAxis_.isModified()) yAxis_.update(axisRenderers_[1].getData());
     axisRenderers_[1].render(dims, lowerLeft + size2_t(0, padding),
                              size2_t(lowerLeft.x, upperRight.y - padding));
 
