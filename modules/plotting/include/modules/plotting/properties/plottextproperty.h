@@ -37,7 +37,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/glmvec.h>
 #include <modules/fontrendering/properties/fontproperty.h>
-#include <modules/plotting/datastructures/plottextdata.h>
+#include <modules/plotting/datastructures/textdata.h>
 
 #include <string>
 #include <string_view>
@@ -51,7 +51,7 @@ class IVW_MODULE_PLOTTING_API PlotTextProperty : public BoolCompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.PlotTextProperty"};
-    using LabelPlacement = PlotTextData::LabelPlacement;
+    using Placement = TextData::Placement;
 
     PlotTextProperty(std::string_view identifier, std::string_view displayName, Document help,
                      bool checked = false,
@@ -66,7 +66,7 @@ public:
     virtual ~PlotTextProperty() = default;
 
     StringProperty title_;
-    OptionProperty<LabelPlacement> placement_;
+    OptionProperty<Placement> placement_;
     FloatVec4Property color_;
     FloatProperty position_;  //!< position along axis [0,1]
     FloatProperty offset_;    //!< offset from axis
@@ -74,7 +74,7 @@ public:
                               //!  0 degrees means horizontal orientation
     FontProperty font_;
 
-    void update(PlotTextData& data) const;
+    void update(TextData& data) const;
 };
 
 }  // namespace plot

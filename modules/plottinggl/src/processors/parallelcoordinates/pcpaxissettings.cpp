@@ -273,7 +273,7 @@ void PCPAxisSettings::update(AxisData& data) const {
 
     data.captionSettings.enabled =
         pcp_->captionPosition_.get() != ParallelCoordinates::LabelPosition::None;
-    data.captionSettings.placement = PlotTextData::LabelPlacement::Outside;
+    data.captionSettings.placement = TextData::Placement::Outside;
     data.captionSettings.color = pcp_->captionColor_.get();
     data.captionSettings.position = (pcp_->captionPosition_.get() ==
                                      ParallelCoordinates::LabelPosition::Above) != invertRange.get()
@@ -300,19 +300,19 @@ void PCPAxisSettings::update(AxisData& data) const {
     }
 
     data.labelSettings.enabled = pcp_->showLabels_;
-    data.labelSettings.placement = PlotTextData::LabelPlacement::Outside;
+    data.labelSettings.placement = TextData::Placement::Outside;
     data.labelSettings.color = pcp_->labelColor_.get();
     data.labelSettings.position = 0.0f;
     data.labelSettings.offset = vec2(pcp_->labelOffset_, 0.0f);
     data.labelSettings.rotation = 0.0f;
     pcp_->labelSettings_.update(data.labelSettings.font);
 
-    data.major.style = TickStyle::Both;
+    data.major.style = TickData::Style::Both;
     data.major.color = getColor();
     data.major.length = pcp_->axisSize_ * 2.0f;
     data.major.width = getWidth();
 
-    data.minor.style = TickStyle::None;
+    data.minor.style = TickData::Style::None;
     data.minor.color = vec4(0.0f);
     data.minor.length = 0.0f;
     data.minor.width = 0.0f;

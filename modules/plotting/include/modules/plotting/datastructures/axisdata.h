@@ -32,7 +32,7 @@
 
 #include <inviwo/core/util/glmvec.h>
 #include <modules/plotting/datastructures/tickdata.h>
-#include <modules/plotting/datastructures/plottextdata.h>
+#include <modules/plotting/datastructures/textdata.h>
 #include <modules/plotting/algorithm/labeling.h>
 
 #include <string>
@@ -53,7 +53,7 @@ struct IVW_MODULE_PLOTTING_API AxisData {
     Orientation orientation = Orientation::Horizontal;
 
     std::string caption;
-    PlotTextData captionSettings;
+    TextData captionSettings;
 
     std::vector<double> majorPositions;
     TickData major;
@@ -62,7 +62,7 @@ struct IVW_MODULE_PLOTTING_API AxisData {
     TickData minor;
 
     std::vector<std::string> labels;
-    PlotTextData labelSettings;
+    TextData labelSettings;
 
     bool operator==(const AxisData&) const = default;
 };
