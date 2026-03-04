@@ -27,27 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/datastructures/stipplingsettings.h>
+#include <modules/basegl/datastructures/stipplingdata.h>
 
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
-
-namespace inviwo {
-
-StipplingSettings::StipplingSettings(const StipplingSettingsInterface* other)
-    : mode(other->getMode())
-    , length(other->getLength())
-    , spacing(other->getSpacing())
-    , offset(other->getOffset())
-    , worldScale(other->getWorldScale()) {}
-
-StipplingSettingsInterface::Mode StipplingSettings::getMode() const { return mode; }
-
-float StipplingSettings::getLength() const { return length; }
-
-float StipplingSettings::getSpacing() const { return spacing; }
-
-float StipplingSettings::getOffset() const { return offset; }
-
-float StipplingSettings::getWorldScale() const { return worldScale; }
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

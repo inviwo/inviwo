@@ -48,7 +48,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <modules/base/properties/transformlistproperty.h>
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
+#include <modules/basegl/datastructures/stipplingdata.h>
 #include <modules/basegl/properties/linesettingsproperty.h>
 #include <modules/basegl/properties/stipplingproperty.h>
 #include <modules/oit/datastructures/transformedrasterization.h>
@@ -122,7 +122,8 @@ LineRasterizer::LineRasterizer()
                            : 0;
             },
             [](int mode, Shader& shader) {
-                shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", fmt::to_string(mode));
+                shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY",
+                                                              fmt::to_string(mode));
             }}},
           [this](Shader& shader) -> void {
               shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -162,12 +163,12 @@ void LineRasterizer::configureShader(Shader& shader) {
     fso->setShaderDefine("USE_FRAGMENT_LIST",
                          !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists());
 
-    fso->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.getPseudoLighting());
-    fso->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.getRoundDepthProfile());
+    fso->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.pseudoLighting.get());
+    fso->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.roundDepthProfile.get());
     fso->setShaderDefine("UNIFORM_ALPHA", useUniformAlpha_.get());
     fso->setShaderDefine("OVERWRITE_COLOR", overwriteColor_.get());
 
-    utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
+    utilgl::addShaderDefines(shader, lineSettings_.stippling.mode.getSelectedValue());
 
     shader.build();
 }
@@ -175,15 +176,15 @@ void LineRasterizer::configureShader(Shader& shader) {
 void LineRasterizer::setUniforms(Shader& shader) {
     Rasterizer::setUniforms(shader);
 
-    shader.setUniform("lineWidth", lineSettings_.getWidth());
-    shader.setUniform("antialiasing", lineSettings_.getAntialiasingWidth());
-    shader.setUniform("miterLimit", lineSettings_.getMiterLimit());
-    shader.setUniform("roundCaps", lineSettings_.getRoundCaps());
+    shader.setUniform("lineWidth", lineSettings_.lineWidth);
+    shader.setUniform("antialiasing", lineSettings_.antialiasing);
+    shader.setUniform("miterLimit", lineSettings_.miterLimit);
+    shader.setUniform("roundCaps", lineSettings_.roundCaps);
     // Stippling settings
-    shader.setUniform("stippling.length", lineSettings_.getStippling().getLength());
-    shader.setUniform("stippling.spacing", lineSettings_.getStippling().getSpacing());
-    shader.setUniform("stippling.offset", lineSettings_.getStippling().getOffset());
-    shader.setUniform("stippling.worldScale", lineSettings_.getStippling().getWorldScale());
+    shader.setUniform("stippling.length", lineSettings_.stippling.length);
+    shader.setUniform("stippling.spacing", lineSettings_.stippling.spacing);
+    shader.setUniform("stippling.offset", lineSettings_.stippling.offset);
+    shader.setUniform("stippling.worldScale", lineSettings_.stippling.worldScale);
     // Alpha
     if (useUniformAlpha_.get()) shader.setUniform("uniformAlpha", uniformAlpha_.get());
     if (overwriteColor_.get()) shader.setUniform("overwriteColor", constantColor_.get());

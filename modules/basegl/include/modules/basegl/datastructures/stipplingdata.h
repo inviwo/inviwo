@@ -26,19 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
+#include <modules/basegl/baseglmoduledefine.h>
+
+#include <cstdint>
 
 namespace inviwo {
 
-bool operator==(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) {
-    return a.getMode() == b.getMode() && a.getLength() == b.getLength() &&
-           a.getSpacing() == b.getSpacing() && a.getOffset() == b.getOffset() &&
-           a.getWorldScale() == b.getWorldScale();
-}
+/**
+ * @brief  Settings for stippling (Dashed line, e.g., - - -)
+ */
+struct IVW_MODULE_BASEGL_API StipplingData {
+    enum class Mode : std::uint8_t { None, ScreenSpace, WorldSpace };
+    float length = 20.f;   //!< refers to the length of one dash
+    float spacing = 10.f;  //!< spacing between two dashes
+    float offset = 0.f;    //!< offset for shifting the stipple pattern
+    float worldScale = 4.f;
+    Mode mode = Mode::None;
 
-bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) {
-    return !(a == b);
-}
+    bool operator==(const StipplingData&) const = default;
+};
 
 }  // namespace inviwo

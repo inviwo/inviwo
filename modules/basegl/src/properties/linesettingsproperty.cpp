@@ -119,26 +119,21 @@ LineSettingsProperty* LineSettingsProperty::clone() const {
     return new LineSettingsProperty(*this);
 }
 
-float LineSettingsProperty::getWidth() const { return lineWidth.get(); }
-float LineSettingsProperty::getAntialiasingWidth() const { return antialiasing.get(); }
-
-float LineSettingsProperty::getMiterLimit() const { return miterLimit.get(); }
-bool LineSettingsProperty::getRoundCaps() const { return roundCaps.get(); }
-bool LineSettingsProperty::getPseudoLighting() const { return pseudoLighting.get(); }
-bool LineSettingsProperty::getRoundDepthProfile() const { return roundDepthProfile.get(); }
-
-vec4 LineSettingsProperty::getDefaultColor() const { return defaultColor.get(); }
-
-const StipplingSettingsInterface& LineSettingsProperty::getStippling() const { return stippling; }
-
-bool LineSettingsProperty::getOverrideColor() const { return overrideColor.isChecked(); }
-vec3 LineSettingsProperty::getOverrideColorValue() const { return color.get(); }
-
-bool LineSettingsProperty::getOverrideAlpha() const { return overrideAlpha.isChecked(); }
-float LineSettingsProperty::getOverrideAlphaValue() const { return alpha.get(); }
-
-bool LineSettingsProperty::getUseMetaColor() const { return useMetaColor.isChecked(); }
-
-const TransferFunction& LineSettingsProperty::getMetaColor() const { return metaColor.get(); }
+void LineSettingsProperty::update(LineData& data) const {
+    data.lineWidth = lineWidth.get();
+    data.antialiasing = antialiasing.get();
+    data.miterLimit = miterLimit.get();
+    data.roundCaps = roundCaps.get();
+    data.pseudoLighting = pseudoLighting.get();
+    data.roundDepthProfile = roundDepthProfile.get();
+    data.overrideColor = overrideColor.isChecked();
+    data.overrideAlpha = overrideAlpha.isChecked();
+    data.useMetaColor = useMetaColor.isChecked();
+    stippling.update(data.stippling);
+    data.defaultColor = defaultColor.get();
+    data.overrideColorValue = color.get();
+    data.overrideAlphaValue = alpha.get();
+    data.metaColor = metaColor.get();
+}
 
 }  // namespace inviwo

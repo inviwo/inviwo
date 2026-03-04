@@ -352,11 +352,11 @@ void OpacityOptimization::buildShaders() {
         auto* frag = shader.getFragmentShaderObject();
         clearAndAddExtensionsAndDefines(frag);
 
-        utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
+        utilgl::addShaderDefines(shader, lineSettings_.stippling.mode);
 
         vert->setShaderDefine("HAS_COLOR", true);
-        frag->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.getPseudoLighting());
-        frag->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.getRoundDepthProfile());
+        frag->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.pseudoLighting);
+        frag->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.roundDepthProfile);
         frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
 
         shader.build();
@@ -368,13 +368,13 @@ void OpacityOptimization::buildShaders() {
         auto* frag = shader.getFragmentShaderObject();
         clearAndAddExtensionsAndDefines(frag);
 
-        utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
+        utilgl::addShaderDefines(shader, lineSettings_.stippling.mode);
 
         vert->setShaderDefine("HAS_COLOR", true);
         geom->setShaderDefine("ENABLE_ADJACENCY", true, "1");
 
-        frag->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.getPseudoLighting());
-        frag->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.getRoundDepthProfile());
+        frag->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.pseudoLighting);
+        frag->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.roundDepthProfile);
         frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
 
         shader.build();
@@ -591,10 +591,10 @@ void OpacityOptimization::renderGeometry(const Pass pass, Units& units) {
                             lineSettings_.defaultColor);
 
         // Stippling settings
-        shader.setUniform("stippling.length", lineSettings_.getStippling().getLength());
-        shader.setUniform("stippling.spacing", lineSettings_.getStippling().getSpacing());
-        shader.setUniform("stippling.offset", lineSettings_.getStippling().getOffset());
-        shader.setUniform("stippling.worldScale", lineSettings_.getStippling().getWorldScale());
+        shader.setUniform("stippling.length", lineSettings_.stippling.length);
+        shader.setUniform("stippling.spacing", lineSettings_.stippling.spacing);
+        shader.setUniform("stippling.offset", lineSettings_.stippling.offset);
+        shader.setUniform("stippling.worldScale", lineSettings_.stippling.worldScale);
     };
 
     {  // Triangles

@@ -37,7 +37,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <modules/basegl/datastructures/linesettingsinterface.h>
+#include <modules/basegl/datastructures/linedata.h>
 #include <modules/basegl/properties/stipplingproperty.h>
 
 #include <string>
@@ -46,8 +46,7 @@
 namespace inviwo {
 class StipplingSettingsInterface;
 
-class IVW_MODULE_BASEGL_API LineSettingsProperty : public LineSettingsInterface,
-                                                   public CompositeProperty {
+class IVW_MODULE_BASEGL_API LineSettingsProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.LineSettingsProperty"};
@@ -60,49 +59,7 @@ public:
 
     virtual LineSettingsProperty* clone() const override;
 
-    // Inherited from LineSettingsInterface
-    /**
-     * @copydoc LineSettingsInterface::getWidth
-     */
-    virtual float getWidth() const override;
-    /**
-     * @copydoc LineSettingsInterface::getAntialiasingWidth
-     */
-    virtual float getAntialiasingWidth() const override;
-    /**
-     * @copydoc LineSettingsInterface::getMiterLimit
-     */
-    virtual float getMiterLimit() const override;
-    /**
-     * @copydoc LineSettingsInterface::getRoundCaps
-     */
-    virtual bool getRoundCaps() const override;
-    /**
-     * @copydoc LineSettingsInterface::getPseudoLighting
-     */
-    virtual bool getPseudoLighting() const override;
-    /**
-     * @copydoc LineSettingsInterface::getRoundDepthProfile
-     */
-    virtual bool getRoundDepthProfile() const override;
-    /**
-     * @copydoc LineSettingsInterface::getDefaultColor
-     */
-    virtual vec4 getDefaultColor() const override;
-    /**
-     * @copydoc LineSettingsInterface::getStippling
-     */
-    virtual const StipplingSettingsInterface& getStippling() const override;
-
-    virtual bool getOverrideColor() const override;
-    virtual vec3 getOverrideColorValue() const override;
-
-    virtual bool getOverrideAlpha() const override;
-    virtual float getOverrideAlphaValue() const override;
-
-    virtual bool getUseMetaColor() const override;
-
-    virtual const TransferFunction& getMetaColor() const override;
+    void update(LineData&) const;
 
     FloatProperty lineWidth;
     FloatProperty antialiasing;

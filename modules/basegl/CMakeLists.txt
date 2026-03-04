@@ -9,12 +9,10 @@ set(HEADER_FILES
     include/modules/basegl/algorithm/volumenormalization.h
     include/modules/basegl/baseglmodule.h
     include/modules/basegl/baseglmoduledefine.h
-    include/modules/basegl/datastructures/linesettings.h
-    include/modules/basegl/datastructures/linesettingsinterface.h
+    include/modules/basegl/datastructures/linedata.h
     include/modules/basegl/datastructures/meshshadercache.h
     include/modules/basegl/datastructures/splittersettings.h
-    include/modules/basegl/datastructures/stipplingsettings.h
-    include/modules/basegl/datastructures/stipplingsettingsinterface.h
+    include/modules/basegl/datastructures/stipplingdata.h
     include/modules/basegl/datavisualizer/imagebackgroundvisualizer.h
     include/modules/basegl/datavisualizer/imagevisualizer.h
     include/modules/basegl/datavisualizer/layervisualizer.h
@@ -146,12 +144,10 @@ set(SOURCE_FILES
     src/algorithm/imageconvolution.cpp
     src/algorithm/volumenormalization.cpp
     src/baseglmodule.cpp
-    src/datastructures/linesettings.cpp
-    src/datastructures/linesettingsinterface.cpp
+    src/datastructures/linedata.cpp
     src/datastructures/meshshadercache.cpp
     src/datastructures/splittersettings.cpp
-    src/datastructures/stipplingsettings.cpp
-    src/datastructures/stipplingsettingsinterface.cpp
+    src/datastructures/stipplingdata.cpp
     src/datavisualizer/imagebackgroundvisualizer.cpp
     src/datavisualizer/imagevisualizer.cpp
     src/datavisualizer/layervisualizer.cpp

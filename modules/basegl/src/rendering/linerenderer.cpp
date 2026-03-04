@@ -33,10 +33,9 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <modules/basegl/datastructures/linesettings.h>
-#include <modules/basegl/datastructures/linesettingsinterface.h>
+#include <modules/basegl/datastructures/linedata.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
+#include <modules/basegl/datastructures/stipplingdata.h>
 #include <modules/basegl/properties/stipplingproperty.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -101,37 +100,36 @@ LineRenderer::LineRenderer(const std::vector<MeshShaderCache::Requirement>& requ
                    [this](Shader& shader) -> void { configureShader(shader); }}
     , tfLookup_{} {
 
-    if (settings_.getUseMetaColor()) {
-        tfLookup_.calculate(settings_.getMetaColor());
+    if (settings_.useMetaColor) {
+        tfLookup_.calculate(settings_.metaColor);
     }
 }
 
 void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
-                          const LineSettingsInterface& settings) {
+                          const LineData& settings) {
     render(mesh, camera, screenDim, settings, [](Shader&) {});
 }
 
 void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
-                          const LineSettingsInterface& settings,
-                          const std::function<void(Shader&)>& func) {
+                          const LineData& settings, const std::function<void(Shader&)>& func) {
     if (mesh.getNumberOfBuffers() == 0) return;
 
     // Changing these settings require recompilation
-    const bool recompile = settings_.getPseudoLighting() != settings.getPseudoLighting() ||
-                           settings_.getRoundDepthProfile() != settings.getRoundDepthProfile() ||
-                           settings_.getOverrideColor() != settings.getOverrideColor() ||
-                           settings_.getOverrideAlpha() != settings.getOverrideAlpha() ||
-                           settings_.getUseMetaColor() != settings.getUseMetaColor() ||
-                           settings_.getStippling().getMode() != settings.getStippling().getMode();
+    const bool recompile = settings_.pseudoLighting != settings.pseudoLighting ||
+                           settings_.roundDepthProfile != settings.roundDepthProfile ||
+                           settings_.overrideColor != settings.overrideColor ||
+                           settings_.overrideAlpha != settings.overrideAlpha ||
+                           settings_.useMetaColor != settings.useMetaColor ||
+                           settings_.stippling.mode != settings.stippling.mode;
 
     // Changes to these settings require updating the transfer function lookup
-    const bool updateLookup = settings_.getUseMetaColor() != settings.getUseMetaColor() ||
-                              settings_.getMetaColor() != settings.getMetaColor();
+    const bool updateLookup = settings_.useMetaColor != settings.useMetaColor ||
+                              settings_.metaColor != settings.metaColor;
 
-    settings_ = LineSettings(settings);
+    settings_ = settings;
 
-    if (settings_.getUseMetaColor() && updateLookup) {
-        tfLookup_.calculate(settings_.getMetaColor());
+    if (settings_.useMetaColor && updateLookup) {
+        tfLookup_.calculate(settings_.metaColor);
     }
 
     if (recompile) {
@@ -141,7 +139,7 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     TextureUnit texUnit;
-    if (settings_.getUseMetaColor()) {
+    if (settings_.useMetaColor) {
         if (const auto* tfLayer = tfLookup_.getRepresentation<LayerGL>()) {
             tfLayer->bindTexture(texUnit.getEnum());
         }
@@ -176,18 +174,18 @@ void LineRenderer::setUniforms(Shader& lineShader, const Mesh& mesh, const Camer
     lineShader.setUniform("screenDim", vec2(screenDim));
     utilgl::setShaderUniforms(lineShader, camera, "camera");
 
-    lineShader.setUniform("lineWidth", settings_.getWidth());
-    lineShader.setUniform("antialiasing", settings_.getAntialiasingWidth());
-    lineShader.setUniform("miterLimit", settings_.getMiterLimit());
-    lineShader.setUniform("roundCaps", settings_.getRoundCaps());
-    lineShader.setUniform("defaultColor", settings_.getDefaultColor());
-    lineShader.setUniform("config.color", settings_.getOverrideColorValue());
-    lineShader.setUniform("config.alpha", settings_.getOverrideAlphaValue());
+    lineShader.setUniform("lineWidth", settings_.lineWidth);
+    lineShader.setUniform("antialiasing", settings_.antialiasing);
+    lineShader.setUniform("miterLimit", settings_.miterLimit);
+    lineShader.setUniform("roundCaps", settings_.roundCaps);
+    lineShader.setUniform("defaultColor", settings_.defaultColor);
+    lineShader.setUniform("config.color", settings_.overrideColorValue);
+    lineShader.setUniform("config.alpha", settings_.overrideAlphaValue);
     // Stippling settings
-    lineShader.setUniform("stippling.length", settings_.getStippling().getLength());
-    lineShader.setUniform("stippling.spacing", settings_.getStippling().getSpacing());
-    lineShader.setUniform("stippling.offset", settings_.getStippling().getOffset());
-    lineShader.setUniform("stippling.worldScale", settings_.getStippling().getWorldScale());
+    lineShader.setUniform("stippling.length", settings_.stippling.length);
+    lineShader.setUniform("stippling.spacing", settings_.stippling.spacing);
+    lineShader.setUniform("stippling.offset", settings_.stippling.offset);
+    lineShader.setUniform("stippling.worldScale", settings_.stippling.worldScale);
     utilgl::setShaderUniforms(lineShader, mesh, "geometry");
     func(lineShader);
 }
@@ -199,14 +197,14 @@ void LineRenderer::configureShaders() {
 }
 void LineRenderer::configureShader(Shader& shader) {
     shader[ShaderType::Fragment]->setShaderDefine("ENABLE_PSEUDO_LIGHTING",
-                                                  settings_.getPseudoLighting());
+                                                  settings_.pseudoLighting);
     shader[ShaderType::Fragment]->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE",
-                                                  settings_.getRoundDepthProfile());
-    shader[ShaderType::Vertex]->setShaderDefine("OVERRIDE_COLOR", settings_.getOverrideColor());
-    shader[ShaderType::Vertex]->setShaderDefine("OVERRIDE_ALPHA", settings_.getOverrideAlpha());
-    shader[ShaderType::Vertex]->setShaderDefine("USE_SCALARMETACOLOR", settings_.getUseMetaColor());
+                                                  settings_.roundDepthProfile);
+    shader[ShaderType::Vertex]->setShaderDefine("OVERRIDE_COLOR", settings_.overrideColor);
+    shader[ShaderType::Vertex]->setShaderDefine("OVERRIDE_ALPHA", settings_.overrideAlpha);
+    shader[ShaderType::Vertex]->setShaderDefine("USE_SCALARMETACOLOR", settings_.useMetaColor);
 
-    utilgl::addShaderDefines(shader, settings_.getStippling().getMode());
+    utilgl::addShaderDefines(shader, settings_.stippling.mode);
     shader.build();
 }
 

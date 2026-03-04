@@ -34,9 +34,6 @@
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
-#include <modules/basegl/datastructures/linesettings.h>
-#include <modules/basegl/datastructures/stipplingsettings.h>
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
 #include <modules/basegl/rendering/linerenderer.h>
 #include <modules/plotting/datastructures/boxselection.h>
 #include <modules/plotting/properties/boxselectionproperty.h>
@@ -47,7 +44,7 @@
 namespace inviwo::plot {
 
 BoxSelectionRenderer::BoxSelectionRenderer() : lineRenderer_{} {
-    lineSettings_.stippling.mode = StipplingSettingsInterface::Mode::ScreenSpace;
+    lineSettings_.stippling.mode = StipplingData::Mode::ScreenSpace;
     lineSettings_.stippling.length = 5.f;
     lineSettings_.overrideColor = true;
 }

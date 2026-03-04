@@ -35,7 +35,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/staticstring.h>
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
+#include <modules/basegl/datastructures/stipplingdata.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderobject.h>
 
@@ -47,81 +47,91 @@ StipplingProperty::StipplingProperty(std::string_view identifier, std::string_vi
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, invalidationLevel, std::move(semantics)}
-    , mode_{"stippleMode",
-            "Stipple Mode",
-            {{"none", "None", Mode::None},
-             {"screenspace", "Screen Space", Mode::ScreenSpace},
-             {"worldspace", "World Space", Mode::WorldSpace}},
-            0,
-            InvalidationLevel::InvalidResources}
-    , length_{"stippleLen", "Length",
-              util::ordinalLength(20.0f, 100.0f)
-                  .set("Length of a dash, in pixels if Stippling Mode is ScreenSpace"_help)}
-    , spacing_{"stippleSpacing", "Spacing",
-               util::ordinalLength(10.0f, 100.0f)
-                   .set(
-                       "Distance between two dashes, in pixels if Stippling Mode is ScreenSpace"_help)}
-    , offset_{"stippleOffset", "Offset",
-              util::ordinalLength(0.0f, 100.0f)
-                  .set("Offset of first dash, in pixels if Stippling Mode is ScreenSpace"_help)}
-    , worldScale_{
+    , mode{"stippleMode",
+           "Stipple Mode",
+           {{"none", "None", StipplingData::Mode::None},
+            {"screenspace", "Screen Space", StipplingData::Mode::ScreenSpace},
+            {"worldspace", "World Space", StipplingData::Mode::WorldSpace}},
+           0,
+           InvalidationLevel::InvalidResources}
+    , length{"stippleLen", "Length",
+             util::ordinalLength(20.0f, 100.0f)
+                 .set("Length of a dash, in pixels if Stippling Mode is ScreenSpace"_help)}
+    , spacing{"stippleSpacing", "Spacing",
+              util::ordinalLength(10.0f, 100.0f)
+                  .set(
+                      "Distance between two dashes, in pixels if Stippling Mode is ScreenSpace"_help)}
+    , offset{"stippleOffset", "Offset",
+             util::ordinalLength(0.0f, 100.0f)
+                 .set("Offset of first dash, in pixels if Stippling Mode is ScreenSpace"_help)}
+    , worldScale{
           "stippleWorldScale", "World Scale",
           util::ordinalScale(4.0f, 20.0f)
               .set(
                   "Scaling of parameters. Only applicable if Stippling Mode is WorldSpace."_help)} {
 
-    addProperties(mode_, length_, spacing_, offset_, worldScale_);
+    addProperties(mode, length, spacing, offset, worldScale);
 
-    mode_.onChange([this]() { worldScale_.setVisible(mode_.get() == Mode::WorldSpace); });
-    worldScale_.setVisible(mode_.get() == Mode::WorldSpace);
+    mode.onChange(
+        [this]() { worldScale.setVisible(mode.get() == StipplingData::Mode::WorldSpace); });
+    worldScale.setVisible(mode.get() == StipplingData::Mode::WorldSpace);
 }
 
 StipplingProperty::StipplingProperty(const StipplingProperty& rhs)
     : CompositeProperty(rhs)
-    , mode_(rhs.mode_)
-    , length_(rhs.length_)
-    , spacing_(rhs.spacing_)
-    , offset_(rhs.offset_)
-    , worldScale_(rhs.worldScale_) {
+    , mode(rhs.mode)
+    , length(rhs.length)
+    , spacing(rhs.spacing)
+    , offset(rhs.offset)
+    , worldScale(rhs.worldScale) {
 
-    addProperties(mode_, length_, spacing_, offset_, worldScale_);
+    addProperties(mode, length, spacing, offset, worldScale);
 
-    mode_.onChange([this]() { worldScale_.setVisible(mode_.get() == Mode::WorldSpace); });
-    worldScale_.setVisible(mode_.get() == Mode::WorldSpace);
+    mode.onChange(
+        [this]() { worldScale.setVisible(mode.get() == StipplingData::Mode::WorldSpace); });
+    worldScale.setVisible(mode.get() == StipplingData::Mode::WorldSpace);
 }
 
 StipplingProperty* StipplingProperty::clone() const { return new StipplingProperty(*this); }
 
+void StipplingProperty::update(StipplingData& data) const {
+    data.length = length.get();
+    data.spacing = spacing.get();
+    data.offset = offset.get();
+    data.worldScale = worldScale.get();
+    data.mode = mode.get();
+}
+
 namespace utilgl {
 
 void addShaderDefines(Shader& shader, const StipplingProperty& property) {
-    addShaderDefines(shader, property.mode_.get());
+    addShaderDefines(shader, property.mode.get());
 }
 
-void addShaderDefines(Shader& shader, const StipplingProperty::Mode& mode) {
+void addShaderDefines(Shader& shader, const StipplingData::Mode& mode) {
     std::string value;
     switch (mode) {
-        case StipplingProperty::Mode::ScreenSpace:
+        case StipplingData::Mode::ScreenSpace:
             value = "1";
             break;
-        case StipplingProperty::Mode::WorldSpace:
+        case StipplingData::Mode::WorldSpace:
             value = "2";
             break;
-        case StipplingProperty::Mode::None:
+        case StipplingData::Mode::None:
         default:
             break;
     }
 
     auto fragShader = shader.getFragmentShaderObject();
-    fragShader->setShaderDefine("ENABLE_STIPPLING", mode != StipplingProperty::Mode::None);
+    fragShader->setShaderDefine("ENABLE_STIPPLING", mode != StipplingData::Mode::None);
     fragShader->addShaderDefine("STIPPLE_MODE", value);
 }
 
 void setShaderUniforms(Shader& shader, const StipplingProperty& property, const std::string& name) {
-    shader.setUniform(name + ".length", property.length_.get());
-    shader.setUniform(name + ".spacing", property.spacing_.get());
-    shader.setUniform(name + ".offset", property.offset_.get());
-    shader.setUniform(name + ".worldScale", property.worldScale_.get());
+    shader.setUniform(name + ".length", property.length.get());
+    shader.setUniform(name + ".spacing", property.spacing.get());
+    shader.setUniform(name + ".offset", property.offset.get());
+    shader.setUniform(name + ".worldScale", property.worldScale.get());
 }
 
 }  // namespace utilgl
