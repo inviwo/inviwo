@@ -32,7 +32,7 @@
 #include <modules/basegl/baseglmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
-#include <modules/basegl/datastructures/linesettings.h>
+#include <modules/basegl/datastructures/linedata.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/core/datastructures/tflookuptable.h>
@@ -40,7 +40,6 @@
 namespace inviwo {
 
 class Camera;
-class LineSettingsInterface;
 class Mesh;
 class Shader;
 
@@ -57,33 +56,33 @@ public:
     ~LineRenderer() = default;
 
     /**
-     * @brief Render lines according to currently set LineSettingsInterface settings
+     * @brief Render lines according to currently set LineData settings
      * Only meshes with DrawType::Lines will be rendered.
      *
      * @param mesh to render as lines, must
      * @param camera for projection
      * @param screenDim width, height in pixels
-     * @param settings @see LineSettingsInterface
+     * @param settings @see LineData
      */
     void render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
-                const LineSettingsInterface& settings);
+                const LineData& settings);
 
     template <typename... T>
     void renderWithUniforms(const Mesh& mesh, const Camera& camera, size2_t screenDim,
-                            const LineSettingsInterface& settings, const T&... args) {
+                            const LineData& settings, const T&... args) {
         render(mesh, camera, screenDim, settings,
                [&](Shader& shader) { utilgl::setUniforms(shader, args...); });
     }
 
 protected:
-    void render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
-                const LineSettingsInterface& settings, const std::function<void(Shader&)>& func);
+    void render(const Mesh& mesh, const Camera& camera, size2_t screenDim, const LineData& settings,
+                const std::function<void(Shader&)>& func);
     // Call whenever PseudoLighting or RoundDepthProfile, or Stippling mode change
     void configureShaders();
     void setUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, size2_t screenDim,
                      const std::function<void(Shader&)>& func);
     void configureShader(Shader& shader);
-    LineSettings settings_;  //!< Local cache
+    LineData settings_;  //!< Local cache
     MeshShaderCache lineShaders_;
     TFLookupTable tfLookup_;
 };
