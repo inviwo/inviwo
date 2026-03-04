@@ -55,15 +55,15 @@ namespace {
 QColor colorForState(CodeState state) {
     switch (state) {
         case CodeState::Stable:
-            return QColor(38, 86, 115);
+            return {38, 86, 115};
         case CodeState::Experimental:
-            return QColor(141, 92, 21);
+            return {141, 92, 21};
         case CodeState::Deprecated:
-            return QColor(77, 77, 80);
+            return {77, 77, 80};
         case CodeState::Broken:
-            return QColor(115, 107, 39);
+            return {115, 107, 39};
     }
-    return QColor(0, 0, 0);
+    return {0, 0, 0};
 }
 
 QColor getColor(QStyleOptionViewItem& opt, QPalette::ColorRole role) {

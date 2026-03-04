@@ -112,18 +112,10 @@ Tags getPlatformTags() {
 }
 
 Tag getPlatformTag(const Tags& t) {
-    for (auto& tag : t.tags_) {
-        if (Tags::TTK == tag) {
-            return tag;
-        } else if (Tags::VTK == tag) {
-            return tag;
-        } else if (Tags::PY == tag) {
-            return tag;
-        } else if (Tags::CL == tag) {
-            return tag;
-        } else if (Tags::GL == tag) {
-            return tag;
-        } else if (Tags::CPU == tag) {
+    // return the first matching tag in the platform tags, starting from the most specific ones
+    // which is assumed to be the last ones in the list.
+    for (auto& tag : getPlatformTags().tags_ | std::views::reverse) {
+        if (std::ranges::contains(t.tags_, tag)) {
             return tag;
         }
     }

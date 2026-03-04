@@ -143,14 +143,23 @@ PillListView::PillListView(QWidget* parent) : QListView(parent) {
     setFont(f);
 }
 
-int PillListView::heightForWidth(int /*width*/) const {
+int PillListView::heightForWidth(int viewWidth) const {
+    QStyleOptionViewItem option;
+    initViewItemOption(&option);
 
-    // Ask Qt to compute layout for this width
-    const_cast<PillListView*>(this)->doItemsLayout();
-    const QModelIndex last = model()->index(model()->rowCount() - 1, 0);
-    const QRect r = visualRect(last);
-
-    return r.bottom() + frameWidth() * 2 + spacing();
+    const auto* delegate = static_cast<PillDelegate*>(itemDelegate());
+    int rows = 1;
+    int rowWidth = 0;
+    for (int i = 0; i < model()->rowCount(); ++i) {
+        const auto size = delegate->sizeHint(option, model()->index(i, 0));
+        if (rowWidth + size.width() + 2 >= viewWidth) { // 2 is from testing on macOS
+            ++rows;
+            rowWidth = 0;
+        }
+        rowWidth += size.width();
+    }
+    const auto size = delegate->sizeHint(option, model()->index(0, 0));
+    return rows * (size.height());
 }
 
 QSize PillListView::viewportSizeHint() const {
