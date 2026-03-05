@@ -1,12 +1,14 @@
-name: "Weekly Coverage"
+name: "Coverage"
 
 # Runs a full regression + test cycle with LLVM code-coverage instrumentation
 # enabled. Coverage and sanitizers are mutually exclusive, so this is a
-# separate job that runs once a week rather than on every PR.
+# separate job from the main build workflow. It runs on every PR as well as
+# on a weekly schedule.
 
 on:
   schedule:
     - cron: '0 3 * * 1'   # Every Monday at 03:00 UTC
+  pull_request:
   workflow_dispatch:
 
 permissions:
