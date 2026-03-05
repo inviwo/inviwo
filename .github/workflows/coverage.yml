@@ -166,11 +166,10 @@ jobs:
           --title "Inviwo Code Coverage — $(date -u '+%Y-%m-%d')" \
           --show-details \
           --legend \
-          --highlight \
           --branch-coverage \
           --demangle-cpp \
           --num-spaces 4 \
-          --ignore-errors source,inconsistent \
+          --ignore-errors source,inconsistent,deprecated \
           --quiet
 
         # Generate text summary, save to file, and append to the step summary
