@@ -30,6 +30,7 @@
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 #include <inviwo/core/datastructures/bitset.h>          // for BitSet
+#include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/io/serialization/deserializer.h>  // for Deserializer
 #include <inviwo/core/io/serialization/serializer.h>    // for Serializer
 #include <inviwo/core/network/networkutils.h>           // for getPredecessors
@@ -217,6 +218,12 @@ Document BrushingAndLinkingInport::getInfo() const {
     return doc;
 }
 
+DataInfo BrushingAndLinkingInport::getDataInfo() const {
+    return DataInfo{.cid = "org.inviwo.BrushingAndLinkingData",
+                    .name = "B&L",
+                    .color = uvec3{160, 182, 240}};
+}
+
 void BrushingAndLinkingInport::setChanged(bool changed, const Outport* source) {
     if (!changed) {
         manager_.clearModifications();
@@ -291,6 +298,12 @@ Document BrushingAndLinkingOutport::getInfo() const {
         }
     }
     return doc;
+}
+
+DataInfo BrushingAndLinkingOutport::getDataInfo() const {
+    return DataInfo{.cid = "org.inviwo.BrushingAndLinkingData",
+                    .name = "B&L",
+                    .color = uvec3{160, 182, 240}};
 }
 
 std::string_view BrushingAndLinkingOutport::getClassIdentifier() const {

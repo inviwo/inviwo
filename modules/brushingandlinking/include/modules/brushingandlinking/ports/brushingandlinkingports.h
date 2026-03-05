@@ -245,6 +245,7 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     virtual glm::uvec3 getColorCode() const override { return {160, 182, 240}; }
     virtual Document getInfo() const override;
+    virtual DataInfo getDataInfo() const override;
 
 protected:
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
@@ -317,6 +318,7 @@ public:
 
     virtual glm::uvec3 getColorCode() const override { return uvec3(160, 182, 240); }
     virtual Document getInfo() const override;
+    virtual DataInfo getDataInfo() const override;
 
     virtual std::string_view getClassIdentifier() const override;
 

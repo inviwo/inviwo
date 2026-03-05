@@ -242,11 +242,11 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         identifierText_.setTextFormat(Qt::PlainText);
         tagText_.setTextFormat(Qt::PlainText);
 
-        const auto tags =
-            utilqt::toQString(util::getPlatformTags(processor_->getTags()).getString());
+        const auto tag =
+            utilqt::toQString(util::getPlatformTag(processor_->getTags()).getString());
         tagSize_ = [&]() {
             const QFontMetricsF fm{getFont(FontType::Tag)};
-            return fm.tightBoundingRect(tags).width();
+            return fm.tightBoundingRect(tag).width();
         }();
 
         nameText_.setText(elide(processor_->getDisplayName(), size.width() - (2.0 * labelMargin),
@@ -260,7 +260,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
             return fm.tightBoundingRect(identifierText_.text()).width();
         }();
 
-        tagText_.setText(tags);
+        tagText_.setText(tag);
 
         QTextOption opts{Qt::AlignLeft | Qt::AlignBaseline};
         opts.setWrapMode(QTextOption::NoWrap);

@@ -107,24 +107,19 @@ std::ostream& operator<<(std::ostream& os, const Tags& obj) {
 
 namespace util {
 
-Tags getPlatformTags(const Tags& t) {
-    Tags result;
-    for (auto& tag : t.tags_) {
-        if (Tags::GL == tag) {
-            result.addTag(tag);
-        } else if (Tags::CL == tag) {
-            result.addTag(tag);
-        } else if (Tags::CPU == tag) {
-            result.addTag(tag);
-        } else if (Tags::PY == tag) {
-            result.addTag(tag);
-        } else if (Tag{"VTK"} == tag) {
-            result.addTag(tag);
-        } else if (Tag{"TTK"} == tag) {
-            result.addTag(tag);
+Tags getPlatformTags() {
+    return Tags::CPU | Tags::GL | Tags::CL | Tags::PY | Tags::VTK | Tags::TTK;
+}
+
+Tag getPlatformTag(const Tags& t) {
+    // return the first matching tag in the platform tags, starting from the most specific ones
+    // which is assumed to be the last ones in the list.
+    for (auto& tag : getPlatformTags().tags_ | std::views::reverse) {
+        if (std::ranges::contains(t.tags_, tag)) {
+            return tag;
         }
     }
-    return result;
+    return Tags::CPU;
 }
 
 }  // namespace util

@@ -32,6 +32,7 @@
 #include <modules/python3/pythonoutport.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/docutils.h>
+#include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
 
@@ -85,6 +86,12 @@ Document PythonInport::getInfo() const {
         b.append("p", "Port has no data");
     }
     return doc;
+}
+
+DataInfo PythonInport::getDataInfo() const {
+    return {.cid = "org.inviwo.python.object",
+            .name = "Python Object",
+            .color = uvec3{12, 240, 153}};
 }
 
 }  // namespace inviwo

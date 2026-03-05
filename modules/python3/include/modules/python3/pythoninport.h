@@ -46,6 +46,8 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     virtual uvec3 getColorCode() const override { return uvec3{12, 240, 153}; }
     virtual Document getInfo() const override;
+    virtual DataInfo getDataInfo() const override;
+
     virtual size_t getMaxNumberOfConnections() const override { return 1; }
 
     virtual bool canConnectTo(const Port* port) const override;

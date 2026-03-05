@@ -199,7 +199,7 @@ QWidget* PropertyListFrame::create(Processor* processor) {
     processor->getNetwork()->addObserver(this);
 
     // this is a hack for a qt issue on windows and linux where the widget created does not get the
-    // full stylesheet applied. This started in Qt 6.8.x and was still an issue in 6.10 
+    // full stylesheet applied. This started in Qt 6.8.x and was still an issue in 6.10
     widget->setStyleSheet(qApp->styleSheet());
 
     return widget;
@@ -225,7 +225,7 @@ QWidget* PropertyListFrame::create(Property* property) {
         RenderContext::getPtr()->activateDefaultRenderContext();
 
         // this is a hack for a qt issue on windows and linux where the widget created does not get
-        // the full stylesheet applied. This started in Qt 6.8.x and was still an issue in 6.10 
+        // the full stylesheet applied. This started in Qt 6.8.x and was still an issue in 6.10
         widget->setStyleSheet(qApp->styleSheet());
 
         return widget;
@@ -352,13 +352,17 @@ bool PropertyListWidget::event(QEvent* e) {
         switch (ple->action) {
             case PropertyListEvent::Action::Add: {
                 if (auto processor = network->getProcessorByIdentifier(ple->identifier)) {
-                    addProcessorProperties(processor);
+                    if (processor->getNetwork() == network) {
+                        addProcessorProperties(processor);
+                    }
                 }
                 break;
             }
             case PropertyListEvent::Action::Remove: {
                 if (auto processor = network->getProcessorByIdentifier(ple->identifier)) {
-                    removeProcessorProperties(processor);
+                    if (processor->getNetwork() == network) {
+                        removeProcessorProperties(processor);
+                    }
                 }
                 break;
             }

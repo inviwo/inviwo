@@ -68,25 +68,4 @@ ProcessorDocs generateDocs(ProcessorFactory& pf) {
     return {docs};
 }
 
-bool matchOutportToInports(std::string_view outportClassId, const HelpProcessor& processor) {
-    static constexpr std::string_view outportPostFix = ".outport";
-    static constexpr std::string_view inportPostFix = ".inport";
-    static constexpr std::string_view flatInportPostFix = ".flat.inport";
-    static constexpr std::string_view multiInportPostFix = ".multi.inport";
-    static constexpr std::string_view flatMultiInportPostFix = ".flat.multi.inport";
-
-    if (outportClassId.ends_with(outportPostFix)) {
-        const auto base = outportClassId.substr(0, outportClassId.size() - outportPostFix.size());
-        return std::ranges::any_of(processor.inports, [&](const help::HelpInport& inport) {
-            if (inport.classIdentifier.starts_with(base)) {
-                const auto inportKind = inport.classIdentifier.substr(base.size());
-                return inportKind == inportPostFix || inportKind == flatInportPostFix ||
-                       inportKind == multiInportPostFix || inportKind == flatMultiInportPostFix;
-            }
-            return false;
-        });
-    }
-    return false;
-}
-
 }  // namespace inviwo::help

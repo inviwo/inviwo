@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,48 +28,54 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <pybind11/pybind11.h>  // IWYU pragma: keep
+#include <optional>
 
-#include <inviwo/core/ports/porttraits.h>
-#include <inviwo/core/ports/outport.h>
-#include <inviwo/core/util/glmvec.h>
+#include <QModelIndex>
+#include <QTreeView>
+#include <QDrag>
+
+class QAbstractItemModel;
+class QMouseEvent;
+class QPoint;
+class QFocusEvent;
 
 namespace inviwo {
 
-#include <warn/push>
-#include <warn/ignore/attributes>
-class IVW_MODULE_PYTHON3_API PythonOutport : public Outport {
+class ProcessorListWidget;
+class Processor;
+
+class IVW_QTEDITOR_API ProcessorListView : public QTreeView {
+
 public:
-    PythonOutport(std::string_view identifier, Document help = {});
-    virtual ~PythonOutport() = default;
+    ProcessorListView(QAbstractItemModel* model, ProcessorListWidget* parent);
+    ProcessorListView(const ProcessorListView&) = delete;
+    ProcessorListView& operator=(const ProcessorListView&) = delete;
+    ProcessorListView(ProcessorListView&&) = delete;
+    ProcessorListView& operator=(ProcessorListView&&) = delete;
+    virtual ~ProcessorListView() = default;
 
-    virtual std::string_view getClassIdentifier() const override;
-    virtual glm::uvec3 getColorCode() const override { return uvec3{12, 240, 153}; }
-    virtual Document getInfo() const override;
-    virtual DataInfo getDataInfo() const override;
+protected:
+    static QModelIndex findFirstLeaf(QAbstractItemModel* model, QModelIndex parent = QModelIndex());
 
-    pybind11::object getData() const;
+    virtual void mousePressEvent(QMouseEvent* e) override;
+    virtual void mouseMoveEvent(QMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QMouseEvent* e) override;
 
-    virtual void clear() override;
-
-    virtual void setData(pybind11::object data);
-
-    virtual bool hasData() const override;
+    virtual void focusInEvent(QFocusEvent* e) override;
+    virtual void focusOutEvent(QFocusEvent* e) override;
 
 private:
-    pybind11::object data_;
-};
-#include <warn/pop>
+    void showContextMenu(const QPoint& p);
 
-template <>
-struct PortTraits<PythonOutport> {
-    static constexpr std::string_view classIdentifier() { return "org.inviwo.pythonoutport"; }
+    ProcessorListWidget* processorTreeWidget_;
+    std::optional<QPoint> dragStartPosition_;
 };
 
-inline std::string_view PythonOutport::getClassIdentifier() const {
-    return PortTraits<PythonOutport>::classIdentifier();
-}
+class IVW_QTEDITOR_API ProcessorDragObject : public QDrag {
+public:
+    ProcessorDragObject(QWidget* source, std::shared_ptr<Processor> processor);
+};
 
 }  // namespace inviwo

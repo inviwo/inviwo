@@ -17,6 +17,7 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacegridview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacetreemodel.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacetreeview.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwomainwindow.h
 )
 
 # Add header files
@@ -26,11 +27,11 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/dataopener.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorsettings.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorutils.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/fileassociations.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/helpwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoaboutwindow.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoeditmenu.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwomainwindow.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoqteditordefine.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/lineediteventfilter.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialog.h
@@ -44,8 +45,12 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networksearch.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/pilllistview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorerroritem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlinkgraphicsitem.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlistfilter.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlistmodel.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlistview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlistwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorportgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorpreview.h
@@ -69,8 +74,9 @@ set(SOURCE_FILES
     connectiongraphicsitem.cpp
     consolewidget.cpp
     dataopener.cpp
-    editorsettings.cpp
     editorgraphicsitem.cpp
+    editorsettings.cpp
+    editorutils.cpp
     fileassociations.cpp
     helpwidget.cpp
     inviwoaboutwindow.cpp
@@ -90,10 +96,14 @@ set(SOURCE_FILES
     networkeditor.cpp
     networkeditorview.cpp
     networksearch.cpp
+    pilllistview.cpp
     processordraghelper.cpp
     processorerroritem.cpp
     processorgraphicsitem.cpp
     processorlinkgraphicsitem.cpp
+    processorlistfilter.cpp
+    processorlistmodel.cpp
+    processorlistview.cpp
     processorlistwidget.cpp
     processormimedata.cpp
     processorportgraphicsitem.cpp

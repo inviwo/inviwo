@@ -90,7 +90,7 @@ private:
 };
 
 struct IVW_QTEDITOR_API WorkspaceInfo {
-    std::shared_ptr<WorkspaceAnnotationsQt> annotations;
+    std::shared_ptr<const WorkspaceAnnotationsQt> annotations;
 };
 
 }  // namespace inviwo

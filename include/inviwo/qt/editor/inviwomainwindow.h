@@ -55,7 +55,7 @@ namespace inviwo {
 class NetworkEditorView;
 class NetworkEditor;
 class PropertyListWidget;
-class ProcessorTreeWidget;
+class ProcessorListWidget;
 class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
@@ -72,6 +72,10 @@ class TextLabelOverlay;
 class MenuKeyboardEventFilter;
 class Processor;
 class EditorSettings;
+
+namespace help {
+class ProcessorDocs;
+}  // namespace help
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow {
 public:
@@ -106,7 +110,7 @@ public:
     NetworkEditorView& getNetworkEditorView() const;
     TextLabelOverlay& getNetworkEditorOverlay() const;
     SettingsWidget* getSettingsWidget() const;
-    ProcessorTreeWidget* getProcessorTreeWidget() const;
+    ProcessorListWidget* getProcessorTreeWidget() const;
     PropertyListWidget* getPropertyListWidget() const;
     ConsoleWidget* getConsoleWidget() const;
     AnnotationsWidget* getAnnotationsWidget() const;
@@ -116,6 +120,8 @@ public:
 
     InviwoEditMenu* getInviwoEditMenu() const;
     ToolsMenu* getToolsMenu() const;
+
+    std::shared_ptr<help::ProcessorDocs> getDocs() const;
 
     /**
      * sets up an empty workspace. In case there are unsaved changes, the user will be asked to save
@@ -239,9 +245,12 @@ private:
 
     void updateWindowTitle();
 
+    void updateProcessorDocs();
+
     InviwoApplication* app_;
     std::unique_ptr<EditorSettings> editorSettings_;
     MenuKeyboardEventFilter* menuEventFilter_;
+    std::shared_ptr<help::ProcessorDocs> docs_;
     InviwoEditMenu* editMenu_ = nullptr;
     ToolsMenu* toolsMenu_ = nullptr;
     QMenu* exampleMenu_ = nullptr;
@@ -252,7 +261,7 @@ private:
     NetworkEditorView* networkEditorView_;
 
     SettingsWidget* settings_;
-    ProcessorTreeWidget* processorTreeWidget_;
+    ProcessorListWidget* processorTreeWidget_;
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
@@ -306,6 +315,21 @@ private:
     std::shared_ptr<std::function<void()>> moduleUnloadCallback_;
 
     DefaultState defaultState_;
+};
+
+class IVW_QTEDITOR_API ProcessorDocsLoader
+    : public QObject,
+      public std::enable_shared_from_this<ProcessorDocsLoader> {
+    Q_OBJECT
+public:
+    explicit ProcessorDocsLoader(InviwoApplication* app);
+    void operator()();
+
+signals:
+    void done(std::shared_ptr<help::ProcessorDocs> docs);
+
+private:
+    InviwoApplication* app_ = nullptr;
 };
 
 }  // namespace inviwo

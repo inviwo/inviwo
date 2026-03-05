@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,48 +28,28 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <pybind11/pybind11.h>  // IWYU pragma: keep
-
-#include <inviwo/core/ports/porttraits.h>
-#include <inviwo/core/ports/outport.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/processors/processor.h>
 
-namespace inviwo {
+#include <QPoint>
 
-#include <warn/push>
-#include <warn/ignore/attributes>
-class IVW_MODULE_PYTHON3_API PythonOutport : public Outport {
-public:
-    PythonOutport(std::string_view identifier, Document help = {});
-    virtual ~PythonOutport() = default;
+#include <vector>
 
-    virtual std::string_view getClassIdentifier() const override;
-    virtual glm::uvec3 getColorCode() const override { return uvec3{12, 240, 153}; }
-    virtual Document getInfo() const override;
-    virtual DataInfo getDataInfo() const override;
+namespace inviwo::utilqt {
 
-    pybind11::object getData() const;
+// We start just below srcPos and search for free space, to the left and the right
+// in steps of the grid size.
+// Then we check a grid size lower down, and continue until we have found the closest
+// location.
+IVW_QTEDITOR_API ivec2 findSpaceForProcessors(QPoint srcPos, const std::vector<Processor*>& added,
+                                              const std::vector<Processor*>& current);
 
-    virtual void clear() override;
+IVW_QTEDITOR_API void addProcessorAndConnect(const std::shared_ptr<Processor>& processor,
+                                             ProcessorNetwork* net, Outport* outport);
 
-    virtual void setData(pybind11::object data);
+IVW_QTEDITOR_API void addProcessorAndConnect(const std::shared_ptr<Processor>& processor,
+                                             ProcessorNetwork* net, Processor* source);
 
-    virtual bool hasData() const override;
-
-private:
-    pybind11::object data_;
-};
-#include <warn/pop>
-
-template <>
-struct PortTraits<PythonOutport> {
-    static constexpr std::string_view classIdentifier() { return "org.inviwo.pythonoutport"; }
-};
-
-inline std::string_view PythonOutport::getClassIdentifier() const {
-    return PortTraits<PythonOutport>::classIdentifier();
-}
-
-}  // namespace inviwo
+}  // namespace inviwo::utilqt

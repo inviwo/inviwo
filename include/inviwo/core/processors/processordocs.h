@@ -47,9 +47,6 @@ public:
 
 IVW_CORE_API ProcessorDocs generateDocs(ProcessorFactory& pf);
 
-IVW_CORE_API bool matchOutportToInports(std::string_view outportClassId,
-                                        const help::HelpProcessor& processor);
-
 }  // namespace help
 
 }  // namespace inviwo

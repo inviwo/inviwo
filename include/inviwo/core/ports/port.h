@@ -40,6 +40,7 @@ namespace inviwo {
 
 class Processor;
 class Document;
+struct DataInfo;
 
 /**
  * @defgroup ports Ports
@@ -99,6 +100,8 @@ public:
     const Document& getHelp() const;
     Document& getHelp();
     Port& setHelp(Document help);
+
+    virtual DataInfo getDataInfo() const = 0;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
