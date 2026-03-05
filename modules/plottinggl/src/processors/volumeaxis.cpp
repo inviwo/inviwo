@@ -126,15 +126,20 @@ void VolumeAxis::updateCaptions() {
             break;
         case CaptionType::Custom:
             if (auto volume = inport_.getData()) {
-                axisHelper_.xAxis_.captionSettings_.title_.set(fmt::format(
-                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[0].name),
-                    fmt::arg("u", volume->axes[0].unit)));
-                axisHelper_.yAxis_.captionSettings_.title_.set(fmt::format(
-                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[1].name),
-                    fmt::arg("u", volume->axes[1].unit)));
-                axisHelper_.zAxis_.captionSettings_.title_.set(fmt::format(
-                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[2].name),
-                    fmt::arg("u", volume->axes[2].unit)));
+                try {
+                    axisHelper_.xAxis_.captionSettings_.title_.set(fmt::format(
+                        fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[0].name),
+                        fmt::arg("u", volume->axes[0].unit)));
+                    axisHelper_.yAxis_.captionSettings_.title_.set(fmt::format(
+                        fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[1].name),
+                        fmt::arg("u", volume->axes[1].unit)));
+                    axisHelper_.zAxis_.captionSettings_.title_.set(fmt::format(
+                        fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[2].name),
+                        fmt::arg("u", volume->axes[2].unit)));
+                } catch (const fmt::format_error& e) {
+                    log::error("Invalid custom caption format: {}: {}", customCaption_.get(),
+                               e.what());
+                }
             }
             break;
         case CaptionType::String:
