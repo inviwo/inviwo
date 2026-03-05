@@ -14,6 +14,7 @@
 # with the regular binary cache. vcpkg will rebuild all dependencies from source.
 
 set(VCPKG_TARGET_ARCHITECTURE arm64)
+set(VCPKG_CMAKE_SYSTEM_NAME Darwin)
 set(VCPKG_CRT_LINKAGE dynamic)
 set(VCPKG_LIBRARY_LINKAGE dynamic)
 set(VCPKG_OSX_ARCHITECTURES arm64)
