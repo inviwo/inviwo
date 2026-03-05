@@ -176,7 +176,7 @@ void CategoricalAxisProperty::update(AxisData& data) const {
     linearRange({.start = 0.0, .stop = static_cast<double>(categories_.size()) - 1.0, .step = 1.0},
                 data.majorPositions);
     data.minorPositions.clear();
-    data.labels.assign_range(categories_);
+    data.labels.assign(categories_.begin(), categories_.end());
 
     labelSettings_.update(data.labelSettings);
     majorTicks_.update(data.major);
