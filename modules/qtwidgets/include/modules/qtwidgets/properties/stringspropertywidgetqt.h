@@ -30,9 +30,11 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
 
-#include <inviwo/core/properties/propertywidget.h>          // for PropertyWidget
-#include <inviwo/core/util/stdextensions.h>                 // for make_array
-#include <inviwo/core/util/zip.h>                           // for zip
+#include <inviwo/core/properties/propertywidget.h>  // for PropertyWidget
+#include <inviwo/core/util/stdextensions.h>         // for make_array
+#include <inviwo/core/util/zip.h>                   // for zip
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/exception.h>
 #include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
 #include <modules/qtwidgets/inviwoqtutils.h>                // for fromQString, toQString
 #include <modules/qtwidgets/lineeditqt.h>                   // for LineEditQt
@@ -132,7 +134,7 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
         connect(lineEdit, &LineEditQt::editingFinished, this, [this, p = &prop, l = lineEdit]() {
             std::string valueStr = utilqt::fromQString(l->text());
             p->setInitiatingWidget(this);
-            p->set(valueStr);
+            util::exceptionGuard([&]() { p->set(valueStr); });
             p->clearInitiatingWidget();
         });
 

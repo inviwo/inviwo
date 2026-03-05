@@ -361,6 +361,19 @@ void logError(SourceContext context, fmt::format_string<Args...> format, Args&&.
                               fmt::format(format, std::forward<Args>(args)...));
 }
 
+template <typename F>
+void exceptionGuard(F&& fun) noexcept {
+    try {
+        std::forward<F>(fun)();
+    } catch (const Exception& e) {
+        log::exception(e);
+    } catch (const std::exception& e) {
+        log::exception(e);
+    } catch (...) {
+        log::exception();
+    }
+}
+
 }  // namespace util
 
 }  // namespace inviwo

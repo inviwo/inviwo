@@ -325,7 +325,8 @@ void ColorPropertyWidgetQt<T>::setPropertyValue() {
     if (!colorDialog_) return;
 
     currentColor_ = colorDialog_->currentColor();
-    ordinalProperty_->set(detail::ColorConverter<T>::toGLM(currentColor_));
+    util::exceptionGuard(
+        [&]() { ordinalProperty_->set(detail::ColorConverter<T>::toGLM(currentColor_)); });
     updateButton();
 }
 

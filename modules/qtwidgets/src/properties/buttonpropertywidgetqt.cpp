@@ -57,11 +57,7 @@ ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
     button_->setText(QString::fromStdString(property_->getDisplayName()));
     connect(button_, &QPushButton::released, this, [&]() {
         if (!property_->getReadOnly()) {
-            try {
-                property_->pressButton();
-            } catch (const Exception& e) {
-                log::exception(e);
-            }
+            util::exceptionGuard([&]() { property_->pressButton(); });
         }
     });
     button_->setFocusPolicy(Qt::StrongFocus);

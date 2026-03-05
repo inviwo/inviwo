@@ -124,7 +124,7 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
             }
 
             property_->setInitiatingWidget(this);
-            property_->set(static_cast<vec3>(newPos));
+            util::exceptionGuard([&]() { property_->set(static_cast<vec3>(newPos)); });
             property_->clearInitiatingWidget();
         });
     }

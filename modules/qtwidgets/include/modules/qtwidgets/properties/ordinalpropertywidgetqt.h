@@ -305,7 +305,7 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::setPropertyValue(size_t editorId) {
     }
 
     ordinal_->setInitiatingWidget(this);
-    ordinal_->set(val);
+    util::exceptionGuard([&]() { ordinal_->set(val); });
     ordinal_->clearInitiatingWidget();
 }
 

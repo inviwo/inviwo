@@ -107,7 +107,7 @@ void OptionPropertyWidgetQt::optionChanged(int) {
     if (comboBox_->count() && comboBox_->currentIndex() >= 0 &&
         static_cast<size_t>(comboBox_->currentIndex()) != property_->getSelectedIndex()) {
         property_->setInitiatingWidget(this);
-        property_->setSelectedIndex(comboBox_->currentIndex());
+        util::exceptionGuard([&]() { property_->setSelectedIndex(comboBox_->currentIndex()); });
         property_->clearInitiatingWidget();
     }
 }

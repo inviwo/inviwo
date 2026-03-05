@@ -87,7 +87,9 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
 
     {
         connect(lineEdit_, &FilePathLineEditQt::pathChanged, this,
-                [this](const std::filesystem::path& path) { property_->set(path); });
+                [this](const std::filesystem::path& path) {
+                    util::exceptionGuard([&]() { property_->set(path); });
+                });
         auto sp = lineEdit_->sizePolicy();
         sp.setHorizontalStretch(3);
         lineEdit_->setSizePolicy(sp);
@@ -148,7 +150,9 @@ void FilePropertyWidgetQt::setPropertyValue() {
     fileDialog.setSelectedExtension(property_->getSelectedExtension());
 
     if (fileDialog.exec()) {
-        property_->set(fileDialog.getSelectedFile(), fileDialog.getSelectedFileExtension());
+        util::exceptionGuard([&]() {
+            property_->set(fileDialog.getSelectedFile(), fileDialog.getSelectedFileExtension());
+        });
     }
 }
 
@@ -156,7 +160,7 @@ void FilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
     auto mimeData = drop->mimeData();
     if (!mimeData->urls().empty()) {
         auto url = mimeData->urls().front();
-        property_->set(utilqt::toPath(url.toLocalFile()));
+        util::exceptionGuard([&]() { property_->set(utilqt::toPath(url.toLocalFile())); });
         drop->accept();
     } else {
         drop->ignore();

@@ -29,10 +29,11 @@
 
 #pragma once
 
-#include <inviwo/core/properties/minmaxproperty.h>                  // IWYU pragma: keep
-#include <inviwo/core/properties/property.h>                        // for Property
-#include <inviwo/core/util/glm.h>                                   // for almostEqual
-#include <inviwo/core/util/glmutils.h>                              // for is_floating_point
+#include <inviwo/core/properties/minmaxproperty.h>  // IWYU pragma: keep
+#include <inviwo/core/properties/property.h>        // for Property
+#include <inviwo/core/util/glm.h>                   // for almostEqual
+#include <inviwo/core/util/glmutils.h>              // for is_floating_point
+#include <inviwo/core/util/logcentral.h>
 #include <modules/qtwidgets/editablelabelqt.h>                      // for EditableLabelQt
 #include <modules/qtwidgets/inviwoqtutils.h>                        // for emToPx, decimals
 #include <modules/qtwidgets/numberwidget.h>                         // for NumberWidget
@@ -231,7 +232,15 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider(int valMin, int valMax) 
 
     if (modified) {
         minMaxProperty_->setInitiatingWidget(this);
-        minMaxProperty_->set(range);
+        try {
+            minMaxProperty_->set(range);
+        } catch (const Exception& e) {
+            log::exception(e);
+        } catch (const std::exception& e) {
+            log::exception(e);
+        } catch (...) {
+            log::exception();
+        }
         minMaxProperty_->clearInitiatingWidget();
     }
 }
@@ -257,7 +266,15 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromMin() {
         }
 
         minMaxProperty_->setInitiatingWidget(this);
-        minMaxProperty_->set(range);
+        try {
+            minMaxProperty_->set(range);
+        } catch (const Exception& e) {
+            log::exception(e);
+        } catch (const std::exception& e) {
+            log::exception(e);
+        } catch (...) {
+            log::exception();
+        }
         minMaxProperty_->clearInitiatingWidget();
     }
 }
@@ -283,7 +300,7 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromMax() {
         }
 
         minMaxProperty_->setInitiatingWidget(this);
-        minMaxProperty_->set(range);
+        util::exceptionGuard([&]() { minMaxProperty_->set(range); });
         minMaxProperty_->clearInitiatingWidget();
     }
 }

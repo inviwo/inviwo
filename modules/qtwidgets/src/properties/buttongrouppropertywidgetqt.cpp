@@ -73,11 +73,7 @@ ButtonGroupPropertyWidgetQt::ButtonGroupPropertyWidgetQt(ButtonGroupProperty* pr
 
         connect(buttonWidget, &QPushButton::released, this, [this, i]() {
             if (!property_->getReadOnly()) {
-                try {
-                    property_->pressButton(i);
-                } catch (const Exception& e) {
-                    log::exception(e);
-                }
+                util::exceptionGuard([&]() { property_->pressButton(i); });
             }
         });
         hLayout->addWidget(buttonWidget);

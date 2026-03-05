@@ -90,7 +90,7 @@ StringMultilinePropertyWidgetQt::StringMultilinePropertyWidgetQt(StringProperty*
 void StringMultilinePropertyWidgetQt::setPropertyValue() {
     std::string valueStr = utilqt::fromQString(textEdit_->toPlainText());
     property_->setInitiatingWidget(this);
-    property_->set(valueStr);
+    util::exceptionGuard([&]() { property_->set(valueStr); });
     property_->clearInitiatingWidget();
 }
 

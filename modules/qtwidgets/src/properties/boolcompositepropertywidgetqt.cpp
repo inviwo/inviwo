@@ -116,7 +116,7 @@ void BoolCompositePropertyWidgetQt::onSetDisplayName(Property*, const std::strin
 bool BoolCompositePropertyWidgetQt::isChecked() const { return boolCompProperty_->isChecked(); }
 void BoolCompositePropertyWidgetQt::setChecked(bool checked) {
     CollapsibleGroupBoxWidgetQt::setChecked(checked);
-    boolCompProperty_->setChecked(checked);
+    util::exceptionGuard([&]() { boolCompProperty_->setChecked(checked); });
 }
 
 bool BoolCompositePropertyWidgetQt::isCollapsed() const { return boolCompProperty_->isCollapsed(); }
