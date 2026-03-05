@@ -59,6 +59,10 @@ public:
                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                          PropertySemantics semantics = PropertySemantics::Default);
     BoxSelectionProperty(const BoxSelectionProperty& rhs);
+    BoxSelectionProperty(BoxSelectionProperty&&) = delete;
+    BoxSelectionProperty& operator=(const BoxSelectionProperty&) = delete;
+    BoxSelectionProperty& operator=(BoxSelectionProperty&&) = delete;
+
     virtual BoxSelectionProperty* clone() const override;
     virtual ~BoxSelectionProperty() = default;
 

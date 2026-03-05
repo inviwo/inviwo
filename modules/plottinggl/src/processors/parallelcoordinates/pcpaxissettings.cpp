@@ -260,6 +260,28 @@ float PCPAxisSettings::getWidth() const {
     }
 }
 
+bool PCPAxisSettings::dataModified() const {
+    bool modified = false;
+
+    if (!catCol_) modified |= range.isModified();
+    modified |= invertRange.isModified();
+    modified |= getBoolProperty()->isModified();
+    modified |= pcp_->axisHoverColor_.isModified();
+    modified |= pcp_->axisSelectedColor_.isModified();
+    modified |= pcp_->axisColor_.isModified();
+    modified |= pcp_->axisSize_.isModified();
+    modified |= pcp_->captionPosition_.isModified();
+    modified |= pcp_->captionColor_.isModified();
+    modified |= pcp_->captionOffset_.isModified();
+    modified |= pcp_->captionSettings_.isModified();
+    modified |= pcp_->showLabels_.isModified();
+    modified |= pcp_->labelColor_.isModified();
+    modified |= pcp_->labelOffset_.isModified();
+    modified |= pcp_->labelSettings_.isModified();
+
+    return modified;
+}
+
 void PCPAxisSettings::update(AxisData& data) const {
 
     data.range = getRange();
@@ -296,7 +318,7 @@ void PCPAxisSettings::update(AxisData& data) const {
         updateLabelPositions(data.majorPositions, data.minorPositions, defaultLabeling, data.range,
                              10, 0);
         updateLabels(data.labels, data.majorPositions,
-                     pcp_ ? pcp_->labelFormat_ : std::string_view{"%.1f"});
+                     pcp_ ? pcp_->labelFormat_ : std::string_view{"{:.1f}"});
     }
 
     data.labelSettings.enabled = pcp_->showLabels_;

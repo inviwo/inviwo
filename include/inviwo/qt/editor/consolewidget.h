@@ -62,7 +62,7 @@ namespace inviwo {
 class MenuItem;
 class InviwoMainWindow;
 class InviwoEditMenu;
-class LevelFilter;
+struct LevelFilter;
 
 class LogTableModelEntry {
 public:

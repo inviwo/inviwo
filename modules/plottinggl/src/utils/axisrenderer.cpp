@@ -139,7 +139,8 @@ std::vector<MeshShaderCache::Requirement> AxisRendererBase::shaderRequirements_ 
     {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
     {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"}};
 
-AxisRendererBase::AxisRendererBase(const AxisData& data) : data_(data), shaders_{getShaders()} {}
+AxisRendererBase::AxisRendererBase(AxisData data)
+    : data_(std::move(data)), shaders_{getShaders()} {}
 
 std::shared_ptr<MeshShaderCache> AxisRendererBase::getShaders() {
     static std::weak_ptr<MeshShaderCache> cache_;
@@ -218,8 +219,8 @@ void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3&
     lineShader.deactivate();
 }
 
-AxisRenderer::AxisRenderer(const AxisData& data)
-    : AxisRendererBase(data)
+AxisRenderer::AxisRenderer(AxisData data)
+    : AxisRendererBase(std::move(data))
     , labels_{[](std::vector<ivec2>& labelPos, util::TextureAtlas&,
                  const std::vector<double>& majorPositions, const AxisData& data, const vec3& start,
                  const vec3& end, const vec3&) {
@@ -359,8 +360,8 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
     return bRect;
 }
 
-AxisRenderer3D::AxisRenderer3D(const AxisData& data)
-    : AxisRendererBase(data)
+AxisRenderer3D::AxisRenderer3D(AxisData data)
+    : AxisRendererBase(std::move(data))
     , labels_{[](std::vector<vec3>& labelPos, util::TextureAtlas&,
                  const std::vector<double>& majorPositions, const AxisData& data, const vec3& start,
                  const vec3& end, const vec3& tickDirection) {

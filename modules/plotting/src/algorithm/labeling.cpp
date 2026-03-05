@@ -118,7 +118,7 @@ void linearRange(const dvec2& range, const LinearRange& optRange, int minorTickF
     minor.clear();
 
     const auto preView = std::views::iota(0uz, pre) | std::views::transform([=](size_t i) {
-                             return optRange.start - (pre - i) * minorStep;
+                             return optRange.start - static_cast<double>(pre - i) * minorStep;
                          });
     minor.insert(minor.end(), preView.begin(), preView.end());
 
@@ -133,7 +133,7 @@ void linearRange(const dvec2& range, const LinearRange& optRange, int minorTickF
         minor.emplace_back(p);
     }
     const auto postView = std::views::iota(0uz, post) | std::views::transform([=](size_t i) {
-                              return optRange.stop + (i + 1) * minorStep;
+                              return optRange.stop + static_cast<double>(i + 1) * minorStep;
                           });
     minor.insert(minor.end(), postView.begin(), postView.end());
 }
@@ -300,6 +300,7 @@ LinearRange labelingExtendedWilkinson(double valueMin, double valueMax, int numT
 // based on https://github.com/matplotlib/matplotlib/blob/main/lib/matplotlib/ticker.py
 namespace {
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 std::pair<double, double> scaleRange(double valueMin, double valueMax, int n = 1,
                                      double threshold = 100.0) {
     const double dv = std::abs(valueMax - valueMin);  // > 0, since zero check is done before

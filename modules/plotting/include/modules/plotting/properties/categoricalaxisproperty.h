@@ -69,7 +69,10 @@ public:
                             Orientation orientation = Orientation::Horizontal,
                             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                             PropertySemantics semantics = PropertySemantics::Default);
-    CategoricalAxisProperty(const CategoricalAxisProperty& rhs);
+
+    CategoricalAxisProperty(CategoricalAxisProperty&&) = delete;
+    CategoricalAxisProperty& operator=(const CategoricalAxisProperty&) = delete;
+    CategoricalAxisProperty& operator=(CategoricalAxisProperty&&) = delete;
     virtual CategoricalAxisProperty* clone() const override;
     virtual ~CategoricalAxisProperty() = default;
 
@@ -101,6 +104,9 @@ public:
 
     MajorTickProperty majorTicks_;
     TickData minorTicks_;
+
+protected:
+    CategoricalAxisProperty(const CategoricalAxisProperty& rhs);
 
 private:
     std::vector<std::string> categories_;
