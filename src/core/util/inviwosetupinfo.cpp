@@ -76,7 +76,7 @@ InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork&
     network.forEachProcessor(
         [&](const Processor* p) { usedProcessorClassIdentifiers.insert(p->getClassIdentifier()); });
 
-    auto& mm = app.getModuleManager();
+    const auto& mm = app.getModuleManager();
 
     for (const auto& inviwoModule : mm.getInviwoModules()) {
         std::pmr::vector<std::pmr::string> processors{alloc};
@@ -92,26 +92,26 @@ InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork&
         }
     }
 
-    const auto addTransitiveDeps = [&](this auto& self, std::string_view moduleId,
+    const auto addTransitiveDeps = [&](auto& self, std::string_view moduleId,
                                        std::pmr::vector<ModuleSetupInfo>& modules) -> void {
         if (auto* mfo = mm.getFactoryObject(moduleId)) {
             for (auto&& [dependencyId, _] : mfo->dependencies) {
                 if (auto* inviwoModule = mm.getModuleByIdentifier(dependencyId)) {
                     if (!std::ranges::contains(
                             modules, inviwoModule->getIdentifier(),
-                            [&](const auto& m) { return std::string_view{m.name}; })) {
+                            [](const auto& m) { return std::string_view{m.name}; })) {
 
                         modules_.emplace_back(inviwoModule->getIdentifier(),
                                               inviwoModule->getVersion(),
                                               std::pmr::vector<std::pmr::string>{alloc});
-                        self(inviwoModule->getIdentifier(), modules);
+                        self(self, inviwoModule->getIdentifier(), modules);
                     }
                 }
             }
         }
     };
     for (auto&& i : std::views::iota(0uz, modules_.size())) {
-        addTransitiveDeps(modules_[i].name, modules_);
+        addTransitiveDeps(addTransitiveDeps, modules_[i].name, modules_);
     }
 }
 
