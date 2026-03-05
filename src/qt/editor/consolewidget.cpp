@@ -349,6 +349,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     editActionsHandle_ =
         setupCopyPaste(mainWindow_->getInviwoEditMenu(), tableView_->selectionModel(), this);
+
+    levelCallback(false);
 }
 
 ConsoleWidget::~ConsoleWidget() = default;
