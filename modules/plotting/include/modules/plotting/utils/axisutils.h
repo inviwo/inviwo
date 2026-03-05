@@ -47,7 +47,9 @@ class Mesh;
 
 namespace plot {
 
-// No picking buffer will be generated id pickingId = std::numeric_limits<size_t>::max()
+/**
+ * No picking buffer will be generated if pickingId = std::numeric_limits<size_t>::max()
+ */
 IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateAxisMesh3D(
     const vec3& startPos, const vec3& endPos, const vec4& color,
     const size_t& pickingId = std::numeric_limits<size_t>::max());
@@ -70,46 +72,6 @@ IVW_MODULE_PLOTTING_API std::pair<vec2, vec2> tickBoundingRect(
     const AxisData& data, const std::vector<double>& majorPositions,
     const std::vector<double>& minorPositions, const vec2& startPos, const vec2& endPos);
 
-/*
-class MinorTickSettings;
-struct AxisLabels;
-
-
-IVW_MODULE_PLOTTING_API AxisLabels getAxisLabels(LabelingAlgorithm algorithm, dvec2 range,
-                                                 int numberOfTicks, std::string_view
-labelFormat, const AxisLabels& customLabels);
-
-IVW_MODULE_PLOTTING_API AxisLabels getAxisLabels(const AxisData& settings);
-
-
-IVW_MODULE_PLOTTING_API std::vector<double> getMinorTicks(const MinorTickSettings& tickSettings,
-                                                          const AxisLabels& axisTicks, dvec2
-range); IVW_MODULE_PLOTTING_API std::vector<double> getMinorTicks(const AxisData& settings);
-
-vec2 IVW_MODULE_PLOTTING_API getAxisCaptionPosition(const AxisData& settings, const vec2&
-startPos, const vec2& endPos);
-
-
-
-vec3 IVW_MODULE_PLOTTING_API getAxisCaptionPosition3D(const AxisData& settings,
-                                                      const vec3& startPos, const vec3& endPos,
-                                                      const vec3& tickDirection);
-
-IVW_MODULE_PLOTTING_API std::vector<std::pair<double, vec3>> getLabelPositions3D(
-    const AxisLabels& ticks, const AxisData& property, const vec3& startPos, const vec3& endPos,
-    const vec3& tickDirection);
-
-
-// No picking buffer will be generated if pickingId = std::numeric_limits<size_t>::max()
-IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateAxisMesh(
-    const vec2& startPos, const vec2& endPos, const vec4& color,
-    const size_t& pickingId = std::numeric_limits<size_t>::max());
-
-
-
-
-*/
-
 /**
  * @brief utility function to create a mesh for a given set of tick mark positions
  *
@@ -131,14 +93,6 @@ IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateTicksMesh(
     const std::vector<double>& tickMarks, dvec2 axisRange, const vec3& startPos, const vec3& endPos,
     const vec3& tickDirection, float tickLength, TickData::Style style, const vec4& color,
     bool flip);
-
-/*
-IVW_MODULE_PLOTTING_API std::pair<vec2, vec2> tickBoundingRect(const AxisData& settings,
-                                                               const AxisLabels& ticks,
-                                                               const vec2& startPos,
-                                                               const vec2& endPos);
-
-*/
 
 }  // namespace plot
 

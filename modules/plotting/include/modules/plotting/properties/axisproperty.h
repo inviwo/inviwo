@@ -73,6 +73,10 @@ public:
                  PropertySemantics semantics = PropertySemantics::Default);
 
     AxisProperty(const AxisProperty& rhs);
+    AxisProperty(AxisProperty&&) = delete;
+    AxisProperty& operator=(const AxisProperty&) = delete;
+    AxisProperty& operator=(AxisProperty&&) = delete;
+
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
 

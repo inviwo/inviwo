@@ -113,7 +113,7 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     captionSettings_.title_.set("Axis Title");
 
     labelSettings_.title_.setDisplayName("Format");
-    labelSettings_.title_.set("%.1f");
+    labelSettings_.title_.set("{:.1f}");
     labelSettings_.position_.setVisible(false);
 
     captionSettings_.setCollapsed(true);

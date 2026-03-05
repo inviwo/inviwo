@@ -66,8 +66,11 @@ public:
                  int size = 14, float lineSpacing = 0.0f, vec2 anchorPos = vec2{-1.0f},
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
-
     FontProperty(const FontProperty& rhs);
+    FontProperty(FontProperty&&) = delete;
+    FontProperty& operator=(const FontProperty&) = delete;
+    FontProperty& operator=(FontProperty&&) = delete;
+
     virtual FontProperty* clone() const override;
     virtual ~FontProperty() = default;
 

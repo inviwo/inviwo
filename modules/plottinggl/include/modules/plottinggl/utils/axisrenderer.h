@@ -266,7 +266,7 @@ private:
  */
 class IVW_MODULE_PLOTTINGGL_API AxisRendererBase {
 public:
-    explicit AxisRendererBase(const AxisData& settings);
+    explicit AxisRendererBase(AxisData data = {});
     AxisRendererBase(const AxisRendererBase& rhs) = delete;
     AxisRendererBase(AxisRendererBase&& rhs) noexcept = default;
     AxisRendererBase& operator=(const AxisRendererBase& rhs) = delete;
@@ -310,7 +310,7 @@ private:
  */
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer : public AxisRendererBase {
 public:
-    AxisRenderer(const AxisData& data);  // NOLINT(google-explicit-constructor)
+    AxisRenderer(AxisData data = {});  // NOLINT(google-explicit-constructor)
     AxisRenderer(const AxisRenderer& rhs) = delete;
     AxisRenderer(AxisRenderer&& rhs) noexcept = default;
     AxisRenderer& operator=(const AxisRenderer& rhs) = delete;
@@ -345,7 +345,7 @@ private:
  */
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer3D : public AxisRendererBase {
 public:
-    AxisRenderer3D(const AxisData& settings);  // NOLINT(google-explicit-constructor)
+    AxisRenderer3D(AxisData data = {});  // NOLINT(google-explicit-constructor)
     AxisRenderer3D(const AxisRenderer3D& rhs) = delete;
     AxisRenderer3D(AxisRenderer3D&& rhs) noexcept = default;
     AxisRenderer3D& operator=(const AxisRenderer3D& rhs) = delete;
