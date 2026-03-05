@@ -97,14 +97,15 @@ double niceNumber(double value, bool round) {
 }  // namespace
 
 void linearRange(const LinearRange& range, std::vector<double>& positions) {
-    positions.assign_range(rangeView(range));
+    const auto view = rangeView(range);
+    positions.assign(view.begin(), view.end());
 }
 
 void linearRange(const dvec2& range, const LinearRange& optRange, int minorTickFrequency,
                  std::vector<double>& major, std::vector<double>& minor) {
 
     const auto view = rangeView(optRange);
-    major.assign_range(view);
+    major.assign(view.begin(), view.end());
 
     if (minorTickFrequency <= 1) return;
 
@@ -116,22 +117,25 @@ void linearRange(const dvec2& range, const LinearRange& optRange, int minorTickF
 
     minor.clear();
 
-    minor.append_range(std::views::iota(0uz, pre) | std::views::transform([=](size_t i) {
-                           return optRange.start - (pre - i) * minorStep;
-                       }));
+    const auto preView = std::views::iota(0uz, pre) | std::views::transform([=](size_t i) {
+                             return optRange.start - (pre - i) * minorStep;
+                         });
+    minor.insert(minor.end(), preView.begin(), preView.end());
 
-    minor.append_range(view | std::views::take(std::ranges::size(view) - 1uz) |
-                       std::views::transform([&](double x) {
-                           return std::views::iota(0, minorTickFrequency - 1) |
-                                  std::views::transform([=](int i) {
-                                      return x + static_cast<double>(i + 1) * minorStep;
-                                  });
-                       }) |
-                       std::views::join);
-
-    minor.append_range(std::views::iota(0uz, post) | std::views::transform([=](size_t i) {
-                           return optRange.stop + (i + 1) * minorStep;
-                       }));
+    for (auto&& p : view | std::views::take(std::ranges::size(view) - 1uz) |
+                        std::views::transform([&](double x) {
+                            return std::views::iota(0, minorTickFrequency - 1) |
+                                   std::views::transform([=](int i) {
+                                       return x + static_cast<double>(i + 1) * minorStep;
+                                   });
+                        }) |
+                        std::views::join) {
+        minor.emplace_back(p);
+    }
+    const auto postView = std::views::iota(0uz, post) | std::views::transform([=](size_t i) {
+                              return optRange.stop + (i + 1) * minorStep;
+                          });
+    minor.insert(minor.end(), postView.begin(), postView.end());
 }
 
 LinearRange labelingHeckbert(double valueMin, double valueMax, int numTicks) {
@@ -449,14 +453,17 @@ LinearRange labelingMatplotlib(double valueMin, double valueMax, int maxTicks,
 void labelingLimits(double valueMin, double valueMax, std::vector<double>& positions,
                     bool includeZero) {
 
+    positions.clear();
     if (almostEqual(valueMin, valueMax)) {
-        positions.assign_range(std::array{valueMin});
-    } else if (includeZero && (std::signbit(valueMin) != std::signbit(valueMax)) &&
-               !(almostEqual(valueMin, 0.0) || almostEqual(valueMax, 0.0))) {
-        // include 0.0 if neither limit is zero and they have different signs
-        positions.assign_range(std::array{valueMin, 0.0, valueMax});
+        positions.emplace_back(valueMin);
     } else {
-        positions.assign_range(std::array{valueMin, valueMax});
+        positions.emplace_back(valueMin);
+        if (includeZero && (std::signbit(valueMin) != std::signbit(valueMax)) &&
+            !(almostEqual(valueMin, 0.0) || almostEqual(valueMax, 0.0))) {
+            // include 0.0 if neither limit is zero and they have different signs
+            positions.emplace_back(0.0);
+        }
+        positions.emplace_back(valueMax);
     }
 }
 
@@ -500,7 +507,7 @@ void updateLabels(std::vector<std::string>& labels, const std::vector<double>& p
 }
 
 void updateLabels(std::vector<std::string>& labels, std::span<const std::string> srcLabels) {
-    labels.assign_range(srcLabels);
+    labels.assign(srcLabels.begin(), srcLabels.end());
 }
 
 }  // namespace inviwo::plot
