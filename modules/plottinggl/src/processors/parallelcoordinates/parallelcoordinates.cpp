@@ -168,7 +168,7 @@ ParallelCoordinates::ParallelCoordinates()
     , labelSettings_("labels", "Label Settings", font::FontType::Label, 20, 0.0f, vec2{-1.0f, 0.0f})
     , showLabels_("show", "Display min/max", true)
     , labelOffset_("offset", "Offset", 15.0f, -50.0, 50.0f)
-    , labelFormat_("format", "Format", "%.4f")
+    , labelFormat_("format", "Format", "{:.4f}")
     , labelColor_("color", "Color", vec4(.0, .0f, .0f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                   InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
@@ -561,7 +561,7 @@ void ParallelCoordinates::drawAxis(size2_t size) {
     for (auto& axis : axes_) {
         if (!axis.pcp->isChecked()) continue;
         auto ap = axisPos(axis.pcp->columnId());
-        if (axis.pcp->isModified()) axis.pcp->update(axis.axisRender->getData());
+        if (axis.pcp->dataModified()) axis.pcp->update(axis.axisRender->getData());
         if (axis.pcp->invertRange) std::swap(ap.first, ap.second);
         axis.axisRender->render(size, ap.first, ap.second);
     }

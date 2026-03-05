@@ -78,12 +78,14 @@ Qt::ItemFlags ProcessorListModel::flags(const QModelIndex& index) const {
 
     auto* node = indexToNode(index);
     switch (node->type) {
+        case Node::Type::Item:
+            return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemNeverHasChildren;
         case Node::Type::Root:
             [[fallthrough]];
         case Node::Type::Group:
+            [[fallthrough]];
+        default:
             return Qt::NoItemFlags;
-        case Node::Type::Item:
-            return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemNeverHasChildren;
     }
 }
 QVariant ProcessorListModel::data(const QModelIndex& index, int role) const {

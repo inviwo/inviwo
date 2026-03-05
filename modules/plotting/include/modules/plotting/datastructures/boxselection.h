@@ -37,7 +37,7 @@ namespace inviwo {
 namespace plot {
 
 struct IVW_MODULE_PLOTTING_API BoxSelection {
-    enum class Mode { Selection, Filtering, None };
+    enum class Mode : std::uint8_t { Selection, Filtering, None };
 
     vec4 lineColor = vec4{0.0f, 0.0f, 0.0f, 1.0f};
     float lineWidth = 1.0f;

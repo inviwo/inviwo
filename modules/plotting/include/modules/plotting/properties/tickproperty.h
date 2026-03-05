@@ -53,6 +53,9 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
     MajorTickProperty(const MajorTickProperty& rhs);
+    MajorTickProperty(MajorTickProperty&&) = delete;
+    MajorTickProperty& operator=(const MajorTickProperty&) = delete;
+    MajorTickProperty& operator=(MajorTickProperty&&) = delete;
     virtual MajorTickProperty* clone() const override;
     virtual ~MajorTickProperty() = default;
 
@@ -74,6 +77,9 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
     MinorTickProperty(const MinorTickProperty& rhs);
+    MinorTickProperty(MinorTickProperty&&) = delete;
+    MinorTickProperty& operator=(const MinorTickProperty&) = delete;
+    MinorTickProperty& operator=(MinorTickProperty&&) = delete;
     virtual MinorTickProperty* clone() const override;
     virtual ~MinorTickProperty() = default;
 

@@ -414,8 +414,6 @@ bool updateV5(TxElement* root) {
     return res;
 }
 
-
-namespace detail {
 constexpr bool is_flag(char c) { return c == '+' || c == '-' || c == ' ' || c == '#' || c == '0'; }
 constexpr bool is_specifier(char c) {
     switch (c) {
@@ -437,7 +435,93 @@ constexpr bool is_specifier(char c) {
             return false;
     }
 }
-}  // namespace detail
+
+std::string_view toStringView(auto begin, auto end) {
+    return {&*begin, static_cast<size_t>(end - begin)};
+}
+// NOLINTBEGIN(llvm-qualified-auto)
+std::string_view::const_iterator translateSpec(std::string_view::const_iterator it,
+                                               std::string_view::const_iterator end,
+                                               std::string& out) {
+
+    auto percent = it++;
+    if (it != end && *it == '%') {
+        out.push_back('%');
+        ++it;
+        return it;
+    }
+
+    // ---- flags ----
+    auto flags_begin = it;
+    while (it != end && is_flag(*it)) ++it;
+    const auto flags = toStringView(flags_begin, it);
+
+    // ---- width ----
+    auto width_begin = it;
+    while (it != end && std::isdigit(static_cast<unsigned char>(*it))) ++it;
+    const auto width = toStringView(width_begin, it);
+
+    // ---- precision ----
+    std::string_view precision;
+    if (it != end && *it == '.') {
+        ++it;
+        auto prec_begin = it;
+        while (it != end && std::isdigit(static_cast<unsigned char>(*it))) ++it;
+        precision = toStringView(prec_begin, it);
+    }
+
+    // ---- specifier ----
+    if (it == end || !is_specifier(*it)) {
+        // invalid → copy literally
+        out.append(percent, it);
+        return it;
+    }
+
+    char spec = *it++;
+    out += "{:";
+
+    // ---- flags mapping ----
+    for (const char f : flags) {
+        if (f == '0' && width.empty()) continue;  // zero-pad only with width
+        if (f == '-') continue;                   // ignore left-align (semantic mismatch)
+        out.push_back(f);
+    }
+
+    // ---- width ----
+    out.append(width);
+
+    // ---- precision ----
+    if (!precision.empty()) {
+        out.push_back('.');
+        out.append(precision);
+    }
+
+    // ---- type ----
+    switch (spec) {
+        case 'd':
+        case 'i':
+        case 'u':
+            break;
+        case 'o':
+        case 'x':
+        case 'X':
+            out.push_back(spec);
+            break;
+        case 'f':
+        case 'F':
+        case 'e':
+        case 'E':
+        case 'g':
+        case 'G':
+            out.push_back(static_cast<char>(std::tolower(spec)));
+            break;
+        case 's':
+            break;
+    }
+
+    out.push_back('}');
+    return it;
+}
 
 std::string printfToFmt(std::string_view input) {
     std::string out;
@@ -449,89 +533,14 @@ std::string printfToFmt(std::string_view input) {
     while (it != end) {
         if (*it != '%') {
             out.push_back(*it++);
-            continue;
+        } else {
+            it = translateSpec(it, end, out);
         }
-
-        auto percent = it++;
-        if (it != end && *it == '%') {
-            out.push_back('%');
-            ++it;
-            continue;
-        }
-
-        // ---- flags ----
-        auto flags_begin = it;
-        while (it != end && detail::is_flag(*it)) ++it;
-        std::string_view flags(flags_begin, static_cast<size_t>(it - flags_begin));
-
-        // ---- width ----
-        auto width_begin = it;
-        while (it != end && std::isdigit(static_cast<unsigned char>(*it))) ++it;
-        std::string_view width{width_begin, static_cast<size_t>(it - width_begin)};
-
-        // ---- precision ----
-        std::string_view precision;
-        if (it != end && *it == '.') {
-            ++it;
-            auto prec_begin = it;
-            while (it != end && std::isdigit(static_cast<unsigned char>(*it))) ++it;
-            precision = {prec_begin, static_cast<size_t>(it - prec_begin)};
-        }
-
-        // ---- specifier ----
-        if (it == end || !detail::is_specifier(*it)) {
-            // invalid → copy literally
-            out.append(percent, it);
-            continue;
-        }
-
-        char spec = *it++;
-        out += "{:";
-
-        // ---- flags mapping ----
-        for (char f : flags) {
-            if (f == '0' && width.empty()) continue;  // zero-pad only with width
-            if (f == '-') continue;                   // ignore left-align (semantic mismatch)
-            out.push_back(f);
-        }
-
-        // ---- width ----
-        out.append(width);
-
-        // ---- precision ----
-        if (!precision.empty()) {
-            out.push_back('.');
-            out.append(precision);
-        }
-
-        // ---- type ----
-        switch (spec) {
-            case 'd':
-            case 'i':
-            case 'u':
-                break;
-            case 'o':
-            case 'x':
-            case 'X':
-                out.push_back(spec);
-                break;
-            case 'f':
-            case 'F':
-            case 'e':
-            case 'E':
-            case 'g':
-            case 'G':
-                out.push_back(static_cast<char>(std::tolower(spec)));
-                break;
-            case 's':
-                break;
-        }
-
-        out.push_back('}');
     }
 
     return out;
 }
+// NOLINTEND(llvm-qualified-auto)
 
 bool updateV6(TxElement* root) {
     bool res = false;
@@ -572,7 +581,6 @@ bool updateV6(TxElement* root) {
 
     return res;
 }
-
 
 }  // namespace
 

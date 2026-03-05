@@ -72,6 +72,7 @@ void BoolCompositeProperty::setChecked(bool checked) { checked_.set(checked); }
 
 BoolCompositeProperty::operator bool() const { return checked_.get(); }
 
+const BoolProperty* BoolCompositeProperty::getBoolProperty() const { return &checked_; }
 BoolProperty* BoolCompositeProperty::getBoolProperty() { return &checked_; }
 
 }  // namespace inviwo

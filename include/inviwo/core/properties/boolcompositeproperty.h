@@ -65,6 +65,7 @@ public:
 
     virtual operator bool() const;
 
+    virtual const BoolProperty* getBoolProperty() const;
     virtual BoolProperty* getBoolProperty();
 
 private:

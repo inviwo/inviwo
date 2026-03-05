@@ -69,6 +69,10 @@ public:
 
     PCPAxisSettings(std::string_view identifier, std::string_view displayName, size_t columnId = 0);
     PCPAxisSettings(const PCPAxisSettings& rhs);
+    PCPAxisSettings(PCPAxisSettings&&) = delete;
+    PCPAxisSettings& operator=(const PCPAxisSettings&) = delete;
+    PCPAxisSettings& operator=(PCPAxisSettings&&) = delete;
+
     virtual PCPAxisSettings* clone() const override;
 
     virtual ~PCPAxisSettings() = default;
@@ -77,6 +81,8 @@ public:
      * Update the range of the axis based on the given column.
      */
     void update(std::shared_ptr<const DataFrame> frame);
+
+    bool dataModified() const;
 
     /**
      * Normalizes the value v from the range of the parameter to zero and one. Clamps out-of-bounds
