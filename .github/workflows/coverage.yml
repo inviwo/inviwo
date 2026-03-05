@@ -132,17 +132,21 @@ jobs:
         # Install lcov (provides genhtml for rich HTML output)
         brew install lcov 2>/dev/null || true
 
-        # Collect instrumented Inviwo shared libraries
+        # The main inviwo app is the primary binary: it is the executable that
+        # runs all regression workspaces and therefore exercises the most code.
+        # On macOS it lives inside its .app bundle.
+        PRIMARY_BIN="build/bin/inviwo.app/Contents/MacOS/inviwo"
+
+        # Collect additional instrumented objects: unit/integration test runners
+        # and all Inviwo shared libraries (where most of the code actually lives).
         OBJECT_FLAGS=""
+        [ -f build/bin/inviwo-unittests ] && \
+          OBJECT_FLAGS="$OBJECT_FLAGS -object build/bin/inviwo-unittests"
+        [ -f build/bin/inviwo-integrationtests ] && \
+          OBJECT_FLAGS="$OBJECT_FLAGS -object build/bin/inviwo-integrationtests"
         while IFS= read -r lib; do
           OBJECT_FLAGS="$OBJECT_FLAGS -object $lib"
         done < <(find build -name "libinviwo*.dylib" 2>/dev/null | sort)
-
-        # Optional: also include integration-test executable
-        [ -f build/bin/inviwo-integrationtests ] && \
-          OBJECT_FLAGS="$OBJECT_FLAGS -object build/bin/inviwo-integrationtests"
-
-        PRIMARY_BIN="build/bin/inviwo-unittests"
 
         # Export coverage in lcov format
         # shellcheck disable=SC2086
