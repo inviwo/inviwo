@@ -39,7 +39,7 @@ jobs:
     - name: "Get Vcpkg SHA"
       shell: bash
       run: |
-        SHA=$(jq -r '.[\"vcpkg-configuration\"].[\"default-registry\"].baseline' inviwo/vcpkg.json)
+        SHA=$(jq -r '.["vcpkg-configuration"].["default-registry"].baseline' inviwo/vcpkg.json)
         echo "VCPKG_SHA=${SHA}" >> $GITHUB_ENV
 
     - name: "VCPKG Update"
