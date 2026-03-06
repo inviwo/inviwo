@@ -315,10 +315,10 @@ void PCPAxisSettings::update(AxisData& data) const {
         data.minorPositions.clear();
         updateLabels(data.labels, catCol_->getCategories());
     } else {
-        updateLabelPositions(data.majorPositions, data.minorPositions, defaultLabeling, data.range,
-                             10, 0);
+        updateLabelPositions(data.majorPositions, data.minorPositions, LabelingAlgorithm::Limits,
+                             data.range, 10, 0, true);
         updateLabels(data.labels, data.majorPositions,
-                     pcp_ ? pcp_->labelFormat_ : std::string_view{"{:.1f}"});
+                     pcp_ ? pcp_->labelFormat_ : ParallelCoordinates::defaultLabelFormat);
     }
 
     data.labelSettings.enabled = pcp_->showLabels_;

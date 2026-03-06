@@ -439,7 +439,7 @@ constexpr bool is_specifier(char c) {
 std::string_view toStringView(auto begin, auto end) {
     return {&*begin, static_cast<size_t>(end - begin)};
 }
-// NOLINTBEGIN(llvm-qualified-auto)
+// NOLINTBEGIN(llvm-qualified-auto, readability-qualified-auto)
 std::string_view::const_iterator translateSpec(std::string_view::const_iterator it,
                                                std::string_view::const_iterator end,
                                                std::string& out) {
@@ -516,6 +516,7 @@ std::string_view::const_iterator translateSpec(std::string_view::const_iterator 
             out.push_back(static_cast<char>(std::tolower(spec)));
             break;
         case 's':
+        default:
             break;
     }
 
@@ -540,7 +541,7 @@ std::string printfToFmt(std::string_view input) {
 
     return out;
 }
-// NOLINTEND(llvm-qualified-auto)
+// NOLINTEND(llvm-qualified-auto, readability-qualified-auto)
 
 bool updateV6(TxElement* root) {
     bool res = false;
