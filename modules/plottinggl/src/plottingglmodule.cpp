@@ -477,7 +477,7 @@ std::string_view::const_iterator translateSpec(std::string_view::const_iterator 
         return it;
     }
 
-    char spec = *it++;
+    const char spec = *it++;
     out += "{:";
 
     // ---- flags mapping ----
