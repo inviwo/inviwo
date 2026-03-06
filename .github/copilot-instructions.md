@@ -2,14 +2,14 @@
 
 ## Project Overview
 
-**Inviwo** (Interactive Visualization Workshop) is an open-source visualization framework written in **C++17** with **Python** bindings. It enables scientists and developers to build data processing and visualization pipelines through a visual programming (node-graph) interface.
+**Inviwo** (Interactive Visualization Workshop) is an open-source visualization framework written in **C++23** with **Python** bindings. It enables scientists and developers to build data processing and visualization pipelines through a visual programming (node-graph) interface.
 
 - **License**: Simplified BSD (free for commercial use)
 - **Current version**: see `CMakeLists.txt` (`project(inviwo VERSION ...)`)
-- **Platforms**: Windows, Linux, macOS
+- **Cross Platform**: Windows, Linux, macOS
 - **Main website**: https://inviwo.org
 - **API docs**: https://inviwo.org/inviwo/doc
-
+- **GitHub**: https://github.com/inviwo/inviwo
 ---
 
 ## Repository Layout
@@ -23,13 +23,11 @@ inviwo/
 ├── docs/                 # Sphinx/Doxygen documentation sources, style guides
 ├── ext/                  # Vendored external dependencies (flags, ticpp)
 ├── include/inviwo/       # Public C++ headers for the core framework
+│   ├── core/             # Framework core: processors, data structures, properties, algorithms
+│   └── qt/               # Qt-based GUI: network editor, properties panel, canvas
 ├── modules/              # 40+ extension modules (rendering, I/O, UI, Python, etc.)
 ├── resources/            # Application resources (icons, images, stylesheets)
-├── src/
-│   ├── core/             # Framework core: processors, data structures, properties, algorithms
-│   ├── py/               # Python 3 bindings (pybind11)
-│   ├── qt/               # Qt-based GUI: network editor, properties panel, canvas
-│   └── sys/              # System utilities (file I/O, threading, profiling)
+├── src/                  # Source files for the core framework (mainly for internal implementation)
 ├── tests/                # Unit, integration, regression tests, and benchmarks
 ├── tools/
 │   └── meta/             # Code-generation tool for scaffolding modules and processors
@@ -46,9 +44,9 @@ inviwo/
 ## Build System
 
 ### Requirements
-- **CMake** ≥ 3.23
+- **CMake** ≥ 4.0
 - **vcpkg** for dependency management (bootstrapped automatically via CMake presets)
-- **Compiler**: MSVC 2022 (Windows), Clang (macOS), GCC or Clang (Linux)
+- **Compiler**: MSVC 2026 (Windows), Clang (macOS), GCC or Clang (Linux)
 - **Qt 6** (required for GUI applications)
 - **Python 3** (required for Python bindings)
 
@@ -66,17 +64,21 @@ inviwo/
 ### Building
 
 ```bash
+# Clone
+git clone https://github.com/inviwo/inviwo
+git clone https://github.com/microsoft/vcpkg
+
 # Configure
-cmake -S . -B build --preset developer
+cmake -S inviwo --preset ninja-developer
 
 # Build all targets
-cmake --build build --parallel
+cmake --build builds/ninja-developer --parallel
 
 # Run tests
-ctest --test-dir build --output-on-failure
+ctest --test-dir build/ninja-developer --output-on-failure
 
 # Build a single module target
-cmake --build build --target inviwo-module-base
+cmake --build build/ninja-developer --target inviwo-module-base
 ```
 
 ### Common CMake Options
@@ -110,17 +112,17 @@ Run formatter: `clang-format -i <file>`
 ### General Conventions
 - UTF-8 source files with Unix line endings
 - Trailing whitespace trimmed, final newline required (see `.editorconfig`)
-- Use C++17 features freely (structured bindings, `if constexpr`, `std::optional`, etc.)
+- Use C++23 features freely (structured bindings, `if constexpr`, `std::optional`, etc.)
 - Prefer `std::string_view` and `std::span` over raw pointers
 - Use `fmt::format` (bundled) for string formatting, not `std::sprintf`
 - Exceptions are used for error reporting; use `Exception` from `<inviwo/core/util/exception.h>`
-- Use `LogError`, `LogWarn`, `LogInfo` macros for logging
+- Use `log::error`, `log::warn`, `log::info` functions for logging, they use fmt-style formatting
 - All public API symbols need a DLL export macro (e.g., `IVW_CORE_API`, `IVW_MODULE_BASE_API`)
 
 ### Include Order (manual, not auto-sorted)
 1. Corresponding header (for `.cpp` files)
-2. Module/component headers
-3. Inviwo core headers
+2. Inviwo core headers
+3. Module/component headers
 4. Third-party headers
 5. Standard library headers
 
@@ -131,7 +133,7 @@ Run formatter: `clang-format -i <file>`
 ### Core Concepts
 
 - **Processor**: A node in the visualization pipeline. Has `Inport`s, `Outport`s, and `Property`s. Override `process()` to implement logic.
-- **Port**: Typed connection point (e.g., `VolumeInport`, `MeshOutport`, `ImageInport`).
+- **Port**: Typed connection point (e.g., `VolumeOutport`/`VolumeInport`, `MeshOutport`/`MeshInport`, `ImageOutport`/`ImageInport`).
 - **Property**: A configurable parameter exposed in the UI (e.g., `FloatProperty`, `BoolProperty`, `TransferFunctionProperty`).
 - **Module**: A collection of processors, data structures, and utilities. Registered via `InviwoModule` subclass.
 
@@ -143,7 +145,7 @@ Run formatter: `clang-format -i <file>`
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <mymodule/mymoduledefine.h>
+#include <inviwo/mymodule/mymoduledefine.h>
 
 namespace inviwo {
 
@@ -167,7 +169,7 @@ private:
 
 ```cpp
 // myprocessor.cpp
-#include <mymodule/myprocessor.h>
+#include <inviwo/mymodule/processors/myprocessor.h>
 
 namespace inviwo {
 
@@ -203,16 +205,18 @@ void MyProcessor::process() {
 ### Module Structure
 
 ```
-modules/mymodule/
+inviwo/mymodule/
 ├── CMakeLists.txt                        # ivw_module() + ivw_create_module()
 ├── depends.cmake                         # Optional: list(APPEND dependencies Core Base)
-├── include/modules/mymodule/
+├── include/inviwo/mymodule/
 │   ├── mymoduledefine.h                  # DLL export macro (generated or hand-written)
-│   ├── mymodule.h                        # Module class declaration
-│   └── myprocessor.h
+│   ├── mymodule.h
+│   └── processors                        # Module class declaration
+│       └── myprocessor.h
 └── src/
-    ├── mymodule.cpp                      # Module registration
-    └── myprocessor.cpp
+│   ├── mymodule.cpp
+│   └── processors                        # Module registration
+        └── myprocessor.cpp
 ```
 
 **`CMakeLists.txt` template:**
@@ -220,15 +224,15 @@ modules/mymodule/
 ivw_module(MyModule)
 
 set(HEADER_FILES
-    include/modules/mymodule/mymodule.h
-    include/modules/mymodule/mymoduledefine.h
-    include/modules/mymodule/myprocessor.h
+    include/inviwo/mymodule/mymodule.h
+    include/inviwo/mymodule/mymoduledefine.h
+    include/inviwo/mymodule/processors/myprocessor.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/mymodule.cpp
-    src/myprocessor.cpp
+    src/processors/myprocessor.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -237,8 +241,8 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 **Module registration (`src/mymodule.cpp`):**
 ```cpp
-#include <modules/mymodule/mymodule.h>
-#include <modules/mymodule/myprocessor.h>
+#include <inviwo/mymodule/mymodule.h>
+#include <inviwo/mymodule/processorsmyprocessor.h>
 
 namespace inviwo {
 
@@ -410,7 +414,7 @@ Dependencies are declared in `vcpkg.json`. Features group optional dependencies:
 }
 ```
 
-Add new dependencies by editing `vcpkg.json`. Avoid adding vcpkg ports that conflict with existing ones.
+Add new dependencies by editing `vcpkg.json`. CMake will automatically bootstrap vcpkg and install missing dependencies when you configure the project with a preset that includes `vcpkg` (e.g., `ninja-developer`).
 
 ---
 
@@ -442,25 +446,8 @@ Ensure the module's CMake target was built and the module identifier matches the
 INVIWO_DISABLE_MODULES="animation;animationqt" ./inviwo
 ```
 
-### vcpkg bootstrap fails
-Make sure git submodules are initialized if vcpkg is a submodule. Some CI setups require:
-
-```bash
-git submodule update --init --recursive
-```
-
 ### Linker errors with DLL exports
 Every public class in a module needs the module's export macro (e.g., `IVW_MODULE_BASE_API`). The macro is defined in the module's `*moduledefine.h` file.
-
-### Python binding import errors after API change
-After moving vector types in 2025-09-23, update Python scripts:
-
-```python
-# Old
-inviwopy.dvec3Vector(...)
-# New
-inviwopy.glm.dvec3Vector(...)
-```
 
 ---
 
