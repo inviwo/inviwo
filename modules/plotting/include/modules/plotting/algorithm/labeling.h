@@ -53,11 +53,12 @@ struct IVW_MODULE_PLOTTING_API LinearRange {
 };
 
 constexpr LabelingAlgorithm defaultLabeling = LabelingAlgorithm::Matplotlib;
+constexpr std::string_view defaultFormat = "{:.1f}";
 
 IVW_MODULE_PLOTTING_API void updateLabelPositions(std::vector<double>& majorPositions,
                                                   std::vector<double>& minorPositions,
                                                   LabelingAlgorithm algorithm, const dvec2& range,
-                                                  int maxTicks, int minorTickFrequency);
+                                                  int maxTicks, int minorTickFrequency, bool fillAxis);
 
 IVW_MODULE_PLOTTING_API void updateLabels(std::vector<std::string>& labels,
                                           const std::vector<double>& positions,

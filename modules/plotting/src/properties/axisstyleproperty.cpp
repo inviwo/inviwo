@@ -82,7 +82,7 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
                          "Maximum number of labels/ticks."_help)}
     , labelFormat_{"labelFormat", "Label Format",
                    "Formatting string for labels using the printf format specification."_help,
-                   "{:.1f}"} {
+                   plot::defaultFormat} {
 
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 

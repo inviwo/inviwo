@@ -32,6 +32,7 @@
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/logcentral.h>
 
 #include <cmath>
 #include <ranges>
@@ -110,10 +111,10 @@ void linearRange(const dvec2& range, const LinearRange& optRange, int minorTickF
     if (minorTickFrequency <= 1) return;
 
     const auto minorStep = optRange.step / static_cast<double>(minorTickFrequency);
-    const auto pre =
-        static_cast<size_t>(std::floor(std::max(0.0, optRange.start - range.x) / minorStep));
-    const auto post =
-        static_cast<size_t>(std::floor(std::max(0.0, range.y - optRange.stop) / minorStep));
+    const auto pre = static_cast<size_t>(
+        std::floor(std::max(0.0, std::abs(optRange.start - range.x)) / std::abs(minorStep)));
+    const auto post = static_cast<size_t>(
+        std::floor(std::max(0.0, std::abs(range.y - optRange.stop)) / std::abs(minorStep)));
 
     // GCC 14 does not have support for assign_range, so we have to do it manually here
     minor.clear();
@@ -472,22 +473,39 @@ void labelingLimits(double valueMin, double valueMax, std::vector<double>& posit
 
 void updateLabelPositions(std::vector<double>& major, std::vector<double>& minor,
                           LabelingAlgorithm algorithm, const dvec2& range, int maxTicks,
-                          int minorTickFrequency) {
+                          int minorTickFrequency, bool fillAxis) {
+    const auto ensurePositiveRange = [](const dvec2& r, auto&& fun) -> LinearRange {
+        if (r.x <= r.y) {
+            return fun(r);
+        } else {
+            const LinearRange o = fun(dvec2(r.y, r.x));
+            return {o.stop, o.start, -o.step};
+        }
+    };
+
+    const auto fill = [&](const dvec2& r, const LinearRange& opt) {
+        return fillAxis ? r : dvec2{opt.start, opt.stop};
+    };
+
     switch (algorithm) {
         using enum LabelingAlgorithm;
         case Heckbert: {
-            const auto optRange = labelingHeckbert(range.x, range.y, maxTicks);
-            linearRange(range, optRange, minorTickFrequency, major, minor);
+            const auto optRange = ensurePositiveRange(
+                range, [&](const auto& r) { return labelingHeckbert(r.x, r.y, maxTicks); });
+            linearRange(fill(range, optRange), optRange, minorTickFrequency, major, minor);
             break;
         }
         case Matplotlib: {
-            const auto optRange = labelingMatplotlib(range.x, range.y, maxTicks);
-            linearRange(range, optRange, minorTickFrequency, major, minor);
+            const auto optRange = ensurePositiveRange(
+                range, [&](const auto& r) { return labelingMatplotlib(r.x, r.y, maxTicks); });
+            linearRange(fill(range, optRange), optRange, minorTickFrequency, major, minor);
             break;
         }
         case ExtendedWilkinson: {
-            const auto optRange = labelingExtendedWilkinson(range.x, range.y, maxTicks);
-            linearRange(range, optRange, minorTickFrequency, major, minor);
+            const auto optRange = ensurePositiveRange(range, [&](const auto& r) {
+                return labelingExtendedWilkinson(r.x, r.y, maxTicks);
+            });
+            linearRange(fill(range, optRange), optRange, minorTickFrequency, major, minor);
             break;
         }
         case Limits: {
