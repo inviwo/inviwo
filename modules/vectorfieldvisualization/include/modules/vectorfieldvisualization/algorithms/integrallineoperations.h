@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
-#include <inviwo/core/util/glmmat.h>                                          // for dmat4
-#include <modules/vectorfieldvisualization/datastructures/integralline.h>     // for Integ...
-#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>  // for Integ...
+#include <inviwo/core/util/glmmat.h>
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
 namespace inviwo {
 

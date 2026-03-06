@@ -27,19 +27,19 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/resizeevent.h>    // for ResizeEvent
-#include <inviwo/core/network/networklock.h>               // for NetworkLock
-#include <inviwo/core/processors/canvasprocessorwidget.h>  // for CanvasProcessorWidget
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/util/glmvec.h>                       // for ivec2, uvec2, size2_t
-#include <inviwo/core/util/rendercontext.h>                // for RenderContext
-#include <modules/glfw/canvasglfw.h>                       // for CanvasGLFW
-#include <modules/glfw/canvasprocessorwidgetglfw.h>        // for CanvasProcessorWidgetGLFW
+#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/processors/canvasprocessorwidget.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <modules/glfw/canvasglfw.h>
+#include <modules/glfw/canvasprocessorwidgetglfw.h>
 
-#include <functional>  // for __base, function
-#include <memory>      // for unique_ptr
+#include <functional>
+#include <memory>
 
-#include <glm/vec2.hpp>  // for vec<>::(anonymous)
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 class Canvas;

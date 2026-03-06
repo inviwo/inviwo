@@ -29,27 +29,27 @@
 
 #include <modules/base/processors/noisegenerator3d.h>
 
-#include <inviwo/core/algorithm/markdown.h>            // for operator""_unindentHelp
-#include <inviwo/core/ports/volumeport.h>              // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Experimental
-#include <inviwo/core/processors/processortags.h>      // for Tag, Tag::CPU
-#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/minmaxproperty.h>     // for FloatMinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>     // for OptionPropertyOption, OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>    // for IntSizeTProperty, IntProperty, Int...
-#include <inviwo/core/util/glmvec.h>                   // for size3_t
-#include <inviwo/core/util/staticstring.h>             // for operator+
-#include <inviwo/core/util/zip.h>                      // for zipper
-#include <modules/base/algorithm/randomutils.h>        // for haltonSequence, randomVolume
+#include <inviwo/core/algorithm/markdown.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/base/algorithm/randomutils.h>
 
-#include <memory>       // for shared_ptr, shared_ptr<>::element_...
-#include <type_traits>  // for remove_extent_t
+#include <memory>
+#include <type_traits>
 
-#include <glm/detail/qualifier.hpp>  // for tvec2
-#include <glm/vec2.hpp>              // for vec<>::(anonymous)
+#include <glm/detail/qualifier.hpp>
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 class Volume;

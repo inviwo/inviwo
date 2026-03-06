@@ -37,15 +37,15 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <QColor>   // for QColor
-#include <QImage>   // for QImage
-#include <QObject>  // for slots, Q_OBJECT, signals
-#include <QPoint>   // for QPoint
-#include <QRegion>  // for QRegion
-#include <QSize>    // for QSize
-#include <QWidget>  // for QWidget
+#include <QColor>
+#include <QImage>
+#include <QObject>
+#include <QPoint>
+#include <QRegion>
+#include <QSize>
+#include <QWidget>
 
 class QPainter;
 class QMouseEvent;

@@ -29,23 +29,23 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/datastructures/light/lightingstate.h>  // for ShadingMode
-#include <inviwo/core/datastructures/spatialdata.h>          // for SpatialEntity
-#include <inviwo/core/properties/raycastingproperty.h>       // for RaycastingProperty, Raycasti...
+#include <inviwo/core/datastructures/light/lightingstate.h>
+#include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/properties/raycastingproperty.h>
 #include <inviwo/core/util/detected.h>
-#include <modules/opengl/inviwoopengl.h>          // for GLuint
+#include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>         // IWYU pragma: keep
 #include <modules/opengl/texture/textureutils.h>  // IWYU pragma: keep
 
-#include <cstddef>      // for size_t
-#include <memory>       // for shared_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for enable_if, is_base_of, is_enum
-#include <utility>      // for pair
-#include <vector>       // for vector
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 

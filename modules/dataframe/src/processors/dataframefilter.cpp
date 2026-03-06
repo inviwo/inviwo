@@ -29,38 +29,38 @@
 
 #include <inviwo/dataframe/processors/dataframefilter.h>
 
-#include <inviwo/core/datastructures/bitset.h>                         // for BitSet
-#include <inviwo/core/processors/processor.h>                          // for Processor
-#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
-#include <inviwo/core/processors/processortags.h>                      // for Tag, Tag::CPU, Tags
-#include <inviwo/core/properties/boolcompositeproperty.h>              // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
-#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
-#include <inviwo/core/properties/minmaxproperty.h>                     // for DoubleMinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>                     // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                    // for IntProperty, Doubl...
-#include <inviwo/core/properties/propertyowner.h>                      // for PropertyOwner
-#include <inviwo/core/properties/stringproperty.h>                     // for StringProperty
-#include <inviwo/core/util/exception.h>                                // for Exception
-#include <inviwo/core/util/sourcecontext.h>                            // for SourceContext
-#include <inviwo/core/util/statecoordinator.h>                         // for StateCoordinator
-#include <inviwo/core/util/staticstring.h>                             // for operator+
-#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrame, DataFra...
-#include <inviwo/dataframe/properties/filterlistproperty.h>            // for FilterType, Filter...
-#include <inviwo/dataframe/util/dataframeutil.h>                       // for selectRows
-#include <inviwo/dataframe/util/filters.h>                             // for Filters, doubleMatch
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>      // for BrushingTargetsInv...
-#include <modules/brushingandlinking/datastructures/brushingaction.h>  // for BrushingTarget
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/statecoordinator.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/filterlistproperty.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
+#include <inviwo/dataframe/util/filters.h>
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-#include <cstdint>      // for uint32_t
-#include <memory>       // for make_shared, share...
-#include <type_traits>  // for enable_if<>::type
-#include <utility>      // for declval
+#include <cstdint>
+#include <memory>
+#include <type_traits>
+#include <utility>
 
-#include <flags/flags.h>  // for operator|, flags
-#include <glm/vec2.hpp>   // for vec, vec<>::(anony...
+#include <flags/flags.h>
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 

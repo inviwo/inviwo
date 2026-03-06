@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>                  // for ImageInport, ImageOutport
-#include <inviwo/core/processors/poolprocessor.h>         // for PoolProcessor
-#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
-#include <inviwo/core/properties/ordinalproperty.h>       // for DoubleProperty, IntProperty
-#include <modules/base/datastructures/imagereusecache.h>  // for ImageReuseCache
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/poolprocessor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/base/datastructures/imagereusecache.h>
 
 namespace inviwo {
 

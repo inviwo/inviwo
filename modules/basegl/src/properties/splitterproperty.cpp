@@ -29,14 +29,14 @@
 
 #include <modules/basegl/properties/splitterproperty.h>
 
-#include <inviwo/core/properties/boolcompositeproperty.h>    // for BoolCompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>        // for InvalidationLevel, Invalidat...
-#include <inviwo/core/properties/optionproperty.h>           // for OptionPropertyOption, Option...
-#include <inviwo/core/properties/ordinalproperty.h>          // for ordinalColor, FloatProperty
-#include <inviwo/core/properties/propertysemantics.h>        // for PropertySemantics
-#include <inviwo/core/util/glmvec.h>                         // for vec4
-#include <inviwo/core/util/staticstring.h>                   // for operator+
-#include <modules/basegl/datastructures/splittersettings.h>  // for Style, Style::Divider, Style...
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/basegl/datastructures/splittersettings.h>
 
 namespace inviwo {
 

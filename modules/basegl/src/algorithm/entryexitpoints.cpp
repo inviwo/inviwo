@@ -29,43 +29,43 @@
 
 #include <modules/basegl/algorithm/entryexitpoints.h>
 
-#include <inviwo/core/datastructures/camera/camera.h>          // for mat4, Camera
-#include <inviwo/core/datastructures/coordinatetransformer.h>  // for SpatialCameraCoordinateTra...
-#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh
-#include <inviwo/core/datastructures/image/image.h>            // for Image
-#include <inviwo/core/datastructures/image/imagetypes.h>       // for ImageType, ImageType::AllL...
-#include <inviwo/core/datastructures/image/layer.h>            // for Layer
-#include <inviwo/core/datastructures/volume/volume.h>          // for Volume
-#include <inviwo/core/util/dispatcher.h>                       // for Dispatcher
-#include <inviwo/core/util/formats.h>                          // for DataVec3Float32
-#include <inviwo/core/util/glmvec.h>                           // for vec3, size2_t
-#include <modules/opengl/image/imagegl.h>                      // for ImageGL
-#include <modules/opengl/image/layergl.h>                      // for LayerGL
-#include <modules/opengl/inviwoopengl.h>                       // for GL_BACK, GL_FRONT, GL_GREATER
-#include <modules/opengl/openglutils.h>                        // for CullFaceState, DepthFuncState
-#include <modules/opengl/rendering/meshdrawergl.h>             // for MeshDrawerGL::DrawObject
-#include <modules/opengl/shader/shader.h>                      // for Shader, Shader::Build
-#include <modules/opengl/shader/shadermanager.h>               // for ShaderManager
-#include <modules/opengl/shader/shaderobject.h>                // for ShaderObject
-#include <modules/opengl/shader/stringshaderresource.h>        // for StringShaderResource, Shad...
-#include <modules/opengl/shader/shadertype.h>                  // for ShaderType, ShaderType::Fr...
-#include <modules/opengl/texture/textureunit.h>                // for TextureUnit
-#include <modules/opengl/texture/textureutils.h>               // for clearCurrentTarget, deacti...
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/image/layergl.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/stringshaderresource.h>
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 
-#include <array>        // for array, array<>::value_type
-#include <chrono>       // for literals
-#include <cstddef>      // for size_t
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_extent_t
-#include <utility>      // for pair
-#include <vector>       // for vector
+#include <array>
+#include <chrono>
+#include <cstddef>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
-#include <glm/geometric.hpp>                    // for cross, dot, normalize
-#include <glm/gtx/handed_coordinate_space.hpp>  // for rightHanded
-#include <glm/mat4x4.hpp>                       // for operator*, mat
-#include <glm/vec2.hpp>                         // for operator!=
-#include <glm/vec3.hpp>                         // for operator*, operator-, vec
-#include <glm/vec4.hpp>                         // for operator*, operator+
+#include <glm/geometric.hpp>
+#include <glm/gtx/handed_coordinate_space.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

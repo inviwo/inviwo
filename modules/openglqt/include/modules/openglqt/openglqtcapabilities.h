@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <inviwo/core/util/capabilities.h>  // for Capabilities
+#include <inviwo/core/util/capabilities.h>
 
-#include <vector>  // for vector
+#include <vector>
 
 namespace inviwo {
 

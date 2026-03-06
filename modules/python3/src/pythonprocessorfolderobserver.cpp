@@ -29,19 +29,19 @@
 
 #include <modules/python3/pythonprocessorfolderobserver.h>
 
-#include <inviwo/core/common/inviwomodule.h>                // for InviwoModule
-#include <inviwo/core/processors/processorfactoryobject.h>  // for ProcessorFactoryObject
-#include <inviwo/core/util/exception.h>                     // for Exception
-#include <inviwo/core/util/fileobserver.h>                  // for FileObserver
-#include <inviwo/core/util/filesystem.h>                    // for getFileExtension, directoryEx...
-#include <inviwo/core/util/logcentral.h>                    // for LogCentral
-#include <modules/python3/pythonprocessorfactoryobject.h>   // for PythonProcessorFactoryObject
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/logcentral.h>
+#include <modules/python3/pythonprocessorfactoryobject.h>
 
-#include <algorithm>  // for count
-#include <exception>  // for exception
-#include <fstream>    // for operator<<, basic_ifstream
-#include <memory>     // for allocator, make_unique
-#include <utility>    // for move
+#include <algorithm>
+#include <exception>
+#include <fstream>
+#include <memory>
+#include <utility>
 
 namespace inviwo {
 class InviwoApplication;

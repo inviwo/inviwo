@@ -30,18 +30,18 @@
 #include <modules/base/processors/meshsource.h>
 
 #include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/io/datareader.h>              // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>     // for DataReaderException
-#include <inviwo/core/ports/meshport.h>             // for MeshOutport
-#include <inviwo/core/ports/outportiterable.h>      // for OutportIterableImpl<>::const_iterator
-#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>  // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>   // for Tags, Tags::CPU
-#include <inviwo/core/properties/fileproperty.h>    // for FileProperty
-#include <modules/base/processors/datasource.h>     // for DataSource
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <modules/base/processors/datasource.h>
 
-#include <functional>  // for __base
-#include <memory>      // for shared_ptr
+#include <functional>
+#include <memory>
 
 namespace inviwo {
 class InviwoApplication;

@@ -29,12 +29,12 @@
 
 #include <modules/python3qt/properties/pythonfilepropertywidgetqt.h>
 
-#include <inviwo/core/properties/fileproperty.h>                  // for FileProperty
-#include <inviwo/core/properties/propertysemantics.h>             // for operator==, PropertySem...
-#include <modules/python3qt/properties/pythoneditordockwidget.h>  // for PythonEditorDockWidget
-#include <modules/qtwidgets/properties/filepropertywidgetqt.h>    // for FilePropertyWidgetQt
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <modules/python3qt/properties/pythoneditordockwidget.h>
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
 
-#include <memory>  // for make_unique, unique_ptr
+#include <memory>
 
 namespace inviwo {
 

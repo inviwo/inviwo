@@ -29,13 +29,13 @@
 
 #include <modules/plotting/properties/plottextproperty.h>
 
-#include <inviwo/core/properties/boolcompositeproperty.h>   // for BoolCompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>       // for InvalidationLevel, Invalidati...
-#include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty, FloatVec4Property
-#include <inviwo/core/properties/propertysemantics.h>       // for PropertySemantics, PropertySe...
-#include <inviwo/core/properties/stringproperty.h>          // for StringProperty
-#include <inviwo/core/util/glmvec.h>                        // for vec4, vec2, vec3
-#include <modules/fontrendering/properties/fontproperty.h>  // for FontProperty
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/fontrendering/properties/fontproperty.h>
 
 namespace inviwo {
 class FontSettings;

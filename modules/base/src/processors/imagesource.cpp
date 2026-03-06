@@ -29,33 +29,33 @@
 
 #include <modules/base/processors/imagesource.h>
 
-#include <inviwo/core/common/factoryutil.h>            // for getDataReaderFactory
-#include <inviwo/core/datastructures/image/image.h>    // for Image
-#include <inviwo/core/io/datareader.h>                 // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>        // for DataReaderException
-#include <inviwo/core/io/datareaderfactory.h>          // for DataReaderFactory
-#include <inviwo/core/ports/imageport.h>               // for ImageOutport
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::CPU
-#include <inviwo/core/properties/fileproperty.h>       // for FileProperty
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
-#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>    // for IntSize2Property
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics
-#include <inviwo/core/util/fileextension.h>            // for FileExtension, operator==, operator<<
-#include <inviwo/core/util/filesystem.h>               // for fileExists
-#include <inviwo/core/util/formats.h>                  // for DataFormat, DataVec4UInt8
-#include <inviwo/core/util/glmvec.h>                   // for size2_t
-#include <inviwo/core/util/logcentral.h>               // for log, LogCentral
-#include <inviwo/core/util/statecoordinator.h>         // for StateCoordinator
-#include <modules/base/processors/datasource.h>        // for updateFilenameFilters, updateReade...
+#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/statecoordinator.h>
+#include <modules/base/processors/datasource.h>
 
-#include <map>          // for map, operator!=
-#include <memory>       // for make_shared, unique_ptr, shared_ptr
-#include <ostream>      // for operator<<
-#include <type_traits>  // for remove_extent_t
+#include <map>
+#include <memory>
+#include <ostream>
+#include <type_traits>
 
 #include <fmt/std.h>
 

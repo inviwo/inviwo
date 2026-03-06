@@ -30,17 +30,17 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
-#include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
-#include <inviwo/core/util/stdextensions.h>                   // for make_array
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
-#include <modules/opengl/shader/shader.h>                     // for Shader
-#include <modules/opengl/shader/shaderobject.h>               // for ShaderObject
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
 
-#include <cstddef>      // for size_t
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <cstddef>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

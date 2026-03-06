@@ -30,45 +30,45 @@
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
 
 #include <inviwo/core/algorithm/easing.h>
-#include <inviwo/core/common/factoryutil.h>                            // for getPropertyWidgetF...
-#include <inviwo/core/properties/cameraproperty.h>                     // for CameraProperty
-#include <inviwo/core/properties/property.h>                           // for Property
-#include <inviwo/core/properties/propertywidgetfactory.h>              // for PropertyWidgetFactory
-#include <inviwo/core/util/stringconversion.h>                         // for toString
-#include <modules/animation/animationmanager.h>                        // for AnimationManager
-#include <modules/animation/datastructures/animationtime.h>            // for Seconds
-#include <modules/animation/datastructures/keyframe.h>                 // for Keyframe
-#include <modules/animation/datastructures/keyframeobserver.h>         // for KeyframeObserver
-#include <modules/animation/datastructures/keyframesequence.h>         // for KeyframeSequence
-#include <modules/animation/datastructures/propertytrack.h>            // for BasePropertyTrack
-#include <modules/animation/datastructures/track.h>                    // for Track
-#include <modules/animation/datastructures/valuekeyframesequence.h>    // for ValueKeyframeSequence
-#include <modules/animation/factories/interpolationfactory.h>          // for InterpolationFactory
-#include <modules/animation/factories/interpolationfactoryobject.h>    // for InterpolationFacto...
-#include <modules/animation/interpolation/interpolation.h>             // for Interpolation
-#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>   // for SequenceEditorWidget
-#include <modules/qtwidgets/editablelabelqt.h>                         // for EditableLabelQt
-#include <modules/qtwidgets/inviwoqtutils.h>                           // for toQString, refSpacePx
-#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>  // for CollapsibleGroupBo...
-#include <modules/qtwidgets/properties/propertywidgetqt.h>             // for PropertyWidgetQt
+#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/animation/animationmanager.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
+#include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/valuekeyframesequence.h>
+#include <modules/animation/factories/interpolationfactory.h>
+#include <modules/animation/factories/interpolationfactoryobject.h>
+#include <modules/animation/interpolation/interpolation.h>
+#include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
 
-#include <algorithm>         // for none_of
-#include <cstddef>           // for size_t
-#include <functional>        // for __base
-#include <initializer_list>  // for begin, end
-#include <memory>            // for unique_ptr, unique...
-#include <vector>            // for vector
+#include <algorithm>
+#include <cstddef>
+#include <functional>
+#include <initializer_list>
+#include <memory>
+#include <vector>
 
-#include <QComboBox>       // for QComboBox
-#include <QFont>           // for QFont
-#include <QGridLayout>     // for QGridLayout
-#include <QHBoxLayout>     // for QHBoxLayout
-#include <QLabel>          // for QLabel
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <QVBoxLayout>     // for QVBoxLayout
-#include <QVariant>        // for QVariant
-#include <QWidget>         // for QWidget
+#include <QComboBox>
+#include <QFont>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QSignalBlocker>
+#include <QVBoxLayout>
+#include <QVariant>
+#include <QWidget>
 
 namespace inviwo {
 

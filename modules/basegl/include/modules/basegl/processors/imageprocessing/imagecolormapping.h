@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEG...
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/properties/transferfunctionproperty.h>             // for TransferFunction...
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {

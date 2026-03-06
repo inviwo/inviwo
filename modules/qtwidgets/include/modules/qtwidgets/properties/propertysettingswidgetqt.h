@@ -29,41 +29,41 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/network/networklock.h>            // for NetworkLock
-#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, ConstraintBeh...
-#include <inviwo/core/properties/minmaxproperty.h>      // for MinMaxProperty
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 // Core
-#include <inviwo/core/properties/propertywidget.h>  // for PropertyWidget
-#include <inviwo/core/util/glmcomp.h>               // for glmcomp
-#include <inviwo/core/util/glmutils.h>              // for value_type
-#include <inviwo/core/util/glmvec.h>                // for uvec2
-#include <inviwo/core/util/logcentral.h>            // for LogCentral
-#include <modules/qtwidgets/inviwoqtutils.h>        // for refSpacePx, toQString
-#include <modules/qtwidgets/qstringhelper.h>        // for QStringHelper
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/util/glmcomp.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/qstringhelper.h>
 
-#include <array>    // for array
-#include <cstddef>  // for size_t
-#include <ostream>  // for operator<<, stringstream, basic_o...
-#include <string>   // for allocator, operator+, char_traits
-#include <vector>   // for vector
+#include <array>
+#include <cstddef>
+#include <ostream>
+#include <string>
+#include <vector>
 
-#include <QCheckBox>                 // for QCheckBox
-#include <QCloseEvent>               // for QCloseEvent
-#include <QDialog>                   // for QDialog
-#include <QGridLayout>               // for QGridLayout
-#include <QKeyEvent>                 // for QKeyEvent
-#include <QLabel>                    // for QLabel
-#include <QLineEdit>                 // for QLineEdit
-#include <QLocale>                   // for QLocale
-#include <QPushButton>               // for QPushButton
-#include <QSignalBlocker>            // for QSignalBlocker
-#include <QString>                   // for QString
-#include <Qt>                        // for Key_Enter, Key_Escape, Key_Return
-#include <glm/common.hpp>            // for max, min
-#include <glm/detail/qualifier.hpp>  // for defaultp, tvec2
-#include <glm/vec2.hpp>              // for vec<>::(anonymous)
+#include <QCheckBox>
+#include <QCloseEvent>
+#include <QDialog>
+#include <QGridLayout>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QLineEdit>
+#include <QLocale>
+#include <QPushButton>
+#include <QSignalBlocker>
+#include <QString>
+#include <Qt>
+#include <glm/common.hpp>
+#include <glm/detail/qualifier.hpp>
+#include <glm/vec2.hpp>
 
 class QCloseEvent;
 class QKeyEvent;

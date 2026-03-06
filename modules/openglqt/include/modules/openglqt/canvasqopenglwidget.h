@@ -29,25 +29,25 @@
 
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>     // for LayerType, LayerType::Color
-#include <inviwo/core/interaction/events/eventpropagator.h>  // for EventPropagator
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/interaction/contextmenuaction.h>
-#include <inviwo/core/util/canvas.h>  // for Canvas::ContextID, Canvas (p...
-#include <inviwo/core/util/glmvec.h>  // for size2_t
-#include <modules/opengl/canvasgl.h>  // for CanvasGL
+#include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/canvasgl.h>
 
-#include <cstddef>      // for size_t
-#include <functional>   // for function
-#include <memory>       // for unique_ptr, shared_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <cstddef>
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
 
 #define QT_NO_OPENGL_ES_2
 #define GLEXT_64_TYPES_DEFINED
 
-#include <QOpenGLWidget>  // for QOpenGLWidget
+#include <QOpenGLWidget>
 #include <QSize>
 
 class QWidget;

@@ -29,16 +29,16 @@
 
 #include <modules/base/processors/volumedivergencecpuprocessor.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>        // for Volume
-#include <inviwo/core/ports/volumeport.h>                    // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/processor.h>                // for Processor
-#include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>           // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>            // for Tags, Tags::CPU
-#include <modules/base/algorithm/volume/volumedivergence.h>  // for divergenceVolume
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <modules/base/algorithm/volume/volumedivergence.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 

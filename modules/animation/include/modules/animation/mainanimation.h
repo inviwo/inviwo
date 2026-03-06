@@ -28,10 +28,10 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
+#include <modules/animation/animationmoduledefine.h>
 
-#include <inviwo/core/network/workspacemanager.h>   // for WorkspaceManager, WorkspaceManager:...
-#include <modules/animation/animationcontroller.h>  // for AnimationController
+#include <inviwo/core/network/workspacemanager.h>
+#include <modules/animation/animationcontroller.h>
 #include <modules/animation/animationmanager.h>
 
 #include <optional>

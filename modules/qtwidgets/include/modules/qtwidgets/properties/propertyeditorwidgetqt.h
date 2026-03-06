@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/properties/propertyeditorwidget.h>  // for PropertyEditorWidget
-#include <inviwo/core/properties/propertyobserver.h>      // for PropertyObserver
-#include <inviwo/core/util/glmvec.h>                      // for ivec2
-#include <modules/qtwidgets/inviwodockwidget.h>           // for InviwoDockWidget
+#include <inviwo/core/properties/propertyeditorwidget.h>
+#include <inviwo/core/properties/propertyobserver.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <string>  // for string
+#include <string>
 
 class QCloseEvent;
 class QMoveEvent;

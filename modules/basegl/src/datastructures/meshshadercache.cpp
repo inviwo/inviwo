@@ -29,17 +29,17 @@
 
 #include <modules/basegl/datastructures/meshshadercache.h>
 
-#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for BufferType, operator<<
-#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh, Mesh::MeshInfo
-#include <inviwo/core/util/exception.h>                        // for Exception
-#include <inviwo/core/util/iterrange.h>                        // for iter_range
-#include <inviwo/core/util/sourcecontext.h>                    // for SourceContext
-#include <inviwo/core/util/stringconversion.h>                 // for toString, toUpper
-#include <inviwo/core/util/zip.h>                              // for zip, zipIterator, zipper
-#include <modules/opengl/shader/shader.h>                      // for Shader, Shader::Build
-#include <modules/opengl/shader/shaderobject.h>                // for ShaderObject
-#include <modules/opengl/shader/shadertype.h>                  // for ShaderType, ShaderType::Ve...
-#include <modules/opengl/shader/shaderutils.h>                 // for toShaderResources
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/iterrange.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 class ShaderResource;

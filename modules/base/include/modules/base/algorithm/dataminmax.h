@@ -29,23 +29,23 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/util/formats.h>                 // for DataFormat
-#include <inviwo/core/util/glm.h>                     // for isfinite
-#include <inviwo/core/util/glmcomp.h>                 // for glmcomp
-#include <inviwo/core/util/glmconvert.h>              // for glm_convert
-#include <inviwo/core/util/glmutils.h>                // for is_floating_point, flat_extent
-#include <inviwo/core/util/glmvec.h>                  // for dvec4
-#include <modules/base/algorithm/algorithmoptions.h>  // for IgnoreSpecialValues, IgnoreSpecialV...
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmcomp.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/algorithm/algorithmoptions.h>
 
-#include <algorithm>    // for max, min
-#include <cstddef>      // for size_t
-#include <numeric>      // for accumulate
-#include <type_traits>  // for enable_if
-#include <utility>      // for pair
+#include <algorithm>
+#include <cstddef>
+#include <numeric>
+#include <type_traits>
+#include <utility>
 
-#include <glm/common.hpp>  // for max, min
+#include <glm/common.hpp>
 
 namespace inviwo {
 

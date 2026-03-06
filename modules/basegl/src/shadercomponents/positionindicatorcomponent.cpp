@@ -29,16 +29,16 @@
 
 #include <modules/basegl/shadercomponents/positionindicatorcomponent.h>
 
-#include <inviwo/core/properties/planeproperty.h>             // for PlaneProperty
-#include <inviwo/core/properties/volumeindicatorproperty.h>   // for VolumeIndicatorProperty
-#include <inviwo/core/util/stringconversion.h>                // for StrBuffer, trim
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
-#include <modules/opengl/shader/shaderutils.h>                // for setUniforms
+#include <inviwo/core/properties/planeproperty.h>
+#include <inviwo/core/properties/volumeindicatorproperty.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 
-#include <fmt/core.h>  // for format, basic_string_view
+#include <fmt/core.h>
 
 namespace inviwo {
 class Property;

@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/properties/propertyobserver.h>  // for PropertyObserver
+#include <inviwo/core/properties/propertyobserver.h>
 
-#include <string>  // for string
+#include <string>
 
-#include <QObject>  // for Q_OBJECT, signals
-#include <QSize>    // for QSize
-#include <QString>  // for QString
-#include <QWidget>  // for QWidget
+#include <QObject>
+#include <QSize>
+#include <QString>
+#include <QWidget>
 
 class QEvent;
 class QLabel;

@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>                           // for Volum...
-#include <inviwo/core/processors/processor.h>                       // for Proce...
-#include <inviwo/core/processors/processorinfo.h>                   // for Proce...
-#include <inviwo/core/properties/ordinalproperty.h>                 // for Float...
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>  // for SeedP...
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
 namespace inviwo {
 

@@ -29,45 +29,45 @@
 
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h>
 
-#include <inviwo/core/datastructures/image/image.h>                     // for Image
-#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageChannel, Ima...
-#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
-#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/io/serialization/deserializer.h>                  // for Deserializer
-#include <inviwo/core/io/serialization/serializationexception.h>        // for SerializationExce...
-#include <inviwo/core/io/serialization/serializer.h>                    // for Serializer
-#include <inviwo/core/ports/imageport.h>                                // for ImageOutport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
-#include <inviwo/core/properties/ordinalproperty.h>                     // for IntProperty, IntV...
-#include <inviwo/core/util/formats.h>                                   // for DataVec2Float32
-#include <inviwo/core/util/glmmat.h>                                    // for mat2
-#include <inviwo/core/util/glmvec.h>                                    // for dvec2, vec2, ivec2
-#include <inviwo/core/util/typetraits.h>                                // for alwaysTrue, identity
-#include <modules/base/properties/gaussianproperty.h>                   // for Gaussian1DProperty
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/io/serialization/serializationexception.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/typetraits.h>
+#include <modules/base/properties/gaussianproperty.h>
 
-#include <algorithm>      // for generate
-#include <cmath>          // for cos, sin, M_PI
-#include <cstddef>        // for size_t
-#include <functional>     // for __base
-#include <limits>         // for numeric_limits
-#include <memory>         // for make_shared, shar...
-#include <string>         // for string
-#include <string_view>    // for string_view
-#include <type_traits>    // for remove_extent_t
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <functional>
+#include <limits>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
 #include <numbers>
 
-#include <glm/geometric.hpp>  // for distance
-#include <glm/mat2x2.hpp>     // for operator*, mat<>:...
-#include <glm/vec2.hpp>       // for operator*, vec<>:...
+#include <glm/geometric.hpp>
+#include <glm/mat2x2.hpp>
+#include <glm/vec2.hpp>
 
 #include <warn/push>
 #include <warn/ignore/all>

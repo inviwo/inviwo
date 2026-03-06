@@ -29,14 +29,14 @@
 
 #include <modules/fontrendering/properties/fontfaceoptionproperty.h>
 
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
-#include <inviwo/core/properties/optionproperty.h>     // for OptionPropertyString
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics
-#include <inviwo/core/util/filesystem.h>               // for getFileNameWithoutExtension
-#include <modules/fontrendering/util/fontutils.h>      // for getAvailableFonts, getFont, FontType
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/filesystem.h>
+#include <modules/fontrendering/util/fontutils.h>
 
-#include <utility>  // for pair
-#include <vector>   // for vector
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 

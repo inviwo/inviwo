@@ -29,30 +29,30 @@
 
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
-#include <inviwo/core/datastructures/bitset.h>                         // for BitSet::BitSetIter...
-#include <inviwo/core/processors/processor.h>                          // for Processor
-#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
-#include <inviwo/core/processors/processortags.h>                      // for Tags
-#include <inviwo/core/properties/boolcompositeproperty.h>              // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
-#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
-#include <inviwo/core/properties/ordinalproperty.h>                    // for IntProperty
-#include <inviwo/core/properties/propertysemantics.h>                  // for PropertySemantics
-#include <inviwo/core/util/logcentral.h>                               // for LogCentral, LogPro...
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>      // for BrushingAndLinking...
-#include <modules/brushingandlinking/datastructures/brushingaction.h>  // for BrushingAction
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/logcentral.h>
+#include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-#include <algorithm>    // for min
-#include <cstddef>      // for size_t
-#include <functional>   // for __base, function
-#include <iterator>     // for next
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <algorithm>
+#include <cstddef>
+#include <functional>
+#include <iterator>
+#include <string>
+#include <string_view>
 
-#include <fmt/core.h>    // for basic_string_view
-#include <fmt/format.h>  // for join
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 

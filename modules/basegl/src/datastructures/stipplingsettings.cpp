@@ -29,7 +29,7 @@
 
 #include <modules/basegl/datastructures/stipplingsettings.h>
 
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>  // for StipplingSettingsI...
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
 
 namespace inviwo {
 

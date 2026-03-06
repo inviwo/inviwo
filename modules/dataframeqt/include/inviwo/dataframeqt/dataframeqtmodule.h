@@ -28,9 +28,9 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>  // for IVW_MODULE_DATAFRAMEQT_API
+#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 class InviwoApplication;

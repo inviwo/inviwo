@@ -29,25 +29,25 @@
 
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
+#include <modules/plotting/plottingmoduledefine.h>
 
-#include <inviwo/core/ports/datainport.h>                      // for DataInport
-#include <inviwo/core/ports/dataoutport.h>                     // for DataOutport
-#include <inviwo/core/ports/outportiterable.h>                 // for OutportIterable
-#include <inviwo/core/processors/processor.h>                  // for Processor
-#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
-#include <inviwo/core/properties/transferfunctionproperty.h>   // for TransferFunctionProperty
-#include <inviwo/core/util/glmvec.h>                           // for vec4, uvec3
-#include <inviwo/core/util/staticstring.h>                     // for operator+
-#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 
-#include <string>         // for operator+, string
-#include <unordered_map>  // for operator!=
-#include <vector>         // for vector
+#include <string>
+#include <unordered_map>
+#include <vector>
 
-#include "glm/ext/vector_uint3.hpp"  // for uvec3
-#include <fmt/core.h>                // for format, format_to, basic_s...
-#include <glm/gtx/io.hpp>            // for operator<<
+#include "glm/ext/vector_uint3.hpp"
+#include <fmt/core.h>
+#include <glm/gtx/io.hpp>
 
 namespace inviwo {
 class DataFrame;

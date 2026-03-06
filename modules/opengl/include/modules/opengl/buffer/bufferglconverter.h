@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/datastructures/buffer/bufferram.h>         // for BufferRAM
-#include <inviwo/core/datastructures/representationconverter.h>  // for RepresentationConverterT...
-#include <modules/opengl/buffer/buffergl.h>                      // for BufferGL
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <modules/opengl/buffer/buffergl.h>
 
-#include <memory>  // for shared_ptr
+#include <memory>
 
 namespace inviwo {
 class BufferRepresentation;

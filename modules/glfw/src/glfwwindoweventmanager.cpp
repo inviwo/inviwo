@@ -29,22 +29,22 @@
 
 #include <modules/glfw/glfwwindoweventmanager.h>
 
-#include <inviwo/core/interaction/events/keyboardevent.h>  // for KeyboardEvent
-#include <inviwo/core/interaction/events/keyboardkeys.h>   // for KeyModifiers, KeyModifier, Key...
-#include <inviwo/core/interaction/events/mousebuttons.h>   // for MouseState, MouseButton, Mouse...
-#include <inviwo/core/interaction/events/mouseevent.h>     // for MouseEvent
-#include <inviwo/core/interaction/events/wheelevent.h>     // for WheelEvent
-#include <inviwo/core/util/glm.h>                          // for invertY
-#include <inviwo/core/util/glmvec.h>                       // for dvec2, ivec2, uvec2
-#include <modules/glfw/glfwuserdata.h>                     // for GLFWUserData, GLFWUserDataId
+#include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/glfw/glfwuserdata.h>
 
-#include <cctype>   // for toupper
-#include <utility>  // for move
+#include <cctype>
+#include <utility>
 
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>   // for glfwGetWindowSize, GLFWwindow
-#include <flags/flags.h>  // for none
-#include <glm/vec2.hpp>   // for vec<>::(anonymous), operator/
+#include <GLFW/glfw3.h>
+#include <flags/flags.h>
+#include <glm/vec2.hpp>
 #include <utf8cpp/utf8/core.h>
 #include <utf8cpp/utf8/checked.h>
 

@@ -28,12 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
+#include <modules/plotting/plottingmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>  // for dvec2, vec4
+#include <inviwo/core/util/glmvec.h>
 
-#include <string>  // for string
-#include <vector>  // for vector
+#include <string>
+#include <vector>
 
 namespace inviwo {
 

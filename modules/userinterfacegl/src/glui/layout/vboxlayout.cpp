@@ -29,7 +29,7 @@
 
 #include <modules/userinterfacegl/glui/layout/vboxlayout.h>
 
-#include <modules/userinterfacegl/glui/layout/boxlayout.h>  // for BoxLayout, BoxLayout::LayoutD...
+#include <modules/userinterfacegl/glui/layout/boxlayout.h>
 
 namespace inviwo {
 

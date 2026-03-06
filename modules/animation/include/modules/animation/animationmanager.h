@@ -28,14 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
+#include <modules/animation/animationmoduledefine.h>
 
-#include <modules/animation/factories/interpolationfactory.h>  // for InterpolationFactory
-#include <modules/animation/factories/trackfactory.h>          // for TrackFactory
+#include <modules/animation/factories/interpolationfactory.h>
+#include <modules/animation/factories/trackfactory.h>
 #include <modules/animation/factories/recorderfactories.h>
 
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

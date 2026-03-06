@@ -29,23 +29,23 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
+#include <inviwo/dataframe/dataframemoduledefine.h>
 
-#include <inviwo/core/ports/datainport.h>           // for DataInport
-#include <inviwo/core/ports/outportiterable.h>      // for OutportIterable
-#include <inviwo/core/processors/processor.h>       // for Processor
-#include <inviwo/core/processors/processorinfo.h>   // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>    // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>  // for ButtonProperty
-#include <inviwo/core/properties/fileproperty.h>    // for FileProperty
-#include <inviwo/core/properties/stringproperty.h>  // for StringProperty
-#include <inviwo/core/util/glmvec.h>                // for uvec3
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <string>         // for string
-#include <unordered_map>  // for operator!=
-#include <vector>         // for vector
+#include <string>
+#include <unordered_map>
+#include <vector>
 
-#include <fmt/core.h>  // for format_to, basic_string_view, format
+#include <fmt/core.h>
 
 namespace inviwo {
 class DataFrame;

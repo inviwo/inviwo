@@ -29,42 +29,42 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, LayerType::Color
-#include <inviwo/core/util/glmvec.h>                      // for dvec2, ivec2, ivec4, ivec3, uvec4
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/qt/applicationbase/qtlocale.h>
 
-#include <cstddef>      // for size_t
-#include <ios>          // for ostringstream, istringstream
-#include <locale>       // for locale
-#include <sstream>      // for basic_ostream
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <utility>      // for pair
-#include <vector>       // for vector
+#include <cstddef>
+#include <ios>
+#include <locale>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
 #include <filesystem>
 #include <charconv>
 #include <optional>
 
-#include <QByteArray>  // for QByteArray
-#include <QColor>      // for QColor
-#include <QIcon>       // for QIcon
-#include <QImage>      // for QImage
-#include <QLocale>     // for QLocale
-#include <QObject>     // for QObject
-#include <QPixmap>     // for QPixmap
-#include <QPoint>      // for QPoint
-#include <QPointF>     // for QPointF
-#include <QRectF>      // for QRectF
-#include <QSize>       // for QSize
-#include <QSizeF>      // for QSizeF
-#include <QString>     // for QString
+#include <QByteArray>
+#include <QColor>
+#include <QIcon>
+#include <QImage>
+#include <QLocale>
+#include <QObject>
+#include <QPixmap>
+#include <QPoint>
+#include <QPointF>
+#include <QRectF>
+#include <QSize>
+#include <QSizeF>
+#include <QString>
 #include <QModelIndex>
 #include <QPen>
-#include <glm/vec2.hpp>  // for vec<>::(anonymous)
-#include <glm/vec3.hpp>  // for vec<>::(anonymous), operator*
-#include <glm/vec4.hpp>  // for vec<>::(anonymous), operator*
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 #if !(defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L)
 #include <fast_float/fast_float.h>

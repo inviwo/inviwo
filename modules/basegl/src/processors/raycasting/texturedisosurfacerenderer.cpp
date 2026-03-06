@@ -29,22 +29,22 @@
 
 #include <modules/basegl/processors/raycasting/texturedisosurfacerenderer.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>  // for boundingBox
+#include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/ports/volumeport.h>                              // for VolumeInport
-#include <inviwo/core/properties/isotfproperty.h>                      // for IsoTFProperty
-#include <inviwo/core/util/stringconversion.h>                         // for trim
-#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>  // for VolumeRaycasterBase
-#include <modules/basegl/shadercomponents/cameracomponent.h>           // for CameraComponent
-#include <modules/basegl/shadercomponents/isotfcomponent.h>            // for IsoTFComponent
-#include <modules/basegl/shadercomponents/raycastingcomponent.h>       // for RaycastingComponent
-#include <modules/basegl/shadercomponents/volumecomponent.h>           // for VolumeComponent
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
-#include <modules/opengl/volume/volumeutils.h>                // for bindAndSetUniforms
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>
+#include <modules/basegl/shadercomponents/cameracomponent.h>
+#include <modules/basegl/shadercomponents/isotfcomponent.h>
+#include <modules/basegl/shadercomponents/raycastingcomponent.h>
+#include <modules/basegl/shadercomponents/volumecomponent.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/basegl/shadercomponents/shadercomponentutil.h>
 
-#include <fmt/format.h>  // for compile_string_to_view, FMT...
+#include <fmt/format.h>
 
 namespace inviwo {
 

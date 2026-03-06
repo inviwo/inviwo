@@ -29,13 +29,13 @@
 
 #include <modules/animation/datastructures/buttonkeyframesequence.h>
 
-#include <modules/animation/datastructures/animationtime.h>         // for Seconds
-#include <modules/animation/datastructures/basekeyframesequence.h>  // for BaseKeyframeSequence
-#include <modules/animation/datastructures/buttonkeyframe.h>        // for ButtonKeyframe
-#include <modules/animation/datastructures/keyframe.h>              // for operator<
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/basekeyframesequence.h>
+#include <modules/animation/datastructures/buttonkeyframe.h>
+#include <modules/animation/datastructures/keyframe.h>
 
-#include <algorithm>  // for upper_bound
-#include <chrono>     // for operator<, duration
+#include <algorithm>
+#include <chrono>
 
 namespace inviwo {
 

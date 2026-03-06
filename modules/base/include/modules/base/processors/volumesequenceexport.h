@@ -31,8 +31,8 @@
 
 #include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>        // for VolumeInport
-#include <modules/base/processors/dataexport.h>  // for DataExport
+#include <inviwo/core/ports/volumeport.h>
+#include <modules/base/processors/dataexport.h>
 
 namespace inviwo {
 

@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>  // for vec4
+#include <inviwo/core/util/glmvec.h>
 
-#include <functional>  // for function
-#include <string>      // for string
+#include <functional>
+#include <string>
 
-#include <QPlainTextEdit>  // for QPlainTextEdit
-#include <QSize>           // for QSize
-#include <QWidget>         // for QWidget
+#include <QPlainTextEdit>
+#include <QSize>
+#include <QWidget>
 
 class QKeyEvent;
 class QPaintEvent;

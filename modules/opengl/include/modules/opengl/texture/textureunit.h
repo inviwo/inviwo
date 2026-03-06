@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <modules/opengl/inviwoopengl.h>  // for GLint, glActiveTexture, GL_TEXTURE0
+#include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/util/detected.h>
 
-#include <cstddef>  // for size_t
-#include <vector>   // for vector
+#include <cstddef>
+#include <vector>
 
 namespace inviwo {
 

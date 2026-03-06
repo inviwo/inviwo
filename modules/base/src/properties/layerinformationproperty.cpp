@@ -29,28 +29,28 @@
 
 #include <modules/base/properties/layerinformationproperty.h>
 
-#include <inviwo/core/algorithm/markdown.h>               // for operator""_help
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for operator<<
-#include <inviwo/core/datastructures/image/layer.h>       // for Layer
-#include <inviwo/core/properties/compositeproperty.h>     // for CompositeProperty
-#include <inviwo/core/properties/constraintbehavior.h>    // for ConstraintBehavior, ConstraintB...
-#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
-#include <inviwo/core/properties/ordinalproperty.h>       // for OrdinalProperty, IntSizeTProperty
-#include <inviwo/core/properties/propertysemantics.h>     // for PropertySemantics
-#include <inviwo/core/properties/stringproperty.h>        // for StringProperty
-#include <inviwo/core/properties/templateproperty.h>      // for TemplateProperty
-#include <inviwo/core/properties/valuewrapper.h>          // for PropertySerializationMode, Prop...
-#include <inviwo/core/util/foreacharg.h>                  // for for_each_in_tuple
-#include <inviwo/core/util/formats.h>                     // for DataFormatBase
-#include <inviwo/core/util/stringconversion.h>            // for toString
-#include <inviwo/core/util/glm.h>                         // for filled
-#include <inviwo/core/util/glmmat.h>                      // for mat2
-#include <inviwo/core/util/glmvec.h>                      // for vec2
+#include <inviwo/core/algorithm/markdown.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/zip.h>
 
-#include <cstddef>  // for size_t
-#include <limits>   // for numeric_limits<>::type, numeric...
-#include <tuple>    // for tuple, tie
+#include <cstddef>
+#include <limits>
+#include <tuple>
 
 namespace inviwo {
 

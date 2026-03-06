@@ -29,20 +29,20 @@
 
 #include <modules/cimg/cimgmodule.h>
 
-#include <inviwo/core/common/inviwoapplication.h>       // for InviwoApplication
-#include <inviwo/core/common/inviwomodule.h>            // for InviwoModule
-#include <inviwo/core/datastructures/image/layerram.h>  // for LayerRamResizer
-#include <inviwo/core/io/datareader.h>                  // for DataReader
-#include <inviwo/core/io/datawriter.h>                  // for DataWriter
-#include <inviwo/core/util/logcentral.h>                // for LogCentral
-#include <modules/cimg/cimglayerreader.h>               // for CImgLayerReader
-#include <modules/cimg/cimglayerwriter.h>               // for CImgLayerWriter
-#include <modules/cimg/cimgutils.h>                     // for getLibJPGVersion, getOpenEXRVersion
-#include <modules/cimg/tifflayerreader.h>               // for TIFFLayerReader
-#include <modules/cimg/tiffstackvolumereader.h>         // for TIFFStackVolumeReader
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/util/logcentral.h>
+#include <modules/cimg/cimglayerreader.h>
+#include <modules/cimg/cimglayerwriter.h>
+#include <modules/cimg/cimgutils.h>
+#include <modules/cimg/tifflayerreader.h>
+#include <modules/cimg/tiffstackvolumereader.h>
 #include <modules/cimg/processors/layerresampling.h>
 
-#include <ostream>  // for operator<<, char_traits
+#include <ostream>
 
 namespace inviwo {
 

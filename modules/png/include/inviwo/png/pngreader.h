@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <inviwo/png/pngmoduledefine.h>  // for IVW_MODULE_PNG_API
+#include <inviwo/png/pngmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/layer.h>  // for DataReaderType
-#include <inviwo/core/io/datareader.h>               // for DataReaderType
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/io/datareader.h>
 
-#include <stdio.h>      // for FILE
-#include <memory>       // for shared_ptr
-#include <string_view>  // for string_view
+#include <stdio.h>
+#include <memory>
+#include <string_view>
 
 namespace inviwo {
 

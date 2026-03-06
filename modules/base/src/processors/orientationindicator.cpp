@@ -29,34 +29,34 @@
 
 #include <modules/base/processors/orientationindicator.h>
 
-#include <inviwo/core/algorithm/markdown.h>             // for operator""_help
-#include <inviwo/core/datastructures/camera/camera.h>   // for mat4, Camera
-#include <inviwo/core/ports/meshport.h>                 // for MeshOutport
-#include <inviwo/core/processors/processor.h>           // for Processor
-#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>      // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>       // for Tags, Tags::CPU
-#include <inviwo/core/properties/cameraproperty.h>      // for CameraProperty
-#include <inviwo/core/properties/compositeproperty.h>   // for CompositeProperty
-#include <inviwo/core/properties/constraintbehavior.h>  // for ConstraintBehavior, ConstraintBeh...
-#include <inviwo/core/properties/optionproperty.h>      // for OptionPropertyOption, OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>     // for ordinalColor, ordinalScale, Float...
-#include <inviwo/core/util/glmmat.h>                    // for mat3
-#include <inviwo/core/util/glmvec.h>                    // for vec3, vec2, vec4
-#include <inviwo/core/util/staticstring.h>              // for operator+
+#include <inviwo/core/algorithm/markdown.h>
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <modules/base/algorithm/meshutils.h>  // for arrow, sphere
+#include <modules/base/algorithm/meshutils.h>
 
-#include <type_traits>  // for remove_extent_t
+#include <type_traits>
 
-#include <glm/ext/matrix_transform.hpp>       // for scale
-#include <glm/geometric.hpp>                  // for distance
-#include <glm/gtx/scalar_multiplication.hpp>  // for operator*
-#include <glm/gtx/transform.hpp>              // for scale
-#include <glm/mat4x4.hpp>                     // for operator*, mat, mat<>::col_type
-#include <glm/vec2.hpp>                       // for vec, operator*, operator-, operator+
-#include <glm/vec3.hpp>                       // for vec, operator*, operator+, operator/
-#include <glm/vec4.hpp>                       // for operator*, operator+, vec, vec<>:...
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtx/scalar_multiplication.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

@@ -29,22 +29,22 @@
 
 #include <modules/animation/demo/democontroller.h>
 
-#include <inviwo/core/common/inviwoapplication.h>   // for InviwoApplication
-#include <inviwo/core/network/networklock.h>        // for NetworkLock
-#include <inviwo/core/network/workspacemanager.h>   // for WorkspaceManager
-#include <inviwo/core/properties/fileproperty.h>    // for FileProperty
-#include <inviwo/core/properties/optionproperty.h>  // for OptionPropertyInt
-#include <inviwo/core/util/exception.h>             // for IgnoreException, Exception, Exception...
-#include <inviwo/core/util/filedialogstate.h>       // for FileMode, FileMode::DirectoryOnly
-#include <inviwo/core/util/filesystem.h>            // for cleanupPath, getDirectoryContents
-#include <inviwo/core/util/logcentral.h>            // for log, LogLevel, LogLevel::Error
-#include <inviwo/core/util/stringconversion.h>      // for toLower
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/utilities.h>
 
-#include <cstddef>      // for size_t
-#include <functional>   // for __base
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <cstddef>
+#include <functional>
+#include <string_view>
+#include <vector>
 
 #include <fmt/std.h>
 

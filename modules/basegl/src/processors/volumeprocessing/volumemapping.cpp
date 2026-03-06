@@ -29,16 +29,16 @@
 
 #include <modules/basegl/processors/volumeprocessing/volumemapping.h>
 
-#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                         // for CodeState, Cod...
-#include <inviwo/core/processors/processortags.h>                          // for Tags, Tags::GL
-#include <inviwo/core/properties/transferfunctionproperty.h>               // for TransferFuncti...
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
-#include <modules/opengl/texture/textureutils.h>                           // for bindAndSetUnif...
-#include <modules/opengl/shader/shaderutils.h>                             // for setUniforms
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 class TextureUnitContainer;

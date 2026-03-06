@@ -29,17 +29,17 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTINGGL_API
+#include <modules/plottinggl/plottingglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>               // for Processor
-#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
-#include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty
-#include <inviwo/core/properties/marginproperty.h>          // for MarginProperty
-#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
-#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
-#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/marginproperty.h>
+#include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
+#include <modules/plottinggl/utils/axisrenderer.h>
 
 #include <array>
 

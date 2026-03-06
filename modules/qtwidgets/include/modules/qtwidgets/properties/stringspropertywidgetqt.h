@@ -28,27 +28,27 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/properties/propertywidget.h>  // for PropertyWidget
-#include <inviwo/core/util/stdextensions.h>         // for make_array
-#include <inviwo/core/util/zip.h>                   // for zip
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/exception.h>
-#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
-#include <modules/qtwidgets/inviwoqtutils.h>                // for fromQString, toQString
-#include <modules/qtwidgets/lineeditqt.h>                   // for LineEditQt
-#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/lineeditqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <array>       // for array
-#include <cstddef>     // for size_t
-#include <functional>  // for function
-#include <string>      // for string
+#include <array>
+#include <cstddef>
+#include <functional>
+#include <string>
 
-#include <QHBoxLayout>     // for QHBoxLayout
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <QSizePolicy>     // for QSizePolicy, QSizePolicy::Min...
-#include <QWidget>         // for QWidget
+#include <QHBoxLayout>
+#include <QSignalBlocker>
+#include <QSizePolicy>
+#include <QWidget>
 
 class QHBoxLayout;
 namespace inviwo {

@@ -29,13 +29,13 @@
 
 #include <modules/animationqt/animationqtsupplier.h>
 
-#include <inviwo/core/util/exception.h>                                 // for Exception
-#include <inviwo/core/util/moduleutils.h>                               // for getModuleByType
-#include <modules/animationqt/animationqtmodule.h>                      // for AnimationQtModule
-#include <modules/animationqt/factories/sequenceeditorfactory.h>        // for SequenceEditorFac...
-#include <modules/animationqt/factories/sequenceeditorfactoryobject.h>  // for SequenceEditorFac...
-#include <modules/animationqt/factories/trackwidgetqtfactory.h>         // for TrackWidgetQtFactory
-#include <modules/animationqt/factories/trackwidgetqtfactoryobject.h>   // for TrackWidgetQtFact...
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/moduleutils.h>
+#include <modules/animationqt/animationqtmodule.h>
+#include <modules/animationqt/factories/sequenceeditorfactory.h>
+#include <modules/animationqt/factories/sequenceeditorfactoryobject.h>
+#include <modules/animationqt/factories/trackwidgetqtfactory.h>
+#include <modules/animationqt/factories/trackwidgetqtfactoryobject.h>
 
 namespace inviwo {
 

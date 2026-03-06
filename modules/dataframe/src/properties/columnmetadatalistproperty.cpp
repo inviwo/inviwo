@@ -29,18 +29,18 @@
 
 #include <inviwo/dataframe/properties/columnmetadatalistproperty.h>
 
-#include <inviwo/core/network/networklock.h>                     // for NetworkLock
-#include <inviwo/core/properties/invalidationlevel.h>            // for InvalidationLevel
-#include <inviwo/core/properties/listproperty.h>                 // for ListProperty, ListProper...
-#include <inviwo/core/properties/property.h>                     // for OverwriteState, Overwrit...
-#include <inviwo/core/properties/propertyowner.h>                // for PropertyOwner
-#include <inviwo/core/properties/propertysemantics.h>            // for PropertySemantics
-#include <inviwo/core/properties/valuewrapper.h>                 // for PropertySerializationMode
-#include <inviwo/core/util/exception.h>                          // for Exception
-#include <inviwo/core/util/sourcecontext.h>                      // for SourceContext
-#include <inviwo/core/util/zip.h>                                // for enumerate, zipIterator
-#include <inviwo/dataframe/datastructures/dataframe.h>           // for DataFrameInport, DataFrame
-#include <inviwo/dataframe/properties/columnmetadataproperty.h>  // for ColumnMetaDataProperty
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/columnmetadataproperty.h>
 
 namespace inviwo {
 

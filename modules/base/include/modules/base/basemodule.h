@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>                // for InviwoModule
-#include <inviwo/core/io/serialization/ticpp.h>             // for TxElement
-#include <inviwo/core/io/serialization/versionconverter.h>  // for VersionConverter
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/ticpp.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
-#include <memory>  // for unique_ptr
+#include <memory>
 
 namespace inviwo {
 

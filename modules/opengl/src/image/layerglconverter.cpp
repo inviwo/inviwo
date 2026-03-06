@@ -29,14 +29,14 @@
 
 #include <modules/opengl/image/layerglconverter.h>
 
-#include <inviwo/core/datastructures/image/layerram.h>  // for LayerRAM (ptr only), createLayerRAM
-#include <inviwo/core/util/formats.h>                   // for DataFormatBase
-#include <inviwo/core/util/logcentral.h>                // for LogCentral
-#include <modules/opengl/image/layergl.h>               // for LayerGL
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/logcentral.h>
+#include <modules/opengl/image/layergl.h>
 #include <modules/opengl/texture/texture2d.h>           // IWYU pragma: keep
 
-#include <ostream>      // for operator<<, char_traits
-#include <type_traits>  // for remove_extent_t
+#include <ostream>
+#include <type_traits>
 
 namespace inviwo {
 

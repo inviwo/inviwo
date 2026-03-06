@@ -29,30 +29,30 @@
 
 #include <modules/glfw/canvasglfw.h>
 
-#include <inviwo/core/common/inviwoapplication.h>            // for dispatchFront
-#include <inviwo/core/interaction/events/event.h>            // for Event
-#include <inviwo/core/interaction/events/eventpropagator.h>  // for EventPropagator
-#include <inviwo/core/interaction/pickingcontroller.h>       // for PickingController
-#include <inviwo/core/network/networklock.h>                 // for NetworkLock
-#include <inviwo/core/util/canvas.h>                         // for Canvas::ContextID, Canvas
-#include <inviwo/core/util/exception.h>                      // for Exception
-#include <inviwo/core/util/glmvec.h>                         // for ivec2, uvec2, size2_t, dvec2
-#include <inviwo/core/util/logcentral.h>                     // for LogCentral
-#include <inviwo/core/util/rendercontext.h>                  // for CanvasContextHolder, RenderC...
-#include <inviwo/core/util/sourcecontext.h>                  // for SourceContext
-#include <modules/glfw/glfwexception.h>                      // for GLFWException
-#include <modules/glfw/glfwuserdata.h>                       // for GLFWUserData, GLFWUserDataId
-#include <modules/opengl/canvasgl.h>                         // for CanvasGL
-#include <modules/opengl/inviwoopengl.h>                     // for GL_FALSE, GL_TRUE
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/eventpropagator.h>
+#include <inviwo/core/interaction/pickingcontroller.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <modules/glfw/glfwexception.h>
+#include <modules/glfw/glfwuserdata.h>
+#include <modules/opengl/canvasgl.h>
+#include <modules/opengl/inviwoopengl.h>
 
-#include <future>       // for future
-#include <string_view>  // for string_view
+#include <future>
+#include <string_view>
 
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>               // for GLFWwindow, glfwWindowHint
-#include <glm/common.hpp>             // for clamp
-#include <glm/vec2.hpp>               // for operator+, vec<>::(anonymous)
-#include <glm/vector_relational.hpp>  // for all, greaterThanEqual, lessT...
+#include <GLFW/glfw3.h>
+#include <glm/common.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vector_relational.hpp>
 
 namespace inviwo {
 

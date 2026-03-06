@@ -28,14 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <memory>  // for unique_ptr
+#include <memory>
 
-#include <QDoubleSpinBox>  // for QDoubleSpinBox
-#include <QSize>           // for QSize
-#include <QString>         // for QString
-#include <QValidator>      // for QValidator, QValidator::State
+#include <QDoubleSpinBox>
+#include <QSize>
+#include <QString>
+#include <QValidator>
 
 class QEvent;
 class QFocusEvent;

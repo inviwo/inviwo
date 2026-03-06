@@ -29,21 +29,21 @@
 
 #pragma once
 
-#include <inviwo/core/datastructures/datatraits.h>   // for DataTraits
-#include <inviwo/core/ports/imageport.h>             // for ImageMultiInport
-#include <inviwo/core/ports/inport.h>                // for Inport
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>    // for Tags, Tags::CPU
-#include <inviwo/core/processors/processortraits.h>  // for ProcessorTraits
-#include <inviwo/core/properties/optionproperty.h>   // for OptionPropertySize_t, OptionProperty...
-#include <inviwo/core/properties/valuewrapper.h>     // for PropertySerializationMode, PropertyS...
-#include <inviwo/core/util/assertion.h>              // for IVW_ASSERT
+#include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/processors/processortraits.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/assertion.h>
 #include <inviwo/core/network/processornetwork.h>    // IWYU pragma: keep
 
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class Outport;

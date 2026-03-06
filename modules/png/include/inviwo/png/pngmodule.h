@@ -28,9 +28,9 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/png/pngmoduledefine.h>  // for IVW_MODULE_PNG_API
+#include <inviwo/png/pngmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 class InviwoApplication;

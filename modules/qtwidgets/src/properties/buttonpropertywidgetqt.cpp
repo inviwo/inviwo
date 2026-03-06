@@ -29,17 +29,17 @@
 
 #include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
 
-#include <inviwo/core/properties/buttonproperty.h>          // for ButtonProperty
-#include <modules/qtwidgets/inviwoqtutils.h>                // for fromQString, toQString
-#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+#include <inviwo/core/properties/buttonproperty.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <QAction>       // for QAction
-#include <QHBoxLayout>   // for QHBoxLayout
-#include <QInputDialog>  // for QInputDialog
-#include <QLineEdit>     // for QLineEdit, QLineEdit::Normal
-#include <QMenu>         // for QMenu
-#include <QPushButton>   // for QPushButton
-#include <QString>       // for QString
+#include <QAction>
+#include <QHBoxLayout>
+#include <QInputDialog>
+#include <QLineEdit>
+#include <QMenu>
+#include <QPushButton>
+#include <QString>
 
 class QHBoxLayout;
 

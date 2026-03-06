@@ -29,24 +29,24 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
-#include <inviwo/core/ports/dataoutport.h>             // for DataOutport
-#include <inviwo/core/ports/meshport.h>                // for MeshFlatMultiInport
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty
-#include <inviwo/core/util/staticstring.h>             // for operator+
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/staticstring.h>
 
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr
-#include <string>       // for operator==, operator+, string
-#include <string_view>  // for operator==
-#include <vector>       // for vector, operator!=, operator==
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
-#include <fmt/core.h>    // for format
-#include <glm/vec3.hpp>  // for operator+
+#include <fmt/core.h>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

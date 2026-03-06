@@ -29,37 +29,37 @@
 
 #include <modules/qtwidgets/propertylistwidget.h>
 
-#include <inviwo/core/common/inviwoapplication.h>           // for InviwoApplication
-#include <inviwo/core/network/processornetwork.h>           // for ProcessorNetwork
-#include <inviwo/core/network/processornetworkevaluator.h>  // for ProcessorNetworkEv...
-#include <inviwo/core/processors/processor.h>               // for Processor
-#include <inviwo/core/properties/property.h>                // for Property
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/propertyowner.h>                      // for PropertyOwner
-#include <inviwo/core/properties/propertywidgetfactory.h>              // for PropertyWidgetFactory
-#include <inviwo/core/util/raiiutils.h>                                // for OnScopeExit, OnSco...
-#include <inviwo/core/util/rendercontext.h>                            // for RenderContext
-#include <modules/qtwidgets/inviwodockwidget.h>                        // for InviwoDockWidget
-#include <modules/qtwidgets/inviwoqtutils.h>                           // for emToPx, refSpacePx
-#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>  // for CollapsibleGroupBo...
-#include <modules/qtwidgets/properties/propertywidgetqt.h>             // for PropertyWidgetQt
+#include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <functional>  // for __base
-#include <memory>      // for unique_ptr
-#include <utility>     // for pair
-#include <vector>      // for vector
+#include <functional>
+#include <memory>
+#include <utility>
+#include <vector>
 
-#include <QFrame>        // for QFrame, QFrame::No...
-#include <QLayout>       // for QLayout, QLayout::...
-#include <QPainter>      // for QPainter
-#include <QScrollArea>   // for QScrollArea
-#include <QSizeF>        // for QSizeF
-#include <QSizePolicy>   // for QSizePolicy, QSize...
-#include <QString>       // for QString
-#include <QStyle>        // for QStyle, QStyle::PE...
-#include <QStyleOption>  // for QStyleOption
-#include <QVBoxLayout>   // for QVBoxLayout
-#include <Qt>            // for AlignTop, operator|
+#include <QFrame>
+#include <QLayout>
+#include <QPainter>
+#include <QScrollArea>
+#include <QSizeF>
+#include <QSizePolicy>
+#include <QString>
+#include <QStyle>
+#include <QStyleOption>
+#include <QVBoxLayout>
+#include <Qt>
 #include <QApplication>
 
 class QPaintEvent;

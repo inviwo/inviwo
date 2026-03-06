@@ -29,31 +29,31 @@
 
 #include <modules/base/algorithm/volume/marchingcubes.h>
 
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for IndexBufferRAM
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
-#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for TypedMesh<>::Vertex
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/volume/volume.h>                   // IWYU pragma: keep
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/util/assertion.h>                                 // for IVW_ASSERT
-#include <inviwo/core/util/exception.h>                                 // for Exception
-#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
-#include <inviwo/core/util/glmvec.h>                                    // for size3_t, vec3, vec4
-#include <modules/base/algorithm/volume/surfaceextraction.h>            // for addTriangle, encl...
-#include <modules/base/datastructures/kdtree.h>                         // for K3DTree
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/algorithm/volume/surfaceextraction.h>
+#include <modules/base/datastructures/kdtree.h>
 
-#include <algorithm>      // for max
-#include <array>          // for array, array<>::v...
-#include <cstddef>        // for size_t
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
-#include <vector>         // for vector
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <type_traits>
+#include <unordered_set>
+#include <vector>
 
-#include <glm/detail/setup.hpp>  // for size_t
-#include <glm/fwd.hpp>           // for vec3
-#include <glm/geometric.hpp>     // for normalize
-#include <glm/vec3.hpp>          // for operator*, vec<>:...
+#include <glm/detail/setup.hpp>
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 class Mesh;

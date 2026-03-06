@@ -32,15 +32,15 @@
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
-#include <pybind11/trampoline_self_life_support.h>  // for trampoline_self_life_support
+#include <pybind11/trampoline_self_life_support.h>
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
 
 #include <inviwopy/vectoridentifierwrapper.h>
 
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorfactoryobject.h>

@@ -29,64 +29,64 @@
 
 #include <modules/basegl/processors/volumeprocessing/volumecombiner.h>
 
-#include <inviwo/core/datastructures/data.h>                            // for noData
-#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
-#include <inviwo/core/ports/datainport.h>                               // for DataInport
-#include <inviwo/core/ports/inportiterable.h>                           // for InportIterable<>:...
-#include <inviwo/core/ports/outport.h>                                  // for Outport
-#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterable
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeOutport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::GL
-#include <inviwo/core/properties/boolcompositeproperty.h>               // for BoolCompositeProp...
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                      // for ButtonProperty
-#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
-#include <inviwo/core/properties/minmaxproperty.h>                      // for DoubleMinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
-#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
-#include <inviwo/core/properties/property.h>                            // for Property
-#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
-#include <inviwo/core/properties/stringproperty.h>                      // for StringProperty
-#include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
-#include <inviwo/core/util/exception.h>                                 // for Exception
-#include <inviwo/core/util/glmvec.h>                                    // for dvec2, vec4, size3_t
-#include <inviwo/core/util/shuntingyard.h>                              // for Calculator
-#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
-#include <inviwo/core/util/statecoordinator.h>                          // for StateCoordinator
-#include <inviwo/core/util/staticstring.h>                              // for operator+
-#include <inviwo/core/util/stringconversion.h>                          // for toString
-#include <inviwo/core/util/zip.h>                                       // for proxy, enumerate
-#include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
-#include <modules/opengl/inviwoopengl.h>                                // for glViewport, GLsizei
-#include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
-#include <modules/opengl/shader/stringshaderresource.h>                 // for StringShaderResource
-#include <modules/opengl/shader/shadertype.h>                           // for ShaderType, Shade...
-#include <modules/opengl/shader/shaderutils.h>                          // for findShaderResource
-#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>                        // for multiDrawImagePla...
-#include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
-#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+#include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/inportiterable.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/shuntingyard.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/statecoordinator.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/stringshaderresource.h>
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/volume/volumegl.h>
+#include <modules/opengl/volume/volumeutils.h>
 
-#include <algorithm>      // for max, min
-#include <cstddef>        // for size_t
-#include <limits>         // for numeric_limits
-#include <map>            // for map, map<>::mappe...
-#include <sstream>        // for operator<<, basic...
-#include <type_traits>    // for remove_extent_t
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for pair
+#include <algorithm>
+#include <cstddef>
+#include <limits>
+#include <map>
+#include <sstream>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
 
-#include <fmt/format.h>  // for format_to, basic_...
-#include <glm/vec2.hpp>  // for vec<>::(anonymous)
-#include <glm/vec3.hpp>  // for vec<>::(anonymous)
+#include <fmt/format.h>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 namespace {
 std::string idToString(const size_t& id) {

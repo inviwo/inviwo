@@ -29,19 +29,19 @@
 
 #include <modules/eigenutils/processors/testmatrix.h>
 
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>    // for Tags
-#include <inviwo/core/properties/ordinalproperty.h>  // for IntSizeTProperty
-#include <modules/eigenutils/eigenports.h>           // for EigenMatrixOutport
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/eigenutils/eigenports.h>
 
-#include <cstddef>      // for size_t
-#include <memory>       // for make_shared, shared_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <string_view>
 
-#include <Eigen/Core>      // for MatrixXf, DenseCoeffsBase, Matrix
-#include <glm/common.hpp>  // for mix
+#include <Eigen/Core>
+#include <glm/common.hpp>
 
 namespace inviwo {
 

@@ -29,23 +29,23 @@
 
 #include <modules/basegl/processors/geometryentryexitpoints.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>         // for boundingBox
-#include <inviwo/core/interaction/cameratrackball.h>   // for CameraTrackball
-#include <inviwo/core/ports/imageport.h>               // for ImageOutport
-#include <inviwo/core/ports/meshport.h>                // for MeshInport
-#include <inviwo/core/ports/volumeport.h>              // for VolumeInport
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>     // for CameraProperty
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
-#include <inviwo/core/util/formats.h>                  // for DataFormat, DataVec4UInt16
-#include <modules/basegl/algorithm/entryexitpoints.h>  // for CapNearClip, EntryExitPointsHelper
+#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/util/formats.h>
+#include <modules/basegl/algorithm/entryexitpoints.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 

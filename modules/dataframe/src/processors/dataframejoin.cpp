@@ -29,23 +29,23 @@
 
 #include <inviwo/dataframe/processors/dataframejoin.h>
 
-#include <inviwo/core/processors/processor.h>                  // for Processor
-#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>             // for CodeState, CodeState::Expe...
-#include <inviwo/core/processors/processortags.h>              // for Tags
-#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
-#include <inviwo/core/properties/listproperty.h>               // for ListProperty
-#include <inviwo/core/properties/optionproperty.h>             // for OptionProperty, OptionProp...
-#include <inviwo/core/properties/property.h>                   // for Property
-#include <inviwo/core/properties/propertyownerobserver.h>      // for PropertyOwnerObservable
-#include <inviwo/core/util/exception.h>                        // for Exception
-#include <inviwo/core/util/sourcecontext.h>                    // for SourceContext
-#include <inviwo/core/util/staticstring.h>                     // for operator+
-#include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrameInport, DataFrame...
-#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
-#include <inviwo/dataframe/util/dataframeutil.h>               // for appendColumns, appendRows
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertyownerobserver.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
 
-#include <memory>  // for shared_ptr, make_unique
+#include <memory>
 
 namespace inviwo {
 class PropertyOwner;

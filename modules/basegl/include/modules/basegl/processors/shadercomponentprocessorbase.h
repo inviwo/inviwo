@@ -29,17 +29,17 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>       // for ImageOutport
-#include <inviwo/core/processors/processor.h>  // for Processor
-#include <modules/opengl/shader/shader.h>      // for Shader
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <memory>       // for shared_ptr
-#include <string_view>  // for string_view
-#include <type_traits>  // for enable_if_t, is_base_of
-#include <utility>      // for pair
-#include <vector>       // for vector
+#include <memory>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 class ShaderComponent;

@@ -29,9 +29,9 @@
 
 #include <modules/fontrendering/datastructures/fontsettings.h>
 
-#include <inviwo/core/util/glmvec.h>  // for vec2
+#include <inviwo/core/util/glmvec.h>
 
-#include <glm/vec2.hpp>  // for operator==
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 bool operator==(const FontSettings& a, const FontSettings& b) {

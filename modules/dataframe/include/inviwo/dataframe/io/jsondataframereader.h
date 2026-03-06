@@ -28,12 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
-#include <inviwo/core/io/datareader.h>               // for DataReaderType
+#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/core/io/datareader.h>
 
-#include <iosfwd>       // for istream
-#include <memory>       // for shared_ptr
-#include <string_view>  // for string_view
+#include <iosfwd>
+#include <memory>
+#include <string_view>
 
 namespace inviwo {
 class DataFrame;

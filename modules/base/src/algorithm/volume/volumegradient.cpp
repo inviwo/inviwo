@@ -31,37 +31,37 @@
 
 #include <inviwo/core/algorithm/buildarray.h>
 #include <inviwo/core/algorithm/gridtools.h>
-#include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
-#include <inviwo/core/datastructures/data.h>                            // for noData
-#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/unitsystem.h>                      // for Axis, Unit
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAMPrecision
-#include <inviwo/core/util/glmutils.h>                                  // for Vector
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t, dvec2
+#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glmcomp.h>
-#include <inviwo/core/util/indexmapper.h>     // for IndexMapper3D
-#include <inviwo/core/util/spatialsampler.h>  // for SpatialSampler<>:...
-#include <inviwo/core/util/volumeramutils.h>  // for forEachVoxelParallel
-#include <inviwo/core/util/volumesampler.h>   // for VolumeDoubleSampler
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/core/util/volumeramutils.h>
+#include <inviwo/core/util/volumesampler.h>
 #include <inviwo/core/util/assertion.h>
 
-#include <array>          // for array
-#include <functional>     // for __base
-#include <limits>         // for numeric_limits
-#include <string>         // for string
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
-#include <vector>         // for vector
+#include <array>
+#include <functional>
+#include <limits>
+#include <string>
+#include <type_traits>
+#include <unordered_set>
+#include <vector>
 #include <ranges>
 
-#include <glm/common.hpp>              // for mix, max, abs
-#include <glm/gtx/component_wise.hpp>  // for compMax
-#include <glm/mat4x4.hpp>              // for operator*, mat
-#include <glm/vec3.hpp>                // for operator-, operator/
-#include <glm/vec4.hpp>                // for operator*, operator+
+#include <glm/common.hpp>
+#include <glm/gtx/component_wise.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo::util {
 

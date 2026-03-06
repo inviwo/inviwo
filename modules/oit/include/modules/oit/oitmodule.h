@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <modules/oit/oitmoduledefine.h>  // for IVW_MODULE_OIT...
+#include <modules/oit/oitmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 class InviwoApplication;

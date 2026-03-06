@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <modules/qtwidgets/inviwoqtutils.h>  // for emToPx
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <QPoint>      // for QPoint
-#include <QRect>       // for QRect
-#include <QTransform>  // for QTransform
-#include <QWidget>     // for QWidget
+#include <QPoint>
+#include <QRect>
+#include <QTransform>
+#include <QWidget>
 
 class QPaintEvent;
 

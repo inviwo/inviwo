@@ -29,40 +29,40 @@
 
 #include <modules/base/io/binarystlwriter.h>
 
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for operator<<, Buffe...
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::Index...
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
-#include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
-#include <inviwo/core/util/fileextension.h>                             // for FileExtension
-#include <inviwo/core/util/formatdispatching.h>                         // for Vec3s
-#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/glmmat.h>                                    // for mat3
-#include <inviwo/core/util/glmutils.h>                                  // for Matrix
-#include <inviwo/core/util/glmvec.h>                                    // for vec3
-#include <inviwo/core/util/logcentral.h>                                // for log, LogAudience
-#include <inviwo/core/util/stdextensions.h>                             // for find_if
-#include <modules/base/algorithm/meshutils.h>                           // for forEachTriangle
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterexception.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/base/algorithm/meshutils.h>
 
-#include <array>          // for array
-#include <cstddef>        // for size_t
-#include <cstdint>        // for uint32_t, uint16_t
-#include <fstream>        // for basic_ofstream
-#include <functional>     // for function, __base
-#include <string>         // for basic_string
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for pair, move
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <fstream>
+#include <functional>
+#include <string>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
 
-#include <glm/detail/qualifier.hpp>  // for tvec4
-#include <glm/geometric.hpp>         // for normalize
-#include <glm/mat3x3.hpp>            // for operator*
-#include <glm/mat4x4.hpp>            // for operator*
-#include <glm/matrix.hpp>            // for inverse, transpose
-#include <glm/vec3.hpp>              // for operator+, operator*
-#include <glm/vec4.hpp>              // for operator*, operator+
+#include <glm/detail/qualifier.hpp>
+#include <glm/geometric.hpp>
+#include <glm/mat3x3.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/matrix.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

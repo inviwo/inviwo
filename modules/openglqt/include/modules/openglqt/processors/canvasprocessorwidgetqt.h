@@ -29,22 +29,22 @@
 
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <inviwo/core/processors/canvasprocessorwidget.h>  // for CanvasProcessorWidget
-#include <inviwo/core/processors/processor.h>              // for Processor, Processor::NameDisp...
-#include <inviwo/core/util/glmvec.h>                       // for ivec2, size2_t
+#include <inviwo/core/processors/canvasprocessorwidget.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/interaction/contextmenuaction.h>
 
-#include <functional>  // for function
-#include <memory>      // for unique_ptr
+#include <functional>
+#include <memory>
 
-#include <QIcon>        // for QIcon
-#include <QLocale>      // for QLocale
-#include <QPixmap>      // for QPixmap
-#include <QVariant>     // for QVariant
-#include <QMainWindow>  // for QWidget
+#include <QIcon>
+#include <QLocale>
+#include <QPixmap>
+#include <QVariant>
+#include <QMainWindow>
 
 class QHideEvent;
 class QMenu;

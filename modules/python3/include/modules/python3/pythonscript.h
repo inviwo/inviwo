@@ -29,15 +29,15 @@
 
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
+#include <modules/python3/python3moduledefine.h>
 
 #include <pybind11/pybind11.h>  // IWYU pragma: keep
 
-#include <inviwo/core/util/callback.h>  // for BaseCallBack, CallBackList
+#include <inviwo/core/util/callback.h>
 
-#include <functional>     // for function
-#include <string>         // for string
-#include <unordered_map>  // for unordered_map
+#include <functional>
+#include <string>
+#include <unordered_map>
 #include <filesystem>
 
 namespace inviwo {

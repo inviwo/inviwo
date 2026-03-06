@@ -29,39 +29,39 @@
 
 #include <modules/webbrowser/webbrowsermodule.h>
 
-#include <inviwo/core/common/inviwoapplication.h>      // for InviwoApplication
-#include <inviwo/core/common/inviwomodule.h>           // for ModulePath
-#include <inviwo/core/util/commandlineparser.h>        // for CommandLineParser
-#include <inviwo/core/util/exception.h>                // for ModuleInitExce...
-#include <inviwo/core/util/filesystem.h>               // for getExecutablePath
-#include <inviwo/core/util/logcentral.h>               // for LogCentral
-#include <inviwo/core/util/settings/settings.h>        // for Settings
-#include <inviwo/core/util/settings/systemsettings.h>  // for SystemSettings
-#include <inviwo/core/util/staticstring.h>             // for operator+
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/settings/settings.h>
+#include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/timer.h>  // for Timer, Timer::...
+#include <inviwo/core/util/timer.h>
 #include <inviwo/core/util/threadutil.h>
-#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
+#include <modules/opengl/shader/shadermanager.h>
 #include <modules/webbrowser/processors/basicwebbrowser.h>
-#include <modules/webbrowser/processors/webbrowserprocessor.h>  // for WebBrowserProc...
-#include <modules/webbrowser/properties/propertywidgetcef.h>    // for PropertyWidgetCEF
-#include <modules/webbrowser/shader_resources.h>                // for addShaderResou...
-#include <modules/webbrowser/webbrowserapp.h>                   // for WebBrowserApp
-#include <modules/webbrowser/webbrowserclient.h>                // for WebBrowserClient
-#include <modules/webbrowser/webbrowsersettings.h>              // for WebBrowserSett...
+#include <modules/webbrowser/processors/webbrowserprocessor.h>
+#include <modules/webbrowser/properties/propertywidgetcef.h>
+#include <modules/webbrowser/shader_resources.h>
+#include <modules/webbrowser/webbrowserapp.h>
+#include <modules/webbrowser/webbrowserclient.h>
+#include <modules/webbrowser/webbrowsersettings.h>
 
-#include <cstddef>      // for size_t, NULL
-#include <functional>   // for __base, function
-#include <locale>       // for locale
-#include <string_view>  // for string_view
-#include <utility>      // for move
+#include <cstddef>
+#include <functional>
+#include <locale>
+#include <string_view>
+#include <utility>
 
 #include <fmt/std.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <include/cef_app.h>
-#include <include/cef_base.h>  // for CefSettings
+#include <include/cef_base.h>
 #include <warn/pop>
 
 namespace inviwo {

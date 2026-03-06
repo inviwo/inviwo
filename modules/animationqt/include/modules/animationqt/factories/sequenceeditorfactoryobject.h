@@ -28,10 +28,10 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <memory>  // for unique_ptr, make_unique
-#include <string>  // for string
+#include <memory>
+#include <string>
 
 namespace inviwo {
 

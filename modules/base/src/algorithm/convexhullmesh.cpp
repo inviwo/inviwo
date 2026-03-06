@@ -29,19 +29,19 @@
 
 #include <modules/base/algorithm/convexhullmesh.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, IndexBuffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::MeshInfo
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/util/glmvec.h>                                    // for vec2
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <cstdint>        // for uint32_t
-#include <numeric>        // for iota
-#include <type_traits>    // for remove_extent_t
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
+#include <cstdint>
+#include <numeric>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace inviwo {
 

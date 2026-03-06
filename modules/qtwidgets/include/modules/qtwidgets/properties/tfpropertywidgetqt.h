@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <modules/qtwidgets/inviwowidgetsqt.h>              // for IvwPushButton
-#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
-#include <modules/qtwidgets/tf/tfpropertydialog.h>          // for TFPropertyDialog
+#include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/tf/tfpropertydialog.h>
 
-#include <memory>  // for unique_ptr
+#include <memory>
 #include <variant>
 
 class QMenu;

@@ -28,17 +28,17 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
-#include <inviwo/core/properties/ordinalproperty.h>    // for DoubleProperty, IntSize2Property
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
-#include <inviwo/core/properties/stringproperty.h>     // for StringProperty
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <tuple>        // for tie
+#include <string>
+#include <string_view>
+#include <tuple>
 
 namespace inviwo {
 

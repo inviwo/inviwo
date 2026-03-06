@@ -29,23 +29,23 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>                 // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>            // for Processor
-#include <inviwo/core/processors/processorinfo.h>        // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>         // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>       // for ButtonProperty
-#include <inviwo/core/properties/compositeproperty.h>    // for CompositeProperty
-#include <inviwo/core/properties/eventproperty.h>        // for EventProperty
-#include <inviwo/core/properties/filepatternproperty.h>  // for FilePatternProperty
-#include <inviwo/core/properties/ordinalproperty.h>      // for IntProperty
-#include <inviwo/core/properties/stringproperty.h>       // for StringProperty
-#include <inviwo/core/util/fileextension.h>              // for FileExtension
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/properties/filepatternproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/fileextension.h>
 
-#include <memory>  // for shared_ptr
-#include <string>  // for string
-#include <vector>  // for vector
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace inviwo {
 

@@ -29,32 +29,32 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTINGGL_API
+#include <modules/plottinggl/plottingglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>                   // for ImageInport, ImageOutport
-#include <inviwo/core/ports/volumeport.h>                  // for VolumeInport
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
-#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
-#include <inviwo/core/properties/isotfproperty.h>          // for IsoTFProperty
-#include <inviwo/core/properties/optionproperty.h>         // for OptionProperty, OptionPropert...
-#include <inviwo/core/properties/ordinalproperty.h>        // for IntProperty, FloatProperty
-#include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
-#include <inviwo/core/properties/stringproperty.h>         // for StringProperty
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/interaction/pickingmapper.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>       // for Mesh
-#include <inviwo/core/util/glmvec.h>                        // for ivec2
-#include <modules/opengl/rendering/texturequadrenderer.h>   // for TextureQuadRenderer
-#include <modules/opengl/shader/shader.h>                   // for Shader
-#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
-#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
-#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/rendering/texturequadrenderer.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
+#include <modules/plottinggl/utils/axisrenderer.h>
 
-#include <tuple>   // for tuple
-#include <vector>  // for operator!=, vector, operator==
+#include <tuple>
+#include <vector>
 
 namespace inviwo {
 class PickingEvent;

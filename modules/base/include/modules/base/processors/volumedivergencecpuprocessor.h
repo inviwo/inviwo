@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>          // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/poolprocessor.h>  // for Processor
-#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/poolprocessor.h>
+#include <inviwo/core/processors/processorinfo.h>
 #include <modules/base/datastructures/volumereusecache.h>
 
 namespace inviwo {

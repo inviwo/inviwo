@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
+#include <modules/json/jsonmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
+#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/porttraits.h>

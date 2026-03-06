@@ -29,19 +29,19 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSE...
-#include <inviwo/core/common/inviwomodule.h>            // for InviwoModule
-#include <inviwo/core/util/timer.h>                     // for Timer
-#include <modules/webbrowser/webbrowserclient.h>        // for WebBrowserClient
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/timer.h>
+#include <modules/webbrowser/webbrowserclient.h>
 
-#include <memory>   // for unique_ptr, make_unique
-#include <string>   // for string
-#include <utility>  // for move
-#include <vector>   // for vector
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/cef_base.h>  // for CefRefPtr
+#include <include/cef_base.h>
 #if __APPLE__                  // Mac
 #include "include/wrapper/cef_library_loader.h"
 #endif

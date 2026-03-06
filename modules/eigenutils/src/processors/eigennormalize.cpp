@@ -29,14 +29,14 @@
 
 #include <modules/eigenutils/processors/eigennormalize.h>
 
-#include <inviwo/core/processors/processor.h>       // for Processor
-#include <inviwo/core/processors/processorstate.h>  // for CodeState, CodeState::Experimental
-#include <inviwo/core/processors/processortags.h>   // for Tags
-#include <inviwo/core/properties/optionproperty.h>  // for OptionPropertyOption, OptionProperty
-#include <modules/eigenutils/eigenports.h>          // for EigenMatrixOutport, EigenMatrixInport
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <modules/eigenutils/eigenports.h>
 
-#include <memory>       // for make_shared, shared_ptr, shared_ptr<>...
-#include <type_traits>  // for remove_extent_t
+#include <memory>
+#include <type_traits>
 
 #include <Eigen/Dense>
 

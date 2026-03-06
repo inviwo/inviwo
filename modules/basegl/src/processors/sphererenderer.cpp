@@ -29,19 +29,19 @@
 
 #include <modules/basegl/processors/sphererenderer.h>
 
-#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for BufferType, DrawType
-#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh::MeshInfo, Mesh
-#include <inviwo/core/util/glmvec.h>                           // for size2_t, vec4
-#include <inviwo/core/util/staticstring.h>                     // for operator+
-#include <modules/opengl/geometry/meshgl.h>                    // for MeshGL
-#include <modules/opengl/openglutils.h>                        // for BlendModeState
-#include <modules/opengl/rendering/meshdrawergl.h>             // for MeshDrawerGL, Mesh...
-#include <modules/opengl/shader/shader.h>                      // for Shader
-#include <modules/opengl/shader/shaderobject.h>                // for ShaderObject
-#include <modules/opengl/shader/shadertype.h>                  // for ShaderType, Shader...
-#include <modules/opengl/shader/shaderutils.h>                 // for addDefines, setSha...
-#include <modules/opengl/texture/textureunit.h>                // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>               // for activateTargetAndC...
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 

@@ -31,19 +31,19 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionPr...
-#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>   // for VolumeRaycasterBase
-#include <modules/basegl/shadercomponents/backgroundcomponent.h>        // for BackgroundComponent
-#include <modules/basegl/shadercomponents/cameracomponent.h>            // for CameraComponent
-#include <modules/basegl/shadercomponents/entryexitcomponent.h>         // for EntryExitComponent
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>
+#include <modules/basegl/shadercomponents/backgroundcomponent.h>
+#include <modules/basegl/shadercomponents/cameracomponent.h>
+#include <modules/basegl/shadercomponents/entryexitcomponent.h>
 #include <modules/basegl/shadercomponents/tfcomponent.h>
 #include <modules/basegl/shadercomponents/isocomponent.h>
-#include <modules/basegl/shadercomponents/lightcomponent.h>              // for LightComponent
-#include <modules/basegl/shadercomponents/positionindicatorcomponent.h>  // for PositionIndicato...
-#include <modules/basegl/shadercomponents/raycastingcomponent.h>         // for RaycastingComponent
-#include <modules/basegl/shadercomponents/sampletransformcomponent.h>    // for SampleTransformC...
-#include <modules/basegl/shadercomponents/sphericalcomponent.h>          // for SphericalComponent
-#include <modules/basegl/shadercomponents/volumecomponent.h>             // for VolumeComponent
+#include <modules/basegl/shadercomponents/lightcomponent.h>
+#include <modules/basegl/shadercomponents/positionindicatorcomponent.h>
+#include <modules/basegl/shadercomponents/raycastingcomponent.h>
+#include <modules/basegl/shadercomponents/sampletransformcomponent.h>
+#include <modules/basegl/shadercomponents/sphericalcomponent.h>
+#include <modules/basegl/shadercomponents/volumecomponent.h>
 
 namespace inviwo {
 

@@ -30,14 +30,14 @@
 #include <modules/base/processors/meshexport.h>
 
 #include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
-#include <inviwo/core/ports/datainport.h>              // for DataInport
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::CPU
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
 
-#include <memory>  // for shared_ptr
-#include <string>  // for string
+#include <memory>
+#include <string>
 
 namespace inviwo {
 

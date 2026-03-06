@@ -30,16 +30,16 @@
 #include <modules/animation/animationsupplier.h>
 
 #include <inviwo/core/util/moduleutils.h>
-#include <inviwo/core/util/exception.h>                              // for Exception
-#include <modules/animation/animationmanager.h>                      // for AnimationManager
-#include <modules/animation/animationmodule.h>                       // for AnimationModule
-#include <modules/animation/factories/interpolationfactory.h>        // for InterpolationFactory
-#include <modules/animation/factories/interpolationfactoryobject.h>  // for InterpolationFactory...
-#include <modules/animation/factories/trackfactory.h>                // for TrackFactory
-#include <modules/animation/factories/trackfactoryobject.h>          // for TrackFactoryObject
+#include <inviwo/core/util/exception.h>
+#include <modules/animation/animationmanager.h>
+#include <modules/animation/animationmodule.h>
+#include <modules/animation/factories/interpolationfactory.h>
+#include <modules/animation/factories/interpolationfactoryobject.h>
+#include <modules/animation/factories/trackfactory.h>
+#include <modules/animation/factories/trackfactoryobject.h>
 
-#include <string_view>  // for string_view
-#include <utility>      // for move
+#include <string_view>
+#include <utility>
 
 namespace inviwo {
 

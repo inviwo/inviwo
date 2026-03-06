@@ -29,27 +29,27 @@
 
 #include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
 
-#include <inviwo/core/properties/stringproperty.h>  // for StringProperty
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
-#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
-#include <modules/qtwidgets/inviwoqtutils.h>                // for fromQString, toQString
-#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <string>  // for string
+#include <string>
 
-#include <QAbstractScrollArea>  // for QAbstractScrollArea, QAbstrac...
-#include <QFlags>               // for QFlags
-#include <QFontMetrics>         // for QFontMetrics
-#include <QHBoxLayout>          // for QHBoxLayout
-#include <QKeyEvent>            // for QKeyEvent
-#include <QMargins>             // for QMargins
-#include <QSizeF>               // for QSizeF
-#include <QSizePolicy>          // for QSizePolicy, QSizePolicy::Pre...
-#include <QString>              // for QString, operator!=
-#include <QTextCursor>          // for QTextCursor, QTextCursor::Start
-#include <QTextDocument>        // for QTextDocument
-#include <Qt>                   // for ControlModifier, Key_Enter
-#include <glm/common.hpp>       // for clamp
+#include <QAbstractScrollArea>
+#include <QFlags>
+#include <QFontMetrics>
+#include <QHBoxLayout>
+#include <QKeyEvent>
+#include <QMargins>
+#include <QSizeF>
+#include <QSizePolicy>
+#include <QString>
+#include <QTextCursor>
+#include <QTextDocument>
+#include <Qt>
+#include <glm/common.hpp>
 
 class QContextMenuEvent;
 class QFocusEvent;

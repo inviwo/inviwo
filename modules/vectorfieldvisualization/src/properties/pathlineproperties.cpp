@@ -29,8 +29,8 @@
 
 #include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
 
-#include <inviwo/core/properties/ordinalproperty.h>                              // for DoublePr...
-#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>  // for Integral...
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 
 namespace inviwo {
 

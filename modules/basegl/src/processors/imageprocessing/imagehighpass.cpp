@@ -29,16 +29,16 @@
 
 #include <modules/basegl/processors/imageprocessing/imagehighpass.h>
 
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
-#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>                         // for BoolProperty
-#include <inviwo/core/properties/ordinalproperty.h>                      // for IntProperty
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
-#include <modules/opengl/shader/shaderutils.h>                           // for setUniforms
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 class TextureUnitContainer;

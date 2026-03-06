@@ -29,18 +29,18 @@
 
 #include <modules/userinterfacegl/glui/widgets/button.h>
 
-#include <inviwo/core/interaction/pickingmapper.h>                // for PickingMapper
-#include <inviwo/core/util/glmvec.h>                              // for ivec2, vec2, size2_t
-#include <modules/opengl/rendering/meshdrawergl.h>                // for MeshDrawerGL
-#include <modules/opengl/shader/shader.h>                         // for Shader
-#include <modules/opengl/texture/texture2darray.h>                // for Texture2DArray
-#include <modules/opengl/texture/textureunit.h>                   // for TextureUnit
-#include <modules/userinterfacegl/glui/renderer.h>                // for Renderer
-#include <modules/userinterfacegl/glui/widgets/abstractbutton.h>  // for AbstractButton
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/texture2darray.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/userinterfacegl/glui/renderer.h>
+#include <modules/userinterfacegl/glui/widgets/abstractbutton.h>
 
-#include <array>  // for array
+#include <array>
 
-#include <glm/vec2.hpp>  // for operator+
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 class Processor;

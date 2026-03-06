@@ -29,29 +29,29 @@
 
 #include <modules/base/processors/ordinalpropertyanimator.h>
 
-#include <inviwo/core/network/networklock.h>         // for NetworkLock
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Experimental
-#include <inviwo/core/processors/processortags.h>    // for Tags, Tags::CPU
-#include <inviwo/core/properties/buttonproperty.h>   // for ButtonProperty
-#include <inviwo/core/properties/optionproperty.h>   // for OptionProperty, OptionPropertySize_t
-#include <inviwo/core/properties/ordinalproperty.h>  // for OrdinalProperty, IntProperty
-#include <inviwo/core/properties/property.h>         // for Property
-#include <inviwo/core/properties/valuewrapper.h>     // for PropertySerializationMode, PropertyS...
-#include <inviwo/core/util/foreacharg.h>             // for for_each_type
-#include <inviwo/core/util/stringconversion.h>       // for toString
-#include <inviwo/core/util/timer.h>                  // for Timer
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/timer.h>
 
-#include <chrono>   // for milliseconds
-#include <cstddef>  // for size_t
-#include <ostream>  // for operator<<
+#include <chrono>
+#include <cstddef>
+#include <ostream>
 
-#include <glm/common.hpp>             // for clamp
-#include <glm/vec2.hpp>               // for operator*, operator+, operator-, ope...
-#include <glm/vec3.hpp>               // for operator*, operator+, operator-, ope...
-#include <glm/vec4.hpp>               // for operator*, operator+, operator-, ope...
-#include <glm/vector_relational.hpp>  // for greaterThanEqual, lessThan
+#include <glm/common.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/vector_relational.hpp>
 
 namespace inviwo {
 class Deserializer;

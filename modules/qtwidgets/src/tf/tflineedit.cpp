@@ -30,13 +30,13 @@
 #include <modules/qtwidgets/tf/tflineedit.h>
 
 #include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/glmvec.h>                              // for dvec2
-#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>  // for DoubleValueDragSpinBox
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <QSizePolicy>     // for QSizePolicy, QSizePolic...
-#include <glm/vec2.hpp>    // for vec<>::(anonymous)
+#include <QSignalBlocker>
+#include <QSizePolicy>
+#include <glm/vec2.hpp>
 
 class QLayout;
 

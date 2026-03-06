@@ -29,19 +29,19 @@
 
 #include <modules/qtwidgets/properties/boolpropertywidgetqt.h>
 
-#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
-#include <inviwo/core/properties/propertysemantics.h>       // for operator==, PropertySemantics
-#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
-#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <QCheckBox>                    // for QCheckBox
-#include <QHBoxLayout>                  // for QHBoxLayout
-#include <QLineEdit>                    // for QLineEdit
-#include <QRegularExpression>           // for QRegularExpression
-#include <QRegularExpressionValidator>  // for QRegularExpressionValidator
-#include <QSize>                        // for QSize
-#include <QSizePolicy>                  // for QSizePolicy, QSizePolicy::Fixed
-#include <QString>                      // for QString
+#include <QCheckBox>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
+#include <QSize>
+#include <QSizePolicy>
+#include <QString>
 
 class QHBoxLayout;
 

@@ -29,11 +29,11 @@
 
 #include <modules/glfw/filewatcher.h>
 
-#include <inviwo/core/util/assertion.h>      // for IVW_ASSERT
-#include <inviwo/core/util/logcentral.h>     // for LogCentral
-#include <inviwo/core/util/stdextensions.h>  // for erase_remove
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stdextensions.h>
 
-#include <algorithm>  // for find
+#include <algorithm>
 
 #ifdef WIN32
 #include <inviwo/core/common/inviwoapplication.h>

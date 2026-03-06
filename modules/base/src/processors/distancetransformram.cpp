@@ -29,45 +29,45 @@
 
 #include <modules/base/processors/distancetransformram.h>
 
-#include <inviwo/core/algorithm/markdown.h>                            // for operator""_help
-#include <inviwo/core/datastructures/data.h>                           // for noData
-#include <inviwo/core/datastructures/datamapper.h>                     // for DataMapper
-#include <inviwo/core/datastructures/unitsystem.h>                     // for Axis, Unit
-#include <inviwo/core/datastructures/volume/volume.h>                  // for Volume
-#include <inviwo/core/datastructures/volume/volumeram.h>               // for VolumeRAMPrecision
-#include <inviwo/core/ports/volumeport.h>                              // for VolumeOutport, Vol...
-#include <inviwo/core/processors/poolprocessor.h>                      // for Progress, Option
-#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
-#include <inviwo/core/processors/processortags.h>                      // for Tags, Tags::CPU
-#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
-#include <inviwo/core/properties/constraintbehavior.h>                 // for ConstraintBehavior
-#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
-#include <inviwo/core/properties/minmaxproperty.h>                     // for DoubleMinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>                     // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                    // for IntProperty, IntSi...
-#include <inviwo/core/properties/propertysemantics.h>                  // for PropertySemantics
-#include <inviwo/core/properties/valuewrapper.h>                       // for PropertySerializat...
-#include <inviwo/core/util/glmvec.h>                                   // for dvec2, size3_t
-#include <inviwo/core/util/staticstring.h>                             // for operator+
-#include <inviwo/core/util/isstreaminsertable.h>                       // for util::is_stream_in...
-#include <modules/base/algorithm/dataminmax.h>                         // for dataMinMax
-#include <modules/base/algorithm/volume/volumeramdistancetransform.h>  // for volumeDistanceTran...
+#include <inviwo/core/algorithm/markdown.h>
+#include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/poolprocessor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/isstreaminsertable.h>
+#include <modules/base/algorithm/dataminmax.h>
+#include <modules/base/algorithm/volume/volumeramdistancetransform.h>
 
-#include <array>        // for array
-#include <limits>       // for numeric_limits
-#include <memory>       // for shared_ptr, make_s...
-#include <ostream>      // for operator<<
-#include <type_traits>  // for remove_extent_t
-#include <utility>      // for pair
+#include <array>
+#include <limits>
+#include <memory>
+#include <ostream>
+#include <type_traits>
+#include <utility>
 
-#include <glm/common.hpp>              // for max, min
-#include <glm/geometric.hpp>           // for dot, length
-#include <glm/gtx/component_wise.hpp>  // for compMax, compMul
-#include <glm/gtx/norm.hpp>            // for length2
-#include <glm/mat3x3.hpp>              // for operator*, mat
-#include <glm/vec3.hpp>                // for operator/, operator*
-#include <glm/vec4.hpp>                // for vec
+#include <glm/common.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtx/component_wise.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/mat3x3.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

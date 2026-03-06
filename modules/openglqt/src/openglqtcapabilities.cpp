@@ -29,10 +29,10 @@
 
 #include <modules/openglqt/openglqtcapabilities.h>
 
-#include <inviwo/core/util/stringconversion.h>  // for stringTo, splitStringView
-#include <modules/opengl/inviwoopengl.h>        // for glGetString, GL_VERSION, GLubyte
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/opengl/inviwoopengl.h>
 
-#include <string>  // for string
+#include <string>
 
 namespace inviwo {
 

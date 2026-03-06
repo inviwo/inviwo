@@ -28,24 +28,24 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTINGGL_API
+#include <modules/plottinggl/plottingglmoduledefine.h>
 
-#include <inviwo/core/properties/boolcompositeproperty.h>       // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
-#include <inviwo/core/properties/minmaxproperty.h>              // for DoubleMinMaxProperty
-#include <inviwo/core/util/glmvec.h>                            // for vec4, vec2, dvec2
-#include <modules/plotting/datastructures/axissettings.h>       // for AxisSettings, AxisSetting...
-#include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle, MajorTickSettings
-#include <modules/plotting/datastructures/minorticksettings.h>  // for MinorTickSettings
-#include <modules/plotting/datastructures/plottextsettings.h>   // for PlotTextSettings
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/majorticksettings.h>
+#include <modules/plotting/datastructures/minorticksettings.h>
+#include <modules/plotting/datastructures/plottextsettings.h>
 
-#include <cstddef>      // for size_t
-#include <cstdint>      // for uint32_t
-#include <functional>   // for function, __base
-#include <memory>       // for shared_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

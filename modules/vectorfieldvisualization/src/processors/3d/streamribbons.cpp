@@ -29,52 +29,52 @@
 
 #include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                          // for Buffer
-#include <inviwo/core/datastructures/geometry/geometrytype.h>                  // for Connectivi...
-#include <inviwo/core/datastructures/geometry/typedmesh.h>                     // for TypedMesh<...
-#include <inviwo/core/datastructures/representationconverter.h>                // for Representa...
-#include <inviwo/core/datastructures/representationconverterfactory.h>         // for Representa...
-#include <inviwo/core/datastructures/transferfunction.h>                       // for TransferFu...
-#include <inviwo/core/ports/datainport.h>                                      // for DataInport
-#include <inviwo/core/ports/inportiterable.h>                                  // for InportIter...
-#include <inviwo/core/ports/meshport.h>                                        // for MeshOutport
-#include <inviwo/core/ports/outportiterable.h>                                 // for OutportIte...
-#include <inviwo/core/ports/volumeport.h>                                      // for VolumeInport
-#include <inviwo/core/processors/processor.h>                                  // for Processor
-#include <inviwo/core/processors/processorinfo.h>                              // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                             // for CodeState
-#include <inviwo/core/processors/processortags.h>                              // for Tags, Tags...
-#include <inviwo/core/properties/invalidationlevel.h>                          // for Invalidati...
-#include <inviwo/core/properties/optionproperty.h>                             // for OptionProp...
-#include <inviwo/core/properties/ordinalproperty.h>                            // for FloatProperty
-#include <inviwo/core/properties/stringproperty.h>                             // for StringProp...
-#include <inviwo/core/properties/transferfunctionproperty.h>                   // for TransferFu...
-#include <inviwo/core/util/glmmat.h>                                           // for mat3
-#include <inviwo/core/util/glmutils.h>                                         // for Vector
-#include <inviwo/core/util/glmvec.h>                                           // for dvec3, vec4
-#include <inviwo/core/util/imagesampler.h>                                     // for ImageSampler
-#include <inviwo/core/util/logcentral.h>                                       // for LogCentral
-#include <inviwo/core/util/spatialsampler.h>                                   // for SpatialSam...
-#include <inviwo/core/util/statecoordinator.h>                                 // for StateCoord...
-#include <inviwo/core/util/staticstring.h>                                     // for operator+
-#include <inviwo/core/util/stringconversion.h>                                 // for toString
-#include <inviwo/core/util/volumesampler.h>                                    // for VolumeDoub...
-#include <modules/vectorfieldvisualization/datastructures/integralline.h>      // for IntegralLine
-#include <modules/vectorfieldvisualization/integrallinetracer.h>               // for StreamLine...
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>             // for SeedPoints...
-#include <modules/vectorfieldvisualization/properties/streamlineproperties.h>  // for StreamLine...
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/inportiterable.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/imagesampler.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/core/util/statecoordinator.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/volumesampler.h>
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>
+#include <modules/vectorfieldvisualization/integrallinetracer.h>
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
 
-#include <algorithm>      // for max
-#include <cstddef>        // for size_t
-#include <cstdint>        // for uint32_t
-#include <memory>         // for shared_ptr
-#include <type_traits>    // for remove_ext...
-#include <unordered_set>  // for unordered_set
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <type_traits>
+#include <unordered_set>
 
-#include <fmt/core.h>         // for format
-#include <glm/common.hpp>     // for mix, clamp
-#include <glm/geometric.hpp>  // for normalize
-#include <glm/mat3x3.hpp>     // for operator*
+#include <fmt/core.h>
+#include <glm/common.hpp>
+#include <glm/geometric.hpp>
+#include <glm/mat3x3.hpp>
 
 namespace inviwo {
 

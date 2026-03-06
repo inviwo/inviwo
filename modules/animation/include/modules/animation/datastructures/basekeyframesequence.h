@@ -28,22 +28,22 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/core/io/serialization/deserializer.h>          // for Deserializer, IndexedDese...
-#include <inviwo/core/io/serialization/serializer.h>            // for Serializer
-#include <inviwo/core/util/exception.h>                         // for Exception
-#include <inviwo/core/util/indirectiterator.h>                  // for makeIndirectIterator, Ind...
-#include <inviwo/core/util/stdextensions.h>                     // for dynamic_unique_ptr_cast
-#include <modules/animation/datastructures/animationtime.h>     // for Seconds
-#include <modules/animation/datastructures/keyframeobserver.h>  // for KeyframeObserver
-#include <modules/animation/datastructures/keyframesequence.h>  // for KeyframeSequence
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/indirectiterator.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
+#include <modules/animation/datastructures/keyframesequence.h>
 
-#include <algorithm>    // for min, find_if, stable_sort
-#include <cstddef>      // for size_t
-#include <memory>       // for unique_ptr, make_unique
-#include <string_view>  // for string_view
-#include <type_traits>  // for is_base_of
-#include <utility>      // for move
-#include <vector>       // for vector
+#include <algorithm>
+#include <cstddef>
+#include <memory>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 

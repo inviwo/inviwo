@@ -29,9 +29,9 @@
 
 #include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
 
-#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyInt
-#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
-#include <modules/json/io/json/optionpropertyjsonconverter.h>  // for from_json, to_json, json
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <modules/json/io/json/optionpropertyjsonconverter.h>
 
 namespace inviwo {
 

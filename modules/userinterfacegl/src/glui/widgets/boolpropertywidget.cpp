@@ -29,12 +29,12 @@
 
 #include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>
 
-#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
-#include <inviwo/core/properties/propertywidget.h>          // for PropertyWidget
-#include <inviwo/core/util/glmvec.h>                        // for ivec2
-#include <modules/userinterfacegl/glui/widgets/checkbox.h>  // for CheckBox
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/userinterfacegl/glui/widgets/checkbox.h>
 
-#include <functional>  // for __base, function
+#include <functional>
 
 namespace inviwo {
 class Processor;

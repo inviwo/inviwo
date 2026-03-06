@@ -29,11 +29,11 @@
 
 #include <modules/plotting/datastructures/plottextdata.h>
 
-#include <inviwo/core/util/glmvec.h>                           // for vec2, vec4
-#include <modules/fontrendering/datastructures/fontdata.h>     // for FontData
-#include <modules/plotting/datastructures/plottextsettings.h>  // for PlotTextSettings
+#include <inviwo/core/util/glmvec.h>
+#include <modules/fontrendering/datastructures/fontdata.h>
+#include <modules/plotting/datastructures/plottextsettings.h>
 
-#include <type_traits>  // for is_copy_assignable_v, is_c...
+#include <type_traits>
 
 namespace inviwo {
 class FontSettings;

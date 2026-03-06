@@ -27,29 +27,29 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/factoryutil.h>                      // for getPropertyWidgetFactory
-#include <inviwo/core/properties/propertywidgetfactory.h>        // for PropertyWidgetFactory
-#include <modules/animation/demo/democontroller.h>               // for DemoController, DemoCont...
-#include <modules/animation/demo/democontrollerobserver.h>       // for DemoControllerObservable
-#include <modules/animationqt/demo/demonavigatordockwidgetqt.h>  // for DemoNavigatorDockWidgetQt
-#include <modules/qtwidgets/inviwodockwidget.h>                  // for InviwoDockWidget
-#include <modules/qtwidgets/inviwoqtutils.h>                     // for emToPx, toQString
-#include <modules/qtwidgets/properties/propertywidgetqt.h>       // for PropertyWidgetQt
+#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/properties/propertywidgetfactory.h>
+#include <modules/animation/demo/democontroller.h>
+#include <modules/animation/demo/democontrollerobserver.h>
+#include <modules/animationqt/demo/demonavigatordockwidgetqt.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <memory>  // for unique_ptr
-#include <string>  // for string
-#include <vector>  // for vector
+#include <memory>
+#include <string>
+#include <vector>
 
-#include <QAction>      // for QAction
-#include <QIcon>        // for QIcon
-#include <QMainWindow>  // for QMainWindow
-#include <QSizeF>       // for QSizeF
-#include <QSizePolicy>  // for QSizePolicy, QSizePolicy...
-#include <QString>      // for QString
-#include <QToolBar>     // for QToolBar
-#include <QVBoxLayout>  // for QVBoxLayout
-#include <QWidget>      // for QWidget
-#include <Qt>           // for WidgetWithChildrenShortcut
+#include <QAction>
+#include <QIcon>
+#include <QMainWindow>
+#include <QSizeF>
+#include <QSizePolicy>
+#include <QString>
+#include <QToolBar>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <Qt>
 
 class QVBoxLayout;
 

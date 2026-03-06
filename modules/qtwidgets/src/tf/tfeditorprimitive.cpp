@@ -29,33 +29,33 @@
 
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>
 
-#include <inviwo/core/datastructures/datamapper.h>   // for DataMapper
-#include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive
-#include <inviwo/core/datastructures/unitsystem.h>   // for Axis
-#include <inviwo/core/util/glmvec.h>                 // for vec4, vec3, dvec2
-#include <modules/qtwidgets/inviwoqtutils.h>         // for clamp, toQColor, toQString
-#include <modules/qtwidgets/tf/tfeditor.h>           // for TFEditor
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/tf/tfeditor.h>
 #include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
 
-#include <cmath>    // for abs
-#include <cstdlib>  // for abs
+#include <cmath>
+#include <cstdlib>
 
-#include <QBrush>                   // for QBrush
-#include <QColor>                   // for QColor
-#include <QFlags>                   // for QFlags, operator==
-#include <QFont>                    // for QFont
-#include <QGraphicsScene>           // for QGraphicsScene
-#include <QGraphicsSimpleTextItem>  // for QGraphicsSimpleTextItem
-#include <QGuiApplication>          // for QGuiApplication
-#include <QObject>                  // for qobject_cast
-#include <QPainter>                 // for QPainter, QPainter::Antialiasing
-#include <QPen>                     // for QPen
-#include <QPoint>                   // for operator!=, operator-
-#include <QRectF>                   // for QRectF
-#include <QString>                  // for QString
-#include <Qt>                       // for ShiftModifier, RoundCap, SolidLine
-#include <fmt/core.h>               // for basic_string_view, format
-#include <glm/vec4.hpp>             // for operator==, vec<>::(anonymous)
+#include <QBrush>
+#include <QColor>
+#include <QFlags>
+#include <QFont>
+#include <QGraphicsScene>
+#include <QGraphicsSimpleTextItem>
+#include <QGuiApplication>
+#include <QObject>
+#include <QPainter>
+#include <QPen>
+#include <QPoint>
+#include <QRectF>
+#include <QString>
+#include <Qt>
+#include <fmt/core.h>
+#include <glm/vec4.hpp>
 
 class QGraphicsSceneMouseEvent;
 class QStyleOptionGraphicsItem;

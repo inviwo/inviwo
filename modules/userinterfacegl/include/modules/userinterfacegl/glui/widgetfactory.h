@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/util/factory.h>                          // for StandardFactory
+#include <inviwo/core/util/factory.h>
 #include <modules/userinterfacegl/glui/widgetfactoryobject.h>  // IWYU pragma: keep
 #include <modules/userinterfacegl/glui/element.h>              // IWYU pragma: keep
 
-#include <memory>       // for unique_ptr
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <memory>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

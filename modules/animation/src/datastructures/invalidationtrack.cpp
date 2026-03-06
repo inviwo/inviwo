@@ -34,7 +34,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/util/stringconversion.h>
 
-#include <modules/animation/algorithm/animationrange.h>  // for animateRange
+#include <modules/animation/algorithm/animationrange.h>
 
 namespace inviwo {
 

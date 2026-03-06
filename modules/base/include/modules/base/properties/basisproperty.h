@@ -29,29 +29,29 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/spatialdata.h>    // for SpatialEntity, StructuredGridEntity
-#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>     // for ButtonProperty
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
-#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>    // for FloatVec3Property
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
-#include <inviwo/core/properties/valuewrapper.h>       // for ValueWrapper
-#include <inviwo/core/util/glmmat.h>                   // for mat4
-#include <inviwo/core/util/glmvec.h>                   // for vec3
-#include <inviwo/core/util/staticstring.h>             // for operator+
+#include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
 
-#include <functional>   // for __base
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==, string_view
-#include <tuple>        // for tie
-#include <vector>       // for operator!=, vector, operator==
+#include <functional>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <vector>
 
-#include <glm/mat4x4.hpp>  // for operator==
-#include <glm/vec4.hpp>    // for operator==
+#include <glm/mat4x4.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 class Deserializer;

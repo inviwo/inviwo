@@ -30,16 +30,16 @@
 #include <modules/fontrendering/util/fontutils.h>
 
 #include <inviwo/core/util/moduleutils.h>
-#include <inviwo/core/util/filesystem.h>                // for getDirectoryContents, getFileExte...
-#include <inviwo/core/util/stdextensions.h>             // for contains, erase_remove_if
-#include <inviwo/core/util/stringconversion.h>          // for toLower
-#include <modules/fontrendering/fontrenderingmodule.h>  // for FontRenderingModule
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/fontrendering/fontrenderingmodule.h>
 
-#include <algorithm>  // for sort, transform
-#include <cctype>     // for toupper
-#include <iterator>   // for back_insert_iterator, back_inserter
+#include <algorithm>
+#include <cctype>
+#include <iterator>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 #include <fmt/std.h>
 
 namespace inviwo {

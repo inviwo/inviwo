@@ -29,40 +29,40 @@
 
 #include <modules/python3/pythonprocessorfactoryobject.h>
 
-#include <pybind11/pybind11.h>  // for globals, module_, module
-#include <pybind11/cast.h>      // for object::cast, object_api::ope...
-#include <pybind11/eval.h>      // for eval, exec, eval_expr
-#include <pybind11/pytypes.h>   // for object, error_already_set
+#include <pybind11/pybind11.h>
+#include <pybind11/cast.h>
+#include <pybind11/eval.h>
+#include <pybind11/pytypes.h>
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/numpy.h>
 
-#include <inviwo/core/common/inviwoapplication.h>           // for InviwoApplication
-#include <inviwo/core/network/networkutils.h>               // for replaceProcessor
-#include <inviwo/core/network/processornetwork.h>           // for ProcessorNetwork
-#include <inviwo/core/processors/processor.h>               // for Processor
-#include <inviwo/core/processors/processorfactoryobject.h>  // for ProcessorFactoryObject
-#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo, operator!=
-#include <inviwo/core/util/exception.h>                     // for Exception
-#include <inviwo/core/util/fileobserver.h>                  // for FileObserver
-#include <inviwo/core/util/filesystem.h>                    // for getFileNameWithoutExtension
-#include <inviwo/core/util/logcentral.h>                    // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>                 // for SourceContext
-#include <inviwo/core/util/stringconversion.h>              // for trim
-#include <inviwo/core/util/utilities.h>                     // for stripIdentifier
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/networkutils.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/utilities.h>
 
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <array>        // for array
-#include <exception>    // for exception
-#include <fstream>      // for operator<<, basic_ostream
-#include <sstream>      // for basic_stringstream<>::string_...
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_reference<>::type
-#include <utility>      // for move
-#include <vector>       // for vector
+#include <array>
+#include <exception>
+#include <fstream>
+#include <sstream>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 

@@ -31,11 +31,11 @@
 
 #include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/image/layer.h>  // for VolumeSequence
-#include <inviwo/core/ports/layerport.h>             // for VolumeSequenceOutport
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/ports/layerport.h>
 
 #include <modules/base/processors/sequencesource.h>
-#include <modules/base/properties/layerinformationproperty.h>  // for VolumeInformationProperty
+#include <modules/base/properties/layerinformationproperty.h>
 
 namespace inviwo {
 

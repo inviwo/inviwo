@@ -29,18 +29,18 @@
 
 #include <modules/qtwidgets/properties/buttongrouppropertywidgetqt.h>
 
-#include <inviwo/core/properties/buttongroupproperty.h>     // for ButtonGroupProperty, ButtonGr...
-#include <modules/qtwidgets/inviwoqtutils.h>                // for toQString
-#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+#include <inviwo/core/properties/buttongroupproperty.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <cstddef>   // for size_t
-#include <optional>  // for optional
+#include <cstddef>
+#include <optional>
 
-#include <QHBoxLayout>  // for QHBoxLayout
-#include <QIcon>        // for QIcon
-#include <QLayoutItem>  // for QLayoutItem
-#include <QPushButton>  // for QPushButton
-#include <QWidget>      // for QWidget
+#include <QHBoxLayout>
+#include <QIcon>
+#include <QLayoutItem>
+#include <QPushButton>
+#include <QWidget>
 
 class QHBoxLayout;
 

@@ -49,7 +49,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/filesystem.h>
 
-#include <modules/qtwidgets/propertylistwidget.h>  // for PropertyListWidget
+#include <modules/qtwidgets/propertylistwidget.h>
 
 #include <inviwo/sys/moduleloading.h>
 

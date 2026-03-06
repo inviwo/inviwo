@@ -29,23 +29,23 @@
 
 #include <modules/qtwidgets/processors/processordockwidgetqt.h>
 
-#include <inviwo/core/processors/processor.h>        // for Processor, Processor::NameDispatcher...
-#include <inviwo/core/processors/processorwidget.h>  // for ProcessorWidget
-#include <inviwo/core/util/glmvec.h>                 // for ivec2
-#include <modules/qtwidgets/inviwodockwidget.h>      // for InviwoDockWidget
-#include <modules/qtwidgets/inviwoqtutils.h>         // for toQString, getApplicationMainWindow
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <functional>   // for __base
-#include <string_view>  // for string_view
+#include <functional>
+#include <string_view>
 
-#include <QMainWindow>              // for QMainWindow
-#include <QMoveEvent>               // for QMoveEvent
-#include <QPoint>                   // for QPoint
-#include <QResizeEvent>             // for QResizeEvent
-#include <QSize>                    // for QSize
-#include <Qt>                       // for RightDockWidgetArea
-#include <glm/ext/vector_int2.hpp>  // for ivec2
-#include <glm/vec2.hpp>             // for vec<>::(anonymous)
+#include <QMainWindow>
+#include <QMoveEvent>
+#include <QPoint>
+#include <QResizeEvent>
+#include <QSize>
+#include <Qt>
+#include <glm/ext/vector_int2.hpp>
+#include <glm/vec2.hpp>
 
 class QHideEvent;
 class QMoveEvent;

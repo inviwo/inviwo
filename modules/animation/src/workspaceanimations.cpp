@@ -29,26 +29,26 @@
 
 #include <modules/animation/workspaceanimations.h>
 
-#include <inviwo/core/common/inviwoapplication.h>  // for InviwoApplication
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/serialization/deserializer.h>
-#include <inviwo/core/io/serialization/serializer.h>             // for Serializer
-#include <inviwo/core/network/processornetwork.h>                // for ProcessorNetwork
-#include <inviwo/core/network/workspacemanager.h>                // for WorkspaceManager, Worksp...
-#include <inviwo/core/util/exception.h>                          // for Exception
-#include <inviwo/core/util/typetraits.h>                         // for alwaysTrue, identity
-#include <modules/animation/datastructures/animation.h>          // for Animation
-#include <modules/animation/datastructures/animationobserver.h>  // for AnimationObservable
-#include <modules/animation/datastructures/animationtime.h>      // for Seconds
-#include <modules/animation/datastructures/keyframe.h>           // for Keyframe
-#include <modules/animation/datastructures/keyframesequence.h>   // for KeyframeSequence
-#include <modules/animation/datastructures/track.h>              // for Track
-#include <modules/animation/mainanimation.h>                     // for MainAnimation
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/typetraits.h>
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/animationobserver.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/track.h>
+#include <modules/animation/mainanimation.h>
 
-#include <algorithm>   // for find_if, min
-#include <functional>  // for __base
-#include <iterator>    // for distance
-#include <string>      // for basic_string, string
-#include <utility>     // for move
+#include <algorithm>
+#include <functional>
+#include <iterator>
+#include <string>
+#include <utility>
 
 namespace inviwo {
 

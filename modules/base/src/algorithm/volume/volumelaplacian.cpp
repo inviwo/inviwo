@@ -29,41 +29,41 @@
 
 #include <modules/base/algorithm/volume/volumelaplacian.h>
 
-#include <inviwo/core/datastructures/coordinatetransformer.h>           // for CoordinateSpace
-#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/unitsystem.h>                      // for Axis, Unit
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/util/formatdispatching.h>                         // for dispatch, All
-#include <inviwo/core/util/formats.h>                                   // for DataFormat
-#include <inviwo/core/util/glmcomp.h>                                   // for glmcomp
-#include <inviwo/core/util/glmmat.h>                                    // for dmat4
-#include <inviwo/core/util/glmutils.h>                                  // for same_extent
-#include <inviwo/core/util/glmvec.h>                                    // for dvec3, dvec2, siz...
-#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper3D
-#include <inviwo/core/util/templatesampler.h>                           // for TemplateVolumeSam...
-#include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxelParallel
+#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmcomp.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/templatesampler.h>
+#include <inviwo/core/util/volumeramutils.h>
 
-#include <functional>     // for __base
-#include <unordered_map>  // for unordered_map
-#include <vector>         // for vector
-#include <algorithm>      // for max
-#include <array>          // for array
-#include <cstdlib>        // for abs, size_t
-#include <limits>         // for numeric_limits
-#include <memory>         // for shared_ptr, share...
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
+#include <functional>
+#include <unordered_map>
+#include <vector>
+#include <algorithm>
+#include <array>
+#include <cstdlib>
+#include <limits>
+#include <memory>
+#include <type_traits>
+#include <unordered_set>
 
-#include <glm/gtx/matrix_operation.hpp>  // for diagonal3x3
-#include <glm/mat3x3.hpp>                // for mat
-#include <glm/mat4x4.hpp>                // for operator*, mat
-#include <glm/vec3.hpp>                  // for operator-, operator+
-#include <glm/vec4.hpp>                  // for operator*, operator+
-#include <glm/common.hpp>                // for max, min, mix
-#include <glm/vec2.hpp>                  // for operator+, operator*
+#include <glm/gtx/matrix_operation.hpp>
+#include <glm/mat3x3.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/common.hpp>
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 

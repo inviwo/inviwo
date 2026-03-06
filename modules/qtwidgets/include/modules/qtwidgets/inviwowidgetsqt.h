@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <QComboBox>    // for QComboBox
-#include <QLineEdit>    // for QLineEdit
-#include <QObject>      // for Q_OBJECT
-#include <QPushButton>  // for QPushButton
-#include <QSize>        // for QSize
+#include <QComboBox>
+#include <QLineEdit>
+#include <QObject>
+#include <QPushButton>
+#include <QSize>
 
 class QWidget;
 

@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <include/cef_base.h>  // for CefRefPtr
+#include <include/cef_base.h>
 
 class CefCommandLine;
 

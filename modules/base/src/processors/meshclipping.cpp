@@ -29,49 +29,49 @@
 
 #include <modules/base/processors/meshclipping.h>
 
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
-#include <inviwo/core/datastructures/camera/camera.h>                   // for Camera
-#include <inviwo/core/datastructures/coordinatetransformer.h>           // for SpatialCoordinate...
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh::BufferVector
-#include <inviwo/core/datastructures/geometry/plane.h>                  // for Plane
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/ports/dataoutport.h>                              // for DataOutport
-#include <inviwo/core/ports/meshport.h>                                 // for MeshInport, MeshO...
-#include <inviwo/core/ports/outportiterable.h>                          // for OutportIterableIm...
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                      // for ButtonProperty
-#include <inviwo/core/properties/cameraproperty.h>                      // for CameraProperty
-#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
-#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
-#include <inviwo/core/util/formatdispatching.h>                         // for Float3s
-#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral
-#include <inviwo/core/util/stdextensions.h>                             // for find_if
-#include <modules/base/algorithm/mesh/meshclipping.h>                   // for clipMeshAgainstPlane
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/geometry/plane.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/base/algorithm/mesh/meshclipping.h>
 
-#include <algorithm>      // for max, minmax_element
-#include <functional>     // for __base
-#include <iterator>       // for begin, end
-#include <memory>         // for shared_ptr, share...
-#include <string_view>    // for string_view
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for pair
+#include <algorithm>
+#include <functional>
+#include <iterator>
+#include <memory>
+#include <string_view>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
 
-#include <fmt/core.h>         // for format
-#include <glm/common.hpp>     // for abs, max, min
-#include <glm/geometric.hpp>  // for normalize, distance
-#include <glm/mat4x4.hpp>     // for operator*, mat
-#include <glm/matrix.hpp>     // for inverse, transpose
-#include <glm/vec3.hpp>       // for operator*, operator+
-#include <glm/vec4.hpp>       // for operator*, operator+
+#include <fmt/core.h>
+#include <glm/common.hpp>
+#include <glm/geometric.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/matrix.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

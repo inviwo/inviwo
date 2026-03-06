@@ -30,52 +30,52 @@
 #include <modules/oit/processors/meshrasterizer.h>
 
 #include <inviwo/core/algorithm/boundingbox.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>             // for IndexBuffer
-#include <inviwo/core/datastructures/data.h>                      // for noData
-#include <inviwo/core/datastructures/geometry/geometrytype.h>     // for Connectivit...
-#include <inviwo/core/datastructures/geometry/mesh.h>             // for Mesh, Mesh:...
-#include <inviwo/core/ports/datainport.h>                         // for DataInport
-#include <inviwo/core/ports/meshport.h>                           // for MeshFlatMul...
-#include <inviwo/core/processors/processor.h>                     // for Processor
-#include <inviwo/core/processors/processorinfo.h>                 // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                // for CodeState
-#include <inviwo/core/processors/processortags.h>                 // for Tags, Tags::GL
-#include <inviwo/core/properties/boolcompositeproperty.h>         // for BoolComposi...
-#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                // for ButtonProperty
-#include <inviwo/core/properties/compositeproperty.h>             // for CompositePr...
-#include <inviwo/core/properties/invalidationlevel.h>             // for Invalidatio...
-#include <inviwo/core/properties/listproperty.h>                  // for ListProperty
-#include <inviwo/core/properties/optionproperty.h>                // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>               // for IntProperty
-#include <inviwo/core/properties/property.h>                      // for Property
-#include <inviwo/core/properties/propertysemantics.h>             // for PropertySem...
-#include <inviwo/core/properties/transferfunctionproperty.h>      // for TransferFun...
-#include <inviwo/core/util/document.h>                            // for Document
-#include <inviwo/core/util/glmmat.h>                              // for mat4
-#include <inviwo/core/util/glmvec.h>                              // for vec4, ivec2
-#include <inviwo/core/util/logcentral.h>                          // for LogCentral
-#include <inviwo/core/util/staticstring.h>                        // for operator+
-#include <modules/oit/algorithm/calcnormals.h>                    // for CalculateMe...
-#include <modules/oit/datastructures/halfedges.h>                 // for HalfEdges
-#include <modules/oit/datastructures/transformedrasterization.h>  // for Transformed...
-#include <modules/opengl/geometry/meshgl.h>                       // for MeshGL
-#include <modules/opengl/image/layergl.h>                         // for LayerGL
-#include <modules/opengl/inviwoopengl.h>                          // for GL_BACK
-#include <modules/opengl/openglutils.h>                           // for BlendModeState
-#include <modules/opengl/rendering/meshdrawergl.h>                // for MeshDrawerG...
-#include <modules/opengl/shader/shader.h>                         // for Shader, Sha...
-#include <modules/opengl/shader/shaderobject.h>                   // for ShaderObject
-#include <modules/opengl/shader/shaderutils.h>                    // for addShaderDe...
-#include <modules/opengl/texture/textureunit.h>                   // for TextureUnit
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/oit/algorithm/calcnormals.h>
+#include <modules/oit/datastructures/halfedges.h>
+#include <modules/oit/datastructures/transformedrasterization.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/image/layergl.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>
 
-#include <utility>  // for pair
-#include <variant>  // for visit, variant
+#include <utility>
+#include <variant>
 
-#include <fmt/core.h>      // for format
-#include <glm/mat4x4.hpp>  // for operator*
-#include <glm/vec2.hpp>    // for operator/
-#include <glm/vec4.hpp>    // for operator*
+#include <fmt/core.h>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 class Rasterization;

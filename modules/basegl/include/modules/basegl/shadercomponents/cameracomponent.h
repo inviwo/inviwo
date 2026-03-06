@@ -28,16 +28,16 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/properties/cameraproperty.h>            // for CameraProperty
-#include <inviwo/core/util/glmmat.h>                          // for mat4
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/util/glmmat.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
 
-#include <functional>   // for function
-#include <optional>     // for optional
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <functional>
+#include <optional>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class Property;

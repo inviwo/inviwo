@@ -29,22 +29,22 @@
 
 #include <modules/base/algorithm/mesh/meshcameraalgorithms.h>
 
-#include <inviwo/core/algorithm/camerautils.h>                   // for computeCameraNearFar
-#include <inviwo/core/network/networklock.h>                     // for NetworkLock
-#include <inviwo/core/properties/cameraproperty.h>               // for CameraProperty
-#include <inviwo/core/properties/ordinalrefproperty.h>           // for FloatVec3RefProperty
-#include <inviwo/core/util/glmvec.h>                             // for vec3, vec4
-#include <modules/base/algorithm/mesh/axisalignedboundingbox.h>  // for axisAlignedBoundingBox
+#include <inviwo/core/algorithm/camerautils.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
 
-#include <algorithm>  // for max
+#include <algorithm>
 
-#include <glm/common.hpp>                // for abs, max, min
-#include <glm/ext/matrix_transform.hpp>  // for scale
-#include <glm/geometric.hpp>             // for distance
-#include <glm/gtx/transform.hpp>         // for scale
-#include <glm/mat4x4.hpp>                // for mat, mat<>::col_type
-#include <glm/vec3.hpp>                  // for operator*, operator-, vec
-#include <glm/vec4.hpp>                  // for operator*
+#include <glm/common.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 class Mesh;

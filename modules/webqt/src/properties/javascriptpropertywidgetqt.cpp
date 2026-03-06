@@ -28,9 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/webqt/properties/javascriptpropertywidgetqt.h>
-#include <inviwo/core/properties/propertysemantics.h>  // for operator==, PropertySem...
+#include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/exception.h>
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/webqt/javascriptsyntaxhighlight.h>

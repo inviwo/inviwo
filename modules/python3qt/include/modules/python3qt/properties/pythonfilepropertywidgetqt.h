@@ -28,9 +28,9 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3qt/python3qtmoduledefine.h>  // for IVW_MODULE_PYTHON3QT_API
+#include <modules/python3qt/python3qtmoduledefine.h>
 
-#include <modules/qtwidgets/properties/filepropertywidgetqt.h>  // for FilePropertyWidgetQt
+#include <modules/qtwidgets/properties/filepropertywidgetqt.h>
 
 namespace inviwo {
 class FileProperty;

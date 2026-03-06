@@ -28,12 +28,12 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/webbrowserutil.h>
-#include <modules/opengl/openglcapabilities.h> // for OpenGLCapabilities
+#include <modules/opengl/openglcapabilities.h>
 
-#include <tuple>  // for tuple
+#include <tuple>
 #include <cmath>
 
-#include <include/cef_base.h>  // for CefBrowserSettings, CefWindowInfo, STATE_ENABLED
+#include <include/cef_base.h>
 #include <include/cef_parser.h>
 
 namespace inviwo::cefutil {

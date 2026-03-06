@@ -29,24 +29,24 @@
 
 #include <modules/openglqt/openglqtmenu.h>
 
-#include <inviwo/core/util/iterrange.h>           // for iter_range
-#include <inviwo/core/util/stdextensions.h>       // for find_if
-#include <modules/opengl/inviwoopengl.h>          // for GLuint
-#include <modules/opengl/shader/shader.h>         // for Shader
-#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
-#include <modules/opengl/shader/shaderobject.h>   // for ShaderObject
-#include <modules/openglqt/shaderwidget.h>        // for ShaderWidget
-#include <modules/qtwidgets/inviwoqtutils.h>      // for getApplicationMainWindow
+#include <inviwo/core/util/iterrange.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/openglqt/shaderwidget.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <functional>  // for __base
-#include <utility>     // for pair, move
-#include <vector>      // for vector
+#include <functional>
+#include <utility>
+#include <vector>
 
-#include <QAction>      // for QAction
-#include <QIcon>        // for QIcon
+#include <QAction>
+#include <QIcon>
 #include <QMainWindow>  // IWYU pragma: keep
-#include <QString>      // for QString, operator+
-#include <Qt>           // for WA_DeleteOnClose
+#include <QString>
+#include <Qt>
 
 class QWidget;
 

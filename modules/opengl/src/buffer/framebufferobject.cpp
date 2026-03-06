@@ -29,24 +29,24 @@
 
 #include <modules/opengl/buffer/framebufferobject.h>
 
-#include <inviwo/core/util/assertion.h>             // for IVW_ASSERT, assertion, assertions
-#include <inviwo/core/util/canvas.h>                // for Canvas, Canvas::ContextID
-#include <inviwo/core/util/rendercontext.h>         // for RenderContext
-#include <inviwo/core/util/sourcecontext.h>         // for IVW_SOURCE_LOCATION, SourceLocation
-#include <inviwo/core/util/stdextensions.h>         // for any_of
-#include <modules/opengl/openglexception.h>         // for OpenGLException
-#include <modules/opengl/texture/texture2d.h>       // for Texture2D
-#include <modules/opengl/texture/texture2darray.h>  // for Texture2DArray
-#include <modules/opengl/texture/texture3d.h>       // for Texture3D
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/opengl/openglexception.h>
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/texture/texture2darray.h>
+#include <modules/opengl/texture/texture3d.h>
 
-#include <algorithm>    // for find
-#include <chrono>       // for literals
-#include <iterator>     // for distance
-#include <string>       // for basic_string
-#include <string_view>  // for operator""sv, string_view
-#include <utility>      // for move
+#include <algorithm>
+#include <chrono>
+#include <iterator>
+#include <string>
+#include <string_view>
+#include <utility>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
 namespace inviwo {
 

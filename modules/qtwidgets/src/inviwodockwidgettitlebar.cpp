@@ -29,22 +29,22 @@
 
 #include <modules/qtwidgets/inviwodockwidgettitlebar.h>
 
-#include <inviwo/core/util/raiiutils.h>       // for KeepTrueWhileInScope
-#include <modules/qtwidgets/inviwoqtutils.h>  // for emToPx, windowTitleHelper
+#include <inviwo/core/util/raiiutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/logcentral.h>
 
-#include <QDockWidget>   // for QDockWidget
-#include <QEvent>        // for QEvent, QEvent::ModifiedChange, QEvent::Win...
-#include <QHBoxLayout>   // for QHBoxLayout
-#include <QIcon>         // for QIcon, QIcon::Normal, QIcon::Off, QIcon::On
-#include <QLabel>        // for QLabel
-#include <QLayout>       // for QLayout
-#include <QList>         // for QList, QList<>::iterator
-#include <QPainter>      // for QPainter
-#include <QSizeF>        // for QSizeF
-#include <QStyle>        // for QStyle, QStyle::PE_Widget
-#include <QStyleOption>  // for QStyleOption
-#include <QToolButton>   // for QToolButton
+#include <QDockWidget>
+#include <QEvent>
+#include <QHBoxLayout>
+#include <QIcon>
+#include <QLabel>
+#include <QLayout>
+#include <QList>
+#include <QPainter>
+#include <QSizeF>
+#include <QStyle>
+#include <QStyleOption>
+#include <QToolButton>
 
 class QHBoxLayout;
 class QShowEvent;

@@ -29,35 +29,35 @@
 
 #include <modules/pvm/pvmvolumereader.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>     // for Volume, DataReaderType
-#include <inviwo/core/datastructures/volume/volumeram.h>  // for createVolumeRAM
-#include <inviwo/core/io/datareader.h>                    // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>           // for DataReaderException
-#include <inviwo/core/metadata/metadata.h>                // for StringMetaData, MetaDataPrimiti...
-#include <inviwo/core/metadata/metadataowner.h>           // for MetaDataOwner
-#include <inviwo/core/util/fileextension.h>               // for FileExtension
-#include <inviwo/core/util/formatconversion.h>            // for formatBytesToString
-#include <inviwo/core/util/formats.h>                     // for DataFormat, DataFormatBase, Dat...
-#include <inviwo/core/util/glmmat.h>                      // for mat3
-#include <inviwo/core/util/glmvec.h>                      // for uvec3, vec3, size3_t
-#include <inviwo/core/util/logcentral.h>                  // for LogCentral
-#include <inviwo/core/util/raiiutils.h>                   // for OnScopeExit, OnScopeExit::ExitA...
-#include <inviwo/core/util/safecstr.h>                    // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>               // for SourceContext
-#include <inviwo/core/util/stringconversion.h>            // for toString, replaceInString
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/metadata/metadata.h>
+#include <inviwo/core/metadata/metadataowner.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/formatconversion.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stringconversion.h>
 
-#include <cstdlib>      // for free, size_t
-#include <algorithm>    // for copy
-#include <functional>   // for __base
-#include <ostream>      // for operator<<, basic_ostream
-#include <string>       // for string, char_traits
-#include <type_traits>  // for remove_extent_t
-#include <utility>      // for move
+#include <cstdlib>
+#include <algorithm>
+#include <functional>
+#include <ostream>
+#include <string>
+#include <type_traits>
+#include <utility>
 
-#include <glm/gtx/component_wise.hpp>  // for compMul
-#include <glm/mat3x3.hpp>              // for mat<>::col_type
-#include <glm/vec3.hpp>                // for vec<>::(anonymous), operator+, vec
-#include <tidds/ddsbase.h>             // for readPVMvolume, swapbytes
+#include <glm/gtx/component_wise.hpp>
+#include <glm/mat3x3.hpp>
+#include <glm/vec3.hpp>
+#include <tidds/ddsbase.h>
 
 #include <fmt/std.h>
 

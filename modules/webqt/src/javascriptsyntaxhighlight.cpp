@@ -29,20 +29,20 @@
 
 #include <inviwo/webqt/javascriptsyntaxhighlight.h>
 
-#include <inviwo/core/properties/optionproperty.h>   // for OptionPropertyString
-#include <inviwo/core/properties/ordinalproperty.h>  // for FloatVec4Property, ordinalColor, Int...
-#include <inviwo/core/properties/property.h>         // for Property
-#include <inviwo/core/util/settings/settings.h>      // for Settings
-#include <modules/qtwidgets/inviwoqtutils.h>         // for toQColor, getDefaultMonoSpaceFontIndex
-#include <modules/qtwidgets/syntaxhighlighter.h>     // for SyntaxHighlighter, background, comment
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/settings/settings.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/syntaxhighlighter.h>
 
-#include <array>        // for array
-#include <chrono>       // for literals
-#include <string>       // for string
-#include <string_view>  // for operator""sv, string_view, basic_str...
+#include <array>
+#include <chrono>
+#include <string>
+#include <string_view>
 
-#include <QColor>           // for QColor
-#include <QTextCharFormat>  // for QTextCharFormat
+#include <QColor>
+#include <QTextCharFormat>
 
 namespace inviwo {
 

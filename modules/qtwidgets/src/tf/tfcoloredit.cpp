@@ -29,11 +29,11 @@
 
 #include <modules/qtwidgets/tf/tfcoloredit.h>
 
-#include <inviwo/core/util/glmvec.h>                     // for vec3
-#include <modules/qtwidgets/inviwoqtutils.h>             // for toQColor, tovec3
-#include <modules/qtwidgets/properties/colorlineedit.h>  // for ColorLineEdit, ColorLineEdit::Co...
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/colorlineedit.h>
 
-#include <QSizePolicy>  // for QSizePolicy, QSizePolicy::Minimum
+#include <QSizePolicy>
 
 class QWidget;
 

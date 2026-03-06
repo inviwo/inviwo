@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/util/capabilities.h>  // for Capabilities
-#include <inviwo/core/util/logcentral.h>    // for LogCentral, LogAudience, LogAudience::User
+#include <inviwo/core/util/capabilities.h>
+#include <inviwo/core/util/logcentral.h>
 
-#include <cstddef>      // for size_t
-#include <sstream>      // for stringstream, basic_stringstream<>::strin...
-#include <string>       // for string, basic_string
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <cstddef>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class OpenGLSettings;

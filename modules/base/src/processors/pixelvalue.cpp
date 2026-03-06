@@ -29,47 +29,47 @@
 
 #include <modules/base/processors/pixelvalue.h>
 
-#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
-#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
-#include <inviwo/core/datastructures/image/layerutil.h>                 // for applySwizzleMask
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/interaction/events/event.h>                       // for Event
-#include <inviwo/core/interaction/events/mousebuttons.h>                // for MouseButtons, Mou...
-#include <inviwo/core/interaction/events/mouseevent.h>                  // for MouseEvent
-#include <inviwo/core/ports/imageport.h>                                // for ImageInport, Imag...
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
-#include <inviwo/core/properties/eventproperty.h>                       // for EventProperty
-#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
-#include <inviwo/core/properties/ordinalproperty.h>                     // for OrdinalProperty
-#include <inviwo/core/properties/property.h>                            // for Property
-#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
-#include <inviwo/core/properties/stringproperty.h>                      // for StringProperty
-#include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
-#include <inviwo/core/util/formatdispatching.h>                         // for All, PrecisionVal...
-#include <inviwo/core/util/glmconvert.h>                                // for glm_convert
-#include <inviwo/core/util/glmutils.h>                                  // for value_type
-#include <inviwo/core/util/glmvec.h>                                    // for dvec4, vec4, size2_t
-#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
-#include <inviwo/core/util/stringconversion.h>                          // for toString
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layerutil.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/stringconversion.h>
 
-#include <cstddef>        // for size_t
-#include <functional>     // for __base
-#include <limits>         // for numeric_limits
-#include <memory>         // for shared_ptr, uniqu...
-#include <string>         // for string
-#include <string_view>    // for string_view
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
+#include <cstddef>
+#include <functional>
+#include <limits>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <unordered_set>
 
-#include <flags/flags.h>              // for any
-#include <glm/gtx/io.hpp>             // for operator<<
-#include <glm/vec2.hpp>               // for operator*, operator-
-#include <glm/vec4.hpp>               // for vec
-#include <glm/vector_relational.hpp>  // for any, greaterThan
+#include <flags/flags.h>
+#include <glm/gtx/io.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
+#include <glm/vector_relational.hpp>
 
 namespace inviwo {
 class Image;

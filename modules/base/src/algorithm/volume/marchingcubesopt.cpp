@@ -29,40 +29,40 @@
 
 #include <modules/base/algorithm/volume/marchingcubesopt.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, IndexBuffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/volume/volume.h>                   // IWYU pragma: keep
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/util/assertion.h>                                 // for IVW_ASSERT
-#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
-#include <inviwo/core/util/glmconvert.h>                                // for glm_convert
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t, vec4
-#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
-#include <inviwo/core/util/stdextensions.h>                             // for make_array, contains
-#include <modules/base/algorithm/volume/surfaceextraction.h>            // for encloseSurfce
-#include <modules/base/datastructures/disjointsets.h>                   // for DisjointSets
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/base/algorithm/volume/surfaceextraction.h>
+#include <modules/base/datastructures/disjointsets.h>
 
-#include <algorithm>      // for find_if, transform
-#include <bitset>         // for bitset, __bitset<...
-#include <cstdint>        // for uint32_t
-#include <iterator>       // for distance, back_in...
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for pair
+#include <algorithm>
+#include <bitset>
+#include <cstdint>
+#include <iterator>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
 
-#include <glm/common.hpp>                // for max
-#include <glm/ext/scalar_constants.hpp>  // for epsilon
-#include <glm/geometric.hpp>             // for normalize, cross
-#include <glm/gtx/component_wise.hpp>    // for compAdd
-#include <glm/gtx/norm.hpp>              // for length2
-#include <glm/gtx/normal.hpp>            // for triangleNormal
-#include <glm/vec2.hpp>                  // for vec<>::(anonymous)
-#include <glm/vec3.hpp>                  // for operator+, operator-
-#include <glm/vec4.hpp>                  // for vec
+#include <glm/common.hpp>
+#include <glm/ext/scalar_constants.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtx/component_wise.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/gtx/normal.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

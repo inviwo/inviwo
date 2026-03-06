@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/layerram.h>           // for LayerRAM
-#include <inviwo/core/datastructures/representationconverter.h>  // for RepresentationConverterT...
-#include <modules/opengl/image/layergl.h>                        // for LayerGL
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <modules/opengl/image/layergl.h>
 
-#include <memory>  // for shared_ptr
+#include <memory>
 
 namespace inviwo {
 class LayerRepresentation;

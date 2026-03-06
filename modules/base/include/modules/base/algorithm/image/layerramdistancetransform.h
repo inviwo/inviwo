@@ -29,26 +29,26 @@
 
 #pragma once
 
-#include <inviwo/core/datastructures/image/layer.h>     // for Layer
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>  // IWYU pragma: keep
-#include <inviwo/core/util/exception.h>                 // for Exception
-#include <inviwo/core/util/formatdispatching.h>         // for Scalars, PrecisionValueType
-#include <inviwo/core/util/glmconvert.h>                // for glm_convert_normalized
-#include <inviwo/core/util/glmutils.h>                  // for Vector, Matrix
-#include <inviwo/core/util/glmvec.h>                    // for i64vec2, size2_t
-#include <inviwo/core/util/indexmapper.h>               // for IndexMapper
-#include <inviwo/core/util/logcentral.h>                // for LogCentral
-#include <inviwo/core/util/stringconversion.h>          // for toString
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stringconversion.h>
 
-#include <stdlib.h>   // for size_t, abs
-#include <algorithm>  // for min
-#include <cmath>      // for sqrt
-#include <string>     // for operator+, basic_string, string
-#include <vector>     // for vector
+#include <stdlib.h>
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <vector>
 
-#include <glm/fwd.hpp>     // for int64
-#include <glm/matrix.hpp>  // for transpose
-#include <glm/vec2.hpp>    // for vec<>::(anonymous), operator*, opera...
+#include <glm/fwd.hpp>
+#include <glm/matrix.hpp>
+#include <glm/vec2.hpp>
 
 #ifdef IVW_USE_OPENMP
 #include <thread>

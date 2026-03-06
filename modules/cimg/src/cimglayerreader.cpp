@@ -29,15 +29,15 @@
 
 #include <modules/cimg/cimglayerreader.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, LayerType::Color
-#include <inviwo/core/datastructures/image/layer.h>       // for Layer, DataReaderType
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>    // IWYU pragma: keep
-#include <inviwo/core/io/datareader.h>                    // for DataReaderType
-#include <inviwo/core/util/formats.h>                     // for DataFormatId, DataFormatId::Not...
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/glmutils.h>
-#include <modules/cimg/cimgutils.h>  // for loadLayer
+#include <modules/cimg/cimgutils.h>
 
-#include <cstddef>  // for size_t
+#include <cstddef>
 
 namespace inviwo {
 class LayerRepresentation;

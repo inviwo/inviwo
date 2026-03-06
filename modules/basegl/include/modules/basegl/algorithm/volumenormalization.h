@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>                  // for bvec4
-#include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
-#include <modules/opengl/shader/shader.h>             // for Shader
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <array>        // for array
-#include <cstddef>      // for size_t
-#include <memory>       // for shared_ptr
-#include <string_view>  // for basic_string_view, string_view
+#include <array>
+#include <cstddef>
+#include <memory>
+#include <string_view>
 
 namespace inviwo {
 class Volume;

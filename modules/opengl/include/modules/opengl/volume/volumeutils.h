@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>  // for VolumeInport
+#include <inviwo/core/ports/volumeport.h>
 
-#include <string_view>  // for string_view
+#include <string_view>
 
 namespace inviwo {
 

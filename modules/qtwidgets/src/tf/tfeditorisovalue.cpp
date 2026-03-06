@@ -29,22 +29,22 @@
 
 #include <modules/qtwidgets/tf/tfeditorisovalue.h>
 
-#include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive, operator==
-#include <inviwo/core/util/glmvec.h>                 // for dvec2
-#include <modules/qtwidgets/tf/tfeditor.h>           // for TFEditor
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive
+#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/tf/tfeditor.h>
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <QColor>          // for QColor
-#include <QGraphicsScene>  // for QGraphicsScene
-#include <QLineF>          // for QLineF
-#include <QObject>         // for qobject_cast
-#include <QPainter>        // for QPainter
-#include <QPen>            // for QPen
-#include <QPointF>         // for QPointF
-#include <QSizeF>          // for QSizeF
-#include <Qt>              // for DashLine, NoBrush, RoundCap
-#include <glm/vec2.hpp>    // for vec<>::(anonymous)
+#include <QColor>
+#include <QGraphicsScene>
+#include <QLineF>
+#include <QObject>
+#include <QPainter>
+#include <QPen>
+#include <QPointF>
+#include <QSizeF>
+#include <Qt>
+#include <glm/vec2.hpp>
 #include <QGraphicsView>
 
 namespace inviwo {

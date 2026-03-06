@@ -29,22 +29,22 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
-#include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
-#include <inviwo/core/properties/ordinalproperty.h>        // for IntSizeTProperty, IntSize3Prop...
-#include <inviwo/core/properties/optionproperty.h>         // for IntSizeTProperty, IntSize3Prop...
-#include <inviwo/core/properties/property.h>               // for OverwriteState
-#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
-#include <inviwo/core/properties/stringproperty.h>         // for StringProperty
-#include <inviwo/core/properties/stringsproperty.h>        // for StringsProperty
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/stringsproperty.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 
-#include <array>        // for array
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <array>
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 class Volume;

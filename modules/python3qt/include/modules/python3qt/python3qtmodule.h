@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/python3qt/python3qtmoduledefine.h>  // for IVW_MODULE_PYTHON3QT_API
+#include <modules/python3qt/python3qtmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
-#include <inviwo/core/util/exception.h>       // for SourceContext, Exception
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/exception.h>
 
-#include <atomic>  // for atomic
-#include <memory>  // for unique_ptr
-#include <string>  // for string
+#include <atomic>
+#include <memory>
+#include <string>
 
 namespace inviwo {
 class InviwoApplication;

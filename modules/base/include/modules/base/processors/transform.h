@@ -29,22 +29,22 @@
 
 #pragma once
 
-#include <inviwo/core/datastructures/coordinatetransformer.h>  // for CoordinateSpace, Coordinat...
-#include <inviwo/core/ports/datainport.h>                      // for DataInport
-#include <inviwo/core/ports/dataoutport.h>                     // for DataOutport
-#include <inviwo/core/processors/processor.h>                  // for Processor
-#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>             // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>              // for Tags
-#include <inviwo/core/processors/processortraits.h>            // for ProcessorTraits
-#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
-#include <inviwo/core/properties/optionproperty.h>             // for OptionProperty, OptionProp...
-#include <modules/base/properties/transformlistproperty.h>     // for TransformListProperty
+#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/processors/processortraits.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <modules/base/properties/transformlistproperty.h>
 
-#include <memory>       // for shared_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

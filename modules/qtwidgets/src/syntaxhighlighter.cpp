@@ -29,14 +29,14 @@
 
 #include <modules/qtwidgets/syntaxhighlighter.h>
 
-#include <modules/qtwidgets/inviwoqtutils.h>  // for toQString, toQColor, getDefaultMonoSpaceFon...
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <chrono>       // for literals
-#include <string_view>  // for string_view
-#include <span>         // for span
+#include <chrono>
+#include <string_view>
+#include <span>
 
-#include <QRegularExpressionMatchIterator>  // for QRegularExpressionMatchIterator
-#include <fmt/core.h>                       // for format
+#include <QRegularExpressionMatchIterator>
+#include <fmt/core.h>
 
 class QTextCharFormat;
 

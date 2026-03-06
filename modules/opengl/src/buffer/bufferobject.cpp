@@ -29,20 +29,20 @@
 
 #include <modules/opengl/buffer/bufferobject.h>
 
-#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for BufferTarget, BufferUsage
-#include <inviwo/core/util/formats.h>                          // for DataFormatBase, NumericType
-#include <inviwo/core/util/logcentral.h>                       // for LogCentral
-#include <inviwo/core/util/observer.h>                         // for Observable
-#include <modules/opengl/buffer/bufferobjectobserver.h>        // for BufferObjectObserver
-#include <modules/opengl/glformats.h>                          // for GLFormat, operator!=, GLFo...
-#include <modules/opengl/inviwoopengl.h>                       // for GLenum, GLsizeiptr, glVert...
-#include <modules/opengl/openglexception.h>                    // for OpenGLException
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/observer.h>
+#include <modules/opengl/buffer/bufferobjectobserver.h>
+#include <modules/opengl/glformats.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglexception.h>
 #include <inviwo/core/resourcemanager/resource.h>
 
-#include <chrono>       // for literals
-#include <cstring>      // for memcpy
-#include <type_traits>  // for remove_reference<>::type
-#include <utility>      // for move
+#include <chrono>
+#include <cstring>
+#include <type_traits>
+#include <utility>
 
 namespace inviwo {
 

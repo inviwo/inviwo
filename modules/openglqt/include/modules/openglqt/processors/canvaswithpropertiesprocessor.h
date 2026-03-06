@@ -29,26 +29,26 @@
 
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, operator<<
-#include <inviwo/core/io/datawriter.h>                    // for Overwrite
-#include <inviwo/core/ports/imageport.h>                  // for ImageInport
-#include <inviwo/core/processors/exporter.h>              // for Exporter
-#include <inviwo/core/processors/processor.h>             // for Processor
-#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
-#include <inviwo/core/properties/optionproperty.h>        // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>       // for IntSize2Property, IntSizeTProperty
-#include <inviwo/core/properties/stringproperty.h>        // for StringProperty
-#include <inviwo/core/util/staticstring.h>                // for operator+
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/exporter.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/staticstring.h>
 
-#include <functional>   // for __base
-#include <memory>       // for unique_ptr
-#include <optional>     // for optional
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==, string_view
-#include <vector>       // for operator!=, vector, operator==
+#include <functional>
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

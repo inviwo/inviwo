@@ -29,31 +29,31 @@
 
 #include <modules/qtwidgets/properties/valuedragger.h>
 
-#include <modules/qtwidgets/inviwoqtutils.h>               // for emToPx
-#include <modules/qtwidgets/numberlineedit.h>              // for NumberLineEdit
-#include <modules/qtwidgets/properties/indicatorwidget.h>  // for IndicatorWidget
-#include <QColor>                                          // for QColor
-#include <QFlags>                                          // for QFlags
-#include <QMouseEvent>                                     // for QMouseEvent
-#include <QPainter>                                        // for QPainter, QPainter::Antialiasing
-#include <QPalette>                                        // for QPalette, QPalette::Active
-#include <QPen>                                            // for QPen
-#include <QPointF>                                         // for QPointF
-#include <QSizeF>                                          // for QSizeF
-#include <QSizePolicy>                                     // for QSizePolicy, QSizePolicy::Fixed
-#include <QString>                                         // for QString
-#include <QStyle>                                          // for QStyle, QStyle::State_Enabled
-#include <QStyleOption>                                    // for QStyleOption
-#include <QTimerEvent>                                     // for QTimerEvent
-#include <QToolTip>                                        // for QToolTip
-#include <QTransform>                                      // for QTransform
-#include <Qt>                                              // for LeftButton, NoBrush, FlatCap
-#include <QPainterPath>                                    // for QPainterPath
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/numberlineedit.h>
+#include <modules/qtwidgets/properties/indicatorwidget.h>
+#include <QColor>
+#include <QFlags>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPalette>
+#include <QPen>
+#include <QPointF>
+#include <QSizeF>
+#include <QSizePolicy>
+#include <QString>
+#include <QStyle>
+#include <QStyleOption>
+#include <QTimerEvent>
+#include <QToolTip>
+#include <QTransform>
+#include <Qt>
+#include <QPainterPath>
 
-#include <algorithm>    // for max, min
-#include <cmath>        // for pow, remainder, abs
-#include <memory>       // for unique_ptr, make_unique
-#include <type_traits>  // for enable_if_t, is_integral
+#include <algorithm>
+#include <cmath>
+#include <memory>
+#include <type_traits>
 
 namespace inviwo {
 

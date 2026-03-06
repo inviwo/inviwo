@@ -29,24 +29,24 @@
 
 #include <modules/qtwidgets/properties/isotfpropertywidgetqt.h>
 
-#include <inviwo/core/datastructures/isovaluecollection.h>    // for IsoValueCollection
-#include <inviwo/core/datastructures/transferfunction.h>      // for TransferFunction
-#include <inviwo/core/network/networklock.h>                  // for NetworkLock
-#include <inviwo/core/properties/isotfproperty.h>             // for IsoTFProperty
-#include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
-#include <inviwo/core/properties/property.h>                  // for Property
-#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
-#include <modules/qtwidgets/editablelabelqt.h>                // for EditableLabelQt
-#include <modules/qtwidgets/inviwowidgetsqt.h>                // for IvwPushButton
-#include <modules/qtwidgets/properties/propertywidgetqt.h>    // for PropertyWidgetQt
-#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>  // for TFPushButton
-#include <modules/qtwidgets/tf/tfpropertydialog.h>            // for TFPropertyDialog
-#include <modules/qtwidgets/tf/tfutils.h>                     // for exportToFile, importFromFile
+#include <inviwo/core/datastructures/isovaluecollection.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
+#include <modules/qtwidgets/tf/tfpropertydialog.h>
+#include <modules/qtwidgets/tf/tfutils.h>
 
-#include <QAction>      // for QAction
-#include <QHBoxLayout>  // for QHBoxLayout
-#include <QMenu>        // for QMenu
-#include <QSizePolicy>  // for QSizePolicy, QSizePolicy::F...
+#include <QAction>
+#include <QHBoxLayout>
+#include <QMenu>
+#include <QSizePolicy>
 
 class QHBoxLayout;
 

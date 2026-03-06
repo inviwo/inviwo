@@ -28,20 +28,20 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/properties/compositeproperty.h>                  // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
-#include <inviwo/core/properties/optionproperty.h>                     // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                    // for FloatProperty
-#include <inviwo/core/properties/propertysemantics.h>                  // for PropertySemantics
-#include <inviwo/core/util/staticstring.h>                             // for operator+
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>  // for StipplingSettingsI...
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
 
-#include <functional>   // for __base
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==, string...
-#include <vector>       // for operator!=, vector
+#include <functional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class Shader;

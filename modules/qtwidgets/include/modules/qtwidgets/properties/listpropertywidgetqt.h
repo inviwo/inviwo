@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS...
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>  // for CompositePropertyWid...
+#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 
-#include <cstddef>  // for size_t
-#include <memory>   // for unique_ptr
+#include <cstddef>
+#include <memory>
 
 class QMenu;
 class QToolButton;

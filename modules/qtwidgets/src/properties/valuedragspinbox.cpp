@@ -29,14 +29,14 @@
 
 #include <modules/qtwidgets/properties/valuedragspinbox.h>
 
-#include <modules/qtwidgets/numberlineedit.h>           // for NumberLineEdit
-#include <modules/qtwidgets/properties/valuedragger.h>  // for ValueDragger
+#include <modules/qtwidgets/numberlineedit.h>
+#include <modules/qtwidgets/properties/valuedragger.h>
 
-#include <QAbstractSpinBox>  // for QAbstractSpinBox, QAbstractSpinBo...
-#include <QDoubleSpinBox>    // for QDoubleSpinBox
-#include <QHBoxLayout>       // for QHBoxLayout
-#include <QSpinBox>          // for QSpinBox
-#include <Qt>                // for ClickFocus, WheelFocus
+#include <QAbstractSpinBox>
+#include <QDoubleSpinBox>
+#include <QHBoxLayout>
+#include <QSpinBox>
+#include <Qt>
 
 namespace inviwo {
 

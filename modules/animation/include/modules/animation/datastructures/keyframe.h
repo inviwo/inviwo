@@ -28,13 +28,13 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
+#include <modules/animation/animationmoduledefine.h>
 
-#include <inviwo/core/io/serialization/serializable.h>          // for Serializable
-#include <modules/animation/datastructures/animationtime.h>     // for Seconds
-#include <modules/animation/datastructures/keyframeobserver.h>  // for KeyframeObservable
+#include <inviwo/core/io/serialization/serializable.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
 
-#include <chrono>  // for operator<, operator<=, opera...
+#include <chrono>
 
 namespace inviwo {
 class Deserializer;

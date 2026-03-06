@@ -29,7 +29,7 @@
 
 #include <modules/animation/datastructures/keyframeobserver.h>
 
-#include <modules/animation/datastructures/animationtime.h>  // for Seconds
+#include <modules/animation/datastructures/animationtime.h>
 
 namespace inviwo {
 

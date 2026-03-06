@@ -29,35 +29,35 @@
 
 #include <modules/qtwidgets/properties/tfprimitivesetwidgetqt.h>
 
-#include <inviwo/core/datastructures/datamapper.h>                         // for DataMapper
-#include <inviwo/core/datastructures/tfprimitive.h>                        // for TFPrimitiveData
-#include <inviwo/core/datastructures/tfprimitiveset.h>                     // for TFPrimitiveSet
-#include <inviwo/core/network/networklock.h>                               // for NetworkLock
-#include <inviwo/core/ports/volumeport.h>                                  // for VolumeInport
-#include <inviwo/core/properties/isovalueproperty.h>                       // for IsoValueProperty
-#include <inviwo/core/properties/property.h>                               // for Property
-#include <inviwo/core/properties/propertysemantics.h>                      // for PropertySemantics
-#include <inviwo/core/properties/transferfunctionproperty.h>               // for TransferFuncti...
-#include <inviwo/core/util/colorconversion.h>                              // for hex2rgba, rgb2hex
-#include <inviwo/core/util/exception.h>                                    // for Exception
-#include <inviwo/core/util/glmvec.h>                                       // for dvec2, vec3, vec4
-#include <inviwo/core/util/logcentral.h>                                   // for LogCentral
-#include <inviwo/core/util/transformiterator.h>                            // for TransformIterator
-#include <modules/qtwidgets/editablelabelqt.h>                             // for EditableLabelQt
-#include <modules/qtwidgets/inviwoqtutils.h>                               // for fromQString
-#include <modules/qtwidgets/properties/propertywidgetqt.h>                 // for PropertyWidgetQt
-#include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>  // for MultilineTextEdit
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/colorconversion.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/transformiterator.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/properties/stringmultilinepropertywidgetqt.h>
 
-#include <QHBoxLayout>   // for QHBoxLayout
-#include <QSizePolicy>   // for QSizePolicy
-#include <QString>       // for operator!=
-#include <QTextCursor>   // for QTextCursor
-#include <glm/vec2.hpp>  // for vec<>::(anonym...
+#include <QHBoxLayout>
+#include <QSizePolicy>
+#include <QString>
+#include <QTextCursor>
+#include <glm/vec2.hpp>
 
-#include <cstddef>      // for size_t
-#include <sstream>      // for char_traits
-#include <stdexcept>    // for invalid_argument
-#include <type_traits>  // for remove_extent_t
+#include <cstddef>
+#include <sstream>
+#include <stdexcept>
+#include <type_traits>
 
 class QHBoxLayout;
 

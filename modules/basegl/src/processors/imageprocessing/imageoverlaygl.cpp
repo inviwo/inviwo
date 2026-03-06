@@ -29,34 +29,34 @@
 
 #include <modules/basegl/processors/imageprocessing/imageoverlaygl.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>   // for ImageType, ImageType::ColorDep...
-#include <inviwo/core/interaction/events/event.h>          // for Event
-#include <inviwo/core/interaction/events/resizeevent.h>    // for ResizeEvent
-#include <inviwo/core/ports/imageport.h>                   // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>         // for CodeState, CodeState::Experime...
-#include <inviwo/core/processors/processortags.h>          // for Tags, Tags::GL
-#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>      // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
-#include <inviwo/core/properties/optionproperty.h>         // for OptionPropertyOption, OptionPr...
-#include <inviwo/core/properties/ordinalproperty.h>        // for FloatVec2Property, IntVec2Prop...
-#include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
-#include <inviwo/core/util/glmvec.h>                       // for vec2, ivec2, ivec4, vec4, uvec2
-#include <inviwo/core/util/staticstring.h>                 // for operator+
-#include <inviwo/core/util/rendercontext.h>                // for RenderContext
-#include <modules/basegl/viewmanager.h>                    // for ViewManager, ViewManager::View
-#include <modules/opengl/openglutils.h>                    // for BlendModeState, DepthFuncState
-#include <modules/opengl/shader/shader.h>                  // for Shader, Shader::Build
-#include <modules/opengl/shader/shaderobject.h>            // for ShaderObject
-#include <modules/opengl/texture/textureunit.h>            // for TextureUnit
-#include <modules/opengl/texture/textureutils.h>           // for activateTargetAndCopySource
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <modules/basegl/viewmanager.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 
-#include <cstddef>  // for size_t
+#include <cstddef>
 
-#include <glm/vec2.hpp>  // for operator*, vec<>::(anonymous)
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 class Deserializer;

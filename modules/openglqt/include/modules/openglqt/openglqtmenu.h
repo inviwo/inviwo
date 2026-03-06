@@ -29,15 +29,15 @@
 
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager, ShaderManager::Callback
+#include <modules/opengl/shader/shadermanager.h>
 
-#include <memory>         // for shared_ptr, unique_ptr
-#include <unordered_map>  // for unordered_map
+#include <memory>
+#include <unordered_map>
 
-#include <QMenu>    // for QMenu
-#include <QObject>  // for Q_OBJECT
+#include <QMenu>
+#include <QObject>
 
 class QWidget;
 

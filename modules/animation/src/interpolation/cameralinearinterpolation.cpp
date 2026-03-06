@@ -29,26 +29,26 @@
 
 #include <modules/animation/interpolation/cameralinearinterpolation.h>
 
-#include <inviwo/core/io/serialization/serializebase.h>       // for SerializationTarget, Serial...
-#include <inviwo/core/io/serialization/serializer.h>          // for Serializer
-#include <inviwo/core/util/glmvec.h>                          // for dvec3
-#include <modules/animation/datastructures/animationtime.h>   // for Seconds
-#include <modules/animation/datastructures/camerakeyframe.h>  // for CameraKeyframe, CameraKeyfr...
-#include <modules/animation/interpolation/interpolation.h>    // for Interpolation
+#include <inviwo/core/io/serialization/serializebase.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/camerakeyframe.h>
+#include <modules/animation/interpolation/interpolation.h>
 
-#include <algorithm>  // for upper_bound
-#include <chrono>     // for operator-, operator<, opera...
-#include <iterator>   // for prev
-#include <ratio>      // for ratio
+#include <algorithm>
+#include <chrono>
+#include <iterator>
+#include <ratio>
 
-#include <glm/common.hpp>                    // for mix
-#include <glm/detail/qualifier.hpp>          // for defaultp
-#include <glm/detail/type_quat.hpp>          // for operator*, qua::qua<T, Q>
-#include <glm/ext/quaternion_common.hpp>     // for slerp
-#include <glm/ext/quaternion_geometric.hpp>  // for dot
-#include <glm/geometric.hpp>                 // for cross, normalize, dot
-#include <glm/gtx/quaternion.hpp>            // for quat_identity, rotation
-#include <glm/vec3.hpp>                      // for operator*, operator+
+#include <glm/common.hpp>
+#include <glm/detail/qualifier.hpp>
+#include <glm/detail/type_quat.hpp>
+#include <glm/ext/quaternion_common.hpp>
+#include <glm/ext/quaternion_geometric.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 class Deserializer;

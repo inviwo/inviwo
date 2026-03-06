@@ -29,25 +29,25 @@
 
 #include <modules/base/processors/volumesequencesingletimestepsampler.h>
 
-#include <inviwo/core/ports/dataoutport.h>           // for DataOutport
-#include <inviwo/core/ports/outportiterable.h>       // for OutportIterableImpl<>::const_iterator
-#include <inviwo/core/ports/volumeport.h>            // for VolumeSequenceInport
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Experimental
-#include <inviwo/core/processors/processortags.h>    // for Tags, Tags::None
-#include <inviwo/core/properties/ordinalproperty.h>  // for DoubleProperty
-#include <inviwo/core/properties/valuewrapper.h>     // for PropertySerializationMode, PropertyS...
-#include <inviwo/core/util/logcentral.h>             // for LogCentral
-#include <inviwo/core/util/spatialsampler.h>         // for SpatialSampler
-#include <inviwo/core/util/volumesequenceutils.h>    // for getTimestamp, hasTimestamp, getTimes...
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/core/util/volumesequenceutils.h>
 
-#include <functional>   // for __base
-#include <string_view>  // for string_view
-#include <utility>      // for pair
+#include <functional>
+#include <string_view>
+#include <utility>
 
-#include <fmt/core.h>   // for format
-#include <glm/fwd.hpp>  // for uvec3
+#include <fmt/core.h>
+#include <glm/fwd.hpp>
 
 namespace inviwo {
 

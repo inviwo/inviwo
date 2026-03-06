@@ -28,20 +28,20 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMAT...
+#include <modules/animation/animationmoduledefine.h>
 
-#include <modules/animation/datastructures/animationstate.h>            // for AnimationState
-#include <modules/animation/datastructures/animationtime.h>             // for Seconds
-#include <modules/animation/datastructures/basetrack.h>                 // for BaseTrack<>::key_...
-#include <modules/animation/datastructures/callbackkeyframe.h>          // for CallbackKeyframe
-#include <modules/animation/datastructures/callbackkeyframesequence.h>  // for CallbackKeyframeS...
-#include <modules/animation/datastructures/keyframe.h>                  // for operator<
-#include <modules/animation/datastructures/keyframesequence.h>          // for operator<
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/basetrack.h>
+#include <modules/animation/datastructures/callbackkeyframe.h>
+#include <modules/animation/datastructures/callbackkeyframesequence.h>
+#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/keyframesequence.h>
 
-#include <functional>  // for __base
-#include <memory>      // for unique_ptr
-#include <string>      // for basic_string, string
-#include <vector>      // for vector
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace inviwo {
 

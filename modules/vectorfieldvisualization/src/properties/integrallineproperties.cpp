@@ -29,12 +29,12 @@
 
 #include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 
-#include <inviwo/core/datastructures/coordinatetransformer.h>  // for CoordinateSpace, Coordinat...
-#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
-#include <inviwo/core/properties/optionproperty.h>             // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>            // for FloatProperty, IntProperty
-#include <inviwo/core/util/staticstring.h>                     // for operator+
+#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/staticstring.h>
 
 namespace inviwo {
 

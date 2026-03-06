@@ -31,8 +31,8 @@
 #include <inviwo/core/io/serialization/serializer.h>    // IWYU pragma: keep
 #include <inviwo/core/io/serialization/deserializer.h>  // IWYU pragma: keep
 
-#include <modules/animation/datastructures/animationtime.h>  // for Seconds
-#include <modules/animation/datastructures/basekeyframe.h>   // for BaseKeyframe
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/basekeyframe.h>
 
 namespace inviwo {
 

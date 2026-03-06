@@ -29,28 +29,28 @@
 
 #include <modules/base/processors/pointgenerationprocessor.h>
 
-#include <inviwo/core/datastructures/camera/camera.h>  // for mat4
-#include <inviwo/core/ports/dataoutport.h>             // for DataOutport
-#include <inviwo/core/ports/outportiterable.h>         // for OutportIterableImpl<>::const_i...
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::CPU
-#include <inviwo/core/util/glmmat.h>                   // for dmat4
-#include <inviwo/core/util/glmvec.h>                   // for vec3, vec4, vec2, dvec3, size3_t
-#include <inviwo/core/util/staticstring.h>             // for operator+
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
 
-#include <cstddef>      // for size_t
-#include <functional>   // for __base
-#include <iterator>     // for back_insert_iterator, back_ins...
-#include <memory>       // for shared_ptr, make_shared
-#include <optional>     // for optional, nullopt
-#include <string_view>  // for string_view
+#include <cstddef>
+#include <functional>
+#include <iterator>
+#include <memory>
+#include <optional>
+#include <string_view>
 
-#include <fmt/core.h>                         // for format, basic_string_view
-#include <fmt/format.h>                       // for formatbuf<>::int_type, formatb...
-#include <glm/gtx/scalar_multiplication.hpp>  // for operator*
-#include <glm/vec3.hpp>                       // for operator+, operator*, vec, ope...
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <glm/gtx/scalar_multiplication.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

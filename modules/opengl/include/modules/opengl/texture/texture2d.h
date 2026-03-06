@@ -29,17 +29,17 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for rgba, SwizzleMask
-#include <inviwo/core/util/glmvec.h>                      // for size2_t
-#include <modules/opengl/inviwoopengl.h>                  // for GLenum, GL_CLAMP_TO_EDGE, GLint
-#include <modules/opengl/texture/texture.h>               // for Texture
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/texture/texture.h>
 
-#include <array>    // for array
-#include <cstddef>  // for size_t
+#include <array>
+#include <cstddef>
 
-#include <glm/vec2.hpp>  // for vec<>::(anonymous)
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 struct GLFormat;

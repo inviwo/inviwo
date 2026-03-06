@@ -35,7 +35,7 @@
 #include <pybind11/functional.h>
 #include <pybind11/stl/filesystem.h>
 
-#include <inviwo/core/datastructures/bitset.h>  // for BitSet
+#include <inviwo/core/datastructures/bitset.h>
 
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>

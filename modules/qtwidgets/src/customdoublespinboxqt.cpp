@@ -29,11 +29,11 @@
 
 #include <modules/qtwidgets/customdoublespinboxqt.h>
 
-#include <limits>  // for numeric_limits, numeric_limits<>::max_exponent
+#include <limits>
 
-#include <QLocale>         // for QLocale
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <QTimerEvent>     // for QTimerEvent
+#include <QLocale>
+#include <QSignalBlocker>
+#include <QTimerEvent>
 
 class QWidget;
 

@@ -28,14 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>  // for IVW_MODULE_DATAFRAMEQT_API
+#include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
 
-#include <inviwo/core/processors/processor.h>                // for Processor, Processor::NameDi...
-#include <modules/qtwidgets/processors/processorwidgetqt.h>  // for ProcessorWidgetQt
+#include <inviwo/core/processors/processor.h>
+#include <modules/qtwidgets/processors/processorwidgetqt.h>
 
-#include <memory>  // for shared_ptr, unique_ptr
+#include <memory>
 
-#include <QObject>  // for Q_OBJECT
+#include <QObject>
 
 namespace inviwo {
 

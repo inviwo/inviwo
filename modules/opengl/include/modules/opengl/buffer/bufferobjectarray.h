@@ -29,15 +29,15 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/util/canvas.h>             // for Canvas, Canvas::ContextID
-#include <modules/opengl/buffer/bufferobject.h>  // for BufferObject, BufferObject::BindingType
-#include <modules/opengl/inviwoopengl.h>         // for GLuint
+#include <inviwo/core/util/canvas.h>
+#include <modules/opengl/buffer/bufferobject.h>
+#include <modules/opengl/inviwoopengl.h>
 
-#include <cstddef>  // for size_t
-#include <utility>  // for pair
-#include <vector>   // for vector
+#include <cstddef>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 

@@ -29,8 +29,8 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/transferfunction.h>  // For TransferFunction
-#include <inviwo/core/io/datareader.h>                    // for DataReaderType
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/io/datareader.h>
 #include <inviwo/core/datastructures/image/layer.h>
 
 #include <memory>

@@ -27,24 +27,24 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/processors/processor.h>                // for Processor
-#include <inviwo/core/processors/processorwidget.h>          // for ProcessorWidget
-#include <inviwo/core/util/glmvec.h>                         // for ivec2
-#include <inviwo/core/util/raiiutils.h>                      // for KeepTrueWhileInScope
-#include <modules/qtwidgets/inviwoqtutils.h>                 // for setFullScreenAndOnTop, toGLM
-#include <modules/qtwidgets/processors/processorwidgetqt.h>  // for ProcessorWidgetQt, Processor...
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/processors/processorwidgetqt.h>
 
-#include <functional>   // for __base
-#include <string_view>  // for string_view
+#include <functional>
+#include <string_view>
 
-#include <QMainWindow>              // for QMainWindow
-#include <QMoveEvent>               // for QMoveEvent
-#include <QPoint>                   // for QPoint
-#include <QResizeEvent>             // for QResizeEvent
-#include <QWidget>                  // for QWidget
-#include <Qt>                       // for Tool, Window, WindowFlags
-#include <glm/ext/vector_int2.hpp>  // for ivec2
-#include <glm/vec2.hpp>             // for vec<>::(anonymous), operator!=
+#include <QMainWindow>
+#include <QMoveEvent>
+#include <QPoint>
+#include <QResizeEvent>
+#include <QWidget>
+#include <Qt>
+#include <glm/ext/vector_int2.hpp>
+#include <glm/vec2.hpp>
 
 class QCloseEvent;
 class QHideEvent;

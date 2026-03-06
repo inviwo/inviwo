@@ -29,25 +29,25 @@
 
 #include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
 
-#include <inviwo/core/properties/optionproperty.h>          // for BaseOptionProperty
-#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
-#include <modules/qtwidgets/inviwoqtutils.h>                // for toQString
-#include <modules/qtwidgets/inviwowidgetsqt.h>              // for IvwComboBox
-#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+#include <inviwo/core/properties/optionproperty.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <algorithm>  // for min
-#include <cstddef>    // for size_t
-#include <memory>     // for unique_ptr
+#include <algorithm>
+#include <cstddef>
+#include <memory>
 
-#include <QComboBox>       // for QComboBox
-#include <QGridLayout>     // for QGridLayout
-#include <QHBoxLayout>     // for QHBoxLayout
-#include <QMenu>           // for QMenu
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <QSizePolicy>     // for QSizePolicy
-#include <QString>         // for operator!=, QString
-#include <QWidget>         // for QWidget
-#include <Qt>              // for CustomContextMenu
+#include <QComboBox>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QMenu>
+#include <QSignalBlocker>
+#include <QSizePolicy>
+#include <QString>
+#include <QWidget>
+#include <Qt>
 
 class QHBoxLayout;
 class QPoint;

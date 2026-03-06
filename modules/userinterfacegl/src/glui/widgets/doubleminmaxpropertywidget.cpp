@@ -29,17 +29,17 @@
 
 #include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>
 
-#include <inviwo/core/properties/minmaxproperty.h>             // for DoubleMinMaxProperty, MinM...
-#include <inviwo/core/properties/propertywidget.h>             // for PropertyWidget
-#include <inviwo/core/util/glmvec.h>                           // for ivec2, dvec2
-#include <modules/userinterfacegl/glui/element.h>              // for UIOrientation
-#include <modules/userinterfacegl/glui/widgets/rangeslider.h>  // for RangeSlider
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/userinterfacegl/glui/element.h>
+#include <modules/userinterfacegl/glui/widgets/rangeslider.h>
 
-#include <algorithm>   // for min
-#include <cmath>       // for round
-#include <functional>  // for __base, function
+#include <algorithm>
+#include <cmath>
+#include <functional>
 
-#include <glm/vec2.hpp>  // for vec<>::(anonymous), operat...
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 class Processor;

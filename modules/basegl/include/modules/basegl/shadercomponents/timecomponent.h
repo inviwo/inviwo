@@ -28,19 +28,19 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/properties/boolcompositeproperty.h>     // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>              // for BoolProperty
-#include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel
-#include <inviwo/core/properties/ordinalproperty.h>           // for IntProperty
-#include <inviwo/core/util/timer.h>                           // for Timer
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/timer.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
 
-#include <functional>   // for function
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <functional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class Property;

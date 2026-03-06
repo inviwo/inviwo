@@ -29,15 +29,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
-#include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent
+#include <inviwo/core/ports/volumeport.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <tuple>        // for tuple
-#include <vector>       // for vector
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <vector>
 #include <optional>
 
 namespace inviwo {

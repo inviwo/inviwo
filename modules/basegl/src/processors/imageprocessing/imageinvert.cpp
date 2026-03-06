@@ -29,12 +29,12 @@
 
 #include <modules/basegl/processors/imageprocessing/imageinvert.h>
 
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
-#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 
-#include <string>  // for string
+#include <string>
 
 namespace inviwo {
 const ProcessorInfo ImageInvert::processorInfo_{

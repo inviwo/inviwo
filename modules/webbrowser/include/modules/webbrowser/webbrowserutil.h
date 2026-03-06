@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
+#include <modules/webbrowser/webbrowsermoduledefine.h>
 
 #include <inviwo/core/util/logcentral.h>
 
-#include <tuple>  // for tuple
+#include <tuple>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/cef_base.h>  // for CefBrowserSettings
+#include <include/cef_base.h>
 
 #include <warn/pop>
 

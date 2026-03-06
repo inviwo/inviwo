@@ -29,40 +29,40 @@
 
 #include <modules/base/io/datvolumewriter.h>
 
-#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
-#include <inviwo/core/datastructures/image/imagetypes.h>                // for enumToStr, Swizzl...
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/unitsystem.h>                      // for Axis, Unit
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, DataWrite...
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
-#include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
-#include <inviwo/core/io/inviwofileformattypes.h>                       // for ByteOrder...
-#include <inviwo/core/metadata/metadata.h>                              // for StringMetaData
-#include <inviwo/core/metadata/metadatamap.h>                           // for MetaDataMap
-#include <inviwo/core/util/fileextension.h>                             // for FileExtension
-#include <inviwo/core/util/filesystem.h>                                // for ofstream, getFile...
-#include <inviwo/core/util/stdextensions.h>                             // for overloaded
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterexception.h>
+#include <inviwo/core/io/inviwofileformattypes.h>
+#include <inviwo/core/metadata/metadata.h>
+#include <inviwo/core/metadata/metadatamap.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stdextensions.h>
 
-#include <array>          // for array
-#include <fstream>        // for stringstream, bas...
-#include <memory>         // for unique_ptr
-#include <string>         // for char_traits, string
-#include <unordered_set>  // for unordered_set
-#include <vector>         // for vector
+#include <array>
+#include <fstream>
+#include <memory>
+#include <string>
+#include <unordered_set>
+#include <vector>
 
-#include <fmt/core.h>     // for basic_string_view
-#include <fmt/format.h>   // for join
-#include <fmt/ostream.h>  // for print
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <fmt/std.h>
 
-#include <glm/fwd.hpp>           // for mat4, mat3, vec3
-#include <glm/gtc/type_ptr.hpp>  // for value_ptr
-#include <glm/gtx/range.hpp>     // for begin, end
-#include <glm/mat3x3.hpp>        // for mat<>::col_type
-#include <glm/mat4x4.hpp>        // for mat<>::col_type
-#include <glm/matrix.hpp>        // for transpose
+#include <glm/fwd.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/range.hpp>
+#include <glm/mat3x3.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/matrix.hpp>
 
 namespace inviwo {
 

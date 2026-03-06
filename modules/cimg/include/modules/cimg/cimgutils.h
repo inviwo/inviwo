@@ -29,16 +29,16 @@
 
 #pragma once
 
-#include <modules/cimg/cimgmoduledefine.h>  // for IVW_MODULE_CIMG_API
+#include <modules/cimg/cimgmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for SwizzleMask
-#include <inviwo/core/util/formats.h>                     // for DataFormatId, DataFormatBase (p...
-#include <inviwo/core/util/glmvec.h>                      // for uvec2, size3_t, dvec2
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <memory>       // for unique_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 #include <filesystem>
 
 namespace inviwo {

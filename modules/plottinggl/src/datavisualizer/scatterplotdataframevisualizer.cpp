@@ -29,26 +29,26 @@
 
 #include <modules/plottinggl/datavisualizer/scatterplotdataframevisualizer.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                // for InviwoApplication
-#include <inviwo/core/io/datareaderfactory.h>                    // for DataReaderFactory
-#include <inviwo/core/network/processornetwork.h>                // for ProcessorNetwork
-#include <inviwo/core/ports/outport.h>                           // for Outport
-#include <inviwo/core/processors/processor.h>                    // for Processor
-#include <inviwo/core/processors/processorutils.h>               // for makeProcessor, GridPos
-#include <inviwo/core/properties/optionproperty.h>               // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>              // for FloatVec4Property, IntSi...
-#include <inviwo/core/rendering/datavisualizer.h>                // for DataVisualizer
-#include <inviwo/core/util/document.h>                           // for Document, Document::Docu...
-#include <inviwo/core/util/fileextension.h>                      // for FileExtension
-#include <inviwo/core/util/glmvec.h>                             // for ivec2, vec4
-#include <inviwo/dataframe/datastructures/dataframe.h>           // for DataFrameOutport
-#include <inviwo/dataframe/processors/csvsource.h>               // for CSVSource
-#include <modules/basegl/processors/background.h>                // for Background, Background::...
-#include <modules/opengl/canvasprocessorgl.h>                    // for CanvasProcessorGL
-#include <modules/plottinggl/processors/scatterplotprocessor.h>  // for ScatterPlotProcessor
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/rendering/datavisualizer.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/processors/csvsource.h>
+#include <modules/basegl/processors/background.h>
+#include <modules/opengl/canvasprocessorgl.h>
+#include <modules/plottinggl/processors/scatterplotprocessor.h>
 
-#include <map>     // for map
-#include <memory>  // for unique_ptr
+#include <map>
+#include <memory>
 
 namespace inviwo {
 class Inport;

@@ -29,31 +29,31 @@
 
 #include <modules/basegl/algorithm/volumenormalization.h>
 
-#include <inviwo/core/datastructures/data.h>                            // for noData
-#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
-#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/glmvec.h>                                    // for bvec4, size3_t
+#include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/exception.h>
-#include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
-#include <modules/opengl/inviwoopengl.h>              // for glViewport, GLsizei
-#include <modules/opengl/shader/shader.h>             // for Shader, Shader::B...
-#include <modules/opengl/shader/shaderobject.h>       // for ShaderObject
-#include <modules/opengl/shader/shadertype.h>         // for ShaderType, Shade...
-#include <modules/opengl/shader/shaderutils.h>        // for findShaderResource
-#include <modules/opengl/texture/textureunit.h>       // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>      // for multiDrawImagePla...
-#include <modules/opengl/volume/volumegl.h>           // for VolumeGL
-#include <modules/opengl/volume/volumeutils.h>        // for bindAndSetUniforms
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/volume/volumegl.h>
+#include <modules/opengl/volume/volumeutils.h>
 
-#include <type_traits>    // for remove_extent_t
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for pair
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
 
-#include <glm/vec3.hpp>  // for vec<>::(anonymous)
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

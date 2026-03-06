@@ -28,12 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
+#include <modules/animation/animationmoduledefine.h>
 
-#include <inviwo/core/util/observer.h>                       // for Observable, Observer
-#include <modules/animation/datastructures/animationtime.h>  // for Seconds
+#include <inviwo/core/util/observer.h>
+#include <modules/animation/datastructures/animationtime.h>
 
-#include <vector>  // for vector
+#include <vector>
 
 namespace inviwo {
 

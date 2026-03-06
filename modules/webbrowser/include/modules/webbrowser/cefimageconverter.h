@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>  // for IVW_MODULE_WEBBROWSER_API
+#include <modules/webbrowser/webbrowsermoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>       // for vec3
-#include <modules/opengl/shader/shader.h>  // for Shader, Shader::Build
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <string_view>  // for string_view
+#include <string_view>
 
 namespace inviwo {
 class Texture2D;

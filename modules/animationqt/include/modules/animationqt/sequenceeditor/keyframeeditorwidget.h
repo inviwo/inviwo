@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMATIONQT_API
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <inviwo/core/properties/property.h>                    // for Property
-#include <modules/animation/datastructures/animationtime.h>     // for Seconds
-#include <modules/animation/datastructures/keyframeobserver.h>  // for KeyframeObserver
+#include <inviwo/core/properties/property.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/keyframeobserver.h>
 
-#include <memory>  // for unique_ptr
+#include <memory>
 
-#include <QWidget>  // for QWidget
+#include <QWidget>
 
 class QComboBox;
 class QHBoxLayout;

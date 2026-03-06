@@ -29,14 +29,14 @@
 
 #include <modules/opengl/buffer/bufferglconverter.h>
 
-#include <inviwo/core/datastructures/buffer/bufferram.h>         // for createBufferRAM
-#include <inviwo/core/datastructures/representationconverter.h>  // for ConverterException
-#include <inviwo/core/util/formats.h>                            // for DataFormatBase
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/sourcecontext.h>
-#include <modules/opengl/buffer/buffergl.h>  // for BufferGL
+#include <modules/opengl/buffer/buffergl.h>
 
-#include <string>       // for operator+, string
-#include <type_traits>  // for remove_extent_t
+#include <string>
+#include <type_traits>
 
 namespace inviwo {
 

@@ -29,22 +29,22 @@
 
 #include <modules/base/algorithm/image/marchingsquares.h>
 
-#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType
-#include <inviwo/core/datastructures/geometry/typedmesh.h>     // for BasicMesh, TypedMesh
-#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/image/layerram.h>         // IWYU pragma: keep
 #include <inviwo/core/datastructures/image/layer.h>            // IWYU pragma: keep
-#include <inviwo/core/datastructures/buffer/buffer.h>          // for util::makeBuffer
-#include <inviwo/core/datastructures/isovaluecollection.h>     // for IsoValueCollection
-#include <inviwo/core/util/formatdispatching.h>                // for dispatch, All
-#include <inviwo/core/util/formats.h>                          // for DataFormatBase
-#include <inviwo/core/util/glmcomp.h>                          // for glmcomp
-#include <inviwo/core/util/glmconvert.h>                       // for glm_convert
-#include <inviwo/core/util/glmutils.h>                         // for extent
-#include <inviwo/core/util/glmvec.h>                           // for vec3, vec4
-#include <inviwo/core/util/indexmapper.h>                      // for IndexMapper, Inde...
-#include <inviwo/core/util/interpolation.h>                    // for Interpolation
-#include <inviwo/core/util/exception.h>                        // for Exception
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/isovaluecollection.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmcomp.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/interpolation.h>
+#include <inviwo/core/util/exception.h>
 
 #include <span>
 #include <ranges>

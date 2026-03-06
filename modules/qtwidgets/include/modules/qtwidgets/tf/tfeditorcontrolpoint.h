@@ -29,18 +29,18 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/datastructures/tfprimitive.h>  // for TFPrimitive, TFPrimitiveObserver
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
+#include <inviwo/core/datastructures/tfprimitive.h>
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>
 #include <modules/qtwidgets/tf/tfmovemode.h>
 
-#include <inviwo/core/util/glmvec.h>  // for dvec2
+#include <inviwo/core/util/glmvec.h>
 
-#include <QGraphicsItem>  // for QGraphicsItem::UserType
-#include <QPainterPath>   // for QPainterPath
-#include <QPointF>        // for QPointF
-#include <QRectF>         // for QRectF
+#include <QGraphicsItem>
+#include <QPainterPath>
+#include <QPointF>
+#include <QRectF>
 
 class QGraphicsScene;
 class QPainter;

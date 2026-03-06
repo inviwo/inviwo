@@ -29,15 +29,15 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/datastructures/buffer/bufferrepresentation.h>  // for BufferRepresentation
-#include <inviwo/core/datastructures/geometry/geometrytype.h>        // for BufferTarget, Buffer...
-#include <modules/opengl/inviwoopengl.h>                             // for GLenum, GLsizeiptr
+#include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <modules/opengl/inviwoopengl.h>
 
-#include <cstddef>    // for size_t
-#include <memory>     // for shared_ptr, unique_ptr
-#include <typeindex>  // for type_index
+#include <cstddef>
+#include <memory>
+#include <typeindex>
 
 namespace inviwo {
 class BufferObject;

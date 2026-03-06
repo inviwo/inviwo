@@ -28,21 +28,21 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>  // for IVW_MODULE_BRUSHI...
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 
-#include <inviwo/core/util/fmtutils.h>  // for FlagFormatter
+#include <inviwo/core/util/fmtutils.h>
 
-#include <array>        // for array
-#include <cstddef>      // for size_t
-#include <iosfwd>       // for ostream, istream
-#include <memory>       // for hash
-#include <ostream>      // for operator<<, char_...
-#include <string_view>  // for string_view, hash
-#include <utility>      // for declval
+#include <array>
+#include <cstddef>
+#include <iosfwd>
+#include <memory>
+#include <ostream>
+#include <string_view>
+#include <utility>
 
-#include <flags/allow_flags.h>  // for ALLOW_FLAGS_FOR_ENUM
-#include <flags/flags.h>        // for flags
-#include <fmt/core.h>           // for formatter
+#include <flags/allow_flags.h>
+#include <flags/flags.h>
+#include <fmt/core.h>
 
 namespace inviwo {
 

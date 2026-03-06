@@ -29,64 +29,64 @@
 
 #include <modules/vectorfieldvisualization/processors/integrallinevectortomesh.h>
 
-#include <inviwo/core/datastructures/buffer/bufferram.h>                      // for BufferRAM
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>             // for IndexBufferRAM
-#include <inviwo/core/datastructures/geometry/geometrytype.h>                 // for Connectivit...
-#include <inviwo/core/datastructures/geometry/typedmesh.h>                    // for TypedMesh<>...
-#include <inviwo/core/datastructures/representationconverter.h>               // for Representat...
-#include <inviwo/core/datastructures/representationconverterfactory.h>        // for Representat...
-#include <inviwo/core/datastructures/transferfunction.h>                      // for TransferFun...
-#include <inviwo/core/io/serialization/deserializer.h>                        // for Deserializer
-#include <inviwo/core/io/serialization/serializer.h>                          // for Serializer
-#include <inviwo/core/network/networklock.h>                                  // for NetworkLock
-#include <inviwo/core/ports/datainport.h>                                     // for DataInport
-#include <inviwo/core/ports/meshport.h>                                       // for MeshOutport
-#include <inviwo/core/ports/outportiterable.h>                                // for OutportIter...
-#include <inviwo/core/processors/processor.h>                                 // for Processor
-#include <inviwo/core/processors/processorinfo.h>                             // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                            // for CodeState
-#include <inviwo/core/processors/processortags.h>                             // for Tags, Tags:...
-#include <inviwo/core/properties/boolcompositeproperty.h>                     // for BoolComposi...
-#include <inviwo/core/properties/boolproperty.h>                              // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                            // for ButtonProperty
-#include <inviwo/core/properties/compositeproperty.h>                         // for CompositePr...
-#include <inviwo/core/properties/invalidationlevel.h>                         // for Invalidatio...
-#include <inviwo/core/properties/minmaxproperty.h>                            // for DoubleMinMa...
-#include <inviwo/core/properties/optionproperty.h>                            // for OptionPrope...
-#include <inviwo/core/properties/ordinalproperty.h>                           // for DoubleProperty
-#include <inviwo/core/properties/property.h>                                  // for Property
-#include <inviwo/core/properties/propertysemantics.h>                         // for PropertySem...
-#include <inviwo/core/properties/transferfunctionproperty.h>                  // for TransferFun...
-#include <inviwo/core/properties/valuewrapper.h>                              // for PropertySer...
-#include <inviwo/core/util/exception.h>                                       // for Exception
-#include <inviwo/core/util/glmconvert.h>                                      // for glm_convert
-#include <inviwo/core/util/glmvec.h>                                          // for vec4, dvec3
-#include <inviwo/core/util/logcentral.h>                                      // for LogCentral
-#include <inviwo/core/util/raiiutils.h>                                       // for OnScopeExit
-#include <inviwo/core/util/sourcecontext.h>                                   // for SourceContext
-#include <inviwo/core/util/staticstring.h>                                    // for operator+
-#include <inviwo/core/util/zip.h>                                             // for zipper, get
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>         // for BrushingAnd...
-#include <modules/vectorfieldvisualization/datastructures/integralline.h>     // for IntegralLine
-#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>  // for IntegralLin...
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/vectorfieldvisualization/datastructures/integralline.h>
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
-#include <algorithm>      // for max, min
-#include <cmath>          // for floor
-#include <cstddef>        // for size_t
-#include <cstdint>        // for uint32_t
-#include <limits>         // for numeric_limits
-#include <memory>         // for shared_ptr
-#include <ostream>        // for operator<<
-#include <type_traits>    // for remove_exte...
-#include <unordered_set>  // for unordered_set
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <memory>
+#include <ostream>
+#include <type_traits>
+#include <unordered_set>
 
-#include <fmt/core.h>                // for format, for...
-#include <glm/detail/qualifier.hpp>  // for tvec2, qual...
-#include <glm/detail/setup.hpp>      // for length_t
-#include <glm/geometric.hpp>         // for length, nor...
-#include <glm/vec2.hpp>              // for operator*
-#include <glm/vec3.hpp>              // for operator*
-#include <glm/vec4.hpp>              // for operator*
+#include <fmt/core.h>
+#include <glm/detail/qualifier.hpp>
+#include <glm/detail/setup.hpp>
+#include <glm/geometric.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

@@ -29,47 +29,47 @@
 
 #include <modules/oit/processors/sphererasterizer.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>                          // for boundingBox
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh::MeshInfo
-#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
-#include <inviwo/core/datastructures/representationconverter.h>         // for Representat...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for Representat...
-#include <inviwo/core/datastructures/transferfunction.h>                // for TransferFun...
-#include <inviwo/core/interaction/cameratrackball.h>                    // for CameraTrack...
-#include <inviwo/core/ports/meshport.h>                                 // for MeshFlatMul...
-#include <inviwo/core/properties/simplelightingproperty.h>              // for SimpleLight...
-#include <inviwo/core/util/document.h>                                  // for Document
-#include <inviwo/core/util/glmmat.h>                                    // for mat4
-#include <inviwo/core/util/glmutils.h>                                  // for Matrix
-#include <inviwo/core/util/glmvec.h>                                    // for ivec2, vec4
-#include <modules/base/properties/transformlistproperty.h>              // for TransformLi...
-#include <modules/basegl/datastructures/meshshadercache.h>              // for MeshShaderC...
-#include <modules/oit/datastructures/transformedrasterization.h>        // for Transformed...
-#include <modules/oit/ports/rasterizationport.h>                        // for Rasterizati...
-#include <modules/oit/rendering/fragmentlistrenderer.h>                 // for FragmentLis...
-#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
-#include <modules/opengl/image/layergl.h>                               // for LayerGL
-#include <modules/opengl/inviwoopengl.h>                                // for GL_DEPTH_TEST
-#include <modules/opengl/openglcapabilities.h>                          // for OpenGLCapab...
-#include <modules/opengl/openglutils.h>                                 // for BlendModeState
-#include <modules/opengl/rendering/meshdrawergl.h>                      // for MeshDrawerGL
-#include <modules/opengl/shader/shader.h>                               // for Shader
-#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
-#include <modules/opengl/shader/shadertype.h>                           // for ShaderType
-#include <modules/opengl/shader/shaderutils.h>                          // for setShaderUn...
-#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit
+#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/properties/transformlistproperty.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/oit/datastructures/transformedrasterization.h>
+#include <modules/oit/ports/rasterizationport.h>
+#include <modules/oit/rendering/fragmentlistrenderer.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/image/layergl.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>
 
-#include <cstddef>        // for size_t
-#include <map>            // for __map_iterator
-#include <type_traits>    // for remove_exte...
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for pair
+#include <cstddef>
+#include <map>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
 
-#include <fmt/core.h>      // for format
-#include <glm/mat4x4.hpp>  // for operator*
-#include <glm/vec2.hpp>    // for vec<>::(ano...
-#include <glm/vec4.hpp>    // for operator*
+#include <fmt/core.h>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 class Rasterization;

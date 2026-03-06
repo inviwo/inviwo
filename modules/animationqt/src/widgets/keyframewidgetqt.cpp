@@ -29,28 +29,28 @@
 
 #include <modules/animationqt/widgets/keyframewidgetqt.h>
 
-#include <modules/animation/datastructures/animationtime.h>  // for Seconds
-#include <modules/animation/datastructures/keyframe.h>       // for Keyframe
-#include <modules/animationqt/widgets/editorconstants.h>     // for timeToScenePos, trackHeight
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animationqt/widgets/editorconstants.h>
 
-#include <algorithm>  // for max
+#include <algorithm>
 
-#include <QApplication>     // for QApplication
-#include <QBrush>           // for QBrush
-#include <QColor>           // for QColor
-#include <QFlags>           // for QFlags
-#include <QGraphicsItem>    // for operator|, QGraphicsItem
-#include <QGraphicsScene>   // for QGraphicsScene
-#include <QGraphicsView>    // for QGraphicsView
-#include <QList>            // for QList
-#include <QPainter>         // for QPainter, QPainter::Antialia...
-#include <QPen>             // for QPen
-#include <QPoint>           // for operator!=, QPoint
-#include <QPointF>          // for QPointF
-#include <QRadialGradient>  // for QRadialGradient
-#include <QTransform>       // for QTransform
-#include <Qt>               // for LeftButton, MouseButtons
-#include <qglobal.h>        // for operator==, qreal
+#include <QApplication>
+#include <QBrush>
+#include <QColor>
+#include <QFlags>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QList>
+#include <QPainter>
+#include <QPen>
+#include <QPoint>
+#include <QPointF>
+#include <QRadialGradient>
+#include <QTransform>
+#include <Qt>
+#include <qglobal.h>
 
 class QStyleOptionGraphicsItem;
 class QWidget;

@@ -29,11 +29,11 @@
 
 #include <modules/python3/processortrampoline.h>
 
-#include <pybind11/pybind11.h>  // for get_override, PYBIND11_OVERLOAD
+#include <pybind11/pybind11.h>
 
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/util/exception.h>
 
 #include <modules/python3/opaquetypes.h>

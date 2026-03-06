@@ -29,27 +29,27 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/light/baselightsource.h>  // for LightSource
-#include <inviwo/core/interaction/interactionhandler.h>        // for InteractionHandler
-#include <inviwo/core/interaction/trackball.h>                 // for Trackball
-#include <inviwo/core/interaction/trackballobject.h>           // for TrackballObject, Trackball...
-#include <inviwo/core/ports/dataoutport.h>                     // for DataOutport
-#include <inviwo/core/processors/processor.h>                  // for Processor
-#include <inviwo/core/processors/processorinfo.h>              // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>               // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
-#include <inviwo/core/properties/compositeproperty.h>          // for CompositeProperty
-#include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyInt
-#include <inviwo/core/properties/ordinalproperty.h>            // for FloatVec2Property, FloatPr...
-#include <inviwo/core/properties/positionproperty.h>           // for PositionProperty
-#include <inviwo/core/util/glmvec.h>                           // for vec3, vec2
+#include <inviwo/core/datastructures/light/baselightsource.h>
+#include <inviwo/core/interaction/interactionhandler.h>
+#include <inviwo/core/interaction/trackball.h>
+#include <inviwo/core/interaction/trackballobject.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/positionproperty.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <memory>  // for shared_ptr
-#include <string>  // for string, operator+
+#include <memory>
+#include <string>
 
-#include <fmt/core.h>  // for format
+#include <fmt/core.h>
 
 namespace inviwo {
 

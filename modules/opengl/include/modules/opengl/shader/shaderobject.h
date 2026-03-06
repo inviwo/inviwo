@@ -29,26 +29,26 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/util/dispatcher.h>               // for Dispatcher
-#include <modules/opengl/inviwoopengl.h>               // for GLuint, GLenum
-#include <modules/opengl/shader/linenumberresolver.h>  // for LineNumberResolver
-#include <modules/opengl/shader/shaderresource.h>      // for ShaderResource, ShaderResource::Ca...
-#include <modules/opengl/shader/shadersegment.h>       // for ShaderSegment
-#include <modules/opengl/shader/shadertype.h>          // for ShaderType
+#include <inviwo/core/util/dispatcher.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/shader/linenumberresolver.h>
+#include <modules/opengl/shader/shaderresource.h>
+#include <modules/opengl/shader/shadersegment.h>
+#include <modules/opengl/shader/shadertype.h>
 
-#include <cstddef>        // for size_t
-#include <functional>     // for less, function
-#include <iosfwd>         // for ostringstream, ostream
-#include <map>            // for map, map<>::value_compare
-#include <memory>         // for shared_ptr
-#include <optional>       // for optional
-#include <string>         // for string, operator<, basic_string
-#include <string_view>    // for string_view
-#include <unordered_map>  // for unordered_map
-#include <utility>        // for move, pair, forward
-#include <vector>         // for vector
+#include <cstddef>
+#include <functional>
+#include <iosfwd>
+#include <map>
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 

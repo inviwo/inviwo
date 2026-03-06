@@ -29,15 +29,15 @@
 
 #pragma once
 
-#include <inviwo/png/pngmoduledefine.h>  // for IVW_MODULE_PNG_API
+#include <inviwo/png/pngmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/layer.h>  // for DataWriterType
-#include <inviwo/core/io/datawriter.h>               // for DataWriterType
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/io/datawriter.h>
 
-#include <stdio.h>      // for FILE
-#include <memory>       // for unique_ptr
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <stdio.h>
+#include <memory>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

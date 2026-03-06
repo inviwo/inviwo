@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <modules/qtwidgets/lineeditqt.h>  // for LineEditQt
+#include <modules/qtwidgets/lineeditqt.h>
 #include <inviwo/core/util/filedialogstate.h>
 
 #include <filesystem>
 
-#include <QObject>  // for Q_OBJECT
+#include <QObject>
 
 class QFocusEvent;
 class QLabel;

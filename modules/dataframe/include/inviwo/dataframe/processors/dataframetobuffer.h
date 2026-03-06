@@ -37,8 +37,8 @@
 #include <inviwo/core/ports/bufferport.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 
-#include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrame
-#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 
 namespace inviwo {
 

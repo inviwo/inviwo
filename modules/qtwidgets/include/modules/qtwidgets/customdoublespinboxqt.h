@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <QDoubleSpinBox>  // for QDoubleSpinBox
-#include <QObject>         // for Q_OBJECT
-#include <QSize>           // for QSize
-#include <QString>         // for QString
+#include <QDoubleSpinBox>
+#include <QObject>
+#include <QSize>
+#include <QString>
 
 class QWidget;
 class QTimerEvent;

@@ -29,7 +29,7 @@
 
 #include <modules/qtwidgets/keyboardutils.h>
 
-#include <inviwo/core/interaction/events/keyboardkeys.h>  // for IvwKey, IvwKey::GraveAccent
+#include <inviwo/core/interaction/events/keyboardkeys.h>
 
 #ifdef _WIN32
 // needed for virtual key codes on Windows
@@ -37,7 +37,7 @@
 #include <winuser.h>
 #endif
 
-#include <QKeyEvent>  // for QKeyEvent
+#include <QKeyEvent>
 
 namespace inviwo {
 

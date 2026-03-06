@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <QLineEdit>  // for QLineEdit
-#include <QObject>    // for Q_OBJECT, signals
-#include <QSize>      // for QSize
+#include <QLineEdit>
+#include <QObject>
+#include <QSize>
 
 class QPaintEvent;
 class QWidget;

@@ -31,8 +31,8 @@
 #include <modules/opactopt/processors/directopacityoptimization.h>
 #include <modules/opactopt/processors/meshmappingvolume.h>
 
-#include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
-#include <inviwo/core/common/inviwomodule.h>      // for InviwoModule
+#include <modules/opengl/shader/shadermanager.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 

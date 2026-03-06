@@ -29,31 +29,31 @@
 
 #include <modules/opengl/canvasgl.h>
 
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/image/image.h>                     // IWYU pragma: keep
-#include <inviwo/core/datastructures/image/imagetypes.h>                // for LayerType, LayerT...
-#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/interaction/pickingcontroller.h>                  // for PickingController
-#include <inviwo/core/util/canvas.h>                                    // for Canvas
-#include <inviwo/core/util/glmvec.h>                                    // for size2_t, dvec2
-#include <modules/opengl/debugmessages.h>                               // for handleOpenGLDebug...
-#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
-#include <modules/opengl/image/layergl.h>                               // for LayerGL
-#include <modules/opengl/inviwoopengl.h>                                // for glEnable, glClear
-#include <modules/opengl/openglcapabilities.h>                          // for OpenGLCapabilities
-#include <modules/opengl/shader/shader.h>                               // for Shader
-#include <modules/opengl/sharedopenglresources.h>                       // for SharedOpenGLResou...
-#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit
-#include <modules/opengl/texture/textureutils.h>                        // for planeRect
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/interaction/pickingcontroller.h>
+#include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/debugmessages.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/image/layergl.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/sharedopenglresources.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
+#include <type_traits>
+#include <unordered_set>
 
-#include <glm/common.hpp>  // for clamp
-#include <glm/vec2.hpp>    // for operator-, vec<>:...
-#include <glm/vec4.hpp>    // for vec<>::(anonymous)
+#include <glm/common.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

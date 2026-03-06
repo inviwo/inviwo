@@ -29,19 +29,19 @@
 
 #include <modules/base/algorithm/dataminmax.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for BufferBase
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
-#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
-#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/util/glmvec.h>                                    // for dvec4
-#include <modules/base/algorithm/algorithmoptions.h>                    // for IgnoreSpecialValues
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/algorithm/algorithmoptions.h>
 
-#include <memory>         // for unique_ptr
-#include <unordered_set>  // for unordered_set
+#include <memory>
+#include <unordered_set>
 
 namespace inviwo {
 

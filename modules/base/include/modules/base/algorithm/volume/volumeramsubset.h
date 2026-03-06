@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/volume/volumeborder.h>  // for VolumeBorders
-#include <inviwo/core/util/glmvec.h>                         // for size3_t
+#include <inviwo/core/datastructures/volume/volumeborder.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <memory>  // for shared_ptr
+#include <memory>
 
 namespace inviwo {
 class VolumeRAM;

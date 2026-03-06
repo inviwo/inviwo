@@ -29,23 +29,23 @@
 
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
+#include <modules/python3/python3moduledefine.h>
 
 #include <pybind11/pybind11.h>  // IWYU pragma: keep
-#include <pybind11/numpy.h>     // for array, dtype
+#include <pybind11/numpy.h>
 
-#include <inviwo/core/util/formats.h>           // for DataFormat, DataFormatBase
-#include <inviwo/core/util/glmcomp.h>           // for glmcomp
-#include <inviwo/core/util/glmutils.h>          // for Vector
-#include <inviwo/core/util/stringconversion.h>  // for toString
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmcomp.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <cstddef>  // for size_t
-#include <memory>   // for allocator, unique_ptr
-#include <string>   // for string, operator+, char_traits
-#include <vector>   // for vector
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace inviwo {
 

@@ -29,24 +29,24 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/ports/imageport.h>               // for ImageMultiInport, ImageOutport
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/minmaxproperty.h>     // for IntMinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>    // for FloatProperty
-#include <inviwo/core/util/glmvec.h>                   // for ivec2
-#include <inviwo/core/util/staticstring.h>             // for operator+
-#include <modules/basegl/viewmanager.h>                // for ViewManager
-#include <modules/opengl/shader/shader.h>              // for Shader
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/basegl/viewmanager.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <functional>   // for __base
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector, operator==
+#include <functional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class Event;

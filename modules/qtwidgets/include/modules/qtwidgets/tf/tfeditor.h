@@ -29,22 +29,22 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/datastructures/datamapper.h>   // for DataMapper
-#include <inviwo/core/util/glmvec.h>                 // for dvec2, vec4
-#include <modules/qtwidgets/tf/tfeditorprimitive.h>  // for TFEditorPrimitive, TFEditorPrimitiv...
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/qtwidgets/tf/tfeditorprimitive.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <modules/qtwidgets/tf/tfmovemode.h>
 
-#include <functional>  // for function
-#include <memory>      // for shared_ptr
-#include <vector>      // for vector
+#include <functional>
+#include <memory>
+#include <vector>
 #include <span>
 
-#include <QGraphicsScene>  // for QGraphicsScene
-#include <QObject>         // for Q_OBJECT, signals
-#include <QPointF>         // for QPointF
+#include <QGraphicsScene>
+#include <QObject>
+#include <QPointF>
 
 class QGraphicsSceneMouseEvent;
 class QKeyEvent;

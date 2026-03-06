@@ -29,17 +29,17 @@
 
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
+#include <modules/plotting/plottingmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>                            // for vec3, vec2, dvec2, vec4
-#include <modules/plotting/datastructures/axissettings.h>       // for AxisSettings
-#include <modules/plotting/datastructures/majorticksettings.h>  // for MajorTickSettings (ptr only)
+#include <inviwo/core/util/glmvec.h>
+#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/majorticksettings.h>
 
-#include <cstddef>  // for size_t
-#include <limits>   // for numeric_limits
-#include <memory>   // for unique_ptr
-#include <utility>  // for pair
-#include <vector>   // for vector
+#include <cstddef>
+#include <limits>
+#include <memory>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 

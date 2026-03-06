@@ -29,23 +29,23 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
-#include <inviwo/core/processors/processor.h>                   // for Processor
-#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
-#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>             // for IntProperty, IntSize3Prop...
-#include <inviwo/core/util/formats.h>                           // for DataFormatId
-#include <inviwo/core/util/staticstring.h>                      // for operator+
-#include <modules/base/properties/basisproperty.h>              // for BasisProperty
-#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
 
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector, opera...
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 class Deserializer;

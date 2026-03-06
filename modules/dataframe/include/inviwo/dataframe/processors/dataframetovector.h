@@ -34,8 +34,8 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
-#include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrame
-#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 
 #include <vector>
 #include <string>

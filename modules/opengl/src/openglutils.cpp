@@ -29,22 +29,22 @@
 
 #include <modules/opengl/openglutils.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageChannel, Wrapping, Interpo...
-#include <inviwo/core/util/glmvec.h>                      // for vec4, bvec4, ivec4
-#include <inviwo/core/util/moveonlyvalue.h>               // for MoveOnlyValue
-#include <inviwo/core/util/sourcecontext.h>               // for SourceContext
-#include <modules/opengl/openglexception.h>               // for OpenGLException
-#include <modules/opengl/texture/textureunit.h>           // for TextureUnit
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/moveonlyvalue.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <modules/opengl/openglexception.h>
+#include <modules/opengl/texture/textureunit.h>
 
-#include <algorithm>    // for transform, max, min
-#include <optional>     // for optional
-#include <string>       // for string
-#include <type_traits>  // for remove_reference<>::type
-#include <utility>      // for move, swap
-#include <vector>       // for vector
+#include <algorithm>
+#include <optional>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
-#include <glm/gtc/type_ptr.hpp>  // for value_ptr
-#include <glm/vec4.hpp>          // for vec<>::(anonymous), vec, operat...
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 namespace utilgl {

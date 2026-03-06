@@ -30,26 +30,26 @@
 #pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/renderhandlergl.h>  // for RenderHandlerGL
-#include <functional>                            // for function
-#include <map>                                   // for map
-#include <memory>                                // for unique_ptr, shared_ptr
-#include <string>                                // for string
-#include <vector>                                // for vector
+#include <modules/webbrowser/renderhandlergl.h>
+#include <functional>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/base/cef_macros.h>               // for DISALLOW_COPY_AND_AS...
-#include <include/base/cef_scoped_refptr.h>        // for scoped_refptr
-#include <include/cef_base.h>                      // for CefRefPtr, CefString
-#include <include/cef_client.h>                    // for CefClient
-#include <include/cef_display_handler.h>           // for CefDisplayHandler
-#include <include/cef_life_span_handler.h>         // for CefLifeSpanHandler
-#include <include/cef_load_handler.h>              // for CefLoadHandler, CefL...
-#include <include/cef_process_message.h>           // for CefProcessId, CefPro...
-#include <include/cef_render_handler.h>            // for CefRenderHandler
-#include <include/cef_request_handler.h>           // for CefRequestHandler
-#include <include/cef_resource_request_handler.h>  // for CefResourceRequestHa...
+#include <include/base/cef_macros.h>
+#include <include/base/cef_scoped_refptr.h>
+#include <include/cef_base.h>
+#include <include/cef_client.h>
+#include <include/cef_display_handler.h>
+#include <include/cef_life_span_handler.h>
+#include <include/cef_load_handler.h>
+#include <include/cef_process_message.h>
+#include <include/cef_render_handler.h>
+#include <include/cef_request_handler.h>
+#include <include/cef_resource_request_handler.h>
 #include <include/wrapper/cef_resource_manager.h>  // IWYU pragma: keep
 #include <warn/pop>
 

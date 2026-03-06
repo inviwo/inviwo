@@ -29,23 +29,23 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
-#include <inviwo/core/datastructures/image/layerram.h>                  // for LayerRAM
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
-#include <inviwo/core/util/glmconvert.h>                                // for glm_convert_norma...
-#include <inviwo/core/util/glmvec.h>                                    // for ivec2, size2_t
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmconvert.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <algorithm>      // for copy, fill
-#include <cstddef>        // for size_t
-#include <memory>         // for shared_ptr, make_...
-#include <unordered_set>  // for unordered_set
+#include <algorithm>
+#include <cstddef>
+#include <memory>
+#include <unordered_set>
 
-#include <glm/common.hpp>  // for max, min
-#include <glm/vec2.hpp>    // for vec<>::(anonymous)
+#include <glm/common.hpp>
+#include <glm/vec2.hpp>
 
 namespace inviwo {
 

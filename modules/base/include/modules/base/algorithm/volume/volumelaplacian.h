@@ -29,8 +29,8 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
-#include <memory>                           // for shared_ptr, share...
+#include <modules/base/basemoduledefine.h>
+#include <memory>
 
 namespace inviwo {
 class Volume;

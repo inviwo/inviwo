@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>  // for IVW_M...
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
-#include <inviwo/core/processors/processor.h>                                 // for Proce...
-#include <inviwo/core/processors/processorinfo.h>                             // for Proce...
-#include <inviwo/core/properties/ordinalproperty.h>                           // for Doubl...
-#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>  // for Integ...
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
 namespace inviwo {
 

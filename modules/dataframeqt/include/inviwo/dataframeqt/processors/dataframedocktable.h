@@ -31,17 +31,17 @@
 
 #include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
 
-#include <inviwo/core/metadata/processorwidgetmetadata.h>  // for ProcessorWidgetMet...
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/metadata/processorwidgetmetadata.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/exporter.h>
-#include <inviwo/core/properties/boolproperty.h>  // for BoolProperty
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>  // for IntSize2Property
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/util/glmvec.h>                                   // for size2_t
-#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <modules/qtwidgets/processors/processordockwidgetqt.h>
 #include <inviwo/core/network/processornetworkobserver.h>

@@ -29,7 +29,7 @@
 
 #include <inviwopy/pyvolume.h>
 #include <inviwopy/pyglmtypes.h>
-#include <inviwopy/pyimage.h>  // for the opaque swizzlemask
+#include <inviwopy/pyimage.h>
 #include <inviwopy/util/pydatasequence.h>
 
 #include <pybind11/stl_bind.h>

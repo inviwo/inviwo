@@ -29,12 +29,12 @@
 
 #include <modules/animation/datastructures/callbackkeyframe.h>
 
-#include <modules/animation/datastructures/animationstate.h>  // for AnimationState, AnimationTi...
-#include <modules/animation/datastructures/animationtime.h>   // for Seconds
-#include <modules/animation/datastructures/basekeyframe.h>    // for BaseKeyframe
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/basekeyframe.h>
 
-#include <chrono>   // for operator<=, operator>=, dur...
-#include <utility>  // for move
+#include <chrono>
+#include <utility>
 
 namespace inviwo {
 

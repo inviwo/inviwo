@@ -28,7 +28,7 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
+#include <modules/json/jsonmoduledefine.h>
 #include <modules/json/json.h>
 
 namespace inviwo {

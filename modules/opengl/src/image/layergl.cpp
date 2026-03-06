@@ -29,17 +29,17 @@
 
 #include <modules/opengl/image/layergl.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>           // for InterpolationType, Lay...
-#include <inviwo/core/datastructures/image/layerrepresentation.h>  // for LayerRepresentation
-#include <inviwo/core/util/assertion.h>                            // for IVW_ASSERT
-#include <inviwo/core/util/glmvec.h>                               // for size2_t
-#include <modules/opengl/glformats.h>                              // for GLFormat, GLFormats
-#include <modules/opengl/openglutils.h>                            // for convertWrappingToGL
-#include <modules/opengl/texture/texture2d.h>                      // for Texture2D
-#include <modules/opengl/texture/textureunit.h>                    // for TextureUnit
-#include <modules/opengl/texture/textureutils.h>                   // for bindTexture
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layerrepresentation.h>
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/glformats.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 
-#include <type_traits>  // for remove_extent_t
+#include <type_traits>
 
 namespace inviwo {
 class DataFormatBase;

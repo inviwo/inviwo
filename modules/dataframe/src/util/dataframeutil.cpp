@@ -29,43 +29,43 @@
 
 #include <inviwo/dataframe/util/dataframeutil.h>
 
-#include <inviwo/core/datastructures/bitset.h>                          // for BitSet
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for BufferBase, Buffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/util/assertion.h>                                 // for IVW_ASSERT
-#include <inviwo/core/util/document.h>                                  // for Document, TableBu...
-#include <inviwo/core/util/exception.h>                                 // for Exception
-#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
-#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/glmvec.h>                                    // for ivec2
-#include <inviwo/core/util/iterrange.h>                                 // for iter_range, as_range
-#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
-#include <inviwo/core/util/stdextensions.h>                             // for transform, contains
-#include <inviwo/core/util/stringconversion.h>                          // for toLower
-#include <inviwo/core/util/transformiterator.h>                         // for TransformIterator
-#include <inviwo/core/util/zip.h>                                       // for zipper, enumerate
-#include <inviwo/dataframe/datastructures/column.h>                     // for CategoricalColumn
-#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
-#include <inviwo/dataframe/util/filters.h>                              // for ItemFilter, Filters
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/iterrange.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/transformiterator.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/dataframe/datastructures/column.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/util/filters.h>
 
-#include <algorithm>      // for any_of
-#include <functional>     // for function
-#include <iterator>       // for distance
-#include <map>            // for operator==, map
-#include <optional>       // for optional
-#include <string_view>    // for string_view, oper...
-#include <unordered_map>  // for operator==, unord...
-#include <utility>        // for move, pair
-#include <variant>        // for visit
+#include <algorithm>
+#include <functional>
+#include <iterator>
+#include <map>
+#include <optional>
+#include <string_view>
+#include <unordered_map>
+#include <utility>
+#include <variant>
 
-#include <fmt/core.h>        // for format, basic_str...
-#include <glm/gtx/hash.hpp>  // for hash<>::operator()
-#include <glm/vec2.hpp>      // for operator==, opera...
-#include <glm/vec3.hpp>      // for operator==, opera...
-#include <glm/vec4.hpp>      // for operator==, opera...
+#include <fmt/core.h>
+#include <glm/gtx/hash.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

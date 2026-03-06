@@ -27,43 +27,43 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/python3module.h>  // for Python3Module
+#include <modules/python3/python3module.h>
 
-#include <pybind11/pybind11.h>  // for module
+#include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
-#include <inviwo/core/common/inviwomodule.h>                         // for InviwoModule
-#include <inviwo/core/datastructures/datarepresentation.h>           // for DataRepresentation<>...
-#include <inviwo/core/datastructures/representationconverter.h>      // for RepresentationConver...
-#include <inviwo/core/datastructures/representationfactoryobject.h>  // for RepresentationFactor...
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/datastructures/datarepresentation.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationfactoryobject.h>
 #include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
-#include <inviwo/core/util/commandlineparser.h>  // for CommandLineParser
-#include <inviwo/core/util/exception.h>          // for ModuleInitException
-#include <inviwo/core/util/filesystem.h>         // for fileExists
-#include <inviwo/core/util/logcentral.h>         // for LogCentral
-#include <inviwo/core/util/pathtype.h>           // for PathType, PathType::...
-#include <inviwo/core/util/sourcecontext.h>      // for SourceContext
+#include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/pathtype.h>
+#include <inviwo/core/util/sourcecontext.h>
 #include <modules/python3/pythonscript.h>
-#include <modules/python3/pythoninterpreter.h>  // for PythonInterpreter
-#include <modules/python3/pythonlogger.h>       // for PythonLogger
-#include <modules/python3/volumepy.h>           // for VolumePy, VolumePy2R...
+#include <modules/python3/pythoninterpreter.h>
+#include <modules/python3/pythonlogger.h>
+#include <modules/python3/volumepy.h>
 #include <modules/python3/layerpy.h>
 #include <modules/python3/opaquetypes.h>
 
-#include <tclap/ArgException.h>  // for ArgParseException
-#include <tclap/ValueArg.h>      // for ValueArg
+#include <tclap/ArgException.h>
+#include <tclap/ValueArg.h>
 
-#include <exception>    // for exception
-#include <functional>   // for __base, function
-#include <memory>       // for make_unique, unique_ptr
-#include <ostream>      // for operator<<
-#include <string>       // for string, operator+
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <exception>
+#include <functional>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include <fmt/std.h>
 

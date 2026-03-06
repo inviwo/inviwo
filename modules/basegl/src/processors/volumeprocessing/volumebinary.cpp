@@ -29,24 +29,24 @@
 
 #include <modules/basegl/processors/volumeprocessing/volumebinary.h>
 
-#include <inviwo/core/datastructures/datamapper.h>                         // for DataMapper
-#include <inviwo/core/datastructures/unitsystem.h>                         // for Axis, Unit
-#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                         // for CodeState, Cod...
-#include <inviwo/core/processors/processortags.h>                          // for Tags, Tags::None
-#include <inviwo/core/properties/invalidationlevel.h>                      // for InvalidationLevel
-#include <inviwo/core/properties/optionproperty.h>                         // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                        // for FloatProperty
-#include <inviwo/core/util/formats.h>                                      // for DataFormat
-#include <inviwo/core/util/glmvec.h>                                       // for dvec2, vec2
-#include <inviwo/core/util/staticstring.h>                                 // for operator+
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
-#include <modules/opengl/shader/shader.h>                                  // for Shader
-#include <modules/opengl/shader/shaderobject.h>                            // for ShaderObject
-#include <modules/opengl/shader/shaderutils.h>                             // for setUniforms
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#include <memory>       // for shared_ptr
-#include <type_traits>  // for remove_extent_t
+#include <memory>
+#include <type_traits>
 
 namespace inviwo {
 class TextureUnitContainer;

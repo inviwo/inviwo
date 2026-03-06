@@ -28,10 +28,10 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <memory>   // for shared_ptr
-#include <utility>  // for pair
+#include <memory>
+#include <utility>
 
 namespace inviwo {
 class ShaderResource;

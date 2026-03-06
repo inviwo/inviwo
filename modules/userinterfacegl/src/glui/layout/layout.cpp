@@ -29,7 +29,7 @@
 
 #include <modules/userinterfacegl/glui/layout/layout.h>
 
-#include <inviwo/core/util/glmvec.h>  // for ivec4
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 

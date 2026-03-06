@@ -31,9 +31,9 @@
 
 #include <inviwo/core/util/logcentral.h>
 
-#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
-#include <include/cef_base.h>                // for CefRefPtr, CefString
-#include <include/cef_command_line.h>        // for CefCommandLine
+#include <include/base/cef_scoped_refptr.h>
+#include <include/cef_base.h>
+#include <include/cef_command_line.h>
 
 #include <include/cef_browser.h>
 #include <include/cef_callback.h>

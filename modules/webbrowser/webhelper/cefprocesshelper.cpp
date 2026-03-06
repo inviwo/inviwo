@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#include <cstddef>  // for NULL
+#include <cstddef>
 
-#include <app_switches.h>      // for CreateCommandLine, GetProcessType, PROCE...
-#include <include/cef_app.h>   // for CefApp, CefExecuteProcess
-#include <include/cef_base.h>  // for CefRefPtr, CefMainArgs
-#include <webotherapp.h>       // for CefWebAppOther
-#include <webrendererapp.h>    // for CefWebRendererApp
+#include <app_switches.h>
+#include <include/cef_app.h>
+#include <include/cef_base.h>
+#include <webotherapp.h>
+#include <webrendererapp.h>
 
 class CefCommandLine;
 

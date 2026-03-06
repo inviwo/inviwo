@@ -28,9 +28,9 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3qt/python3qtmoduledefine.h>  // for IVW_MODULE_PYTHON3QT_API
+#include <modules/python3qt/python3qtmoduledefine.h>
 
-#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>  // for StringPropertyWidgetQt
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
 
 namespace inviwo {
 class StringProperty;

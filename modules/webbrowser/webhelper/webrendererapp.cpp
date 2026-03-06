@@ -29,8 +29,8 @@
 
 #include <webrendererapp.h>
 
-#include <include/cef_base.h>                    // for CefRefPtr
-#include <include/cef_render_process_handler.h>  // for CefRenderProcessHandler
+#include <include/cef_base.h>
+#include <include/cef_render_process_handler.h>
 
 namespace inviwo {
 

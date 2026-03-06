@@ -29,11 +29,11 @@
 
 #include <app_switches.h>
 
-#include <string>  // for operator==, string
+#include <string>
 
-#include <include/base/cef_scoped_refptr.h>  // for scoped_refptr
-#include <include/cef_base.h>                // for CefRefPtr, CefMainArgs, CefString
-#include <include/cef_command_line.h>        // for CefCommandLine
+#include <include/base/cef_scoped_refptr.h>
+#include <include/cef_base.h>
+#include <include/cef_command_line.h>
 
 namespace {
 

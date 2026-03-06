@@ -29,15 +29,15 @@
 
 #pragma once
 
-#include <modules/fontrendering/fontrenderingmoduledefine.h>  // for IVW_MODULE_FONTRENDERING...
+#include <modules/fontrendering/fontrenderingmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>                             // for ivec2, vec4
-#include <modules/fontrendering/datastructures/texatlasentry.h>  // for TexAtlasRenderInfo
+#include <inviwo/core/util/glmvec.h>
+#include <modules/fontrendering/datastructures/texatlasentry.h>
 
-#include <cstddef>  // for size_t
-#include <memory>   // for shared_ptr
-#include <string>   // for string
-#include <vector>   // for vector
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace inviwo {
 

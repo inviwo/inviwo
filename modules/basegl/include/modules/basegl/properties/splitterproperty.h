@@ -28,21 +28,21 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/properties/boolcompositeproperty.h>    // for BoolCompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>        // for InvalidationLevel, Invalidat...
-#include <inviwo/core/properties/optionproperty.h>           // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>          // for FloatProperty, FloatVec4Prop...
-#include <inviwo/core/properties/propertysemantics.h>        // for PropertySemantics, PropertyS...
-#include <inviwo/core/util/glmvec.h>                         // for vec4
-#include <inviwo/core/util/staticstring.h>                   // for operator+
-#include <modules/basegl/datastructures/splittersettings.h>  // for Style, Style::Divider, Split...
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <modules/basegl/datastructures/splittersettings.h>
 
-#include <functional>   // for __base
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==, string_view
-#include <vector>       // for operator!=, vector, operator==
+#include <functional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 

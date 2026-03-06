@@ -29,33 +29,33 @@
 
 #include <modules/openglqt/processors/canvasprocessorwidgetqt.h>
 
-#include <inviwo/core/interaction/events/resizeevent.h>    // for ResizeEvent
-#include <inviwo/core/metadata/processormetadata.h>        // for ProcessorMetaData, ProcessorMe...
-#include <inviwo/core/network/networklock.h>               // for NetworkLock
-#include <inviwo/core/processors/canvasprocessor.h>        // for CanvasProcessor
-#include <inviwo/core/processors/canvasprocessorwidget.h>  // for CanvasProcessorWidget
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/processors/processorwidget.h>        // for ProcessorWidget
-#include <inviwo/core/util/glmvec.h>                       // for ivec2, size2_t
-#include <inviwo/core/util/raiiutils.h>                    // for KeepTrueWhileInScope
-#include <inviwo/core/util/rendercontext.h>                // for RenderContext
-#include <modules/openglqt/canvasqopenglwidget.h>          // for CanvasQOpenGLWidget
-#include <modules/qtwidgets/inviwoqtutils.h>               // for setFullScreenAndOnTop, toGLM
+#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/metadata/processormetadata.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/processors/canvasprocessorwidget.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <modules/openglqt/canvasqopenglwidget.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <string>
+#include <string_view>
 
-#include <QAction>                            // for QAction
-#include <QGridLayout>                        // for QGridLayout
-#include <QIcon>                              // for QIcon
-#include <QMainWindow>                        // for QMainWindow
-#include <QMenu>                              // for QMenu
-#include <QMoveEvent>                         // for QMoveEvent
-#include <QPoint>                             // for QPoint
-#include <Qt>                                 // for NoFocus, Tool, WA_MacAlwaysSho...
-#include <glm/fwd.hpp>                        // for vec2
-#include <glm/gtx/scalar_multiplication.hpp>  // for operator/, operator*
-#include <glm/vec2.hpp>                       // for operator!=, vec<>::(anonymous)
+#include <QAction>
+#include <QGridLayout>
+#include <QIcon>
+#include <QMainWindow>
+#include <QMenu>
+#include <QMoveEvent>
+#include <QPoint>
+#include <Qt>
+#include <glm/fwd.hpp>
+#include <glm/gtx/scalar_multiplication.hpp>
+#include <glm/vec2.hpp>
 
 class QHideEvent;
 class QMoveEvent;

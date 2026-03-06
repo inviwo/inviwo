@@ -31,34 +31,34 @@
 
 #include <inviwo/core/algorithm/buildarray.h>
 #include <inviwo/core/algorithm/gridtools.h>
-#include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
-#include <inviwo/core/datastructures/data.h>                            // for noData
-#include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAMPrecision
-#include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
-#include <inviwo/core/util/glmutils.h>                                  // for Vector
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t, dvec2
-#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
-#include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxel
+#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/assertion.h>
 
-#include <cstdlib>    // for abs
-#include <algorithm>  // for max, min
+#include <cstdlib>
+#include <algorithm>
 #include <ranges>
-#include <cmath>          // for abs
-#include <limits>         // for numeric_limits
-#include <type_traits>    // for conditional_t
-#include <unordered_set>  // for unordered_set
+#include <cmath>
+#include <limits>
+#include <type_traits>
+#include <unordered_set>
 #include <atomic>
 
-#include <glm/common.hpp>  // for mix
-#include <glm/mat4x4.hpp>  // for operator*, mat
-#include <glm/vec3.hpp>    // for operator/, operator*
-#include <glm/vec4.hpp>    // for operator*, operator+
+#include <glm/common.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo::util {
 

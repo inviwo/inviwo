@@ -29,18 +29,18 @@
 
 #include <modules/qtwidgets/tf/tfselectionwatcher.h>
 
-#include <inviwo/core/datastructures/tfprimitive.h>     // for TFPrimitive
-#include <inviwo/core/datastructures/tfprimitiveset.h>  // for TFPrimitiveSet
-#include <inviwo/core/network/networklock.h>            // for NetworkLock
-#include <inviwo/core/util/exception.h>                 // for Exception
-#include <inviwo/core/util/glmvec.h>                    // for vec3
-#include <inviwo/core/util/raiiutils.h>                 // for KeepTrueWhileInScope
-#include <inviwo/core/util/stdextensions.h>             // for contains
-#include <modules/qtwidgets/inviwoqtutils.h>            // for toQColor, tovec3
+#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <string_view>  // for string_view
+#include <string_view>
 
-#include <glm/vec3.hpp>  // for operator==
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 

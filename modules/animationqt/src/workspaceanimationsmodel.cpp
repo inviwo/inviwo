@@ -29,19 +29,19 @@
 
 #include <modules/animationqt/workspaceanimationsmodel.h>
 
-#include <inviwo/core/util/dispatcher.h>                 // for Dispatcher<>::Handle
-#include <modules/animation/datastructures/animation.h>  // for Animation
-#include <modules/animation/workspaceanimations.h>       // for WorkspaceAnimations, WorkspaceAn...
-#include <modules/qtwidgets/inviwoqtutils.h>             // for fromQString, toQString
+#include <inviwo/core/util/dispatcher.h>
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/workspaceanimations.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <cstddef>     // for size_t
-#include <functional>  // for __base
-#include <iterator>    // for distance
-#include <string>      // for operator==, string, basic_string
+#include <cstddef>
+#include <functional>
+#include <iterator>
+#include <string>
 
-#include <QFlags>      // for QFlags
-#include <QObject>     // for emit
-#include <fmt/core.h>  // for format
+#include <QFlags>
+#include <QObject>
+#include <fmt/core.h>
 
 class QModelIndex;
 

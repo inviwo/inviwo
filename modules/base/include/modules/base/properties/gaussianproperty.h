@@ -29,18 +29,18 @@
 
 #pragma once
 
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
-#include <inviwo/core/properties/ordinalproperty.h>    // for DoubleProperty, OrdinalProperty
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
-#include <inviwo/core/util/glmvec.h>                   // for dvec2, dvec3
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <cmath>        // for exp, M_PI
-#include <string>       // for string
-#include <string_view>  // for string_view
+#include <cmath>
+#include <string>
+#include <string_view>
 #include <numbers>
 
-#include <glm/gtx/norm.hpp>  // for distance2
+#include <glm/gtx/norm.hpp>
 
 namespace inviwo {
 template <typename T>

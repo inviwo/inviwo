@@ -29,14 +29,14 @@
 
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <modules/opengl/shader/shaderobject.h>  // for ShaderObject, ShaderObject::Callback
-#include <modules/qtwidgets/inviwodockwidget.h>  // for InviwoDockWidget
+#include <modules/opengl/shader/shaderobject.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <functional>  // for function
-#include <memory>      // for shared_ptr
-#include <vector>      // for vector
+#include <functional>
+#include <memory>
+#include <vector>
 
 class QAction;
 class QCloseEvent;

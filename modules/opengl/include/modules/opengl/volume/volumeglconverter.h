@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/datastructures/representationconverter.h>  // for RepresentationConverterT...
-#include <inviwo/core/datastructures/volume/volumeram.h>         // for VolumeRAM
-#include <modules/opengl/volume/volumegl.h>                      // for VolumeGL
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <modules/opengl/volume/volumegl.h>
 
-#include <memory>  // for shared_ptr
+#include <memory>
 
 namespace inviwo {
 class VolumeRepresentation;

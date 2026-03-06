@@ -28,21 +28,21 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <inviwo/core/processors/canvasprocessorwidget.h>  // for CanvasProcessorWidget
-#include <inviwo/core/processors/processor.h>              // for Processor, Processor::NameDisp...
-#include <inviwo/core/util/glmvec.h>                       // for ivec2, size2_t
+#include <inviwo/core/processors/canvasprocessorwidget.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/interaction/contextmenuaction.h>
 
-#include <functional>   // for function
-#include <memory>       // for unique_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <vector>       // for vector
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
-#include <QMainWindow>  // for QMainWindow
+#include <QMainWindow>
 
 class QEvent;
 class QMenu;

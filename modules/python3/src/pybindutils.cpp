@@ -29,21 +29,21 @@
 
 #include <modules/python3/pybindutils.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for BufferBase, Buffer
-#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>                  // IWYU pragma: keep
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volume.h>                   // for Volume
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/util/formatdispatching.h>  // for dispatch, All
-#include <inviwo/core/util/formats.h>            // for NumericType, Data...
-#include <inviwo/core/util/glmvec.h>             // for size2_t, size3_t
-#include <inviwo/core/util/exception.h>          // for Exception
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/exception.h>
 
-#include <cstring>        // for memcpy
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
+#include <cstring>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace inviwo {
 template <typename T>

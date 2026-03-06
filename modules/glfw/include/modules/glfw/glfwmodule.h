@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/glfw/glfwmoduledefine.h>  // for IVW_MODULE_GLFW_API
+#include <modules/glfw/glfwmoduledefine.h>
 
-#include <inviwo/core/common/inviwomodule.h>                         // for InviwoModule
-#include <inviwo/core/network/processornetworkevaluationobserver.h>  // for ProcessorNetworkEval...
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/network/processornetworkevaluationobserver.h>
 
-#include <memory>  // for unique_ptr
+#include <memory>
 
 namespace inviwo {
 class CanvasGLFW;

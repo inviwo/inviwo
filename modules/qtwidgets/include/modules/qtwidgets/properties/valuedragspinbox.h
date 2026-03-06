@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <QObject>  // for Q_OBJECT, signals, slots
-#include <QString>  // for QString
-#include <QWidget>  // for QWidget
+#include <QObject>
+#include <QString>
+#include <QWidget>
 
 namespace inviwo {
 

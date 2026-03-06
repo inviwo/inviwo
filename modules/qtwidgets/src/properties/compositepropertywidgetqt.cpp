@@ -29,11 +29,11 @@
 
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
 
-#include <inviwo/core/properties/compositeproperty.h>                  // for CompositeProperty
-#include <inviwo/core/properties/compositepropertyobserver.h>          // for CompositePropertyO...
-#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>  // for CollapsibleGroupBo...
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/compositepropertyobserver.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 
-#include <vector>  // for vector
+#include <vector>
 
 namespace inviwo {
 class Property;

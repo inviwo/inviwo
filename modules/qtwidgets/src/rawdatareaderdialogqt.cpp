@@ -29,36 +29,36 @@
 
 #include <modules/qtwidgets/rawdatareaderdialogqt.h>
 
-#include <inviwo/core/datastructures/datamapper.h>  // for DataMapper
-#include <inviwo/core/datastructures/unitsystem.h>  // for Axis, Unit
-#include <inviwo/core/util/formats.h>               // for DataFormatBase, DataFormatId, DataFor...
-#include <inviwo/core/util/glmvec.h>                // for uvec3, dvec2, dvec3
-#include <inviwo/core/util/rendercontext.h>         // for RenderContext
-#include <inviwo/core/util/exception.h>             // for Exception
-#include <modules/qtwidgets/inviwoqtutils.h>        // for emToPx, fromLocalQString, toLocalQString
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/exception.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <limits>  // for numeric_limits
+#include <limits>
 
-#include <QChar>             // for QChar
-#include <QComboBox>         // for QComboBox
-#include <QDialogButtonBox>  // for QDialogButtonBox, operator|, QDialogB...
-#include <QDoubleSpinBox>    // for QDoubleSpinBox
-#include <QDoubleValidator>  // for QDoubleValidator
-#include <QGridLayout>       // for QGridLayout
-#include <QGroupBox>         // for QGroupBox
-#include <QHBoxLayout>       // for QHBoxLayout
-#include <QLabel>            // for QLabel
-#include <QLineEdit>         // for QLineEdit
-#include <QLocale>           // for QLocale
-#include <QObject>           // for SIGNAL, SLOT
-#include <QSpinBox>          // for QSpinBox
-#include <QCheckBox>         // for QCheckBox
-#include <QString>           // for QString
-#include <QVariant>          // for QVariant
-#include <QWidget>           // for QWidget
-#include <glm/fwd.hpp>       // for dvec3
-#include <glm/vec2.hpp>      // for vec<>::(anonymous)
-#include <glm/vec3.hpp>      // for vec<>::(anonymous)
+#include <QChar>
+#include <QComboBox>
+#include <QDialogButtonBox>
+#include <QDoubleSpinBox>
+#include <QDoubleValidator>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QLocale>
+#include <QObject>
+#include <QSpinBox>
+#include <QCheckBox>
+#include <QString>
+#include <QVariant>
+#include <QWidget>
+#include <glm/fwd.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 class QHBoxLayout;
 

@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BAS...
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>          // for VolumeInport
-#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
 namespace inviwo {
 class TextureUnitContainer;

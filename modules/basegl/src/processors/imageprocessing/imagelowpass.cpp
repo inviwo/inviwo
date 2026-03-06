@@ -29,21 +29,21 @@
 
 #include <modules/basegl/processors/imageprocessing/imagelowpass.h>
 
-#include <inviwo/core/ports/imageport.h>                // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>           // for Processor
-#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>      // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>       // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
-#include <inviwo/core/properties/invalidationlevel.h>   // for InvalidationLevel, InvalidationLe...
-#include <inviwo/core/properties/ordinalproperty.h>     // for IntProperty, FloatProperty
-#include <modules/basegl/algorithm/imageconvolution.h>  // for ImageConvolution
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/basegl/algorithm/imageconvolution.h>
 
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_extent_t
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
 
 namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

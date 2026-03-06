@@ -29,52 +29,52 @@
 
 #include <modules/base/processors/volumeinformation.h>
 
-#include <inviwo/core/algorithm/markdown.h>                             // for operator""_help
-#include <inviwo/core/datastructures/camera/camera.h>                   // for mat4
-#include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags
-#include <inviwo/core/properties/boolcompositeproperty.h>               // for BoolCompositeProp...
-#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
-#include <inviwo/core/properties/minmaxproperty.h>                      // for DoubleMinMaxProperty
-#include <inviwo/core/properties/ordinalproperty.h>                     // for DoubleProperty
-#include <inviwo/core/properties/property.h>                            // for OverwriteState
-#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
-#include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
-#include <inviwo/core/util/foreacharg.h>                                // for for_each_argument
-#include <inviwo/core/util/formats.h>                                   // for DataFloat64, Data...
-#include <inviwo/core/util/glm.h>                                       // for filled
-#include <inviwo/core/util/glmmat.h>                                    // for mat3
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, dvec3, vec4
-#include <inviwo/core/util/metadatatoproperty.h>                        // for MetaDataToProperty
+#include <inviwo/core/algorithm/markdown.h>
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/metadatatoproperty.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
-#include <modules/base/algorithm/algorithmoptions.h>                // for IgnoreSpecialValues
-#include <modules/base/algorithm/dataminmax.h>                      // for volumeMinMax
-#include <modules/base/algorithm/volume/volumesignificantvoxels.h>  // for volumeSignificant...
-#include <modules/base/properties/volumeinformationproperty.h>      // for VolumeInformation...
+#include <modules/base/algorithm/algorithmoptions.h>
+#include <modules/base/algorithm/dataminmax.h>
+#include <modules/base/algorithm/volume/volumesignificantvoxels.h>
+#include <modules/base/properties/volumeinformationproperty.h>
 
-#include <cstddef>        // for size_t
-#include <limits>         // for numeric_limits<>:...
-#include <memory>         // for shared_ptr, share...
-#include <string>         // for string
-#include <string_view>    // for string_view
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for pair
+#include <cstddef>
+#include <limits>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
 
-#include <glm/geometric.hpp>  // for length
-#include <glm/mat3x3.hpp>     // for operator+
-#include <glm/mat4x4.hpp>     // for operator*, mat
-#include <glm/vec3.hpp>       // for operator+, vec
-#include <glm/vec4.hpp>       // for operator*, operator+
+#include <glm/geometric.hpp>
+#include <glm/mat3x3.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

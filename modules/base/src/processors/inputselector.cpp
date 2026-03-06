@@ -29,7 +29,7 @@
 
 #include <modules/base/processors/inputselector.h>
 
-#include <inviwo/core/ports/imageport.h>  // for BaseImageInport, ImageMultiInport, ImageOutport
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 

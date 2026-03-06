@@ -33,9 +33,9 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeconfig.h>
 
-#include <memory>   // for shared_ptr, make_shared
-#include <utility>  // for pair
-#include <vector>   // for vector
+#include <memory>
+#include <utility>
+#include <vector>
 #include <mutex>
 
 namespace inviwo {

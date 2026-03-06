@@ -29,13 +29,13 @@
 
 #include <modules/json/io/json/directorypropertyjsonconverter.h>
 
-#include <inviwo/core/properties/directoryproperty.h>        // for DirectoryProperty
-#include <inviwo/core/util/filedialogstate.h>                // for AcceptMode, FileMode
-#include <inviwo/core/util/fileextension.h>                  // for FileExtension
-#include <modules/json/io/json/filepropertyjsonconverter.h>  // for json
+#include <inviwo/core/properties/directoryproperty.h>
+#include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/fileextension.h>
+#include <modules/json/io/json/filepropertyjsonconverter.h>
 
-#include <stdexcept>  // for out_of_range
-#include <string>     // for string, basic_string
+#include <stdexcept>
+#include <string>
 
 namespace inviwo {
 

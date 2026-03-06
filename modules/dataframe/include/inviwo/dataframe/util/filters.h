@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
+#include <inviwo/dataframe/dataframemoduledefine.h>
 
-#include <cstddef>      // for size_t
-#include <cstdint>      // for int64_t
-#include <functional>   // for function
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <variant>      // for variant
-#include <vector>       // for vector
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <string>
+#include <string_view>
+#include <variant>
+#include <vector>
 
 namespace inviwo {
 template <typename T>

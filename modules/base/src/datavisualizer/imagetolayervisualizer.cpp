@@ -29,15 +29,15 @@
 
 #include <modules/base/datavisualizer/imagetolayervisualizer.h>
 
-#include <inviwo/core/common/factoryutil.h>         // for getDataReaderFactory
-#include <inviwo/core/io/datareaderfactory.h>       // for DataReaderFactory
-#include <inviwo/core/network/processornetwork.h>   // for ProcessorNetwork
-#include <inviwo/core/ports/imageport.h>            // for ImageOutport
-#include <inviwo/core/ports/outport.h>              // for Outport
-#include <inviwo/core/processors/processor.h>       // for Processor
-#include <inviwo/core/processors/processorutils.h>  // for makeProcessor, GridPos
-#include <inviwo/core/rendering/datavisualizer.h>   // for DataVisualizer
-#include <inviwo/core/util/document.h>              // for Document, Document::DocumentHandle
+#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/rendering/datavisualizer.h>
+#include <inviwo/core/util/document.h>
 #include <modules/base/processors/imagetolayer.h>
 
 namespace inviwo {

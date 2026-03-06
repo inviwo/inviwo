@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/cimg/cimgmoduledefine.h>  // for IVW_MODULE_CIMG_API
+#include <modules/cimg/cimgmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, LayerType::Color
-#include <inviwo/core/datastructures/image/layer.h>       // for DataReaderType
-#include <inviwo/core/io/datareader.h>                    // for DataReaderType
-#include <inviwo/core/util/glmvec.h>                      // for size2_t
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <memory>       // for shared_ptr, make_shared
-#include <string_view>  // for string_view
+#include <memory>
+#include <string_view>
 
 namespace inviwo {
 template <typename T>

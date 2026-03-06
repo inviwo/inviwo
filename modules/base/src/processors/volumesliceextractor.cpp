@@ -29,48 +29,48 @@
 
 #include <modules/base/processors/volumesliceextractor.h>
 
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for CartesianCoordina...
-#include <inviwo/core/datastructures/image/image.h>                     // for Image
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/imageram.h>                  // IWYU pragma: keep
-#include <inviwo/core/datastructures/image/imagetypes.h>                // for ImageChannel, Ima...
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/interaction/events/eventmatcher.h>                // for GestureEventMatcher
-#include <inviwo/core/interaction/events/gestureevent.h>                // for GestureEvent
-#include <inviwo/core/interaction/events/gesturestate.h>                // for GestureStates
-#include <inviwo/core/interaction/events/keyboardkeys.h>                // for IvwKey, KeyState
-#include <inviwo/core/interaction/events/wheelevent.h>                  // for WheelEvent
-#include <inviwo/core/ports/imageport.h>                                // for ImageOutport
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/eventproperty.h>                       // for EventProperty
-#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
-#include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
-#include <inviwo/core/properties/ordinalproperty.h>                     // for IntSizeTProperty
-#include <inviwo/core/util/formatdispatching.h>                         // for All, PrecisionVal...
-#include <inviwo/core/util/formats.h>                                   // for DataFormat, DataV...
-#include <inviwo/core/util/glmutils.h>                                  // for extent
-#include <inviwo/core/util/glmvec.h>                                    // for size2_t, dvec2
-#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
-#include <inviwo/core/util/staticstring.h>                              // for operator+
-#include <inviwo/core/util/document.h>                                  // for Document
-#include <modules/base/datastructures/imagereusecache.h>                // for ImageReuseCache
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/interaction/events/eventmatcher.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/gesturestate.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/document.h>
+#include <modules/base/datastructures/imagereusecache.h>
 
-#include <algorithm>      // for copy
-#include <cstddef>        // for size_t
-#include <memory>         // for shared_ptr, make_...
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
+#include <algorithm>
+#include <cstddef>
+#include <memory>
+#include <type_traits>
+#include <unordered_set>
 
-#include <flags/flags.h>   // for any
-#include <glm/common.hpp>  // for clamp
-#include <glm/vec2.hpp>    // for vec<>::(anonymous)
-#include <glm/vec3.hpp>    // for vec, vec<>::(anon...
+#include <flags/flags.h>
+#include <glm/common.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 class Event;

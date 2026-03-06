@@ -29,19 +29,19 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/ports/volumeport.h>      // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/processor.h>  // for Processor
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <modules/base/datastructures/volumereusecache.h>
 #include <modules/base/properties/datarangeproperty.h>
 #include <modules/basegl/algorithm/dataminmaxgl.h>
-#include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
-#include <modules/opengl/shader/shader.h>             // for Shader
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <memory>  // for shared_ptr
-#include <string>  // for string
+#include <memory>
+#include <string>
 
 namespace inviwo {
 class DataFormatBase;

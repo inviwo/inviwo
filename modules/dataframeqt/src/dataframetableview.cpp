@@ -29,25 +29,25 @@
 
 #include <inviwo/dataframeqt/dataframetableview.h>
 
-#include <inviwo/core/util/raiiutils.h>                   // for KeepTrueWhileInScope
-#include <inviwo/dataframeqt/dataframemodel.h>            // for DataFrameModel
-#include <inviwo/dataframeqt/dataframesortfilterproxy.h>  // for DataFrameSortFilterProxy
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/dataframeqt/dataframemodel.h>
+#include <inviwo/dataframeqt/dataframesortfilterproxy.h>
 
-#include <vector>  // for vector
+#include <vector>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QAbstractButton>       // for QAbstractButton
-#include <QAbstractItemModel>    // for QAbstractItemModel
-#include <QAbstractItemView>     // for QAbstractItemView, QAbstractIte...
-#include <QHeaderView>           // for QHeaderView
-#include <QItemSelection>        // for QItemSelection
-#include <QItemSelectionModel>   // for QItemSelectionModel, QItemSelec...
-#include <QModelIndex>           // for QModelIndex
-#include <QStyle>                // for QStyle, QStyle::State, QStyle::...
-#include <QStyleOptionViewItem>  // for QStyleOptionViewItem
-#include <QStyledItemDelegate>   // for QStyledItemDelegate
-#include <Qt>                    // for AscendingOrder
+#include <QAbstractButton>
+#include <QAbstractItemModel>
+#include <QAbstractItemView>
+#include <QHeaderView>
+#include <QItemSelection>
+#include <QItemSelectionModel>
+#include <QModelIndex>
+#include <QStyle>
+#include <QStyleOptionViewItem>
+#include <QStyledItemDelegate>
+#include <Qt>
 
 class QEvent;
 class QPainter;

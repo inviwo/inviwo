@@ -29,39 +29,39 @@
 
 #include <modules/basegl/processors/imageprocessing/imagenormalizationprocessor.h>
 
-#include <inviwo/core/datastructures/image/layer.h>                      // for Layer
-#include <inviwo/core/datastructures/image/layerram.h>                   // for LayerRAM
-#include <inviwo/core/datastructures/representationconverter.h>          // for RepresentationCo...
-#include <inviwo/core/datastructures/representationconverterfactory.h>   // for RepresentationCo...
-#include <inviwo/core/ports/imageport.h>                                 // for ImageInport, Ima...
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                       // for CodeState, CodeS...
-#include <inviwo/core/processors/processortags.h>                        // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>                         // for BoolProperty
-#include <inviwo/core/properties/invalidationlevel.h>                    // for InvalidationLevel
-#include <inviwo/core/properties/stringproperty.h>                       // for StringProperty
-#include <inviwo/core/util/formats.h>                                    // for DataFormatBase
-#include <inviwo/core/util/glmvec.h>                                     // for dvec3, dvec4, vec4
-#include <inviwo/core/util/logcentral.h>                                 // for LogCentral
-#include <modules/base/algorithm/algorithmoptions.h>                     // for IgnoreSpecialValues
-#include <modules/base/algorithm/dataminmax.h>                           // for layerMinMax
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor
-#include <modules/opengl/shader/shader.h>                                // for Shader
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
+#include <modules/base/algorithm/algorithmoptions.h>
+#include <modules/base/algorithm/dataminmax.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <algorithm>      // for max, min
-#include <memory>         // for shared_ptr, uniq...
-#include <string>         // for string
-#include <string_view>    // for string_view
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
-#include <utility>        // for pair
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
 
-#include <fmt/core.h>      // for basic_string_view
-#include <fmt/format.h>    // for to_string, forma...
-#include <glm/common.hpp>  // for abs, max
-#include <glm/gtx/io.hpp>  // for operator<<
-#include <glm/vec3.hpp>    // for vec<>::(anonymous)
-#include <glm/vec4.hpp>    // for vec, vec<>::(ano...
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <glm/common.hpp>
+#include <glm/gtx/io.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 class TextureUnitContainer;

@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-#include <inviwo/core/properties/optionproperty.h>   // for OptionPropertyString
-#include <inviwo/core/properties/ordinalproperty.h>  // for FloatVec4Property, IntProperty
-#include <inviwo/core/util/settings/settings.h>      // for Settings
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/settings/settings.h>
 
-#include <functional>  // for function
-#include <memory>      // for shared_ptr
-#include <vector>      // for vector
+#include <functional>
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 class SyntaxHighlighter;

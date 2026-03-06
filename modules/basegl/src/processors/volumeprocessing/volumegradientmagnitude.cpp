@@ -27,26 +27,26 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/datamapper.h>  // for DataMapper
-#include <inviwo/core/datastructures/unitsystem.h>  // for Axis, Unit
-#include <inviwo/core/ports/volumeport.h>           // for VolumeIn...
-#include <inviwo/core/processors/processorinfo.h>   // for Processo...
-#include <inviwo/core/processors/processorstate.h>  // for CodeState
-#include <inviwo/core/processors/processortags.h>   // for Tags
-#include <inviwo/core/properties/optionproperty.h>  // for OptionPr...
-#include <inviwo/core/util/formats.h>               // for DataFloat32
-#include <inviwo/core/util/glmvec.h>                // for dvec2
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/exception.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>        // for VolumeGL...
-#include <modules/basegl/processors/volumeprocessing/volumegradientmagnitude.h>  // for VolumeGr...
-#include <modules/opengl/shader/shader.h>                                        // for Shader
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <modules/basegl/processors/volumeprocessing/volumegradientmagnitude.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <array>        // for array
-#include <memory>       // for shared_ptr
-#include <sstream>      // for stringst...
-#include <string>       // for char_traits
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_e...
+#include <array>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <type_traits>
 
 namespace inviwo {
 class TextureUnitContainer;

@@ -29,26 +29,26 @@
 
 #include <modules/cimg/tiffstackvolumereader.h>
 
-#include <inviwo/core/datastructures/datamapper.h>                   // for DataMapper
-#include <inviwo/core/datastructures/volume/volume.h>                // for Volume, DataReaderType
-#include <inviwo/core/datastructures/volume/volumedisk.h>            // for VolumeDisk
-#include <inviwo/core/datastructures/volume/volumeram.h>             // for createVolumeRAM
-#include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
-#include <inviwo/core/io/datareader.h>                               // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>                      // for DataReaderException
-#include <inviwo/core/util/fileextension.h>                          // for FileExtension
-#include <inviwo/core/util/filesystem.h>                             // for fileExists, addBasePath
-#include <inviwo/core/util/formats.h>                                // for DataFormatBase
-#include <inviwo/core/util/glmvec.h>                                 // for vec3, dvec2, size3_t
-#include <modules/cimg/cimgutils.h>                                  // for TIFFHeader, loadTIFF...
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumedisk.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/cimg/cimgutils.h>
 
-#include <type_traits>  // for remove_extent_t
+#include <type_traits>
 
-#include <glm/ext/matrix_transform.hpp>  // for scale
-#include <glm/gtx/component_wise.hpp>    // for compMin
-#include <glm/gtx/transform.hpp>         // for scale
-#include <glm/vec3.hpp>                  // for operator/, operator*
-#include <glm/vec4.hpp>                  // for operator*
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/component_wise.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 #include <fmt/std.h>
 

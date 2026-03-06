@@ -29,23 +29,23 @@
 
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
 
-#include <inviwo/core/properties/propertysemantics.h>         // for PropertySemantics, operator==
-#include <inviwo/core/properties/stringproperty.h>            // for StringProperty
-#include <modules/qtwidgets/editablelabelqt.h>                // for EditableLabelQt
-#include <modules/qtwidgets/inviwoqtutils.h>                  // for fromQString, toQString
-#include <modules/qtwidgets/lineeditqt.h>                     // for LineEditQt
-#include <modules/qtwidgets/properties/propertywidgetqt.h>    // for PropertyWidgetQt
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/lineeditqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 
-#include <string>  // for operator==, string
+#include <string>
 
-#include <QHBoxLayout>     // for QHBoxLayout
-#include <QIcon>           // for QIcon
-#include <QLineEdit>       // for QLineEdit, QLineEdit::Passw...
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <QSizePolicy>     // for QSizePolicy
-#include <QToolButton>     // for QToolButton
-#include <QWidget>         // for QWidget
+#include <QHBoxLayout>
+#include <QIcon>
+#include <QLineEdit>
+#include <QSignalBlocker>
+#include <QSizePolicy>
+#include <QToolButton>
+#include <QWidget>
 
 namespace inviwo {
 

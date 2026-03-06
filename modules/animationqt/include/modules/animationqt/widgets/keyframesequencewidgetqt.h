@@ -28,17 +28,17 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animationqt/animationqtmoduledefine.h>  // for IVW_MODULE_ANIMAT...
+#include <modules/animationqt/animationqtmoduledefine.h>
 
-#include <modules/animation/datastructures/keyframesequenceobserver.h>  // for KeyframeSequenceO...
-#include <modules/animationqt/widgets/editorconstants.h>                // for ItemTypes, ItemTy...
+#include <modules/animation/datastructures/keyframesequenceobserver.h>
+#include <modules/animationqt/widgets/editorconstants.h>
 
-#include <memory>         // for unique_ptr
-#include <unordered_map>  // for unordered_map
+#include <memory>
+#include <unordered_map>
 
-#include <QGraphicsItem>  // for QGraphicsItem
-#include <QRectF>         // for QRectF
-#include <QVariant>       // for QVariant
+#include <QGraphicsItem>
+#include <QRectF>
+#include <QVariant>
 
 class QPainter;
 class QRectF;

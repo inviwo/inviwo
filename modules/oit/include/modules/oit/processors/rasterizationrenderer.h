@@ -29,20 +29,20 @@
 
 #pragma once
 
-#include <modules/oit/oitmoduledefine.h>  // for IVW_MODULE_MESHRENDE...
+#include <modules/oit/oitmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/image.h>        // for Image
-#include <inviwo/core/interaction/cameratrackball.h>       // for CameraTrackball
-#include <inviwo/core/ports/imageport.h>                   // for ImageInport, ImageOu...
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
-#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
-#include <inviwo/core/properties/cameraproperty.h>         // for CameraProperty
-#include <inviwo/core/properties/ordinalproperty.h>        // for FloatProperty, Float...
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/util/dispatcher.h>                 // for Dispatcher, Dispatch...
-#include <modules/oit/ports/rasterizationport.h>         // for RasterizationInport
-#include <modules/oit/rendering/fragmentlistrenderer.h>  // for FragmentListRenderer
+#include <inviwo/core/util/dispatcher.h>
+#include <modules/oit/ports/rasterizationport.h>
+#include <modules/oit/rendering/fragmentlistrenderer.h>
 #include <modules/oit/rendering/rasterizationrendererbase.h>
 
 #include <optional>

@@ -29,43 +29,43 @@
 
 #include <modules/basegl/processors/imageprocessing/imagelayoutgl.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageType, ImageType::ColorDept...
-#include <inviwo/core/interaction/events/event.h>         // for Event
-#include <inviwo/core/interaction/events/resizeevent.h>   // for ResizeEvent
-#include <inviwo/core/ports/imageport.h>                  // for ImageMultiInport, ImageOutport
-#include <inviwo/core/ports/outport.h>                    // for Outport
-#include <inviwo/core/processors/processor.h>             // for Processor
-#include <inviwo/core/processors/processorinfo.h>         // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>        // for CodeState, CodeState::Experimental
-#include <inviwo/core/processors/processortags.h>         // for Tags, Tags::GL
-#include <inviwo/core/properties/compositeproperty.h>     // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
-#include <inviwo/core/properties/minmaxproperty.h>        // for IntMinMaxProperty, MinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>        // for OptionPropertyOption, OptionPro...
-#include <inviwo/core/properties/ordinalproperty.h>       // for FloatProperty, OrdinalProperty
-#include <inviwo/core/properties/propertysemantics.h>     // for PropertySemantics, PropertySema...
-#include <inviwo/core/util/assertion.h>                   // for IVW_ASSERT
-#include <inviwo/core/util/glmvec.h>                      // for ivec2, ivec4, size2_t, vec2, uvec2
-#include <inviwo/core/util/rendercontext.h>               // for RenderContext
-#include <inviwo/core/util/statecoordinator.h>            // for StateCoordinator
-#include <inviwo/core/util/staticstring.h>                // for operator+
-#include <inviwo/core/util/stdextensions.h>               // for all_of
-#include <modules/basegl/viewmanager.h>                   // for ViewManager, ViewManager::View
-#include <modules/opengl/inviwoopengl.h>                  // for glViewport
-#include <modules/opengl/shader/shader.h>                 // for Shader
-#include <modules/opengl/texture/textureunit.h>           // for TextureUnit
-#include <modules/opengl/texture/textureutils.h>          // for activateAndClearTarget, bindTex...
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/outport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/statecoordinator.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/basegl/viewmanager.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 
-#include <algorithm>    // for max, min, find
-#include <cstddef>      // for size_t
-#include <iterator>     // for distance
-#include <limits>       // for numeric_limits
-#include <memory>       // for shared_ptr
-#include <type_traits>  // for remove_extent_t
+#include <algorithm>
+#include <cstddef>
+#include <iterator>
+#include <limits>
+#include <memory>
+#include <type_traits>
 
-#include <glm/common.hpp>             // for clamp, min
-#include <glm/vec2.hpp>               // for vec<>::(anonymous), vec, operator-
-#include <glm/vector_relational.hpp>  // for any, lessThanEqual, equal
+#include <glm/common.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vector_relational.hpp>
 #include <glm/gtx/component_wise.hpp>
 
 namespace inviwo {

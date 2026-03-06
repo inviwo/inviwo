@@ -30,8 +30,8 @@
 #pragma once
 
 #include <QWidget>
-#include <QPoint>        // for QPoint
-#include <QSize>         // for QSize
+#include <QPoint>
+#include <QSize>
 
 class QMouseEvent;
 class QPaintEvent;

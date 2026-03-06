@@ -29,12 +29,12 @@
 
 #include <modules/basegl/properties/linesettingsproperty.h>
 
-#include <inviwo/core/properties/boolproperty.h>          // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>     // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>     // for InvalidationLevel, Invalidation...
-#include <inviwo/core/properties/ordinalproperty.h>       // for FloatProperty
-#include <inviwo/core/properties/propertysemantics.h>     // for PropertySemantics
-#include <modules/basegl/properties/stipplingproperty.h>  // for StipplingProperty
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <modules/basegl/properties/stipplingproperty.h>
 
 namespace inviwo {
 class StipplingSettingsInterface;

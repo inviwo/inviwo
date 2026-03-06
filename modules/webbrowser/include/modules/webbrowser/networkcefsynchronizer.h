@@ -30,7 +30,7 @@
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 
-#include <inviwo/core/processors/processor.h>  // for Processor
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/settings/settings.h>
 

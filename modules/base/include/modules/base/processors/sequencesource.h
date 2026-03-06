@@ -28,7 +28,7 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
 #include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/io/datareader.h>
@@ -54,11 +54,11 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <modules/base/properties/basisproperty.h>
 
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector, opera...
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include <fmt/format.h>
 

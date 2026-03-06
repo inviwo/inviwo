@@ -29,26 +29,26 @@
 
 #include <modules/qtwidgets/rangesliderqt.h>
 
-#include <inviwo/core/util/glmvec.h>            // for ivec2
-#include <inviwo/core/util/stringconversion.h>  // for toString
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/logcentral.h>
 
-#include <algorithm>  // for min
+#include <algorithm>
 #include <cmath>
 
-#include <QEvent>           // for QEvent, QEvent::MouseButtonRelease, QEven...
-#include <QFrame>           // for QFrame
-#include <QHelpEvent>       // for QHelpEvent
-#include <QList>            // for QList
-#include <QMouseEvent>      // for QMouseEvent
-#include <QPoint>           // for QPoint
-#include <QSignalBlocker>   // for QSignalBlocker
-#include <QSizePolicy>      // for QSizePolicy, QSizePolicy::Expanding, QSiz...
-#include <QSplitterHandle>  // for QSplitterHandle
-#include <QString>          // for QString
-#include <QToolTip>         // for QToolTip
-#include <QWidget>          // for QWidget
-#include <glm/vec2.hpp>     // for vec<>::(anonymous)
+#include <QEvent>
+#include <QFrame>
+#include <QHelpEvent>
+#include <QList>
+#include <QMouseEvent>
+#include <QPoint>
+#include <QSignalBlocker>
+#include <QSizePolicy>
+#include <QSplitterHandle>
+#include <QString>
+#include <QToolTip>
+#include <QWidget>
+#include <glm/vec2.hpp>
 
 #include <fmt/format.h>
 

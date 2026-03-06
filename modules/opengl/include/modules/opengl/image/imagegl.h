@@ -29,20 +29,20 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/imagerepresentation.h>  // for ImageRepresentation
-#include <inviwo/core/datastructures/image/imagetypes.h>           // for ImageType, ImageType::...
-#include <inviwo/core/util/glmvec.h>                               // for size2_t, dvec4
-#include <modules/opengl/buffer/framebufferobject.h>               // for FrameBufferObject
-#include <modules/opengl/inviwoopengl.h>                           // for GLenum
-#include <modules/opengl/openglutils.h>                            // for DepthMaskState
+#include <inviwo/core/datastructures/image/imagerepresentation.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
 
-#include <cstddef>    // for size_t
-#include <optional>   // for optional
-#include <tuple>      // for tuple
-#include <typeindex>  // for type_index
-#include <vector>     // for vector
+#include <cstddef>
+#include <optional>
+#include <tuple>
+#include <typeindex>
+#include <vector>
 
 namespace inviwo {
 

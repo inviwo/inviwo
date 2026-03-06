@@ -29,11 +29,11 @@
 
 #include <modules/webbrowser/properties/javascriptpropertywidgetqt.h>
 
-#include <inviwo/core/properties/propertysemantics.h>             // for operator==, PropertySem...
-#include <inviwo/core/properties/stringproperty.h>                // for StringProperty
-#include <inviwo/core/util/assertion.h>                           // for IVW_ASSERT
-#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>  // for StringPropertyWidgetQt
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>      // for TextEditorDockWidget
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/assertion.h>
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 #include <modules/qtwidgets/syntaxhighlighter.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>

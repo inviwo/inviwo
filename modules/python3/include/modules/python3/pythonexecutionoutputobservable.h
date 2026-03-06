@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>  // for IVW_MODULE_PYTHON3_API
+#include <modules/python3/python3moduledefine.h>
 
-#include <inviwo/core/util/observer.h>  // for Observable, Observer
+#include <inviwo/core/util/observer.h>
 
-#include <string>  // for string
-#include <vector>  // for vector
+#include <string>
+#include <vector>
 
 namespace inviwo {
 

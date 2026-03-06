@@ -29,8 +29,8 @@
 
 #include <modules/basegl/datastructures/linesettings.h>
 
-#include <modules/basegl/datastructures/linesettingsinterface.h>  // for LineSettingsInterface
-#include <modules/basegl/datastructures/stipplingsettings.h>      // for StipplingSettings
+#include <modules/basegl/datastructures/linesettingsinterface.h>
+#include <modules/basegl/datastructures/stipplingsettings.h>
 
 namespace inviwo {
 class StipplingSettingsInterface;

@@ -29,20 +29,20 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/image/layer.h>        // for Layer
-#include <inviwo/core/io/datawriter.h>                     // for DataWriterType
-#include <inviwo/core/io/datawriterexception.h>            // for DataWriterException
-#include <inviwo/core/network/processornetworkobserver.h>  // for ProcessorNetworkObserver
-#include <inviwo/core/ports/imageport.h>                   // for ImageInport
-#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
-#include <inviwo/core/properties/ordinalproperty.h>        // for IntSize2Property
-#include <inviwo/core/util/glmvec.h>                       // for size2_t
-#include <modules/base/processors/dataexport.h>            // for DataExport
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterexception.h>
+#include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/processors/dataexport.h>
 
-#include <map>  // for operator!=, map
+#include <map>
 
 namespace inviwo {
 class PortConnection;

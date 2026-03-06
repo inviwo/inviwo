@@ -29,21 +29,21 @@
 
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTIN...
+#include <modules/plottinggl/plottingglmoduledefine.h>
 
-#include <inviwo/core/datastructures/bitset.h>                         // for BitSet
-#include <inviwo/core/ports/imageport.h>                               // for BaseImageInport
-#include <inviwo/core/processors/processor.h>                          // for Processor
-#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
-#include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
-#include <inviwo/dataframe/properties/columnoptionproperty.h>          // for ColumnOptionProperty
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
-#include <modules/opengl/texture/textureutils.h>                       // for ImageInport
-#include <modules/plottinggl/plotters/persistencediagramplotgl.h>      // for PersistenceDiagram...
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/plottinggl/plotters/persistencediagramplotgl.h>
 
-#include <cstddef>     // for size_t
-#include <functional>  // for function
-#include <memory>      // for shared_ptr
+#include <cstddef>
+#include <functional>
+#include <memory>
 
 namespace inviwo {
 

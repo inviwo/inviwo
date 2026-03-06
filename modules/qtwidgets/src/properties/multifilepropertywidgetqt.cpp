@@ -29,34 +29,34 @@
 
 #include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
 
-#include <inviwo/core/properties/multifileproperty.h>       // for MultiFileProperty
-#include <inviwo/core/util/filedialogstate.h>               // for FileMode, AcceptMode, AcceptM...
-#include <inviwo/core/util/fileextension.h>                 // for FileExtension
-#include <inviwo/core/util/filesystem.h>                    // for directoryExists, getFileDirec...
+#include <inviwo/core/properties/multifileproperty.h>
+#include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/assertion.h>                     // IWYU pragma: keep
-#include <modules/qtwidgets/editablelabelqt.h>              // for EditableLabelQt
-#include <modules/qtwidgets/filepathlineeditqt.h>           // for FilePathLineEditQt
-#include <modules/qtwidgets/inviwofiledialog.h>             // for InviwoFileDialog
-#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/filepathlineeditqt.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <string>  // for string, basic_string, operator+
-#include <vector>  // for vector, __vector_base<>::valu...
+#include <string>
+#include <vector>
 
-#include <QDesktopServices>  // for QDesktopServices
-#include <QDragEnterEvent>   // for QDragEnterEvent
-#include <QDragMoveEvent>    // for QDragMoveEvent
-#include <QDropEvent>        // for QDropEvent
-#include <QHBoxLayout>       // for QHBoxLayout
-#include <QIcon>             // for QIcon
-#include <QList>             // for QList, QList<>::iterator
-#include <QMimeData>         // for QMimeData
-#include <QSizePolicy>       // for QSizePolicy
-#include <QString>           // for QString
-#include <QStringList>       // for QStringList
-#include <QToolButton>       // for QToolButton
-#include <QUrl>              // for QUrl, QUrl::TolerantMode
-#include <QWidget>           // for QWidget
+#include <QDesktopServices>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QHBoxLayout>
+#include <QIcon>
+#include <QList>
+#include <QMimeData>
+#include <QSizePolicy>
+#include <QString>
+#include <QStringList>
+#include <QToolButton>
+#include <QUrl>
+#include <QWidget>
 
 class QHBoxLayout;
 

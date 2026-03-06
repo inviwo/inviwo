@@ -29,19 +29,19 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/datastructures/geometry/typedmesh.h>    // for PositionsBuffer, TypedMesh
-#include <inviwo/core/interaction/cameratrackball.h>          // for CameraTrackball
-#include <inviwo/core/interaction/pickingmapper.h>            // for PickingMapper
-#include <inviwo/core/ports/imageport.h>                      // for ImageInport, ImageOutport
-#include <inviwo/core/ports/volumeport.h>                     // for VolumeInport
-#include <inviwo/core/processors/processor.h>                 // for Processor
-#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
-#include <inviwo/core/properties/cameraproperty.h>            // for CameraProperty
-#include <inviwo/core/properties/ordinalproperty.h>           // for FloatVec3Property
-#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
-#include <modules/opengl/shader/shader.h>                     // for Shader
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 class PickingEvent;

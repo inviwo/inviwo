@@ -29,16 +29,16 @@
 
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
 
-#include <inviwo/core/properties/optionproperty.h>      // for OptionPropertyOption, OptionPrope...
-#include <inviwo/core/properties/property.h>            // for Property
-#include <inviwo/core/properties/valuewrapper.h>        // for PropertySerializationMode, Proper...
-#include <inviwo/core/util/utilities.h>                 // for stripIdentifier
-#include <inviwo/core/util/zip.h>                       // for enumerate, zipIterator, zipper
-#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrameInport, DataFrame
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
-#include <type_traits>  // for remove_extent_t
-#include <utility>      // for move
-#include <vector>       // for vector
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 

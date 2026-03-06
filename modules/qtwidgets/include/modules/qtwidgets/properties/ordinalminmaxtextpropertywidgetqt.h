@@ -29,29 +29,29 @@
 
 #pragma once
 
-#include <inviwo/core/metadata/metadata.h>                          // for BoolMetaData
-#include <inviwo/core/properties/constraintbehavior.h>              // for ConstraintBehavior
-#include <inviwo/core/properties/property.h>                        // for Property
+#include <inviwo/core/metadata/metadata.h>
+#include <inviwo/core/properties/constraintbehavior.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/minmaxproperty.h>                  // IWYU pragma: keep
-#include <inviwo/core/util/glm.h>                                   // for almostEqual
-#include <modules/qtwidgets/editablelabelqt.h>                      // for EditableLabelQt
-#include <modules/qtwidgets/numberwidget.h>                         // for NumberWidget
-#include <modules/qtwidgets/properties/propertysettingswidgetqt.h>  // for MinMaxPropertySetting...
-#include <modules/qtwidgets/properties/propertywidgetqt.h>          // for PropertyWidgetQt
+#include <inviwo/core/util/glm.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/numberwidget.h>
+#include <modules/qtwidgets/properties/propertysettingswidgetqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <cstddef>  // for size_t
-#include <memory>   // for unique_ptr
+#include <cstddef>
+#include <memory>
 
-#include <QAction>         // for QAction
-#include <QHBoxLayout>     // for QHBoxLayout
-#include <QLabel>          // for QLabel
-#include <QSignalBlocker>  // for QSignalBlocker
-#include <QSizePolicy>     // for QSizePolicy, QSizePol...
-#include <QWidget>         // for QWidget
+#include <QAction>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QSignalBlocker>
+#include <QSizePolicy>
+#include <QWidget>
 #include <QMenu>           // IWYU pragma: keep
 
-#include <glm/detail/qualifier.hpp>    // for defaultp, tvec2
-#include <glm/gtc/type_precision.hpp>  // for i64
+#include <glm/detail/qualifier.hpp>
+#include <glm/gtc/type_precision.hpp>
 
 class QHBoxLayout;
 

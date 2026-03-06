@@ -29,19 +29,19 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/imagetypes.h>  // for SwizzleMask, InterpolationType
-#include <inviwo/core/util/observer.h>                    // for Observable
-#include <modules/opengl/inviwoopengl.h>                  // for GLenum, GLint, GLuint, GL_TEXTU...
-#include <modules/opengl/texture/textureobserver.h>       // for TextureObserver
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/observer.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/texture/textureobserver.h>
 
-#include <array>    // for array
-#include <cstddef>  // for size_t
-#include <mutex>    // for mutex
-#include <utility>  // for pair
-#include <vector>   // for vector
-#include <span>     // for span
+#include <array>
+#include <cstddef>
+#include <mutex>
+#include <utility>
+#include <vector>
+#include <span>
 
 namespace inviwo {
 class DataFormatBase;

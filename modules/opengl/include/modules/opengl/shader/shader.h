@@ -29,25 +29,25 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/util/callback.h>           // for BaseCallBack, CallBackList
-#include <inviwo/core/util/glmmat.h>             // for mat2, mat3, mat4
-#include <inviwo/core/util/glmvec.h>             // for bvec2, bvec3, bvec4, ivec2, ivec3, ivec4
-#include <inviwo/core/util/iterrange.h>          // for iter_range
-#include <modules/opengl/inviwoopengl.h>         // for GLint, GLuint
-#include <modules/opengl/shader/shaderobject.h>  // for ShaderObject, ShaderObject::Callback
+#include <inviwo/core/util/callback.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/iterrange.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/shader/shaderobject.h>
 
-#include <cstddef>      // for nullptr_t
-#include <functional>   // for function, less
-#include <map>          // for map
-#include <memory>       // for shared_ptr, unique_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for enable_if_t
-#include <utility>      // for pair
-#include <vector>       // for vector, vector<>::const_iterator, vector...
-#include <span>         // for span
+#include <cstddef>
+#include <functional>
+#include <map>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <vector>
+#include <span>
 
 namespace inviwo {
 

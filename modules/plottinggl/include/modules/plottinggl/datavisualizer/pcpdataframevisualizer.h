@@ -28,14 +28,14 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>  // for IVW_MODULE_PLOTTINGGL_API
+#include <modules/plottinggl/plottingglmoduledefine.h>
 
-#include <inviwo/core/rendering/datavisualizer.h>  // for DataVisualizer
-#include <inviwo/core/util/document.h>             // for Document
+#include <inviwo/core/rendering/datavisualizer.h>
+#include <inviwo/core/util/document.h>
 
-#include <string>   // for string
-#include <utility>  // for pair
-#include <vector>   // for vector
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace inviwo {
 struct FileExtension;

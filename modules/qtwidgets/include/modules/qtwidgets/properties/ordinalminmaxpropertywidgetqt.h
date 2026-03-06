@@ -29,34 +29,34 @@
 
 #pragma once
 
-#include <inviwo/core/properties/minmaxproperty.h>  // IWYU pragma: keep
-#include <inviwo/core/properties/property.h>        // for Property
-#include <inviwo/core/util/glm.h>                   // for almostEqual
-#include <inviwo/core/util/glmutils.h>              // for is_floating_point
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmutils.h>
 #include <inviwo/core/util/logcentral.h>
-#include <modules/qtwidgets/editablelabelqt.h>                      // for EditableLabelQt
-#include <modules/qtwidgets/inviwoqtutils.h>                        // for emToPx, decimals
-#include <modules/qtwidgets/numberwidget.h>                         // for NumberWidget
-#include <modules/qtwidgets/properties/propertysettingswidgetqt.h>  // for MinMaxPropertySetting...
-#include <modules/qtwidgets/properties/propertywidgetqt.h>          // for PropertyWidgetQt
-#include <modules/qtwidgets/rangesliderqt.h>                        // for RangeSliderQt
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/numberwidget.h>
+#include <modules/qtwidgets/properties/propertysettingswidgetqt.h>
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/rangesliderqt.h>
 
-#include <cstddef>      // for size_t
-#include <memory>       // for unique_ptr
-#include <type_traits>  // for is_integral, enable_if
+#include <cstddef>
+#include <memory>
+#include <type_traits>
 
-#include <QAction>          // for QAction
-#include <QDoubleSpinBox>   // for QDoubleSpinBox
-#include <QHBoxLayout>      // for QHBoxLayout
-#include <QSignalBlocker>   // for QSignalBlocker
-#include <QSizePolicy>      // for QSizePolicy
-#include <QSplitterHandle>  // for QSplitterHandle
-#include <QWidget>          // for QWidget
-#include <Qt>               // for Horizontal
+#include <QAction>
+#include <QDoubleSpinBox>
+#include <QHBoxLayout>
+#include <QSignalBlocker>
+#include <QSizePolicy>
+#include <QSplitterHandle>
+#include <QWidget>
+#include <Qt>
 #include <QMenu>            // IWYU pragma: keep
 
-#include <glm/detail/qualifier.hpp>    // for defaultp, tvec2
-#include <glm/gtc/type_precision.hpp>  // for i64
+#include <glm/detail/qualifier.hpp>
+#include <glm/gtc/type_precision.hpp>
 
 class QHBoxLayout;
 

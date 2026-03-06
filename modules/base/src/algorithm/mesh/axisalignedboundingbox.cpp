@@ -29,20 +29,20 @@
 
 #include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
 
-#include <inviwo/core/datastructures/camera/camera.h>          // for mat4
-#include <inviwo/core/datastructures/coordinatetransformer.h>  // for SpatialCoordinateTransformer
-#include <inviwo/core/datastructures/geometry/geometrytype.h>  // for BufferType, BufferType::Po...
-#include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh
-#include <inviwo/core/util/glmvec.h>                           // for vec3, vec4
-#include <modules/base/algorithm/dataminmax.h>                 // for bufferMinMax
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/base/algorithm/dataminmax.h>
 
-#include <algorithm>    // for find_if
-#include <limits>       // for numeric_limits
-#include <type_traits>  // for remove_extent_t
+#include <algorithm>
+#include <limits>
+#include <type_traits>
 
-#include <glm/common.hpp>  // for max, min
-#include <glm/mat4x4.hpp>  // for operator*, mat
-#include <glm/vec4.hpp>    // for operator*, operator+
+#include <glm/common.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

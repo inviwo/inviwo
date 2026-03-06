@@ -29,18 +29,18 @@
 
 #include <modules/brushingandlinking/datastructures/brushingaction.h>
 
-#include <inviwo/core/util/exception.h>      // for Exception
-#include <inviwo/core/util/ostreamjoiner.h>  // for ostream_joiner, make_ostream_joiner
-#include <inviwo/core/util/sourcecontext.h>  // for SourceContext
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/sourcecontext.h>
 
-#include <algorithm>    // for copy, find_if
-#include <iostream>     // for char_traits, operator<<, operator>>
-#include <mutex>        // for mutex, scoped_lock
-#include <string>       // for string, basic_string, basic_string<>::__self...
-#include <type_traits>  // for decay_t
-#include <vector>       // for vector
+#include <algorithm>
+#include <iostream>
+#include <mutex>
+#include <string>
+#include <type_traits>
+#include <vector>
 
-#include <flags/iterator.h>  // for operator!=
+#include <flags/iterator.h>
 
 namespace inviwo {
 

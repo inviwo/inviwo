@@ -29,31 +29,31 @@
 
 #include <modules/base/processors/volumecreator.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>           // for Volume
-#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
-#include <inviwo/core/processors/processor.h>                   // for Processor
-#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>              // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>               // for Tags, Tags::CPU
-#include <inviwo/core/properties/optionproperty.h>              // for OptionPropertyOption, Opt...
-#include <inviwo/core/properties/ordinalproperty.h>             // for IntProperty, IntSize3Prop...
-#include <inviwo/core/properties/property.h>                    // for Property, OverwriteState
-#include <inviwo/core/util/foreacharg.h>                        // for for_each_type
-#include <inviwo/core/util/formatdispatching.h>                 // for dispatch, All
-#include <inviwo/core/util/formats.h>                           // for DataFormatId, DataFormat
-#include <inviwo/core/util/glmvec.h>                            // for size3_t
-#include <inviwo/core/util/staticstring.h>                      // for operator+
-#include <inviwo/core/util/stdextensions.h>                     // for any_of, ref
-#include <modules/base/algorithm/volume/volumegeneration.h>     // for makeMarchingCubeVolume
-#include <modules/base/properties/basisproperty.h>              // for BasisProperty
-#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/base/algorithm/volume/volumegeneration.h>
+#include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
 
-#include <array>    // for array
-#include <cstddef>  // for size_t
+#include <array>
+#include <cstddef>
 
-#include <glm/common.hpp>              // for max, min
-#include <glm/gtx/component_wise.hpp>  // for compMax, compMin
-#include <glm/gtx/hash.hpp>            // for hash<>::operator()
+#include <glm/common.hpp>
+#include <glm/gtx/component_wise.hpp>
+#include <glm/gtx/hash.hpp>
 
 namespace inviwo {
 class Deserializer;

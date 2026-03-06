@@ -29,65 +29,65 @@
 
 #include <modules/plottinggl/plotters/persistencediagramplotgl.h>
 
-#include <inviwo/core/datastructures/bitset.h>                          // for BitSet
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
-#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for TypedMesh<>::Vertex
-#include <inviwo/core/datastructures/image/image.h>                     // for Image
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/datastructures/tfprimitive.h>                     // for TFPrimitiveData
-#include <inviwo/core/datastructures/transferfunction.h>                // for TransferFunction
-#include <inviwo/core/interaction/events/pickingevent.h>                // for PickingEvent
-#include <inviwo/core/interaction/pickingmapper.h>                      // for PickingMapper
-#include <inviwo/core/interaction/pickingstate.h>                       // for PickingHoverState
-#include <inviwo/core/ports/imageport.h>                                // for ImageOutport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
-#include <inviwo/core/properties/minmaxproperty.h>                      // for DoubleMinMaxProperty
-#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatVec4Property
-#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
-#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
-#include <inviwo/core/properties/marginproperty.h>                      // for MarginProperty
-#include <inviwo/core/util/dispatcher.h>                                // for Dispatcher
-#include <inviwo/core/util/foreacharg.h>                                // for for_each_in_tuple
-#include <inviwo/core/util/formatdispatching.h>                         // for Scalars
-#include <inviwo/core/util/glmvec.h>                                    // for vec2, vec4, size2_t
-#include <inviwo/core/util/stdextensions.h>                             // for contains, find
-#include <inviwo/core/util/zip.h>                                       // for zipper, make_sequ...
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/representationconverter.h>
+#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/interaction/pickingstate.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/marginproperty.h>
+#include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/zip.h>
 #include <inviwo/dataframe/datastructures/column.h>                     // IWYU pragma: keep
-#include <modules/base/algorithm/algorithmoptions.h>                    // for IgnoreSpecialValues
-#include <modules/base/algorithm/cohensutherland.h>                     // for clipLineCohenSuth...
-#include <modules/base/algorithm/dataminmax.h>                          // for bufferMinMax
-#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
-#include <modules/opengl/inviwoopengl.h>                                // for glDrawElements
-#include <modules/opengl/openglutils.h>                                 // for BlendModeState
-#include <modules/opengl/rendering/meshdrawergl.h>                      // for MeshDrawerGL, Mes...
-#include <modules/opengl/shader/shader.h>                               // for Shader
-#include <modules/opengl/shader/shaderutils.h>                          // for setShaderUniforms
-#include <modules/opengl/texture/textureutils.h>                        // for deactivateCurrent...
-#include <modules/plotting/datastructures/axissettings.h>               // for AxisSettings::Ori...
-#include <modules/plotting/properties/axisproperty.h>                   // for AxisProperty
-#include <modules/plotting/properties/axisstyleproperty.h>              // for AxisStyleProperty
-#include <modules/plottinggl/utils/axisrenderer.h>                      // for AxisRenderer
+#include <modules/base/algorithm/algorithmoptions.h>
+#include <modules/base/algorithm/cohensutherland.h>
+#include <modules/base/algorithm/dataminmax.h>
+#include <modules/opengl/geometry/meshgl.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
+#include <modules/plottinggl/utils/axisrenderer.h>
 
-#include <map>          // for operator!=
-#include <optional>     // for optional, nullopt
-#include <sstream>      // for basic_stringbuf<>...
-#include <string_view>  // for string_view
-#include <tuple>        // for get, tuple
-#include <type_traits>  // for remove_extent_t
-#include <utility>      // for pair
+#include <map>
+#include <optional>
+#include <sstream>
+#include <string_view>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
-#include <fmt/core.h>                // for basic_string_view
-#include <glm/detail/qualifier.hpp>  // for tvec2
-#include <glm/vec2.hpp>              // for vec<>::(anonymous)
-#include <glm/vec3.hpp>              // for operator/
-#include <glm/vec4.hpp>              // for vec, vec<>::(anon...
+#include <fmt/core.h>
+#include <glm/detail/qualifier.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace inviwo {
 

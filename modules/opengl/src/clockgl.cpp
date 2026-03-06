@@ -29,12 +29,12 @@
 
 #include <modules/opengl/clockgl.h>
 
-#include <inviwo/core/util/logcentral.h>  // for LogCentral, LogAudience, LogAudience::User, Log...
+#include <inviwo/core/util/logcentral.h>
 
-#include <algorithm>    // for rotate, stable_partition
-#include <ratio>        // for ratio
-#include <string>       // for operator+, string, to_string, char_traits
-#include <type_traits>  // for enable_if<>::type
+#include <algorithm>
+#include <ratio>
+#include <string>
+#include <type_traits>
 
 namespace inviwo {
 

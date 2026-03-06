@@ -28,12 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/datastructures/animationstate.h>  // for AnimationTimeState, Animati...
-#include <modules/animation/datastructures/animationtime.h>   // for Seconds
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/animationtime.h>
 
-#include <algorithm>  // for max, min, lower_bound, uppe...
-#include <chrono>     // for operator<=, duration, opera...
-#include <iterator>   // for make_reverse_iterator
+#include <algorithm>
+#include <chrono>
+#include <iterator>
 
 namespace inviwo {
 

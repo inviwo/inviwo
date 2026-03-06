@@ -29,17 +29,17 @@
 
 #pragma once
 
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>  // for IVW_MODULE_USERINTERFAC...
+#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
-#include <inviwo/core/util/glmvec.h>                       // for vec4
-#include <modules/fontrendering/textrenderer.h>            // for TextRenderer
-#include <modules/opengl/rendering/texturequadrenderer.h>  // for TextureQuadRenderer
-#include <modules/opengl/shader/shader.h>                  // for Shader
+#include <inviwo/core/util/glmvec.h>
+#include <modules/fontrendering/textrenderer.h>
+#include <modules/opengl/rendering/texturequadrenderer.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <map>     // for map
-#include <memory>  // for shared_ptr
-#include <string>  // for string, operator<
-#include <vector>  // for vector
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 #include <filesystem>
 
 namespace inviwo {
