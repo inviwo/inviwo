@@ -318,6 +318,7 @@ var hierarchy =
         [ "inviwo::MeshRAM", "classinviwo_1_1MeshRAM.html", null ]
       ] ]
     ] ],
+    [ "inviwo::DataInfo", "structinviwo_1_1DataInfo.html", null ],
     [ "inviwo::DataMapper", "classinviwo_1_1DataMapper.html", null ],
     [ "inviwo::utilgl::DataMinMaxGL", "classinviwo_1_1utilgl_1_1DataMinMaxGL.html", null ],
     [ "inviwo::DataReader", "classinviwo_1_1DataReader.html", [
@@ -904,6 +905,7 @@ var hierarchy =
         [ "inviwo::plot::ScatterPlotProcessor", "classinviwo_1_1plot_1_1ScatterPlotProcessor.html", null ],
         [ "inviwo::plot::VolumeAxis", "classinviwo_1_1plot_1_1VolumeAxis.html", null ]
       ] ],
+      [ "inviwo::ProcessorDocsLoader", "classinviwo_1_1ProcessorDocsLoader.html", null ],
       [ "inviwo::WorkspaceInfoLoader", "classinviwo_1_1WorkspaceInfoLoader.html", null ]
     ] ],
     [ "inviwo::algorithm::EntryExitPointsHelper", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html", null ],
@@ -1593,6 +1595,7 @@ var hierarchy =
       [ "inviwo::util::is_floating_point< T >", "structinviwo_1_1util_1_1is__floating__point.html", null ]
     ] ],
     [ "inviwo::util::is_stream_insertable&lt; T &gt;", "classinviwo_1_1util_1_1is__stream__insertable.html", null ],
+    [ "inviwo::ProcessorListModel::Item", "structinviwo_1_1ProcessorListModel_1_1Item.html", null ],
     [ "inviwo::RAMCache&lt; DataType &gt;::Item", "structinviwo_1_1RAMCache_1_1Item.html", null ],
     [ "inviwo::SearchDSL&lt; Ts &gt;::Item", "structinviwo_1_1SearchDSL_1_1Item.html", null ],
     [ "inviwo::filters::ItemFilter", "structinviwo_1_1filters_1_1ItemFilter.html", null ],
@@ -1924,6 +1927,7 @@ var hierarchy =
     [ "inviwo::NetworkVisitorExit", "classinviwo_1_1NetworkVisitorExit.html", null ],
     [ "inviwo::NoData", "structinviwo_1_1NoData.html", null ],
     [ "inviwo::deserializer::Node", "structinviwo_1_1deserializer_1_1Node.html", null ],
+    [ "inviwo::ProcessorListModel::Node", "structinviwo_1_1ProcessorListModel_1_1Node.html", null ],
     [ "inviwo::NodeSwitch", "classinviwo_1_1NodeSwitch.html", null ],
     [ "inviwo::ffmpeg::NoMoveCopy", "structinviwo_1_1ffmpeg_1_1NoMoveCopy.html", [
       [ "inviwo::ffmpeg::Codec", "classinviwo_1_1ffmpeg_1_1Codec.html", null ],
@@ -2258,7 +2262,7 @@ var hierarchy =
       [ "inviwo::FactoryObserver< OutportFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< PortInspectorFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< ProcessorFactoryObject >", "classinviwo_1_1FactoryObserver.html", [
-        [ "inviwo::ProcessorTreeWidget", "classinviwo_1_1ProcessorTreeWidget.html", null ]
+        [ "inviwo::ProcessorListWidget", "classinviwo_1_1ProcessorListWidget.html", null ]
       ] ],
       [ "inviwo::FactoryObserver< ProcessorWidgetFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< RepresentationFactoryObject< Representation > >", "classinviwo_1_1FactoryObserver.html", null ],
@@ -2856,9 +2860,11 @@ var hierarchy =
     [ "inviwo::PythonProcessorFactoryObjectData", "structinviwo_1_1PythonProcessorFactoryObjectData.html", null ],
     [ "inviwo::PythonScript", "classinviwo_1_1PythonScript.html", null ],
     [ "QAbstractItemModel", null, [
+      [ "inviwo::ProcessorListModel", "classinviwo_1_1ProcessorListModel.html", null ],
       [ "inviwo::WorkspaceTreeModel", "classinviwo_1_1WorkspaceTreeModel.html", null ]
     ] ],
     [ "QAbstractListModel", null, [
+      [ "inviwo::TagModel", "classinviwo_1_1TagModel.html", null ],
       [ "inviwo::animation::AnimationsModel", "classinviwo_1_1animation_1_1AnimationsModel.html", null ]
     ] ],
     [ "QAbstractNativeEventFilter", null, [
@@ -2888,7 +2894,7 @@ var hierarchy =
         [ "inviwo::InviwoAboutWindow", "classinviwo_1_1InviwoAboutWindow.html", null ],
         [ "inviwo::LinkDialog", "classinviwo_1_1LinkDialog.html", null ],
         [ "inviwo::ProcessorDockWidgetQt", "classinviwo_1_1ProcessorDockWidgetQt.html", null ],
-        [ "inviwo::ProcessorTreeWidget", "classinviwo_1_1ProcessorTreeWidget.html", null ],
+        [ "inviwo::ProcessorListWidget", "classinviwo_1_1ProcessorListWidget.html", null ],
         [ "inviwo::PropertyEditorWidgetQt", "classinviwo_1_1PropertyEditorWidgetQt.html", null ],
         [ "inviwo::PropertyListWidget", "classinviwo_1_1PropertyListWidget.html", null ],
         [ "inviwo::PythonEditorWidget", "classinviwo_1_1PythonEditorWidget.html", null ],
@@ -2988,6 +2994,7 @@ var hierarchy =
       ] ]
     ] ],
     [ "QListView", null, [
+      [ "inviwo::PillListView", "classinviwo_1_1PillListView.html", null ],
       [ "inviwo::animation::AnimationLabelViewQt", "classinviwo_1_1animation_1_1AnimationLabelViewQt.html", null ]
     ] ],
     [ "QMainWindow", null, [
@@ -3012,6 +3019,7 @@ var hierarchy =
       [ "inviwo::LineEditEventFilter", "classinviwo_1_1LineEditEventFilter.html", null ],
       [ "inviwo::LinkDialogProcessorGraphicsItem", "classinviwo_1_1LinkDialogProcessorGraphicsItem.html", null ],
       [ "inviwo::LinkDragHelper", "classinviwo_1_1LinkDragHelper.html", null ],
+      [ "inviwo::ProcessorDocsLoader", "classinviwo_1_1ProcessorDocsLoader.html", null ],
       [ "inviwo::ProcessorDragHelper", "classinviwo_1_1ProcessorDragHelper.html", null ],
       [ "inviwo::ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", null ],
       [ "inviwo::TFMenuHelper", "classinviwo_1_1TFMenuHelper.html", null ],
@@ -3038,7 +3046,8 @@ var hierarchy =
       [ "inviwo::animation::SequenceEditorPanel", "classinviwo_1_1animation_1_1SequenceEditorPanel.html", null ]
     ] ],
     [ "QSortFilterProxyModel", null, [
-      [ "inviwo::DataFrameSortFilterProxy", "classinviwo_1_1DataFrameSortFilterProxy.html", null ]
+      [ "inviwo::DataFrameSortFilterProxy", "classinviwo_1_1DataFrameSortFilterProxy.html", null ],
+      [ "inviwo::ProcessorListFilter", "classinviwo_1_1ProcessorListFilter.html", null ]
     ] ],
     [ "QSplitter", null, [
       [ "inviwo::RangeSliderQt", "classinviwo_1_1RangeSliderQt.html", null ],
@@ -3054,15 +3063,12 @@ var hierarchy =
       [ "inviwo::DataFrameTableView", "classinviwo_1_1DataFrameTableView.html", null ]
     ] ],
     [ "QTreeView", null, [
+      [ "inviwo::ProcessorListView", "classinviwo_1_1ProcessorListView.html", null ],
       [ "inviwo::WorkspaceGridView", "classinviwo_1_1WorkspaceGridView.html", null ],
       [ "inviwo::WorkspaceTreeView", "classinviwo_1_1WorkspaceTreeView.html", null ]
     ] ],
     [ "QTreeWidget", null, [
-      [ "inviwo::ProcessorTree", "classinviwo_1_1ProcessorTree.html", null ],
       [ "inviwo::PropertySelectionTree", "classinviwo_1_1PropertySelectionTree.html", null ]
-    ] ],
-    [ "QTreeWidgetItem", null, [
-      [ "inviwo::ProcessorTreeItem", "classinviwo_1_1ProcessorTreeItem.html", null ]
     ] ],
     [ "inviwo::ClockGL::Query", "structinviwo_1_1ClockGL_1_1Query.html", null ],
     [ "inviwo::InviwoApplication::Queue", "structinviwo_1_1InviwoApplication_1_1Queue.html", null ],

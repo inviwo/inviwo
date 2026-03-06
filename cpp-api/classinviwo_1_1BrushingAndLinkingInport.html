@@ -119,6 +119,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aae1a522467d182b9d34d6a26fd1334fc" id="r_aae1a522467d182b9d34d6a26fd1334fc"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aae1a522467d182b9d34d6a26fd1334fc">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
 <tr class="memitem:a838ceeb246231241b4443d75ee49a58a" id="r_a838ceeb246231241b4443d75ee49a58a"><td class="memItemLeft">virtual std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a838ceeb246231241b4443d75ee49a58a">getClassIdentifier</a> () const override</td></tr>
 <tr class="memitem:a9e13cd28f41420e334017fa5a911559f" id="r_a9e13cd28f41420e334017fa5a911559f"><td class="memItemLeft">virtual glm::uvec3&#160;</td><td class="memItemRight"><a class="el" href="#a9e13cd28f41420e334017fa5a911559f">getColorCode</a> () const override</td></tr>
+<tr class="memitem:aa58554c3fa0acf8a5e66f9a8a67bf25c" id="r_aa58554c3fa0acf8a5e66f9a8a67bf25c"><td class="memItemLeft">virtual <a class="el" href="structinviwo_1_1DataInfo.html">DataInfo</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa58554c3fa0acf8a5e66f9a8a67bf25c">getDataInfo</a> () const override</td></tr>
 <tr class="memitem:abe9dbda3e2fad228233ec9616b076693" id="r_abe9dbda3e2fad228233ec9616b076693"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight"><a class="el" href="#abe9dbda3e2fad228233ec9616b076693">getInfo</a> () const override</td></tr>
 <tr class="memitem:adb1929b6661370c834670c13aa1fd892" id="r_adb1929b6661370c834670c13aa1fd892"><td class="memItemLeft"><a id="adb1929b6661370c834670c13aa1fd892" name="adb1929b6661370c834670c13aa1fd892"></a>
 BrushingAndLinkingManager &amp;&#160;</td><td class="memItemRight"><b>getManager</b> ()</td></tr>
@@ -355,6 +356,33 @@ Processor *&#160;</td><td class="memItemRight"><b>processor_</b></td></tr>
 <p>Returns the RGB color code used to colorize all ports of this type. This color code is for instance used in the <a class="el" href="classinviwo_1_1NetworkEditor.html">NetworkEditor</a>. To distinguish different port types through their color, this method should be overloaded in derived classes. </p>
 
 <p>Implements <a class="el" href="classinviwo_1_1Port.html#a4a4e1fa8b669dedf737d67442030b58b">inviwo::Port</a>.</p>
+
+</div>
+</div>
+<a id="aa58554c3fa0acf8a5e66f9a8a67bf25c" name="aa58554c3fa0acf8a5e66f9a8a67bf25c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa58554c3fa0acf8a5e66f9a8a67bf25c">&#9670;&#160;</a></span>getDataInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="structinviwo_1_1DataInfo.html">DataInfo</a> inviwo::BrushingAndLinkingInport::getDataInfo </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Port.html">inviwo::Port</a>.</p>
 
 </div>
 </div>

@@ -34,7 +34,7 @@ var searchData=
   ['scrollarea_5f_31',['scrollArea_',['../classinviwo_1_1AnnotationsWidget.html#a529245cdc9244373490b2cc4dea2b2fe',1,'inviwo::AnnotationsWidget::scrollArea_'],['../classinviwo_1_1SettingsWidget.html#a822a1423700f54362fc97fc123c5b6f0',1,'inviwo::SettingsWidget::scrollArea_']]],
   ['searchdsl_32',['SearchDSL',['../classinviwo_1_1SearchDSL.html',1,'inviwo']]],
   ['searchdsl_3c_20inviwo_3a_3aprocessor_20_3e_33',['SearchDSL&lt; inviwo::Processor &gt;',['../classinviwo_1_1SearchDSL.html',1,'inviwo']]],
-  ['searchdsl_3c_20inviwo_3a_3aprocessorfactoryobject_2c_20inviwo_3a_3ainviwomodule_20_3e_34',['SearchDSL&lt; inviwo::ProcessorFactoryObject, inviwo::InviwoModule &gt;',['../classinviwo_1_1SearchDSL.html',1,'inviwo']]],
+  ['searchdsl_3c_20inviwo_3a_3aprocessorlistmodel_3a_3aitem_20_3e_34',['SearchDSL&lt; inviwo::ProcessorListModel::Item &gt;',['../classinviwo_1_1SearchDSL.html',1,'inviwo']]],
   ['seed3dto4d_35',['Seed3Dto4D',['../classinviwo_1_1Seed3Dto4D.html',1,'inviwo']]],
   ['seed_5f_36',['seed_',['../classinviwo_1_1NoiseGenerator2D.html#aedbe030941ebe3f092273ead0ec11029',1,'inviwo::NoiseGenerator2D']]],
   ['seedpointgenerator_37',['SeedPointGenerator',['../classinviwo_1_1SeedPointGenerator.html',1,'inviwo']]],

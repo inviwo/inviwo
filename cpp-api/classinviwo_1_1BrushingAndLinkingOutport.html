@@ -121,6 +121,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7aba4b96ef7e8a14dbe86d877e438f78" id="r_a7aba4b96ef7e8a14dbe86d877e438f78"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a7aba4b96ef7e8a14dbe86d877e438f78">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
 <tr class="memitem:a1a057e9570954e8364132dbb65a54032" id="r_a1a057e9570954e8364132dbb65a54032"><td class="memItemLeft">virtual std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a1a057e9570954e8364132dbb65a54032">getClassIdentifier</a> () const override</td></tr>
 <tr class="memitem:a1375ad29b4fb876b8d375340d9054a22" id="r_a1375ad29b4fb876b8d375340d9054a22"><td class="memItemLeft">virtual glm::uvec3&#160;</td><td class="memItemRight"><a class="el" href="#a1375ad29b4fb876b8d375340d9054a22">getColorCode</a> () const override</td></tr>
+<tr class="memitem:a6c56470e6792d6842b5a8e294039ea3a" id="r_a6c56470e6792d6842b5a8e294039ea3a"><td class="memItemLeft">virtual <a class="el" href="structinviwo_1_1DataInfo.html">DataInfo</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6c56470e6792d6842b5a8e294039ea3a">getDataInfo</a> () const override</td></tr>
 <tr class="memitem:ade31c8a714984d3db10a52f61fb1a059" id="r_ade31c8a714984d3db10a52f61fb1a059"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight"><a class="el" href="#ade31c8a714984d3db10a52f61fb1a059">getInfo</a> () const override</td></tr>
 <tr class="memitem:a812db4a6bc8659e1b7cae4516fd5c48a" id="r_a812db4a6bc8659e1b7cae4516fd5c48a"><td class="memItemLeft">const std::vector&lt; <a class="el" href="structinviwo_1_1BrushingTargetsInvalidationLevel.html">BrushingTargetsInvalidationLevel</a> &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a812db4a6bc8659e1b7cae4516fd5c48a">getInvalidationLevels</a> () const</td></tr>
 <tr class="memitem:a55ead7d2e6968fedc857b088b540b5f7" id="r_a55ead7d2e6968fedc857b088b540b5f7"><td class="memItemLeft"><a id="a55ead7d2e6968fedc857b088b540b5f7" name="a55ead7d2e6968fedc857b088b540b5f7"></a>
@@ -318,6 +319,33 @@ Processor *&#160;</td><td class="memItemRight"><b>processor_</b></td></tr>
 <p>Returns the RGB color code used to colorize all ports of this type. This color code is for instance used in the <a class="el" href="classinviwo_1_1NetworkEditor.html">NetworkEditor</a>. To distinguish different port types through their color, this method should be overloaded in derived classes. </p>
 
 <p>Implements <a class="el" href="classinviwo_1_1Port.html#a4a4e1fa8b669dedf737d67442030b58b">inviwo::Port</a>.</p>
+
+</div>
+</div>
+<a id="a6c56470e6792d6842b5a8e294039ea3a" name="a6c56470e6792d6842b5a8e294039ea3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c56470e6792d6842b5a8e294039ea3a">&#9670;&#160;</a></span>getDataInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="structinviwo_1_1DataInfo.html">DataInfo</a> inviwo::BrushingAndLinkingOutport::getDataInfo </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Port.html">inviwo::Port</a>.</p>
 
 </div>
 </div>

@@ -240,6 +240,8 @@ static QPointF&#160;</td><td class="memItemRight"><b>snapToGrid</b> (QPointF pos
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
+<tr class="memitem:a2004198d87ff304efb323d04464ec265" id="r_a2004198d87ff304efb323d04464ec265"><td class="memItemLeft"><a id="a2004198d87ff304efb323d04464ec265" name="a2004198d87ff304efb323d04464ec265"></a>
+static constexpr int&#160;</td><td class="memItemRight"><b>gridSpacing</b> = 25</td></tr>
 <tr class="memitem:abc0d10209018b924c71adc7e7a4d0297" id="r_abc0d10209018b924c71adc7e7a4d0297"><td class="memItemLeft"><a id="abc0d10209018b924c71adc7e7a4d0297" name="abc0d10209018b924c71adc7e7a4d0297"></a>
 static constexpr std::string_view&#160;</td><td class="memItemRight"><b>name</b> {&quot;NetworkEditor&quot;}</td></tr>
 </table><table class="memberdecls">
@@ -281,8 +283,8 @@ virtual void&#160;</td><td class="memItemRight"><b>mouseMoveEvent</b> (QGraphics
 virtual void&#160;</td><td class="memItemRight"><b>mousePressEvent</b> (QGraphicsSceneMouseEvent *e) override</td></tr>
 <tr class="memitem:a1a0142a020435c1fbaf010645dbdc16e" id="r_a1a0142a020435c1fbaf010645dbdc16e"><td class="memItemLeft"><a id="a1a0142a020435c1fbaf010645dbdc16e" name="a1a0142a020435c1fbaf010645dbdc16e"></a>
 virtual void&#160;</td><td class="memItemRight"><b>mouseReleaseEvent</b> (QGraphicsSceneMouseEvent *e) override</td></tr>
-<tr class="memitem:a18121b81c908e75fb3dcbfbc8833cd48" id="r_a18121b81c908e75fb3dcbfbc8833cd48"><td class="memItemLeft"><a id="a18121b81c908e75fb3dcbfbc8833cd48" name="a18121b81c908e75fb3dcbfbc8833cd48"></a>
-void&#160;</td><td class="memItemRight"><b>propagateEventToSelectedProcessors</b> (<a class="el" href="classinviwo_1_1KeyboardEvent.html">KeyboardEvent</a> &amp;pressKeyEvent)</td></tr>
+<tr class="memitem:ae3432d98f53fadf0441fca84889b1dfc" id="r_ae3432d98f53fadf0441fca84889b1dfc"><td class="memItemLeft"><a id="ae3432d98f53fadf0441fca84889b1dfc" name="ae3432d98f53fadf0441fca84889b1dfc"></a>
+void&#160;</td><td class="memItemRight"><b>propagateEventToSelectedProcessorsAndSettings</b> (<a class="el" href="classinviwo_1_1KeyboardEvent.html">KeyboardEvent</a> &amp;event)</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observable')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; NetworkEditorObserver &gt;</a></td></tr>
 <tr class="memitem:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable" id="r_a980d804dbfb060d91d5b54161f14dc8f"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>forEachObserver</b> (C callback)</td></tr>
@@ -302,8 +304,6 @@ virtual void&#160;</td><td class="memItemRight"><b>removeObserver</b> (Observer 
 Static Protected Member Functions</h2></td></tr>
 <tr class="memitem:a462c6a1f9b0c3d9f6d2dab4e2b1c9b17" id="r_a462c6a1f9b0c3d9f6d2dab4e2b1c9b17"><td class="memItemLeft"><a id="a462c6a1f9b0c3d9f6d2dab4e2b1c9b17" name="a462c6a1f9b0c3d9f6d2dab4e2b1c9b17"></a>
 static void&#160;</td><td class="memItemRight"><b>editLabel</b> (std::string_view type, const std::function&lt; std::string()&gt; &amp;get, const std::function&lt; void(std::string_view)&gt; &amp;set)</td></tr>
-<tr class="memitem:a37e736f3e1cf85eb90d9eca948a248c9" id="r_a37e736f3e1cf85eb90d9eca948a248c9"><td class="memItemLeft"><a id="a37e736f3e1cf85eb90d9eca948a248c9" name="a37e736f3e1cf85eb90d9eca948a248c9"></a>
-static ivec2&#160;</td><td class="memItemRight"><b>findSpaceForProcessors</b> (QPoint startPos, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;added, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;current)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>

@@ -1,5 +1,13 @@
 var NAVTREEINDEX27 =
 {
+"classinviwo_1_1plot_1_1AxisProperty.html#abc0c6f5733da1b032935df15fe5aeaef":[2,0,0,15,3,2],
+"classinviwo_1_1plot_1_1AxisProperty.html#abc0c6f5733da1b032935df15fe5aeaef":[4,0,1,22,4,2],
+"classinviwo_1_1plot_1_1AxisRenderProcessor.html":[2,0,0,15,7],
+"classinviwo_1_1plot_1_1AxisRenderProcessor.html":[4,0,1,22,8],
+"classinviwo_1_1plot_1_1AxisRenderProcessor.html#acd6617b0ddbd2520aa27dd16b2fb7e5a":[2,0,0,15,7,0],
+"classinviwo_1_1plot_1_1AxisRenderProcessor.html#acd6617b0ddbd2520aa27dd16b2fb7e5a":[4,0,1,22,8,0],
+"classinviwo_1_1plot_1_1AxisRenderer.html":[2,0,0,15,4],
+"classinviwo_1_1plot_1_1AxisRenderer.html":[4,0,1,22,5],
 "classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[2,0,0,15,4,0],
 "classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[4,0,1,22,5,0],
 "classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[2,0,0,15,4,1],
@@ -194,8 +202,8 @@ var NAVTREEINDEX27 =
 "classinviwo_1_1plot_1_1VolumeAxis.html":[4,0,1,22,41],
 "classinviwo_1_1plot_1_1VolumeAxis.html#adcfd6f37498b7cec87e3811ae1552ce7":[2,0,0,15,40,0],
 "classinviwo_1_1plot_1_1VolumeAxis.html#adcfd6f37498b7cec87e3811ae1552ce7":[4,0,1,22,41,0],
-"classinviwo_1_1pngModule.html":[2,0,0,797],
-"classinviwo_1_1pngModule.html":[4,0,1,806],
+"classinviwo_1_1pngModule.html":[2,0,0,799],
+"classinviwo_1_1pngModule.html":[4,0,1,808],
 "classinviwo_1_1pool_1_1Progress.html":[2,0,0,16,1],
 "classinviwo_1_1pool_1_1Progress.html":[4,0,1,23,1],
 "classinviwo_1_1pool_1_1Stop.html":[2,0,0,16,2],
@@ -241,13 +249,5 @@ var NAVTREEINDEX27 =
 "classinviwo_1_1util_1_1NotificationBlocker.html":[4,0,1,30,49],
 "classinviwo_1_1util_1_1Permutations.html":[2,0,0,20,49],
 "classinviwo_1_1util_1_1Permutations.html":[4,0,1,30,53],
-"classinviwo_1_1util_1_1TempFileHandle.html":[2,0,0,20,60],
-"classinviwo_1_1util_1_1TempFileHandle.html":[4,0,1,30,64],
-"classinviwo_1_1util_1_1TextureAtlas.html":[2,0,0,20,61],
-"classinviwo_1_1util_1_1TextureAtlas.html":[4,0,1,30,65],
-"classinviwo_1_1util_1_1cloneable__ptr.html":[2,0,0,20,4],
-"classinviwo_1_1util_1_1cloneable__ptr.html":[4,0,1,30,8],
-"classinviwo_1_1util_1_1is__container.html":[2,0,0,20,33],
-"classinviwo_1_1util_1_1is__container.html":[4,0,1,30,37],
-"classinviwo_1_1util_1_1is__stream__insertable.html":[2,0,0,20,37]
+"classinviwo_1_1util_1_1TempFileHandle.html":[2,0,0,20,60]
 };

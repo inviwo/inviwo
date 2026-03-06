@@ -20,7 +20,7 @@ var searchData=
   ['scopedclock_3c_20clockgl_2c_20callback_20_3e_17',['ScopedClock&lt; ClockGL, Callback &gt;',['../classinviwo_1_1ScopedClock.html',1,'inviwo']]],
   ['searchdsl_18',['SearchDSL',['../classinviwo_1_1SearchDSL.html',1,'inviwo']]],
   ['searchdsl_3c_20inviwo_3a_3aprocessor_20_3e_19',['SearchDSL&lt; inviwo::Processor &gt;',['../classinviwo_1_1SearchDSL.html',1,'inviwo']]],
-  ['searchdsl_3c_20inviwo_3a_3aprocessorfactoryobject_2c_20inviwo_3a_3ainviwomodule_20_3e_20',['SearchDSL&lt; inviwo::ProcessorFactoryObject, inviwo::InviwoModule &gt;',['../classinviwo_1_1SearchDSL.html',1,'inviwo']]],
+  ['searchdsl_3c_20inviwo_3a_3aprocessorlistmodel_3a_3aitem_20_3e_20',['SearchDSL&lt; inviwo::ProcessorListModel::Item &gt;',['../classinviwo_1_1SearchDSL.html',1,'inviwo']]],
   ['seed3dto4d_21',['Seed3Dto4D',['../classinviwo_1_1Seed3Dto4D.html',1,'inviwo']]],
   ['seedpointgenerator_22',['SeedPointGenerator',['../classinviwo_1_1SeedPointGenerator.html',1,'inviwo']]],
   ['seedpointgenerator2d_23',['SeedPointGenerator2D',['../classinviwo_1_1SeedPointGenerator2D.html',1,'inviwo']]],
