@@ -479,7 +479,7 @@ void updateLabelPositions(std::vector<double>& major, std::vector<double>& minor
             return fun(r);
         } else {
             const LinearRange o = fun(dvec2(r.y, r.x));
-            return {o.stop, o.start, -o.step};
+            return {.start = o.stop, .stop = o.start, .step = -o.step};
         }
     };
 
@@ -510,7 +510,12 @@ void updateLabelPositions(std::vector<double>& major, std::vector<double>& minor
         }
         case Limits: {
             minor.clear();
-            labelingLimits(range.x, range.y, major);
+            labelingLimits(range.x, range.y, major, false);
+            break;
+        }
+        case LimitsAndZero: {
+            minor.clear();
+            labelingLimits(range.x, range.y, major, true);
             break;
         }
     }
