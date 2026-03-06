@@ -115,12 +115,13 @@ void linearRange(const dvec2& range, const LinearRange& optRange, int minorTickF
     const auto post =
         static_cast<size_t>(std::floor(std::max(0.0, range.y - optRange.stop) / minorStep));
 
+    // GCC 14 does not have support for assign_range, so we have to do it manually here
     minor.clear();
-
-    const auto preView = std::views::iota(0uz, pre) | std::views::transform([=](size_t i) {
-                             return optRange.start - static_cast<double>(pre - i) * minorStep;
-                         });
-    minor.insert(minor.end(), preView.begin(), preView.end());
+    for (auto&& p : std::views::iota(0uz, pre) | std::views::transform([=](size_t i) {
+                        return optRange.start - static_cast<double>(pre - i) * minorStep;
+                    })) {
+        minor.emplace_back(p);
+    }
 
     for (auto&& p : view | std::views::take(std::ranges::size(view) - 1uz) |
                         std::views::transform([&](double x) {
@@ -132,10 +133,11 @@ void linearRange(const dvec2& range, const LinearRange& optRange, int minorTickF
                         std::views::join) {
         minor.emplace_back(p);
     }
-    const auto postView = std::views::iota(0uz, post) | std::views::transform([=](size_t i) {
-                              return optRange.stop + static_cast<double>(i + 1) * minorStep;
-                          });
-    minor.insert(minor.end(), postView.begin(), postView.end());
+    for (auto&& p : std::views::iota(0uz, post) | std::views::transform([=](size_t i) {
+                        return optRange.stop + static_cast<double>(i + 1) * minorStep;
+                    })) {
+        minor.emplace_back(p);
+    }
 }
 
 LinearRange labelingHeckbert(double valueMin, double valueMax, int numTicks) {
