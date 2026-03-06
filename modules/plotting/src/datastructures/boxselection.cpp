@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2020-2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/datastructures/majortickdata.h>
+#include <modules/plotting/datastructures/boxselection.h>
 
-#include <inviwo/core/util/glmvec.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
-
-namespace inviwo {
-
-namespace plot {
-MajorTickData::MajorTickData(const MajorTickSettings& s)
-    : style{s.getStyle()}
-    , color{s.getColor()}
-    , tickLength{s.getTickLength()}
-    , tickWidth{s.getTickWidth()}
-    , tickDelta{s.getTickDelta()}
-    , rangeBasedTicks{s.getRangeBasedTicks()} {}
-TickStyle MajorTickData::getStyle() const { return style; }
-
-vec4 MajorTickData::getColor() const { return color; }
-
-float MajorTickData::getTickLength() const { return tickLength; }
-
-float MajorTickData::getTickWidth() const { return tickWidth; }
-
-double MajorTickData::getTickDelta() const { return tickDelta; }
-
-bool MajorTickData::getRangeBasedTicks() const { return rangeBasedTicks; }
-
-}  // namespace plot
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

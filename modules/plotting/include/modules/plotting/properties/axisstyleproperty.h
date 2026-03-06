@@ -33,18 +33,14 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h> 
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <modules/fontrendering/properties/fontfaceoptionproperty.h>
+#include <modules/plotting/algorithm/labeling.h>
 
-#include <string>
-#include <string_view>
-#include <tuple>
-#include <vector>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 class AxisProperty;
 
 /**
@@ -74,16 +70,20 @@ public:
     FloatVec4Property color_;
     FloatProperty lineWidth_;
     FloatProperty tickLength_;
+    OptionProperty<LabelingAlgorithm> labelingAlgorithm_;
+    IntProperty numberOfTicks_;
     StringProperty labelFormat_;
 
 private:
     std::vector<AxisProperty*> axes_;
 
     auto props() {
-        return std::tie(fontFace_, fontSize_, color_, lineWidth_, tickLength_, labelFormat_);
+        return std::tie(fontFace_, fontSize_, color_, lineWidth_, tickLength_, labelingAlgorithm_,
+                        numberOfTicks_, labelFormat_);
     }
     auto props() const {
-        return std::tie(fontFace_, fontSize_, color_, lineWidth_, tickLength_, labelFormat_);
+        return std::tie(fontFace_, fontSize_, color_, lineWidth_, tickLength_, labelingAlgorithm_,
+                        numberOfTicks_, labelFormat_);
     }
 };
 
@@ -92,6 +92,4 @@ void AxisStyleProperty::registerProperties(Ts&... properties) {
     (registerProperty(properties), ...);
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

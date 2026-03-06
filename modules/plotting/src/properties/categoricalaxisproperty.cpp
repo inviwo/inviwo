@@ -41,9 +41,9 @@
 #include <modules/fontrendering/properties/fontfaceoptionproperty.h>
 #include <modules/fontrendering/properties/fontproperty.h>
 #include <modules/fontrendering/util/fontutils.h>
-#include <modules/plotting/datastructures/axissettings.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
-#include <modules/plotting/datastructures/minortickdata.h>
+#include <modules/plotting/algorithm/labeling.h>
+#include <modules/plotting/datastructures/axisdata.h>
+#include <modules/plotting/datastructures/tickdata.h>
 #include <modules/plotting/properties/plottextproperty.h>
 #include <modules/plotting/properties/tickproperty.h>
 
@@ -81,7 +81,8 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     , captionSettings_{"caption", "Caption", "Caption settings"_help, false}
     , labelSettings_{"labels", "Axis Labels",
                      "Settings for axis labels shown next to major ticks"_help, true}
-    , majorTicks_{"majorTicks", "Major Ticks"} {
+    , majorTicks_{"majorTicks", "Major Ticks"}
+    , minorTicks_{.style = TickData::Style::None} {
 
     scalingFactor_.setVisible(false);
     addProperties(visible_, color_, width_, scalingFactor_, mirrored_, orientation_);
@@ -110,10 +111,6 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     adjustAlignment();
 
     setCategories(std::move(categories));
-
-    minorTicks_.style = TickStyle::None;
-    majorTicks_.tickDelta_.set(1.0);
-    majorTicks_.tickDelta_.setReadOnly(true);
 }
 
 CategoricalAxisProperty::CategoricalAxisProperty(const CategoricalAxisProperty& rhs)
@@ -146,60 +143,45 @@ const std::vector<std::string>& CategoricalAxisProperty::getCategories() const {
     return categories_;
 }
 
-void CategoricalAxisProperty::setCategories(std::vector<std::string> categories) {
-    categories_ = std::move(categories);
-}
-
-const std::string& CategoricalAxisProperty::getCaption() const {
-    return captionSettings_.title_.get();
+void CategoricalAxisProperty::setCategories(std::span<const std::string> categories) {
+    categories_.resize(categories.size());
+    std::ranges::copy(categories, categories_.begin());
 }
 
 void CategoricalAxisProperty::adjustAlignment() {
 
     auto updateAlignment = [](PlotTextProperty& p, Orientation o) {
         if (o == Orientation::Horizontal) {
-            p.font_.anchorPos_.set(
-                vec2{0.0f, (p.placement_ == LabelPlacement::Outside) ? 1.0f : -1.0f});
+            p.font_.anchorPos_.set(vec2{0.0f, (p.placement_ == Placement::Outside) ? 1.0f : -1.0f});
         } else {
-            p.font_.anchorPos_.set(
-                vec2{(p.placement_ == LabelPlacement::Outside) ? 1.0f : -1.0f, 0.0f});
+            p.font_.anchorPos_.set(vec2{(p.placement_ == Placement::Outside) ? 1.0f : -1.0f, 0.0f});
         }
     };
 
-    updateAlignment(labelSettings_, getOrientation());
-    updateAlignment(captionSettings_, getOrientation());
+    updateAlignment(labelSettings_, orientation_.getSelectedValue());
+    updateAlignment(captionSettings_, orientation_.getSelectedValue());
 }
 
-bool CategoricalAxisProperty::getAxisVisible() const { return visible_.get(); }
+void CategoricalAxisProperty::update(AxisData& data) const {
+    data.range = dvec2{0.0, static_cast<double>(categories_.size()) - 1.0};
+    data.visible = visible_.get();
+    data.mirrored = mirrored_.get();
+    data.color = color_.get();
+    data.width = width_.get();
+    data.scale = scalingFactor_.get();
+    data.orientation = orientation_.getSelectedValue();
+    data.caption = captionSettings_.title_.get();
+    captionSettings_.update(data.captionSettings);
 
-bool CategoricalAxisProperty::getMirrored() const { return mirrored_.get(); }
+    linearRange({.start = 0.0, .stop = static_cast<double>(categories_.size()) - 1.0, .step = 1.0},
+                data.majorPositions);
+    data.minorPositions.clear();
+    data.labels.assign(categories_.begin(), categories_.end());
 
-vec4 CategoricalAxisProperty::getColor() const { return color_.get(); }
-
-float CategoricalAxisProperty::getWidth() const { return width_.get(); }
-
-float CategoricalAxisProperty::getScalingFactor() const { return scalingFactor_.get(); }
-
-dvec2 CategoricalAxisProperty::getRange() const {
-    return {0, static_cast<double>(categories_.size()) - 1.0};
+    labelSettings_.update(data.labelSettings);
+    majorTicks_.update(data.major);
+    data.minor = minorTicks_;
 }
-
-AxisSettings::Orientation CategoricalAxisProperty::getOrientation() const {
-    return orientation_.getSelectedValue();
-}
-
-const PlotTextSettings& CategoricalAxisProperty::getCaptionSettings() const {
-    return captionSettings_;
-}
-
-const std::vector<std::string>& CategoricalAxisProperty::getLabels() const { return categories_; }
-
-const PlotTextSettings& CategoricalAxisProperty::getLabelSettings() const { return labelSettings_; }
-
-const MajorTickSettings& CategoricalAxisProperty::getMajorTicks() const { return majorTicks_; }
-
-const MinorTickSettings& CategoricalAxisProperty::getMinorTicks() const { return minorTicks_; }
-
 }  // namespace plot
 
 }  // namespace inviwo

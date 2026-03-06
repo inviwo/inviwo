@@ -31,27 +31,21 @@
 #include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
 
 namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API MinorTickSettings {
-public:
-    MinorTickSettings() = default;
-    virtual ~MinorTickSettings() = default;
+struct IVW_MODULE_PLOTTING_API BoxSelection {
+    enum class Mode : std::uint8_t { Selection, Filtering, None };
 
-    virtual TickStyle getStyle() const = 0;
-    virtual bool getFillAxis() const = 0;
-    virtual vec4 getColor() const = 0;
-    virtual float getTickLength() const = 0;
-    virtual float getTickWidth() const = 0;
-    virtual int getTickFrequency() const = 0;
+    vec4 lineColor = vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    float lineWidth = 1.0f;
+    Mode mode = Mode::Selection;
+
+    bool operator==(const BoxSelection&) const = default;
 };
 
-IVW_MODULE_PLOTTING_API bool operator==(const MinorTickSettings& a, const MinorTickSettings& b);
-IVW_MODULE_PLOTTING_API bool operator!=(const MinorTickSettings& a, const MinorTickSettings& b);
 }  // namespace plot
 
 }  // namespace inviwo

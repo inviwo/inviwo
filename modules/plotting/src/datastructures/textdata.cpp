@@ -26,39 +26,28 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/textdata.h>
 
-#include <inviwo/core/util/glmvec.h>
+#include <type_traits> 
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
+static_assert(std::is_copy_constructible_v<TextData>);
+static_assert(std::is_copy_assignable_v<TextData>);
+static_assert(std::is_nothrow_move_constructible_v<TextData>);
+static_assert(std::is_nothrow_move_assignable_v<TextData>);
 
-enum class TickStyle { None, Inside, Outside, Both };
+TextData::Placement flip(TextData::Placement p) {
+    using enum TextData::Placement;
+    switch (p) {
+        case Outside:
+            return Inside;
+        case Inside:
+            return Outside;
+        default:
+            return p;
+    }
+}
 
-class IVW_MODULE_PLOTTING_API MajorTickSettings {
-public:
-    MajorTickSettings() = default;
-    virtual ~MajorTickSettings() = default;
-
-    virtual TickStyle getStyle() const = 0;
-    virtual vec4 getColor() const = 0;
-    virtual float getTickLength() const = 0;
-    virtual float getTickWidth() const = 0;
-    virtual double getTickDelta() const = 0;
-    virtual bool getRangeBasedTicks() const = 0;
-};
-
-IVW_MODULE_PLOTTING_API bool operator==(const MajorTickSettings& a, const MajorTickSettings& b);
-IVW_MODULE_PLOTTING_API bool operator!=(const MajorTickSettings& a, const MajorTickSettings& b);
-
-/**
- * flip inside and outside direction of tick style \p s
- */
-IVW_MODULE_PLOTTING_API TickStyle flip(TickStyle s);
-
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

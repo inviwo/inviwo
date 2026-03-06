@@ -60,8 +60,8 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/plotting/datastructures/axissettings.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
+#include <modules/plotting/datastructures/axisdata.h>
+#include <modules/plotting/datastructures/tickdata.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plotting/properties/plottextproperty.h>
@@ -190,7 +190,7 @@ ColorScaleLegend::ColorScaleLegend()
     , shader_{"img_texturequad.vert", "legend.frag"}
     , isoValueShader_{"isovaluetri.vert", "isovaluetri.geom", "standard.frag", Shader::Build::No}
     , axis_{"axis", "Scale Axis"}
-    , axisRenderer_{axis_}
+    , axisRenderer_{AxisData{}}
     , isovalueMesh_{DrawType::Points, ConnectivityType::None}
     , picking_{this, 1, [this](PickingEvent* e) { handlePicking(e); }} {
 
@@ -238,7 +238,7 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.setCaption(title_.get());
     axis_.captionSettings_.setChecked(true);
     axis_.labelSettings_.font_.fontFace_.set(axis_.captionSettings_.font_.fontFace_.get());
-    axis_.majorTicks_.style_.set(plot::TickStyle::Outside);
+    axis_.majorTicks_.style.set(plot::TickData::Style::Outside);
     axis_.setCurrentStateAsDefault();
 
     auto updateFunc = [this]() { updateTitle(volumeInport_.getData()); };
@@ -252,7 +252,7 @@ ColorScaleLegend::ColorScaleLegend()
 }
 
 std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dimensions) const {
-    const float ticsWidth = ceil(axis_.majorTicks_.tickWidth_.get());
+    const float ticsWidth = ceil(axis_.majorTicks_.width.get());
     const auto borderWidth = borderWidth_.get();
 
     const auto [position, legendSize] = [&]() {
@@ -277,7 +277,7 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
     ivec2 axisEnd{0};
 
     if (axis_.getOrientation() == AxisProperty::Orientation::Horizontal) {
-        if (axis_.getMirrored()) {
+        if (axis_.mirrored_.get()) {
             axisStart = topLeft + ivec2(ticsWidth / 2, 0) + ivec2(-borderWidth, borderWidth);
             axisEnd = topRight - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth);
         } else {
@@ -285,7 +285,7 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
             axisEnd = bottomRight - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth, -borderWidth);
         }
     } else {
-        if (axis_.getMirrored()) {
+        if (axis_.mirrored_.get()) {
             axisStart = bottomLeft + ivec2(0, ticsWidth / 2) - ivec2(borderWidth);
             axisEnd = topLeft - ivec2(0, ticsWidth / 2) + ivec2(-borderWidth, borderWidth);
         } else {
@@ -368,7 +368,7 @@ void ColorScaleLegend::process() {
             const MeshDrawerGL::DrawObject drawer(isovalueMesh_.getRepresentation<MeshGL>(),
                                                   isovalueMesh_.getDefaultMeshInfo());
 
-            if (axis_.getOrientation() == AxisSettings::Orientation::Horizontal) {
+            if (axis_.getOrientation() == AxisData::Orientation::Horizontal) {
                 isoValueShader_.setUniform("trafo", mat4(1.0f));
                 isoValueShader_.setUniform("screenDim", vec2(view.z, view.w));
                 isoValueShader_.setUniform("screenDimInv", 1.0f / vec2(view.z, view.w));
@@ -385,6 +385,10 @@ void ColorScaleLegend::process() {
             glDrawArraysInstanced(GL_POINTS, 0, 1,
                                   static_cast<GLsizei>(isotfComposite_.isovalues_.get().size()));
         }
+    }
+
+    if (axis_.isModified()) {
+        axis_.update(axisRenderer_.getData());
     }
 
     axisRenderer_.render(dimensions, axisStart, axisEnd);

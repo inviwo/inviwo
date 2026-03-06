@@ -31,10 +31,8 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -87,9 +85,9 @@ public:
     OptionProperty<AxisRangeMode> rangeMode_;
 
     CompositeProperty customRanges_;
-    DoubleMinMaxProperty rangeXaxis_;
-    DoubleMinMaxProperty rangeYaxis_;
-    DoubleMinMaxProperty rangeZaxis_;
+    DoubleVec2Property rangeXaxis_;
+    DoubleVec2Property rangeYaxis_;
+    DoubleVec2Property rangeZaxis_;
 
     BoolCompositeProperty visibility_;
     OptionPropertyString presets_;

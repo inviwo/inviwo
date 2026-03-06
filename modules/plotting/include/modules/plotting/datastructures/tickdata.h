@@ -26,35 +26,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
-#include <modules/plotting/datastructures/minorticksettings.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
 
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
+namespace inviwo::plot {
 
-namespace inviwo {
+struct IVW_MODULE_PLOTTING_API TickData {
+    enum class Style : std::uint8_t { None, Inside, Outside, Both };
 
-namespace plot {
+    vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    float length = 8.0f;
+    float width = 2.5f;
+    Style style = Style::Both;
 
-bool AxisSettings::isVertical() const { return getOrientation() == Orientation::Vertical; }
+    bool operator==(const TickData&) const = default;
+};
 
-bool operator==(const AxisSettings& a, const AxisSettings& b) {
-    return a.getCaption() == b.getCaption() && a.getLabels() == b.getLabels() &&
-           a.getAxisVisible() == b.getAxisVisible() && a.getMirrored() == b.getMirrored() &&
-           a.getColor() == b.getColor() && a.getWidth() == b.getWidth() &&
-           a.getRange() == b.getRange() && a.getOrientation() == b.getOrientation() &&
-           a.getCaptionSettings() == b.getCaptionSettings() &&
-           a.getLabelSettings() == b.getLabelSettings() && a.getMajorTicks() == b.getMajorTicks() &&
-           a.getMinorTicks() == b.getMinorTicks();
-}
-
-bool operator!=(const AxisSettings& a, const AxisSettings& b) { return !(a == b); }
-
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

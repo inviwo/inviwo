@@ -55,7 +55,7 @@ typedef struct FT_FaceRec_* FT_Face;
 
 namespace inviwo {
 
-class FontSettings;
+struct FontData;
 class Shader;
 struct TexAtlasEntry;
 class Texture2D;
@@ -273,7 +273,7 @@ public:
      */
     int getBaseLineDescender() const;
 
-    void configure(const FontSettings& settings);
+    void configure(const FontData& settings);
 
 protected:
     static std::shared_ptr<Shader> getShader();
@@ -342,14 +342,14 @@ protected:
     FT_Face fontface_;
 
     int fontSize_;        //<! font size in pixel
-    double lineSpacing_;  //!< spacing between two lines in percent (default = 0.2)
+    double lineSpacing_;  //<! spacing between two lines in percent (default = 0.2)
 
     static constexpr int glyphMargin_ = 2;  //<! margin around glyphs in font cache
     std::shared_ptr<Shader> shader_;
-
     FrameBufferObject fbo_;
-    std::shared_ptr<Texture2D>
-        currTexture_;  //<! 2D texture handle which was used previously in renderToTexture()
+
+    ///! 2D texture handle which was used previously in renderToTexture()
+    std::shared_ptr<Texture2D> currTexture_;
 };
 
 namespace util {

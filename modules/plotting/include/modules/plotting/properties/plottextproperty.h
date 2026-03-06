@@ -32,14 +32,12 @@
 #include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/glmvec.h>
 #include <modules/fontrendering/properties/fontproperty.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
+#include <modules/plotting/datastructures/textdata.h>
 
 #include <string>
 #include <string_view>
@@ -49,11 +47,11 @@ class FontSettings;
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API PlotTextProperty : public PlotTextSettings,
-                                                 public BoolCompositeProperty {
+class IVW_MODULE_PLOTTING_API PlotTextProperty : public BoolCompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.PlotTextProperty"};
+    using Placement = TextData::Placement;
 
     PlotTextProperty(std::string_view identifier, std::string_view displayName, Document help,
                      bool checked = false,
@@ -64,11 +62,14 @@ public:
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default);
     PlotTextProperty(const PlotTextProperty& rhs);
+    PlotTextProperty(PlotTextProperty&&) = delete;
+    PlotTextProperty& operator=(const PlotTextProperty&) = delete;
+    PlotTextProperty& operator=(PlotTextProperty&&) = delete;
     virtual PlotTextProperty* clone() const override;
     virtual ~PlotTextProperty() = default;
 
     StringProperty title_;
-    OptionProperty<LabelPlacement> placement_;
+    OptionProperty<Placement> placement_;
     FloatVec4Property color_;
     FloatProperty position_;  //!< position along axis [0,1]
     FloatProperty offset_;    //!< offset from axis
@@ -76,14 +77,7 @@ public:
                               //!  0 degrees means horizontal orientation
     FontProperty font_;
 
-    // Inherited via PlotTextSettings
-    virtual bool isEnabled() const override;
-    virtual LabelPlacement getPlacement() const override;
-    virtual vec4 getColor() const override;
-    virtual float getPosition() const override;
-    virtual vec2 getOffset() const override;
-    virtual float getRotation() const override;
-    virtual const FontSettings& getFont() const override;
+    void update(TextData& data) const;
 };
 
 }  // namespace plot

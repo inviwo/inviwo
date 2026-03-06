@@ -37,14 +37,12 @@
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/fontrendering/util/textureatlas.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
-#include <modules/plotting/datastructures/axissettings.h>
-#include <modules/plotting/datastructures/majortickdata.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
-#include <modules/plotting/datastructures/minortickdata.h>
-#include <modules/plotting/datastructures/plottextdata.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
+#include <modules/plotting/datastructures/axisdata.h>
+#include <modules/plotting/datastructures/tickdata.h>
+#include <modules/plotting/datastructures/textdata.h>
+#include <modules/plotting/algorithm/labeling.h>
+#include <modules/plotting/utils/axisutils.h>
 
-#include <cstddef>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -52,10 +50,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 
 namespace inviwo {
 
@@ -79,15 +73,15 @@ namespace detail {
 
 struct Resetter {
 
-    void operator()(TextTextureObject& text) { text.texture.reset(); }
-    void operator()(util::TextureAtlas& atlas) { atlas.clear(); }
-    void operator()(bool& valid) { valid = false; }
+    void operator()(TextTextureObject& text) const { text.texture.reset(); }
+    void operator()(util::TextureAtlas& atlas) const { atlas.clear(); }
+    void operator()(bool& valid) const { valid = false; }
     template <typename T>
-    void operator()(T& arg) {
+    void operator()(T& arg) const {
         arg.reset();
     }
     template <typename T>
-    void operator()(std::vector<T>& arg) {
+    void operator()(std::vector<T>& arg) const {
         arg.clear();
     }
 };
@@ -121,7 +115,7 @@ struct Guard {
         }
     }
 
-    operator const T&() const { return value_; }
+    operator const T&() const { return value_; }  // NOLINT(google-explicit-constructor)
     const T& get() const { return value_; }
 
 private:
@@ -131,10 +125,10 @@ private:
 struct IVW_MODULE_PLOTTINGGL_API AxisMeshes {
     AxisMeshes();
 
-    Mesh* getAxis(const AxisSettings& settings, const vec3& start, const vec3& end, size_t pickId);
-    Mesh* getMajor(const AxisSettings& settings, const vec3& start, const vec3& end,
+    Mesh* getAxis(const AxisData& settings, const vec3& start, const vec3& end, size_t pickId);
+    Mesh* getMajor(const AxisData& settings, const vec3& start, const vec3& end,
                    const vec3& tickDirection);
-    Mesh* getMinor(const AxisSettings& settings, const vec3& start, const vec3& end,
+    Mesh* getMinor(const AxisData& settings, const vec3& start, const vec3& end,
                    const vec3& tickDirection);
 
 private:
@@ -152,36 +146,36 @@ private:
     Guard<size_t, MPAxis> pickId_;
     Guard<dvec2, MPMajor, MPMinor> range_;
     Guard<bool, MPMajor, MPMinor> flip_;
-    Guard<MajorTickData, MPMajor, MPMinor> major_;
-    Guard<MinorTickData, MPMinor> minor_;
     Guard<vec3, MPMajor, MPMinor> tickDirection_;
     Guard<float, MPMajor, MPMinor> scalingFactor_;
+
+    Guard<TickData, MPMajor> major_;
+    Guard<std::vector<double>, MPMajor> majorPositions_;
+
+    Guard<TickData, MPMinor> minor_;
+    Guard<std::vector<double>, MPMinor> minorPositions_;
 };
 
 template <typename P>
-struct AxisLabels {
-    using LabelPos = std::vector<P>;
-    using Updater = std::function<void(LabelPos&, util::TextureAtlas&, const AxisSettings&,
-                                       const vec3&, const vec3&, const vec3&)>;
+struct AxisTickLabels {
+    using Updater =
+        std::function<void(std::vector<P>&, util::TextureAtlas&, const std::vector<double>&,
+                           const AxisData&, const vec3&, const vec3&, const vec3&)>;
 
-    AxisLabels(Updater updatePos) : updatePos_{updatePos} {}
-    AxisLabels(const AxisLabels&) = delete;
-    AxisLabels(AxisLabels&&) noexcept = default;
-    AxisLabels& operator=(const AxisLabels&) = delete;
-    AxisLabels& operator=(AxisLabels&&) noexcept = default;
+    explicit AxisTickLabels(Updater updatePos) : updatePos_{updatePos} {}
+    AxisTickLabels(const AxisTickLabels&) = delete;
+    AxisTickLabels(AxisTickLabels&&) noexcept = default;
+    AxisTickLabels& operator=(const AxisTickLabels&) = delete;
+    AxisTickLabels& operator=(AxisTickLabels&&) noexcept = default;
+    ~AxisTickLabels() = default;
 
-    util::TextureAtlas& getAtlas(const AxisSettings& settings, const vec3& start, const vec3& end,
-                                 TextRenderer& renderer) {
-        startPos_.check(*this, start);
-        endPos_.check(*this, end);
-        range_.check(*this, settings.getRange());
-        labelsSettings_.check(*this, settings.getLabelSettings());
-        major_.check(*this, settings.getMajorTicks());
-        labels_.check(*this, settings.getLabels());
+    util::TextureAtlas& getAtlas(const AxisData& settings, TextRenderer& renderer) {
+        labelsSettings_.check(*this, settings.labelSettings);
+        labels_.check(*this, settings.labels);
 
         if (!validAtlas_) {
-            renderer.configure(labelsSettings_.get().getFont());
-            atlas_.fillAtlas(renderer, labels_, labelsSettings_.get().getColor());
+            renderer.configure(labelsSettings_.get().font);
+            atlas_.fillAtlas(renderer, labels_.get(), labelsSettings_.get().color);
             validAtlas_ = true;
         }
         return atlas_;
@@ -189,21 +183,28 @@ struct AxisLabels {
 
     const util::TextureAtlas& getCurrentAtlas() const { return atlas_; }
 
-    const LabelPos& getLabelPos(const AxisSettings& settings, const vec3& start, const vec3& end,
-                                TextRenderer& renderer, const vec3& tickDirection) {
+    const std::vector<double>& getAxisTicks(const AxisData& settings) {
+        majorPositions_.check(*this, settings.majorPositions);
+        return majorPositions_;
+    }
+
+    const std::vector<P>& getLabelPos(const AxisData& settings, const vec3& start, const vec3& end,
+                                      TextRenderer& renderer, const vec3& tickDirection) {
 
         startPos_.check(*this, start);
         endPos_.check(*this, end);
-        range_.check(*this, settings.getRange());
-        labelsSettings_.check(*this, settings.getLabelSettings());
-        major_.check(*this, settings.getMajorTicks());
+        range_.check(*this, settings.range);
+        labelsSettings_.check(*this, settings.labelSettings);
+        major_.check(*this, settings.major);
         tickDirection_.check(*this, tickDirection);
-        flipped_.check(*this, settings.getMirrored());
-        scalingFactor_.check(*this, settings.getScalingFactor());
+        flipped_.check(*this, settings.mirrored);
+        scalingFactor_.check(*this, settings.scale);
+        majorPositions_.check(*this, settings.majorPositions);
 
         if (positions_.empty()) {
-            auto& atlas = getAtlas(settings, start, end, renderer);
-            updatePos_(positions_, atlas, settings, start, end, tickDirection);
+            auto& atlas = getAtlas(settings, renderer);
+            updatePos_(positions_, atlas, majorPositions_, settings, startPos_.get(), endPos_.get(),
+                       tickDirection_.get());
         }
         return positions_;
     }
@@ -212,17 +213,18 @@ protected:
     Updater updatePos_;
     util::TextureAtlas atlas_;
     bool validAtlas_ = false;
-    LabelPos positions_;
+    std::vector<P> positions_;
 
-    using MPAtlas = MemPtr<AxisLabels, bool, &AxisLabels::validAtlas_>;
-    using MPLabel = MemPtr<AxisLabels, LabelPos, &AxisLabels::positions_>;
+    using MPAtlas = MemPtr<AxisTickLabels, bool, &AxisTickLabels::validAtlas_>;
+    using MPLabel = MemPtr<AxisTickLabels, std::vector<P>, &AxisTickLabels::positions_>;
 
-    Guard<vec3, MPAtlas, MPLabel> startPos_;
-    Guard<vec3, MPAtlas, MPLabel> endPos_;
-    Guard<dvec2, MPAtlas, MPLabel> range_;
-    Guard<PlotTextData, MPAtlas, MPLabel> labelsSettings_;
+    Guard<vec3, MPLabel> startPos_;
+    Guard<vec3, MPLabel> endPos_;
+    Guard<dvec2, MPLabel> range_;
+    Guard<TextData, MPAtlas, MPLabel> labelsSettings_;
     Guard<std::vector<std::string>, MPAtlas> labels_;
-    Guard<MajorTickData, MPAtlas, MPLabel> major_;
+    Guard<std::vector<double>, MPLabel> majorPositions_;
+    Guard<TickData, MPLabel> major_;
     Guard<vec3, MPLabel> tickDirection_;
     Guard<bool, MPLabel> flipped_;
     Guard<float, MPLabel> scalingFactor_;
@@ -235,14 +237,13 @@ struct IVW_MODULE_PLOTTINGGL_API AxisCaption {
     AxisCaption& operator=(const AxisCaption&) = delete;
     AxisCaption& operator=(AxisCaption&&) noexcept = default;
 
-    TextTextureObject& getCaption(const std::string& caption, const PlotTextSettings& settings,
+    TextTextureObject& getCaption(const std::string& caption, const TextData& settings,
                                   TextRenderer& renderer) {
         caption_.check(*this, caption);
         settings_.check(*this, settings);
         if (!axisCaption_.texture) {
-            renderer.configure(settings_.get().getFont());
-            axisCaption_ =
-                util::createTextTextureObject(renderer, caption_, settings_.get().getColor());
+            renderer.configure(settings_.get().font);
+            axisCaption_ = util::createTextTextureObject(renderer, caption_, settings_.get().color);
         }
         return axisCaption_;
     }
@@ -251,21 +252,21 @@ private:
     TextTextureObject axisCaption_;
     using MPCap = MemPtr<AxisCaption, TextTextureObject, &AxisCaption::axisCaption_>;
     Guard<std::string, MPCap> caption_;
-    Guard<PlotTextData, MPCap> settings_;
+    Guard<TextData, MPCap> settings_;
 
     static_assert(std::is_nothrow_move_assignable_v<Guard<std::string, MPCap>>);
-    static_assert(std::is_nothrow_move_assignable_v<Guard<PlotTextData, MPCap>>);
+    static_assert(std::is_nothrow_move_assignable_v<Guard<TextData, MPCap>>);
 };
 
 }  // namespace detail
 
 /**
- * @brief Renders an axis based on AxisSettings
- * @see AxisSettings AxisProperty CategoricalAxisProperty
+ * @brief Renders an axis based on AxisData
+ * @see AxisData AxisProperty CategoricalAxisProperty
  */
 class IVW_MODULE_PLOTTINGGL_API AxisRendererBase {
 public:
-    AxisRendererBase(const AxisSettings& settings);
+    explicit AxisRendererBase(AxisData data = {});
     AxisRendererBase(const AxisRendererBase& rhs) = delete;
     AxisRendererBase(AxisRendererBase&& rhs) noexcept = default;
     AxisRendererBase& operator=(const AxisRendererBase& rhs) = delete;
@@ -275,11 +276,14 @@ public:
     void setAxisPickingId(size_t id) { axisPickingId_ = id; }
     size_t getAxisPickingId() const { return axisPickingId_; }
 
+    const AxisData& getData() const { return data_; }
+    AxisData& getData() { return data_; }
+
 protected:
     void renderAxis(Camera* camera, const vec3& start, const vec3& end, const vec3& tickdir,
                     const size2_t& outputDims, bool antialiasing);
 
-    std::reference_wrapper<const AxisSettings> settings_;
+    AxisData data_;
 
     TextRenderer textRenderer_;
     TextureQuadRenderer quadRenderer_;
@@ -306,8 +310,7 @@ private:
  */
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer : public AxisRendererBase {
 public:
-    using Labels = detail::AxisLabels<ivec2>;
-    AxisRenderer(const AxisSettings& settings);
+    AxisRenderer(AxisData data = {});  // NOLINT(google-explicit-constructor)
     AxisRenderer(const AxisRenderer& rhs) = delete;
     AxisRenderer(AxisRenderer&& rhs) noexcept = default;
     AxisRenderer& operator=(const AxisRenderer& rhs) = delete;
@@ -334,7 +337,7 @@ public:
 private:
     void renderText(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos);
 
-    Labels labels_;
+    detail::AxisTickLabels<ivec2> labels_;
 };
 
 /**
@@ -342,8 +345,7 @@ private:
  */
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer3D : public AxisRendererBase {
 public:
-    using Labels = detail::AxisLabels<vec3>;
-    AxisRenderer3D(const AxisSettings& settings);
+    AxisRenderer3D(AxisData data = {});  // NOLINT(google-explicit-constructor)
     AxisRenderer3D(const AxisRenderer3D& rhs) = delete;
     AxisRenderer3D(AxisRenderer3D&& rhs) noexcept = default;
     AxisRenderer3D& operator=(const AxisRenderer3D& rhs) = delete;
@@ -371,7 +373,7 @@ private:
     void renderText(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                     const vec3& endPos, const vec3& tickDirection);
 
-    Labels labels_;
+    detail::AxisTickLabels<vec3> labels_;
 };
 
 }  // namespace plot

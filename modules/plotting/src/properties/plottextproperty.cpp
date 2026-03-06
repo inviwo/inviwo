@@ -52,10 +52,13 @@ PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view
     , placement_{"placement",
                  "Placement",
                  "Allows to place the text on either the outside or inside of the axis"_help,
-                 {{"outside", "Outside", LabelPlacement::Outside},
-                  {"inside", "Inside", LabelPlacement::Inside}},
+                 {{"outside", "Outside", TextData::Placement::Outside},
+                  {"inside", "Inside", TextData::Placement::Inside}},
                  0}
-    , color_("color", "Color", util::ordinalColor(vec4(vec3(0.0f), 1.0f)).set("Text color"_help))
+    , color_("color", "Color",
+             util::ordinalColor(vec4(vec3(0.0f), 1.0f))
+                 .set("Text color"_help)
+                 .set(PropertySemantics::Color))
     , position_("position", "Position",
                 "Relative position of the text between start and end point of the axis"_help, 0.5f,
                 {0.0f, ConstraintBehavior::Editable}, {1.0f, ConstraintBehavior::Editable})
@@ -69,10 +72,7 @@ PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view
                     .set("Text rotation in degree"_help))
     , font_("font", "Font") {
 
-    color_.setSemantics(PropertySemantics::Color);
-
     addProperties(title_, placement_, color_, offset_, position_, rotation_, font_);
-
     font_.anchorPos_.set(vec2(0.0f, 0.0f));
 }
 
@@ -98,13 +98,15 @@ PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)
 
 PlotTextProperty* PlotTextProperty::clone() const { return new PlotTextProperty(*this); }
 
-bool PlotTextProperty::isEnabled() const { return isChecked(); }
-LabelPlacement PlotTextProperty::getPlacement() const { return placement_.getSelectedValue(); }
-vec4 PlotTextProperty::getColor() const { return color_.get(); }
-float PlotTextProperty::getPosition() const { return position_.get(); }
-vec2 PlotTextProperty::getOffset() const { return {offset_.get(), 0.0f}; }
-float PlotTextProperty::getRotation() const { return rotation_.get(); }
-const FontSettings& PlotTextProperty::getFont() const { return font_; }
+void PlotTextProperty::update(TextData& data) const {
+    data.enabled = isChecked();
+    data.placement = placement_.getSelectedValue();
+    data.color = color_.get();
+    data.position = position_.get();
+    data.offset = vec2(offset_.get(), 0.0f);
+    data.rotation = rotation_.get();
+    font_.update(data.font);
+}
 
 }  // namespace plot
 

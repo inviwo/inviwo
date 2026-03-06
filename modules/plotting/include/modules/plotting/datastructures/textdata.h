@@ -26,41 +26,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/plotting/datastructures/plottextsettings.h>
+#include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
+#include <modules/fontrendering/datastructures/fontdata.h>
 
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
+namespace inviwo::plot {
 
-namespace inviwo {
+struct IVW_MODULE_PLOTTING_API TextData {
+    enum class Placement : std::uint8_t { Outside, Inside };
 
-namespace plot {
+    FontData font;
+    vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    vec2 offset = vec2{10.0f, 0.0f};
+    float position = 0.5f;
+    float rotation = 0.0f;
+    Placement placement = Placement::Outside;
+    bool enabled = true;
 
-PlotTextSettings::operator bool() const { return isEnabled(); }
+    bool operator==(const TextData&) const = default;
+};
 
-bool operator==(const PlotTextSettings& a, const PlotTextSettings& b) {
-    return a.isEnabled() == b.isEnabled() && a.getPlacement() == b.getPlacement() &&
-           a.getColor() == b.getColor() && a.getPosition() == b.getPosition() &&
-           a.getOffset() == b.getOffset() && a.getRotation() == b.getRotation() &&
-           a.getFont() == b.getFont();
-}
+IVW_MODULE_PLOTTING_API TextData::Placement flip(TextData::Placement p);
 
-bool operator!=(const PlotTextSettings& a, const PlotTextSettings& b) { return !(a == b); }
-
-LabelPlacement flip(LabelPlacement p) {
-    switch (p) {
-        case LabelPlacement::Outside:
-            return LabelPlacement::Inside;
-        case LabelPlacement::Inside:
-            return LabelPlacement::Outside;
-        default:
-            return p;
-    }
-}
-
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

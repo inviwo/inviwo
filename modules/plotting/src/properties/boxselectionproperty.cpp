@@ -36,7 +36,7 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/staticstring.h>
-#include <modules/plotting/datastructures/boxselectionsettings.h>
+#include <modules/plotting/datastructures/boxselection.h>
 
 namespace inviwo {
 
@@ -50,9 +50,9 @@ BoxSelectionProperty::BoxSelectionProperty(const std::string& identifier,
                                            PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , mode_("mode", "Mode",
-            {{"selection", "Selection", BoxSelectionSettingsInterface::Mode::Selection},
-             {"filtering", "Filtering", BoxSelectionSettingsInterface::Mode::Filtering},
-             {"none", "None", BoxSelectionSettingsInterface::Mode::None}})
+            {{"selection", "Selection", BoxSelection::Mode::Selection},
+             {"filtering", "Filtering", BoxSelection::Mode::Filtering},
+             {"none", "None", BoxSelection::Mode::None}})
     , lineColor_("lineColor", "Line Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
     , lineWidth_("lineWidth", "Line Width", 1.0f, 0.0f, 10.0f) {
     lineColor_.setSemantics(PropertySemantics::Color);
@@ -77,9 +77,11 @@ BoxSelectionProperty* BoxSelectionProperty::clone() const {
     return new BoxSelectionProperty(*this);
 }
 
-BoxSelectionSettingsInterface::Mode BoxSelectionProperty::getMode() const { return mode_.get(); }
-vec4 BoxSelectionProperty::getLineColor() const { return lineColor_.get(); }
-float BoxSelectionProperty::getLineWidth() const { return lineWidth_.get(); }
+void BoxSelectionProperty::update(BoxSelection& data) const {
+    data.lineColor = lineColor_.get();
+    data.lineWidth = lineWidth_.get();
+    data.mode = mode_.get();
+}
 
 }  // namespace plot
 

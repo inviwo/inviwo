@@ -29,21 +29,9 @@
 
 #include <modules/fontrendering/datastructures/fontdata.h>
 
-#include <inviwo/core/util/glmvec.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
-
 #include <type_traits>
 
 namespace inviwo {
-FontData::FontData(const FontSettings& s)
-    : fontFace{s.getFontFace()}
-    , fontSize{s.getFontSize()}
-    , lineSpacing{s.getLineSpacing()}
-    , anchorPos{s.getAnchorPos()} {}
-const std::filesystem::path& FontData::getFontFace() const { return fontFace; }
-int FontData::getFontSize() const { return fontSize; }
-float FontData::getLineSpacing() const { return lineSpacing; }
-vec2 FontData::getAnchorPos() const { return anchorPos; }
 
 static_assert(std::is_copy_constructible_v<FontData>);
 static_assert(std::is_copy_assignable_v<FontData>);

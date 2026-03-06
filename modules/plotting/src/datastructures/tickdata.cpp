@@ -27,46 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/datastructures/plottextdata.h>
+#include <modules/plotting/datastructures/tickdata.h>
 
-#include <inviwo/core/util/glmvec.h>
-#include <modules/fontrendering/datastructures/fontdata.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
-
-#include <type_traits>
-
-namespace inviwo {
-class FontSettings;
-
-namespace plot {
-
-PlotTextData::PlotTextData(const PlotTextSettings& s)
-    : enabled{s.isEnabled()}
-    , color{s.getColor()}
-    , position{s.getPosition()}
-    , offset{s.getOffset()}
-    , rotation{s.getRotation()}
-    , font{s.getFont()} {}
-
-bool PlotTextData::isEnabled() const { return enabled; }
-
-LabelPlacement PlotTextData::getPlacement() const { return placement; }
-
-vec4 PlotTextData::getColor() const { return color; }
-
-float PlotTextData::getPosition() const { return position; }
-
-vec2 PlotTextData::getOffset() const { return offset; }
-
-float PlotTextData::getRotation() const { return rotation; }
-
-const FontSettings& PlotTextData::getFont() const { return font; }
-
-static_assert(std::is_copy_constructible_v<PlotTextData>);
-static_assert(std::is_copy_assignable_v<PlotTextData>);
-static_assert(std::is_nothrow_move_constructible_v<PlotTextData>);
-static_assert(std::is_nothrow_move_assignable_v<PlotTextData>);
-
-}  // namespace plot
-
-}  // namespace inviwo
+namespace inviwo::plot {}  // namespace inviwo::plot
