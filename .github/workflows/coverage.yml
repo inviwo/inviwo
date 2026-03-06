@@ -1,0 +1,220 @@
+name: "Coverage"
+
+# Runs a full regression + test cycle with LLVM code-coverage instrumentation
+# enabled. Coverage and sanitizers are mutually exclusive, so this is a
+# separate job from the main build workflow. It runs on every PR as well as
+# on a weekly schedule.
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'   # Every Monday at 03:00 UTC
+  pull_request:
+    paths:
+      - '.github/workflows/coverage.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  VCPKG_CACHE_TOKEN: ${{ secrets.VCPKG_CACHE_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VCPKG_FEATURE_FLAGS: dependencygraph
+  CCACHE_BASEDIR: ${{ github.workspace }}
+  CCACHE_NODIRECT: true
+  CCACHE_NODEPEND: true
+
+jobs:
+  coverage:
+    name: "Coverage"
+    runs-on: [regression, macOS]
+    timeout-minutes: 480
+
+    steps:
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v6
+      with:
+        path: inviwo
+
+    - name: "Get Vcpkg SHA"
+      shell: bash
+      run: |
+        SHA=$(jq -r '.[\"vcpkg-configuration\"].[\"default-registry\"].baseline' inviwo/vcpkg.json)
+        echo "VCPKG_SHA=${SHA}" >> $GITHUB_ENV
+
+    - name: "VCPKG Update"
+      shell: bash
+      run: |
+        cd $VCPKG_INSTALLATION_ROOT
+        git fetch
+        git checkout $VCPKG_SHA
+        ./bootstrap-vcpkg.sh
+
+    - name: "Configure CMake"
+      shell: bash
+      run: >
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake
+        -S inviwo -B build
+        --preset ninja-developer --fresh
+        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_CXX_FLAGS='-stdlib=libc++'
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        -DVCPKG_MANIFEST_FEATURES="python;qt"
+        -DVCPKG_APPLOCAL_DEPS=OFF
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DIVW_MODULE_EIGENUTILS=ON
+        -DIVW_MODULE_HDF5=ON
+        -DIVW_MODULE_TETRAMESH=OFF
+        -DIVW_MODULE_WEBBROWSER=ON
+        -DIVW_MODULE_WEBQT=ON
+        -DIVW_CFG_CODE_COVERAGE=ON
+
+    - name: "Build"
+      timeout-minutes: 300
+      shell: bash
+      run: cmake --build build --config RelWithDebInfo --parallel --target all
+
+    - name: "Unit Tests"
+      id: unit_tests
+      continue-on-error: true
+      shell: bash
+      working-directory: "build"
+      env:
+        LLVM_PROFILE_FILE: "${{ github.workspace }}/profiles/unit-%p.profraw"
+      run: |
+        mkdir -p "${{ github.workspace }}/profiles"
+        ctest -C RelWithDebInfo --output-on-failure
+
+    - name: "Integration Tests"
+      id: integration
+      continue-on-error: true
+      shell: bash
+      working-directory: "build/bin"
+      env:
+        LLVM_PROFILE_FILE: "${{ github.workspace }}/profiles/integration-%p.profraw"
+      run: ./inviwo-integrationtests
+
+    - name: "Clone Regression"
+      uses: actions/checkout@v6
+      with:
+        repository: inviwo/regression
+        ref: main
+        token: ${{ secrets.INVIWO_TEAM_SECRET }}
+        path: regression
+
+    - name: "Regression Tests"
+      id: regression_tests
+      continue-on-error: true
+      shell: bash
+      env:
+        LLVM_PROFILE_FILE: "${{ github.workspace }}/profiles/regression-%p.profraw"
+      run: |
+        mkdir -p regression/macos/coverage
+        python3 inviwo/tools/regression.py \
+          --config build/pyconfig.ini \
+          --build_type RelWithDebInfo \
+          --output regression/macos/coverage \
+          --summary
+
+    - name: "Merge Profiles"
+      shell: bash
+      run: |
+        shopt -s nullglob
+        profraw_files=( profiles/*.profraw )
+        if [ ${#profraw_files[@]} -eq 0 ]; then
+          echo "No .profraw files found — no tests produced coverage data." >&2
+          exit 1
+        fi
+        echo "Merging ${#profraw_files[@]} profile file(s)..."
+        xcrun llvm-profdata merge -sparse profiles/*.profraw \
+          -o profiles/merged.profdata
+        echo "Profile merge complete."
+
+    - name: "Generate Coverage Report"
+      shell: bash
+      run: |
+        # Install lcov (provides genhtml for rich HTML output) if not already present
+        if ! command -v genhtml &>/dev/null; then
+          brew install lcov
+        fi
+
+        # The main inviwo app is the primary binary: it is the executable that
+        # runs all regression workspaces and therefore exercises the most code.
+        # On macOS it lives inside its .app bundle.
+        PRIMARY_BIN="build/bin/inviwo.app/Contents/MacOS/inviwo"
+
+        # Collect additional instrumented objects: unit/integration test runners
+        # and all Inviwo shared libraries (where most of the code actually lives).
+        OBJECT_FLAGS=""
+        [ -f build/bin/inviwo-unittests ] && \
+          OBJECT_FLAGS="$OBJECT_FLAGS -object build/bin/inviwo-unittests"
+        [ -f build/bin/inviwo-integrationtests ] && \
+          OBJECT_FLAGS="$OBJECT_FLAGS -object build/bin/inviwo-integrationtests"
+        while IFS= read -r lib; do
+          OBJECT_FLAGS="$OBJECT_FLAGS -object $lib"
+        done < <(find build -name "libinviwo*.dylib" 2>/dev/null | sort)
+
+        # Export coverage in lcov format
+        # shellcheck disable=SC2086  # Word splitting is intentional: $OBJECT_FLAGS holds multiple -object <path> pairs
+        xcrun llvm-cov export \
+          --format=lcov \
+          --instr-profile=profiles/merged.profdata \
+          --ignore-filename-regex='(ext/|vcpkg_installed/|/opt/homebrew|/Applications/Xcode)' \
+          "$PRIMARY_BIN" $OBJECT_FLAGS \
+          > coverage.lcov
+
+        # Generate rich HTML report with genhtml
+        mkdir -p coverage-report
+        genhtml coverage.lcov \
+          --output-directory coverage-report \
+          --title "Inviwo Code Coverage — $(date -u '+%Y-%m-%d')" \
+          --show-details \
+          --legend \
+          --branch-coverage \
+          --demangle-cpp \
+          --num-spaces 4 \
+          --ignore-errors source,inconsistent,deprecated \
+          --quiet
+
+        # Generate text summary, save to file, and append to the step summary
+        # shellcheck disable=SC2086  # Word splitting is intentional: $OBJECT_FLAGS holds multiple -object <path> pairs
+        xcrun llvm-cov report \
+          --instr-profile=profiles/merged.profdata \
+          --ignore-filename-regex='(ext/|vcpkg_installed/|/opt/homebrew|/Applications/Xcode)' \
+          "$PRIMARY_BIN" $OBJECT_FLAGS \
+          > coverage-report/text-summary.txt
+        cat coverage-report/text-summary.txt
+
+        echo "### :bar_chart: Code Coverage Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        cat coverage-report/text-summary.txt >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+
+        echo "### Test outcomes" >> $GITHUB_STEP_SUMMARY
+        echo "| Job | Result |" >> $GITHUB_STEP_SUMMARY
+        echo "| --- | ------ |" >> $GITHUB_STEP_SUMMARY
+        echo "| Unit tests        | ${{ steps.unit_tests.outcome }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Integration tests | ${{ steps.integration.outcome }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Regression tests  | ${{ steps.regression_tests.outcome }} |" >> $GITHUB_STEP_SUMMARY
+
+    - name: "Upload Coverage Report"
+      uses: actions/upload-artifact@v7
+      with:
+        name: coverage-report
+        path: coverage-report/
+        retention-days: 30
+
+    - name: "Upload Coverage Data"
+      uses: actions/upload-artifact@v7
+      with:
+        name: coverage-lcov
+        path: coverage.lcov
+        retention-days: 30
+
+    - name: "Upload Vcpkg build Logs"
+      if: "${{ failure() }}"
+      uses: actions/upload-artifact@v7
+      with:
+        name: vcpkg-logs-coverage
+        path: vcpkg/buildtrees/**/*.log
