@@ -151,11 +151,13 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
         button->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
         button->setObjectName("resetButton");
         connect(button, &QToolButton::clicked, this, [this]() {
-            if (property_) {
-                property_->resetToDefaultState();
-            } else if (propertyOwner_) {
-                propertyOwner_->resetAllProperties();
-            }
+            util::exceptionGuard([&]() {
+                if (property_) {
+                    property_->resetToDefaultState();
+                } else if (propertyOwner_) {
+                    propertyOwner_->resetAllProperties();
+                }
+            });
         });
         button->setFocusPolicy(Qt::NoFocus);
 

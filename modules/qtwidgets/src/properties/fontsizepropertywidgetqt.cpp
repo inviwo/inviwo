@@ -110,7 +110,7 @@ FontSizePropertyWidgetQt::FontSizePropertyWidgetQt(IntProperty* property)
             // custom font size
             if (fontSize != property_->get()) {
                 property_->setInitiatingWidget(this);
-                property_->set(fontSize);
+                util::exceptionGuard([&]() { property_->set(fontSize); });
                 property_->clearInitiatingWidget();
             }
         }

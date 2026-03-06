@@ -74,11 +74,10 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         setFocusPolicy(lineEdit_->focusPolicy());
         setFocusProxy(lineEdit_);
 
-        auto setPropertyValueFromString = [this]() {
+        connect(lineEdit_, &QLineEdit::editingFinished, this, [this]() {
             QString str(lineEdit_->text());
-            property_->set(str == "true" || str == "1");
-        };
-        connect(lineEdit_, &QLineEdit::editingFinished, setPropertyValueFromString);
+            util::exceptionGuard([&]() { property_->set(str == "true" || str == "1"); });
+        });
         hLayout->addWidget(lineEdit_);
     } else {
         checkBox_ = new QCheckBox();
@@ -88,8 +87,8 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         setFocusPolicy(checkBox_->focusPolicy());
         setFocusProxy(checkBox_);
 
-        auto setPropertyValueFromCheckbox = [this](bool checked) { property_->set(checked); };
-        connect(checkBox_, &QCheckBox::toggled, setPropertyValueFromCheckbox);
+        connect(checkBox_, &QCheckBox::toggled, this,
+                [this](bool checked) { util::exceptionGuard([&]() { property_->set(checked); }); });
         hLayout->addWidget(checkBox_);
     }
     setDisabled(property_->getReadOnly());

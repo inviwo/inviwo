@@ -87,7 +87,9 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
 
     {
         connect(lineEdit_, &FilePathLineEditQt::pathChanged, this,
-                [this](const std::filesystem::path& path) { property_->set(path); });
+                [this](const std::filesystem::path& path) {
+                    util::exceptionGuard([&]() { property_->set(path); });
+                });
         QSizePolicy sp = lineEdit_->sizePolicy();
         sp.setHorizontalStretch(3);
         lineEdit_->setSizePolicy(sp);
@@ -130,7 +132,9 @@ void MultiFilePropertyWidgetQt::setPropertyValue() {
     fileDialog.setSelectedExtension(property_->getSelectedExtension());
 
     if (fileDialog.exec()) {
-        property_->set(fileDialog.getSelectedFiles(), fileDialog.getSelectedFileExtension());
+        util::exceptionGuard([&]() {
+            property_->set(fileDialog.getSelectedFiles(), fileDialog.getSelectedFileExtension());
+        });
     }
 }
 
@@ -141,7 +145,7 @@ void MultiFilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
         for (auto&& url : mimeData->urls()) {
             paths.push_back(utilqt::toPath(url.toLocalFile()));
         }
-        property_->set(paths);
+        util::exceptionGuard([&]() { property_->set(paths); });
         drop->accept();
     } else {
         drop->ignore();

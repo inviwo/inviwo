@@ -126,7 +126,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
                 fileObserver_.ignoreNextUpdate();
                 fileObserver_.setFileName(path);
                 editor_->document()->setModified(false);
-                fileProperty_->set(path);
+                util::exceptionGuard([&]() { fileProperty_->set(path); });
             }
         });
     } else if (stringProperty_) {
@@ -264,7 +264,8 @@ void TextEditorDockWidget::save() {
         fileObserver_.ignoreNextUpdate();
         saveToFile(fileProperty_->get());
     } else if (stringProperty_) {
-        stringProperty_->set(utilqt::fromQString(editor_->toPlainText()));
+        util::exceptionGuard(
+            [&]() { stringProperty_->set(utilqt::fromQString(editor_->toPlainText())); });
     }
     editor_->document()->setModified(false);
 }

@@ -104,7 +104,7 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
 void StringPropertyWidgetQt::setPropertyValue() {
     std::string valueStr = utilqt::fromQString(lineEdit_->text());
     property_->setInitiatingWidget(this);
-    property_->set(valueStr);
+    util::exceptionGuard([&]() { property_->set(valueStr); });
     property_->clearInitiatingWidget();
 }
 
