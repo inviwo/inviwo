@@ -44,6 +44,7 @@ enum class LabelingAlgorithm : unsigned char {
     Matplotlib,
     ExtendedWilkinson,
     Limits,
+    LimitsAndZero,
 };
 
 struct IVW_MODULE_PLOTTING_API LinearRange {
