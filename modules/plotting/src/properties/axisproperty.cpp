@@ -113,7 +113,7 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     captionSettings_.title_.set("Axis Title");
 
     labelSettings_.title_.setDisplayName("Format");
-    labelSettings_.title_.set("{:.1f}");
+    labelSettings_.title_.set(plot::defaultFormat);
     labelSettings_.position_.setVisible(false);
 
     captionSettings_.setCollapsed(true);
@@ -295,7 +295,8 @@ void AxisProperty::update(AxisData& data) const {
     captionSettings_.update(data.captionSettings);
 
     updateLabelPositions(data.majorPositions, data.minorPositions, labelingAlgorithm_.get(),
-                         data.range, majorTicks_.numberOfTicks.get(), minorTicks_.frequency.get());
+                         data.range, majorTicks_.numberOfTicks.get(), minorTicks_.frequency.get(),
+                         minorTicks_.fillAxis.get());
 
     labelSettings_.update(data.labelSettings);
     updateLabels(data.labels, data.majorPositions, labelSettings_.title_.get());

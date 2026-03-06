@@ -168,7 +168,7 @@ ParallelCoordinates::ParallelCoordinates()
     , labelSettings_("labels", "Label Settings", font::FontType::Label, 20, 0.0f, vec2{-1.0f, 0.0f})
     , showLabels_("show", "Display min/max", true)
     , labelOffset_("offset", "Offset", 15.0f, -50.0, 50.0f)
-    , labelFormat_("format", "Format", "{:.4f}")
+    , labelFormat_("format", "Format", defaultLabelFormat)
     , labelColor_("color", "Color", vec4(.0, .0f, .0f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                   InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
@@ -416,7 +416,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
         prop->setVisible(true);
 
         // Create axis for rendering
-        auto renderer = std::make_unique<AxisRenderer>(AxisData{});
+        auto renderer = std::make_unique<AxisRenderer>();
         renderer->setAxisPickingId(axisPicking_.getPickingId(columnIndex));
 
         auto slider = std::make_unique<glui::DoubleMinMaxPropertyWidget>(
