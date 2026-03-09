@@ -769,11 +769,10 @@ function(ivw_find_unique_path_segements retval paths)
 endfunction()
 
 # A function to try to retrive the git hash of the last commit in a 
-# directory
-function(ivw_git_get_hash dir retval)
+function(ivw_git_get dir retval)
     find_package(Git QUIET)
     if(GIT_FOUND)
-        execute_process(COMMAND "${GIT_EXECUTABLE}" describe --match=NeVeRmAtCh --always --abbrev=20 --dirty
+        execute_process(COMMAND "${GIT_EXECUTABLE}" ${ARGN}
             WORKING_DIRECTORY ${dir}
             RESULT_VARIABLE result
             OUTPUT_VARIABLE version
@@ -783,37 +782,63 @@ function(ivw_git_get_hash dir retval)
             return()
         endif()
     endif()
-    set(${retval} "????????" PARENT_SCOPE)
+    set(${retval} "????????????????????????????????????????" PARENT_SCOPE)
 endfunction()
 
 # A helper funtion to generate a header file with inviwo build 
 # information, like the build date and the commit hash
 # ivw_generate_build_info(<template> <outputfile> <module dir1> <module dir2> ...
-function(ivw_generate_build_info source_template ini_template buildinfo_sourcefile buildinfo_inifile)
-    ivw_find_unique_path_segements(unique_names "${ARGN}")
-    set(index 0)
-    set(hashes_list "")
+function(ivw_generate_build_info source_template xml_template buildinfo_sourcefile buildinfo_inifile)
+    set(xmlList "")
+    set(cppList "")
     foreach(dir ${ARGN})
-        list(GET unique_names ${index} name)
-        ivw_git_get_hash(${dir} hash)
-        list(APPEND hashes_list "{\"${name}\", \"${hash}\"}")
-        MATH(EXPR index "${index}+1")
+        cmake_path(GET dir FILENAME group_name)
+        if(EXISTS ${dir}/meta.cmake)
+            include(${dir}/meta.cmake)
+        endif()
+        ivw_git_get(${dir} hash describe --match=NeVeRmAtCh --always --abbrev=40 --dirty)
+        ivw_git_get(${dir} toplevel rev-parse --show-toplevel)
+        ivw_git_get(${dir} repo --no-pager remote get-url origin)
+
+        string(SUBSTRING ${hash} 0 40 sha)
+        string(SUBSTRING ${hash} 40 -1 dirty)
+        if(dirty STREQUAL "-dirty")
+            set(dirty "1")
+        else()
+            set(dirty "0")
+        endif()
+
+        list(APPEND xmlList
+            "<ModulesDir"
+            "    name=\"${group_name}\""
+            "    dir=\"${dir}\""
+            "    sha=\"${sha}\""
+            "    repo=\"${repo}\""
+            "    repoDir=\"${toplevel}\""
+            "    dirty=\"${dirty}\">"
+            "</ModulesDir>"
+        )
+
+        set(cppListItem
+            "        {"
+            "            .name=\"${group_name}\","
+            "            .dir=\"${dir}\","
+            "            .sha=\"${sha}\","
+            "            .repo=\"${repo}\","
+            "            .repoDir=\"${toplevel}\","
+            "            .dirty=\"${dirty}\""
+            "        }"
+        )
+        string(REPLACE ";" "\n" cppItem "${cppListItem}")
+        list(APPEND cppList ${cppItem})
     endforeach()
-    string(REPLACE ";" ",\n            " hashes "${hashes_list}")
-    set(HASHES "{\n            ${hashes}\n        }")
+
+    string(REPLACE ";" "\n" xml "${xmlList}")
+    set(MODULESDIRS "${xml}")
+
+    string(REPLACE ";" ",\n" cpp "${cppList}")
+    set(HASHES "{\n${cpp}\n    }")
     set(NHASHES "${index}")
-
-    set(index 0)
-    set(hashes_list "")
-    foreach(dir ${ARGN})
-        list(GET unique_names ${index} name)
-        ivw_git_get_hash(${dir} hash)
-        list(APPEND hashes_list "${name}=${hash}")
-        MATH(EXPR index "${index}+1")
-    endforeach()
-    string(REPLACE ";" "\n" hashes "${hashes_list}")
-    set(INIHASHES "${hashes}")
-
 
     string(TIMESTAMP TMPYEAR "%Y")
     string(REGEX REPLACE "0*([0-9]+)" "\\1" YEAR ${TMPYEAR})
@@ -829,8 +854,7 @@ function(ivw_generate_build_info source_template ini_template buildinfo_sourcefi
     string(REGEX REPLACE "0*([0-9]+)" "\\1" SECOND ${TMPSECOND})
     configure_file("${source_template}" "${buildinfo_sourcefile}" @ONLY)
 
-    string(REPLACE "\"" "" ini_dest_path ${INI_DEST_PATH})
-    configure_file("${ini_template}" "${ini_dest_path}${buildinfo_inifile}" @ONLY)
+    configure_file("${xml_template}" "${buildinfo_inifile}" @ONLY)
 endfunction()
 
 # Get target properties recursively by following all INTERFACE_LINK_LIBRARIES

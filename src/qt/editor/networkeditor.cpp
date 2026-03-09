@@ -30,6 +30,7 @@
 #include <inviwo/qt/editor/networkeditor.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/io/serialization/serializer.h>
@@ -84,6 +85,7 @@
 #include <inviwo/qt/editor/connectiondraghelper.h>
 #include <inviwo/qt/editor/linkdraghelper.h>
 #include <inviwo/qt/editor/subpropertyselectiondialog.h>
+#include <inviwo/qt/editor/sourcetools.h>
 
 #include <QApplication>
 #include <QClipboard>
@@ -782,12 +784,29 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
     connect(helpAction, &QAction::triggered, [this, processor]() {
         showProcessorHelp(processor->getProcessor()->getClassIdentifier(), true);
     });
+
+    const std::filesystem::path processorFile{processor->getProcessor()->getProcessorInfo().file};
+    const QAction* openSource = menu.addAction(QIcon(":/svgicons/open.svg"), "Open Source");
+    connect(openSource, &QAction::triggered, this, [this, processorFile]() {
+        util::openProcessorFile(
+            {.cppFile = processorFile,
+             .header = false,
+             .web = QApplication::keyboardModifiers().testFlag(Qt::ControlModifier),
+             .manager = &mainWindow_->getInviwoApplication()->getModuleManager()});
+    });
+    const QAction* openHeader = menu.addAction(QIcon(":/svgicons/open.svg"), "Open Header");
+    connect(openHeader, &QAction::triggered, this, [this, processorFile]() {
+        util::openProcessorFile(
+            {.cppFile = processorFile,
+             .header = true,
+             .web = QApplication::keyboardModifiers().testFlag(Qt::ControlModifier),
+             .manager = &mainWindow_->getInviwoApplication()->getModuleManager()});
+    });
 }
 
 void NetworkEditor::addCompositeMenuItems(
     QMenu& menu, const std::vector<Processor*>& selectedProcessors,
     const std::unordered_set<CompositeProcessor*>& selectedComposites) {
-
     auto* compAction =
         menu.addAction(QIcon(":/svgicons/composite-create-enabled.svg"), tr("&Create Composite"));
     connect(compAction, &QAction::triggered, this, [this]() {
@@ -839,7 +858,6 @@ void NetworkEditor::addCompositeMenuItems(
 void NetworkEditor::addSequenceMenuItems(
     QMenu& menu, const std::vector<Processor*>& selectedProcessors,
     const std::unordered_set<SequenceProcessor*>& selectedSequences) {
-
     auto* sequenceAction =
         menu.addAction(QIcon(":/svgicons/composite-create-enabled.svg"), tr("&Create Sequence"));
     connect(sequenceAction, &QAction::triggered, this, [this]() {
@@ -850,7 +868,8 @@ void NetworkEditor::addSequenceMenuItems(
 
     // TODO(Peter)
     // auto* expandAction =
-    //    menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Sequence"));
+    //    menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand
+    //    Sequence"));
     // connect(expandAction, &QAction::triggered, this, [selectedSequences]() {
     //    for (auto& p : selectedSequences) {
     //         util::expandSequenceProcessorIntoNetwork(*p);
@@ -869,7 +888,6 @@ void NetworkEditor::addSequenceMenuItems(
 
 void NetworkEditor::addCopyPasteMenuItems(QMenu& menu, const QList<QGraphicsItem*>& activeItems,
                                           const ivec2& position) {
-
     auto* cutAction = menu.addAction(QIcon(":/svgicons/edit-cut.svg"), tr("Cu&t"));
     cutAction->setEnabled(!activeItems.empty());
     connect(cutAction, &QAction::triggered, this, [this, items = activeItems]() {
@@ -1168,7 +1186,6 @@ void NetworkEditor::ensureVisible(const std::vector<Processor*>& processors) {
 }
 
 void NetworkEditor::paste(const QMimeData& mimeData, util::OffsetCallback offsetCallback) {
-
     QByteArray data;
     if (mimeData.formats().contains(utilqt::toQString(NetworkEditor::getMimeTag()))) {
         data = mimeData.data(utilqt::toQString(NetworkEditor::getMimeTag()));

@@ -32,6 +32,7 @@
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/io/serialization/deserializer.h>
 
 #include <fstream>
 #include <locale>
@@ -40,85 +41,73 @@ namespace inviwo {
 
 namespace util {
 
-// helper struct to define arbitrary separator characters in a locale
-// usage:
-//   std::stringstream stream;
-//   stream.imbue(std::locale(stream.getloc(), new CsvWhitespace));
-struct IniSeparator : std::ctype<char> {
-    static const mask* makeTable() {
-        // copy table of C locale
-        static std::vector<mask> m(classic_table(), classic_table() + table_size);
-        m[' '] &= ~space;  // remove space as whitespace
-        m['='] |= space;
-        return &m[0];
+namespace {
+
+struct DeserializeModuleDir : BuildInfo::ModulesDir {
+    void deserialize(Deserializer& d) {
+        d.deserialize("name", name, SerializationTarget::Attribute);
+        d.deserialize("dir", dir, SerializationTarget::Attribute);
+        d.deserialize("sha", sha, SerializationTarget::Attribute);
+        d.deserialize("repo", repo, SerializationTarget::Attribute);
+        d.deserialize("repoDir", repoDir, SerializationTarget::Attribute);
+        d.deserialize("dirty", dirty, SerializationTarget::Attribute);
     }
-    IniSeparator(std::size_t refs = 0) : ctype(makeTable(), false, refs) {}
 };
+}  // namespace
 
-std::optional<BuildInfo> getBuildInfo() {
-    auto dir = filesystem::getExecutablePath().parent_path() / "inviwo_buildinfo.ini";
-    auto in = std::ifstream(dir, std::ios::in);
-    if (!in.is_open()) {
+const std::optional<BuildInfo>& getBuildInfo() {
+    static constexpr std::string_view xmlFileName = "inviwo_buildinfo.xml";
+
+    const auto maybeIn = []() -> std::optional<std::filesystem::path> {
+        auto exeDir = filesystem::getExecutablePath().parent_path();
+        auto dir = exeDir / xmlFileName;
+        if (std::filesystem::is_regular_file(dir)) return dir;
+
+#if defined(__APPLE__)
+        if (dir.parent_path().filename() == "MacOS") {
+            dir = exeDir.parent_path().parent_path().parent_path() / xmlFileName;
+            if (std::filesystem::is_regular_file(dir)) return dir;
+        }
+#endif
+
+        dir = filesystem::getInviwoBinDir() / xmlFileName;
+        if (std::filesystem::is_regular_file(dir)) return dir;
+
         return std::nullopt;
-    }
+    }();
 
-    BuildInfo buildInfo;
+    static const std::optional<BuildInfo> buildInfo =
+        maybeIn.and_then([](const std::filesystem::path& file) -> std::optional<BuildInfo> {
+            BuildInfo buildInfo;
 
-    std::istringstream iss;
-    iss.imbue(std::locale(iss.getloc(), new IniSeparator()));
-    enum class Section { Unknown, Date, Hashes };
+            try {
+                Deserializer d{file, "BuildInfo"};
 
-    std::string line;
-    Section currentSection = Section::Unknown;
-    while (std::getline(in, line)) {
-        line = trim(line);
-        // ignore comment, i.e. line starts with ';'
-        if (line.empty() || line[0] == ';') {
-            continue;
-        }
-        if (line == "[date]") {
-            currentSection = Section::Date;
-        } else if (line == "[hashes]") {
-            currentSection = Section::Hashes;
-        } else if (line[0] == '[') {
-            currentSection = Section::Unknown;
-        } else {
-            // read in key value pairs
-            iss.clear();
-            iss.str(line);
-            std::string key;
-            std::string value;
-            if (!(iss >> key >> value)) {
-                // invalid key-value pair, ignore it
-                continue;
-            }
-            switch (currentSection) {
-                case Section::Date: {
-                    int valuei = std::stoi(value);
-                    if (key == "year") {
-                        buildInfo.year = valuei;
-                    } else if (key == "month") {
-                        buildInfo.month = valuei;
-                    } else if (key == "day") {
-                        buildInfo.day = valuei;
-                    } else if (key == "hour") {
-                        buildInfo.hour = valuei;
-                    } else if (key == "minute") {
-                        buildInfo.minute = valuei;
-                    } else if (key == "second") {
-                        buildInfo.second = valuei;
-                    }
-                    break;
+                d.deserialize("year", buildInfo.year, SerializationTarget::Attribute);
+                d.deserialize("month", buildInfo.month, SerializationTarget::Attribute);
+                d.deserialize("day", buildInfo.day, SerializationTarget::Attribute);
+                d.deserialize("hour", buildInfo.hour, SerializationTarget::Attribute);
+                d.deserialize("minute", buildInfo.minute, SerializationTarget::Attribute);
+                d.deserialize("second", buildInfo.second, SerializationTarget::Attribute);
+
+                std::vector<DeserializeModuleDir> modulesDirs;
+                d.deserialize("ModulesDirs", modulesDirs, "ModulesDir");
+
+                for (auto& md : modulesDirs) {
+                    buildInfo.modulesDirs.emplace_back(md.name, md.dir, md.sha, md.repo, md.repoDir,
+                                                       md.dirty);
                 }
-                case Section::Hashes:
-                    buildInfo.githashes.push_back({key, value});
-                    break;
-                case Section::Unknown:
-                default:
-                    break;
+                return buildInfo;
+            } catch (const Exception& e) {
+                log::exception(e);
+            } catch (const std::exception& e) {
+                log::exception(e);
+            } catch (...) {
+                log::exception();
             }
-        }
-    }
+            return std::nullopt;
+        });
+
     return buildInfo;
 }
 

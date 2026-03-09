@@ -56,6 +56,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorpreview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/settingswidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/sourcetools.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspaceannotationsqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacemodelroles.h
@@ -110,6 +111,7 @@ set(SOURCE_FILES
     processorpreview.cpp
     resourcemanager/resourcemanagerdockwidget.cpp
     settingswidget.cpp
+    sourcetools.cpp
     subpropertyselectiondialog.cpp
     toolsmenu.cpp
     verticallabel.cpp

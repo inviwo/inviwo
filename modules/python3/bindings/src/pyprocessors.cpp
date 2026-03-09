@@ -146,16 +146,19 @@ void exposeProcessors(pybind11::module& m) {
     py::implicitly_convertible<Tag, Tags>();
 
     py::classh<ProcessorInfo>(m, "ProcessorInfo")
-        .def(py::init<std::string, std::string, std::string, CodeState, Tags, Document>(),
+        .def(py::init<std::string, std::string, std::string, CodeState, Tags, Document,
+                      std::string>(),
              py::arg("classIdentifier"), py::arg("displayName"), py::arg("category") = "Python",
              py::arg("codeState") = CodeState::Stable, py::arg("tags") = Tags::PY,
-             py::arg("help") = Document{})
+             py::arg("help") = Document{}, py::arg("file") = std::string{})
         .def_readonly("classIdentifier", &ProcessorInfo::classIdentifier)
         .def_readonly("displayName", &ProcessorInfo::displayName)
         .def_readonly("category", &ProcessorInfo::category)
         .def_readonly("codeState", &ProcessorInfo::codeState)
         .def_readonly("tags", &ProcessorInfo::tags)
-        .def_readonly("visible", &ProcessorInfo::visible);
+        .def_readonly("help", &ProcessorInfo::help)
+        .def_readonly("visible", &ProcessorInfo::visible)
+        .def_readonly("file", &ProcessorInfo::file);
 
     py::classh<ProcessorFactoryObject, ProcessorFactoryObjectTrampoline>(m,
                                                                          "ProcessorFactoryObject")

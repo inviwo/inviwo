@@ -39,6 +39,10 @@
 #include <inviwo/core/util/docutils.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/modulemanager.h>
+#include <inviwo/core/common/inviwomodule.h>
+
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 #include <inviwo/qt/editor/processorlinkgraphicsitem.h>
@@ -242,8 +246,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         identifierText_.setTextFormat(Qt::PlainText);
         tagText_.setTextFormat(Qt::PlainText);
 
-        const auto tag =
-            utilqt::toQString(util::getPlatformTag(processor_->getTags()).getString());
+        const auto tag = utilqt::toQString(util::getPlatformTag(processor_->getTags()).getString());
         tagSize_ = [&]() {
             const QFontMetricsF fm{getFont(FontType::Tag)};
             return fm.tightBoundingRect(tag).width();
@@ -635,6 +638,26 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
                         true));
     tb(H("Max Time"), util::msToString(maxEvalTime_, true, true));
 #endif
+
+    auto* app = processor_->getNetwork()->getApplication();
+    const std::filesystem::path processorFile{processor_->getProcessorInfo().file};
+
+    std::filesystem::path best;
+    std::string bestModule;
+    for (auto& m : app->getModuleManager().getInviwoModules()) {
+        const auto relpath = processorFile.lexically_relative(m.getPath());
+        if (!relpath.empty() && !relpath.string().starts_with("..")) {
+            if (best.empty() || relpath.string().length() < best.string().length()) {
+                best = relpath;
+                bestModule = m.getIdentifier();
+            }
+        }
+    }
+
+    if (!best.empty()) {
+        tb(H("Module"), bestModule);
+        tb(H("File"), best);
+    }
 
     showToolTipHelper(e, utilqt::toLocalQString(doc));
 }

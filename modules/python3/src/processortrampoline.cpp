@@ -30,6 +30,8 @@
 #include <modules/python3/processortrampoline.h>
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
@@ -66,6 +68,14 @@ const ProcessorInfo& ProcessorTrampoline::getProcessorInfo() const {
             pybind11::get_override(static_cast<const Processor*>(this), "getProcessorInfo");
         if (f) {
             info_ = f().cast<ProcessorInfo>();
+            if (info_->file.empty()) {
+                auto pyp = pybind11::cast(this);
+                if (pybind11::hasattr(pyp, "__inviwo_file__")) {
+                    info_->file =
+                        pyp.attr("__inviwo_file__").cast<std::filesystem::path>().generic_string();
+                }
+            }
+
         } else {
             throw Exception("Missing getProcessorInfo member function in python processor");
         }

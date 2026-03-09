@@ -1154,9 +1154,9 @@ ivw_register_license_file(NAME "base64" VERSION 2.rc.08 MODULE Core
 set(build_info_script_list
     "include(${IVW_ROOT_DIR}/cmake/globalutils.cmake)"
     "ivw_generate_build_info(${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.cpp"
-    "    ${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.ini"
+    "    ${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.xml"
     "    ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp"
-    "    inviwo_buildinfo.ini"
+    "    inviwo_buildinfo.xml"
     "    ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})"
 )
 string(REPLACE ";" "\n" build_info_script "${build_info_script_list}")
@@ -1166,9 +1166,8 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake" ${build_info_script})
 set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<$<BOOL:${IVW_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>/>)
 add_custom_target(inviwo-buildinfo-header ALL
     BYPRODUCTS  ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp
-    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH=\"${buildinfo_output_dir}\"
-        -P "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake"
-    WORKING_DIRECTORY ${OUTPUT_DIR}
+    COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake"
+    WORKING_DIRECTORY ${buildinfo_output_dir}
     COMMENT "Generating inviwo build info (buildinfo)"
     VERBATIM
 )
@@ -1180,7 +1179,7 @@ if(IVW_CFG_EMBED_BUILDINFO)
 else()
     ## ensure that the ini file containing the build info is packaged and installed to the bin folder
     install(
-        FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<$<BOOL:${IVW_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>/>inviwo_buildinfo.ini 
+        FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<$<BOOL:${IVW_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>/>inviwo_buildinfo.xml
         DESTINATION ${IVW_RUNTIME_INSTALL_DIR} 
         COMPONENT Application
     )

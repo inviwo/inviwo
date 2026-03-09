@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/document.h>
 
+#include <source_location>
 #include <string>
 
 namespace inviwo {
@@ -44,9 +45,14 @@ namespace inviwo {
 struct IVW_CORE_API ProcessorInfo {
 public:
     ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName, std::string aCategory,
-                  CodeState aCodeState, Tags someTags);
+                  CodeState aCodeState, Tags someTags,
+                  std::source_location location = std::source_location::current());
     ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName, std::string aCategory,
-                  CodeState aCodeState, Tags someTags, Document help, bool visible = true);
+                  CodeState aCodeState, Tags someTags, Document help, bool visible = true,
+                  std::source_location location = std::source_location::current());
+    ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName, std::string aCategory,
+                  CodeState aCodeState, Tags someTags, Document help, std::string file,
+                  bool visible = true);
 
     /// Identifier must be unique for all processors, example org.inviwo.yourprocessor
     std::string classIdentifier;
@@ -55,7 +61,8 @@ public:
     CodeState codeState;
     Tags tags;      ///< Searchable tags, platform tags are shown in ProcessorTreeWidget
     Document help;  ///< Help text for the processor
-    bool visible;   ///< Show in processor list (ProcessorTreeWidget), enabling drag&drop
+    std::string file;
+    bool visible;  ///< Show in processor list (ProcessorTreeWidget), enabling drag&drop
 
     IVW_CORE_API friend bool operator==(const ProcessorInfo& a, const ProcessorInfo& b);
     IVW_CORE_API friend bool operator!=(const ProcessorInfo& a, const ProcessorInfo& b);

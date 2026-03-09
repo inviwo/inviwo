@@ -81,6 +81,7 @@ std::shared_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplicatio
         auto main = py::module::import("__main__");
         py::object proc =
             main.attr(name_.c_str())(util::stripIdentifier(pi.displayName), pi.displayName);
+        proc.attr("__inviwo_file__") = file_;
         return proc.cast<std::shared_ptr<Processor>>();
 
     } catch (std::exception& e) {

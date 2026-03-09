@@ -278,8 +278,9 @@ void InviwoApplication::printApplicationInfo() {
     log::info("Inviwo Version: {}", build::version);
     if (auto buildInfo = util::getBuildInfo()) {
         log::info("Build Date: {}", buildInfo->getDate());
-        for (auto [name, hash] : buildInfo->githashes) {
-            log::info("Git {}  hash: {}", name, hash);
+        for (auto& modulesDir : buildInfo->modulesDirs) {
+            log::info("{}: {} SHA: {} {}", modulesDir.name, modulesDir.repo, modulesDir.sha,
+                      modulesDir.dirty ? "Dirty" : "");
         }
     }
     log::info("Base Path: {}", filesystem::findBasePath());

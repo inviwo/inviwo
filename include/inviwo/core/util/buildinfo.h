@@ -36,6 +36,7 @@
 #include <string>
 #include <string_view>
 #include <optional>
+#include <filesystem>
 
 #include <fmt/core.h>
 
@@ -55,7 +56,17 @@ struct IVW_CORE_API BuildInfo {
     int minute = 0;
     int second = 0;
 
-    std::vector<std::pair<std::string, std::string>> githashes;
+
+    struct ModulesDir {
+        std::string name;
+        std::filesystem::path dir;
+        std::string sha;
+        std::string repo;
+        std::filesystem::path repoDir;
+        bool dirty;
+    };
+
+    std::vector<ModulesDir> modulesDirs;
 
     std::string getDate() const {
         return fmt::format("{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}", year, month, day, hour,
@@ -68,7 +79,7 @@ struct IVW_CORE_API BuildInfo {
  *
  * @return build information
  */
-std::optional<BuildInfo> IVW_CORE_API getBuildInfo();
+const std::optional<BuildInfo>& IVW_CORE_API getBuildInfo();
 
 }  // namespace util
 

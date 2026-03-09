@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,28 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-// Automatically generated file do not change!
+#pragma once
 
-#include <inviwo/core/util/buildinfo.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
+
+#include <filesystem>
 
 namespace inviwo {
 
+class ModuleManager;
+
 namespace util {
 
-const std::optional<BuildInfo>& getBuildInfo() {
-    static const BuildInfo info{
-        .year = @YEAR@,
-        .month = @MONTH@,
-        .day = @DAY@,
-        .hour = @HOUR@,
-        .minute = @MINUTE@,
-        .second  = @SECOND@,
-        .modulesDirs = @HASHES@
-    };
+struct IVW_QTEDITOR_API OpenProcessorFile {
+    std::filesystem::path cppFile;
+    bool header = false;
+    bool web = false;
+    ModuleManager* manager;
+};
 
-    return info;
+IVW_QTEDITOR_API void openProcessorFile(OpenProcessorFile config);
+
 }
-
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util
