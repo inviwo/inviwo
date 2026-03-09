@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # Use a PAT so that commits pushed by this workflow trigger CI on the PR.
           # The default GITHUB_TOKEN does not trigger other workflow runs.
