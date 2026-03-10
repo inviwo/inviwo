@@ -45,7 +45,7 @@ namespace inviwo {
 namespace util {
 
 /**
- * \struct BuildInfo
+ * @struct BuildInfo
  * @brief Provides information on build time and date as well as git hashes
  */
 struct IVW_CORE_API BuildInfo {
@@ -56,8 +56,7 @@ struct IVW_CORE_API BuildInfo {
     int minute = 0;
     int second = 0;
 
-
-    struct ModulesDir {
+    struct IVW_CORE_API ModulesDir {
         std::string name;
         std::filesystem::path dir;
         std::string sha;
@@ -76,10 +75,9 @@ struct IVW_CORE_API BuildInfo {
 
 /**
  * @brief Accesses build information via an INI file or compile-time definitions
- *
  * @return build information
  */
-const std::optional<BuildInfo>& IVW_CORE_API getBuildInfo();
+IVW_CORE_API const std::optional<BuildInfo>& getBuildInfo();
 
 }  // namespace util
 
