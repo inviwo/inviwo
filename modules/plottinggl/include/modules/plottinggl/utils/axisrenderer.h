@@ -177,7 +177,6 @@ struct AxisTickLabels {
         major_.check(*this, settings.major);
         tickDirection_.check(*this, tickDirection);
         flipped_.check(*this, settings.mirrored);
-        scalingFactor_.check(*this, settings.scale);
         majorPositions_.check(*this, settings.majorPositions);
 
         if (positions_.empty()) {
@@ -206,7 +205,6 @@ protected:
     Guard<TickData, MPLabel> major_;
     Guard<vec3, MPLabel> tickDirection_;
     Guard<bool, MPLabel> flipped_;
-    Guard<float, MPLabel> scalingFactor_;
 };
 
 struct IVW_MODULE_PLOTTINGGL_API AxisCaption {

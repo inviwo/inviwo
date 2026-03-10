@@ -66,10 +66,6 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     , color_{"color", "Color",
              util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f}).set("Color of the axis"_help)}
     , width_{"width", "Width", util::ordinalLength(2.5f, 20.0f).set("Line width of the axis"_help)}
-    , scalingFactor_{"scalingFactor", "Scaling Factor",
-                     util::ordinalScale(1.0f, 10.0f)
-                         .set("Scaling factor affecting tick lengths and offsets of axis caption "
-                              "and labels"_help)}
     , mirrored_{"flipped", "Swap Label Position",
                 "Show labels on the opposite side of the axis"_help, false}
     , orientation_{"orientation",
@@ -84,8 +80,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     , majorTicks_{"majorTicks", "Major Ticks"}
     , minorTicks_{.style = TickData::Style::None} {
 
-    scalingFactor_.setVisible(false);
-    addProperties(visible_, color_, width_, scalingFactor_, mirrored_, orientation_);
+    addProperties(visible_, color_, width_, mirrored_, orientation_);
 
     // change default fonts, make axis labels slightly less pronounced
     captionSettings_.font_.fontFace_.setSelectedIdentifier(
@@ -118,7 +113,6 @@ CategoricalAxisProperty::CategoricalAxisProperty(const CategoricalAxisProperty& 
     , visible_{rhs.visible_}
     , color_{rhs.color_}
     , width_{rhs.width_}
-    , scalingFactor_{rhs.scalingFactor_}
     , mirrored_{rhs.mirrored_}
     , orientation_{rhs.orientation_}
     , captionSettings_{rhs.captionSettings_}
@@ -126,8 +120,8 @@ CategoricalAxisProperty::CategoricalAxisProperty(const CategoricalAxisProperty& 
     , majorTicks_{rhs.majorTicks_}
     , minorTicks_{rhs.minorTicks_} {
 
-    addProperties(visible_, color_, width_, scalingFactor_, mirrored_, orientation_,
-                  captionSettings_, labelSettings_, majorTicks_);
+    addProperties(visible_, color_, width_, mirrored_, orientation_, captionSettings_,
+                  labelSettings_, majorTicks_);
 
     orientation_.onChange([this]() { adjustAlignment(); });
 
@@ -168,7 +162,6 @@ void CategoricalAxisProperty::update(AxisData& data) const {
     data.mirrored = mirrored_.get();
     data.color = color_.get();
     data.width = width_.get();
-    data.scale = scalingFactor_.get();
     data.orientation = orientation_.getSelectedValue();
     data.caption = captionSettings_.title_.get();
     captionSettings_.update(data.captionSettings);

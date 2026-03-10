@@ -202,7 +202,7 @@ void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3&
         const auto* lineMesh = SharedOpenGLResources::getPtr()->lineMesh();
         drawMesh(lineMesh, data_.width, false, makeLineTransform(start, end));
     }
-    const auto tick = glm::normalize(tickDir) * data_.scale * (data_.mirrored ? -1.0f : 1.0f);
+    const auto tick = glm::normalize(tickDir) * (data_.mirrored ? -1.0f : 1.0f);
     if (auto* majorMesh = majorMesh_.get(data_.majorPositions, data_.range, data_.major.style)) {
         drawMesh(majorMesh->getRepresentation<MeshGL>(), data_.major.width, true,
                  makeTickTransform(start, end, tick * data_.major.length));

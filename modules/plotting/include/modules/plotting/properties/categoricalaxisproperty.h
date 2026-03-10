@@ -92,7 +92,6 @@ public:
     BoolProperty visible_;
     FloatVec4Property color_;
     FloatProperty width_;
-    FloatProperty scalingFactor_;
 
     BoolProperty mirrored_;
     OptionProperty<Orientation> orientation_;

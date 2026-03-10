@@ -49,7 +49,6 @@ struct IVW_MODULE_PLOTTING_API AxisData {
     bool mirrored = false;
     vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
     float width = 2.5f;
-    float scale = 1.0f;
     Orientation orientation = Orientation::Horizontal;
 
     std::string caption;
