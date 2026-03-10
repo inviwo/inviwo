@@ -42,6 +42,19 @@
 
 namespace inviwo {
 
+namespace {
+
+std::unique_ptr<Mesh> createLineMesh() {
+    auto verticesBuffer = util::makeBuffer<vec3>({{0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}});
+    auto m = std::make_unique<Mesh>();
+    m->addBuffer(BufferType::PositionAttrib, verticesBuffer);
+    m->addIndices(Mesh::MeshInfo{.dt = DrawType::Lines, .ct = ConnectivityType::None},
+                  util::makeIndexBuffer({0, 1}));
+    return m;
+}
+
+}  // namespace
+
 SharedOpenGLResources* SharedOpenGLResources::instance_ = nullptr;
 
 const MeshGL* SharedOpenGLResources::imagePlaneRect() {
@@ -50,6 +63,14 @@ const MeshGL* SharedOpenGLResources::imagePlaneRect() {
         planeRectMeshGl_ = planeRectMesh_->getRepresentation<MeshGL>();
     }
     return planeRectMeshGl_;
+}
+
+const MeshGL* SharedOpenGLResources::lineMesh() {
+    if (!lineMesh_) {
+        lineMesh_ = createLineMesh();
+        lineMeshGl_ = lineMesh_->getRepresentation<MeshGL>();
+    }
+    return lineMeshGl_;
 }
 
 Shader* SharedOpenGLResources::getTextureShader() {
@@ -103,6 +124,7 @@ Shader* SharedOpenGLResources::getImageCopyShader(size_t colorLayers) {
 
 void SharedOpenGLResources::reset() {
     planeRectMesh_ = nullptr;
+    lineMesh_ = nullptr;
     textureShader_ = nullptr;
     noiseShader_ = nullptr;
     imgCopyShaders_.clear();

@@ -304,6 +304,7 @@ void ParallelCoordinates::adjustMargins() {
         for (auto& axis : axes_) {
             if (axis.pcp->isChecked()) {
                 const auto ap = axisPos(axis.pcp->columnId());
+                axis.pcp->update(axis.axisRender->getData());
                 const auto axisBRect = axis.axisRender->boundingRect(ap.first, ap.second);
                 bRect.first = glm::min(bRect.first, axisBRect.first);
                 bRect.second = glm::max(bRect.second, axisBRect.second);
@@ -325,7 +326,7 @@ void ParallelCoordinates::adjustMargins() {
 ParallelCoordinates::~ParallelCoordinates() = default;
 
 void ParallelCoordinates::process() {
-    utilgl::ClearColor clearColor(vec4(0.0f));
+    const utilgl::ClearColor clearColor{vec4{0.0}};
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     if (axes_.empty()) {

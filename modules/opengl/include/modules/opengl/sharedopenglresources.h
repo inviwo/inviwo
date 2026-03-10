@@ -49,6 +49,7 @@ public:
     virtual ~SharedOpenGLResources() = default;
 
     const MeshGL* imagePlaneRect();
+    const MeshGL* lineMesh();
 
     Shader* getTextureShader();
     Shader* getNoiseShader();
@@ -59,6 +60,9 @@ public:
 private:
     std::unique_ptr<Mesh> planeRectMesh_;
     const MeshGL* planeRectMeshGl_ = nullptr;
+
+    std::unique_ptr<Mesh> lineMesh_;
+    const MeshGL* lineMeshGl_ = nullptr;
 
     std::unique_ptr<Shader> textureShader_;
     std::unique_ptr<Shader> noiseShader_;

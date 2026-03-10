@@ -34,6 +34,7 @@
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/datastructures/camera/plotcamera.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
 #include <modules/fontrendering/datastructures/fontdata.h>
 #include <modules/fontrendering/datastructures/texatlasentry.h>
@@ -50,6 +51,7 @@
 #include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/sharedopenglresources.h>
 #include <modules/plotting/utils/axisutils.h>
 
 #include <algorithm>
@@ -74,112 +76,106 @@ namespace plot {
 
 namespace detail {
 
-AxisMeshes::AxisMeshes() = default;
+TickMesh::TickMesh() = default;
 
-Mesh* AxisMeshes::getAxis(const AxisData& data, const vec3& start, const vec3& end, size_t pickId) {
-    startPos_.check(*this, start);
-    endPos_.check(*this, end);
-    color_.check(*this, data.color);
-    pickId_.check(*this, pickId);
+Mesh* TickMesh::get(const std::vector<double>& positions, const dvec2& range,
+                    TickData::Style style) {
+    if (style == TickData::Style::None || positions.empty()) return nullptr;
 
-    if (!axisMesh_) {
-        axisMesh_ = plot::generateAxisMesh3D(startPos_.get(), endPos_.get(), color_, pickId_);
+    range_.check(*this, range);
+    style_.check(*this, style);
+    positions_.check(*this, positions);
+    if (!mesh_) {
+        mesh_ = generateTicksMesh(positions_.get(), range_.get(), style_.get());
     }
-    return axisMesh_.get();
-}
-
-Mesh* AxisMeshes::getMajor(const AxisData& data, const vec3& start, const vec3& end,
-                           const vec3& tickDirection) {
-    startPos_.check(*this, start);
-    endPos_.check(*this, end);
-    range_.check(*this, data.range);
-    flip_.check(*this, data.mirrored);
-    tickDirection_.check(*this, tickDirection);
-    scalingFactor_.check(*this, data.scale);
-    major_.check(*this, data.major);
-    majorPositions_.check(*this, data.majorPositions);
-    if (!majorMesh_) {
-        majorMesh_ =
-            generateTicksMesh(majorPositions_.get(), range_.get(), startPos_.get(), endPos_.get(),
-                              tickDirection_.get(), major_.get().length * scalingFactor_.get(),
-                              major_.get().style, major_.get().color, flip_.get());
-    }
-    return majorMesh_.get();
-}
-
-Mesh* AxisMeshes::getMinor(const AxisData& data, const vec3& start, const vec3& end,
-                           const vec3& tickDirection) {
-    startPos_.check(*this, start);
-    endPos_.check(*this, end);
-    range_.check(*this, data.range);
-    flip_.check(*this, data.mirrored);
-    major_.check(*this, data.major);
-    tickDirection_.check(*this, tickDirection);
-    scalingFactor_.check(*this, data.scale);
-    minor_.check(*this, data.minor);
-    minorPositions_.check(*this, data.minorPositions);
-    if (!minorMesh_) {
-        minorMesh_ =
-            generateTicksMesh(minorPositions_.get(), range_.get(), startPos_.get(), endPos_.get(),
-                              tickDirection_.get(), minor_.get().length * scalingFactor_.get(),
-                              minor_.get().style, minor_.get().color, flip_.get());
-    }
-    return minorMesh_.get();
+    return mesh_.get();
 }
 
 }  // namespace detail
 
-std::vector<std::pair<ShaderType, std::string>> AxisRendererBase::shaderItems_ = {
-    {ShaderType::Vertex, "linerenderer.vert"},
-    {ShaderType::Geometry, "linerenderer.geom"},
-    {ShaderType::Fragment, "linerenderer.frag"}};
+AxisRendererBase::AxisRendererBase(AxisData data) : data_(std::move(data)) {}
 
-std::vector<MeshShaderCache::Requirement> AxisRendererBase::shaderRequirements_ = {
-    {BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
-    {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
-    {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"}};
-
-AxisRendererBase::AxisRendererBase(AxisData data)
-    : data_(std::move(data)), shaders_{getShaders()} {}
-
-std::shared_ptr<MeshShaderCache> AxisRendererBase::getShaders() {
-    static std::weak_ptr<MeshShaderCache> cache_;
+std::shared_ptr<Shader> AxisRendererBase::shaderCache() {
+    static std::weak_ptr<Shader> cache_;
 
     if (auto cache = cache_.lock()) {
         return cache;
     } else {
-        cache = std::make_shared<MeshShaderCache>(
-            AxisRendererBase::shaderItems_, AxisRendererBase::shaderRequirements_,
-            [&](Shader& shader) -> void {
-                shader.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "0");
-                shader.build();
-            });
+        cache = std::make_shared<Shader>("linerenderer.vert", "linerenderer.geom",
+                                         "linerenderer.frag", Shader::Build::No);
+
+        cache->getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "0");
+        cache->getVertexShaderObject()->clearInDeclarations();
+        cache->getVertexShaderObject()->addInDeclaration(
+            "in_Position", static_cast<int>(BufferType::PositionAttrib), "vec3");
+        cache->build();
         cache_ = cache;
         return cache;
     }
 }
+Shader& AxisRendererBase::getShader() {
+    if (!shader_) {
+        shader_ = shaderCache();
+    }
+    return *shader_;
+}
+
+namespace {
+
+glm::mat4 makeLineTransform(const glm::vec3& start, const glm::vec3& stop) {
+    glm::vec3 d = stop - start;
+    float len = glm::length(d);
+    glm::vec3 dir = d / len;
+
+    return glm::translate(glm::mat4(1.0f), start) *
+           glm::mat4_cast(glm::rotation(glm::vec3(1, 0, 0), dir)) *
+           glm::scale(glm::mat4(1.0f), glm::vec3(len, 1, 1));
+}
+
+glm::mat4 makeTickTransform(const glm::vec3& start, const glm::vec3& stop, const glm::vec3& dir) {
+    glm::vec3 X = stop - start;
+    glm::vec3 Y = dir;
+    glm::vec3 Z = glm::cross(glm::normalize(X), Y);
+
+    glm::mat4 M(1.0f);
+    M[0] = glm::vec4(X, 0.0f);
+    M[1] = glm::vec4(Y, 0.0f);
+    M[2] = glm::vec4(Z, 0.0f);
+    M[3] = glm::vec4(start, 1.0f);
+
+    return M;
+}
+struct Transform : public SpatialEntity {
+    Transform(const mat4& worldMatrix) : SpatialEntity(mat4{1.0f}, worldMatrix) {}
+    virtual SpatialEntity* clone() const override { return new Transform(*this); }
+    virtual const Axis* getAxis(size_t) const override { return nullptr; }
+};
+
+}  // namespace
+
 void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3& end,
                                   const vec3& tickDir, const size2_t& outputDims,
                                   bool antialiasing) {
-    auto* axisMesh = meshes_.getAxis(data_, start, end, axisPickingId_);
-    if (!axisMesh) return;
 
-    auto& lineShader = shaders_->getShader(*axisMesh);
+    auto& lineShader = getShader();
     lineShader.activate();
     lineShader.setUniform("screenDim", vec2(outputDims));
+    lineShader.setUniform("defaultColor", data_.color);
+    lineShader.setUniform("defaultPickID", (axisPickingId_ == std::numeric_limits<size_t>::max()
+                                                ? 0u
+                                                : static_cast<unsigned int>(axisPickingId_)));
     if (camera) {
         utilgl::setShaderUniforms(lineShader, *camera, "camera");
     } else {
-        const auto m = mat4(1.0f);
-        lineShader.setUniform("camera.worldToView", m);
-        lineShader.setUniform("camera.viewToWorld", m);
-        lineShader.setUniform("camera.worldToClip", m);
-        lineShader.setUniform("camera.viewToClip", m);
-        lineShader.setUniform("camera.clipToView", m);
-        lineShader.setUniform("camera.clipToWorld", m);
-        lineShader.setUniform("camera.position", vec3(0.0f));
-        lineShader.setUniform("camera.nearPlane", 0.0f);
-        lineShader.setUniform("camera.farPlane", 1.0f);
+        const auto dim = vec2{outputDims};
+        const PlotCamera cam{vec3{dim / 2.0f, 1.0f},
+                             vec3{dim / 2.0f, 0.0f},
+                             vec3(0.0f, 1.0f, 0.0f),
+                             0.001f,
+                             100.0f,
+                             dim.x / dim.y,
+                             dim};
+        utilgl::setShaderUniforms(lineShader, cam, "camera");
     }
 
     // returns thickness of antialiased edge based on the global antialiasing flag
@@ -192,30 +188,29 @@ void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3&
         }
     };
 
-    // compute matrix to transform meshes from screen coords to clip space
-    const auto m = !camera ? mat4(vec4(2.0f / outputDims.x, 0.0f, 0.0f, 0.0f),
-                                  vec4(0.0f, 2.0f / outputDims.y, 0.0f, 0.0f),
-                                  vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(-1.0f, -1.0f, 0.0f, 1.0f))
-                           : mat4{1};
-
-    auto drawMesh = [&](Mesh* mesh, float lineWidth, bool caps) {
-        if (!mesh) return;
-        mesh->setWorldMatrix(m);
-        const auto* meshgl = mesh->getRepresentation<MeshGL>();
+    auto drawMesh = [&](const MeshGL* meshGL, float lineWidth, bool caps,
+                        mat4 transform = mat4(1.0f)) {
         lineShader.setUniform("lineWidth", lineWidth);
-        MeshDrawerGL::DrawObject drawer(meshgl, mesh->getDefaultMeshInfo());
-        utilgl::setShaderUniforms(lineShader, *mesh, "geometry");
+        MeshDrawerGL::DrawObject drawer(meshGL, meshGL->getDefaultMeshInfo());
+        utilgl::setShaderUniforms(lineShader, Transform{transform}, "geometry");
         lineShader.setUniform("antialiasing", antialiasWidth(lineWidth));
         lineShader.setUniform("roundCaps", caps);
         drawer.draw();
     };
 
-    drawMesh(axisMesh, data_.width, false);
-    auto* majorMesh = meshes_.getMajor(data_, start, end, tickDir);
-    drawMesh(majorMesh, data_.major.width, true);
-    auto* minorMesh = meshes_.getMinor(data_, start, end, tickDir);
-    drawMesh(minorMesh, data_.minor.width, true);
-
+    if (data_.width > 0.0f) {
+        const auto* lineMesh = SharedOpenGLResources::getPtr()->lineMesh();
+        drawMesh(lineMesh, data_.width, false, makeLineTransform(start, end));
+    }
+    const auto tick = glm::normalize(tickDir) * data_.scale * (data_.mirrored ? -1.0f : 1.0f);
+    if (auto* majorMesh = majorMesh_.get(data_.majorPositions, data_.range, data_.major.style)) {
+        drawMesh(majorMesh->getRepresentation<MeshGL>(), data_.major.width, true,
+                 makeTickTransform(start, end, tick * data_.major.length));
+    }
+    if (auto* minorMesh = minorMesh_.get(data_.minorPositions, data_.range, data_.minor.style)) {
+        drawMesh(minorMesh->getRepresentation<MeshGL>(), data_.minor.width, true,
+                 makeTickTransform(start, end, tick * data_.minor.length));
+    }
     lineShader.deactivate();
 }
 
@@ -418,8 +413,8 @@ static_assert(!std::is_copy_assignable_v<detail::AxisCaption>);
 static_assert(std::is_nothrow_move_constructible_v<detail::AxisCaption>);
 static_assert(std::is_nothrow_move_assignable_v<detail::AxisCaption>);
 
-static_assert(std::is_nothrow_move_constructible_v<detail::AxisMeshes>);
-static_assert(std::is_nothrow_move_assignable_v<detail::AxisMeshes>);
+static_assert(std::is_nothrow_move_constructible_v<detail::TickMesh>);
+static_assert(std::is_nothrow_move_assignable_v<detail::TickMesh>);
 
 static_assert(std::is_nothrow_move_constructible_v<TextRenderer>);
 static_assert(std::is_nothrow_move_assignable_v<TextRenderer>);

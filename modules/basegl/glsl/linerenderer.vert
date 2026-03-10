@@ -36,12 +36,12 @@ uniform GeometryParameters geometry;
 uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
                                     mat4(1), mat4(1), vec3(0), 0, 1);
 
-uniform bool pickingEnabled = false;
+uniform uint defaultPickID = 0;
 uniform vec4 defaultColor = vec4(1, 1, 1, 1);
 
 struct Config {
     vec3 color;
-    float alpha;    
+    float alpha;
 };
 uniform Config config = Config(vec3(0.7), 1.0);
 
@@ -82,6 +82,6 @@ void main() {
 #if defined(HAS_PICKING)
     vertex.pickID = in_Picking;
 #else 
-    vertex.pickID = 0;
+    vertex.pickID = defaultPickID;
 #endif
 }
