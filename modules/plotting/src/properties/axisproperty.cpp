@@ -333,13 +333,13 @@ std::vector<ButtonGroupProperty::Button> AxisProperty::buttons(bool hasOrientati
                                 vec2{0.0f, 1.0f}, false),
         createOrientationButton(":svgicons/axis-horizontal-top.svg",
                                 "Horizontal axis with labels above", Orientation::Horizontal,
-                                vec2{0.0f, -1.0f}, true),
+                                vec2{0.0f, 1.0f}, true),
     }};
 
     if (hasOrientation) {
         btns.push_back(createOrientationButton(":svgicons/axis-vertical-left.svg",
                                                "Vertical axis with labels on the left",
-                                               Orientation::Vertical, vec2{1.0f, 0.0f}, true));
+                                               Orientation::Vertical, vec2{-1.0f, 0.0f}, true));
         btns.push_back(createOrientationButton(":svgicons/axis-vertical-right.svg",
                                                "Vertical axis with labels on the right",
                                                Orientation::Vertical, vec2{-1.0f, 0.0f}, false));
