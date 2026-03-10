@@ -82,9 +82,9 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
     vLayout->setSpacing(utilqt::refSpacePx(this));
     vLayout->setContentsMargins(0, 0, 0, 0);
 
-    auto app = mainWindow->getInviwoApplication();
+    auto* app = mainWindow->getInviwoApplication();
 
-    auto textDoc = new AboutBrowser(this);
+    auto* textDoc = new AboutBrowser(this);
     vLayout->addWidget(textDoc);
     centralWidget->setLayout(vLayout);
     setWidget(centralWidget);
@@ -237,15 +237,15 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
             const auto link = repoLink.contains("github.com")
                                   ? repoLink + "/tree/" + modulesDirs.front().sha
                                   : repoLink;
-            auto d1 = d0.append("div");
-            d1.append("b", repoLink.substr(repoLink.find_last_of('/') + 1));
-            d1.appendText(" ");
-            d1.append("a", repoLink, {{"href", link}});
-            d1.appendText(" ");
-            d1.append("code", modulesDirs.front().sha);
-            d1.appendText(modulesDirs.front().dirty ? " (dirty)" : "");
+            auto mdiv = d0.append("div");
+            mdiv.append("b", repoLink.substr(repoLink.find_last_of('/') + 1));
+            mdiv.appendText(" ");
+            mdiv.append("a", repoLink, {{"href", link}});
+            mdiv.appendText(" ");
+            mdiv.append("code", modulesDirs.front().sha);
+            mdiv.appendText(modulesDirs.front().dirty ? " (dirty)" : "");
 
-            auto dl = d0.append("dl", "",  {{"style", "margin-bottom:10px;"}} );
+            auto list = d0.append("dl", "",  {{"style", "margin-bottom:10px;"}} );
             for (auto modulesDir : modulesDirs) {
                 auto modules = app->getModuleManager().getFactoryObjects() |
                                std::views::filter([&](const InviwoModuleFactoryObject& mfo) {
@@ -257,8 +257,8 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
                                std::ranges::to<std::vector>();
                 if (modules.empty()) continue;
                 std::ranges::sort(modules);
-                dl.append("dt", modulesDir.name);
-                dl.append("dd", fmt::format("{}", fmt::join(modules, ", ")));
+                list.append("dt", modulesDir.name);
+                list.append("dd", fmt::format("{}", fmt::join(modules, ", ")));
             }
         }
     } else {

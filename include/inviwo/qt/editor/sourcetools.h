@@ -45,7 +45,7 @@ struct IVW_QTEDITOR_API OpenProcessorFile {
     ModuleManager* manager;
 };
 
-IVW_QTEDITOR_API void openProcessorFile(OpenProcessorFile config);
+IVW_QTEDITOR_API void openProcessorFile(const OpenProcessorFile& config);
 
-}
-}  // namespace inviwo::util
+}  // namespace util
+}  // namespace inviwo

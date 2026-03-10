@@ -86,6 +86,7 @@ bool openUrl(const std::string& url) {
 
 std::optional<std::string> getRepoLink(const std::filesystem::path& path) {
     auto bi = util::getBuildInfo();
+    if (!bi) return std::nullopt;
 
     auto file = path.generic_string();
     for (auto&& modulesDir : bi->modulesDirs) {
@@ -103,7 +104,7 @@ std::optional<std::string> getRepoLink(const std::filesystem::path& path) {
 
 }  // namespace
 
-void openProcessorFile(OpenProcessorFile config) {
+void openProcessorFile(const OpenProcessorFile& config) {
     auto* inviwoModule = findModuleForFile(config.manager, config.cppFile);
 
     const auto candidates =

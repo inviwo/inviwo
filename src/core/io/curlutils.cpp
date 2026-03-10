@@ -534,7 +534,7 @@ bool urlExists(std::string_view url) {
     try {
         curl::curl_easy easy;
 
-        SafeCStr urlCStr{url};
+        const SafeCStr urlCStr{url};
         easy.add<CURLOPT_URL>(urlCStr.c_str());
         easy.add<CURLOPT_NOBODY>(1L);  // HEAD request so body is not downloaded
         easy.add<CURLOPT_FOLLOWLOCATION>(1L);
