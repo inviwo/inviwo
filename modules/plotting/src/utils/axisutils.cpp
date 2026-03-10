@@ -111,7 +111,7 @@ std::vector<std::pair<double, vec2>> getLabelPositions(const std::vector<double>
     }
 
     const auto axisDir = glm::normalize(endPos - startPos);
-    auto normal = vec2(axisDir.y, -axisDir.x) * data.scale;
+    auto normal = vec2(axisDir.y, -axisDir.x);
 
     if (data.mirrored) {
         // reverse normal as labels are supposed to be on the other side of the axis
@@ -156,7 +156,7 @@ std::vector<std::pair<double, vec3>> getLabelPositions3D(const std::vector<doubl
     }
 
     const auto axisDir = glm::normalize(endPos - startPos);
-    auto normal = -glm::normalize(tickDirection) * data.scale;
+    auto normal = -glm::normalize(tickDirection);
 
     if (data.mirrored) {
         // reverse normal as labels are supposed to be on the other side of the axis
@@ -185,7 +185,7 @@ std::vector<std::pair<double, vec3>> getLabelPositions3D(const std::vector<doubl
 vec2 getAxisCaptionPosition(const AxisData& data, const vec2& startPos, const vec2& endPos) {
     const vec2 axisPos = glm::mix(startPos, endPos, data.captionSettings.position);
     const auto axisDir = glm::normalize(endPos - startPos);
-    auto normal = vec2(axisDir.y, -axisDir.x) * data.scale;
+    auto normal = vec2(axisDir.y, -axisDir.x);
 
     if (data.mirrored) {
         // reverse normal as labels are supposed to be on the other side of the axis
@@ -199,7 +199,7 @@ vec2 getAxisCaptionPosition(const AxisData& data, const vec2& startPos, const ve
 vec3 getAxisCaptionPosition3D(const AxisData& data, const vec3& startPos, const vec3& endPos,
                               const vec3& tickDirection) {
     const auto axisPos = glm::mix(startPos, endPos, data.captionSettings.position);
-    auto normal = -glm::normalize(tickDirection) * data.scale;
+    auto normal = -glm::normalize(tickDirection);
 
     if (data.mirrored) {
         // reverse normal as labels are supposed to be on the other side of the axis

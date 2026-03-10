@@ -290,7 +290,6 @@ void AxisProperty::update(AxisData& data) const {
     data.mirrored = mirrored_.get();
     data.color = color_.get();
     data.width = width_.get();
-    data.scale = scalingFactor_.get();
     data.orientation = getOrientation();
     data.caption = captionSettings_.title_.get();
     captionSettings_.update(data.captionSettings);
@@ -304,6 +303,11 @@ void AxisProperty::update(AxisData& data) const {
 
     majorTicks_.update(data.major);
     minorTicks_.update(data.minor);
+
+    data.major.length *= scalingFactor_.get();
+    data.minor.length *= scalingFactor_.get();
+    data.labelSettings.offset.x *= scalingFactor_.get();
+    data.captionSettings.offset.x *= scalingFactor_.get();
 }
 
 std::vector<ButtonGroupProperty::Button> AxisProperty::buttons(bool hasOrientation) {
