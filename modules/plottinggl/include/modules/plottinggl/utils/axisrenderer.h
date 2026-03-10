@@ -124,6 +124,7 @@ private:
 struct IVW_MODULE_PLOTTINGGL_API TickMesh {
     TickMesh();
     Mesh* get(const std::vector<double>& positions, const dvec2& range, TickData::Style style);
+
 private:
     std::unique_ptr<Mesh> mesh_;
 
@@ -218,10 +219,15 @@ struct IVW_MODULE_PLOTTINGGL_API AxisCaption {
     TextTextureObject& getCaption(const std::string& caption, const TextData& settings,
                                   TextRenderer& renderer) {
         caption_.check(*this, caption);
-        settings_.check(*this, settings);
+        fontFace_.check(*this, settings.font.fontFace);
+        fontSize_.check(*this, settings.font.fontSize);
+        lineSpacing_.check(*this, settings.font.lineSpacing);
+        color_.check(*this, settings.color);
         if (!axisCaption_.texture) {
-            renderer.configure(settings_.get().font);
-            axisCaption_ = util::createTextTextureObject(renderer, caption_, settings_.get().color);
+            renderer.setFont(fontFace_.get());
+            renderer.setFontSize(fontSize_.get());
+            renderer.setLineSpacing(lineSpacing_.get());
+            axisCaption_ = util::createTextTextureObject(renderer, caption_.get(), color_.get());
         }
         return axisCaption_;
     }
@@ -230,7 +236,10 @@ private:
     TextTextureObject axisCaption_;
     using MPCap = MemPtr<AxisCaption, TextTextureObject, &AxisCaption::axisCaption_>;
     Guard<std::string, MPCap> caption_;
-    Guard<TextData, MPCap> settings_;
+    Guard<std::filesystem::path, MPCap> fontFace_;
+    Guard<int, MPCap> fontSize_;
+    Guard<float, MPCap> lineSpacing_;
+    Guard<vec4, MPCap> color_;
 
     static_assert(std::is_nothrow_move_assignable_v<Guard<std::string, MPCap>>);
     static_assert(std::is_nothrow_move_assignable_v<Guard<TextData, MPCap>>);
