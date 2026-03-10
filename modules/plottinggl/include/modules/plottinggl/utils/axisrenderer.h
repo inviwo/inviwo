@@ -33,7 +33,6 @@
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/glmvec.h>
-#include <modules/basegl/datastructures/meshshadercache.h>
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/fontrendering/util/textureatlas.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
@@ -122,38 +121,17 @@ private:
     T value_ = T{};
 };
 
-struct IVW_MODULE_PLOTTINGGL_API AxisMeshes {
-    AxisMeshes();
-
-    Mesh* getAxis(const AxisData& settings, const vec3& start, const vec3& end, size_t pickId);
-    Mesh* getMajor(const AxisData& settings, const vec3& start, const vec3& end,
-                   const vec3& tickDirection);
-    Mesh* getMinor(const AxisData& settings, const vec3& start, const vec3& end,
-                   const vec3& tickDirection);
-
+struct IVW_MODULE_PLOTTINGGL_API TickMesh {
+    TickMesh();
+    Mesh* get(const std::vector<double>& positions, const dvec2& range, TickData::Style style);
 private:
-    std::unique_ptr<Mesh> axisMesh_;
-    std::unique_ptr<Mesh> majorMesh_;
-    std::unique_ptr<Mesh> minorMesh_;
+    std::unique_ptr<Mesh> mesh_;
 
-    using MPAxis = MemPtr<AxisMeshes, std::unique_ptr<Mesh>, &AxisMeshes::axisMesh_>;
-    using MPMajor = MemPtr<AxisMeshes, std::unique_ptr<Mesh>, &AxisMeshes::majorMesh_>;
-    using MPMinor = MemPtr<AxisMeshes, std::unique_ptr<Mesh>, &AxisMeshes::minorMesh_>;
+    using MP = MemPtr<TickMesh, std::unique_ptr<Mesh>, &TickMesh::mesh_>;
 
-    Guard<vec3, MPAxis, MPMajor, MPMinor> startPos_;
-    Guard<vec3, MPAxis, MPMajor, MPMinor> endPos_;
-    Guard<vec4, MPAxis> color_;
-    Guard<size_t, MPAxis> pickId_;
-    Guard<dvec2, MPMajor, MPMinor> range_;
-    Guard<bool, MPMajor, MPMinor> flip_;
-    Guard<vec3, MPMajor, MPMinor> tickDirection_;
-    Guard<float, MPMajor, MPMinor> scalingFactor_;
-
-    Guard<TickData, MPMajor> major_;
-    Guard<std::vector<double>, MPMajor> majorPositions_;
-
-    Guard<TickData, MPMinor> minor_;
-    Guard<std::vector<double>, MPMinor> minorPositions_;
+    Guard<dvec2, MP> range_;
+    Guard<TickData::Style, MP> style_;
+    Guard<std::vector<double>, MP> positions_;
 };
 
 template <typename P>
@@ -290,15 +268,15 @@ protected:
 
     size_t axisPickingId_ = std::numeric_limits<size_t>::max();  // max == unused
 
-    detail::AxisMeshes meshes_;
+    detail::TickMesh majorMesh_;
+    detail::TickMesh minorMesh_;
     detail::AxisCaption caption_;
 
-    static std::shared_ptr<MeshShaderCache> getShaders();
-    std::shared_ptr<MeshShaderCache> shaders_;
+    Shader& getShader();
 
 private:
-    static std::vector<std::pair<ShaderType, std::string>> shaderItems_;
-    static std::vector<MeshShaderCache::Requirement> shaderRequirements_;
+    static std::shared_ptr<Shader> shaderCache();
+    std::shared_ptr<Shader> shader_;
 };
 
 /**

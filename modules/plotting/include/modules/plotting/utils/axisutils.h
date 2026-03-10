@@ -51,7 +51,7 @@ namespace plot {
  * No picking buffer will be generated if pickingId = std::numeric_limits<size_t>::max()
  */
 IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateAxisMesh3D(
-    const vec3& startPos, const vec3& endPos, const vec4& color,
+    const vec3& startPos, const vec3& endPos,
     const size_t& pickingId = std::numeric_limits<size_t>::max());
 
 IVW_MODULE_PLOTTING_API std::vector<std::pair<double, vec2>> getLabelPositions(
@@ -77,22 +77,13 @@ IVW_MODULE_PLOTTING_API std::pair<vec2, vec2> tickBoundingRect(
  *
  * @param tickMarks positions of tick marks in same coordinate system as the axis range
  * @param axisRange min/max values of the axis
- * @param startPos  start position of axis (spatial coordinates)
- * @param endPos    end position of axis  (spatial coordinates)
- * @param tickDirection   direction of ticks pointing outwards (spatial coordinates)
- * @param tickLength length of the ticks
  * @param style     tick style (none, inside, outside, both)
- * @param color     tick color
- * @param flip      if true, the orientation of ticks is flipped (only affects inside/outside
- *                  ticks). This is, e.g., used for axis at the top (default tick outside
- *                  location is bottom/left)
+
  * @return mesh containing of ticks, each tick is represented by two positions and matching
  * colors
  */
 IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateTicksMesh(
-    const std::vector<double>& tickMarks, dvec2 axisRange, const vec3& startPos, const vec3& endPos,
-    const vec3& tickDirection, float tickLength, TickData::Style style, const vec4& color,
-    bool flip);
+    const std::vector<double>& tickMarks, dvec2 axisRange, TickData::Style style);
 
 }  // namespace plot
 

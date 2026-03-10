@@ -54,42 +54,17 @@
 
 namespace inviwo::plot {
 
-std::unique_ptr<Mesh> generateAxisMesh3D(const vec3& startPos, const vec3& endPos,
-                                         const vec4& color, const size_t& pickingId) {
-
-    auto verticesBuffer = util::makeBuffer<vec3>({startPos, endPos});
-    auto colorBuffer = util::makeBuffer<vec4>({color, color});
-
-    auto m = std::make_unique<Mesh>();
-    m->addBuffer(BufferType::PositionAttrib, verticesBuffer);
-    m->addBuffer(BufferType::ColorAttrib, colorBuffer);
-
-    if (pickingId != std::numeric_limits<size_t>::max()) {
-        const auto id = static_cast<uint32_t>(pickingId);
-        auto pickingBuffer = util::makeBuffer<uint32_t>({id, id});
-        m->addBuffer(BufferType::PickingAttrib, pickingBuffer);
-    }
-    m->addIndices(Mesh::MeshInfo{.dt = DrawType::Lines, .ct = ConnectivityType::None},
-                  util::makeIndexBuffer({0, 1}));
-
-    return m;
-}
-
-std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickmarks, dvec2 axisRange,
-                                        const vec3& startPos, const vec3& endPos,
-                                        const vec3& tickDirection, float tickLength,
-                                        TickData::Style style, const vec4& color, bool flip) {
-    if (tickmarks.empty()) {
+std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickMarks, dvec2 axisRange,
+                                        TickData::Style style) {
+    if (tickMarks.empty()) {
         return nullptr;
     }
 
     // compute tick positions
-    const auto axisDir = glm::normalize(endPos - startPos);
-    const auto tickDir = glm::normalize(tickDirection) * tickLength;
-
-    const auto screenLength(glm::distance(endPos, startPos));
+    constexpr auto axisDir = vec3{1.0f, 0.0f, 0.0f};
+    constexpr auto tickDir = vec3{0.0f, 1.0f, 0.0f};
     const auto axisLength = axisRange.y - axisRange.x;
-    const vec3 scaling(axisDir * static_cast<float>(screenLength / axisLength));
+    const vec3 scaling(axisDir / axisLength);
 
     vec2 tickOffset;
     switch (style) {
@@ -105,27 +80,19 @@ std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickmarks, dv
             tickOffset = vec2(-1.0f, 1.0f);
             break;
     }
-    if (flip) {
-        tickOffset = -tickOffset;
-    }
 
-    const size_t numTicks = tickmarks.size();
+    const size_t numTicks = tickMarks.size();
     auto posBuffer = std::make_shared<Buffer<vec3>>(numTicks * 2, BufferUsage::Static);
-    auto colBuffer = std::make_shared<Buffer<vec4>>(numTicks * 2, BufferUsage::Static);
     auto& vertices = posBuffer->getEditableRAMRepresentation()->getDataContainer();
-    auto& colors = colBuffer->getEditableRAMRepresentation()->getDataContainer();
-
-    std::ranges::fill(colors, color);
 
     for (size_t i = 0u; i < numTicks; ++i) {
-        const vec3 pos(startPos + scaling * static_cast<float>(tickmarks[i] - axisRange.x));
+        const vec3 pos(scaling * static_cast<float>(tickMarks[i] - axisRange.x));
         vertices[2 * i] = pos + tickDir * tickOffset.x;
         vertices[2 * i + 1] = pos + tickDir * tickOffset.y;
     }
 
     auto mesh = std::make_unique<Mesh>(DrawType::Lines, ConnectivityType::None);
     mesh->addBuffer(BufferType::PositionAttrib, posBuffer);
-    mesh->addBuffer(BufferType::ColorAttrib, colBuffer);
 
     std::vector<uint32_t> indices(numTicks * 2);
     std::iota(indices.begin(), indices.end(), 0);
