@@ -181,6 +181,7 @@ CacheBase::CacheBase()
 }
 
 void CacheBase::setNetwork(ProcessorNetwork* network) {
+    Processor::setNetwork(network);
     ProcessorNetworkEvaluationObserver::removeObservations();
     if (network) {
         network->getEvaluator()->addObserver(this);
