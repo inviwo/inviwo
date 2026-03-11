@@ -76,7 +76,7 @@ const std::optional<BuildInfo>& getBuildInfo() {
         return std::nullopt;
     }();
 
-    static const std::optional<BuildInfo> buildInfo =
+    static const std::optional<BuildInfo> maybebuildInfo =
         maybeIn.and_then([](const std::filesystem::path& file) -> std::optional<BuildInfo> {
             BuildInfo buildInfo;
 
@@ -108,7 +108,7 @@ const std::optional<BuildInfo>& getBuildInfo() {
             return std::nullopt;
         });
 
-    return buildInfo;
+    return maybebuildInfo;
 }
 
 }  // namespace util
