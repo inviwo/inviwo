@@ -1166,6 +1166,7 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake" ${build_info_script})
 set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<$<BOOL:${IVW_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>/>)
 add_custom_target(inviwo-buildinfo-header ALL
     BYPRODUCTS  ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp
+    COMMAND ${CMAKE_COMMAND} -E cat "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake"
     COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake"
     WORKING_DIRECTORY ${buildinfo_output_dir}
     COMMENT "Generating inviwo build info (buildinfo)"
