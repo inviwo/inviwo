@@ -639,24 +639,27 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     tb(H("Max Time"), util::msToString(maxEvalTime_, true, true));
 #endif
 
-    auto* app = processor_->getNetwork()->getApplication();
-    const std::filesystem::path processorFile{processor_->getProcessorInfo().file};
+    if (auto* net = processor_->getNetwork()) {
+        if (auto* app = net->getApplication()) {
+            const std::filesystem::path processorFile{processor_->getProcessorInfo().file};
 
-    std::filesystem::path best;
-    std::string bestModule;
-    for (auto& m : app->getModuleManager().getInviwoModules()) {
-        const auto relpath = processorFile.lexically_relative(m.getPath());
-        if (!relpath.empty() && !relpath.string().starts_with("..")) {
-            if (best.empty() || relpath.string().length() < best.string().length()) {
-                best = relpath;
-                bestModule = m.getIdentifier();
+            std::filesystem::path best;
+            std::string bestModule;
+            for (auto& m : app->getModuleManager().getInviwoModules()) {
+                const auto relpath = processorFile.lexically_relative(m.getPath());
+                if (!relpath.empty() && !relpath.string().starts_with("..")) {
+                    if (best.empty() || relpath.string().length() < best.string().length()) {
+                        best = relpath;
+                        bestModule = m.getIdentifier();
+                    }
+                }
+            }
+
+            if (!best.empty()) {
+                tb(H("Module"), bestModule);
+                tb(H("File"), best);
             }
         }
-    }
-
-    if (!best.empty()) {
-        tb(H("Module"), bestModule);
-        tb(H("File"), best);
     }
 
     showToolTipHelper(e, utilqt::toLocalQString(doc));
