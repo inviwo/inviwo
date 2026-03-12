@@ -224,9 +224,8 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
 #ifdef IVW_DEBUG
 
     if (!inviwo::OpenCL::isValidImageFormat(inviwo::OpenCL::getPtr()->getContext(), clFormat)) {
-        LogErrorCustom("cl::ImageFormat typeToImageFormat",
-                       "OpenCL device does not support format");
-        ivwAssert(
+        log::error("OpenCL device does not support format");
+        IVW_ASSERT(
             inviwo::OpenCL::isValidImageFormat(inviwo::OpenCL::getPtr()->getContext(), clFormat),
             "cl::ImageFormat typeToImageFormat: OpenCL device does not support format");
     };

@@ -77,7 +77,7 @@ void LayerCLGL2GLConverter::update(std::shared_ptr<const LayerCLGL>,
 std::shared_ptr<LayerCL> LayerCLGL2CLConverter::createFrom(
     std::shared_ptr<const LayerCLGL> src) const {
 #ifdef IVW_DEBUG
-    LogWarn("Performance warning: Use shared CLGL representation instead of CL ");
+    log::warn("Performance warning: Use shared CLGL representation instead of CL ");
 #endif
     auto destination = std::make_shared<LayerCL>(src->getDimensions(), src->getLayerType(),
                                                  src->getDataFormat(), src->getSwizzleMask());
