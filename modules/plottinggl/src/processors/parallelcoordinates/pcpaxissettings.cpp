@@ -293,7 +293,6 @@ void PCPAxisSettings::update(AxisData& data) const {
 
     data.captionSettings.enabled =
         pcp_->captionPosition_.get() != ParallelCoordinates::LabelPosition::None;
-    data.captionSettings.placement = TextData::Placement::Outside;
     data.captionSettings.color = pcp_->captionColor_.get();
     data.captionSettings.position = (pcp_->captionPosition_.get() ==
                                      ParallelCoordinates::LabelPosition::Above) != invertRange.get()
@@ -301,7 +300,7 @@ void PCPAxisSettings::update(AxisData& data) const {
                                         : 0.0f;
     data.captionSettings.offset =
         vec2{0.0f, pcp_->captionOffset_ * (invertRange.get() ? -1.0f : 1.0f)};
-    data.captionSettings.rotation = 0.0f;
+    data.captionSettings.rotation = -90.0f;
 
     pcp_->captionSettings_.update(data.captionSettings.font);
 
@@ -320,11 +319,10 @@ void PCPAxisSettings::update(AxisData& data) const {
     }
 
     data.labelSettings.enabled = pcp_->showLabels_;
-    data.labelSettings.placement = TextData::Placement::Outside;
     data.labelSettings.color = pcp_->labelColor_.get();
     data.labelSettings.position = 0.0f;
     data.labelSettings.offset = vec2(pcp_->labelOffset_, 0.0f);
-    data.labelSettings.rotation = 0.0f;
+    data.labelSettings.rotation = -90.0f;
     pcp_->labelSettings_.update(data.labelSettings.font);
 
     data.major.style = TickData::Style::Both;

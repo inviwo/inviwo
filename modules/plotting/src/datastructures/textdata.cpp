@@ -38,16 +38,4 @@ static_assert(std::is_copy_assignable_v<TextData>);
 static_assert(std::is_nothrow_move_constructible_v<TextData>);
 static_assert(std::is_nothrow_move_assignable_v<TextData>);
 
-TextData::Placement flip(TextData::Placement p) {
-    using enum TextData::Placement;
-    switch (p) {
-        case Outside:
-            return Inside;
-        case Inside:
-            return Outside;
-        default:
-            return p;
-    }
-}
-
 }  // namespace inviwo::plot

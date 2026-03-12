@@ -62,13 +62,11 @@ public:
 
     AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
                  Orientation orientation = Orientation::Horizontal,
-                 bool includeOrientationProperty = true,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
     AxisProperty(std::string_view identifier, std::string_view displayName,
                  Orientation orientation = Orientation::Horizontal,
-                 bool includeOrientationProperty = true,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
@@ -80,15 +78,14 @@ public:
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
 
+    using BoolCompositeProperty::set;
+
     /**
-     * @brief aligns and centers caption and labels according to the current axis orientation and
+     * @brief aligns and centers caption and labels according to the orientation and
      * mirror state. For a horizontal axis, both caption and labels are centered horizontally with
      * the vertical anchor position at the top (or bottom when mirrored). In the vertical
      * case, labels are right-aligned (left when mirrored) and vertically centered.
      */
-    void defaultAlignLabels(Orientation orientation);
-
-    using BoolCompositeProperty::set;
     void set(Orientation orientation, bool mirrored);
 
     virtual AxisProperty& setCaption(std::string_view title);
@@ -131,6 +128,8 @@ public:
 
     void update(AxisData& data) const;
 
+    virtual void invokeEvent(Event* event) override;
+
     // general properties
     FloatVec4Property color_;
     FloatProperty width_;
@@ -152,8 +151,6 @@ public:
     MinorTickProperty minorTicks_;
 
 private:
-    std::vector<ButtonGroupProperty::Button> buttons(bool hasOrientation);
-
     ButtonGroupProperty alignment_;
 };
 

@@ -35,6 +35,8 @@
 #include <modules/plotting/algorithm/labeling.h>
 #include <modules/plotting/utils/axisutils.h>
 
+#include <inviwo/core/interaction/events/keyboardevent.h>
+
 #include <algorithm>
 #include <limits>
 
@@ -44,11 +46,52 @@ class MajorTickSettings;
 class MinorTickSettings;
 class PlotTextSettings;
 
+namespace {
+
+std::vector<ButtonGroupProperty::Button> buttons(AxisProperty& axisProperty) {
+
+    const auto align = [&](std::string_view icon, std::string_view text, float p,
+                           int axis) -> ButtonGroupProperty::Button {
+        return {.icon = fmt::format(":svgicons/{}", icon),
+                .tooltip = std::string{text},
+                .action = [ap = &axisProperty, p, axis]() {
+                    ap->labelSettings_.font_.anchorPos_.set(p, axis);
+                    ap->captionSettings_.font_.anchorPos_.set(p, axis);
+                }};
+    };
+
+    return {align("axis-labels-left.svg", "Align labels left", -1.0f, 0),
+            align("axis-labels-center.svg", "Center labels", 0.0f, 0),
+            align("axis-labels-right.svg", "Align labels right", 1.0f, 0),
+            align("axis-labels-top.svg", "Align labels at the top", 1.0f, 1),
+            align("axis-labels-middle.svg", "Align labels in the middle", 0.0f, 1),
+            align("axis-labels-bottom.svg", "Align labels at the bottom", -1.0f, 1),
+            {.name = "A+",
+             .tooltip = "Increase font size (Ctrl+Plus)",
+             .action =
+                 [ap = &axisProperty]() {
+                     ap->captionSettings_.font_.fontSize_.set(
+                         std::min(1000, ap->captionSettings_.font_.fontSize_.get() + 1));
+                     ap->labelSettings_.font_.fontSize_.set(
+                         std::min(1000, ap->labelSettings_.font_.fontSize_.get() + 1));
+                 }},
+            {.name = "A-",
+             .tooltip = "Decrease font size (Ctrl+Minus)",
+             .action = [ap = &axisProperty]() {
+                 ap->captionSettings_.font_.fontSize_.set(
+                     std::max(0, ap->captionSettings_.font_.fontSize_.get() - 1));
+                 ap->labelSettings_.font_.fontSize_.set(
+                     std::max(0, ap->labelSettings_.font_.fontSize_.get() - 1));
+             }}};
+}
+
+}  // namespace
+
 std::string_view AxisProperty::getClassIdentifier() const { return classIdentifier; }
 
 AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
-                           Orientation orientation, bool includeOrientationProperty,
-                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
+                           Orientation orientation, InvalidationLevel invalidationLevel,
+                           PropertySemantics semantics)
     : BoolCompositeProperty{identifier, displayName,       std::move(help),
                             true,       invalidationLevel, std::move(semantics)}
     , color_{"color", "Color",
@@ -100,7 +143,7 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     , alignment_{"alignment", "Alignment",
                  "Set axis orientation, label position and the horizontal "
                  "and vertical alignment of both labels and captions."_help,
-                 buttons(includeOrientationProperty), InvalidationLevel::Valid} {
+                 buttons(*this), InvalidationLevel::Valid} {
 
     range_.setReadOnly(true);
     scalingFactor_.setVisible(false);
@@ -127,22 +170,21 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
                   minorTicks_);
 
     BoolCompositeProperty::setCollapsed(true);
-    defaultAlignLabels(orientation);
+    set(orientation, mirrored_.get());
 
     setCurrentStateAsDefault();
 }
 
 AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName,
-                           Orientation orientation, bool includeOrientationProperty,
-                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
+                           Orientation orientation, InvalidationLevel invalidationLevel,
+                           PropertySemantics semantics)
     : AxisProperty{identifier,
                    displayName,
                    "Different settings for an axis including captions, labels, ticks, "
                    "font settings, line widths, colors, and more."_help,
                    orientation,
-                   includeOrientationProperty,
                    invalidationLevel,
-                   semantics} {}
+                   std::move(semantics)} {}
 
 AxisProperty::AxisProperty(const AxisProperty& rhs)
     : BoolCompositeProperty{rhs}
@@ -167,24 +209,16 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
 
 AxisProperty* AxisProperty::clone() const { return new AxisProperty(*this); }
 
-void AxisProperty::defaultAlignLabels(Orientation orientation) {
-    captionSettings_.offset_.set(orientation == Orientation::Vertical ? 50.0f : 35.0f);
-    captionSettings_.rotation_.set(orientation == Orientation::Vertical ? 90.0f : 0.0f);
-
-    const vec2 anchor = [&]() {
-        if (orientation == Orientation::Vertical) {
-            return vec2{-1.0f, 0.0f};
-        } else {
-            return vec2{0.0f, 1.0f};
-        }
-    }();
-    captionSettings_.font_.anchorPos_.set(anchor);
-    labelSettings_.font_.anchorPos_.set(anchor);
-}
-
 void AxisProperty::set(Orientation orientation, bool mirrored) {
     mirrored_.set(mirrored);
-    defaultAlignLabels(orientation);
+    using enum Orientation;
+    captionSettings_.offset_.set(orientation == Vertical ? 50.0f : 35.0f);
+    captionSettings_.rotation_.set(0.0f);
+    captionSettings_.font_.anchorPos_.set(vec2{0.0f, 1.0f});
+
+    labelSettings_.rotation_.set(orientation == Vertical ? -90.0f : 0.0f);
+    labelSettings_.font_.anchorPos_.set(orientation == Vertical ? vec2{-1.0f, 0.0f}
+                                                                : vec2{0.0f, 1.0f});
 }
 
 AxisProperty& AxisProperty::setCaption(std::string_view title) {
@@ -282,51 +316,31 @@ void AxisProperty::update(AxisData& data) const {
     data.captionSettings.offset.x *= scalingFactor_.get();
 }
 
-std::vector<ButtonGroupProperty::Button> AxisProperty::buttons(bool hasOrientation) {
-    auto createOrientationButton = [&](std::string_view icon, std::string_view text,
-                                       const vec2 anchor,
-                                       bool mirrored) -> ButtonGroupProperty::Button {
-        return {std::nullopt, std::string{icon}, std::string{text}, [this, anchor, mirrored]() {
-                    mirrored_.set(mirrored);
-                    labelSettings_.font_.anchorPos_.set(anchor);
-                    captionSettings_.font_.anchorPos_.set(anchor);
-                }};
-    };
-    auto createAlignmentButton = [&](std::string_view icon, std::string_view text, float p,
-                                     int axis) -> ButtonGroupProperty::Button {
-        return {std::nullopt, std::string{icon}, std::string{text}, [this, p, axis]() {
-                    labelSettings_.font_.anchorPos_.set(p, axis);
-                    captionSettings_.font_.anchorPos_.set(p, axis);
-                }};
-    };
+void AxisProperty::invokeEvent(Event* event) {
+    if (auto* keyEvent = event->getAs<KeyboardEvent>()) {
+        if (keyEvent->key() == IvwKey::Plus && keyEvent->modifiers() == KeyModifier::Control &&
+            keyEvent->state() == KeyState::Release) {
 
-    std::vector<ButtonGroupProperty::Button> btns{{
-        createOrientationButton(":svgicons/axis-horizontal-bottom.svg",
-                                "Horizontal axis with labels below", vec2{0.0f, 1.0f}, false),
-        createOrientationButton(":svgicons/axis-horizontal-top.svg",
-                                "Horizontal axis with labels above", vec2{0.0f, 1.0f}, true),
-    }};
+            captionSettings_.font_.fontSize_.set(
+                std::min(1000, captionSettings_.font_.fontSize_.get() + 1));
+            labelSettings_.font_.fontSize_.set(
+                std::min(1000, labelSettings_.font_.fontSize_.get() + 1));
+        } else if ((keyEvent->key() == IvwKey::Minus || keyEvent->key() == IvwKey::Underscore) &&
+                   keyEvent->modifiers() == KeyModifier::Control &&
+                   keyEvent->state() == KeyState::Release) {
 
-    if (hasOrientation) {
-        btns.push_back(createOrientationButton(":svgicons/axis-vertical-left.svg",
-                                               "Vertical axis with labels on the left",
-                                               vec2{-1.0f, 0.0f}, true));
-        btns.push_back(createOrientationButton(":svgicons/axis-vertical-right.svg",
-                                               "Vertical axis with labels on the right",
-                                               vec2{-1.0f, 0.0f}, false));
+            captionSettings_.font_.fontSize_.set(
+                std::max(0, captionSettings_.font_.fontSize_.get() - 1));
+            labelSettings_.font_.fontSize_.set(
+                std::max(0, labelSettings_.font_.fontSize_.get() - 1));
+        } else if (keyEvent->key() == IvwKey::Num0 &&
+                   keyEvent->modifiers() == KeyModifier::Control &&
+                   keyEvent->state() == KeyState::Release) {
+
+            captionSettings_.font_.fontSize_.resetToDefaultState();
+            labelSettings_.font_.fontSize_.resetToDefaultState();
+        }
     }
-    btns.push_back(
-        createAlignmentButton(":svgicons/axis-labels-left.svg", "Align labels left", -1.0f, 0));
-    btns.push_back(
-        createAlignmentButton(":svgicons/axis-labels-center.svg", "Center labels", 0.0f, 0));
-    btns.push_back(
-        createAlignmentButton(":svgicons/axis-labels-right.svg", "Align labels right", 1.0f, 0));
-    btns.push_back(
-        createAlignmentButton(":svgicons/axis-labels-top.svg", "Align labels at the top", 1.0f, 1));
-    btns.push_back(createAlignmentButton(":svgicons/axis-labels-middle.svg",
-                                         "Align labels in the middle", 0.0f, 1));
-    btns.push_back(createAlignmentButton(":svgicons/axis-labels-bottom.svg",
-                                         "Align labels at the bottom", -1.0f, 1));
-    return btns;
 }
+
 }  // namespace inviwo::plot

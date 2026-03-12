@@ -63,8 +63,7 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.CategoricalAxisProperty"};
     using Orientation = AxisProperty::Orientation;
-    using Placement = TextData::Placement;
-
+    
     CategoricalAxisProperty(std::string_view identifier, std::string_view displayName,
                             std::vector<std::string> categories = {"Category"},
                             Orientation orientation = Orientation::Horizontal,
@@ -89,21 +88,17 @@ public:
 
     void update(AxisData& data) const;
 
-    // general properties
+    void setOrientation(Orientation orientation, bool mirrored);
+
     BoolProperty visible_;
     FloatVec4Property color_;
     FloatProperty width_;
-
     BoolProperty mirrored_;
-    OptionProperty<Orientation> orientation_;
 
-    // caption besides axis
     PlotTextProperty captionSettings_;
-    // labels showing numbers along axis
     PlotTextProperty labelSettings_;
-
     MajorTickProperty majorTicks_;
-    TickData minorTicks_;
+
 
 protected:
     CategoricalAxisProperty(const CategoricalAxisProperty& rhs);

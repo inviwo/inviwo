@@ -159,8 +159,6 @@ struct AxisTickLabels {
         return atlas_;
     }
 
-    const util::TextureAtlas& getCurrentAtlas() const { return atlas_; }
-
     const std::vector<double>& getAxisTicks(const AxisData& settings) {
         majorPositions_.check(*this, settings.majorPositions);
         return majorPositions_;
@@ -178,8 +176,6 @@ struct AxisTickLabels {
         majorPositions_.check(*this, data.majorPositions);
 
         if (positions_.empty()) {
-            getAtlas(data, renderer);
-
             if constexpr (util::extent_v<P> == 3) {
                 plot::getLabelPositions3D(majorPositions_.get(), mirrored_.get(), offset_.get(),
                                           range_.get(), startPos_.get(), endPos_.get(),

@@ -232,36 +232,37 @@ void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, cons
 
 namespace {
 
-// create a transformation matrix that consideres the anchor position _after_ the bbox rotation
-mat4 textTransform(const TextBoundingBox& bbox, vec2 anchor, float angleRadians, bool mirrored,
-                   const vec3& dir) {
-
-    auto mirror2D = [](glm::vec2 dir) -> glm::mat2 {
-        glm::vec2 d = glm::normalize(dir);
-        return glm::mat2(2 * d.x * d.x - 1, 2 * d.x * d.y, 2 * d.x * d.y, 2 * d.y * d.y - 1);
-    };
-    if (mirrored) {
-        anchor = mirror2D(dir) * anchor;
-    }
+mat4 textTransform(const TextBoundingBox& bbox, vec2 anchor, float angleRadians,
+                   const vec3& axisDir) {
 
     const vec2 translation = vec2{bbox.textExtent} * 0.5f * -(anchor);
     const auto textCenter = glm::round(vec2{bbox.textExtent} * 0.5f);
 
     // translate to anchor pos and apply rotation
     return glm::rotate(angleRadians, vec3(0.0f, 0.0f, 1.0f)) *
-           glm::mat4_cast(glm::rotation(glm::vec3(1, 0, 0), dir)) *
+           glm::mat4_cast(glm::rotation(glm::vec3(1, 0, 0), axisDir)) *
            glm::translate(vec3(translation, 0.0f)) *
            glm::translate(vec3(-textCenter + vec2(bbox.glyphsOrigin), 0.f));
+}
+
+vec2 adjustAnchor(vec2 anchor, float angleRadians, bool mirrored, const vec3& axisDir) {
+    if (mirrored) {
+        const auto mirrorY = mat2{vec2{1, 0}, vec2{0, -1}};
+        const auto r1 = mat2{glm::rotate(-angleRadians, vec3(0.0f, 0.0f, 1.0f))};
+        const auto r2 = mat2{glm::rotate(angleRadians, vec3(0.0f, 0.0f, 1.0f))};
+        return r2 * mirrorY * r1 * anchor;
+    }
+    return anchor;
 }
 
 }  // namespace
 
 void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
                               const ivec2& endPos) {
-    // axis caption
 
     const auto axisDir = vec3{glm::normalize(vec2{endPos - startPos}), 0.0f};
 
+    // axis caption
     if (data_.captionSettings.enabled) {
         const auto& cs = data_.captionSettings;
         const auto& capTex = caption_.getCaption(data_.caption, cs, textRenderer_);
@@ -269,8 +270,9 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
         const auto pos = plot::getAxisCaptionPosition(data_, startPos, endPos);
         const auto posi = glm::ivec2{glm::round(pos)};
 
-        const auto m = textTransform(capTex.bbox, cs.font.anchorPos, glm::radians(cs.rotation),
-                                     data_.mirrored, axisDir);
+        const auto anchor =
+            adjustAnchor(cs.font.anchorPos, glm::radians(cs.rotation), data_.mirrored, axisDir);
+        const auto m = textTransform(capTex.bbox, anchor, glm::radians(cs.rotation), axisDir);
         quadRenderer_.render(*capTex.texture, posi, outputDims, m);
     }
 
@@ -286,10 +288,11 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
         std::vector<mat4> transforms;
         const auto& ri = atlas.getRenderInfo();
 
+        const auto anchor =
+            adjustAnchor(ls.font.anchorPos, glm::radians(ls.rotation), data_.mirrored, axisDir);
         std::ranges::transform(
             ri.boundingBoxes, std::back_inserter(transforms), [&](const TextBoundingBox& bb) {
-                return textTransform(bb, ls.font.anchorPos, glm::radians(ls.rotation),
-                                     data_.mirrored, axisDir);
+                return textTransform(bb, anchor, glm::radians(ls.rotation), axisDir);
             });
 
         // render axis labels
@@ -306,11 +309,12 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
 
     if (data_.captionSettings.enabled) {
         const auto& cs = data_.captionSettings;
-        const auto& captex = caption_.getCaption(data_.caption, cs, textRenderer_);
-        const auto texDims(captex.texture->getDimensions());
+        const auto& capTex = caption_.getCaption(data_.caption, cs, textRenderer_);
+        const auto texDims(capTex.texture->getDimensions());
 
-        const auto m = textTransform(captex.bbox, cs.font.anchorPos, glm::radians(cs.rotation),
-                                     data_.mirrored, axisDir);
+        const auto anchor =
+            adjustAnchor(cs.font.anchorPos, glm::radians(cs.rotation), data_.mirrored, axisDir);
+        const auto m = textTransform(capTex.bbox, anchor, glm::radians(cs.rotation), axisDir);
 
         const auto pos = plot::getAxisCaptionPosition(data_, startPos, endPos);
 
@@ -332,16 +336,15 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
 
         const auto& atlas = labels_.getAtlas(data_, textRenderer_);
 
-        const auto anchor = (data_.mirrored ? -1.0f : 1.0f) * ls.font.anchorPos;
-        const auto angle = glm::radians(ls.rotation);
-
         // render axis labels
         const auto& ri = atlas.getRenderInfo();
 
+        const auto anchor =
+            adjustAnchor(ls.font.anchorPos, glm::radians(ls.rotation), data_.mirrored, axisDir);
         for (auto&& item : util::zip(positions, ri.boundingBoxes)) {
             const auto& pos = item.first();
             const auto& bb = item.second();
-            const auto m = textTransform(bb, anchor, angle, data_.mirrored, axisDir);
+            const auto m = textTransform(bb, anchor, glm::radians(ls.rotation), axisDir);
 
             const auto pos1 = vec2{pos} + vec2{m * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
             const auto pos2 = vec2{pos} + vec2{m * vec4{bb.glyphsExtent, 0.0f, 1.0f}};
@@ -373,18 +376,18 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
     // axis caption
     if (data_.captionSettings.enabled) {
         const auto& cs = data_.captionSettings;
-        auto captex = caption_.getCaption(data_.caption, cs, textRenderer_);
+        auto capTex = caption_.getCaption(data_.caption, cs, textRenderer_);
 
         // render axis caption centered at the axis using the offset
-        const vec2 texDims(captex.texture->getDimensions());
+        const vec2 texDims(capTex.texture->getDimensions());
         const auto anchor(cs.font.anchorPos);
 
         const vec3 pos(plot::getAxisCaptionPosition3D(data_, startPos, endPos, tickDirection));
 
         const auto transform = glm::rotate(glm::radians(cs.rotation), vec3(0.0f, 0.0f, 1.0f));
 
-        quadRenderer_.renderToRect3D(*camera, *captex.texture, pos,
-                                     ivec2(captex.texture->getDimensions()), outputDims, anchor,
+        quadRenderer_.renderToRect3D(*camera, *capTex.texture, pos,
+                                     ivec2(capTex.texture->getDimensions()), outputDims, anchor,
                                      transform);
     }
 

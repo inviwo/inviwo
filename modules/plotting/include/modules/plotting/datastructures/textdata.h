@@ -36,19 +36,14 @@
 namespace inviwo::plot {
 
 struct IVW_MODULE_PLOTTING_API TextData {
-    enum class Placement : std::uint8_t { Outside, Inside };
-
     FontData font;
     vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
     vec2 offset = vec2{10.0f, 0.0f};
     float position = 0.5f;
     float rotation = 0.0f;
-    Placement placement = Placement::Outside;
     bool enabled = true;
 
     bool operator==(const TextData&) const = default;
 };
-
-IVW_MODULE_PLOTTING_API TextData::Placement flip(TextData::Placement p);
 
 }  // namespace inviwo::plot

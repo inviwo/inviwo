@@ -49,12 +49,6 @@ PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view
                                    PropertySemantics semantics)
     : BoolCompositeProperty(identifier, displayName, help, checked, invalidationLevel, semantics)
     , title_("title", "Title", "")
-    , placement_{"placement",
-                 "Placement",
-                 "Allows to place the text on either the outside or inside of the axis"_help,
-                 {{"outside", "Outside", TextData::Placement::Outside},
-                  {"inside", "Inside", TextData::Placement::Inside}},
-                 0}
     , color_("color", "Color",
              util::ordinalColor(vec4(vec3(0.0f), 1.0f))
                  .set("Text color"_help)
@@ -72,7 +66,7 @@ PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view
                     .set("Text rotation in degree"_help))
     , font_("font", "Font") {
 
-    addProperties(title_, placement_, color_, offset_, position_, rotation_, font_);
+    addProperties(title_, color_, offset_, position_, rotation_, font_);
     font_.anchorPos_.set(vec2(0.0f, 0.0f));
 }
 
@@ -86,21 +80,19 @@ PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view
 PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)
     : BoolCompositeProperty(rhs)
     , title_(rhs.title_)
-    , placement_(rhs.placement_)
     , color_(rhs.color_)
     , position_(rhs.position_)
     , offset_(rhs.offset_)
     , rotation_(rhs.rotation_)
     , font_(rhs.font_) {
 
-    addProperties(title_, placement_, color_, offset_, position_, rotation_, font_);
+    addProperties(title_, color_, offset_, position_, rotation_, font_);
 }
 
 PlotTextProperty* PlotTextProperty::clone() const { return new PlotTextProperty(*this); }
 
 void PlotTextProperty::update(TextData& data) const {
     data.enabled = isChecked();
-    data.placement = placement_.getSelectedValue();
     data.color = color_.get();
     data.position = position_.get();
     data.offset = vec2(offset_.get(), 0.0f);
