@@ -35,7 +35,7 @@ namespace inviwo {
 namespace util {
 
 const std::optional<BuildInfo>& getBuildInfo() {
-    static const BuildInfo info{
+    static const std::optional<BuildInfo> info = BuildInfo{
         .year = @YEAR@,
         .month = @MONTH@,
         .day = @DAY@,
