@@ -55,12 +55,34 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
                         "Convenience property for updating/overriding multiple axes properties. "
                         "A property change will propagate to all the subproperties of the registered axes."_help,
                         invalidationLevel, std::move(semantics)}
+    , buttons_{"buttons",
+               "Actions",
+               {{.name = "A+",
+                 .tooltip = "Increase font size (Ctrl+Plus)",
+                 .action =
+                     [this]() {
+                         const NetworkLock lock(this);
+                         for (auto* a : axes_) {
+                             a->captionSettings_.font_.fontSize_.set(
+                                 std::min(1000, a->captionSettings_.font_.fontSize_.get() + 1));
+                             a->labelSettings_.font_.fontSize_.set(
+                                 std::min(1000, a->labelSettings_.font_.fontSize_.get() + 1));
+                         }
+                     }},
+                {.name = "A-",
+                 .tooltip = "Decrease font size (Ctrl+Minus)",
+                 .action =
+                     [this]() {
+                         const NetworkLock lock(this);
+                         for (auto* a : axes_) {
+                             a->captionSettings_.font_.fontSize_.set(
+                                 std::max(0, a->captionSettings_.font_.fontSize_.get() - 1));
+                             a->labelSettings_.font_.fontSize_.set(
+                                 std::max(0, a->labelSettings_.font_.fontSize_.get() - 1));
+                         }
+                     }}}}
     , fontFace_{"fontFace", "Font Face", "Font face used for axis labels and captions"_help,
                 font::FontType::Label}
-    , fontSize_{"fontSize", "Font Size",
-                util::ordinalCount(14, 144)
-                    .set("Font size for both axis labels and captions"_help)
-                    .set(PropertySemantics("Fontsize"))}
     , color_{"defaultcolor", "Color",
              util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f)).set("Default color of the axis"_help)}
     , lineWidth_{"lineWidth", "Line Width",
@@ -91,12 +113,6 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
         const NetworkLock lock(this);
         for (auto* a : axes_) {
             a->setFontFace(fontFace_);
-        }
-    });
-    fontSize_.onChange([this]() {
-        const NetworkLock lock(this);
-        for (auto* a : axes_) {
-            a->setFontSize(fontSize_);
         }
     });
     color_.onChange([this]() {
@@ -140,8 +156,8 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
 
 AxisStyleProperty::AxisStyleProperty(const AxisStyleProperty& rhs)
     : CompositeProperty{rhs}
+    , buttons_{rhs.buttons_}
     , fontFace_{rhs.fontFace_}
-    , fontSize_{rhs.fontSize_}
     , color_{rhs.color_}
     , lineWidth_{rhs.lineWidth_}
     , tickLength_{rhs.tickLength_}

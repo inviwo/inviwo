@@ -174,12 +174,9 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
           {"negXposY", "Z -X+Y", false},
       }}
     , axisStyle_{"axisStyle", "Global Axis Style"}
-    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help, AxisProperty::Orientation::Horizontal,
-             false}
-    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help, AxisProperty::Orientation::Horizontal,
-             false}
-    , zAxis_{"zAxis", "Z Axis", "Axis properties for y"_help, AxisProperty::Orientation::Horizontal,
-             false}
+    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help, AxisProperty::Orientation::Horizontal}
+    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help, AxisProperty::Orientation::Horizontal}
+    , zAxis_{"zAxis", "Z Axis", "Axis properties for y"_help, AxisProperty::Orientation::Horizontal}
     , camera_{"camera", "Camera", getBoundingBox}
     , trackball_{&camera_}
     , axisRenderers_{AxisData{}, AxisData{}, AxisData{}}

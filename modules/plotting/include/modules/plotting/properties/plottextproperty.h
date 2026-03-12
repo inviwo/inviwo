@@ -51,7 +51,6 @@ class IVW_MODULE_PLOTTING_API PlotTextProperty : public BoolCompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.PlotTextProperty"};
-    using Placement = TextData::Placement;
 
     PlotTextProperty(std::string_view identifier, std::string_view displayName, Document help,
                      bool checked = false,
@@ -69,7 +68,6 @@ public:
     virtual ~PlotTextProperty() = default;
 
     StringProperty title_;
-    OptionProperty<Placement> placement_;
     FloatVec4Property color_;
     FloatProperty position_;  //!< position along axis [0,1]
     FloatProperty offset_;    //!< offset from axis

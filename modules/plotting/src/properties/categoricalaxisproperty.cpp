@@ -68,19 +68,13 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     , width_{"width", "Width", util::ordinalLength(2.5f, 20.0f).set("Line width of the axis"_help)}
     , mirrored_{"flipped", "Swap Label Position",
                 "Show labels on the opposite side of the axis"_help, false}
-    , orientation_{"orientation",
-                   "Orientation",
-                   "Determines the orientation of the axis (horizontal or vertical)"_help,
-                   {{"horizontal", "Horizontal", Orientation::Horizontal},
-                    {"vertical", "Vertical", Orientation::Vertical}},
-                   orientation == Orientation::Horizontal ? size_t{0} : size_t{1}}
+
     , captionSettings_{"caption", "Caption", "Caption settings"_help, false}
     , labelSettings_{"labels", "Axis Labels",
                      "Settings for axis labels shown next to major ticks"_help, true}
-    , majorTicks_{"majorTicks", "Major Ticks"}
-    , minorTicks_{.style = TickData::Style::None} {
+    , majorTicks_{"majorTicks", "Major Ticks"} {
 
-    addProperties(visible_, color_, width_, mirrored_, orientation_);
+    addProperties(visible_, color_, width_, mirrored_);
 
     // change default fonts, make axis labels slightly less pronounced
     captionSettings_.font_.fontFace_.setSelectedIdentifier(
@@ -101,9 +95,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(
 
     setCollapsed(true);
 
-    orientation_.onChange([this]() { adjustAlignment(); });
-    // update label alignment to match current status
-    adjustAlignment();
+    set(orientation, mirrored_.get());
 
     setCategories(std::move(categories));
 }
@@ -114,19 +106,12 @@ CategoricalAxisProperty::CategoricalAxisProperty(const CategoricalAxisProperty& 
     , color_{rhs.color_}
     , width_{rhs.width_}
     , mirrored_{rhs.mirrored_}
-    , orientation_{rhs.orientation_}
     , captionSettings_{rhs.captionSettings_}
     , labelSettings_{rhs.labelSettings_}
-    , majorTicks_{rhs.majorTicks_}
-    , minorTicks_{rhs.minorTicks_} {
+    , majorTicks_{rhs.majorTicks_} {
 
-    addProperties(visible_, color_, width_, mirrored_, orientation_, captionSettings_,
-                  labelSettings_, majorTicks_);
-
-    orientation_.onChange([this]() { adjustAlignment(); });
-
-    // update label alignment to match current status
-    adjustAlignment();
+    addProperties(visible_, color_, width_, mirrored_, captionSettings_, labelSettings_,
+                  majorTicks_);
 }
 
 CategoricalAxisProperty* CategoricalAxisProperty::clone() const {
@@ -142,18 +127,16 @@ void CategoricalAxisProperty::setCategories(std::span<const std::string> categor
     std::ranges::copy(categories, categories_.begin());
 }
 
-void CategoricalAxisProperty::adjustAlignment() {
+void CategoricalAxisProperty::setOrientation(Orientation orientation, bool mirrored) {
+    mirrored_.set(mirrored);
+    using enum Orientation;
+    captionSettings_.offset_.set(orientation == Vertical ? 50.0f : 35.0f);
+    captionSettings_.rotation_.set(0.0f);
+    captionSettings_.font_.anchorPos_.set(vec2{0.0f, 1.0f});
 
-    auto updateAlignment = [](PlotTextProperty& p, Orientation o) {
-        if (o == Orientation::Horizontal) {
-            p.font_.anchorPos_.set(vec2{0.0f, (p.placement_ == Placement::Outside) ? 1.0f : -1.0f});
-        } else {
-            p.font_.anchorPos_.set(vec2{(p.placement_ == Placement::Outside) ? 1.0f : -1.0f, 0.0f});
-        }
-    };
-
-    updateAlignment(labelSettings_, orientation_.getSelectedValue());
-    updateAlignment(captionSettings_, orientation_.getSelectedValue());
+    labelSettings_.rotation_.set(orientation == Vertical ? -90.0f : 0.0f);
+    labelSettings_.font_.anchorPos_.set(orientation == Vertical ? vec2{-1.0f, 0.0f}
+                                                                : vec2{0.0f, 1.0f});
 }
 
 void CategoricalAxisProperty::update(AxisData& data) const {
@@ -172,7 +155,7 @@ void CategoricalAxisProperty::update(AxisData& data) const {
 
     labelSettings_.update(data.labelSettings);
     majorTicks_.update(data.major);
-    data.minor = minorTicks_;
+    data.minor.style = TickData::Style::None;
 }
 }  // namespace plot
 

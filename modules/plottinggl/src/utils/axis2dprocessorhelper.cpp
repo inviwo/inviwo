@@ -135,10 +135,8 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
           {"posX", "Y +X", false},
       }}
     , axisStyle_{"axisStyle", "Global Axis Style"}
-    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help, AxisProperty::Orientation::Horizontal,
-             false}
-    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help, AxisProperty::Orientation::Horizontal,
-             false}
+    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help, AxisProperty::Orientation::Horizontal}
+    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help, AxisProperty::Orientation::Horizontal}
     , camera_{"camera", "Camera", std::move(getBoundingBox)}
     , trackball_{&camera_}
     , axisRenderers_{AxisData{}, AxisData{}}

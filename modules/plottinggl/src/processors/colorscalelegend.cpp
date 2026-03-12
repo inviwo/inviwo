@@ -435,54 +435,51 @@ std::vector<ButtonGroupProperty::Button> ColorScaleLegend::buttons() {
 }
 
 void ColorScaleLegend::setPlacement(Placement placement) {
+    using enum AxisProperty::Orientation;
 
-    auto setPositions = [&](const vec2& legendPos, const vec2& anchor) {
-        axis_.captionSettings_.font_.anchorPos_.set(anchor);
-        axis_.labelSettings_.font_.anchorPos_.set(anchor);
+    auto setPositions = [&](AxisProperty::Orientation orientation, bool mirror,
+                            const vec2& legendPos, bool inside) {
         position_.set(legendPos);
+        margin_.set(inside ? 10 : 90);
+        orientation_ = orientation;
+
+        axis_.mirrored_.set(mirror);
+        axis_.captionSettings_.font_.anchorPos_.set(vec2{0.0f, 1.0f});
+        axis_.captionSettings_.rotation_.set(0.0f);
+        axis_.captionSettings_.offset_.set(orientation == Vertical ? 50.0f : 35.0f);
+
+        axis_.labelSettings_.rotation_.set(orientation == Vertical ? -90.0f : 0.0f);
+        axis_.labelSettings_.font_.anchorPos_.set(orientation == Vertical ? vec2{-1.0f, 0.0f}
+                                                                          : vec2{0.0f, 1.0f});
     };
 
     switch (placement) {
+        case Placement::OutsideLeft:
+            setPositions(Vertical, true, vec2{0.0f, 0.5f}, false);
+            break;
         case Placement::OutsideTop:
-            axis_.set(AxisProperty::Orientation::Horizontal, true);
-            orientation_ = AxisProperty::Orientation::Horizontal;
-            setPositions(vec2{0.5f, 1.0f}, vec2{0.0f, -1.0f});
+            setPositions(Horizontal, true, vec2{0.5f, 1.0f}, false);
             break;
         case Placement::OutsideRight:
-            axis_.set(AxisProperty::Orientation::Vertical, false);
-            orientation_ = AxisProperty::Orientation::Vertical;
-            setPositions(vec2{1.0f, 0.5f}, vec2{-1.0f, 0.0f});
+            setPositions(Vertical, false, vec2{1.0f, 0.5f}, false);
             break;
         case Placement::OutsideBottom:
-            axis_.set(AxisProperty::Orientation::Horizontal, false);
-            orientation_ = AxisProperty::Orientation::Horizontal;
-            setPositions(vec2{0.5f, 0.0f}, vec2{0.0f, 1.0f});
+            setPositions(Horizontal, false, vec2{0.5f, 0.0f}, false);
             break;
         case Placement::InsideLeft:
-            axis_.set(AxisProperty::Orientation::Vertical, false);
-            orientation_ = AxisProperty::Orientation::Vertical;
-            setPositions(vec2{0.0f, 0.5f}, vec2{-1.0f, 0.0f});
+            setPositions(Vertical, false, vec2{0.0f, 0.5f}, true);
             break;
         case Placement::InsideTop:
-            axis_.set(AxisProperty::Orientation::Horizontal, false);
-            orientation_ = AxisProperty::Orientation::Horizontal;
-            setPositions(vec2{0.5f, 1.0f}, vec2{0.0f, 1.0f});
+            setPositions(Horizontal, false, vec2{0.5f, 1.0f}, true);
             break;
         case Placement::InsideRight:
-            axis_.set(AxisProperty::Orientation::Vertical, true);
-            orientation_ = AxisProperty::Orientation::Vertical;
-            setPositions(vec2{1.0f, 0.5f}, vec2{1.0f, 0.0f});
+            setPositions(Vertical, true, vec2{1.0f, 0.5f}, true);
             break;
         case Placement::InsideBottom:
-            axis_.set(AxisProperty::Orientation::Horizontal, true);
-            orientation_ = AxisProperty::Orientation::Horizontal;
-            setPositions(vec2{0.5f, 0.0f}, vec2{0.0f, -1.0f});
+            setPositions(Horizontal, true, vec2{0.5f, 0.0f}, true);
             break;
-        case Placement::OutsideLeft:
+
         default:
-            axis_.set(AxisProperty::Orientation::Vertical, true);
-            orientation_ = AxisProperty::Orientation::Vertical;
-            setPositions(vec2{0.0f, 0.5f}, vec2{1.0f, 0.0f});
             break;
     }
 }
