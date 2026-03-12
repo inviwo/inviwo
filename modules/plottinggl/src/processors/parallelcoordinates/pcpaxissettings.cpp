@@ -289,7 +289,6 @@ void PCPAxisSettings::update(AxisData& data) const {
     data.mirrored = invertRange.get();
     data.color = getColor();
     data.width = getWidth();
-    data.orientation = AxisData::Orientation::Vertical;
     data.caption = caption_;
 
     data.captionSettings.enabled =

@@ -123,9 +123,9 @@ Shader& AxisRendererBase::getShader() {
 namespace {
 
 glm::mat4 makeLineTransform(const glm::vec3& start, const glm::vec3& stop) {
-    glm::vec3 d = stop - start;
-    float len = glm::length(d);
-    glm::vec3 dir = d / len;
+    const glm::vec3 d = stop - start;
+    const float len = glm::length(d);
+    const glm::vec3 dir = d / len;
 
     return glm::translate(glm::mat4(1.0f), start) *
            glm::mat4_cast(glm::rotation(glm::vec3(1, 0, 0), dir)) *
@@ -133,9 +133,9 @@ glm::mat4 makeLineTransform(const glm::vec3& start, const glm::vec3& stop) {
 }
 
 glm::mat4 makeTickTransform(const glm::vec3& start, const glm::vec3& stop, const glm::vec3& dir) {
-    glm::vec3 X = stop - start;
-    glm::vec3 Y = dir;
-    glm::vec3 Z = glm::cross(glm::normalize(X), Y);
+    const glm::vec3 X = stop - start;
+    const glm::vec3 Y = dir;
+    const glm::vec3 Z = glm::cross(glm::normalize(X), Y);
 
     glm::mat4 M(1.0f);
     M[0] = glm::vec4(X, 0.0f);
@@ -146,7 +146,7 @@ glm::mat4 makeTickTransform(const glm::vec3& start, const glm::vec3& stop, const
     return M;
 }
 struct Transform : public SpatialEntity {
-    Transform(const mat4& worldMatrix) : SpatialEntity(mat4{1.0f}, worldMatrix) {}
+    explicit Transform(const mat4& worldMatrix) : SpatialEntity(mat4{1.0f}, worldMatrix) {}
     virtual SpatialEntity* clone() const override { return new Transform(*this); }
     virtual const Axis* getAxis(size_t) const override { return nullptr; }
 };
@@ -214,15 +214,7 @@ void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3&
     lineShader.deactivate();
 }
 
-AxisRenderer::AxisRenderer(AxisData data)
-    : AxisRendererBase(std::move(data))
-    , labels_{[](std::vector<ivec2>& labelPos, util::TextureAtlas&,
-                 const std::vector<double>& majorPositions, const AxisData& data, const vec3& start,
-                 const vec3& end, const vec3&) {
-        const auto tickmarks = plot::getLabelPositions(majorPositions, data, start, end);
-        labelPos.resize(tickmarks.size());
-        std::ranges::transform(tickmarks, labelPos.begin(), [&](auto&& p) { return p.second; });
-    }} {}
+AxisRenderer::AxisRenderer(AxisData data) : AxisRendererBase(std::move(data)), labels_{} {}
 
 void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos,
                           bool antialiasing) {
@@ -241,21 +233,24 @@ void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, cons
 namespace {
 
 // create a transformation matrix that consideres the anchor position _after_ the bbox rotation
-mat4 textTransform(const TextBoundingBox& bbox, const vec2& anchor, float angleRadians) {
-    const auto textExtentRotated = [&]() {
-        const float c = std::abs(cos(angleRadians));
-        const float s = std::abs(sin(angleRadians));
-        return vec2{
-            bbox.textExtent.x * c + bbox.textExtent.y * s,
-            bbox.textExtent.x * s + bbox.textExtent.y * c,
-        };
-    }();
-    const vec2 translation = textExtentRotated * 0.5f * -(anchor);
+mat4 textTransform(const TextBoundingBox& bbox, vec2 anchor, float angleRadians, bool mirrored,
+                   const vec3& dir) {
+
+    auto mirror2D = [](glm::vec2 dir) -> glm::mat2 {
+        glm::vec2 d = glm::normalize(dir);
+        return glm::mat2(2 * d.x * d.x - 1, 2 * d.x * d.y, 2 * d.x * d.y, 2 * d.y * d.y - 1);
+    };
+    if (mirrored) {
+        anchor = mirror2D(dir) * anchor;
+    }
+
+    const vec2 translation = vec2{bbox.textExtent} * 0.5f * -(anchor);
     const auto textCenter = glm::round(vec2{bbox.textExtent} * 0.5f);
 
     // translate to anchor pos and apply rotation
-    return glm::translate(vec3(translation, 0.0f)) *
-           glm::rotate(angleRadians, vec3(0.0f, 0.0f, 1.0f)) *
+    return glm::rotate(angleRadians, vec3(0.0f, 0.0f, 1.0f)) *
+           glm::mat4_cast(glm::rotation(glm::vec3(1, 0, 0), dir)) *
+           glm::translate(vec3(translation, 0.0f)) *
            glm::translate(vec3(-textCenter + vec2(bbox.glyphsOrigin), 0.f));
 }
 
@@ -264,6 +259,9 @@ mat4 textTransform(const TextBoundingBox& bbox, const vec2& anchor, float angleR
 void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
                               const ivec2& endPos) {
     // axis caption
+
+    const auto axisDir = vec3{glm::normalize(vec2{endPos - startPos}), 0.0f};
+
     if (data_.captionSettings.enabled) {
         const auto& cs = data_.captionSettings;
         const auto& capTex = caption_.getCaption(data_.caption, cs, textRenderer_);
@@ -271,9 +269,8 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
         const auto pos = plot::getAxisCaptionPosition(data_, startPos, endPos);
         const auto posi = glm::ivec2{glm::round(pos)};
 
-        const auto m =
-            textTransform(capTex.bbox, (data_.mirrored ? -1.0f : 1.0f) * cs.font.anchorPos,
-                          glm::radians(cs.rotation));
+        const auto m = textTransform(capTex.bbox, cs.font.anchorPos, glm::radians(cs.rotation),
+                                     data_.mirrored, axisDir);
         quadRenderer_.render(*capTex.texture, posi, outputDims, m);
     }
 
@@ -288,10 +285,11 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
         // translate to anchor pos and apply rotation
         std::vector<mat4> transforms;
         const auto& ri = atlas.getRenderInfo();
+
         std::ranges::transform(
             ri.boundingBoxes, std::back_inserter(transforms), [&](const TextBoundingBox& bb) {
-                return textTransform(bb, (data_.mirrored ? -1.0f : 1.0f) * ls.font.anchorPos,
-                                     glm::radians(ls.rotation));
+                return textTransform(bb, ls.font.anchorPos, glm::radians(ls.rotation),
+                                     data_.mirrored, axisDir);
             });
 
         // render axis labels
@@ -304,14 +302,15 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
     auto bRect =
         tickBoundingRect(data_, data_.majorPositions, data_.minorPositions, startPos, endPos);
 
+    const auto axisDir = vec3{glm::normalize(vec2{endPos - startPos}), 0.0f};
+
     if (data_.captionSettings.enabled) {
         const auto& cs = data_.captionSettings;
         const auto& captex = caption_.getCaption(data_.caption, cs, textRenderer_);
         const auto texDims(captex.texture->getDimensions());
 
-        const auto m =
-            textTransform(captex.bbox, (data_.mirrored ? -1.0f : 1.0f) * cs.font.anchorPos,
-                          glm::radians(cs.rotation));
+        const auto m = textTransform(captex.bbox, cs.font.anchorPos, glm::radians(cs.rotation),
+                                     data_.mirrored, axisDir);
 
         const auto pos = plot::getAxisCaptionPosition(data_, startPos, endPos);
 
@@ -342,7 +341,7 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
         for (auto&& item : util::zip(positions, ri.boundingBoxes)) {
             const auto& pos = item.first();
             const auto& bb = item.second();
-            const auto m = textTransform(bb, anchor, angle);
+            const auto m = textTransform(bb, anchor, angle, data_.mirrored, axisDir);
 
             const auto pos1 = vec2{pos} + vec2{m * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
             const auto pos2 = vec2{pos} + vec2{m * vec4{bb.glyphsExtent, 0.0f, 1.0f}};
@@ -358,16 +357,7 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
     return bRect;
 }
 
-AxisRenderer3D::AxisRenderer3D(AxisData data)
-    : AxisRendererBase(std::move(data))
-    , labels_{[](std::vector<vec3>& labelPos, util::TextureAtlas&,
-                 const std::vector<double>& majorPositions, const AxisData& data, const vec3& start,
-                 const vec3& end, const vec3& tickDirection) {
-        const auto tickmarks =
-            plot::getLabelPositions3D(majorPositions, data, start, end, tickDirection);
-        labelPos.resize(tickmarks.size());
-        std::ranges::transform(tickmarks, labelPos.begin(), [](auto& tick) { return tick.second; });
-    }} {}
+AxisRenderer3D::AxisRenderer3D(AxisData data) : AxisRendererBase(std::move(data)), labels_{} {}
 
 void AxisRenderer3D::render(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                             const vec3& endPos, const vec3& tickDirection, bool antialiasing) {

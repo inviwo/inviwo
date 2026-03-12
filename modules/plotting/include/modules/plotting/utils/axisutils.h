@@ -54,13 +54,15 @@ IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateAxisMesh3D(
     const vec3& startPos, const vec3& endPos,
     const size_t& pickingId = std::numeric_limits<size_t>::max());
 
-IVW_MODULE_PLOTTING_API std::vector<std::pair<double, vec2>> getLabelPositions(
-    const std::vector<double>& ticks, const AxisData& data, const vec2& startPos,
-    const vec2& endPos);
+IVW_MODULE_PLOTTING_API void getLabelPositions2D(const std::vector<double>& ticks, bool mirrored,
+                                                 vec2 offset, dvec2 range, const vec2& startPos,
+                                                 const vec2& endPos, std::vector<ivec2>& dest);
 
-IVW_MODULE_PLOTTING_API std::vector<std::pair<double, vec3>> getLabelPositions3D(
-    const std::vector<double>& positions, const AxisData& data, const vec3& startPos,
-    const vec3& endPos, const vec3& tickDirection);
+IVW_MODULE_PLOTTING_API void getLabelPositions3D(const std::vector<double>& positions,
+                                                 bool mirrored, vec2 offset, dvec2 range,
+                                                 const vec3& startPos, const vec3& endPos,
+                                                 const vec3& tickDirection,
+                                                 std::vector<vec3>& dest);
 
 IVW_MODULE_PLOTTING_API vec2 getAxisCaptionPosition(const AxisData& data, const vec2& startPos,
                                                     const vec2& endPos);

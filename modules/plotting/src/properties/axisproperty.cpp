@@ -126,18 +126,8 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
                   mirrored_, labelingAlgorithm_, captionSettings_, labelSettings_, majorTicks_,
                   minorTicks_);
 
-    if (includeOrientationProperty) {
-        orientation_.emplace(std::string_view{"orientation"}, std::string_view{"Orientation"},
-                             "Determines the orientation of the axis (horizontal or vertical)"_help,
-                             std::vector<OptionPropertyOption<Orientation>>{
-                                 {"horizontal", "Horizontal", Orientation::Horizontal},
-                                 {"vertical", "Vertical", Orientation::Vertical}},
-                             orientation == Orientation::Horizontal ? size_t{0} : size_t{1});
-        insertProperty(7, *orientation_);
-    }
-
     BoolCompositeProperty::setCollapsed(true);
-    defaultAlignLabels();
+    defaultAlignLabels(orientation);
 
     setCurrentStateAsDefault();
 }
@@ -163,7 +153,6 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , customRange_{rhs.customRange_}
     , scalingFactor_{rhs.scalingFactor_}
     , mirrored_{rhs.mirrored_}
-    , orientation_{rhs.orientation_}
     , labelingAlgorithm_{rhs.labelingAlgorithm_}
     , captionSettings_{rhs.captionSettings_}
     , labelSettings_{rhs.labelSettings_}
@@ -174,24 +163,19 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, scalingFactor_,
                   mirrored_, labelingAlgorithm_, captionSettings_, labelSettings_, majorTicks_,
                   minorTicks_);
-
-    // insert orientation property only if rhs owns one, too
-    if (orientation_) {
-        insertProperty(7, *orientation_);
-    }
 }
 
 AxisProperty* AxisProperty::clone() const { return new AxisProperty(*this); }
 
-void AxisProperty::defaultAlignLabels() {
-    captionSettings_.offset_.set(orientation_ == Orientation::Vertical ? 50.0f : 35.0f);
-    captionSettings_.rotation_.set(orientation_ == Orientation::Vertical ? 90.0f : 0.0f);
+void AxisProperty::defaultAlignLabels(Orientation orientation) {
+    captionSettings_.offset_.set(orientation == Orientation::Vertical ? 50.0f : 35.0f);
+    captionSettings_.rotation_.set(orientation == Orientation::Vertical ? 90.0f : 0.0f);
 
     const vec2 anchor = [&]() {
-        if (orientation_ == Orientation::Vertical) {
-            return (mirrored_ ? vec2{1.0f, 0.0f} : vec2{-1.0f, 0.0f});
+        if (orientation == Orientation::Vertical) {
+            return vec2{-1.0f, 0.0f};
         } else {
-            return (mirrored_ ? vec2{0.0f, -1.0f} : vec2{0.0f, 1.0f});
+            return vec2{0.0f, 1.0f};
         }
     }();
     captionSettings_.font_.anchorPos_.set(anchor);
@@ -199,11 +183,8 @@ void AxisProperty::defaultAlignLabels() {
 }
 
 void AxisProperty::set(Orientation orientation, bool mirrored) {
-    if (orientation_) {
-        orientation_->set(orientation);
-    }
     mirrored_.set(mirrored);
-    defaultAlignLabels();
+    defaultAlignLabels(orientation);
 }
 
 AxisProperty& AxisProperty::setCaption(std::string_view title) {
@@ -276,21 +257,12 @@ dvec2 AxisProperty::getRange() const {
     }
 }
 
-auto AxisProperty::getOrientation() const -> Orientation {
-    if (orientation_) {
-        return orientation_->getSelectedValue();
-    } else {
-        return AxisData::Orientation::Horizontal;
-    }
-}
-
 void AxisProperty::update(AxisData& data) const {
     data.range = getRange();
     data.visible = isChecked();
     data.mirrored = mirrored_.get();
     data.color = color_.get();
     data.width = width_.get();
-    data.orientation = getOrientation();
     data.caption = captionSettings_.title_.get();
     captionSettings_.update(data.captionSettings);
 
@@ -311,13 +283,10 @@ void AxisProperty::update(AxisData& data) const {
 }
 
 std::vector<ButtonGroupProperty::Button> AxisProperty::buttons(bool hasOrientation) {
-    auto createOrientationButton = [&](std::string_view icon, std::string_view text, Orientation o,
+    auto createOrientationButton = [&](std::string_view icon, std::string_view text,
                                        const vec2 anchor,
                                        bool mirrored) -> ButtonGroupProperty::Button {
-        return {std::nullopt, std::string{icon}, std::string{text}, [this, o, anchor, mirrored]() {
-                    if (orientation_) {
-                        orientation_->set(o);
-                    }
+        return {std::nullopt, std::string{icon}, std::string{text}, [this, anchor, mirrored]() {
                     mirrored_.set(mirrored);
                     labelSettings_.font_.anchorPos_.set(anchor);
                     captionSettings_.font_.anchorPos_.set(anchor);
@@ -333,20 +302,18 @@ std::vector<ButtonGroupProperty::Button> AxisProperty::buttons(bool hasOrientati
 
     std::vector<ButtonGroupProperty::Button> btns{{
         createOrientationButton(":svgicons/axis-horizontal-bottom.svg",
-                                "Horizontal axis with labels below", Orientation::Horizontal,
-                                vec2{0.0f, 1.0f}, false),
+                                "Horizontal axis with labels below", vec2{0.0f, 1.0f}, false),
         createOrientationButton(":svgicons/axis-horizontal-top.svg",
-                                "Horizontal axis with labels above", Orientation::Horizontal,
-                                vec2{0.0f, 1.0f}, true),
+                                "Horizontal axis with labels above", vec2{0.0f, 1.0f}, true),
     }};
 
     if (hasOrientation) {
         btns.push_back(createOrientationButton(":svgicons/axis-vertical-left.svg",
                                                "Vertical axis with labels on the left",
-                                               Orientation::Vertical, vec2{-1.0f, 0.0f}, true));
+                                               vec2{-1.0f, 0.0f}, true));
         btns.push_back(createOrientationButton(":svgicons/axis-vertical-right.svg",
                                                "Vertical axis with labels on the right",
-                                               Orientation::Vertical, vec2{-1.0f, 0.0f}, false));
+                                               vec2{-1.0f, 0.0f}, false));
     }
     btns.push_back(
         createAlignmentButton(":svgicons/axis-labels-left.svg", "Align labels left", -1.0f, 0));

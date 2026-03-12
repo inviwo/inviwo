@@ -103,83 +103,66 @@ std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickMarks, dv
     return mesh;
 }
 
-std::vector<std::pair<double, vec2>> getLabelPositions(const std::vector<double>& positions,
-                                                       const AxisData& data, const vec2& startPos,
-                                                       const vec2& endPos) {
-    if (positions.empty()) {
-        return {};
-    }
+void getLabelPositions2D(const std::vector<double>& positions, bool mirrored, vec2 offset,
+                         dvec2 range, const vec2& startPos, const vec2& endPos,
+                         std::vector<ivec2>& dest) {
 
     const auto axisDir = glm::normalize(endPos - startPos);
     auto normal = vec2(axisDir.y, -axisDir.x);
 
-    if (data.mirrored) {
+    if (mirrored) {
         // reverse normal as labels are supposed to be on the other side of the axis
         normal = -normal;
     }
 
     // determine position of left-most label
-    const vec2 labelOrigin(startPos + normal * data.labelSettings.offset.x +
-                           axisDir * data.labelSettings.offset.y);
+    const vec2 labelOrigin(startPos + normal * offset.x + axisDir * offset.y);
 
     // position a label below each tick
-    const auto axisRange = data.range;
     const auto screenLength(glm::distance(endPos, startPos));
-    const auto axisLength = axisRange.y - axisRange.x;
-    std::vector<std::pair<double, vec2>> labelPositions(positions.size());
+    const auto axisLength = range.y - range.x;
 
+    dest.resize(positions.size());
     if (axisLength != 0.0) {
         const vec2 scaling(axisDir * static_cast<float>(screenLength / axisLength));
-        std::ranges::transform(
-            positions, labelPositions.begin(), [&](double pos) -> std::pair<double, vec2> {
-                return {pos, labelOrigin + scaling * static_cast<float>(pos - axisRange.x)};
-            });
+        std::ranges::transform(positions, dest.begin(), [&](double pos) {
+            return labelOrigin + scaling * static_cast<float>(pos - range.x);
+        });
 
     } else {
         const auto denom = positions.size() > 1 ? static_cast<float>(positions.size()) - 1.0f : 1.f;
         const vec2 scaling{axisDir * screenLength / denom};
         auto seq = util::make_sequence(size_t{0}, positions.size(), size_t{1});
-        std::ranges::transform(positions, seq, labelPositions.begin(),
-                               [&](double pos, size_t i) -> std::pair<double, vec2> {
-                                   return {pos, labelOrigin + scaling * static_cast<double>(i)};
-                               });
+        std::ranges::transform(positions, seq, dest.begin(), [&](double pos, size_t i) {
+            return ivec2{glm::round(labelOrigin + scaling * static_cast<double>(i))};
+        });
     }
-    return labelPositions;
 }
 
-std::vector<std::pair<double, vec3>> getLabelPositions3D(const std::vector<double>& positions,
-                                                         const AxisData& data, const vec3& startPos,
-                                                         const vec3& endPos,
-                                                         const vec3& tickDirection) {
-    if (positions.empty()) {
-        return {};
-    }
+void getLabelPositions3D(const std::vector<double>& positions, bool mirrored, vec2 offset,
+                         dvec2 range, const vec3& startPos, const vec3& endPos,
+                         const vec3& tickDirection, std::vector<vec3>& dest) {
 
     const auto axisDir = glm::normalize(endPos - startPos);
     auto normal = -glm::normalize(tickDirection);
 
-    if (data.mirrored) {
+    if (mirrored) {
         // reverse normal as labels are supposed to be on the other side of the axis
         normal = -normal;
     }
 
     // determine position of left-most label
-    const vec3 labelOrigin =
-        startPos + normal * data.labelSettings.offset.x + axisDir * data.labelSettings.offset.y;
+    const vec3 labelOrigin = startPos + normal * offset.x + axisDir * offset.y;
 
     // position a label below each tick
-    const auto axisRange = data.range;
     const auto worldLen(glm::distance(endPos, startPos));
-    const auto axisLength = axisRange.y - axisRange.x;
+    const auto axisLength = range.y - range.x;
     const vec3 scaling(axisDir * static_cast<float>(worldLen / axisLength));
 
-    std::vector<std::pair<double, vec3>> labelPositions(positions.size());
-    std::ranges::transform(
-        positions, labelPositions.begin(), [&](double pos) -> std::pair<double, vec3> {
-            return {pos, labelOrigin + scaling * static_cast<float>(pos - axisRange.x)};
-        });
-
-    return labelPositions;
+    dest.resize(positions.size());
+    std::ranges::transform(positions, dest.begin(), [&](double pos) {
+        return labelOrigin + scaling * static_cast<float>(pos - range.x);
+    });
 }
 
 vec2 getAxisCaptionPosition(const AxisData& data, const vec2& startPos, const vec2& endPos) {
