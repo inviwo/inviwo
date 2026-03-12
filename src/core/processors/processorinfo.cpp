@@ -33,24 +33,28 @@
 namespace inviwo {
 
 ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName,
-                             std::string aCategory, CodeState aCodeState, Tags someTags)
-    : classIdentifier{std::move(aClassIdentifier)}
-    , displayName{std::move(aDisplayName)}
-    , category{std::move(aCategory)}
-    , codeState(aCodeState)
-    , tags{std::move(someTags)}
-    , help{}
-    , visible{true} {}
+                             std::string aCategory, CodeState aCodeState, Tags someTags,
+                             std::source_location location)
+    : ProcessorInfo(std::move(aClassIdentifier), std::move(aDisplayName), std::move(aCategory),
+                    aCodeState, std::move(someTags), {}, location.file_name(), true) {}
 
 ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName,
                              std::string aCategory, CodeState aCodeState, Tags someTags,
-                             Document help, bool isVisible)
+                             Document help, bool isVisible, std::source_location location)
+    : ProcessorInfo(std::move(aClassIdentifier), std::move(aDisplayName), std::move(aCategory),
+                    aCodeState, std::move(someTags), std::move(help), location.file_name(),
+                    isVisible) {}
+
+ProcessorInfo::ProcessorInfo(std::string aClassIdentifier, std::string aDisplayName,
+                             std::string aCategory, CodeState aCodeState, Tags someTags,
+                             Document help, std::string file, bool isVisible)
     : classIdentifier{std::move(aClassIdentifier)}
     , displayName{std::move(aDisplayName)}
     , category{std::move(aCategory)}
     , codeState(aCodeState)
     , tags{std::move(someTags)}
     , help{std::move(help)}
+    , file{std::move(file)}
     , visible{isVisible} {}
 
 bool operator==(const ProcessorInfo& a, const ProcessorInfo& b) {

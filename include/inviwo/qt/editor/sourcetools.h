@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,59 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <vector>
-#include <utility>
-#include <string>
-#include <string_view>
-#include <optional>
 #include <filesystem>
-
-#include <fmt/core.h>
 
 namespace inviwo {
 
+class ModuleManager;
+
 namespace util {
 
-/**
- * @struct BuildInfo
- * @brief Provides information on build time and date as well as git hashes
- */
-struct IVW_CORE_API BuildInfo {
-    int year = 0;
-    int month = 0;
-    int day = 0;
-    int hour = 0;
-    int minute = 0;
-    int second = 0;
-
-    struct IVW_CORE_API ModulesDir {
-        std::string name;
-        std::filesystem::path dir;
-        std::string sha;
-        std::string repo;
-        std::filesystem::path repoDir;
-        bool dirty;
-    };
-
-    std::vector<ModulesDir> modulesDirs;
-
-    std::string getDate() const {
-        return fmt::format("{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}", year, month, day, hour,
-                           minute, second);
-    }
+struct IVW_QTEDITOR_API OpenProcessorFile {
+    std::filesystem::path cppFile;
+    bool header = false;
+    bool web = false;
+    ModuleManager* manager;
 };
 
-/**
- * @brief Accesses build information via an INI file or compile-time definitions
- * @return build information
- */
-IVW_CORE_API const std::optional<BuildInfo>& getBuildInfo();
+IVW_QTEDITOR_API void openProcessorFile(const OpenProcessorFile& config);
 
 }  // namespace util
-
 }  // namespace inviwo

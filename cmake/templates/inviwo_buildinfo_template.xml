@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Automatically generated file do not change! -->
+<BuildInfo
+    version="0"
+    year=@YEAR@
+    month=@MONTH@
+    day=@DAY@
+    hour=@HOUR@
+    minute=@MINUTE@
+    second=@SECOND@
+>
+<ModulesDirs>
+@MODULESDIRS@
+</ModulesDirs>
+</BuildInfo>

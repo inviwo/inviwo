@@ -34,17 +34,16 @@ namespace inviwo {
 
 namespace util {
 
-std::optional<BuildInfo> getBuildInfo() {
-    BuildInfo info;
-    
-    info.year = @YEAR@;
-    info.month = @MONTH@; 
-    info.day = @DAY@;
-    info.hour = @HOUR@;
-    info.minute = @MINUTE@;
-    info.second  = @SECOND@;
-
-    info.githashes = @HASHES@;
+const std::optional<BuildInfo>& getBuildInfo() {
+    static const std::optional<BuildInfo> info = BuildInfo{
+        .year = @YEAR@,
+        .month = @MONTH@,
+        .day = @DAY@,
+        .hour = @HOUR@,
+        .minute = @MINUTE@,
+        .second  = @SECOND@,
+        .modulesDirs = @MODULESDIRSCPP@
+    };
 
     return info;
 }

@@ -71,8 +71,8 @@ protected:
 
 }  // namespace
 
-InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
-    : InviwoDockWidget("About", mainwindow, "AboutWidget") {
+InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
+    : InviwoDockWidget("About", mainWindow, "AboutWidget") {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(120, 120)));  // default size
@@ -82,17 +82,17 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     vLayout->setSpacing(utilqt::refSpacePx(this));
     vLayout->setContentsMargins(0, 0, 0, 0);
 
-    auto app = mainwindow->getInviwoApplication();
+    auto* app = mainWindow->getInviwoApplication();
 
-    auto textdoc = new AboutBrowser(this);
-    vLayout->addWidget(textdoc);
+    auto* textDoc = new AboutBrowser(this);
+    vLayout->addWidget(textDoc);
     centralWidget->setLayout(vLayout);
     setWidget(centralWidget);
 
-    textdoc->setReadOnly(true);
-    textdoc->setUndoRedoEnabled(false);
-    textdoc->setAcceptRichText(false);
-    textdoc->setOpenExternalLinks(true);
+    textDoc->setReadOnly(true);
+    textDoc->setUndoRedoEnabled(false);
+    textDoc->setAcceptRichText(false);
+    textDoc->setOpenExternalLinks(true);
 
     const std::chrono::time_point now{std::chrono::system_clock::now()};
     const std::chrono::year_month_day ymd{std::chrono::floor<std::chrono::days>(now)};
@@ -119,14 +119,40 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
     auto makeBody = [](Document& doc) {
         auto html = doc.append("html");
-        html.append("head").append(
-            "style",
-            "a { color: #268BD2; font-weight: normal; text-decoration:none;}\n"
-            "body, table, div, p, dl "
-            "{color: #9d9995; background-color: #323235; font: 400 14px/18px"
-            "Calibra, sans-serif;}\n "
-            "h1, h2, h3, h4 {color: #c8ccd0; margin-bottom:3px;}");
-        return html.append("body", "", {{"style", "margin: 7px;"}});
+        html.append("head").append("style",
+                                   "a {"
+                                   "    color: #268BD2;"
+                                   "    font-weight: normal;"
+                                   "    text-decoration:none;"
+                                   "    margin-top: 0px;"
+                                   "    margin-right: 0px;"
+                                   "    margin-bottom: 0px;"
+                                   "    margin-left: 0px;"
+                                   "}\n"
+                                   "body {"
+                                   "    background-color: #323235;"
+                                   "    margin-top: 7px;"
+                                   "    margin-right: 7px;"
+                                   "    margin-bottom: 7px;"
+                                   "    margin-left: 7px;"
+                                   "}\n "
+                                   "table, div, p, dl, span {"
+                                   "    color: #9d9995;"
+                                   "    background-color: #323235;"
+                                   "    font: 400 14px/18px Calibra, sans-serif;"
+                                   "    margin-top: 3px;"
+                                   "    margin-right: 0px;"
+                                   "    margin-bottom: 3px;"
+                                   "    margin-left: 0px;"
+                                   "}\n "
+                                   "h1, h2, h3, h4 {"
+                                   "    color: #c8ccd0;"
+                                   "    margin-top: 14px;"
+                                   "    margin-right: 0px;"
+                                   "    margin-bottom: 3px;"
+                                   "    margin-left: 0px;"
+                                   "}\n");
+        return html.append("body");
     };
 
     Document doc;
@@ -134,7 +160,8 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     {
         auto table = body.append("table").append("tr");
 
-        table.append("td").append("img", "", makeImg(":/inviwo/inviwo-logo-light-600px.png", 128));
+        table.append("td", "", {{"style", "padding: 7px;"}})
+            .append("img", "", makeImg(":/inviwo/inviwo-logo-light-600px.png", 128));
 
         auto cell = table.append("td");
         cell.append("h1", "Inviwo", {{"style", "color:white;"}});
@@ -150,17 +177,15 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     {
         auto h = body.append("p");
         h.append("h3", "Core Team:");
-        h.append("br");
-        h.append("span",
-                 "Peter Steneteg, Martin Falk, Daniel Jönsson, Rickard Englund, Timo Ropinski, "
-                 "Anke Friederici, Julian Kreiser, Dominik Engel");
+        h.append("div", "Peter Steneteg, Martin Falk");
     }
     {
         auto h = body.append("p");
         h.append("h3", "Contributors:");
-        h.append("br");
 
-        h.append("span",
+        h.append("div",
+                 "Daniel Jönsson, Rickard Englund, Timo Ropinski, "
+                 "Anke Friederici, Julian Kreiser, Dominik Engel, "
                  "Erik Sundén, Sathish Kottravel, Robin Skånberg, Jochen Jankowai, Tino Weinkauf, "
                  "Wiebke Köpp, Alexander Johansson, Andreas Valter, Johan Norén, Emanuel Winblad, "
                  "Hans-Christian Helltegen, Viktor Axelsson");
@@ -168,43 +193,31 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     {
         auto h = body.append("p");
         h.append("h3", "Sponsors:");
-        h.append("br");
-        h.append("span",
+        h.append("div",
                  "This work is supported by Linköping University, Ulm University, and KTH Royal "
                  "Institute of Technology as well as grants from the Swedish e-Science Research "
                  "Centre (SeRC), the Excellence Center at Linköping - Lund in Information "
                  "Technology (ELLIIT), the Swedish Research Council (Vetenskapsrådet), DFG (German "
                  "Research Foundation), and the BMBF.");
         h.append("br");
-        auto p = h.append("p");
-
-        auto liu = p.append("a", "", {{"href", "https://www.liu.se"}});
-        liu.append("img", "", makeImg(":/images/liu-white-crop.svg", 60));
-
-        auto uulm = p.append("a", "", {{"href", "https://www.uni-ulm.de/en/"}});
-        uulm.append("img", "", makeImg(":/images/uulm.svg", 60));
-
-        auto kth = p.append("a", "", {{"href", "https://www.kth.se"}});
-        kth.append("img", "", makeImg(":/images/kth.svg", 60));
-
-        auto serc = p.append("a", "", {{"href", "https://www.e-science.se"}});
-        serc.append("img", "", makeImg(":/images/serc.svg", 60));
-
-        auto elliit = p.append("a", "", {{"href", "https://old.liu.se/elliit?l=en"}});
-        elliit.append("img", "", makeImg(":/images/elliit.svg", 60));
-
-        auto vr = p.append("a", "", {{"href", "https://www.vr.se/english.html"}});
-        vr.append("img", "", makeImg(":images/vr.svg", 60));
-
-        auto dfg = p.append("a", "", {{"href", "https://www.dfg.de/en/index.jsp"}});
-        dfg.append("img", "", makeImg(":images/dfg.svg", 60));
-
-        auto bmbf = p.append("a", "", {{"href", "https://www.bmbf.de"}});
-        bmbf.append("img", "", makeImg(":images/bmbf-white.svg", 60));
+        auto p = h.append("p", "");
+        for (auto&& [link, img] : std::to_array<std::pair<std::string_view, QString>>(
+                 {{"https://www.liu.se", ":/images/liu-white-crop.svg"},
+                  {"https://www.uni-ulm.de/en/", ":/images/uulm.svg"},
+                  {"https://www.kth.se", ":/images/kth.svg"},
+                  {"https://www.e-science.se", ":/images/serc.svg"},
+                  {"https://old.liu.se/elliit?l=en", ":/images/elliit.svg"},
+                  {"https://www.vr.se/english.html", ":images/vr.svg"},
+                  {"https://www.dfg.de/en/index.jsp", ":images/dfg.svg"},
+                  {"https://www.bmbf.de", ":images/bmbf-white.svg"}})) {
+            auto l = p.append("a", "", {{"href", std::string{link}}});
+            l.append("img", "", makeImg(img, 60));
+            p.appendText("&nbsp;&nbsp;  ");
+        }
     }
 
-    auto h1 = body.append("p");
-    h1.append("h3", "Build Info: ");
+    auto h1 = body.append("div");
+    h1.append("h3", "Build Info:");
     utildoc::TableBuilder tb1(h1, P::end());
     tb1(H("Configuration"), build::configuration);
     tb1(H("Generator"), build::generator);
@@ -213,17 +226,44 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
     if (auto bi = util::getBuildInfo()) {
         tb1(H("Date"), bi->getDate());
-        auto h2 = body.append("p");
-        h2.append("h3", "Repos:");
-        utildoc::TableBuilder tb2(h2, P::end());
-        for (auto item : bi->githashes) {
-            tb2(H(item.first), item.second);
+        StringMap<std::vector<util::BuildInfo::ModulesDir>> modulesDirsByRepo;
+        for (auto& modulesDir : bi->modulesDirs) {
+            modulesDirsByRepo[modulesDir.repo].push_back(modulesDir);
         }
-    }
-    {
+        auto d0 = body.append("div");
+        d0.append("h3", "Repos:");
+        for (auto& [repo, modulesDirs] : modulesDirsByRepo) {
+            const auto repoLink = repo.ends_with(".git") ? repo.substr(0, repo.size() - 4) : repo;
+            const auto link = repoLink.contains("github.com")
+                                  ? repoLink + "/tree/" + modulesDirs.front().sha
+                                  : repoLink;
+            auto mdiv = d0.append("div");
+            mdiv.append("b", repoLink.substr(repoLink.find_last_of('/') + 1));
+            mdiv.appendText(" ");
+            mdiv.append("a", repoLink, {{"href", link}});
+            mdiv.appendText(" ");
+            mdiv.append("code", modulesDirs.front().sha);
+            mdiv.appendText(modulesDirs.front().dirty ? " (dirty)" : "");
+
+            auto list = d0.append("dl", "",  {{"style", "margin-bottom:10px;"}} );
+            for (auto modulesDir : modulesDirs) {
+                auto modules = app->getModuleManager().getFactoryObjects() |
+                               std::views::filter([&](const InviwoModuleFactoryObject& mfo) {
+                                   return mfo.srcPath.generic_string().starts_with(
+                                       modulesDir.dir.generic_string());
+                               }) |
+                               std::views::transform(
+                                   [](const InviwoModuleFactoryObject& m) { return m.name; }) |
+                               std::ranges::to<std::vector>();
+                if (modules.empty()) continue;
+                std::ranges::sort(modules);
+                list.append("dt", modulesDir.name);
+                list.append("dd", fmt::format("{}", fmt::join(modules, ", ")));
+            }
+        }
+    } else {
         auto h = body.append("p");
         h.append("h3", "Modules: ");
-        h.append("br");
         std::vector<std::string> names;
         std::ranges::copy(
             app->getModuleManager().getFactoryObjects() |
@@ -232,12 +272,12 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
         std::ranges::sort(names);
 
-        h.append("span", joinString(names, ", "));
+        h.append("div", joinString(names, ", "));
     }
     {
         auto h = body.append("div");
-        h.append("h3", "Qt Version: ");
-        h.append("span", QT_VERSION_STR);
+        h.append("h3", "Qt Version:");
+        h.append("div", QT_VERSION_STR);
     }
     {
         auto h = body.append("p");
@@ -274,9 +314,10 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     }
 
     std::string str = doc;
-    textdoc->setHtml(utilqt::toQString(str));
+    log::info("{}", str);
+    textDoc->setHtml(utilqt::toQString(str));
 
-    auto showLicense = [str, textdoc, app, escape, makeBody](const QUrl& url) {
+    auto showLicense = [str, textDoc, app, escape, makeBody](const QUrl& url) {
         if (url.hasQuery()) {
             QUrlQuery query(url);
             auto moduleName = utilqt::fromQString(query.queryItemValue("module"));
@@ -328,13 +369,13 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
                 li.append("pre", escape(buffer.str()), {{"style", "font: 12px;"}});
             }
-            textdoc->setHtml(utilqt::toQString(doc));
+            textDoc->setHtml(utilqt::toQString(doc));
             return;
         }
-        textdoc->setHtml(utilqt::toQString(str));
+        textDoc->setHtml(utilqt::toQString(str));
     };
 
-    connect(textdoc, &QTextBrowser::anchorClicked, this, showLicense);
+    connect(textDoc, &QTextBrowser::anchorClicked, this, showLicense);
 }
 
 }  // namespace inviwo

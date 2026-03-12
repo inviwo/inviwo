@@ -129,4 +129,6 @@ IVW_CORE_API std::string_view description(ResponseCode rs);
 IVW_CORE_API bool isUrl(const std::filesystem::path& path);
 IVW_CORE_API std::filesystem::path downloadAndCacheIfUrl(const std::filesystem::path& url);
 
+IVW_CORE_API bool urlExists(std::string_view url);
+
 }  // namespace inviwo::net

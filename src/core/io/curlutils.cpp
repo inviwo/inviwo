@@ -32,6 +32,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/formatconversion.h>
+#include <inviwo/core/util/safecstr.h>
 
 #include <curlcpp/curl_easy.h>
 #include <curlcpp/curl_ios.h>
@@ -528,5 +529,21 @@ namespace {
 }  // namespace
 
 bool isUrl(const std::filesystem::path& path) { return isUrlImpl(path.native()); }
+
+bool urlExists(std::string_view url) {
+    try {
+        curl::curl_easy easy;
+
+        const SafeCStr urlCStr{url};
+        easy.add<CURLOPT_URL>(urlCStr.c_str());
+        easy.add<CURLOPT_NOBODY>(1L);  // HEAD request so body is not downloaded
+        easy.add<CURLOPT_FOLLOWLOCATION>(1L);
+        easy.perform();
+        const auto response = net::ResponseCode{easy.get_info<CURLINFO_RESPONSE_CODE>().get()};
+        return response == net::ResponseCode::OK;
+    } catch (const curl::curl_easy_exception&) {
+        return false;
+    }
+}
 
 }  // namespace inviwo::net

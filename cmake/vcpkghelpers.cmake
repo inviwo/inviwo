@@ -29,7 +29,7 @@
 
 # Retrieve the git SHA of the VCPKG installation, once for later use in ivw_vcpkg_install
 if(VCPKG_TOOLCHAIN)
-    ivw_git_get_hash(${Z_VCPKG_ROOT_DIR} ivw_vcpkg_sha)
+    ivw_git_get(${Z_VCPKG_ROOT_DIR} ivw_vcpkg_sha describe --match=NeVeRmAtCh --always --abbrev=20 --dirty)
 endif()
 
 function(ivw_private_vcpkg_install_helper)
