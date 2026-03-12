@@ -113,8 +113,6 @@ struct Guard {
             value_ = value;
         }
     }
-
-    operator const T&() const { return value_; }  // NOLINT(google-explicit-constructor)
     const T& get() const { return value_; }
 
 private:
@@ -137,11 +135,7 @@ private:
 
 template <typename P>
 struct AxisTickLabels {
-    using Updater =
-        std::function<void(std::vector<P>&, util::TextureAtlas&, const std::vector<double>&,
-                           const AxisData&, const vec3&, const vec3&, const vec3&)>;
-
-    explicit AxisTickLabels(Updater updatePos) : updatePos_{updatePos} {}
+    explicit AxisTickLabels() = default;
     AxisTickLabels(const AxisTickLabels&) = delete;
     AxisTickLabels(AxisTickLabels&&) noexcept = default;
     AxisTickLabels& operator=(const AxisTickLabels&) = delete;
@@ -149,12 +143,17 @@ struct AxisTickLabels {
     ~AxisTickLabels() = default;
 
     util::TextureAtlas& getAtlas(const AxisData& settings, TextRenderer& renderer) {
-        labelsSettings_.check(*this, settings.labelSettings);
         labels_.check(*this, settings.labels);
+        fontFace_.check(*this, settings.labelSettings.font.fontFace);
+        fontSize_.check(*this, settings.labelSettings.font.fontSize);
+        lineSpacing_.check(*this, settings.labelSettings.font.lineSpacing);
+        color_.check(*this, settings.labelSettings.color);
 
         if (!validAtlas_) {
-            renderer.configure(labelsSettings_.get().font);
-            atlas_.fillAtlas(renderer, labels_.get(), labelsSettings_.get().color);
+            renderer.setFont(fontFace_.get());
+            renderer.setFontSize(fontSize_.get());
+            renderer.setLineSpacing(lineSpacing_.get());
+            atlas_.fillAtlas(renderer, labels_.get(), color_.get());
             validAtlas_ = true;
         }
         return atlas_;
@@ -167,44 +166,53 @@ struct AxisTickLabels {
         return majorPositions_;
     }
 
-    const std::vector<P>& getLabelPos(const AxisData& settings, const vec3& start, const vec3& end,
+    const std::vector<P>& getLabelPos(const AxisData& data, const vec3& start, const vec3& end,
                                       TextRenderer& renderer, const vec3& tickDirection) {
 
         startPos_.check(*this, start);
         endPos_.check(*this, end);
-        range_.check(*this, settings.range);
-        labelsSettings_.check(*this, settings.labelSettings);
-        major_.check(*this, settings.major);
+        range_.check(*this, data.range);
+        offset_.check(*this, data.labelSettings.offset);
+        mirrored_.check(*this, data.mirrored);
         tickDirection_.check(*this, tickDirection);
-        flipped_.check(*this, settings.mirrored);
-        majorPositions_.check(*this, settings.majorPositions);
+        majorPositions_.check(*this, data.majorPositions);
 
         if (positions_.empty()) {
-            auto& atlas = getAtlas(settings, renderer);
-            updatePos_(positions_, atlas, majorPositions_, settings, startPos_.get(), endPos_.get(),
-                       tickDirection_.get());
+            getAtlas(data, renderer);
+
+            if constexpr (util::extent_v<P> == 3) {
+                plot::getLabelPositions3D(majorPositions_.get(), mirrored_.get(), offset_.get(),
+                                          range_.get(), startPos_.get(), endPos_.get(),
+                                          tickDirection_.get(), positions_);
+            } else {
+                plot::getLabelPositions2D(majorPositions_.get(), mirrored_.get(), offset_.get(),
+                                          range_.get(), startPos_.get(), endPos_.get(), positions_);
+            }
         }
         return positions_;
     }
 
 protected:
-    Updater updatePos_;
     util::TextureAtlas atlas_;
     bool validAtlas_ = false;
     std::vector<P> positions_;
 
     using MPAtlas = MemPtr<AxisTickLabels, bool, &AxisTickLabels::validAtlas_>;
-    using MPLabel = MemPtr<AxisTickLabels, std::vector<P>, &AxisTickLabels::positions_>;
+    using MPPositions = MemPtr<AxisTickLabels, std::vector<P>, &AxisTickLabels::positions_>;
 
-    Guard<vec3, MPLabel> startPos_;
-    Guard<vec3, MPLabel> endPos_;
-    Guard<dvec2, MPLabel> range_;
-    Guard<TextData, MPAtlas, MPLabel> labelsSettings_;
+    Guard<vec3, MPPositions> startPos_;
+    Guard<vec3, MPPositions> endPos_;
+    Guard<dvec2, MPPositions> range_;
+    Guard<vec2, MPPositions> offset_;
+    Guard<bool, MPPositions> mirrored_;
+    Guard<vec3, MPPositions> tickDirection_;
+    Guard<std::vector<double>, MPPositions> majorPositions_;
+
+    Guard<std::filesystem::path, MPAtlas> fontFace_;
+    Guard<int, MPAtlas> fontSize_;
+    Guard<float, MPAtlas> lineSpacing_;
+    Guard<vec4, MPAtlas> color_;
     Guard<std::vector<std::string>, MPAtlas> labels_;
-    Guard<std::vector<double>, MPLabel> majorPositions_;
-    Guard<TickData, MPLabel> major_;
-    Guard<vec3, MPLabel> tickDirection_;
-    Guard<bool, MPLabel> flipped_;
 };
 
 struct IVW_MODULE_PLOTTINGGL_API AxisCaption {

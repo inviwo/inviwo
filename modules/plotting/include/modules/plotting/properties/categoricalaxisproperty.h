@@ -42,6 +42,7 @@
 #include <modules/plotting/datastructures/tickdata.h>
 #include <modules/plotting/properties/plottextproperty.h>
 #include <modules/plotting/properties/tickproperty.h>
+#include <modules/plotting/properties/axisproperty.h>
 
 #include <functional>
 #include <string>
@@ -61,7 +62,7 @@ class IVW_MODULE_PLOTTING_API CategoricalAxisProperty : public CompositeProperty
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.CategoricalAxisProperty"};
-    using Orientation = AxisData::Orientation;
+    using Orientation = AxisProperty::Orientation;
     using Placement = TextData::Placement;
 
     CategoricalAxisProperty(std::string_view identifier, std::string_view displayName,

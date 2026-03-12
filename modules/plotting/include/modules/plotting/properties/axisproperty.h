@@ -58,7 +58,7 @@ class IVW_MODULE_PLOTTING_API AxisProperty : public BoolCompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.AxisProperty"};
-    using Orientation = AxisData::Orientation;
+    enum class Orientation : std::uint8_t { Horizontal, Vertical };
 
     AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
                  Orientation orientation = Orientation::Horizontal,
@@ -86,7 +86,7 @@ public:
      * the vertical anchor position at the top (or bottom when mirrored). In the vertical
      * case, labels are right-aligned (left when mirrored) and vertically centered.
      */
-    void defaultAlignLabels();
+    void defaultAlignLabels(Orientation orientation);
 
     using BoolCompositeProperty::set;
     void set(Orientation orientation, bool mirrored);
@@ -128,7 +128,6 @@ public:
     AxisProperty& setLineWidth(float width);
 
     dvec2 getRange() const;
-    Orientation getOrientation() const;
 
     void update(AxisData& data) const;
 
@@ -141,7 +140,6 @@ public:
     FloatProperty scalingFactor_;
 
     BoolProperty mirrored_;
-    std::optional<OptionProperty<Orientation>> orientation_;
     OptionProperty<LabelingAlgorithm> labelingAlgorithm_;
 
     // caption besides axis

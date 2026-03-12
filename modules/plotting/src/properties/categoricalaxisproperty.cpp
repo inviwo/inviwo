@@ -162,7 +162,6 @@ void CategoricalAxisProperty::update(AxisData& data) const {
     data.mirrored = mirrored_.get();
     data.color = color_.get();
     data.width = width_.get();
-    data.orientation = orientation_.getSelectedValue();
     data.caption = captionSettings_.title_.get();
     captionSettings_.update(data.captionSettings);
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,41 +26,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/core/util/unicodefloatingpoint.h>
 
-#include <inviwo/core/util/glmvec.h>
-#include <modules/plotting/datastructures/tickdata.h>
-#include <modules/plotting/datastructures/textdata.h>
-#include <modules/plotting/algorithm/labeling.h>
+namespace inviwo {
 
-#include <string>
-#include <vector>
-
-namespace inviwo::plot {
-
-struct IVW_MODULE_PLOTTING_API AxisData {
-    dvec2 range = dvec2{0.0, 100.0};
-
-    bool visible = true;
-    bool mirrored = false;
-    vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
-    float width = 2.5f;
-
-    std::string caption;
-    TextData captionSettings;
-
-    std::vector<double> majorPositions;
-    TickData major;
-
-    std::vector<double> minorPositions;
-    TickData minor;
-
-    std::vector<std::string> labels;
-    TextData labelSettings;
-
-    bool operator==(const AxisData&) const = default;
-};
-
-}  // namespace inviwo::plot
+}  // namespace inviwo

@@ -45,7 +45,8 @@ namespace inviwo::plot {
  */
 class IVW_MODULE_PLOTTINGGL_API VolumeAxis : public Processor {
 public:
-    enum class CaptionType : unsigned char { String, Data, Custom };
+    enum class CaptionType : std::uint8_t { String, Data, Custom };
+    enum class LabelScale : std::uint8_t { None, Tens, Thousands };
 
     VolumeAxis();
 
@@ -63,8 +64,10 @@ private:
 
     OptionProperty<CaptionType> captionType_;
     StringProperty customCaption_;
+    OptionProperty<LabelScale> labelScale_;
 
     Axis3DProcessorHelper axisHelper_;
+    ivec3 exps_{1, 1, 1};
 };
 
 }  // namespace inviwo::plot
