@@ -823,12 +823,12 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 option(IVW_CFG_EMBED_BUILDINFO "Embed buildinfo into the binary file instead of using a ini file, will force inviwo-core to recompile every build" OFF)
 if(IVW_CFG_EMBED_BUILDINFO)
-    list(APPEND SOURCE_FILES "${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp")
+    list(APPEND SOURCE_FILES "${CMAKE_CURRENT_BINARY_DIR}/src/util/buildinfocpp.cpp")
     ivw_group("Source Files" BASE "${CMAKE_CURRENT_BINARY_DIR}/src/"
-        "${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp")
+        "${CMAKE_CURRENT_BINARY_DIR}/src/util/buildinfocpp.cpp")
 else()
-    list(APPEND SOURCE_FILES util/buildinfoini.cpp)
-    ivw_group("Source Files" util/buildinfoini.cpp)
+    list(APPEND SOURCE_FILES util/buildinfoxml.cpp)
+    ivw_group("Source Files" util/buildinfoxml.cpp)
 endif()
 
 file(TO_CMAKE_PATH "${Python3_STDLIB}" Python3_STDLIB)
@@ -1155,8 +1155,6 @@ set(build_info_script_list
     "include(${IVW_ROOT_DIR}/cmake/globalutils.cmake)"
     "ivw_generate_build_info(${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.cpp"
     "    ${IVW_CMAKE_TEMPLATES}/inviwo_buildinfo_template.xml"
-    "    ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp"
-    "    inviwo_buildinfo.xml"
     "    ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})"
 )
 string(REPLACE ";" "\n" build_info_script "${build_info_script_list}")
@@ -1165,10 +1163,12 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake" ${build_info_script})
 # Custom target for updating the build information (this target is always out-of-date)
 set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<$<BOOL:${IVW_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>/>)
 add_custom_target(inviwo-buildinfo-header ALL
-    BYPRODUCTS  ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp
-    COMMAND ${CMAKE_COMMAND} -E cat "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake"
-    COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake"
-    WORKING_DIRECTORY ${buildinfo_output_dir}
+    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp
+    COMMAND ${CMAKE_COMMAND}
+        -DXML_DEST_PATH=\"${buildinfo_output_dir}/inviwo_buildinfo.xml\"
+        -DCPP_DEST_PATH=\"${CMAKE_CURRENT_BINARY_DIR}/src/util/buildinfocpp.cpp\"
+        -P "${CMAKE_CURRENT_BINARY_DIR}/build_info.cmake"
+
     COMMENT "Generating inviwo build info (buildinfo)"
     VERBATIM
 )

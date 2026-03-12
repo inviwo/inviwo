@@ -788,7 +788,7 @@ endfunction()
 # A helper funtion to generate a header file with inviwo build 
 # information, like the build date and the commit hash
 # ivw_generate_build_info(<template> <outputfile> <module dir1> <module dir2> ...
-function(ivw_generate_build_info source_template xml_template buildinfo_sourcefile buildinfo_inifile)
+function(ivw_generate_build_info cpp_template xml_template)
     set(xmlList "")
     set(cppList "")
     foreach(dir ${ARGN})
@@ -803,9 +803,11 @@ function(ivw_generate_build_info source_template xml_template buildinfo_sourcefi
         string(SUBSTRING ${hash} 0 40 sha)
         string(SUBSTRING ${hash} 40 -1 dirty)
         if(dirty STREQUAL "-dirty")
-            set(dirty "1")
+            set(dirtyxml "1")
+            set(dirtycpp "true")
         else()
-            set(dirty "0")
+            set(dirtyxml "0")
+            set(dirtycpp "false")
         endif()
 
         list(APPEND xmlList
@@ -815,7 +817,7 @@ function(ivw_generate_build_info source_template xml_template buildinfo_sourcefi
             "    sha=\"${sha}\""
             "    repo=\"${repo}\""
             "    repoDir=\"${toplevel}\""
-            "    dirty=\"${dirty}\">"
+            "    dirty=\"${dirtyxml}\">"
             "</ModulesDir>"
         )
 
@@ -826,7 +828,7 @@ function(ivw_generate_build_info source_template xml_template buildinfo_sourcefi
             "            .sha=\"${sha}\","
             "            .repo=\"${repo}\","
             "            .repoDir=\"${toplevel}\","
-            "            .dirty=\"${dirty}\""
+            "            .dirty=${dirtycpp}"
             "        }"
         )
         string(REPLACE ";" "\n" cppItem "${cppListItem}")
@@ -837,8 +839,7 @@ function(ivw_generate_build_info source_template xml_template buildinfo_sourcefi
     set(MODULESDIRS "${xml}")
 
     string(REPLACE ";" ",\n" cpp "${cppList}")
-    set(HASHES "{\n${cpp}\n    }")
-    set(NHASHES "${index}")
+    set(MODULESDIRSCPP "{\n${cpp}\n    }")
 
     string(TIMESTAMP TMPYEAR "%Y")
     string(REGEX REPLACE "0*([0-9]+)" "\\1" YEAR ${TMPYEAR})
@@ -852,9 +853,21 @@ function(ivw_generate_build_info source_template xml_template buildinfo_sourcefi
     string(REGEX REPLACE "0*([0-9]+)" "\\1" MINUTE ${TMPMINUTE})
     string(TIMESTAMP TMPSECOND "%S")
     string(REGEX REPLACE "0*([0-9]+)" "\\1" SECOND ${TMPSECOND})
-    configure_file("${source_template}" "${buildinfo_sourcefile}" @ONLY)
 
-    configure_file("${xml_template}" "${buildinfo_inifile}" @ONLY)
+    if(XML_DEST_PATH)
+    string(REPLACE "\"" "" xml_dest_path ${XML_DEST_PATH})
+    else()
+    set(xml_dest_path "inviwo_buildinfo.xml")
+    endif()
+
+    if(CPP_DEST_PATH)
+    string(REPLACE "\"" "" cpp_dest_path ${CPP_DEST_PATH})
+    else()
+    set(cpp_dest_path "inviwo_buildinfo.cpp")
+    endif()
+
+    configure_file("${cpp_template}" "${cpp_dest_path}" @ONLY)
+    configure_file("${xml_template}" "${xml_dest_path}" @ONLY)
 endfunction()
 
 # Get target properties recursively by following all INTERFACE_LINK_LIBRARIES

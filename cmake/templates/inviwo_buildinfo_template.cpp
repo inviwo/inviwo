@@ -42,7 +42,7 @@ const std::optional<BuildInfo>& getBuildInfo() {
         .hour = @HOUR@,
         .minute = @MINUTE@,
         .second  = @SECOND@,
-        .modulesDirs = @HASHES@
+        .modulesDirs = @MODULESDIRSCPP@
     };
 
     return info;
