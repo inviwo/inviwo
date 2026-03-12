@@ -89,7 +89,7 @@ var NAVTREEINDEX =
 "structinviwo_1_1DataInfo.html",
 "structinviwo_1_1PortTraits_3_01ImageOutport_01_4.html",
 "structinviwo_1_1VolumeGLProcessor_1_1FBO.html",
-"structinviwo_1_1util_1_1IndexMapper_3_012_00_01IndexType_01_4.html"
+"structinviwo_1_1util_1_1IndexMapper.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

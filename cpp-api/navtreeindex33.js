@@ -225,6 +225,8 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1util_1_1BufferDispatcher.html":[4,0,1,30,6],
 "structinviwo_1_1util_1_1BuildInfo.html":[2,0,0,20,3],
 "structinviwo_1_1util_1_1BuildInfo.html":[4,0,1,30,7],
+"structinviwo_1_1util_1_1BuildInfo_1_1ModulesDir.html":[2,0,0,20,3,0],
+"structinviwo_1_1util_1_1BuildInfo_1_1ModulesDir.html":[4,0,1,30,7,0],
 "structinviwo_1_1util_1_1ColumnMapper_1_1Info.html":[2,0,0,20,5,0],
 "structinviwo_1_1util_1_1ColumnMapper_1_1Info.html":[4,0,1,30,9,0],
 "structinviwo_1_1util_1_1ColumnMapper_1_1OffsetAndPicking.html":[2,0,0,20,5,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1util_1_1Grid3DPointGeneration.html":[4,0,1,30,27],
 "structinviwo_1_1util_1_1GridPos.html":[2,0,0,20,24],
 "structinviwo_1_1util_1_1GridPos.html":[4,0,1,30,28],
-"structinviwo_1_1util_1_1IndexMapper.html":[2,0,0,20,27],
-"structinviwo_1_1util_1_1IndexMapper.html":[4,0,1,30,31],
-"structinviwo_1_1util_1_1IndexMapper_3_012_00_01IndexType_01_4.html":[2,0,0,20,28]
+"structinviwo_1_1util_1_1IndexMapper.html":[2,0,0,20,27]
 };
