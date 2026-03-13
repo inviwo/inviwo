@@ -95,7 +95,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(
 
     setCollapsed(true);
 
-    set(orientation, mirrored_.get());
+    setOrientation(orientation, mirrored_.get());
 
     setCategories(std::move(categories));
 }
