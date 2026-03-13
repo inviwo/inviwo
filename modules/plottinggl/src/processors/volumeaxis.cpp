@@ -95,13 +95,8 @@ VolumeAxis::VolumeAxis()
         }
     });
 
-    // adjust scaling factor for label offsets and tick lengths
-    axisHelper_.offsetScaling_.onChange(
-        [&]() { axisHelper_.adjustScalingFactor(inport_.getData().get()); });
-
     // adjust axis ranges when input mesh, i.e. its basis, changes
     inport_.onChange([&]() {
-        axisHelper_.adjustScalingFactor(inport_.getData().get());
         exps_ =
             axisHelper_.adjustRanges(inport_.getData().get(), labelScaleStep(labelScale_.get()));
         updateCaptions();

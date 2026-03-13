@@ -276,11 +276,29 @@ void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
     const dmat4 m = getDataToWorldMatrix(entity);
     const dmat3 nm = glm::transpose(glm::inverse(m));
     // the mean length of the three basis vectors is used for a relative axis offset (%)
-    const double offset = axisOffset_.get() * xAxis_.scalingFactor_.get();
+    const auto scale = scalingFactor(&entity);
+    const double offset = axisOffset_.get() * scale;
 
-    if (xAxis_.isModified()) xAxis_.update(axisRenderers_[0].getData());
-    if (yAxis_.isModified()) yAxis_.update(axisRenderers_[1].getData());
-    if (zAxis_.isModified()) zAxis_.update(axisRenderers_[2].getData());
+    auto scaleAxisData = [&](AxisData& data) {
+        data.major.length *= scale;
+        data.minor.length *= scale;
+        data.labelSettings.offset.x *= scale;
+        data.captionSettings.offset.x *= scale;
+    };
+
+    if (xAxis_.isModified() || scale != oldScale_) {
+        xAxis_.update(axisRenderers_[0].getData());
+        scaleAxisData(axisRenderers_[0].getData());
+    }
+    if (yAxis_.isModified() || scale != oldScale_) {
+        yAxis_.update(axisRenderers_[1].getData());
+        scaleAxisData(axisRenderers_[1].getData());
+    }
+    if (zAxis_.isModified() || scale != oldScale_) {
+        zAxis_.update(axisRenderers_[2].getData());
+        scaleAxisData(axisRenderers_[2].getData());
+    }
+    oldScale_ = scale;
 
     const auto render = [&](const AxisParams& axis, size_t axisIdx) {
         const dvec3 center{0.5, 0.5, 0.5};
@@ -327,33 +345,25 @@ void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
     }
 }
 
-void Axis3DProcessorHelper::adjustScalingFactor(const SpatialEntity* entity) {
+float Axis3DProcessorHelper::scalingFactor(const SpatialEntity* entity) const {
     if (entity) {
         const mat4 m{getDataToWorldMatrix(*entity)};
-
-        const float factor = [l = vec3{glm::length(m[0]), glm::length(m[1]), glm::length(m[2])}, &m,
-                              mode = offsetScaling_.get()]() {
-            switch (mode) {
-                case OffsetScaling::MinExtent:
-                    return glm::compMin(l) / 100.0f;
-                case OffsetScaling::MaxExtent:
-                    return glm::compMax(l) / 100.0f;
-                case OffsetScaling::MeanExtent:
-                    return glm::compAdd(l) / (3.0f * 100.0f);
-                case OffsetScaling::Diagonal:
-                    return glm::length(m[0] + m[1] + m[2]) / 100.0f;
-                case OffsetScaling::None:
-                default:
-                    return 1.0f;
-            }
-        }();
-        xAxis_.scalingFactor_.set(factor);
-        yAxis_.scalingFactor_.set(factor);
-        zAxis_.scalingFactor_.set(factor);
+        const auto l = vec3{glm::length(m[0]), glm::length(m[1]), glm::length(m[2])};
+        switch (offsetScaling_.get()) {
+            case OffsetScaling::MinExtent:
+                return glm::compMin(l) / 100.0f;
+            case OffsetScaling::MaxExtent:
+                return glm::compMax(l) / 100.0f;
+            case OffsetScaling::MeanExtent:
+                return glm::compAdd(l) / (3.0f * 100.0f);
+            case OffsetScaling::Diagonal:
+                return glm::length(m[0] + m[1] + m[2]) / 100.0f;
+            case OffsetScaling::None:
+            default:
+                return 1.0f;
+        }
     } else {
-        xAxis_.scalingFactor_.set(1.0f);
-        yAxis_.scalingFactor_.set(1.0f);
-        zAxis_.scalingFactor_.set(1.0f);
+        return 1.0f;
     }
 }
 

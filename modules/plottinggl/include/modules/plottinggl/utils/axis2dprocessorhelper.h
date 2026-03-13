@@ -54,7 +54,7 @@ public:
 
     void renderAxes(size2_t outputDims, const SpatialEntity& entity);
 
-    void adjustScalingFactor(const SpatialEntity* entity = nullptr);
+    float scalingFactor(const SpatialEntity* entity = nullptr) const;
     void adjustRanges(const SpatialEntity* entity);
 
     auto props() {
@@ -90,6 +90,7 @@ public:
 
 protected:
     bool propertyUpdate_;
+    float oldScale_ = 0.0;
 };
 
 }  // namespace inviwo::plot

@@ -116,11 +116,6 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
                    dvec2{0.001},
                    InvalidationLevel::InvalidOutput,
                    PropertySemantics::Text}
-    , scalingFactor_{"scalingFactor", "Scaling Factor",
-                     util::ordinalScale(1.0f, 10.0f)
-                         .set("Scaling factor affecting tick lengths and offsets of axis caption "
-                              "and labels"_help)
-                         .setMin(std::numeric_limits<float>::min())}
     , mirrored_{"mirrored", "Mirror ",
                 "Swaps the inside and outside of the axis. If not mirrored, the outside will be to "
                 "the right of the axis pointing from start point to end point."_help,
@@ -146,7 +141,6 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
                  buttons(*this), InvalidationLevel::Valid} {
 
     range_.setReadOnly(true);
-    scalingFactor_.setVisible(false);
 
     // change default fonts, make axis labels slightly less pronounced
     captionSettings_.font_.fontFace_.setSelectedIdentifier(
@@ -165,7 +159,7 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     majorTicks_.setCollapsed(true);
     minorTicks_.setCollapsed(true);
 
-    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, scalingFactor_,
+    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_,
                   mirrored_, labelingAlgorithm_, captionSettings_, labelSettings_, majorTicks_,
                   minorTicks_);
 
@@ -193,7 +187,6 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , overrideRange_{rhs.overrideRange_}
     , range_{rhs.range_}
     , customRange_{rhs.customRange_}
-    , scalingFactor_{rhs.scalingFactor_}
     , mirrored_{rhs.mirrored_}
     , labelingAlgorithm_{rhs.labelingAlgorithm_}
     , captionSettings_{rhs.captionSettings_}
@@ -202,9 +195,8 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , minorTicks_{rhs.minorTicks_}
     , alignment_{rhs.alignment_} {
 
-    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, scalingFactor_,
-                  mirrored_, labelingAlgorithm_, captionSettings_, labelSettings_, majorTicks_,
-                  minorTicks_);
+    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, mirrored_,
+                  labelingAlgorithm_, captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 }
 
 AxisProperty* AxisProperty::clone() const { return new AxisProperty(*this); }
@@ -309,11 +301,6 @@ void AxisProperty::update(AxisData& data) const {
 
     majorTicks_.update(data.major);
     minorTicks_.update(data.minor);
-
-    data.major.length *= scalingFactor_.get();
-    data.minor.length *= scalingFactor_.get();
-    data.labelSettings.offset.x *= scalingFactor_.get();
-    data.captionSettings.offset.x *= scalingFactor_.get();
 }
 
 void AxisProperty::invokeEvent(Event* event) {
