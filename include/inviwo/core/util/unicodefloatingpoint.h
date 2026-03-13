@@ -92,7 +92,7 @@ inline bool hasUnitMantissa(std::string_view mantissa) {
     mantissa.remove_prefix(2);
 
     if (mantissa.empty()) return true;
-    for (char c : mantissa) {
+    for (const char c : mantissa) {
         if (c != '0') return false;
     }
     return true;

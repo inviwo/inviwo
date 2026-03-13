@@ -97,7 +97,7 @@ struct GuardHelper<Cls, MP> {
     static void reset(Cls& obj) { Resetter{}(MP::get(obj)); }
 };
 
-template <typename C, typename T, T C::*memptr>
+template <typename C, typename T, T C::* memptr>
 struct MemPtr {
     using Cls = C;
     static T& get(C& obj) { return obj.*memptr; }
@@ -165,7 +165,7 @@ struct AxisTickLabels {
     }
 
     const std::vector<P>& getLabelPos(const AxisData& data, const vec3& start, const vec3& end,
-                                      TextRenderer& renderer, const vec3& tickDirection) {
+                                      const vec3& tickDirection) {
 
         startPos_.check(*this, start);
         endPos_.check(*this, end);

@@ -38,6 +38,8 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glm.h>
 
+#include <modules/plotting/utils/labelscaling.h>
+
 #include <fmt/core.h>
 #include <algorithm>
 #include <ranges>
@@ -389,26 +391,15 @@ ivec3 Axis3DProcessorHelper::adjustRanges(const SpatialEntity* entity,
         volDims = dvec3(grid3d->getDimensions());
     }
 
-    const auto scale = [&](const dvec2& r) {
-        if (autoScale) {
-            const auto s = static_cast<double>(*autoScale);
-            const auto exp = std::floor(std::log10(glm::compMax(glm::abs(r))));
-            const auto majorExp = (exp > 0 ? std::floor(exp / s) : std::round(exp / s)) * s;
-            const auto factor = std::pow(10.0, -majorExp);
-            return std::pair{factor, static_cast<int>(majorExp)};
-        } else {
-            return std::pair{1.0, 0};
-        }
-    };
     ivec3 exps{0, 0, 0};
     auto setRanges = [&](const dvec2& x, const dvec2& y, const dvec2& z) {
-        auto [xFactor, xExp] = scale(x);
-        auto [yFactor, yExp] = scale(y);
-        auto [zFactor, zExp] = scale(z);
+        auto [xScaled, xExp] = scaleRange(x, autoScale);
+        auto [yScaled, yExp] = scaleRange(y, autoScale);
+        auto [zScaled, zExp] = scaleRange(z, autoScale);
 
-        xAxis_.range_.set(x * xFactor);
-        yAxis_.range_.set(y * yFactor);
-        zAxis_.range_.set(z * zFactor);
+        xAxis_.range_.set(xScaled);
+        yAxis_.range_.set(yScaled);
+        zAxis_.range_.set(zScaled);
 
         exps = ivec3(xExp, yExp, zExp);
     };

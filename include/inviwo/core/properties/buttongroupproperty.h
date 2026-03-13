@@ -49,10 +49,10 @@ namespace inviwo {
 class IVW_CORE_API ButtonGroupProperty : public Property {
 public:
     struct IVW_CORE_API Button {
-        std::optional<std::string> name;
-        std::optional<std::string> icon;
-        std::optional<std::string> tooltip;
-        std::function<void()> action;
+        std::optional<std::string> name = std::nullopt;
+        std::optional<std::string> icon = std::nullopt;
+        std::optional<std::string> tooltip = std::nullopt;
+        std::function<void()> action = {};
     };
 
     virtual std::string_view getClassIdentifier() const override;
@@ -102,8 +102,8 @@ public:
      */
     void pressButton(size_t index);
 
-    virtual ButtonGroupProperty& propertyModified()
-        override;  // override for custom onChange behavior
+    // override for custom onChange behavior
+    virtual ButtonGroupProperty& propertyModified() override;
 
     // Override Property::resetToDefaultState, to avoid calling propertyModified  on reset.
     virtual ButtonGroupProperty& resetToDefaultState() override;

@@ -38,6 +38,8 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <modules/plottinggl/utils/axis3dprocessorhelper.h>
 
+#include <modules/plotting/utils/labelscaling.h>
+
 namespace inviwo::plot {
 
 /**
@@ -45,9 +47,6 @@ namespace inviwo::plot {
  */
 class IVW_MODULE_PLOTTINGGL_API VolumeAxis : public Processor {
 public:
-    enum class CaptionType : std::uint8_t { String, Data, Custom };
-    enum class LabelScale : std::uint8_t { None, Tens, Thousands };
-
     VolumeAxis();
 
     virtual void process() override;
