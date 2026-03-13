@@ -133,7 +133,7 @@ void getLabelPositions2D(const std::vector<double>& positions, bool mirrored, ve
         const auto denom = positions.size() > 1 ? static_cast<float>(positions.size()) - 1.0f : 1.f;
         const vec2 scaling{axisDir * screenLength / denom};
         auto seq = util::make_sequence(size_t{0}, positions.size(), size_t{1});
-        std::ranges::transform(positions, seq, dest.begin(), [&](double pos, size_t i) {
+        std::ranges::transform(seq, dest.begin(), [&](size_t i) {
             return ivec2{glm::round(labelOrigin + scaling * static_cast<double>(i))};
         });
     }
