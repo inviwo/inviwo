@@ -31,6 +31,7 @@ jobs:
 
           VCPKG_JSON="vcpkg.json"
           BRANCH="bot/vcpkg-baseline-update"
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
 
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -45,10 +46,19 @@ jobs:
           # that branch so its state is used as the baseline for the sed replacement.
           EXISTING_PR=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty')
 
+          REBASED=false
           if [ -n "$EXISTING_PR" ]; then
             git fetch origin "$BRANCH"
             git checkout -B "$BRANCH" "origin/$BRANCH"
-            echo "Checked out existing PR #${EXISTING_PR} branch: $BRANCH"
+            # Rebase the existing PR branch onto the current default branch so it
+            # stays current with master even when there is no new vcpkg update.
+            if ! git rebase "origin/$DEFAULT_BRANCH"; then
+              git rebase --abort
+              echo "::error::Rebase of $BRANCH onto origin/$DEFAULT_BRANCH failed due to conflicts. Manual intervention required."
+              exit 1
+            fi
+            REBASED=true
+            echo "Checked out and rebased existing PR #${EXISTING_PR} branch onto origin/$DEFAULT_BRANCH"
           else
             git checkout -b "$BRANCH"
           fi
@@ -64,6 +74,10 @@ jobs:
 
           if [ "$CURRENT_BASELINE" = "$LATEST_COMMIT" ]; then
             echo "Baseline is already up-to-date."
+            if [ "$REBASED" = "true" ]; then
+              git push --force-with-lease origin "$BRANCH"
+              echo "Pushed rebased branch (no baseline change needed)."
+            fi
             exit 0
           fi
 
@@ -98,6 +112,10 @@ jobs:
 
           if [ -z "$CHANGED" ]; then
             echo "No dependency version changes in the new baseline."
+            if [ "$REBASED" = "true" ]; then
+              git push --force-with-lease origin "$BRANCH"
+              echo "Pushed rebased branch (no dependency changes)."
+            fi
             exit 0
           fi
 
@@ -113,7 +131,11 @@ jobs:
           printf 'chore: update vcpkg baseline to %s\n\nChanged dependencies:\n%s\n' \
             "${LATEST_COMMIT:0:10}" "$CHANGED" > /tmp/commit_msg.txt
           git commit -F /tmp/commit_msg.txt
-          git push origin "$BRANCH"
+          if [ "$REBASED" = "true" ]; then
+            git push --force-with-lease origin "$BRANCH"
+          else
+            git push origin "$BRANCH"
+          fi
 
           printf '## vcpkg baseline update\n\nUpdated baseline from `%s` to `%s`.\n\n### Changed dependencies\n```\n%s\n```\n\nFull vcpkg commit: https://github.com/microsoft/vcpkg/commit/%s\n' \
             "${MAIN_BASELINE:0:10}" "${LATEST_COMMIT:0:10}" "$CHANGED" "$LATEST_COMMIT" \
