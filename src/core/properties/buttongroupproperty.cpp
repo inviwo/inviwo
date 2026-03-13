@@ -118,7 +118,7 @@ void ButtonGroupProperty::set(const Property* src) {
 void ButtonGroupProperty::pressButton(size_t index) {
     if (index < buttons_.size()) {
         buttonPressed_ = index;
-        buttons_[index].action();
+        if (buttons_[index].action) buttons_[index].action();
         Property::propertyModified();
         buttonPressed_ = std::numeric_limits<size_t>::max();
     }

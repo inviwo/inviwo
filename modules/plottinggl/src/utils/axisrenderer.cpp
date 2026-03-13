@@ -232,24 +232,23 @@ void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, cons
 
 namespace {
 
-mat4 textTransform(const TextBoundingBox& bbox, vec2 anchor, float angleRadians,
-                   const vec3& axisDir) {
+mat4 textTransform(const TextBoundingBox& bbox, vec2 anchor, float angle, const vec3& axisDir) {
 
     const vec2 translation = vec2{bbox.textExtent} * 0.5f * -(anchor);
     const auto textCenter = glm::round(vec2{bbox.textExtent} * 0.5f);
 
     // translate to anchor pos and apply rotation
-    return glm::rotate(angleRadians, vec3(0.0f, 0.0f, 1.0f)) *
+    return glm::rotate(glm::radians(angle), vec3(0.0f, 0.0f, 1.0f)) *
            glm::mat4_cast(glm::rotation(glm::vec3(1, 0, 0), axisDir)) *
            glm::translate(vec3(translation, 0.0f)) *
            glm::translate(vec3(-textCenter + vec2(bbox.glyphsOrigin), 0.f));
 }
 
-vec2 adjustAnchor(vec2 anchor, float angleRadians, bool mirrored, const vec3& axisDir) {
+vec2 adjustAnchor(vec2 anchor, float angle, bool mirrored) {
     if (mirrored) {
         const auto mirrorY = mat2{vec2{1, 0}, vec2{0, -1}};
-        const auto r1 = mat2{glm::rotate(-angleRadians, vec3(0.0f, 0.0f, 1.0f))};
-        const auto r2 = mat2{glm::rotate(angleRadians, vec3(0.0f, 0.0f, 1.0f))};
+        const auto r1 = mat2{glm::rotate(glm::radians(-angle), vec3(0.0f, 0.0f, 1.0f))};
+        const auto r2 = mat2{glm::rotate(glm::radians(angle), vec3(0.0f, 0.0f, 1.0f))};
         return r2 * mirrorY * r1 * anchor;
     }
     return anchor;
@@ -270,17 +269,15 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
         const auto pos = plot::getAxisCaptionPosition(data_, startPos, endPos);
         const auto posi = glm::ivec2{glm::round(pos)};
 
-        const auto anchor =
-            adjustAnchor(cs.font.anchorPos, glm::radians(cs.rotation), data_.mirrored, axisDir);
-        const auto m = textTransform(capTex.bbox, anchor, glm::radians(cs.rotation), axisDir);
+        const auto anchor = adjustAnchor(cs.font.anchorPos, cs.rotation, data_.mirrored);
+        const auto m = textTransform(capTex.bbox, anchor, cs.rotation, axisDir);
         quadRenderer_.render(*capTex.texture, posi, outputDims, m);
     }
 
     // axis labels
     if (data_.labelSettings.enabled) {
         const auto& ls = data_.labelSettings;
-        const auto& pos =
-            labels_.getLabelPos(data_, vec3{startPos, 0}, vec3{endPos, 0}, textRenderer_, vec3{1});
+        const auto& pos = labels_.getLabelPos(data_, vec3{startPos, 0}, vec3{endPos, 0}, vec3{1});
 
         const auto& atlas = labels_.getAtlas(data_, textRenderer_);
 
@@ -288,12 +285,11 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
         std::vector<mat4> transforms;
         const auto& ri = atlas.getRenderInfo();
 
-        const auto anchor =
-            adjustAnchor(ls.font.anchorPos, glm::radians(ls.rotation), data_.mirrored, axisDir);
-        std::ranges::transform(
-            ri.boundingBoxes, std::back_inserter(transforms), [&](const TextBoundingBox& bb) {
-                return textTransform(bb, anchor, glm::radians(ls.rotation), axisDir);
-            });
+        const auto anchor = adjustAnchor(ls.font.anchorPos, ls.rotation, data_.mirrored);
+        std::ranges::transform(ri.boundingBoxes, std::back_inserter(transforms),
+                               [&](const TextBoundingBox& bb) {
+                                   return textTransform(bb, anchor, ls.rotation, axisDir);
+                               });
 
         // render axis labels
         quadRenderer_.renderToRect(*atlas.getTexture(), pos, ri.size, ri.texTransform, outputDims,
@@ -312,9 +308,8 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
         const auto& capTex = caption_.getCaption(data_.caption, cs, textRenderer_);
         const auto texDims(capTex.texture->getDimensions());
 
-        const auto anchor =
-            adjustAnchor(cs.font.anchorPos, glm::radians(cs.rotation), data_.mirrored, axisDir);
-        const auto m = textTransform(capTex.bbox, anchor, glm::radians(cs.rotation), axisDir);
+        const auto anchor = adjustAnchor(cs.font.anchorPos, cs.rotation, data_.mirrored);
+        const auto m = textTransform(capTex.bbox, anchor, cs.rotation, axisDir);
 
         const auto pos = plot::getAxisCaptionPosition(data_, startPos, endPos);
 
@@ -332,19 +327,18 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
     if (data_.labelSettings.enabled) {
         const auto& ls = data_.labelSettings;
         const auto& positions =
-            labels_.getLabelPos(data_, vec3{startPos, 0}, vec3{endPos, 0}, textRenderer_, vec3{1});
+            labels_.getLabelPos(data_, vec3{startPos, 0}, vec3{endPos, 0}, vec3{1});
 
         const auto& atlas = labels_.getAtlas(data_, textRenderer_);
 
         // render axis labels
         const auto& ri = atlas.getRenderInfo();
 
-        const auto anchor =
-            adjustAnchor(ls.font.anchorPos, glm::radians(ls.rotation), data_.mirrored, axisDir);
+        const auto anchor = adjustAnchor(ls.font.anchorPos, ls.rotation, data_.mirrored);
         for (auto&& item : util::zip(positions, ri.boundingBoxes)) {
             const auto& pos = item.first();
             const auto& bb = item.second();
-            const auto m = textTransform(bb, anchor, glm::radians(ls.rotation), axisDir);
+            const auto m = textTransform(bb, anchor, ls.rotation, axisDir);
 
             const auto pos1 = vec2{pos} + vec2{m * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
             const auto pos2 = vec2{pos} + vec2{m * vec4{bb.glyphsExtent, 0.0f, 1.0f}};
@@ -394,8 +388,7 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
     // axis labels
     if (data_.labelSettings.enabled) {
         const auto& ls = data_.labelSettings;
-        const auto& pos =
-            labels_.getLabelPos(data_, startPos, endPos, textRenderer_, tickDirection);
+        const auto& pos = labels_.getLabelPos(data_, startPos, endPos, tickDirection);
 
         const auto& atlas = labels_.getAtlas(data_, textRenderer_);
         const auto& renderInfo = atlas.getRenderInfo();
