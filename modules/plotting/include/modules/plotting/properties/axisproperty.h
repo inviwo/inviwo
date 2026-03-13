@@ -136,8 +136,7 @@ public:
     BoolProperty overrideRange_;
     DoubleVec2Property range_;
     DoubleVec2Property customRange_;
-    FloatProperty scalingFactor_;
-
+    
     BoolProperty mirrored_;
     OptionProperty<LabelingAlgorithm> labelingAlgorithm_;
 
