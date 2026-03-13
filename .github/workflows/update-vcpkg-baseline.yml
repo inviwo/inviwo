@@ -42,23 +42,21 @@ jobs:
           MAIN_BASELINE=$(jq -r '."vcpkg-configuration"."default-registry".baseline' "$VCPKG_JSON")
           echo "Main branch baseline: $MAIN_BASELINE"
 
-          # Check for an existing open PR at the beginning; if found, check out
-          # that branch so its state is used as the baseline for the sed replacement.
+          # Check for an existing open PR at the beginning.
           EXISTING_PR=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty')
 
           REBASED=false
           if [ -n "$EXISTING_PR" ]; then
             git fetch origin "$BRANCH"
-            git checkout -B "$BRANCH" "origin/$BRANCH"
-            # Rebase the existing PR branch onto the current default branch so it
-            # stays current with master even when there is no new vcpkg update.
-            if ! git rebase "origin/$DEFAULT_BRANCH"; then
-              git rebase --abort
-              echo "::error::Rebase of $BRANCH onto origin/$DEFAULT_BRANCH failed due to conflicts. Manual intervention required."
-              exit 1
-            fi
+            # Reset the branch to origin/$DEFAULT_BRANCH instead of rebasing.
+            # A rebase would replay every commit since the original branch point,
+            # which can produce hundreds of add/add conflicts when the bot branch
+            # was created from an old commit and master has since added many files.
+            # The bot branch only needs to carry a single vcpkg.json update on top
+            # of the current default branch, so a hard reset is always safe here.
+            git checkout -B "$BRANCH" "origin/$DEFAULT_BRANCH"
             REBASED=true
-            echo "Checked out and rebased existing PR #${EXISTING_PR} branch onto origin/$DEFAULT_BRANCH"
+            echo "Reset existing PR #${EXISTING_PR} branch to origin/$DEFAULT_BRANCH"
           else
             git checkout -b "$BRANCH"
           fi
