@@ -67,7 +67,7 @@ public:
 
     void renderAxes(size2_t outputDims, const SpatialEntity& entity);
 
-    void adjustScalingFactor(const SpatialEntity* entity = nullptr);
+    float scalingFactor(const SpatialEntity* entity = nullptr) const;
     ivec3 adjustRanges(const SpatialEntity* entity,
                        const std::optional<int>& autoScale = std::nullopt);
 
@@ -103,6 +103,8 @@ public:
     CameraTrackball trackball_;
 
     std::array<AxisRenderer3D, 3> axisRenderers_;
+
+    float oldScale_ = 0.0f;
 
 protected:
     dmat4 getDataToWorldMatrix(const SpatialEntity& entity) const;
