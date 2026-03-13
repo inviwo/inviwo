@@ -32,38 +32,17 @@
 
 #include <inviwo/core/util/glmvec.h>
 
-namespace inviwo {
-class FontSettings;
+namespace inviwo::plot {
 
-namespace plot {
+struct IVW_MODULE_PLOTTING_API TickData {
+    enum class Style : std::uint8_t { None, Inside, Outside, Both };
 
-enum class LabelPlacement { Outside, Inside };
+    vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    float length = 8.0f;
+    float width = 2.5f;
+    Style style = Style::Both;
 
-class IVW_MODULE_PLOTTING_API PlotTextSettings {
-public:
-    PlotTextSettings() = default;
-    virtual ~PlotTextSettings() = default;
-
-    virtual bool isEnabled() const = 0;
-    virtual LabelPlacement getPlacement() const = 0;
-    virtual vec4 getColor() const = 0;
-    virtual float getPosition() const = 0;  //!< position along axis [0,1]
-    virtual vec2 getOffset() const = 0;     //!< offset from axis
-    virtual float getRotation() const = 0;  //!< Degrees of rotation
-    virtual const FontSettings& getFont() const = 0;
-
-    // Conversion to bool for enabled state
-    operator bool() const;
+    bool operator==(const TickData&) const = default;
 };
 
-IVW_MODULE_PLOTTING_API bool operator==(const PlotTextSettings& a, const PlotTextSettings& b);
-IVW_MODULE_PLOTTING_API bool operator!=(const PlotTextSettings& a, const PlotTextSettings& b);
-
-/**
- * flip inside and outside direction of placement \p p
- */
-IVW_MODULE_PLOTTING_API LabelPlacement flip(LabelPlacement p);
-
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

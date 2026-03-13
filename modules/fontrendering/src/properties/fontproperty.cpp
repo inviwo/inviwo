@@ -89,14 +89,11 @@ FontProperty::FontProperty(const FontProperty& rhs)
 
 FontProperty* FontProperty::clone() const { return new FontProperty(*this); }
 
-const std::filesystem::path& FontProperty::getFontFace() const {
-    return fontFace_.getSelectedValue();
+void FontProperty::update(FontData& data) const {
+    data.fontFace = fontFace_.getSelectedValue();
+    data.fontSize = fontSize_.get();
+    data.lineSpacing = lineSpacing_.get();
+    data.anchorPos = anchorPos_.get();
 }
-
-int FontProperty::getFontSize() const { return fontSize_.get(); }
-
-float FontProperty::getLineSpacing() const { return lineSpacing_.get(); }
-
-vec2 FontProperty::getAnchorPos() const { return anchorPos_.get(); }
 
 }  // namespace inviwo

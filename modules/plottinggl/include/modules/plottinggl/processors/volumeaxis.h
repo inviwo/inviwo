@@ -38,17 +38,15 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <modules/plottinggl/utils/axis3dprocessorhelper.h>
 
-namespace inviwo {
+#include <modules/plotting/utils/labelscaling.h>
 
-namespace plot {
+namespace inviwo::plot {
 
 /**
  * @brief Processor for rendering axis annotations next to a volume
  */
 class IVW_MODULE_PLOTTINGGL_API VolumeAxis : public Processor {
 public:
-    enum class CaptionType { String, Data, Custom };
-
     VolumeAxis();
 
     virtual void process() override;
@@ -65,10 +63,10 @@ private:
 
     OptionProperty<CaptionType> captionType_;
     StringProperty customCaption_;
+    OptionProperty<LabelScale> labelScale_;
 
     Axis3DProcessorHelper axisHelper_;
+    ivec3 exps_{1, 1, 1};
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

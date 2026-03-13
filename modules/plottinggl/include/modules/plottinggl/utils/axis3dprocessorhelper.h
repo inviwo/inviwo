@@ -31,10 +31,8 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -69,8 +67,9 @@ public:
 
     void renderAxes(size2_t outputDims, const SpatialEntity& entity);
 
-    void adjustScalingFactor(const SpatialEntity* entity = nullptr);
-    void adjustRanges(const SpatialEntity* entity);
+    float scalingFactor(const SpatialEntity* entity = nullptr) const;
+    ivec3 adjustRanges(const SpatialEntity* entity,
+                       const std::optional<int>& autoScale = std::nullopt);
 
     auto props() {
         return std::tie(offsetScaling_, axisOffset_, rangeMode_, customRanges_, visibility_,
@@ -87,9 +86,9 @@ public:
     OptionProperty<AxisRangeMode> rangeMode_;
 
     CompositeProperty customRanges_;
-    DoubleMinMaxProperty rangeXaxis_;
-    DoubleMinMaxProperty rangeYaxis_;
-    DoubleMinMaxProperty rangeZaxis_;
+    DoubleVec2Property rangeXaxis_;
+    DoubleVec2Property rangeYaxis_;
+    DoubleVec2Property rangeZaxis_;
 
     BoolCompositeProperty visibility_;
     OptionPropertyString presets_;
@@ -104,6 +103,8 @@ public:
     CameraTrackball trackball_;
 
     std::array<AxisRenderer3D, 3> axisRenderers_;
+
+    float oldScale_ = 0.0f;
 
 protected:
     dmat4 getDataToWorldMatrix(const SpatialEntity& entity) const;

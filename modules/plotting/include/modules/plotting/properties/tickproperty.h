@@ -33,26 +33,18 @@
 
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/staticstring.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
-#include <modules/plotting/datastructures/minorticksettings.h>
+#include <modules/plotting/datastructures/tickdata.h>
 
-#include <functional>
 #include <string>
 #include <string_view>
 #include <vector>
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
-
-class IVW_MODULE_PLOTTING_API MajorTickProperty : public MajorTickSettings,
-                                                  public CompositeProperty {
+class IVW_MODULE_PLOTTING_API MajorTickProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.MajorTickProperty"};
@@ -61,27 +53,22 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
     MajorTickProperty(const MajorTickProperty& rhs);
+    MajorTickProperty(MajorTickProperty&&) = delete;
+    MajorTickProperty& operator=(const MajorTickProperty&) = delete;
+    MajorTickProperty& operator=(MajorTickProperty&&) = delete;
     virtual MajorTickProperty* clone() const override;
     virtual ~MajorTickProperty() = default;
 
-    OptionProperty<TickStyle> style_;
-    FloatVec4Property color_;
-    FloatProperty tickLength_;
-    FloatProperty tickWidth_;
-    DoubleProperty tickDelta_;
-    BoolProperty rangeBasedTicks_;
+    OptionProperty<TickData::Style> style;
+    FloatVec4Property color;
+    FloatProperty length;
+    FloatProperty width;
+    IntProperty numberOfTicks;
 
-    // Inherited via MajorTickSettings
-    virtual TickStyle getStyle() const override;
-    virtual vec4 getColor() const override;
-    virtual float getTickLength() const override;
-    virtual float getTickWidth() const override;
-    virtual double getTickDelta() const override;
-    virtual bool getRangeBasedTicks() const override;
+    void update(TickData& data) const;
 };
 
-class IVW_MODULE_PLOTTING_API MinorTickProperty : public MinorTickSettings,
-                                                  public CompositeProperty {
+class IVW_MODULE_PLOTTING_API MinorTickProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.MinorTickProperty"};
@@ -90,25 +77,20 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
     MinorTickProperty(const MinorTickProperty& rhs);
+    MinorTickProperty(MinorTickProperty&&) = delete;
+    MinorTickProperty& operator=(const MinorTickProperty&) = delete;
+    MinorTickProperty& operator=(MinorTickProperty&&) = delete;
     virtual MinorTickProperty* clone() const override;
     virtual ~MinorTickProperty() = default;
 
-    OptionProperty<TickStyle> style_;
-    BoolProperty fillAxis_;
-    FloatVec4Property color_;
-    FloatProperty tickLength_;
-    FloatProperty tickWidth_;
-    IntProperty tickFrequency_;
+    OptionProperty<TickData::Style> style;
+    BoolProperty fillAxis;
+    FloatVec4Property color;
+    FloatProperty length;
+    FloatProperty width;
+    IntProperty frequency;
 
-    // Inherited via MinorTickSettings
-    virtual TickStyle getStyle() const override;
-    virtual bool getFillAxis() const override;
-    virtual vec4 getColor() const override;
-    virtual float getTickLength() const override;
-    virtual float getTickWidth() const override;
-    virtual int getTickFrequency() const override;
+    void update(TickData& data) const;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

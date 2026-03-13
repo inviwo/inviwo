@@ -34,11 +34,11 @@
 #include <inviwo/core/util/foreacharg.h>
 #include <modules/opengl/texture/textureutils.h>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 
-namespace inviwo {
+#include <ranges>
 
-namespace plot {
+namespace inviwo::plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeAxis::processorInfo_{
@@ -57,12 +57,9 @@ VolumeAxis::VolumeAxis()
     , imageInport_{"imageInport", "Background image (optional)"_help}
     , outport_{"outport",
                "Output image containing the rendered volume axes and the optional input image"_help}
-    , captionType_("captionType", "Caption Type",
-                   {{"string", "Caption String", CaptionType::String},
-                    {"data", "Caption from Data", CaptionType::Data},
-                    {"custom", "Custom Format (example '{n}{u: [}')", CaptionType::Custom}},
-                   0)
+    , captionType_("captionType", "Caption Type", captionTypeState())
     , customCaption_("customCaption", "Custom Caption", "{n}{u: [}")
+    , labelScale_{"labelScale", "Label Scaling", labelScaleState()}
     , axisHelper_{util::boundingBox(inport_)} {
 
     imageInport_.setOptional(true);
@@ -72,32 +69,46 @@ VolumeAxis::VolumeAxis()
     util::for_each_in_tuple(
         [&](Property& p) {
             if (p.getIdentifier() == "visibility") {
-                addProperties(captionType_, customCaption_);
+                addProperties(captionType_, customCaption_, labelScale_);
             }
             addProperty(p);
         },
         axisHelper_.props());
 
-    captionType_.onChange([this]() { updateCaptions(); });
+    captionType_.onChange([this]() {
+        if (imageInport_.hasData()) {
+            exps_ = axisHelper_.adjustRanges(inport_.getData().get(),
+                                             labelScaleStep(labelScale_.get()));
+        }
+        updateCaptions();
+    });
+    labelScale_.onChange([this]() {
+        if (imageInport_.hasData()) {
+            exps_ = axisHelper_.adjustRanges(inport_.getData().get(),
+                                             labelScaleStep(labelScale_.get()));
+        }
+        updateCaptions();
+    });
     customCaption_.onChange([this]() {
         if (captionType_.get() == CaptionType::Custom) {
             updateCaptions();
         }
     });
 
-    // adjust scaling factor for label offsets and tick lengths
-    axisHelper_.offsetScaling_.onChange(
-        [&]() { axisHelper_.adjustScalingFactor(inport_.getData().get()); });
-
     // adjust axis ranges when input mesh, i.e. its basis, changes
     inport_.onChange([&]() {
-        axisHelper_.adjustScalingFactor(inport_.getData().get());
-        axisHelper_.adjustRanges(inport_.getData().get());
+        exps_ =
+            axisHelper_.adjustRanges(inport_.getData().get(), labelScaleStep(labelScale_.get()));
         updateCaptions();
     });
     // sync ranges when custom range is enabled or disabled
-    axisHelper_.rangeMode_.onChange(
-        [this]() { axisHelper_.adjustRanges(inport_.getData().get()); });
+    axisHelper_.rangeMode_.onChange([this]() {
+        if (imageInport_.hasData()) {
+            exps_ = axisHelper_.adjustRanges(inport_.getData().get(),
+                                             labelScaleStep(labelScale_.get()));
+        }
+        updateCaptions();
+    });
 
     setAllPropertiesCurrentStateAsDefault();
 }
@@ -115,36 +126,15 @@ void VolumeAxis::process() {
 }
 
 void VolumeAxis::updateCaptions() {
-    switch (captionType_.get()) {
-        case CaptionType::Data:
-            if (auto volume = inport_.getData()) {
-                axisHelper_.xAxis_.captionSettings_.title_.set(
-                    fmt::format("{}{: [}", volume->axes[0].name, volume->axes[0].unit));
-                axisHelper_.yAxis_.captionSettings_.title_.set(
-                    fmt::format("{}{: [}", volume->axes[1].name, volume->axes[1].unit));
-                axisHelper_.zAxis_.captionSettings_.title_.set(
-                    fmt::format("{}{: [}", volume->axes[2].name, volume->axes[2].unit));
-            }
-            break;
-        case CaptionType::Custom:
-            if (auto volume = inport_.getData()) {
-                axisHelper_.xAxis_.captionSettings_.title_.set(fmt::format(
-                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[0].name),
-                    fmt::arg("u", volume->axes[0].unit)));
-                axisHelper_.yAxis_.captionSettings_.title_.set(fmt::format(
-                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[1].name),
-                    fmt::arg("u", volume->axes[1].unit)));
-                axisHelper_.zAxis_.captionSettings_.title_.set(fmt::format(
-                    fmt::runtime(customCaption_.get()), fmt::arg("n", volume->axes[2].name),
-                    fmt::arg("u", volume->axes[2].unit)));
-            }
-            break;
-        case CaptionType::String:
-        default:
-            break;
+    if (auto volume = inport_.getData()) {
+        for (auto&& [prop, axis, exp] : std::views::zip(
+                 std::to_array({&axisHelper_.xAxis_, &axisHelper_.yAxis_, &axisHelper_.zAxis_}),
+                 volume->axes, std::span(glm::value_ptr(exps_), 3))) {
+            prop->captionSettings_.title_.set(
+                formatAxisCaption(axis, captionType_.get(), labelScale_.get(), customCaption_.get(),
+                                  exp, prop->captionSettings_.title_.get()));
+        }
     }
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

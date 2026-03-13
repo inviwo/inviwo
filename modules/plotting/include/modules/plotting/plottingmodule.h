@@ -42,7 +42,7 @@ class InviwoApplication;
 
 class IVW_MODULE_PLOTTING_API PlottingModule : public InviwoModule {
 public:
-    PlottingModule(InviwoApplication* app);
+    explicit PlottingModule(InviwoApplication* app);
 
     virtual int getVersion() const override;
     virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
@@ -50,7 +50,7 @@ public:
 private:
     class Converter : public VersionConverter {
     public:
-        Converter(int version);
+        explicit Converter(int version);
         virtual bool convert(TxElement* root) override;
 
     private:

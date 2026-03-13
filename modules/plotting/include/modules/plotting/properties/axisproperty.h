@@ -33,64 +33,66 @@
 
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttongroupproperty.h>
-#include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/staticstring.h>
-#include <modules/plotting/datastructures/axissettings.h>
+
+#include <modules/plotting/datastructures/axisdata.h>
 #include <modules/plotting/properties/plottextproperty.h>
 #include <modules/plotting/properties/tickproperty.h>
+#include <modules/plotting/algorithm/labeling.h>
 
-#include <functional>
 #include <string>
 #include <string_view>
 #include <vector>
 #include <optional>
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
 class MajorTickSettings;
 class MinorTickSettings;
 class PlotTextSettings;
 
-class IVW_MODULE_PLOTTING_API AxisProperty : public AxisSettings, public BoolCompositeProperty {
+class IVW_MODULE_PLOTTING_API AxisProperty : public BoolCompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.AxisProperty"};
+    enum class Orientation : std::uint8_t { Horizontal, Vertical };
 
     AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
                  Orientation orientation = Orientation::Horizontal,
-                 bool includeOrientationProperty = true,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
     AxisProperty(std::string_view identifier, std::string_view displayName,
                  Orientation orientation = Orientation::Horizontal,
-                 bool includeOrientationProperty = true,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
     AxisProperty(const AxisProperty& rhs);
+    AxisProperty(AxisProperty&&) = delete;
+    AxisProperty& operator=(const AxisProperty&) = delete;
+    AxisProperty& operator=(AxisProperty&&) = delete;
+
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
 
+    using BoolCompositeProperty::set;
+
     /**
-     * @brief aligns and centers caption and labels according to the current axis orientation and
+     * @brief aligns and centers caption and labels according to the orientation and
      * mirror state. For a horizontal axis, both caption and labels are centered horizontally with
      * the vertical anchor position at the top (or bottom when mirrored). In the vertical
      * case, labels are right-aligned (left when mirrored) and vertically centered.
      */
-    void defaultAlignLabels();
-
-    using BoolCompositeProperty::set;
     void set(Orientation orientation, bool mirrored);
 
     virtual AxisProperty& setCaption(std::string_view title);
+
+    AxisProperty& setLabelingAlgorithm(LabelingAlgorithm algorithm);
+
+    AxisProperty& setNumberOfTicks(int numTicks);
 
     AxisProperty& setLabelFormat(std::string_view formatStr);
     /**
@@ -122,35 +124,21 @@ public:
      */
     AxisProperty& setLineWidth(float width);
 
-    // Inherited via AxisSettings
-    virtual dvec2 getRange() const override;
+    dvec2 getRange() const;
 
-    virtual bool getAxisVisible() const override;
-    virtual bool getMirrored() const override;
-    virtual vec4 getColor() const override;
-    virtual float getWidth() const override;
-    virtual float getScalingFactor() const override;
-    virtual Orientation getOrientation() const override;
+    void update(AxisData& data) const;
 
-    virtual const std::string& getCaption() const override;
-    virtual const PlotTextSettings& getCaptionSettings() const override;
-
-    virtual const std::vector<std::string>& getLabels() const override;
-    virtual const PlotTextSettings& getLabelSettings() const override;
-
-    virtual const MajorTickSettings& getMajorTicks() const override;
-    virtual const MinorTickSettings& getMinorTicks() const override;
+    virtual void invokeEvent(Event* event) override;
 
     // general properties
     FloatVec4Property color_;
     FloatProperty width_;
     BoolProperty overrideRange_;
-    DoubleMinMaxProperty range_;
-    DoubleMinMaxProperty customRange_;
-    FloatProperty scalingFactor_;
-
+    DoubleVec2Property range_;
+    DoubleVec2Property customRange_;
+    
     BoolProperty mirrored_;
-    std::optional<OptionProperty<Orientation>> orientation_;
+    OptionProperty<LabelingAlgorithm> labelingAlgorithm_;
 
     // caption besides axis
     PlotTextProperty captionSettings_;
@@ -162,12 +150,7 @@ public:
     MinorTickProperty minorTicks_;
 
 private:
-    virtual void updateLabels();
-    std::vector<ButtonGroupProperty::Button> buttons(bool hasOrientation);
-
     ButtonGroupProperty alignment_;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

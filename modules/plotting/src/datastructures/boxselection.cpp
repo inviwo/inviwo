@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2020-2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,39 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/boxselection.h>
 
-#include <inviwo/core/util/glmvec.h>
-
-namespace inviwo {
-
-namespace plot {
-
-enum class TickStyle { None, Inside, Outside, Both };
-
-class IVW_MODULE_PLOTTING_API MajorTickSettings {
-public:
-    MajorTickSettings() = default;
-    virtual ~MajorTickSettings() = default;
-
-    virtual TickStyle getStyle() const = 0;
-    virtual vec4 getColor() const = 0;
-    virtual float getTickLength() const = 0;
-    virtual float getTickWidth() const = 0;
-    virtual double getTickDelta() const = 0;
-    virtual bool getRangeBasedTicks() const = 0;
-};
-
-IVW_MODULE_PLOTTING_API bool operator==(const MajorTickSettings& a, const MajorTickSettings& b);
-IVW_MODULE_PLOTTING_API bool operator!=(const MajorTickSettings& a, const MajorTickSettings& b);
-
-/**
- * flip inside and outside direction of tick style \p s
- */
-IVW_MODULE_PLOTTING_API TickStyle flip(TickStyle s);
-
-}  // namespace plot
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

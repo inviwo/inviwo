@@ -26,34 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/plotting/datastructures/majortickdata.h>
+#include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
+#include <modules/fontrendering/datastructures/fontdata.h>
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
-MajorTickData::MajorTickData(const MajorTickSettings& s)
-    : style{s.getStyle()}
-    , color{s.getColor()}
-    , tickLength{s.getTickLength()}
-    , tickWidth{s.getTickWidth()}
-    , tickDelta{s.getTickDelta()}
-    , rangeBasedTicks{s.getRangeBasedTicks()} {}
-TickStyle MajorTickData::getStyle() const { return style; }
+struct IVW_MODULE_PLOTTING_API TextData {
+    FontData font;
+    vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    vec2 offset = vec2{10.0f, 0.0f};
+    float position = 0.5f;
+    float rotation = 0.0f;
+    bool enabled = true;
 
-vec4 MajorTickData::getColor() const { return color; }
+    bool operator==(const TextData&) const = default;
+};
 
-float MajorTickData::getTickLength() const { return tickLength; }
-
-float MajorTickData::getTickWidth() const { return tickWidth; }
-
-double MajorTickData::getTickDelta() const { return tickDelta; }
-
-bool MajorTickData::getRangeBasedTicks() const { return rangeBasedTicks; }
-
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

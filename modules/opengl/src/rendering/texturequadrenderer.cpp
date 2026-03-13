@@ -437,15 +437,14 @@ void TextureQuadRenderer::renderToRect(const Texture2D& texture,
     const vec2 scaling(vec2(2.0f) / vec2(canvasSize));
     const auto toNDC = glm::translate(vec3(-1.0f, -1.0f, -1.0f)) * glm::scale(vec3{scaling, 1.f});
 
-    for (auto&& elem : util::zip(positions, extent, texTransform, transformations)) {
-        const auto ext = vec2{elem.second()};
-        const auto pos = vec3{elem.first().x, elem.first().y, 0.0f};
+    for (auto&& [pos, ext, texTrans, trans] :
+         std::views::zip(positions, extent, texTransform, transformations)) {
 
         const auto dataToWorld =
-            toNDC * glm::translate(pos) * get<3>(elem) * glm::scale(vec3{ext, 1.f});
+            toNDC * glm::translate(vec3(pos, 0.0)) * trans * glm::scale(vec3{ext, 1.f});
 
         shader_->setUniform("geometry_.dataToWorld", dataToWorld);
-        shader_->setUniform("texCoordTransform", elem.third());
+        shader_->setUniform("texCoordTransform", texTrans);
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }

@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2026-02-20 Improved labeling for 2D and 3D axes
+Various algorithms for generating axis labels were implemented and can be found in `modules/plotting/algorithm/labeling.h`. Support was added for Heckbert's nice numbering, matplotlib's labeling algorithm, and the Extended Wilkinson algorithm by J. Talbot. These should produce "nice" labels given an optimal/maximum number of tick marks. In addition, there is also `LabelingAlgorithm::Limits` showing labels only for the minimum and maximum of the axis range and `LabelingAlgorithm::CustomOnly`, which only shows custom labels. The axis rendering and the associated settings have been refactored in that respect.
+
 ## 2025-12-18 Disable modules at runtime
 A new environment variable to disable loading modules at runtime `INVIWO_DISABLE_MODULES` has been added.
 It takes a semicolon separated list of lowercase module identifiers. 
