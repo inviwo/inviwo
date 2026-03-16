@@ -111,6 +111,24 @@ std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
     return {find(meta[0]), find(meta[1]), find(meta[2])};
 }
 
+auto rangeOptions(bool hasDims, bool hasBoundingBox) {
+    using AxisRangeMode = Axis3DProcessorHelper::AxisRangeMode;
+    using enum AxisRangeMode;
+    std::vector<OptionPropertyOption<AxisRangeMode>> rangeOptions;
+    if (hasDims) {
+        rangeOptions.emplace_back("dims", "Volume Dimensions (voxel)", Dims);
+    }
+    rangeOptions.emplace_back("basis", "Basis", Basis);
+    rangeOptions.emplace_back("basisOffset", "Basis & Offset", BasisOffset);
+    rangeOptions.emplace_back("world", "Model & World Transform", World);
+    if (hasBoundingBox) {
+        rangeOptions.emplace_back("dataBoundingBox", "Data Bounding Box", DataBoundingBox);
+        rangeOptions.emplace_back("modelBoundingBox", "Model Bounding Box", ModelBoundingBox);
+        rangeOptions.emplace_back("boundingBox", "World Bounding Box", WorldBoundingBox);
+    }
+    return rangeOptions;
+}
+
 }  // namespace
 
 Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
@@ -118,12 +136,13 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
     : offsetScaling_{"offsetScaling",
                      "Offset Scaling",
                      R"(Offset scaling affects tick lengths and offsets of axis captions and labels.
-                        + **None** No scaling, offsets and lengths are given in world coordinates.
-                        + **Min** Relative scaling based on the shortest extent of the bounding box. Useful 
-                                when visualizing growing data.
-                        + **Max** Relative scaling based on the longest extent of the bounding box. Useful 
-                                when visualizing shrinking data.
-                        + **Mean** Relative scaling basd on the mean bounding box extent.
+                        + **None**     No scaling, offsets and lengths are given in world 
+                                       coordinates.
+                        + **Min**      Relative scaling based on the shortest extent of the bounding
+                                       box. Useful when visualizing growing data.
+                        + **Max**      Relative scaling based on the longest extent of the bounding
+                                       box. Useful when visualizing shrinking data.
+                        + **Mean**     Relative scaling basd on the mean bounding box extent.
                         + **Diagonal** Relative scaling based on the diagonal of the bounding box.
                       )"_unindentHelp,
                      {{"none", "None (absolute World coordinates)", OffsetScaling::None},
@@ -134,22 +153,15 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
                      1}
     , axisOffset_{"axisOffset", "Axis Offset",
                   util::ordinalLength(10.0f, 50.0f)
-                      .set(
-                          "Offset between each axis and the data considering the Offset Scaling mode"_help)}
-    , rangeMode_{"rangeMode", "Axis Range Mode", "Determines axis ranges"_help}
-    , customRanges_{"customRanges", "Custom Ranges"}
-    , rangeXaxis_("rangeX", "X Axis", "Custom range for the x axis"_help, dvec2{0.0, 1.0},
-                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
-                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
-                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , rangeYaxis_("rangeY", "Y Axis", "Custom range for the y axis"_help, dvec2{0.0, 1.0},
-                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
-                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
-                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , rangeZaxis_("rangeZ", "Z Axis", "Custom range for the z axis"_help, dvec2{0.0, 1.0},
-                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
-                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
-                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+                      .set("Offset between each axis and the data "
+                           "considering the Offset Scaling mode"_help)}
+    , rangeMode_{"rangeMode", "Axis Range Mode", "Determines axis ranges"_help,
+                 rangeOptions(useDimsRange == DimsRangeMode::Yes, getBoundingBox != nullptr)}
+
+    , captionType_("captionType", "Caption Type", captionTypeState())
+    , customCaption_("customCaption", "Custom Caption", "{n}{u: [}")
+    , labelScale_{"labelScale", "Label Scaling", labelScaleState()}
+
     , visibility_{"visibility", "Axis Visibility",
                   "Visibility of all available axes (default: all axis start at the origin)"_help,
                   true}
@@ -185,32 +197,6 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
     , propertyUpdate_{false}
     , getBoundingBox_{getBoundingBox ? std::optional{getBoundingBox} : std::nullopt} {
 
-    xAxis_.setCaption("x");
-    yAxis_.setCaption("y");
-    zAxis_.setCaption("z");
-
-    std::vector<OptionPropertyOption<AxisRangeMode>> rangeOptions = {
-        {"basis", "Basis", AxisRangeMode::Basis},
-        {"basisOffset", "Basis & Offset", AxisRangeMode::BasisOffset},
-        {"world", "Model & World Transform", AxisRangeMode::World},
-        {"custom", "Custom", AxisRangeMode::Custom}};
-    if (useDimsRange == DimsRangeMode::Yes) {
-        rangeOptions.emplace(rangeOptions.begin(), "dims", "Volume Dimensions (voxel)",
-                             AxisRangeMode::Dims);
-    }
-    if (getBoundingBox_.has_value()) {
-        const std::array<OptionPropertyOption<AxisRangeMode>, 3> options = {{
-            {"dataBoundingBox", "Data Bounding Box", AxisRangeMode::DataBoundingBox},
-            {"modelBoundingBox", "Model Bounding Box", AxisRangeMode::ModelBoundingBox},
-            {"boundingBox", "World Bounding Box", AxisRangeMode::WorldBoundingBox},
-        }};
-        rangeOptions.insert(rangeOptions.end() - 1, std::begin(options), std::end(options));
-    }
-    rangeMode_.replaceOptions(rangeOptions);
-
-    customRanges_.addProperties(rangeXaxis_, rangeYaxis_, rangeZaxis_);
-    customRanges_.setCollapsed(true);
-
     presets_.setSerializationMode(PropertySerializationMode::None);
     presets_.onChange([this]() {
         const NetworkLock lock(&visibility_);
@@ -243,77 +229,89 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
     trackball_.setCollapsed(true);
 
     // initialize axes
+    xAxis_.setCaption("x");
+    yAxis_.setCaption("y");
+    zAxis_.setCaption("z");
     for (auto* property : {&xAxis_, &yAxis_, &zAxis_}) {
         property->majorTicks_.width.set(1.5f);
         property->majorTicks_.style.set(TickData::Style::Outside);
 
         property->minorTicks_.width.set(1.3f);
         property->minorTicks_.style.set(TickData::Style::Outside);
+
+        // Treat the range as a pure output property.
+        property->range_.setInvalidationLevel(InvalidationLevel::Valid);
+
+        property->setCurrentStateAsDefault();
     }
-
-    auto linkAxisRanges = [this](const DoubleVec2Property& from, DoubleVec2Property& to) {
-        auto func = [&]() {
-            if (!propertyUpdate_ && (rangeMode_.getSelectedValue() == AxisRangeMode::Custom)) {
-                const util::KeepTrueWhileInScope b(&propertyUpdate_);
-                to.set(from.get());
-            }
-        };
-        return func;
-    };
-    // "link" custom ranges with individual axis ranges
-    xAxis_.range_.onChange(linkAxisRanges(xAxis_.range_, rangeXaxis_));
-    yAxis_.range_.onChange(linkAxisRanges(yAxis_.range_, rangeYaxis_));
-    zAxis_.range_.onChange(linkAxisRanges(zAxis_.range_, rangeZaxis_));
-    rangeXaxis_.onChange(linkAxisRanges(rangeXaxis_, xAxis_.range_));
-    rangeYaxis_.onChange(linkAxisRanges(rangeYaxis_, yAxis_.range_));
-    rangeZaxis_.onChange(linkAxisRanges(rangeZaxis_, zAxis_.range_));
-
-    customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
 }
 
 void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& entity) {
+    const auto d2w = getDataToWorldMatrix(entity);
+    const auto nD2W = dmat3{glm::transpose(glm::inverse(d2w))};
 
-    const dmat4 m = getDataToWorldMatrix(entity);
-    const dmat3 nm = glm::transpose(glm::inverse(m));
-    // the mean length of the three basis vectors is used for a relative axis offset (%)
     const auto scale = scalingFactor(&entity);
     const double offset = axisOffset_.get() * scale;
+    const auto autoScale = labelScaleStep(labelScale_.get());
 
-    auto scaleAxisData = [&](AxisData& data) {
+    for (auto [i, ap, ar, range] :
+         std::views::zip(std::views::iota(0, 3), std::to_array({&xAxis_, &yAxis_, &zAxis_}),
+                         axisRenderers_, axisRanges(entity))) {
+
+        auto [scaledRange, exponent] = scaleRange(range, autoScale);
+        if (ap->overrideRange_) {
+            scaledRange = ap->customRange_;
+            exponent = 0;
+        }
+
+        auto& data = ar.getData();
+        data.range = scaledRange;
+        data.visible = ap->isChecked();
+        data.mirrored = ap->mirrored_.get();
+        data.color = ap->color_.get();
+        data.width = ap->width_.get();
+        data.caption = ap->captionSettings_.title_.get();
+        ap->captionSettings_.update(data.captionSettings);
+
+        updateLabelPositions(data.majorPositions, data.minorPositions, ap->labelingAlgorithm_.get(),
+                             data.range, ap->majorTicks_.numberOfTicks.get(),
+                             ap->minorTicks_.frequency.get(), ap->minorTicks_.fillAxis.get());
+
+        ap->labelSettings_.update(data.labelSettings);
+        updateLabels(data.labels, data.majorPositions, ap->labelSettings_.title_.get());
+
+        ap->majorTicks_.update(data.major);
+        ap->minorTicks_.update(data.minor);
+
         data.major.length *= scale;
         data.minor.length *= scale;
         data.labelSettings.offset.x *= scale;
         data.captionSettings.offset.x *= scale;
-    };
 
-    if (xAxis_.isModified() || scale != oldScale_) {
-        xAxis_.update(axisRenderers_[0].getData());
-        scaleAxisData(axisRenderers_[0].getData());
+        if (entity.getAxis(i)) {
+            data.caption =
+                formatAxisCaption(*entity.getAxis(i), captionType_.get(), labelScale_.get(),
+                                  customCaption_.get(), exponent, data.caption);
+        }
+
+        // Update axis range
+        ap->range_.set(scaledRange);
     }
-    if (yAxis_.isModified() || scale != oldScale_) {
-        yAxis_.update(axisRenderers_[1].getData());
-        scaleAxisData(axisRenderers_[1].getData());
-    }
-    if (zAxis_.isModified() || scale != oldScale_) {
-        zAxis_.update(axisRenderers_[2].getData());
-        scaleAxisData(axisRenderers_[2].getData());
-    }
-    oldScale_ = scale;
 
     const auto render = [&](const AxisParams& axis, size_t axisIdx) {
         const dvec3 center{0.5, 0.5, 0.5};
         const auto offsetDir =
-            glm::normalize(dmat3(m) * glm::normalize(axis.start - center + axis.stop - center));
-        const vec3 start{dvec3{m * dvec4(axis.start, 1)} + offset * offsetDir};
-        const vec3 stop{dvec3{m * dvec4(axis.stop, 1)} + offset * offsetDir};
-        const vec3 tickDir{nm * axis.tickDir};
+            glm::normalize(dmat3{d2w} * glm::normalize(axis.start - center + axis.stop - center));
+        const vec3 start{dvec3{d2w * dvec4(axis.start, 1)} + offset * offsetDir};
+        const vec3 stop{dvec3{d2w * dvec4(axis.stop, 1)} + offset * offsetDir};
+        const vec3 tickDir{nD2W * axis.tickDir};
         axisRenderers_[axisIdx].render(&camera_.get(), outputDims, start, stop, tickDir);
     };
 
     if (visibility_.isChecked()) {  // automatic selection
         // transform camera to data space since findAxisPositions uses a uniform cube centered at
         // the origin to determine the visible faces
-        const mat4 trafo{glm::inverse(m)};
+        const mat4 trafo{glm::inverse(d2w)};
         const auto axes =
             findAxisPositions(glm::normalize(vec3(trafo * vec4(camera_.getLookFrom(), 1.0f)) -
                                              vec3(trafo * vec4(camera_.getLookTo(), 1.0f))));
@@ -367,21 +365,86 @@ float Axis3DProcessorHelper::scalingFactor(const SpatialEntity* entity) const {
     }
 }
 
+namespace {
+std::array<dvec2, 3> getRangeDims(const SpatialEntity& entity) {
+    dvec3 volDims(1.0);
+    if (const auto* grid2d = dynamic_cast<const StructuredGridEntity<2>*>(&entity)) {
+        volDims = dvec3(grid2d->getDimensions(), 0.0);
+    } else if (const auto* grid3d = dynamic_cast<const StructuredGridEntity<3>*>(&entity)) {
+        volDims = dvec3(grid3d->getDimensions());
+    }
+    return {dvec2{0.0, volDims.x}, dvec2{0.0, volDims.y}, dvec2{0.0, volDims.z}};
+}
+
+std::array<dvec2, 3> getRangeBasis(const SpatialEntity& entity) {
+    dvec3 basisLen(1.0);
+    for (size_t i = 0; i < 3; ++i) {
+        basisLen[i] = glm::length(entity.getBasis()[i]);
+    }
+    return {dvec2{0.0, basisLen.x}, dvec2{0.0, basisLen.y}, dvec2{0.0, basisLen.z}};
+}
+
+std::array<dvec2, 3> getRangeBasisOffset(const SpatialEntity& entity) {
+    const auto offset = dvec3{entity.getOffset()};
+    const auto ranges = getRangeBasis(entity);
+    return {ranges[0] + offset.x, ranges[1] + offset.y, ranges[2] + offset.z};
+}
+
+std::array<dvec2, 3> getRangeWorld(const SpatialEntity& entity) {
+    const auto d2w = dmat4{entity.getCoordinateTransformer().getDataToWorldMatrix()};
+
+    return {dvec2{d2w[3].x, d2w[3].x + glm::length(d2w[0])},
+            dvec2{d2w[3].y, d2w[3].y + glm::length(d2w[1])},
+            dvec2{d2w[3].z, d2w[3].z + glm::length(d2w[2])}};
+}
+
+std::array<dvec2, 3> getRangeBoundingBox(CoordinateSpace destSpace, const SpatialEntity& entity,
+                                         std::optional<mat4> worldBoundingBox) {
+    if (worldBoundingBox) {
+        const auto bb =
+            dmat4{entity.getCoordinateTransformer().getMatrix(CoordinateSpace::World, destSpace)} *
+            dmat4{worldBoundingBox.value()};
+
+        return {dvec2{bb[3].x, bb[3].x + glm::length(bb[0])},
+                dvec2{bb[3].y, bb[3].y + glm::length(bb[1])},
+                dvec2{bb[3].z, bb[3].z + glm::length(bb[2])}};
+    } else {
+        return {dvec2{0.0, 1.0}, dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
+    }
+}
+
+}  // namespace
+
+std::array<dvec2, 3> Axis3DProcessorHelper::axisRanges(const SpatialEntity& entity) const {
+    switch (rangeMode_.get()) {
+        case AxisRangeMode::Dims:
+            return getRangeDims(entity);
+        case AxisRangeMode::Basis:
+            return getRangeBasis(entity);
+        case AxisRangeMode::BasisOffset:
+            return getRangeBasisOffset(entity);
+        case AxisRangeMode::World:
+            return getRangeWorld(entity);
+        case AxisRangeMode::DataBoundingBox:
+            return getRangeBoundingBox(
+                CoordinateSpace::Data, entity,
+                getBoundingBox_.and_then([](auto&& func) { return func(); }));
+        case AxisRangeMode::ModelBoundingBox:
+            return getRangeBoundingBox(
+                CoordinateSpace::Model, entity,
+                getBoundingBox_.and_then([](auto&& func) { return func(); }));
+        case AxisRangeMode::WorldBoundingBox:
+            return getRangeBoundingBox(
+                CoordinateSpace::World, entity,
+                getBoundingBox_.and_then([](auto&& func) { return func(); }));
+    }
+    return {dvec2{0.0, 1.0}, dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
+}
+
+/*
 ivec3 Axis3DProcessorHelper::adjustRanges(const SpatialEntity* entity,
                                           const std::optional<int>& autoScale) {
-    dvec3 volDims(1.0);
-    dvec3 offset(0.0);
-    dvec3 basisLen(1.0);
-    dmat4 worldTrafo{1.0f};
-
     if (entity) {
-        for (size_t i = 0; i < 3; ++i) {
-            basisLen[i] = glm::length(entity->getBasis()[i]);
-        }
-        offset = entity->getOffset();
-
-        worldTrafo = getDataToWorldMatrix(*entity);
-
         std::array<AxisProperty*, 3> axes = {&xAxis_, &yAxis_, &zAxis_};
         for (size_t i = 0; i < 3; ++i) {
             if (const auto* axis = entity->getAxis(i)) {
@@ -394,89 +457,9 @@ ivec3 Axis3DProcessorHelper::adjustRanges(const SpatialEntity* entity,
             }
         }
     }
-
-    if (const auto* grid2d = dynamic_cast<const StructuredGridEntity<2>*>(entity)) {
-        volDims = dvec3(grid2d->getDimensions(), 0.0);
-    } else if (const auto* grid3d = dynamic_cast<const StructuredGridEntity<3>*>(entity)) {
-        volDims = dvec3(grid3d->getDimensions());
-    }
-
-    ivec3 exps{0, 0, 0};
-    auto setRanges = [&](const dvec2& x, const dvec2& y, const dvec2& z) {
-        auto [xScaled, xExp] = scaleRange(x, autoScale);
-        auto [yScaled, yExp] = scaleRange(y, autoScale);
-        auto [zScaled, zExp] = scaleRange(z, autoScale);
-
-        xAxis_.range_.set(xScaled);
-        yAxis_.range_.set(yScaled);
-        zAxis_.range_.set(zScaled);
-
-        exps = ivec3(xExp, yExp, zExp);
-    };
-
-    const util::KeepTrueWhileInScope b(&propertyUpdate_);
-    switch (rangeMode_.get()) {
-        case AxisRangeMode::Dims:
-            setRanges(dvec2{0.0, volDims.x}, dvec2{0.0, volDims.y}, dvec2{0.0, volDims.z});
-            break;
-        case AxisRangeMode::Basis:
-            setRanges(dvec2{0.0, basisLen.x}, dvec2{0.0, basisLen.y}, dvec2{0.0, basisLen.z});
-            break;
-        case AxisRangeMode::BasisOffset:
-            setRanges(dvec2{offset.x, offset.x + basisLen.x},
-                      dvec2{offset.y, offset.y + basisLen.y},
-                      dvec2{offset.z, offset.z + basisLen.z});
-            break;
-        case AxisRangeMode::World:
-            setRanges(dvec2{worldTrafo[3].x, worldTrafo[3].x + glm::length(worldTrafo[0])},
-                      dvec2{worldTrafo[3].y, worldTrafo[3].y + glm::length(worldTrafo[1])},
-                      dvec2{worldTrafo[3].z, worldTrafo[3].z + glm::length(worldTrafo[2])});
-            break;
-        case AxisRangeMode::DataBoundingBox: {
-            dmat4 m = getBoundingBox_.and_then([](auto&& func) { return func(); })
-                          .transform([](const mat4& bbox) { return dmat4{bbox}; })
-                          .value_or(worldTrafo);
-            if (entity) {
-                m = dmat4{entity->getCoordinateTransformer().getModelToDataMatrix()} * m;
-            }
-            setRanges(dvec2{m[3].x, m[3].x + glm::length(m[0])},
-                      dvec2{m[3].y, m[3].y + glm::length(m[1])},
-                      dvec2{m[3].z, m[3].z + glm::length(m[2])});
-            break;
-        }
-        case AxisRangeMode::ModelBoundingBox: {
-            dmat4 m = getBoundingBox_.and_then([](auto&& func) { return func(); })
-                          .transform([](const mat4& bbox) { return dmat4{bbox}; })
-                          .value_or(worldTrafo);
-            if (entity) {
-                m = glm::inverse(dmat4{entity->getWorldMatrix()}) * m;
-            }
-            setRanges(dvec2{m[3].x, m[3].x + glm::length(m[0])},
-                      dvec2{m[3].y, m[3].y + glm::length(m[1])},
-                      dvec2{m[3].z, m[3].z + glm::length(m[2])});
-            break;
-        }
-        case AxisRangeMode::WorldBoundingBox: {
-            const dmat4 m = getBoundingBox_.and_then([](auto&& func) { return func(); })
-                                .transform([](const mat4& bbox) { return dmat4{bbox}; })
-                                .value_or(worldTrafo);
-
-            setRanges(dvec2{m[3].x, m[3].x + glm::length(m[0])},
-                      dvec2{m[3].y, m[3].y + glm::length(m[1])},
-                      dvec2{m[3].z, m[3].z + glm::length(m[2])});
-            break;
-        }
-        case AxisRangeMode::Custom:
-            setRanges(rangeXaxis_.get(), rangeYaxis_.get(), rangeZaxis_.get());
-            break;
-        default:
-            break;
-    }
-
-    customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
-
-    return exps;
 }
+
+*/
 
 dmat4 Axis3DProcessorHelper::getDataToWorldMatrix(const SpatialEntity& entity) const {
     const auto& coordinateTransformer = entity.getCoordinateTransformer();
@@ -490,5 +473,6 @@ dmat4 Axis3DProcessorHelper::getDataToWorldMatrix(const SpatialEntity& entity) c
         return m;
     }
 }
+
 
 }  // namespace inviwo::plot

@@ -62,12 +62,6 @@ MeshAxis::MeshAxis()
 
     util::for_each_in_tuple([&](Property& p) { addProperty(p); }, axisHelper_.props());
 
-    // adjust axis ranges when input mesh, i.e. its basis, changes
-    inport_.onChange([&]() { axisHelper_.adjustRanges(inport_.getData().get()); });
-    // sync ranges when custom range is enabled or disabled
-    axisHelper_.rangeMode_.onChange(
-        [this]() { axisHelper_.adjustRanges(inport_.getData().get()); });
-
     setAllPropertiesCurrentStateAsDefault();
 }
 

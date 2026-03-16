@@ -39,6 +39,7 @@
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
+#include <modules/plotting/utils/labelscaling.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 #include <tuple>
@@ -55,11 +56,9 @@ public:
         World,
         DataBoundingBox,
         ModelBoundingBox,
-        WorldBoundingBox,
-        Custom
+        WorldBoundingBox
     };
-    enum class OffsetScaling : unsigned char { None, MinExtent, MaxExtent, MeanExtent, Diagonal };
-
+    enum class OffsetScaling : std::uint8_t { None, MinExtent, MaxExtent, MeanExtent, Diagonal };
     enum class DimsRangeMode : std::uint8_t { No, Yes };
 
     explicit Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
@@ -68,16 +67,18 @@ public:
     void renderAxes(size2_t outputDims, const SpatialEntity& entity);
 
     float scalingFactor(const SpatialEntity* entity = nullptr) const;
-    ivec3 adjustRanges(const SpatialEntity* entity,
-                       const std::optional<int>& autoScale = std::nullopt);
+
+    std::array<dvec2, 3> axisRanges(const SpatialEntity& entity) const;
 
     auto props() {
-        return std::tie(offsetScaling_, axisOffset_, rangeMode_, customRanges_, visibility_,
-                        axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
+        return std::tie(offsetScaling_, axisOffset_, rangeMode_, captionType_, customCaption_,
+                        labelScale_, visibility_, axisStyle_, xAxis_, yAxis_, zAxis_, camera_,
+                        trackball_);
     }
     auto props() const {
-        return std::tie(offsetScaling_, axisOffset_, rangeMode_, customRanges_, visibility_,
-                        axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
+        return std::tie(offsetScaling_, axisOffset_, rangeMode_, captionType_, customCaption_,
+                        labelScale_, visibility_, axisStyle_, xAxis_, yAxis_, zAxis_, camera_,
+                        trackball_);
     }
 
     OptionProperty<OffsetScaling> offsetScaling_;
@@ -85,10 +86,9 @@ public:
 
     OptionProperty<AxisRangeMode> rangeMode_;
 
-    CompositeProperty customRanges_;
-    DoubleVec2Property rangeXaxis_;
-    DoubleVec2Property rangeYaxis_;
-    DoubleVec2Property rangeZaxis_;
+    OptionProperty<CaptionType> captionType_;
+    StringProperty customCaption_;
+    OptionProperty<LabelScale> labelScale_;
 
     BoolCompositeProperty visibility_;
     OptionPropertyString presets_;
@@ -103,8 +103,6 @@ public:
     CameraTrackball trackball_;
 
     std::array<AxisRenderer3D, 3> axisRenderers_;
-
-    float oldScale_ = 0.0f;
 
 protected:
     dmat4 getDataToWorldMatrix(const SpatialEntity& entity) const;

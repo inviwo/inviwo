@@ -74,7 +74,7 @@ OptionPropertyState<LabelScale> labelScaleState() {
 
 std::string formatAxisCaption(const Axis& axis, CaptionType captionType, LabelScale labelScale,
                               std::string_view customFormat, int exponent,
-                              std::string_view origCaption) {
+                              std::string_view originalCaption) {
 
     switch (captionType) {
         case CaptionType::Data:
@@ -87,13 +87,13 @@ std::string formatAxisCaption(const Axis& axis, CaptionType captionType, LabelSc
                     fmt::arg("s", formatExponent(exponent)), fmt::arg("e", exponent));
             } catch (const fmt::format_error& e) {
                 log::error("Invalid custom caption format: {}: {}", customFormat, e.what());
-                return std::string{origCaption};
+                return std::string{originalCaption};
             }
 
         case CaptionType::String:
             [[fallthrough]];
         default:
-            return std::string{origCaption};
+            return std::string{originalCaption};
     }
 }
 
