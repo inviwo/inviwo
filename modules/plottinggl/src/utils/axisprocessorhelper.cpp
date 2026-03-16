@@ -59,7 +59,7 @@ OptionPropertyState<AxisRangeMode> rangeModeState(bool hasDims, bool hasBounding
     return {.options = rangeOptions, .help = "Determines axis ranges"_help};
 }
 
-float calcScaleFactor(const glm::mat4& matrix, OffsetScaling mode) {
+float calcScaleFactor3D(const glm::mat4& matrix, OffsetScaling mode) {
     const auto l = vec3{glm::length(matrix[0]), glm::length(matrix[1]), glm::length(matrix[2])};
     switch (mode) {
         case OffsetScaling::MinExtent:
@@ -70,6 +70,22 @@ float calcScaleFactor(const glm::mat4& matrix, OffsetScaling mode) {
             return glm::compAdd(l) / (3.0f * 100.0f);
         case OffsetScaling::Diagonal:
             return glm::length(matrix[0] + matrix[1] + matrix[2]) / 100.0f;
+        case OffsetScaling::None:
+        default:
+            return 1.0f;
+    }
+}
+float calcScaleFactor2D(const glm::mat4& matrix, OffsetScaling mode) {
+    const auto l = vec2{glm::length(matrix[0]), glm::length(matrix[1])};
+    switch (mode) {
+        case OffsetScaling::MinExtent:
+            return glm::compMin(l) / 100.0f;
+        case OffsetScaling::MaxExtent:
+            return glm::compMax(l) / 100.0f;
+        case OffsetScaling::MeanExtent:
+            return glm::compAdd(l) / (2.0f * 100.0f);
+        case OffsetScaling::Diagonal:
+            return glm::length(matrix[0] + matrix[1]) / 100.0f;
         case OffsetScaling::None:
         default:
             return 1.0f;

@@ -50,7 +50,7 @@ TEST(Unitsystem, unitsystem) {
     EXPECT_EQ(fmt::format("{: (si}", m), " (m)");
     EXPECT_EQ(fmt::format("{: [si}", m), " [m]");
     EXPECT_EQ(fmt::format("{: [psi}", km), " [km]");
-    EXPECT_EQ(fmt::format("{: [Psi}", km), " [1e+03 m]");
+    EXPECT_EQ(fmt::format("{: [Psi}", km), " [10⁺³ m]");
 
     EXPECT_EQ(fmt::format("{: [si}", m.pow(3)), " [m³]");
     EXPECT_EQ(fmt::format("{: [si}", m.pow(-1)), " [1/m]");

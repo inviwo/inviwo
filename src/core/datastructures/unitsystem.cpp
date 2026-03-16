@@ -266,7 +266,7 @@ std::back_insert_iterator<fmt::memory_buffer> util::formatUnitTo(
     int neg = 0;
     int pos = 0;
     if (mult != 1.0) {
-        it = fmt::format_to(it, "{:4.2e}", UnicodeFloat{mult});
+        it = fmt::format_to(it, "{:4.2g}", UnicodeFloat{mult});
         ++pos;
         if (!niceUnits.empty()) *it++ = ' ';
     }

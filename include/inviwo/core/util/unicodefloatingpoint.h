@@ -92,10 +92,8 @@ inline bool hasUnitMantissa(std::string_view mantissa) {
     mantissa.remove_prefix(2);
 
     if (mantissa.empty()) return true;
-    for (const char c : mantissa) {
-        if (c != '0') return false;
-    }
-    return true;
+
+    return std::ranges::all_of(mantissa, [](const char c) { return c == '0'; });
 }
 
 }  // namespace detail

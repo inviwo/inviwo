@@ -108,8 +108,8 @@ std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
 
 }  // namespace
 
-Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
-                                             DimsRangeMode useDimsRange)
+Axis3DProcessorHelper::Axis3DProcessorHelper(
+    const std::function<std::optional<mat4>()>& getBoundingBox, DimsRangeMode useDimsRange)
     : offsetScaling_{"offsetScaling",
                      "Offset Scaling",
                      R"(Offset scaling affects tick lengths and offsets of axis captions and labels.
@@ -226,7 +226,7 @@ void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
     const auto maybeBB = std::optional<mat4>{getBoundingBox_ ? getBoundingBox_() : std::nullopt};
     const auto d2w = plot::getTransform(entity, maybeBB, rangeMode_.get());
     const auto nD2W = dmat3{glm::transpose(glm::inverse(d2w))};
-    const auto scale = plot::calcScaleFactor(d2w, offsetScaling_.get());
+    const auto scale = plot::calcScaleFactor3D(d2w, offsetScaling_.get());
     const auto autoScale = plot::labelScaleStep(labelScale_.get());
     const auto axisRanges = plot::calcAxisRanges(entity, maybeBB, rangeMode_.get());
 

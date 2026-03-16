@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
@@ -190,7 +191,11 @@ ColorScaleLegend::ColorScaleLegend()
     , shader_{"img_texturequad.vert", "legend.frag"}
     , isoValueShader_{"isovaluetri.vert", "isovaluetri.geom", "standard.frag", Shader::Build::No}
     , axis_{"axis", "Scale Axis"}
-    , orientation_{AxisProperty::Orientation::Horizontal}
+    , orientation_{"orientation",
+                   "Orientation",
+                   {{"horizontal", "Horizontal", AxisProperty::Orientation::Horizontal},
+                    {"vertical", "Vertical", AxisProperty::Orientation::Vertical}},
+                   0}
     , axisRenderer_{AxisData{}}
     , isovalueMesh_{DrawType::Points, ConnectivityType::None}
     , picking_{this, 1, [this](PickingEvent* e) { handlePicking(e); }} {
@@ -208,7 +213,7 @@ ColorScaleLegend::ColorScaleLegend()
     overrideTFRange_.setCollapsed(true);
 
     // legend position
-    positioning_.addProperties(legendPresets_, margin_, position_, legendSize_);
+    positioning_.addProperties(legendPresets_, orientation_, margin_, position_, legendSize_);
 
     // legend style
     isovalues_.addProperty(triSize_);
@@ -258,7 +263,7 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
 
     const auto [position, legendSize] = [&]() {
         const auto initialPos = position_.get();
-        const auto size = (orientation_ == AxisProperty::Orientation::Horizontal)
+        const auto size = (orientation_.get() == AxisProperty::Orientation::Horizontal)
                               ? legendSize_.get()
                               : glm::yx(legendSize_.get());
 
@@ -277,7 +282,7 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
     ivec2 axisStart{0};
     ivec2 axisEnd{0};
 
-    if (orientation_ == AxisProperty::Orientation::Horizontal) {
+    if (orientation_.get() == AxisProperty::Orientation::Horizontal) {
         if (axis_.mirrored_.get()) {
             axisStart = topLeft + ivec2(ticsWidth / 2, 0) + ivec2(-borderWidth, borderWidth);
             axisEnd = topRight - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth);
@@ -391,7 +396,6 @@ void ColorScaleLegend::process() {
     if (axis_.isModified()) {
         axis_.update(axisRenderer_.getData());
     }
-
     axisRenderer_.render(dimensions, axisStart, axisEnd);
 
     utilgl::deactivateCurrentTarget();
@@ -439,9 +443,10 @@ void ColorScaleLegend::setPlacement(Placement placement) {
 
     auto setPositions = [&](AxisProperty::Orientation orientation, bool mirror,
                             const vec2& legendPos, bool inside) {
+        const NetworkLock lock(this);
         position_.set(legendPos);
         margin_.set(inside ? 10 : 90);
-        orientation_ = orientation;
+        orientation_.setSelectedValue(orientation);
 
         axis_.mirrored_.set(mirror);
         axis_.captionSettings_.font_.anchorPos_.set(vec2{0.0f, 1.0f});

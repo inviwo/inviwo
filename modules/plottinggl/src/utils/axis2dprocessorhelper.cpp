@@ -86,8 +86,8 @@ std::array<AxisParams, 2> findAxisPositions(dvec3 viewDirection) {
 
 namespace plot {
 
-Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
-                                             DimsRangeMode useDimsRange)
+Axis2DProcessorHelper::Axis2DProcessorHelper(
+    const std::function<std::optional<mat4>()>& getBoundingBox, DimsRangeMode useDimsRange)
     : offsetScaling_{"offsetScaling",
                      "Offset Scaling",
                      R"(Offset scaling affects tick lengths and offsets of axis captions and labels.
@@ -135,7 +135,7 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
     , axisStyle_{"axisStyle", "Global Axis Style"}
     , axes_{{{"xAxis", "X Axis", "Axis properties for x"_help},
              {"yAxis", "Y Axis", "Axis properties for y"_help}}}
-    , camera_{"camera", "Camera", std::move(getBoundingBox)}
+    , camera_{"camera", "Camera", getBoundingBox}
     , trackball_{&camera_}
     , axisRenderers_{}
     , getBoundingBox_{getBoundingBox} {
@@ -199,7 +199,7 @@ void Axis2DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
     }
 
     const auto nD2W = dmat3{glm::transpose(glm::inverse(d2w))};
-    const auto scale = plot::calcScaleFactor(d2w, offsetScaling_.get());
+    const auto scale = plot::calcScaleFactor2D(d2w, offsetScaling_.get());
     const auto autoScale = plot::labelScaleStep(labelScale_.get());
     const auto axisRanges = plot::calcAxisRanges(entity, maybeBB, rangeMode_.get());
 

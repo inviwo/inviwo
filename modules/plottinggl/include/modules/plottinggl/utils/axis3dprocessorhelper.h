@@ -50,7 +50,7 @@ namespace inviwo::plot {
 
 class IVW_MODULE_PLOTTINGGL_API Axis3DProcessorHelper {
 public:
-    explicit Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
+    explicit Axis3DProcessorHelper(const std::function<std::optional<mat4>()>& getBoundingBox,
                                    DimsRangeMode useDimsRange = DimsRangeMode::No);
 
     void renderAxes(size2_t outputDims, const SpatialEntity& entity);

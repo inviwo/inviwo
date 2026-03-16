@@ -139,7 +139,7 @@ private:
 
     // axis properties
     AxisProperty axis_;
-    AxisProperty::Orientation orientation_;
+    OptionProperty<AxisProperty::Orientation> orientation_;
     AxisRenderer axisRenderer_;
 
     Mesh isovalueMesh_;
