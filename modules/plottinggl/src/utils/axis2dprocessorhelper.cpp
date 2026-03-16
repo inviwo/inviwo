@@ -37,6 +37,7 @@
 
 #include <fmt/core.h>
 #include <algorithm>
+#include <ranges>
 
 namespace inviwo {
 
@@ -55,16 +56,16 @@ std::array<AxisParams, 2> findAxisPositions(dvec3 viewDirection) {
         std::array<size_t, 2> idx;
         dvec3 tickDir;
     };
-    // clang-format off
-    constexpr std::array<std::array<AI, 2>, 2> meta =
-        {{{
-            AI{{0, 2}, dvec3{0, 1, 0}},
-            AI{{1, 3}, dvec3{0, -1, 0}},
-        },{
-            AI{{0, 1}, dvec3{1, 0, 0}},
-            AI{{2, 3}, dvec3{-1, 0, 0}},
-        }}};
-    // clang-format on
+
+    constexpr std::array<std::array<AI, 2>, 2> meta = {
+        {{
+             AI{.idx = {0, 2}, .tickDir = dvec3{0, 1, 0}},
+             AI{.idx = {1, 3}, .tickDir = dvec3{0, -1, 0}},
+         },
+         {
+             AI{.idx = {0, 1}, .tickDir = dvec3{1, 0, 0}},
+             AI{.idx = {2, 3}, .tickDir = dvec3{-1, 0, 0}},
+         }}};
 
     const auto dist = [&](const AI& edge) {
         return 0.5 * (glm::dot(corners[edge.idx[0]] - center, viewDirection) +
@@ -75,7 +76,7 @@ std::array<AxisParams, 2> findAxisPositions(dvec3 viewDirection) {
         const auto min = *std::ranges::max_element(
             axis, [&](const AI& a, const AI& b) { return (dist(a) < dist(b)); });
 
-        return {corners[min.idx[0]], corners[min.idx[1]], min.tickDir};
+        return {.start = corners[min.idx[0]], .stop = corners[min.idx[1]], .tickDir = min.tickDir};
     };
 
     return {find(meta[0]), find(meta[1])};
@@ -108,16 +109,13 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
                   util::ordinalLength(10.0f, 50.0f)
                       .set(
                           "Offset between each axis and the data considering the Offset Scaling mode"_help)}
-    , rangeMode_{"rangeMode", "Axis Range Mode", "Determines axis ranges"_help}
-    , customRanges_{"customRanges", "Custom Ranges"}
-    , rangeXaxis_("rangeX", "X Axis", "Custom range for the x axis"_help, dvec2{0.0, 1.0},
-                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
-                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
-                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , rangeYaxis_("rangeY", "Y Axis", "Custom range for the y axis"_help, dvec2{0.0, 1.0},
-                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
-                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
-                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , rangeMode_{"rangeMode", "Axis Range Mode",
+                 rangeModeState(useDimsRange == DimsRangeMode::Yes, getBoundingBox != nullptr)}
+
+    , captionType_("captionType", "Caption Type", captionTypeState())
+    , customCaption_("customCaption", "Custom Caption", "{n}{u: [}")
+    , labelScale_{"labelScale", "Label Scaling", labelScaleState()}
+
     , visibility_{"visibility", "Axis Visibility",
                   "Visibility of all available axes (default: all axis start at the origin)"_help,
                   true}
@@ -135,33 +133,16 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
           {"posX", "Y +X", false},
       }}
     , axisStyle_{"axisStyle", "Global Axis Style"}
-    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help, AxisProperty::Orientation::Horizontal}
-    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help, AxisProperty::Orientation::Horizontal}
+    , axes_{{{"xAxis", "X Axis", "Axis properties for x"_help},
+             {"yAxis", "Y Axis", "Axis properties for y"_help}}}
     , camera_{"camera", "Camera", std::move(getBoundingBox)}
     , trackball_{&camera_}
-    , axisRenderers_{AxisData{}, AxisData{}}
-    , propertyUpdate_{false} {
-
-    xAxis_.setCaption("x");
-    yAxis_.setCaption("y");
-
-    std::vector<OptionPropertyOption<AxisRangeMode>> rangeOptions = {
-        {"basis", "Basis", AxisRangeMode::Basis},
-        {"basisOffset", "Basis & Offset", AxisRangeMode::BasisOffset},
-        {"world", "Model & World Transform", AxisRangeMode::World},
-        {"custom", "Custom", AxisRangeMode::Custom}};
-    if (useDimsRange == DimsRangeMode::Yes) {
-        rangeOptions.emplace(rangeOptions.begin(), "dims", "Volume Dimensions (voxel)",
-                             AxisRangeMode::Dims);
-    }
-    rangeMode_.replaceOptions(rangeOptions);
-
-    customRanges_.addProperties(rangeXaxis_, rangeYaxis_);
-    customRanges_.setCollapsed(true);
+    , axisRenderers_{}
+    , getBoundingBox_{getBoundingBox} {
 
     presets_.setSerializationMode(PropertySerializationMode::None);
     presets_.onChange([&]() {
-        NetworkLock lock(&visibility_);
+        const NetworkLock lock(&visibility_);
         if (presets_.getSelectedValue() == "all") {
             for (auto& p : visibleAxes_) {
                 p.set(true);
@@ -183,193 +164,124 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
         visibility_.addProperty(p);
     }
 
-    axisStyle_.registerProperties(xAxis_, yAxis_);
     axisStyle_.setCollapsed(true);
     visibility_.setCollapsed(true);
     camera_.setCollapsed(true);
     trackball_.setCollapsed(true);
 
     // initialize axes
-    for (auto property : {&xAxis_, &yAxis_}) {
-        property->majorTicks_.width.set(1.5f);
-        property->majorTicks_.style.set(TickData::Style::Outside);
+    static constexpr std::array<std::string_view, 2> defaulCaptions{"x", "y"};
+    for (auto&& [axis, caption] : std::views::zip(axes_, defaulCaptions)) {
+        axis.setCaption(caption);
+        axis.majorTicks_.width.set(1.5f);
+        axis.majorTicks_.style.set(TickData::Style::Outside);
 
-        property->minorTicks_.width.set(1.3f);
-        property->minorTicks_.style.set(TickData::Style::Outside);
+        axis.minorTicks_.width.set(1.3f);
+        axis.minorTicks_.style.set(TickData::Style::Outside);
+
+        // Treat the range as a pure output property.
+        axis.range_.setInvalidationLevel(InvalidationLevel::Valid);
+
+        axis.setCurrentStateAsDefault();
+
+        axisStyle_.registerProperties(axis);
     }
-
-    auto linkAxisRanges = [this](const DoubleVec2Property& from, DoubleVec2Property& to) {
-        auto func = [&]() {
-            if (!propertyUpdate_ && (rangeMode_.getSelectedValue() == AxisRangeMode::Custom)) {
-                const util::KeepTrueWhileInScope b(&propertyUpdate_);
-                to.set(from.get());
-            }
-        };
-        return func;
-    };
-    // "link" custom ranges with individual axis ranges
-    xAxis_.range_.onChange(linkAxisRanges(xAxis_.range_, rangeXaxis_));
-    yAxis_.range_.onChange(linkAxisRanges(yAxis_.range_, rangeYaxis_));
-    rangeXaxis_.onChange(linkAxisRanges(rangeXaxis_, xAxis_.range_));
-    rangeYaxis_.onChange(linkAxisRanges(rangeYaxis_, yAxis_.range_));
-
-    customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
 }
 
 void Axis2DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& entity) {
-    dmat4 modelMatrix{entity.getModelMatrix()};
-    const dmat4 worldMatrix{entity.getWorldMatrix()};
 
+    const auto maybeBB = std::optional<mat4>{getBoundingBox_ ? getBoundingBox_() : std::nullopt};
+    auto d2w = plot::getTransform(entity, maybeBB, rangeMode_.get());
     // ensure non-zero columns in model matrix which are caused by zero-length basis vectors
     // FIXME: coordinate transformer should take care of this for the model matrix
-    if (glm::length(modelMatrix[2]) < glm::epsilon<double>()) {
-        modelMatrix[2] =
-            dvec4(glm::normalize(glm::cross(dvec3(modelMatrix[0]), dvec3(modelMatrix[1]))), 0.0);
+    if (glm::length(d2w[2]) < glm::epsilon<double>()) {
+        d2w[2] = dvec4(glm::normalize(glm::cross(dvec3(d2w[0]), dvec3(d2w[1]))), 0.0);
     }
 
-    const dmat4 m = worldMatrix * modelMatrix;
-    const dmat4 mInv = glm::inverse(m);
-    const dmat3 nm = glm::transpose(mInv);
-    // the mean length of the three basis vectors is used for a relative axis offset (%)
-    const auto scale = scalingFactor(&entity);
-    const double offset = axisOffset_.get() * scale;
+    const auto nD2W = dmat3{glm::transpose(glm::inverse(d2w))};
+    const auto scale = plot::calcScaleFactor(d2w, offsetScaling_.get());
+    const auto autoScale = plot::labelScaleStep(labelScale_.get());
+    const auto axisRanges = plot::calcAxisRanges(entity, maybeBB, rangeMode_.get());
 
-    auto scaleAxisData = [&](AxisData& data) {
+    for (auto&& [i, axis, renderer, range] :
+         std::views::zip(std::views::iota(0uz, axes_.size()), axes_, axisRenderers_, axisRanges)) {
+        auto [scaledRange, exponent] = scaleRange(range, autoScale);
+        if (axis.overrideRange_) {
+            scaledRange = axis.customRange_;
+            exponent = 0;
+        }
+
+        auto& data = renderer.getData();
+        data.range = scaledRange;
+        data.visible = axis.isChecked();
+        data.mirrored = axis.mirrored_.get();
+        data.color = axis.color_.get();
+        data.width = axis.width_.get();
+        data.caption = axis.captionSettings_.title_.get();
+        axis.captionSettings_.update(data.captionSettings);
+
+        updateLabelPositions(data.majorPositions, data.minorPositions,
+                             axis.labelingAlgorithm_.get(), data.range,
+                             axis.majorTicks_.numberOfTicks.get(), axis.minorTicks_.frequency.get(),
+                             axis.minorTicks_.fillAxis.get());
+
+        axis.labelSettings_.update(data.labelSettings);
+        updateLabels(data.labels, data.majorPositions, axis.labelSettings_.title_.get());
+
+        axis.majorTicks_.update(data.major);
+        axis.minorTicks_.update(data.minor);
+
         data.major.length *= scale;
         data.minor.length *= scale;
         data.labelSettings.offset.x *= scale;
         data.captionSettings.offset.x *= scale;
-    };
 
-    if (xAxis_.isModified() || scale != oldScale_) {
-        xAxis_.update(axisRenderers_[0].getData());
-        scaleAxisData(axisRenderers_[0].getData());
+        if (entity.getAxis(i)) {
+            data.caption =
+                formatAxisCaption(*entity.getAxis(i), captionType_.get(), labelScale_.get(),
+                                  customCaption_.get(), exponent, data.caption);
+        }
+
+        // Update axis range
+        axis.range_.set(scaledRange);
     }
-    if (yAxis_.isModified() || scale != oldScale_) {
-        yAxis_.update(axisRenderers_[1].getData());
-        scaleAxisData(axisRenderers_[1].getData());
-    }
-    oldScale_ = scale;
+
+    const double offset = axisOffset_.get() * scale;
 
     const auto render = [&](const AxisParams& axis, size_t axisIdx) {
-        const dvec3 center{0.5, 0.5, 0.0};
+        const dvec3 center{0.5, 0.5, 0.5};
         const auto offsetDir =
-            glm::normalize(dmat3(m) * glm::normalize(axis.start - center + axis.stop - center));
-        const vec3 start{dvec3{m * dvec4(axis.start, 1)} + offset * offsetDir};
-        const vec3 stop{dvec3{m * dvec4(axis.stop, 1)} + offset * offsetDir};
-        const vec3 tickDir{nm * axis.tickDir};
+            glm::normalize(dmat3{d2w} * glm::normalize(axis.start - center + axis.stop - center));
+        const vec3 start{dvec3{d2w * dvec4(axis.start, 1)} + offset * offsetDir};
+        const vec3 stop{dvec3{d2w * dvec4(axis.stop, 1)} + offset * offsetDir};
+        const vec3 tickDir{nD2W * glm::normalize(axis.tickDir)};
         axisRenderers_[axisIdx].render(&camera_.get(), outputDims, start, stop, tickDir);
     };
 
     if (visibility_.isChecked()) {  // automatic selection
         // transform camera to data space since findAxisPositions uses a uniform square centered at
         // the origin to determine the visible faces
+        const mat4 trafo{glm::inverse(d2w)};
         const auto axes =
-            findAxisPositions(glm::normalize(vec3(mInv * vec4(camera_.getLookFrom(), 1.0f)) -
-                                             vec3(mInv * vec4(camera_.getLookTo(), 1.0f))));
+            findAxisPositions(glm::normalize(vec3(trafo * vec4(camera_.getLookFrom(), 1.0f)) -
+                                             vec3(trafo * vec4(camera_.getLookTo(), 1.0f))));
         for (auto&& [i, axis] : util::enumerate(axes)) {
             render(axis, i);
         }
     } else {
         constexpr std::array<AxisParams, 4> axes{{
             // x axis
-            {{0., 0., 0.}, {1., 0., 0.}, {0., 1., 0.}},
-            {{0., 1., 0.}, {1., 1., 0.}, {0., -1., 0.}},
+            {.start = {0., 0., 0.}, .stop = {1., 0., 0.}, .tickDir = {0., 1., 0.}},
+            {.start = {0., 1., 0.}, .stop = {1., 1., 0.}, .tickDir = {0., -1., 0.}},
             // y axis
-            {{0., 0., 0.}, {0., 1., 0.}, {1., 0., 0.}},
-            {{1., 0., 0.}, {1., 1., 0.}, {-1., 0., 0.}},
+            {.start = {0., 0., 0.}, .stop = {0., 1., 0.}, .tickDir = {1., 0., 0.}},
+            {.start = {1., 0., 0.}, .stop = {1., 1., 0.}, .tickDir = {-1., 0., 0.}},
         }};
         for (auto&& [i, axis] : util::enumerate(axes)) {
             if (!visibleAxes_[i].get()) continue;
             render(axis, i / 2);
         }
     }
-}
-
-float Axis2DProcessorHelper::scalingFactor(const SpatialEntity* entity) const {
-    if (entity) {
-        const mat4 m{entity->getCoordinateTransformer().getDataToWorldMatrix()};
-        const auto l = vec3{glm::length(m[0]), glm::length(m[1]), glm::length(m[2])};
-        switch (offsetScaling_.get()) {
-            case OffsetScaling::MinExtent:
-                return glm::compMin(vec2{l}) / 100.0f;
-            case OffsetScaling::MaxExtent:
-                return glm::compMax(l) / 100.0f;
-            case OffsetScaling::MeanExtent:
-                return glm::compAdd(l) / (2.0f * 100.0f);
-            case OffsetScaling::Diagonal:
-                return glm::length(m[0] + m[1] + m[2]) / 100.0f;
-            case OffsetScaling::None:
-            default:
-                return 1.0f;
-        }
-    } else {
-        return 1.0f;
-    }
-}
-
-void Axis2DProcessorHelper::adjustRanges(const SpatialEntity* entity) {
-    dvec2 layerDims(1.0);
-    dvec3 offset(0.0);
-    dvec3 basisLen(1.0);
-    mat4 worldTrafo{1.0f};
-
-    if (entity) {
-        for (size_t i = 0; i < 3; ++i) {
-            basisLen[i] = glm::length(entity->getBasis()[i]);
-        }
-        offset = entity->getOffset();
-
-        worldTrafo = entity->getCoordinateTransformer().getDataToWorldMatrix();
-
-        std::array<AxisProperty*, 2> axes = {&xAxis_, &yAxis_};
-        for (size_t i = 0; i < 2; ++i) {
-            if (auto axis = entity->getAxis(i)) {
-                util::updateDefaultState(axes[i]->captionSettings_.title_,
-                                         fmt::format("{}{: [}", axis->name, axis->unit),
-                                         util::OverwriteState::No);
-            } else {
-                util::updateDefaultState(axes[i]->captionSettings_.title_,
-                                         util::defaultAxesNames[i], util::OverwriteState::No);
-            }
-        }
-    }
-
-    if (auto grid2d = dynamic_cast<const StructuredGridEntity<2>*>(entity)) {
-        layerDims = dvec2(grid2d->getDimensions());
-    } else if (auto grid3d = dynamic_cast<const StructuredGridEntity<3>*>(entity)) {
-        layerDims = dvec2(grid3d->getDimensions());
-    }
-
-    util::KeepTrueWhileInScope b(&propertyUpdate_);
-    switch (rangeMode_.get()) {
-        case AxisRangeMode::Dims:
-            xAxis_.range_.set(dvec2(0.0, layerDims.x));
-            yAxis_.range_.set(dvec2(0.0, layerDims.y));
-            break;
-        case AxisRangeMode::Basis:
-            xAxis_.range_.set(dvec2(0.0, basisLen.x));
-            yAxis_.range_.set(dvec2(0.0, basisLen.y));
-            break;
-        case AxisRangeMode::BasisOffset:
-            xAxis_.range_.set(dvec2(offset.x, offset.x + basisLen.x));
-            yAxis_.range_.set(dvec2(offset.y, offset.y + basisLen.y));
-            break;
-        case AxisRangeMode::World:
-            xAxis_.range_.set(
-                dvec2(worldTrafo[3].x, worldTrafo[3].x + glm::length(vec3(worldTrafo[0]))));
-            yAxis_.range_.set(
-                dvec2(worldTrafo[3].y, worldTrafo[3].y + glm::length(vec3(worldTrafo[1]))));
-            break;
-        case AxisRangeMode::Custom:
-            xAxis_.range_.set(rangeXaxis_.get());
-            yAxis_.range_.set(rangeYaxis_.get());
-            break;
-        default:
-            break;
-    }
-
-    customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
 }
 
 }  // namespace plot

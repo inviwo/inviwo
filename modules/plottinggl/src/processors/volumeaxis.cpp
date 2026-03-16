@@ -57,7 +57,7 @@ VolumeAxis::VolumeAxis()
     , imageInport_{"imageInport", "Background image (optional)"_help}
     , outport_{"outport",
                "Output image containing the rendered volume axes and the optional input image"_help}
-    , axisHelper_{util::boundingBox(inport_)} {
+    , axisHelper_{util::boundingBox(inport_), DimsRangeMode::Yes} {
 
     imageInport_.setOptional(true);
 

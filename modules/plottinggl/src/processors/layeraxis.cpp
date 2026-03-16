@@ -53,19 +53,13 @@ LayerAxis::LayerAxis()
     , imageInport_{"imageInport", "Background image (optional)"_help}
     , outport_{"outport",
                "Output image containing the rendered layer axes and the optional input image"_help}
-    , axisHelper_{util::boundingBox(inport_), Axis2DProcessorHelper::DimsRangeMode::Yes} {
+    , axisHelper_{util::boundingBox(inport_), DimsRangeMode::Yes} {
 
     imageInport_.setOptional(true);
 
     addPorts(inport_, imageInport_, outport_);
 
     util::for_each_in_tuple([&](Property& p) { addProperty(p); }, axisHelper_.props());
-
-    // adjust axis ranges when input mesh, i.e. its basis, changes
-    inport_.onChange([&]() { axisHelper_.adjustRanges(inport_.getData().get()); });
-    // sync ranges when custom range is enabled or disabled
-    axisHelper_.rangeMode_.onChange(
-        [this]() { axisHelper_.adjustRanges(inport_.getData().get()); });
 
     setAllPropertiesCurrentStateAsDefault();
 }

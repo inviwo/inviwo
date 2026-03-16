@@ -62,25 +62,20 @@ std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
         std::array<size_t, 2> idx;
         std::array<dvec3, 2> faceNormals;
     };
-    // clang-format off
-    constexpr std::array<std::array<AI, 4>, 3> meta =
-        {{{
-            AI{.idx={0, 4}, .faceNormals={dvec3{0, -1, 0}, dvec3{0, 0, -1}}},
-            AI{.idx={1, 5}, .faceNormals={dvec3{0, -1, 0}, dvec3{0, 0,  1}}},
-            AI{.idx={2, 6}, .faceNormals={dvec3{0, 0, -1}, dvec3{0, 1,  0}}},
-            AI{.idx={3, 7}, .faceNormals={dvec3{0, 1,  0}, dvec3{0, 0,  1}}}
-        },{
-            AI{.idx={0, 2}, .faceNormals={dvec3{-1, 0, 0}, dvec3{0, 0, -1}}},
-            AI{.idx={1, 3}, .faceNormals={dvec3{-1, 0, 0}, dvec3{0, 0,  1}}},
-            AI{.idx={4, 6}, .faceNormals={dvec3{0, 0, -1}, dvec3{1, 0,  0}}},
-            AI{.idx={5, 7}, .faceNormals={dvec3{1, 0,  0}, dvec3{0, 0,  1}}}
-        },{
-            AI{.idx={0, 1}, .faceNormals={dvec3{-1, 0, 0}, dvec3{0, -1, 0}}},
-            AI{.idx={2, 3}, .faceNormals={dvec3{-1, 0, 0}, dvec3{0,  1, 0}}},
-            AI{.idx={4, 5}, .faceNormals={dvec3{0, -1, 0}, dvec3{1,  0, 0}}},
-            AI{.idx={6, 7}, .faceNormals={dvec3{1,  0, 0}, dvec3{0,  1, 0}}}
-        }}};
-    // clang-format on
+
+    constexpr std::array<std::array<AI, 4>, 3> meta = {
+        {{AI{.idx = {0, 4}, .faceNormals = {dvec3{0, -1, 0}, dvec3{0, 0, -1}}},
+          AI{.idx = {1, 5}, .faceNormals = {dvec3{0, -1, 0}, dvec3{0, 0, 1}}},
+          AI{.idx = {2, 6}, .faceNormals = {dvec3{0, 0, -1}, dvec3{0, 1, 0}}},
+          AI{.idx = {3, 7}, .faceNormals = {dvec3{0, 1, 0}, dvec3{0, 0, 1}}}},
+         {AI{.idx = {0, 2}, .faceNormals = {dvec3{-1, 0, 0}, dvec3{0, 0, -1}}},
+          AI{.idx = {1, 3}, .faceNormals = {dvec3{-1, 0, 0}, dvec3{0, 0, 1}}},
+          AI{.idx = {4, 6}, .faceNormals = {dvec3{0, 0, -1}, dvec3{1, 0, 0}}},
+          AI{.idx = {5, 7}, .faceNormals = {dvec3{1, 0, 0}, dvec3{0, 0, 1}}}},
+         {AI{.idx = {0, 1}, .faceNormals = {dvec3{-1, 0, 0}, dvec3{0, -1, 0}}},
+          AI{.idx = {2, 3}, .faceNormals = {dvec3{-1, 0, 0}, dvec3{0, 1, 0}}},
+          AI{.idx = {4, 5}, .faceNormals = {dvec3{0, -1, 0}, dvec3{1, 0, 0}}},
+          AI{.idx = {6, 7}, .faceNormals = {dvec3{1, 0, 0}, dvec3{0, 1, 0}}}}}};
 
     const auto onEdge = [&](const AI& edge) {
         return glm::sign(glm::dot(edge.faceNormals[0], viewDirection)) !=
@@ -111,24 +106,6 @@ std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
     return {find(meta[0]), find(meta[1]), find(meta[2])};
 }
 
-auto rangeOptions(bool hasDims, bool hasBoundingBox) {
-    using AxisRangeMode = Axis3DProcessorHelper::AxisRangeMode;
-    using enum AxisRangeMode;
-    std::vector<OptionPropertyOption<AxisRangeMode>> rangeOptions;
-    if (hasDims) {
-        rangeOptions.emplace_back("dims", "Volume Dimensions (voxel)", Dims);
-    }
-    rangeOptions.emplace_back("basis", "Basis", Basis);
-    rangeOptions.emplace_back("basisOffset", "Basis & Offset", BasisOffset);
-    rangeOptions.emplace_back("world", "Model & World Transform", World);
-    if (hasBoundingBox) {
-        rangeOptions.emplace_back("dataBoundingBox", "Data Bounding Box", DataBoundingBox);
-        rangeOptions.emplace_back("modelBoundingBox", "Model Bounding Box", ModelBoundingBox);
-        rangeOptions.emplace_back("boundingBox", "World Bounding Box", WorldBoundingBox);
-    }
-    return rangeOptions;
-}
-
 }  // namespace
 
 Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
@@ -155,8 +132,8 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
                   util::ordinalLength(10.0f, 50.0f)
                       .set("Offset between each axis and the data "
                            "considering the Offset Scaling mode"_help)}
-    , rangeMode_{"rangeMode", "Axis Range Mode", "Determines axis ranges"_help,
-                 rangeOptions(useDimsRange == DimsRangeMode::Yes, getBoundingBox != nullptr)}
+    , rangeMode_{"rangeMode", "Axis Range Mode",
+                 rangeModeState(useDimsRange == DimsRangeMode::Yes, getBoundingBox != nullptr)}
 
     , captionType_("captionType", "Caption Type", captionTypeState())
     , customCaption_("customCaption", "Custom Caption", "{n}{u: [}")
@@ -188,14 +165,13 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
           {"negXposY", "Z -X+Y", false},
       }}
     , axisStyle_{"axisStyle", "Global Axis Style"}
-    , xAxis_{"xAxis", "X Axis", "Axis properties for x"_help, AxisProperty::Orientation::Horizontal}
-    , yAxis_{"yAxis", "Y Axis", "Axis properties for y"_help, AxisProperty::Orientation::Horizontal}
-    , zAxis_{"zAxis", "Z Axis", "Axis properties for y"_help, AxisProperty::Orientation::Horizontal}
+    , axes_{{{"xAxis", "X Axis", "Axis properties for x"_help},
+             {"yAxis", "Y Axis", "Axis properties for y"_help},
+             {"zAxis", "Z Axis", "Axis properties for y"_help}}}
     , camera_{"camera", "Camera", getBoundingBox}
     , trackball_{&camera_}
-    , axisRenderers_{AxisData{}, AxisData{}, AxisData{}}
-    , propertyUpdate_{false}
-    , getBoundingBox_{getBoundingBox ? std::optional{getBoundingBox} : std::nullopt} {
+    , axisRenderers_{}
+    , getBoundingBox_{getBoundingBox} {
 
     presets_.setSerializationMode(PropertySerializationMode::None);
     presets_.onChange([this]() {
@@ -222,66 +198,65 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
         visibility_.addProperty(p);
     }
 
-    axisStyle_.registerProperties(xAxis_, yAxis_, zAxis_);
     axisStyle_.setCollapsed(true);
     visibility_.setCollapsed(true);
     camera_.setCollapsed(true);
     trackball_.setCollapsed(true);
 
     // initialize axes
-    xAxis_.setCaption("x");
-    yAxis_.setCaption("y");
-    zAxis_.setCaption("z");
-    for (auto* property : {&xAxis_, &yAxis_, &zAxis_}) {
-        property->majorTicks_.width.set(1.5f);
-        property->majorTicks_.style.set(TickData::Style::Outside);
+    static constexpr std::array<std::string_view, 3> defaulCaptions{"x", "y", "z"};
+    for (auto&& [axis, caption] : std::views::zip(axes_, defaulCaptions)) {
+        axis.setCaption(caption);
+        axis.majorTicks_.width.set(1.5f);
+        axis.majorTicks_.style.set(TickData::Style::Outside);
 
-        property->minorTicks_.width.set(1.3f);
-        property->minorTicks_.style.set(TickData::Style::Outside);
+        axis.minorTicks_.width.set(1.3f);
+        axis.minorTicks_.style.set(TickData::Style::Outside);
 
         // Treat the range as a pure output property.
-        property->range_.setInvalidationLevel(InvalidationLevel::Valid);
+        axis.range_.setInvalidationLevel(InvalidationLevel::Valid);
 
-        property->setCurrentStateAsDefault();
+        axis.setCurrentStateAsDefault();
+
+        axisStyle_.registerProperties(axis);
     }
 }
 
 void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& entity) {
-    const auto d2w = getDataToWorldMatrix(entity);
+    const auto maybeBB = std::optional<mat4>{getBoundingBox_ ? getBoundingBox_() : std::nullopt};
+    const auto d2w = plot::getTransform(entity, maybeBB, rangeMode_.get());
     const auto nD2W = dmat3{glm::transpose(glm::inverse(d2w))};
+    const auto scale = plot::calcScaleFactor(d2w, offsetScaling_.get());
+    const auto autoScale = plot::labelScaleStep(labelScale_.get());
+    const auto axisRanges = plot::calcAxisRanges(entity, maybeBB, rangeMode_.get());
 
-    const auto scale = scalingFactor(&entity);
-    const double offset = axisOffset_.get() * scale;
-    const auto autoScale = labelScaleStep(labelScale_.get());
-
-    for (auto [i, ap, ar, range] :
-         std::views::zip(std::views::iota(0, 3), std::to_array({&xAxis_, &yAxis_, &zAxis_}),
-                         axisRenderers_, axisRanges(entity))) {
-
+    for (auto&& [i, axis, renderer, range] :
+         std::views::zip(std::views::iota(0uz, axes_.size()), axes_, axisRenderers_, axisRanges)) {
         auto [scaledRange, exponent] = scaleRange(range, autoScale);
-        if (ap->overrideRange_) {
-            scaledRange = ap->customRange_;
+        if (axis.overrideRange_) {
+            scaledRange = axis.customRange_;
             exponent = 0;
         }
 
-        auto& data = ar.getData();
+        auto& data = renderer.getData();
         data.range = scaledRange;
-        data.visible = ap->isChecked();
-        data.mirrored = ap->mirrored_.get();
-        data.color = ap->color_.get();
-        data.width = ap->width_.get();
-        data.caption = ap->captionSettings_.title_.get();
-        ap->captionSettings_.update(data.captionSettings);
+        data.visible = axis.isChecked();
+        data.mirrored = axis.mirrored_.get();
+        data.color = axis.color_.get();
+        data.width = axis.width_.get();
+        data.caption = axis.captionSettings_.title_.get();
+        axis.captionSettings_.update(data.captionSettings);
 
-        updateLabelPositions(data.majorPositions, data.minorPositions, ap->labelingAlgorithm_.get(),
-                             data.range, ap->majorTicks_.numberOfTicks.get(),
-                             ap->minorTicks_.frequency.get(), ap->minorTicks_.fillAxis.get());
+        updateLabelPositions(data.majorPositions, data.minorPositions,
+                             axis.labelingAlgorithm_.get(), data.range,
+                             axis.majorTicks_.numberOfTicks.get(), axis.minorTicks_.frequency.get(),
+                             axis.minorTicks_.fillAxis.get());
 
-        ap->labelSettings_.update(data.labelSettings);
-        updateLabels(data.labels, data.majorPositions, ap->labelSettings_.title_.get());
+        axis.labelSettings_.update(data.labelSettings);
+        updateLabels(data.labels, data.majorPositions, axis.labelSettings_.title_.get());
 
-        ap->majorTicks_.update(data.major);
-        ap->minorTicks_.update(data.minor);
+        axis.majorTicks_.update(data.major);
+        axis.minorTicks_.update(data.minor);
 
         data.major.length *= scale;
         data.minor.length *= scale;
@@ -295,8 +270,10 @@ void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
         }
 
         // Update axis range
-        ap->range_.set(scaledRange);
+        axis.range_.set(scaledRange);
     }
+
+    const double offset = axisOffset_.get() * scale;
 
     const auto render = [&](const AxisParams& axis, size_t axisIdx) {
         const dvec3 center{0.5, 0.5, 0.5};
@@ -304,7 +281,7 @@ void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
             glm::normalize(dmat3{d2w} * glm::normalize(axis.start - center + axis.stop - center));
         const vec3 start{dvec3{d2w * dvec4(axis.start, 1)} + offset * offsetDir};
         const vec3 stop{dvec3{d2w * dvec4(axis.stop, 1)} + offset * offsetDir};
-        const vec3 tickDir{nD2W * axis.tickDir};
+        const vec3 tickDir{nD2W * glm::normalize(axis.tickDir)};
         axisRenderers_[axisIdx].render(&camera_.get(), outputDims, start, stop, tickDir);
     };
 
@@ -342,137 +319,5 @@ void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
         }
     }
 }
-
-float Axis3DProcessorHelper::scalingFactor(const SpatialEntity* entity) const {
-    if (entity) {
-        const mat4 m{getDataToWorldMatrix(*entity)};
-        const auto l = vec3{glm::length(m[0]), glm::length(m[1]), glm::length(m[2])};
-        switch (offsetScaling_.get()) {
-            case OffsetScaling::MinExtent:
-                return glm::compMin(l) / 100.0f;
-            case OffsetScaling::MaxExtent:
-                return glm::compMax(l) / 100.0f;
-            case OffsetScaling::MeanExtent:
-                return glm::compAdd(l) / (3.0f * 100.0f);
-            case OffsetScaling::Diagonal:
-                return glm::length(m[0] + m[1] + m[2]) / 100.0f;
-            case OffsetScaling::None:
-            default:
-                return 1.0f;
-        }
-    } else {
-        return 1.0f;
-    }
-}
-
-namespace {
-std::array<dvec2, 3> getRangeDims(const SpatialEntity& entity) {
-    dvec3 volDims(1.0);
-    if (const auto* grid2d = dynamic_cast<const StructuredGridEntity<2>*>(&entity)) {
-        volDims = dvec3(grid2d->getDimensions(), 0.0);
-    } else if (const auto* grid3d = dynamic_cast<const StructuredGridEntity<3>*>(&entity)) {
-        volDims = dvec3(grid3d->getDimensions());
-    }
-    return {dvec2{0.0, volDims.x}, dvec2{0.0, volDims.y}, dvec2{0.0, volDims.z}};
-}
-
-std::array<dvec2, 3> getRangeBasis(const SpatialEntity& entity) {
-    dvec3 basisLen(1.0);
-    for (size_t i = 0; i < 3; ++i) {
-        basisLen[i] = glm::length(entity.getBasis()[i]);
-    }
-    return {dvec2{0.0, basisLen.x}, dvec2{0.0, basisLen.y}, dvec2{0.0, basisLen.z}};
-}
-
-std::array<dvec2, 3> getRangeBasisOffset(const SpatialEntity& entity) {
-    const auto offset = dvec3{entity.getOffset()};
-    const auto ranges = getRangeBasis(entity);
-    return {ranges[0] + offset.x, ranges[1] + offset.y, ranges[2] + offset.z};
-}
-
-std::array<dvec2, 3> getRangeWorld(const SpatialEntity& entity) {
-    const auto d2w = dmat4{entity.getCoordinateTransformer().getDataToWorldMatrix()};
-
-    return {dvec2{d2w[3].x, d2w[3].x + glm::length(d2w[0])},
-            dvec2{d2w[3].y, d2w[3].y + glm::length(d2w[1])},
-            dvec2{d2w[3].z, d2w[3].z + glm::length(d2w[2])}};
-}
-
-std::array<dvec2, 3> getRangeBoundingBox(CoordinateSpace destSpace, const SpatialEntity& entity,
-                                         std::optional<mat4> worldBoundingBox) {
-    if (worldBoundingBox) {
-        const auto bb =
-            dmat4{entity.getCoordinateTransformer().getMatrix(CoordinateSpace::World, destSpace)} *
-            dmat4{worldBoundingBox.value()};
-
-        return {dvec2{bb[3].x, bb[3].x + glm::length(bb[0])},
-                dvec2{bb[3].y, bb[3].y + glm::length(bb[1])},
-                dvec2{bb[3].z, bb[3].z + glm::length(bb[2])}};
-    } else {
-        return {dvec2{0.0, 1.0}, dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
-    }
-}
-
-}  // namespace
-
-std::array<dvec2, 3> Axis3DProcessorHelper::axisRanges(const SpatialEntity& entity) const {
-    switch (rangeMode_.get()) {
-        case AxisRangeMode::Dims:
-            return getRangeDims(entity);
-        case AxisRangeMode::Basis:
-            return getRangeBasis(entity);
-        case AxisRangeMode::BasisOffset:
-            return getRangeBasisOffset(entity);
-        case AxisRangeMode::World:
-            return getRangeWorld(entity);
-        case AxisRangeMode::DataBoundingBox:
-            return getRangeBoundingBox(
-                CoordinateSpace::Data, entity,
-                getBoundingBox_.and_then([](auto&& func) { return func(); }));
-        case AxisRangeMode::ModelBoundingBox:
-            return getRangeBoundingBox(
-                CoordinateSpace::Model, entity,
-                getBoundingBox_.and_then([](auto&& func) { return func(); }));
-        case AxisRangeMode::WorldBoundingBox:
-            return getRangeBoundingBox(
-                CoordinateSpace::World, entity,
-                getBoundingBox_.and_then([](auto&& func) { return func(); }));
-    }
-    return {dvec2{0.0, 1.0}, dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
-}
-
-/*
-ivec3 Axis3DProcessorHelper::adjustRanges(const SpatialEntity* entity,
-                                          const std::optional<int>& autoScale) {
-    if (entity) {
-        std::array<AxisProperty*, 3> axes = {&xAxis_, &yAxis_, &zAxis_};
-        for (size_t i = 0; i < 3; ++i) {
-            if (const auto* axis = entity->getAxis(i)) {
-                util::updateDefaultState(axes[i]->captionSettings_.title_,
-                                         fmt::format("{}{: [}", axis->name, axis->unit),
-                                         util::OverwriteState::No);
-            } else {
-                util::updateDefaultState(axes[i]->captionSettings_.title_,
-                                         util::defaultAxesNames[i], util::OverwriteState::No);
-            }
-        }
-    }
-}
-
-*/
-
-dmat4 Axis3DProcessorHelper::getDataToWorldMatrix(const SpatialEntity& entity) const {
-    const auto& coordinateTransformer = entity.getCoordinateTransformer();
-    const dmat4 m = coordinateTransformer.getDataToWorldMatrix();
-    using enum AxisRangeMode;
-    if (util::contains({DataBoundingBox, ModelBoundingBox, WorldBoundingBox}, rangeMode_.get())) {
-        return getBoundingBox_.and_then([](auto&& func) { return func(); })
-            .transform([](const mat4& bbox) { return dmat4{bbox}; })
-            .value_or(m);
-    } else {
-        return m;
-    }
-}
-
 
 }  // namespace inviwo::plot
