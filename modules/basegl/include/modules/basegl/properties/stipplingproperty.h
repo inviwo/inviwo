@@ -36,7 +36,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/staticstring.h>
-#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
+#include <modules/basegl/datastructures/stipplingdata.h>
 
 #include <functional>
 #include <string>
@@ -46,8 +46,7 @@
 namespace inviwo {
 class Shader;
 
-class IVW_MODULE_BASEGL_API StipplingProperty : public CompositeProperty,
-                                                public StipplingSettingsInterface {
+class IVW_MODULE_BASEGL_API StipplingProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.StipplingProperty"};
@@ -59,24 +58,20 @@ public:
     virtual StipplingProperty* clone() const override;
     virtual ~StipplingProperty() = default;
 
-    // StipplingSettingsInterface
-    virtual Mode getMode() const override { return mode_.get(); };
-    virtual float getLength() const override { return length_.get(); };
-    virtual float getSpacing() const override { return spacing_.get(); };
-    virtual float getOffset() const override { return offset_.get(); };
-    virtual float getWorldScale() const override { return worldScale_.get(); };
+    OptionProperty<StipplingData::Mode> mode;
+    FloatProperty length;
+    FloatProperty spacing;
+    FloatProperty offset;
+    FloatProperty worldScale;
 
-    OptionProperty<StipplingSettingsInterface::Mode> mode_;
-    FloatProperty length_;
-    FloatProperty spacing_;
-    FloatProperty offset_;
-    FloatProperty worldScale_;
+    void update(StipplingData& data) const;
+
 };
 
 namespace utilgl {
 
 IVW_MODULE_BASEGL_API void addShaderDefines(Shader& shader, const StipplingProperty& property);
-IVW_MODULE_BASEGL_API void addShaderDefines(Shader& shader, const StipplingProperty::Mode& mode);
+IVW_MODULE_BASEGL_API void addShaderDefines(Shader& shader, const StipplingData::Mode& mode);
 IVW_MODULE_BASEGL_API void setShaderUniforms(Shader& shader, const StipplingProperty& property,
                                              const std::string& name);
 

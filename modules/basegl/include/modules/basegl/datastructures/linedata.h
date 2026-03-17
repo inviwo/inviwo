@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2020-2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/basegl/datastructures/linesettingsinterface.h>
+#include <modules/basegl/baseglmoduledefine.h>
+
+#include <modules/basegl/datastructures/stipplingdata.h>
+#include <inviwo/core/datastructures/transferfunction.h>
 
 namespace inviwo {
+/**
+ * @brief Settings for line rendering
+ */
+struct IVW_MODULE_BASEGL_API LineData {
+    float lineWidth = 1.f;
+    float antialiasing = 0.5f;
+    float miterLimit = 0.8f;
+    bool roundCaps = true;
+    bool pseudoLighting = false;
+    bool roundDepthProfile = false;
+    bool overrideColor = false;
+    bool overrideAlpha = false;
+    bool useMetaColor = false;
+    StipplingData stippling;
+    vec4 defaultColor = vec4{1.0f, 0.7f, 0.2f, 1.0f};
+    vec3 overrideColorValue = vec3{0.7f, 0.7f, 0.7f};
+    float overrideAlphaValue = 1.0f;
+    TransferFunction metaColor{
+        {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}}, 
+         {.pos = 1.0, .color = vec4{1.0f, 1.0f, 1.0f, 1.0f}}}};
 
-bool operator==(const LineSettingsInterface& a, const LineSettingsInterface& b) {
-    return a.getWidth() == b.getWidth() && a.getAntialiasingWidth() == b.getAntialiasingWidth() &&
-           a.getMiterLimit() == b.getMiterLimit() && a.getRoundCaps() == b.getRoundCaps() &&
-           a.getPseudoLighting() == b.getPseudoLighting() &&
-           a.getRoundDepthProfile() == b.getRoundDepthProfile();
-}
+    bool operator==(const LineData&) const = default;
+};
 
 }  // namespace inviwo

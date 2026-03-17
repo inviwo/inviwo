@@ -33,7 +33,7 @@
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/util/glmvec.h>
-#include <modules/basegl/datastructures/linesettings.h>
+#include <modules/basegl/datastructures/linedata.h>
 #include <modules/basegl/rendering/linerenderer.h>
 #include <modules/plotting/datastructures/boxselection.h>
 
@@ -60,7 +60,7 @@ public:
                 const BoxSelection& sel);
 
 protected:
-    LineSettings lineSettings_;
+    LineData lineSettings_;
     algorithm::LineRenderer lineRenderer_;
 
     using PositionMesh = TypedMesh<buffertraits::PositionsBuffer2D>;
