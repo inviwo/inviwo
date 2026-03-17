@@ -249,6 +249,7 @@ protected:
     BitSet filtered_;
     BitSet selected_;
     BitSet highlighted_;
+    BitSet initialBrushingIndices_;
 
     bool partitionDirty_;
     Processor* processor_;
@@ -258,8 +259,7 @@ protected:
     Dispatcher<SelectionFunc> selectionChangedCallback_;
     Dispatcher<SelectionFunc> filteringChangedCallback_;
 
-    BoxSelectionInteractionHandler::SelectionCallbackHandle boxSelectionChangedCallback_;
-    BoxSelectionInteractionHandler::SelectionCallbackHandle boxFilteringChangedCallback_;
+    plot::BoxSelectionInteractionHandler::SelectionCallbackHandle boxSelectionCallback_;
 
     BoxSelectionInteractionHandler boxSelectionHandler_;
     BoxSelectionRenderer selectionRectRenderer_;

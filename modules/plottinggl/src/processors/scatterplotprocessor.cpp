@@ -135,7 +135,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
                 for (auto idx : filtered) {
                     indices.add(indexCol[idx]);
                 }
-                brushingPort_.filter("scatterplot", indices);
+                brushingPort_.filter(getIdentifier(), indices);
             }
         });
     addInteractionHandler(&scatterPlot_);

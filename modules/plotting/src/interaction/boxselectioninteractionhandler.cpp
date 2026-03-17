@@ -30,240 +30,93 @@
 #include <modules/plotting/interaction/boxselectioninteractionhandler.h>
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 #include <inviwo/core/interaction/events/mousebuttons.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/util/dispatcher.h>
-#include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/zip.h>
 #include <modules/plotting/datastructures/boxselection.h>
 #include <modules/plotting/properties/boxselectionproperty.h>
-
-#include <cmath>
-#include <limits>
-#include <tuple>
-#include <type_traits>
-#include <unordered_set>
 
 #include <flags/flags.h>
 #include <glm/common.hpp>
 #include <glm/gtx/component_wise.hpp>
 #include <glm/vec2.hpp>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 BoxSelectionInteractionHandler::BoxSelectionInteractionHandler(
-    const BoxSelectionProperty& dragRectSettings, std::shared_ptr<const BufferBase> xAxis,
-    std::shared_ptr<const BufferBase> yAxis,
+    const BoxSelectionProperty& boxSelectionSettings,
     std::function<dvec2(dvec2 p, const size2_t& dims)> screenToData)
-    : InteractionHandler()
-    , dragRectSettings_(dragRectSettings)
-    , xAxis_(xAxis)
-    , yAxis_(yAxis)
-    , screenToData_(screenToData) {}
+    : InteractionHandler{}
+    , dragRectSettings_{boxSelectionSettings}
+    , screenToData_{std::move(screenToData)}
+    , mouseBoxSelection_{"mouseBoxSelection",
+                         "Box Selection",
+                         [this](Event* e) { mouseEvent(e->getAs<MouseEvent>(), false); },
+                         MouseButton::Left,
+                         MouseState::Move | MouseState::Press | MouseState::Release,
+                         KeyModifier::Shift}
+    , mouseBoxSelectionAppend_{"mouseBoxSelectionAppend",
+                               "Box Selection Append",
+                               [this](Event* e) { mouseEvent(e->getAs<MouseEvent>(), true); },
+                               MouseButton::Left,
+                               MouseState::Move | MouseState::Press | MouseState::Release,
+                               KeyModifier::Shift | KeyModifier::Control} {}
 
-void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
-    if (event->hash() == MouseEvent::chash()) {
-        auto me = event->getAs<MouseEvent>();
-        auto append = me->modifiers().contains(KeyModifier::Control);
-        if ((me->button() == MouseButton::Left) && (me->state() == MouseState::Press)) {
-            dragRect_ = {dvec2{me->pos().x, me->pos().y}, dvec2{me->pos().x, me->pos().y}};
-            me->setUsed(true);
-        } else if ((me->button() == MouseButton::Left) && (me->state() == MouseState::Release)) {
-            if (dragRect_ && glm::compMax(glm::abs(me->pos() - (*dragRect_)[0])) <= 1) {
-                // Click in empty space
-                switch (dragRectSettings_.mode_.get()) {
-                    case BoxSelection::Mode::Selection: {
-                        if (xAxis_) {
-                            // selection changed
-                            std::vector<bool> selected(xAxis_->getSize(), false);
-                            selectionChangedCallback_.invoke(selected, append);
-                        }
-                        break;
-                    }
-                    case BoxSelection::Mode::Filtering: {
-                        if (xAxis_) {
-                            std::vector<bool> filtered(xAxis_->getSize(), false);
-                            filteringChangedCallback_.invoke(filtered, append);
-                        }
-                        break;
-                    }
-                    case BoxSelection::Mode::None:
-                        break;
-                }
-            }
-            dragRect_ = std::nullopt;
-            me->setUsed(true);
-        } else if (dragRect_ && (me->buttonState() & MouseButton::Left) &&
-                   (me->state() == MouseState::Move)) {
-            // convert position from screen coords to data range
-            (*dragRect_)[1] = dvec2{me->pos().x, me->pos().y};
-            auto dstart = screenToData_((*dragRect_)[0], me->canvasSize());
-            auto dend = screenToData_((*dragRect_)[1], me->canvasSize());
-            dragRectChanged(glm::min(dstart, dend), glm::max(dstart, dend), append);
-            me->setUsed(true);
+void BoxSelectionInteractionHandler::mouseEvent(MouseEvent* me, bool append) {
+    if (!me) return;
+
+    const auto interaction = [mode = dragRectSettings_.mode_.get()]() {
+        using enum BoxSelection::Mode;
+        switch (mode) {
+            case Selection:
+                return AxisRangeInteraction::Selection;
+            case Filtering:
+                return AxisRangeInteraction::Filtering;
+            case None:
+            default:
+                return AxisRangeInteraction::None;
         }
+    }();
+    if (me->state() == MouseState::Press) {
+        dragRect_ = {dvec2{me->pos().x, me->pos().y}, dvec2{me->pos().x, me->pos().y}};
+
+        eventCallback_.invoke(AxisRangeEventState::Started, interaction,
+                              AxisRangeInteractionMode::None, std::nullopt);
+
+        me->setUsed(true);
+    } else if (me->state() == MouseState::Release) {
+        if (dragRect_ && glm::compMax(glm::abs(me->pos() - (*dragRect_)[0])) <= 1) {
+            // Click in empty space
+            eventCallback_.invoke(AxisRangeEventState::Finished, interaction,
+                                  AxisRangeInteractionMode::Clear, std::nullopt);
+        } else {
+            eventCallback_.invoke(AxisRangeEventState::Finished, interaction,
+                                  AxisRangeInteractionMode::None, std::nullopt);
+        }
+        dragRect_ = std::nullopt;
+        me->setUsed(true);
+    } else if (dragRect_ && (me->state() == MouseState::Move)) {
+        // convert position from screen coords to data range
+        (*dragRect_)[1] = dvec2{me->pos().x, me->pos().y};
+        const auto dstart = screenToData_((*dragRect_)[0], me->canvasSize());
+        const auto dend = screenToData_((*dragRect_)[1], me->canvasSize());
+        const auto mode =
+            append ? AxisRangeInteractionMode::Append : AxisRangeInteractionMode::Replace;
+        eventCallback_.invoke(AxisRangeEventState::Updated, interaction, mode,
+                              std::array<dvec2, 2>{glm::min(dstart, dend), glm::max(dstart, dend)});
+        me->setUsed(true);
     }
 }
 
-auto BoxSelectionInteractionHandler::addSelectionChangedCallback(
-    std::function<SelectionFunc> callback) -> SelectionCallbackHandle {
-    return selectionChangedCallback_.add(callback);
-}
-
-auto BoxSelectionInteractionHandler::addFilteringChangedCallback(
-    std::function<SelectionFunc> callback) -> SelectionCallbackHandle {
-    return filteringChangedCallback_.add(callback);
-}
-
-void BoxSelectionInteractionHandler::setXAxisData(std::shared_ptr<const BufferBase> buffer) {
-    xAxis_ = buffer;
-}
-
-void BoxSelectionInteractionHandler::setYAxisData(std::shared_ptr<const BufferBase> buffer) {
-    yAxis_ = buffer;
+auto BoxSelectionInteractionHandler::addEventCallback(std::function<SelectionFunc> callback)
+    -> SelectionCallbackHandle {
+    return eventCallback_.add(std::move(callback));
 }
 
 void BoxSelectionInteractionHandler::reset() { dragRect_.reset(); }
 
-void BoxSelectionInteractionHandler::dragRectChanged(const dvec2& start, const dvec2& end,
-                                                     bool append) {
-    switch (dragRectSettings_.mode_.get()) {
-        case BoxSelection::Mode::Selection:
-            // selection changed
-            selectionChangedCallback_.invoke(boxSelect(start, end, xAxis_.get(), yAxis_.get()),
-                                             append);
-            break;
-        case BoxSelection::Mode::Filtering:
-            filteringChangedCallback_.invoke(boxFilter(start, end, xAxis_.get(), yAxis_.get()),
-                                             append);
-            break;
-        case BoxSelection::Mode::None:
-            break;
-    }
-}
-
-std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start, const dvec2& end,
-                                                            const BufferBase* xAxis,
-                                                            const BufferBase* yAxis) {
-
-    if (xAxis == nullptr || yAxis == nullptr) {
-        return std::vector<bool>();
-    }
-
-    // 1. Determine selection along x-axis
-    // 2. Determine selection along y-axis using the subset from 1
-
-    auto xbuf = xAxis->getRepresentation<BufferRAM>();
-#include <warn/push>
-#include <warn/ignore/conversion>  // Ignore double->float warnings
-    auto selectedIndicesX = xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
-        [min = start[0], max = end[0]](auto brprecision) {
-            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-            std::vector<bool> selected(brprecision->getSize(), false);
-            // Avoid conversions in the loop
-
-            const auto tmin = std::numeric_limits<ValueType>::is_integer
-                                  ? static_cast<ValueType>(std::ceil(min))
-                                  : static_cast<ValueType>(min);
-            const auto tmax = std::numeric_limits<ValueType>::is_integer
-                                  ? static_cast<ValueType>(std::floor(max))
-                                  : static_cast<ValueType>(max);
-            for (auto&& [ind, elem] : util::enumerate(brprecision->getDataContainer())) {
-                if (elem < tmin || elem > tmax) {
-                    continue;
-                } else {
-                    selected[ind] = true;
-                }
-            }
-            return selected;
-        });
-    // Use indices filted by x-axis as input
-    auto ybuf = yAxis->getRepresentation<BufferRAM>();
-    auto selectedIndices = ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
-        [selectedIndicesX, min = start[1], max = end[1]](auto brprecision) {
-            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-            auto data = brprecision->getDataContainer();
-            std::vector<bool> selected(brprecision->getSize(), false);
-            // Avoid conversions in the loop
-            const auto tmin = std::numeric_limits<ValueType>::is_integer
-                                  ? static_cast<ValueType>(std::ceil(min))
-                                  : static_cast<ValueType>(min);
-            const auto tmax = std::numeric_limits<ValueType>::is_integer
-                                  ? static_cast<ValueType>(std::floor(max))
-                                  : static_cast<ValueType>(max);
-
-            for (auto&& [ind, elem] : util::enumerate(selectedIndicesX)) {
-                if (elem) {
-                    if (data[ind] < tmin || data[ind] > tmax) {
-                        continue;
-                    } else {
-                        selected[ind] = true;
-                    }
-                }
-            }
-            return selected;
-        });
-#include <warn/pop>
-    return selectedIndices;
-}
-
-std::vector<bool> BoxSelectionInteractionHandler::boxFilter(const dvec2& start, const dvec2& end,
-                                                            const BufferBase* xAxis,
-                                                            const BufferBase* yAxis) {
-    if (xAxis == nullptr || yAxis == nullptr) {
-        return std::vector<bool>();
-    }
-    auto xbuf = xAxis->getRepresentation<BufferRAM>();
-#include <warn/push>
-#include <warn/ignore/conversion>  // Ignore double->float warnings
-    auto filteredIndices = xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
-        [start, end, ybuf = yAxis->getRepresentation<BufferRAM>()](auto brprecision) {
-            using ValueTypeX = util::PrecisionValueType<decltype(brprecision)>;
-            // Avoid conversions in the loop
-            const auto tminX = std::numeric_limits<ValueTypeX>::is_integer
-                                   ? static_cast<ValueTypeX>(std::ceil(start[0]))
-                                   : static_cast<ValueTypeX>(start[0]);
-            const auto tmaxX = std::numeric_limits<ValueTypeX>::is_integer
-                                   ? static_cast<ValueTypeX>(std::floor(end[0]))
-                                   : static_cast<ValueTypeX>(end[0]);
-            auto xData = brprecision->getDataContainer();
-            return ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
-                [tminX, tmaxX, start, end, xData](auto brprecision) {
-                    using ValueTypeY = util::PrecisionValueType<decltype(brprecision)>;
-                    std::vector<bool> filtered(brprecision->getSize(), false);
-                    const auto tminY = std::numeric_limits<ValueTypeY>::is_integer
-                                           ? static_cast<ValueTypeY>(std::ceil(start[1]))
-                                           : static_cast<ValueTypeY>(start[1]);
-                    const auto tmaxY = std::numeric_limits<ValueTypeY>::is_integer
-                                           ? static_cast<ValueTypeY>(std::floor(end[1]))
-                                           : static_cast<ValueTypeY>(end[1]);
-
-                    for (auto&& [ind, xVal, yVal] :
-                         util::enumerate(xData, brprecision->getDataContainer())) {
-                        if ((xVal < tminX) || (xVal > tmaxX) || (yVal < tminY) || (yVal > tmaxY)) {
-                            filtered[ind] = true;
-                        } else {
-                            continue;
-                        }
-                    }
-                    return filtered;
-                });
-        });
-
-#include <warn/pop>
-
-    return filteredIndices;
-}
-
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

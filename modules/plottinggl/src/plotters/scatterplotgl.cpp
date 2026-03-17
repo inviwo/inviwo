@@ -32,11 +32,7 @@
 #include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
-#include <inviwo/core/datastructures/tfprimitive.h>
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
@@ -48,7 +44,6 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/selectioncolorproperty.h>
@@ -61,13 +56,13 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/dataframe/datastructures/column.h>
+#include <inviwo/dataframe/util/selectionutil.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobject.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/plotting/datastructures/axisdata.h>
@@ -83,6 +78,7 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include <array>
 
 #include <fmt/core.h>
 #include <glm/common.hpp>
@@ -170,7 +166,7 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
     , partitionDirty_(true)
     , processor_(processor)
-    , boxSelectionHandler_(properties_.boxSelectionSettings_, points_.xCoord, points_.yCoord,
+    , boxSelectionHandler_(properties_.boxSelectionSettings_,
                            [&](dvec2 p, const size2_t& dims) {
                                const dvec4 margins =
                                    properties_.margins_.getAsVec4() +
@@ -208,23 +204,47 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
         }
     });
 
-    boxSelectionChangedCallback_ = boxSelectionHandler_.addSelectionChangedCallback(
-        [this](const std::vector<bool>& selected, bool append) {
-            BitSet b(selected);
-            // prevent selection of filtered indices
-            b -= filtered_;
-            if (append) {
-                b &= selected_;
+    util::for_each_in_tuple([&](auto& e) { properties_.boxSelectionSettings_.addProperty(e); },
+                            boxSelectionHandler_.properties());
+
+    boxSelectionCallback_ = boxSelectionHandler_.addEventCallback(
+        [this](AxisRangeEventState state, AxisRangeInteraction interaction,
+               AxisRangeInteractionMode mode, std::optional<std::array<dvec2, 2>> rect) {
+            if (state == AxisRangeEventState::Started) {
+                if (interaction == AxisRangeInteraction::Selection) {
+                    initialBrushingIndices_ = selected_;
+                } else if (interaction == AxisRangeInteraction::Filtering) {
+                    initialBrushingIndices_ = filtered_;
+                }
+            } else if (state == AxisRangeEventState::Finished) {
+                initialBrushingIndices_.clear();
+                if (mode == AxisRangeInteractionMode::Clear) {
+                    if (interaction == AxisRangeInteraction::Selection) {
+                        selectionChangedCallback_.invoke(BitSet{});
+                    } else if (interaction == AxisRangeInteraction::Filtering) {
+                        filteringChangedCallback_.invoke(BitSet{});
+                    }
+                }
+            } else if (state == AxisRangeEventState::Updated && rect) {
+                const auto r = rect.value_or(std::array<dvec2, 2>{{{}, {}}});
+                if (interaction == AxisRangeInteraction::Selection) {
+                    BitSet b{
+                        util::boxSelect(r[0], r[1], points_.xCoord.get(), points_.yCoord.get())};
+                    // prevent selection of filtered indices
+                    b -= filtered_;
+                    if (mode == AxisRangeInteractionMode::Append) {
+                        b |= initialBrushingIndices_;
+                    }
+                    selectionChangedCallback_.invoke(b);
+                } else if (interaction == AxisRangeInteraction::Filtering) {
+                    BitSet b{
+                        util::boxFilter(r[0], r[1], points_.xCoord.get(), points_.yCoord.get())};
+                    if (mode == AxisRangeInteractionMode::Append) {
+                        b &= filtered_;
+                    }
+                    filteringChangedCallback_.invoke(b);
+                }
             }
-            selectionChangedCallback_.invoke(b);
-        });
-    boxFilteringChangedCallback_ = boxSelectionHandler_.addFilteringChangedCallback(
-        [this](const std::vector<bool>& filtered, bool append) {
-            BitSet b(filtered);
-            if (append) {
-                b &= filtered_;
-            }
-            filteringChangedCallback_.invoke(b);
         });
 }
 
@@ -284,7 +304,6 @@ void ScatterPlotGL::setXAxisData(const Column* col) {
         points_.xCoord = nullptr;
     }
     partitionDirty_ = true;
-    boxSelectionHandler_.setXAxisData(points_.xCoord);
 }
 
 void ScatterPlotGL::setYAxisData(const Column* col) {
@@ -296,7 +315,6 @@ void ScatterPlotGL::setYAxisData(const Column* col) {
         points_.yCoord = nullptr;
     }
     partitionDirty_ = true;
-    boxSelectionHandler_.setYAxisData(points_.yCoord);
 }
 
 void ScatterPlotGL::setColorData(const Column* col) {
