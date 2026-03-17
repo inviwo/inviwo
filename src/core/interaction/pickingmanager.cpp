@@ -43,11 +43,13 @@ PickingManager::~PickingManager() = default;
 
 PickingAction* PickingManager::registerPickingAction(Processor* processor,
                                                      PickingAction::Callback action, size_t size) {
+    std::scoped_lock lock(mutex_);
+
     PickingAction* pickObj = nullptr;
 
     // Find the smallest object with capacity >= size
-    auto it = std::lower_bound(unusedObjects_.begin(), unusedObjects_.end(), size,
-                               [](PickingAction* p, size_t s) { return p->getCapacity() < s; });
+    auto it = std::ranges::lower_bound(unusedObjects_, size, std::ranges::less{},
+                                       [](PickingAction* p) { return p->getCapacity(); });
 
     if (it != unusedObjects_.end()) {
         pickObj = *it;
@@ -72,7 +74,9 @@ PickingAction* PickingManager::registerPickingAction(Processor* processor,
 }
 
 bool PickingManager::unregisterPickingAction(const PickingAction* p) {
-    auto it1 = std::find(unusedObjects_.begin(), unusedObjects_.end(), p);
+    std::scoped_lock lock(mutex_);
+
+    auto it1 = std::ranges::find(unusedObjects_, p);
     if (it1 == unusedObjects_.end()) {
 
         auto it2 = util::find_if(
@@ -85,8 +89,7 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
 
             // clean-up unused queue
             while (!pickingActions_.empty()) {
-                auto it = std::find(unusedObjects_.begin(), unusedObjects_.end(),
-                                    pickingActions_.back().get());
+                auto it = std::ranges::find(unusedObjects_, pickingActions_.back().get());
                 if (it == unusedObjects_.end()) {
                     break;
                 }
@@ -99,11 +102,9 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
             (*it2)->setAction(nullptr);
             (*it2)->setProcessor(nullptr);
 
-            auto insit = std::upper_bound(unusedObjects_.begin(), unusedObjects_.end(),
-                                          (*it2)->getCapacity(),
-                                          [](const size_t& capacity, PickingAction* po) {
-                                              return capacity < po->getCapacity();
-                                          });
+            auto insit =
+                std::ranges::upper_bound(unusedObjects_, (*it2)->getCapacity(), std::ranges::less{},
+                                         [](PickingAction* po) { return po->getCapacity(); });
 
             unusedObjects_.insert(insit, (*it2).get());
             return true;
@@ -116,11 +117,12 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
 const PickingAction* PickingManager::getPickingActionFromIndex(size_t index) const {
     if (index == 0) return nullptr;
 
+    std::scoped_lock lock(mutex_);
+
     // This will find the first picking object with an start greater then index.
-    auto pIt = std::upper_bound(pickingActions_.begin(), pickingActions_.end(), index,
-                                [](const size_t& i, const std::unique_ptr<PickingAction>& p) {
-                                    return i < p->getPickingId(0);
-                                });
+    auto pIt = std::ranges::upper_bound(
+        pickingActions_, index, std::ranges::less{},
+        [](const std::unique_ptr<PickingAction>& p) { return p->getPickingId(0); });
 
     if (std::distance(pickingActions_.begin(), pIt) > 0) {
         auto po = (*(--pIt)).get();
@@ -137,9 +139,9 @@ const PickingAction* PickingManager::getPickingActionFromColor(const uvec3& c) c
 
 bool PickingManager::pickingEnabled() {
     if (!enableCallback_) {
-        auto picking = &(InviwoApplication::getPtr()
-                             ->getSettingsByType<SystemSettings>()
-                             ->enablePickingProperty_);
+        auto* picking = &(InviwoApplication::getPtr()
+                              ->getSettingsByType<SystemSettings>()
+                              ->enablePickingProperty_);
 
         enableCallback_ = picking->onChange([this, picking]() { enabled_ = picking->get(); });
         enabled_ = picking->get();
@@ -149,10 +151,11 @@ bool PickingManager::pickingEnabled() {
 }
 
 bool PickingManager::isPickingActionRegistered(const PickingAction* action) const {
-    return std::any_of(pickingActions_.begin(), pickingActions_.end(),
-                       [&](auto& item) { return item.get() == action; });
+    std::scoped_lock lock(mutex_);
+    return std::ranges::any_of(pickingActions_, [&](auto& item) { return item.get() == action; });
 }
 
+namespace {
 // First the left four bits are swapped with the right four bits.
 // Then all adjacent pairs are swapped and then all adjacent single bits.
 // This results in a reversed order.
@@ -162,9 +165,10 @@ std::uint8_t reverse(std::uint8_t b) {
     b = static_cast<std::uint8_t>((b & 0xAA) >> 1 | (b & 0x55) << 1);
     return b;
 }
+}  // namespace
 
 uvec3 PickingManager::indexToColor(size_t id) {
-    std::uint32_t index = static_cast<std::uint32_t>(id);
+    const auto index = static_cast<std::uint32_t>(id);
 
     std::uint8_t r = 0;
     std::uint8_t g = 0;
