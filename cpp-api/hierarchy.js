@@ -1638,12 +1638,9 @@ var hierarchy =
     [ "inviwo::LightingConfig", "structinviwo_1_1LightingConfig.html", null ],
     [ "inviwo::LightingState", "structinviwo_1_1LightingState.html", null ],
     [ "inviwo::plot::LinearRange", "structinviwo_1_1plot_1_1LinearRange.html", null ],
+    [ "inviwo::LineData", "structinviwo_1_1LineData.html", null ],
     [ "inviwo::LineNumberResolver", "structinviwo_1_1LineNumberResolver.html", null ],
     [ "inviwo::algorithm::LineRenderer", "classinviwo_1_1algorithm_1_1LineRenderer.html", null ],
-    [ "inviwo::LineSettingsInterface", "classinviwo_1_1LineSettingsInterface.html", [
-      [ "inviwo::LineSettings", "classinviwo_1_1LineSettings.html", null ],
-      [ "inviwo::LineSettingsProperty", "classinviwo_1_1LineSettingsProperty.html", null ]
-    ] ],
     [ "inviwo::LinkDialogTreeItem", "classinviwo_1_1LinkDialogTreeItem.html", [
       [ "inviwo::GraphicsItemData< Processor >", "classinviwo_1_1GraphicsItemData.html", [
         [ "inviwo::LinkDialogProcessorGraphicsItem", "classinviwo_1_1LinkDialogProcessorGraphicsItem.html", null ]
@@ -1838,7 +1835,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< InputType >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< splitter::Direction >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< splitter::Style >", "classinviwo_1_1OptionProperty.html", null ],
-          [ "inviwo::OptionProperty< StipplingSettingsInterface::Mode >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< StipplingData::Mode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< SeedingSpace >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< MessageBreakLevel >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< OutputType >", "classinviwo_1_1OptionProperty.html", null ],
@@ -3237,7 +3234,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< InputType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< splitter::Direction >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< splitter::Style >", "classinviwo_1_1OptionPropertyOption.html", null ],
-      [ "inviwo::OptionPropertyOption< StipplingSettingsInterface::Mode >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< StipplingData::Mode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< SeedingSpace >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< MessageBreakLevel >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< OutputType >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3572,10 +3569,7 @@ var hierarchy =
     [ "inviwo::StaticString&lt; N &gt;", "structinviwo_1_1StaticString.html", null ],
     [ "inviwo::Statistics", "structinviwo_1_1Statistics.html", null ],
     [ "inviwo::command::Stats", "structinviwo_1_1command_1_1Stats.html", null ],
-    [ "inviwo::StipplingSettingsInterface", "classinviwo_1_1StipplingSettingsInterface.html", [
-      [ "inviwo::StipplingProperty", "classinviwo_1_1StipplingProperty.html", null ],
-      [ "inviwo::StipplingSettings", "classinviwo_1_1StipplingSettings.html", null ]
-    ] ],
+    [ "inviwo::StipplingData", "structinviwo_1_1StipplingData.html", null ],
     [ "inviwo::pool::Stop", "classinviwo_1_1pool_1_1Stop.html", null ],
     [ "inviwo::StrBuffer", "structinviwo_1_1StrBuffer.html", null ],
     [ "std::streambuf", null, [
