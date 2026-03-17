@@ -173,14 +173,14 @@ Mesh::BufferVector ColumnMapper::getBuffers(const DataFrame& df) {
     return buffers;
 }
 
-ColumnMapper::Info::Info(BufferType bt, Types type)
+ColumnMapper::Info::Info(BufferType bt, Types type, bool doTransformInit)
     : type{std::move(type)}
     , bufferType{bt}
     , comp{toLower(enumToStr(bt)), enumToStr(bt)}
     , range("range", "Range", "Range of input data, before any transforms"_help, 0.0, 0.0,
             std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), 0.001, 0.0,
             InvalidationLevel::Valid, PropertySemantics::Text)
-    , doTransform("doTransform", "Apply transformation", false) {
+    , doTransform("doTransform", "Apply transformation", doTransformInit) {
 
     visit([&](auto& self) {
         for (auto& s : self.sources) {
@@ -258,8 +258,10 @@ DataFrameToMesh::DataFrameToMesh()
               {CurvatureAttrib, RealType{ScaleAndOffset{}}},
               {IndexAttrib, IntType{ScaleAndOffset{}}},
               {RadiiAttrib, RealType{ScaleAndOffset{}}},
-              {PickingAttrib, PickingType{OffsetAndPicking{
-                                  this, 0, [this](PickingEvent* event) { picking(event); }}}},
+              {PickingAttrib,
+               PickingType{
+                   OffsetAndPicking{this, 0, [this](PickingEvent* event) { picking(event); }}},
+               true},
               {ScalarMetaAttrib, RealType{ScaleAndOffset{}}},
               {IntMetaAttrib, IntType{ScaleAndOffset{}}}}}
 

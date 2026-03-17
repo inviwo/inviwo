@@ -134,7 +134,7 @@ public:
     using Types = std::variant<SpatialType, RealType, IntType, PickingType, ColorType>;
 
     struct IVW_MODULE_DATAFRAME_API Info {
-        Info(BufferType bt, Types type);
+        Info(BufferType bt, Types type, bool doTransformInit = false);
         glm::dvec2 getDataRange() const;
         Types type;
         BufferType bufferType;
@@ -165,6 +165,7 @@ public:
     DataFrameToMesh();
 
     virtual void process() override;
+    virtual void invokeEvent(Event* event) override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
