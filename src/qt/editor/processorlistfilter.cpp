@@ -134,7 +134,7 @@ bool ProcessorListFilter::filterAcceptsRow(int source_row, const QModelIndex& so
     auto index = sourceModel()->index(source_row, 0, source_parent);
     if (const auto* item = utilqt::getData(index, Role::Item).value<const Item*>()) {
         if (!item->info.visible) return false;
-        if (item->info.tags.getMatches(tags_) == 0) return false;
+        if (tags_.getMatches(util::getPlatformTag(item->info.tags)) == 0) return false;
 
         return dsl_.match(*item);
     } else {
@@ -177,11 +177,18 @@ void ProcessorListFilter::setGrouping(Grouping grouping) {
 }
 
 void ProcessorListFilter::setCheckedTags(const Tags& tags) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
+    if (tags_ != tags) {
+        tags_ = tags;
+        invalidateFilter();
+    }
+#else
     if (tags_ != tags) {
         beginFilterChange();
         tags_ = tags;
         endFilterChange();
     }
+#endif
 }
 
 std::any ProcessorListFilter::currentData(std::string_view name) { return dsl_.currentData(name); }
