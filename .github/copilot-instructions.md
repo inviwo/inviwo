@@ -5,7 +5,7 @@
 **Inviwo** (Interactive Visualization Workshop) is an open-source visualization framework written in **C++23** with **Python** bindings. It enables scientists and developers to build data processing and visualization pipelines through a visual programming (node-graph) interface.
 
 - **License**: Simplified BSD (free for commercial use)
-- **Current version**: see `CMakeLists.txt` (`project(inviwo VERSION ...)`)
+- **Current version**: see the root `CMakeLists.txt` (project declared via `project(${IVW_CFG_PROJECT_NAME} ... VERSION ...)`, with the canonical version string assembled as `IVW_VERSION` from `IVW_MAJOR_VERSION`, `IVW_MINOR_VERSION`, etc.)
 - **Cross Platform**: Windows, Linux, macOS
 - **Main website**: https://inviwo.org
 - **API docs**: https://inviwo.org/inviwo/doc
@@ -59,7 +59,7 @@ inviwo/
 | `msvc-developer` | Windows MSVC developer build |
 | `xcode-developer` | macOS Xcode developer build |
 | `ninja-developer` | Ninja-based developer build (Linux/macOS) |
-| `gha-dynamic` / `gha-static` | CI presets used by GitHub Actions |
+| `gha-dynamic` / `gha-static` | CI presets used by GitHub Actions defined in `.github/presets/*.json`|
 
 ### Building
 
@@ -75,10 +75,10 @@ cmake -S inviwo --preset ninja-developer
 cmake --build builds/ninja-developer --parallel
 
 # Run tests
-ctest --test-dir build/ninja-developer --output-on-failure
+ctest --test-dir builds/ninja-developer --output-on-failure
 
 # Build a single module target
-cmake --build build/ninja-developer --target inviwo-module-base
+cmake --build builds/ninja-developer --target inviwo-module-base
 ```
 
 ### Common CMake Options
@@ -159,9 +159,9 @@ protected:
     virtual void process() override;
 
 private:
-    VolumeInport inport_{"inputVolume"};
-    VolumeOutport outport_{"outputVolume"};
-    FloatProperty threshold_{"threshold", "Threshold", 0.5f, 0.0f, 1.0f};
+    VolumeInport inport_;
+    VolumeOutport outport_;
+    FloatProperty threshold_;
 };
 
 }  // namespace inviwo
@@ -196,6 +196,7 @@ const ProcessorInfo& MyProcessor::getProcessorInfo() const { return processorInf
 void MyProcessor::process() {
     auto volume = inport_.getData();
     // ... process and produce output ...
+    auto result = std::make_shared<Volume>();
     outport_.setData(result);
 }
 
@@ -242,7 +243,7 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 **Module registration (`src/mymodule.cpp`):**
 ```cpp
 #include <inviwo/mymodule/mymodule.h>
-#include <inviwo/mymodule/processorsmyprocessor.h>
+#include <inviwo/mymodule/processors/myprocessor.h>
 
 namespace inviwo {
 
@@ -263,10 +264,10 @@ The `tools/meta` binary scaffolds new modules and processors:
 ./build/tools/meta/inviwo-meta
 
 # Create a new module
-./inviwo-meta --module MyModule --path ./modules/
+./inviwo-meta --modules MyModule --path ./modules/
 
-# Create a new processor inside a module
-./inviwo-meta --processor MyProcessor --module MyModule --path ./modules/
+# Create a new processor
+./inviwo-meta --processors MyProcessor --path ./modules/
 ```
 
 ---
@@ -322,11 +323,11 @@ ctest --test-dir build -V
 // Shared ownership via std::shared_ptr (convention in Inviwo)
 auto volume = std::make_shared<Volume>(dims, format);
 auto mesh = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
+outport_.setData(mesh);                 // Pass shared_ptr
 
 // Port data access
-auto vol = inport_.getData();           // std::shared_ptr<const Volume>
-auto mesh = inport_.getData();          // std::shared_ptr<const Mesh>
-outport_.setData(result);              // Pass shared_ptr
+auto vol = volumeInport_.getData();     // std::shared_ptr<const Volume>  
+auto mesh = meshInport_.getData();      // std::shared_ptr<const Mesh>  
 ```
 
 ### Properties
@@ -381,7 +382,10 @@ class MyGLProcessor : public Processor {
 
 The workflow is defined in `.github/workflows/inviwo.yml`.
 
-**Matrix**: Windows (MSVC), macOS (arm64), Linux (GCC) × {Dynamic, Static} × {Release, Debug}
+**Matrix**:  
+- Windows (MSVC): {Dynamic, Static} × {Release} (no Debug)  
+- macOS (arm64): {Dynamic, Static} × {Release, Debug}  
+- Linux (GCC): Dynamic × {Release, Debug}, Static × {Release} (no Static Debug)  
 
 **Key steps**:
 1. Bootstrap vcpkg and restore dependency cache
