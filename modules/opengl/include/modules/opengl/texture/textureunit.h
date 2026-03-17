@@ -36,6 +36,8 @@
 
 #include <cstddef>
 #include <vector>
+#include <array>
+#include <atomic>
 
 namespace inviwo {
 
@@ -50,18 +52,15 @@ public:
     TextureUnit(TextureUnit&& rhs) noexcept;
     TextureUnit& operator=(TextureUnit&& that) noexcept;
 
-    // These are called from OpenGLCapabilities retrieveStaticInfo/destructor.
-    static void initialize(int numUnits);
-    static void deinitialize();
+    GLint getEnum() const { return unitEnum_; }
+    GLint getUnitNumber() const { return unitNumber_; }
 
-    inline GLint getEnum() const { return unitEnum_; }
-    inline GLint getUnitNumber() const { return unitNumber_; }
-
-    inline void activate() const { glActiveTexture(unitEnum_); }
-    inline static void setZeroUnit() { glActiveTexture(GL_TEXTURE0); }
+    void activate() const { glActiveTexture(unitEnum_); }
+    static void setZeroUnit() { glActiveTexture(GL_TEXTURE0); }
 
 private:
-    static std::vector<bool> textureUnits_;
+    static std::array<std::atomic_bool, 128> textureUnits_;
+    static size_t maxTextureImageUnits();
 
     GLint unitEnum_;
     GLint unitNumber_;
