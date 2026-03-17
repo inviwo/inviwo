@@ -80,8 +80,8 @@ protected:
     // Call whenever PseudoLighting or RoundDepthProfile, or Stippling mode change
     void configureShaders();
     void setUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, size2_t screenDim,
-                     const std::function<void(Shader&)>& func);
-    void configureShader(Shader& shader);
+                     const std::function<void(Shader&)>& func) const;
+    void configureShader(Shader& shader) const;
     LineData settings_;  //!< Local cache
     MeshShaderCache lineShaders_;
     TFLookupTable tfLookup_;

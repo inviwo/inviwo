@@ -98,12 +98,7 @@ LineRenderer::LineRenderer(const std::vector<MeshShaderCache::Requirement>& requ
 
                    detail::defaultRequirements(requirements),
                    [this](Shader& shader) -> void { configureShader(shader); }}
-    , tfLookup_{} {
-
-    if (settings_.useMetaColor) {
-        tfLookup_.calculate(settings_.metaColor);
-    }
-}
+    , tfLookup_{} {}
 
 void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
                           const LineData& settings) {
@@ -136,9 +131,9 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
         configureShaders();
     }
 
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    TextureUnit texUnit;
+    const TextureUnit texUnit;
     if (settings_.useMetaColor) {
         if (const auto* tfLayer = tfLookup_.getRepresentation<LayerGL>()) {
             tfLayer->bindTexture(texUnit.getEnum());
@@ -170,7 +165,7 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
 }
 
 void LineRenderer::setUniforms(Shader& lineShader, const Mesh& mesh, const Camera& camera,
-                               size2_t screenDim, const std::function<void(Shader&)>& func) {
+                               size2_t screenDim, const std::function<void(Shader&)>& func) const {
     lineShader.setUniform("screenDim", vec2(screenDim));
     utilgl::setShaderUniforms(lineShader, camera, "camera");
 
@@ -195,7 +190,7 @@ void LineRenderer::configureShaders() {
         configureShader(item.second);
     }
 }
-void LineRenderer::configureShader(Shader& shader) {
+void LineRenderer::configureShader(Shader& shader) const {
     shader[ShaderType::Fragment]->setShaderDefine("ENABLE_PSEUDO_LIGHTING",
                                                   settings_.pseudoLighting);
     shader[ShaderType::Fragment]->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE",
