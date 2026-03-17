@@ -87,6 +87,7 @@ Qt::ItemFlags ProcessorListModel::flags(const QModelIndex& index) const {
         default:
             return Qt::NoItemFlags;
     }
+    return Qt::NoItemFlags;
 }
 QVariant ProcessorListModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) return {};
