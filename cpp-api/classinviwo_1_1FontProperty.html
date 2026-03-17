@@ -102,7 +102,6 @@ $(function(){initNavTree('classinviwo_1_1FontProperty.html','','classinviwo_1_1F
  <div class="center">
   <img src="classinviwo_1_1FontProperty.png" usemap="#inviwo_3A_3AFontProperty_map" alt=""/>
   <map id="inviwo_3A_3AFontProperty_map" name="inviwo_3A_3AFontProperty_map">
-<area href="classinviwo_1_1FontSettings.html" alt="inviwo::FontSettings" shape="rect" coords="0,224,305,248"/>
 <area href="classinviwo_1_1CompositeProperty.html" alt="inviwo::CompositeProperty" shape="rect" coords="1260,224,1565,248"/>
 <area href="classinviwo_1_1Property.html" title="A Property represents a parameter to a processor." alt="inviwo::Property" shape="rect" coords="315,168,620,192"/>
 <area href="classinviwo_1_1PropertyOwner.html" alt="inviwo::PropertyOwner" shape="rect" coords="1260,168,1565,192"/>
@@ -127,17 +126,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9039e6e644dac4a5a781640da2b457fd" id="r_a9039e6e644dac4a5a781640da2b457fd"><td class="memItemLeft">virtual FontProperty *&#160;</td><td class="memItemRight"><a class="el" href="#a9039e6e644dac4a5a781640da2b457fd">clone</a> () const override</td></tr>
 <tr class="memitem:a39d38c8bed24d42b38b9a323bff03a35" id="r_a39d38c8bed24d42b38b9a323bff03a35"><td class="memItemLeft"><a id="a39d38c8bed24d42b38b9a323bff03a35" name="a39d38c8bed24d42b38b9a323bff03a35"></a>
 &#160;</td><td class="memItemRight"><b>FontProperty</b> (const FontProperty &amp;rhs)</td></tr>
+<tr class="memitem:a40e4fee1a6133df44229c7baf4705b14" id="r_a40e4fee1a6133df44229c7baf4705b14"><td class="memItemLeft"><a id="a40e4fee1a6133df44229c7baf4705b14" name="a40e4fee1a6133df44229c7baf4705b14"></a>
+&#160;</td><td class="memItemRight"><b>FontProperty</b> (FontProperty &amp;&amp;)=delete</td></tr>
 <tr class="memitem:a7323945e1d3c4b30e78cf3c30281b2aa" id="r_a7323945e1d3c4b30e78cf3c30281b2aa"><td class="memItemLeft"><a id="a7323945e1d3c4b30e78cf3c30281b2aa" name="a7323945e1d3c4b30e78cf3c30281b2aa"></a>
 &#160;</td><td class="memItemRight"><b>FontProperty</b> (std::string_view identifier, std::string_view displayName, font::FontType fontType, int size=14, float lineSpacing=0.0f, vec2 anchorPos=vec2{-1.0f}, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
 <tr class="memitem:aaeb83cd7d2d0015f05feb94be6484d61" id="r_aaeb83cd7d2d0015f05feb94be6484d61"><td class="memItemLeft"><a id="aaeb83cd7d2d0015f05feb94be6484d61" name="aaeb83cd7d2d0015f05feb94be6484d61"></a>
 &#160;</td><td class="memItemRight"><b>FontProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
 <tr class="memitem:afdda5199f283777ef0af1531c436b4c0" id="r_afdda5199f283777ef0af1531c436b4c0"><td class="memItemLeft"><a id="afdda5199f283777ef0af1531c436b4c0" name="afdda5199f283777ef0af1531c436b4c0"></a>
 &#160;</td><td class="memItemRight"><b>FontProperty</b> (std::string_view identifier, std::string_view displayName, std::string_view fontFaceName, int size=14, float lineSpacing=0.0f, vec2 anchorPos=vec2{-1.0f}, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
-<tr class="memitem:a850a4e926c6e2b4e95265b0a59149f5c" id="r_a850a4e926c6e2b4e95265b0a59149f5c"><td class="memItemLeft">virtual vec2&#160;</td><td class="memItemRight"><a class="el" href="#a850a4e926c6e2b4e95265b0a59149f5c">getAnchorPos</a> () const override</td></tr>
 <tr class="memitem:a4ce36a91a459d11adae8e4898c5f2761" id="r_a4ce36a91a459d11adae8e4898c5f2761"><td class="memItemLeft">virtual std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a4ce36a91a459d11adae8e4898c5f2761">getClassIdentifier</a> () const override</td></tr>
-<tr class="memitem:af238be47cc3995a842e2ebde9d0371ff" id="r_af238be47cc3995a842e2ebde9d0371ff"><td class="memItemLeft">virtual const std::filesystem::path &amp;&#160;</td><td class="memItemRight"><a class="el" href="#af238be47cc3995a842e2ebde9d0371ff">getFontFace</a> () const override</td></tr>
-<tr class="memitem:ad7c7a0f732e75e7989b46237c4d5e210" id="r_ad7c7a0f732e75e7989b46237c4d5e210"><td class="memItemLeft">virtual int&#160;</td><td class="memItemRight"><a class="el" href="#ad7c7a0f732e75e7989b46237c4d5e210">getFontSize</a> () const override</td></tr>
-<tr class="memitem:a4c556443bf249e64bd245d006974e7f1" id="r_a4c556443bf249e64bd245d006974e7f1"><td class="memItemLeft">virtual float&#160;</td><td class="memItemRight"><a class="el" href="#a4c556443bf249e64bd245d006974e7f1">getLineSpacing</a> () const override</td></tr>
+<tr class="memitem:ad7b6dedbfcc5b14a4b252a67e6361fee" id="r_ad7b6dedbfcc5b14a4b252a67e6361fee"><td class="memItemLeft"><a id="ad7b6dedbfcc5b14a4b252a67e6361fee" name="ad7b6dedbfcc5b14a4b252a67e6361fee"></a>
+FontProperty &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const FontProperty &amp;)=delete</td></tr>
+<tr class="memitem:af273ec80e8640a0827d611f11070378d" id="r_af273ec80e8640a0827d611f11070378d"><td class="memItemLeft"><a id="af273ec80e8640a0827d611f11070378d" name="af273ec80e8640a0827d611f11070378d"></a>
+FontProperty &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (FontProperty &amp;&amp;)=delete</td></tr>
+<tr class="memitem:a6c2c1d33f90e47a1bdff633afffb6872" id="r_a6c2c1d33f90e47a1bdff633afffb6872"><td class="memItemLeft"><a id="a6c2c1d33f90e47a1bdff633afffb6872" name="a6c2c1d33f90e47a1bdff633afffb6872"></a>
+void&#160;</td><td class="memItemRight"><b>update</b> (<a class="el" href="structinviwo_1_1FontData.html">FontData</a> &amp;data) const</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1CompositeProperty"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1CompositeProperty')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1CompositeProperty.html">inviwo::CompositeProperty</a></td></tr>
 <tr class="memitem:a2a08ae47c1464cddec0a932ba95da711 inherit pub_methods_classinviwo_1_1CompositeProperty" id="r_a2a08ae47c1464cddec0a932ba95da711"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1CompositeProperty.html#a2a08ae47c1464cddec0a932ba95da711">accept</a> (<a class="el" href="classinviwo_1_1NetworkVisitor.html">NetworkVisitor</a> &amp;visitor) override</td></tr>
 <tr class="memdesc:a2a08ae47c1464cddec0a932ba95da711 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a <a class="el" href="classinviwo_1_1NetworkVisitor.html" title="Visitor pattern base for visiting an Inviwo ProcessorNetwork.">NetworkVisitor</a>, the visitor will visit this and then each <a class="el" href="classinviwo_1_1Property.html" title="A Property represents a parameter to a processor.">Property</a> of the <a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> in an undefined order. The Visitor will then visit each Properties's properties and so on.  <br /></td></tr>
@@ -559,33 +562,6 @@ std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> *
 
 </div>
 </div>
-<a id="a850a4e926c6e2b4e95265b0a59149f5c" name="a850a4e926c6e2b4e95265b0a59149f5c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a850a4e926c6e2b4e95265b0a59149f5c">&#9670;&#160;</a></span>getAnchorPos()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual vec2 inviwo::FontProperty::getAnchorPos </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classinviwo_1_1FontSettings.html">inviwo::FontSettings</a>.</p>
-
-</div>
-</div>
 <a id="a4ce36a91a459d11adae8e4898c5f2761" name="a4ce36a91a459d11adae8e4898c5f2761"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4ce36a91a459d11adae8e4898c5f2761">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
@@ -610,87 +586,6 @@ std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> *
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1CompositeProperty.html">inviwo::CompositeProperty</a>.</p>
-
-</div>
-</div>
-<a id="af238be47cc3995a842e2ebde9d0371ff" name="af238be47cc3995a842e2ebde9d0371ff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af238be47cc3995a842e2ebde9d0371ff">&#9670;&#160;</a></span>getFontFace()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual const std::filesystem::path &amp; inviwo::FontProperty::getFontFace </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classinviwo_1_1FontSettings.html">inviwo::FontSettings</a>.</p>
-
-</div>
-</div>
-<a id="ad7c7a0f732e75e7989b46237c4d5e210" name="ad7c7a0f732e75e7989b46237c4d5e210"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad7c7a0f732e75e7989b46237c4d5e210">&#9670;&#160;</a></span>getFontSize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual int inviwo::FontProperty::getFontSize </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classinviwo_1_1FontSettings.html">inviwo::FontSettings</a>.</p>
-
-</div>
-</div>
-<a id="a4c556443bf249e64bd245d006974e7f1" name="a4c556443bf249e64bd245d006974e7f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4c556443bf249e64bd245d006974e7f1">&#9670;&#160;</a></span>getLineSpacing()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual float inviwo::FontProperty::getLineSpacing </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classinviwo_1_1FontSettings.html">inviwo::FontSettings</a>.</p>
 
 </div>
 </div>

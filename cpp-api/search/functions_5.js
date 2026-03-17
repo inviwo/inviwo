@@ -17,7 +17,7 @@ var searchData=
   ['findtrack_14',['findTrack',['../classinviwo_1_1animation_1_1Animation.html#a0876e71ff595e57da35a9fa672ae9eb2',1,'inviwo::animation::Animation']]],
   ['finduniqueidentifier_15',['findUniqueIdentifier',['../namespaceinviwo_1_1util.html#a2a1641752b9b6ec1384f983f1f7b86a9',1,'inviwo::util']]],
   ['fitdata_16',['fitData',['../classinviwo_1_1CameraProperty.html#a9809d3da72f008bac786199166d21db2',1,'inviwo::CameraProperty']]],
-  ['flip_17',['flip',['../classinviwo_1_1BitSet.html#a40549ab5a4ff165904787f5cc72c3ee9',1,'inviwo::BitSet::flip()'],['../namespaceinviwo_1_1plot.html#ae3d30381f68f9c2ef6774acbbc76c8e1',1,'inviwo::plot::flip(TickStyle s)'],['../namespaceinviwo_1_1plot.html#a14faa95221250b79c028b6849690b3ae',1,'inviwo::plot::flip(LabelPlacement p)']]],
+  ['flip_17',['flip',['../classinviwo_1_1BitSet.html#a40549ab5a4ff165904787f5cc72c3ee9',1,'inviwo::BitSet']]],
   ['flippositions_18',['flipPositions',['../namespaceinviwo_1_1util.html#a0cb3c9707e78b11bc105e3b2614f1621',1,'inviwo::util']]],
   ['fliprange_19',['flipRange',['../classinviwo_1_1BitSet.html#a34645adf31d94d9bb92775ae4a275b1a',1,'inviwo::BitSet']]],
   ['flipup_20',['flipUp',['../classinviwo_1_1CameraProperty.html#a57c9e847d1c5b80fc5dfe48d041b8e22',1,'inviwo::CameraProperty']]],

@@ -41,18 +41,12 @@ var hierarchy =
     [ "inviwo::plot::Axis2DProcessorHelper", "classinviwo_1_1plot_1_1Axis2DProcessorHelper.html", null ],
     [ "inviwo::plot::Axis3DProcessorHelper", "classinviwo_1_1plot_1_1Axis3DProcessorHelper.html", null ],
     [ "inviwo::plot::detail::AxisCaption", "structinviwo_1_1plot_1_1detail_1_1AxisCaption.html", null ],
-    [ "inviwo::plot::detail::AxisLabels&lt; P &gt;", "structinviwo_1_1plot_1_1detail_1_1AxisLabels.html", null ],
-    [ "inviwo::plot::detail::AxisMeshes", "structinviwo_1_1plot_1_1detail_1_1AxisMeshes.html", null ],
+    [ "inviwo::plot::AxisData", "structinviwo_1_1plot_1_1AxisData.html", null ],
     [ "inviwo::plot::AxisRendererBase", "classinviwo_1_1plot_1_1AxisRendererBase.html", [
       [ "inviwo::plot::AxisRenderer", "classinviwo_1_1plot_1_1AxisRenderer.html", null ],
       [ "inviwo::plot::AxisRenderer3D", "classinviwo_1_1plot_1_1AxisRenderer3D.html", null ]
     ] ],
-    [ "inviwo::plot::AxisSettings", "classinviwo_1_1plot_1_1AxisSettings.html", [
-      [ "inviwo::plot::AxisData", "classinviwo_1_1plot_1_1AxisData.html", null ],
-      [ "inviwo::plot::AxisProperty", "classinviwo_1_1plot_1_1AxisProperty.html", null ],
-      [ "inviwo::plot::CategoricalAxisProperty", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html", null ],
-      [ "inviwo::plot::PCPAxisSettings", "classinviwo_1_1plot_1_1PCPAxisSettings.html", null ]
-    ] ],
+    [ "inviwo::plot::detail::AxisTickLabels&lt; P &gt;", "structinviwo_1_1plot_1_1detail_1_1AxisTickLabels.html", null ],
     [ "inviwo::kind::Base", "structinviwo_1_1kind_1_1Base.html", null ],
     [ "inviwo::TFData::Base", "structinviwo_1_1TFData_1_1Base.html", [
       [ "inviwo::TFData::Implementation< T >", "structinviwo_1_1TFData_1_1Implementation.html", null ]
@@ -133,10 +127,8 @@ var hierarchy =
       ] ]
     ] ],
     [ "inviwo::BitSet::BitSetIterator", "classinviwo_1_1BitSet_1_1BitSetIterator.html", null ],
+    [ "inviwo::plot::BoxSelection", "structinviwo_1_1plot_1_1BoxSelection.html", null ],
     [ "inviwo::plot::BoxSelectionRenderer", "classinviwo_1_1plot_1_1BoxSelectionRenderer.html", null ],
-    [ "inviwo::plot::BoxSelectionSettingsInterface", "classinviwo_1_1plot_1_1BoxSelectionSettingsInterface.html", [
-      [ "inviwo::plot::BoxSelectionProperty", "classinviwo_1_1plot_1_1BoxSelectionProperty.html", null ]
-    ] ],
     [ "inviwo::util::BrickIterator&lt; Iter &gt;", "classinviwo_1_1util_1_1BrickIterator.html", null ],
     [ "inviwo::BrushingTarget", "structinviwo_1_1BrushingTarget.html", null ],
     [ "inviwo::BrushingTargetsInvalidationLevel", "structinviwo_1_1BrushingTargetsInvalidationLevel.html", null ],
@@ -1266,10 +1258,7 @@ var hierarchy =
     [ "inviwo::ViewEvent::FlipUp", "structinviwo_1_1ViewEvent_1_1FlipUp.html", null ],
     [ "inviwo::ViewEvent::FlipView", "structinviwo_1_1ViewEvent_1_1FlipView.html", null ],
     [ "inviwo::TextRenderer::FontCache", "structinviwo_1_1TextRenderer_1_1FontCache.html", null ],
-    [ "inviwo::FontSettings", "classinviwo_1_1FontSettings.html", [
-      [ "inviwo::FontData", "classinviwo_1_1FontData.html", null ],
-      [ "inviwo::FontProperty", "classinviwo_1_1FontProperty.html", null ]
-    ] ],
+    [ "inviwo::FontData", "structinviwo_1_1FontData.html", null ],
     [ "inviwo::util::for_each_type&lt; Types &gt;", "structinviwo_1_1util_1_1for__each__type.html", null ],
     [ "inviwo::util::for_each_type&lt; std::tuple&lt; T &gt; &gt;", "structinviwo_1_1util_1_1for__each__type_3_01std_1_1tuple_3_01T_01_4_01_4.html", null ],
     [ "inviwo::util::for_each_type&lt; std::tuple&lt; T, Types... &gt; &gt;", "structinviwo_1_1util_1_1for__each__type_3_01std_1_1tuple_3_01T_00_01Types_8_8_8_01_4_01_4.html", null ],
@@ -1277,6 +1266,7 @@ var hierarchy =
     [ "inviwo::util::for_each_type_pair&lt; std::tuple&lt; ATypes... &gt;, std::tuple&lt; BTypes... &gt; &gt;", "structinviwo_1_1util_1_1for__each__type__pair_3_01std_1_1tuple_3_01ATypes_8_8_8_01_4_00_01std_1_980543efefbc8ab89773d2539d3c1f94.html", null ],
     [ "inviwo::utilgl::FormatConversion", "structinviwo_1_1utilgl_1_1FormatConversion.html", null ],
     [ "fmt::formatter", null, [
+      [ "fmt::formatter< inviwo::UnicodeFloat >", "structfmt_1_1formatter_3_01inviwo_1_1UnicodeFloat_01_4.html", null ],
       [ "inviwo::FlagArrayFormatter< T >", "structinviwo_1_1FlagArrayFormatter.html", null ],
       [ "inviwo::FlagFormatter< T >", "structinviwo_1_1FlagFormatter.html", null ],
       [ "inviwo::FlagsFormatter< T >", "structinviwo_1_1FlagsFormatter.html", null ]
@@ -1647,6 +1637,7 @@ var hierarchy =
     [ "inviwo::LicenseInfo", "classinviwo_1_1LicenseInfo.html", null ],
     [ "inviwo::LightingConfig", "structinviwo_1_1LightingConfig.html", null ],
     [ "inviwo::LightingState", "structinviwo_1_1LightingState.html", null ],
+    [ "inviwo::plot::LinearRange", "structinviwo_1_1plot_1_1LinearRange.html", null ],
     [ "inviwo::LineNumberResolver", "structinviwo_1_1LineNumberResolver.html", null ],
     [ "inviwo::algorithm::LineRenderer", "classinviwo_1_1algorithm_1_1LineRenderer.html", null ],
     [ "inviwo::LineSettingsInterface", "classinviwo_1_1LineSettingsInterface.html", [
@@ -1677,11 +1668,6 @@ var hierarchy =
     ] ],
     [ "inviwo::LogTableModelEntry", "classinviwo_1_1LogTableModelEntry.html", null ],
     [ "inviwo::animation::MainAnimation", "classinviwo_1_1animation_1_1MainAnimation.html", null ],
-    [ "inviwo::plot::MajorTickSettings", "classinviwo_1_1plot_1_1MajorTickSettings.html", [
-      [ "inviwo::plot::MajorTickData", "classinviwo_1_1plot_1_1MajorTickData.html", null ],
-      [ "inviwo::plot::MajorTickProperty", "classinviwo_1_1plot_1_1MajorTickProperty.html", null ],
-      [ "inviwo::plot::PCPMajorTickSettings", "classinviwo_1_1plot_1_1PCPMajorTickSettings.html", null ]
-    ] ],
     [ "inviwo::deserializer::MapFunctions&lt; IdTransform, MakeNew, ShouldMakeNew, CanRecreate, OnNew, OnRemove &gt;", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ],
     [ "inviwo::MarchingTetrahedron", "classinviwo_1_1MarchingTetrahedron.html", null ],
     [ "inviwo::amira::Material", "structinviwo_1_1amira_1_1Material.html", null ],
@@ -1871,15 +1857,16 @@ var hierarchy =
           [ "inviwo::OptionProperty< PlaybackMode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< OffsetScaling >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< AxisRangeMode >", "classinviwo_1_1OptionProperty.html", null ],
-          [ "inviwo::OptionProperty< BoxSelectionSettingsInterface::Mode >", "classinviwo_1_1OptionProperty.html", null ],
-          [ "inviwo::OptionProperty< Orientation >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< CaptionType >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< LabelScale >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< LabelingAlgorithm >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< BoxSelection::Mode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< LabelType >", "classinviwo_1_1OptionProperty.html", null ],
-          [ "inviwo::OptionProperty< TickStyle >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< AxisProperty::Orientation >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< TickData::Style >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< AxisSelection >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< LabelPosition >", "classinviwo_1_1OptionProperty.html", null ],
-          [ "inviwo::OptionProperty< LabelPlacement >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ScatterPlotGL::SortingOrder >", "classinviwo_1_1OptionProperty.html", null ],
-          [ "inviwo::OptionProperty< CaptionType >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< AngleMeasure >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< T >", "classinviwo_1_1OptionProperty.html", null ]
         ] ],
@@ -1901,11 +1888,6 @@ var hierarchy =
     [ "inviwo::util::MetaDataToProperty", "classinviwo_1_1util_1_1MetaDataToProperty.html", null ],
     [ "inviwo::util::detail::min&lt; T &gt;", "structinviwo_1_1util_1_1detail_1_1min.html", null ],
     [ "inviwo::MinMaxPropertyState&lt; T &gt;", "structinviwo_1_1MinMaxPropertyState.html", null ],
-    [ "inviwo::plot::MinorTickSettings", "classinviwo_1_1plot_1_1MinorTickSettings.html", [
-      [ "inviwo::plot::MinorTickData", "classinviwo_1_1plot_1_1MinorTickData.html", null ],
-      [ "inviwo::plot::MinorTickProperty", "classinviwo_1_1plot_1_1MinorTickProperty.html", null ],
-      [ "inviwo::plot::PCPMinorTickSettings", "classinviwo_1_1plot_1_1PCPMinorTickSettings.html", null ]
-    ] ],
     [ "inviwo::utilgl::BlendModeState::Mode", "structinviwo_1_1utilgl_1_1BlendModeState_1_1Mode.html", null ],
     [ "inviwo::ModuleCallback", "classinviwo_1_1ModuleCallback.html", null ],
     [ "inviwo::ModuleCallbackAction", "classinviwo_1_1ModuleCallbackAction.html", null ],
@@ -2696,12 +2678,6 @@ var hierarchy =
     [ "inviwo::PickingMapper", "classinviwo_1_1PickingMapper.html", null ],
     [ "inviwo::ShaderSegment::Placeholder", "structinviwo_1_1ShaderSegment_1_1Placeholder.html", null ],
     [ "inviwo::Plane", "classinviwo_1_1Plane.html", null ],
-    [ "inviwo::plot::PlotTextSettings", "classinviwo_1_1plot_1_1PlotTextSettings.html", [
-      [ "inviwo::plot::PCPCaptionSettings", "classinviwo_1_1plot_1_1PCPCaptionSettings.html", null ],
-      [ "inviwo::plot::PCPLabelSettings", "classinviwo_1_1plot_1_1PCPLabelSettings.html", null ],
-      [ "inviwo::plot::PlotTextData", "classinviwo_1_1plot_1_1PlotTextData.html", null ],
-      [ "inviwo::plot::PlotTextProperty", "classinviwo_1_1plot_1_1PlotTextProperty.html", null ]
-    ] ],
     [ "inviwo::util::PMRDeleter", "structinviwo_1_1util_1_1PMRDeleter.html", null ],
     [ "inviwo::plot::ScatterPlotGL::Points", "structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html", null ],
     [ "inviwo::Polygon&lt; T &gt;", "classinviwo_1_1Polygon.html", null ],
@@ -3280,15 +3256,16 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< PlaybackMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< OffsetScaling >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< AxisRangeMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
-      [ "inviwo::OptionPropertyOption< BoxSelectionSettingsInterface::Mode >", "classinviwo_1_1OptionPropertyOption.html", null ],
-      [ "inviwo::OptionPropertyOption< Orientation >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< CaptionType >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< LabelScale >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< LabelingAlgorithm >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< BoxSelection::Mode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< LabelType >", "classinviwo_1_1OptionPropertyOption.html", null ],
-      [ "inviwo::OptionPropertyOption< TickStyle >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< AxisProperty::Orientation >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< TickData::Style >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< AxisSelection >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< LabelPosition >", "classinviwo_1_1OptionPropertyOption.html", null ],
-      [ "inviwo::OptionPropertyOption< LabelPlacement >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ScatterPlotGL::SortingOrder >", "classinviwo_1_1OptionPropertyOption.html", null ],
-      [ "inviwo::OptionPropertyOption< CaptionType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< AngleMeasure >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::BitSet", "classinviwo_1_1BitSet.html", null ],
       [ "inviwo::BrushingAndLinkingManager", "classinviwo_1_1BrushingAndLinkingManager.html", null ],
@@ -3625,6 +3602,7 @@ var hierarchy =
     [ "inviwo::utilgl::TexEnv", "structinviwo_1_1utilgl_1_1TexEnv.html", null ],
     [ "inviwo::utilgl::TexParameter", "structinviwo_1_1utilgl_1_1TexParameter.html", null ],
     [ "inviwo::TextBoundingBox", "structinviwo_1_1TextBoundingBox.html", null ],
+    [ "inviwo::plot::TextData", "structinviwo_1_1plot_1_1TextData.html", null ],
     [ "inviwo::TextFileReader", "classinviwo_1_1TextFileReader.html", null ],
     [ "inviwo::TextRenderer", "classinviwo_1_1TextRenderer.html", null ],
     [ "inviwo::TextTextureObject", "structinviwo_1_1TextTextureObject.html", null ],
@@ -3644,6 +3622,8 @@ var hierarchy =
       [ "inviwo::TFPropertyModel< U >", "classinviwo_1_1TFPropertyModel.html", null ]
     ] ],
     [ "inviwo::ThreadPool", "classinviwo_1_1ThreadPool.html", null ],
+    [ "inviwo::plot::TickData", "structinviwo_1_1plot_1_1TickData.html", null ],
+    [ "inviwo::plot::detail::TickMesh", "structinviwo_1_1plot_1_1detail_1_1TickMesh.html", null ],
     [ "inviwo::cimgutil::TIFFHeader", "structinviwo_1_1cimgutil_1_1TIFFHeader.html", null ],
     [ "inviwo::Timer", "classinviwo_1_1Timer.html", null ],
     [ "inviwo::TimerThread", "classinviwo_1_1TimerThread.html", null ],
@@ -3720,6 +3700,7 @@ var hierarchy =
     [ "inviwo::hdf5::TypeMap&lt; unsigned int &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01unsigned_01int_01_4.html", null ],
     [ "inviwo::hdf5::TypeMap&lt; unsigned long long &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01unsigned_01long_01long_01_4.html", null ],
     [ "inviwo::hdf5::TypeMap&lt; unsigned short &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01unsigned_01short_01_4.html", null ],
+    [ "inviwo::UnicodeFloat", "structinviwo_1_1UnicodeFloat.html", null ],
     [ "inviwo::UniformLabelAtlasGL", "classinviwo_1_1UniformLabelAtlasGL.html", null ],
     [ "std::unique_ptr&lt; T &gt;", null, [
       [ "inviwo::QPtr< inviwo::PythonEditorWidget >", "classinviwo_1_1QPtr.html", null ],

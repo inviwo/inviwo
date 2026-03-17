@@ -1,7 +1,7 @@
 var classinviwo_1_1plot_1_1AxisProperty =
 [
     [ "clone", "classinviwo_1_1plot_1_1AxisProperty.html#a42afb33ed34ca597f48b5652b0dd47b8", null ],
-    [ "defaultAlignLabels", "classinviwo_1_1plot_1_1AxisProperty.html#a70e035c8facd8095cb4e0c852701f6a9", null ],
+    [ "set", "classinviwo_1_1plot_1_1AxisProperty.html#a0db10b42d5d143dcfc8334d13b240a56", null ],
     [ "setColor", "classinviwo_1_1plot_1_1AxisProperty.html#abc0c6f5733da1b032935df15fe5aeaef", null ],
     [ "setFontFace", "classinviwo_1_1plot_1_1AxisProperty.html#a5a6fa0714d88f3d1a9cd9adaec1d54e7", null ],
     [ "setFontSize", "classinviwo_1_1plot_1_1AxisProperty.html#aa8b8fdcb42012eae4ac9387855bad919", null ],

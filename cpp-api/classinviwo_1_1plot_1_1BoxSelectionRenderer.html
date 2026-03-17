@@ -101,10 +101,8 @@ $(function(){initNavTree('classinviwo_1_1plot_1_1BoxSelectionRenderer.html','','
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a42e3c2c293f29fc70ff215d0e21d21a7" id="r_a42e3c2c293f29fc70ff215d0e21d21a7"><td class="memItemLeft"><a id="a42e3c2c293f29fc70ff215d0e21d21a7" name="a42e3c2c293f29fc70ff215d0e21d21a7"></a>
-&#160;</td><td class="memItemRight"><b>BoxSelectionRenderer</b> (const <a class="el" href="classinviwo_1_1plot_1_1BoxSelectionProperty.html">BoxSelectionProperty</a> &amp;settings)</td></tr>
-<tr class="memitem:afd0efb0a2de0665bf6349b537474d28b" id="r_afd0efb0a2de0665bf6349b537474d28b"><td class="memItemLeft"><a id="afd0efb0a2de0665bf6349b537474d28b" name="afd0efb0a2de0665bf6349b537474d28b"></a>
-void&#160;</td><td class="memItemRight"><b>render</b> (std::optional&lt; std::array&lt; dvec2, 2 &gt; &gt; dragRect, size2_t screenDim)</td></tr>
+<tr class="memitem:a88cffa49edf8aecd7dd4ccbca293332c" id="r_a88cffa49edf8aecd7dd4ccbca293332c"><td class="memItemLeft"><a id="a88cffa49edf8aecd7dd4ccbca293332c" name="a88cffa49edf8aecd7dd4ccbca293332c"></a>
+void&#160;</td><td class="memItemRight"><b>render</b> (std::optional&lt; std::array&lt; dvec2, 2 &gt; &gt; dragRect, size2_t screenDim, const <a class="el" href="structinviwo_1_1plot_1_1BoxSelection.html">BoxSelection</a> &amp;sel)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-types" class="groupheader"><a id="pro-types" name="pro-types"></a>
 Protected Types</h2></td></tr>
@@ -118,8 +116,6 @@ Protected Attributes</h2></td></tr>
 <a class="el" href="classinviwo_1_1algorithm_1_1LineRenderer.html">algorithm::LineRenderer</a>&#160;</td><td class="memItemRight"><b>lineRenderer_</b></td></tr>
 <tr class="memitem:af020ffdf95fa01b7598f88286d6babcf" id="r_af020ffdf95fa01b7598f88286d6babcf"><td class="memItemLeft"><a id="af020ffdf95fa01b7598f88286d6babcf" name="af020ffdf95fa01b7598f88286d6babcf"></a>
 <a class="el" href="classinviwo_1_1LineSettings.html">LineSettings</a>&#160;</td><td class="memItemRight"><b>lineSettings_</b></td></tr>
-<tr class="memitem:af64d6302fa23fb208f6a07da2257da73" id="r_af64d6302fa23fb208f6a07da2257da73"><td class="memItemLeft"><a id="af64d6302fa23fb208f6a07da2257da73" name="af64d6302fa23fb208f6a07da2257da73"></a>
-const <a class="el" href="classinviwo_1_1plot_1_1BoxSelectionProperty.html">BoxSelectionProperty</a> &amp;&#160;</td><td class="memItemRight"><b>settings_</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Renders a 2D rectangle in screen space. Use in combination with <a class="el" href="classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html" title="Handles interaction for 2D rectangle selection/filtering Selection/Filtering callbacks are called whe...">BoxSelectionInteractionHandler</a>. </p>

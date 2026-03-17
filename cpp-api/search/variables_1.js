@@ -5,5 +5,6 @@ var searchData=
   ['classidentifier_2',['classIdentifier',['../structinviwo_1_1ProcessorInfo.html#a73ee300447fec6bf02343fe794da5b20',1,'inviwo::ProcessorInfo']]],
   ['column_3',['column',['../structinviwo_1_1filters_1_1ItemFilter.html#a5bc29c92ccbdd35feb9168fa5e8e3a0e',1,'inviwo::filters::ItemFilter']]],
   ['currenttime_5f_4',['currentTime_',['../classinviwo_1_1animation_1_1AnimationController.html#a8979f71ccd7c4d7337a5761157a753d5',1,'inviwo::animation::AnimationController']]],
-  ['customworldup_5f_5',['customWorldUp_',['../classinviwo_1_1Trackball.html#ab57f66e9c793da117acc921ecb7c3335',1,'inviwo::Trackball']]]
+  ['currtexture_5f_5',['currTexture_',['../classinviwo_1_1TextRenderer.html#a04eca09446337f3845792dce2ac39035',1,'inviwo::TextRenderer']]],
+  ['customworldup_5f_6',['customWorldUp_',['../classinviwo_1_1Trackball.html#ab57f66e9c793da117acc921ecb7c3335',1,'inviwo::Trackball']]]
 ];

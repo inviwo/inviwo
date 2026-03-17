@@ -1,9 +1,5 @@
 var NAVTREEINDEX25 =
 {
-"classinviwo_1_1WorkspaceTreeModel.html":[4,0,1,1392],
-"classinviwo_1_1WorkspaceTreeView.html":[2,0,0,1384],
-"classinviwo_1_1WorkspaceTreeView.html":[4,0,1,1393],
-"classinviwo_1_1WorldTransformDeprecated.html":[2,0,0,1385],
 "classinviwo_1_1WorldTransformDeprecated.html":[4,0,1,1394],
 "classinviwo_1_1WorldTransformDeprecated.html#aebf13cd44926ab6c52fca40fc9be1b84":[2,0,0,1385,0],
 "classinviwo_1_1WorldTransformDeprecated.html#aebf13cd44926ab6c52fca40fc9be1b84":[4,0,1,1394,0],
@@ -249,5 +245,9 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1animation_1_1KeyframeObserver.html":[4,0,1,2,53],
 "classinviwo_1_1animation_1_1KeyframeSequence.html":[2,0,0,0,53],
 "classinviwo_1_1animation_1_1KeyframeSequence.html":[4,0,1,2,54],
-"classinviwo_1_1animation_1_1KeyframeSequence.html#a80d5ec07320b8a43914d7ac72acd4fcb":[2,0,0,0,53,0]
+"classinviwo_1_1animation_1_1KeyframeSequence.html#a80d5ec07320b8a43914d7ac72acd4fcb":[2,0,0,0,53,0],
+"classinviwo_1_1animation_1_1KeyframeSequence.html#a80d5ec07320b8a43914d7ac72acd4fcb":[4,0,1,2,54,0],
+"classinviwo_1_1animation_1_1KeyframeSequence.html#a9511c257cbfac03f63c998eb25628802":[2,0,0,0,53,2],
+"classinviwo_1_1animation_1_1KeyframeSequence.html#a9511c257cbfac03f63c998eb25628802":[4,0,1,2,54,2],
+"classinviwo_1_1animation_1_1KeyframeSequence.html#ac6734d134d886fb53d32690699438ebc":[2,0,0,0,53,1]
 };

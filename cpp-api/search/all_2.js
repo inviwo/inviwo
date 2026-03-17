@@ -235,11 +235,12 @@ var searchData=
   ['cuberenderer_232',['CubeRenderer',['../classinviwo_1_1CubeRenderer.html',1,'inviwo']]],
   ['cullfacestate_233',['CullFaceState',['../structinviwo_1_1utilgl_1_1CullFaceState.html',1,'inviwo::utilgl']]],
   ['currenttime_5f_234',['currentTime_',['../classinviwo_1_1animation_1_1AnimationController.html#a8979f71ccd7c4d7337a5761157a753d5',1,'inviwo::animation::AnimationController']]],
-  ['curvaturebuffer_235',['CurvatureBuffer',['../classinviwo_1_1buffertraits_1_1CurvatureBuffer.html',1,'inviwo::buffertraits']]],
-  ['curvegraphicsitem_236',['CurveGraphicsItem',['../classinviwo_1_1CurveGraphicsItem.html',1,'inviwo']]],
-  ['custom_20logger_237',['Log to a custom logger',['../namespaceinviwo_1_1log.html#autotoc_md25',1,'']]],
-  ['customdoublespinboxqt_238',['CustomDoubleSpinBoxQt',['../classinviwo_1_1CustomDoubleSpinBoxQt.html',1,'inviwo']]],
-  ['customtransformproperty_239',['CustomTransformProperty',['../classinviwo_1_1transform_1_1CustomTransformProperty.html',1,'inviwo::transform']]],
-  ['customworldup_5f_240',['customWorldUp_',['../classinviwo_1_1Trackball.html#ab57f66e9c793da117acc921ecb7c3335',1,'inviwo::Trackball']]],
-  ['cut_241',['Cut',['../classinviwo_1_1GlyphClipping.html#a5e117a11a9864a7770f47cd93076d524aeb334dca00e390e0d3ebf52d205807d7',1,'inviwo::GlyphClipping']]]
+  ['currtexture_5f_235',['currTexture_',['../classinviwo_1_1TextRenderer.html#a04eca09446337f3845792dce2ac39035',1,'inviwo::TextRenderer']]],
+  ['curvaturebuffer_236',['CurvatureBuffer',['../classinviwo_1_1buffertraits_1_1CurvatureBuffer.html',1,'inviwo::buffertraits']]],
+  ['curvegraphicsitem_237',['CurveGraphicsItem',['../classinviwo_1_1CurveGraphicsItem.html',1,'inviwo']]],
+  ['custom_20logger_238',['Log to a custom logger',['../namespaceinviwo_1_1log.html#autotoc_md25',1,'']]],
+  ['customdoublespinboxqt_239',['CustomDoubleSpinBoxQt',['../classinviwo_1_1CustomDoubleSpinBoxQt.html',1,'inviwo']]],
+  ['customtransformproperty_240',['CustomTransformProperty',['../classinviwo_1_1transform_1_1CustomTransformProperty.html',1,'inviwo::transform']]],
+  ['customworldup_5f_241',['customWorldUp_',['../classinviwo_1_1Trackball.html#ab57f66e9c793da117acc921ecb7c3335',1,'inviwo::Trackball']]],
+  ['cut_242',['Cut',['../classinviwo_1_1GlyphClipping.html#a5e117a11a9864a7770f47cd93076d524aeb334dca00e390e0d3ebf52d205807d7',1,'inviwo::GlyphClipping']]]
 ];

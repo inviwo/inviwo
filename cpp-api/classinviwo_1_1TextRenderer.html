@@ -113,8 +113,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a36812d1bafe0e08feb87f4a4ba9a6832"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes the glyph bounding box of a given string in pixels (screen space). The vertical height of the bounding box will be about (ascend + descend) + (number of lines - 1) times line height.  <br /></td></tr>
 <tr class="memitem:a59790cb00ed75ec1e6e4b9708688196b" id="r_a59790cb00ed75ec1e6e4b9708688196b"><td class="memItemLeft">vec2&#160;</td><td class="memItemRight"><a class="el" href="#a59790cb00ed75ec1e6e4b9708688196b">computeTextSize</a> (std::string_view str, const vec2 &amp;scale)</td></tr>
 <tr class="memdesc:a59790cb00ed75ec1e6e4b9708688196b"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes the glyph bounding box of a given string in normalized device coordinates using the scaling factor. The vertical height of the bounding box will be about (ascend + descend) + (number of lines - 1) times line height.  <br /></td></tr>
-<tr class="memitem:a947bfaf9cdb46006de3b04b2ece6f29e" id="r_a947bfaf9cdb46006de3b04b2ece6f29e"><td class="memItemLeft"><a id="a947bfaf9cdb46006de3b04b2ece6f29e" name="a947bfaf9cdb46006de3b04b2ece6f29e"></a>
-void&#160;</td><td class="memItemRight"><b>configure</b> (const <a class="el" href="classinviwo_1_1FontSettings.html">FontSettings</a> &amp;settings)</td></tr>
+<tr class="memitem:aef0e9221a03dbaa06bbf321718e2e531" id="r_aef0e9221a03dbaa06bbf321718e2e531"><td class="memItemLeft"><a id="aef0e9221a03dbaa06bbf321718e2e531" name="aef0e9221a03dbaa06bbf321718e2e531"></a>
+void&#160;</td><td class="memItemRight"><b>configure</b> (const <a class="el" href="structinviwo_1_1FontData.html">FontData</a> &amp;settings)</td></tr>
 <tr class="memitem:aca81cfe39ecebe4022b66d12d6ca6f04" id="r_aca81cfe39ecebe4022b66d12d6ca6f04"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#aca81cfe39ecebe4022b66d12d6ca6f04">getBaseLineDescender</a> () const</td></tr>
 <tr class="memdesc:aca81cfe39ecebe4022b66d12d6ca6f04"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the size of the font part below the baseline, which corresponds to descent  <br /></td></tr>
 <tr class="memitem:a28957933e4838fa141efe7b144e0001f" id="r_a28957933e4838fa141efe7b144e0001f"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a28957933e4838fa141efe7b144e0001f">getBaseLineOffset</a> () const</td></tr>
@@ -202,6 +202,7 @@ static std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Shader.html">Shade
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a04eca09446337f3845792dce2ac39035" id="r_a04eca09446337f3845792dce2ac39035"><td class="memItemLeft"><a id="a04eca09446337f3845792dce2ac39035" name="a04eca09446337f3845792dce2ac39035"></a>
 std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Texture2D.html">Texture2D</a> &gt;&#160;</td><td class="memItemRight"><b>currTexture_</b></td></tr>
+<tr class="memdesc:a04eca09446337f3845792dce2ac39035"><td class="mdescLeft">&#160;</td><td class="mdescRight">! 2D texture handle which was used previously in <a class="el" href="#ae72ac7537c42f8e4fafc05da2bb8ab52" title="renders the given string with the specified color into a texture.">renderToTexture()</a> <br /></td></tr>
 <tr class="memitem:a5f23118d3132fdd6854b88396ee4ba7f" id="r_a5f23118d3132fdd6854b88396ee4ba7f"><td class="memItemLeft"><a id="a5f23118d3132fdd6854b88396ee4ba7f" name="a5f23118d3132fdd6854b88396ee4ba7f"></a>
 <a class="el" href="classinviwo_1_1FrameBufferObject.html">FrameBufferObject</a>&#160;</td><td class="memItemRight"><b>fbo_</b></td></tr>
 <tr class="memitem:a1cf3ea0b210189deeacbb29f4c44f48f" id="r_a1cf3ea0b210189deeacbb29f4c44f48f"><td class="memItemLeft"><a id="a1cf3ea0b210189deeacbb29f4c44f48f" name="a1cf3ea0b210189deeacbb29f4c44f48f"></a>
@@ -214,7 +215,6 @@ int&#160;</td><td class="memItemRight"><b>fontSize_</b></td></tr>
 std::unordered_map&lt; FontFamilyStyle, <a class="el" href="structinviwo_1_1TextRenderer_1_1FontCache.html">FontCache</a> &gt;&#160;</td><td class="memItemRight"><b>glyphAtlas_</b></td></tr>
 <tr class="memitem:ac60efadbceeefbee54d206c31854642d" id="r_ac60efadbceeefbee54d206c31854642d"><td class="memItemLeft"><a id="ac60efadbceeefbee54d206c31854642d" name="ac60efadbceeefbee54d206c31854642d"></a>
 double&#160;</td><td class="memItemRight"><b>lineSpacing_</b></td></tr>
-<tr class="memdesc:ac60efadbceeefbee54d206c31854642d"><td class="mdescLeft">&#160;</td><td class="mdescRight">spacing between two lines in percent (default = 0.2) <br /></td></tr>
 <tr class="memitem:a0ce8981ffbd3a3c81a6c7829d14f7ab7" id="r_a0ce8981ffbd3a3c81a6c7829d14f7ab7"><td class="memItemLeft"><a id="a0ce8981ffbd3a3c81a6c7829d14f7ab7" name="a0ce8981ffbd3a3c81a6c7829d14f7ab7"></a>
 std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &gt;&#160;</td><td class="memItemRight"><b>shader_</b></td></tr>
 </table><table class="memberdecls">

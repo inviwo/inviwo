@@ -15,5 +15,5 @@ var classinviwo_1_1TextRenderer =
     [ "requestGlyph", "classinviwo_1_1TextRenderer.html#aeac0404a551ec7f5982b736ab5ef1ad5", null ],
     [ "setFont", "classinviwo_1_1TextRenderer.html#acc388fa9bc68e5f8994ebe84cb5752ff", null ],
     [ "setLineSpacing", "classinviwo_1_1TextRenderer.html#adc7715714f0a4c50b643ef02d115898d", null ],
-    [ "lineSpacing_", "classinviwo_1_1TextRenderer.html#ac60efadbceeefbee54d206c31854642d", null ]
+    [ "currTexture_", "classinviwo_1_1TextRenderer.html#a04eca09446337f3845792dce2ac39035", null ]
 ];
