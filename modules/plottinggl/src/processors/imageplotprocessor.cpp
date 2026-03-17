@@ -57,7 +57,7 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/axisdata.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
@@ -105,13 +105,19 @@ ImagePlotProcessor::ImagePlotProcessor()
                   {"basisOffset", "Image Basis & Offset", AxisRangeMode::ImageBasisOffset},
                   {"custom", "Custom", AxisRangeMode::Custom}})
     , customRanges_("customRanges", "Custom Ranges")
-    , rangeXaxis_("rangeX", "X Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max())
-    , rangeYaxis_("rangeY", "Y Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max())
+    , rangeXaxis_("rangeX", "X Axis", "Custom range for the x axis"_help, dvec2{0.0, 1.0},
+                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
+                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
+                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , rangeYaxis_("rangeY", "Y Axis", "Custom range for the y axis"_help, dvec2{0.0, 1.0},
+                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
+                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
+                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , axisStyle_("axisStyle", "Global Axis Style")
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis", AxisProperty::Orientation::Vertical)
     , imageInteraction_("imageInteraction", "Image Interaction", true)
-    , axisRenderers_({{xAxis_, yAxis_}})
+    , axisRenderers_{AxisData{}, AxisData{}}
     , imgRenderer_{}
     , viewManager_{}
     , viewport_{0, 0, 1, 1}
@@ -119,12 +125,7 @@ ImagePlotProcessor::ImagePlotProcessor()
 
     bgInport_.setOptional(true);
 
-    addPort(imgInport_);
-    addPort(bgInport_);
-    addPort(outport_);
-
-    rangeXaxis_.setSemantics(PropertySemantics::Text);
-    rangeYaxis_.setSemantics(PropertySemantics::Text);
+    addPorts(imgInport_, bgInport_, outport_);
 
     customRanges_.addProperties(rangeXaxis_, rangeYaxis_);
     customRanges_.setCollapsed(true);
@@ -147,10 +148,10 @@ ImagePlotProcessor::ImagePlotProcessor()
     xAxis_.setCaption("x");
     yAxis_.setCaption("y");
 
-    auto linkAxisRanges = [this](DoubleMinMaxProperty& from, DoubleMinMaxProperty& to) {
+    auto linkAxisRanges = [this](const DoubleVec2Property& from, DoubleVec2Property& to) {
         auto func = [&]() {
             if (!propertyUpdate_ && (rangeMode_.getSelectedValue() == AxisRangeMode::Custom)) {
-                util::KeepTrueWhileInScope b(&propertyUpdate_);
+                const util::KeepTrueWhileInScope b(&propertyUpdate_);
                 to.set(from.get());
             }
         };
@@ -186,9 +187,11 @@ void ImagePlotProcessor::process() {
     const auto padding = axisMargin_.get();
 
     // draw horizontal axis
+    if (xAxis_.isModified()) xAxis_.update(axisRenderers_[0].getData());
     axisRenderers_[0].render(dims, lowerLeft + size2_t(padding, 0),
                              size2_t(upperRight.x - padding, lowerLeft.y));
     // draw vertical axis
+    if (yAxis_.isModified()) yAxis_.update(axisRenderers_[1].getData());
     axisRenderers_[1].render(dims, lowerLeft + size2_t(0, padding),
                              size2_t(lowerLeft.x, upperRight.y - padding));
 

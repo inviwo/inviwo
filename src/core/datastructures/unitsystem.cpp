@@ -31,6 +31,7 @@
 
 #include <inviwo/core/algorithm/permutations.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/unicodefloatingpoint.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/unitsettings.h>
@@ -243,6 +244,10 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
     std::sort(winner.begin(), winner.end(),
               [](const auto& a, const auto& b) { return std::get<1>(a) < std::get<1>(b); });
 
+    if (closestMultiplier == std::numeric_limits<double>::max()) {
+        closestMultiplier = 1.0;
+    }
+
     return {unit.multiplier() / closestMultiplier, winner};
 }
 
@@ -258,11 +263,14 @@ std::back_insert_iterator<fmt::memory_buffer> util::formatUnitTo(
     const auto [mult, niceUnits] =
         ::inviwo::util::findBestSetOfNamedUnits(unit, enabledGroups, usesPrefixes);
 
-    if (mult != 1.0) {
-        it = fmt::format_to(it, "{:4.2g} ", mult);
-    }
     int neg = 0;
     int pos = 0;
+    if (mult != 1.0) {
+        it = fmt::format_to(it, "{:4.2g}", UnicodeFloat{mult});
+        ++pos;
+        if (!niceUnits.empty()) *it++ = ' ';
+    }
+
     for (auto&& [prefix, abbr, pow] : niceUnits) {
         if (pow > 0) {
             it = std::copy(prefix.begin(), prefix.end(), it);

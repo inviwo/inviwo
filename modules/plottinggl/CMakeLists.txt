@@ -24,6 +24,7 @@ set(HEADER_FILES
     include/modules/plottinggl/rendering/boxselectionrenderer.h
     include/modules/plottinggl/utils/axis2dprocessorhelper.h
     include/modules/plottinggl/utils/axis3dprocessorhelper.h
+    include/modules/plottinggl/utils/axisprocessorhelper.h
     include/modules/plottinggl/utils/axisrenderer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -50,6 +51,7 @@ set(SOURCE_FILES
     src/rendering/boxselectionrenderer.cpp
     src/utils/axis2dprocessorhelper.cpp
     src/utils/axis3dprocessorhelper.cpp
+    src/utils/axisprocessorhelper.cpp
     src/utils/axisrenderer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

@@ -31,34 +31,18 @@
 #include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
+struct IVW_MODULE_PLOTTING_API TickData {
+    enum class Style : std::uint8_t { None, Inside, Outside, Both };
 
-class IVW_MODULE_PLOTTING_API MajorTickData : public MajorTickSettings {
-public:
-    MajorTickData() = default;
-    MajorTickData(const MajorTickSettings& s);
-    virtual ~MajorTickData() = default;
-
-    // Inherited via MajorTickSettings
-    virtual TickStyle getStyle() const override;
-    virtual vec4 getColor() const override;
-    virtual float getTickLength() const override;
-    virtual float getTickWidth() const override;
-    virtual double getTickDelta() const override;
-    virtual bool getRangeBasedTicks() const override;
-
-    TickStyle style = TickStyle::Both;
     vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
-    float tickLength = 8.0f;
-    float tickWidth = 2.5f;
-    double tickDelta = 0.0;
-    bool rangeBasedTicks = false;
+    float length = 8.0f;
+    float width = 2.5f;
+    Style style = Style::Both;
+
+    bool operator==(const TickData&) const = default;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

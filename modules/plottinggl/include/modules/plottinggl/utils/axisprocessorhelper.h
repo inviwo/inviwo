@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,47 +26,45 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/plotting/datastructures/plottextdata.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>
+#include <inviwo/core/properties/optionproperty.h>
 
-#include <inviwo/core/util/glmvec.h>
-#include <modules/fontrendering/datastructures/fontdata.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
-
-#include <type_traits>
+#include <cstdint>
 
 namespace inviwo {
-class FontSettings;
+
+class SpatialEntity;
 
 namespace plot {
 
-PlotTextData::PlotTextData(const PlotTextSettings& s)
-    : enabled{s.isEnabled()}
-    , color{s.getColor()}
-    , position{s.getPosition()}
-    , offset{s.getOffset()}
-    , rotation{s.getRotation()}
-    , font{s.getFont()} {}
+enum class AxisRangeMode : unsigned char {
+    Dims,
+    Basis,
+    BasisOffset,
+    World,
+    DataBoundingBox,
+    ModelBoundingBox,
+    WorldBoundingBox
+};
+enum class OffsetScaling : std::uint8_t { None, MinExtent, MaxExtent, MeanExtent, Diagonal };
+enum class DimsRangeMode : std::uint8_t { No, Yes };
 
-bool PlotTextData::isEnabled() const { return enabled; }
+IVW_MODULE_PLOTTINGGL_API OptionPropertyState<AxisRangeMode> rangeModeState(bool hasDims,
+                                                                            bool hasBoundingBox);
 
-LabelPlacement PlotTextData::getPlacement() const { return placement; }
+IVW_MODULE_PLOTTINGGL_API float calcScaleFactor3D(const glm::mat4& matrix, OffsetScaling mode);
 
-vec4 PlotTextData::getColor() const { return color; }
+IVW_MODULE_PLOTTINGGL_API float calcScaleFactor2D(const glm::mat4& matrix, OffsetScaling mode);
 
-float PlotTextData::getPosition() const { return position; }
+IVW_MODULE_PLOTTINGGL_API std::array<dvec2, 3> calcAxisRanges(const SpatialEntity& entity,
+                                                              std::optional<mat4> worldBoundingBox,
+                                                              AxisRangeMode mode);
 
-vec2 PlotTextData::getOffset() const { return offset; }
-
-float PlotTextData::getRotation() const { return rotation; }
-
-const FontSettings& PlotTextData::getFont() const { return font; }
-
-static_assert(std::is_copy_constructible_v<PlotTextData>);
-static_assert(std::is_copy_assignable_v<PlotTextData>);
-static_assert(std::is_nothrow_move_constructible_v<PlotTextData>);
-static_assert(std::is_nothrow_move_assignable_v<PlotTextData>);
+IVW_MODULE_PLOTTINGGL_API dmat4 getTransform(const SpatialEntity& entity,
+                                             std::optional<mat4> worldBoundingBox,
+                                             AxisRangeMode mode);
 
 }  // namespace plot
-
 }  // namespace inviwo

@@ -30,48 +30,70 @@
 #include <modules/plotting/properties/axisproperty.h>
 
 #include <inviwo/core/network/networklock.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/staticstring.h>
-#include <modules/fontrendering/properties/fontfaceoptionproperty.h>
-#include <modules/fontrendering/properties/fontproperty.h>
 #include <modules/fontrendering/util/fontutils.h>
-#include <modules/plotting/datastructures/axissettings.h>
-#include <modules/plotting/properties/plottextproperty.h>
-#include <modules/plotting/properties/tickproperty.h>
+#include <modules/plotting/algorithm/labeling.h>
 #include <modules/plotting/utils/axisutils.h>
 
+#include <inviwo/core/interaction/events/keyboardevent.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <iterator>
 #include <limits>
 
-#include <fmt/core.h>
-#include <fmt/printf.h>
-#include <glm/vec2.hpp>
-#include <glm/gtx/vec_swizzle.hpp>
+namespace inviwo::plot {
 
-namespace inviwo {
-
-namespace plot {
 class MajorTickSettings;
 class MinorTickSettings;
 class PlotTextSettings;
 
+namespace {
+
+std::vector<ButtonGroupProperty::Button> buttons(AxisProperty& axisProperty) {
+
+    const auto align = [&](std::string_view icon, std::string_view text, float p,
+                           int axis) -> ButtonGroupProperty::Button {
+        return {.icon = fmt::format(":svgicons/{}", icon),
+                .tooltip = std::string{text},
+                .action = [ap = &axisProperty, p, axis]() {
+                    ap->labelSettings_.font_.anchorPos_.set(p, axis);
+                    ap->captionSettings_.font_.anchorPos_.set(p, axis);
+                }};
+    };
+
+    return {align("axis-labels-left.svg", "Align labels left", -1.0f, 0),
+            align("axis-labels-center.svg", "Center labels", 0.0f, 0),
+            align("axis-labels-right.svg", "Align labels right", 1.0f, 0),
+            align("axis-labels-top.svg", "Align labels at the top", 1.0f, 1),
+            align("axis-labels-middle.svg", "Align labels in the middle", 0.0f, 1),
+            align("axis-labels-bottom.svg", "Align labels at the bottom", -1.0f, 1),
+            {.name = "A+",
+             .tooltip = "Increase font size (Ctrl+Plus)",
+             .action =
+                 [ap = &axisProperty]() {
+                     ap->captionSettings_.font_.fontSize_.set(
+                         std::min(1000, ap->captionSettings_.font_.fontSize_.get() + 1));
+                     ap->labelSettings_.font_.fontSize_.set(
+                         std::min(1000, ap->labelSettings_.font_.fontSize_.get() + 1));
+                 }},
+            {.name = "A-",
+             .tooltip = "Decrease font size (Ctrl+Minus)",
+             .action = [ap = &axisProperty]() {
+                 ap->captionSettings_.font_.fontSize_.set(
+                     std::max(0, ap->captionSettings_.font_.fontSize_.get() - 1));
+                 ap->labelSettings_.font_.fontSize_.set(
+                     std::max(0, ap->labelSettings_.font_.fontSize_.get() - 1));
+             }}};
+}
+
+}  // namespace
+
 std::string_view AxisProperty::getClassIdentifier() const { return classIdentifier; }
 
 AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
-                           Orientation orientation, bool includeOrientationProperty,
-                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : BoolCompositeProperty{identifier, displayName, help, true, invalidationLevel, semantics}
+                           Orientation orientation, InvalidationLevel invalidationLevel,
+                           PropertySemantics semantics)
+    : BoolCompositeProperty{identifier, displayName,       std::move(help),
+                            true,       invalidationLevel, std::move(semantics)}
     , color_{"color", "Color",
              util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f}).set("Color of the axis"_help)}
     , width_{"width", "Width", util::ordinalLength(2.5f, 20.0f).set("Line width of the axis"_help)}
@@ -79,47 +101,46 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     , range_{"range",
              "Axis Range",
              "Value range of the axis"_help,
-             0.0,
-             100.0,
-             -1.0e6,
-             1.0e6,
-             0.01,
-             0.0,
+             dvec2{0.0, 100.0},
+             {dvec2{std::numeric_limits<double>::lowest()}, ConstraintBehavior::Ignore},
+             {dvec2{std::numeric_limits<double>::max()}, ConstraintBehavior::Ignore},
+             dvec2{0.001},
              InvalidationLevel::InvalidOutput,
              PropertySemantics::Text}
     , customRange_{"customRange",
                    "Custom Range",
                    "Custom range overriding the range of the axis"_help,
-                   0.0,
-                   100.0,
-                   -1.0e6,
-                   1.0e6,
-                   0.01,
-                   0.0,
+                   dvec2{0.0, 100.0},
+                   {dvec2{std::numeric_limits<double>::lowest()}, ConstraintBehavior::Ignore},
+                   {dvec2{std::numeric_limits<double>::max()}, ConstraintBehavior::Ignore},
+                   dvec2{0.001},
                    InvalidationLevel::InvalidOutput,
                    PropertySemantics::Text}
-    , scalingFactor_{"scalingFactor", "Scaling Factor",
-                     util::ordinalScale(1.0f, 10.0f)
-                         .set("Scaling factor affecting tick lengths and offsets of axis caption "
-                              "and labels"_help)
-                         .setMin(std::numeric_limits<float>::min())}
     , mirrored_{"mirrored", "Mirror ",
                 "Swaps the inside and outside of the axis. If not mirrored, the outside will be to "
                 "the right of the axis pointing from start point to end point."_help,
                 orientation == Orientation::Vertical}
+    , labelingAlgorithm_{"labeling",
+                         "Labeling Algorithm",
+                         {{"heckbert", "Heckbert", LabelingAlgorithm::Heckbert},
+                          {"matplotlib", "Matplotlib", LabelingAlgorithm::Matplotlib},
+                          {"extentedWilkinson", "Ext. Wilkinson",
+                           LabelingAlgorithm::ExtendedWilkinson},
+                          {"limits", "Limits only", LabelingAlgorithm::Limits},
+                          {"limitsAndZero", "Limits And Zero", LabelingAlgorithm::LimitsAndZero}},
+                         1}
     , captionSettings_{"caption", "Caption",
                        "Font and alignment settings for the axis caption"_help, true}
     , labelSettings_{"labels", "Axis Labels",
                      "Settings for axis labels shown next to major ticks"_help, true}
     , majorTicks_{"majorTicks", "Major Ticks"}
     , minorTicks_{"minorTicks", "Minor Ticks"}
-    , alignment_{
-          "alignment", "Alignment",
-          "Set axis orientation, label position and the horizontal and vertical alignment of both labels and captions."_help,
-          buttons(includeOrientationProperty), InvalidationLevel::Valid} {
+    , alignment_{"alignment", "Alignment",
+                 "Set axis orientation, label position and the horizontal "
+                 "and vertical alignment of both labels and captions."_help,
+                 buttons(*this), InvalidationLevel::Valid} {
 
     range_.setReadOnly(true);
-    scalingFactor_.setVisible(false);
 
     // change default fonts, make axis labels slightly less pronounced
     captionSettings_.font_.fontFace_.setSelectedIdentifier(
@@ -130,7 +151,7 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     captionSettings_.title_.set("Axis Title");
 
     labelSettings_.title_.setDisplayName("Format");
-    labelSettings_.title_.set("%.1f");
+    labelSettings_.title_.set(plot::defaultFormat);
     labelSettings_.position_.setVisible(false);
 
     captionSettings_.setCollapsed(true);
@@ -138,44 +159,26 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     majorTicks_.setCollapsed(true);
     minorTicks_.setCollapsed(true);
 
-    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, scalingFactor_,
-                  mirrored_, captionSettings_, labelSettings_, majorTicks_, minorTicks_);
+    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_,
+                  mirrored_, labelingAlgorithm_, captionSettings_, labelSettings_, majorTicks_,
+                  minorTicks_);
 
-    if (includeOrientationProperty) {
-        orientation_.emplace(std::string_view{"orientation"}, std::string_view{"Orientation"},
-                             "Determines the orientation of the axis (horizontal or vertical)"_help,
-                             std::vector<OptionPropertyOption<Orientation>>{
-                                 {"horizontal", "Horizontal", Orientation::Horizontal},
-                                 {"vertical", "Vertical", Orientation::Vertical}},
-                             orientation == Orientation::Horizontal ? size_t{0} : size_t{1});
-        insertProperty(7, *orientation_);
-    }
-
-    setCollapsed(true);
-    defaultAlignLabels();
+    BoolCompositeProperty::setCollapsed(true);
+    set(orientation, mirrored_.get());
 
     setCurrentStateAsDefault();
-
-    majorTicks_.onChange([this]() { updateLabels(); });
-    overrideRange_.onChange([this]() { updateLabels(); });
-    range_.onChange([this]() { updateLabels(); });
-    customRange_.onChange([this]() { updateLabels(); });
-    labelSettings_.title_.onChange([this]() { updateLabels(); });
-    // update label alignment to match current status
-    updateLabels();
 }
 
 AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName,
-                           Orientation orientation, bool includeOrientationProperty,
-                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
+                           Orientation orientation, InvalidationLevel invalidationLevel,
+                           PropertySemantics semantics)
     : AxisProperty{identifier,
                    displayName,
                    "Different settings for an axis including captions, labels, ticks, "
                    "font settings, line widths, colors, and more."_help,
                    orientation,
-                   includeOrientationProperty,
                    invalidationLevel,
-                   semantics} {}
+                   std::move(semantics)} {}
 
 AxisProperty::AxisProperty(const AxisProperty& rhs)
     : BoolCompositeProperty{rhs}
@@ -184,55 +187,30 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , overrideRange_{rhs.overrideRange_}
     , range_{rhs.range_}
     , customRange_{rhs.customRange_}
-    , scalingFactor_{rhs.scalingFactor_}
     , mirrored_{rhs.mirrored_}
-    , orientation_{rhs.orientation_}
+    , labelingAlgorithm_{rhs.labelingAlgorithm_}
     , captionSettings_{rhs.captionSettings_}
     , labelSettings_{rhs.labelSettings_}
     , majorTicks_{rhs.majorTicks_}
     , minorTicks_{rhs.minorTicks_}
     , alignment_{rhs.alignment_} {
 
-    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, scalingFactor_,
-                  mirrored_, captionSettings_, labelSettings_, majorTicks_, minorTicks_);
-
-    // insert orientation property only if rhs owns one, too
-    if (orientation_) {
-        insertProperty(7, *orientation_);
-    }
-
-    majorTicks_.onChange([this]() { updateLabels(); });
-    overrideRange_.onChange([this]() { updateLabels(); });
-    range_.onChange([this]() { updateLabels(); });
-    customRange_.onChange([this]() { updateLabels(); });
-    labelSettings_.title_.onChange([this]() { updateLabels(); });
-    // update label alignment to match current status
-    updateLabels();
+    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, mirrored_,
+                  labelingAlgorithm_, captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 }
 
 AxisProperty* AxisProperty::clone() const { return new AxisProperty(*this); }
 
-void AxisProperty::defaultAlignLabels() {
-    captionSettings_.offset_.set(orientation_ == Orientation::Vertical ? 50.0f : 35.0f);
-    captionSettings_.rotation_.set(orientation_ == Orientation::Vertical ? 90.0f : 0.0f);
-
-    const vec2 anchor = [&]() {
-        if (orientation_ == Orientation::Vertical) {
-            return (mirrored_ ? vec2{1.0f, 0.0f} : vec2{-1.0f, 0.0f});
-        } else {
-            return (mirrored_ ? vec2{0.0f, -1.0f} : vec2{0.0f, 1.0f});
-        }
-    }();
-    captionSettings_.font_.anchorPos_.set(anchor);
-    labelSettings_.font_.anchorPos_.set(anchor);
-}
-
 void AxisProperty::set(Orientation orientation, bool mirrored) {
-    if (orientation_) {
-        orientation_->set(orientation);
-    }
     mirrored_.set(mirrored);
-    defaultAlignLabels();
+    using enum Orientation;
+    captionSettings_.offset_.set(orientation == Vertical ? 50.0f : 35.0f);
+    captionSettings_.rotation_.set(0.0f);
+    captionSettings_.font_.anchorPos_.set(vec2{0.0f, 1.0f});
+
+    labelSettings_.rotation_.set(orientation == Vertical ? -90.0f : 0.0f);
+    labelSettings_.font_.anchorPos_.set(orientation == Vertical ? vec2{-1.0f, 0.0f}
+                                                                : vec2{0.0f, 1.0f});
 }
 
 AxisProperty& AxisProperty::setCaption(std::string_view title) {
@@ -240,7 +218,15 @@ AxisProperty& AxisProperty::setCaption(std::string_view title) {
     return *this;
 }
 
-const std::string& AxisProperty::getCaption() const { return captionSettings_.title_.get(); }
+AxisProperty& AxisProperty::setLabelingAlgorithm(LabelingAlgorithm algorithm) {
+    labelingAlgorithm_.set(algorithm);
+    return *this;
+}
+
+AxisProperty& AxisProperty::setNumberOfTicks(int numTicks) {
+    majorTicks_.numberOfTicks.set(numTicks);
+    return *this;
+}
 
 AxisProperty& AxisProperty::setLabelFormat(std::string_view formatStr) {
     labelSettings_.title_.set(formatStr);
@@ -248,13 +234,7 @@ AxisProperty& AxisProperty::setLabelFormat(std::string_view formatStr) {
 }
 
 AxisProperty& AxisProperty::setRange(const dvec2& range) {
-    NetworkLock lock(&range_);
-    if (range_.getRangeMin() > range.x) {
-        range_.setRangeMin(range.x);
-    }
-    if (range_.getRangeMax() < range.y) {
-        range_.setRangeMax(range.y);
-    }
+    const NetworkLock lock(&range_);
     range_.set(range);
 
     return *this;
@@ -264,8 +244,8 @@ AxisProperty& AxisProperty::setColor(const vec4& c) {
     color_.set(c);
     captionSettings_.color_.set(c);
     labelSettings_.color_.set(c);
-    majorTicks_.color_.set(c);
-    minorTicks_.color_.set(c);
+    majorTicks_.color.set(c);
+    minorTicks_.color.set(c);
 
     return *this;
 }
@@ -283,35 +263,17 @@ AxisProperty& AxisProperty::setFontSize(int fontsize) {
 }
 
 AxisProperty& AxisProperty::setTickLength(float major, float minor) {
-    majorTicks_.tickLength_.set(major);
-    minorTicks_.tickLength_.set(minor);
+    majorTicks_.length.set(major);
+    minorTicks_.length.set(minor);
     return *this;
 }
 
 AxisProperty& AxisProperty::setLineWidth(float width) {
     width_.set(width);
-    majorTicks_.tickWidth_.set(width);
-    minorTicks_.tickWidth_.set(width * 0.66667f);
+    majorTicks_.width.set(width);
+    minorTicks_.width.set(width * 0.66667f);
     return *this;
 }
-
-void AxisProperty::updateLabels() {
-    const auto tickmarks = plot::getMajorTickPositions(majorTicks_, getRange());
-    categories_.clear();
-    const auto& format = labelSettings_.title_.get();
-    std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(categories_),
-                   [&](auto tick) { return fmt::sprintf(format, tick); });
-}
-
-bool AxisProperty::getAxisVisible() const { return isChecked(); }
-
-bool AxisProperty::getMirrored() const { return mirrored_.get(); }
-
-vec4 AxisProperty::getColor() const { return color_.get(); }
-
-float AxisProperty::getWidth() const { return width_.get(); }
-
-float AxisProperty::getScalingFactor() const { return scalingFactor_.get(); }
 
 dvec2 AxisProperty::getRange() const {
     if (overrideRange_) {
@@ -321,77 +283,51 @@ dvec2 AxisProperty::getRange() const {
     }
 }
 
-AxisSettings::Orientation AxisProperty::getOrientation() const {
-    if (orientation_) {
-        return orientation_->getSelectedValue();
-    } else {
-        return Orientation::Horizontal;
+void AxisProperty::update(AxisData& data) const {
+    data.range = getRange();
+    data.visible = isChecked();
+    data.mirrored = mirrored_.get();
+    data.color = color_.get();
+    data.width = width_.get();
+    data.caption = captionSettings_.title_.get();
+    captionSettings_.update(data.captionSettings);
+
+    updateLabelPositions(data.majorPositions, data.minorPositions, labelingAlgorithm_.get(),
+                         data.range, majorTicks_.numberOfTicks.get(), minorTicks_.frequency.get(),
+                         minorTicks_.fillAxis.get());
+
+    labelSettings_.update(data.labelSettings);
+    updateLabels(data.labels, data.majorPositions, labelSettings_.title_.get());
+
+    majorTicks_.update(data.major);
+    minorTicks_.update(data.minor);
+}
+
+void AxisProperty::invokeEvent(Event* event) {
+    if (auto* keyEvent = event->getAs<KeyboardEvent>()) {
+        if (keyEvent->key() == IvwKey::Plus && keyEvent->modifiers() == KeyModifier::Control &&
+            keyEvent->state() == KeyState::Release) {
+
+            captionSettings_.font_.fontSize_.set(
+                std::min(1000, captionSettings_.font_.fontSize_.get() + 1));
+            labelSettings_.font_.fontSize_.set(
+                std::min(1000, labelSettings_.font_.fontSize_.get() + 1));
+        } else if ((keyEvent->key() == IvwKey::Minus || keyEvent->key() == IvwKey::Underscore) &&
+                   keyEvent->modifiers() == KeyModifier::Control &&
+                   keyEvent->state() == KeyState::Release) {
+
+            captionSettings_.font_.fontSize_.set(
+                std::max(0, captionSettings_.font_.fontSize_.get() - 1));
+            labelSettings_.font_.fontSize_.set(
+                std::max(0, labelSettings_.font_.fontSize_.get() - 1));
+        } else if (keyEvent->key() == IvwKey::Num0 &&
+                   keyEvent->modifiers() == KeyModifier::Control &&
+                   keyEvent->state() == KeyState::Release) {
+
+            captionSettings_.font_.fontSize_.resetToDefaultState();
+            labelSettings_.font_.fontSize_.resetToDefaultState();
+        }
     }
 }
 
-const PlotTextSettings& AxisProperty::getCaptionSettings() const { return captionSettings_; }
-
-const std::vector<std::string>& AxisProperty::getLabels() const { return categories_; }
-
-const PlotTextSettings& AxisProperty::getLabelSettings() const { return labelSettings_; }
-
-const MajorTickSettings& AxisProperty::getMajorTicks() const { return majorTicks_; }
-
-const MinorTickSettings& AxisProperty::getMinorTicks() const { return minorTicks_; }
-
-std::vector<ButtonGroupProperty::Button> AxisProperty::buttons(bool hasOrientation) {
-    auto createOrientationButton = [&](std::string_view icon, std::string_view text, Orientation o,
-                                       const vec2 anchor,
-                                       bool mirrored) -> ButtonGroupProperty::Button {
-        return {std::nullopt, std::string{icon}, std::string{text}, [this, o, anchor, mirrored]() {
-                    if (orientation_) {
-                        orientation_->set(o);
-                    }
-                    mirrored_.set(mirrored);
-                    labelSettings_.font_.anchorPos_.set(anchor);
-                    captionSettings_.font_.anchorPos_.set(anchor);
-                }};
-    };
-    auto createAlignmentButton = [&](std::string_view icon, std::string_view text, float p,
-                                     int axis) -> ButtonGroupProperty::Button {
-        return {std::nullopt, std::string{icon}, std::string{text}, [this, p, axis]() {
-                    labelSettings_.font_.anchorPos_.set(p, axis);
-                    captionSettings_.font_.anchorPos_.set(p, axis);
-                }};
-    };
-
-    std::vector<ButtonGroupProperty::Button> btns{{
-        createOrientationButton(":svgicons/axis-horizontal-bottom.svg",
-                                "Horizontal axis with labels below", Orientation::Horizontal,
-                                vec2{0.0f, 1.0f}, false),
-        createOrientationButton(":svgicons/axis-horizontal-top.svg",
-                                "Horizontal axis with labels above", Orientation::Horizontal,
-                                vec2{0.0f, -1.0f}, true),
-    }};
-
-    if (hasOrientation) {
-        btns.push_back(createOrientationButton(":svgicons/axis-vertical-left.svg",
-                                               "Vertical axis with labels on the left",
-                                               Orientation::Vertical, vec2{1.0f, 0.0f}, true));
-        btns.push_back(createOrientationButton(":svgicons/axis-vertical-right.svg",
-                                               "Vertical axis with labels on the right",
-                                               Orientation::Vertical, vec2{-1.0f, 0.0f}, false));
-    }
-    btns.push_back(
-        createAlignmentButton(":svgicons/axis-labels-left.svg", "Align labels left", -1.0f, 0));
-    btns.push_back(
-        createAlignmentButton(":svgicons/axis-labels-center.svg", "Center labels", 0.0f, 0));
-    btns.push_back(
-        createAlignmentButton(":svgicons/axis-labels-right.svg", "Align labels right", 1.0f, 0));
-    btns.push_back(
-        createAlignmentButton(":svgicons/axis-labels-top.svg", "Align labels at the top", 1.0f, 1));
-    btns.push_back(createAlignmentButton(":svgicons/axis-labels-middle.svg",
-                                         "Align labels in the middle", 0.0f, 1));
-    btns.push_back(createAlignmentButton(":svgicons/axis-labels-bottom.svg",
-                                         "Align labels at the bottom", -1.0f, 1));
-    return btns;
-}
-
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

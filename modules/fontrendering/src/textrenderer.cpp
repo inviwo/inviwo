@@ -38,7 +38,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/safecstr.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
+#include <modules/fontrendering/datastructures/fontdata.h>
 #include <modules/fontrendering/datastructures/texatlasentry.h>
 #include <modules/fontrendering/datastructures/textboundingbox.h>
 #include <modules/opengl/buffer/framebufferobject.h>
@@ -707,10 +707,10 @@ TextRenderer::FontFamilyStyle TextRenderer::getFontTuple() const {
                            fontSize_);
 }
 
-void TextRenderer::configure(const FontSettings& settings) {
-    setFont(settings.getFontFace());
-    setFontSize(settings.getFontSize());
-    setLineSpacing(settings.getLineSpacing());
+void TextRenderer::configure(const FontData& data) {
+    setFont(data.fontFace);
+    setFontSize(data.fontSize);
+    setLineSpacing(data.lineSpacing);
 }
 
 std::shared_ptr<Shader> TextRenderer::getShader() {

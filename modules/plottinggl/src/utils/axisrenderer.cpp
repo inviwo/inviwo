@@ -34,8 +34,9 @@
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/datastructures/camera/plotcamera.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
+#include <modules/fontrendering/datastructures/fontdata.h>
 #include <modules/fontrendering/datastructures/texatlasentry.h>
 #include <modules/fontrendering/datastructures/textboundingbox.h>
 #include <modules/fontrendering/textrenderer.h>
@@ -49,13 +50,8 @@
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/texture2d.h>                      // IWYU pragma: keep
-#include <modules/plotting/datastructures/axissettings.h>
-#include <modules/plotting/datastructures/majortickdata.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
-#include <modules/plotting/datastructures/minortickdata.h>
-#include <modules/plotting/datastructures/minorticksettings.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/sharedopenglresources.h>
 #include <modules/plotting/utils/axisutils.h>
 
 #include <algorithm>
@@ -80,113 +76,106 @@ namespace plot {
 
 namespace detail {
 
-AxisMeshes::AxisMeshes() = default;
+TickMesh::TickMesh() = default;
 
-Mesh* AxisMeshes::getAxis(const AxisSettings& settings, const vec3& start, const vec3& end,
-                          size_t pickId) {
-    startPos_.check(*this, start);
-    endPos_.check(*this, end);
-    color_.check(*this, settings.getColor());
-    pickId_.check(*this, pickId);
+Mesh* TickMesh::get(const std::vector<double>& positions, const dvec2& range,
+                    TickData::Style style) {
+    if (style == TickData::Style::None || positions.empty()) return nullptr;
 
-    if (!axisMesh_) {
-        axisMesh_ = plot::generateAxisMesh3D(startPos_.get(), endPos_.get(), color_, pickId_);
+    range_.check(*this, range);
+    style_.check(*this, style);
+    positions_.check(*this, positions);
+    if (!mesh_) {
+        mesh_ = generateTicksMesh(positions_.get(), range_.get(), style_.get());
     }
-    return axisMesh_.get();
-}
-
-Mesh* AxisMeshes::getMajor(const AxisSettings& settings, const vec3& start, const vec3& end,
-                           const vec3& tickDirection) {
-    startPos_.check(*this, start);
-    endPos_.check(*this, end);
-    range_.check(*this, settings.getRange());
-    flip_.check(*this, settings.getMirrored());
-    major_.check(*this, settings.getMajorTicks());
-    tickDirection_.check(*this, tickDirection);
-    scalingFactor_.check(*this, settings.getScalingFactor());
-    if (!majorMesh_) {
-        const auto tickPositions = getMajorTickPositions(major_, range_);
-        majorMesh_ =
-            generateTicksMesh(tickPositions, range_, startPos_.get(), endPos_.get(), tickDirection_,
-                              major_.get().getTickLength() * scalingFactor_.get(),
-                              major_.get().getStyle(), major_.get().getColor(), flip_);
-    }
-    return majorMesh_.get();
-}
-
-Mesh* AxisMeshes::getMinor(const AxisSettings& settings, const vec3& start, const vec3& end,
-                           const vec3& tickDirection) {
-    startPos_.check(*this, start);
-    endPos_.check(*this, end);
-    range_.check(*this, settings.getRange());
-    flip_.check(*this, settings.getMirrored());
-    major_.check(*this, settings.getMajorTicks());
-    minor_.check(*this, settings.getMinorTicks());
-    tickDirection_.check(*this, tickDirection);
-    scalingFactor_.check(*this, settings.getScalingFactor());
-    if (!minorMesh_) {
-        const auto tickPositions = getMinorTickPositions(minor_, major_, range_);
-        minorMesh_ =
-            generateTicksMesh(tickPositions, range_, startPos_.get(), endPos_.get(), tickDirection,
-                              minor_.get().getTickLength() * scalingFactor_.get(),
-                              minor_.get().getStyle(), minor_.get().getColor(), flip_);
-    }
-    return minorMesh_.get();
+    return mesh_.get();
 }
 
 }  // namespace detail
 
-std::vector<std::pair<ShaderType, std::string>> AxisRendererBase::shaderItems_ = {
-    {ShaderType::Vertex, "linerenderer.vert"},
-    {ShaderType::Geometry, "linerenderer.geom"},
-    {ShaderType::Fragment, "linerenderer.frag"}};
+AxisRendererBase::AxisRendererBase(AxisData data) : data_(std::move(data)) {}
 
-std::vector<MeshShaderCache::Requirement> AxisRendererBase::shaderRequirements_ = {
-    {BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
-    {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
-    {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"}};
-
-AxisRendererBase::AxisRendererBase(const AxisSettings& settings)
-    : settings_(settings), shaders_{getShaders()} {}
-
-std::shared_ptr<MeshShaderCache> AxisRendererBase::getShaders() {
-    static std::weak_ptr<MeshShaderCache> cache_;
+std::shared_ptr<Shader> AxisRendererBase::shaderCache() {
+    static std::weak_ptr<Shader> cache_;
 
     if (auto cache = cache_.lock()) {
         return cache;
     } else {
-        cache = std::make_shared<MeshShaderCache>(
-            AxisRendererBase::shaderItems_, AxisRendererBase::shaderRequirements_,
-            [&](Shader& shader) -> void {
-                shader.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "0");
-                shader.build();
-            });
+        cache = std::make_shared<Shader>("linerenderer.vert", "linerenderer.geom",
+                                         "linerenderer.frag", Shader::Build::No);
+
+        cache->getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "0");
+        cache->getVertexShaderObject()->clearInDeclarations();
+        cache->getVertexShaderObject()->addInDeclaration(
+            "in_Position", static_cast<int>(BufferType::PositionAttrib), "vec3");
+        cache->build();
         cache_ = cache;
         return cache;
     }
 }
-void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3& end,
-                                  const vec3& tickdir, const size2_t& outputDims,
-                                  bool antialiasing) {
-    auto axisMesh = meshes_.getAxis(settings_, start, end, axisPickingId_);
-    if (!axisMesh) return;
+Shader& AxisRendererBase::getShader() {
+    if (!shader_) {
+        shader_ = shaderCache();
+    }
+    return *shader_;
+}
 
-    auto& lineShader = shaders_->getShader(*axisMesh);
+namespace {
+
+glm::mat4 makeLineTransform(const glm::vec3& start, const glm::vec3& stop) {
+    const glm::vec3 d = stop - start;
+    const float len = glm::length(d);
+    const glm::vec3 dir = d / len;
+
+    return glm::translate(glm::mat4(1.0f), start) *
+           glm::mat4_cast(glm::rotation(glm::vec3(1, 0, 0), dir)) *
+           glm::scale(glm::mat4(1.0f), glm::vec3(len, 1, 1));
+}
+
+glm::mat4 makeTickTransform(const glm::vec3& start, const glm::vec3& stop, const glm::vec3& dir) {
+    const glm::vec3 X = stop - start;
+    const glm::vec3 Y = dir;
+    const glm::vec3 Z = glm::cross(glm::normalize(X), Y);
+
+    glm::mat4 M(1.0f);
+    M[0] = glm::vec4(X, 0.0f);
+    M[1] = glm::vec4(Y, 0.0f);
+    M[2] = glm::vec4(Z, 0.0f);
+    M[3] = glm::vec4(start, 1.0f);
+
+    return M;
+}
+struct Transform : public SpatialEntity {
+    explicit Transform(const mat4& worldMatrix) : SpatialEntity(mat4{1.0f}, worldMatrix) {}
+    virtual SpatialEntity* clone() const override { return new Transform(*this); }
+    virtual const Axis* getAxis(size_t) const override { return nullptr; }
+};
+
+}  // namespace
+
+void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3& end,
+                                  const vec3& tickDir, const size2_t& outputDims,
+                                  bool antialiasing) {
+
+    auto& lineShader = getShader();
     lineShader.activate();
     lineShader.setUniform("screenDim", vec2(outputDims));
+    lineShader.setUniform("defaultColor", data_.color);
+    lineShader.setUniform("defaultPickID", (axisPickingId_ == std::numeric_limits<size_t>::max()
+                                                ? 0u
+                                                : static_cast<unsigned int>(axisPickingId_)));
     if (camera) {
         utilgl::setShaderUniforms(lineShader, *camera, "camera");
     } else {
-        const auto m = mat4(1.0f);
-        lineShader.setUniform("camera.worldToView", m);
-        lineShader.setUniform("camera.viewToWorld", m);
-        lineShader.setUniform("camera.worldToClip", m);
-        lineShader.setUniform("camera.viewToClip", m);
-        lineShader.setUniform("camera.clipToView", m);
-        lineShader.setUniform("camera.clipToWorld", m);
-        lineShader.setUniform("camera.position", vec3(0.0f));
-        lineShader.setUniform("camera.nearPlane", 0.0f);
-        lineShader.setUniform("camera.farPlane", 1.0f);
+        const auto dim = vec2{outputDims};
+        const PlotCamera cam{vec3{dim / 2.0f, 1.0f},
+                             vec3{dim / 2.0f, 0.0f},
+                             vec3(0.0f, 1.0f, 0.0f),
+                             0.001f,
+                             100.0f,
+                             dim.x / dim.y,
+                             dim};
+        utilgl::setShaderUniforms(lineShader, cam, "camera");
     }
 
     // returns thickness of antialiased edge based on the global antialiasing flag
@@ -199,50 +188,41 @@ void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3&
         }
     };
 
-    // compute matrix to transform meshes from screen coords to clip space
-    const auto m = !camera ? mat4(vec4(2.0f / outputDims.x, 0.0f, 0.0f, 0.0f),
-                                  vec4(0.0f, 2.0f / outputDims.y, 0.0f, 0.0f),
-                                  vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(-1.0f, -1.0f, 0.0f, 1.0f))
-                           : mat4{1};
-
-    auto drawMesh = [&](Mesh* mesh, float lineWidth, bool caps) {
-        if (!mesh) return;
-        mesh->setWorldMatrix(m);
-        auto meshgl = mesh->getRepresentation<MeshGL>();
+    auto drawMesh = [&](const MeshGL* meshGL, float lineWidth, bool caps,
+                        mat4 transform = mat4(1.0f)) {
         lineShader.setUniform("lineWidth", lineWidth);
-        MeshDrawerGL::DrawObject drawer(meshgl, mesh->getDefaultMeshInfo());
-        utilgl::setShaderUniforms(lineShader, *mesh, "geometry");
+        MeshDrawerGL::DrawObject drawer(meshGL, meshGL->getDefaultMeshInfo());
+        utilgl::setShaderUniforms(lineShader, Transform{transform}, "geometry");
         lineShader.setUniform("antialiasing", antialiasWidth(lineWidth));
         lineShader.setUniform("roundCaps", caps);
         drawer.draw();
     };
 
-    drawMesh(axisMesh, settings_.get().getWidth(), false);
-    auto majorMesh = meshes_.getMajor(settings_, start, end, tickdir);
-    drawMesh(majorMesh, settings_.get().getMajorTicks().getTickWidth(), true);
-    auto minorMesh = meshes_.getMinor(settings_, start, end, tickdir);
-    drawMesh(minorMesh, settings_.get().getMinorTicks().getTickWidth(), true);
-
+    if (data_.width > 0.0f) {
+        const auto* lineMesh = SharedOpenGLResources::getPtr()->lineMesh();
+        drawMesh(lineMesh, data_.width, false, makeLineTransform(start, end));
+    }
+    const auto tick = glm::normalize(tickDir) * (data_.mirrored ? -1.0f : 1.0f);
+    if (auto* majorMesh = majorMesh_.get(data_.majorPositions, data_.range, data_.major.style)) {
+        drawMesh(majorMesh->getRepresentation<MeshGL>(), data_.major.width, true,
+                 makeTickTransform(start, end, tick * data_.major.length));
+    }
+    if (auto* minorMesh = minorMesh_.get(data_.minorPositions, data_.range, data_.minor.style)) {
+        drawMesh(minorMesh->getRepresentation<MeshGL>(), data_.minor.width, true,
+                 makeTickTransform(start, end, tick * data_.minor.length));
+    }
     lineShader.deactivate();
 }
 
-AxisRenderer::AxisRenderer(const AxisSettings& settings)
-    : AxisRendererBase(settings)
-    , labels_{[](Labels::LabelPos& labelPos, util::TextureAtlas&, const AxisSettings& settings,
-                 const vec3& start, const vec3& end, const vec3&) {
-        const auto tickmarks = plot::getLabelPositions(settings, start, end);
-        labelPos.resize(tickmarks.size());
-        std::transform(tickmarks.begin(), tickmarks.end(), labelPos.begin(),
-                       [&](auto&& p) { return p.second; });
-    }} {}
+AxisRenderer::AxisRenderer(AxisData data) : AxisRendererBase(std::move(data)), labels_{} {}
 
 void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos,
                           bool antialiasing) {
-    if (!settings_.get().getAxisVisible()) {
+    if (!data_.visible) {
         return;
     }
 
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     const auto axisDir = glm::normalize(vec2{endPos} - vec2{startPos});
     const auto tickDir = vec3(-axisDir.y, axisDir.x, 0.0f);
@@ -250,61 +230,66 @@ void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, cons
     renderText(outputDims, startPos, endPos);
 }
 
-namespace detail {
+namespace {
 
-// create a transformation matrix that consideres the anchor position _after_ the bbox rotation
-mat4 textTransform(const TextBoundingBox& bbox, const vec2& anchor, float angleRadians) {
-    const auto textExtentRotated = [&]() {
-        const float c = std::abs(cos(angleRadians));
-        const float s = std::abs(sin(angleRadians));
-        return vec2{
-            bbox.textExtent.x * c + bbox.textExtent.y * s,
-            bbox.textExtent.x * s + bbox.textExtent.y * c,
-        };
-    }();
-    const vec2 translation = textExtentRotated * 0.5f * -(anchor);
+mat4 textTransform(const TextBoundingBox& bbox, vec2 anchor, float angle, const vec3& axisDir) {
+
+    const vec2 translation = vec2{bbox.textExtent} * 0.5f * -(anchor);
     const auto textCenter = glm::round(vec2{bbox.textExtent} * 0.5f);
 
     // translate to anchor pos and apply rotation
-    return glm::translate(vec3(translation, 0.0f)) *
-           glm::rotate(angleRadians, vec3(0.0f, 0.0f, 1.0f)) *
+    return glm::rotate(glm::radians(angle), vec3(0.0f, 0.0f, 1.0f)) *
+           glm::mat4_cast(glm::rotation(glm::vec3(1, 0, 0), axisDir)) *
+           glm::translate(vec3(translation, 0.0f)) *
            glm::translate(vec3(-textCenter + vec2(bbox.glyphsOrigin), 0.f));
 }
 
-}  // namespace detail
+vec2 adjustAnchor(vec2 anchor, float angle, bool mirrored) {
+    if (mirrored) {
+        const auto mirrorY = mat2{vec2{1, 0}, vec2{0, -1}};
+        const auto r1 = mat2{glm::rotate(glm::radians(-angle), vec3(0.0f, 0.0f, 1.0f))};
+        const auto r2 = mat2{glm::rotate(glm::radians(angle), vec3(0.0f, 0.0f, 1.0f))};
+        return r2 * mirrorY * r1 * anchor;
+    }
+    return anchor;
+}
+
+}  // namespace
 
 void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
                               const ivec2& endPos) {
-    // axis caption
-    if (const auto& captionSettings = settings_.get().getCaptionSettings()) {
-        auto& captex =
-            caption_.getCaption(settings_.get().getCaption(), captionSettings, textRenderer_);
 
-        const auto pos = plot::getAxisCaptionPosition(settings_, startPos, endPos);
+    const auto axisDir = vec3{glm::normalize(vec2{endPos - startPos}), 0.0f};
+
+    // axis caption
+    if (data_.captionSettings.enabled) {
+        const auto& cs = data_.captionSettings;
+        const auto& capTex = caption_.getCaption(data_.caption, cs, textRenderer_);
+
+        const auto pos = plot::getAxisCaptionPosition(data_, startPos, endPos);
         const auto posi = glm::ivec2{glm::round(pos)};
 
-        const auto m = detail::textTransform(captex.bbox, captionSettings.getFont().getAnchorPos(),
-                                             glm::radians(captionSettings.getRotation()));
-        quadRenderer_.render(*captex.texture, posi, outputDims, m);
+        const auto anchor = adjustAnchor(cs.font.anchorPos, cs.rotation, data_.mirrored);
+        const auto m = textTransform(capTex.bbox, anchor, cs.rotation, axisDir);
+        quadRenderer_.render(*capTex.texture, posi, outputDims, m);
     }
 
     // axis labels
-    if (const auto& labels = settings_.get().getLabelSettings()) {
-        auto& pos = labels_.getLabelPos(settings_, vec3{startPos, 0}, vec3{endPos, 0},
-                                        textRenderer_, vec3{1});
+    if (data_.labelSettings.enabled) {
+        const auto& ls = data_.labelSettings;
+        const auto& pos = labels_.getLabelPos(data_, vec3{startPos, 0}, vec3{endPos, 0}, vec3{1});
 
-        auto& atlas =
-            labels_.getAtlas(settings_, vec3{startPos, 0}, vec3{endPos, 0}, textRenderer_);
-
-        const auto anchor = labels.getFont().getAnchorPos();
-        const auto angle = glm::radians(labels.getRotation());
+        const auto& atlas = labels_.getAtlas(data_, textRenderer_);
 
         // translate to anchor pos and apply rotation
         std::vector<mat4> transforms;
         const auto& ri = atlas.getRenderInfo();
-        std::transform(
-            ri.boundingBoxes.begin(), ri.boundingBoxes.end(), std::back_inserter(transforms),
-            [&](const TextBoundingBox& bb) { return detail::textTransform(bb, anchor, angle); });
+
+        const auto anchor = adjustAnchor(ls.font.anchorPos, ls.rotation, data_.mirrored);
+        std::ranges::transform(ri.boundingBoxes, std::back_inserter(transforms),
+                               [&](const TextBoundingBox& bb) {
+                                   return textTransform(bb, anchor, ls.rotation, axisDir);
+                               });
 
         // render axis labels
         quadRenderer_.renderToRect(*atlas.getTexture(), pos, ri.size, ri.texTransform, outputDims,
@@ -313,18 +298,20 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
 }
 
 std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const ivec2& endPos) {
+    auto bRect =
+        tickBoundingRect(data_, data_.majorPositions, data_.minorPositions, startPos, endPos);
 
-    auto bRect = tickBoundingRect(settings_, startPos, endPos);
+    const auto axisDir = vec3{glm::normalize(vec2{endPos - startPos}), 0.0f};
 
-    if (const auto& captionSettings = settings_.get().getCaptionSettings()) {
-        auto& captex =
-            caption_.getCaption(settings_.get().getCaption(), captionSettings, textRenderer_);
-        const auto texDims(captex.texture->getDimensions());
+    if (data_.captionSettings.enabled) {
+        const auto& cs = data_.captionSettings;
+        const auto& capTex = caption_.getCaption(data_.caption, cs, textRenderer_);
+        const auto texDims(capTex.texture->getDimensions());
 
-        const auto m = detail::textTransform(captex.bbox, captionSettings.getFont().getAnchorPos(),
-                                             glm::radians(captionSettings.getRotation()));
+        const auto anchor = adjustAnchor(cs.font.anchorPos, cs.rotation, data_.mirrored);
+        const auto m = textTransform(capTex.bbox, anchor, cs.rotation, axisDir);
 
-        const auto pos = plot::getAxisCaptionPosition(settings_, startPos, endPos);
+        const auto pos = plot::getAxisCaptionPosition(data_, startPos, endPos);
 
         const auto pos1 = pos + vec2{m * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
         const auto pos2 = pos + vec2{m * vec4{texDims.x, texDims.y, 0.0f, 1.0f}};
@@ -337,23 +324,21 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
     }
 
     // axis labels
-    if (const auto& labels = settings_.get().getLabelSettings()) {
-        auto& positions = labels_.getLabelPos(settings_, vec3{startPos, 0}, vec3{endPos, 0},
-                                              textRenderer_, vec3{1});
+    if (data_.labelSettings.enabled) {
+        const auto& ls = data_.labelSettings;
+        const auto& positions =
+            labels_.getLabelPos(data_, vec3{startPos, 0}, vec3{endPos, 0}, vec3{1});
 
-        auto& atlas =
-            labels_.getAtlas(settings_, vec3{startPos, 0}, vec3{endPos, 0}, textRenderer_);
-
-        const auto anchor = labels.getFont().getAnchorPos();
-        const auto angle = glm::radians(labels.getRotation());
+        const auto& atlas = labels_.getAtlas(data_, textRenderer_);
 
         // render axis labels
         const auto& ri = atlas.getRenderInfo();
 
+        const auto anchor = adjustAnchor(ls.font.anchorPos, ls.rotation, data_.mirrored);
         for (auto&& item : util::zip(positions, ri.boundingBoxes)) {
             const auto& pos = item.first();
             const auto& bb = item.second();
-            const auto m = detail::textTransform(bb, anchor, angle);
+            const auto m = textTransform(bb, anchor, ls.rotation, axisDir);
 
             const auto pos1 = vec2{pos} + vec2{m * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
             const auto pos2 = vec2{pos} + vec2{m * vec4{bb.glyphsExtent, 0.0f, 1.0f}};
@@ -369,22 +354,13 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
     return bRect;
 }
 
-AxisRenderer3D::AxisRenderer3D(const AxisSettings& settings)
-    : AxisRendererBase(settings)
-    , labels_{[](Labels::LabelPos& labelPos, util::TextureAtlas&, const AxisSettings& settings,
-                 const vec3& start, const vec3& end, const vec3& tickDirection) {
-        const auto tickmarks = plot::getLabelPositions3D(settings, start, end, tickDirection);
-        labelPos.resize(tickmarks.size());
-
-        std::transform(tickmarks.begin(), tickmarks.end(), labelPos.begin(),
-                       [](auto& tick) { return tick.second; });
-    }} {}
+AxisRenderer3D::AxisRenderer3D(AxisData data) : AxisRendererBase(std::move(data)), labels_{} {}
 
 void AxisRenderer3D::render(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                             const vec3& endPos, const vec3& tickDirection, bool antialiasing) {
-    if (!settings_.get().getAxisVisible()) return;
+    if (!data_.visible) return;
 
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     renderAxis(camera, startPos, endPos, tickDirection, outputDims, antialiasing);
     renderText(camera, outputDims, startPos, endPos, tickDirection);
 }
@@ -392,36 +368,32 @@ void AxisRenderer3D::render(Camera* camera, const size2_t& outputDims, const vec
 void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                                 const vec3& endPos, const vec3& tickDirection) {
     // axis caption
-    if (const auto& captionSettings = settings_.get().getCaptionSettings()) {
-        auto captex =
-            caption_.getCaption(settings_.get().getCaption(), captionSettings, textRenderer_);
+    if (data_.captionSettings.enabled) {
+        const auto& cs = data_.captionSettings;
+        auto capTex = caption_.getCaption(data_.caption, cs, textRenderer_);
 
         // render axis caption centered at the axis using the offset
-        const vec2 texDims(captex.texture->getDimensions());
-        const auto anchor(captionSettings.getFont().getAnchorPos());
+        const vec2 texDims(capTex.texture->getDimensions());
+        const auto anchor(cs.font.anchorPos);
 
-        const vec3 pos(plot::getAxisCaptionPosition3D(settings_, startPos, endPos, tickDirection));
+        const vec3 pos(plot::getAxisCaptionPosition3D(data_, startPos, endPos, tickDirection));
 
-        const auto angle = glm::radians(captionSettings.getRotation());
-        const auto transform = glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f));
+        const auto transform = glm::rotate(glm::radians(cs.rotation), vec3(0.0f, 0.0f, 1.0f));
 
-        quadRenderer_.renderToRect3D(*camera, *captex.texture, pos,
-                                     ivec2(captex.texture->getDimensions()), outputDims, anchor,
+        quadRenderer_.renderToRect3D(*camera, *capTex.texture, pos,
+                                     ivec2(capTex.texture->getDimensions()), outputDims, anchor,
                                      transform);
     }
 
     // axis labels
-    if (const auto& labels = settings_.get().getLabelSettings()) {
-        const auto& pos =
-            labels_.getLabelPos(settings_, startPos, endPos, textRenderer_, tickDirection);
+    if (data_.labelSettings.enabled) {
+        const auto& ls = data_.labelSettings;
+        const auto& pos = labels_.getLabelPos(data_, startPos, endPos, tickDirection);
 
-        auto& atlas = labels_.getAtlas(settings_, startPos, endPos, textRenderer_);
-
-        // render axis labels
-        const vec2 anchorPos(labels.getFont().getAnchorPos());
+        const auto& atlas = labels_.getAtlas(data_, textRenderer_);
         const auto& renderInfo = atlas.getRenderInfo();
         quadRenderer_.renderToRect3D(*camera, *atlas.getTexture(), pos, renderInfo.size,
-                                     renderInfo.texTransform, outputDims, anchorPos);
+                                     renderInfo.texTransform, outputDims, ls.font.anchorPos);
     }
 }
 
@@ -430,18 +402,18 @@ static_assert(!std::is_copy_assignable_v<detail::AxisCaption>);
 static_assert(std::is_nothrow_move_constructible_v<detail::AxisCaption>);
 static_assert(std::is_nothrow_move_assignable_v<detail::AxisCaption>);
 
-static_assert(std::is_nothrow_move_constructible_v<detail::AxisMeshes>);
-static_assert(std::is_nothrow_move_assignable_v<detail::AxisMeshes>);
+static_assert(std::is_nothrow_move_constructible_v<detail::TickMesh>);
+static_assert(std::is_nothrow_move_assignable_v<detail::TickMesh>);
 
 static_assert(std::is_nothrow_move_constructible_v<TextRenderer>);
 static_assert(std::is_nothrow_move_assignable_v<TextRenderer>);
 static_assert(std::is_nothrow_move_constructible_v<TextureQuadRenderer>);
 static_assert(std::is_nothrow_move_assignable_v<TextureQuadRenderer>);
 
-static_assert(!std::is_copy_constructible_v<detail::AxisLabels<ivec2>>);
-static_assert(!std::is_copy_assignable_v<detail::AxisLabels<ivec2>>);
-static_assert(std::is_nothrow_move_constructible_v<detail::AxisLabels<ivec2>>);
-static_assert(std::is_nothrow_move_assignable_v<detail::AxisLabels<ivec2>>);
+static_assert(!std::is_copy_constructible_v<detail::AxisTickLabels<ivec2>>);
+static_assert(!std::is_copy_assignable_v<detail::AxisTickLabels<ivec2>>);
+static_assert(std::is_nothrow_move_constructible_v<detail::AxisTickLabels<ivec2>>);
+static_assert(std::is_nothrow_move_assignable_v<detail::AxisTickLabels<ivec2>>);
 
 static_assert(!std::is_copy_constructible_v<AxisRendererBase>);
 static_assert(!std::is_copy_assignable_v<AxisRendererBase>);

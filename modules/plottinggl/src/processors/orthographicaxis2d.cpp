@@ -68,7 +68,7 @@ OrthographicAxis2D::OrthographicAxis2D()
     , antialiasing_{"antialias", "Antialiasing", true}
     , camera_{"camera", "Camera"}
     , trackball_{&camera_}
-    , axisRenderers_{axis1_, axis2_} {
+    , axisRenderers_{plot::AxisData{}, plot::AxisData{}} {
 
     style_.setCollapsed(true);
     style_.registerProperties(axis1_, axis2_);
@@ -149,9 +149,6 @@ void OrthographicAxis2D::process() {
     axis1_.setRange(dvec2{wStart.x, wEnd.x});
     axis2_.setRange(dvec2{wStart.y, wEnd.y});
 
-    axis1_.majorTicks_.tickDelta_.set(std::abs((wEnd.x - wStart.x) / 10.0));
-    axis2_.majorTicks_.tickDelta_.set(std::abs((wEnd.y - wStart.y) / 10.0));
-
     axis1_.captionSettings_.title_.set(
         fmt::format("{}{: [}", data->getAxis(0)->name, data->getAxis(0)->unit));
     axis2_.captionSettings_.title_.set(
@@ -160,9 +157,11 @@ void OrthographicAxis2D::process() {
     const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
 
     // draw horizontally
+    if (axis1_.isModified()) axis1_.update(axisRenderers_[0].getData());
     axisRenderers_[0].render(dims, xStart, xEnd, antialiasing_.get());
 
     // draw vertically
+    if (axis2_.isModified()) axis2_.update(axisRenderers_[1].getData());
     axisRenderers_[1].render(dims, yStart, yEnd, antialiasing_.get());
 }
 

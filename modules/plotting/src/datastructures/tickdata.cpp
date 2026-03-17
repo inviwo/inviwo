@@ -26,44 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/tickdata.h>
 
-#include <inviwo/core/util/glmvec.h>
-
-namespace inviwo {
-class FontSettings;
-
-namespace plot {
-
-enum class LabelPlacement { Outside, Inside };
-
-class IVW_MODULE_PLOTTING_API PlotTextSettings {
-public:
-    PlotTextSettings() = default;
-    virtual ~PlotTextSettings() = default;
-
-    virtual bool isEnabled() const = 0;
-    virtual LabelPlacement getPlacement() const = 0;
-    virtual vec4 getColor() const = 0;
-    virtual float getPosition() const = 0;  //!< position along axis [0,1]
-    virtual vec2 getOffset() const = 0;     //!< offset from axis
-    virtual float getRotation() const = 0;  //!< Degrees of rotation
-    virtual const FontSettings& getFont() const = 0;
-
-    // Conversion to bool for enabled state
-    operator bool() const;
-};
-
-IVW_MODULE_PLOTTING_API bool operator==(const PlotTextSettings& a, const PlotTextSettings& b);
-IVW_MODULE_PLOTTING_API bool operator!=(const PlotTextSettings& a, const PlotTextSettings& b);
-
-/**
- * flip inside and outside direction of placement \p p
- */
-IVW_MODULE_PLOTTING_API LabelPlacement flip(LabelPlacement p);
-
-}  // namespace plot
-
-}  // namespace inviwo
+namespace inviwo::plot {}  // namespace inviwo::plot

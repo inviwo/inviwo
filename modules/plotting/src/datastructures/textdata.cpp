@@ -26,32 +26,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/textdata.h>
 
-#include <inviwo/core/util/glmvec.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
+#include <type_traits> 
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
+static_assert(std::is_copy_constructible_v<TextData>);
+static_assert(std::is_copy_assignable_v<TextData>);
+static_assert(std::is_nothrow_move_constructible_v<TextData>);
+static_assert(std::is_nothrow_move_assignable_v<TextData>);
 
-class IVW_MODULE_PLOTTING_API MinorTickSettings {
-public:
-    MinorTickSettings() = default;
-    virtual ~MinorTickSettings() = default;
-
-    virtual TickStyle getStyle() const = 0;
-    virtual bool getFillAxis() const = 0;
-    virtual vec4 getColor() const = 0;
-    virtual float getTickLength() const = 0;
-    virtual float getTickWidth() const = 0;
-    virtual int getTickFrequency() const = 0;
-};
-
-IVW_MODULE_PLOTTING_API bool operator==(const MinorTickSettings& a, const MinorTickSettings& b);
-IVW_MODULE_PLOTTING_API bool operator!=(const MinorTickSettings& a, const MinorTickSettings& b);
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

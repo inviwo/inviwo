@@ -34,10 +34,9 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/util/glmvec.h>
-#include <modules/plotting/datastructures/axissettings.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
-#include <modules/plotting/datastructures/minorticksettings.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
+#include <modules/plotting/datastructures/axisdata.h>
+#include <modules/plotting/datastructures/tickdata.h>
+#include <modules/plotting/datastructures/textdata.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -59,77 +58,10 @@ namespace plot {
 class PCPAxisSettings;
 class ParallelCoordinates;
 
-class IVW_MODULE_PLOTTINGGL_API PCPLabelSettings : public PlotTextSettings {
-public:
-    PCPLabelSettings(PCPAxisSettings* settings) : settings_{settings} {}
-
-    // Inherited via PlotTextSettings
-    virtual bool isEnabled() const override;
-    virtual LabelPlacement getPlacement() const override;
-    virtual vec4 getColor() const override;
-    virtual float getPosition() const override;
-    virtual vec2 getOffset() const override;
-    virtual float getRotation() const override;
-    virtual const FontSettings& getFont() const override;
-
-private:
-    PCPAxisSettings* settings_;
-};
-
-class IVW_MODULE_PLOTTINGGL_API PCPCaptionSettings : public PlotTextSettings {
-public:
-    PCPCaptionSettings(PCPAxisSettings* settings) : settings_{settings} {}
-
-    // Inherited via PlotTextSettings
-    virtual bool isEnabled() const override;
-    virtual LabelPlacement getPlacement() const override;
-    virtual vec4 getColor() const override;
-    virtual float getPosition() const override;
-    virtual vec2 getOffset() const override;
-    virtual float getRotation() const override;
-    virtual const FontSettings& getFont() const override;
-
-private:
-    PCPAxisSettings* settings_;
-};
-
-class IVW_MODULE_PLOTTINGGL_API PCPMajorTickSettings : public MajorTickSettings {
-public:
-    PCPMajorTickSettings(PCPAxisSettings* settings) : settings_{settings} {}
-
-    // Inherited via MajorTickSettings
-    virtual TickStyle getStyle() const override;
-    virtual vec4 getColor() const override;
-    virtual float getTickLength() const override;
-    virtual float getTickWidth() const override;
-    virtual double getTickDelta() const override;
-    virtual bool getRangeBasedTicks() const override;
-
-private:
-    PCPAxisSettings* settings_;
-};
-
-class IVW_MODULE_PLOTTINGGL_API PCPMinorTickSettings : public MinorTickSettings {
-public:
-    PCPMinorTickSettings(PCPAxisSettings* settings) : settings_{settings} {}
-
-    // Inherited via MinorTickSettings
-    virtual TickStyle getStyle() const override;
-    virtual bool getFillAxis() const override;
-    virtual vec4 getColor() const override;
-    virtual float getTickLength() const override;
-    virtual float getTickWidth() const override;
-    virtual int getTickFrequency() const override;
-
-private:
-    PCPAxisSettings* settings_;
-};
-
 /**
  * Helper class for handling axis specific tasks for the parallel coordinates plot
  */
-class IVW_MODULE_PLOTTINGGL_API PCPAxisSettings : public AxisSettings,
-                                                  public BoolCompositeProperty {
+class IVW_MODULE_PLOTTINGGL_API PCPAxisSettings : public BoolCompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{
@@ -137,6 +69,10 @@ public:
 
     PCPAxisSettings(std::string_view identifier, std::string_view displayName, size_t columnId = 0);
     PCPAxisSettings(const PCPAxisSettings& rhs);
+    PCPAxisSettings(PCPAxisSettings&&) = delete;
+    PCPAxisSettings& operator=(const PCPAxisSettings&) = delete;
+    PCPAxisSettings& operator=(PCPAxisSettings&&) = delete;
+
     virtual PCPAxisSettings* clone() const override;
 
     virtual ~PCPAxisSettings() = default;
@@ -145,6 +81,8 @@ public:
      * Update the range of the axis based on the given column.
      */
     void update(std::shared_ptr<const DataFrame> frame);
+
+    bool dataModified() const;
 
     /**
      * Normalizes the value v from the range of the parameter to zero and one. Clamps out-of-bounds
@@ -181,24 +119,10 @@ public:
 
     bool isFiltering() const { return upperBrushed_ || lowerBrushed_; }
 
-    // Inherited via AxisSettings
-    virtual dvec2 getRange() const override;
-
-    virtual bool getAxisVisible() const override;
-    virtual bool getMirrored() const override;
-    virtual vec4 getColor() const override;
-    virtual float getWidth() const override;
-    virtual float getScalingFactor() const override;
-    virtual Orientation getOrientation() const override;
-
-    virtual const std::string& getCaption() const override;
-    virtual const PlotTextSettings& getCaptionSettings() const override;
-
-    virtual const std::vector<std::string>& getLabels() const override;
-    virtual const PlotTextSettings& getLabelSettings() const override;
-
-    virtual const MajorTickSettings& getMajorTicks() const override;
-    virtual const MinorTickSettings& getMinorTicks() const override;
+    dvec2 getRange() const;
+    vec4 getColor() const;
+    float getWidth() const;
+    void update(AxisData& data) const;
 
     std::function<double(size_t)> at = [](size_t) { return 0.0; };
 
@@ -208,19 +132,10 @@ public:
     ParallelCoordinates* pcp_ = nullptr;
     std::shared_ptr<const Column> col_;
     const CategoricalColumn* catCol_ = nullptr;
+    std::string caption_;
 
 private:
     void updateBrushing();
-    void updateLabels();
-
-    std::string caption_;
-    std::vector<std::string> labels_;
-    std::shared_ptr<std::function<void()>> labelUpdateCallback_;
-
-    PCPCaptionSettings captionSettings_;
-    PCPLabelSettings labelSettings_;
-    PCPMajorTickSettings major_;
-    PCPMinorTickSettings minor_;
 
     bool upperBrushed_ = false;  //! Flag to indicated if the upper handle is brushing away data
     bool lowerBrushed_ = false;  //! Flag to indicated if the lower handle is brushing away data

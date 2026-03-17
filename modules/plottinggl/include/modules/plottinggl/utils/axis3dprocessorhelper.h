@@ -31,17 +31,17 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
+#include <modules/plotting/utils/labelscaling.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
+#include <modules/plottinggl/utils/axisprocessorhelper.h>
 
 #include <tuple>
 #include <optional>
@@ -50,66 +50,41 @@ namespace inviwo::plot {
 
 class IVW_MODULE_PLOTTINGGL_API Axis3DProcessorHelper {
 public:
-    enum class AxisRangeMode : unsigned char {
-        Dims,
-        Basis,
-        BasisOffset,
-        World,
-        DataBoundingBox,
-        ModelBoundingBox,
-        WorldBoundingBox,
-        Custom
-    };
-    enum class OffsetScaling : unsigned char { None, MinExtent, MaxExtent, MeanExtent, Diagonal };
-
-    enum class DimsRangeMode : std::uint8_t { No, Yes };
-
-    explicit Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
+    explicit Axis3DProcessorHelper(const std::function<std::optional<mat4>()>& getBoundingBox,
                                    DimsRangeMode useDimsRange = DimsRangeMode::No);
 
     void renderAxes(size2_t outputDims, const SpatialEntity& entity);
 
-    void adjustScalingFactor(const SpatialEntity* entity = nullptr);
-    void adjustRanges(const SpatialEntity* entity);
-
     auto props() {
-        return std::tie(offsetScaling_, axisOffset_, rangeMode_, customRanges_, visibility_,
-                        axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
+        return std::tie(offsetScaling_, axisOffset_, rangeMode_, captionType_, customCaption_,
+                        labelScale_, visibility_, axisStyle_, axes_[0], axes_[1], axes_[2], camera_,
+                        trackball_);
     }
     auto props() const {
-        return std::tie(offsetScaling_, axisOffset_, rangeMode_, customRanges_, visibility_,
-                        axisStyle_, xAxis_, yAxis_, zAxis_, camera_, trackball_);
+        return std::tie(offsetScaling_, axisOffset_, rangeMode_, captionType_, customCaption_,
+                        labelScale_, visibility_, axisStyle_, axes_[0], axes_[1], axes_[2], camera_,
+                        trackball_);
     }
 
     OptionProperty<OffsetScaling> offsetScaling_;
     FloatProperty axisOffset_;
-
     OptionProperty<AxisRangeMode> rangeMode_;
-
-    CompositeProperty customRanges_;
-    DoubleMinMaxProperty rangeXaxis_;
-    DoubleMinMaxProperty rangeYaxis_;
-    DoubleMinMaxProperty rangeZaxis_;
+    OptionProperty<CaptionType> captionType_;
+    StringProperty customCaption_;
+    OptionProperty<LabelScale> labelScale_;
 
     BoolCompositeProperty visibility_;
     OptionPropertyString presets_;
     std::array<BoolProperty, 12> visibleAxes_;
 
     AxisStyleProperty axisStyle_;
-    AxisProperty xAxis_;
-    AxisProperty yAxis_;
-    AxisProperty zAxis_;
+    std::array<AxisProperty, 3> axes_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
 
     std::array<AxisRenderer3D, 3> axisRenderers_;
-
-protected:
-    dmat4 getDataToWorldMatrix(const SpatialEntity& entity) const;
-
-    bool propertyUpdate_;
-    std::optional<std::function<std::optional<mat4>()>> getBoundingBox_;
+    std::function<std::optional<mat4>()> getBoundingBox_;
 };
 
 }  // namespace inviwo::plot

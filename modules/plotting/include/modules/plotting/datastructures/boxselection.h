@@ -36,28 +36,15 @@ namespace inviwo {
 
 namespace plot {
 
-enum class TickStyle { None, Inside, Outside, Both };
+struct IVW_MODULE_PLOTTING_API BoxSelection {
+    enum class Mode : std::uint8_t { Selection, Filtering, None };
 
-class IVW_MODULE_PLOTTING_API MajorTickSettings {
-public:
-    MajorTickSettings() = default;
-    virtual ~MajorTickSettings() = default;
+    vec4 lineColor = vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    float lineWidth = 1.0f;
+    Mode mode = Mode::Selection;
 
-    virtual TickStyle getStyle() const = 0;
-    virtual vec4 getColor() const = 0;
-    virtual float getTickLength() const = 0;
-    virtual float getTickWidth() const = 0;
-    virtual double getTickDelta() const = 0;
-    virtual bool getRangeBasedTicks() const = 0;
+    bool operator==(const BoxSelection&) const = default;
 };
-
-IVW_MODULE_PLOTTING_API bool operator==(const MajorTickSettings& a, const MajorTickSettings& b);
-IVW_MODULE_PLOTTING_API bool operator!=(const MajorTickSettings& a, const MajorTickSettings& b);
-
-/**
- * flip inside and outside direction of tick style \p s
- */
-IVW_MODULE_PLOTTING_API TickStyle flip(TickStyle s);
 
 }  // namespace plot
 

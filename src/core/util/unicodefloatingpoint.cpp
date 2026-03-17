@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/datastructures/plottextsettings.h>
-
-#include <inviwo/core/util/glmvec.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
-
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
+#include <inviwo/core/util/unicodefloatingpoint.h>
 
 namespace inviwo {
-
-namespace plot {
-
-PlotTextSettings::operator bool() const { return isEnabled(); }
-
-bool operator==(const PlotTextSettings& a, const PlotTextSettings& b) {
-    return a.isEnabled() == b.isEnabled() && a.getPlacement() == b.getPlacement() &&
-           a.getColor() == b.getColor() && a.getPosition() == b.getPosition() &&
-           a.getOffset() == b.getOffset() && a.getRotation() == b.getRotation() &&
-           a.getFont() == b.getFont();
-}
-
-bool operator!=(const PlotTextSettings& a, const PlotTextSettings& b) { return !(a == b); }
-
-LabelPlacement flip(LabelPlacement p) {
-    switch (p) {
-        case LabelPlacement::Outside:
-            return LabelPlacement::Inside;
-        case LabelPlacement::Inside:
-            return LabelPlacement::Outside;
-        default:
-            return p;
-    }
-}
-
-}  // namespace plot
 
 }  // namespace inviwo

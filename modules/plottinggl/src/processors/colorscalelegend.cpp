@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
@@ -60,8 +61,8 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/plotting/datastructures/axissettings.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
+#include <modules/plotting/datastructures/axisdata.h>
+#include <modules/plotting/datastructures/tickdata.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plotting/properties/plottextproperty.h>
@@ -190,7 +191,12 @@ ColorScaleLegend::ColorScaleLegend()
     , shader_{"img_texturequad.vert", "legend.frag"}
     , isoValueShader_{"isovaluetri.vert", "isovaluetri.geom", "standard.frag", Shader::Build::No}
     , axis_{"axis", "Scale Axis"}
-    , axisRenderer_{axis_}
+    , orientation_{"orientation",
+                   "Orientation",
+                   {{"horizontal", "Horizontal", AxisProperty::Orientation::Horizontal},
+                    {"vertical", "Vertical", AxisProperty::Orientation::Vertical}},
+                   0}
+    , axisRenderer_{AxisData{}}
     , isovalueMesh_{DrawType::Points, ConnectivityType::None}
     , picking_{this, 1, [this](PickingEvent* e) { handlePicking(e); }} {
 
@@ -207,7 +213,7 @@ ColorScaleLegend::ColorScaleLegend()
     overrideTFRange_.setCollapsed(true);
 
     // legend position
-    positioning_.addProperties(legendPresets_, margin_, position_, legendSize_);
+    positioning_.addProperties(legendPresets_, orientation_, margin_, position_, legendSize_);
 
     // legend style
     isovalues_.addProperty(triSize_);
@@ -238,7 +244,7 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.setCaption(title_.get());
     axis_.captionSettings_.setChecked(true);
     axis_.labelSettings_.font_.fontFace_.set(axis_.captionSettings_.font_.fontFace_.get());
-    axis_.majorTicks_.style_.set(plot::TickStyle::Outside);
+    axis_.majorTicks_.style.set(plot::TickData::Style::Outside);
     axis_.setCurrentStateAsDefault();
 
     auto updateFunc = [this]() { updateTitle(volumeInport_.getData()); };
@@ -252,12 +258,12 @@ ColorScaleLegend::ColorScaleLegend()
 }
 
 std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dimensions) const {
-    const float ticsWidth = ceil(axis_.majorTicks_.tickWidth_.get());
+    const float ticsWidth = ceil(axis_.majorTicks_.width.get());
     const auto borderWidth = borderWidth_.get();
 
     const auto [position, legendSize] = [&]() {
         const auto initialPos = position_.get();
-        const auto size = (axis_.orientation_ == AxisProperty::Orientation::Horizontal)
+        const auto size = (orientation_.get() == AxisProperty::Orientation::Horizontal)
                               ? legendSize_.get()
                               : glm::yx(legendSize_.get());
 
@@ -276,8 +282,8 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
     ivec2 axisStart{0};
     ivec2 axisEnd{0};
 
-    if (axis_.getOrientation() == AxisProperty::Orientation::Horizontal) {
-        if (axis_.getMirrored()) {
+    if (orientation_.get() == AxisProperty::Orientation::Horizontal) {
+        if (axis_.mirrored_.get()) {
             axisStart = topLeft + ivec2(ticsWidth / 2, 0) + ivec2(-borderWidth, borderWidth);
             axisEnd = topRight - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth);
         } else {
@@ -285,7 +291,7 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
             axisEnd = bottomRight - ivec2(ticsWidth / 2, 0) + ivec2(borderWidth, -borderWidth);
         }
     } else {
-        if (axis_.getMirrored()) {
+        if (axis_.mirrored_.get()) {
             axisStart = bottomLeft + ivec2(0, ticsWidth / 2) - ivec2(borderWidth);
             axisEnd = topLeft - ivec2(0, ticsWidth / 2) + ivec2(-borderWidth, borderWidth);
         } else {
@@ -345,7 +351,7 @@ void ColorScaleLegend::process() {
     utilgl::setUniforms(shader_, axis_.color_, borderWidth_, backgroundStyle_, checkerBoardSize_,
                         isotfComposite_);
     shader_.setUniform("legendOrientation",
-                       (axis_.getOrientation() == AxisProperty::Orientation::Horizontal) ? 0 : 1);
+                       (orientation_ == AxisProperty::Orientation::Horizontal) ? 0 : 1);
     shader_.setUniform("tfRange.scale", static_cast<float>(tfScale));
     shader_.setUniform("tfRange.outputOffset", static_cast<float>(tfOffset));
     shader_.setUniform("pickingId", static_cast<int>(picking_.getPickingId(0)));
@@ -368,7 +374,7 @@ void ColorScaleLegend::process() {
             const MeshDrawerGL::DrawObject drawer(isovalueMesh_.getRepresentation<MeshGL>(),
                                                   isovalueMesh_.getDefaultMeshInfo());
 
-            if (axis_.getOrientation() == AxisSettings::Orientation::Horizontal) {
+            if (orientation_ == AxisProperty::Orientation::Horizontal) {
                 isoValueShader_.setUniform("trafo", mat4(1.0f));
                 isoValueShader_.setUniform("screenDim", vec2(view.z, view.w));
                 isoValueShader_.setUniform("screenDimInv", 1.0f / vec2(view.z, view.w));
@@ -387,6 +393,9 @@ void ColorScaleLegend::process() {
         }
     }
 
+    if (axis_.isModified()) {
+        axis_.update(axisRenderer_.getData());
+    }
     axisRenderer_.render(dimensions, axisStart, axisEnd);
 
     utilgl::deactivateCurrentTarget();
@@ -430,46 +439,52 @@ std::vector<ButtonGroupProperty::Button> ColorScaleLegend::buttons() {
 }
 
 void ColorScaleLegend::setPlacement(Placement placement) {
+    using enum AxisProperty::Orientation;
 
-    auto setPositions = [&](const vec2& legendPos, const vec2& anchor) {
-        axis_.labelSettings_.font_.anchorPos_.set(anchor);
-        axis_.captionSettings_.font_.anchorPos_.set(anchor);
+    auto setPositions = [&](AxisProperty::Orientation orientation, bool mirror,
+                            const vec2& legendPos, bool inside) {
+        const NetworkLock lock(this);
         position_.set(legendPos);
+        margin_.set(inside ? 10 : 90);
+        orientation_.setSelectedValue(orientation);
+
+        axis_.mirrored_.set(mirror);
+        axis_.captionSettings_.font_.anchorPos_.set(vec2{0.0f, 1.0f});
+        axis_.captionSettings_.rotation_.set(0.0f);
+        axis_.captionSettings_.offset_.set(orientation == Vertical ? 50.0f : 35.0f);
+
+        axis_.labelSettings_.rotation_.set(orientation == Vertical ? -90.0f : 0.0f);
+        axis_.labelSettings_.font_.anchorPos_.set(orientation == Vertical ? vec2{-1.0f, 0.0f}
+                                                                          : vec2{0.0f, 1.0f});
     };
 
     switch (placement) {
+        case Placement::OutsideLeft:
+            setPositions(Vertical, true, vec2{0.0f, 0.5f}, false);
+            break;
         case Placement::OutsideTop:
-            axis_.set(AxisProperty::Orientation::Horizontal, true);
-            setPositions(vec2{0.5f, 1.0f}, vec2{0.0f, -1.0f});
+            setPositions(Horizontal, true, vec2{0.5f, 1.0f}, false);
             break;
         case Placement::OutsideRight:
-            axis_.set(AxisProperty::Orientation::Vertical, false);
-            setPositions(vec2{1.0f, 0.5f}, vec2{-1.0f, 0.0f});
+            setPositions(Vertical, false, vec2{1.0f, 0.5f}, false);
             break;
         case Placement::OutsideBottom:
-            axis_.set(AxisProperty::Orientation::Horizontal, false);
-            setPositions(vec2{0.5f, 0.0f}, vec2{0.0f, 1.0f});
+            setPositions(Horizontal, false, vec2{0.5f, 0.0f}, false);
             break;
         case Placement::InsideLeft:
-            axis_.set(AxisProperty::Orientation::Vertical, false);
-            setPositions(vec2{0.0f, 0.5f}, vec2{-1.0f, 0.0f});
+            setPositions(Vertical, false, vec2{0.0f, 0.5f}, true);
             break;
         case Placement::InsideTop:
-            axis_.set(AxisProperty::Orientation::Horizontal, false);
-            setPositions(vec2{0.5f, 1.0f}, vec2{0.0f, 1.0f});
+            setPositions(Horizontal, false, vec2{0.5f, 1.0f}, true);
             break;
         case Placement::InsideRight:
-            axis_.set(AxisProperty::Orientation::Vertical, true);
-            setPositions(vec2{1.0f, 0.5f}, vec2{1.0f, 0.0f});
+            setPositions(Vertical, true, vec2{1.0f, 0.5f}, true);
             break;
         case Placement::InsideBottom:
-            axis_.set(AxisProperty::Orientation::Horizontal, true);
-            setPositions(vec2{0.5f, 0.0f}, vec2{0.0f, -1.0f});
+            setPositions(Horizontal, true, vec2{0.5f, 0.0f}, true);
             break;
-        case Placement::OutsideLeft:
+
         default:
-            axis_.set(AxisProperty::Orientation::Vertical, true);
-            setPositions(vec2{0.0f, 0.5f}, vec2{1.0f, 0.0f});
             break;
     }
 }

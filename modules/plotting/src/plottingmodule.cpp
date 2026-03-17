@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/properties/constraintbehavior.h>
 #include <modules/plotting/processors/dataframecolumntocolorvector.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
@@ -41,6 +42,7 @@
 
 #include <functional>
 #include <string>
+#include <type_traits>
 
 namespace inviwo {
 class InviwoApplication;
@@ -56,13 +58,104 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProperty<plot::PlotTextProperty>();
 }
 
-int PlottingModule::getVersion() const { return 2; }
+int PlottingModule::getVersion() const { return 3; }
 
 std::unique_ptr<VersionConverter> PlottingModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
 }
 
 PlottingModule::Converter::Converter(int version) : version_(version) {}
+
+namespace {
+
+void convertDoubleMinMaxPropertyToVec2(TxElement* node) {
+    node->SetAttribute("type", "DoubleVec2Property");
+
+    using ET = std::underlying_type_t<ConstraintBehavior>;
+    const std::string ct = fmt::to_string(static_cast<ET>(ConstraintBehavior::Ignore));
+
+    TxElement minConstraint{"minConstraint"};
+    minConstraint.AddAttribute("content", ct);
+    TxElement maxConstraint{"maxConstraint"};
+    maxConstraint.AddAttribute("content", ct);
+    node->InsertEndChild(minConstraint);
+    node->InsertEndChild(maxConstraint);
+    if (auto* range = xml::getElement(node, "range")) {
+        const auto minVal = range->GetAttribute("x");
+        const auto maxVal = range->GetAttribute("y");
+        TxElement minValNode{"minvale"};
+        minValNode.SetAttribute("x", minVal);
+        minValNode.SetAttribute("y", minVal);
+        TxElement maxValNode{"maxvale"};
+        maxValNode.SetAttribute("x", maxVal);
+        maxValNode.SetAttribute("y", maxVal);
+
+        node->RemoveChild(range);
+        node->InsertEndChild(minValNode);
+        node->InsertEndChild(maxValNode);
+    }
+    if (auto* increment = xml::getElement(node, "increment")) {
+        const auto inc = increment->GetAttribute("content");
+        increment->RemoveAttribute("content");
+        increment->SetAttribute("x", inc);
+        increment->SetAttribute("y", inc);
+    }
+    if (auto* minSep = xml::getElement(node, "minSeparation")) {
+        node->RemoveChild(minSep);
+    }
+}
+
+bool updateV2(TxElement* root) {
+    bool res = false;
+
+    TraversingVersionConverter conv{[&res](TxElement* node) -> bool {
+        if (const auto& key = node->Value(); key != "Property") return true;
+        if (const auto& type = node->GetAttribute("type"); type != "org.inviwo.AxisProperty") {
+            return true;
+        }
+
+        // convert DoubleMinMaxProperty to DoubleVec2Property
+        if (auto* elem = xml::getElement(node, "Properties/Property&identifier=range")) {
+            convertDoubleMinMaxPropertyToVec2(elem);
+            res = true;
+        }
+        if (auto* elem = xml::getElement(node, "Properties/Property&identifier=customRange")) {
+            convertDoubleMinMaxPropertyToVec2(elem);
+            res = true;
+        }
+
+        res = true;
+        return true;
+    }};
+
+    TraversingVersionConverter conv2{[&res](TxElement* node) -> bool {
+        if (const auto& key = node->Value(); key != "Processor") return true;
+        if (const auto& type = node->GetAttribute("type");
+            type != "org.inviwo.ImagePlotProcessor") {
+            return true;
+        }
+
+        // convert DoubleMinMaxProperty to DoubleVec2Property
+        if (auto* elem = xml::getElement(node, "Properties/Property&identifier=rangeX")) {
+            convertDoubleMinMaxPropertyToVec2(elem);
+            res = true;
+        }
+        if (auto* elem = xml::getElement(node, "Properties/Property&identifier=rangeY")) {
+            convertDoubleMinMaxPropertyToVec2(elem);
+            res = true;
+        }
+
+        res = true;
+        return true;
+    }};
+
+    conv.convert(root);
+    conv2.convert(root);
+
+    return res;
+}
+
+}  // namespace
 
 bool PlottingModule::Converter::convert(TxElement* root) {
     bool res = false;
@@ -76,10 +169,9 @@ bool PlottingModule::Converter::convert(TxElement* root) {
         }
         case 1: {
             TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                const auto key = node->Value();
-                if (key != "Property") return true;
-                const auto& type = node->GetAttribute("type");
-                if (type != "org.inviwo.AxisStyleProperty") {
+                if (const auto key = node->Value(); key != "Property") return true;
+                if (const auto& type = node->GetAttribute("type");
+                    type != "org.inviwo.AxisStyleProperty") {
                     return true;
                 }
 
@@ -90,6 +182,11 @@ bool PlottingModule::Converter::convert(TxElement* root) {
                 return true;
             }};
             conv.convert(root);
+
+            [[fallthrough]];
+        }
+        case 2: {
+            res |= updateV2(root);
 
             return res;
         }

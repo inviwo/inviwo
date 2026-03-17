@@ -35,13 +35,12 @@
 #include <inviwo/core/util/glmvec.h>
 #include <modules/basegl/datastructures/linesettings.h>
 #include <modules/basegl/rendering/linerenderer.h>
+#include <modules/plotting/datastructures/boxselection.h>
 
 #include <array>
 #include <optional>
 
 namespace inviwo::plot {
-class BoxSelectionProperty;
-
 /**
  * @brief Renders a 2D rectangle in screen space.
  * Use in combination with BoxSelectionInteractionHandler.
@@ -49,7 +48,7 @@ class BoxSelectionProperty;
  */
 class IVW_MODULE_PLOTTINGGL_API BoxSelectionRenderer {
 public:
-    explicit BoxSelectionRenderer(const BoxSelectionProperty& settings);
+    explicit BoxSelectionRenderer();
     virtual ~BoxSelectionRenderer() = default;
     /*
      * @brief Draw rectangle if dragRect exists.
@@ -57,10 +56,10 @@ public:
      * @param dragRect start/end pixel coordinates
      * @param screenDim size of render surface
      */
-    void render(std::optional<std::array<dvec2, 2>> dragRect, size2_t screenDim);
+    void render(std::optional<std::array<dvec2, 2>> dragRect, size2_t screenDim,
+                const BoxSelection& sel);
 
 protected:
-    const BoxSelectionProperty& settings_;
     LineSettings lineSettings_;
     algorithm::LineRenderer lineRenderer_;
 

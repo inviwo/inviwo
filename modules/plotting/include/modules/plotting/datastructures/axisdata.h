@@ -31,64 +31,36 @@
 #include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
-#include <modules/plotting/datastructures/axissettings.h>
-#include <modules/plotting/datastructures/majortickdata.h>
-#include <modules/plotting/datastructures/minortickdata.h>
-#include <modules/plotting/datastructures/plottextdata.h>
+#include <modules/plotting/datastructures/tickdata.h>
+#include <modules/plotting/datastructures/textdata.h>
+#include <modules/plotting/algorithm/labeling.h>
 
 #include <string>
 #include <vector>
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
-class MajorTickSettings;
-class MinorTickSettings;
-class PlotTextSettings;
-
-class IVW_MODULE_PLOTTING_API AxisData : public AxisSettings {
-public:
-    AxisData() = default;
-    AxisData(const AxisSettings& settings);
-    virtual ~AxisData() = default;
-
+struct IVW_MODULE_PLOTTING_API AxisData {
     dvec2 range = dvec2{0.0, 100.0};
 
     bool visible = true;
     bool mirrored = false;
     vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
     float width = 2.5f;
-    float scalingFactor = 1.0f;
-    Orientation orientation = Orientation::Horizontal;
 
     std::string caption;
-    PlotTextData captionSettings;
+    TextData captionSettings;
+
+    std::vector<double> majorPositions;
+    TickData major;
+
+    std::vector<double> minorPositions;
+    TickData minor;
 
     std::vector<std::string> labels;
-    PlotTextData labelSettings;
+    TextData labelSettings;
 
-    MajorTickData majorTicks;
-    MinorTickData minorticks;
-
-    // Inherited via AxisSettings
-    virtual dvec2 getRange() const override;
-
-    virtual bool getAxisVisible() const override;
-    virtual bool getMirrored() const override;
-    virtual vec4 getColor() const override;
-    virtual float getWidth() const override;
-    virtual float getScalingFactor() const override;
-    virtual Orientation getOrientation() const override;
-
-    virtual const std::string& getCaption() const override;
-    virtual const PlotTextSettings& getCaptionSettings() const override;
-
-    virtual const std::vector<std::string>& getLabels() const override;
-    virtual const PlotTextSettings& getLabelSettings() const override;
-
-    virtual const MajorTickSettings& getMajorTicks() const override;
-    virtual const MinorTickSettings& getMinorTicks() const override;
+    bool operator==(const AxisData&) const = default;
 };
 
-}  // namespace plot
-}  // namespace inviwo
+}  // namespace inviwo::plot

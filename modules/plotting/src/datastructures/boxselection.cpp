@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2020-2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/boxselection.h>
 
-#include <inviwo/core/util/glmvec.h>
-#include <modules/plotting/datastructures/majorticksettings.h>
-#include <modules/plotting/datastructures/minorticksettings.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
-
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
-
-namespace inviwo {
-
-namespace plot {
-
-bool AxisSettings::isVertical() const { return getOrientation() == Orientation::Vertical; }
-
-bool operator==(const AxisSettings& a, const AxisSettings& b) {
-    return a.getCaption() == b.getCaption() && a.getLabels() == b.getLabels() &&
-           a.getAxisVisible() == b.getAxisVisible() && a.getMirrored() == b.getMirrored() &&
-           a.getColor() == b.getColor() && a.getWidth() == b.getWidth() &&
-           a.getRange() == b.getRange() && a.getOrientation() == b.getOrientation() &&
-           a.getCaptionSettings() == b.getCaptionSettings() &&
-           a.getLabelSettings() == b.getLabelSettings() && a.getMajorTicks() == b.getMajorTicks() &&
-           a.getMinorTicks() == b.getMinorTicks();
-}
-
-bool operator!=(const AxisSettings& a, const AxisSettings& b) { return !(a == b); }
-
-}  // namespace plot
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

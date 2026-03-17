@@ -42,7 +42,7 @@
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/zip.h>
-#include <modules/plotting/datastructures/boxselectionsettings.h>
+#include <modules/plotting/datastructures/boxselection.h>
 #include <modules/plotting/properties/boxselectionproperty.h>
 
 #include <cmath>
@@ -80,8 +80,8 @@ void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
         } else if ((me->button() == MouseButton::Left) && (me->state() == MouseState::Release)) {
             if (dragRect_ && glm::compMax(glm::abs(me->pos() - (*dragRect_)[0])) <= 1) {
                 // Click in empty space
-                switch (dragRectSettings_.getMode()) {
-                    case BoxSelectionSettingsInterface::Mode::Selection: {
+                switch (dragRectSettings_.mode_.get()) {
+                    case BoxSelection::Mode::Selection: {
                         if (xAxis_) {
                             // selection changed
                             std::vector<bool> selected(xAxis_->getSize(), false);
@@ -89,14 +89,14 @@ void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
                         }
                         break;
                     }
-                    case BoxSelectionSettingsInterface::Mode::Filtering: {
+                    case BoxSelection::Mode::Filtering: {
                         if (xAxis_) {
                             std::vector<bool> filtered(xAxis_->getSize(), false);
                             filteringChangedCallback_.invoke(filtered, append);
                         }
                         break;
                     }
-                    case BoxSelectionSettingsInterface::Mode::None:
+                    case BoxSelection::Mode::None:
                         break;
                 }
             }
@@ -136,17 +136,17 @@ void BoxSelectionInteractionHandler::reset() { dragRect_.reset(); }
 
 void BoxSelectionInteractionHandler::dragRectChanged(const dvec2& start, const dvec2& end,
                                                      bool append) {
-    switch (dragRectSettings_.getMode()) {
-        case BoxSelectionSettingsInterface::Mode::Selection:
+    switch (dragRectSettings_.mode_.get()) {
+        case BoxSelection::Mode::Selection:
             // selection changed
             selectionChangedCallback_.invoke(boxSelect(start, end, xAxis_.get(), yAxis_.get()),
                                              append);
             break;
-        case BoxSelectionSettingsInterface::Mode::Filtering:
+        case BoxSelection::Mode::Filtering:
             filteringChangedCallback_.invoke(boxFilter(start, end, xAxis_.get(), yAxis_.get()),
                                              append);
             break;
-        case BoxSelectionSettingsInterface::Mode::None:
+        case BoxSelection::Mode::None:
             break;
     }
 }
@@ -159,7 +159,6 @@ std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start, 
         return std::vector<bool>();
     }
 
-    // For efficiency:
     // 1. Determine selection along x-axis
     // 2. Determine selection along y-axis using the subset from 1
 
