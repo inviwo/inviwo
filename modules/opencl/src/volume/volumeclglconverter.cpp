@@ -79,7 +79,7 @@ void VolumeGL2CLGLConverter::update(std::shared_ptr<const VolumeGL>,
 std::shared_ptr<VolumeCL> VolumeCLGL2CLConverter::createFrom(
     std::shared_ptr<const VolumeCLGL> volumeCLGL) const {
 #ifdef IVW_DEBUG
-    LogWarn("Performance warning: Use shared CLGL representation instead of CL ");
+    log::warn("Performance warning: Use shared CLGL representation instead of CL ");
 #endif
 
     const size3_t dimensions{volumeCLGL->getDimensions()};
