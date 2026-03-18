@@ -43,7 +43,7 @@ PickingManager::~PickingManager() = default;
 
 PickingAction* PickingManager::registerPickingAction(Processor* processor,
                                                      PickingAction::Callback action, size_t size) {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
 
     PickingAction* pickObj = nullptr;
 
@@ -74,7 +74,7 @@ PickingAction* PickingManager::registerPickingAction(Processor* processor,
 }
 
 bool PickingManager::unregisterPickingAction(const PickingAction* p) {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
 
     auto it1 = std::ranges::find(unusedObjects_, p);
     if (it1 == unusedObjects_.end()) {
@@ -117,7 +117,7 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
 const PickingAction* PickingManager::getPickingActionFromIndex(size_t index) const {
     if (index == 0) return nullptr;
 
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
 
     // This will find the first picking object with an start greater then index.
     auto pIt = std::ranges::upper_bound(
@@ -151,7 +151,7 @@ bool PickingManager::pickingEnabled() {
 }
 
 bool PickingManager::isPickingActionRegistered(const PickingAction* action) const {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
     return std::ranges::any_of(pickingActions_, [&](auto& item) { return item.get() == action; });
 }
 
