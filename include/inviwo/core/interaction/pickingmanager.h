@@ -34,6 +34,8 @@
 #include <inviwo/core/util/callback.h>
 #include <inviwo/core/interaction/pickingaction.h>
 
+#include <mutex>
+
 namespace inviwo {
 
 class PickingEvent;
@@ -43,19 +45,14 @@ class PickingEvent;
  */
 class IVW_CORE_API PickingManager : public Singleton<PickingManager> {
 public:
-    static const size_t VoidId = 0;  ///< Picking id when nothing is picked
+    static constexpr size_t VoidId = 0;  ///< Picking id when nothing is picked
 
     PickingManager();
     PickingManager(const PickingManager&) = delete;
+    PickingManager(PickingManager&&) = delete;
     PickingManager& operator=(const PickingManager&) = delete;
+    PickingManager& operator=(PickingManager&&) = delete;
     virtual ~PickingManager();
-
-    // clang-format off
-    template <typename T>
-    [[deprecated("was declared deprecated. Use `registerPickingAction(Processor*, PickingAction::Callback, size_t)` instead")]]
-    PickingAction* registerPickingAction(Processor* processor, T* o,
-                                         void (T::*m)(PickingEvent*), size_t size = 1);
-    // clang-format on
 
     PickingAction* registerPickingAction(Processor* processor, PickingAction::Callback callback,
                                          size_t size = 1);
@@ -89,17 +86,8 @@ private:
 
     friend Singleton<PickingManager>;
     static PickingManager* instance_;
-};
 
-// clang-format off
-template <typename T>
-[[deprecated("was declared deprecated. Use `registerPickingAction(Processor*, PickingAction::Callback, size_t)` instead")]]
-PickingAction* PickingManager::registerPickingAction(Processor* processor, T* o,
-                                                     void (T::*m)(PickingEvent*),
-                                      size_t size) {
-    using namespace std::placeholders;
-    return registerPickingAction(processor, std::bind(m, o, _1), size);
-}
-// clang-format on
+    mutable std::mutex mutex_;
+};
 
 }  // namespace inviwo
