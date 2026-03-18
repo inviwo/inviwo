@@ -83,7 +83,7 @@ size_t TextureUnit::maxTextureImageUnits() {
     static const size_t max = []() {
         GLint numTexUnits_ = -1;
         glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &numTexUnits_);
-        IVW_ASSERT(numTexUnits_ > 0 && numTexUnits_ < textureUnits_.size(),
+        IVW_ASSERT(numTexUnits_ > 0 && static_cast<size_t>(numTexUnits_) < textureUnits_.size(),
                    "Unexpected number of texture units");
         return static_cast<size_t>(numTexUnits_);
     }();
