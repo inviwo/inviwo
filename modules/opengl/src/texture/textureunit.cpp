@@ -38,17 +38,14 @@
 
 namespace inviwo {
 
-std::vector<bool> TextureUnit::textureUnits_{};
+std::array<std::atomic<bool>, 128> TextureUnit::textureUnits_{false};
 
 TextureUnit::TextureUnit() : unitEnum_(0), unitNumber_(0) {
-    IVW_ASSERT(!textureUnits_.empty(), "Texture unit handler not initialized.");
-
     // check which texture unit is available
-    for (size_t i = 1; i < textureUnits_.size(); i++) {
-        if (textureUnits_[i] == false) {
-            // unit previously unused, mark as used now
-            textureUnits_[i] = true;
-            unitNumber_ = (GLint)i;
+    for (size_t i = 1; i < maxTextureImageUnits(); i++) {
+        bool expected = false;
+        if (textureUnits_[i].compare_exchange_weak(expected, true)) {
+            unitNumber_ = static_cast<GLint>(i);
             unitEnum_ = GL_TEXTURE0 + unitNumber_;
             return;
         }
@@ -82,9 +79,16 @@ TextureUnit::~TextureUnit() {
     }
 }
 
-void TextureUnit::initialize(int numUnits) { textureUnits_.resize(numUnits, false); }
-
-void TextureUnit::deinitialize() { textureUnits_.clear(); }
+size_t TextureUnit::maxTextureImageUnits() {
+    static const size_t max = []() {
+        GLint numTexUnits_ = -1;
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &numTexUnits_);
+        IVW_ASSERT(numTexUnits_ > 0 && static_cast<size_t>(numTexUnits_) < textureUnits_.size(),
+                   "Unexpected number of texture units");
+        return static_cast<size_t>(numTexUnits_);
+    }();
+    return max;
+}
 
 TextureUnitContainer::TextureUnitContainer(size_t i) : units_{} {
     units_.reserve(std::max(size_t{8}, i));
