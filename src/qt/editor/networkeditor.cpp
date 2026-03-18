@@ -627,6 +627,7 @@ void NetworkEditor::addVisualizers(QMenu& menu, ProcessorOutportGraphicsItem* og
         for (const auto& [classIdentifier, displayName] : items) {
             auto* action = subMenu->addAction(utilqt::toQString(displayName));
             connect(action, &QAction::triggered, this, [app, outport, pcid = classIdentifier]() {
+                rendercontext::activateDefault();
                 if (auto p = app->getProcessorFactory()->createShared(pcid)) {
                     utilqt::addProcessorAndConnect(p, app->getProcessorNetwork(), outport);
                 }
