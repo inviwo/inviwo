@@ -172,6 +172,12 @@
       "dependencies": [
        "or-tools"
       ]
+    },
+     "ezc3d" : {
+      "description": "C3D reader/writer library",
+      "dependencies": [
+       "ezc3d"
+      ]
     }
   }
 }
