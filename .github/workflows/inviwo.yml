@@ -282,8 +282,8 @@ jobs:
         -DIVW_CFG_ADDRESS_SANITIZER=ON
         -DIVW_CFG_UNDEFINED_BEHAVIOR_SANITIZER=ON
         -DVCPKG_OVERLAY_TRIPLETS="$GITHUB_WORKSPACE/inviwo/tools/vcpkg/triplets"
-        -DVCPKG_TARGET_TRIPLET=arm64-osx-dynamic-asan
-        -DVCPKG_HOST_TRIPLET=arm64-osx-dynamic
+        -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic-asan
+        -DVCPKG_HOST_TRIPLET=x64-osx-dynamic
 
     - name: "Build"
       timeout-minutes: 360
