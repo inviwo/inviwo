@@ -12,6 +12,7 @@ set(HEADER_FILES
     include/modules/python3qt/properties/pythoneditordockwidget.h
     include/modules/python3qt/properties/pythonfilepropertywidgetqt.h
     include/modules/python3qt/properties/pythonpropertywidgetqt.h
+    include/modules/python3qt/properties/pythonscriptpropertywidgetqt.h
     include/modules/python3qt/python3qtmodule.h
     include/modules/python3qt/python3qtmoduledefine.h
     include/modules/python3qt/pythoneditorwidget.h
@@ -29,6 +30,7 @@ set(SOURCE_FILES
     src/properties/pythoneditordockwidget.cpp
     src/properties/pythonfilepropertywidgetqt.cpp
     src/properties/pythonpropertywidgetqt.cpp
+    src/properties/pythonscriptpropertywidgetqt.cpp
     src/python3qtmodule.cpp
     src/pythoneditorwidget.cpp
     src/pythonmenu.cpp

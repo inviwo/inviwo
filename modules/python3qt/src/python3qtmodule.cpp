@@ -41,6 +41,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/scriptproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/glmvec.h>
@@ -52,6 +53,7 @@
 #include <modules/python3/polymorphictypehooks.h>
 #include <modules/python3qt/properties/pythonfilepropertywidgetqt.h>
 #include <modules/python3qt/properties/pythonpropertywidgetqt.h>
+#include <modules/python3qt/properties/pythonscriptpropertywidgetqt.h>
 #include <modules/python3qt/pythonmenu.h>
 #include <modules/python3qt/pythonsyntaxhighlight.h>
 
@@ -247,6 +249,9 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
     registerPropertyWidget<PythonFilePropertyWidgetQt, FileProperty>(
         PropertySemantics::PythonEditor);
     registerPropertyWidget<PythonPropertyWidgetQt, StringProperty>(PropertySemantics::PythonEditor);
+
+    registerPropertyWidget<PythonScriptPropertyWidgetQt, ScriptProperty>(
+        PropertySemantics::Default);
 }
 
 Python3QtModule::~Python3QtModule() = default;
