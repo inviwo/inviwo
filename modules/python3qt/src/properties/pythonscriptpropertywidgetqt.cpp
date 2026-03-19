@@ -37,9 +37,8 @@
 #include <modules/qtwidgets/lineeditqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <modules/python3/pythonscript.h>
-
 #include <pybind11/pybind11.h>
+#include <pybind11/eval.h>
 #include <pybind11/stl.h>
 
 #include <any>
@@ -162,33 +161,23 @@ void PythonScriptPropertyWidgetQt::installPythonBackend() {
         }
         globals["__args__"] = pyArgs;
 
-        PyObject* byteCode = Py_CompileString(source.c_str(), "<ScriptProperty>", Py_file_input);
-        if (!byteCode) {
-            PyErr_Print();
+        try {
+            py::exec(source, globals, globals);
+        } catch (const py::error_already_set& e) {
             throw Exception(IVW_CONTEXT_CUSTOM("PythonScriptPropertyWidgetQt"),
-                            "Failed to compile Python script");
+                            "Python script error: {}", e.what());
         }
-
-        PyObject* result = PyEval_EvalCode(byteCode, globals.ptr(), globals.ptr());
-        Py_DECREF(byteCode);
-
-        if (!result) {
-            PyErr_Print();
-            throw Exception(IVW_CONTEXT_CUSTOM("PythonScriptPropertyWidgetQt"),
-                            "Failed to execute Python script");
-        }
-        Py_DECREF(result);
 
         if (globals.contains("__result__")) {
             py::object pyResult = globals["__result__"];
-            if (py::isinstance<py::float_>(pyResult)) {
+            if (py::isinstance<py::bool_>(pyResult)) {
+                return std::any(pyResult.cast<bool>());
+            } else if (py::isinstance<py::float_>(pyResult)) {
                 return std::any(pyResult.cast<double>());
             } else if (py::isinstance<py::int_>(pyResult)) {
                 return std::any(pyResult.cast<int>());
             } else if (py::isinstance<py::str>(pyResult)) {
                 return std::any(pyResult.cast<std::string>());
-            } else if (py::isinstance<py::bool_>(pyResult)) {
-                return std::any(pyResult.cast<bool>());
             } else {
                 return std::any(pyResult);
             }
