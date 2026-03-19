@@ -19,13 +19,6 @@
 # ensures the build tools work correctly while target libraries are still fully
 # instrumented.
 #
-# Note: -fno-sanitize=vptr is required because Qt builds some translation units
-# with -fno-rtti.  The UBSan vptr checker emits references to RTTI typeinfo
-# symbols that are absent when RTTI is disabled, causing "Undefined symbols for
-# architecture x86_64: typeinfo for ..." linker errors in libQt6Gui and other Qt
-# libraries.  Disabling only the vptr sub-check preserves all other UBSan
-# diagnostics while allowing Qt (and similar libraries) to link successfully.
-#
 # Note: Building dependencies with sanitizers creates binaries that are incompatible
 # with the regular binary cache. vcpkg will rebuild all dependencies from source.
 
@@ -35,6 +28,17 @@ set(VCPKG_CRT_LINKAGE dynamic)
 set(VCPKG_LIBRARY_LINKAGE dynamic)
 set(VCPKG_OSX_ARCHITECTURES x86_64)
 
-set(VCPKG_CXX_FLAGS "-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer")
-set(VCPKG_C_FLAGS   "-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer")
-set(VCPKG_LINKER_FLAGS "-fsanitize=address,undefined -fno-sanitize=vptr")
+set(VCPKG_CXX_FLAGS "-fsanitize=address,undefined -fno-omit-frame-pointer")
+set(VCPKG_C_FLAGS   "-fsanitize=address,undefined -fno-omit-frame-pointer")
+set(VCPKG_LINKER_FLAGS "-fsanitize=address,undefined")
+
+# Qt builds some translation units with -fno-rtti.  The UBSan vptr checker
+# emits references to RTTI typeinfo symbols that are absent when RTTI is
+# disabled, causing "Undefined symbols for architecture x86_64: typeinfo
+# for ..." linker errors in libQt6Gui and other Qt libraries.  Disable the
+# vptr sub-check only for Qt ports; all other UBSan diagnostics are kept.
+if(PORT MATCHES "qt*")
+    string(APPEND VCPKG_CXX_FLAGS " -fno-sanitize=vptr")
+    string(APPEND VCPKG_C_FLAGS " -fno-sanitize=vptr")
+    string(APPEND VCPKG_LINKER_FLAGS " -fno-sanitize=vptr")
+endif()
