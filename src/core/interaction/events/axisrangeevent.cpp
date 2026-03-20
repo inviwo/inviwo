@@ -34,7 +34,7 @@ namespace inviwo {
 
 AxisRangeEvent::AxisRangeEvent(AxisRangeEventState state, AxisRangeInteraction interaction,
                                AxisRangeInteractionMode mode, std::optional<Rectangle> rect)
-    : state_{state}, interaction_{interaction}, mode_{mode}, rect_{std::move(rect)} {}
+    : state_{state}, interaction_{interaction}, mode_{mode}, rect_{rect} {}
 
 AxisRangeEvent* AxisRangeEvent::clone() const { return new AxisRangeEvent{*this}; }
 

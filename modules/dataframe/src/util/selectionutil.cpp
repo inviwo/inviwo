@@ -95,7 +95,7 @@ BitSet boxSelect(const dvec2& start, const dvec2& end, const BufferBase* xAxis,
     auto selectedIndices = ybuf->dispatch<BitSet, dispatching::filter::Scalars>(
         [selectedIndicesX, min = start[1], max = end[1]](auto brprecision) {
             using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-            auto data = brprecision->getDataContainer();
+            const auto& data = brprecision->getDataContainer();
             BitSet selected;
             // Avoid conversions in the loop
             const auto [tmin, tmax] = adjustLimits<ValueType>(min, max);
