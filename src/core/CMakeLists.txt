@@ -302,6 +302,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertywidgetfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/raycastingproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/scriptproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/selectioncolorproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simplelightingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simpleraycastingproperty.h
@@ -705,6 +706,7 @@ set(SOURCE_FILES
     properties/propertywidgetfactory.cpp
     properties/propertywidgetfactoryobject.cpp
     properties/raycastingproperty.cpp
+    properties/scriptproperty.cpp
     properties/selectioncolorproperty.cpp
     properties/simplelightingproperty.cpp
     properties/simpleraycastingproperty.cpp

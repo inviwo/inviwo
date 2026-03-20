@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,34 +26,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/python3qt/python3qtmoduledefine.h>
-
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
-
-#include <functional>
-#include <memory>
-#include <vector>
+#include <modules/python3/pyanyconverter.h>
 
 namespace inviwo {
-class Property;
 
-/**
- * @brief A text editor with Python syntax highlighting
- * @see TextEditorDockWidget
- * @see PythonSyntaxHighlight
- */
-class IVW_MODULE_PYTHON3QT_API PythonEditorDockWidget : public TextEditorDockWidget {
-public:
-    /**
-     * @brief Create a text editor for @p property
-     * @pre Property has to be of type FileProperty, StringProperty, or ScriptProperty
-     */
-    PythonEditorDockWidget(Property* property);
+void PyAnyConverter::registerToPy(std::type_index type, ToPyFn converter) {
+    toPyConverters_[type] = std::move(converter);
+}
 
-private:
-    std::vector<std::shared_ptr<std::function<void()>>> callbacks_;
-};
+void PyAnyConverter::registerToAny(ToAnyFn converter) {
+    toAnyConverters_.push_back(std::move(converter));
+}
+
+pybind11::object PyAnyConverter::toPyObject(const std::any& value) const {
+    if (!value.has_value()) {
+        return pybind11::none();
+    }
+    auto it = toPyConverters_.find(std::type_index(value.type()));
+    if (it != toPyConverters_.end()) {
+        return it->second(value);
+    }
+    return pybind11::none();
+}
+
+std::any PyAnyConverter::toAny(pybind11::handle obj) const {
+    for (const auto& converter : toAnyConverters_) {
+        if (auto result = converter(obj)) {
+            return *result;
+        }
+    }
+    // Fallback: store the py::object itself
+    return std::any(pybind11::reinterpret_borrow<pybind11::object>(obj));
+}
 
 }  // namespace inviwo
