@@ -48,7 +48,23 @@ namespace inviwo {
  */
 class IVW_CORE_API EventProperty : public Property {
 public:
-    using Action = std::function<void(Event*)>;
+    enum class State : std::uint8_t { Active, Finished };
+
+    struct Action {
+        template <typename F>
+        Action(F&& f)  // NOLINT(google-explicit-constructor)
+            requires std::is_invocable_v<F, Event*, State> || std::is_invocable_v<F, Event*>
+        {
+            if constexpr (std::is_invocable_v<F, Event*, State>) {
+                action = std::forward<F>(f);
+            } else if constexpr (std::is_invocable_v<F, Event*>) {
+                action = [func = std::forward<F>(f)](Event* e, State i) {
+                    if (i != State::Finished) func(e);
+                };
+            }
+        }
+        std::function<void(Event*, State)> action;
+    };
 
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.EventProperty"};
@@ -142,6 +158,7 @@ private:
     std::unique_ptr<EventMatcher> matcher_;
     Action action_;
     bool enabled_ = true;
+    bool active_ = false;
 };
 
 }  // namespace inviwo

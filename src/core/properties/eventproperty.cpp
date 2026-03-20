@@ -86,12 +86,21 @@ EventProperty::EventProperty(const EventProperty& rhs)
     : Property(rhs)
     , matcher_{rhs.matcher_ ? rhs.matcher_->clone() : nullptr}
     , action_{rhs.action_}
-    , enabled_{rhs.enabled_} {}
+    , enabled_{rhs.enabled_}
+    , active_{rhs.active_} {}
 
 EventProperty* EventProperty::clone() const { return new EventProperty(*this); }
 
 void EventProperty::invokeEvent(Event* e) {
-    if (enabled_ && matcher_ && (*matcher_)(e)) action_(e);
+    if (enabled_ && matcher_) {
+        if ((*matcher_)(e)) {
+            active_ = true;
+            action_.action(e, State::Active);
+        } else if (active_) {
+            active_ = false;
+            action_.action(e, State::Finished);
+        }
+    }
 }
 
 EventMatcher* EventProperty::getEventMatcher() const { return matcher_.get(); }
