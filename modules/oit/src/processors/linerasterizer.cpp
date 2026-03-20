@@ -181,7 +181,7 @@ void LineRasterizer::setUniforms(Shader& shader) {
     shader.setUniform("miterLimit", lineSettings_.miterLimit);
     shader.setUniform("roundCaps", lineSettings_.roundCaps);
     // Stippling settings
-    shader.setUniform("stippling.length", lineSettings_.stippling.length);
+    shader.setUniform("stippling.stippleLength", lineSettings_.stippling.length);
     shader.setUniform("stippling.spacing", lineSettings_.stippling.spacing);
     shader.setUniform("stippling.offset", lineSettings_.stippling.offset);
     shader.setUniform("stippling.worldScale", lineSettings_.stippling.worldScale);

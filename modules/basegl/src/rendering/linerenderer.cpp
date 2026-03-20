@@ -177,7 +177,7 @@ void LineRenderer::setUniforms(Shader& lineShader, const Mesh& mesh, const Camer
     lineShader.setUniform("config.color", settings_.overrideColorValue);
     lineShader.setUniform("config.alpha", settings_.overrideAlphaValue);
     // Stippling settings
-    lineShader.setUniform("stippling.length", settings_.stippling.length);
+    lineShader.setUniform("stippling.stippleLength", settings_.stippling.length);
     lineShader.setUniform("stippling.spacing", settings_.stippling.spacing);
     lineShader.setUniform("stippling.offset", settings_.stippling.offset);
     lineShader.setUniform("stippling.worldScale", settings_.stippling.worldScale);
