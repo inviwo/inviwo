@@ -8,6 +8,7 @@ set(HEADER_FILES
     include/modules/python3/opaquetypes.h
     include/modules/python3/polymorphictypehooks.h
     include/modules/python3/processortrampoline.h
+    include/modules/python3/pyanyconverter.h
     include/modules/python3/pybindflags.h
     include/modules/python3/pybindmodule.h
     include/modules/python3/pybindutils.h
@@ -33,6 +34,7 @@ set(SOURCE_FILES
     src/opaquetypes.cpp
     src/polymorphictypehooks.cpp
     src/processortrampoline.cpp
+    src/pyanyconverter.cpp
     src/pybindflags.cpp
     src/pybindutils.cpp
     src/pyportutils.cpp
