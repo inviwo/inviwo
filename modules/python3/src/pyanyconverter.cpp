@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,37 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/commandlineparser.h>
 #include <modules/python3/pyanyconverter.h>
-#include <modules/python3/pythonlogger.h>
-#include <modules/python3/pythonprocessorfolderobserver.h>
-#include <modules/python3/pyutils.h>
-
-#include <modules/python3/pythonworkspacescripts.h>
-#include <string>
 
 namespace inviwo {
-class PythonInterpreter;
 
-class IVW_MODULE_PYTHON3_API Python3Module : public InviwoModule {
-public:
-    Python3Module(InviwoApplication* app);
-    virtual ~Python3Module();
+void PyAnyConverter::registerToPy(std::type_index type, ToPyFn converter) {
+    toPyConverters_[type] = std::move(converter);
+}
 
-    PythonInterpreter* getPythonInterpreter();
+void PyAnyConverter::registerToAny(ToAnyFn converter) {
+    toAnyConverters_.push_back(std::move(converter));
+}
 
-    PythonWorkspaceScripts& getWorkspaceScripts();
+pybind11::object PyAnyConverter::toPyObject(const std::any& value) const {
+    if (!value.has_value()) {
+        return pybind11::none();
+    }
+    auto it = toPyConverters_.find(std::type_index(value.type()));
+    if (it != toPyConverters_.end()) {
+        return it->second(value);
+    }
+    return pybind11::none();
+}
 
-    PyAnyConverter& getPyAnyConverter();
-    const PyAnyConverter& getPyAnyConverter() const;
-
-private:
-    std::unique_ptr<PythonInterpreter> pythonInterpreter_;
-    TCLAP::ValueArg<std::string> scriptArg_;
-    CommandLineArgHolder scriptArgHolder_;
-    TCLAP::ValueArg<std::string> workspaceScriptArg_;
-    CommandLineArgHolder workspaceScriptArgHolder_;
-    PythonLogger pythonLogger_;
-
-    pyutil::ModulePath scripts_;
-    PythonProcessorFolderObserver pythonFolderObserver_;
-    PythonProcessorFolderObserver settingsFolderObserver_;
-
-    PythonWorkspaceScripts workspaceScripts_;
-    PyAnyConverter pyAnyConverter_;
-};
+std::any PyAnyConverter::toAny(pybind11::handle obj) const {
+    for (const auto& converter : toAnyConverters_) {
+        if (auto result = converter(obj)) {
+            return *result;
+        }
+    }
+    // Fallback: store the py::object itself
+    return std::any(pybind11::reinterpret_borrow<pybind11::object>(obj));
+}
 
 }  // namespace inviwo

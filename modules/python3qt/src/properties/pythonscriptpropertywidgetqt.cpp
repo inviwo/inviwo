@@ -29,8 +29,12 @@
 
 #include <modules/python3qt/properties/pythonscriptpropertywidgetqt.h>
 
+#include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/properties/scriptproperty.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/moduleutils.h>
+#include <modules/python3/pyanyconverter.h>
+#include <modules/python3/python3module.h>
 #include <modules/python3qt/properties/pythoneditordockwidget.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -39,7 +43,6 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/eval.h>
-#include <pybind11/stl.h>
 
 #include <any>
 #include <string>
@@ -134,8 +137,11 @@ void PythonScriptPropertyWidgetQt::addEditor() {
 }
 
 void PythonScriptPropertyWidgetQt::installPythonBackend() {
-    property_->setBackend([](const std::string& source,
-                             const std::vector<std::any>& args) -> std::any {
+    auto* app = util::getInviwoApplication(property_);
+    const auto& converter = util::getModuleByTypeOrThrow<Python3Module>(app).getPyAnyConverter();
+
+    property_->setBackend([&converter](const std::string& source,
+                                       const std::vector<std::any>& args) -> std::any {
         namespace py = pybind11;
         const py::gil_scoped_acquire guard{};
 
@@ -143,21 +149,7 @@ void PythonScriptPropertyWidgetQt::installPythonBackend() {
 
         py::list pyArgs;
         for (const auto& arg : args) {
-            if (auto* v = std::any_cast<double>(&arg)) {
-                pyArgs.append(py::cast(*v));
-            } else if (auto* v = std::any_cast<int>(&arg)) {
-                pyArgs.append(py::cast(*v));
-            } else if (auto* v = std::any_cast<float>(&arg)) {
-                pyArgs.append(py::cast(*v));
-            } else if (auto* v = std::any_cast<std::string>(&arg)) {
-                pyArgs.append(py::cast(*v));
-            } else if (auto* v = std::any_cast<bool>(&arg)) {
-                pyArgs.append(py::cast(*v));
-            } else if (auto* v = std::any_cast<py::object>(&arg)) {
-                pyArgs.append(*v);
-            } else {
-                pyArgs.append(py::none());
-            }
+            pyArgs.append(converter.toPyObject(arg));
         }
         globals["__args__"] = pyArgs;
 
@@ -169,18 +161,7 @@ void PythonScriptPropertyWidgetQt::installPythonBackend() {
         }
 
         if (globals.contains("__result__")) {
-            py::object pyResult = globals["__result__"];
-            if (py::isinstance<py::bool_>(pyResult)) {
-                return std::any(pyResult.cast<bool>());
-            } else if (py::isinstance<py::float_>(pyResult)) {
-                return std::any(pyResult.cast<double>());
-            } else if (py::isinstance<py::int_>(pyResult)) {
-                return std::any(pyResult.cast<int>());
-            } else if (py::isinstance<py::str>(pyResult)) {
-                return std::any(pyResult.cast<std::string>());
-            } else {
-                return std::any(pyResult);
-            }
+            return converter.toAny(globals["__result__"]);
         }
 
         return std::any{};

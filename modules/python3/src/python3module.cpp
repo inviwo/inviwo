@@ -47,6 +47,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/pathtype.h>
 #include <inviwo/core/util/sourcecontext.h>
+#include <modules/python3/pyanyconverter.h>
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/pythonlogger.h>
@@ -170,6 +171,24 @@ Python3Module::Python3Module(InviwoApplication* app)
     } catch (const std::exception& e) {
         throw ModuleInitException(e.what());
     }
+
+    // Register default std::any <-> py::object converters.
+    // std::any -> py::object direction (keyed by type_index, order does not matter)
+    pyAnyConverter_.registerToPy<bool>();
+    pyAnyConverter_.registerToPy<int>();
+    pyAnyConverter_.registerToPy<float>();
+    pyAnyConverter_.registerToPy<double>();
+    pyAnyConverter_.registerToPy<std::string>();
+    pyAnyConverter_.registerToPy(std::type_index(typeid(pybind11::object)),
+                                 [](const std::any& a) -> pybind11::object {
+                                     return std::any_cast<const pybind11::object&>(a);
+                                 });
+
+    // py::object -> std::any direction (order matters: more specific types first)
+    pyAnyConverter_.registerToAny<bool, pybind11::bool_>();
+    pyAnyConverter_.registerToAny<double, pybind11::float_>();
+    pyAnyConverter_.registerToAny<int, pybind11::int_>();
+    pyAnyConverter_.registerToAny<std::string, pybind11::str>();
 }
 
 Python3Module::~Python3Module() {
@@ -180,5 +199,9 @@ Python3Module::~Python3Module() {
 PythonInterpreter* Python3Module::getPythonInterpreter() { return pythonInterpreter_.get(); }
 
 PythonWorkspaceScripts& Python3Module::getWorkspaceScripts() { return workspaceScripts_; }
+
+PyAnyConverter& Python3Module::getPyAnyConverter() { return pyAnyConverter_; }
+
+const PyAnyConverter& Python3Module::getPyAnyConverter() const { return pyAnyConverter_; }
 
 }  // namespace inviwo
