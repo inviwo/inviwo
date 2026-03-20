@@ -107,11 +107,12 @@ ScatterPlotProcessor::ScatterPlotProcessor()
             if (auto data = dataFramePort_.getData()) {
                 BitSet indices;
                 auto iCol = data->getIndexColumn();
-                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
                 for (auto idx : highlighted) {
                     indices.add(indexCol[idx]);
                 }
                 brushingPort_.highlight(indices);
+                invalidate(InvalidationLevel::InvalidOutput);
             }
         });
     selectionChangedCallBack_ =
@@ -119,11 +120,12 @@ ScatterPlotProcessor::ScatterPlotProcessor()
             if (auto data = dataFramePort_.getData()) {
                 BitSet indices;
                 auto iCol = data->getIndexColumn();
-                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
                 for (auto idx : selected) {
                     indices.add(indexCol[idx]);
                 }
                 brushingPort_.select(indices);
+                invalidate(InvalidationLevel::InvalidOutput);
             }
         });
     filteringChangedCallBack_ =
@@ -131,11 +133,12 @@ ScatterPlotProcessor::ScatterPlotProcessor()
             if (auto data = dataFramePort_.getData()) {
                 BitSet indices;
                 auto iCol = data->getIndexColumn();
-                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
                 for (auto idx : filtered) {
                     indices.add(indexCol[idx]);
                 }
-                brushingPort_.filter("scatterplot", indices);
+                brushingPort_.filter(getIdentifier(), indices);
+                invalidate(InvalidationLevel::InvalidOutput);
             }
         });
     addInteractionHandler(&scatterPlot_);

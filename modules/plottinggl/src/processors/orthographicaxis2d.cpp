@@ -30,9 +30,12 @@
 #include <modules/plottinggl/processors/orthographicaxis2d.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <inviwo/core/properties/eventproperty.h>
-#include <inviwo/core/datastructures/camera/orthographiccamera.h>
+#include <inviwo/core/datastructures/camera/plotcamera.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/image/imagegl.h>
+
+#include <inviwo/core/interaction/events/axisrangeevent.h>
 
 namespace inviwo {
 
@@ -66,19 +69,51 @@ OrthographicAxis2D::OrthographicAxis2D()
     , margins_{"margins", "Margins", 5.0f, 5.0f, 55.0f, 65.0f}
     , axisMargin_{"axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f}
     , antialiasing_{"antialias", "Antialiasing", true}
+    , boxSelectionProperty_{"boxSelection", "Box Selection/Filtering"}
     , camera_{"camera", "Camera"}
     , trackball_{&camera_}
-    , axisRenderers_{plot::AxisData{}, plot::AxisData{}} {
+    , axisRenderers_{plot::AxisData{}, plot::AxisData{}}
+    , boxSelectionRenderer_{}
+    , boxSelection_{boxSelectionProperty_,
+                    [&](dvec2 p, const size2_t& dims) {
+                        const auto pClip = p / dvec2{dims} * 2.0 - 1.0;
+                        const dvec2 pWorld{camera_.get().getWorldPosFromNormalizedDeviceCoords(
+                            dvec3{pClip, -1.0})};
+                        if (auto mesh = mesh_.getData()) {
+                            const auto& ct = mesh->getCoordinateTransformer();
+                            const auto pData = ct.getWorldToDataMatrix() * dvec4{pWorld, 0.0, 1.0};
+                            return dvec2{pData / pData.w};
+                        }
+                        return pWorld;
+                    },
+                    MouseButton::Left, KeyModifier::Control} {
 
     style_.setCollapsed(true);
     style_.registerProperties(axis1_, axis2_);
     style_.insertProperty(3, backgroundColor_);
     style_.addProperties(antialiasing_, clipContent_);
+    boxSelectionProperty_.setCollapsed(true);
 
     addPorts(inport_, mesh_, outport_);
-    addProperties(style_, axis1_, axis2_, margins_, axisMargin_, camera_, trackball_);
+    addProperties(style_, axis1_, axis2_, margins_, axisMargin_, boxSelectionProperty_, camera_,
+                  trackball_);
+    util::for_each_in_tuple([this](auto& e) { boxSelectionProperty_.addProperty(e); },
+                            boxSelection_.properties());
 
-    camera_.setCamera(std::make_unique<OrthographicCamera>());
+    selectionCallback_ = boxSelection_.addEventCallback(
+        [this](AxisRangeEventState state, AxisRangeInteraction interaction,
+               AxisRangeInteractionMode mode, std::optional<std::array<dvec2, 2>> rect) {
+            AxisRangeEvent event{state, interaction, mode, rect};
+            for (auto* inport : getInports()) {
+                if (event.shouldPropagateTo(inport, this, &outport_)) {
+                    inport->propagateEvent(&event);
+                }
+            }
+            // invalidate processor to redraw the selection rectangle
+            invalidate(InvalidationLevel::InvalidOutput);
+        });
+
+    camera_.setCamera(std::make_unique<PlotCamera>());
     camera_.setCurrentStateAsDefault();
 
     trackball_.allowHorizontalRotation_.set(false);
@@ -112,12 +147,13 @@ void OrthographicAxis2D::process() {
             [&]() -> std::optional<std::pair<utilgl::ScissorState, utilgl::GlBoolState>> {
             if (clipContent_) {
                 return std::pair{
-                    utilgl::ScissorState{static_cast<GLint>(margins_.getLeft() + padding),
-                                         static_cast<GLint>(margins_.getBottom() + padding),
-                                         static_cast<GLsizei>(dims.x - margins_.getLeft() -
-                                                              margins_.getRight() - 2 * padding),
-                                         static_cast<GLsizei>(dims.y - margins_.getBottom() -
-                                                              margins_.getTop() - 2 * padding)},
+                    utilgl::ScissorState{
+                        static_cast<GLint>(margins_.getLeft() + padding),
+                        static_cast<GLint>(margins_.getBottom() + padding),
+                        static_cast<GLsizei>(static_cast<float>(dims.x) - margins_.getLeft() -
+                                             margins_.getRight() - 2 * padding),
+                        static_cast<GLsizei>(static_cast<float>(dims.y) - margins_.getBottom() -
+                                             margins_.getTop() - 2 * padding)},
                     utilgl::GlBoolState{GL_SCISSOR_TEST, true}};
             }
             return std::nullopt;
@@ -163,6 +199,10 @@ void OrthographicAxis2D::process() {
     // draw vertically
     if (axis2_.isModified()) axis2_.update(axisRenderers_[1].getData());
     axisRenderers_[1].render(dims, yStart, yEnd, antialiasing_.get());
+
+    plot::BoxSelectionData sel;
+    boxSelectionProperty_.update(sel);
+    boxSelectionRenderer_.render(boxSelection_.getDragRectangle(), dims, sel);
 }
 
 }  // namespace inviwo

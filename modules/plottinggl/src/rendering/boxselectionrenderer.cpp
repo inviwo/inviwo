@@ -35,7 +35,6 @@
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
 #include <modules/basegl/rendering/linerenderer.h>
-#include <modules/plotting/datastructures/boxselection.h>
 #include <modules/plotting/properties/boxselectionproperty.h>
 
 #include <glm/vec2.hpp>
@@ -45,13 +44,16 @@ namespace inviwo::plot {
 
 BoxSelectionRenderer::BoxSelectionRenderer() : lineRenderer_{} {
     lineSettings_.stippling.mode = StipplingData::Mode::ScreenSpace;
-    lineSettings_.stippling.length = 5.f;
+    lineSettings_.stippling.length = 12.f;
+    lineSettings_.stippling.spacing = 8.f;
+    lineSettings_.stippling.offset = 1.f;
+    lineSettings_.roundCaps = false;
     lineSettings_.overrideColor = true;
 }
 
 void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, size2_t screenDim,
-                                  const BoxSelection& sel) {
-    if (dragRect && sel.mode != BoxSelection::Mode::None) {
+                                  const BoxSelectionData& sel) {
+    if (dragRect && sel.mode != BoxSelectionData::Mode::None) {
         lineSettings_.lineWidth = sel.lineWidth;
         lineSettings_.overrideColorValue = sel.lineColor;
 

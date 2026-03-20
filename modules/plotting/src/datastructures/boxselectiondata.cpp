@@ -26,53 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-
-#include <inviwo/core/datastructures/geometry/geometrytype.h>
-#include <inviwo/core/datastructures/geometry/typedmesh.h>
-#include <inviwo/core/util/glmvec.h>
-#include <modules/basegl/datastructures/linedata.h>
-#include <modules/basegl/rendering/linerenderer.h>
 #include <modules/plotting/datastructures/boxselectiondata.h>
 
-#include <array>
-#include <optional>
-
-namespace inviwo::plot {
-/**
- * @brief Renders a 2D rectangle in screen space.
- * Use in combination with BoxSelection.
- * @see BoxSelection
- */
-class IVW_MODULE_PLOTTINGGL_API BoxSelectionRenderer {
-public:
-    explicit BoxSelectionRenderer();
-    virtual ~BoxSelectionRenderer() = default;
-    /*
-     * @brief Draw rectangle if dragRect exists.
-     *
-     * @param dragRect start/end pixel coordinates
-     * @param screenDim size of render surface
-     */
-    void render(std::optional<std::array<dvec2, 2>> dragRect, size2_t screenDim,
-                const BoxSelectionData& sel);
-
-protected:
-    LineData lineSettings_;
-    algorithm::LineRenderer lineRenderer_;
-
-    using PositionMesh = TypedMesh<buffertraits::PositionsBuffer2D>;
-    PositionMesh dragRectMesh_{DrawType::Lines,
-                               ConnectivityType::Loop,
-                               {
-                                   {vec2{0.f, 0.f}},
-                                   {vec2{1.f, 0.f}},
-                                   {vec2{1.f, 1.f}},
-                                   {vec2{0.f, 1.f}},
-                               },
-                               {0, 1, 2, 3}};
-};
-
-}  // namespace inviwo::plot
+namespace inviwo {}  // namespace inviwo

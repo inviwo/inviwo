@@ -39,6 +39,7 @@ set(HEADER_FILES
     include/inviwo/dataframe/properties/optionconverter.h
     include/inviwo/dataframe/util/dataframeutil.h
     include/inviwo/dataframe/util/filters.h
+    include/inviwo/dataframe/util/selectionutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -79,6 +80,7 @@ set(SOURCE_FILES
     src/properties/optionconverter.cpp
     src/util/dataframeutil.cpp
     src/util/filters.cpp
+    src/util/selectionutil.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

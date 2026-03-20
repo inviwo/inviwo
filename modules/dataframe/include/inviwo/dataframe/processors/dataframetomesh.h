@@ -33,14 +33,13 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/datastructures/bitset.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-#include <inviwo/core/io/serialization/serializer.h>
-#include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/interaction/pickingmapper.h>
@@ -49,9 +48,6 @@
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
-
-#include <flags/allow_flags.h>
-#include <flags/flags.h>
 
 #include <array>
 #include <variant>
@@ -134,7 +130,7 @@ public:
     using Types = std::variant<SpatialType, RealType, IntType, PickingType, ColorType>;
 
     struct IVW_MODULE_DATAFRAME_API Info {
-        Info(BufferType bt, Types type);
+        Info(BufferType bt, Types type, bool doTransformInit = false);
         glm::dvec2 getDataRange() const;
         Types type;
         BufferType bufferType;
@@ -159,12 +155,14 @@ private:
 }  // namespace util
 
 class PickingEvent;
+class AxisRangeEvent;
 
 class IVW_MODULE_DATAFRAME_API DataFrameToMesh : public Processor {
 public:
     DataFrameToMesh();
 
     virtual void process() override;
+    virtual void invokeEvent(Event* event) override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -184,6 +182,7 @@ private:
     using enum BufferType;
 
     void picking(PickingEvent* event);
+    void axisInteraction(AxisRangeEvent* event);
 
     DataInport<DataFrame> dataFrame_;
     BrushingAndLinkingInport bnl_;
@@ -196,6 +195,8 @@ private:
 
     OrdinalProperty<mat4> modelMatrix_;
     OrdinalProperty<mat4> worldMatrix_;
+
+    BitSet initialBrushingIndices_;
 };
 
 }  // namespace inviwo

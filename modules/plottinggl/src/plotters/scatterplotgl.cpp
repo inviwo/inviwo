@@ -32,11 +32,7 @@
 #include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
-#include <inviwo/core/datastructures/tfprimitive.h>
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
@@ -48,7 +44,6 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/selectioncolorproperty.h>
@@ -61,21 +56,18 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/dataframe/datastructures/column.h>
+#include <inviwo/dataframe/util/selectionutil.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobject.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/plotting/datastructures/axisdata.h>
-#include <modules/plotting/interaction/boxselectioninteractionhandler.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
-#include <modules/plotting/properties/boxselectionproperty.h>
-#include <modules/plottinggl/rendering/boxselectionrenderer.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 #include <algorithm>
@@ -83,15 +75,14 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include <array>
 
 #include <fmt/core.h>
 #include <glm/common.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 std::string_view ScatterPlotGL::Properties::getClassIdentifier() const { return classIdentifier; }
 
@@ -170,32 +161,32 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
     , partitionDirty_(true)
     , processor_(processor)
-    , boxSelectionHandler_(properties_.boxSelectionSettings_, points_.xCoord, points_.yCoord,
-                           [&](dvec2 p, const size2_t& dims) {
-                               const dvec4 margins =
-                                   properties_.margins_.getAsVec4() +
-                                   properties_.axisMargin_.get();  // top, right, bottom, left
+    , boxSelection_(properties_.boxSelectionSettings_,
+                    [&](dvec2 p, const size2_t& dims) {
+                        const dvec4 margins =
+                            properties_.margins_.getAsVec4() +
+                            properties_.axisMargin_.get();  // top, right, bottom, left
 
-                               dvec2 bottomLeft{margins.w, margins.z};
-                               dvec2 topRight{static_cast<double>(dims.x) - margins.y,
-                                              static_cast<double>(dims.y) - margins.x};
-                               if (bottomLeft.x > topRight.x) {
-                                   std::swap(bottomLeft.x, topRight.x);
-                               }
-                               if (bottomLeft.y > topRight.y) {
-                                   std::swap(bottomLeft.y, topRight.y);
-                               }
+                        dvec2 bottomLeft{margins.w, margins.z};
+                        dvec2 topRight{static_cast<double>(dims.x) - margins.y,
+                                       static_cast<double>(dims.y) - margins.x};
+                        if (bottomLeft.x > topRight.x) {
+                            std::swap(bottomLeft.x, topRight.x);
+                        }
+                        if (bottomLeft.y > topRight.y) {
+                            std::swap(bottomLeft.y, topRight.y);
+                        }
 
-                               // clamp position to plotting area
-                               p = glm::clamp(p, bottomLeft, topRight);
-                               const dvec2 pNormalized = (p - bottomLeft) / (topRight - bottomLeft);
+                        // clamp position to plotting area
+                        p = glm::clamp(p, bottomLeft, topRight);
+                        const dvec2 pNormalized = (p - bottomLeft) / (topRight - bottomLeft);
 
-                               const dvec2 rangeX = properties_.xAxis_.range_.get();
-                               const dvec2 rangeY = properties_.yAxis_.range_.get();
-                               const dvec2 extent{rangeX.y - rangeX.x, rangeY.y - rangeY.x};
+                        const dvec2 rangeX = properties_.xAxis_.range_.get();
+                        const dvec2 rangeY = properties_.yAxis_.range_.get();
+                        const dvec2 extent{rangeX.y - rangeX.x, rangeY.y - rangeY.x};
 
-                               return dvec2{pNormalized * extent + dvec2{rangeX.x, rangeY.x}};
-                           })
+                        return dvec2{pNormalized * extent + dvec2{rangeX.x, rangeY.x}};
+                    })
     , selectionRectRenderer_() {
 
     if (processor_) {
@@ -208,23 +199,50 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
         }
     });
 
-    boxSelectionChangedCallback_ = boxSelectionHandler_.addSelectionChangedCallback(
-        [this](const std::vector<bool>& selected, bool append) {
-            BitSet b(selected);
-            // prevent selection of filtered indices
-            b -= filtered_;
-            if (append) {
-                b &= selected_;
+    util::for_each_in_tuple([&](auto& e) { properties_.boxSelectionSettings_.addProperty(e); },
+                            boxSelection_.properties());
+
+    boxSelectionCallback_ = boxSelection_.addEventCallback(
+        [this](AxisRangeEventState state, AxisRangeInteraction interaction,
+               AxisRangeInteractionMode mode, std::optional<std::array<dvec2, 2>> rect) {
+            if (state == AxisRangeEventState::Started) {
+                if (interaction == AxisRangeInteraction::Selection) {
+                    initialBrushingIndices_ = selected_;
+                } else if (interaction == AxisRangeInteraction::Filtering) {
+                    initialBrushingIndices_ = filtered_;
+                }
+            } else if (state == AxisRangeEventState::Finished) {
+                initialBrushingIndices_.clear();
+                if (mode == AxisRangeInteractionMode::Clear) {
+                    if (interaction == AxisRangeInteraction::Selection) {
+                        selectionChangedCallback_.invoke(BitSet{});
+                    } else if (interaction == AxisRangeInteraction::Filtering) {
+                        filteringChangedCallback_.invoke(BitSet{});
+                    }
+                } else if (processor_) {
+                    // trigger redrawing
+                    processor_->invalidate(InvalidationLevel::InvalidOutput);
+                }
+            } else if (state == AxisRangeEventState::Updated && rect) {
+                const auto r = rect.value_or(std::array<dvec2, 2>{{{}, {}}});
+                if (interaction == AxisRangeInteraction::Selection) {
+                    BitSet b{
+                        util::boxSelect(r[0], r[1], points_.xCoord.get(), points_.yCoord.get())};
+                    // prevent selection of filtered indices
+                    b -= filtered_;
+                    if (mode == AxisRangeInteractionMode::Append) {
+                        b |= initialBrushingIndices_;
+                    }
+                    selectionChangedCallback_.invoke(b);
+                } else if (interaction == AxisRangeInteraction::Filtering) {
+                    BitSet b{
+                        util::boxFilter(r[0], r[1], points_.xCoord.get(), points_.yCoord.get())};
+                    if (mode == AxisRangeInteractionMode::Append) {
+                        b &= filtered_;
+                    }
+                    filteringChangedCallback_.invoke(b);
+                }
             }
-            selectionChangedCallback_.invoke(b);
-        });
-    boxFilteringChangedCallback_ = boxSelectionHandler_.addFilteringChangedCallback(
-        [this](const std::vector<bool>& filtered, bool append) {
-            BitSet b(filtered);
-            if (append) {
-                b &= filtered_;
-            }
-            filteringChangedCallback_.invoke(b);
         });
 }
 
@@ -284,7 +302,6 @@ void ScatterPlotGL::setXAxisData(const Column* col) {
         points_.xCoord = nullptr;
     }
     partitionDirty_ = true;
-    boxSelectionHandler_.setXAxisData(points_.xCoord);
 }
 
 void ScatterPlotGL::setYAxisData(const Column* col) {
@@ -296,7 +313,6 @@ void ScatterPlotGL::setYAxisData(const Column* col) {
         points_.yCoord = nullptr;
     }
     partitionDirty_ = true;
-    boxSelectionHandler_.setYAxisData(points_.yCoord);
 }
 
 void ScatterPlotGL::setColorData(const Column* col) {
@@ -391,15 +407,6 @@ auto ScatterPlotGL::addFilteringChangedCallback(std::function<SelectionFunc> cal
     return filteringChangedCallback_.add(callback);
 }
 
-void ScatterPlotGL::invokeEvent(Event* event) {
-    boxSelectionHandler_.invokeEvent(event);
-    if (event->hasBeenUsed()) {
-        if (processor_) {
-            processor_->invalidate(InvalidationLevel::InvalidOutput);
-        }
-    }
-}
-
 void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
     if (partitionDirty_) {
         partitionData();
@@ -450,9 +457,9 @@ void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
         shader_.deactivate();
     }
 
-    BoxSelection sel;
+    BoxSelectionData sel;
     properties_.boxSelectionSettings_.update(sel);
-    selectionRectRenderer_.render(boxSelectionHandler_.getDragRectangle(), dims, sel);
+    selectionRectRenderer_.render(boxSelection_.getDragRectangle(), dims, sel);
     renderAxis(dims);
 }
 
@@ -557,7 +564,7 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
             selectionChangedCallback_.invoke(BitSet(id));
         }
         // reset box selection handler since the data point was selected here
-        boxSelectionHandler_.reset();
+        boxSelection_.reset();
         p->setUsed(true);
     }
 }
@@ -618,6 +625,4 @@ void ScatterPlotGL::partitionData() {
     partitionDirty_ = false;
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

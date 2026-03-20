@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,31 +24,40 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_SELECTIONCOLOR_GLSL
-#define IVW_SELECTIONCOLOR_GLSL
+#include <inviwo/core/interaction/events/axisrangeevent.h>
+#include <inviwo/core/interaction/events/eventutil.h>
 
-struct SelectionColor {
-    vec4 color;
-    float colorMixIn;
-    float alphaMixIn;
-    bool visible;
-};
+namespace inviwo {
 
-/**
- * Blend @p srcColor with @p selectionColor using separate interpolants for color and alpha.
- * @param srcColor
- * @param selectionColor
- * @return color resulting from mixing @p srcColor with @p selectionColor
- */
-vec4 applySelectionColor(in vec4 srcColor, in SelectionColor selectionColor) {
-    return mix(srcColor, selectionColor.color, vec4(vec3(selectionColor.colorMixIn), selectionColor.alphaMixIn));
+AxisRangeEvent::AxisRangeEvent(AxisRangeEventState state, AxisRangeInteraction interaction,
+                               AxisRangeInteractionMode mode, std::optional<Rectangle> rect)
+    : state_{state}, interaction_{interaction}, mode_{mode}, rect_{rect} {}
+
+AxisRangeEvent* AxisRangeEvent::clone() const { return new AxisRangeEvent{*this}; }
+
+auto AxisRangeEvent::rect() const -> std::optional<Rectangle> { return rect_; }
+
+AxisRangeEventState AxisRangeEvent::state() const { return state_; }
+
+AxisRangeInteraction AxisRangeEvent::interaction() const { return interaction_; }
+
+AxisRangeInteractionMode AxisRangeEvent::mode() const { return mode_; }
+
+uint64_t AxisRangeEvent::hash() const { return chash(); }
+
+void AxisRangeEvent::print(fmt::memory_buffer& buff) const {
+    if (rect_.has_value()) {
+        util::printEvent(buff, "AxisRangeEvent", std::make_pair("state", state_),
+                         std::make_pair("interaction", interaction_), std::make_pair("mode", mode_),
+                         std::make_pair("start", (*rect_)[0]), std::make_pair("end", (*rect_)[1]));
+    } else {
+        util::printEvent(buff, "AxisRangeEvent", std::make_pair("state", state_),
+                         std::make_pair("interaction", interaction_),
+                         std::make_pair("mode", mode_));
+    }
 }
 
-float applySelectionColorAlphaOnly(in vec4 srcColor, in SelectionColor selectionColor) {
-    return mix(srcColor.a, selectionColor.color.a, selectionColor.alphaMixIn);
-}
-
-#endif // IVW_SELECTIONCOLOR_GLSL
+}  // namespace inviwo

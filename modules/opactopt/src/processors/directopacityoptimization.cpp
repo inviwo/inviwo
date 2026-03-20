@@ -591,7 +591,7 @@ void OpacityOptimization::renderGeometry(const Pass pass, Units& units) {
                             lineSettings_.defaultColor);
 
         // Stippling settings
-        shader.setUniform("stippling.length", lineSettings_.stippling.length);
+        shader.setUniform("stippling.stippleLength", lineSettings_.stippling.length);
         shader.setUniform("stippling.spacing", lineSettings_.stippling.spacing);
         shader.setUniform("stippling.offset", lineSettings_.stippling.offset);
         shader.setUniform("stippling.worldScale", lineSettings_.stippling.worldScale);
