@@ -30,7 +30,6 @@
 #include <inviwo/dataframe/util/selectionutil.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/zip.h>
 
@@ -53,10 +52,31 @@ std::pair<T, T> adjustLimits(double min, double max) {
     }
 }
 
+BitSet rangeSelection(const BufferBase* buffer, double min, double max) {
+    const auto* buf = buffer->getRepresentation<BufferRAM>();
+#include <warn/push>
+#include <warn/ignore/conversion>  // Ignore double->float warnings
+    return buf->dispatch<BitSet, dispatching::filter::Scalars>([min, max](auto brprecision) {
+        using ValueType = util::PrecisionValueType<decltype(brprecision)>;
+        BitSet selected;
+        // Avoid conversions in the loop
+        const auto [tmin, tmax] = adjustLimits<ValueType>(min, max);
+        for (auto&& [ind, elem] : util::enumerate(brprecision->getDataContainer())) {
+            if (elem < tmin || elem > tmax) {
+                continue;
+            } else {
+                selected.add(ind);
+            }
+        }
+        return selected;
+    });
+#include <warn/pop>
+}
+
 }  // namespace
 
-std::vector<bool> boxSelect(const dvec2& start, const dvec2& end, const BufferBase* xAxis,
-                            const BufferBase* yAxis) {
+BitSet boxSelect(const dvec2& start, const dvec2& end, const BufferBase* xAxis,
+                 const BufferBase* yAxis) {
 
     if (xAxis == nullptr || yAxis == nullptr) {
         return {};
@@ -66,38 +86,24 @@ std::vector<bool> boxSelect(const dvec2& start, const dvec2& end, const BufferBa
     // 1. Determine selection along x-axis
     // 2. Determine selection along y-axis using the subset from 1
 
-    const auto* xbuf = xAxis->getRepresentation<BufferRAM>();
+    auto selectedIndicesX = rangeSelection(xAxis, start[0], end[0]);
+
 #include <warn/push>
 #include <warn/ignore/conversion>  // Ignore double->float warnings
-    auto selectedIndicesX = xbuf->dispatch<BitSet, dispatching::filter::Scalars>(
-        [min = start[0], max = end[0]](auto brprecision) {
-            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-            BitSet selected;
-            // Avoid conversions in the loop
-            const auto [tmin, tmax] = adjustLimits<ValueType>(min, max);
-            for (auto&& [ind, elem] : util::enumerate(brprecision->getDataContainer())) {
-                if (elem < tmin || elem > tmax) {
-                    continue;
-                } else {
-                    selected.add(ind);
-                }
-            }
-            return selected;
-        });
     // Use indices filted by x-axis as input
     const auto* ybuf = yAxis->getRepresentation<BufferRAM>();
-    auto selectedIndices = ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
+    auto selectedIndices = ybuf->dispatch<BitSet, dispatching::filter::Scalars>(
         [selectedIndicesX, min = start[1], max = end[1]](auto brprecision) {
             using ValueType = util::PrecisionValueType<decltype(brprecision)>;
             auto data = brprecision->getDataContainer();
-            std::vector<bool> selected(brprecision->getSize(), false);
+            BitSet selected;
             // Avoid conversions in the loop
             const auto [tmin, tmax] = adjustLimits<ValueType>(min, max);
             for (auto ind : selectedIndicesX) {
                 if (data[ind] < tmin || data[ind] > tmax) {
                     continue;
                 } else {
-                    selected[ind] = true;
+                    selected.add(ind);
                 }
             }
             return selected;
@@ -106,40 +112,17 @@ std::vector<bool> boxSelect(const dvec2& start, const dvec2& end, const BufferBa
     return selectedIndices;
 }
 
-std::vector<bool> boxFilter(const dvec2& start, const dvec2& end, const BufferBase* xAxis,
-                            const BufferBase* yAxis) {
+BitSet boxFilter(const dvec2& start, const dvec2& end, const BufferBase* xAxis,
+                 const BufferBase* yAxis) {
     if (xAxis == nullptr || yAxis == nullptr) {
         return {};
     }
-    const auto* xbuf = xAxis->getRepresentation<BufferRAM>();
-#include <warn/push>
-#include <warn/ignore/conversion>  // Ignore double->float warnings
-    auto filteredIndices = xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
-        [start, end, ybuf = yAxis->getRepresentation<BufferRAM>()](auto brprecision) {
-            using ValueTypeX = util::PrecisionValueType<decltype(brprecision)>;
-            // Avoid conversions in the loop
-            const auto [tminX, tmaxX] = adjustLimits<ValueTypeX>(start[0], end[0]);
-            const auto& xData = brprecision->getDataContainer();
-            return ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
-                [tminX, tmaxX, start, end, xData](auto brprecision) {
-                    using ValueTypeY = util::PrecisionValueType<decltype(brprecision)>;
-                    std::vector<bool> filtered(brprecision->getSize(), false);
-                    const auto [tminY, tmaxY] = adjustLimits<ValueTypeY>(start[1], end[2]);
-                    for (auto&& [ind, xVal, yVal] :
-                         util::enumerate(xData, brprecision->getDataContainer())) {
-                        if ((xVal < tminX) || (xVal > tmaxX) || (yVal < tminY) || (yVal > tmaxY)) {
-                            filtered[ind] = true;
-                        } else {
-                            continue;
-                        }
-                    }
-                    return filtered;
-                });
-        });
 
-#include <warn/pop>
+    auto filtered = boxSelect(start, end, xAxis, yAxis);
+    // invert selection
+    filtered.flipRange(0, static_cast<std::uint32_t>(xAxis->getSize()));
 
-    return filteredIndices;
+    return filtered;
 }
 
 }  // namespace inviwo::util

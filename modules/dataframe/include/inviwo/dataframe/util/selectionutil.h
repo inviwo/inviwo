@@ -29,6 +29,7 @@
 #pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/util/glmvec.h>
 
 #include <vector>
@@ -38,12 +39,10 @@ class BufferBase;
 
 namespace util {
 
-IVW_MODULE_DATAFRAME_API std::vector<bool> boxSelect(const dvec2& start, const dvec2& end,
-                                                     const BufferBase* xAxis_,
-                                                     const BufferBase* yAxis_);
-IVW_MODULE_DATAFRAME_API std::vector<bool> boxFilter(const dvec2& start, const dvec2& end,
-                                                     const BufferBase* xAxis_,
-                                                     const BufferBase* yAxis_);
+IVW_MODULE_DATAFRAME_API BitSet boxSelect(const dvec2& start, const dvec2& end,
+                                          const BufferBase* xAxis_, const BufferBase* yAxis_);
+IVW_MODULE_DATAFRAME_API BitSet boxFilter(const dvec2& start, const dvec2& end,
+                                          const BufferBase* xAxis_, const BufferBase* yAxis_);
 
 }  // namespace util
 
