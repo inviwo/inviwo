@@ -43,3 +43,14 @@ if(PORT MATCHES "qt*")
     string(APPEND VCPKG_C_FLAGS " -fno-sanitize=vptr")
     string(APPEND VCPKG_LINKER_FLAGS " -fno-sanitize=vptr")
 endif()
+
+# The python3 port installs an executable (tools/python3/python3) that is
+# invoked at build time and at runtime.  When the binary is built with ASAN
+# it gets an rpath entry for libclang_rt.asan_osx_dynamic.dylib which is not
+# present in the vcpkg installed tree, causing a dyld load failure.  Skip
+# sanitizer instrumentation for python3 to keep the interpreter functional.
+if(PORT STREQUAL "python3")
+    set(VCPKG_CXX_FLAGS "-fno-omit-frame-pointer")
+    set(VCPKG_C_FLAGS   "-fno-omit-frame-pointer")
+    set(VCPKG_LINKER_FLAGS "")
+endif()
