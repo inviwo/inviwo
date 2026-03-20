@@ -40,6 +40,10 @@
 
 namespace inviwo {
 
+enum class ModifierMatchingBehavior : std::uint8_t { ExactMatch, PartialMatch, Always };
+
+IVW_CORE_API bool match(ModifierMatchingBehavior behavior, KeyModifiers a, KeyModifiers b);
+
 /**
  * @brief A class to represent a event matcher for use in event properties.
  */
@@ -71,9 +75,10 @@ protected:
 
 class IVW_CORE_API KeyboardEventMatcher final : public EventMatcher {
 public:
-    explicit KeyboardEventMatcher(IvwKey key = IvwKey::Undefined,
-                                  KeyStates states = KeyState::Press,
-                                  KeyModifiers modifier = KeyModifiers(flags::none));
+    explicit KeyboardEventMatcher(
+        IvwKey key = IvwKey::Undefined, KeyStates states = KeyState::Press,
+        KeyModifiers modifier = KeyModifiers(flags::none),
+        ModifierMatchingBehavior matching = ModifierMatchingBehavior::ExactMatch);
 
     virtual ~KeyboardEventMatcher() = default;
     virtual KeyboardEventMatcher* clone() const override;
@@ -109,13 +114,15 @@ private:
     ValueWrapper<IvwKey> key_;
     ValueWrapper<KeyStates> states_;
     ValueWrapper<KeyModifiers> modifiers_;
+    ModifierMatchingBehavior matching_;
 };
 
 class IVW_CORE_API MouseEventMatcher final : public EventMatcher {
 public:
-    explicit MouseEventMatcher(MouseButtons buttons = MouseButton::None,
-                               MouseStates states = MouseState::Press,
-                               KeyModifiers modifiers = KeyModifiers(flags::none));
+    explicit MouseEventMatcher(
+        MouseButtons buttons = MouseButton::None, MouseStates states = MouseState::Press,
+        KeyModifiers modifiers = KeyModifiers(flags::none),
+        ModifierMatchingBehavior matching = ModifierMatchingBehavior::ExactMatch);
 
     virtual ~MouseEventMatcher() = default;
     virtual MouseEventMatcher* clone() const override;
@@ -151,11 +158,14 @@ private:
     ValueWrapper<MouseButtons> buttons_;
     ValueWrapper<MouseStates> states_;
     ValueWrapper<KeyModifiers> modifiers_;
+    ModifierMatchingBehavior matching_;
 };
 
 class IVW_CORE_API WheelEventMatcher final : public EventMatcher {
 public:
-    explicit WheelEventMatcher(KeyModifiers modifiers = KeyModifiers(flags::none));
+    explicit WheelEventMatcher(
+        KeyModifiers modifiers = KeyModifiers(flags::none),
+        ModifierMatchingBehavior matching = ModifierMatchingBehavior::ExactMatch);
 
     virtual ~WheelEventMatcher() = default;
     virtual WheelEventMatcher* clone() const override;
@@ -183,14 +193,15 @@ protected:
 
 private:
     ValueWrapper<KeyModifiers> modifiers_;
+    ModifierMatchingBehavior matching_;
 };
 
 class IVW_CORE_API GestureEventMatcher final : public EventMatcher {
 public:
-    explicit GestureEventMatcher(GestureTypes types,
-                                 GestureStates states = GestureStates(flags::any),
-                                 int numFingers = -1,
-                                 KeyModifiers modifiers = KeyModifiers(flags::none));
+    explicit GestureEventMatcher(
+        GestureTypes types, GestureStates states = GestureStates(flags::any), int numFingers = -1,
+        KeyModifiers modifiers = KeyModifiers(flags::none),
+        ModifierMatchingBehavior matching = ModifierMatchingBehavior::ExactMatch);
 
     virtual ~GestureEventMatcher() = default;
     virtual GestureEventMatcher* clone() const override;
@@ -230,6 +241,7 @@ private:
     ValueWrapper<GestureStates> states_;
     ValueWrapper<int> numFingers_;
     ValueWrapper<KeyModifiers> modifiers_;
+    ModifierMatchingBehavior matching_;
 };
 
 class IVW_CORE_API GeneralEventMatcher final : public EventMatcher {

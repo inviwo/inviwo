@@ -48,34 +48,39 @@ EventProperty::EventProperty(std::string_view identifier, std::string_view displ
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Document help, Action action, IvwKey key, KeyStates states,
-                             KeyModifiers modifiers, InvalidationLevel invalidationLevel,
-                             PropertySemantics semantics)
-    : EventProperty(identifier, displayName, std::move(help), std::move(action),
-                    std::make_unique<KeyboardEventMatcher>(key, states, modifiers),
-                    invalidationLevel, semantics) {}
+                             KeyModifiers modifiers, ModifierMatchingBehavior modifierMatching,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : EventProperty(
+          identifier, displayName, std::move(help), std::move(action),
+          std::make_unique<KeyboardEventMatcher>(key, states, modifiers, modifierMatching),
+          invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Action action, IvwKey key, KeyStates states, KeyModifiers modifiers,
+                             ModifierMatchingBehavior modifierMatching,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : EventProperty(identifier, displayName, Document{}, std::move(action),
-                    std::make_unique<KeyboardEventMatcher>(key, states, modifiers),
-                    invalidationLevel, semantics) {}
+    : EventProperty(
+          identifier, displayName, Document{}, std::move(action),
+          std::make_unique<KeyboardEventMatcher>(key, states, modifiers, modifierMatching),
+          invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Document help, Action action, MouseButtons buttons, MouseStates states,
-                             KeyModifiers modifiers, InvalidationLevel invalidationLevel,
-                             PropertySemantics semantics)
-    : EventProperty(identifier, displayName, std::move(help), std::move(action),
-                    std::make_unique<MouseEventMatcher>(buttons, states, modifiers),
-                    invalidationLevel, semantics) {}
+                             KeyModifiers modifiers, ModifierMatchingBehavior modifierMatching,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : EventProperty(
+          identifier, displayName, std::move(help), std::move(action),
+          std::make_unique<MouseEventMatcher>(buttons, states, modifiers, modifierMatching),
+          invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Action action, MouseButtons buttons, MouseStates states,
-                             KeyModifiers modifiers, InvalidationLevel invalidationLevel,
-                             PropertySemantics semantics)
-    : EventProperty(identifier, displayName, Document{}, std::move(action),
-                    std::make_unique<MouseEventMatcher>(buttons, states, modifiers),
-                    invalidationLevel, semantics) {}
+                             KeyModifiers modifiers, ModifierMatchingBehavior modifierMatching,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : EventProperty(
+          identifier, displayName, Document{}, std::move(action),
+          std::make_unique<MouseEventMatcher>(buttons, states, modifiers, modifierMatching),
+          invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(const EventProperty& rhs)
     : Property(rhs)

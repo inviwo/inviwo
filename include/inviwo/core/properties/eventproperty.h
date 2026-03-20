@@ -91,24 +91,28 @@ public:
     EventProperty(std::string_view identifier, std::string_view displayName, Document help,
                   Action action, IvwKey key, KeyStates states = KeyState::Press,
                   KeyModifiers modifier = KeyModifiers(flags::none),
+                  ModifierMatchingBehavior modifierMatching = ModifierMatchingBehavior::ExactMatch,
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                   PropertySemantics semantics = PropertySemantics::Default);
 
     EventProperty(std::string_view identifier, std::string_view displayName, Action action,
                   IvwKey key, KeyStates states = KeyState::Press,
                   KeyModifiers modifier = KeyModifiers(flags::none),
+                  ModifierMatchingBehavior modifierMatching = ModifierMatchingBehavior::ExactMatch,
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                   PropertySemantics semantics = PropertySemantics::Default);
 
     EventProperty(std::string_view identifier, std::string_view displayName, Document help,
                   Action action, MouseButtons buttons, MouseStates states = MouseState::Press,
                   KeyModifiers modifiers = KeyModifiers(flags::none),
+                  ModifierMatchingBehavior modifierMatching = ModifierMatchingBehavior::ExactMatch,
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                   PropertySemantics semantics = PropertySemantics::Default);
 
     EventProperty(std::string_view identifier, std::string_view displayName, Action action,
                   MouseButtons buttons, MouseStates states = MouseState::Press,
                   KeyModifiers modifiers = KeyModifiers(flags::none),
+                  ModifierMatchingBehavior modifierMatching = ModifierMatchingBehavior::ExactMatch,
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                   PropertySemantics semantics = PropertySemantics::Default);
 
