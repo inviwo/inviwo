@@ -32,20 +32,16 @@
 
 #include <inviwo/core/util/glmvec.h>
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
-
-struct IVW_MODULE_PLOTTING_API BoxSelection {
+struct IVW_MODULE_PLOTTING_API BoxSelectionData {
     enum class Mode : std::uint8_t { Selection, Filtering, None };
 
     vec4 lineColor = vec4{0.0f, 0.0f, 0.0f, 1.0f};
     float lineWidth = 1.0f;
     Mode mode = Mode::Selection;
 
-    bool operator==(const BoxSelection&) const = default;
+    bool operator==(const BoxSelectionData&) const = default;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

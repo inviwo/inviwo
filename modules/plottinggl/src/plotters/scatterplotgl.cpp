@@ -66,11 +66,8 @@
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/plotting/datastructures/axisdata.h>
-#include <modules/plotting/interaction/boxselectioninteractionhandler.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
-#include <modules/plotting/properties/boxselectionproperty.h>
-#include <modules/plottinggl/rendering/boxselectionrenderer.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 #include <algorithm>
@@ -85,9 +82,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 std::string_view ScatterPlotGL::Properties::getClassIdentifier() const { return classIdentifier; }
 
@@ -166,32 +161,32 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
     , partitionDirty_(true)
     , processor_(processor)
-    , boxSelectionHandler_(properties_.boxSelectionSettings_,
-                           [&](dvec2 p, const size2_t& dims) {
-                               const dvec4 margins =
-                                   properties_.margins_.getAsVec4() +
-                                   properties_.axisMargin_.get();  // top, right, bottom, left
+    , boxSelection_(properties_.boxSelectionSettings_,
+                    [&](dvec2 p, const size2_t& dims) {
+                        const dvec4 margins =
+                            properties_.margins_.getAsVec4() +
+                            properties_.axisMargin_.get();  // top, right, bottom, left
 
-                               dvec2 bottomLeft{margins.w, margins.z};
-                               dvec2 topRight{static_cast<double>(dims.x) - margins.y,
-                                              static_cast<double>(dims.y) - margins.x};
-                               if (bottomLeft.x > topRight.x) {
-                                   std::swap(bottomLeft.x, topRight.x);
-                               }
-                               if (bottomLeft.y > topRight.y) {
-                                   std::swap(bottomLeft.y, topRight.y);
-                               }
+                        dvec2 bottomLeft{margins.w, margins.z};
+                        dvec2 topRight{static_cast<double>(dims.x) - margins.y,
+                                       static_cast<double>(dims.y) - margins.x};
+                        if (bottomLeft.x > topRight.x) {
+                            std::swap(bottomLeft.x, topRight.x);
+                        }
+                        if (bottomLeft.y > topRight.y) {
+                            std::swap(bottomLeft.y, topRight.y);
+                        }
 
-                               // clamp position to plotting area
-                               p = glm::clamp(p, bottomLeft, topRight);
-                               const dvec2 pNormalized = (p - bottomLeft) / (topRight - bottomLeft);
+                        // clamp position to plotting area
+                        p = glm::clamp(p, bottomLeft, topRight);
+                        const dvec2 pNormalized = (p - bottomLeft) / (topRight - bottomLeft);
 
-                               const dvec2 rangeX = properties_.xAxis_.range_.get();
-                               const dvec2 rangeY = properties_.yAxis_.range_.get();
-                               const dvec2 extent{rangeX.y - rangeX.x, rangeY.y - rangeY.x};
+                        const dvec2 rangeX = properties_.xAxis_.range_.get();
+                        const dvec2 rangeY = properties_.yAxis_.range_.get();
+                        const dvec2 extent{rangeX.y - rangeX.x, rangeY.y - rangeY.x};
 
-                               return dvec2{pNormalized * extent + dvec2{rangeX.x, rangeY.x}};
-                           })
+                        return dvec2{pNormalized * extent + dvec2{rangeX.x, rangeY.x}};
+                    })
     , selectionRectRenderer_() {
 
     if (processor_) {
@@ -205,9 +200,9 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     });
 
     util::for_each_in_tuple([&](auto& e) { properties_.boxSelectionSettings_.addProperty(e); },
-                            boxSelectionHandler_.properties());
+                            boxSelection_.properties());
 
-    boxSelectionCallback_ = boxSelectionHandler_.addEventCallback(
+    boxSelectionCallback_ = boxSelection_.addEventCallback(
         [this](AxisRangeEventState state, AxisRangeInteraction interaction,
                AxisRangeInteractionMode mode, std::optional<std::array<dvec2, 2>> rect) {
             if (state == AxisRangeEventState::Started) {
@@ -224,6 +219,9 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
                     } else if (interaction == AxisRangeInteraction::Filtering) {
                         filteringChangedCallback_.invoke(BitSet{});
                     }
+                } else if (processor_) {
+                    // trigger redrawing
+                    processor_->invalidate(InvalidationLevel::InvalidOutput);
                 }
             } else if (state == AxisRangeEventState::Updated && rect) {
                 const auto r = rect.value_or(std::array<dvec2, 2>{{{}, {}}});
@@ -409,15 +407,6 @@ auto ScatterPlotGL::addFilteringChangedCallback(std::function<SelectionFunc> cal
     return filteringChangedCallback_.add(callback);
 }
 
-void ScatterPlotGL::invokeEvent(Event* event) {
-    boxSelectionHandler_.invokeEvent(event);
-    if (event->hasBeenUsed()) {
-        if (processor_) {
-            processor_->invalidate(InvalidationLevel::InvalidOutput);
-        }
-    }
-}
-
 void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
     if (partitionDirty_) {
         partitionData();
@@ -468,9 +457,9 @@ void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
         shader_.deactivate();
     }
 
-    BoxSelection sel;
+    BoxSelectionData sel;
     properties_.boxSelectionSettings_.update(sel);
-    selectionRectRenderer_.render(boxSelectionHandler_.getDragRectangle(), dims, sel);
+    selectionRectRenderer_.render(boxSelection_.getDragRectangle(), dims, sel);
     renderAxis(dims);
 }
 
@@ -575,7 +564,7 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
             selectionChangedCallback_.invoke(BitSet(id));
         }
         // reset box selection handler since the data point was selected here
-        boxSelectionHandler_.reset();
+        boxSelection_.reset();
         p->setUsed(true);
     }
 }
@@ -636,6 +625,4 @@ void ScatterPlotGL::partitionData() {
     partitionDirty_ = false;
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

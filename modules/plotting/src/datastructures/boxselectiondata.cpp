@@ -27,6 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/datastructures/boxselection.h>
+#include <modules/plotting/datastructures/boxselectiondata.h>
 
 namespace inviwo {}  // namespace inviwo

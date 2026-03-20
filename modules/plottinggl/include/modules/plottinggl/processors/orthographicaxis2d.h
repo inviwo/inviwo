@@ -42,7 +42,7 @@
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plotting/properties/boxselectionproperty.h>
-#include <modules/plotting/interaction/boxselectioninteractionhandler.h>
+#include <modules/plotting/interaction/boxselection.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 #include <modules/plottinggl/rendering/boxselectionrenderer.h>
 
@@ -70,15 +70,15 @@ private:
     MarginProperty margins_;
     FloatProperty axisMargin_;
     BoolProperty antialiasing_;
-    plot::BoxSelectionProperty boxSelection_;
+    plot::BoxSelectionProperty boxSelectionProperty_;
     CameraProperty camera_;
     CameraTrackball trackball_;
 
     std::array<plot::AxisRenderer, 2> axisRenderers_;
     plot::BoxSelectionRenderer boxSelectionRenderer_;
-    plot::BoxSelectionInteractionHandler boxSelectionHandler_;
+    plot::BoxSelection boxSelection_;
 
-    plot::BoxSelectionInteractionHandler::SelectionCallbackHandle selectionCallback_;
+    plot::BoxSelection::SelectionCallbackHandle selectionCallback_;
 };
 
 }  // namespace inviwo

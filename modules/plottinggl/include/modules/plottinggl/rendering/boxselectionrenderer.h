@@ -35,7 +35,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <modules/basegl/datastructures/linedata.h>
 #include <modules/basegl/rendering/linerenderer.h>
-#include <modules/plotting/datastructures/boxselection.h>
+#include <modules/plotting/datastructures/boxselectiondata.h>
 
 #include <array>
 #include <optional>
@@ -43,8 +43,8 @@
 namespace inviwo::plot {
 /**
  * @brief Renders a 2D rectangle in screen space.
- * Use in combination with BoxSelectionInteractionHandler.
- * @see BoxSelectionInteractionHandler
+ * Use in combination with BoxSelection.
+ * @see BoxSelection
  */
 class IVW_MODULE_PLOTTINGGL_API BoxSelectionRenderer {
 public:
@@ -57,7 +57,7 @@ public:
      * @param screenDim size of render surface
      */
     void render(std::optional<std::array<dvec2, 2>> dragRect, size2_t screenDim,
-                const BoxSelection& sel);
+                const BoxSelectionData& sel);
 
 protected:
     LineData lineSettings_;

@@ -69,37 +69,38 @@ OrthographicAxis2D::OrthographicAxis2D()
     , margins_{"margins", "Margins", 5.0f, 5.0f, 55.0f, 65.0f}
     , axisMargin_{"axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f}
     , antialiasing_{"antialias", "Antialiasing", true}
-    , boxSelection_{"boxSelection", "Box Selection/Filtering"}
+    , boxSelectionProperty_{"boxSelection", "Box Selection/Filtering"}
     , camera_{"camera", "Camera"}
     , trackball_{&camera_}
     , axisRenderers_{plot::AxisData{}, plot::AxisData{}}
     , boxSelectionRenderer_{}
-    , boxSelectionHandler_{
-          boxSelection_, [&](dvec2 p, const size2_t& dims) {
-              const auto pClip = p / dvec2{dims} * 2.0 - 1.0;
-              const dvec2 pWorld{
-                  camera_.get().getWorldPosFromNormalizedDeviceCoords(dvec3{pClip, -1.0})};
-              if (auto mesh = mesh_.getData()) {
-                  const auto& ct = mesh->getCoordinateTransformer();
-                  const auto pData = ct.getWorldToDataMatrix() * dvec4{pWorld, 0.0, 1.0};
-                  return dvec2{pData / pData.w};
-              }
-              return pWorld;
-          }} {
+    , boxSelection_{boxSelectionProperty_,
+                    [&](dvec2 p, const size2_t& dims) {
+                        const auto pClip = p / dvec2{dims} * 2.0 - 1.0;
+                        const dvec2 pWorld{camera_.get().getWorldPosFromNormalizedDeviceCoords(
+                            dvec3{pClip, -1.0})};
+                        if (auto mesh = mesh_.getData()) {
+                            const auto& ct = mesh->getCoordinateTransformer();
+                            const auto pData = ct.getWorldToDataMatrix() * dvec4{pWorld, 0.0, 1.0};
+                            return dvec2{pData / pData.w};
+                        }
+                        return pWorld;
+                    },
+                    MouseButton::Left, KeyModifier::Control} {
 
     style_.setCollapsed(true);
     style_.registerProperties(axis1_, axis2_);
     style_.insertProperty(3, backgroundColor_);
     style_.addProperties(antialiasing_, clipContent_);
-    boxSelection_.setCollapsed(true);
+    boxSelectionProperty_.setCollapsed(true);
 
     addPorts(inport_, mesh_, outport_);
-    addProperties(style_, axis1_, axis2_, margins_, axisMargin_, boxSelection_, camera_,
+    addProperties(style_, axis1_, axis2_, margins_, axisMargin_, boxSelectionProperty_, camera_,
                   trackball_);
-    util::for_each_in_tuple([&](auto& e) { trackball_.addProperty(e); },
-                            boxSelectionHandler_.properties());
+    util::for_each_in_tuple([this](auto& e) { boxSelectionProperty_.addProperty(e); },
+                            boxSelection_.properties());
 
-    selectionCallback_ = boxSelectionHandler_.addEventCallback(
+    selectionCallback_ = boxSelection_.addEventCallback(
         [this](AxisRangeEventState state, AxisRangeInteraction interaction,
                AxisRangeInteractionMode mode, std::optional<std::array<dvec2, 2>> rect) {
             AxisRangeEvent event{state, interaction, mode, rect};
@@ -199,18 +200,9 @@ void OrthographicAxis2D::process() {
     if (axis2_.isModified()) axis2_.update(axisRenderers_[1].getData());
     axisRenderers_[1].render(dims, yStart, yEnd, antialiasing_.get());
 
-    plot::BoxSelection sel;
-    boxSelection_.update(sel);
-    boxSelectionRenderer_.render(boxSelectionHandler_.getDragRectangle(), dims, sel);
-}
-
-void OrthographicAxis2D::invokeEvent(Event* event) {
-    // boxSelectionHandler_.invokeEvent(event);
-    // if (event->hasBeenUsed()) {
-    //     // invalidate processor to redraw the selection rectangle
-    //     invalidate(InvalidationLevel::InvalidOutput);
-    // }
-    Processor::invokeEvent(event);
+    plot::BoxSelectionData sel;
+    boxSelectionProperty_.update(sel);
+    boxSelectionRenderer_.render(boxSelection_.getDragRectangle(), dims, sel);
 }
 
 }  // namespace inviwo
