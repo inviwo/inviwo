@@ -47,4 +47,8 @@ vec4 applySelectionColor(in vec4 srcColor, in SelectionColor selectionColor) {
     return mix(srcColor, selectionColor.color, vec4(vec3(selectionColor.colorMixIn), selectionColor.alphaMixIn));
 }
 
+float applySelectionColorAlphaOnly(in vec4 srcColor, in SelectionColor selectionColor) {
+    return mix(srcColor.a, selectionColor.color.a, selectionColor.alphaMixIn);
+}
+
 #endif // IVW_SELECTIONCOLOR_GLSL

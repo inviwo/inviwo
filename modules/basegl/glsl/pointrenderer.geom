@@ -53,6 +53,7 @@ struct Point {
     vec4 color;
     vec4 pickColor;
     float radius;
+    float borderAlpha;
     uint index;
     uint marker;
 };
@@ -69,6 +70,7 @@ layout(points, max_vertices = 1) out;
 in PointVert {
     vec4 color;
     flat float radius;
+    flat float borderAlpha;
     flat uint pickID;
     flat uint index;
     flat uint marker;
@@ -84,6 +86,7 @@ out PointGeom {
     flat vec4 pickColor;
     vec3 camPos;
     float radius;
+    flat float borderAlpha;
     flat uint index;
     flat uint marker;
 } outPoint;
@@ -101,6 +104,7 @@ void emitQuad(in Point point, in vec3 camPos) {
     outPoint.center = point.center;
     outPoint.color = point.color;
     outPoint.pickColor = point.pickColor;
+    outPoint.borderAlpha = point.borderAlpha;
     outPoint.index = point.index;
     outPoint.marker = point.marker;
 
@@ -157,6 +161,7 @@ void main(void) {
     point.pickColor.xyz = pickingIndexToColor(inPoint[0].pickID);
     point.pickColor.w = inPoint[0].pickID == 0 ? 0.0 : 1.0;
     point.radius = inPoint[0].radius;
+    point.borderAlpha = inPoint[0].borderAlpha;
     point.index = inPoint[0].index;
     point.marker = inPoint[0].marker;
 

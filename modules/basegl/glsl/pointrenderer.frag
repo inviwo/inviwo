@@ -39,7 +39,7 @@ uniform vec4 viewport;
 
 uniform float borderWidth = 0.0;  // [pixel]
 uniform float antialising = 1.5;  // [pixel]
-uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
+uniform vec4 borderColor = vec4(0.0, 0.0, 0.0, 1.0);
 
 #if defined(ENABLE_LABELS)
 struct Label {
@@ -62,6 +62,7 @@ in PointGeom {
     flat vec4 pickColor;
     vec3 camPos;
     float radius;
+    flat float borderAlpha;
     flat uint index;
 	flat uint marker;
 }
@@ -144,6 +145,7 @@ void main() {
 
     // shading
     vec4 glyphColor = point.color;
+    vec4 borderColorAdjusted = vec4(borderColor.rgb, point.borderAlpha);
 
 #if defined(ENABLE_TEXTURING)
     {
@@ -174,12 +176,12 @@ void main() {
 
     if (antialising > 0.0 && borderWidth > 0.0) {
         if (r > point.radius - antialising) {
-            glyphColor = borderColor;
+            glyphColor = borderColorAdjusted;
             glyphColor.a = mix(glyphColor.a, 0.0, (r - point.radius + antialising) / antialising);
         } else if (r > point.radius - borderWidth - antialising) {
-            glyphColor = borderColor;
+            glyphColor = borderColorAdjusted;
         } else if (r > point.radius - borderWidth - 2.0 * antialising) {
-            glyphColor = mix(glyphColor, borderColor,
+            glyphColor = mix(glyphColor, borderColorAdjusted,
                              (r - (point.radius - borderWidth - 2.0 * antialising)) / antialising);
         }
     } else if (antialising > 0.0) {
@@ -188,7 +190,7 @@ void main() {
         }
     } else if (borderWidth > 0.0) {
         if (r > point.radius - borderWidth) {
-            glyphColor = borderColor;
+            glyphColor = borderColorAdjusted;
         }
     }
 
