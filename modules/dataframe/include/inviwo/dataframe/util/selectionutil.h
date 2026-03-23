@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/plotting/datastructures/boxselection.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/util/glmvec.h>
 
-namespace inviwo {}  // namespace inviwo
+#include <vector>
+
+namespace inviwo {
+class BufferBase;
+
+namespace util {
+
+IVW_MODULE_DATAFRAME_API BitSet boxSelect(const dvec2& start, const dvec2& end,
+                                          const BufferBase* xAxis_, const BufferBase* yAxis_);
+IVW_MODULE_DATAFRAME_API BitSet boxFilter(const dvec2& start, const dvec2& end,
+                                          const BufferBase* xAxis_, const BufferBase* yAxis_);
+
+}  // namespace util
+
+}  // namespace inviwo

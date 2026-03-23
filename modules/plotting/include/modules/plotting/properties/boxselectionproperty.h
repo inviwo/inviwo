@@ -37,12 +37,10 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/staticstring.h>
-#include <modules/plotting/datastructures/boxselection.h>
+#include <modules/plotting/datastructures/boxselectiondata.h>
 
-#include <functional>
 #include <string>
 #include <string_view>
-#include <vector>
 
 namespace inviwo {
 
@@ -66,11 +64,11 @@ public:
     virtual BoxSelectionProperty* clone() const override;
     virtual ~BoxSelectionProperty() = default;
 
-    OptionProperty<BoxSelection::Mode> mode_;
+    OptionProperty<BoxSelectionData::Mode> mode_;
     FloatVec4Property lineColor_;
     FloatProperty lineWidth_;
 
-    void update(BoxSelection& data) const;
+    void update(BoxSelectionData& data) const;
 };
 
 }  // namespace plot

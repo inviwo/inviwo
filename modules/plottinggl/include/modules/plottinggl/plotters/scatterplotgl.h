@@ -33,8 +33,6 @@
 #include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -49,8 +47,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/plotting/interaction/boxselectioninteractionhandler.h>
+#include <modules/plotting/interaction/boxselection.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plotting/properties/boxselectionproperty.h>
@@ -200,9 +197,6 @@ public:
     SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);
     SelectionCallbackHandle addFilteringChangedCallback(std::function<SelectionFunc> callback);
 
-    // InteractionHandler
-    virtual void invokeEvent(Event* event) override;
-
     Properties properties_;
     Shader shader_;
 
@@ -249,6 +243,7 @@ protected:
     BitSet filtered_;
     BitSet selected_;
     BitSet highlighted_;
+    BitSet initialBrushingIndices_;
 
     bool partitionDirty_;
     Processor* processor_;
@@ -258,10 +253,9 @@ protected:
     Dispatcher<SelectionFunc> selectionChangedCallback_;
     Dispatcher<SelectionFunc> filteringChangedCallback_;
 
-    BoxSelectionInteractionHandler::SelectionCallbackHandle boxSelectionChangedCallback_;
-    BoxSelectionInteractionHandler::SelectionCallbackHandle boxFilteringChangedCallback_;
+    plot::BoxSelection::SelectionCallbackHandle boxSelectionCallback_;
 
-    BoxSelectionInteractionHandler boxSelectionHandler_;
+    BoxSelection boxSelection_;
     BoxSelectionRenderer selectionRectRenderer_;
 };
 

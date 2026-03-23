@@ -33,12 +33,14 @@
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/interaction/events/axisrangeevent.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/glmcomp.h>
 
 #include <modules/base/algorithm/dataminmax.h>
 
 #include <inviwo/dataframe/datastructures/column.h>
+#include <inviwo/dataframe/util/selectionutil.h>
 
 #include <ranges>
 
@@ -173,14 +175,14 @@ Mesh::BufferVector ColumnMapper::getBuffers(const DataFrame& df) {
     return buffers;
 }
 
-ColumnMapper::Info::Info(BufferType bt, Types type)
+ColumnMapper::Info::Info(BufferType bt, Types type, bool doTransformInit)
     : type{std::move(type)}
     , bufferType{bt}
     , comp{toLower(enumToStr(bt)), enumToStr(bt)}
     , range("range", "Range", "Range of input data, before any transforms"_help, 0.0, 0.0,
             std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), 0.001, 0.0,
             InvalidationLevel::Valid, PropertySemantics::Text)
-    , doTransform("doTransform", "Apply transformation", false) {
+    , doTransform("doTransform", "Apply transformation", doTransformInit) {
 
     visit([&](auto& self) {
         for (auto& s : self.sources) {
@@ -258,8 +260,10 @@ DataFrameToMesh::DataFrameToMesh()
               {CurvatureAttrib, RealType{ScaleAndOffset{}}},
               {IndexAttrib, IntType{ScaleAndOffset{}}},
               {RadiiAttrib, RealType{ScaleAndOffset{}}},
-              {PickingAttrib, PickingType{OffsetAndPicking{
-                                  this, 0, [this](PickingEvent* event) { picking(event); }}}},
+              {PickingAttrib,
+               PickingType{
+                   OffsetAndPicking{this, 0, [this](PickingEvent* event) { picking(event); }}},
+               true},
               {ScalarMetaAttrib, RealType{ScaleAndOffset{}}},
               {IntMetaAttrib, IntType{ScaleAndOffset{}}}}}
 
@@ -290,14 +294,14 @@ void DataFrameToMesh::process() {
     auto mesh = std::make_shared<Mesh>(mapper_.getBuffers(*data), Mesh::IndexVector{});
 
     if (drawType_.getSelectedValue() == 0) {
-        mesh->setDefaultMeshInfo({DrawType::Points, ConnectivityType::None});
+        mesh->setDefaultMeshInfo({.dt = DrawType::Points, .ct = ConnectivityType::None});
     } else if (drawType_.getSelectedValue() == 1) {
-        mesh->setDefaultMeshInfo({DrawType::Lines, ConnectivityType::Strip});
+        mesh->setDefaultMeshInfo({.dt = DrawType::Lines, .ct = ConnectivityType::Strip});
     }
 
     {
         auto& pos = std::get<SpatialType>(infos_[0].type);
-        for (size_t i = 0; i < pos.sources.size(); ++i) {
+        for (size_t i = 0; i < util::extent_v<SpatialType::ElemType>; ++i) {
             if (!pos.sources[i].isNoneSelected()) {
                 const auto col = data->getColumn(pos.sources[i].getSelectedValue());
                 mesh->axes[i].name = col->getHeader();
@@ -310,6 +314,16 @@ void DataFrameToMesh::process() {
     mesh->setWorldMatrix(worldMatrix_.get());
 
     outport_.setData(mesh);
+}
+
+void DataFrameToMesh::invokeEvent(Event* event) {
+    if (auto* axisRangeEvent = event->getAs<AxisRangeEvent>()) {
+        axisInteraction(axisRangeEvent);
+    }
+
+    if (!event->hasBeenUsed()) {
+        Processor::invokeEvent(event);
+    }
 }
 
 void DataFrameToMesh::picking(PickingEvent* event) {
@@ -335,6 +349,59 @@ void DataFrameToMesh::picking(PickingEvent* event) {
         bnl_.select(selected);
         event->setUsed(true);
     }
+}
+
+void DataFrameToMesh::axisInteraction(AxisRangeEvent* event) {
+    const auto data = dataFrame_.getData();
+
+    std::array<std::shared_ptr<const Column>, 3> axisCols;
+    auto& pos = std::get<SpatialType>(infos_[0].type);
+    for (size_t i = 0; i < pos.sources.size(); ++i) {
+        if (!pos.sources[i].isNoneSelected()) {
+            axisCols[i] = data->getColumn(pos.sources[i].getSelectedValue());
+        }
+    }
+    if (!axisCols[0] || !axisCols[1]) {
+        throw Exception(SourceContext{},
+                        "AxisRangeEvent interaction requires x and y axis columns to be set");
+    }
+
+    if (event->state() == AxisRangeEventState::Started) {
+        if (event->interaction() == AxisRangeInteraction::Selection) {
+            initialBrushingIndices_ = bnl_.getSelectedIndices();
+        } else if (event->interaction() == AxisRangeInteraction::Filtering) {
+            initialBrushingIndices_ = bnl_.getFilteredIndices();
+        }
+    } else if (event->state() == AxisRangeEventState::Finished) {
+        initialBrushingIndices_.clear();
+        if (event->mode() == AxisRangeInteractionMode::Clear) {
+            if (event->interaction() == AxisRangeInteraction::Selection) {
+                bnl_.select({});
+            } else if (event->interaction() == AxisRangeInteraction::Filtering) {
+                bnl_.filter(getIdentifier(), {});
+            }
+        }
+    } else if (event->state() == AxisRangeEventState::Updated && event->rect()) {
+        const auto rect = event->rect().value_or(std::array<dvec2, 2>{{{}, {}}});
+        if (event->interaction() == AxisRangeInteraction::Selection) {
+            BitSet b{util::boxSelect(rect[0], rect[1], axisCols[0]->getBuffer().get(),
+                                     axisCols[1]->getBuffer().get())};
+            // prevent selection of filtered indices
+            b -= bnl_.getFilteredIndices();
+            if (event->mode() == AxisRangeInteractionMode::Append) {
+                b |= initialBrushingIndices_;
+            }
+            bnl_.select(b);
+        } else if (event->interaction() == AxisRangeInteraction::Filtering) {
+            BitSet b{util::boxFilter(rect[0], rect[1], axisCols[0]->getBuffer().get(),
+                                     axisCols[1]->getBuffer().get())};
+            if (event->mode() == AxisRangeInteractionMode::Append) {
+                b &= bnl_.getFilteredIndices();
+            }
+            bnl_.filter(getIdentifier(), b);
+        }
+    }
+    event->setUsed(true);
 }
 
 }  // namespace inviwo

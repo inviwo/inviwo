@@ -31,19 +31,21 @@
 #include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/interaction/interactionhandler.h>
+#include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/interaction/axisrangeeventstate.h>
 
 #include <array>
 #include <functional>
 #include <memory>
 #include <optional>
-#include <string>
 #include <vector>
 
 namespace inviwo {
 class BufferBase;
 class Event;
+class MouseEvent;
 
 namespace plot {
 class BoxSelectionProperty;
@@ -53,44 +55,35 @@ class BoxSelectionProperty;
  * Selection/Filtering callbacks are called when filtering changes.
  *
  * The current drag rectangle is given by getDragRectangle.
+ *
+ * The event properties returned by properties() need to be added to a processor in order for the
+ * interactions to work.
+ *
  * @see DragRectangleRenderer
  */
-class IVW_MODULE_PLOTTING_API BoxSelectionInteractionHandler : public InteractionHandler {
+class IVW_MODULE_PLOTTING_API BoxSelection {
 public:
-    /**
-     * @brief Selection/filtering-changed callback.
-     * The index of each element is given by its location (0, 1 ... n).
-     * Second argument specifies if the selection/filtering should be appended.
-     */
-    using SelectionFunc = void(const std::vector<bool>&, bool);
+    using SelectionFunc = void(AxisRangeEventState, AxisRangeInteraction, AxisRangeInteractionMode,
+                               std::optional<std::array<dvec2, 2>>);
     using SelectionCallbackHandle = std::shared_ptr<std::function<SelectionFunc>>;
+
     /**
      * @brief Handles interaction for 2D rectangle selection/filtering
-     * Selection/Filtering callbacks are called when filtering changes.
+     * The callbacks are called when filtering changes.
      * @param boxSelectionSettings use for selection/filtering/none
-     * @param xAxis data
-     * @param yAxis data
      * @param screenToData converts screen coordinates to (x,y) data coordinates
      */
-    BoxSelectionInteractionHandler(const BoxSelectionProperty& boxSelectionSettings,
-                                   std::shared_ptr<const BufferBase> xAxis,
-                                   std::shared_ptr<const BufferBase> yAxis,
-                                   std::function<dvec2(dvec2 p, const size2_t& dims)> screenToData);
-    virtual ~BoxSelectionInteractionHandler() = default;
-
-    virtual void invokeEvent(Event* event) override;
+    BoxSelection(const BoxSelectionProperty& boxSelectionSettings,
+                 std::function<dvec2(dvec2 p, const size2_t& dims)> screenToData,
+                 MouseButton mouseButton = MouseButton::Left,
+                 KeyModifiers modifiers = KeyModifiers(flags::none));
 
     /**
-     * @brief Added callbacks will be called when selection changed.
+     * @brief Added callbacks will be called when a box selection is initiated, updated, and
+     * finished
      */
-    SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);
-    /**
-     * @brief Added callbacks will be called when filtering changed.
-     */
-    SelectionCallbackHandle addFilteringChangedCallback(std::function<SelectionFunc> callback);
+    SelectionCallbackHandle addEventCallback(std::function<SelectionFunc> callback);
 
-    void setXAxisData(std::shared_ptr<const BufferBase> buffer);
-    void setYAxisData(std::shared_ptr<const BufferBase> buffer);
     /**
      * @brief Returns (lower, upper) screen space coordinates of selection rectangle, null if not
      * active.
@@ -102,24 +95,19 @@ public:
      */
     void reset();
 
+    auto properties() { return std::tie(mouseBoxSelection_); }
+    auto properties() const { return std::tie(mouseBoxSelection_); }
+
 protected:
-    /**
-     * @brief React to rectangle drag changes. Input is in data-space of each axis.
-     */
-    void dragRectChanged(const dvec2& start, const dvec2& end, bool append);
-    std::vector<bool> boxSelect(const dvec2& start, const dvec2& end, const BufferBase* xAxis_,
-                                const BufferBase* yAxis_);
-    std::vector<bool> boxFilter(const dvec2& start, const dvec2& end, const BufferBase* xAxis_,
-                                const BufferBase* yAxis_);
+    void handleEvent(Event* event, EventProperty::State state);
 
-    Dispatcher<SelectionFunc> selectionChangedCallback_;
-    Dispatcher<SelectionFunc> filteringChangedCallback_;
+    Dispatcher<SelectionFunc> eventCallback_;
     const BoxSelectionProperty& dragRectSettings_;  ///! Selection/filtering
-    std::shared_ptr<const BufferBase> xAxis_;
-    std::shared_ptr<const BufferBase> yAxis_;
-
     std::function<dvec2(dvec2 p, const size2_t& dims)> screenToData_;
     std::optional<std::array<dvec2, 2>> dragRect_;
+    std::optional<std::array<dvec2, 2>> dataRect_;
+
+    EventProperty mouseBoxSelection_;
 };
 
 }  // namespace plot

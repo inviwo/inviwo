@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,31 +24,58 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_SELECTIONCOLOR_GLSL
-#define IVW_SELECTIONCOLOR_GLSL
+#include <inviwo/core/interaction/axisrangeeventstate.h>
+#include <inviwo/core/util/exception.h>
 
-struct SelectionColor {
-    vec4 color;
-    float colorMixIn;
-    float alphaMixIn;
-    bool visible;
-};
+namespace inviwo {
 
-/**
- * Blend @p srcColor with @p selectionColor using separate interpolants for color and alpha.
- * @param srcColor
- * @param selectionColor
- * @return color resulting from mixing @p srcColor with @p selectionColor
- */
-vec4 applySelectionColor(in vec4 srcColor, in SelectionColor selectionColor) {
-    return mix(srcColor, selectionColor.color, vec4(vec3(selectionColor.colorMixIn), selectionColor.alphaMixIn));
+std::string_view enumToStr(AxisRangeEventState state) {
+    using enum AxisRangeEventState;
+    switch (state) {
+        case None:
+            return "None";
+        case Started:
+            return "Started";
+        case Updated:
+            return "Updated";
+        case Finished:
+            return "Finished";
+    }
+    throw Exception(SourceContext{}, "Found invalid AxisRangeEventState enum value '{}'",
+                    static_cast<int>(state));
 }
 
-float applySelectionColorAlphaOnly(in vec4 srcColor, in SelectionColor selectionColor) {
-    return mix(srcColor.a, selectionColor.color.a, selectionColor.alphaMixIn);
+std::string_view enumToStr(AxisRangeInteraction interaction) {
+    using enum AxisRangeInteraction;
+    switch (interaction) {
+        case None:
+            return "None";
+        case Selection:
+            return "Selection";
+        case Filtering:
+            return "Filtering";
+    }
+    throw Exception(SourceContext{}, "Found invalid AxisRangeInteraction enum value '{}'",
+                    static_cast<int>(interaction));
 }
 
-#endif // IVW_SELECTIONCOLOR_GLSL
+std::string_view enumToStr(AxisRangeInteractionMode mode) {
+    using enum AxisRangeInteractionMode;
+    switch (mode) {
+        case None:
+            return "None";
+        case Replace:
+            return "Replace";
+        case Append:
+            return "Append";
+        case Clear:
+            return "Clear";
+    }
+    throw Exception(SourceContext{}, "Found invalid AxisRangeInteractionMode enum value '{}'",
+                    static_cast<int>(mode));
+}
+
+}  // namespace inviwo

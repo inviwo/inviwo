@@ -48,45 +48,63 @@ EventProperty::EventProperty(std::string_view identifier, std::string_view displ
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Document help, Action action, IvwKey key, KeyStates states,
-                             KeyModifiers modifiers, InvalidationLevel invalidationLevel,
-                             PropertySemantics semantics)
-    : EventProperty(identifier, displayName, std::move(help), std::move(action),
-                    std::make_unique<KeyboardEventMatcher>(key, states, modifiers),
-                    invalidationLevel, semantics) {}
+                             KeyModifiers modifiers, ModifierMatchingBehavior modifierMatching,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : EventProperty(
+          identifier, displayName, std::move(help), std::move(action),
+          std::make_unique<KeyboardEventMatcher>(key, states, modifiers, modifierMatching),
+          invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Action action, IvwKey key, KeyStates states, KeyModifiers modifiers,
+                             ModifierMatchingBehavior modifierMatching,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : EventProperty(identifier, displayName, Document{}, std::move(action),
-                    std::make_unique<KeyboardEventMatcher>(key, states, modifiers),
-                    invalidationLevel, semantics) {}
+    : EventProperty(
+          identifier, displayName, Document{}, std::move(action),
+          std::make_unique<KeyboardEventMatcher>(key, states, modifiers, modifierMatching),
+          invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Document help, Action action, MouseButtons buttons, MouseStates states,
-                             KeyModifiers modifiers, InvalidationLevel invalidationLevel,
-                             PropertySemantics semantics)
-    : EventProperty(identifier, displayName, std::move(help), std::move(action),
-                    std::make_unique<MouseEventMatcher>(buttons, states, modifiers),
-                    invalidationLevel, semantics) {}
+                             KeyModifiers modifiers, ModifierMatchingBehavior modifierMatching,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : EventProperty(
+          identifier, displayName, std::move(help), std::move(action),
+          std::make_unique<MouseEventMatcher>(buttons, states, modifiers, modifierMatching),
+          invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Action action, MouseButtons buttons, MouseStates states,
-                             KeyModifiers modifiers, InvalidationLevel invalidationLevel,
-                             PropertySemantics semantics)
-    : EventProperty(identifier, displayName, Document{}, std::move(action),
-                    std::make_unique<MouseEventMatcher>(buttons, states, modifiers),
-                    invalidationLevel, semantics) {}
+                             KeyModifiers modifiers, ModifierMatchingBehavior modifierMatching,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : EventProperty(
+          identifier, displayName, Document{}, std::move(action),
+          std::make_unique<MouseEventMatcher>(buttons, states, modifiers, modifierMatching),
+          invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(const EventProperty& rhs)
     : Property(rhs)
     , matcher_{rhs.matcher_ ? rhs.matcher_->clone() : nullptr}
     , action_{rhs.action_}
-    , enabled_{rhs.enabled_} {}
+    , enabled_{rhs.enabled_}
+    , active_{rhs.active_} {}
 
 EventProperty* EventProperty::clone() const { return new EventProperty(*this); }
 
 void EventProperty::invokeEvent(Event* e) {
-    if (enabled_ && matcher_ && (*matcher_)(e)) action_(e);
+    if (enabled_ && matcher_) {
+        if ((*matcher_)(e)) {
+            if (!active_) {
+                active_ = true;
+                action_.action(e, State::Started);
+            } else {
+                action_.action(e, State::Active);
+            }
+        } else if (active_) {
+            active_ = false;
+            action_.action(e, State::Finished);
+        }
+    }
 }
 
 EventMatcher* EventProperty::getEventMatcher() const { return matcher_.get(); }

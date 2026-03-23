@@ -41,6 +41,8 @@ uniform sampler2D metaColor;
 
 uniform uint marker = 0;
 
+uniform vec4 borderColor = vec4(0, 0, 0, 1);
+
 #if defined(ENABLE_BNL)
 uniform usamplerBuffer bnl;
 uniform SelectionColor bnlFilter;
@@ -51,6 +53,7 @@ uniform SelectionColor bnlHighlight;
 out PointVert {
     vec4 color;
     flat float radius;
+    flat float borderAlpha;
     flat uint pickID;
     flat uint index;
     flat uint marker;
@@ -102,11 +105,18 @@ void main(void) {
 
     if (flags == 3) {
         point.color = applySelectionColor(point.color, bnlFilter);
+        point.borderAlpha = applySelectionColorAlphaOnly(borderColor, bnlFilter);
     } else if (flags == 2) {
         point.color = applySelectionColor(point.color, bnlHighlight);
+        point.borderAlpha = applySelectionColorAlphaOnly(borderColor, bnlHighlight);
     } else if (flags == 1) {
         point.color = applySelectionColor(point.color, bnlSelect);
+        point.borderAlpha = applySelectionColorAlphaOnly(borderColor, bnlSelect);
+    } else {
+        point.borderAlpha = borderColor.a;
     }
+#else
+    point.borderAlpha = borderColor.a;
 #endif
 
 #if defined(HAS_PICKING)

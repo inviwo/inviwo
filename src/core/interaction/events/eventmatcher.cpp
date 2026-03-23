@@ -34,7 +34,22 @@
 #include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
 
+#include <algorithm>
+
 namespace inviwo {
+
+bool match(ModifierMatchingBehavior behavior, KeyModifiers a, KeyModifiers b) {
+    switch (behavior) {
+        case ModifierMatchingBehavior::ExactMatch:
+            return a == b;
+        case ModifierMatchingBehavior::PartialMatch:
+            return a == KeyModifiers(flags::none) ||
+                   std::ranges::any_of(b, [&a](auto modifier) { return a.contains(modifier); });
+        case ModifierMatchingBehavior::Always:
+            return true;
+    }
+    return false;
+}
 
 void EventMatcher::setCurrentStateAsDefault() {}
 void EventMatcher::resetToDefaultState() {}
@@ -42,23 +57,23 @@ bool EventMatcher::isDefaultState() const { return false; }
 void EventMatcher::serialize(Serializer&) const {}
 void EventMatcher::deserialize(Deserializer&) {}
 
-KeyboardEventMatcher::KeyboardEventMatcher(IvwKey key, KeyStates states, KeyModifiers modifiers)
-    : EventMatcher()
-    , key_("key", key)
-    , states_("states", states)
-    , modifiers_("modifiers", modifiers) {}
+KeyboardEventMatcher::KeyboardEventMatcher(IvwKey key, KeyStates states, KeyModifiers modifiers,
+                                           ModifierMatchingBehavior matching)
+    : EventMatcher{}
+    , key_{"key", key}
+    , states_{"states", states}
+    , modifiers_{"modifiers", modifiers}
+    , matching_{matching} {}
 
 KeyboardEventMatcher* KeyboardEventMatcher::clone() const {
     return new KeyboardEventMatcher(*this);
 }
 
 bool KeyboardEventMatcher::operator()(Event* e) {
-    if (e->hash() != KeyboardEvent::chash()) return false;
-
-    auto ke = static_cast<KeyboardEvent*>(e);
-    if (ke->key() == key_) {
+    if (const auto* ke = e->getAs<KeyboardEvent>(); ke && ke->key() == key_) {
         if (states_.value & ke->state()) {
-            if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == ke->modifiers()) {
+            if (modifiers_ == KeyModifiers(flags::any) ||
+                match(matching_, modifiers_, ke->modifiers())) {
                 return true;
             }
         }
@@ -114,39 +129,41 @@ std::string KeyboardEventMatcher::displayString() const {
 }
 
 MouseEventMatcher::MouseEventMatcher(MouseButtons buttons, MouseStates states,
-                                     KeyModifiers modifiers)
-    : EventMatcher()
-    , buttons_("buttons", buttons)
-    , states_("states", states)
-    , modifiers_("modifiers", modifiers) {}
+                                     KeyModifiers modifiers, ModifierMatchingBehavior matching)
+    : EventMatcher{}
+    , buttons_{"buttons", buttons}
+    , states_{"states", states}
+    , modifiers_{"modifiers", modifiers}
+    , matching_{matching} {}
 
 MouseEventMatcher* MouseEventMatcher::clone() const { return new MouseEventMatcher(*this); }
 
 bool MouseEventMatcher::operator()(Event* e) {
-    if (e->hash() != MouseEvent::chash()) return false;
-    auto me = static_cast<MouseEvent*>(e);
-
-    if (me->state() == MouseState::Move) {
-        if (states_.value & me->state()) {
-            if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == me->modifiers()) {
-                if (me->buttonState() != MouseButton::None) {
-                    for (auto s : me->buttonState()) {
-                        if (buttons_.value & s) {
-                            return true;
+    if (const auto* me = e->getAs<MouseEvent>()) {
+        if (me->state() == MouseState::Move) {
+            if (states_.value & me->state()) {
+                if (modifiers_ == KeyModifiers(flags::any) ||
+                    match(matching_, modifiers_, me->modifiers())) {
+                    if (me->buttonState() != MouseButton::None) {
+                        for (auto s : me->buttonState()) {
+                            if (buttons_.value & s) {
+                                return true;
+                            }
                         }
+                    } else if (buttons_.value == MouseButton::None) {
+                        return true;
+                    } else if (buttons_.value == MouseButtons(flags::any)) {
+                        return true;
                     }
-                } else if (buttons_.value == MouseButton::None) {
-                    return true;
-                } else if (buttons_.value == MouseButtons(flags::any)) {
-                    return true;
                 }
             }
-        }
-    } else {
-        if (buttons_.value & me->button()) {
-            if (states_.value & me->state()) {
-                if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == me->modifiers()) {
-                    return true;
+        } else {
+            if (buttons_.value & me->button()) {
+                if (states_.value & me->state()) {
+                    if (modifiers_ == KeyModifiers(flags::any) ||
+                        match(matching_, modifiers_, me->modifiers())) {
+                        return true;
+                    }
                 }
             }
         }
@@ -209,16 +226,15 @@ std::string MouseEventMatcher::displayString() const {
     }
 }
 
-WheelEventMatcher::WheelEventMatcher(KeyModifiers modifiers)
-    : EventMatcher(), modifiers_("modifiers", modifiers) {}
+WheelEventMatcher::WheelEventMatcher(KeyModifiers modifiers, ModifierMatchingBehavior matching)
+    : EventMatcher{}, modifiers_{"modifiers", modifiers}, matching_{matching} {}
 
 WheelEventMatcher* WheelEventMatcher::clone() const { return new WheelEventMatcher(*this); }
 
 bool WheelEventMatcher::operator()(Event* e) {
-    if (e->hash() != WheelEvent::chash()) return false;
-    auto we = static_cast<WheelEvent*>(e);
-
-    if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == we->modifiers()) {
+    if (const auto* we = e->getAs<WheelEvent>();
+        we &&
+        (modifiers_ == KeyModifiers(flags::any) || match(matching_, modifiers_, we->modifiers()))) {
         return true;
     }
 
@@ -264,23 +280,22 @@ std::string WheelEventMatcher::displayString() const {
 }
 
 GestureEventMatcher::GestureEventMatcher(GestureTypes types, GestureStates states, int numFingers,
-                                         KeyModifiers modifiers)
-    : EventMatcher()
-    , types_("types", types)
-    , states_("states", states)
-    , numFingers_("numFingers", numFingers)
-    , modifiers_("modifiers", modifiers) {}
+                                         KeyModifiers modifiers, ModifierMatchingBehavior matching)
+    : EventMatcher{}
+    , types_{"types", types}
+    , states_{"states", states}
+    , numFingers_{"numFingers", numFingers}
+    , modifiers_{"modifiers", modifiers}
+    , matching_{matching} {}
 
 GestureEventMatcher* GestureEventMatcher::clone() const { return new GestureEventMatcher(*this); }
 
 bool GestureEventMatcher::operator()(Event* e) {
-    if (e->hash() != GestureEvent::chash()) return false;
-    auto ge = static_cast<GestureEvent*>(e);
-
-    if (types_.value & ge->type()) {
+    if (const auto* ge = e->getAs<GestureEvent>(); ge && types_.value & ge->type()) {
         if (states_.value & ge->state()) {
             if (numFingers_ == -1 || numFingers_ == ge->numFingers()) {
-                if (modifiers_ == KeyModifiers(flags::any) || modifiers_ == ge->modifiers()) {
+                if (modifiers_ == KeyModifiers(flags::any) ||
+                    match(matching_, modifiers_, ge->modifiers())) {
                     return true;
                 }
             }
