@@ -146,6 +146,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility class to calculate and apply auto linking.  <a href="classinviwo_1_1AutoLinker.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Axis" id="r_Axis"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1Axis.html">Axis</a></td></tr>
 <tr class="memitem:AxisAlignedCutPlane" id="r_AxisAlignedCutPlane"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1AxisAlignedCutPlane.html">AxisAlignedCutPlane</a></td></tr>
+<tr class="memitem:AxisRangeEvent" id="r_AxisRangeEvent"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1AxisRangeEvent.html">AxisRangeEvent</a></td></tr>
 <tr class="memitem:Background" id="r_Background"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Background.html">Background</a></td></tr>
 <tr class="memitem:BackgroundComponent" id="r_BackgroundComponent"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1BackgroundComponent.html">BackgroundComponent</a></td></tr>
 <tr class="memitem:BaseGLModule" id="r_BaseGLModule"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1BaseGLModule.html">BaseGLModule</a></td></tr>
@@ -2429,6 +2430,20 @@ Enumerations</h2></td></tr>
 &#160;&#160;<b>Debug</b>
 <br />
  }</td></tr>
+<tr class="memitem:a53cfcb4649428179e287b47680dfb8c1" id="r_a53cfcb4649428179e287b47680dfb8c1"><td class="memItemLeft"><a id="a53cfcb4649428179e287b47680dfb8c1" name="a53cfcb4649428179e287b47680dfb8c1"></a>enum class &#160;</td><td class="memItemRight"><b>AxisRangeEventState</b> : std::uint8_t { <b>None</b>
+, <b>Started</b>
+, <b>Updated</b>
+, <b>Finished</b>
+ }</td></tr>
+<tr class="memitem:a27b3fb54fe05e6aca55986d878511c1a" id="r_a27b3fb54fe05e6aca55986d878511c1a"><td class="memItemLeft"><a id="a27b3fb54fe05e6aca55986d878511c1a" name="a27b3fb54fe05e6aca55986d878511c1a"></a>enum class &#160;</td><td class="memItemRight"><b>AxisRangeInteraction</b> : std::uint8_t { <b>None</b>
+, <b>Selection</b>
+, <b>Filtering</b>
+ }</td></tr>
+<tr class="memitem:a98a3c0b6f0eadd7306b005dda7ed43b9" id="r_a98a3c0b6f0eadd7306b005dda7ed43b9"><td class="memItemLeft"><a id="a98a3c0b6f0eadd7306b005dda7ed43b9" name="a98a3c0b6f0eadd7306b005dda7ed43b9"></a>enum class &#160;</td><td class="memItemRight"><b>AxisRangeInteractionMode</b> : std::uint8_t { <b>None</b>
+, <b>Replace</b>
+, <b>Append</b>
+, <b>Clear</b>
+ }</td></tr>
 <tr class="memitem:a9f3604081147a8d422030258e441d82b" id="r_a9f3604081147a8d422030258e441d82b"><td class="memItemLeft"><a id="a9f3604081147a8d422030258e441d82b" name="a9f3604081147a8d422030258e441d82b"></a>enum class &#160;</td><td class="memItemRight"><b>BlendMode</b> : std::uint8_t { <br />
 &#160;&#160;<b>Source</b>
 , <b>Destination</b>
@@ -2956,6 +2971,10 @@ Enumerations</h2></td></tr>
 , <b>AppendWorkspace</b>
 , <b>OpenWithPath</b>
  }</td></tr>
+<tr class="memitem:abdf0332c5b9244baabbf13614e64e6bc" id="r_abdf0332c5b9244baabbf13614e64e6bc"><td class="memItemLeft"><a id="abdf0332c5b9244baabbf13614e64e6bc" name="abdf0332c5b9244baabbf13614e64e6bc"></a>enum class &#160;</td><td class="memItemRight"><b>ModifierMatchingBehavior</b> : std::uint8_t { <b>ExactMatch</b>
+, <b>PartialMatch</b>
+, <b>Always</b>
+ }</td></tr>
 <tr class="memitem:a7a5891ffd6649768d34340a921edb02d" id="r_a7a5891ffd6649768d34340a921edb02d"><td class="memItemLeft"><a id="a7a5891ffd6649768d34340a921edb02d" name="a7a5891ffd6649768d34340a921edb02d"></a>enum class &#160;</td><td class="memItemRight"><b>ModuleCallBackActionState</b> { <b>Default</b> = 0
 , <b>Enabled</b> = 1
 , <b>Disabled</b> = 2
@@ -3221,6 +3240,12 @@ template&lt;class F, class... Args&gt; </td></tr>
 IVW_CORE_API std::string&#160;</td><td class="memItemRight"><b>dotSeperatedToPascalCase</b> (std::string_view s)</td></tr>
 <tr class="memitem:a6143e0994326dedca49d8d01e799a806" id="r_a6143e0994326dedca49d8d01e799a806"><td class="memItemLeft"><a id="a6143e0994326dedca49d8d01e799a806" name="a6143e0994326dedca49d8d01e799a806"></a>
 IVW_CORE_API std::string_view&#160;</td><td class="memItemRight"><b>enumToStr</b> (AcceptMode mode)</td></tr>
+<tr class="memitem:a76e57c8c9844a1fa9eb6fa0c437a6371" id="r_a76e57c8c9844a1fa9eb6fa0c437a6371"><td class="memItemLeft"><a id="a76e57c8c9844a1fa9eb6fa0c437a6371" name="a76e57c8c9844a1fa9eb6fa0c437a6371"></a>
+IVW_CORE_API std::string_view&#160;</td><td class="memItemRight"><b>enumToStr</b> (AxisRangeEventState state)</td></tr>
+<tr class="memitem:a269cb70687f9e1338f727305011f26ac" id="r_a269cb70687f9e1338f727305011f26ac"><td class="memItemLeft"><a id="a269cb70687f9e1338f727305011f26ac" name="a269cb70687f9e1338f727305011f26ac"></a>
+IVW_CORE_API std::string_view&#160;</td><td class="memItemRight"><b>enumToStr</b> (AxisRangeInteraction interaction)</td></tr>
+<tr class="memitem:a40ff8c9610379a48674ce4c73d97c33b" id="r_a40ff8c9610379a48674ce4c73d97c33b"><td class="memItemLeft"><a id="a40ff8c9610379a48674ce4c73d97c33b" name="a40ff8c9610379a48674ce4c73d97c33b"></a>
+IVW_CORE_API std::string_view&#160;</td><td class="memItemRight"><b>enumToStr</b> (AxisRangeInteractionMode mode)</td></tr>
 <tr class="memitem:abe7f656a44cc3fa9380edea3bad69017" id="r_abe7f656a44cc3fa9380edea3bad69017"><td class="memItemLeft"><a id="abe7f656a44cc3fa9380edea3bad69017" name="abe7f656a44cc3fa9380edea3bad69017"></a>
 IVW_MODULE_BRUSHINGANDLINKING_API std::string_view&#160;</td><td class="memItemRight"><b>enumToStr</b> (<a class="el" href="#a0780518930e4f82763044068321c57f4">BrushingAction</a> dt)</td></tr>
 <tr class="memitem:abe25253e7214c4c3df45b418be1349fc" id="r_abe25253e7214c4c3df45b418be1349fc"><td class="memItemLeft"><a id="abe25253e7214c4c3df45b418be1349fc" name="abe25253e7214c4c3df45b418be1349fc"></a>
@@ -3447,6 +3472,8 @@ IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><b>LogGLError</b> 
 <tr class="memitem:a5042483609bd48307453304227395005" id="r_a5042483609bd48307453304227395005"><td class="memItemLeft">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><a class="el" href="#a5042483609bd48307453304227395005">LogGLError</a> (std::string_view source, std::string_view fileName, std::string_view functionName, int lineNumber)</td></tr>
 <tr class="memitem:ad476c20e66499943d5f6e2c6d7e500c8" id="r_ad476c20e66499943d5f6e2c6d7e500c8"><td class="memItemLeft"><a id="ad476c20e66499943d5f6e2c6d7e500c8" name="ad476c20e66499943d5f6e2c6d7e500c8"></a>
 IVW_CORE_API std::string&#160;</td><td class="memItemRight"><b>ltrim</b> (std::string s)</td></tr>
+<tr class="memitem:a2f8e591c37b72ef40cb21480f83c08b8" id="r_a2f8e591c37b72ef40cb21480f83c08b8"><td class="memItemLeft"><a id="a2f8e591c37b72ef40cb21480f83c08b8" name="a2f8e591c37b72ef40cb21480f83c08b8"></a>
+IVW_CORE_API bool&#160;</td><td class="memItemRight"><b>match</b> (ModifierMatchingBehavior behavior, KeyModifiers a, KeyModifiers b)</td></tr>
 <tr class="memitem:a72996ce2a9e5107b78a7b35ea484f8c1" id="r_a72996ce2a9e5107b78a7b35ea484f8c1"><td class="memTemplParams" colspan="2"><a id="a72996ce2a9e5107b78a7b35ea484f8c1" name="a72996ce2a9e5107b78a7b35ea484f8c1"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a72996ce2a9e5107b78a7b35ea484f8c1 template"><td class="memItemLeft">Matrix&lt; 2, T &gt;&#160;</td><td class="memItemRight"><b>MatrixInvert</b> (const glm::tmat2x2&lt; T, glm::defaultp &gt; &amp;m)</td></tr>

@@ -86,6 +86,7 @@ var group__properties =
       [ "getClassIdentifierForWidget", "classinviwo_1_1DirectoryProperty.html#a2eeefb2679cef790d4428855f4008bcf", null ]
     ] ],
     [ "inviwo::EventProperty", "classinviwo_1_1EventProperty.html", [
+      [ "Action", "structinviwo_1_1EventProperty_1_1Action.html", null ],
       [ "EventProperty", "classinviwo_1_1EventProperty.html#a5c9c44064e07055da5a117738d366893", null ],
       [ "EventProperty", "classinviwo_1_1EventProperty.html#a440ef7e374ff6177c145f67f3489bdd4", null ],
       [ "clone", "classinviwo_1_1EventProperty.html#ac5e344a9c88f1a1a65178d3d396028d8", null ],

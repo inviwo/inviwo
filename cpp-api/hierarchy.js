@@ -3,6 +3,7 @@ var hierarchy =
     [ "Action", null, [
       [ "inviwo::TrackballAction", "classinviwo_1_1TrackballAction.html", null ]
     ] ],
+    [ "inviwo::EventProperty::Action", "structinviwo_1_1EventProperty_1_1Action.html", null ],
     [ "inviwo::utilgl::Activate&lt; T &gt;", "structinviwo_1_1utilgl_1_1Activate.html", null ],
     [ "inviwo::utilgl::ActivateFBO", "classinviwo_1_1utilgl_1_1ActivateFBO.html", null ],
     [ "inviwo::util::detail_indirect::add_const_to_reference&lt; T &gt;", "structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference.html", null ],
@@ -127,7 +128,8 @@ var hierarchy =
       ] ]
     ] ],
     [ "inviwo::BitSet::BitSetIterator", "classinviwo_1_1BitSet_1_1BitSetIterator.html", null ],
-    [ "inviwo::plot::BoxSelection", "structinviwo_1_1plot_1_1BoxSelection.html", null ],
+    [ "inviwo::plot::BoxSelection", "classinviwo_1_1plot_1_1BoxSelection.html", null ],
+    [ "inviwo::plot::BoxSelectionData", "structinviwo_1_1plot_1_1BoxSelectionData.html", null ],
     [ "inviwo::plot::BoxSelectionRenderer", "classinviwo_1_1plot_1_1BoxSelectionRenderer.html", null ],
     [ "inviwo::util::BrickIterator&lt; Iter &gt;", "classinviwo_1_1util_1_1BrickIterator.html", null ],
     [ "inviwo::BrushingTarget", "structinviwo_1_1BrushingTarget.html", null ],
@@ -910,6 +912,7 @@ var hierarchy =
     [ "inviwo::ffmpeg::Error", "structinviwo_1_1ffmpeg_1_1Error.html", null ],
     [ "inviwo::log::error&lt; Args &gt;", "structinviwo_1_1log_1_1error.html", null ],
     [ "inviwo::Event", "classinviwo_1_1Event.html", [
+      [ "inviwo::AxisRangeEvent", "classinviwo_1_1AxisRangeEvent.html", null ],
       [ "inviwo::ContextMenuEvent", "classinviwo_1_1ContextMenuEvent.html", null ],
       [ "inviwo::InteractionEvent", "classinviwo_1_1InteractionEvent.html", [
         [ "inviwo::GestureEvent", "classinviwo_1_1GestureEvent.html", null ],
@@ -930,7 +933,6 @@ var hierarchy =
       [ "inviwo::InteractionHandler", "classinviwo_1_1InteractionHandler.html", [
         [ "inviwo::CEFInteractionHandler", "classinviwo_1_1CEFInteractionHandler.html", null ],
         [ "inviwo::PointLightInteractionHandler", "classinviwo_1_1PointLightInteractionHandler.html", null ],
-        [ "inviwo::plot::BoxSelectionInteractionHandler", "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html", null ],
         [ "inviwo::plot::ScatterPlotGL", "classinviwo_1_1plot_1_1ScatterPlotGL.html", null ]
       ] ],
       [ "inviwo::PropertyOwner", "classinviwo_1_1PropertyOwner.html", [
@@ -1857,7 +1859,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< CaptionType >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< LabelScale >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< LabelingAlgorithm >", "classinviwo_1_1OptionProperty.html", null ],
-          [ "inviwo::OptionProperty< BoxSelection::Mode >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< BoxSelectionData::Mode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< LabelType >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< AxisProperty::Orientation >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< TickData::Style >", "classinviwo_1_1OptionProperty.html", null ],
@@ -3256,7 +3258,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< CaptionType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< LabelScale >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< LabelingAlgorithm >", "classinviwo_1_1OptionPropertyOption.html", null ],
-      [ "inviwo::OptionPropertyOption< BoxSelection::Mode >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< BoxSelectionData::Mode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< LabelType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< AxisProperty::Orientation >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< TickData::Style >", "classinviwo_1_1OptionPropertyOption.html", null ],

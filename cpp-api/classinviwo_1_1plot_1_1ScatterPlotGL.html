@@ -138,7 +138,6 @@ HighlightCallbackHandle&#160;</td><td class="memItemRight"><b>addHighlightChange
 SelectionCallbackHandle&#160;</td><td class="memItemRight"><b>addSelectionChangedCallback</b> (std::function&lt; SelectionFunc &gt; callback)</td></tr>
 <tr class="memitem:ae439346ad26c279ec9ec659026c2bd54" id="r_ae439346ad26c279ec9ec659026c2bd54"><td class="memItemLeft"><a id="ae439346ad26c279ec9ec659026c2bd54" name="ae439346ad26c279ec9ec659026c2bd54"></a>
 ToolTipCallbackHandle&#160;</td><td class="memItemRight"><b>addToolTipCallback</b> (std::function&lt; ToolTipFunc &gt; callback)</td></tr>
-<tr class="memitem:ad998ecea2002de0e476dec83b3dcaa93" id="r_ad998ecea2002de0e476dec83b3dcaa93"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ad998ecea2002de0e476dec83b3dcaa93">invokeEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event) override</td></tr>
 <tr class="memitem:a6952b3d4071f7bf188ac99b20475e6b1" id="r_a6952b3d4071f7bf188ac99b20475e6b1"><td class="memItemLeft"><a id="a6952b3d4071f7bf188ac99b20475e6b1" name="a6952b3d4071f7bf188ac99b20475e6b1"></a>
 void&#160;</td><td class="memItemRight"><b>plot</b> (const ivec2 &amp;start, const ivec2 &amp;size, bool useAxisRanges=false)</td></tr>
 <tr class="memitem:a527b263717bed2f600385dfd805d8f4f" id="r_a527b263717bed2f600385dfd805d8f4f"><td class="memItemLeft"><a id="a527b263717bed2f600385dfd805d8f4f" name="a527b263717bed2f600385dfd805d8f4f"></a>
@@ -177,6 +176,9 @@ void&#160;</td><td class="memItemRight"><b>setYAxis</b> (const <a class="el" hre
 void&#160;</td><td class="memItemRight"><b>setYAxisData</b> (const <a class="el" href="classinviwo_1_1Column.html">Column</a> *col)</td></tr>
 <tr class="memitem:aaa41d3da13901203e81a2c5b6c548bb8" id="r_aaa41d3da13901203e81a2c5b6c548bb8"><td class="memItemLeft"><a id="aaa41d3da13901203e81a2c5b6c548bb8" name="aaa41d3da13901203e81a2c5b6c548bb8"></a>
 void&#160;</td><td class="memItemRight"><b>setYAxisLabel</b> (const std::string &amp;label)</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1EventListener"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1EventListener')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1EventListener.html">inviwo::EventListener</a></td></tr>
+<tr class="memitem:ad364022b262124d04b53d35805dd957b inherit pub_methods_classinviwo_1_1EventListener" id="r_ad364022b262124d04b53d35805dd957b"><td class="memItemLeft">
+virtual void&#160;</td><td class="memItemRight"><b>invokeEvent</b> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -206,12 +208,10 @@ void&#160;</td><td class="memItemRight"><b>setShaderUniforms</b> (<a class="el" 
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a9d01b8704c929b18aa6cb2911fa8a373" id="r_a9d01b8704c929b18aa6cb2911fa8a373"><td class="memItemLeft"><a id="a9d01b8704c929b18aa6cb2911fa8a373" name="a9d01b8704c929b18aa6cb2911fa8a373"></a>
 std::array&lt; <a class="el" href="classinviwo_1_1plot_1_1AxisRenderer.html">AxisRenderer</a>, 2 &gt;&#160;</td><td class="memItemRight"><b>axisRenderers_</b></td></tr>
-<tr class="memitem:aa154f9ac84888a801034cff7a5baa091" id="r_aa154f9ac84888a801034cff7a5baa091"><td class="memItemLeft"><a id="aa154f9ac84888a801034cff7a5baa091" name="aa154f9ac84888a801034cff7a5baa091"></a>
-BoxSelectionInteractionHandler::SelectionCallbackHandle&#160;</td><td class="memItemRight"><b>boxFilteringChangedCallback_</b></td></tr>
-<tr class="memitem:a2e7f8130283f3aa1cda6de6e9f18c8be" id="r_a2e7f8130283f3aa1cda6de6e9f18c8be"><td class="memItemLeft"><a id="a2e7f8130283f3aa1cda6de6e9f18c8be" name="a2e7f8130283f3aa1cda6de6e9f18c8be"></a>
-BoxSelectionInteractionHandler::SelectionCallbackHandle&#160;</td><td class="memItemRight"><b>boxSelectionChangedCallback_</b></td></tr>
-<tr class="memitem:afe495df35dc5b135dffceb3d378ffe0e" id="r_afe495df35dc5b135dffceb3d378ffe0e"><td class="memItemLeft"><a id="afe495df35dc5b135dffceb3d378ffe0e" name="afe495df35dc5b135dffceb3d378ffe0e"></a>
-<a class="el" href="classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html">BoxSelectionInteractionHandler</a>&#160;</td><td class="memItemRight"><b>boxSelectionHandler_</b></td></tr>
+<tr class="memitem:a5a6fefe6526d4ddc040f121d0a647490" id="r_a5a6fefe6526d4ddc040f121d0a647490"><td class="memItemLeft"><a id="a5a6fefe6526d4ddc040f121d0a647490" name="a5a6fefe6526d4ddc040f121d0a647490"></a>
+<a class="el" href="classinviwo_1_1plot_1_1BoxSelection.html">BoxSelection</a>&#160;</td><td class="memItemRight"><b>boxSelection_</b></td></tr>
+<tr class="memitem:abeb247678ab25f843ccb886f6c59934f" id="r_abeb247678ab25f843ccb886f6c59934f"><td class="memItemLeft"><a id="abeb247678ab25f843ccb886f6c59934f" name="abeb247678ab25f843ccb886f6c59934f"></a>
+plot::BoxSelection::SelectionCallbackHandle&#160;</td><td class="memItemRight"><b>boxSelectionCallback_</b></td></tr>
 <tr class="memitem:af71145990173173b62206ea3f8ffefba" id="r_af71145990173173b62206ea3f8ffefba"><td class="memItemLeft"><a id="af71145990173173b62206ea3f8ffefba" name="af71145990173173b62206ea3f8ffefba"></a>
 <a class="el" href="classinviwo_1_1BitSet.html">BitSet</a>&#160;</td><td class="memItemRight"><b>filtered_</b></td></tr>
 <tr class="memitem:ace6cb300fae197d150d7071d3193fd0c" id="r_ace6cb300fae197d150d7071d3193fd0c"><td class="memItemLeft"><a id="ace6cb300fae197d150d7071d3193fd0c" name="ace6cb300fae197d150d7071d3193fd0c"></a>
@@ -222,6 +222,8 @@ BoxSelectionInteractionHandler::SelectionCallbackHandle&#160;</td><td class="mem
 <a class="el" href="classinviwo_1_1BitSet.html">BitSet</a>&#160;</td><td class="memItemRight"><b>highlighted_</b></td></tr>
 <tr class="memitem:a1e5164d21adbca2e44014ef819473fad" id="r_a1e5164d21adbca2e44014ef819473fad"><td class="memItemLeft"><a id="a1e5164d21adbca2e44014ef819473fad" name="a1e5164d21adbca2e44014ef819473fad"></a>
 std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; uint32_t &gt; &gt;&#160;</td><td class="memItemRight"><b>indexColumn_</b></td></tr>
+<tr class="memitem:a087c259a516e17279adf5a4dbb5df8d4" id="r_a087c259a516e17279adf5a4dbb5df8d4"><td class="memItemLeft"><a id="a087c259a516e17279adf5a4dbb5df8d4" name="a087c259a516e17279adf5a4dbb5df8d4"></a>
+<a class="el" href="classinviwo_1_1BitSet.html">BitSet</a>&#160;</td><td class="memItemRight"><b>initialBrushingIndices_</b></td></tr>
 <tr class="memitem:a049b657b21627c82df64ab31b62b52f4" id="r_a049b657b21627c82df64ab31b62b52f4"><td class="memItemLeft"><a id="a049b657b21627c82df64ab31b62b52f4" name="a049b657b21627c82df64ab31b62b52f4"></a>
 vec2&#160;</td><td class="memItemRight"><b>minmaxC_</b> = vec2(0.0f, 1.0f)</td></tr>
 <tr class="memitem:a0a14514463b8ee32c6152ada176dc0a8" id="r_a0a14514463b8ee32c6152ada176dc0a8"><td class="memItemLeft"><a id="a0a14514463b8ee32c6152ada176dc0a8" name="a0a14514463b8ee32c6152ada176dc0a8"></a>
@@ -250,33 +252,6 @@ SortingOrder&#160;</td><td class="memItemRight"><b>sortOrder_</b> = SortingOrder
 <a class="el" href="classinviwo_1_1Dispatcher.html">Dispatcher</a>&lt; ToolTipFunc &gt;&#160;</td><td class="memItemRight"><b>tooltipCallback_</b></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="ad998ecea2002de0e476dec83b3dcaa93" name="ad998ecea2002de0e476dec83b3dcaa93"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad998ecea2002de0e476dec83b3dcaa93">&#9670;&#160;</a></span>invokeEvent()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void inviwo::plot::ScatterPlotGL::invokeEvent </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1Event.html">Event</a> *</td>          <td class="paramname"><span class="paramname"><em>event</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1EventListener.html">inviwo::EventListener</a>.</p>
-
-</div>
-</div>
 <a id="aac916c02a5ab8745604e170abbabecf6" name="aac916c02a5ab8745604e170abbabecf6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aac916c02a5ab8745604e170abbabecf6">&#9670;&#160;</a></span>setFilteredIndices()</h2>
 

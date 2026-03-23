@@ -367,14 +367,13 @@ var searchData=
   ['doubledispatch_364',['doubleDispatch',['../namespaceinviwo_1_1dispatching.html#a172fc38f8f66307a0614b74eb026eb30',1,'inviwo::dispatching']]],
   ['doubleminmaxpropertywidget_365',['DoubleMinMaxPropertyWidget',['../classinviwo_1_1glui_1_1DoubleMinMaxPropertyWidget.html',1,'inviwo::glui']]],
   ['doublevaluedragspinbox_366',['DoubleValueDragSpinBox',['../classinviwo_1_1DoubleValueDragSpinBox.html',1,'inviwo']]],
-  ['dragrectchanged_367',['dragRectChanged',['../classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#af200b31e441a7032b9d0c2c84cf6fe60',1,'inviwo::plot::BoxSelectionInteractionHandler']]],
-  ['draw_368',['draw',['../classinviwo_1_1MeshDrawer.html#a75bb14e125cfe966519211d6f8e43caf',1,'inviwo::MeshDrawer::draw()'],['../classinviwo_1_1MeshDrawerGL.html#a05883f6787a51554aa11b04c094df048',1,'inviwo::MeshDrawerGL::draw() override'],['../classinviwo_1_1MeshDrawerGL.html#af9ee868adf285db2a5b20131d54904de',1,'inviwo::MeshDrawerGL::draw(DrawMode drawMode)']]],
-  ['drawlines_369',['DrawLines',['../classinviwo_1_1DrawLines.html',1,'inviwo']]],
-  ['drawobject_370',['DrawObject',['../classinviwo_1_1MeshDrawerGL_1_1DrawObject.html',1,'inviwo::MeshDrawerGL']]],
-  ['drawpoints_371',['DrawPoints',['../classinviwo_1_1DrawPoints.html',1,'inviwo']]],
-  ['dropcolumn_372',['dropColumn',['../classinviwo_1_1DataFrame.html#a44c13224a45cd943fad2ced479f2a970',1,'inviwo::DataFrame::dropColumn(std::string_view header)'],['../classinviwo_1_1DataFrame.html#a5c737ea646c78f9a975a5025eaad5323',1,'inviwo::DataFrame::dropColumn(size_t index)']]],
-  ['dropindicatorline_373',['dropIndicatorLine',['../classinviwo_1_1animation_1_1AnimationEditorQt.html#aa819cfd5d0602043cdb933a34450ef07',1,'inviwo::animation::AnimationEditorQt']]],
-  ['durationtostring_374',['durationToString',['../namespaceinviwo_1_1util.html#a818947e6c0c72cbdeb18b6631686091b',1,'inviwo::util']]],
-  ['dynport_375',['DynPort',['../structinviwo_1_1detail_1_1DynPort.html',1,'inviwo::detail']]],
-  ['dynuniform_376',['DynUniform',['../structinviwo_1_1detail_1_1DynUniform.html',1,'inviwo::detail']]]
+  ['draw_367',['draw',['../classinviwo_1_1MeshDrawer.html#a75bb14e125cfe966519211d6f8e43caf',1,'inviwo::MeshDrawer::draw()'],['../classinviwo_1_1MeshDrawerGL.html#a05883f6787a51554aa11b04c094df048',1,'inviwo::MeshDrawerGL::draw() override'],['../classinviwo_1_1MeshDrawerGL.html#af9ee868adf285db2a5b20131d54904de',1,'inviwo::MeshDrawerGL::draw(DrawMode drawMode)']]],
+  ['drawlines_368',['DrawLines',['../classinviwo_1_1DrawLines.html',1,'inviwo']]],
+  ['drawobject_369',['DrawObject',['../classinviwo_1_1MeshDrawerGL_1_1DrawObject.html',1,'inviwo::MeshDrawerGL']]],
+  ['drawpoints_370',['DrawPoints',['../classinviwo_1_1DrawPoints.html',1,'inviwo']]],
+  ['dropcolumn_371',['dropColumn',['../classinviwo_1_1DataFrame.html#a44c13224a45cd943fad2ced479f2a970',1,'inviwo::DataFrame::dropColumn(std::string_view header)'],['../classinviwo_1_1DataFrame.html#a5c737ea646c78f9a975a5025eaad5323',1,'inviwo::DataFrame::dropColumn(size_t index)']]],
+  ['dropindicatorline_372',['dropIndicatorLine',['../classinviwo_1_1animation_1_1AnimationEditorQt.html#aa819cfd5d0602043cdb933a34450ef07',1,'inviwo::animation::AnimationEditorQt']]],
+  ['durationtostring_373',['durationToString',['../namespaceinviwo_1_1util.html#a818947e6c0c72cbdeb18b6631686091b',1,'inviwo::util']]],
+  ['dynport_374',['DynPort',['../structinviwo_1_1detail_1_1DynPort.html',1,'inviwo::detail']]],
+  ['dynuniform_375',['DynUniform',['../structinviwo_1_1detail_1_1DynUniform.html',1,'inviwo::detail']]]
 ];

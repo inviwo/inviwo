@@ -149,6 +149,7 @@ var namespaceinviwo =
     [ "AutoLinker", "classinviwo_1_1AutoLinker.html", "classinviwo_1_1AutoLinker" ],
     [ "Axis", "structinviwo_1_1Axis.html", null ],
     [ "AxisAlignedCutPlane", "classinviwo_1_1AxisAlignedCutPlane.html", "classinviwo_1_1AxisAlignedCutPlane" ],
+    [ "AxisRangeEvent", "classinviwo_1_1AxisRangeEvent.html", null ],
     [ "Background", "classinviwo_1_1Background.html", "classinviwo_1_1Background" ],
     [ "BackgroundComponent", "classinviwo_1_1BackgroundComponent.html", "classinviwo_1_1BackgroundComponent" ],
     [ "BaseGLModule", "classinviwo_1_1BaseGLModule.html", "classinviwo_1_1BaseGLModule" ],

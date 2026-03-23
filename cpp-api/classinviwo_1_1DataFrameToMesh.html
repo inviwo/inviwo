@@ -118,6 +118,7 @@ $(function(){initNavTree('classinviwo_1_1DataFrameToMesh.html','','classinviwo_1
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae42aca57e2862138454d7e300bb4c8f1" id="r_ae42aca57e2862138454d7e300bb4c8f1"><td class="memItemLeft">virtual const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ae42aca57e2862138454d7e300bb4c8f1">getProcessorInfo</a> () const override</td></tr>
+<tr class="memitem:a5838ed12b0e1f5c3622bde1d91650850" id="r_a5838ed12b0e1f5c3622bde1d91650850"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a5838ed12b0e1f5c3622bde1d91650850">invokeEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event) override</td></tr>
 <tr class="memitem:a9fb03745c36a0eb66439faa6c432642a" id="r_a9fb03745c36a0eb66439faa6c432642a"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a9fb03745c36a0eb66439faa6c432642a">process</a> () override</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a06088cebce8b3d454b56abf70458b62e inherit pub_methods_classinviwo_1_1Processor" id="r_a06088cebce8b3d454b56abf70458b62e"><td class="memItemLeft">
@@ -182,7 +183,6 @@ bool&#160;</td><td class="memItemRight"><b>hasInteractionHandler</b> () const</t
 bool&#160;</td><td class="memItemRight"><b>hasProcessorWidget</b> () const</td></tr>
 <tr class="memitem:a9ca0ca1407ee6e9f0c5e3a9b1a453dd1 inherit pub_methods_classinviwo_1_1Processor" id="r_a9ca0ca1407ee6e9f0c5e3a9b1a453dd1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">initializeResources</a> ()</td></tr>
 <tr class="memitem:a60ba7b32a166fbdf87e140b9b2cc654c inherit pub_methods_classinviwo_1_1Processor" id="r_a60ba7b32a166fbdf87e140b9b2cc654c"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a60ba7b32a166fbdf87e140b9b2cc654c">invalidate</a> (<a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel, Property *modifiedProperty=nullptr) override</td></tr>
-<tr class="memitem:af5ca45df8fe5ad88e2857f39cf7fe771 inherit pub_methods_classinviwo_1_1Processor" id="r_af5ca45df8fe5ad88e2857f39cf7fe771"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#af5ca45df8fe5ad88e2857f39cf7fe771">invokeEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event) override</td></tr>
 <tr class="memitem:a92e39a99e6e1dbd8e4d4756b8e56df22 inherit pub_methods_classinviwo_1_1Processor" id="r_a92e39a99e6e1dbd8e4d4756b8e56df22"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a92e39a99e6e1dbd8e4d4756b8e56df22">isConnectionActive</a> (<a class="el" href="classinviwo_1_1Inport.html">Inport</a> *inport, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> *outport) const</td></tr>
 <tr class="memitem:ad92dc01e0538cd13ea49613d9b310ec4 inherit pub_methods_classinviwo_1_1Processor" id="r_ad92dc01e0538cd13ea49613d9b310ec4"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#ad92dc01e0538cd13ea49613d9b310ec4">isReady</a> () const</td></tr>
 <tr class="memitem:ab73a999515a39a1b14a968c4feee93d9 inherit pub_methods_classinviwo_1_1Processor" id="r_ab73a999515a39a1b14a968c4feee93d9"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#ab73a999515a39a1b14a968c4feee93d9">isSink</a> () const</td></tr>
@@ -494,6 +494,33 @@ friend&#160;</td><td class="memItemRight"><b>Property</b></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a>.</p>
+
+</div>
+</div>
+<a id="a5838ed12b0e1f5c3622bde1d91650850" name="a5838ed12b0e1f5c3622bde1d91650850"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5838ed12b0e1f5c3622bde1d91650850">&#9670;&#160;</a></span>invokeEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::DataFrameToMesh::invokeEvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Event.html">Event</a> *</td>          <td class="paramname"><span class="paramname"><em>event</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a>.</p>
 
 </div>
 </div>
