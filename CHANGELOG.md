@@ -1,7 +1,11 @@
-Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
+Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
-## 2026-02-20 Improved labeling for 2D and 3D axes
-Various algorithms for generating axis labels were implemented and can be found in `modules/plotting/algorithm/labeling.h`. Support was added for Heckbert's nice numbering, matplotlib's labeling algorithm, and the Extended Wilkinson algorithm by J. Talbot. These should produce "nice" labels given an optimal/maximum number of tick marks. In addition, there is also `LabelingAlgorithm::Limits` showing labels only for the minimum and maximum of the axis range and `LabelingAlgorithm::CustomOnly`, which only shows custom labels. The axis rendering and the associated settings have been refactored in that respect.
+## 2026-03-23 Box selection in Parallel Coordinates Plot and OrthographicAxis2D
+Box selection was added to the Parallel Coordinates Plot (PCP). It supports selecting lines anywhere in the PCP or data values located on the columns.
+The `Orthographic Axis2D` processor also supports a box selection and propagates these interactions with `AxisRangeEvents`. For an example implementation check out the `DataFrame To Mesh` processor, which uses `AxisRangeEvents` to select and filter a DataFrame.
+
+## 2026-03-17 Improved labeling for 2D and 3D axes
+Various algorithms for generating axis labels were implemented and can be found in `modules/plotting/algorithm/labeling.h`. Support was added for Heckbert's nice numbering, matplotlib's labeling algorithm, and the Extended Wilkinson algorithm by J. Talbot. These should produce "nice" labels given an optimal/maximum number of tick marks. In addition, there is also `LabelingAlgorithm::Limits` showing labels only for the minimum and maximum of the axis range and `LabelingAlgorithm::LimitsAndZero` with an additional tick at zero. The axis rendering has been refactored in that respect.
 
 ## 2025-12-18 Disable modules at runtime
 A new environment variable to disable loading modules at runtime `INVIWO_DISABLE_MODULES` has been added.
