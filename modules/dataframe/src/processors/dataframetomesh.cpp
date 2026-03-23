@@ -301,7 +301,7 @@ void DataFrameToMesh::process() {
 
     {
         auto& pos = std::get<SpatialType>(infos_[0].type);
-        for (size_t i = 0; i < pos.sources.size(); ++i) {
+        for (size_t i = 0; i < util::extent_v<SpatialType::ElemType>; ++i) {
             if (!pos.sources[i].isNoneSelected()) {
                 const auto col = data->getColumn(pos.sources[i].getSelectedValue());
                 mesh->axes[i].name = col->getHeader();

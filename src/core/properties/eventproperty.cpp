@@ -94,8 +94,12 @@ EventProperty* EventProperty::clone() const { return new EventProperty(*this); }
 void EventProperty::invokeEvent(Event* e) {
     if (enabled_ && matcher_) {
         if ((*matcher_)(e)) {
-            active_ = true;
-            action_.action(e, State::Active);
+            if (!active_) {
+                active_ = true;
+                action_.action(e, State::Started);
+            } else {
+                action_.action(e, State::Active);
+            }
         } else if (active_) {
             active_ = false;
             action_.action(e, State::Finished);

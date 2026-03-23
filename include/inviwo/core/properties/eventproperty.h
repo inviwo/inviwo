@@ -48,7 +48,7 @@ namespace inviwo {
  */
 class IVW_CORE_API EventProperty : public Property {
 public:
-    enum class State : std::uint8_t { Active, Finished };
+    enum class State : std::uint8_t { Started, Active, Finished };
 
     struct Action {
         template <typename F>

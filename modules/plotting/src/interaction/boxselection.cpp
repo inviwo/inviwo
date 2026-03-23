@@ -116,7 +116,7 @@ void BoxSelection::handleEvent(Event* e, EventProperty::State state) {
         return;
     }
 
-    if (state == EventProperty::State::Active) {
+    if (state == EventProperty::State::Active || state == EventProperty::State::Started) {
         const auto interaction = getInteraction(dragRectSettings_.mode_);
         const bool append = me->modifiers().contains(appendModifier);
 
