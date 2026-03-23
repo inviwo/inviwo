@@ -37,7 +37,6 @@
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
@@ -49,28 +48,24 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/marginproperty.h>
 #include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/staticstring.h>
 #include <inviwo/dataframe/properties/dataframecolormapproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 #include <modules/fontrendering/properties/fontproperty.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
+#include <modules/plotting/properties/boxselectionproperty.h>
+#include <modules/plotting/interaction/boxselection.h>
+#include <modules/plottinggl/rendering/boxselectionrenderer.h>
 #include <modules/userinterfacegl/glui/renderer.h>
 #include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>
 
 #include <array>
-#include <cstddef>
 #include <cstdint>
-#include <functional>
 #include <memory>
-#include <string>
 #include <string_view>
-#include <unordered_map>
 #include <utility>
 #include <vector>
-
-#include <fmt/core.h>
 
 namespace inviwo {
 class DataFrame;
@@ -84,9 +79,10 @@ class PCPAxisSettings;
 
 class IVW_MODULE_PLOTTINGGL_API ParallelCoordinates : public Processor {
 public:
-    enum class BlendMode { None = 0, Additive = 1, Subtractive = 2, Regular = 3 };
-    enum class LabelPosition { None, Above, Below };
-    enum class AxisSelection { Single, Multiple, None };
+    enum class BlendMode : std::uint8_t { None = 0, Additive = 1, Subtractive = 2, Regular = 3 };
+    enum class LabelPosition : std::uint8_t { None, Above, Below };
+    enum class AxisSelection : std::uint8_t { Single, Multiple, None };
+    enum class BoxSelectionMode : std::uint8_t { Lines, DataValues };
 
 public:
     ParallelCoordinates();
@@ -151,15 +147,19 @@ public:
     BoolProperty includeLabelsInMargin_;
     ButtonProperty resetHandlePositions_;
 
+    BoxSelectionProperty boxSelectionProperty_;
+    OptionProperty<BoxSelectionMode> boxSelectionMode_;
+
     int getHoveredAxis() const { return hoveredAxis_; }
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
     static constexpr std::string_view defaultLabelFormat = "{:.4f}";
+
 protected:
     void linePicked(PickingEvent* p);
-    enum class PickType { Axis, Lower, Upper, Groove };
+    enum class PickType : std::uint8_t { Axis, Lower, Upper, Groove };
     void axisPicked(PickingEvent* p, uint32_t columnId, PickType pt);
 
 private:
@@ -178,6 +178,11 @@ private:
     void drawAxis(size2_t size);
     void drawHandles(size2_t size);
     void drawLines(size2_t size);
+    void boxSelection(AxisRangeEventState state, AxisRangeInteraction interaction,
+                      AxisRangeInteractionMode mode,
+                      std::optional<std::array<dvec2, 2>> screenrect);
+    BitSet columnDataValueIntersections(const std::array<dvec2, 2>& screenRect) const;
+    BitSet lineIntersections(const std::array<dvec2, 2>& screenRect) const;
 
     void updateBrushing();
 
@@ -190,6 +195,11 @@ private:
 
     glui::Renderer sliderWidgetRenderer_;
     std::vector<ColumnAxis> axes_;
+
+    plot::BoxSelectionRenderer boxSelectionRenderer_;
+    plot::BoxSelection boxSelection_;
+    plot::BoxSelection::SelectionCallbackHandle boxSelectionCallback_;
+    BitSet initialBrushingIndices_;
 
     bool enabledAxesModified_ = false;
 
@@ -221,17 +231,16 @@ private:
         // @see UniformSetter<std::array<bool, N>>
         std::vector<int> axisFlipped;
 
-        inline static size_t offsetToIndex(size_t offset, size_t cols) {
+        static size_t offsetToIndex(size_t offset, size_t cols) {
             return offset / (cols * sizeof(uint32_t));
         }
-        inline static size_t indexToOffset(size_t index, size_t cols) {
+        static size_t indexToOffset(size_t index, size_t cols) {
             return index * cols * sizeof(uint32_t);
         }
     };
     Lines lines_;
 
     std::pair<vec2, vec2> marginsInternal_;  // Margins with/without considering labels
-    BitSet highlightedLines_;
     int hoveredAxis_ = -1;
 
     bool brushingDirty_;
