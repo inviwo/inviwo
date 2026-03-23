@@ -32,12 +32,12 @@
 #include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/util/glmvec.h>
 
-#include <vector>
-
 namespace inviwo {
 class BufferBase;
 
 namespace util {
+
+IVW_MODULE_DATAFRAME_API BitSet rangeSelection(const BufferBase* buffer, double min, double max);
 
 IVW_MODULE_DATAFRAME_API BitSet boxSelect(const dvec2& start, const dvec2& end,
                                           const BufferBase* xAxis_, const BufferBase* yAxis_);

@@ -52,6 +52,8 @@ std::pair<T, T> adjustLimits(double min, double max) {
     }
 }
 
+}  // namespace
+
 BitSet rangeSelection(const BufferBase* buffer, double min, double max) {
     const auto* buf = buffer->getRepresentation<BufferRAM>();
 #include <warn/push>
@@ -72,8 +74,6 @@ BitSet rangeSelection(const BufferBase* buffer, double min, double max) {
     });
 #include <warn/pop>
 }
-
-}  // namespace
 
 BitSet boxSelect(const dvec2& start, const dvec2& end, const BufferBase* xAxis,
                  const BufferBase* yAxis) {
