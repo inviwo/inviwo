@@ -35,9 +35,6 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
-#include <inviwo/core/datastructures/image/imagetypes.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/interaction/pickingstate.h>
@@ -45,14 +42,11 @@
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
-#include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/minmaxproperty.h>
@@ -62,15 +56,13 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/marginproperty.h>
 #include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <inviwo/dataframe/properties/dataframecolormapproperty.h>
 #include <inviwo/dataframe/util/dataframeutil.h>
+#include <inviwo/dataframe/util/selectionutil.h>
 #include <modules/brushingandlinking/datastructures/brushingaction.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 #include <modules/fontrendering/properties/fontproperty.h>
@@ -93,21 +85,14 @@
 #include <cstdint>
 #include <iterator>
 #include <limits>
-#include <ostream>
 #include <tuple>
-#include <type_traits>
 #include <unordered_set>
 
-#include <fmt/core.h>
 #include <glm/common.hpp>
-#include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ParallelCoordinates::processorInfo_{
@@ -145,7 +130,7 @@ ParallelCoordinates::ParallelCoordinates()
     , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 20.0f)
     , selectedLine_("selectedLine", "Selected Line")
     , selectedLineWidth_("selectedLineWidth", "Line Width", 10.0f, 1.0f, 20.0f)
-    , selectedLineColorOverride_("selectedLineColorOverride", "Override Line Color", false)
+    , selectedLineColorOverride_("selectedLineColorOverride", "Override Line Color", true)
     , selectedLineColor_("selectedLineColor", "Color", vec4(1.0f, 0.769f, 0.247f, 1.0f), vec4(0.0f),
                          vec4(1.0f))
     , showFiltered_("showFiltered", "Show Filtered", false)
@@ -198,6 +183,16 @@ ParallelCoordinates::ParallelCoordinates()
     , margins_("margins", "Margins")
     , includeLabelsInMargin_("includeLabelsInMargins", "Include labels", true)
     , resetHandlePositions_("resetHandlePositions", "Reset Handle Positions")
+    , boxSelectionProperty_{"boxSelection", "Box Selection/Filtering"}
+    , boxSelectionMode_{"boxSelectionMode",
+                        "Selection Mode",
+                        {{"lines", "Lines", BoxSelectionMode::Lines},
+                         {"dataValues", "Data Values (on Columns)", BoxSelectionMode::DataValues}}}
+
+    , boxSelectionRenderer_{}
+    , boxSelection_{boxSelectionProperty_,
+                    [&](dvec2 screenPos, const size2_t& /*dims*/) { return screenPos; },
+                    MouseButton::Left}
 
     , linePicking_(this, 1, [&](PickingEvent* p) { linePicked(p); })
     , axisPicking_(this, 1,
@@ -216,7 +211,10 @@ ParallelCoordinates::ParallelCoordinates()
 
     imageInport_.setOptional(true);
 
-    addProperties(axisProperties_, colormap_, axisSelection_);
+    addProperties(axisProperties_, colormap_, axisSelection_, boxSelectionProperty_);
+    boxSelectionProperty_.insertProperty(0, boxSelectionMode_);
+    boxSelectionProperty_.mode_.setVisible(false);
+    boxSelectionProperty_.setCollapsed(true);
 
     selectedLineColor_.setSemantics(PropertySemantics::Color);
     selectedLineColorOverride_.addProperty(selectedLineColor_);
@@ -289,6 +287,14 @@ ParallelCoordinates::ParallelCoordinates()
         }
     });
 
+    util::for_each_in_tuple([&](auto& e) { boxSelectionProperty_.addProperty(e); },
+                            boxSelection_.properties());
+    boxSelectionCallback_ = boxSelection_.addEventCallback(
+        [this](AxisRangeEventState state, AxisRangeInteraction interaction,
+               AxisRangeInteractionMode mode, std::optional<std::array<dvec2, 2>> rect) {
+            boxSelection(state, interaction, mode, rect);
+        });
+
     setAllPropertiesCurrentStateAsDefault();
 }
 
@@ -344,7 +350,7 @@ void ParallelCoordinates::process() {
         std::vector<size_t> enabledAxes{enabledAxes_};
         std::erase_if(enabledAxes,
                       [&](auto id) { return id >= axes_.size() || !axes_[id].pcp->isChecked(); });
-        for (auto& axis : axes_) {
+        for (const auto& axis : axes_) {
             if (axis.pcp->isChecked() && !util::contains(enabledAxes, axis.pcp->columnId())) {
                 enabledAxes.push_back(axis.pcp->columnId());
             }
@@ -369,11 +375,15 @@ void ParallelCoordinates::process() {
         adjustMargins();
     }
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
 
     drawLines(dims);
     drawAxis(dims);
     drawHandles(dims);
+
+    plot::BoxSelectionData sel;
+    boxSelectionProperty_.update(sel);
+    boxSelectionRenderer_.render(boxSelection_.getDragRectangle(), dims, sel);
 
     utilgl::deactivateCurrentTarget();
 
@@ -397,7 +407,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
     axisPicking_.resize(nColumns);
     lines_.axisFlipped.resize(nColumns);
 
-    for (auto [columnIndex, column] : util::enumerate(*data)) {
+    for (const auto& [columnIndex, column] : util::enumerate(*data)) {
         const auto& displayName = column->getHeader();
         const auto identifier = util::stripIdentifier(displayName);
 
@@ -410,9 +420,9 @@ void ParallelCoordinates::createOrUpdateProperties() {
                 axisProperties_.removeProperty(identifier);
             }
 
-            auto prop = std::make_unique<PCPAxisSettings>(identifier, displayName, id);
-            auto ptr = prop.get();
-            axisProperties_.addProperty(std::move(prop));
+            auto axisSettingsProp = std::make_unique<PCPAxisSettings>(identifier, displayName, id);
+            auto* ptr = axisSettingsProp.get();
+            axisProperties_.addProperty(std::move(axisSettingsProp));
             return ptr;
         }();
 
@@ -443,7 +453,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
         // initialize corresponding flipped flag for the line shader
         lines_.axisFlipped[axes_.size()] = static_cast<int>(prop->invertRange);
 
-        axes_.push_back({prop, std::move(renderer), std::move(slider)});
+        axes_.emplace_back(prop, std::move(renderer), std::move(slider));
     }
 
     for (auto& axis : axes_) {
@@ -464,8 +474,8 @@ void ParallelCoordinates::buildLineMesh() {
     rangesDirty_ = false;
     auto& mesh = lines_.mesh;
 
-    for (auto& item : mesh.getBuffers()) {
-        item.second->getEditableRepresentation<BufferRAM>()->clear();
+    for (const auto& [info, buffer] : mesh.getBuffers()) {
+        buffer->getEditableRepresentation<BufferRAM>()->clear();
     }
 
     const auto numberOfAxis = axes_.size();
@@ -475,12 +485,12 @@ void ParallelCoordinates::buildLineMesh() {
     linePicking_.resize(numberOfLines);
 
     const auto metaAxisId = colormap_.selectedColorAxis.get();
-    const auto metaAxes = axes_[glm::clamp(metaAxisId, 0, static_cast<int>(axes_.size()) - 1)].pcp;
+    auto* const metaAxes = axes_[glm::clamp(metaAxisId, 0, static_cast<int>(axes_.size()) - 1)].pcp;
 
     for (size_t i = 0; i < numberOfLines; i++) {
         const auto meta = static_cast<float>(metaAxes->getNormalizedAt(i));
         const auto picking = static_cast<uint32_t>(linePicking_.getPickingId(i));
-        for (auto& axis : axes_) {
+        for (const auto& axis : axes_) {
             mesh.addVertex(static_cast<float>(axis.pcp->getNormalizedAt(i)), picking, meta);
         }
     }
@@ -499,8 +509,7 @@ void ParallelCoordinates::buildLineIndices() {
 
     lines_.sizes.resize(numberOfLines, static_cast<int>(numberOfEnabledAxis));
     if (!lines_.sizes.empty() && lines_.sizes.front() != static_cast<int>(numberOfEnabledAxis)) {
-        std::fill(lines_.sizes.begin(), lines_.sizes.end(),
-                  static_cast<GLsizei>(numberOfEnabledAxis));
+        std::ranges::fill(lines_.sizes, static_cast<int>(numberOfEnabledAxis));
     }
 
     auto& indices = lines_.indices.getEditableRAMRepresentation()->getDataContainer();
@@ -530,8 +539,9 @@ void ParallelCoordinates::buildAxisPositions() {
     const auto numberOfEnabledAxis = enabledAxes_.size();
 
     lines_.axisPositions.resize(numberOfAxis, 0.0f);
-    for (auto&& item : util::enumerate(enabledAxes_)) {
-        lines_.axisPositions[item.second()] = item.first() / float(numberOfEnabledAxis - 1);
+    for (auto&& [index, axisIndex] : util::enumerate(enabledAxes_)) {
+        lines_.axisPositions[axisIndex] =
+            static_cast<float>(index) / static_cast<float>(numberOfEnabledAxis - 1);
     }
 }
 
@@ -648,7 +658,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     TextureUnitContainer unit;
     utilgl::bindAndSetUniforms(lineShader_, unit, colormap_.tf);
 
-    bool enableBlending =
+    const bool enableBlending =
         (blendMode_.get() == BlendMode::Additive || blendMode_.get() == BlendMode::Subtractive ||
          blendMode_.get() == BlendMode::Regular);
     // pcp_common.glsl
@@ -658,8 +668,6 @@ void ParallelCoordinates::drawLines(size2_t size) {
     // pcp_lines.vert
     lineShader_.setUniform("axisPositions", lines_.axisPositions);
     lineShader_.setUniform("axisFlipped", lines_.axisFlipped);
-    // pcp_lines.geom
-    // lineWidth;
 
     // pcp_lines.frag
     lineShader_.setUniform("additiveBlend", enableBlending);
@@ -668,8 +676,8 @@ void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.setUniform("selectColor", selectedLineColor_.get());
 
     {
-        auto meshGL = lines_.mesh.getRepresentation<MeshGL>();
-        utilgl::Enable<MeshGL> enable{meshGL};
+        const auto* meshGL = lines_.mesh.getRepresentation<MeshGL>();
+        const utilgl::Enable<MeshGL> enable{meshGL};
         lines_.indices.getRepresentation<BufferGL>()->bind();
 
         std::array<float, 4> width = {lineWidth_, lineWidth_, selectedLineWidth_,
@@ -720,7 +728,7 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
         p->getPressItem() == PickingPressItem::Primary) {
 
         auto iCol = dataFrame_.getData()->getIndexColumn();
-        auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
         auto id = p->getPickedId();
 
@@ -799,7 +807,7 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, uint32_t columnId, PickTyp
     };
 
     if (p->getPressState() == PickingPressState::Move &&
-        p->getPressItems().count(PickingPressItem::Primary) && pt != PickType::Lower &&
+        p->getPressItems().contains(PickingPressItem::Primary) && pt != PickType::Lower &&
         pt != PickType::Upper) {
         isDragging_ = true;
 
@@ -848,11 +856,7 @@ void ParallelCoordinates::updateBrushing() {
     brushingDirty_ = false;
 
     auto iCol = dataFrame_.getData()->getIndexColumn();
-    auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-
-    const auto nRows = indexCol.size();
-
-    std::vector<bool> brushed(nRows, false);
+    const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
     auto brushAxis = [&](const std::vector<bool>& filtered, std::string_view axisName) {
         BitSet b;
@@ -864,7 +868,7 @@ void ParallelCoordinates::updateBrushing() {
         brushingAndLinking_.filter(axisName, b);
     };
 
-    for (auto& axis : axes_) {
+    for (const auto& axis : axes_) {
         brushAxis(axis.pcp->getBrushed(), axis.pcp->caption_);
     }
 }
@@ -876,7 +880,7 @@ std::pair<size2_t, size2_t> ParallelCoordinates::axisPos(size_t columnId) const 
     const size2_t upperRight(rect.second);
 
     const auto dx = columnId < lines_.axisPositions.size() ? lines_.axisPositions[columnId] : 0.0f;
-    const auto x = static_cast<size_t>(dx * (upperRight.x - lowerLeft.x));
+    const auto x = static_cast<size_t>(dx * (rect.second.x - rect.first.x));
     const auto startPos = lowerLeft + size2_t(x, 0);
     const auto endPos = size2_t(lowerLeft.x + x, upperRight.y);
 
@@ -894,11 +898,165 @@ void ParallelCoordinates::serialize(Serializer& s) const {
 
 void ParallelCoordinates::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    decltype(enabledAxes_) old{enabledAxes_};
+    const decltype(enabledAxes_) old{enabledAxes_};
     d.deserialize("enabledAxes", enabledAxes_, "axis");
     enabledAxesModified_ |= old != enabledAxes_;
 }
 
-}  // namespace plot
+void ParallelCoordinates::boxSelection(AxisRangeEventState state, AxisRangeInteraction interaction,
+                                       AxisRangeInteractionMode mode,
+                                       std::optional<std::array<dvec2, 2>> screenRect) {
 
-}  // namespace inviwo
+    if (state == AxisRangeEventState::Started) {
+        if (interaction == AxisRangeInteraction::Selection) {
+            initialBrushingIndices_ = brushingAndLinking_.getSelectedIndices();
+        }
+    } else if (state == AxisRangeEventState::Finished) {
+        initialBrushingIndices_.clear();
+        if (mode == AxisRangeInteractionMode::Clear) {
+            if (interaction == AxisRangeInteraction::Selection) {
+                brushingAndLinking_.select(BitSet{});
+                invalidate(InvalidationLevel::InvalidOutput);
+            }
+        } else {
+            // trigger redrawing
+            invalidate(InvalidationLevel::InvalidOutput);
+        }
+    } else if (state == AxisRangeEventState::Updated && screenRect) {
+        auto& r = *screenRect;
+        if (r[0].x > r[1].x) {
+            std::swap(r[0].x, r[1].x);
+        }
+        if (r[0].y > r[1].y) {
+            std::swap(r[0].y, r[1].y);
+        }
+
+        if (interaction == AxisRangeInteraction::Selection) {
+            BitSet b;
+            switch (boxSelectionMode_) {
+                using enum BoxSelectionMode;
+                case DataValues:
+                    b = columnDataValueIntersections(r);
+                    break;
+                case Lines:
+                    b = lineIntersections(r);
+                    break;
+                default:
+                    break;
+            }
+            b -= brushingAndLinking_.getFilteredIndices();
+            if (mode == AxisRangeInteractionMode::Append) {
+                b |= initialBrushingIndices_;
+            }
+            brushingAndLinking_.select(b);
+            invalidate(InvalidationLevel::InvalidOutput);
+        }
+    }
+}
+
+namespace {
+
+bool lineRectangleOverlap(const std::array<dvec2, 2>& screenRect, dvec2 lineStart, dvec2 lineEnd) {
+    const std::array corners{
+        screenRect[0],
+        dvec2{screenRect[1].x, screenRect[0].y},
+        screenRect[1],
+        dvec2{screenRect[0].x, screenRect[1].y},
+    };
+
+    const dvec2 dir{glm::normalize(lineEnd - lineStart)};
+    const dvec2 pDir{-dir.y, dir.x};
+    const double pDist{glm::dot(pDir, lineStart)};
+
+    const dvec4 lineDistances{
+        glm::dot(pDir, corners[0]) - pDist, glm::dot(pDir, corners[1]) - pDist,
+        glm::dot(pDir, corners[2]) - pDist, glm::dot(pDir, corners[3]) - pDist};
+    // if distances have opposite signs, the infinite line overlaps with the rectangle
+    return std::signbit(glm::compMin(lineDistances)) != std::signbit(glm::compMax(lineDistances));
+}
+
+double rangeConversion(double v, dvec2 sourceRange, dvec2 destRange) {
+    return (v - sourceRange.x) / (sourceRange.y - sourceRange.x) * (destRange.y - destRange.x) +
+           destRange.x;
+}
+
+}  // namespace
+
+BitSet ParallelCoordinates::lineIntersections(const std::array<dvec2, 2>& screenRect) const {
+    auto axisPosd = [this](auto columnId) {
+        auto [lower, upper] = axisPos(columnId);
+        return std::pair<dvec2, dvec2>{lower, upper};
+    };
+
+    const auto data = dataFrame_.getData();
+    auto iCol = dataFrame_.getData()->getIndexColumn();
+    const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+
+    BitSet b;
+    for (const auto& [left, right] :
+         std::views::zip(enabledAxes_, enabledAxes_ | std::views::drop(1))) {
+
+        const auto leftColumnId = axes_[left].pcp->columnId();
+        const auto rightColumnId = axes_[right].pcp->columnId();
+
+        auto [leftLower, leftUpper] = axisPosd(leftColumnId);
+        auto [rightLower, rightUpper] = axisPosd(rightColumnId);
+
+        if (std::min(leftLower.x, rightLower.x) <= screenRect[1].x &&
+            std::max(leftLower.x, rightLower.x) >= screenRect[0].x) {
+            auto leftColumn = data->getColumn(leftColumnId);
+            auto rightColumn = data->getColumn(rightColumnId);
+            // adjust selection rectangle to fit in between the two columns
+            const std::array rect{
+                dvec2{std::max(std::min(leftLower.x, rightLower.x), screenRect[0].x),
+                      screenRect[0].y},
+                dvec2{std::min(std::max(leftLower.x, rightLower.x), screenRect[1].x),
+                      screenRect[1].y}};
+
+            auto leftAxisRange{leftColumn->getRange()};
+            if (axes_[left].pcp->invertRange) std::swap(leftAxisRange.x, leftAxisRange.y);
+            auto rightAxisRange{rightColumn->getRange()};
+            if (axes_[right].pcp->invertRange) std::swap(rightAxisRange.x, rightAxisRange.y);
+
+            for (size_t i = 0; i < data->getNumberOfRows(); ++i) {
+                const dvec2 lineStart{leftLower.x,
+                                      rangeConversion(leftColumn->getAsDouble(i), leftAxisRange,
+                                                      dvec2{leftLower.y, leftUpper.y})};
+                const dvec2 lineEnd{rightLower.x,
+                                    rangeConversion(rightColumn->getAsDouble(i), rightAxisRange,
+                                                    dvec2{rightLower.y, rightUpper.y})};
+
+                if (lineRectangleOverlap(rect, lineStart, lineEnd)) {
+                    b.add(indexCol[i]);
+                }
+            }
+        }
+    }
+    return b;
+}
+
+BitSet ParallelCoordinates::columnDataValueIntersections(
+    const std::array<dvec2, 2>& screenRect) const {
+    const auto data = dataFrame_.getData();
+    BitSet b;
+    for (const auto& axis : axes_) {
+        if (!axis.pcp->isChecked()) continue;
+        auto [lower, upper] = axisPos(axis.pcp->columnId());
+        const dvec2 lowerd{lower};
+        const dvec2 upperd{upper};
+
+        if (screenRect[0].x <= lowerd.x && lowerd.x <= screenRect[1].x) {
+            dvec2 axisRange{axis.pcp->getRange()};
+            if (axis.pcp->invertRange) std::swap(axisRange.x, axisRange.y);
+            const double min =
+                rangeConversion(screenRect[0].y, dvec2{lowerd.y, upperd.y}, axisRange);
+            const double max =
+                rangeConversion(screenRect[1].y, dvec2{lowerd.y, upperd.y}, axisRange);
+            b |= util::rangeSelection(data->getColumn(axis.pcp->columnId())->getBuffer().get(), min,
+                                      max);
+        }
+    }
+    return b;
+}
+
+}  // namespace inviwo::plot
