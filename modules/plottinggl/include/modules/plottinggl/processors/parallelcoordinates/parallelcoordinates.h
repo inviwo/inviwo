@@ -129,6 +129,7 @@ public:
     FontProperty captionSettings_;
     OptionProperty<LabelPosition> captionPosition_;
     FloatProperty captionOffset_;
+    FloatProperty captionRotation_;
     FloatVec4Property captionColor_;
 
     FontProperty labelSettings_;
