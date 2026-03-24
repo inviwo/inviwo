@@ -66,19 +66,20 @@ uniform CameraParameters camera =
 // line stippling
 uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
 
-in float segmentLength_;  // total length of the current line segment in screen space
-in float distanceWorld_;  // distance in world coords to segment start
-in vec2
-    texCoord_;  // x = distance to segment start, y = orth. distance to center (in screen coords)
-in vec4 color_;
-flat in vec4 pickColor_;
+in LineGeom {
+    vec2 texCoord; // x = distance to segment start, y = orth. distance to center (in screen coords)
+    vec4 color;
+    flat vec4 pickColor;
+    float segmentLength; // total length of the current line segment in screen space
+    float distanceWorld;  // distance in world coords to segment start
+} fragment;
 
 void main() {
 #if defined(OVERWRITE_COLOR)
     vec4 color = overwriteColor;
 
 #else //UNIFORM_ALPHA
-    vec4 color = color_;
+    vec4 color = fragment.color;
 #if defined(UNIFORM_ALPHA)
     color.a = uniformAlpha;
 #endif // UNIFORM_ALPHA
@@ -88,11 +89,11 @@ void main() {
     float linewidthHalf = lineWidth * 0.5;
 
     // make joins round by using the texture coords
-    float distance = abs(texCoord_.y);
-    if (texCoord_.x < 0.0) {
-        distance = length(texCoord_);
-    } else if (texCoord_.x > segmentLength_) {
-        distance = length(vec2(texCoord_.x - segmentLength_, texCoord_.y));
+    float distance = abs(fragment.texCoord.y);
+    if (fragment.texCoord.x < 0.0) {
+        distance = length(fragment.texCoord);
+    } else if (fragment.texCoord.x > fragment.segmentLength) {
+        distance = length(vec2(fragment.texCoord.x - fragment.segmentLength, fragment.texCoord.y));
     }
 
     float d = distance - linewidthHalf + antialiasing;
@@ -109,10 +110,10 @@ void main() {
     float stippleLength = stippling.stippleLength + stippling.spacing;
 #if STIPPLE_MODE == 2
     // in world space
-    float v = (distanceWorld_ * stippling.worldScale);
+    float v = (fragment.distanceWorld * stippling.worldScale);
 #else
     // in screen space
-    float v = (texCoord_.x + stippling.offset) / stippleLength;
+    float v = (fragment.texCoord.x + stippling.offset) / stippleLength;
 #endif  // STIPPLE_MODE
 
     float t = fract(v) * stippleLength / stippling.spacing;
@@ -156,6 +157,6 @@ void main() {
     gl_FragDepth = depth;
 #endif  // ENABLE_ROUND_DEPTH_PROFILE
     FragData0 = vec4(color.xyz, color.a * alpha);
-    PickingData = pickColor_;
+    PickingData = fragment.pickColor;
 #endif // not USE_FRAGMENT_LIST
 }
