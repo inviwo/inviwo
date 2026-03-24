@@ -190,6 +190,8 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
             );
         });
 
+    m.def("transpose", [](const Mat& m) { return glm::transpose(m); });
+
     if constexpr (std::floating_point<T>) {
         using Mat2 = glm::mat<2, Cols, T>;
         using Mat3 = glm::mat<3, Cols, T>;
@@ -200,6 +202,11 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
             .def(pybind11::self * Mat2())
             .def(pybind11::self * Mat3())
             .def(pybind11::self * Mat4());
+
+        if constexpr (Cols == Rows) {
+            m.def("inverse", [](const Mat& m) { return glm::inverse(m); });
+            m.def("determinant", [](const Mat& m) { return glm::determinant(m); });
+        }
     }
 
     pybind11::bind_vector<std::vector<Mat>, pybind11::smart_holder>(m, classname + "Vector",
