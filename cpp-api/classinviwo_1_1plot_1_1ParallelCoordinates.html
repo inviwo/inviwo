@@ -117,16 +117,19 @@ $(function(){initNavTree('classinviwo_1_1plot_1_1ParallelCoordinates.html','','c
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a098ac7914cfa8da863476823bec705eb" id="r_a098ac7914cfa8da863476823bec705eb"><td class="memItemLeft"><a id="a098ac7914cfa8da863476823bec705eb" name="a098ac7914cfa8da863476823bec705eb"></a>enum class &#160;</td><td class="memItemRight"><b>AxisSelection</b> { <b>Single</b>
+<tr class="memitem:ae01ccbcd7f481bb1731e3d52462ab649" id="r_ae01ccbcd7f481bb1731e3d52462ab649"><td class="memItemLeft"><a id="ae01ccbcd7f481bb1731e3d52462ab649" name="ae01ccbcd7f481bb1731e3d52462ab649"></a>enum class &#160;</td><td class="memItemRight"><b>AxisSelection</b> : std::uint8_t { <b>Single</b>
 , <b>Multiple</b>
 , <b>None</b>
  }</td></tr>
-<tr class="memitem:af3653d81e58c2d9fa5f729d0e9ebfbcb" id="r_af3653d81e58c2d9fa5f729d0e9ebfbcb"><td class="memItemLeft"><a id="af3653d81e58c2d9fa5f729d0e9ebfbcb" name="af3653d81e58c2d9fa5f729d0e9ebfbcb"></a>enum class &#160;</td><td class="memItemRight"><b>BlendMode</b> { <b>None</b> = 0
+<tr class="memitem:a9abcf8f68c53380fe79b2c306f0d8edb" id="r_a9abcf8f68c53380fe79b2c306f0d8edb"><td class="memItemLeft"><a id="a9abcf8f68c53380fe79b2c306f0d8edb" name="a9abcf8f68c53380fe79b2c306f0d8edb"></a>enum class &#160;</td><td class="memItemRight"><b>BlendMode</b> : std::uint8_t { <b>None</b> = 0
 , <b>Additive</b> = 1
 , <b>Subtractive</b> = 2
 , <b>Regular</b> = 3
  }</td></tr>
-<tr class="memitem:aa22386aba516180da1d3eeb9a67f21d1" id="r_aa22386aba516180da1d3eeb9a67f21d1"><td class="memItemLeft"><a id="aa22386aba516180da1d3eeb9a67f21d1" name="aa22386aba516180da1d3eeb9a67f21d1"></a>enum class &#160;</td><td class="memItemRight"><b>LabelPosition</b> { <b>None</b>
+<tr class="memitem:ac9ac52287be5b07d161f77f11cbc8e4a" id="r_ac9ac52287be5b07d161f77f11cbc8e4a"><td class="memItemLeft"><a id="ac9ac52287be5b07d161f77f11cbc8e4a" name="ac9ac52287be5b07d161f77f11cbc8e4a"></a>enum class &#160;</td><td class="memItemRight"><b>BoxSelectionMode</b> : std::uint8_t { <b>Lines</b>
+, <b>DataValues</b>
+ }</td></tr>
+<tr class="memitem:ab987a953ea1bdf89ed15ef35ec5342d7" id="r_ab987a953ea1bdf89ed15ef35ec5342d7"><td class="memItemLeft"><a id="ab987a953ea1bdf89ed15ef35ec5342d7" name="ab987a953ea1bdf89ed15ef35ec5342d7"></a>enum class &#160;</td><td class="memItemRight"><b>LabelPosition</b> : std::uint8_t { <b>None</b>
 , <b>Above</b>
 , <b>Below</b>
  }</td></tr>
@@ -416,6 +419,10 @@ FloatVec4Property&#160;</td><td class="memItemRight"><b>axisSelectedColor_</b></
 FloatProperty&#160;</td><td class="memItemRight"><b>axisSize_</b></td></tr>
 <tr class="memitem:a2c59ef58931045993cc5d06ef4b7b0e6" id="r_a2c59ef58931045993cc5d06ef4b7b0e6"><td class="memItemLeft"><a id="a2c59ef58931045993cc5d06ef4b7b0e6" name="a2c59ef58931045993cc5d06ef4b7b0e6"></a>
 <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; BlendMode &gt;&#160;</td><td class="memItemRight"><b>blendMode_</b></td></tr>
+<tr class="memitem:a427ff85a8f0649b4c4cbb23859b7e713" id="r_a427ff85a8f0649b4c4cbb23859b7e713"><td class="memItemLeft"><a id="a427ff85a8f0649b4c4cbb23859b7e713" name="a427ff85a8f0649b4c4cbb23859b7e713"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; BoxSelectionMode &gt;&#160;</td><td class="memItemRight"><b>boxSelectionMode_</b></td></tr>
+<tr class="memitem:ad58d6dac77b3bb0cb3b3bbfdc628c09e" id="r_ad58d6dac77b3bb0cb3b3bbfdc628c09e"><td class="memItemLeft"><a id="ad58d6dac77b3bb0cb3b3bbfdc628c09e" name="ad58d6dac77b3bb0cb3b3bbfdc628c09e"></a>
+<a class="el" href="classinviwo_1_1plot_1_1BoxSelectionProperty.html">BoxSelectionProperty</a>&#160;</td><td class="memItemRight"><b>boxSelectionProperty_</b></td></tr>
 <tr class="memitem:a5835259fcabc2d74c365281d629d1d59" id="r_a5835259fcabc2d74c365281d629d1d59"><td class="memItemLeft"><a id="a5835259fcabc2d74c365281d629d1d59" name="a5835259fcabc2d74c365281d629d1d59"></a>
 <a class="el" href="classinviwo_1_1BrushingAndLinkingInport.html">BrushingAndLinkingInport</a>&#160;</td><td class="memItemRight"><b>brushingAndLinking_</b></td></tr>
 <tr class="memitem:aa3cc0be16600fb88ead0bd0277f1fb6f" id="r_aa3cc0be16600fb88ead0bd0277f1fb6f"><td class="memItemLeft"><a id="aa3cc0be16600fb88ead0bd0277f1fb6f" name="aa3cc0be16600fb88ead0bd0277f1fb6f"></a>
@@ -492,7 +499,7 @@ static const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorIn
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-types" class="groupheader"><a id="pro-types" name="pro-types"></a>
 Protected Types</h2></td></tr>
-<tr class="memitem:aba31cf29397209f7291f80e0c0804080" id="r_aba31cf29397209f7291f80e0c0804080"><td class="memItemLeft"><a id="aba31cf29397209f7291f80e0c0804080" name="aba31cf29397209f7291f80e0c0804080"></a>enum class &#160;</td><td class="memItemRight"><b>PickType</b> { <b>Axis</b>
+<tr class="memitem:a4fd1e22dcd200e359f9cdec85766d8ff" id="r_a4fd1e22dcd200e359f9cdec85766d8ff"><td class="memItemLeft"><a id="a4fd1e22dcd200e359f9cdec85766d8ff" name="a4fd1e22dcd200e359f9cdec85766d8ff"></a>enum class &#160;</td><td class="memItemRight"><b>PickType</b> : std::uint8_t { <b>Axis</b>
 , <b>Lower</b>
 , <b>Upper</b>
 , <b>Groove</b>
