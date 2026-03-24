@@ -22,6 +22,7 @@ inviwopy.glm
       compMul
       cos
       cross
+      determinant
       distance
       distance2
       dot
@@ -29,6 +30,7 @@ inviwopy.glm
       floor
       greaterThan
       greaterThanEqual
+      inverse
       length
       length2
       lessThan
@@ -37,6 +39,7 @@ inviwopy.glm
       rotate
       sin
       tan
+      transpose
    
    .. rubric:: Classes
 
