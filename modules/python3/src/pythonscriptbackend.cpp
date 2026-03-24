@@ -26,53 +26,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/python3qt/python3qtmoduledefine.h>
+#include <modules/python3/pythonscriptbackend.h>
 
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
+#include <modules/python3/pyanyconverter.h>
 
-#include <memory>
+#include <inviwo/core/util/exception.h>
 
-class QHBoxLayout;
+#include <pybind11/pybind11.h>
+#include <pybind11/eval.h>
 
 namespace inviwo {
-class ScriptProperty;
-class EditableLabelQt;
-class LineEditQt;
-class PropertyEditorWidget;
 
-/**
- * @brief Widget for a ScriptProperty providing a Python script editor.
- *
- * Displays the script source in a line edit and offers a text editor button
- * to open a Python-syntax-highlighted editor dock widget.
- * When the Python3Qt module is loaded, it also sets a Python execution backend
- * on the ScriptProperty so that scripts can be called at runtime.
- *
- * @see ScriptProperty
- * @see PythonEditorDockWidget
- */
-class IVW_MODULE_PYTHON3QT_API PythonScriptPropertyWidgetQt : public PropertyWidgetQt {
-public:
-    explicit PythonScriptPropertyWidgetQt(ScriptProperty* property);
-    virtual ~PythonScriptPropertyWidgetQt();
+PythonScriptBackendFactoryObject::PythonScriptBackendFactoryObject(const PyAnyConverter& converter)
+    : ScriptBackendFactoryObject("python"), converter_{converter} {}
 
-    virtual void updateFromProperty() override;
+ScriptProperty::Backend PythonScriptBackendFactoryObject::create() const {
+    return [&converter = converter_](const std::string& source,
+                                     const std::vector<std::any>& args) -> std::any {
+        namespace py = pybind11;
+        const py::gil_scoped_acquire guard{};
 
-    virtual bool hasEditorWidget() const override;
-    virtual PropertyEditorWidget* getEditorWidget() override;
+        py::dict globals = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
-private:
-    void setPropertyValue();
-    void initEditor();
-    void addEditor();
+        py::list pyArgs;
+        for (const auto& arg : args) {
+            pyArgs.append(converter.toPyObject(arg));
+        }
+        globals["__args__"] = pyArgs;
 
-    ScriptProperty* property_;
-    LineEditQt* lineEdit_;
-    QHBoxLayout* hWidgetLayout_;
-    std::unique_ptr<TextEditorDockWidget> editor_;
-};
+        try {
+            py::exec(source, globals, globals);
+        } catch (const py::error_already_set& e) {
+            throw Exception(IVW_CONTEXT_CUSTOM("PythonScriptBackend"),
+                            "Python script error: {}", e.what());
+        }
+
+        if (globals.contains("__result__")) {
+            return converter.toAny(globals["__result__"]);
+        }
+
+        return std::any{};
+    };
+}
 
 }  // namespace inviwo

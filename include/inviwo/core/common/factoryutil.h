@@ -53,6 +53,7 @@ class PortInspectorFactory;
 class PortInspectorManager;
 class RepresentationMetaFactory;
 class RepresentationConverterMetaFactory;
+class ScriptBackendFactory;
 
 class ResourceManager;
 
@@ -239,6 +240,17 @@ IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaF
     Processor* processor);
 IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory(
     Property* property);
+///@}
+
+///@{
+/**
+ * ScriptBackend factory
+ * @see ScriptProperty ScriptBackendFactory ScriptBackendFactoryObject
+ */
+IVW_CORE_API ScriptBackendFactory* getScriptBackendFactory();
+IVW_CORE_API ScriptBackendFactory* getScriptBackendFactory(InviwoApplication* app);
+IVW_CORE_API ScriptBackendFactory* getScriptBackendFactory(Processor* processor);
+IVW_CORE_API ScriptBackendFactory* getScriptBackendFactory(Property* property);
 ///@}
 
 ///@{

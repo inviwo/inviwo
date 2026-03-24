@@ -26,53 +26,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
-#include <modules/python3qt/python3qtmoduledefine.h>
-
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
-
-#include <memory>
-
-class QHBoxLayout;
+#include <modules/python3/python3moduledefine.h>
+#include <inviwo/core/properties/scriptbackendfactory.h>
 
 namespace inviwo {
-class ScriptProperty;
-class EditableLabelQt;
-class LineEditQt;
-class PropertyEditorWidget;
+
+class PyAnyConverter;
 
 /**
- * @brief Widget for a ScriptProperty providing a Python script editor.
+ * @brief ScriptBackendFactoryObject that creates Python script backends.
  *
- * Displays the script source in a line edit and offers a text editor button
- * to open a Python-syntax-highlighted editor dock widget.
- * When the Python3Qt module is loaded, it also sets a Python execution backend
- * on the ScriptProperty so that scripts can be called at runtime.
+ * Uses the PyAnyConverter from the Python3Module for type conversions between
+ * std::any and pybind11::object. The created backends execute Python scripts
+ * using pybind11::exec and return results via the `__result__` convention.
  *
+ * @see ScriptBackendFactoryObject
+ * @see PyAnyConverter
  * @see ScriptProperty
- * @see PythonEditorDockWidget
  */
-class IVW_MODULE_PYTHON3QT_API PythonScriptPropertyWidgetQt : public PropertyWidgetQt {
+class IVW_MODULE_PYTHON3_API PythonScriptBackendFactoryObject : public ScriptBackendFactoryObject {
 public:
-    explicit PythonScriptPropertyWidgetQt(ScriptProperty* property);
-    virtual ~PythonScriptPropertyWidgetQt();
+    /**
+     * @param converter Reference to the PyAnyConverter for type conversions.
+     *        Must remain valid for the lifetime of any backends created by this factory object.
+     */
+    explicit PythonScriptBackendFactoryObject(const PyAnyConverter& converter);
 
-    virtual void updateFromProperty() override;
-
-    virtual bool hasEditorWidget() const override;
-    virtual PropertyEditorWidget* getEditorWidget() override;
+    virtual ScriptProperty::Backend create() const override;
 
 private:
-    void setPropertyValue();
-    void initEditor();
-    void addEditor();
-
-    ScriptProperty* property_;
-    LineEditQt* lineEdit_;
-    QHBoxLayout* hWidgetLayout_;
-    std::unique_ptr<TextEditorDockWidget> editor_;
+    const PyAnyConverter& converter_;
 };
 
 }  // namespace inviwo

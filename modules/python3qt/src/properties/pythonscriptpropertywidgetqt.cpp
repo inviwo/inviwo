@@ -29,20 +29,13 @@
 
 #include <modules/python3qt/properties/pythonscriptpropertywidgetqt.h>
 
-#include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/properties/scriptproperty.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/moduleutils.h>
-#include <modules/python3/pyanyconverter.h>
-#include <modules/python3/python3module.h>
 #include <modules/python3qt/properties/pythoneditordockwidget.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/lineeditqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-
-#include <pybind11/pybind11.h>
-#include <pybind11/eval.h>
 
 #include <any>
 #include <string>
@@ -98,7 +91,6 @@ PythonScriptPropertyWidgetQt::PythonScriptPropertyWidgetQt(ScriptProperty* prope
     }
 
     addEditor();
-    installPythonBackend();
     updateFromProperty();
 }
 
@@ -133,38 +125,6 @@ void PythonScriptPropertyWidgetQt::addEditor() {
         if (!editor_) initEditor();
         editor_->updateFromProperty();
         editor_->setVisible(true);
-    });
-}
-
-void PythonScriptPropertyWidgetQt::installPythonBackend() {
-    auto* app = util::getInviwoApplication(property_);
-    const auto& converter = util::getModuleByTypeOrThrow<Python3Module>(app).getPyAnyConverter();
-
-    property_->setBackend([&converter](const std::string& source,
-                                       const std::vector<std::any>& args) -> std::any {
-        namespace py = pybind11;
-        const py::gil_scoped_acquire guard{};
-
-        py::dict globals = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
-
-        py::list pyArgs;
-        for (const auto& arg : args) {
-            pyArgs.append(converter.toPyObject(arg));
-        }
-        globals["__args__"] = pyArgs;
-
-        try {
-            py::exec(source, globals, globals);
-        } catch (const py::error_already_set& e) {
-            throw Exception(IVW_CONTEXT_CUSTOM("PythonScriptPropertyWidgetQt"),
-                            "Python script error: {}", e.what());
-        }
-
-        if (globals.contains("__result__")) {
-            return converter.toAny(globals["__result__"]);
-        }
-
-        return std::any{};
     });
 }
 

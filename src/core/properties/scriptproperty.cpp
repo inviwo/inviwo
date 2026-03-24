@@ -29,6 +29,8 @@
 
 #include <inviwo/core/properties/scriptproperty.h>
 
+#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/properties/scriptbackendfactory.h>
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
@@ -67,14 +69,29 @@ ScriptProperty& ScriptProperty::setDefaultSource(std::string_view source) {
 
 void ScriptProperty::setBackend(Backend backend) { backend_ = std::move(backend); }
 
-bool ScriptProperty::hasBackend() const { return static_cast<bool>(backend_); }
+bool ScriptProperty::hasBackend() const {
+    if (backend_) return true;
+    if (auto* factory = util::getScriptBackendFactory(const_cast<ScriptProperty*>(this))) {
+        return !factory->getKeys().empty();
+    }
+    return false;
+}
 
 std::any ScriptProperty::call(std::vector<std::any> args) const {
-    if (!backend_) {
-        throw Exception(IVW_CONTEXT, "No script backend set for ScriptProperty '{}'",
-                        getDisplayName());
+    if (backend_) {
+        return backend_(source_.value, args);
     }
-    return backend_(source_.value, args);
+
+    // Fall back to the factory
+    if (auto* factory = util::getScriptBackendFactory(const_cast<ScriptProperty*>(this))) {
+        auto backend = factory->createDefault();
+        if (backend) {
+            return backend(source_.value, args);
+        }
+    }
+
+    throw Exception(IVW_CONTEXT, "No script backend set for ScriptProperty '{}'",
+                    getDisplayName());
 }
 
 ScriptProperty& ScriptProperty::setCurrentStateAsDefault() {

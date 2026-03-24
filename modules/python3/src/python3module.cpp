@@ -49,6 +49,7 @@
 #include <inviwo/core/util/sourcecontext.h>
 #include <modules/python3/pyanyconverter.h>
 #include <modules/python3/pythonscript.h>
+#include <modules/python3/pythonscriptbackend.h>
 #include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/pythonlogger.h>
 #include <modules/python3/volumepy.h>
@@ -189,6 +190,9 @@ Python3Module::Python3Module(InviwoApplication* app)
     pyAnyConverter_.registerToAny<double, pybind11::float_>();
     pyAnyConverter_.registerToAny<int, pybind11::int_>();
     pyAnyConverter_.registerToAny<std::string, pybind11::str>();
+
+    // Register Python script backend with the factory
+    registerScriptBackend(std::make_unique<PythonScriptBackendFactoryObject>(pyAnyConverter_));
 }
 
 Python3Module::~Python3Module() {
