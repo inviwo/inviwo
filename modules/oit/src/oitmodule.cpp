@@ -72,4 +72,25 @@ OITModule::OITModule(InviwoApplication* app) : InviwoModule(app, "Oit") {
     registerPort<RasterizationOutport>();
 }
 
+int OITModule::getVersion() const { return 1; }
+
+std::unique_ptr<VersionConverter> OITModule::getConverter(int version) const {
+    return std::make_unique<Converter>(version);
+}
+
+OITModule::Converter::Converter(int version) : version_(version) {}
+
+bool OITModule::Converter::convert(TxElement* root) {
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            res |= xml::renamePortIdentifier(root, "org.inviwo.RasterizationRenderer",
+                                             "rastarizations", "rasterizations");
+            return res;
+        }
+        default:
+            return false;
+    }
+}
+
 }  // namespace inviwo
