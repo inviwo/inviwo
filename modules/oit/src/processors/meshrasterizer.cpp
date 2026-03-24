@@ -444,8 +444,7 @@ void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
 
     if (!faceSettings_[0].show_ && !faceSettings_[1].show_) {
         outport_.setData(nullptr);
-        log::warn("Both sides are disabled, not rendering anything.");
-        return;  // everything is culled
+        throw Exception("MeshRasterizer: Front Face and Back Face are both disabled");
     }
 
     const std::array<bool, 2> showFace = {faceSettings_[0].show_, faceSettings_[1].show_};

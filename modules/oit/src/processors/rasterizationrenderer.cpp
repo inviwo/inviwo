@@ -50,7 +50,7 @@
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/logcentral.h>
-#include <modules/oit/datastructures/rasterization.h>      // IWYU pragma: keep
+#include <modules/oit/datastructures/rasterization.h>  // IWYU pragma: keep
 #include <modules/oit/processors/rasterizer.h>
 #include <modules/oit/ports/rasterizationport.h>
 #include <modules/oit/rendering/fragmentlistrenderer.h>
@@ -195,7 +195,7 @@ void RasterizationRenderer::process() {
     if (!flr_) {
         utilgl::activateTargetAndClearOrCopySource(outport_, background_);
         for (const auto& rasterization : rasterizations_) {
-            if (rasterization->usesFragmentLists() == UseFragmentList::No) {
+            if (rasterization && rasterization->usesFragmentLists() == UseFragmentList::No) {
                 rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
             }
         }
@@ -210,7 +210,7 @@ void RasterizationRenderer::process() {
     // render into a temp image to be able to compare depths in the final pass
     utilgl::activateTargetAndClearOrCopySource(intermediateImage_, background_);
     for (const auto& rasterization : rasterizations_) {
-        if (rasterization->usesFragmentLists() == UseFragmentList::No) {
+        if (rasterization && rasterization->usesFragmentLists() == UseFragmentList::No) {
             rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
         }
     }
@@ -222,7 +222,7 @@ void RasterizationRenderer::process() {
 
         flr_->beginCount();
         for (const auto& rasterization : rasterizations_) {
-            if (rasterization->usesFragmentLists() == UseFragmentList::Yes) {
+            if (rasterization && rasterization->usesFragmentLists() == UseFragmentList::Yes) {
                 rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
             }
         }
@@ -245,7 +245,9 @@ void RasterizationRenderer::process() {
     // were used.
     // @see Rasterization::setValid, Rasterization::setValidDelayed
     for (auto rasterization : rasterizations_) {
-        rasterization->getProcessor()->setValidDelayed();
+        if (rasterization) {
+            rasterization->getProcessor()->setValidDelayed();
+        }
     }
 }
 
