@@ -416,128 +416,142 @@ LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItemAt(const QPointF p
 }
 
 void NetworkEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
-    if (auto* p = getProcessorGraphicsItemAt(e->scenePos())) {
-        processorItem_ = p;
-        automation_.enter(processorItem_->pos(), e->modifiers(), *processorItem_->getProcessor());
-    }
+    util::exceptionGuard([&]() {
+        if (auto* p = getProcessorGraphicsItemAt(e->scenePos())) {
+            processorItem_ = p;
+            automation_.enter(processorItem_->pos(), e->modifiers(),
+                              *processorItem_->getProcessor());
+        }
+    });
     QGraphicsScene::mousePressEvent(e);
 }
 
 void NetworkEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
-    if (processorItem_) {
-        automation_.move(processorItem_->pos(), e->modifiers(), *processorItem_->getProcessor());
-    }
-
+    util::exceptionGuard([&]() {
+        if (processorItem_) {
+            automation_.move(processorItem_->pos(), e->modifiers(),
+                             *processorItem_->getProcessor());
+        }
+    });
     QGraphicsScene::mouseMoveEvent(e);
 }
 
 void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
-    for (auto& elem : processorGraphicsItems_) {
-        const QPointF pos = elem.second->pos();
-        const QPointF newPos = snapToGrid(pos);
-        if (pos != newPos) elem.second->setPos(newPos);
-    }
+    util::exceptionGuard([&]() {
+        for (auto& elem : processorGraphicsItems_) {
+            const QPointF pos = elem.second->pos();
+            const QPointF newPos = snapToGrid(pos);
+            if (pos != newPos) elem.second->setPos(newPos);
+        }
 
-    if (processorItem_) {
-        automation_.drop(processorItem_->pos(), e->modifiers(), *processorItem_->getProcessor());
-        processorItem_ = nullptr;
-        updateSceneSize();
-    } else {
-        automation_.leave();
-    }
+        if (processorItem_) {
+            automation_.drop(processorItem_->pos(), e->modifiers(),
+                             *processorItem_->getProcessor());
+            processorItem_ = nullptr;
+            updateSceneSize();
+        } else {
+            automation_.leave();
+        }
 
-    const auto modifiers = QApplication::keyboardModifiers();
-    if (modifiers.testFlag(Qt::ShiftModifier) || modifiers.testFlag(Qt::AltModifier)) {
-        for (auto* item : selectedItems()) {
-            if (auto* gp = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
-                if (modifiers.testFlag(Qt::ShiftModifier)) {
-                    for (auto* proc : util::getDirectSuccessors(gp->getProcessor())) {
-                        if (auto it = processorGraphicsItems_.find(proc);
-                            it != processorGraphicsItems_.end()) {
-                            it->second->setSelected(true);
+        const auto modifiers = QApplication::keyboardModifiers();
+        if (modifiers.testFlag(Qt::ShiftModifier) || modifiers.testFlag(Qt::AltModifier)) {
+            for (auto* item : selectedItems()) {
+                if (auto* gp = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+                    if (modifiers.testFlag(Qt::ShiftModifier)) {
+                        for (auto* proc : util::getDirectSuccessors(gp->getProcessor())) {
+                            if (auto it = processorGraphicsItems_.find(proc);
+                                it != processorGraphicsItems_.end()) {
+                                it->second->setSelected(true);
+                            }
                         }
                     }
-                }
-                if (modifiers.testFlag(Qt::AltModifier)) {
-                    for (auto* proc : util::getDirectPredecessors(gp->getProcessor())) {
-                        if (auto it = processorGraphicsItems_.find(proc);
-                            it != processorGraphicsItems_.end()) {
-                            it->second->setSelected(true);
+                    if (modifiers.testFlag(Qt::AltModifier)) {
+                        for (auto* proc : util::getDirectPredecessors(gp->getProcessor())) {
+                            if (auto it = processorGraphicsItems_.find(proc);
+                                it != processorGraphicsItems_.end()) {
+                                it->second->setSelected(true);
+                            }
                         }
                     }
                 }
             }
         }
-    }
+    });
 
     QGraphicsScene::mouseReleaseEvent(e);
 }
 
 void NetworkEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
-    if (auto* p = getProcessorGraphicsItemAt(e->scenePos())) {
-        if (auto* processor = p->getProcessor()) {
-            if (auto* widget = processor->getProcessorWidget()) {
-                widget->setVisible(!widget->isVisible());
+    util::exceptionGuard([&]() {
+        if (auto* p = getProcessorGraphicsItemAt(e->scenePos())) {
+            if (auto* processor = p->getProcessor()) {
+                if (auto* widget = processor->getProcessorWidget()) {
+                    widget->setVisible(!widget->isVisible());
+                }
             }
+            e->accept();
+        } else if (auto linkGraphicsItem = getLinkGraphicsItemAt(e->scenePos())) {
+            showLinkDialog(linkGraphicsItem->getSrcProcessorGraphicsItem()->getProcessor(),
+                           linkGraphicsItem->getDestProcessorGraphicsItem()->getProcessor());
+            e->accept();
+        } else {
+            QGraphicsScene::mouseDoubleClickEvent(e);
         }
-        e->accept();
-    } else if (auto linkGraphicsItem = getLinkGraphicsItemAt(e->scenePos())) {
-        showLinkDialog(linkGraphicsItem->getSrcProcessorGraphicsItem()->getProcessor(),
-                       linkGraphicsItem->getDestProcessorGraphicsItem()->getProcessor());
-        e->accept();
-    } else {
-        QGraphicsScene::mouseDoubleClickEvent(e);
-    }
+    });
 }
 
 void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
     QGraphicsScene::keyPressEvent(keyEvent);
 
-    if (processorItem_) {
-        automation_.move(processorItem_->pos(), keyEvent->modifiers(),
-                         *processorItem_->getProcessor());
-    }
-
-    if (keyEvent->key() == Qt::Key_D) {
-        keyEvent->accept();
-
-        const auto selected = selectedItems() | std::views::transform([](auto* p) {
-                                  return qgraphicsitem_cast<ProcessorGraphicsItem*>(p);
-                              }) |
-                              std::views::filter([](auto* p) { return p != nullptr; }) |
-                              std::views::take(1) |
-                              std::views::transform([](auto* p) { return p->getProcessor(); }) |
-                              std::ranges::to<std::vector>();
-
-        if (!selected.empty()) {
-            mainWindow_->getProcessorTreeWidget()->setPredecessorProcessor(
-                selected.front()->getIdentifier());
-            mainWindow_->getProcessorTreeWidget()->focusSearch(false);
+    util::exceptionGuard([&]() {
+        if (processorItem_) {
+            automation_.move(processorItem_->pos(), keyEvent->modifiers(),
+                             *processorItem_->getProcessor());
         }
-    }
 
-    if (!keyEvent->isAccepted()) {
-        KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
-                                    utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
-                                    utilqt::fromQString(keyEvent->text()));
-        propagateEventToSelectedProcessorsAndSettings(pressKeyEvent);
-    }
+        if (keyEvent->key() == Qt::Key_D) {
+            keyEvent->accept();
+
+            const auto selected = selectedItems() | std::views::transform([](auto* p) {
+                                      return qgraphicsitem_cast<ProcessorGraphicsItem*>(p);
+                                  }) |
+                                  std::views::filter([](auto* p) { return p != nullptr; }) |
+                                  std::views::take(1) |
+                                  std::views::transform([](auto* p) { return p->getProcessor(); }) |
+                                  std::ranges::to<std::vector>();
+
+            if (!selected.empty()) {
+                mainWindow_->getProcessorTreeWidget()->setPredecessorProcessor(
+                    selected.front()->getIdentifier());
+                mainWindow_->getProcessorTreeWidget()->focusSearch(false);
+            }
+        }
+
+        if (!keyEvent->isAccepted()) {
+            KeyboardEvent pressKeyEvent(
+                utilqt::getKeyButton(keyEvent), KeyState::Press, utilqt::getModifiers(keyEvent),
+                keyEvent->nativeVirtualKey(), utilqt::fromQString(keyEvent->text()));
+            propagateEventToSelectedProcessorsAndSettings(pressKeyEvent);
+        }
+    });
 }
 
 void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
     QGraphicsScene::keyPressEvent(keyEvent);
 
-    if (processorItem_) {
-        automation_.move(processorItem_->pos(), keyEvent->modifiers(),
-                         *processorItem_->getProcessor());
-    }
+    util::exceptionGuard([&]() {
+        if (processorItem_) {
+            automation_.move(processorItem_->pos(), keyEvent->modifiers(),
+                             *processorItem_->getProcessor());
+        }
 
-    if (!keyEvent->isAccepted()) {
-        KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
-                                      utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
-                                      utilqt::fromQString(keyEvent->text()));
-        propagateEventToSelectedProcessorsAndSettings(releaseKeyEvent);
-    }
+        if (!keyEvent->isAccepted()) {
+            KeyboardEvent releaseKeyEvent(
+                utilqt::getKeyButton(keyEvent), KeyState::Release, utilqt::getModifiers(keyEvent),
+                keyEvent->nativeVirtualKey(), utilqt::fromQString(keyEvent->text()));
+            propagateEventToSelectedProcessorsAndSettings(releaseKeyEvent);
+        }
+    });
 }
 
 void NetworkEditor::deleteAndKeepConnections(ProcessorGraphicsItem* processor) {
@@ -585,13 +599,14 @@ void NetworkEditor::addVisualizers(QMenu& menu, ProcessorOutportGraphicsItem* og
             menu.addAction(tr(hasInspector ? "Hide Port Inspector" : "Show Port &Inspector"));
         showPortInsector->setCheckable(true);
         showPortInsector->setChecked(hasInspector);
-        connect(showPortInsector, &QAction::triggered, [pim, outport, pos]() {
-            if (!pim->hasPortInspector(outport)) {
-                pim->addPortInspector(outport, ivec2(pos.x(), pos.y()));
-            } else {
-                pim->removePortInspector(outport);
-            }
-        });
+        connect(showPortInsector, &QAction::triggered,
+                util::exceptionGuarded([pim, outport, pos]() {
+                    if (!pim->hasPortInspector(outport)) {
+                        pim->addPortInspector(outport, ivec2(pos.x(), pos.y()));
+                    } else {
+                        pim->removePortInspector(outport);
+                    }
+                }));
     }
 
     auto dataVis = app->getDataVisualizerManager()->getDataVisualizersForOutport(outport);
@@ -599,8 +614,9 @@ void NetworkEditor::addVisualizers(QMenu& menu, ProcessorOutportGraphicsItem* og
         auto* subMenu = menu.addMenu("Add Visualizer");
         for (auto* vis : dataVis) {
             auto* action = subMenu->addAction(utilqt::toQString(vis->getName()));
-            connect(action, &QAction::triggered,
-                    [this, vis, outport]() { addVisualizer(vis, outport); });
+            connect(action, &QAction::triggered, util::exceptionGuarded([this, vis, outport]() {
+                        addVisualizer(vis, outport);
+                    }));
         }
     }
 
@@ -626,12 +642,13 @@ void NetworkEditor::addVisualizers(QMenu& menu, ProcessorOutportGraphicsItem* og
 
         for (const auto& [classIdentifier, displayName] : items) {
             auto* action = subMenu->addAction(utilqt::toQString(displayName));
-            connect(action, &QAction::triggered, this, [app, outport, pcid = classIdentifier]() {
-                rendercontext::activateDefault();
-                if (auto p = app->getProcessorFactory()->createShared(pcid)) {
-                    utilqt::addProcessorAndConnect(p, app->getProcessorNetwork(), outport);
-                }
-            });
+            connect(action, &QAction::triggered, this,
+                    util::exceptionGuarded([app, outport, pcid = classIdentifier]() {
+                        rendercontext::activateDefault();
+                        if (auto p = app->getProcessorFactory()->createShared(pcid)) {
+                            utilqt::addProcessorAndConnect(p, app->getProcessorNetwork(), outport);
+                        }
+                    }));
         }
     }
 
@@ -678,7 +695,7 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
         showAction->setCheckable(true);
         showAction->setChecked(widget->isVisible());
         connect(showAction, &QAction::triggered,
-                [widget]() { widget->setVisible(!widget->isVisible()); });
+                util::exceptionGuarded([widget]() { widget->setVisible(!widget->isVisible()); }));
     } else if (auto* comp = dynamic_cast<CompositeProcessor*>(processor->getProcessor())) {
         if (util::any_of(comp->getSubNetwork().processorRange(),
                          [](const Processor& p) { return p.hasProcessorWidget(); })) {
@@ -689,8 +706,9 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
                         fmt::format("Show {} Widget", subProcessor.getDisplayName())));
                     showAction->setCheckable(true);
                     showAction->setChecked(subWidget->isVisible());
-                    connect(showAction, &QAction::triggered,
-                            [subWidget]() { subWidget->setVisible(!subWidget->isVisible()); });
+                    connect(showAction, &QAction::triggered, util::exceptionGuarded([subWidget]() {
+                                subWidget->setVisible(!subWidget->isVisible());
+                            }));
                 }
             }
         }
@@ -722,87 +740,92 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
     const auto* resetTimeMeasurementsAction =
         menu.addAction(QIcon(":svgicons/timer.svg"), tr("Reset &Time Measurements"));
     connect(resetTimeMeasurementsAction, &QAction::triggered,
-            [processor]() { processor->resetTimeMeasurements(); });
+            util::exceptionGuarded([processor]() { processor->resetTimeMeasurements(); }));
 #endif
 
     const auto* delprocessor =
         menu.addAction(QIcon(":/svgicons/edit-delete.svg"), tr("Delete && &Keep Connections"));
     connect(delprocessor, &QAction::triggered,
-            [this, processor]() { deleteAndKeepConnections(processor); });
+            util::exceptionGuarded([this, processor]() { deleteAndKeepConnections(processor); }));
 
     menu.addSeparator();
     const auto* invalidateOutputAction = menu.addAction(tr("Invalidate &Output"));
-    connect(invalidateOutputAction, &QAction::triggered, [processor]() {
-        processor->getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
-    });
+    connect(invalidateOutputAction, &QAction::triggered, util::exceptionGuarded([processor]() {
+                processor->getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
+            }));
 
     const auto* invalidateResourcesAction = menu.addAction(tr("Invalidate &Resources"));
-    connect(invalidateResourcesAction, &QAction::triggered, [processor]() {
-        processor->getProcessor()->invalidate(InvalidationLevel::InvalidResources);
-    });
+    connect(invalidateResourcesAction, &QAction::triggered, util::exceptionGuarded([processor]() {
+                processor->getProcessor()->invalidate(InvalidationLevel::InvalidResources);
+            }));
 
     menu.addSeparator();
 
     const auto* showPropAction = menu.addAction(tr("Show &Properties"));
-    connect(showPropAction, &QAction::triggered, [this, processor]() {
-        auto plw =
-            std::make_unique<PropertyListWidget>(mainWindow_, mainWindow_->getInviwoApplication());
-        plw->setFloating(true);
-        plw->addProcessorProperties(processor->getProcessor());
-        plw->setWindowTitle(utilqt::toQString(processor->getProcessor()->getDisplayName()));
-        plw->show();
-        processor->adoptWidget(std::move(plw));
-    });
+    connect(showPropAction, &QAction::triggered, util::exceptionGuarded([this, processor]() {
+                auto plw = std::make_unique<PropertyListWidget>(
+                    mainWindow_, mainWindow_->getInviwoApplication());
+                plw->setFloating(true);
+                plw->addProcessorProperties(processor->getProcessor());
+                plw->setWindowTitle(utilqt::toQString(processor->getProcessor()->getDisplayName()));
+                plw->show();
+                processor->adoptWidget(std::move(plw));
+            }));
 
     const auto* internalLink = menu.addAction(tr("Show Internal &Links"));
-    connect(internalLink, &QAction::triggered, [this, processor = processor->getProcessor()]() {
-        auto* dialog = new LinkDialog(processor, processor, mainWindow_);
-        dialog->show();
-    });
+    connect(internalLink, &QAction::triggered,
+            util::exceptionGuarded([this, processor = processor->getProcessor()]() {
+                auto* dialog = new LinkDialog(processor, processor, mainWindow_);
+                dialog->show();
+            }));
 
     menu.addSeparator();
 
     const auto* selectPre = menu.addAction(tr("Select Predecessors"));
-    connect(selectPre, &QAction::triggered, [this, processor = processor->getProcessor()]() {
-        for (auto* p : util::getPredecessors(processor)) {
-            if (auto it = processorGraphicsItems_.find(p); it != processorGraphicsItems_.end()) {
-                it->second->setSelected(true);
-            }
-        }
-    });
+    connect(selectPre, &QAction::triggered,
+            util::exceptionGuarded([this, processor = processor->getProcessor()]() {
+                for (auto* p : util::getPredecessors(processor)) {
+                    if (auto it = processorGraphicsItems_.find(p);
+                        it != processorGraphicsItems_.end()) {
+                        it->second->setSelected(true);
+                    }
+                }
+            }));
     const auto* selectSuc = menu.addAction(tr("Select Successors"));
-    connect(selectSuc, &QAction::triggered, [this, processor = processor->getProcessor()]() {
-        for (auto* p : util::getSuccessors(processor)) {
-            if (auto it = processorGraphicsItems_.find(p); it != processorGraphicsItems_.end()) {
-                it->second->setSelected(true);
-            }
-        }
-    });
+    connect(selectSuc, &QAction::triggered,
+            util::exceptionGuarded([this, processor = processor->getProcessor()]() {
+                for (auto* p : util::getSuccessors(processor)) {
+                    if (auto it = processorGraphicsItems_.find(p);
+                        it != processorGraphicsItems_.end()) {
+                        it->second->setSelected(true);
+                    }
+                }
+            }));
 
     menu.addSeparator();
 
     const QAction* helpAction = menu.addAction(QIcon(":/svgicons/help.svg"), tr("Show &Help"));
-    connect(helpAction, &QAction::triggered, [this, processor]() {
-        showProcessorHelp(processor->getProcessor()->getClassIdentifier(), true);
-    });
+    connect(helpAction, &QAction::triggered, util::exceptionGuarded([this, processor]() {
+                showProcessorHelp(processor->getProcessor()->getClassIdentifier(), true);
+            }));
 
     const std::filesystem::path processorFile{processor->getProcessor()->getProcessorInfo().file};
     const QAction* openSource = menu.addAction(QIcon(":/svgicons/open.svg"), "Open Source");
-    connect(openSource, &QAction::triggered, this, [this, processorFile]() {
-        util::openProcessorFile(
-            {.cppFile = processorFile,
-             .header = false,
-             .web = QApplication::keyboardModifiers().testFlag(Qt::ControlModifier),
-             .manager = &mainWindow_->getInviwoApplication()->getModuleManager()});
-    });
+    connect(openSource, &QAction::triggered, this, util::exceptionGuarded([this, processorFile]() {
+                util::openProcessorFile(
+                    {.cppFile = processorFile,
+                     .header = false,
+                     .web = QApplication::keyboardModifiers().testFlag(Qt::ControlModifier),
+                     .manager = &mainWindow_->getInviwoApplication()->getModuleManager()});
+            }));
     const QAction* openHeader = menu.addAction(QIcon(":/svgicons/open.svg"), "Open Header");
-    connect(openHeader, &QAction::triggered, this, [this, processorFile]() {
-        util::openProcessorFile(
-            {.cppFile = processorFile,
-             .header = true,
-             .web = QApplication::keyboardModifiers().testFlag(Qt::ControlModifier),
-             .manager = &mainWindow_->getInviwoApplication()->getModuleManager()});
-    });
+    connect(openHeader, &QAction::triggered, this, util::exceptionGuarded([this, processorFile]() {
+                util::openProcessorFile(
+                    {.cppFile = processorFile,
+                     .header = true,
+                     .web = QApplication::keyboardModifiers().testFlag(Qt::ControlModifier),
+                     .manager = &mainWindow_->getInviwoApplication()->getModuleManager()});
+            }));
 }
 
 void NetworkEditor::addCompositeMenuItems(
@@ -810,49 +833,52 @@ void NetworkEditor::addCompositeMenuItems(
     const std::unordered_set<CompositeProcessor*>& selectedComposites) {
     auto* compAction =
         menu.addAction(QIcon(":/svgicons/composite-create-enabled.svg"), tr("&Create Composite"));
-    connect(compAction, &QAction::triggered, this, [this]() {
-        rendercontext::activateDefault();
-        util::replaceSelectionWithCompositeProcessor(*network_);
-    });
+    connect(compAction, &QAction::triggered, this, util::exceptionGuarded([this]() {
+                rendercontext::activateDefault();
+                util::replaceSelectionWithCompositeProcessor(*network_);
+            }));
     compAction->setEnabled(selectedProcessors.size() > 1);
 
     auto* expandAction =
         menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Composite"));
-    connect(expandAction, &QAction::triggered, this, [selectedComposites]() {
-        for (auto* p : selectedComposites) {
-            util::expandCompositeProcessorIntoNetwork(*p);
-        }
-    });
+    connect(expandAction, &QAction::triggered, this, util::exceptionGuarded([selectedComposites]() {
+                for (auto* p : selectedComposites) {
+                    util::expandCompositeProcessorIntoNetwork(*p);
+                }
+            }));
     expandAction->setDisabled(selectedComposites.empty());
 
     auto* selectPropAction =
         menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Configure Properties"));
     selectPropAction->setEnabled(selectedComposites.size() == 1);
-    connect(selectPropAction, &QAction::triggered, this, [this, selectedComposites]() {
-        auto* dialog = new SubPropertySelectionDialog(*selectedComposites.begin(), mainWindow_);
-        dialog->show();
-    });
+    connect(selectPropAction, &QAction::triggered, this,
+            util::exceptionGuarded([this, selectedComposites]() {
+                auto* dialog =
+                    new SubPropertySelectionDialog(*selectedComposites.begin(), mainWindow_);
+                dialog->show();
+            }));
 
     auto* saveCompAction = menu.addAction(QIcon(":/svgicons/save.svg"), tr("&Save Composite"));
-    connect(saveCompAction, &QAction::triggered, this, [selectedComposites]() {
-        for (auto* p : selectedComposites) {
-            const auto compDir = filesystem::getPath(PathType::Settings, "/composites", true);
-            const auto filename = util::findUniqueIdentifier(
-                util::stripIdentifier(p->getDisplayName()),
-                [&](std::string_view basename) {
-                    const auto path = compDir / fmt::format("{}.inv", basename);
-                    return !std::filesystem::is_regular_file(path);
-                },
-                "");
-            std::filesystem::create_directories(compDir);
-            const auto path = compDir / (filename + ".inv");
-            p->saveSubNetwork(path);
-            log::info(
-                "Saved Composite to \"{}\".\nComposite is now available in the "
-                "Processor list (restart may be required).",
-                path);
-        }
-    });
+    connect(
+        saveCompAction, &QAction::triggered, this, util::exceptionGuarded([selectedComposites]() {
+            for (auto* p : selectedComposites) {
+                const auto compDir = filesystem::getPath(PathType::Settings, "/composites", true);
+                const auto filename = util::findUniqueIdentifier(
+                    util::stripIdentifier(p->getDisplayName()),
+                    [&](std::string_view basename) {
+                        const auto path = compDir / fmt::format("{}.inv", basename);
+                        return !std::filesystem::is_regular_file(path);
+                    },
+                    "");
+                std::filesystem::create_directories(compDir);
+                const auto path = compDir / (filename + ".inv");
+                p->saveSubNetwork(path);
+                log::info(
+                    "Saved Composite to \"{}\".\nComposite is now available in the "
+                    "Processor list (restart may be required).",
+                    path);
+            }
+        }));
     saveCompAction->setDisabled(selectedComposites.empty());
 }
 
@@ -861,10 +887,10 @@ void NetworkEditor::addSequenceMenuItems(
     const std::unordered_set<SequenceProcessor*>& selectedSequences) {
     auto* sequenceAction =
         menu.addAction(QIcon(":/svgicons/composite-create-enabled.svg"), tr("&Create Sequence"));
-    connect(sequenceAction, &QAction::triggered, this, [this]() {
-        rendercontext::activateDefault();
-        util::replaceSelectionWithSequenceProcessor(*network_);
-    });
+    connect(sequenceAction, &QAction::triggered, this, util::exceptionGuarded([this]() {
+                rendercontext::activateDefault();
+                util::replaceSelectionWithSequenceProcessor(*network_);
+            }));
     sequenceAction->setEnabled(selectedProcessors.size() > 1);
 
     // TODO(Peter)
@@ -881,37 +907,41 @@ void NetworkEditor::addSequenceMenuItems(
     auto* selectPropAction =
         menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Configure Properties"));
     selectPropAction->setEnabled(selectedSequences.size() == 1);
-    connect(selectPropAction, &QAction::triggered, this, [this, selectedSequences]() {
-        auto* dialog = new SubPropertySelectionDialog(*selectedSequences.begin(), mainWindow_);
-        dialog->show();
-    });
+    connect(selectPropAction, &QAction::triggered, this,
+            util::exceptionGuarded([this, selectedSequences]() {
+                auto* dialog =
+                    new SubPropertySelectionDialog(*selectedSequences.begin(), mainWindow_);
+                dialog->show();
+            }));
 }
 
 void NetworkEditor::addCopyPasteMenuItems(QMenu& menu, const QList<QGraphicsItem*>& activeItems,
                                           const ivec2& position) {
     auto* cutAction = menu.addAction(QIcon(":/svgicons/edit-cut.svg"), tr("Cu&t"));
     cutAction->setEnabled(!activeItems.empty());
-    connect(cutAction, &QAction::triggered, this, [this, items = activeItems]() {
-        auto mimeData = cut(items);
-        QApplication::clipboard()->setMimeData(mimeData.release());
-    });
+    connect(cutAction, &QAction::triggered, this,
+            util::exceptionGuarded([this, items = activeItems]() {
+                auto mimeData = cut(items);
+                QApplication::clipboard()->setMimeData(mimeData.release());
+            }));
 
     auto* copyAction = menu.addAction(QIcon(":/svgicons/edit-copy.svg"), tr("&Copy"));
     copyAction->setEnabled(!activeItems.empty());
-    connect(copyAction, &QAction::triggered, this, [this, items = activeItems]() {
-        auto mimeData = copy(items);
-        QApplication::clipboard()->setMimeData(mimeData.release());
-    });
+    connect(copyAction, &QAction::triggered, this,
+            util::exceptionGuarded([this, items = activeItems]() {
+                auto mimeData = copy(items);
+                QApplication::clipboard()->setMimeData(mimeData.release());
+            }));
 
     auto* pasteAction = menu.addAction(QIcon(":/svgicons/edit-paste.svg"), tr("&Paste"));
     const auto* mimeData = QApplication::clipboard()->mimeData();
     pasteAction->setEnabled(mimeData->formats().contains(utilqt::toQString(getMimeTag())) ||
                             mimeData->formats().contains(QString("text/plain")));
-    connect(pasteAction, &QAction::triggered, this, [this, position]() {
-        if (const auto* mimeData = QApplication::clipboard()->mimeData()) {
-            paste(*mimeData, position);
-        }
-    });
+    connect(pasteAction, &QAction::triggered, this, util::exceptionGuarded([this, position]() {
+                if (const auto* mimeData = QApplication::clipboard()->mimeData()) {
+                    paste(*mimeData, position);
+                }
+            }));
 }
 
 void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
@@ -957,10 +987,10 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         } else if (auto* link = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)) {
             auto* editLink = menu.addAction(tr("Edit Links"));
-            connect(editLink, &QAction::triggered, [this, link]() {
-                showLinkDialog(link->getSrcProcessorGraphicsItem()->getProcessor(),
-                               link->getDestProcessorGraphicsItem()->getProcessor());
-            });
+            connect(editLink, &QAction::triggered, util::exceptionGuarded([this, link]() {
+                        showLinkDialog(link->getSrcProcessorGraphicsItem()->getProcessor(),
+                                       link->getDestProcessorGraphicsItem()->getProcessor());
+                    }));
             break;
         }
     }
@@ -969,9 +999,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         menu.addSeparator();
         auto* editLink = menu.addAction(tr("Make Link"));
         connect(editLink, &QAction::triggered,
-                [this, p0 = activeProcessors[0], p1 = activeProcessors[1]]() {
-                    showLinkDialog(p0, p1);
-                });
+                util::exceptionGuarded([this, p0 = activeProcessors[0],
+                                        p1 = activeProcessors[1]]() { showLinkDialog(p0, p1); }));
     }
 
     menu.addSeparator();
@@ -1003,7 +1032,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     auto* deleteAction = menu.addAction(QIcon(":/svgicons/edit-delete.svg"), tr("&Delete"));
     deleteAction->setEnabled(!activeItems.empty());
     connect(deleteAction, &QAction::triggered, this,
-            [this, items = activeItems]() { deleteItems(items); });
+            util::exceptionGuarded([this, items = activeItems]() { deleteItems(items); }));
 
     menu.exec(QCursor::pos());
     e->accept();
