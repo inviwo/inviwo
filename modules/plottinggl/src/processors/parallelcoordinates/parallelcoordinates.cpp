@@ -92,7 +92,6 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/vec2.hpp>
 
-
 namespace inviwo::plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -404,7 +403,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
     axisPicking_.resize(nColumns);
     lines_.axisFlipped.resize(nColumns);
 
-    for (auto [columnIndex, column] : util::enumerate(*data)) {
+    for (const auto& [columnIndex, column] : util::enumerate(*data)) {
         const auto& displayName = column->getHeader();
         const auto identifier = util::stripIdentifier(displayName);
 
@@ -417,9 +416,9 @@ void ParallelCoordinates::createOrUpdateProperties() {
                 axisProperties_.removeProperty(identifier);
             }
 
-            auto prop = std::make_unique<PCPAxisSettings>(identifier, displayName, id);
-            auto ptr = prop.get();
-            axisProperties_.addProperty(std::move(prop));
+            auto axisSettingsProp = std::make_unique<PCPAxisSettings>(identifier, displayName, id);
+            auto* ptr = axisSettingsProp.get();
+            axisProperties_.addProperty(std::move(axisSettingsProp));
             return ptr;
         }();
 
@@ -450,7 +449,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
         // initialize corresponding flipped flag for the line shader
         lines_.axisFlipped[axes_.size()] = static_cast<int>(prop->invertRange);
 
-        axes_.push_back({prop, std::move(renderer), std::move(slider)});
+        axes_.emplace_back(prop, std::move(renderer), std::move(slider));
     }
 
     for (auto& axis : axes_) {
@@ -471,8 +470,8 @@ void ParallelCoordinates::buildLineMesh() {
     rangesDirty_ = false;
     auto& mesh = lines_.mesh;
 
-    for (auto& item : mesh.getBuffers()) {
-        item.second->getEditableRepresentation<BufferRAM>()->clear();
+    for (const auto& [info, buffer] : mesh.getBuffers()) {
+        buffer->getEditableRepresentation<BufferRAM>()->clear();
     }
 
     const auto numberOfAxis = axes_.size();
@@ -482,12 +481,12 @@ void ParallelCoordinates::buildLineMesh() {
     linePicking_.resize(numberOfLines);
 
     const auto metaAxisId = colormap_.selectedColorAxis.get();
-    const auto metaAxes = axes_[glm::clamp(metaAxisId, 0, static_cast<int>(axes_.size()) - 1)].pcp;
+    auto* const metaAxes = axes_[glm::clamp(metaAxisId, 0, static_cast<int>(axes_.size()) - 1)].pcp;
 
     for (size_t i = 0; i < numberOfLines; i++) {
         const auto meta = static_cast<float>(metaAxes->getNormalizedAt(i));
         const auto picking = static_cast<uint32_t>(linePicking_.getPickingId(i));
-        for (auto& axis : axes_) {
+        for (const auto& axis : axes_) {
             mesh.addVertex(static_cast<float>(axis.pcp->getNormalizedAt(i)), picking, meta);
         }
     }
@@ -506,8 +505,7 @@ void ParallelCoordinates::buildLineIndices() {
 
     lines_.sizes.resize(numberOfLines, static_cast<int>(numberOfEnabledAxis));
     if (!lines_.sizes.empty() && lines_.sizes.front() != static_cast<int>(numberOfEnabledAxis)) {
-        std::fill(lines_.sizes.begin(), lines_.sizes.end(),
-                  static_cast<GLsizei>(numberOfEnabledAxis));
+        std::ranges::fill(lines_.sizes, static_cast<int>(numberOfEnabledAxis));
     }
 
     auto& indices = lines_.indices.getEditableRAMRepresentation()->getDataContainer();
@@ -537,8 +535,9 @@ void ParallelCoordinates::buildAxisPositions() {
     const auto numberOfEnabledAxis = enabledAxes_.size();
 
     lines_.axisPositions.resize(numberOfAxis, 0.0f);
-    for (auto&& item : util::enumerate(enabledAxes_)) {
-        lines_.axisPositions[item.second()] = item.first() / float(numberOfEnabledAxis - 1);
+    for (auto&& [index, axisIndex] : util::enumerate(enabledAxes_)) {
+        lines_.axisPositions[axisIndex] =
+            static_cast<float>(index) / static_cast<float>(numberOfEnabledAxis - 1);
     }
 }
 
@@ -920,7 +919,7 @@ void ParallelCoordinates::boxSelection(AxisRangeEventState state, AxisRangeInter
             invalidate(InvalidationLevel::InvalidOutput);
         }
     } else if (state == AxisRangeEventState::Updated && screenRect) {
-        auto r = screenRect.value_or(std::array<dvec2, 2>{{{}, {}}});
+        auto& r = *screenRect;
         if (r[0].x > r[1].x) {
             std::swap(r[0].x, r[1].x);
         }
