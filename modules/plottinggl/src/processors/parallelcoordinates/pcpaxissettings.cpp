@@ -300,7 +300,7 @@ void PCPAxisSettings::update(AxisData& data) const {
                                         : 0.0f;
     data.captionSettings.offset =
         vec2{0.0f, pcp_->captionOffset_ * (invertRange.get() ? -1.0f : 1.0f)};
-    data.captionSettings.rotation = -90.0f;
+    data.captionSettings.rotation = -90.0f + pcp_->captionRotation_.get();
 
     pcp_->captionSettings_.update(data.captionSettings.font);
 

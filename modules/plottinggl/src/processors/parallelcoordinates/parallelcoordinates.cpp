@@ -162,6 +162,10 @@ ParallelCoordinates::ParallelCoordinates()
                         {"below", "Below", LabelPosition::Below}},
                        1)
     , captionOffset_("offset", "Offset", 15.0f, -50.0f, 50.0f, 0.1f)
+    , captionRotation_("rotation", "Rotation",
+                       util::ordinalSymmetricVector(0.0f, 360.0f)
+                           .setInc(10.0f)
+                           .set("Text rotation in degree"_help))
     , captionColor_("color", "Color", vec4(.0, .0f, .0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                     InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
@@ -226,7 +230,7 @@ ParallelCoordinates::ParallelCoordinates()
 
     addProperty(captionSettings_);
     captionSettings_.insertProperty(0, captionPosition_);
-    captionSettings_.addProperties(captionOffset_, captionColor_);
+    captionSettings_.addProperties(captionOffset_, captionRotation_, captionColor_);
     captionPosition_.onChange([&]() {
         auto pos = captionSettings_.anchorPos_.get();
         auto offset = captionOffset_.get();
