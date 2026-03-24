@@ -74,7 +74,16 @@ void HiddenCanvasQt::createContext() { context_->create(); }
 void HiddenCanvasQt::initializeGLEW() { OpenGLCapabilities::initializeGLEW(); }
 
 void HiddenCanvasQt::update() {}
-void HiddenCanvasQt::activate() { context_->makeCurrent(offScreenSurface_); }
+void HiddenCanvasQt::activate() {
+    context_->makeCurrent(offScreenSurface_);
+    if (auto err = glGetError(); err != GL_NO_ERROR) {
+        // The call the makeCurrent started to generate a GL_INVALID_ENUM error in some cases,
+        // which we ignore for now
+        if (err != GL_INVALID_ENUM) {
+            log::warn("OpenGL Error: {}", err);
+        }
+    }
+}
 
 std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenCanvas() { return createHiddenQtCanvas(); }
 
