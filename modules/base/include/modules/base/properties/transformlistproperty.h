@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/glmmat.h>
@@ -185,6 +186,26 @@ public:
 
     virtual mat4 getMatrix() const override;
 
+    FloatMat4Property matrix;
+};
+
+class IVW_MODULE_BASE_API PortTransformProperty : public TransformProperty {
+public:
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.trafo.PortTransformProperty"};
+
+    PortTransformProperty(std::string_view identifier, std::string_view displayName,
+                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                          PropertySemantics semantics = PropertySemantics::Default);
+    PortTransformProperty(const PortTransformProperty& rhs);
+    virtual PortTransformProperty* clone() const override;
+    virtual ~PortTransformProperty() = default;
+
+    virtual mat4 getMatrix() const override;
+
+    virtual void setOwner(PropertyOwner* owner) override;
+
+    DataInport<mat4> port;
     FloatMat4Property matrix;
 };
 
