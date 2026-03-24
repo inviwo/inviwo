@@ -88,7 +88,7 @@ void RasterizationRenderer::initializeResources() { initializeShader_.invoke(); 
 
 RasterizationRenderer::RasterizationRenderer()
     : Processor{}
-    , rasterizations_{"rastarizations",
+    , rasterizations_{"rasterizations",
                       "Input rasterizations filling the fragment lists/render target"_help}
     , background_{"imageInport", "Optional background image"_help}
     , outport_{"image",
