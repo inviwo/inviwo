@@ -577,7 +577,6 @@ void ParallelCoordinates::drawAxis(size2_t size) {
         if (!axis.pcp->isChecked()) continue;
         auto ap = axisPos(axis.pcp->columnId());
         if (axis.pcp->dataModified()) axis.pcp->update(axis.axisRender->getData());
-        if (axis.pcp->invertRange) std::swap(ap.first, ap.second);
         axis.axisRender->render(size, ap.first, ap.second);
     }
 }
