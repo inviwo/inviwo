@@ -374,6 +374,21 @@ void exceptionGuard(F&& fun) noexcept {
     }
 }
 
+template <typename F>
+auto exceptionGuarded(F&& fun) noexcept {
+    return [f = std::forward<F>(fun)]() {
+        try {
+            f();
+        } catch (const Exception& e) {
+            log::exception(e);
+        } catch (const std::exception& e) {
+            log::exception(e);
+        } catch (...) {
+            log::exception();
+        }
+    };
+}
+
 }  // namespace util
 
 }  // namespace inviwo
