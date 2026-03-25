@@ -285,8 +285,11 @@ bool PCPAxisSettings::dataModified() const {
 void PCPAxisSettings::update(AxisData& data) const {
 
     data.range = getRange();
+    if (invertRange.get()) {
+        data.range = {data.range.y, data.range.x};
+    }
     data.visible = isChecked();
-    data.mirrored = invertRange.get();
+    data.mirrored = false;
     data.color = getColor();
     data.width = getWidth();
     data.caption = caption_;
@@ -294,12 +297,9 @@ void PCPAxisSettings::update(AxisData& data) const {
     data.captionSettings.enabled =
         pcp_->captionPosition_.get() != ParallelCoordinates::LabelPosition::None;
     data.captionSettings.color = pcp_->captionColor_.get();
-    data.captionSettings.position = (pcp_->captionPosition_.get() ==
-                                     ParallelCoordinates::LabelPosition::Above) != invertRange.get()
-                                        ? 1.0f
-                                        : 0.0f;
-    data.captionSettings.offset =
-        vec2{0.0f, pcp_->captionOffset_ * (invertRange.get() ? -1.0f : 1.0f)};
+    data.captionSettings.position =
+        (pcp_->captionPosition_.get() == ParallelCoordinates::LabelPosition::Above) ? 1.0f : 0.0f;
+    data.captionSettings.offset = vec2{0.0f, pcp_->captionOffset_.get()};
     data.captionSettings.rotation = -90.0f + pcp_->captionRotation_.get();
 
     pcp_->captionSettings_.update(data.captionSettings.font);
