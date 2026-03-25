@@ -1016,6 +1016,7 @@ var hierarchy =
           [ "inviwo::plot::ScatterPlotGL::Properties", "classinviwo_1_1plot_1_1ScatterPlotGL_1_1Properties.html", null ],
           [ "inviwo::transform::TransformProperty", "classinviwo_1_1transform_1_1TransformProperty.html", [
             [ "inviwo::transform::CustomTransformProperty", "classinviwo_1_1transform_1_1CustomTransformProperty.html", null ],
+            [ "inviwo::transform::PortTransformProperty", "classinviwo_1_1transform_1_1PortTransformProperty.html", null ],
             [ "inviwo::transform::RotateProperty", "classinviwo_1_1transform_1_1RotateProperty.html", null ],
             [ "inviwo::transform::ScaleProperty", "classinviwo_1_1transform_1_1ScaleProperty.html", null ],
             [ "inviwo::transform::TranslateProperty", "classinviwo_1_1transform_1_1TranslateProperty.html", null ]
@@ -1443,6 +1444,9 @@ var hierarchy =
     ] ],
     [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::Volume, N, Flat &gt;, inviwo::Volume, Flat &gt;", "classinviwo_1_1InportIterable.html", [
       [ "inviwo::DataInport< inviwo::Volume, 0, true >", "classinviwo_1_1DataInport.html", null ]
+    ] ],
+    [ "inviwo::InportIterable&lt; DataInport&lt; mat4, 1, false &gt;, mat4, false &gt;", "classinviwo_1_1InportIterable.html", [
+      [ "inviwo::DataInport< mat4 >", "classinviwo_1_1DataInport.html", null ]
     ] ],
     [ "inviwo::InportIterable&lt; DataInport&lt; std::vector&lt; std::shared_ptr&lt; inviwo::Volume &gt; &gt;, 1, false &gt;, std::vector&lt; std::shared_ptr&lt; inviwo::Volume &gt; &gt;, false &gt;", "classinviwo_1_1InportIterable.html", [
       [ "inviwo::DataInport< std::vector< std::shared_ptr< inviwo::Volume > > >", "classinviwo_1_1DataInport.html", null ]
@@ -3372,6 +3376,7 @@ var hierarchy =
           [ "inviwo::DataInport< std::vector< T > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::Volume >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::DataSequence< inviwo::Image > >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< mat4 >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::BrushingAndLinkingInport", "classinviwo_1_1BrushingAndLinkingInport.html", null ],
           [ "inviwo::DataInport< T, N, Flat >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::PythonInport", "classinviwo_1_1PythonInport.html", null ]

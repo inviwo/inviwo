@@ -1,5 +1,7 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1InviwoDefaults_3_01unsigned_01int_01_4.html":[4,0,1,502],
+"structinviwo_1_1InviwoDefaults_3_01unsigned_01short_01_4.html":[2,0,0,494],
 "structinviwo_1_1InviwoDefaults_3_01unsigned_01short_01_4.html":[4,0,1,503],
 "structinviwo_1_1InviwoSetupInfo.html":[2,0,0,504],
 "structinviwo_1_1InviwoSetupInfo.html":[4,0,1,513],
@@ -247,7 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1RaycastingState.html":[2,0,0,990],
 "structinviwo_1_1RaycastingState.html":[4,0,1,999],
 "structinviwo_1_1ReaderWriter.html":[2,0,0,993],
-"structinviwo_1_1ReaderWriter.html":[4,0,1,1002],
-"structinviwo_1_1Resource.html":[2,0,0,1014],
-"structinviwo_1_1Resource.html":[4,0,1,1023]
+"structinviwo_1_1ReaderWriter.html":[4,0,1,1002]
 };

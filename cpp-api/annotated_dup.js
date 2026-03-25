@@ -390,6 +390,7 @@ var annotated_dup =
       ] ],
       [ "transform", null, [
         [ "CustomTransformProperty", "classinviwo_1_1transform_1_1CustomTransformProperty.html", "classinviwo_1_1transform_1_1CustomTransformProperty" ],
+        [ "PortTransformProperty", "classinviwo_1_1transform_1_1PortTransformProperty.html", "classinviwo_1_1transform_1_1PortTransformProperty" ],
         [ "RotateProperty", "classinviwo_1_1transform_1_1RotateProperty.html", "classinviwo_1_1transform_1_1RotateProperty" ],
         [ "ScaleProperty", "classinviwo_1_1transform_1_1ScaleProperty.html", "classinviwo_1_1transform_1_1ScaleProperty" ],
         [ "TransformProperty", "classinviwo_1_1transform_1_1TransformProperty.html", null ],

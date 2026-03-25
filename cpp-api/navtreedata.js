@@ -83,13 +83,13 @@ var NAVTREEINDEX =
 "classinviwo_1_1animation_1_1AnimationController.html",
 "classinviwo_1_1animation_1_1Track.html#a04382e9a119f3efe3657b2facd75acef",
 "classinviwo_1_1plot_1_1MajorTickProperty.html",
-"namespaceinviwo.html#a173d82ecd35b28f8611ecb036ccc6639",
-"namespaceinviwo_1_1util.html#a144ffacb1ddf668f23cac00ffca4071a",
-"namespaceinviwo_1_1utilgl.html#aea7669ac2172ee07baaadcc5b57e99d7",
-"structinviwo_1_1InviwoDefaults_3_01unsigned_01short_01_4.html",
-"structinviwo_1_1ResourceMeta.html",
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html",
-"structinviwo_1_1util_1_1is__constructible.html"
+"namespaceinviwo.html#a0780518930e4f82763044068321c57f4ae0626222614bdee31951d84c64e5e9ff",
+"namespaceinviwo_1_1util.html#a1341a5fe91b0d7f378da017b90eb3779",
+"namespaceinviwo_1_1utilgl.html#ad0989204ab71fccc9fc50b3dce9a975a",
+"structinviwo_1_1InviwoDefaults_3_01unsigned_01int_01_4.html",
+"structinviwo_1_1Resource.html",
+"structinviwo_1_1dispatching_1_1filter_1_1Floats.html",
+"structinviwo_1_1util_1_1identity.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

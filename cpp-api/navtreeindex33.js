@@ -1,5 +1,7 @@
 var NAVTREEINDEX33 =
 {
+"structinviwo_1_1dispatching_1_1filter_1_1Floats.html":[2,0,0,8,0,5],
+"structinviwo_1_1dispatching_1_1filter_1_1Floats.html":[4,0,1,12,1,5],
 "structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[2,0,0,8,0,9],
 "structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[4,0,1,12,1,9],
 "structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[2,0,0,8,0,10],
@@ -247,7 +249,5 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1util_1_1hashtuple_1_1HashValueImpl_3_01Tuple_00_010_01_4.html":[4,0,1,30,3,1],
 "structinviwo_1_1util_1_1identifier.html":[2,0,0,20,25],
 "structinviwo_1_1util_1_1identifier.html":[4,0,1,30,29],
-"structinviwo_1_1util_1_1identity.html":[2,0,0,20,26],
-"structinviwo_1_1util_1_1identity.html":[4,0,1,30,30],
-"structinviwo_1_1util_1_1is__constructible.html":[2,0,0,20,32]
+"structinviwo_1_1util_1_1identity.html":[2,0,0,20,26]
 };
