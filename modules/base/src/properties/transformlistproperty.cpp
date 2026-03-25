@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
@@ -66,6 +67,8 @@ TransformationList::TransformationList(std::string_view identifier, std::string_
               v.emplace_back(std::make_unique<transform::ScaleProperty>("scaling", "Scaling"));
               v.emplace_back(
                   std::make_unique<transform::CustomTransformProperty>("custom", "Custom Matrix"));
+              v.emplace_back(
+                  std::make_unique<transform::PortTransformProperty>("port", "Inport Matrix"));
               return v;
           }(),
           0, ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove, invalidationLevel, semantics) {}
@@ -76,7 +79,7 @@ TransformationList* TransformationList::clone() const { return new Transformatio
 mat4 TransformationList::getMatrix() const {
     mat4 total{1.0f};
     for (const auto& p : *this) {
-        if (auto prop = dynamic_cast<transform::TransformProperty*>(p)) {
+        if (auto* prop = dynamic_cast<transform::TransformProperty*>(p)) {
             total = prop->getMatrix() * total;
         }
     }
@@ -252,6 +255,68 @@ CustomTransformProperty* CustomTransformProperty::clone() const {
 }
 
 mat4 CustomTransformProperty::getMatrix() const { return matrix; }
+
+std::string_view PortTransformProperty::getClassIdentifier() const { return classIdentifier; }
+
+PortTransformProperty::PortTransformProperty(std::string_view identifier,
+                                             std::string_view displayName,
+                                             InvalidationLevel invalidationLevel,
+                                             PropertySemantics semantics)
+    : TransformProperty(identifier, displayName, invalidationLevel, semantics)
+    , port{"inport"}
+    , matrix{"matrix",
+             "Matrix",
+             mat4{1.0},
+             {util::filled<mat4>(-1.e6f), ConstraintBehavior::Ignore},
+             {util::filled<mat4>(1.e6f), ConstraintBehavior::Ignore},
+             util::filled<mat4>(0.001f),
+             InvalidationLevel::InvalidResources} {
+    matrix.setReadOnly(true);
+
+    addProperties(matrix);
+
+    port.onChange([this]() {
+        if (auto data = port.getData()) {
+            matrix.set(*data);
+        } else {
+            matrix.set(mat4{1.0f});
+        }
+    });
+}
+
+PortTransformProperty::PortTransformProperty(const PortTransformProperty& rhs)
+    : TransformProperty(rhs), port("inport"), matrix(rhs.matrix) {
+
+    addProperties(matrix);
+
+    port.onChange([this]() {
+        if (auto data = port.getData()) {
+            matrix.set(*data);
+        } else {
+            matrix.set(mat4{1.0f});
+        }
+    });
+}
+
+PortTransformProperty* PortTransformProperty::clone() const {
+    return new PortTransformProperty(*this);
+}
+
+void PortTransformProperty::setOwner(PropertyOwner* owner) {
+    TransformProperty::setOwner(owner);
+
+    if (owner && owner->getProcessor()) {
+        owner->getProcessor()->addPort(port);
+    }
+}
+
+mat4 PortTransformProperty::getMatrix() const {
+    if (auto data = port.getData()) {
+        return *data;
+    } else {
+        return mat4{1.0f};
+    }
+}
 
 }  // namespace transform
 
