@@ -1,5 +1,9 @@
 var NAVTREEINDEX15 =
 {
+"classinviwo_1_1ProcessorGraphicsItem.html#ac6c47ebb6be4a209a36a7f208feb118d":[4,0,1,848,1],
+"classinviwo_1_1ProcessorGraphicsItem.html#af1231d85a8f38e921bf495686dfae7ec":[2,0,0,839,2],
+"classinviwo_1_1ProcessorGraphicsItem.html#af1231d85a8f38e921bf495686dfae7ec":[4,0,1,848,2],
+"classinviwo_1_1ProcessorInportGraphicsItem.html":[2,0,0,841],
 "classinviwo_1_1ProcessorInportGraphicsItem.html":[4,0,1,850],
 "classinviwo_1_1ProcessorLinkGraphicsItem.html":[2,0,0,842],
 "classinviwo_1_1ProcessorLinkGraphicsItem.html":[4,0,1,851],
@@ -245,9 +249,5 @@ var NAVTREEINDEX15 =
 "classinviwo_1_1PropertyOwner.html#afac3bd8e7f7ae474407e918f1346ed19":[4,0,1,921,2],
 "classinviwo_1_1PropertyOwnerObservable.html":[2,0,0,913],
 "classinviwo_1_1PropertyOwnerObservable.html":[4,0,1,922],
-"classinviwo_1_1PropertyOwnerObserver.html":[2,0,0,914],
-"classinviwo_1_1PropertyOwnerObserver.html":[4,0,1,923],
-"classinviwo_1_1PropertyOwnerObserver.html#a8fda779bbd2dd6c3549ddd58f2d735e2":[2,0,0,914,0],
-"classinviwo_1_1PropertyOwnerObserver.html#a8fda779bbd2dd6c3549ddd58f2d735e2":[4,0,1,923,0],
-"classinviwo_1_1PropertyPresetManager.html":[2,0,0,915]
+"classinviwo_1_1PropertyOwnerObserver.html":[2,0,0,914]
 };

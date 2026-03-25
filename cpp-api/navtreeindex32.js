@@ -1,5 +1,9 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1ResourceMeta.html":[2,0,0,1020],
+"structinviwo_1_1ResourceMeta.html":[4,0,1,1029],
+"structinviwo_1_1RuntimeModuleLoading.html":[2,0,0,1023],
+"structinviwo_1_1RuntimeModuleLoading.html":[4,0,1,1032],
 "structinviwo_1_1SearchDSL_1_1Item.html":[2,0,0,1029,0],
 "structinviwo_1_1SearchDSL_1_1Item.html":[4,0,1,1038,0],
 "structinviwo_1_1SelectionColorState.html":[2,0,0,1036],
@@ -245,9 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1dispatching_1_1filter_1_1FloatVecs.html":[2,0,0,8,0,7],
 "structinviwo_1_1dispatching_1_1filter_1_1FloatVecs.html":[4,0,1,12,1,7],
 "structinviwo_1_1dispatching_1_1filter_1_1Floats.html":[2,0,0,8,0,5],
-"structinviwo_1_1dispatching_1_1filter_1_1Floats.html":[4,0,1,12,1,5],
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[2,0,0,8,0,9],
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[4,0,1,12,1,9],
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[2,0,0,8,0,10],
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[4,0,1,12,1,10]
+"structinviwo_1_1dispatching_1_1filter_1_1Floats.html":[4,0,1,12,1,5]
 };

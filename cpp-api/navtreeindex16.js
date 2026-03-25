@@ -1,5 +1,9 @@
 var NAVTREEINDEX16 =
 {
+"classinviwo_1_1PropertyOwnerObserver.html":[4,0,1,923],
+"classinviwo_1_1PropertyOwnerObserver.html#a8fda779bbd2dd6c3549ddd58f2d735e2":[2,0,0,914,0],
+"classinviwo_1_1PropertyOwnerObserver.html#a8fda779bbd2dd6c3549ddd58f2d735e2":[4,0,1,923,0],
+"classinviwo_1_1PropertyPresetManager.html":[2,0,0,915],
 "classinviwo_1_1PropertyPresetManager.html":[4,0,1,924],
 "classinviwo_1_1PropertySelectionTree.html":[2,0,0,916],
 "classinviwo_1_1PropertySelectionTree.html":[4,0,1,925],
@@ -245,9 +249,5 @@ var NAVTREEINDEX16 =
 "classinviwo_1_1RepresentationConverterPackage.html":[4,0,1,1015],
 "classinviwo_1_1RepresentationConverterType.html":[2,0,0,1007],
 "classinviwo_1_1RepresentationConverterType.html":[4,0,1,1016],
-"classinviwo_1_1RepresentationFactory.html":[2,0,0,1008],
-"classinviwo_1_1RepresentationFactory.html":[4,0,1,1017],
-"classinviwo_1_1RepresentationFactory.html#a428e5b160012e569b2e528bf77a02372":[2,0,0,1008,1],
-"classinviwo_1_1RepresentationFactory.html#a428e5b160012e569b2e528bf77a02372":[4,0,1,1017,1],
-"classinviwo_1_1RepresentationFactory.html#ad7cac44817cce74d0fea0a7308119929":[2,0,0,1008,0]
+"classinviwo_1_1RepresentationFactory.html":[2,0,0,1008]
 };

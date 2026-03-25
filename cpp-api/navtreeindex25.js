@@ -1,5 +1,9 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1animation_1_1AnimationController.html":[4,0,1,2,2],
+"classinviwo_1_1animation_1_1AnimationController.html#a1335d8e6ddb069c2d6396b784aee96c2":[2,0,0,0,1,2],
+"classinviwo_1_1animation_1_1AnimationController.html#a1335d8e6ddb069c2d6396b784aee96c2":[4,0,1,2,2,2],
+"classinviwo_1_1animation_1_1AnimationController.html#a20989ddc89e8f917091b00e812bbfce9":[2,0,0,0,1,3],
 "classinviwo_1_1animation_1_1AnimationController.html#a20989ddc89e8f917091b00e812bbfce9":[4,0,1,2,2,3],
 "classinviwo_1_1animation_1_1AnimationController.html#a2656a9e8ebd05f9873be9f9b7a89420d":[2,0,0,0,1,9],
 "classinviwo_1_1animation_1_1AnimationController.html#a2656a9e8ebd05f9873be9f9b7a89420d":[4,0,1,2,2,9],
@@ -245,9 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1animation_1_1SequenceEditorWidget.html":[4,0,1,2,74],
 "classinviwo_1_1animation_1_1Track.html":[2,0,0,0,74],
 "classinviwo_1_1animation_1_1Track.html":[4,0,1,2,75],
-"classinviwo_1_1animation_1_1Track.html#a04382e9a119f3efe3657b2facd75acef":[2,0,0,0,74,7],
-"classinviwo_1_1animation_1_1Track.html#a04382e9a119f3efe3657b2facd75acef":[4,0,1,2,75,7],
-"classinviwo_1_1animation_1_1Track.html#a0faa03bd673b36cc528f62a467764644":[2,0,0,0,74,4],
-"classinviwo_1_1animation_1_1Track.html#a0faa03bd673b36cc528f62a467764644":[4,0,1,2,75,4],
-"classinviwo_1_1animation_1_1Track.html#a196d2c47326a86dd12b62577b78b60ee":[2,0,0,0,74,1]
+"classinviwo_1_1animation_1_1Track.html#a04382e9a119f3efe3657b2facd75acef":[2,0,0,0,74,7]
 };

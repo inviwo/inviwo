@@ -1,5 +1,9 @@
 var NAVTREEINDEX33 =
 {
+"structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[2,0,0,8,0,9],
+"structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[4,0,1,12,1,9],
+"structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[2,0,0,8,0,10],
+"structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[4,0,1,12,1,10],
 "structinviwo_1_1dispatching_1_1filter_1_1Integers.html":[2,0,0,8,0,8],
 "structinviwo_1_1dispatching_1_1filter_1_1Integers.html":[4,0,1,12,1,8],
 "structinviwo_1_1dispatching_1_1filter_1_1Scalars.html":[2,0,0,8,0,11],
@@ -245,9 +249,5 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1util_1_1identifier.html":[4,0,1,30,29],
 "structinviwo_1_1util_1_1identity.html":[2,0,0,20,26],
 "structinviwo_1_1util_1_1identity.html":[4,0,1,30,30],
-"structinviwo_1_1util_1_1is__constructible.html":[2,0,0,20,32],
-"structinviwo_1_1util_1_1is__constructible.html":[4,0,1,30,36],
-"structinviwo_1_1util_1_1is__dereferenceable.html":[2,0,0,20,34],
-"structinviwo_1_1util_1_1is__dereferenceable.html":[4,0,1,30,38],
-"structinviwo_1_1util_1_1is__dereferenceable_3_01T_00_01std_1_1void__t_3_01decltype_07_5std_1_1dea79db0978b6be7e835bcf0aa2839bd26.html":[2,0,0,20,35]
+"structinviwo_1_1util_1_1is__constructible.html":[2,0,0,20,32]
 };

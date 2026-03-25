@@ -1,5 +1,9 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1InviwoDefaults_3_01unsigned_01short_01_4.html":[4,0,1,503],
+"structinviwo_1_1InviwoSetupInfo.html":[2,0,0,504],
+"structinviwo_1_1InviwoSetupInfo.html":[4,0,1,513],
+"structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html":[2,0,0,504,0],
 "structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html":[4,0,1,513,0],
 "structinviwo_1_1KDNodeDistWrapper.html":[2,0,0,537],
 "structinviwo_1_1KDNodeDistWrapper.html":[4,0,1,546],
@@ -245,9 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1ReaderWriter.html":[2,0,0,993],
 "structinviwo_1_1ReaderWriter.html":[4,0,1,1002],
 "structinviwo_1_1Resource.html":[2,0,0,1014],
-"structinviwo_1_1Resource.html":[4,0,1,1023],
-"structinviwo_1_1ResourceMeta.html":[2,0,0,1020],
-"structinviwo_1_1ResourceMeta.html":[4,0,1,1029],
-"structinviwo_1_1RuntimeModuleLoading.html":[2,0,0,1023],
-"structinviwo_1_1RuntimeModuleLoading.html":[4,0,1,1032]
+"structinviwo_1_1Resource.html":[4,0,1,1023]
 };

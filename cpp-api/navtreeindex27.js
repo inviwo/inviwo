@@ -1,5 +1,9 @@
 var NAVTREEINDEX27 =
 {
+"classinviwo_1_1plot_1_1MajorTickProperty.html":[2,0,0,15,19],
+"classinviwo_1_1plot_1_1MajorTickProperty.html":[4,0,1,22,20],
+"classinviwo_1_1plot_1_1MajorTickProperty.html#a6584f5d17cd22a3c0439ee5886659449":[2,0,0,15,19,0],
+"classinviwo_1_1plot_1_1MajorTickProperty.html#a6584f5d17cd22a3c0439ee5886659449":[4,0,1,22,20,0],
 "classinviwo_1_1plot_1_1MeshAxis.html":[2,0,0,15,20],
 "classinviwo_1_1plot_1_1MeshAxis.html":[4,0,1,22,21],
 "classinviwo_1_1plot_1_1MeshAxis.html#a2a31eb70f5b5dcd504e1986e1b01bb40":[2,0,0,15,20,0],
@@ -245,9 +249,5 @@ var NAVTREEINDEX27 =
 "namespaceinviwo.html#a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1":[2,0,0,1401,2],
 "namespaceinviwo.html#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a":[2,0,0,1401,0],
 "namespaceinviwo.html#a0780518930e4f82763044068321c57f4ae0626222614bdee31951d84c64e5e9ff":[2,0,0,1401,1],
-"namespaceinviwo.html#a0a430f9d2844d7d03ea80581f65c7634":[2,0,0,1394],
-"namespaceinviwo.html#a173d82ecd35b28f8611ecb036ccc6639":[2,0,0,1421],
-"namespaceinviwo.html#a1c63bd1fc251c208f4fe52b5ab5e5224":[2,0,0,1420],
-"namespaceinviwo.html#a1f86d7470565254911766cbd73f130ad":[2,0,0,1439],
-"namespaceinviwo.html#a22a497d7998cd75395b7f306b468cb61":[2,0,0,1424]
+"namespaceinviwo.html#a0a430f9d2844d7d03ea80581f65c7634":[2,0,0,1394]
 };

@@ -831,7 +831,7 @@ var namespaceinviwo =
     [ "Observable", "classinviwo_1_1Observable.html", "classinviwo_1_1Observable" ],
     [ "ObservableInterface", "classinviwo_1_1ObservableInterface.html", null ],
     [ "Observer", "classinviwo_1_1Observer.html", "classinviwo_1_1Observer" ],
-    [ "OITModule", "classinviwo_1_1OITModule.html", null ],
+    [ "OITModule", "classinviwo_1_1OITModule.html", "classinviwo_1_1OITModule" ],
     [ "OpacityOptimization", "classinviwo_1_1OpacityOptimization.html", "classinviwo_1_1OpacityOptimization" ],
     [ "OpactOptModule", "classinviwo_1_1OpactOptModule.html", null ],
     [ "OpenGLCapabilities", "classinviwo_1_1OpenGLCapabilities.html", "classinviwo_1_1OpenGLCapabilities" ],

@@ -1,5 +1,9 @@
 var NAVTREEINDEX34 =
 {
+"structinviwo_1_1util_1_1is__constructible.html":[4,0,1,30,36],
+"structinviwo_1_1util_1_1is__dereferenceable.html":[2,0,0,20,34],
+"structinviwo_1_1util_1_1is__dereferenceable.html":[4,0,1,30,38],
+"structinviwo_1_1util_1_1is__dereferenceable_3_01T_00_01std_1_1void__t_3_01decltype_07_5std_1_1dea79db0978b6be7e835bcf0aa2839bd26.html":[2,0,0,20,35],
 "structinviwo_1_1util_1_1is__dereferenceable_3_01T_00_01std_1_1void__t_3_01decltype_07_5std_1_1dea79db0978b6be7e835bcf0aa2839bd26.html":[4,0,1,30,39],
 "structinviwo_1_1util_1_1is__floating__point.html":[2,0,0,20,36],
 "structinviwo_1_1util_1_1is__floating__point.html":[4,0,1,30,40],
