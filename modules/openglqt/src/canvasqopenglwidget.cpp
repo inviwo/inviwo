@@ -217,7 +217,20 @@ void CanvasQOpenGLWidget::update() {
     QOpenGLWidget::update();  // this will trigger a paint event.
 }
 
-void CanvasQOpenGLWidget::paintGL() { CanvasGL::update(); }
+void CanvasQOpenGLWidget::paintGL() {
+#if defined(__APPLE__)
+#define GL_SILENCE_DEPRECATION
+    if (auto err = glGetError(); err != GL_NO_ERROR) {
+        // The call the paintGL started to generate a GL_INVALID_ENUM error in some cases,
+        // which we ignore for now
+        if (err != GL_INVALID_ENUM) {
+            log::warn("OpenGL Error: {}", err);
+        }
+    }
+#undef GL_SILENCE_DEPRECATION
+#endif
+    CanvasGL::update();
+}
 
 void CanvasQOpenGLWidget::render(std::shared_ptr<const Image> image, LayerType layerType,
                                  size_t idx) {
