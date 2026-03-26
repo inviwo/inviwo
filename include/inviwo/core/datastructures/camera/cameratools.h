@@ -129,8 +129,8 @@ struct IVW_CORE_API FovBounds {
     bool farPlaneClipped;
 };
 
-IVW_CORE_API FovBounds calculateFovBounds(const glm::mat4& boundingBox, const glm::vec3& lookFrom,
-                                          const glm::vec3& lookTo, const glm::vec3& lookUp,
+IVW_CORE_API FovBounds calculateFovBounds(const glm::mat4& boundingBox, const glm::dvec3& lookFrom,
+                                          const glm::dvec3& lookTo, const glm::dvec3& lookUp,
                                           float nearPlane, float farPlane);
 
 IVW_CORE_API bool canZoomBounded(const FovBounds& bounds, vec2 fov, float zoomFactor);
@@ -143,19 +143,22 @@ void perspectiveZoom(CamType& cam, const ZoomOptions& opts) {
         const auto up = cam.getLookUp();
         const auto dir = -glm::normalize(cam.getDirection());
         const auto right = glm::cross(up, dir);
-        const auto basis = mat3(right, up, dir);
+        const auto basis = dmat3(right, up, dir);
 
         const auto size =
-            fovyToSize(cam.getFovy(), glm::length(cam.getDirection()), cam.getAspectRatio());
-        const auto translate = glm::translate(vec3{0.5f * size * opts.origin.value(), 0.f});
-        const auto scale = glm::scale(vec3{1.0f - opts.factor.y, 1.0f - opts.factor.y, 1.f});
+            fovyToSize(cam.getFovy(), static_cast<float>(glm::length(cam.getDirection())),
+                       cam.getAspectRatio());
+        const auto translate = glm::translate(dvec3{0.5f * size * opts.origin.value(), 0.0});
+        const auto scale =
+            glm::scale(dvec3{1.0 - opts.factor.y, 1.0 - opts.factor.y, 1.0});
         const auto m = translate * scale * glm::inverse(translate);
-        const auto offset = basis * vec3{m * vec4{0.f, 0.f, 0.f, 1.f}};
+        const auto offset = basis * dvec3{m * dvec4{0.0, 0.0, 0.0, 1.0}};
 
-        cam.setLook(cam.getLookFrom() + offset - direction * opts.factor.y,
+        cam.setLook(cam.getLookFrom() + offset - direction * static_cast<double>(opts.factor.y),
                     cam.getLookTo() + offset, cam.getLookUp());
     } else {
-        const auto newFrom = cam.getLookFrom() - direction * opts.factor.y;
+        const auto newFrom =
+            cam.getLookFrom() - direction * static_cast<double>(opts.factor.y);
 
         if (opts.bounded == ZoomOptions::Bounded::Yes && opts.boundingBox &&
             !opts.boundingBox()

@@ -75,20 +75,20 @@ public:
 
     virtual void invokeEvent(Event* event) override;
 
-    const vec3 getLookTo() const;
-    const vec3 getLookFrom() const;
-    const vec3 getLookUp() const;
-    const vec3 getLookRight() const;
+    const dvec3 getLookTo() const;
+    const dvec3 getLookFrom() const;
+    const dvec3 getLookUp() const;
+    const dvec3 getLookRight() const;
 
-    const vec3 getLookFromMinValue() const;
-    const vec3 getLookFromMaxValue() const;
+    const dvec3 getLookFromMinValue() const;
+    const dvec3 getLookFromMaxValue() const;
 
-    const vec3 getLookToMinValue() const;
-    const vec3 getLookToMaxValue() const;
+    const dvec3 getLookToMinValue() const;
+    const dvec3 getLookToMaxValue() const;
 
-    void setLookTo(vec3 lookTo);
-    void setLookFrom(vec3 lookFrom);
-    void setLookUp(vec3 lookUp);
+    void setLookTo(dvec3 lookTo);
+    void setLookFrom(dvec3 lookFrom);
+    void setLookUp(dvec3 lookUp);
 
     /**
      * @brief Set look from, look to and up vector at the same time.
@@ -98,19 +98,19 @@ public:
      * @param lookTo
      * @param lookUp
      */
-    void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp);
+    void setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp);
 
-    vec3 getWorldSpaceTranslationFromNDCSpace(const vec3& fromNormalizedDeviceCoord,
-                                              const vec3& toNormalizedDeviceCoord);
+    dvec3 getWorldSpaceTranslationFromNDCSpace(const dvec3& fromNormalizedDeviceCoord,
+                                               const dvec3& toNormalizedDeviceCoord);
 
 protected:
     enum class Direction { Up = 0, Down, Left, Right };
 
-    vec3 mapNormalizedMousePosToTrackball(const vec2& mousePos, float radius = 1.0f);
-    void rotateTrackBall(const vec3& fromTrackballPos, const vec3& toTrackballPos);
-    vec3 getBoundedTranslation(const vec3& lookFrom, const vec3& lookTo, vec3 translation);
-    float getBoundedZoom(const vec3& lookFrom, const vec3& zoomTo, float zoom);
-    std::pair<bool, vec3> getTrackBallIntersection(const vec2 pos) const;
+    dvec3 mapNormalizedMousePosToTrackball(const vec2& mousePos, float radius = 1.0f);
+    void rotateTrackBall(const dvec3& fromTrackballPos, const dvec3& toTrackballPos);
+    dvec3 getBoundedTranslation(const dvec3& lookFrom, const dvec3& lookTo, dvec3 translation);
+    float getBoundedZoom(const dvec3& lookFrom, const dvec3& zoomTo, float zoom);
+    std::pair<bool, dvec3> getTrackBallIntersection(const vec2 pos) const;
 
     void rotate(MouseEvent* event);
     void rotateTAV(MouseEvent* event);
@@ -127,10 +127,10 @@ protected:
     void moveForward(Event* event);
     void moveBackward(Event* event);
 
-    const vec3 getWorldUp() const;
-    mat4 roll(float radians) const;
-    mat4 pitch(float radians) const;
-    mat4 yaw(float radians) const;
+    const dvec3 getWorldUp() const;
+    dmat4 roll(float radians) const;
+    dmat4 pitch(float radians) const;
+    dmat4 yaw(float radians) const;
 
     void stepRotate(Direction dir);
     void stepZoom(Direction dir, int numSteps = 1);
@@ -164,8 +164,8 @@ protected:
     TrackballObject* object_;
     bool isMouseBeingPressedAndHold_;
 
-    vec3 lastNDC_;
-    vec3 pressNDC_;
+    dvec3 lastNDC_;
+    dvec3 pressNDC_;
 
     float trackBallWorldSpaceRadius_;
 

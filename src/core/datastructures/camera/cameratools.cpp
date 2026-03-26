@@ -152,18 +152,18 @@ constexpr std::array<std::pair<int, int>, 12> edges{{{0, 1},
 
 }  // namespace
 
-FovBounds calculateFovBounds(const mat4& boundingBox, const vec3& lookFrom, const vec3& lookTo,
-                             const vec3& lookUp, float nearPlane, float farPlane) {
+FovBounds calculateFovBounds(const mat4& boundingBox, const dvec3& lookFrom, const dvec3& lookTo,
+                             const dvec3& lookUp, float nearPlane, float farPlane) {
 
     // Camera basis
-    const vec3 forward = glm::normalize(lookTo - lookFrom);
-    const vec3 right = glm::normalize(glm::cross(forward, lookUp));
-    const vec3 up = glm::cross(right, forward);
+    const dvec3 forward = glm::normalize(lookTo - lookFrom);
+    const dvec3 right = glm::normalize(glm::cross(forward, lookUp));
+    const dvec3 up = glm::cross(right, forward);
 
     std::array<vec3, 8> camPts{};
     std::ranges::transform(corners, camPts.begin(), [&](const vec3& unitCorner) {
         const auto corner = vec3{boundingBox * vec4{unitCorner, 1.0}};
-        const auto v = corner - lookFrom;
+        const auto v = dvec3{corner} - lookFrom;
         return vec3{glm::dot(v, right), glm::dot(v, up), glm::dot(v, forward)};
     });
 
