@@ -44,11 +44,11 @@ namespace cameradefaults {
 constexpr dvec3 lookFrom = dvec3(0.0, 0.0, 2.0);
 constexpr dvec3 lookTo = dvec3(0.0);
 constexpr dvec3 lookUp = dvec3(0.0, 1.0, 0.0);
-constexpr float nearPlane = 0.1f;
-constexpr float farPlane = 100.0f;
-constexpr float fieldOfView = 38.f;
-constexpr float aspectRatio = 1.f;
-constexpr float width = 10.f;
+constexpr double nearPlane = 0.1;
+constexpr double farPlane = 100.0;
+constexpr double fieldOfView = 38.0;
+constexpr double aspectRatio = 1.0;
+constexpr double width = 10.0;
 }  // namespace cameradefaults
 
 class CameraProperty;
