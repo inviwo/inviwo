@@ -118,7 +118,7 @@ std::array<dvec2, 3> getRangeBasisOffset(const SpatialEntity& entity) {
 }
 
 std::array<dvec2, 3> getRangeWorld(const SpatialEntity& entity) {
-    const auto d2w = dmat4{entity.getCoordinateTransformer().getDataToWorldMatrix()};
+    const auto d2w = entity.getCoordinateTransformer().getDataToWorldMatrix();
 
     return {dvec2{d2w[3].x, d2w[3].x + glm::length(d2w[0])},
             dvec2{d2w[3].y, d2w[3].y + glm::length(d2w[1])},
@@ -129,7 +129,7 @@ std::array<dvec2, 3> getRangeBoundingBox(CoordinateSpace destSpace, const Spatia
                                          std::optional<dmat4> worldBoundingBox) {
     if (worldBoundingBox) {
         const auto bb =
-            dmat4{entity.getCoordinateTransformer().getMatrix(CoordinateSpace::World, destSpace)} *
+            entity.getCoordinateTransformer().getMatrix(CoordinateSpace::World, destSpace) *
             worldBoundingBox.value();
 
         return {dvec2{bb[3].x, bb[3].x + glm::length(bb[0])},

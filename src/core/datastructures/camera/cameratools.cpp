@@ -200,7 +200,7 @@ FovBounds calculateFovBounds(const dmat4& boundingBox, const dvec3& lookFrom, co
         }
         if (a.z > farPlane || b.z > farPlane) {
             const double t = (farPlane - a.z) / dz;
-            const dvec3 ip = {glm::mix(dvec2{a}, dvec2{b}, t), static_cast<double>(nearPlane)};
+            const dvec3 ip = {glm::mix(dvec2{a}, dvec2{b}, t), farPlane};
             finalPts[finalPtsCount++] = ip;
         }
     }
