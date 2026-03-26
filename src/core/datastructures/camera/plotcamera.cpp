@@ -75,12 +75,12 @@ void PlotCamera::zoom(const ZoomOptions& opts) {
         const auto up = getLookUp();
         const auto dir = -glm::normalize(getDirection());
         const auto right = glm::cross(up, dir);
-        const auto basis = mat3(right, up, dir);
+        const auto basis = dmat3(right, up, dir);
 
-        const auto translate = glm::translate(vec3{0.5f * size_ * opts.origin.value(), 0.f});
-        const auto scale = glm::scale(vec3{1.0f - opts.factor, 1.f});
+        const auto translate = glm::translate(dvec3{0.5f * size_ * opts.origin.value(), 0.0});
+        const auto scale = glm::scale(dvec3{1.0f - opts.factor, 1.0});
         const auto m = translate * scale * glm::inverse(translate);
-        const auto offset = basis * vec3{m * vec4{0.f, 0.f, 0.f, 1.f}};
+        const auto offset = basis * dvec3{m * dvec4{0.0, 0.0, 0.0, 1.0}};
         setLook(getLookFrom() + offset, getLookTo() + offset, getLookUp());
     }
     setSize(size_ * (1.0f - opts.factor));
@@ -94,11 +94,13 @@ void PlotCamera::updateFrom(const Camera& source) {
         setSize(vec2{oc->getWidth(), oc->getWidth() / getAspectRatio()});
     } else if (const auto* pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         const auto width = util::fovyToWidth(
-            pc->getFovy(), glm::distance(getLookTo(), getLookFrom()), getAspectRatio());
+            pc->getFovy(), static_cast<float>(glm::distance(getLookTo(), getLookFrom())),
+            getAspectRatio());
         setSize(vec2{width, width / getAspectRatio()});
     } else if (const auto* sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
         const auto width = util::fovyToWidth(
-            sc->getFovy(), glm::distance(getLookTo(), getLookFrom()), getAspectRatio());
+            sc->getFovy(), static_cast<float>(glm::distance(getLookTo(), getLookFrom())),
+            getAspectRatio());
         setSize(vec2{width, width / getAspectRatio()});
     }
 }

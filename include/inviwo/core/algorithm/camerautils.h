@@ -91,8 +91,8 @@ IVW_CORE_API float fovxDegreesFrom(float fovyDegrees, float aspect);
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBox, glm::mat3 view,
-                                float fitRatio = 1.05f,
+IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBox,
+                                glm::dmat3 view, float fitRatio = 1.05f,
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No,
                                 float maxZoomFactor = defaultZoomFactor,

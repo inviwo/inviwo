@@ -74,10 +74,12 @@ void OrthographicCamera::updateFrom(const Camera& source) {
     } else if (const auto* plc = dynamic_cast<const PlotCamera*>(&source)) {
         setWidth(plc->getSize().x);
     } else if (const auto* pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
-        setWidth(util::fovyToWidth(pc->getFovy(), glm::distance(getLookTo(), getLookFrom()),
+        setWidth(util::fovyToWidth(pc->getFovy(),
+                                   static_cast<float>(glm::distance(getLookTo(), getLookFrom())),
                                    getAspectRatio()));
     } else if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
-        setWidth(util::fovyToWidth(sc->getFovy(), glm::distance(getLookTo(), getLookFrom()),
+        setWidth(util::fovyToWidth(sc->getFovy(),
+                                   static_cast<float>(glm::distance(getLookTo(), getLookFrom())),
                                    getAspectRatio()));
     }
 }
