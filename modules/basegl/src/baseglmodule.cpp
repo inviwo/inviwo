@@ -233,7 +233,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerDataVisualizer(std::make_unique<MeshVisualizer>(app));
 }
 
-int BaseGLModule::getVersion() const { return 12; }
+int BaseGLModule::getVersion() const { return 13; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -241,7 +241,11 @@ std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const 
 
 BaseGLModule::Converter::Converter(int version) : version_(version) {}
 
-bool BaseGLModule::Converter::convert(TxElement* root) {
+namespace {
+
+bool updateV0(TxElement* root) {
+    bool res = false;
+
     auto makerulesV1 = []() {
         std::vector<xml::IdentifierReplacement> repl = {
             // MeshRenderProcessorGL
@@ -333,14 +337,14 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
             {"ImageInvert", "img_invert.frag"},     {"ImageNormalization", "img_normalize.frag"},
             {"ImageResample", "img_resample.frag"}};
 
-        for (const auto& i : imageGLrepl) {
-            xml::IdentifierReplacement inport = {{xml::Kind::processor("org.inviwo." + i.first),
+        for (const auto& [identifier, shader] : imageGLrepl) {
+            xml::IdentifierReplacement inport = {{xml::Kind::processor("org.inviwo." + identifier),
                                                   xml::Kind::inport("org.inviwo.ImageInport")},
-                                                 i.second + "inport",
+                                                 shader + "inport",
                                                  "inputImage"};
-            xml::IdentifierReplacement outport = {{xml::Kind::processor("org.inviwo." + i.first),
+            xml::IdentifierReplacement outport = {{xml::Kind::processor("org.inviwo." + identifier),
                                                    xml::Kind::outport("org.inviwo.ImageOutport")},
-                                                  i.second + "outport",
+                                                  shader + "outport",
                                                   "outputImage"};
             repl.push_back(inport);
             repl.push_back(outport);
@@ -372,298 +376,396 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
         return repl;
     };
 
+    auto replV1 = makerulesV1();
+    res |= xml::changeIdentifiers(root, replV1);
+
+    return res;
+}
+
+bool updateV1(TxElement* root) {
     bool res = false;
-    switch (version_) {
-        case 0: {
-            auto replV1 = makerulesV1();
-            res |= xml::changeIdentifiers(root, replV1);
-            [[fallthrough]];
-        }
-        case 1: {
-            res |= xml::changeIdentifier(root,
-                                         {{xml::Kind::processor("org.inviwo.Background"),
-                                           xml::Kind::property("org.inviwo.FloatVec4Property")}},
-                                         "color1", "bgColor1");
-            res |= xml::changeIdentifier(root,
-                                         {{xml::Kind::processor("org.inviwo.Background"),
-                                           xml::Kind::property("org.inviwo.FloatVec4Property")}},
-                                         "color2", "bgColor2");
-            [[fallthrough]];
-        }
-        case 2: {
-            res |= xml::changeIdentifier(root,
-                                         {{xml::Kind::processor("org.inviwo.LineRenderer"),
-                                           xml::Kind::property("org.inviwo.FloatProperty")}},
-                                         "antialising", "antialiasing");
+    res |= xml::changeIdentifier(root,
+                                 {{xml::Kind::processor("org.inviwo.Background"),
+                                   xml::Kind::property("org.inviwo.FloatVec4Property")}},
+                                 "color1", "bgColor1");
+    res |= xml::changeIdentifier(root,
+                                 {{xml::Kind::processor("org.inviwo.Background"),
+                                   xml::Kind::property("org.inviwo.FloatVec4Property")}},
+                                 "color2", "bgColor2");
+    return res;
+}
 
-            [[fallthrough]];
-        }
-        case 3: {
-            std::vector<xml::IdentifierReplacement> repl{
-                {{xml::Kind::processor("org.inviwo.SphereRenderer"),
-                  xml::Kind::property("org.inviwo.CompositeProperty"),
-                  xml::Kind::property("org.inviwo.BoolProperty")},
-                 "overrideSphereRadius",
-                 "forceRadius"},
-                {{xml::Kind::processor("org.inviwo.SphereRenderer"),
-                  xml::Kind::property("org.inviwo.CompositeProperty"),
-                  xml::Kind::property("org.inviwo.FloatProperty")},
-                 "customRadius",
-                 "defaultRadius"},
-                {{xml::Kind::processor("org.inviwo.SphereRenderer"),
-                  xml::Kind::property("org.inviwo.CompositeProperty"),
-                  xml::Kind::property("org.inviwo.BoolProperty")},
-                 "overrideSphereColor",
-                 "forceColor"},
-                {{xml::Kind::processor("org.inviwo.SphereRenderer"),
-                  xml::Kind::property("org.inviwo.CompositeProperty"),
-                  xml::Kind::property("org.inviwo.FloatVec4Property")},
-                 "customColor",
-                 "defaultColor"},
+bool updateV2(TxElement* root) {
+    bool res = false;
+    res |= xml::changeIdentifier(root,
+                                 {{xml::Kind::processor("org.inviwo.LineRenderer"),
+                                   xml::Kind::property("org.inviwo.FloatProperty")}},
+                                 "antialising", "antialiasing");
+    return res;
+}
 
-                {{xml::Kind::processor("org.inviwo.CubeRenderer"),
-                  xml::Kind::property("org.inviwo.CompositeProperty"),
-                  xml::Kind::property("org.inviwo.BoolProperty")},
-                 "overrideCubeSize",
-                 "forceSize"},
-                {{xml::Kind::processor("org.inviwo.CubeRenderer"),
-                  xml::Kind::property("org.inviwo.CompositeProperty"),
-                  xml::Kind::property("org.inviwo.FloatProperty")},
-                 "customSize",
-                 "defaultSize"},
-                {{xml::Kind::processor("org.inviwo.CubeRenderer"),
-                  xml::Kind::property("org.inviwo.CompositeProperty"),
-                  xml::Kind::property("org.inviwo.BoolProperty")},
-                 "overrideCubeColor",
-                 "forceColor"},
-                {{xml::Kind::processor("org.inviwo.CubeRenderer"),
-                  xml::Kind::property("org.inviwo.CompositeProperty"),
-                  xml::Kind::property("org.inviwo.FloatVec4Property")},
-                 "customColor",
-                 "defaultColor"},
+bool updateV3(TxElement* root) {
+    bool res = false;
+    std::vector<xml::IdentifierReplacement> repl{
+        {{xml::Kind::processor("org.inviwo.SphereRenderer"),
+          xml::Kind::property("org.inviwo.CompositeProperty"),
+          xml::Kind::property("org.inviwo.BoolProperty")},
+         "overrideSphereRadius",
+         "forceRadius"},
+        {{xml::Kind::processor("org.inviwo.SphereRenderer"),
+          xml::Kind::property("org.inviwo.CompositeProperty"),
+          xml::Kind::property("org.inviwo.FloatProperty")},
+         "customRadius",
+         "defaultRadius"},
+        {{xml::Kind::processor("org.inviwo.SphereRenderer"),
+          xml::Kind::property("org.inviwo.CompositeProperty"),
+          xml::Kind::property("org.inviwo.BoolProperty")},
+         "overrideSphereColor",
+         "forceColor"},
+        {{xml::Kind::processor("org.inviwo.SphereRenderer"),
+          xml::Kind::property("org.inviwo.CompositeProperty"),
+          xml::Kind::property("org.inviwo.FloatVec4Property")},
+         "customColor",
+         "defaultColor"},
 
-                {{xml::Kind::processor("org.inviwo.TubeRendering"),
-                  xml::Kind::property("org.inviwo.SimpleLightingProperty")},
-                 "light",
-                 "lighting"},
-                {{xml::Kind::processor("org.inviwo.TubeRendering"),
-                  xml::Kind::property("org.inviwo.FloatProperty")},
-                 "radius",
-                 "defaultRadius"}};
-            res |= xml::changeIdentifiers(root, repl);
-            [[fallthrough]];
-        }
-        case 4: {
-            res |= xml::changeAttributeRecursive(
-                root,
-                {xml::Kind::processor("org.inviwo.SplitImage"),
-                 xml::Kind::property("org.inviwo.BoolCompositeProperty"),
-                 xml::Kind::property("org.inviwo.FloatVec4Property")},
-                "identifier", "triColor", "hoverColor");
-            res |= xml::changeAttributeRecursive(
-                root,
-                {{xml::Kind::processor("org.inviwo.SplitImage"),
-                  xml::Kind::property("org.inviwo.BoolCompositeProperty")}},
-                "type", "org.inviwo.BoolCompositeProperty", "org.inviwo.SplitterProperty");
-            [[fallthrough]];
-        }
-        case 5: {
-            for (auto&& [path, newName] :
-                 {std::pair{"sphereProperties.defaultRadius", "radius"},
-                  std::pair{"sphereProperties.forceRadius", "overrideRadius"},
-                  std::pair{"sphereProperties.defaultColor", "color"},
-                  std::pair{"sphereProperties.forceColor", "overrideColor"},
-                  std::pair{"clipping.clipMode", "mode"}}) {
+        {{xml::Kind::processor("org.inviwo.CubeRenderer"),
+          xml::Kind::property("org.inviwo.CompositeProperty"),
+          xml::Kind::property("org.inviwo.BoolProperty")},
+         "overrideCubeSize",
+         "forceSize"},
+        {{xml::Kind::processor("org.inviwo.CubeRenderer"),
+          xml::Kind::property("org.inviwo.CompositeProperty"),
+          xml::Kind::property("org.inviwo.FloatProperty")},
+         "customSize",
+         "defaultSize"},
+        {{xml::Kind::processor("org.inviwo.CubeRenderer"),
+          xml::Kind::property("org.inviwo.CompositeProperty"),
+          xml::Kind::property("org.inviwo.BoolProperty")},
+         "overrideCubeColor",
+         "forceColor"},
+        {{xml::Kind::processor("org.inviwo.CubeRenderer"),
+          xml::Kind::property("org.inviwo.CompositeProperty"),
+          xml::Kind::property("org.inviwo.FloatVec4Property")},
+         "customColor",
+         "defaultColor"},
 
-                res |=
-                    xml::renamePropertyIdentifier(root, "org.inviwo.SphereRenderer", path, newName);
-                res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRasterizer", path,
-                                                     newName);
+        {{xml::Kind::processor("org.inviwo.TubeRendering"),
+          xml::Kind::property("org.inviwo.SimpleLightingProperty")},
+         "light",
+         "lighting"},
+        {{xml::Kind::processor("org.inviwo.TubeRendering"),
+          xml::Kind::property("org.inviwo.FloatProperty")},
+         "radius",
+         "defaultRadius"}};
+    res |= xml::changeIdentifiers(root, repl);
+    return res;
+}
+
+bool updateV4(TxElement* root) {
+    bool res = false;
+    res |= xml::changeAttributeRecursive(root,
+                                         {xml::Kind::processor("org.inviwo.SplitImage"),
+                                          xml::Kind::property("org.inviwo.BoolCompositeProperty"),
+                                          xml::Kind::property("org.inviwo.FloatVec4Property")},
+                                         "identifier", "triColor", "hoverColor");
+    res |= xml::changeAttributeRecursive(
+        root,
+        {{xml::Kind::processor("org.inviwo.SplitImage"),
+          xml::Kind::property("org.inviwo.BoolCompositeProperty")}},
+        "type", "org.inviwo.BoolCompositeProperty", "org.inviwo.SplitterProperty");
+    return res;
+}
+
+bool updateV5(TxElement* root) {
+    bool res = false;
+    for (auto&& [path, newName] : {std::pair{"sphereProperties.defaultRadius", "radius"},
+                                   std::pair{"sphereProperties.forceRadius", "overrideRadius"},
+                                   std::pair{"sphereProperties.defaultColor", "color"},
+                                   std::pair{"sphereProperties.forceColor", "overrideColor"},
+                                   std::pair{"clipping.clipMode", "mode"}}) {
+
+        res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRenderer", path, newName);
+        res |= xml::renamePropertyIdentifier(root, "org.inviwo.SphereRasterizer", path, newName);
+    }
+
+    xml::visitMatchingNodesRecursive(
+        root, {"Processor", {{"type", "org.inviwo.SphereRenderer"}}}, [&](TxElement* prop) {
+            if (auto* color = xml::getElement(prop,
+                                              "Properties/Property&identifier=sphereProperties/"
+                                              "Properties/Property&identifier=color")) {
+
+                auto* alpha = color->Clone();
+
+                color->SetAttribute("type", "org.inviwo.FloatVec3Property");
+
+                alpha->ToElement()->SetAttribute("identifier", "alpha");
+                alpha->ToElement()->SetAttribute("type", "org.inviwo.FloatProperty");
+                if (auto* value = alpha->FirstChildElement()) {
+                    auto a = value->GetAttribute("w");
+                    value->SetAttribute("content", a);
+                    color->Parent()->LinkEndChild(alpha);
+                }
+
+                res |= true;
+            }
+        });
+    return res;
+}
+
+bool updateV6(TxElement* root) {
+    bool res = false;
+    TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+        const auto& key = node->Value();
+        if (key != "Processor") return true;
+        if (node->GetAttribute("type") != "org.inviwo.AxisAlignedCutPlane") {
+            return true;
+        }
+        if (auto* disableTF = xml::getElement(node, "Properties/Property&identifier=disableTF")) {
+
+            disableTF->SetAttribute("identifier", "applyTF");
+            if (auto* elem = xml::getElement(disableTF, "displayName")) {
+                elem->SetAttribute("content", "Apply TF");
+            }
+            // flip checked state
+            if (auto* value = xml::getElement(disableTF, "value")) {
+                if (value->GetAttribute("content") == "0") {
+                    value->SetAttribute("content", "1");
+                } else {
+                    value->SetAttribute("content", "0");
+                }
+            }
+            res = true;
+        }
+
+        for (auto&& [path, newIdentifier, newDisplayName, sliceIdentifier] :
+             {std::tuple{"x", "xAxis", "X Axis", "sliceX"},
+              std::tuple{"y", "yAxis", "Z Axis", "sliceY"},
+              std::tuple{"z", "zAxis", "Z Axis", "sliceZ"}}) {
+
+            if (auto* prop =
+                    xml::getElement(node, fmt::format("Properties/Property&identifier={}", path))) {
+                prop->SetAttribute("identifier", newIdentifier);
+                if (auto* elem = xml::getElement(prop, "displayName")) {
+                    elem->SetAttribute("content", newDisplayName);
+                }
+                if (auto* slice = xml::getElement(prop, "Properties/Property&identifier=slice")) {
+                    slice->SetAttribute("identifier", sliceIdentifier);
+                }
+                res = true;
+            }
+        }
+        return true;
+    }};
+    conv.convert(root);
+    return res;
+}
+
+bool updateV7(TxElement* root) {
+    bool res = false;
+    res |= xml::changeAttributeRecursive(root, {{xml::Kind::processor("org.inviwo.ImageMapping")}},
+                                         "type", "org.inviwo.ImageMapping",
+                                         "org.inviwo.ImageColorMapping");
+    res |= xml::changeAttributeRecursive(root, {{xml::Kind::processor("org.inviwo.LayerMapping")}},
+                                         "type", "org.inviwo.LayerMapping",
+                                         "org.inviwo.LayerColorMapping");
+    return res;
+}
+
+bool updateV8(TxElement* root) {
+    bool res = false;
+    res |= xml::renamePropertyIdentifier(root, "org.inviwo.MultichannelRaycaster",
+                                         "transfer-functions", "transferfunctions");
+    res |= xml::renamePortIdentifier(root, "org.inviwo.LightingRaycaster", "entry-points", "entry");
+    res |= xml::renamePortIdentifier(root, "org.inviwo.LightingRaycaster", "exit-points", "exit");
+    return res;
+}
+
+bool updateV9(TxElement* root) {
+    bool res = false;
+    TraversingVersionConverter conv{[&](TxElement* node) {
+        if (const auto& key = node->Value(); key != "Processor") return true;
+        if (node->GetAttribute("type") != "org.inviwo.VolumeSliceGL") {
+            return true;
+        }
+        if (auto* tfGroup = xml::getElement(node, "Properties/Property&identifier=tfGroup")) {
+            if (auto* tf =
+                    xml::getElement(tfGroup, "Properties/Property&identifier=transferFunction")) {
+                if (auto* value = xml::getElement(tf, "visible")) {
+                    value->SetAttribute("content", "1");
+                }
+            }
+            if (auto* alphaOffset =
+                    xml::getElement(tfGroup, "Properties/Property&identifier=alphaOffset")) {
+                if (auto* value = xml::getElement(alphaOffset, "visible")) {
+                    value->SetAttribute("content", "1");
+                }
             }
 
-            xml::visitMatchingNodesRecursive(
-                root, {"Processor", {{"type", "org.inviwo.SphereRenderer"}}}, [&](TxElement* prop) {
-                    if (auto* color =
-                            xml::getElement(prop,
-                                            "Properties/Property&identifier=sphereProperties/"
-                                            "Properties/Property&identifier=color")) {
-
-                        auto* alpha = color->Clone();
-
-                        color->SetAttribute("type", "org.inviwo.FloatVec3Property");
-
-                        alpha->ToElement()->SetAttribute("identifier", "alpha");
-                        alpha->ToElement()->SetAttribute("type", "org.inviwo.FloatProperty");
-                        if (auto* value = alpha->FirstChildElement()) {
-                            auto a = value->GetAttribute("w");
-                            value->SetAttribute("content", a);
-                            color->Parent()->LinkEndChild(alpha);
-                        }
-
-                        res |= true;
-                    }
-                });
-            [[fallthrough]];
+            if (auto* properties = xml::getElement(tfGroup, "Properties")) {
+                if (auto* tfMapping = xml::getElement(
+                        tfGroup, "Properties/Property&identifier=tfMappingEnabled")) {
+                    tfMapping->SetAttribute("identifier", "checked");
+                    tfMapping->SetAttribute("displayName", "");
+                    properties->InsertEndChild(*tfMapping);
+                }
+            }
+            tfGroup->SetAttribute("type", "org.inviwo.BoolCompositeProperty");
+            res = true;
         }
-        case 6: {
-            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                const auto& key = node->Value();
-                if (key != "Processor") return true;
-                if (node->GetAttribute("type") != "org.inviwo.AxisAlignedCutPlane") {
-                    return true;
-                }
-                if (auto* disableTF =
-                        xml::getElement(node, "Properties/Property&identifier=disableTF")) {
 
-                    disableTF->SetAttribute("identifier", "applyTF");
-                    if (auto* elem = xml::getElement(disableTF, "displayName")) {
-                        elem->SetAttribute("content", "Apply TF");
-                    }
-                    // flip checked state
-                    if (auto* value = xml::getElement(disableTF, "value")) {
-                        if (value->GetAttribute("content") == "0") {
-                            value->SetAttribute("content", "1");
-                        } else {
-                            value->SetAttribute("content", "0");
-                        }
-                    }
-                    res = true;
-                }
+        return true;
+    }};
 
-                for (auto&& [path, newIdentifier, newDisplayName, sliceIdentifier] :
-                     {std::tuple{"x", "xAxis", "X Axis", "sliceX"},
-                      std::tuple{"y", "yAxis", "Z Axis", "sliceY"},
-                      std::tuple{"z", "zAxis", "Z Axis", "sliceZ"}}) {
+    res |= xml::changeAttributeRecursive(
+        root, {{xml::Kind::processor("org.inviwo.VolumeSliceExtractor")}}, "type",
+        "org.inviwo.ImageMapping", "org.inviwo.ImageColorMapping");
+    conv.convert(root);
+    return res;
+}
 
-                    if (auto* prop = xml::getElement(
-                            node, fmt::format("Properties/Property&identifier={}", path))) {
-                        prop->SetAttribute("identifier", newIdentifier);
-                        if (auto* elem = xml::getElement(prop, "displayName")) {
-                            elem->SetAttribute("content", newDisplayName);
-                        }
-                        if (auto* slice =
-                                xml::getElement(prop, "Properties/Property&identifier=slice")) {
-                            slice->SetAttribute("identifier", sliceIdentifier);
-                        }
-                        res = true;
-                    }
-                }
-                return true;
-            }};
-            conv.convert(root);
+bool updateV10(TxElement* root) {
+    bool res = false;
+    res |= xml::renamePropertyIdentifier(root, "org.inviwo.LayerNormalization", "zeroCentered",
+                                         "signNormalized");
+    res |= xml::renamePropertyIdentifier(root, "org.inviwo.ImageNormalization", "zeroCentered",
+                                         "signNormalized");
+    return res;
+}
 
-            [[fallthrough]];
+bool updateV11(TxElement* root) {
+    bool res = false;
+    TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+        if (const auto& key = node->Value(); key != "Processor") return true;
+        const auto& type = node->GetAttribute("type");
+
+        if (type == "org.inviwo.RowLayout") {
+            node->SetAttribute("type", "org.inviwo.ColumnLayout");
+            node->SetAttribute("displayName", "Column Layout");
+
+            if (auto* splitters =
+                    xml::getElement(node, "Properties/Property&identifier=splitters")) {
+                splitters->SetAttribute("identifier", "horizontalSplitters");
+
+                xml::changeAttributeRecursive(
+                    splitters, {{xml::Kind::property("org.inviwo.FloatProperty")}}, "type",
+                    "org.inviwo.FloatProperty", "org.inviwo.DoubleProperty");
+            }
         }
-        case 7: {
-            res |= xml::changeAttributeRecursive(
-                root, {{xml::Kind::processor("org.inviwo.ImageMapping")}}, "type",
-                "org.inviwo.ImageMapping", "org.inviwo.ImageColorMapping");
-            res |= xml::changeAttributeRecursive(
-                root, {{xml::Kind::processor("org.inviwo.LayerMapping")}}, "type",
-                "org.inviwo.LayerMapping", "org.inviwo.LayerColorMapping");
-            [[fallthrough]];
+
+        if (type == "org.inviwo.ColumnLayout") {
+            node->SetAttribute("type", "org.inviwo.RowLayout");
+            node->SetAttribute("displayName", "Row Layout");
+
+            if (auto* splitters =
+                    xml::getElement(node, "Properties/Property&identifier=splitters")) {
+                splitters->SetAttribute("identifier", "verticalSplitters");
+
+                xml::changeAttributeRecursive(
+                    splitters, {{xml::Kind::property("org.inviwo.FloatProperty")}}, "type",
+                    "org.inviwo.FloatProperty", "org.inviwo.DoubleProperty");
+            }
         }
-        case 8: {
-            res |= xml::renamePropertyIdentifier(root, "org.inviwo.MultichannelRaycaster",
-                                                 "transfer-functions", "transferfunctions");
-            res |= xml::renamePortIdentifier(root, "org.inviwo.LightingRaycaster", "entry-points",
-                                             "entry");
-            res |= xml::renamePortIdentifier(root, "org.inviwo.LightingRaycaster", "exit-points",
-                                             "exit");
+
+        res = true;
+        return true;
+    }};
+    conv.convert(root);
+    return res;
+}
+
+bool updateV12(TxElement* root) {
+    bool res = false;
+    xml::visitMatchingNodesRecursive(
+        root,
+        {.name = "Processor", .attributes = {{.name = "type", .value = "org.inviwo.Background"}}},
+        [&](TxElement* node) {
+            auto* props = xml::getElement(node, "Properties");
+            if (!props) {
+                props = xml::createNode("Properties", node);
+                res |= true;
+            }
+
+            auto* bgColor1 = xml::getElement(props, "Property&identifier=bgColor1");
+            if (!bgColor1) {
+                bgColor1 = xml::createNode(
+                    "Property&type=org.inviwo.FloatVec4Property&identifier=bgColor1", props);
+            }
+            if (const auto* value = xml::getElement(bgColor1, "value"); !value) {
+                xml::createNode("value&x=0.0&y=0.0&z=0.0&w=1.0", bgColor1);
+                res |= true;
+            }
+
+            auto* bgColor2 = xml::getElement(props, "Property&identifier=bgColor2");
+            if (!bgColor2) {
+                bgColor2 = xml::createNode(
+                    "Property&type=org.inviwo.FloatVec4Property&identifier=bgColor2", props);
+                res |= true;
+            }
+            if (const auto* value = xml::getElement(bgColor2, "value"); !value) {
+                xml::createNode("value&x=1.0&y=1.0&z=1.0&w=1.0", bgColor2);
+                res |= true;
+            }
+
+            auto* style = xml::getElement(node, "Properties/Property&identifier=backgroundStyle");
+            if (!style) {
+                style = xml::createNode(
+                    "Property&type=org.inviwo.OptionPropertyEnumInt&identifier=backgroundStyle",
+                    props);
+                res |= true;
+            }
+            if (const auto* selectedIdentifier = xml::getElement(style, "selectedIdentifier");
+                !selectedIdentifier) {
+                xml::createNode("selectedIdentifier&content=linearGradientVertical", style);
+                res |= true;
+            }
+        });
+    return res;
+}
+
+}  // namespace
+
+bool BaseGLModule::Converter::convert(TxElement* root) {
+    bool res = false;
+    switch (version_) {
+        case 0:
+            res |= updateV0(root);
             [[fallthrough]];
-        }
-        case 9: {
-            TraversingVersionConverter conv{[&](TxElement* node) {
-                if (const auto& key = node->Value(); key != "Processor") return true;
-                if (node->GetAttribute("type") != "org.inviwo.VolumeSliceGL") {
-                    return true;
-                }
-                if (auto* tfGroup =
-                        xml::getElement(node, "Properties/Property&identifier=tfGroup")) {
-                    if (auto* tf = xml::getElement(
-                            tfGroup, "Properties/Property&identifier=transferFunction")) {
-                        if (auto* value = xml::getElement(tf, "visible")) {
-                            value->SetAttribute("content", "1");
-                        }
-                    }
-                    if (auto* alphaOffset = xml::getElement(
-                            tfGroup, "Properties/Property&identifier=alphaOffset")) {
-                        if (auto* value = xml::getElement(alphaOffset, "visible")) {
-                            value->SetAttribute("content", "1");
-                        }
-                    }
-
-                    if (auto* properties = xml::getElement(tfGroup, "Properties")) {
-                        if (auto* tfMapping = xml::getElement(
-                                tfGroup, "Properties/Property&identifier=tfMappingEnabled")) {
-                            tfMapping->SetAttribute("identifier", "checked");
-                            tfMapping->SetAttribute("displayName", "");
-                            properties->InsertEndChild(*tfMapping);
-                        }
-                    }
-                    tfGroup->SetAttribute("type", "org.inviwo.BoolCompositeProperty");
-                    res = true;
-                }
-
-                return true;
-            }};
-
-            res |= xml::changeAttributeRecursive(
-                root, {{xml::Kind::processor("org.inviwo.VolumeSliceExtractor")}}, "type",
-                "org.inviwo.ImageMapping", "org.inviwo.ImageColorMapping");
-            conv.convert(root);
-
+        case 1:
+            res |= updateV1(root);
             [[fallthrough]];
-        }
-        case 10: {
-            res |= xml::renamePropertyIdentifier(root, "org.inviwo.LayerNormalization",
-                                                 "zeroCentered", "signNormalized");
-            res |= xml::renamePropertyIdentifier(root, "org.inviwo.ImageNormalization",
-                                                 "zeroCentered", "signNormalized");
+        case 2:
+            res |= updateV2(root);
             [[fallthrough]];
-        }
-        case 11: {
-            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                const auto& key = node->Value();
-                if (key != "Processor") return true;
-                const auto& type = node->GetAttribute("type");
-
-                if (type == "org.inviwo.RowLayout") {
-                    node->SetAttribute("type", "org.inviwo.ColumnLayout");
-                    node->SetAttribute("displayName", "Column Layout");
-
-                    if (auto* splitters =
-                            xml::getElement(node, "Properties/Property&identifier=splitters")) {
-                        splitters->SetAttribute("identifier", "horizontalSplitters");
-
-                        xml::changeAttributeRecursive(
-                            splitters, {{xml::Kind::property("org.inviwo.FloatProperty")}}, "type",
-                            "org.inviwo.FloatProperty", "org.inviwo.DoubleProperty");
-                    }
-                }
-
-                if (type == "org.inviwo.ColumnLayout") {
-                    node->SetAttribute("type", "org.inviwo.RowLayout");
-                    node->SetAttribute("displayName", "Row Layout");
-
-                    if (auto* splitters =
-                            xml::getElement(node, "Properties/Property&identifier=splitters")) {
-                        splitters->SetAttribute("identifier", "verticalSplitters");
-
-                        xml::changeAttributeRecursive(
-                            splitters, {{xml::Kind::property("org.inviwo.FloatProperty")}}, "type",
-                            "org.inviwo.FloatProperty", "org.inviwo.DoubleProperty");
-                    }
-                }
-
-                res = true;
-                return true;
-            }};
-            conv.convert(root);
-
+        case 3:
+            res |= updateV3(root);
+            [[fallthrough]];
+        case 4:
+            res |= updateV4(root);
+            [[fallthrough]];
+        case 5:
+            res |= updateV5(root);
+            [[fallthrough]];
+        case 6:
+            res |= updateV6(root);
+            [[fallthrough]];
+        case 7:
+            res |= updateV7(root);
+            [[fallthrough]];
+        case 8:
+            res |= updateV8(root);
+            [[fallthrough]];
+        case 9:
+            res |= updateV9(root);
+            [[fallthrough]];
+        case 10:
+            res |= updateV10(root);
+            [[fallthrough]];
+        case 11:
+            res |= updateV11(root);
+            [[fallthrough]];
+        case 12:
+            res |= updateV12(root);
             return res;
-        }
-
         default:
             return false;  // No changes
     }
