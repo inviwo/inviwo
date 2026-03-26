@@ -78,7 +78,7 @@ void PlotCamera::zoom(const ZoomOptions& opts) {
         const auto basis = dmat3(right, up, dir);
 
         const auto translate = glm::translate(dvec3{0.5f * size_ * opts.origin.value(), 0.0});
-        const auto scale = glm::scale(dvec3{1.0f - opts.factor, 1.0});
+        const auto scale = glm::scale(dvec3{1.0 - opts.factor.x, 1.0 - opts.factor.y, 1.0});
         const auto m = translate * scale * glm::inverse(translate);
         const auto offset = basis * dvec3{m * dvec4{0.0, 0.0, 0.0, 1.0}};
         setLook(getLookFrom() + offset, getLookTo() + offset, getLookUp());

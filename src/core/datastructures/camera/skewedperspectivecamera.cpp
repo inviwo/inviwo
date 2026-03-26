@@ -147,7 +147,7 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
 
 dmat4 SkewedPerspectiveCamera::calculateViewMatrix() const {
     const dvec3 xoffset{offset_.x * glm::normalize(glm::cross(lookTo_ - lookFrom_, lookUp_))};
-    const dvec3 yoffset{static_cast<double>(offset_.y) * lookUp_};
+    const dvec3 yoffset{offset_.y * lookUp_};
     return glm::lookAt(lookFrom_ + xoffset + yoffset, lookTo_ + xoffset + yoffset, lookUp_);
 }
 
