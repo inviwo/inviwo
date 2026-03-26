@@ -104,39 +104,39 @@ public:
     void onCameraChanged();
 
     // Necessary for trackball
-    [[nodiscard]] virtual vec3 getLookTo() const override;
-    [[nodiscard]] virtual vec3 getLookFrom() const override;
-    [[nodiscard]] virtual vec3 getLookUp() const override;
+    [[nodiscard]] virtual dvec3 getLookTo() const override;
+    [[nodiscard]] virtual dvec3 getLookFrom() const override;
+    [[nodiscard]] virtual dvec3 getLookUp() const override;
 
-    virtual TrackballObject& setLookTo(vec3 lookTo) override;
-    virtual TrackballObject& setLookFrom(vec3 lookFrom) override;
-    virtual TrackballObject& setLookUp(vec3 lookUp) override;
+    virtual TrackballObject& setLookTo(dvec3 lookTo) override;
+    virtual TrackballObject& setLookFrom(dvec3 lookFrom) override;
+    virtual TrackballObject& setLookUp(dvec3 lookUp) override;
 
-    [[nodiscard]] virtual vec3 getLookFromMinValue() const override;
-    [[nodiscard]] virtual vec3 getLookFromMaxValue() const override;
+    [[nodiscard]] virtual dvec3 getLookFromMinValue() const override;
+    [[nodiscard]] virtual dvec3 getLookFromMaxValue() const override;
 
-    [[nodiscard]] virtual vec3 getLookToMinValue() const override;
-    [[nodiscard]] virtual vec3 getLookToMaxValue() const override;
+    [[nodiscard]] virtual dvec3 getLookToMinValue() const override;
+    [[nodiscard]] virtual dvec3 getLookToMaxValue() const override;
 
-    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
+    virtual TrackballObject& setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp) override;
 
-    [[nodiscard]] virtual float getNearPlaneDist() const override;
-    [[nodiscard]] virtual float getFarPlaneDist() const override;
+    [[nodiscard]] virtual double getNearPlaneDist() const override;
+    [[nodiscard]] virtual double getFarPlaneDist() const override;
 
     virtual void zoom(const ZoomOptions& opts) override;
 
-    [[nodiscard]] virtual vec3 getWorldPosFromNormalizedDeviceCoords(
-        const vec3& ndcCoords) const override;
-    [[nodiscard]] virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
-        const vec2& normalizedScreenCoord) const override;
+    [[nodiscard]] virtual dvec3 getWorldPosFromNormalizedDeviceCoords(
+        const dvec3& ndcCoords) const override;
+    [[nodiscard]] virtual dvec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+        const dvec2& normalizedScreenCoord) const override;
 
 private:
     PositionProperty* lightPosition_;
     CameraProperty* camera_;
     BoolProperty* screenPosEnabled_;
     FloatVec2Property* screenPos_;
-    vec3 lookUp_;  ///< Necessary for trackball
-    vec3 lookTo_;  ///< Necessary for trackball
+    dvec3 lookUp_;  ///< Necessary for trackball
+    dvec3 lookTo_;  ///< Necessary for trackball
     PointLightTrackball trackball_;
     int interactionEventOption_;
 };

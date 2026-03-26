@@ -44,9 +44,9 @@ class IVW_CORE_API OrthographicCamera final : public Camera {
 public:
     OrthographicCamera(dvec3 lookFrom = cameradefaults::lookFrom,
                        dvec3 lookTo = cameradefaults::lookTo, dvec3 lookUp = cameradefaults::lookUp,
-                       float nearPlane = cameradefaults::nearPlane,
-                       float farPlane = cameradefaults::farPlane,
-                       float aspectRatio = cameradefaults::aspectRatio,
+                       double nearPlane = cameradefaults::nearPlane,
+                       double farPlane = cameradefaults::farPlane,
+                       double aspectRatio = cameradefaults::aspectRatio,
                        float width = cameradefaults::width);
     virtual ~OrthographicCamera() = default;
     OrthographicCamera(const OrthographicCamera& other);

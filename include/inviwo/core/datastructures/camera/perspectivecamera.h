@@ -41,9 +41,9 @@ class IVW_CORE_API PerspectiveCamera final : public Camera {
 public:
     PerspectiveCamera(dvec3 lookFrom = cameradefaults::lookFrom,
                       dvec3 lookTo = cameradefaults::lookTo, dvec3 lookUp = cameradefaults::lookUp,
-                      float nearPlane = cameradefaults::nearPlane,
-                      float farPlane = cameradefaults::farPlane,
-                      float aspectRatio = cameradefaults::aspectRatio,
+                      double nearPlane = cameradefaults::nearPlane,
+                      double farPlane = cameradefaults::farPlane,
+                      double aspectRatio = cameradefaults::aspectRatio,
                       float fieldOfView = cameradefaults::fieldOfView);
     virtual ~PerspectiveCamera() = default;
     PerspectiveCamera(const PerspectiveCamera& other);
@@ -74,9 +74,9 @@ inline float PerspectiveCamera::getFovy() const { return fovy_; }
 
 inline dmat4 PerspectiveCamera::calculateProjectionMatrix() const {
     return glm::perspective(static_cast<double>(glm::radians(fovy_)),
-                            static_cast<double>(aspectRatio_),
-                            static_cast<double>(nearPlaneDist_),
-                            static_cast<double>(farPlaneDist_));
+                            aspectRatio_,
+                            nearPlaneDist_,
+                            farPlaneDist_);
 }
 
 }  // namespace inviwo

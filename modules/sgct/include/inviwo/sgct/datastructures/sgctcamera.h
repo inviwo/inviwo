@@ -42,11 +42,11 @@ namespace inviwo {
  */
 class IVW_MODULE_SGCT_API SGCTCamera final : public Camera {
 public:
-    explicit SGCTCamera(vec3 lookFrom = cameradefaults::lookFrom,
-                        vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
-                        float nearPlane = cameradefaults::nearPlane,
-                        float farPlane = cameradefaults::farPlane,
-                        float aspectRatio = cameradefaults::aspectRatio,
+    explicit SGCTCamera(dvec3 lookFrom = cameradefaults::lookFrom,
+                        dvec3 lookTo = cameradefaults::lookTo, dvec3 lookUp = cameradefaults::lookUp,
+                        double nearPlane = cameradefaults::nearPlane,
+                        double farPlane = cameradefaults::farPlane,
+                        double aspectRatio = cameradefaults::aspectRatio,
                         float fieldOfView = cameradefaults::fieldOfView);
 
     SGCTCamera(const SGCTCamera& other) = default;
@@ -72,14 +72,14 @@ public:
 
 protected:
     virtual bool equal(const Camera& other) const override;
-    virtual mat4 calculateProjectionMatrix() const override;
-    virtual mat4 calculateViewMatrix() const override;
+    virtual dmat4 calculateProjectionMatrix() const override;
+    virtual dmat4 calculateViewMatrix() const override;
 
     float fovy_;
 
-    std::optional<mat4> extProj_{};
-    mat4 extView_{1.0f};
-    mat4 extModel_{1.0f};
+    std::optional<dmat4> extProj_{};
+    dmat4 extView_{1.0};
+    dmat4 extModel_{1.0};
 };
 
 inline float SGCTCamera::getFovy() const { return fovy_; }

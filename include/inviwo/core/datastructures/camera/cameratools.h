@@ -131,7 +131,7 @@ struct IVW_CORE_API FovBounds {
 
 IVW_CORE_API FovBounds calculateFovBounds(const glm::mat4& boundingBox, const glm::dvec3& lookFrom,
                                           const glm::dvec3& lookTo, const glm::dvec3& lookUp,
-                                          float nearPlane, float farPlane);
+                                          double nearPlane, double farPlane);
 
 IVW_CORE_API bool canZoomBounded(const FovBounds& bounds, vec2 fov, float zoomFactor);
 

@@ -153,7 +153,7 @@ constexpr std::array<std::pair<int, int>, 12> edges{{{0, 1},
 }  // namespace
 
 FovBounds calculateFovBounds(const mat4& boundingBox, const dvec3& lookFrom, const dvec3& lookTo,
-                             const dvec3& lookUp, float nearPlane, float farPlane) {
+                             const dvec3& lookUp, double nearPlane, double farPlane) {
 
     // Camera basis
     const dvec3 forward = glm::normalize(lookTo - lookFrom);

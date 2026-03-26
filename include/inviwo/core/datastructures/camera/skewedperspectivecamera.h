@@ -46,8 +46,8 @@ class IVW_CORE_API SkewedPerspectiveCamera final : public Camera {
 public:
     SkewedPerspectiveCamera(
         dvec3 lookFrom = cameradefaults::lookFrom, dvec3 lookTo = cameradefaults::lookTo,
-        dvec3 lookUp = cameradefaults::lookUp, float nearPlane = cameradefaults::nearPlane,
-        float farPlane = cameradefaults::farPlane, float aspectRatio = cameradefaults::aspectRatio,
+        dvec3 lookUp = cameradefaults::lookUp, double nearPlane = cameradefaults::nearPlane,
+        double farPlane = cameradefaults::farPlane, double aspectRatio = cameradefaults::aspectRatio,
         float fieldOfView = cameradefaults::fieldOfView, vec2 frustumOffset = vec2(0.0f, 0.0f));
     virtual ~SkewedPerspectiveCamera() = default;
     SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other);

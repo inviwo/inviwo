@@ -46,9 +46,9 @@ class IVW_CORE_API PlotCamera final : public Camera {
 public:
     explicit PlotCamera(dvec3 lookFrom = cameradefaults::lookFrom,
                         dvec3 lookTo = cameradefaults::lookTo, dvec3 lookUp = cameradefaults::lookUp,
-                        float nearPlane = cameradefaults::nearPlane,
-                        float farPlane = cameradefaults::farPlane,
-                        float aspectRatio = cameradefaults::aspectRatio,
+                        double nearPlane = cameradefaults::nearPlane,
+                        double farPlane = cameradefaults::farPlane,
+                        double aspectRatio = cameradefaults::aspectRatio,
                         vec2 size = vec2{300, 300});
     virtual ~PlotCamera() = default;
     PlotCamera(const PlotCamera& other);

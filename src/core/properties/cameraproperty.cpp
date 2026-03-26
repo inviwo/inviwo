@@ -97,17 +97,17 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
           "aspectRatio", "Aspect Ratio",
           "Aspect ratio (width / height) of the camera viewport. This is automatically set "
           "through resize events."_help,
-          []() { return 1.0f; }, [](const float&) {}, {0.0f, ConstraintBehavior::Immutable},
-          {std::numeric_limits<float>::max(), ConstraintBehavior::Immutable}, 0.01f,
+          []() { return 1.0; }, [](const double&) {}, {0.0, ConstraintBehavior::Immutable},
+          {std::numeric_limits<double>::max(), ConstraintBehavior::Immutable}, 0.01,
           InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , nearPlane_(
           "near", "Near Plane", "Near plane distance in world coordinates"_help,
-          []() { return 0.001f; }, [](const float&) {}, {0.001f, ConstraintBehavior::Ignore},
-          {10.0f, ConstraintBehavior::Ignore}, 0.001f)
+          []() { return 0.001; }, [](const double&) {}, {0.001, ConstraintBehavior::Ignore},
+          {10.0, ConstraintBehavior::Ignore}, 0.001)
     , farPlane_(
-          "far", "Far Plane", "Far plane distance in world coordinates"_help, []() { return 1.0f; },
-          [](const float&) {}, {1.0f, ConstraintBehavior::Ignore},
-          {1000.0f, ConstraintBehavior::Ignore}, 1.0f)
+          "far", "Far Plane", "Far plane distance in world coordinates"_help, []() { return 1.0; },
+          [](const double&) {}, {1.0, ConstraintBehavior::Ignore},
+          {1000.0, ConstraintBehavior::Ignore}, 1.0)
 
     , getBoundingBox_{std::move(getBoundingBox)} {
 
@@ -259,11 +259,11 @@ TrackballObject& CameraProperty::setLookUp(dvec3 lookUp) {
     return *this;
 }
 
-CameraProperty& CameraProperty::setAspectRatio(float aspectRatio) {
+CameraProperty& CameraProperty::setAspectRatio(double aspectRatio) {
     aspectRatio_.set(aspectRatio);
     return *this;
 }
-float CameraProperty::getAspectRatio() const { return camera_->getAspectRatio(); }
+double CameraProperty::getAspectRatio() const { return camera_->getAspectRatio(); }
 
 TrackballObject& CameraProperty::setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp) {  // NOLINT
     const NetworkLock lock(this);
@@ -273,22 +273,22 @@ TrackballObject& CameraProperty::setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 loo
     return *this;
 }
 
-float CameraProperty::getNearPlaneDist() const { return nearPlane_.get(); }
+double CameraProperty::getNearPlaneDist() const { return nearPlane_.get(); }
 
-float CameraProperty::getFarPlaneDist() const { return farPlane_.get(); }
+double CameraProperty::getFarPlaneDist() const { return farPlane_.get(); }
 
-CameraProperty& CameraProperty::setNearPlaneDist(float v) {
+CameraProperty& CameraProperty::setNearPlaneDist(double v) {
     nearPlane_.set(v);
     return *this;
 }
 
-CameraProperty& CameraProperty::setFarPlaneDist(float v) {
+CameraProperty& CameraProperty::setFarPlaneDist(double v) {
     farPlane_.set(v);
     return *this;
 }
 
-CameraProperty& CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
-                                                    float minMaxRatio) {
+CameraProperty& CameraProperty::setNearFarPlaneDist(double nearPlaneDist, double farPlaneDist,
+                                                    double minMaxRatio) {
     const NetworkLock lock(this);
 
     nearPlane_.set(nearPlaneDist, std::min(nearPlane_.getMinValue(), nearPlaneDist / minMaxRatio),
@@ -341,7 +341,7 @@ void CameraProperty::invokeEvent(Event* event) {
         if (canvasSize.x > 0 && canvasSize.y > 0) {
             const double width{static_cast<double>(canvasSize[0])};
             const double height{static_cast<double>(canvasSize[1])};
-            setAspectRatio(static_cast<float>(width / height));
+            setAspectRatio(width / height);
         }
     } else if (auto ve = event->getAs<ViewEvent>(); ve && getBoundingBox_) {
         std::visit(util::overloaded{[&](camerautil::Side side) { setView(side); },

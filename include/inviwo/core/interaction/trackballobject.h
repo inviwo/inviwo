@@ -57,8 +57,8 @@ public:
     [[nodiscard]] virtual dvec3 getLookToMinValue() const = 0;
     [[nodiscard]] virtual dvec3 getLookToMaxValue() const = 0;
 
-    [[nodiscard]] virtual float getNearPlaneDist() const = 0;
-    [[nodiscard]] virtual float getFarPlaneDist() const = 0;
+    [[nodiscard]] virtual double getNearPlaneDist() const = 0;
+    [[nodiscard]] virtual double getFarPlaneDist() const = 0;
 
     [[nodiscard]] virtual dvec3 getWorldPosFromNormalizedDeviceCoords(
         const dvec3& ndcCoords) const = 0;

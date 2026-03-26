@@ -929,7 +929,7 @@ float Trackball::getBoundedZoom(const dvec3& lookFrom, const dvec3& zoomTo, floa
 
     if (!boundedZooming_) {
         return glm::min(zoom,
-                        static_cast<float>(directionLength) - std::max(0.0f, object_->getNearPlaneDist()));
+                        static_cast<float>(directionLength) - std::max(0.0, object_->getNearPlaneDist()));
     } else {
         const auto maxZoomOut =
             glm::any(glm::equal(minDistance, dvec3(0)))
@@ -941,7 +941,7 @@ float Trackball::getBoundedZoom(const dvec3& lookFrom, const dvec3& zoomTo, floa
 
         return static_cast<float>(glm::clamp(static_cast<double>(zoom), maxZoomOut,
                           directionLength -
-                              static_cast<double>(std::max(0.0f, object_->getNearPlaneDist()))));
+                              std::max(0.0, object_->getNearPlaneDist())));
     }
 }
 

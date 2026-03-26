@@ -41,8 +41,8 @@
 
 namespace inviwo {
 
-Camera::Camera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, float nearPlane, float farPlane,
-               float aspectRatio)
+Camera::Camera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane,
+               double aspectRatio)
     : lookFrom_(lookFrom)
     , lookTo_(lookTo)
     , lookUp_(lookUp)
@@ -87,14 +87,14 @@ void Camera::setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp) {  // NOLINT
     setLookUp(lookUp);
 }
 
-void Camera::setNearPlaneDist(float val) {
+void Camera::setNearPlaneDist(double val) {
     if (nearPlaneDist_ != val) {
         nearPlaneDist_ = val;
         invalidateProjectionMatrix();
         if (camprop_) camprop_->nearPlane_.propertyModified();
     }
 }
-void Camera::setFarPlaneDist(float val) {
+void Camera::setFarPlaneDist(double val) {
     if (farPlaneDist_ != val) {
         farPlaneDist_ = val;
         invalidateProjectionMatrix();
@@ -102,7 +102,7 @@ void Camera::setFarPlaneDist(float val) {
     }
 }
 
-void Camera::setAspectRatio(float val) {
+void Camera::setAspectRatio(double val) {
     if (aspectRatio_ != val) {
         aspectRatio_ = val;
         invalidateProjectionMatrix();

@@ -181,7 +181,7 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
     , screenPosEnabled_(screenPosEnabled)
     , screenPos_(screenPos)
     , lookUp_(camera_->getLookUp())
-    , lookTo_(0.f)
+    , lookTo_(0.0)
     , trackball_(this)
     , interactionEventOption_(0) {
     // static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
@@ -190,66 +190,66 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
 
 PointLightInteractionHandler::~PointLightInteractionHandler() = default;
 
-vec3 PointLightInteractionHandler::getLookTo() const { return lookTo_; }
+dvec3 PointLightInteractionHandler::getLookTo() const { return lookTo_; }
 
-vec3 PointLightInteractionHandler::getLookFrom() const { return lightPosition_->get(); }
+dvec3 PointLightInteractionHandler::getLookFrom() const { return lightPosition_->get(); }
 
-vec3 PointLightInteractionHandler::getLookUp() const { return lookUp_; }
+dvec3 PointLightInteractionHandler::getLookUp() const { return lookUp_; }
 
-TrackballObject& PointLightInteractionHandler::setLookTo(vec3 lookTo) {
+TrackballObject& PointLightInteractionHandler::setLookTo(dvec3 lookTo) {
     lookTo_ = lookTo;
     return *this;
 }
 
-TrackballObject& PointLightInteractionHandler::setLookFrom(vec3 lookFrom) {
+TrackballObject& PointLightInteractionHandler::setLookFrom(dvec3 lookFrom) {
     lightPosition_->updatePosition(lookFrom, CoordinateSpace::World);
     return *this;
 }
 
-TrackballObject& PointLightInteractionHandler::setLookUp(vec3 lookUp) {
+TrackballObject& PointLightInteractionHandler::setLookUp(dvec3 lookUp) {
     lookUp_ = lookUp;
     return *this;
 }
 
-vec3 PointLightInteractionHandler::getLookFromMinValue() const {
+dvec3 PointLightInteractionHandler::getLookFromMinValue() const {
     return camera_->lookFrom_.getMinValue();
 }
 
-vec3 PointLightInteractionHandler::getLookFromMaxValue() const {
+dvec3 PointLightInteractionHandler::getLookFromMaxValue() const {
     return camera_->lookFrom_.getMaxValue();
 }
 
-vec3 PointLightInteractionHandler::getLookToMinValue() const {
+dvec3 PointLightInteractionHandler::getLookToMinValue() const {
     return camera_->lookTo_.getMinValue();
 }
 
-vec3 PointLightInteractionHandler::getLookToMaxValue() const {
+dvec3 PointLightInteractionHandler::getLookToMaxValue() const {
     return camera_->lookTo_.getMaxValue();
 }
 
-TrackballObject& PointLightInteractionHandler::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
+TrackballObject& PointLightInteractionHandler::setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp) {
     lightPosition_->updatePosition(lookFrom, CoordinateSpace::World);
     lookTo_ = lookTo;
     lookUp_ = lookUp;
     return *this;
 }
 
-float PointLightInteractionHandler::getNearPlaneDist() const { return camera_->getNearPlaneDist(); }
+double PointLightInteractionHandler::getNearPlaneDist() const { return camera_->getNearPlaneDist(); }
 
-float PointLightInteractionHandler::getFarPlaneDist() const { return camera_->getFarPlaneDist(); }
+double PointLightInteractionHandler::getFarPlaneDist() const { return camera_->getFarPlaneDist(); }
 
 void PointLightInteractionHandler::zoom(const ZoomOptions& opts) {
     const auto direction = getLookFrom() - getLookTo();
     setLookFrom(getLookFrom() - direction * opts.factor.y);
 }
 
-vec3 PointLightInteractionHandler::getWorldPosFromNormalizedDeviceCoords(
-    const vec3& ndcCoords) const {
+dvec3 PointLightInteractionHandler::getWorldPosFromNormalizedDeviceCoords(
+    const dvec3& ndcCoords) const {
     return camera_->getWorldPosFromNormalizedDeviceCoords(ndcCoords);
 }
 
-vec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
-    const vec2& normalizedScreenCoord) const {
+dvec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+    const dvec2& normalizedScreenCoord) const {
     return camera_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord);
 }
 
