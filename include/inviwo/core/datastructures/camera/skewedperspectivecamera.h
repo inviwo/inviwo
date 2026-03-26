@@ -45,8 +45,8 @@ namespace inviwo {
 class IVW_CORE_API SkewedPerspectiveCamera final : public Camera {
 public:
     SkewedPerspectiveCamera(
-        vec3 lookFrom = cameradefaults::lookFrom, vec3 lookTo = cameradefaults::lookTo,
-        vec3 lookUp = cameradefaults::lookUp, float nearPlane = cameradefaults::nearPlane,
+        dvec3 lookFrom = cameradefaults::lookFrom, dvec3 lookTo = cameradefaults::lookTo,
+        dvec3 lookUp = cameradefaults::lookUp, float nearPlane = cameradefaults::nearPlane,
         float farPlane = cameradefaults::farPlane, float aspectRatio = cameradefaults::aspectRatio,
         float fieldOfView = cameradefaults::fieldOfView, vec2 frustumOffset = vec2(0.0f, 0.0f));
     virtual ~SkewedPerspectiveCamera() = default;
@@ -66,16 +66,16 @@ public:
     void setOffset(vec2 val);
     virtual void zoom(const ZoomOptions& opts) override;
 
-    virtual void setLookFrom(vec3 val) override;
-    virtual void setLookTo(vec3 val) override;
+    virtual void setLookFrom(dvec3 val) override;
+    virtual void setLookTo(dvec3 val) override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 protected:
     virtual bool equal(const Camera& other) const override;
-    virtual mat4 calculateViewMatrix() const override;
-    virtual mat4 calculateProjectionMatrix() const override;
+    virtual dmat4 calculateViewMatrix() const override;
+    virtual dmat4 calculateProjectionMatrix() const override;
 
     // Left, right, bottom, top view volume
     float fovy_;

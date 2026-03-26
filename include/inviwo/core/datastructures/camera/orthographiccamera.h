@@ -42,8 +42,8 @@ namespace inviwo {
  */
 class IVW_CORE_API OrthographicCamera final : public Camera {
 public:
-    OrthographicCamera(vec3 lookFrom = cameradefaults::lookFrom,
-                       vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
+    OrthographicCamera(dvec3 lookFrom = cameradefaults::lookFrom,
+                       dvec3 lookTo = cameradefaults::lookTo, dvec3 lookUp = cameradefaults::lookUp,
                        float nearPlane = cameradefaults::nearPlane,
                        float farPlane = cameradefaults::farPlane,
                        float aspectRatio = cameradefaults::aspectRatio,
@@ -62,14 +62,14 @@ public:
     void setWidth(float width);
     virtual void zoom(const ZoomOptions& opts) override;
 
-    virtual vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
+    virtual dvec4 getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 protected:
     virtual bool equal(const Camera& other) const override;
-    virtual mat4 calculateProjectionMatrix() const override;
+    virtual dmat4 calculateProjectionMatrix() const override;
 
     float width_;
 };
