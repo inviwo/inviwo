@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 
 #include <glm/mat4x4.hpp>
+#include <glm/ext/matrix_double4x4.hpp>
 #include <glm/vec2.hpp>
 
 #include <optional>
@@ -44,7 +45,7 @@ struct IVW_CORE_API ZoomOptions {
     glm::vec2 factor = glm::vec2{1.0f, 1.0f};
     std::optional<glm::vec2> origin = std::nullopt;
     Bounded bounded = Bounded::No;
-    std::function<std::optional<glm::mat4>()> boundingBox = nullptr;
+    std::function<std::optional<glm::dmat4>()> boundingBox = nullptr;
 };
 
 }  // namespace inviwo

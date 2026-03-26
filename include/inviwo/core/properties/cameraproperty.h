@@ -62,14 +62,14 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.CameraProperty"};
 
     CameraProperty(std::string_view identifier, std::string_view displayName, Document help,
-                   std::function<std::optional<mat4>()> getBoundingBox,
+                   std::function<std::optional<dmat4>()> getBoundingBox,
                    dvec3 eye = dvec3(0.0, 0.0, 2.0), dvec3 center = dvec3(0.0),
                    dvec3 lookUp = dvec3(0.0, 1.0, 0.0),
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
     CameraProperty(std::string_view identifier, std::string_view displayName,
-                   std::function<std::optional<mat4>()> getBoundingBox,
+                   std::function<std::optional<dmat4>()> getBoundingBox,
                    dvec3 eye = dvec3(0.0, 0.0, 2.0), dvec3 center = dvec3(0.0),
                    dvec3 lookUp = dvec3(0.0, 1.0, 0.0),
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
@@ -251,7 +251,7 @@ private:
     std::vector<ButtonGroupProperty::Button> buttons();
     void updateFittingVisibility();
 
-    std::function<std::optional<mat4>()> getBoundingBox_;
+    std::function<std::optional<dmat4>()> getBoundingBox_;
     bool aspectSupplier_ = false;
 };
 

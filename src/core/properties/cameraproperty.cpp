@@ -53,7 +53,7 @@ namespace inviwo {
 std::string_view CameraProperty::getClassIdentifier() const { return classIdentifier; }
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
-                               Document help, std::function<std::optional<mat4>()> getBoundingBox,
+                               Document help, std::function<std::optional<dmat4>()> getBoundingBox,
                                dvec3 eye, dvec3 center, dvec3 lookUp,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel, semantics}
@@ -130,7 +130,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
 }
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
-                               std::function<std::optional<mat4>()> getBoundingBox, dvec3 eye,
+                               std::function<std::optional<dmat4>()> getBoundingBox, dvec3 eye,
                                dvec3 center, dvec3 lookUp, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
     : CameraProperty(identifier, displayName, "Camera settings"_help, std::move(getBoundingBox),
@@ -141,7 +141,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CameraProperty(
           identifier, displayName,
-          [&]() -> std::function<std::optional<mat4>()> {
+          [&]() -> std::function<std::optional<dmat4>()> {
               if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
                   return util::boundingBox(*vp);
               } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {

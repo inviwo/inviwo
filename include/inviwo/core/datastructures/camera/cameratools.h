@@ -129,7 +129,7 @@ struct IVW_CORE_API FovBounds {
     bool farPlaneClipped;
 };
 
-IVW_CORE_API FovBounds calculateFovBounds(const glm::mat4& boundingBox, const glm::dvec3& lookFrom,
+IVW_CORE_API FovBounds calculateFovBounds(const glm::dmat4& boundingBox, const glm::dvec3& lookFrom,
                                           const glm::dvec3& lookTo, const glm::dvec3& lookUp,
                                           double nearPlane, double farPlane);
 
@@ -162,7 +162,7 @@ void perspectiveZoom(CamType& cam, const ZoomOptions& opts) {
 
         if (opts.bounded == ZoomOptions::Bounded::Yes && opts.boundingBox &&
             !opts.boundingBox()
-                 .transform([&](const mat4& bb) {
+                 .transform([&](const dmat4& bb) {
                      const auto bounds =
                          calculateFovBounds(bb, newFrom, cam.getLookTo(), cam.getLookUp(),
                                             cam.getNearPlaneDist(), cam.getFarPlaneDist());

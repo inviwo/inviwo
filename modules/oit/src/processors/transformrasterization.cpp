@@ -75,9 +75,9 @@ UseFragmentList TransformRasterization::usesFragmentLists() const {
     return inport_.getData()->usesFragmentLists();
 }
 
-std::optional<mat4> TransformRasterization::boundingBox() const {
+std::optional<dmat4> TransformRasterization::boundingBox() const {
     if (auto bb = inport_.getData()->boundingBox()) {
-        return transformSetting_.getMatrix() * (*bb);
+        return dmat4(transformSetting_.getMatrix()) * (*bb);
     } else {
         return std::nullopt;
     }

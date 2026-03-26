@@ -51,7 +51,7 @@ public:
     virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
     virtual UseFragmentList usesFragmentLists() const override;
 
-    virtual std::optional<mat4> boundingBox() const override;
+    virtual std::optional<dmat4> boundingBox() const override;
 
     virtual Document getInfo() const override;
 

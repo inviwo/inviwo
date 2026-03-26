@@ -70,14 +70,14 @@ dmat3 getView(Side side) {
 constexpr std::array<vec3, 8> corners{
     {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};
 
-std::tuple<dvec3, dvec3, dvec3, vec2> fitOrthographicCameraView(const mat4& boundingBox,
+std::tuple<dvec3, dvec3, dvec3, vec2> fitOrthographicCameraView(const dmat4& boundingBox,
                                                                 glm::dmat3 view, vec2 nearFar) {
 
-    const auto unitCenter = vec3{.5f};
-    const auto lookTo = dvec3(boundingBox * vec4(unitCenter, 1.f));
+    const auto unitCenter = dvec3{.5};
+    const auto lookTo = dvec3(boundingBox * dvec4(unitCenter, 1.0));
 
     const auto viewPoints = corners | std::views::transform([&](const vec3 corner) {
-                                const auto point = dvec3(boundingBox * vec4(corner, 1.f));
+                                const auto point = dvec3(boundingBox * dvec4(corner, 1.0));
                                 const auto camPoint = view * (point - lookTo);
                                 return camPoint;
                             });
@@ -96,11 +96,11 @@ std::tuple<dvec3, dvec3, dvec3, vec2> fitOrthographicCameraView(const mat4& boun
             vec2{static_cast<float>(size.x), static_cast<float>(size.y)}};
 }
 
-std::tuple<dvec3, dvec3, dvec3> fitPerspectiveCameraView(const mat4& boundingBox, glm::dmat3 view,
+std::tuple<dvec3, dvec3, dvec3> fitPerspectiveCameraView(const dmat4& boundingBox, glm::dmat3 view,
                                                           float fitRatio, vec2 fov) {
 
-    const auto unitCenter = vec3{.5f};
-    const auto lookTo = dvec3(boundingBox * vec4(unitCenter, 1.f));
+    const auto unitCenter = dvec3{.5};
+    const auto lookTo = dvec3(boundingBox * dvec4(unitCenter, 1.0));
 
     const vec2 scale{std::tan(std::numbers::pi_v<float> / 2.0f - fov.x / 2.0f),
                      std::tan(std::numbers::pi_v<float> / 2.0f - fov.y / 2.0f)};
@@ -108,7 +108,7 @@ std::tuple<dvec3, dvec3, dvec3> fitPerspectiveCameraView(const mat4& boundingBox
     // Find the needed distance from the camera to lookTo given a field of view such that a
     // corner of the bounding box are within the view
     const auto dist = [&](vec3 corner) {
-        const auto point = dvec3(boundingBox * vec4(corner, 1.f));
+        const auto point = dvec3(boundingBox * dvec4(corner, 1.0));
         const auto camPoint = view * (point - lookTo);
         const auto max =
             glm::compMax(dvec2{scale} * glm::abs(dvec2{camPoint})) - camPoint.z;
@@ -131,11 +131,11 @@ float fovxDegreesFrom(float fovyDegrees, float aspect) {
     return glm::degrees(fovxFrom(glm::radians(fovyDegrees), aspect));
 }
 
-void setCameraView(CameraProperty& cam, const mat4& boundingBox, glm::dmat3 view, float fitRatio,
+void setCameraView(CameraProperty& cam, const dmat4& boundingBox, glm::dmat3 view, float fitRatio,
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges,
                    float maxZoomFactor, float farNearRatio) {
     const NetworkLock lock(&cam);
-    const mat4 fixedBBox = util::minExtentBoundingBox(boundingBox);
+    const dmat4 fixedBBox = util::minExtentBoundingBox(boundingBox);
 
     if (updateNearFar == UpdateNearFar::Yes) {
         setCameraNearFar(cam, fixedBBox, maxZoomFactor, farNearRatio);
@@ -183,14 +183,14 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, glm::dmat3 view
     }
 }
 
-void setCameraView(CameraProperty& cam, const mat4& boundingBox, float fitRatio,
+void setCameraView(CameraProperty& cam, const dmat4& boundingBox, float fitRatio,
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges,
                    float maxZoomFactor, float farNearRatio) {
     setCameraView(cam, boundingBox, dmat3{cam.viewMatrix()}, fitRatio, updateNearFar,
                   updateLookRanges, maxZoomFactor, farNearRatio);
 }
 
-void setCameraView(CameraProperty& cam, const mat4& boundingBox, Side side, float fitRatio,
+void setCameraView(CameraProperty& cam, const dmat4& boundingBox, Side side, float fitRatio,
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges,
                    float maxZoomFactor, float farNearRatio) {
 
@@ -201,10 +201,10 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, Side side, floa
                   maxZoomFactor, farNearRatio);
 }
 
-void setCameraLookRanges(CameraProperty& cam, const mat4& boundingBox, float zoomRange) {
+void setCameraLookRanges(CameraProperty& cam, const dmat4& boundingBox, float zoomRange) {
     const NetworkLock lock(&cam);
 
-    const dvec3 lookTo(boundingBox * vec4(vec3(.5f), 1.f));
+    const dvec3 lookTo(boundingBox * dvec4(0.5, 0.5, 0.5, 1.0));
 
     const dvec3 dx(boundingBox[0]);
     const dvec3 dy(boundingBox[1]);
@@ -220,24 +220,24 @@ void setCameraLookRanges(CameraProperty& cam, const mat4& boundingBox, float zoo
     cam.lookTo_.setMaxValue(glm::max(p0, p1));
 }
 
-std::pair<float, float> computeCameraNearFar(const mat4& boundingBox, float zoomRange,
+std::pair<float, float> computeCameraNearFar(const dmat4& boundingBox, float zoomRange,
                                              float farNearRatio) {
-    const vec3 bx(boundingBox[0]);
-    const vec3 by(boundingBox[1]);
-    const vec3 bz(boundingBox[2]);
+    const dvec3 bx(boundingBox[0]);
+    const dvec3 by(boundingBox[1]);
+    const dvec3 bz(boundingBox[2]);
 
-    const float dx = glm::length(bx);
-    const float dy = glm::length(by);
-    const float dz = glm::length(bz);
+    const double dx = glm::length(bx);
+    const double dy = glm::length(by);
+    const double dz = glm::length(bz);
 
     const auto d = std::max({dx, dy, dz});
 
     const auto newFar = d * (zoomRange + 1);
     const auto newNear = newFar / farNearRatio;
-    return {newNear, newFar};
+    return {static_cast<float>(newNear), static_cast<float>(newFar)};
 }
 
-void setCameraNearFar(CameraProperty& cam, const mat4& boundingBox, float zoomRange,
+void setCameraNearFar(CameraProperty& cam, const dmat4& boundingBox, float zoomRange,
                       float farNearRatio) {
 
     auto [newNear, newFar] = computeCameraNearFar(boundingBox, zoomRange, farNearRatio);

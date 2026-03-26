@@ -533,7 +533,7 @@ void MeshRasterizer::updateMeshes() {
     }
 }
 
-std::optional<mat4> MeshRasterizer::boundingBox() const { return util::boundingBox(inport_)(); }
+std::optional<dmat4> MeshRasterizer::boundingBox() const { return util::boundingBox(inport_)(); }
 
 Document MeshRasterizer::getInfo() const {
     Document doc;

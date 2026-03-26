@@ -109,7 +109,7 @@ std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
 }  // namespace
 
 Axis3DProcessorHelper::Axis3DProcessorHelper(
-    const std::function<std::optional<mat4>()>& getBoundingBox, DimsRangeMode useDimsRange)
+    const std::function<std::optional<dmat4>()>& getBoundingBox, DimsRangeMode useDimsRange)
     : offsetScaling_{"offsetScaling",
                      "Offset Scaling",
                      R"(Offset scaling affects tick lengths and offsets of axis captions and labels.
@@ -223,7 +223,7 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(
 }
 
 void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& entity) {
-    const auto maybeBB = std::optional<mat4>{getBoundingBox_ ? getBoundingBox_() : std::nullopt};
+    const auto maybeBB = std::optional<dmat4>{getBoundingBox_ ? getBoundingBox_() : std::nullopt};
     const auto d2w = plot::getTransform(entity, maybeBB, rangeMode_.get());
     const auto nD2W = dmat3{glm::transpose(glm::inverse(d2w))};
     const auto scale = plot::calcScaleFactor3D(d2w, offsetScaling_.get());
@@ -288,10 +288,10 @@ void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
     if (visibility_.isChecked()) {  // automatic selection
         // transform camera to data space since findAxisPositions uses a uniform cube centered at
         // the origin to determine the visible faces
-        const mat4 trafo{glm::inverse(d2w)};
+        const dmat4 trafo{glm::inverse(d2w)};
         const auto axes =
-            findAxisPositions(glm::normalize(vec3(trafo * vec4(camera_.getLookFrom(), 1.0f)) -
-                                             vec3(trafo * vec4(camera_.getLookTo(), 1.0f))));
+            findAxisPositions(glm::normalize(vec3(trafo * dvec4(camera_.getLookFrom(), 1.0)) -
+                                             vec3(trafo * dvec4(camera_.getLookTo(), 1.0))));
         for (auto&& [i, axis] : util::enumerate(axes)) {
             render(axis, i);
         }

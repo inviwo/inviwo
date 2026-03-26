@@ -54,16 +54,16 @@ enum class DimsRangeMode : std::uint8_t { No, Yes };
 IVW_MODULE_PLOTTINGGL_API OptionPropertyState<AxisRangeMode> rangeModeState(bool hasDims,
                                                                             bool hasBoundingBox);
 
-IVW_MODULE_PLOTTINGGL_API float calcScaleFactor3D(const glm::mat4& matrix, OffsetScaling mode);
+IVW_MODULE_PLOTTINGGL_API float calcScaleFactor3D(const glm::dmat4& matrix, OffsetScaling mode);
 
-IVW_MODULE_PLOTTINGGL_API float calcScaleFactor2D(const glm::mat4& matrix, OffsetScaling mode);
+IVW_MODULE_PLOTTINGGL_API float calcScaleFactor2D(const glm::dmat4& matrix, OffsetScaling mode);
 
 IVW_MODULE_PLOTTINGGL_API std::array<dvec2, 3> calcAxisRanges(const SpatialEntity& entity,
-                                                              std::optional<mat4> worldBoundingBox,
+                                                              std::optional<dmat4> worldBoundingBox,
                                                               AxisRangeMode mode);
 
 IVW_MODULE_PLOTTINGGL_API dmat4 getTransform(const SpatialEntity& entity,
-                                             std::optional<mat4> worldBoundingBox,
+                                             std::optional<dmat4> worldBoundingBox,
                                              AxisRangeMode mode);
 
 }  // namespace plot
