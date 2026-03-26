@@ -262,7 +262,7 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
     // thus we must transform from camera to world to texture coordinates
     mat4 clipToTexMat = mesh.getCoordinateTransformer(camera).getClipToDataMatrix();
     nearClipShader.setUniform("NDCToTextureMat", clipToTexMat);
-    nearClipShader.setUniform("nearDist", camera.getNearPlaneDist());
+    nearClipShader.setUniform("nearDist", static_cast<float>(camera.getNearPlaneDist()));
     nearClipShader.setUniform("mViewDir", -glm::normalize(camera.getDirection()));
 
     utilgl::singleDrawImagePlaneRect();

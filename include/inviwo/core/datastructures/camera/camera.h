@@ -77,8 +77,8 @@ public:
      * @param farPlane Camera far clip-plane
      * @param aspectRatio Camera aspect ratio
      */
-    Camera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, float nearPlane, float farPlane,
-           float aspectRatio);
+    Camera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane,
+           double aspectRatio);
     virtual ~Camera() = default;
     Camera(const Camera& other) = default;
     Camera& operator=(const Camera& other) = default;
@@ -101,8 +101,8 @@ public:
 
     void setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp);
 
-    virtual float getAspectRatio() const;
-    virtual void setAspectRatio(float val);
+    virtual double getAspectRatio() const;
+    virtual void setAspectRatio(double val);
 
     virtual void zoom(const ZoomOptions& opts) = 0;
 
@@ -116,14 +116,14 @@ public:
     /**
      * @brief Set distance to the near plane from lookFrom.
      */
-    virtual void setNearPlaneDist(float distance);
-    float getNearPlaneDist() const;
+    virtual void setNearPlaneDist(double distance);
+    double getNearPlaneDist() const;
 
     /**
      * @brief Set distance to the far plane from lookFrom.
      */
-    virtual void setFarPlaneDist(float distance);
-    float getFarPlaneDist() const;
+    virtual void setFarPlaneDist(double distance);
+    double getFarPlaneDist() const;
 
     const dmat4& getViewMatrix() const;
     const dmat4& getProjectionMatrix() const;
@@ -181,10 +181,10 @@ protected:
     dvec3 lookTo_;
     dvec3 lookUp_;
 
-    float nearPlaneDist_;  ///< Distance to the near plane from lookFrom.
-    float farPlaneDist_;   ///< Distance to the far plane from lookFrom.
+    double nearPlaneDist_;  ///< Distance to the near plane from lookFrom.
+    double farPlaneDist_;   ///< Distance to the far plane from lookFrom.
 
-    float aspectRatio_;
+    double aspectRatio_;
 
     // Make mutable to allow then to be changed even though they are called from const function.
     // This allows us to perform lazy evaluation.
@@ -205,8 +205,8 @@ inline dvec3 Camera::getLookRight() const {
     return glm::cross(glm::normalize(getDirection()), glm::normalize(lookUp_));
 }
 inline dvec3 Camera::getDirection() const { return lookTo_ - lookFrom_; }
-inline float Camera::getNearPlaneDist() const { return nearPlaneDist_; }
-inline float Camera::getFarPlaneDist() const { return farPlaneDist_; }
-inline float Camera::getAspectRatio() const { return aspectRatio_; }
+inline double Camera::getNearPlaneDist() const { return nearPlaneDist_; }
+inline double Camera::getFarPlaneDist() const { return farPlaneDist_; }
+inline double Camera::getAspectRatio() const { return aspectRatio_; }
 
 }  // namespace inviwo

@@ -39,8 +39,8 @@
 
 namespace inviwo {
 
-OrthographicCamera::OrthographicCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, float nearPlane,
-                                       float farPlane, float aspectRatio, float width)
+OrthographicCamera::OrthographicCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane,
+                                       double farPlane, double aspectRatio, float width)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), width_{width} {}
 
 OrthographicCamera::OrthographicCamera(const OrthographicCamera&) = default;
@@ -112,7 +112,7 @@ dmat4 OrthographicCamera::calculateProjectionMatrix() const {
     const double halfWidth = 0.5 * width_;
     const double halfHeight = halfWidth / aspectRatio_;
     return glm::ortho(-halfWidth, +halfWidth, -halfHeight, +halfHeight,
-                      static_cast<double>(nearPlaneDist_), static_cast<double>(farPlaneDist_));
+                      nearPlaneDist_, farPlaneDist_);
 }
 
 dvec4 OrthographicCamera::getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {

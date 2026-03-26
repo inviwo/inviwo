@@ -43,7 +43,7 @@
 namespace inviwo {
 
 SkewedPerspectiveCamera::SkewedPerspectiveCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp,
-                                                 float nearPlane, float farPlane, float aspectRatio,
+                                                 double nearPlane, double farPlane, double aspectRatio,
                                                  float fieldOfView, vec2 offset)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio)
     , fovy_(fieldOfView)
@@ -163,7 +163,7 @@ dmat4 SkewedPerspectiveCamera::calculateProjectionMatrix() const {
     const double halfHeight = nearPlaneDist_ * std::tan(0.5 * glm::radians(static_cast<double>(fovy_)));
     const double halfWidth = halfHeight * aspectRatio_;
 
-    const double scale = static_cast<double>(nearPlaneDist_) / glm::distance(lookTo_, lookFrom_);
+    const double scale = nearPlaneDist_ / glm::distance(lookTo_, lookFrom_);
 
     // Move the frustum in the opposite direction as the lookFrom.
     const double left = -halfWidth - offset_.x * scale;
@@ -172,8 +172,8 @@ dmat4 SkewedPerspectiveCamera::calculateProjectionMatrix() const {
     const double bottom = -halfHeight - offset_.y * scale;
     const double top = +halfHeight - offset_.y * scale;
 
-    return glm::frustum(left, right, bottom, top, static_cast<double>(nearPlaneDist_),
-                        static_cast<double>(farPlaneDist_));
+    return glm::frustum(left, right, bottom, top, nearPlaneDist_,
+                        farPlaneDist_);
 }
 
 void SkewedPerspectiveCamera::serialize(Serializer& s) const {

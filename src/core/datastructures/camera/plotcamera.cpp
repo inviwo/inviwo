@@ -40,8 +40,8 @@
 
 namespace inviwo {
 
-PlotCamera::PlotCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, float nearPlane, float farPlane,
-                       float aspectRatio, vec2 size)
+PlotCamera::PlotCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane,
+                       double aspectRatio, vec2 size)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), size_{size} {}
 
 PlotCamera::PlotCamera(const PlotCamera&) = default;
@@ -147,7 +147,7 @@ dmat4 PlotCamera::calculateProjectionMatrix() const {
     const double halfWidth = 0.5 * size_.x;
     const double halfHeight = 0.5 * size_.y;
     return glm::ortho(-halfWidth, +halfWidth, -halfHeight, +halfHeight,
-                      static_cast<double>(nearPlaneDist_), static_cast<double>(farPlaneDist_));
+                      nearPlaneDist_, farPlaneDist_);
 }
 
 dvec4 PlotCamera::getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {

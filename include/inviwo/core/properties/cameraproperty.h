@@ -109,8 +109,8 @@ public:
      */
     dvec3 getDirection() const;
 
-    CameraProperty& setAspectRatio(float aspectRatio);
-    float getAspectRatio() const;
+    CameraProperty& setAspectRatio(double aspectRatio);
+    double getAspectRatio() const;
 
     /**
      * Sets given camera properties while respecting their min/max ranges.
@@ -119,19 +119,19 @@ public:
      */
     virtual TrackballObject& setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp) override;  // NOLINT
 
-    virtual float getNearPlaneDist() const override;
-    virtual float getFarPlaneDist() const override;
+    virtual double getNearPlaneDist() const override;
+    virtual double getFarPlaneDist() const override;
 
-    CameraProperty& setNearPlaneDist(float v);
-    CameraProperty& setFarPlaneDist(float v);
+    CameraProperty& setNearPlaneDist(double v);
+    CameraProperty& setFarPlaneDist(double v);
 
     /**
      * Set near and far plane distance values and adjust their min/max ranges.
      * Adjusts the min/max ranges of the properties to e.g. 0.1/10 times the given value.
      * Locks and unlocks processor network before and after changing property values.
      */
-    CameraProperty& setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
-                                        float minMaxRatio = 10.f);
+    CameraProperty& setNearFarPlaneDist(double nearPlaneDist, double farPlaneDist,
+                                        double minMaxRatio = 10.0);
 
     virtual dvec3 getLookFromMinValue() const override;
     virtual dvec3 getLookFromMaxValue() const override;
@@ -240,9 +240,9 @@ public:
     DoubleVec3RefProperty lookFrom_;
     DoubleVec3RefProperty lookTo_;
     DoubleVec3RefProperty lookUp_;
-    FloatRefProperty aspectRatio_;
-    FloatRefProperty nearPlane_;
-    FloatRefProperty farPlane_;
+    DoubleRefProperty aspectRatio_;
+    DoubleRefProperty nearPlane_;
+    DoubleRefProperty farPlane_;
 
 private:
     bool changeCamera(const std::string& name);
