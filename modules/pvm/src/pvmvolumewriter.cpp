@@ -100,10 +100,10 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::filesystem::path&
 
     size3_t dim = vr->getDimensions();
     vec3 spacing(1.f);
-    mat3 basis = data->getBasis();
-    spacing.x = basis[0][0] / dim.x;
-    spacing.y = basis[1][1] / dim.y;
-    spacing.z = basis[2][2] / dim.z;
+    dmat3 basis = data->getBasis();
+    spacing.x = static_cast<float>(basis[0][0]) / dim.x;
+    spacing.y = static_cast<float>(basis[1][1]) / dim.y;
+    spacing.z = static_cast<float>(basis[2][2]) / dim.z;
 
     unsigned char* data2Ptr = nullptr;
     if (components == 2) {

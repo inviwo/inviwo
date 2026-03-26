@@ -71,7 +71,7 @@ ImageGradient::ImageGradient()
 void ImageGradient::preProcess(TextureUnitContainer&, Shader& shader) {
     const auto* layer = inport_.getData()->getColorLayer();
     shader.setUniform("inverseMetricTensor",
-                      layer->getCoordinateTransformer().getInverseMetricTensor());
+                      mat3(layer->getCoordinateTransformer().getInverseMetricTensor()));
     shader.setUniform("channel", channel_.getSelectedValue());
 
     const double gradientEstimate = glm::compMax(glm::abs(layer->dataMap.dataRange)) /

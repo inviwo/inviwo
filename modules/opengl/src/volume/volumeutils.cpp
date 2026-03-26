@@ -64,24 +64,24 @@ void setShaderUniforms(Shader& shader, const Volume& volume, std::string_view sa
 
     StrBuffer buff;
 
-    shader.setUniform(buff.replace("{}.dataToModel", samplerID), ct.getDataToModelMatrix());
-    shader.setUniform(buff.replace("{}.modelToData", samplerID), ct.getModelToDataMatrix());
+    shader.setUniform(buff.replace("{}.dataToModel", samplerID), mat4(ct.getDataToModelMatrix()));
+    shader.setUniform(buff.replace("{}.modelToData", samplerID), mat4(ct.getModelToDataMatrix()));
 
-    shader.setUniform(buff.replace("{}.dataToWorld", samplerID), ct.getDataToWorldMatrix());
-    shader.setUniform(buff.replace("{}.worldToData", samplerID), ct.getWorldToDataMatrix());
+    shader.setUniform(buff.replace("{}.dataToWorld", samplerID), mat4(ct.getDataToWorldMatrix()));
+    shader.setUniform(buff.replace("{}.worldToData", samplerID), mat4(ct.getWorldToDataMatrix()));
 
-    shader.setUniform(buff.replace("{}.modelToWorld", samplerID), ct.getModelToWorldMatrix());
-    shader.setUniform(buff.replace("{}.worldToModel", samplerID), ct.getWorldToModelMatrix());
+    shader.setUniform(buff.replace("{}.modelToWorld", samplerID), mat4(ct.getModelToWorldMatrix()));
+    shader.setUniform(buff.replace("{}.worldToModel", samplerID), mat4(ct.getWorldToModelMatrix()));
 
-    shader.setUniform(buff.replace("{}.worldToTexture", samplerID), ct.getWorldToTextureMatrix());
-    shader.setUniform(buff.replace("{}.textureToWorld", samplerID), ct.getTextureToWorldMatrix());
+    shader.setUniform(buff.replace("{}.worldToTexture", samplerID), mat4(ct.getWorldToTextureMatrix()));
+    shader.setUniform(buff.replace("{}.textureToWorld", samplerID), mat4(ct.getTextureToWorldMatrix()));
 
-    const auto textureToWorldNormalMatrix = glm::inverseTranspose(ct.getTextureToWorldMatrix());
+    const auto textureToWorldNormalMatrix = mat4(glm::inverseTranspose(ct.getTextureToWorldMatrix()));
     shader.setUniform(buff.replace("{}.textureToWorldNormalMatrix", samplerID),
                       textureToWorldNormalMatrix);
 
-    shader.setUniform(buff.replace("{}.textureToIndex", samplerID), ct.getTextureToIndexMatrix());
-    shader.setUniform(buff.replace("{}.indexToTexture", samplerID), ct.getIndexToTextureMatrix());
+    shader.setUniform(buff.replace("{}.textureToIndex", samplerID), mat4(ct.getTextureToIndexMatrix()));
+    shader.setUniform(buff.replace("{}.indexToTexture", samplerID), mat4(ct.getIndexToTextureMatrix()));
 
     const auto gradientSpacing = volume.getWorldSpaceGradientSpacing();
     // Transform the world space gradient spacing to texture space.
@@ -92,7 +92,7 @@ void setShaderUniforms(Shader& shader, const Volume& volume, std::string_view sa
     // which means that the transformation is equal to scaling
     // the world to texture matrix.
     shader.setUniform(buff.replace("{}.textureSpaceGradientSpacing", samplerID),
-                      mat3(glm::scale(ct.getWorldToTextureMatrix(), gradientSpacing)));
+                      mat3(glm::scale(mat4(ct.getWorldToTextureMatrix()), gradientSpacing)));
 
     const vec3 dimF = static_cast<vec3>(volume.getDimensions());
     shader.setUniform(buff.replace("{}.dimensions", samplerID), dimF);

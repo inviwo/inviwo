@@ -196,13 +196,13 @@ Document Volume::getInfo() const {
 }
 
 vec3 Volume::getWorldSpaceGradientSpacing() const {
-    const auto textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
+    const auto textureToWorld = dmat3(getCoordinateTransformer().getTextureToWorldMatrix());
     // Basis vectors with a length of one voxel.
     // Basis vectors may be non-orthogonal
     const auto dimensions = getDimensions();
-    const vec3 a = textureToWorld[0] / static_cast<float>(dimensions[0]);
-    const vec3 b = textureToWorld[1] / static_cast<float>(dimensions[1]);
-    const vec3 c = textureToWorld[2] / static_cast<float>(dimensions[2]);
+    const dvec3 a = textureToWorld[0] / static_cast<double>(dimensions[0]);
+    const dvec3 b = textureToWorld[1] / static_cast<double>(dimensions[1]);
+    const dvec3 c = textureToWorld[2] / static_cast<double>(dimensions[2]);
     // Project the voxel basis vectors
     // onto the world space x/y/z axes,
     // and choose the longest projected vector
@@ -216,12 +216,13 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
     // bx' = dot(x, b) = b.x
     // cx' = dot(x, c) = c.x
     // and so on.
-    auto signedMax = [](const float& x1, const float& x2) {
+    auto signedMax = [](const double& x1, const double& x2) {
         return (std::abs(x1) >= std::abs(x2)) ? x1 : x2;
     };
 
-    const vec3 ds{signedMax(a.x, signedMax(b.x, c.x)), signedMax(a.y, signedMax(b.y, c.y)),
-                  signedMax(a.z, signedMax(b.z, c.z))};
+    const vec3 ds{static_cast<float>(signedMax(a.x, signedMax(b.x, c.x))),
+                  static_cast<float>(signedMax(a.y, signedMax(b.y, c.y))),
+                  static_cast<float>(signedMax(a.z, signedMax(b.z, c.z)))};
 
     // Return the spacing in world space,
     // actually given by:

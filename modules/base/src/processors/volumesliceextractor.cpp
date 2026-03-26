@@ -204,7 +204,7 @@ Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis ax
 }
 
 mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
-    const mat3 basis = v->getOwner()->getBasis();
+    const dmat3 basis = v->getOwner()->getBasis();
     switch (axis) {
         default:
             return mat2(vec2(basis[2][2], basis[2][1]), vec2(basis[1][2], basis[1][1]));
@@ -218,7 +218,7 @@ mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
 }
 
 vec2 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
-    const vec3 offset = v->getOwner()->getOffset();
+    const dvec3 offset = v->getOwner()->getOffset();
     switch (axis) {
         default:
             return vec2(offset.z, offset.y);
