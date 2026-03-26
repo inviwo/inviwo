@@ -112,8 +112,8 @@ void VolumeRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrix
     const auto boundingMesh = meshInport_.getData();
 
     const mat4 meshDataToVolumeData =
-        volumeInport_.getData()->getCoordinateTransformer().getWorldToDataMatrix() *
-        boundingMesh->getCoordinateTransformer().getDataToWorldMatrix();
+        mat4(volumeInport_.getData()->getCoordinateTransformer().getWorldToDataMatrix() *
+             boundingMesh->getCoordinateTransformer().getDataToWorldMatrix());
 
     const utilgl::Activate activate{&shader_};
 

@@ -213,8 +213,8 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
     // Transform coordinates to data space
     auto worldToData = geom->getCoordinateTransformer().getWorldToDataMatrix();
     auto worldToDataNormal = glm::transpose(glm::inverse(worldToData));
-    auto dataSpacePos = vec3(worldToData * vec4(nearPos, 1.0));
-    auto dataSpaceNormal = glm::normalize(vec3(worldToDataNormal * vec4(direction, 0.0)));
+    auto dataSpacePos = vec3(worldToData * dvec4(nearPos, 1.0));
+    auto dataSpaceNormal = glm::normalize(vec3(worldToDataNormal * dvec4(direction, 0.0)));
     // Plane start/end position based on distance to camera near plane
     Plane nearPlane(dataSpacePos, dataSpaceNormal);
 
@@ -239,9 +239,9 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
             auto closestVertex = minDist * nearPlane.getNormal() + nearPlane.getPoint();
             auto farVertex = maxDist * nearPlane.getNormal() + nearPlane.getPoint();
             auto closestWorldSpacePos = vec3(
-                geom->getCoordinateTransformer().getDataToWorldMatrix() * vec4(closestVertex, 1.f));
+                geom->getCoordinateTransformer().getDataToWorldMatrix() * dvec4(dvec3(closestVertex), 1.0));
             auto farWorldSpacePos = vec3(geom->getCoordinateTransformer().getDataToWorldMatrix() *
-                                         vec4(farVertex, 1.f));
+                                         dvec4(dvec3(farVertex), 1.0));
             auto range = glm::abs((farWorldSpacePos - closestWorldSpacePos));
             auto minVal = glm::min(closestWorldSpacePos, farWorldSpacePos);
             auto maxVal = glm::max(closestWorldSpacePos, farWorldSpacePos);

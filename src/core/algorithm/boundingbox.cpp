@@ -126,11 +126,11 @@ std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a, const std::op
 }
 
 mat4 boundingBox(const Layer& layer) {
-    mat4 m = layer.getCoordinateTransformer().getDataToModelMatrix();
-    const vec3 z = glm::cross(vec3{m[0]}, vec3{m[1]});
-    m[2] = vec4{z * 0.0001f, 0.0f};
+    auto m = layer.getCoordinateTransformer().getDataToModelMatrix();
+    const auto z = glm::cross(dvec3{m[0]}, dvec3{m[1]});
+    m[2] = dvec4{z * 0.0001, 0.0};
 
-    return layer.getCoordinateTransformer().getModelToWorldMatrix() * m;
+    return mat4(layer.getCoordinateTransformer().getModelToWorldMatrix() * m);
 }
 
 mat4 boundingBox(const std::vector<std::shared_ptr<Layer>>& layers) {
@@ -178,15 +178,15 @@ mat4 boundingBox(const Mesh& mesh) {
                                                    util::glm_convert<dvec4>(minmax.second)};
                 });
 
-        const vec3 dataMin = vec3(minmax.first);
-        const vec3 dataMax = vec3(minmax.second);
+        const dvec3 dataMin = dvec3(minmax.first);
+        const dvec3 dataMax = dvec3(minmax.second);
         auto m = glm::scale(dataMax - dataMin);
-        m[3] = vec4(dataMin, 1.0f);
-        return mesh.getCoordinateTransformer().getDataToWorldMatrix() * m;
+        m[3] = dvec4(dataMin, 1.0);
+        return mat4(mesh.getCoordinateTransformer().getDataToWorldMatrix() * m);
 
     } else {
         mat4 m{0.0};
-        m[3] = vec4(mesh.getOffset(), 1.0f);
+        m[3] = vec4(vec3(mesh.getOffset()), 1.0f);
         return m;
     }
 }
@@ -214,7 +214,7 @@ mat4 boundingBox(const std::vector<std::shared_ptr<const Mesh>>& meshes) {
 }
 
 mat4 boundingBox(const Volume& volume) {
-    return volume.getCoordinateTransformer().getDataToWorldMatrix();
+    return mat4(volume.getCoordinateTransformer().getDataToWorldMatrix());
 }
 
 mat4 boundingBox(const std::vector<std::shared_ptr<Volume>>& volumes) {

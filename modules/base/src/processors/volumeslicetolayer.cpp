@@ -122,7 +122,7 @@ std::array<Axis, 2> getAxes(const VolumeRepresentation* v, CartesianCoordinateAx
 }
 
 mat3 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
-    const mat3 basis = v->getOwner()->getBasis();
+    const dmat3 basis = v->getOwner()->getBasis();
     switch (axis) {
         default:
         case CartesianCoordinateAxis::X:
@@ -137,8 +137,8 @@ mat3 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
 vec3 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis,
                VolumeSliceToLayer::SlicePosition position, size_t slice) {
     const size3_t dims = v->getDimensions();
-    const vec3 offset = v->getOwner()->getOffset();
-    const mat3 basis = v->getOwner()->getBasis();
+    const dvec3 offset = v->getOwner()->getOffset();
+    const dmat3 basis = v->getOwner()->getBasis();
     const auto t = [&]() {
         using enum VolumeSliceToLayer::SlicePosition;
         switch (position) {

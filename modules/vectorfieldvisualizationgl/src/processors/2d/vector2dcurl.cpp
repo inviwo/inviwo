@@ -52,7 +52,7 @@ Vector2DCurl::Vector2DCurl() : LayerGLProcessor{utilgl::findShaderResource("vect
 
 void Vector2DCurl::preProcess(TextureUnitContainer&, Shader& shader, const Layer& input, Layer&) {
     shader.setUniform("inverseMetricTensor",
-                      input.getCoordinateTransformer().getInverseMetricTensor());
+                      mat3(input.getCoordinateTransformer().getInverseMetricTensor()));
 }
 
 LayerConfig Vector2DCurl::outputConfig(const Layer& input) const {

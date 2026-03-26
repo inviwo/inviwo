@@ -75,12 +75,12 @@ std::pair<vec3, vec3> axisAlignedBoundingBox(const Mesh& mesh) {
     if (it != buffers.end() && it->second->getSize() > 0) {
         auto minmax = util::bufferMinMax(it->second.get());
 
-        mat4 trans = mesh.getCoordinateTransformer().getDataToWorldMatrix();
-        worldMin = glm::min(worldMin, vec3(trans * vec4(vec3(minmax.first), 1.f)));
-        worldMax = glm::max(worldMax, vec3(trans * vec4(vec3(minmax.second), 1.f)));
+        const dmat4 trans = mesh.getCoordinateTransformer().getDataToWorldMatrix();
+        worldMin = glm::min(worldMin, vec3(trans * dvec4(dvec3(minmax.first), 1.0)));
+        worldMax = glm::max(worldMax, vec3(trans * dvec4(dvec3(minmax.second), 1.0)));
     } else {
         // No vertices, use same values for min/max
-        worldMin = worldMax = mesh.getOffset();
+        worldMin = worldMax = vec3(mesh.getOffset());
     }
     return {worldMin, worldMax};
 }
