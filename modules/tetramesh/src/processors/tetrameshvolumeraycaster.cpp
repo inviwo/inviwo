@@ -47,11 +47,11 @@ namespace inviwo {
 
 namespace detail {
 
-std::function<std::optional<mat4>()> boundingBox(const TetraMeshInport& tetra) {
-    return [port = &tetra]() -> std::optional<mat4> {
+std::function<std::optional<dmat4>()> boundingBox(const TetraMeshInport& tetra) {
+    return [port = &tetra]() -> std::optional<dmat4> {
         if (port->hasData()) {
             auto data = port->getData();
-            return data->getBoundingBox();
+            return dmat4(data->getBoundingBox());
         } else {
             return std::nullopt;
         }

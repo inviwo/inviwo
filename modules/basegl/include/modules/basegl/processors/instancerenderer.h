@@ -94,7 +94,7 @@ public:
      * @return The axis-aligned bounding box of all vertices if enableBoundingBoxCalc, otherwise
      * nullopt.
      */
-    std::optional<mat4> render(bool enableBoundingBoxCalc);
+    std::optional<dmat4> render(bool enableBoundingBoxCalc);
 
 private:
     void onDidAddProperty(Property* property, size_t index) override;
@@ -132,6 +132,6 @@ private:
     std::shared_ptr<StringShaderResource> frag_;
     Shader shader_;
 
-    std::optional<mat4> boundingBox_;
+    std::optional<dmat4> boundingBox_;
 };
 }  // namespace inviwo

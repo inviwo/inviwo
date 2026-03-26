@@ -87,7 +87,7 @@ public:
     /**
      * @brief Return the world space bounding box of the rendered geometry.
      */
-    virtual std::optional<mat4> boundingBox() const { return std::nullopt; }
+    virtual std::optional<dmat4> boundingBox() const { return std::nullopt; }
 
     /**
      * @brief Query raycasting state used for volume rendering.

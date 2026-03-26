@@ -152,7 +152,7 @@ constexpr std::array<std::pair<int, int>, 12> edges{{{0, 1},
 
 }  // namespace
 
-FovBounds calculateFovBounds(const mat4& boundingBox, const dvec3& lookFrom, const dvec3& lookTo,
+FovBounds calculateFovBounds(const dmat4& boundingBox, const dvec3& lookFrom, const dvec3& lookTo,
                              const dvec3& lookUp, double nearPlane, double farPlane) {
 
     // Camera basis
@@ -160,14 +160,14 @@ FovBounds calculateFovBounds(const mat4& boundingBox, const dvec3& lookFrom, con
     const dvec3 right = glm::normalize(glm::cross(forward, lookUp));
     const dvec3 up = glm::cross(right, forward);
 
-    std::array<vec3, 8> camPts{};
+    std::array<dvec3, 8> camPts{};
     std::ranges::transform(corners, camPts.begin(), [&](const vec3& unitCorner) {
-        const auto corner = vec3{boundingBox * vec4{unitCorner, 1.0}};
-        const auto v = dvec3{corner} - lookFrom;
-        return vec3{glm::dot(v, right), glm::dot(v, up), glm::dot(v, forward)};
+        const auto corner = dvec3{boundingBox * dvec4{unitCorner, 1.0}};
+        const auto v = corner - lookFrom;
+        return dvec3{glm::dot(v, right), glm::dot(v, up), glm::dot(v, forward)};
     });
 
-    std::array<vec3, camPts.size() + 2 * edges.size()> finalPts{};
+    std::array<dvec3, camPts.size() + 2 * edges.size()> finalPts{};
     size_t finalPtsCount = 0;
     bool nearPlaneClipped = false;
     bool farPlaneClipped = false;
@@ -184,23 +184,23 @@ FovBounds calculateFovBounds(const mat4& boundingBox, const dvec3& lookFrom, con
 
     // Clip edges against near and far plane
     for (const auto& e : edges) {
-        const vec3 a = camPts[e.first];
-        const vec3 b = camPts[e.second];
+        const dvec3 a = camPts[e.first];
+        const dvec3 b = camPts[e.second];
 
         if (a.z < nearPlane && b.z < nearPlane) continue;
         if (a.z > farPlane && b.z > farPlane) continue;
 
-        const float dz = b.z - a.z;
-        if (std::fabs(dz) < 1e-8f) continue;
+        const double dz = b.z - a.z;
+        if (std::fabs(dz) < 1e-8) continue;
 
         if (a.z < nearPlane || b.z < nearPlane) {
-            const float t = (nearPlane - a.z) / dz;
-            const vec3 ip = {glm::mix(vec2{a}, vec2{b}, t), nearPlane};
+            const double t = (nearPlane - a.z) / dz;
+            const dvec3 ip = {glm::mix(dvec2{a}, dvec2{b}, t), nearPlane};
             finalPts[finalPtsCount++] = ip;
         }
         if (a.z > farPlane || b.z > farPlane) {
-            const float t = (farPlane - a.z) / dz;
-            const vec3 ip = {glm::mix(vec2{a}, vec2{b}, t), nearPlane};
+            const double t = (farPlane - a.z) / dz;
+            const dvec3 ip = {glm::mix(dvec2{a}, dvec2{b}, t), static_cast<double>(nearPlane)};
             finalPts[finalPtsCount++] = ip;
         }
     }
@@ -211,13 +211,13 @@ FovBounds calculateFovBounds(const mat4& boundingBox, const dvec3& lookFrom, con
                 .farPlaneClipped = farPlaneClipped};
     }
 
-    const std::span<const vec3> pts{finalPts.data(), finalPtsCount};
+    const std::span<const dvec3> pts{finalPts.data(), finalPtsCount};
 
     const auto [xmin, xmax] = std::ranges::minmax(
-        pts | std::views::transform([](const vec3& p) { return std::atan2(p.x, p.z); }));
+        pts | std::views::transform([](const dvec3& p) { return std::atan2(p.x, p.z); }));
 
     const auto [ymin, ymax] = std::ranges::minmax(
-        pts | std::views::transform([](const vec3& p) { return std::atan2(p.y, p.z); }));
+        pts | std::views::transform([](const dvec3& p) { return std::atan2(p.y, p.z); }));
 
     return {.bounds = std::pair{vec2{xmin, xmax}, vec2{ymin, ymax}},
             .nearPlaneClipped = nearPlaneClipped,

@@ -138,7 +138,7 @@ void VolumeRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrix
     }
 }
 
-std::optional<mat4> VolumeRasterizer::boundingBox() const {
+std::optional<dmat4> VolumeRasterizer::boundingBox() const {
     return util::boundingBox(volumeInport_)();
 }
 

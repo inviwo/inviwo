@@ -58,7 +58,7 @@ public:
                                                                    : UseFragmentList::No;
     }
 
-    virtual std::optional<mat4> boundingBox() const override;
+    virtual std::optional<dmat4> boundingBox() const override;
 
     virtual std::optional<RaycastingState> getRaycastingState() const override;
 

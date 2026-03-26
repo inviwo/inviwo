@@ -82,7 +82,7 @@ public:
     /**
      * @brief Return the world space bounding box of the rendered geometry.
      */
-    std::optional<mat4> boundingBox() const;
+    std::optional<dmat4> boundingBox() const;
 
     std::optional<RaycastingState> getRaycastingState() const;
 

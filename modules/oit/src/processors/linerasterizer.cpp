@@ -227,7 +227,7 @@ void LineRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
     }
 }
 
-std::optional<mat4> LineRasterizer::boundingBox() const { return util::boundingBox(inport_)(); }
+std::optional<dmat4> LineRasterizer::boundingBox() const { return util::boundingBox(inport_)(); }
 
 UseFragmentList LineRasterizer::usesFragmentLists() const {
     return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists() ? UseFragmentList::Yes

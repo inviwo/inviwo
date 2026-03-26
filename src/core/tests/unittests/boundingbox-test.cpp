@@ -37,96 +37,96 @@
 namespace inviwo {
 
 TEST(boundingBox, bboxUnion) {
-    const mat4 m{1.0f};
+    const dmat4 m{1.0};
     EXPECT_EQ(util::boundingBoxUnion(m, std::nullopt), m);
     EXPECT_EQ(util::boundingBoxUnion(std::nullopt, m), m);
     EXPECT_EQ(util::boundingBoxUnion(m, m), m);
 }
 
 TEST(bboxMinExtent, regular) {
-    const mat4 m{1.0f};
+    const dmat4 m{1.0};
     EXPECT_EQ(util::minExtentBoundingBox(m), m);
 }
 
 TEST(bboxMinExtent, zeroBasis) {
-    const mat4 bbox = util::minExtentBoundingBox(mat4{0.0f});
-    const mat3 basis{bbox};
-    EXPECT_EQ(glm::length(bbox[0]), 1.0f);
-    EXPECT_EQ(glm::length(bbox[1]), 1.0f);
-    EXPECT_EQ(glm::length(bbox[2]), 1.0f);
+    const dmat4 bbox = util::minExtentBoundingBox(dmat4{0.0});
+    const dmat3 basis{bbox};
+    EXPECT_EQ(glm::length(bbox[0]), 1.0);
+    EXPECT_EQ(glm::length(bbox[1]), 1.0);
+    EXPECT_EQ(glm::length(bbox[2]), 1.0);
 }
 
 TEST(bboxMinExtent, zeroBasisVectorA) {
-    const mat4 m{
-        vec4{0.0f},
-        vec4{1.0f, 0.0f, 0.0f, 0.0f},
-        vec4{0.0f, 1.0f, 0.0f, 0.0f},
-        vec4{0.0f, 0.0f, 0.0f, 1.0f},
+    const dmat4 m{
+        dvec4{0.0},
+        dvec4{1.0, 0.0, 0.0, 0.0},
+        dvec4{0.0, 1.0, 0.0, 0.0},
+        dvec4{0.0, 0.0, 0.0, 1.0},
     };
 
-    const mat4 bbox = util::minExtentBoundingBox(m);
-    const mat3 basis{bbox};
-    EXPECT_GT(glm::length(bbox[0]), 0.0f);
-    EXPECT_EQ(glm::length(bbox[1]), 1.0f);
-    EXPECT_EQ(glm::length(bbox[2]), 1.0f);
+    const dmat4 bbox = util::minExtentBoundingBox(m);
+    const dmat3 basis{bbox};
+    EXPECT_GT(glm::length(bbox[0]), 0.0);
+    EXPECT_EQ(glm::length(bbox[1]), 1.0);
+    EXPECT_EQ(glm::length(bbox[2]), 1.0);
 }
 
 TEST(bboxMinExtent, zeroBasisVectorB) {
-    const mat4 m{
-        vec4{1.0f, 0.0f, 0.0f, 0.0f},
-        vec4{0.0f},
-        vec4{0.0f, 1.0f, 0.0f, 0.0f},
-        vec4{0.0f, 0.0f, 0.0f, 1.0f},
+    const dmat4 m{
+        dvec4{1.0, 0.0, 0.0, 0.0},
+        dvec4{0.0},
+        dvec4{0.0, 1.0, 0.0, 0.0},
+        dvec4{0.0, 0.0, 0.0, 1.0},
     };
 
-    const mat4 bbox = util::minExtentBoundingBox(m);
-    const mat3 basis{bbox};
-    EXPECT_EQ(glm::length(bbox[0]), 1.0f);
-    EXPECT_GT(glm::length(bbox[1]), 0.0f);
-    EXPECT_EQ(glm::length(bbox[2]), 1.0f);
+    const dmat4 bbox = util::minExtentBoundingBox(m);
+    const dmat3 basis{bbox};
+    EXPECT_EQ(glm::length(bbox[0]), 1.0);
+    EXPECT_GT(glm::length(bbox[1]), 0.0);
+    EXPECT_EQ(glm::length(bbox[2]), 1.0);
 }
 
 TEST(bboxMinExtent, zeroBasisVectorC) {
-    const mat4 m{
-        vec4{1.0f, 0.0f, 0.0f, 0.0f},
-        vec4{0.0f, 1.0f, 0.0f, 0.0f},
-        vec4{0.0f},
-        vec4{0.0f, 0.0f, 0.0f, 1.0f},
+    const dmat4 m{
+        dvec4{1.0, 0.0, 0.0, 0.0},
+        dvec4{0.0, 1.0, 0.0, 0.0},
+        dvec4{0.0},
+        dvec4{0.0, 0.0, 0.0, 1.0},
     };
 
-    const mat4 bbox = util::minExtentBoundingBox(m);
-    const mat3 basis{bbox};
-    EXPECT_EQ(glm::length(bbox[0]), 1.0f);
-    EXPECT_EQ(glm::length(bbox[1]), 1.0f);
-    EXPECT_GT(glm::length(bbox[2]), 0.0f);
+    const dmat4 bbox = util::minExtentBoundingBox(m);
+    const dmat3 basis{bbox};
+    EXPECT_EQ(glm::length(bbox[0]), 1.0);
+    EXPECT_EQ(glm::length(bbox[1]), 1.0);
+    EXPECT_GT(glm::length(bbox[2]), 0.0);
 }
 
 TEST(bboxMinExtent, zeroBasisVectorsAC) {
-    const mat4 m{
-        vec4{0.0f},
-        vec4{1.0f, 0.0f, 0.0f, 0.0f},
-        vec4{0.0f},
-        vec4{0.0f, 0.0f, 0.0f, 1.0f},
+    const dmat4 m{
+        dvec4{0.0},
+        dvec4{1.0, 0.0, 0.0, 0.0},
+        dvec4{0.0},
+        dvec4{0.0, 0.0, 0.0, 1.0},
     };
-    const mat4 bbox = util::minExtentBoundingBox(m);
-    const mat3 basis{bbox};
-    EXPECT_GT(glm::length(bbox[0]), 0.0f);
-    EXPECT_EQ(glm::length(bbox[1]), 1.0f);
-    EXPECT_GT(glm::length(bbox[2]), 0.0f);
+    const dmat4 bbox = util::minExtentBoundingBox(m);
+    const dmat3 basis{bbox};
+    EXPECT_GT(glm::length(bbox[0]), 0.0);
+    EXPECT_EQ(glm::length(bbox[1]), 1.0);
+    EXPECT_GT(glm::length(bbox[2]), 0.0);
 }
 
 TEST(bboxMinExtent, zeroBasisVectorsBC) {
-    const mat4 m{
-        vec4{1.0f, 0.0f, 0.0f, 0.0f},
-        vec4{0.0f},
-        vec4{0.0f},
-        vec4{0.0f, 0.0f, 0.0f, 1.0f},
+    const dmat4 m{
+        dvec4{1.0, 0.0, 0.0, 0.0},
+        dvec4{0.0},
+        dvec4{0.0},
+        dvec4{0.0, 0.0, 0.0, 1.0},
     };
-    const mat4 bbox = util::minExtentBoundingBox(m);
-    const mat3 basis{bbox};
-    EXPECT_EQ(glm::length(bbox[0]), 1.0f);
-    EXPECT_GT(glm::length(bbox[1]), 0.0f);
-    EXPECT_GT(glm::length(bbox[2]), 0.0f);
+    const dmat4 bbox = util::minExtentBoundingBox(m);
+    const dmat3 basis{bbox};
+    EXPECT_EQ(glm::length(bbox[0]), 1.0);
+    EXPECT_GT(glm::length(bbox[1]), 0.0);
+    EXPECT_GT(glm::length(bbox[2]), 0.0);
 }
 
 }  // namespace inviwo

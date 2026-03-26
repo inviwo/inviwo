@@ -50,7 +50,7 @@ namespace inviwo::plot {
 
 class IVW_MODULE_PLOTTINGGL_API Axis3DProcessorHelper {
 public:
-    explicit Axis3DProcessorHelper(const std::function<std::optional<mat4>()>& getBoundingBox,
+    explicit Axis3DProcessorHelper(const std::function<std::optional<dmat4>()>& getBoundingBox,
                                    DimsRangeMode useDimsRange = DimsRangeMode::No);
 
     void renderAxes(size2_t outputDims, const SpatialEntity& entity);
@@ -84,7 +84,7 @@ public:
     CameraTrackball trackball_;
 
     std::array<AxisRenderer3D, 3> axisRenderers_;
-    std::function<std::optional<mat4>()> getBoundingBox_;
+    std::function<std::optional<dmat4>()> getBoundingBox_;
 };
 
 }  // namespace inviwo::plot

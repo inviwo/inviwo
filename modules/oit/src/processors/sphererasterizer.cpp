@@ -209,6 +209,6 @@ Document SphereRasterizer::getInfo() const {
     return doc;
 }
 
-std::optional<mat4> SphereRasterizer::boundingBox() const { return util::boundingBox(inport_)(); }
+std::optional<dmat4> SphereRasterizer::boundingBox() const { return util::boundingBox(inport_)(); }
 
 }  // namespace inviwo

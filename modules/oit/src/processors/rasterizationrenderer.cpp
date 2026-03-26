@@ -138,8 +138,8 @@ RasterizationRenderer::RasterizationRenderer()
     });
 }
 
-std::optional<mat4> RasterizationRenderer::boundingBox() const {
-    std::optional<mat4> bb;
+std::optional<dmat4> RasterizationRenderer::boundingBox() const {
+    std::optional<dmat4> bb;
     for (const auto& rasterization : rasterizations_) {
         bb = util::boundingBoxUnion(bb, rasterization->boundingBox());
     }

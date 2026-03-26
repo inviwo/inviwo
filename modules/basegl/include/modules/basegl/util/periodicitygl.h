@@ -46,7 +46,7 @@ public:
     void setUniforms(Shader& shader) const;
 
     size_t instances() const;
-    std::function<std::optional<mat4>()> boundingBox(MeshFlatMultiInport& port) const;
+    std::function<std::optional<dmat4>()> boundingBox(MeshFlatMultiInport& port) const;
 
     BoolCompositeProperty periodicity;
     FloatMat4Property basis;
