@@ -41,29 +41,29 @@ namespace inviwo {
 class IVW_CORE_API TrackballObject {
 public:
     virtual ~TrackballObject() = default;
-    [[nodiscard]] virtual vec3 getLookTo() const = 0;
-    [[nodiscard]] virtual vec3 getLookFrom() const = 0;
-    [[nodiscard]] virtual vec3 getLookUp() const = 0;
+    [[nodiscard]] virtual dvec3 getLookTo() const = 0;
+    [[nodiscard]] virtual dvec3 getLookFrom() const = 0;
+    [[nodiscard]] virtual dvec3 getLookUp() const = 0;
 
-    virtual TrackballObject& setLookTo(vec3 lookTo) = 0;
-    virtual TrackballObject& setLookFrom(vec3 lookFrom) = 0;
-    virtual TrackballObject& setLookUp(vec3 lookUp) = 0;
+    virtual TrackballObject& setLookTo(dvec3 lookTo) = 0;
+    virtual TrackballObject& setLookFrom(dvec3 lookFrom) = 0;
+    virtual TrackballObject& setLookUp(dvec3 lookUp) = 0;
 
-    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) = 0;  // NOLINT
+    virtual TrackballObject& setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp) = 0;  // NOLINT
 
-    [[nodiscard]] virtual vec3 getLookFromMinValue() const = 0;
-    [[nodiscard]] virtual vec3 getLookFromMaxValue() const = 0;
+    [[nodiscard]] virtual dvec3 getLookFromMinValue() const = 0;
+    [[nodiscard]] virtual dvec3 getLookFromMaxValue() const = 0;
 
-    [[nodiscard]] virtual vec3 getLookToMinValue() const = 0;
-    [[nodiscard]] virtual vec3 getLookToMaxValue() const = 0;
+    [[nodiscard]] virtual dvec3 getLookToMinValue() const = 0;
+    [[nodiscard]] virtual dvec3 getLookToMaxValue() const = 0;
 
     [[nodiscard]] virtual float getNearPlaneDist() const = 0;
     [[nodiscard]] virtual float getFarPlaneDist() const = 0;
 
-    [[nodiscard]] virtual vec3 getWorldPosFromNormalizedDeviceCoords(
-        const vec3& ndcCoords) const = 0;
-    [[nodiscard]] virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
-        const vec2& normalizedScreenCoord) const = 0;
+    [[nodiscard]] virtual dvec3 getWorldPosFromNormalizedDeviceCoords(
+        const dvec3& ndcCoords) const = 0;
+    [[nodiscard]] virtual dvec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+        const dvec2& normalizedScreenCoord) const = 0;
 
     virtual void zoom(const ZoomOptions& opts) = 0;
 };

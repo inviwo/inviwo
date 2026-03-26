@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-PlotCamera::PlotCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane,
+PlotCamera::PlotCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, float nearPlane, float farPlane,
                        float aspectRatio, vec2 size)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), size_{size} {}
 
@@ -141,15 +141,15 @@ bool PlotCamera::equal(const Camera& other) const {
     }
 }
 
-mat4 PlotCamera::calculateProjectionMatrix() const {
-    const float halfWidth = 0.5f * size_.x;
-    const float halfHeight = 0.5f * size_.y;
-    return glm::ortho(-halfWidth, +halfWidth, -halfHeight, +halfHeight, nearPlaneDist_,
-                      farPlaneDist_);
+dmat4 PlotCamera::calculateProjectionMatrix() const {
+    const double halfWidth = 0.5 * size_.x;
+    const double halfHeight = 0.5 * size_.y;
+    return glm::ortho(-halfWidth, +halfWidth, -halfHeight, +halfHeight,
+                      static_cast<double>(nearPlaneDist_), static_cast<double>(farPlaneDist_));
 }
 
-vec4 PlotCamera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
-    return vec4{ndcCoords, 1.0f};
+dvec4 PlotCamera::getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {
+    return dvec4{ndcCoords, 1.0};
 }
 
 void PlotCamera::serialize(Serializer& s) const {

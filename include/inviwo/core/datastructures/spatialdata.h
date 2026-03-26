@@ -97,25 +97,25 @@ namespace inviwo {
 class IVW_CORE_API SpatialEntity {
 public:
     SpatialEntity();
-    explicit SpatialEntity(const glm::mat4& modelMatrix);
-    SpatialEntity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix);
+    explicit SpatialEntity(const glm::dmat4& modelMatrix);
+    SpatialEntity(const glm::dmat4& modelMatrix, const glm::dmat4& worldMatrix);
     SpatialEntity(const SpatialEntity& rhs);
     SpatialEntity& operator=(const SpatialEntity& that);
     virtual SpatialEntity* clone() const = 0;
     virtual ~SpatialEntity();
 
-    glm::vec3 getOffset() const;
-    void setOffset(const glm::vec3& offset);
+    glm::dvec3 getOffset() const;
+    void setOffset(const glm::dvec3& offset);
 
     // Using row vectors in basis
-    glm::mat3 getBasis() const;
-    void setBasis(const glm::mat3& basis);
+    glm::dmat3 getBasis() const;
+    void setBasis(const glm::dmat3& basis);
 
-    glm::mat4 getModelMatrix() const;
-    void setModelMatrix(const glm::mat4& modelMatrix);
+    glm::dmat4 getModelMatrix() const;
+    void setModelMatrix(const glm::dmat4& modelMatrix);
 
-    glm::mat4 getWorldMatrix() const;
-    void setWorldMatrix(const glm::mat4& worldMatrix);
+    glm::dmat4 getWorldMatrix() const;
+    void setWorldMatrix(const glm::dmat4& worldMatrix);
 
     virtual const SpatialCoordinateTransformer& getCoordinateTransformer() const;
     virtual const SpatialCameraCoordinateTransformer& getCoordinateTransformer(
@@ -131,15 +131,15 @@ protected:
     mutable std::unique_ptr<SpatialCoordinateTransformer> transformer_;
     mutable std::unique_ptr<SpatialCameraCoordinateTransformer> cameraTransformer_;
 
-    glm::mat4 modelMatrix_;
-    glm::mat4 worldMatrix_;
+    glm::dmat4 modelMatrix_;
+    glm::dmat4 worldMatrix_;
 };
 
 class IVW_CORE_API SpatialIdentity : public SpatialEntity {
 public:
     SpatialIdentity();
-    explicit SpatialIdentity(const glm::mat4& modelMatrix);
-    SpatialIdentity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix);
+    explicit SpatialIdentity(const glm::dmat4& modelMatrix);
+    SpatialIdentity(const glm::dmat4& modelMatrix, const glm::dmat4& worldMatrix);
     SpatialIdentity(const SpatialIdentity& rhs);
     SpatialIdentity& operator=(const SpatialIdentity& that);
     virtual SpatialIdentity* clone() const override;
@@ -154,8 +154,8 @@ public:
     StructuredGridEntity() = default;
     StructuredGridEntity(const StructuredGridEntity<N>& rhs) = default;
     StructuredGridEntity(const glm::vec<N, size_t>& dimensions, const glm::vec<N, float>& spacing);
-    explicit StructuredGridEntity(const mat4& modelMatrix);
-    StructuredGridEntity(const mat4& modelMatrix, const mat4& worldMatrix);
+    explicit StructuredGridEntity(const dmat4& modelMatrix);
+    StructuredGridEntity(const dmat4& modelMatrix, const dmat4& worldMatrix);
 
     StructuredGridEntity<N>& operator=(const StructuredGridEntity<N>& that) = default;
     virtual StructuredGridEntity<N>* clone() const override = 0;
@@ -172,7 +172,7 @@ public:
      * or for instance http://bpeers.com/articles/glpixel/
      * @see CoordinateTransformer::getTextureToIndexMatrix
      */
-    glm::mat4 getIndexMatrix() const;
+    glm::dmat4 getIndexMatrix() const;
 
     virtual const StructuredCoordinateTransformer& getCoordinateTransformer() const override;
     virtual const StructuredCameraCoordinateTransformer& getCoordinateTransformer(
@@ -186,39 +186,39 @@ template <unsigned int N>
 StructuredGridEntity<N>::StructuredGridEntity(const glm::vec<N, size_t>& dimensions,
                                               const glm::vec<N, float>& spacing)
     : SpatialEntity() {
-    glm::mat3 basis(0.0f);
+    glm::dmat3 basis(0.0);
     for (unsigned int i = 0; i < N; ++i) {
         basis[i][i] = dimensions[i] * spacing[i];
     }
     setBasis(basis);
 
-    glm::vec3 offset(0.0f);
+    glm::dvec3 offset(0.0);
     for (unsigned int i = 0; i < N; ++i) {
         offset += basis[i];
     }
-    setOffset(-0.5f * offset);
+    setOffset(-0.5 * offset);
 }
 
 template <unsigned int N>
-StructuredGridEntity<N>::StructuredGridEntity(const mat4& modelMatrix)
+StructuredGridEntity<N>::StructuredGridEntity(const dmat4& modelMatrix)
     : SpatialEntity(modelMatrix) {}
 
 template <unsigned int N>
-StructuredGridEntity<N>::StructuredGridEntity(const mat4& modelMatrix, const mat4& worldMatrix)
+StructuredGridEntity<N>::StructuredGridEntity(const dmat4& modelMatrix, const dmat4& worldMatrix)
     : SpatialEntity(modelMatrix, worldMatrix) {}
 
 template <unsigned int N>
-glm::mat4 StructuredGridEntity<N>::getIndexMatrix() const {
+glm::dmat4 StructuredGridEntity<N>::getIndexMatrix() const {
     const auto dimensions = getDimensions();
-    glm::mat4 indexMatrix(0.0f);
+    glm::dmat4 indexMatrix(0.0);
     for (unsigned int i = 0; i < N; ++i) {
-        indexMatrix[i][i] = static_cast<float>(dimensions[i]);
+        indexMatrix[i][i] = static_cast<double>(dimensions[i]);
     }
-    indexMatrix[3][3] = 1.0f;
+    indexMatrix[3][3] = 1.0;
 
     // Offset to coordinates to center them in the middle of the texel/voxel.
     for (unsigned int i = 0; i < N; i++) {
-        indexMatrix[N][i] = -0.5f;
+        indexMatrix[N][i] = -0.5;
     }
     return indexMatrix;
 }

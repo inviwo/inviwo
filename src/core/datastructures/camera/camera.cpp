@@ -41,7 +41,7 @@
 
 namespace inviwo {
 
-Camera::Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane,
+Camera::Camera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, float nearPlane, float farPlane,
                float aspectRatio)
     : lookFrom_(lookFrom)
     , lookTo_(lookTo)
@@ -51,12 +51,12 @@ Camera::Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float f
     , aspectRatio_{aspectRatio}
     , invalidViewMatrix_(true)
     , invalidProjectionMatrix_(true)
-    , viewMatrix_{1.0f}
-    , projectionMatrix_{1.0f}
-    , inverseViewMatrix_{1.0f}
-    , inverseProjectionMatrix_{1.0f} {}
+    , viewMatrix_{1.0}
+    , projectionMatrix_{1.0}
+    , inverseViewMatrix_{1.0}
+    , inverseProjectionMatrix_{1.0} {}
 
-void Camera::setLookFrom(vec3 val) {
+void Camera::setLookFrom(dvec3 val) {
     if (lookFrom_ != val) {
         lookFrom_ = val;
         invalidateViewMatrix();
@@ -64,7 +64,7 @@ void Camera::setLookFrom(vec3 val) {
     }
 }
 
-void Camera::setLookTo(vec3 val) {
+void Camera::setLookTo(dvec3 val) {
     if (lookTo_ != val) {
         lookTo_ = val;
         invalidateViewMatrix();
@@ -72,7 +72,7 @@ void Camera::setLookTo(vec3 val) {
     }
 }
 
-void Camera::setLookUp(vec3 val) {
+void Camera::setLookUp(dvec3 val) {
     if (lookUp_ != val) {
         lookUp_ = val;
         invalidateViewMatrix();
@@ -80,7 +80,7 @@ void Camera::setLookUp(vec3 val) {
     }
 }
 
-void Camera::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {  // NOLINT
+void Camera::setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp) {  // NOLINT
     const NetworkLock lock{camprop_};
     setLookFrom(lookFrom);
     setLookTo(lookTo);
@@ -113,7 +113,7 @@ void Camera::setAspectRatio(float val) {
 void Camera::invalidateViewMatrix() { invalidViewMatrix_ = true; }
 void Camera::invalidateProjectionMatrix() { invalidProjectionMatrix_ = true; }
 
-const mat4& Camera::getViewMatrix() const {
+const dmat4& Camera::getViewMatrix() const {
     if (invalidViewMatrix_) {
         viewMatrix_ = calculateViewMatrix();
         inverseViewMatrix_ = glm::inverse(viewMatrix_);
@@ -122,9 +122,9 @@ const mat4& Camera::getViewMatrix() const {
     return viewMatrix_;
 }
 
-mat4 Camera::calculateViewMatrix() const { return glm::lookAt(lookFrom_, lookTo_, lookUp_); }
+dmat4 Camera::calculateViewMatrix() const { return glm::lookAt(lookFrom_, lookTo_, lookUp_); }
 
-const mat4& Camera::getProjectionMatrix() const {
+const dmat4& Camera::getProjectionMatrix() const {
     if (invalidProjectionMatrix_) {
         projectionMatrix_ = calculateProjectionMatrix();
         inverseProjectionMatrix_ = glm::inverse(projectionMatrix_);
@@ -133,35 +133,35 @@ const mat4& Camera::getProjectionMatrix() const {
     return projectionMatrix_;
 }
 
-const mat4& Camera::getInverseViewMatrix() const {
+const dmat4& Camera::getInverseViewMatrix() const {
     if (invalidViewMatrix_) getViewMatrix();
     return inverseViewMatrix_;
 }
 
-const mat4& Camera::getInverseProjectionMatrix() const {
+const dmat4& Camera::getInverseProjectionMatrix() const {
     if (invalidProjectionMatrix_) getProjectionMatrix();
     return inverseProjectionMatrix_;
 }
 
-vec3 Camera::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
-    vec4 clipCoords = getClipPosFromNormalizedDeviceCoords(ndcCoords);
-    vec4 eyeCoords = getInverseProjectionMatrix() * clipCoords;
-    vec4 worldCoords = getInverseViewMatrix() * eyeCoords;
+dvec3 Camera::getWorldPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {
+    dvec4 clipCoords = getClipPosFromNormalizedDeviceCoords(ndcCoords);
+    dvec4 eyeCoords = getInverseProjectionMatrix() * clipCoords;
+    dvec4 worldCoords = getInverseViewMatrix() * eyeCoords;
     worldCoords /= worldCoords.w;
-    return vec3(worldCoords);
+    return dvec3(worldCoords);
 }
 
-vec4 Camera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
+dvec4 Camera::getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {
     const auto& projection = getProjectionMatrix();
-    const float clipW = projection[2][3] / (ndcCoords.z - (projection[2][2] / projection[3][2]));
-    return vec4(ndcCoords * clipW, clipW);
+    const double clipW = projection[2][3] / (ndcCoords.z - (projection[2][2] / projection[3][2]));
+    return dvec4(ndcCoords * clipW, clipW);
 }
 
-vec3 Camera::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
-    const vec2& normalizedScreenCoord) const {
+dvec3 Camera::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+    const dvec2& normalizedScreenCoord) const {
     // Default to using focus point for depth
-    vec4 lookToClipCoord = getProjectionMatrix() * getViewMatrix() * vec4(getLookTo(), 1.f);
-    return vec3(2.f * normalizedScreenCoord - 1.f, lookToClipCoord.z / lookToClipCoord.w);
+    dvec4 lookToClipCoord = getProjectionMatrix() * getViewMatrix() * dvec4(getLookTo(), 1.0);
+    return dvec3(2.0 * normalizedScreenCoord - 1.0, lookToClipCoord.z / lookToClipCoord.w);
 }
 
 void Camera::serialize(Serializer& s) const {

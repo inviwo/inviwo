@@ -42,7 +42,7 @@
 
 namespace inviwo {
 
-SkewedPerspectiveCamera::SkewedPerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp,
+SkewedPerspectiveCamera::SkewedPerspectiveCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp,
                                                  float nearPlane, float farPlane, float aspectRatio,
                                                  float fieldOfView, vec2 offset)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio)
@@ -59,12 +59,12 @@ SkewedPerspectiveCamera* SkewedPerspectiveCamera::clone() const {
 
 std::string_view SkewedPerspectiveCamera::getClassIdentifier() const { return classIdentifier; }
 
-void SkewedPerspectiveCamera::setLookFrom(vec3 val) {
+void SkewedPerspectiveCamera::setLookFrom(dvec3 val) {
     Camera::setLookFrom(val);
     invalidateProjectionMatrix();
 }
 
-void SkewedPerspectiveCamera::setLookTo(vec3 val) {
+void SkewedPerspectiveCamera::setLookTo(dvec3 val) {
     Camera::setLookTo(val);
     invalidateProjectionMatrix();
 }
@@ -145,9 +145,9 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
     }
 }
 
-mat4 SkewedPerspectiveCamera::calculateViewMatrix() const {
-    const vec3 xoffset{offset_.x * glm::normalize(glm::cross(lookTo_ - lookFrom_, lookUp_))};
-    const vec3 yoffset{offset_.y * lookUp_};
+dmat4 SkewedPerspectiveCamera::calculateViewMatrix() const {
+    const dvec3 xoffset{offset_.x * glm::normalize(glm::cross(lookTo_ - lookFrom_, lookUp_))};
+    const dvec3 yoffset{static_cast<double>(offset_.y) * lookUp_};
     return glm::lookAt(lookFrom_ + xoffset + yoffset, lookTo_ + xoffset + yoffset, lookUp_);
 }
 
@@ -159,20 +159,21 @@ bool SkewedPerspectiveCamera::equal(const Camera& other) const {
     }
 }
 
-mat4 SkewedPerspectiveCamera::calculateProjectionMatrix() const {
-    const float halfHeight = nearPlaneDist_ * std::tan(0.5f * glm::radians(fovy_));
-    const float halfWidth = halfHeight * aspectRatio_;
+dmat4 SkewedPerspectiveCamera::calculateProjectionMatrix() const {
+    const double halfHeight = nearPlaneDist_ * std::tan(0.5 * glm::radians(static_cast<double>(fovy_)));
+    const double halfWidth = halfHeight * aspectRatio_;
 
-    const float scale = nearPlaneDist_ / glm::distance(lookTo_, lookFrom_);
+    const double scale = static_cast<double>(nearPlaneDist_) / glm::distance(lookTo_, lookFrom_);
 
     // Move the frustum in the opposite direction as the lookFrom.
-    const float left = -halfWidth - offset_.x * scale;
-    const float right = +halfWidth - offset_.x * scale;
+    const double left = -halfWidth - offset_.x * scale;
+    const double right = +halfWidth - offset_.x * scale;
 
-    const float bottom = -halfHeight - offset_.y * scale;
-    const float top = +halfHeight - offset_.y * scale;
+    const double bottom = -halfHeight - offset_.y * scale;
+    const double top = +halfHeight - offset_.y * scale;
 
-    return glm::frustum(left, right, bottom, top, nearPlaneDist_, farPlaneDist_);
+    return glm::frustum(left, right, bottom, top, static_cast<double>(nearPlaneDist_),
+                        static_cast<double>(farPlaneDist_));
 }
 
 void SkewedPerspectiveCamera::serialize(Serializer& s) const {

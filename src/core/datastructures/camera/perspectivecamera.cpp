@@ -42,7 +42,7 @@
 
 namespace inviwo {
 
-PerspectiveCamera::PerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
+PerspectiveCamera::PerspectiveCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, float nearPlane,
                                      float farPlane, float aspectRatio, float fieldOfView)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), fovy_(fieldOfView) {}
 
