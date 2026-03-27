@@ -181,9 +181,9 @@ bool updateV4(TxElement* root) {
     bool res = false;
     TraversingVersionConverter conv{[&](TxElement* node) -> bool {
         if (auto key = node->Value(); key != "Property") return true;
-        if (const auto& type = node->GetAttribute("type"); type != "org.inviwo.FontProperty")
+        if (const auto& type = node->GetAttribute("type"); type != "org.inviwo.FontProperty") {
             return true;
-
+        }
         if (auto* elem =
                 xml::getElement(node, "Properties/Property&type=org.inviwo.OptionPropertyString")) {
             elem->SetAttribute("type", "org.inviwo.FontFaceOptionProperty");

@@ -338,14 +338,16 @@ bool updateV0(TxElement* root) {
             {"ImageResample", "img_resample.frag"}};
 
         for (const auto& [identifier, shader] : imageGLrepl) {
-            xml::IdentifierReplacement inport = {{xml::Kind::processor("org.inviwo." + identifier),
-                                                  xml::Kind::inport("org.inviwo.ImageInport")},
-                                                 shader + "inport",
-                                                 "inputImage"};
-            xml::IdentifierReplacement outport = {{xml::Kind::processor("org.inviwo." + identifier),
-                                                   xml::Kind::outport("org.inviwo.ImageOutport")},
-                                                  shader + "outport",
-                                                  "outputImage"};
+            const xml::IdentifierReplacement inport = {
+                {xml::Kind::processor("org.inviwo." + identifier),
+                 xml::Kind::inport("org.inviwo.ImageInport")},
+                shader + "inport",
+                "inputImage"};
+            const xml::IdentifierReplacement outport = {
+                {xml::Kind::processor("org.inviwo." + identifier),
+                 xml::Kind::outport("org.inviwo.ImageOutport")},
+                shader + "outport",
+                "outputImage"};
             repl.push_back(inport);
             repl.push_back(outport);
         }
@@ -406,7 +408,7 @@ bool updateV2(TxElement* root) {
 
 bool updateV3(TxElement* root) {
     bool res = false;
-    std::vector<xml::IdentifierReplacement> repl{
+    const std::vector<xml::IdentifierReplacement> repl{
         {{xml::Kind::processor("org.inviwo.SphereRenderer"),
           xml::Kind::property("org.inviwo.CompositeProperty"),
           xml::Kind::property("org.inviwo.BoolProperty")},
@@ -489,7 +491,10 @@ bool updateV5(TxElement* root) {
     }
 
     xml::visitMatchingNodesRecursive(
-        root, {"Processor", {{"type", "org.inviwo.SphereRenderer"}}}, [&](TxElement* prop) {
+        root,
+        {.name = "Processor",
+         .attributes = {{.name = "type", .value = "org.inviwo.SphereRenderer"}}},
+        [&](TxElement* prop) {
             if (auto* color = xml::getElement(prop,
                                               "Properties/Property&identifier=sphereProperties/"
                                               "Properties/Property&identifier=color")) {
