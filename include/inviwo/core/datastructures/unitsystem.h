@@ -109,7 +109,7 @@ constexpr std::array<UnitDesc, 10> si = {{
     {.unit=units::precise::radian,   .name="radian",   .abbr="rad", .flags=UnitFlag::None}
 }};
 
-constexpr std::array<UnitDesc, 17> derived = {{
+constexpr std::array<UnitDesc, 18> derived = {{
     {.unit=units::precise::hertz,     .name="hertz",     .abbr="Hz",  .flags=UnitFlag::UsesPrefix |
                                                                              UnitFlag::OnlyPositivePowers |
                                                                              UnitFlag::OnlyByItSelf},
@@ -128,7 +128,8 @@ constexpr std::array<UnitDesc, 17> derived = {{
     {.unit=units::precise::becquerel, .name="becquerel", .abbr="Bq",  .flags=UnitFlag::UsesPrefix},
     {.unit=units::precise::gray,      .name="gray",      .abbr="Gy",  .flags=UnitFlag::UsesPrefix},
     {.unit=units::precise::sievert,   .name="sievert",   .abbr="Sv",  .flags=UnitFlag::UsesPrefix},
-    {.unit=units::precise::katal,     .name="katal",     .abbr="kat", .flags=UnitFlag::UsesPrefix}
+    {.unit=units::precise::katal,     .name="katal",     .abbr="kat", .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::deg,       .name="degree",    .abbr="°",   .flags=UnitFlag::OnlyByItSelf}
 }};
 
 constexpr std::array<UnitDesc, 3> extra = {{

@@ -164,18 +164,18 @@ void CanvasWithPropertiesProcessorWidgetQt::setProperties(std::string_view paths
 
     addedPaths_.clear();
     frame_->clear();
-    if (auto net = getProcessor()->getNetwork()) {
+    if (const auto* net = getProcessor()->getNetwork()) {
         util::forEachStringPart(paths, "\n", [&](std::string_view path) {
             auto [proc, prop] = util::splitByFirst(path, ".");
-            if (auto processor = net->getProcessorByIdentifier(proc)) {
+            if (auto* processor = net->getProcessorByIdentifier(proc)) {
                 if (prop.empty()) {
                     frame_->add(processor);
                     addedPaths_.emplace_back(path);
-                } else if (auto property = processor->getPropertyByPath(prop)) {
+                } else if (auto* property = processor->getPropertyByPath(prop)) {
                     frame_->add(property);
                     addedPaths_.emplace_back(path);
                 } else {
-                    log::warn("Property: {} not found in processor ", prop, proc);
+                    log::warn("Property: {} not found in processor {}", prop, proc);
                 }
             } else {
                 log::warn("Processor: {} not found", proc);

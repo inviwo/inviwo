@@ -837,6 +837,11 @@ else()
     ivw_group("Source Files" util/buildinfoxml.cpp)
 endif()
 
+if(NOT Python3_VERSION_MAJOR)
+    set(Python3_VERSION_MAJOR 0)
+    set(Python3_VERSION_MINOR 0)
+    set(Python3_VERSION_PATCH 0)
+endif()
 file(TO_CMAKE_PATH "${Python3_STDLIB}" Python3_STDLIB)
 file(TO_CMAKE_PATH "${Python3_SITELIB}" Python3_SITELIB)
 configure_file(${IVW_CMAKE_TEMPLATES}/inviwocommondefines_template.h
