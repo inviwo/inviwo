@@ -121,36 +121,36 @@ std::array<Axis, 2> getAxes(const VolumeRepresentation* v, CartesianCoordinateAx
     }
 }
 
-mat3 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
+dmat3 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const dmat3 basis = v->getOwner()->getBasis();
     switch (axis) {
         default:
         case CartesianCoordinateAxis::X:
-            return mat3{basis[2], basis[1], glm::normalize(basis[0])};
+            return dmat3{basis[2], basis[1], glm::normalize(basis[0])};
         case CartesianCoordinateAxis::Y:
-            return mat3{basis[0], basis[2], -glm::normalize(basis[1])};
+            return dmat3{basis[0], basis[2], -glm::normalize(basis[1])};
         case CartesianCoordinateAxis::Z:
-            return mat3{basis[0], basis[1], glm::normalize(basis[2])};
+            return dmat3{basis[0], basis[1], glm::normalize(basis[2])};
     }
 }
 
-vec3 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis,
-               VolumeSliceToLayer::SlicePosition position, size_t slice) {
-    const size3_t dims = v->getDimensions();
-    const dvec3 offset = v->getOwner()->getOffset();
-    const dmat3 basis = v->getOwner()->getBasis();
+dvec3 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis,
+                VolumeSliceToLayer::SlicePosition position, size_t slice) {
+    const auto dims = v->getDimensions();
+    const auto offset = v->getOwner()->getOffset();
+    const auto basis = v->getOwner()->getBasis();
     const auto t = [&]() {
         using enum VolumeSliceToLayer::SlicePosition;
         switch (position) {
             case Minimum:
-                return vec3{0.0f};
+                return dvec3{0.0f};
             case Centered:
-                return vec3{0.5f};
+                return dvec3{0.5f};
             case Maximum:
-                return vec3{1.0f};
+                return dvec3{1.0f};
             case Index:
             default:
-                return vec3{static_cast<float>(slice)} / vec3{dims - size3_t{1}};
+                return dvec3{static_cast<double>(slice)} / dvec3{dims - size3_t{1}};
         }
     }();
 

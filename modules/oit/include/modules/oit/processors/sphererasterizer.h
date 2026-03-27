@@ -85,7 +85,7 @@ public:
     virtual Document getInfo() const override;
     virtual std::optional<dmat4> boundingBox() const override;
     virtual UseFragmentList usesFragmentLists() const override;
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
+    virtual void rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) override;
 
 private:
     virtual void configureShader(Shader& shader) override;

@@ -106,11 +106,11 @@ public:
 protected:
     enum class Direction { Up = 0, Down, Left, Right };
 
-    dvec3 mapNormalizedMousePosToTrackball(const vec2& mousePos, float radius = 1.0f);
+    dvec3 mapNormalizedMousePosToTrackball(const dvec2& mousePos, double radius = 1.0);
     void rotateTrackBall(const dvec3& fromTrackballPos, const dvec3& toTrackballPos);
     dvec3 getBoundedTranslation(const dvec3& lookFrom, const dvec3& lookTo, dvec3 translation);
-    float getBoundedZoom(const dvec3& lookFrom, const dvec3& zoomTo, float zoom);
-    std::pair<bool, dvec3> getTrackBallIntersection(const vec2 pos) const;
+    double getBoundedZoom(const dvec3& lookFrom, const dvec3& zoomTo, double zoom);
+    std::pair<bool, dvec3> getTrackBallIntersection(const dvec2 pos) const;
 
     void rotate(MouseEvent* event);
     void rotateTAV(MouseEvent* event);
@@ -167,12 +167,12 @@ protected:
     dvec3 lastNDC_;
     dvec3 pressNDC_;
 
-    float trackBallWorldSpaceRadius_;
+    double trackBallWorldSpaceRadius_;
 
-    static constexpr float radius = 0.5f;  ///< Radius in normalized screen space [0 1]^2
-    static constexpr float stepSize = 0.05f;
+    static constexpr double radius = 0.5f;  ///< Radius in normalized screen space [0 1]^2
+    static constexpr double stepSize = 0.05f;
 
-    glm::quat lastRot_;
+    glm::dquat lastRot_;
     std::chrono::system_clock::time_point lastRotTime_;
     bool evaluated_;
     Timer timer_;
@@ -180,13 +180,13 @@ protected:
 public:
     OptionPropertyInt trackballMethod_;  /// Chooses which trackball method to use (mouse only,
                                          /// touch always follows finger)
-    FloatProperty sensitivity_;          /// Controls the rotation sensitivity
-    FloatProperty movementSpeed_;
-    BoolProperty fixUp_;                /// Fixes the up vector to world_up in all rotation methods
-    OptionPropertyInt worldUp_;         /// Defines which axis is considered up in world space
-    FloatVec3Property customWorldUp_;   /// The custom world up direction (normalized)
-    FloatProperty verticalAngleLimit_;  /// Limits the angle between world up and view direction
-                                        /// when fixUp is True
+    DoubleProperty sensitivity_;         /// Controls the rotation sensitivity
+    DoubleProperty movementSpeed_;
+    BoolProperty fixUp_;                 /// Fixes the up vector to world_up in all rotation methods
+    OptionPropertyInt worldUp_;          /// Defines which axis is considered up in world space
+    DoubleVec3Property customWorldUp_;   /// The custom world up direction (normalized)
+    DoubleProperty verticalAngleLimit_;  /// Limits the angle between world up and view direction
+                                         /// when fixUp is True
 
     // Interaction restrictions
     BoolProperty handleInteractionEvents_;

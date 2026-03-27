@@ -177,7 +177,7 @@ void MeshPicking::updatePosition(PickingEvent* p) {
     auto corrWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
     auto prevWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
 
-    position_.set(position_.get() + (corrWorld - prevWorld));
+    position_.set(position_.get() + vec3{corrWorld - prevWorld});
 }
 
 void MeshPicking::process() {
@@ -211,8 +211,8 @@ void MeshPicking::render() {
     utilgl::setShaderUniforms(shader_, highlightColor_);
 
     const auto& ct = mesh_->getCoordinateTransformer(camera_.get());
-    const auto dataToClip =
-        ct.getWorldToClipMatrix() * glm::translate(position_.get()) * ct.getDataToWorldMatrix();
+    const auto dataToClip = ct.getWorldToClipMatrix() * glm::translate(dvec3{position_.get()}) *
+                            ct.getDataToWorldMatrix();
     shader_.setUniform("dataToClip", dataToClip);
 
     {

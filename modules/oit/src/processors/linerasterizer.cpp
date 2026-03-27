@@ -190,7 +190,7 @@ void LineRasterizer::setUniforms(Shader& shader) {
     if (overwriteColor_.get()) shader.setUniform("overwriteColor", constantColor_.get());
 }
 
-void LineRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
+void LineRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
 
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::DepthMaskState depthMask(true);

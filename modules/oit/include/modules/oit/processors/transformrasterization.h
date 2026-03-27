@@ -48,7 +48,7 @@ public:
     TransformRasterization();
     virtual ~TransformRasterization() = default;
 
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
+    virtual void rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) override;
     virtual UseFragmentList usesFragmentLists() const override;
 
     virtual std::optional<dmat4> boundingBox() const override;

@@ -153,7 +153,7 @@ WorldTransformDeprecated<T>::WorldTransformDeprecated()
 template <typename T>
 void WorldTransformDeprecated<T>::process() {
     std::shared_ptr<T> data(inport_.getData()->clone());
-    data->setWorldMatrix(matrix_.get() * data->getWorldMatrix());
+    data->setWorldMatrix(dmat4{matrix_.get()} * data->getWorldMatrix());
     outport_.setData(data);
 }
 

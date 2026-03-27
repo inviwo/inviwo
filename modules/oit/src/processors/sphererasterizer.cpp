@@ -163,7 +163,7 @@ UseFragmentList SphereRasterizer::usesFragmentLists() const {
                : UseFragmentList::No;
 }
 
-void SphereRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
+void SphereRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
 
     bnl_.update();
     labels_.update();

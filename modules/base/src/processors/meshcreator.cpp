@@ -183,16 +183,16 @@ MeshCreator::MeshCreator()
         };
 
         auto updatePosition1 = [this, getDelta](const PickingEvent* p) {
-            position1_.set(position1_.get() + getDelta(p));
+            position1_.set(position1_.get() + vec3{getDelta(p)});
         };
 
         auto updatePosition1and2 = [this, getDelta](const PickingEvent* p) {
-            auto delta = getDelta(p);
+            auto delta = vec3{getDelta(p)};
             position1_.set(position1_.get() + delta);
             position2_.set(position2_.get() + delta);
         };
         auto updateBasis = [this, getDelta](const PickingEvent* p) {
-            basis_.offset_.set(basis_.offset_.get() + getDelta(p));
+            basis_.offset_.set(basis_.offset_.get() + vec3{getDelta(p)});
         };
 
         util::hide(position1_, position2_, normal_, basis_, meshScale_, meshRes_, lineSegments_,

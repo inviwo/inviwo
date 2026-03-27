@@ -45,10 +45,10 @@ public:
 
     BoolProperty updateNearFar;
     BoolProperty updateLookRanges;
-    FloatProperty fittingRatio;
+    DoubleProperty fittingRatio;
 
-    FloatProperty zoomFactor;
-    FloatProperty farNearRatio;
+    DoubleProperty zoomFactor;
+    DoubleProperty farNearRatio;
 
     camerautil::UpdateNearFar getUpdateNearFar() const;
     camerautil::UpdateLookRanges getUpdateLookRanges() const;

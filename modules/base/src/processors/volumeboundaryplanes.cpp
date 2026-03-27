@@ -85,19 +85,19 @@ void VolumeBoundaryPlanes::process() {
     const auto vol = volume_.getData();
     const auto dataToWorld = vol->getCoordinateTransformer().getDataToWorldMatrix();
     const auto basis = vol->getBasis();
-    const auto p0 = dataToWorld * vec4(vec3(0.0f), 1.0f);
-    const auto p1 = dataToWorld * vec4(1.0f);
-    const mat3 worldNormal = glm::transpose(glm::inverse(vol->getWorldMatrix()));
-    const float sign = flipPlanes_ ? -1.0f : 1.0f;
+    const auto p0 = dataToWorld * dvec4(dvec3(0.0), 1.0);
+    const auto p1 = dataToWorld * dvec4(1.0);
+    const dmat3 worldNormal = glm::transpose(glm::inverse(vol->getWorldMatrix()));
+    const double sign = flipPlanes_ ? -1.0 : 1.0;
 
     auto planes = std::make_shared<std::vector<Plane>>();
 
     for (unsigned int i = 0; i < 3; i++) {
-        planes->emplace_back(p0, worldNormal * (-sign * basis[i]));
+        planes->emplace_back(vec3{p0}, vec3{worldNormal * (-sign * basis[i])});
     }
 
     for (unsigned int i = 0; i < 3; i++) {
-        planes->emplace_back(p1, worldNormal * (sign * basis[i]));
+        planes->emplace_back(vec3{p1}, vec3{worldNormal * (sign * basis[i])});
     }
 
     planes_.setData(planes);

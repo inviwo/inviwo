@@ -437,7 +437,7 @@ void MeshRasterizer::setUniforms(Shader& shader) {
                        normalSource_ == NormalSource::GenerateTriangle);
 }
 
-void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
+void MeshRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
     if (inport_.isChanged() || drawSilhouette_.isModified()) {
         updateMeshes();
     }

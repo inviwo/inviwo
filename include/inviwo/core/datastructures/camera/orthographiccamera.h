@@ -47,7 +47,7 @@ public:
                        double nearPlane = cameradefaults::nearPlane,
                        double farPlane = cameradefaults::farPlane,
                        double aspectRatio = cameradefaults::aspectRatio,
-                       float width = cameradefaults::width);
+                       double width = cameradefaults::width);
     virtual ~OrthographicCamera() = default;
     OrthographicCamera(const OrthographicCamera& other);
     OrthographicCamera& operator=(const OrthographicCamera& other);
@@ -58,8 +58,8 @@ public:
     virtual void updateFrom(const Camera& source) override;
     virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
 
-    float getWidth() const;
-    void setWidth(float width);
+    double getWidth() const;
+    void setWidth(double width);
     virtual void zoom(const ZoomOptions& opts) override;
 
     virtual dvec4 getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const override;
@@ -71,9 +71,9 @@ protected:
     virtual bool equal(const Camera& other) const override;
     virtual dmat4 calculateProjectionMatrix() const override;
 
-    float width_;
+    double width_;
 };
 
-inline float OrthographicCamera::getWidth() const { return width_; }
+inline double OrthographicCamera::getWidth() const { return width_; }
 
 }  // namespace inviwo
