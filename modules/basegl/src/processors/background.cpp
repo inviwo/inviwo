@@ -90,23 +90,27 @@ Background::Background()
     , outport_("outport", "Output image"_help)
     , backgroundStyle_(
           "backgroundStyle", "Style",
-          "The are three different styles to choose from Linear gradient, uniform color, and checkerboard."_help,
-          {{"linearGradientVertical", "Linear gradient (Vertical)",
-            BackgroundStyle::LinearVertical},
-           {"linearGradientHorizontal", "Linear gradient (Horizontal)",
-            BackgroundStyle::LinearHorizontal},
-           {"linearGradientSpherical", "Linear gradient (Spherical)",
-            BackgroundStyle::LinearSpherical},
-           {"uniformColor", "Uniform color", BackgroundStyle::Uniform},
-           {"checkerBoard", "Checkerboard", BackgroundStyle::CheckerBoard}},
-          0, InvalidationLevel::InvalidResources)
+          OptionPropertyState<BackgroundStyle>{
+              .options = {{"linearGradientVertical", "Linear gradient (Vertical)",
+                           BackgroundStyle::LinearVertical},
+                          {"linearGradientHorizontal", "Linear gradient (Horizontal)",
+                           BackgroundStyle::LinearHorizontal},
+                          {"linearGradientSpherical", "Linear gradient (Spherical)",
+                           BackgroundStyle::LinearSpherical},
+                          {"uniformColor", "Uniform color", BackgroundStyle::Uniform},
+                          {"checkerBoard", "Checkerboard", BackgroundStyle::CheckerBoard}},
+              .invalidationLevel = InvalidationLevel::InvalidResources,
+              .help =
+                  "The are three different styles to choose from Linear gradient, uniform color, and checkerboard."_help,
+          }
+              .setSelectedValue(BackgroundStyle::Uniform))
     , bgColor1_(
           "bgColor1", "Color 1",
-          util::ordinalColor(0.0f, 0.0f, 0.0f, 1.0f)
+          util::ordinalColor(1.0f, 1.0f, 1.0f, 1.0f)
               .set(
                   "Used as the uniform color and as color 1 in the gradient and checkerboard."_help))
     , bgColor2_("bgColor2", "Color 2",
-                util::ordinalColor(1.0f, 1.0f, 1.0f, 1.0f)
+                util::ordinalColor(0.0f, 0.0f, 0.0f, 1.0f)
                     .set("Used as color 2 in the gradient and checkerboard."_help))
     , checkerBoardSize_("checkerBoardSize", "Checkerboard Size",
                         "Size of the checkerboard cells in pixel."_help, ivec2(10, 10),

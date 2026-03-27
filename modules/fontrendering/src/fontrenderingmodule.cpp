@@ -59,7 +59,7 @@ FontRenderingModule::FontRenderingModule(InviwoApplication* app)
     registerProperty<FontFaceOptionProperty>();
 }
 
-int FontRenderingModule::getVersion() const { return 5; }
+int FontRenderingModule::getVersion() const { return 6; }
 
 std::unique_ptr<VersionConverter> FontRenderingModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -67,132 +67,183 @@ std::unique_ptr<VersionConverter> FontRenderingModule::getConverter(int version)
 
 FontRenderingModule::Converter::Converter(int version) : version_(version) {}
 
-bool FontRenderingModule::Converter::convert(TxElement* root) {
+namespace {
 
+bool updateV0(TxElement* root) {
+    bool res = false;
+    const std::vector<xml::IdentifierReplacement> repl = {
+        // TextOverlayGL
+        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+          xml::Kind::property("org.inviwo.OptionPropertyInt")},
+         "Font size",
+         "fontSize"}};
+    res |= xml::changeIdentifiers(root, repl);
+    return res;
+}
+
+bool updateV1(TxElement* root) {
+    bool res = false;
+    const std::vector<xml::IdentifierReplacement> repl2 = {
+        // TextOverlayGL
+        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+          xml::Kind::property("org.inviwo.FloatVec2Property")},
+         "Position",
+         "position"},
+        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+          xml::Kind::property("org.inviwo.FloatVec2Property")},
+         "Anchor",
+         "anchor"},
+        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+          xml::Kind::property("org.inviwo.FloatVec4Property")},
+         "color_",
+         "color"},
+        {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+          xml::Kind::property("org.inviwo.StringProperty")},
+         "Text",
+         "text"}};
+
+    res |= xml::changeIdentifiers(root, repl2);
+    return res;
+}
+
+bool updateV2(TxElement* root) {
+    bool res = false;
+    res |= xml::changeTag(root,
+                          {{
+                              xml::Kind::processor("org.inviwo.TextOverlayGL"),
+                              xml::Kind::property("org.inviwo.FontProperty"),
+                              xml::Kind::property("org.inviwo.OptionPropertyInt"),
+                          }},
+                          "selectedIdentifier", "value");
+
+    res |= xml::changeAttributeRecursive(root,
+                                         {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
+                                           xml::Kind::property("org.inviwo.FontProperty"),
+                                           xml::Kind::property("org.inviwo.OptionPropertyInt")}},
+                                         "type", "org.inviwo.OptionPropertyInt",
+                                         "org.inviwo.IntProperty");
+
+    res |= xml::changeAttributeRecursive(
+        root, {{xml::Kind::propertyLinkSource("org.inviwo.OptionPropertyInt", "fontSize")}}, "type",
+        "org.inviwo.OptionPropertyInt", "org.inviwo.IntProperty");
+    res |= xml::changeAttributeRecursive(
+        root, {{xml::Kind::propertyLinkDestination("org.inviwo.OptionPropertyInt", "fontSize")}},
+        "type", "org.inviwo.OptionPropertyInt", "org.inviwo.IntProperty");
+    return res;
+}
+
+bool updateV3(TxElement* root) {
+    bool res = false;
+    // TextOverlayGL restructure
+    xml::visitMatchingNodesRecursive(
+        root,
+        xml::ElementMatcher{.name = "Processor",
+                            .attributes = {{.name = "type", .value = "org.inviwo.TextOverlayGL"}}},
+        [&](TxElement* node) {
+            // Move color into font properties
+            if (const auto* color = xml::getElement(node, "Properties/Property&identifier=color")) {
+                if (auto* fontProps =
+                        xml::getElement(node, "Properties/Property&identifier=font/Properties")) {
+                    fontProps->InsertEndChild(*color);
+                } else {
+                    auto* props = xml::getElement(node, "Properties");
+                    if (!props) {
+                        props = xml::createNode("Properties", node);
+                    }
+                    fontProps = xml::createNode(
+                        "Property&type=org.inviwo.FontProperty&identifier=font/Properties", props);
+                    fontProps->InsertEndChild(*color);
+                }
+            }
+
+            // Move only text/pos/offset into new ListProperty
+            auto* props = xml::getElement(node, "Properties");
+            auto* texts =
+                xml::createNode("Property&type=org.inviwo.ListProperty&identifier=texts", props);
+            xml::createNode("OwnedPropertyIdentifiers/PropertyIdentifier&content=text0", texts);
+
+            auto* textsProps = xml::createNode("Properties", texts);
+            auto* overlayProps = xml::createNode(
+                "Property&type=org.inviwo.TextOverlayProperty&identifier=text0/Properties",
+                textsProps);
+            for (auto&& i : {"text", "position", "offset"}) {
+                if (const auto* p = xml::getElement(
+                        node, fmt::format("Properties/Property&identifier={}", i))) {
+                    overlayProps->InsertEndChild(*p);
+                }
+            }
+            res = true;
+        });
+    return res;
+}
+
+bool updateV4(TxElement* root) {
+    bool res = false;
+    TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+        if (auto key = node->Value(); key != "Property") return true;
+        if (const auto& type = node->GetAttribute("type"); type != "org.inviwo.FontProperty") {
+            return true;
+        }
+        if (auto* elem =
+                xml::getElement(node, "Properties/Property&type=org.inviwo.OptionPropertyString")) {
+            elem->SetAttribute("type", "org.inviwo.FontFaceOptionProperty");
+            res = true;
+        }
+
+        return true;
+    }};
+    conv.convert(root);
+    return res;
+}
+
+bool updateV5(TxElement* root) {
+    bool res = false;
+    xml::visitMatchingNodesRecursive(
+        root,
+        {.name = "Processor",
+         .attributes = {{.name = "type", .value = "org.inviwo.TextOverlayGL"}}},
+        [&](TxElement* node) {
+            auto* props = xml::getElement(node, "Properties");
+            if (!props) {
+                props = xml::createNode("Properties", node);
+                res |= true;
+            }
+            auto* color = xml::getElement(props, "Property&identifier=color");
+            if (!color) {
+                color = xml::createNode(
+                    "Property&type=org.inviwo.FloatVec4Property&identifier=color", props);
+            }
+            if (const auto* value = xml::getElement(color, "value"); !value) {
+                xml::createNode("value&x=1.0&y=1.0&z=1.0&w=1.0", color);
+                res |= true;
+            }
+        });
+    return res;
+}
+
+}  // namespace
+
+bool FontRenderingModule::Converter::convert(TxElement* root) {
     bool res = false;
     switch (version_) {
-        case 0: {
-            const std::vector<xml::IdentifierReplacement> repl = {
-                // TextOverlayGL
-                {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
-                  xml::Kind::property("org.inviwo.OptionPropertyInt")},
-                 "Font size",
-                 "fontSize"}};
-            res |= xml::changeIdentifiers(root, repl);
+        case 0:
+            res |= updateV0(root);
             [[fallthrough]];
-        }
-        case 1: {
-            const std::vector<xml::IdentifierReplacement> repl2 = {
-                // TextOverlayGL
-                {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
-                  xml::Kind::property("org.inviwo.FloatVec2Property")},
-                 "Position",
-                 "position"},
-                {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
-                  xml::Kind::property("org.inviwo.FloatVec2Property")},
-                 "Anchor",
-                 "anchor"},
-                {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
-                  xml::Kind::property("org.inviwo.FloatVec4Property")},
-                 "color_",
-                 "color"},
-                {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
-                  xml::Kind::property("org.inviwo.StringProperty")},
-                 "Text",
-                 "text"}};
-            res |= xml::changeIdentifiers(root, repl2);
+        case 1:
+            res |= updateV1(root);
             [[fallthrough]];
-        }
-        case 2: {
-
-            res |= xml::changeTag(root,
-                                  {{
-                                      xml::Kind::processor("org.inviwo.TextOverlayGL"),
-                                      xml::Kind::property("org.inviwo.FontProperty"),
-                                      xml::Kind::property("org.inviwo.OptionPropertyInt"),
-                                  }},
-                                  "selectedIdentifier", "value");
-
-            res |= xml::changeAttributeRecursive(
-                root,
-                {{xml::Kind::processor("org.inviwo.TextOverlayGL"),
-                  xml::Kind::property("org.inviwo.FontProperty"),
-                  xml::Kind::property("org.inviwo.OptionPropertyInt")}},
-                "type", "org.inviwo.OptionPropertyInt", "org.inviwo.IntProperty");
-
-            res |= xml::changeAttributeRecursive(
-                root, {{xml::Kind::propertyLinkSource("org.inviwo.OptionPropertyInt", "fontSize")}},
-                "type", "org.inviwo.OptionPropertyInt", "org.inviwo.IntProperty");
-            res |= xml::changeAttributeRecursive(
-                root,
-                {{xml::Kind::propertyLinkDestination("org.inviwo.OptionPropertyInt", "fontSize")}},
-                "type", "org.inviwo.OptionPropertyInt", "org.inviwo.IntProperty");
-
+        case 2:
+            res |= updateV2(root);
             [[fallthrough]];
-        }
-        case 3: {
-            // TextOverlayGL restructure
-            xml::visitMatchingNodesRecursive(
-                root, xml::ElementMatcher{"Processor", {{"type", "org.inviwo.TextOverlayGL"}}},
-                [&](TxElement* node) {
-                    // Move color into font properties
-                    if (auto color =
-                            xml::getElement(node, "Properties/Property&identifier=color")) {
-                        if (auto fontProps = xml::getElement(
-                                node, "Properties/Property&identifier=font/Properties")) {
-                            fontProps->InsertEndChild(*color);
-                        } else {
-                            auto props = xml::getElement(node, "Properties");
-                            if (!props) {
-                                props = xml::createNode("Properties", node);
-                            }
-                            fontProps = xml::createNode(
-                                "Property&type=org.inviwo.FontProperty&identifier=font/Properties",
-                                props);
-                            fontProps->InsertEndChild(*color);
-                        }
-                    }
-
-                    // Move only text/pos/offset into new ListProperty
-                    auto props = xml::getElement(node, "Properties");
-                    auto texts = xml::createNode(
-                        "Property&type=org.inviwo.ListProperty&identifier=texts", props);
-                    xml::createNode("OwnedPropertyIdentifiers/PropertyIdentifier&content=text0",
-                                    texts);
-
-                    auto textsProps = xml::createNode("Properties", texts);
-                    auto overlayProps = xml::createNode(
-                        "Property&type=org.inviwo.TextOverlayProperty&identifier=text0/Properties",
-                        textsProps);
-                    for (auto&& i : {"text", "position", "offset"}) {
-                        if (auto p = xml::getElement(
-                                node, fmt::format("Properties/Property&identifier={}", i))) {
-                            overlayProps->InsertEndChild(*p);
-                        }
-                    }
-                    res = true;
-                });
+        case 3:
+            res |= updateV3(root);
             [[fallthrough]];
-        }
-        case 4: {
-            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                auto key = node->Value();
-                if (key != "Property") return true;
-                const auto& type = node->GetAttribute("type");
-                if (type != "org.inviwo.FontProperty") return true;
-
-                if (auto elem = xml::getElement(
-                        node, "Properties/Property&type=org.inviwo.OptionPropertyString")) {
-                    elem->SetAttribute("type", "org.inviwo.FontFaceOptionProperty");
-                    res = true;
-                }
-
-                return true;
-            }};
-            conv.convert(root);
-
+        case 4:
+            res |= updateV4(root);
+            [[fallthrough]];
+        case 5:
+            res |= updateV5(root);
             return res;
-        }
         default:
             return false;  // No changes
     }

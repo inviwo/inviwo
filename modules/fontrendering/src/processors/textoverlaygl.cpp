@@ -119,8 +119,9 @@ TextOverlayGL::TextOverlayGL()
              }(),
              0,
              ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove}
-    , color_("color", "Color",
-             util::ordinalColor(vec4(1.f)).set("Foreground color of the text"_help))
+    , color_(
+          "color", "Color",
+          util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f}).set("Foreground color of the text"_help))
     , font_("font", "Font Settings")
     , args_{"args", "Arguments",
             []() {
