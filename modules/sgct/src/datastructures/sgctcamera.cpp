@@ -44,7 +44,7 @@
 namespace inviwo {
 
 SGCTCamera::SGCTCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane,
-                       double aspectRatio, float fieldOfView)
+                       double aspectRatio, double fieldOfView)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), fovy_(fieldOfView) {}
 
 SGCTCamera* SGCTCamera::clone() const { return new SGCTCamera(*this); }
@@ -97,7 +97,7 @@ void SGCTCamera::updateFrom(const Camera& source) {
     }
 }
 
-void SGCTCamera::setFovy(float val) {
+void SGCTCamera::setFovy(double val) {
     if (fovy_ != val) {
         fovy_ = val;
         invalidateProjectionMatrix();
@@ -114,10 +114,10 @@ void SGCTCamera::configureProperties(CameraProperty& cameraProperty, bool attach
     if (attach) {
         util::updateOrCreateCameraFovProperty(
             cameraProperty, [this]() { return getFovy(); },
-            [this](const float& val) { setFovy(val); });
+            [this](const doubledouble& val) { setFovy(val); });
 
     } else if (auto* fov = util::getCameraFovProperty(cameraProperty)) {
-        fov->setGetAndSet([val = fov->get()]() { return val; }, [](const float&) {});
+        fov->setGetAndSet([val = fov->get()]() { return val; }, [](const double&) {});
     }
 }
 
@@ -140,9 +140,9 @@ void SGCTCamera::deserialize(Deserializer& d) {
 }
 
 void SGCTCamera::setExternal(const sgct::RenderData& renderData) {
-    const mat4 proj = glm::make_mat4(renderData.projectionMatrix.values);
-    const mat4 view = glm::make_mat4(renderData.viewMatrix.values);
-    const mat4 model = glm::make_mat4(renderData.modelMatrix.values);
+    const dmat4 proj = glm::make_mat4(renderData.projectionMatrix.values);
+    const dmat4 view = glm::make_mat4(renderData.viewMatrix.values);
+    const dmat4 model = glm::make_mat4(renderData.modelMatrix.values);
 
     bool modified = false;
 
@@ -161,14 +161,14 @@ void SGCTCamera::setExternal(const sgct::RenderData& renderData) {
         getInverseViewMatrix();
         modified = true;
     }
-    if (fovy_ != renderData.viewport.horizontalFieldOfViewDegrees()) {
-        fovy_ = renderData.viewport.horizontalFieldOfViewDegrees();
+    if (fovy_ != static_cast<double>(renderData.viewport.horizontalFieldOfViewDegrees())) {
+        fovy_ = static_cast<double>(renderData.viewport.horizontalFieldOfViewDegrees());
         invalidateProjectionMatrix();
         modified = true;
     }
 
-    if (aspectRatio_ != renderData.window.aspectRatio()) {
-        aspectRatio_ = renderData.window.aspectRatio();
+    if (aspectRatio_ != static_cast<double>(renderData.window.aspectRatio())) {
+        aspectRatio_ = static_cast<double>(renderData.window.aspectRatio());
         invalidateProjectionMatrix();
         modified = true;
     }
