@@ -22,6 +22,9 @@ inviwopy.data
       BufferINT8
       BufferInfo
       BufferInport
+      BufferMat2FLOAT32
+      BufferMat3FLOAT32
+      BufferMat4FLOAT32
       BufferMultiInport
       BufferOutport
       BufferTarget
@@ -79,6 +82,9 @@ inviwopy.data
       IndexBufferINT32
       IndexBufferINT64
       IndexBufferINT8
+      IndexBufferMat2FLOAT32
+      IndexBufferMat3FLOAT32
+      IndexBufferMat4FLOAT32
       IndexBufferUINT16
       IndexBufferUINT32
       IndexBufferUINT64
