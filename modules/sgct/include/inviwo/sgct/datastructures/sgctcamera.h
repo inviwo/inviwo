@@ -47,7 +47,7 @@ public:
                         double nearPlane = cameradefaults::nearPlane,
                         double farPlane = cameradefaults::farPlane,
                         double aspectRatio = cameradefaults::aspectRatio,
-                        float fieldOfView = cameradefaults::fieldOfView);
+                        double fieldOfView = cameradefaults::fieldOfView);
 
     SGCTCamera(const SGCTCamera& other) = default;
     SGCTCamera& operator=(const SGCTCamera& other) = default;
@@ -62,8 +62,8 @@ public:
     virtual void updateFrom(const Camera& source) override;
     virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
 
-    float getFovy() const;
-    void setFovy(float val);
+    double getFovy() const;
+    void setFovy(double val);
     void setExternal(const sgct::RenderData& renderData);
     virtual void zoom(const ZoomOptions& opts) override;
 
@@ -75,13 +75,13 @@ protected:
     virtual dmat4 calculateProjectionMatrix() const override;
     virtual dmat4 calculateViewMatrix() const override;
 
-    float fovy_;
+    double fovy_;
 
     std::optional<dmat4> extProj_{};
     dmat4 extView_{1.0};
     dmat4 extModel_{1.0};
 };
 
-inline float SGCTCamera::getFovy() const { return fovy_; }
+inline double SGCTCamera::getFovy() const { return fovy_; }
 
 }  // namespace inviwo
