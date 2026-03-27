@@ -54,6 +54,7 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertypresetmanager.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/properties/scriptbackendfactory.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/rendering/datavisualizermanager.h>
 #include <inviwo/core/resourcemanager/resourcemanager.h>
@@ -158,6 +159,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     , propertyConverterManager_{std::make_unique<PropertyConverterManager>()}
     , propertyFactory_{std::make_unique<PropertyFactory>()}
     , propertyWidgetFactory_{std::make_unique<PropertyWidgetFactory>()}
+    , scriptBackendFactory_{std::make_unique<ScriptBackendFactory>()}
     , representationMetaFactory_{std::make_unique<RepresentationMetaFactory>()}
     , representationConverterMetaFactory_{std::make_unique<RepresentationConverterMetaFactory>()}
     , settingsRegistry_{}

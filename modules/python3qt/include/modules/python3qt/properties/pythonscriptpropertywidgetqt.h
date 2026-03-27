@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,30 +30,49 @@
 
 #include <modules/python3qt/python3qtmoduledefine.h>
 
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>
 
-#include <functional>
 #include <memory>
-#include <vector>
+
+class QHBoxLayout;
 
 namespace inviwo {
-class Property;
+class ScriptProperty;
+class EditableLabelQt;
+class LineEditQt;
+class PropertyEditorWidget;
 
 /**
- * @brief A text editor with Python syntax highlighting
- * @see TextEditorDockWidget
- * @see PythonSyntaxHighlight
+ * @brief Widget for a ScriptProperty providing a Python script editor.
+ *
+ * Displays the script source in a line edit and offers a text editor button
+ * to open a Python-syntax-highlighted editor dock widget.
+ * When the Python3Qt module is loaded, it also sets a Python execution backend
+ * on the ScriptProperty so that scripts can be called at runtime.
+ *
+ * @see ScriptProperty
+ * @see PythonEditorDockWidget
  */
-class IVW_MODULE_PYTHON3QT_API PythonEditorDockWidget : public TextEditorDockWidget {
+class IVW_MODULE_PYTHON3QT_API PythonScriptPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    /**
-     * @brief Create a text editor for @p property
-     * @pre Property has to be of type FileProperty, StringProperty, or ScriptProperty
-     */
-    PythonEditorDockWidget(Property* property);
+    explicit PythonScriptPropertyWidgetQt(ScriptProperty* property);
+    virtual ~PythonScriptPropertyWidgetQt();
+
+    virtual void updateFromProperty() override;
+
+    virtual bool hasEditorWidget() const override;
+    virtual PropertyEditorWidget* getEditorWidget() override;
 
 private:
-    std::vector<std::shared_ptr<std::function<void()>>> callbacks_;
+    void setPropertyValue();
+    void initEditor();
+    void addEditor();
+
+    ScriptProperty* property_;
+    LineEditQt* lineEdit_;
+    QHBoxLayout* hWidgetLayout_;
+    std::unique_ptr<TextEditorDockWidget> editor_;
 };
 
 }  // namespace inviwo

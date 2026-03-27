@@ -8,6 +8,7 @@ set(HEADER_FILES
     include/modules/python3/opaquetypes.h
     include/modules/python3/polymorphictypehooks.h
     include/modules/python3/processortrampoline.h
+    include/modules/python3/pyanyconverter.h
     include/modules/python3/pybindflags.h
     include/modules/python3/pybindmodule.h
     include/modules/python3/pybindutils.h
@@ -22,6 +23,7 @@ set(HEADER_FILES
     include/modules/python3/pythonprocessorfactoryobject.h
     include/modules/python3/pythonprocessorfolderobserver.h
     include/modules/python3/pythonscript.h
+    include/modules/python3/pythonscriptbackend.h
     include/modules/python3/pythonworkspacescripts.h
     include/modules/python3/pyutils.h
     include/modules/python3/volumepy.h
@@ -33,6 +35,7 @@ set(SOURCE_FILES
     src/opaquetypes.cpp
     src/polymorphictypehooks.cpp
     src/processortrampoline.cpp
+    src/pyanyconverter.cpp
     src/pybindflags.cpp
     src/pybindutils.cpp
     src/pyportutils.cpp
@@ -45,6 +48,7 @@ set(SOURCE_FILES
     src/pythonprocessorfactoryobject.cpp
     src/pythonprocessorfolderobserver.cpp
     src/pythonscript.cpp
+    src/pythonscriptbackend.cpp
     src/pythonworkspacescripts.cpp
     src/pyutils.cpp
     src/volumepy.cpp

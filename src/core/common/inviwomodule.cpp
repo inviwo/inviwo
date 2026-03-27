@@ -48,6 +48,7 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertyconverter.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
+#include <inviwo/core/properties/scriptbackendfactory.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/rendering/datavisualizer.h>
@@ -111,6 +112,9 @@ InviwoModule::~InviwoModule() {
     }
     for (auto& elem : propertyWidgets_) {
         app_->getPropertyWidgetFactory()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : scriptBackends_) {
+        app_->getScriptBackendFactory()->unRegisterObject(elem.get());
     }
     for (auto& unRegFunctor : representationUnRegFunctors_) {
         unRegFunctor();
@@ -286,6 +290,13 @@ void InviwoModule::registerPropertyWidget(
 void InviwoModule::registerPropertyConverter(std::unique_ptr<PropertyConverter> propertyConverter) {
     if (app_->getPropertyConverterManager()->registerObject(propertyConverter.get())) {
         propertyConverters_.push_back(std::move(propertyConverter));
+    }
+}
+
+void InviwoModule::registerScriptBackend(
+    std::unique_ptr<ScriptBackendFactoryObject> backend) {
+    if (app_->getScriptBackendFactory()->registerObject(backend.get())) {
+        scriptBackends_.push_back(std::move(backend));
     }
 }
 

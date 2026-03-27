@@ -295,4 +295,20 @@ ResourceManager* getResourceManager(Property* property) {
     return getResourceManager(property->getOwner()->getProcessor());
 }
 
+ScriptBackendFactory* getScriptBackendFactory() {
+    return getScriptBackendFactory(InviwoApplication::getPtr());
+}
+ScriptBackendFactory* getScriptBackendFactory(InviwoApplication* app) {
+    if (!app) return nullptr;
+    return app->getScriptBackendFactory();
+}
+ScriptBackendFactory* getScriptBackendFactory(Processor* processor) {
+    if (!processor) return nullptr;
+    return getScriptBackendFactory(processor->getInviwoApplication());
+}
+ScriptBackendFactory* getScriptBackendFactory(Property* property) {
+    if (!property) return nullptr;
+    return getScriptBackendFactory(property->getOwner()->getProcessor());
+}
+
 }  // namespace inviwo::util
