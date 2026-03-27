@@ -1,5 +1,13 @@
 var NAVTREEINDEX6 =
 {
+"classinviwo_1_1FontFaceOptionProperty.html#aa200414f61972f6d95f5be638e9a7d00":[1,4,15,0],
+"classinviwo_1_1FontProperty.html":[1,4,16],
+"classinviwo_1_1FontProperty.html#a9039e6e644dac4a5a781640da2b457fd":[1,4,16,0],
+"classinviwo_1_1FontRenderingModule.html":[2,0,0,356],
+"classinviwo_1_1FontRenderingModule.html":[4,0,1,365],
+"classinviwo_1_1FontRenderingModule.html#a171d1d54c650b92d203fb2d578feed1b":[2,0,0,356,0],
+"classinviwo_1_1FontRenderingModule.html#a171d1d54c650b92d203fb2d578feed1b":[4,0,1,365,0],
+"classinviwo_1_1FontRenderingModule.html#a8fedbb69245b37a1dfb110a64cd237fb":[2,0,0,356,1],
 "classinviwo_1_1FontRenderingModule.html#a8fedbb69245b37a1dfb110a64cd237fb":[4,0,1,365,1],
 "classinviwo_1_1FontSizePropertyWidgetQt.html":[2,0,0,357],
 "classinviwo_1_1FontSizePropertyWidgetQt.html":[4,0,1,366],
@@ -241,13 +249,5 @@ var NAVTREEINDEX6 =
 "classinviwo_1_1ImageChannelSelect.html#a0874b698c62aa6048ce7b9d5d0cf40f1":[2,0,0,403,1],
 "classinviwo_1_1ImageChannelSelect.html#a0874b698c62aa6048ce7b9d5d0cf40f1":[4,0,1,412,1],
 "classinviwo_1_1ImageChannelSelect.html#aa84afa3c7de88c727e68eccb62f7338b":[2,0,0,403,0],
-"classinviwo_1_1ImageChannelSelect.html#aa84afa3c7de88c727e68eccb62f7338b":[4,0,1,412,0],
-"classinviwo_1_1ImageColorMapping.html":[2,0,0,404],
-"classinviwo_1_1ImageColorMapping.html":[4,0,1,413],
-"classinviwo_1_1ImageColorMapping.html#a82dff1323603ead8d76d14b70b60aa97":[2,0,0,404,1],
-"classinviwo_1_1ImageColorMapping.html#a82dff1323603ead8d76d14b70b60aa97":[4,0,1,413,1],
-"classinviwo_1_1ImageColorMapping.html#aa92d65d8d271b2962ba44cfc900f097e":[2,0,0,404,0],
-"classinviwo_1_1ImageColorMapping.html#aa92d65d8d271b2962ba44cfc900f097e":[4,0,1,413,0],
-"classinviwo_1_1ImageCompositeProcessorGL.html":[2,0,0,405],
-"classinviwo_1_1ImageCompositeProcessorGL.html":[4,0,1,414]
+"classinviwo_1_1ImageChannelSelect.html#aa84afa3c7de88c727e68eccb62f7338b":[4,0,1,412,0]
 };

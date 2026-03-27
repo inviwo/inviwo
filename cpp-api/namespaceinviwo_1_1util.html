@@ -1575,11 +1575,10 @@ template&lt;typename T&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Utility for retrieving the type of a (Buffer/Layer/Volume)RamPrecision pointer variable. Example usage: </p><div class="fragment"><div class="line">VolumeRam* volumeram = ...; <span class="comment">// of some glm vector type.</span></div>
-<div class="line"><span class="keyword">auto</span> count = volumeram-&gt;dispatch&lt;size_t, <a class="code hl_struct" href="structinviwo_1_1dispatching_1_1filter_1_1Vecs.html">dispatching::filter::Vecs</a>&gt;([](<span class="keyword">auto</span> vrprecision) {</div>
+<div class="line"><span class="keyword">auto</span> count = volumeram-&gt;dispatch&lt;size_t, dispatching::filter::Vecs&gt;([](<span class="keyword">auto</span> vrprecision) {</div>
 <div class="line">    <span class="keyword">using </span>VolumeType = <a class="code hl_typedef" href="#ab1e4eff95e999c0f37072af916d5d93b">util::PrecisionType</a>&lt;<span class="keyword">decltype</span>(vrprecision)&gt;;</div>
 <div class="line">    ....</div>
-<div class="ttc" id="anamespaceinviwo_1_1util_html_ab1e4eff95e999c0f37072af916d5d93b"><div class="ttname"><a href="#ab1e4eff95e999c0f37072af916d5d93b">inviwo::util::PrecisionType</a></div><div class="ttdeci">typename std::remove_pointer&lt; typename std::remove_const&lt; T &gt;::type &gt;::type PrecisionType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:482</div></div>
-<div class="ttc" id="astructinviwo_1_1dispatching_1_1filter_1_1Vecs_html"><div class="ttname"><a href="structinviwo_1_1dispatching_1_1filter_1_1Vecs.html">inviwo::dispatching::filter::Vecs</a></div><div class="ttdef"><b>Definition</b> formatdispatching.h:382</div></div>
+<div class="ttc" id="anamespaceinviwo_1_1util_html_ab1e4eff95e999c0f37072af916d5d93b"><div class="ttname"><a href="#ab1e4eff95e999c0f37072af916d5d93b">inviwo::util::PrecisionType</a></div><div class="ttdeci">typename std::remove_pointer&lt; typename std::remove_const&lt; T &gt;::type &gt;::type PrecisionType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:490</div></div>
 </div><!-- fragment --><p> VolumeType will then be for example VolumeRamPrecision&lt;vec3&gt; </p>
 
 </div>
@@ -1598,7 +1597,7 @@ template&lt;typename T&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Utility for retrieving the type of a (Buffer/Layer/Volume)RamPrecision pointer variable. Example usage: </p><div class="fragment"><div class="line">VolumeRam* volumeram = ...; <span class="comment">// of some glm vector type.</span></div>
-<div class="line"><span class="keyword">auto</span> count = volumeram-&gt;dispatch&lt;size_t, <a class="code hl_struct" href="structinviwo_1_1dispatching_1_1filter_1_1Vecs.html">dispatching::filter::Vecs</a>&gt;([](<span class="keyword">auto</span> vrprecision) {</div>
+<div class="line"><span class="keyword">auto</span> count = volumeram-&gt;dispatch&lt;size_t, dispatching::filter::Vecs&gt;([](<span class="keyword">auto</span> vrprecision) {</div>
 <div class="line">    <span class="keyword">using </span>VolumeType = <a class="code hl_typedef" href="#ab1e4eff95e999c0f37072af916d5d93b">util::PrecisionType</a>&lt;<span class="keyword">decltype</span>(vrprecision)&gt;;</div>
 <div class="line">    ....</div>
 </div><!-- fragment --><p> VolumeType will then be for example VolumeRamPrecision&lt;vec3&gt; </p>
@@ -1619,10 +1618,10 @@ template&lt;typename T&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Utility for retrieving the type of a (Buffer/Layer/Volume)RamPrecision pointer variable. Example usage: </p><div class="fragment"><div class="line">VolumeRam* volumeram = ...; <span class="comment">// of some glm vector type.</span></div>
-<div class="line"><span class="keyword">auto</span> count = volumeram-&gt;dispatch&lt;size_t, <a class="code hl_struct" href="structinviwo_1_1dispatching_1_1filter_1_1Vecs.html">dispatching::filter::Vecs</a>&gt;([](<span class="keyword">auto</span> vrprecision) {</div>
+<div class="line"><span class="keyword">auto</span> count = volumeram-&gt;dispatch&lt;size_t, dispatching::filter::Vecs&gt;([](<span class="keyword">auto</span> vrprecision) {</div>
 <div class="line">    <span class="keyword">using </span>ValueType = <a class="code hl_typedef" href="#a4c5cc1457325e4cf1c8756319d5e83c5">util::PrecisionValueType</a>&lt;<span class="keyword">decltype</span>(vrprecision)&gt;;</div>
 <div class="line">    ....</div>
-<div class="ttc" id="anamespaceinviwo_1_1util_html_a4c5cc1457325e4cf1c8756319d5e83c5"><div class="ttname"><a href="#a4c5cc1457325e4cf1c8756319d5e83c5">inviwo::util::PrecisionValueType</a></div><div class="ttdeci">typename PrecisionType&lt; T &gt;::type PrecisionValueType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:500</div></div>
+<div class="ttc" id="anamespaceinviwo_1_1util_html_a4c5cc1457325e4cf1c8756319d5e83c5"><div class="ttname"><a href="#a4c5cc1457325e4cf1c8756319d5e83c5">inviwo::util::PrecisionValueType</a></div><div class="ttdeci">typename PrecisionType&lt; T &gt;::type PrecisionValueType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:508</div></div>
 </div><!-- fragment --><p> ValueType will then be for example vec3 </p>
 
 </div>

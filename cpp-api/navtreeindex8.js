@@ -1,5 +1,13 @@
 var NAVTREEINDEX8 =
 {
+"classinviwo_1_1ImageVisualizer.html#a6135f3dba053dbb1f080a6431ba4a3c1":[2,0,0,453,5],
+"classinviwo_1_1ImageVisualizer.html#a6135f3dba053dbb1f080a6431ba4a3c1":[4,0,1,462,5],
+"classinviwo_1_1ImageVisualizer.html#a6c034e7c0f35160b2ba3369955d9ca34":[2,0,0,453,3],
+"classinviwo_1_1ImageVisualizer.html#a6c034e7c0f35160b2ba3369955d9ca34":[4,0,1,462,3],
+"classinviwo_1_1ImageVisualizer.html#a99a2c8161ddca9022d5e94b550ffb5db":[2,0,0,453,2],
+"classinviwo_1_1ImageVisualizer.html#a99a2c8161ddca9022d5e94b550ffb5db":[4,0,1,462,2],
+"classinviwo_1_1ImageVisualizer.html#acb7aceaabe07d8021b918eb5b4cdc115":[2,0,0,453,8],
+"classinviwo_1_1ImageVisualizer.html#acb7aceaabe07d8021b918eb5b4cdc115":[4,0,1,462,8],
 "classinviwo_1_1ImageVisualizer.html#ad6be42d13a7a5ca67888aece54aab6ea":[2,0,0,453,4],
 "classinviwo_1_1ImageVisualizer.html#ad6be42d13a7a5ca67888aece54aab6ea":[4,0,1,462,4],
 "classinviwo_1_1IndexBufferInformationProperty.html":[2,0,0,455],
@@ -241,13 +249,5 @@ var NAVTREEINDEX8 =
 "classinviwo_1_1InviwoModule.html#ac892983fed296c0fcc1e4a9fab7bee95":[2,0,0,500,4],
 "classinviwo_1_1InviwoModule.html#ac892983fed296c0fcc1e4a9fab7bee95":[4,0,1,509,4],
 "classinviwo_1_1InviwoModule.html#ad08053fc1d110a251aeb18311846a569":[2,0,0,500,8],
-"classinviwo_1_1InviwoModule.html#ad08053fc1d110a251aeb18311846a569":[4,0,1,509,8],
-"classinviwo_1_1InviwoModule.html#aec618a62fbfac6fbc67dd951f58bb178":[2,0,0,500,13],
-"classinviwo_1_1InviwoModule.html#aec618a62fbfac6fbc67dd951f58bb178":[4,0,1,509,13],
-"classinviwo_1_1InviwoModule.html#aff6681a946543700db5656b7b95ab666":[2,0,0,500,3],
-"classinviwo_1_1InviwoModule.html#aff6681a946543700db5656b7b95ab666":[4,0,1,509,3],
-"classinviwo_1_1InviwoModuleFactoryObject.html":[2,0,0,501],
-"classinviwo_1_1InviwoModuleFactoryObject.html":[4,0,1,510],
-"classinviwo_1_1InviwoModuleFactoryObjectTemplate.html":[2,0,0,502],
-"classinviwo_1_1InviwoModuleFactoryObjectTemplate.html":[4,0,1,511]
+"classinviwo_1_1InviwoModule.html#ad08053fc1d110a251aeb18311846a569":[4,0,1,509,8]
 };

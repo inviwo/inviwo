@@ -308,7 +308,7 @@ template&lt;typename Result, template&lt; class &gt; class Predicate, typename C
 </div><div class="memdoc">
 <p>Dispatch functionality to retrieve the actual underlaying LayerRamPrecision. The dispatcher takes a generic lambda as argument. Code will be instantiated for all the <a class="el" href="classinviwo_1_1DataFormat.html">DataFormat</a> types by default. But by suppling the template <span class="tt">Predicate</span> argument the list of formats to instantiate can be filtered. Hence if one knows that only Vector types are applicable there is no need to write generic code that also works for scalars.</p>
 <p>Example of counting the number of elements larger then 0: </p><div class="fragment"><div class="line">LayerRam* layerram = ...; <span class="comment">// of some glm vector type.</span></div>
-<div class="line"><span class="keyword">auto</span> count = layerram-&gt;dispatch&lt;size_t, <a class="code hl_struct" href="structinviwo_1_1dispatching_1_1filter_1_1Vecs.html">dispatching::filter::Vecs</a>&gt;([](<span class="keyword">auto</span> lrprecision) {</div>
+<div class="line"><span class="keyword">auto</span> count = layerram-&gt;dispatch&lt;size_t, dispatching::filter::Vecs&gt;([](<span class="keyword">auto</span> lrprecision) {</div>
 <div class="line">    <span class="keyword">using </span>LayerType = <a class="code hl_typedef" href="namespaceinviwo_1_1util.html#ab1e4eff95e999c0f37072af916d5d93b">util::PrecisionType</a>&lt;<span class="keyword">decltype</span>(lrprecision)&gt;;</div>
 <div class="line">    <span class="keyword">using </span>ValueType = <a class="code hl_typedef" href="namespaceinviwo_1_1util.html#a4c5cc1457325e4cf1c8756319d5e83c5">util::PrecisionValueType</a>&lt;<span class="keyword">decltype</span>(lrprecision)&gt;;</div>
 <div class="line"> </div>
@@ -317,9 +317,8 @@ template&lt;typename Result, template&lt; class &gt; class Predicate, typename C
 <div class="line">    <span class="keywordflow">return</span> std::count_if(data, data + dim.x * dim.y,</div>
 <div class="line">                         [](<span class="keyword">auto</span> x){return x &gt; ValueType{0};});</div>
 <div class="line">});</div>
-<div class="ttc" id="anamespaceinviwo_1_1util_html_a4c5cc1457325e4cf1c8756319d5e83c5"><div class="ttname"><a href="namespaceinviwo_1_1util.html#a4c5cc1457325e4cf1c8756319d5e83c5">inviwo::util::PrecisionValueType</a></div><div class="ttdeci">typename PrecisionType&lt; T &gt;::type PrecisionValueType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:500</div></div>
-<div class="ttc" id="anamespaceinviwo_1_1util_html_ab1e4eff95e999c0f37072af916d5d93b"><div class="ttname"><a href="namespaceinviwo_1_1util.html#ab1e4eff95e999c0f37072af916d5d93b">inviwo::util::PrecisionType</a></div><div class="ttdeci">typename std::remove_pointer&lt; typename std::remove_const&lt; T &gt;::type &gt;::type PrecisionType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:482</div></div>
-<div class="ttc" id="astructinviwo_1_1dispatching_1_1filter_1_1Vecs_html"><div class="ttname"><a href="structinviwo_1_1dispatching_1_1filter_1_1Vecs.html">inviwo::dispatching::filter::Vecs</a></div><div class="ttdef"><b>Definition</b> formatdispatching.h:382</div></div>
+<div class="ttc" id="anamespaceinviwo_1_1util_html_a4c5cc1457325e4cf1c8756319d5e83c5"><div class="ttname"><a href="namespaceinviwo_1_1util.html#a4c5cc1457325e4cf1c8756319d5e83c5">inviwo::util::PrecisionValueType</a></div><div class="ttdeci">typename PrecisionType&lt; T &gt;::type PrecisionValueType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:508</div></div>
+<div class="ttc" id="anamespaceinviwo_1_1util_html_ab1e4eff95e999c0f37072af916d5d93b"><div class="ttname"><a href="namespaceinviwo_1_1util.html#ab1e4eff95e999c0f37072af916d5d93b">inviwo::util::PrecisionType</a></div><div class="ttdeci">typename std::remove_pointer&lt; typename std::remove_const&lt; T &gt;::type &gt;::type PrecisionType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:490</div></div>
 </div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="autotoc_md15"></a>
 Template arguments:</h1>
 <ul>

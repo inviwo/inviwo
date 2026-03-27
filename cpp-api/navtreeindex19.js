@@ -1,5 +1,13 @@
 var NAVTREEINDEX19 =
 {
+"classinviwo_1_1SplitterRenderer.html":[2,0,0,1097],
+"classinviwo_1_1SplitterRenderer.html":[4,0,1,1106],
+"classinviwo_1_1SplitterRenderer.html#a0163005e341ac81f18f64358337cdb38":[2,0,0,1097,1],
+"classinviwo_1_1SplitterRenderer.html#a0163005e341ac81f18f64358337cdb38":[4,0,1,1106,1],
+"classinviwo_1_1SplitterRenderer.html#a246400099aa5473bfcbcd07bc38060b5":[2,0,0,1097,0],
+"classinviwo_1_1SplitterRenderer.html#a246400099aa5473bfcbcd07bc38060b5":[4,0,1,1106,0],
+"classinviwo_1_1SplitterSettings.html":[2,0,0,1098],
+"classinviwo_1_1SplitterSettings.html":[4,0,1,1107],
 "classinviwo_1_1SpotLight.html":[2,0,0,1099],
 "classinviwo_1_1SpotLight.html":[4,0,1,1108],
 "classinviwo_1_1SpotLight.html#a35c7c8dc90e2df93e2cad91d65b7f8c0":[2,0,0,1099,5],
@@ -241,13 +249,5 @@ var NAVTREEINDEX19 =
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae2063d24561c8c4875b43411ed1d96d4":[4,0,1,1142,8],
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae68274ee049c7e57f972d4eaa7e29dc5":[2,0,0,1133,27],
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae68274ee049c7e57f972d4eaa7e29dc5":[4,0,1,1142,27],
-"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae98d399d44bd7c607fffb308e5cecc30":[2,0,0,1133,29],
-"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae98d399d44bd7c607fffb308e5cecc30":[4,0,1,1142,29],
-"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#aeb90477208f4882cab4af99f859a3203":[2,0,0,1133,19],
-"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#aeb90477208f4882cab4af99f859a3203":[4,0,1,1142,19],
-"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#af0b74f782fa6397321e88f0fecf42ffc":[2,0,0,1133,18],
-"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#af0b74f782fa6397321e88f0fecf42ffc":[4,0,1,1142,18],
-"classinviwo_1_1StructuredCoordinateTransformer.html":[2,0,0,1134],
-"classinviwo_1_1StructuredCoordinateTransformer.html":[4,0,1,1143],
-"classinviwo_1_1StructuredCoordinateTransformer.html#a06334799d2c1ad3a8e3f800d5ba47a0c":[2,0,0,1134,12]
+"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae98d399d44bd7c607fffb308e5cecc30":[2,0,0,1133,29]
 };

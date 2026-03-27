@@ -1,5 +1,13 @@
 var NAVTREEINDEX18 =
 {
+"classinviwo_1_1ShaderManager.html":[2,0,0,1058],
+"classinviwo_1_1ShaderManager.html":[4,0,1,1067],
+"classinviwo_1_1ShaderObject.html":[2,0,0,1059],
+"classinviwo_1_1ShaderObject.html":[4,0,1,1068],
+"classinviwo_1_1ShaderObject.html#a333e17a8e1427fd338600acc4a950656":[2,0,0,1059,10],
+"classinviwo_1_1ShaderObject.html#a333e17a8e1427fd338600acc4a950656":[4,0,1,1068,10],
+"classinviwo_1_1ShaderObject.html#a3bb2e3169259b8a94486d0398934bbaa":[2,0,0,1059,11],
+"classinviwo_1_1ShaderObject.html#a3bb2e3169259b8a94486d0398934bbaa":[4,0,1,1068,11],
 "classinviwo_1_1ShaderObject.html#a4f94c9ce50110d5282db09796bcc369a":[2,0,0,1059,4],
 "classinviwo_1_1ShaderObject.html#a4f94c9ce50110d5282db09796bcc369a":[4,0,1,1068,4],
 "classinviwo_1_1ShaderObject.html#a5724f286db8f5a666f41f4f179185b3b":[2,0,0,1059,3],
@@ -241,13 +249,5 @@ var NAVTREEINDEX18 =
 "classinviwo_1_1SplitImage.html#a801faced2965802c6cc9546babf958fc":[2,0,0,1095,0],
 "classinviwo_1_1SplitImage.html#a801faced2965802c6cc9546babf958fc":[4,0,1,1104,0],
 "classinviwo_1_1SplitterProperty.html":[1,4,37],
-"classinviwo_1_1SplitterProperty.html#a82441a3819e8497587a45a2e9f0dddcf":[1,4,37,0],
-"classinviwo_1_1SplitterRenderer.html":[2,0,0,1097],
-"classinviwo_1_1SplitterRenderer.html":[4,0,1,1106],
-"classinviwo_1_1SplitterRenderer.html#a0163005e341ac81f18f64358337cdb38":[2,0,0,1097,1],
-"classinviwo_1_1SplitterRenderer.html#a0163005e341ac81f18f64358337cdb38":[4,0,1,1106,1],
-"classinviwo_1_1SplitterRenderer.html#a246400099aa5473bfcbcd07bc38060b5":[2,0,0,1097,0],
-"classinviwo_1_1SplitterRenderer.html#a246400099aa5473bfcbcd07bc38060b5":[4,0,1,1106,0],
-"classinviwo_1_1SplitterSettings.html":[2,0,0,1098],
-"classinviwo_1_1SplitterSettings.html":[4,0,1,1107]
+"classinviwo_1_1SplitterProperty.html#a82441a3819e8497587a45a2e9f0dddcf":[1,4,37,0]
 };

@@ -1,5 +1,13 @@
 var NAVTREEINDEX12 =
 {
+"classinviwo_1_1MinMaxPropertyWidgetCEF.html":[4,0,1,683],
+"classinviwo_1_1MinMaxPropertyWidgetCEF.html#a4e7d299b1273d8cfcae366b79724c73a":[2,0,0,674,2],
+"classinviwo_1_1MinMaxPropertyWidgetCEF.html#a4e7d299b1273d8cfcae366b79724c73a":[4,0,1,683,2],
+"classinviwo_1_1MinMaxPropertyWidgetCEF.html#a9b8a58e9cb0f5345fd52af9124f82d73":[2,0,0,674,0],
+"classinviwo_1_1MinMaxPropertyWidgetCEF.html#a9b8a58e9cb0f5345fd52af9124f82d73":[4,0,1,683,0],
+"classinviwo_1_1MinMaxPropertyWidgetCEF.html#aba6caa74b28dac2b7e44bc7faf321f8d":[2,0,0,674,1],
+"classinviwo_1_1MinMaxPropertyWidgetCEF.html#aba6caa74b28dac2b7e44bc7faf321f8d":[4,0,1,683,1],
+"classinviwo_1_1MissingRepresentation.html":[2,0,0,675],
 "classinviwo_1_1MissingRepresentation.html":[4,0,1,684],
 "classinviwo_1_1ModuleCallback.html":[2,0,0,676],
 "classinviwo_1_1ModuleCallback.html":[4,0,1,685],
@@ -241,13 +249,5 @@ var NAVTREEINDEX12 =
 "classinviwo_1_1OpenGLQtMenu.html":[4,0,1,741],
 "classinviwo_1_1OpenGLQtModule.html":[2,0,0,733],
 "classinviwo_1_1OpenGLQtModule.html":[4,0,1,742],
-"classinviwo_1_1OpenGLSettings.html":[2,0,0,734],
-"classinviwo_1_1OpenGLSettings.html":[4,0,1,743],
-"classinviwo_1_1OptionProperty.html":[2,0,0,735],
-"classinviwo_1_1OptionProperty.html":[4,0,1,744],
-"classinviwo_1_1OptionProperty.html#a1762b26ea2989f37ff67d10e84002973":[2,0,0,735,2],
-"classinviwo_1_1OptionProperty.html#a1762b26ea2989f37ff67d10e84002973":[4,0,1,744,2],
-"classinviwo_1_1OptionProperty.html#a1edc0e8bf381ad913d1bf79caf2070a8":[2,0,0,735,10],
-"classinviwo_1_1OptionProperty.html#a1edc0e8bf381ad913d1bf79caf2070a8":[4,0,1,744,10],
-"classinviwo_1_1OptionProperty.html#a44dc680625098bed835f1cac5aad137e":[2,0,0,735,7]
+"classinviwo_1_1OpenGLSettings.html":[2,0,0,734]
 };

@@ -1,5 +1,13 @@
 var NAVTREEINDEX13 =
 {
+"classinviwo_1_1OpenGLSettings.html":[4,0,1,743],
+"classinviwo_1_1OptionProperty.html":[2,0,0,735],
+"classinviwo_1_1OptionProperty.html":[4,0,1,744],
+"classinviwo_1_1OptionProperty.html#a1762b26ea2989f37ff67d10e84002973":[2,0,0,735,2],
+"classinviwo_1_1OptionProperty.html#a1762b26ea2989f37ff67d10e84002973":[4,0,1,744,2],
+"classinviwo_1_1OptionProperty.html#a1edc0e8bf381ad913d1bf79caf2070a8":[2,0,0,735,10],
+"classinviwo_1_1OptionProperty.html#a1edc0e8bf381ad913d1bf79caf2070a8":[4,0,1,744,10],
+"classinviwo_1_1OptionProperty.html#a44dc680625098bed835f1cac5aad137e":[2,0,0,735,7],
 "classinviwo_1_1OptionProperty.html#a44dc680625098bed835f1cac5aad137e":[4,0,1,744,7],
 "classinviwo_1_1OptionProperty.html#a4f3b8126f7acb515d1142114f4b5d036":[2,0,0,735,3],
 "classinviwo_1_1OptionProperty.html#a4f3b8126f7acb515d1142114f4b5d036":[4,0,1,744,3],
@@ -241,13 +249,5 @@ var NAVTREEINDEX13 =
 "classinviwo_1_1PickingEvent.html#a4439e924f37cb44fea63dd97b1fc86fd":[4,0,1,794,0],
 "classinviwo_1_1PickingEvent.html#a4c1f2a30bc65158310557e7d405701ee":[2,0,0,785,17],
 "classinviwo_1_1PickingEvent.html#a4c1f2a30bc65158310557e7d405701ee":[4,0,1,794,17],
-"classinviwo_1_1PickingEvent.html#a5536037c5c052167f31657c0921df6d2":[2,0,0,785,18],
-"classinviwo_1_1PickingEvent.html#a5536037c5c052167f31657c0921df6d2":[4,0,1,794,18],
-"classinviwo_1_1PickingEvent.html#a5c5f51c6b9c273e1842e98312b995f98":[2,0,0,785,10],
-"classinviwo_1_1PickingEvent.html#a5c5f51c6b9c273e1842e98312b995f98":[4,0,1,794,10],
-"classinviwo_1_1PickingEvent.html#a68ea3a2c7010d98846f467503dcd8a24":[2,0,0,785,20],
-"classinviwo_1_1PickingEvent.html#a68ea3a2c7010d98846f467503dcd8a24":[4,0,1,794,20],
-"classinviwo_1_1PickingEvent.html#a6b06316c92357c1949ef4d00548ca2ff":[2,0,0,785,8],
-"classinviwo_1_1PickingEvent.html#a6b06316c92357c1949ef4d00548ca2ff":[4,0,1,794,8],
-"classinviwo_1_1PickingEvent.html#a6d7ed5ef73c155856dc61cfdb99023bb":[2,0,0,785,22]
+"classinviwo_1_1PickingEvent.html#a5536037c5c052167f31657c0921df6d2":[2,0,0,785,18]
 };

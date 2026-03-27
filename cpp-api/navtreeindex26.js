@@ -1,5 +1,13 @@
 var NAVTREEINDEX26 =
 {
+"classinviwo_1_1animation_1_1SequenceEditorFactoryObjectTemplate.html":[4,0,1,2,72],
+"classinviwo_1_1animation_1_1SequenceEditorPanel.html":[2,0,0,0,72],
+"classinviwo_1_1animation_1_1SequenceEditorPanel.html":[4,0,1,2,73],
+"classinviwo_1_1animation_1_1SequenceEditorWidget.html":[2,0,0,0,73],
+"classinviwo_1_1animation_1_1SequenceEditorWidget.html":[4,0,1,2,74],
+"classinviwo_1_1animation_1_1Track.html":[2,0,0,0,74],
+"classinviwo_1_1animation_1_1Track.html":[4,0,1,2,75],
+"classinviwo_1_1animation_1_1Track.html#a04382e9a119f3efe3657b2facd75acef":[2,0,0,0,74,7],
 "classinviwo_1_1animation_1_1Track.html#a04382e9a119f3efe3657b2facd75acef":[4,0,1,2,75,7],
 "classinviwo_1_1animation_1_1Track.html#a0faa03bd673b36cc528f62a467764644":[2,0,0,0,74,4],
 "classinviwo_1_1animation_1_1Track.html#a0faa03bd673b36cc528f62a467764644":[4,0,1,2,75,4],
@@ -87,7 +95,7 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,1,11,18],
 "classinviwo_1_1detail_1_1hasProcessorInfo.html":[4,0,1,11,10],
 "classinviwo_1_1dispatching_1_1DispatchException.html":[2,0,0,8,1],
-"classinviwo_1_1dispatching_1_1DispatchException.html":[4,0,1,12,2],
+"classinviwo_1_1dispatching_1_1DispatchException.html":[4,0,1,12,1],
 "classinviwo_1_1ffmpeg_1_1Codec.html":[4,0,1,13,0],
 "classinviwo_1_1ffmpeg_1_1CodecID.html":[4,0,1,13,1],
 "classinviwo_1_1ffmpeg_1_1Format.html":[4,0,1,13,3],
@@ -241,13 +249,5 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1DataFrameColumnToColorVector.html":[2,0,0,15,15],
 "classinviwo_1_1plot_1_1DataFrameColumnToColorVector.html":[4,0,1,22,16],
 "classinviwo_1_1plot_1_1DataFrameColumnToColorVector.html#aaa0b951d9299c271a4da5a4b0b638d10":[2,0,0,15,15,0],
-"classinviwo_1_1plot_1_1DataFrameColumnToColorVector.html#aaa0b951d9299c271a4da5a4b0b638d10":[4,0,1,22,16,0],
-"classinviwo_1_1plot_1_1ImagePlotProcessor.html":[2,0,0,15,16],
-"classinviwo_1_1plot_1_1ImagePlotProcessor.html":[4,0,1,22,17],
-"classinviwo_1_1plot_1_1ImagePlotProcessor.html#a7f24d080515f260200ada98cb345a310":[2,0,0,15,16,0],
-"classinviwo_1_1plot_1_1ImagePlotProcessor.html#a7f24d080515f260200ada98cb345a310":[4,0,1,22,17,0],
-"classinviwo_1_1plot_1_1LayerAxis.html":[2,0,0,15,17],
-"classinviwo_1_1plot_1_1LayerAxis.html":[4,0,1,22,18],
-"classinviwo_1_1plot_1_1LayerAxis.html#af9e7f57ddc24584db3f9fb60f32a57f1":[2,0,0,15,17,0],
-"classinviwo_1_1plot_1_1LayerAxis.html#af9e7f57ddc24584db3f9fb60f32a57f1":[4,0,1,22,18,0]
+"classinviwo_1_1plot_1_1DataFrameColumnToColorVector.html#aaa0b951d9299c271a4da5a4b0b638d10":[4,0,1,22,16,0]
 };

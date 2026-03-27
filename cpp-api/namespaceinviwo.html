@@ -1856,7 +1856,7 @@ using&#160;</td><td class="memItemRight"><b>DataVec4UInt64</b> = <a class="el" h
 using&#160;</td><td class="memItemRight"><b>DataVec4UInt8</b> = <a class="el" href="classinviwo_1_1DataFormat.html">DataFormat</a>&lt;glm::u8vec4&gt;</td></tr>
 <tr class="memitem:a074c6f3052eba95ebc8aa393d51c8b0e" id="r_a074c6f3052eba95ebc8aa393d51c8b0e"><td class="memItemLeft"><a id="a074c6f3052eba95ebc8aa393d51c8b0e" name="a074c6f3052eba95ebc8aa393d51c8b0e"></a>
 using&#160;</td><td class="memItemRight"><b>DefaultDataFormats</b> = util::wrap&lt;<a class="el" href="classinviwo_1_1DataFormat.html">DataFormat</a>, DefaultDataTypes&gt;</td></tr>
-<tr class="memitem:a727901d887a68fc520b1f8a4169ca046" id="r_a727901d887a68fc520b1f8a4169ca046"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a727901d887a68fc520b1f8a4169ca046">DefaultDataTypes</a></td></tr>
+<tr class="memitem:a7190f8562042d5fa87eb03e0aa6870da" id="r_a7190f8562042d5fa87eb03e0aa6870da"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a7190f8562042d5fa87eb03e0aa6870da">DefaultDataTypes</a></td></tr>
 <tr class="memitem:a0d8a3aeb59fabca34626bf3357cc40d8" id="r_a0d8a3aeb59fabca34626bf3357cc40d8"><td class="memTemplParams" colspan="2"><a id="a0d8a3aeb59fabca34626bf3357cc40d8" name="a0d8a3aeb59fabca34626bf3357cc40d8"></a>
 template&lt;typename C&gt; </td></tr>
 <tr class="memitem:a0d8a3aeb59fabca34626bf3357cc40d8 template"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><b>DispatcherHandle</b> = typename <a class="el" href="classinviwo_1_1Dispatcher.html">Dispatcher</a>&lt;C&gt;::Handle</td></tr>
@@ -2600,7 +2600,11 @@ Enumerations</h2></td></tr>
 , <b>Vec4UInt32</b>
 , <br />
 &#160;&#160;<b>Vec4UInt64</b>
-, <b>NumberOfFormats</b>
+, <b>Mat2Float32</b>
+, <b>Mat3Float32</b>
+, <b>Mat4Float32</b>
+, <br />
+&#160;&#160;<b>NumberOfFormats</b>
 <br />
  }</td></tr>
 <tr class="memitem:a99df63de8fba3cdce1bbb5a031041229" id="r_a99df63de8fba3cdce1bbb5a031041229"><td class="memItemLeft"><a id="a99df63de8fba3cdce1bbb5a031041229" name="a99df63de8fba3cdce1bbb5a031041229"></a>enum class &#160;</td><td class="memItemRight"><b>DrawType</b> { <b>NotSpecified</b> = 0
@@ -3956,8 +3960,8 @@ template class IVW_CORE_TMPL_EXP&#160;</td><td class="memItemRight"><b>Structure
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>inviwo </p>
 </div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
-<a id="a727901d887a68fc520b1f8a4169ca046" name="a727901d887a68fc520b1f8a4169ca046"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a727901d887a68fc520b1f8a4169ca046">&#9670;&#160;</a></span>DefaultDataTypes</h2>
+<a id="a7190f8562042d5fa87eb03e0aa6870da" name="a7190f8562042d5fa87eb03e0aa6870da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7190f8562042d5fa87eb03e0aa6870da">&#9670;&#160;</a></span>DefaultDataTypes</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3974,7 +3978,7 @@ template class IVW_CORE_TMPL_EXP&#160;</td><td class="memItemRight"><b>Structure
 <div class="line">           glm::f32vec3, glm::f64vec3, glm::i8vec3, glm::i16vec3, glm::i32vec3, glm::i64vec3,</div>
 <div class="line">           glm::u8vec3, glm::u16vec3, glm::u32vec3, glm::u64vec3, glm::f32vec4, glm::f64vec4,</div>
 <div class="line">           glm::i8vec4, glm::i16vec4, glm::i32vec4, glm::i64vec4, glm::u8vec4, glm::u16vec4,</div>
-<div class="line">           glm::u32vec4, glm::u64vec4&gt;</div>
+<div class="line">           glm::u32vec4, glm::u64vec4, glm::f32mat2, glm::f32mat3, glm::f32mat4&gt;</div>
 </div><!-- fragment -->
 </div>
 </div>

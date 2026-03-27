@@ -50,5 +50,6 @@ var searchData=
   ['numberlineedit_47',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]],
   ['numberwidget_48',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
   ['numberwidgetconfig_49',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]],
-  ['numericvaluefromstring_50',['numericValueFromString',['../namespaceinviwo_1_1utilqt.html#a4e4f204db5ef145c73f1b6ca2a404e96',1,'inviwo::utilqt']]]
+  ['numerictype_50',['numericType',['../classinviwo_1_1DataFormat.html#a55ba223de5afd6e44eb26dfb70923c78',1,'inviwo::DataFormat']]],
+  ['numericvaluefromstring_51',['numericValueFromString',['../namespaceinviwo_1_1utilqt.html#a4e4f204db5ef145c73f1b6ca2a404e96',1,'inviwo::utilqt']]]
 ];

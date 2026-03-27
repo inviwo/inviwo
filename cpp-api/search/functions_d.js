@@ -8,5 +8,6 @@ var searchData=
   ['normalize_5',['normalize',['../classinviwo_1_1VolumeNormalization.html#a98193b84990da9ea71b3164912f75f4c',1,'inviwo::VolumeNormalization']]],
   ['notifyaftertextureinitialization_6',['notifyAfterTextureInitialization',['../classinviwo_1_1TextureObserver.html#ae0df43dec71ab95ff7036dd945c3753d',1,'inviwo::TextureObserver']]],
   ['notifybeforetextureinitialization_7',['notifyBeforeTextureInitialization',['../classinviwo_1_1TextureObserver.html#ad249a53fb5ab3f67099e29a12993b385',1,'inviwo::TextureObserver']]],
-  ['numericvaluefromstring_8',['numericValueFromString',['../namespaceinviwo_1_1utilqt.html#a4e4f204db5ef145c73f1b6ca2a404e96',1,'inviwo::utilqt']]]
+  ['numerictype_8',['numericType',['../classinviwo_1_1DataFormat.html#a55ba223de5afd6e44eb26dfb70923c78',1,'inviwo::DataFormat']]],
+  ['numericvaluefromstring_9',['numericValueFromString',['../namespaceinviwo_1_1utilqt.html#a4e4f204db5ef145c73f1b6ca2a404e96',1,'inviwo::utilqt']]]
 ];

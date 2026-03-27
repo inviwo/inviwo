@@ -1481,37 +1481,10 @@ var hierarchy =
         [ "inviwo::util::extent< const T, N >", "structinviwo_1_1util_1_1extent_3_01const_01T_00_01N_01_4.html", null ]
       ] ],
       [ "inviwo::util::extent< const T, N >", "structinviwo_1_1util_1_1extent_3_01const_01T_00_01N_01_4.html", null ],
-      [ "inviwo::dispatching::filter::Float1s< Format >", "structinviwo_1_1dispatching_1_1filter_1_1Float1s.html", null ],
-      [ "inviwo::dispatching::filter::Float2s< Format >", "structinviwo_1_1dispatching_1_1filter_1_1Float2s.html", null ],
-      [ "inviwo::dispatching::filter::Float3s< Format >", "structinviwo_1_1dispatching_1_1filter_1_1Float3s.html", null ],
-      [ "inviwo::dispatching::filter::Float4s< Format >", "structinviwo_1_1dispatching_1_1filter_1_1Float4s.html", null ],
-      [ "inviwo::dispatching::filter::FloatScalars< Format >", "structinviwo_1_1dispatching_1_1filter_1_1FloatScalars.html", null ],
-      [ "inviwo::dispatching::filter::Floats< Format >", "structinviwo_1_1dispatching_1_1filter_1_1Floats.html", null ],
-      [ "inviwo::dispatching::filter::IntegerScalars< Format >", "structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html", null ],
-      [ "inviwo::dispatching::filter::Integers< Format >", "structinviwo_1_1dispatching_1_1filter_1_1Integers.html", null ],
-      [ "inviwo::dispatching::filter::Scalars< Format >", "structinviwo_1_1dispatching_1_1filter_1_1Scalars.html", null ],
-      [ "inviwo::dispatching::filter::SignedIntegerScalars< Format >", "structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerScalars.html", null ],
-      [ "inviwo::dispatching::filter::UnsignedIntegerScalars< Format >", "structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html", null ],
-      [ "inviwo::dispatching::filter::Vec2s< Format >", "structinviwo_1_1dispatching_1_1filter_1_1Vec2s.html", null ],
-      [ "inviwo::dispatching::filter::Vec3s< Format >", "structinviwo_1_1dispatching_1_1filter_1_1Vec3s.html", null ],
-      [ "inviwo::dispatching::filter::Vec4s< Format >", "structinviwo_1_1dispatching_1_1filter_1_1Vec4s.html", null ],
-      [ "inviwo::dispatching::filter::Vecs< Format >", "structinviwo_1_1dispatching_1_1filter_1_1Vecs.html", null ],
       [ "inviwo::util::detail::flat_extent_impl< T, N >", "structinviwo_1_1util_1_1detail_1_1flat__extent__impl.html", null ],
       [ "inviwo::util::detail::flat_extent_impl< T, 0 >", "structinviwo_1_1util_1_1detail_1_1flat__extent__impl_3_01T_00_010_01_4.html", null ],
       [ "inviwo::util::extent< T, N >", "structinviwo_1_1util_1_1extent.html", null ],
       [ "std::tuple_size<::inviwo::util::detailzip::proxy< Ts... > >", "structstd_1_1tuple__size_3_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html", null ]
-    ] ],
-    [ "std::integral_constant&lt; bool,(Format::comp &gt;=2 &amp;&amp;Format::numtype !=NumericType::Float)&gt;", null, [
-      [ "inviwo::dispatching::filter::IntegerVecs< Format >", "structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html", null ]
-    ] ],
-    [ "std::integral_constant&lt; bool,(Format::comp &gt;=2 &amp;&amp;Format::numtype==NumericType::Float)&gt;", null, [
-      [ "inviwo::dispatching::filter::FloatVecs< Format >", "structinviwo_1_1dispatching_1_1filter_1_1FloatVecs.html", null ]
-    ] ],
-    [ "std::integral_constant&lt; bool,(Format::comp &gt;=2 &amp;&amp;Format::numtype==NumericType::SignedInteger)&gt;", null, [
-      [ "inviwo::dispatching::filter::SignedIntegerVecs< Format >", "structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerVecs.html", null ]
-    ] ],
-    [ "std::integral_constant&lt; bool,(Format::comp &gt;=2 &amp;&amp;Format::numtype==NumericType::UnsignedInteger)&gt;", null, [
-      [ "inviwo::dispatching::filter::UnsignedIntegerVecs< Format >", "structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html", null ]
     ] ],
     [ "inviwo::IntegralLine", "classinviwo_1_1IntegralLine.html", null ],
     [ "inviwo::IntegralLineSet", "classinviwo_1_1IntegralLineSet.html", null ],
@@ -3652,7 +3625,6 @@ var hierarchy =
     [ "inviwo::Transformer&lt; T, typename std::enable_if&lt; util::is_floating_point&lt; T &gt;::value &gt;::type &gt;", "classinviwo_1_1Transformer_3_01T_00_01typename_01std_1_1enable__if_3_01util_1_1is__floating__poi8021285cfd2189c6e2886140b1bddf32.html", null ],
     [ "inviwo::util::TransformIterator&lt; Transform, Iter &gt;", "structinviwo_1_1util_1_1TransformIterator.html", null ],
     [ "std::true_type", null, [
-      [ "inviwo::dispatching::filter::All< Format >", "structinviwo_1_1dispatching_1_1filter_1_1All.html", null ],
       [ "inviwo::util::detail::is_string< LCString, void >", "structinviwo_1_1util_1_1detail_1_1is__string_3_01LCString_00_01void_01_4.html", null ],
       [ "inviwo::util::is_dereferenceable< T, std::void_t< decltype(*std::declval< T >())> >", "structinviwo_1_1util_1_1is__dereferenceable_3_01T_00_01std_1_1void__t_3_01decltype_07_5std_1_1dea79db0978b6be7e835bcf0aa2839bd26.html", null ]
     ] ],

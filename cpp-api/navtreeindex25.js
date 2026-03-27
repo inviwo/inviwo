@@ -1,5 +1,13 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1animation_1_1Animation.html#ac93506c64f230c931eeea1a262f799f1":[4,0,1,2,1,17],
+"classinviwo_1_1animation_1_1Animation.html#ad564b0758d59a8983e6b87a783b83e4f":[2,0,0,0,0,16],
+"classinviwo_1_1animation_1_1Animation.html#ad564b0758d59a8983e6b87a783b83e4f":[4,0,1,2,1,16],
+"classinviwo_1_1animation_1_1Animation.html#adfae498e5326a6d75c2757db761db325":[2,0,0,0,0,13],
+"classinviwo_1_1animation_1_1Animation.html#adfae498e5326a6d75c2757db761db325":[4,0,1,2,1,13],
+"classinviwo_1_1animation_1_1Animation.html#af5c20a59631336d17fd266115ff06775":[2,0,0,0,0,3],
+"classinviwo_1_1animation_1_1Animation.html#af5c20a59631336d17fd266115ff06775":[4,0,1,2,1,3],
+"classinviwo_1_1animation_1_1AnimationController.html":[2,0,0,0,1],
 "classinviwo_1_1animation_1_1AnimationController.html":[4,0,1,2,2],
 "classinviwo_1_1animation_1_1AnimationController.html#a1335d8e6ddb069c2d6396b784aee96c2":[2,0,0,0,1,2],
 "classinviwo_1_1animation_1_1AnimationController.html#a1335d8e6ddb069c2d6396b784aee96c2":[4,0,1,2,2,2],
@@ -241,13 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1animation_1_1SequenceEditorFactory.html":[4,0,1,2,70],
 "classinviwo_1_1animation_1_1SequenceEditorFactoryObject.html":[2,0,0,0,70],
 "classinviwo_1_1animation_1_1SequenceEditorFactoryObject.html":[4,0,1,2,71],
-"classinviwo_1_1animation_1_1SequenceEditorFactoryObjectTemplate.html":[2,0,0,0,71],
-"classinviwo_1_1animation_1_1SequenceEditorFactoryObjectTemplate.html":[4,0,1,2,72],
-"classinviwo_1_1animation_1_1SequenceEditorPanel.html":[2,0,0,0,72],
-"classinviwo_1_1animation_1_1SequenceEditorPanel.html":[4,0,1,2,73],
-"classinviwo_1_1animation_1_1SequenceEditorWidget.html":[2,0,0,0,73],
-"classinviwo_1_1animation_1_1SequenceEditorWidget.html":[4,0,1,2,74],
-"classinviwo_1_1animation_1_1Track.html":[2,0,0,0,74],
-"classinviwo_1_1animation_1_1Track.html":[4,0,1,2,75],
-"classinviwo_1_1animation_1_1Track.html#a04382e9a119f3efe3657b2facd75acef":[2,0,0,0,74,7]
+"classinviwo_1_1animation_1_1SequenceEditorFactoryObjectTemplate.html":[2,0,0,0,71]
 };

@@ -1,5 +1,13 @@
 var NAVTREEINDEX4 =
 {
+"classinviwo_1_1DataFrameTableVisualizer.html":[2,0,0,210],
+"classinviwo_1_1DataFrameTableVisualizer.html":[4,0,1,219],
+"classinviwo_1_1DataFrameTableVisualizer.html#a02994ba291379298c9c70469675fb867":[2,0,0,210,8],
+"classinviwo_1_1DataFrameTableVisualizer.html#a02994ba291379298c9c70469675fb867":[4,0,1,219,8],
+"classinviwo_1_1DataFrameTableVisualizer.html#a1cd973e00c17db194a7a89f826912438":[2,0,0,210,3],
+"classinviwo_1_1DataFrameTableVisualizer.html#a1cd973e00c17db194a7a89f826912438":[4,0,1,219,3],
+"classinviwo_1_1DataFrameTableVisualizer.html#a1e05201cb50a5b4ae747dfe79d773a21":[2,0,0,210,7],
+"classinviwo_1_1DataFrameTableVisualizer.html#a1e05201cb50a5b4ae747dfe79d773a21":[4,0,1,219,7],
 "classinviwo_1_1DataFrameTableVisualizer.html#a39e7e0d72871ae8572926898fbd1a8b5":[2,0,0,210,1],
 "classinviwo_1_1DataFrameTableVisualizer.html#a39e7e0d72871ae8572926898fbd1a8b5":[4,0,1,219,1],
 "classinviwo_1_1DataFrameTableVisualizer.html#a48a5920a36796dc7797045883bfa9b0d":[2,0,0,210,5],
@@ -241,13 +249,5 @@ var NAVTREEINDEX4 =
 "classinviwo_1_1DiscardShortLines.html":[2,0,0,282],
 "classinviwo_1_1DiscardShortLines.html":[4,0,1,291],
 "classinviwo_1_1DiscardShortLines.html#a7688a9f7e2275efdd91d1b7012ab67e2":[2,0,0,282,0],
-"classinviwo_1_1DiscardShortLines.html#a7688a9f7e2275efdd91d1b7012ab67e2":[4,0,1,291,0],
-"classinviwo_1_1DisjointSets.html":[2,0,0,283],
-"classinviwo_1_1DisjointSets.html":[4,0,1,292],
-"classinviwo_1_1DisjointSets.html#a2b80da19f84d4c0f9268927ceb64b7b9":[2,0,0,283,3],
-"classinviwo_1_1DisjointSets.html#a2b80da19f84d4c0f9268927ceb64b7b9":[4,0,1,292,3],
-"classinviwo_1_1DisjointSets.html#a520928b8231cf4b99ace513236b6482a":[2,0,0,283,0],
-"classinviwo_1_1DisjointSets.html#a520928b8231cf4b99ace513236b6482a":[4,0,1,292,0],
-"classinviwo_1_1DisjointSets.html#a660b4e4957fa5f296d7604b164bc4472":[2,0,0,283,2],
-"classinviwo_1_1DisjointSets.html#a660b4e4957fa5f296d7604b164bc4472":[4,0,1,292,2]
+"classinviwo_1_1DiscardShortLines.html#a7688a9f7e2275efdd91d1b7012ab67e2":[4,0,1,291,0]
 };

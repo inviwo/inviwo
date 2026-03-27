@@ -1,5 +1,13 @@
 var NAVTREEINDEX24 =
 {
+"classinviwo_1_1VolumeRaycaster.html#a414ade847d1808e995ed67d809262d3c":[4,0,1,1345,1],
+"classinviwo_1_1VolumeRaycaster.html#acb9f84ba6fb78cbb7367014987774be5":[2,0,0,1336,0],
+"classinviwo_1_1VolumeRaycaster.html#acb9f84ba6fb78cbb7367014987774be5":[4,0,1,1345,0],
+"classinviwo_1_1VolumeRaycasterBase.html":[2,0,0,1337],
+"classinviwo_1_1VolumeRaycasterBase.html":[4,0,1,1346],
+"classinviwo_1_1VolumeRegionMapper.html":[2,0,0,1339],
+"classinviwo_1_1VolumeRegionMapper.html":[4,0,1,1348],
+"classinviwo_1_1VolumeRegionMapper.html#aa913cf2bed3a44b617930b3e907e70bd":[2,0,0,1339,0],
 "classinviwo_1_1VolumeRegionMapper.html#aa913cf2bed3a44b617930b3e907e70bd":[4,0,1,1348,0],
 "classinviwo_1_1VolumeRegionNeighbor.html":[2,0,0,1340],
 "classinviwo_1_1VolumeRegionNeighbor.html":[4,0,1,1349],
@@ -241,13 +249,5 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1animation_1_1Animation.html#ab56f7791bd6ef28027fa1b441dad539d":[4,0,1,2,1,0],
 "classinviwo_1_1animation_1_1Animation.html#ac8c83e369297a9122f83a16585b10337":[2,0,0,0,0,1],
 "classinviwo_1_1animation_1_1Animation.html#ac8c83e369297a9122f83a16585b10337":[4,0,1,2,1,1],
-"classinviwo_1_1animation_1_1Animation.html#ac93506c64f230c931eeea1a262f799f1":[2,0,0,0,0,17],
-"classinviwo_1_1animation_1_1Animation.html#ac93506c64f230c931eeea1a262f799f1":[4,0,1,2,1,17],
-"classinviwo_1_1animation_1_1Animation.html#ad564b0758d59a8983e6b87a783b83e4f":[2,0,0,0,0,16],
-"classinviwo_1_1animation_1_1Animation.html#ad564b0758d59a8983e6b87a783b83e4f":[4,0,1,2,1,16],
-"classinviwo_1_1animation_1_1Animation.html#adfae498e5326a6d75c2757db761db325":[2,0,0,0,0,13],
-"classinviwo_1_1animation_1_1Animation.html#adfae498e5326a6d75c2757db761db325":[4,0,1,2,1,13],
-"classinviwo_1_1animation_1_1Animation.html#af5c20a59631336d17fd266115ff06775":[2,0,0,0,0,3],
-"classinviwo_1_1animation_1_1Animation.html#af5c20a59631336d17fd266115ff06775":[4,0,1,2,1,3],
-"classinviwo_1_1animation_1_1AnimationController.html":[2,0,0,0,1]
+"classinviwo_1_1animation_1_1Animation.html#ac93506c64f230c931eeea1a262f799f1":[2,0,0,0,0,17]
 };

@@ -1,5 +1,13 @@
 var NAVTREEINDEX7 =
 {
+"classinviwo_1_1ImageColorMapping.html":[2,0,0,404],
+"classinviwo_1_1ImageColorMapping.html":[4,0,1,413],
+"classinviwo_1_1ImageColorMapping.html#a82dff1323603ead8d76d14b70b60aa97":[2,0,0,404,1],
+"classinviwo_1_1ImageColorMapping.html#a82dff1323603ead8d76d14b70b60aa97":[4,0,1,413,1],
+"classinviwo_1_1ImageColorMapping.html#aa92d65d8d271b2962ba44cfc900f097e":[2,0,0,404,0],
+"classinviwo_1_1ImageColorMapping.html#aa92d65d8d271b2962ba44cfc900f097e":[4,0,1,413,0],
+"classinviwo_1_1ImageCompositeProcessorGL.html":[2,0,0,405],
+"classinviwo_1_1ImageCompositeProcessorGL.html":[4,0,1,414],
 "classinviwo_1_1ImageCompositeProcessorGL.html#a4fceda1ae83712cdb003372a4da8d067":[2,0,0,405,0],
 "classinviwo_1_1ImageCompositeProcessorGL.html#a4fceda1ae83712cdb003372a4da8d067":[4,0,1,414,0],
 "classinviwo_1_1ImageCompositor.html":[2,0,0,406],
@@ -241,13 +249,5 @@ var NAVTREEINDEX7 =
 "classinviwo_1_1ImageVisualizer.html#a45fa1b4d4939fdc0916883a6d2fd0e31":[2,0,0,453,6],
 "classinviwo_1_1ImageVisualizer.html#a45fa1b4d4939fdc0916883a6d2fd0e31":[4,0,1,462,6],
 "classinviwo_1_1ImageVisualizer.html#a46866aab8873e56e4ea978b7e1a3136d":[2,0,0,453,7],
-"classinviwo_1_1ImageVisualizer.html#a46866aab8873e56e4ea978b7e1a3136d":[4,0,1,462,7],
-"classinviwo_1_1ImageVisualizer.html#a6135f3dba053dbb1f080a6431ba4a3c1":[2,0,0,453,5],
-"classinviwo_1_1ImageVisualizer.html#a6135f3dba053dbb1f080a6431ba4a3c1":[4,0,1,462,5],
-"classinviwo_1_1ImageVisualizer.html#a6c034e7c0f35160b2ba3369955d9ca34":[2,0,0,453,3],
-"classinviwo_1_1ImageVisualizer.html#a6c034e7c0f35160b2ba3369955d9ca34":[4,0,1,462,3],
-"classinviwo_1_1ImageVisualizer.html#a99a2c8161ddca9022d5e94b550ffb5db":[2,0,0,453,2],
-"classinviwo_1_1ImageVisualizer.html#a99a2c8161ddca9022d5e94b550ffb5db":[4,0,1,462,2],
-"classinviwo_1_1ImageVisualizer.html#acb7aceaabe07d8021b918eb5b4cdc115":[2,0,0,453,8],
-"classinviwo_1_1ImageVisualizer.html#acb7aceaabe07d8021b918eb5b4cdc115":[4,0,1,462,8]
+"classinviwo_1_1ImageVisualizer.html#a46866aab8873e56e4ea978b7e1a3136d":[4,0,1,462,7]
 };

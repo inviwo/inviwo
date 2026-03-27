@@ -1,5 +1,13 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1InviwoDefaults_3_01short_01_4.html":[4,0,1,498],
+"structinviwo_1_1InviwoDefaults_3_01size__t_01_4.html":[2,0,0,490],
+"structinviwo_1_1InviwoDefaults_3_01size__t_01_4.html":[4,0,1,499],
+"structinviwo_1_1InviwoDefaults_3_01std_1_1string_01_4.html":[2,0,0,491],
+"structinviwo_1_1InviwoDefaults_3_01std_1_1string_01_4.html":[4,0,1,500],
+"structinviwo_1_1InviwoDefaults_3_01unsigned_01char_01_4.html":[2,0,0,492],
+"structinviwo_1_1InviwoDefaults_3_01unsigned_01char_01_4.html":[4,0,1,501],
+"structinviwo_1_1InviwoDefaults_3_01unsigned_01int_01_4.html":[2,0,0,493],
 "structinviwo_1_1InviwoDefaults_3_01unsigned_01int_01_4.html":[4,0,1,502],
 "structinviwo_1_1InviwoDefaults_3_01unsigned_01short_01_4.html":[2,0,0,494],
 "structinviwo_1_1InviwoDefaults_3_01unsigned_01short_01_4.html":[4,0,1,503],
@@ -241,13 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1PythonProcessorFactoryObjectData.html":[2,0,0,958],
 "structinviwo_1_1PythonProcessorFactoryObjectData.html":[4,0,1,967],
 "structinviwo_1_1RAMCache.html":[2,0,0,971],
-"structinviwo_1_1RAMCache.html":[4,0,1,980],
-"structinviwo_1_1RAMCache_1_1Item.html":[2,0,0,971,0],
-"structinviwo_1_1RAMCache_1_1Item.html":[4,0,1,980,0],
-"structinviwo_1_1RasterizationRenderer_1_1IllustrationSettings.html":[2,0,0,979,0],
-"structinviwo_1_1RasterizationRenderer_1_1IllustrationSettings.html":[4,0,1,988,0],
-"structinviwo_1_1RaycastingState.html":[2,0,0,990],
-"structinviwo_1_1RaycastingState.html":[4,0,1,999],
-"structinviwo_1_1ReaderWriter.html":[2,0,0,993],
-"structinviwo_1_1ReaderWriter.html":[4,0,1,1002]
+"structinviwo_1_1RAMCache.html":[4,0,1,980]
 };

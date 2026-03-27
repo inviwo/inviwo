@@ -1,5 +1,13 @@
 var NAVTREEINDEX27 =
 {
+"classinviwo_1_1plot_1_1ImagePlotProcessor.html":[2,0,0,15,16],
+"classinviwo_1_1plot_1_1ImagePlotProcessor.html":[4,0,1,22,17],
+"classinviwo_1_1plot_1_1ImagePlotProcessor.html#a7f24d080515f260200ada98cb345a310":[2,0,0,15,16,0],
+"classinviwo_1_1plot_1_1ImagePlotProcessor.html#a7f24d080515f260200ada98cb345a310":[4,0,1,22,17,0],
+"classinviwo_1_1plot_1_1LayerAxis.html":[2,0,0,15,17],
+"classinviwo_1_1plot_1_1LayerAxis.html":[4,0,1,22,18],
+"classinviwo_1_1plot_1_1LayerAxis.html#af9e7f57ddc24584db3f9fb60f32a57f1":[2,0,0,15,17,0],
+"classinviwo_1_1plot_1_1LayerAxis.html#af9e7f57ddc24584db3f9fb60f32a57f1":[4,0,1,22,18,0],
 "classinviwo_1_1plot_1_1MajorTickProperty.html":[2,0,0,15,19],
 "classinviwo_1_1plot_1_1MajorTickProperty.html":[4,0,1,22,20],
 "classinviwo_1_1plot_1_1MajorTickProperty.html#a6584f5d17cd22a3c0439ee5886659449":[2,0,0,15,19,0],
@@ -241,13 +249,5 @@ var NAVTREEINDEX27 =
 "group__typedmesh.html#ga2d8fc4330041da81252febcd0a8c0dac":[1,1,0,15],
 "group__typedmesh.html#ga49f50f4760a5c42168792e6fb1232ea7":[1,1,0,13],
 "group__typedmesh.html#ga99f563e4719dff2809e3baae6fa5c3ec":[1,1,0,12],
-"hierarchy.html":[4,2],
-"index.html":[],
-"index.html":[0],
-"namespaceinviwo.html":[2,0,0],
-"namespaceinviwo.html#a050ff08ae067077e1d015a9d24de27fc":[2,0,0,1428],
-"namespaceinviwo.html#a05e30f6e6e7c1ff3d8fb9dcab599ff87":[2,0,0,1440],
-"namespaceinviwo.html#a0780518930e4f82763044068321c57f4":[2,0,0,1401],
-"namespaceinviwo.html#a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1":[2,0,0,1401,2],
-"namespaceinviwo.html#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a":[2,0,0,1401,0]
+"hierarchy.html":[4,2]
 };
