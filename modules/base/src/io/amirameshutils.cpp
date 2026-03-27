@@ -231,14 +231,14 @@ ParseLevel parseLine(ParseLevel level, AmiraMeshHeader& header, std::string_view
 
 }  // namespace
 
-std::pair<vec3, vec3> getBoundingBox(const AmiraDict& params) {
+std::pair<dvec3, dvec3> getBoundingBox(const AmiraDict& params) {
     auto it = params.find("BoundingBox");
     if (it == params.end()) {
         throw DataReaderException(SourceContext{}, "Missing BoundingBox in Parameters");
     }
 
-    vec3 bboxMin{-1.0f};
-    vec3 bboxMax{1.0f};
+    dvec3 bboxMin{-1.0};
+    dvec3 bboxMax{1.0};
     auto tokens = util::splitIntoArray<6>(it->second, ' ');
     // NOLINTBEGIN(readability-math-missing-parentheses)
     for (int i = 0; i < 3; ++i) {

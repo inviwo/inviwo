@@ -52,11 +52,11 @@ class Mesh;
 namespace meshutil {
 
 void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
-                        CameraProperty& camera, float minMaxRatio) {
-    auto minmax = meshutil::axisAlignedBoundingBox(meshes);
-    auto newLookTo = 0.5f * (minmax.first + minmax.second);
+                        CameraProperty& camera, double minMaxRatio) {
+    const auto minmax = meshutil::axisAlignedBoundingBox(meshes);
+    const auto newLookTo = 0.5 * (minmax.first + minmax.second);
     // Locking to avoid multiple evaluations when changing properties
-    NetworkLock lock(&camera);
+    const NetworkLock lock(&camera);
     // Make sure the new value is not clamped
     auto& lookTo = camera.lookTo_;
     lookTo.set(newLookTo,
@@ -68,10 +68,10 @@ void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
     camera.setNearFarPlaneDist(nearFar.first, nearFar.second, minMaxRatio);
 }
 
-std::pair<float, float> computeNearFarPlanes(std::pair<vec3, vec3> worldSpaceBoundingBox,
-                                             const CameraProperty& camera, float nearFarRatio) {
-    auto m = glm::scale(dvec3(worldSpaceBoundingBox.second - worldSpaceBoundingBox.first));
-    m[3] = dvec4(dvec3(worldSpaceBoundingBox.first), 1.0);
+std::pair<double, double> computeNearFarPlanes(std::pair<dvec3, dvec3> worldSpaceBoundingBox,
+                                               const CameraProperty& camera, double nearFarRatio) {
+    auto m = glm::scale(worldSpaceBoundingBox.second - worldSpaceBoundingBox.first);
+    m[3] = dvec4(worldSpaceBoundingBox.first, 1.0);
 
     auto maxViewLength =
         std::max(glm::distance(camera.lookFrom_.getMaxValue(), camera.lookTo_.get()),

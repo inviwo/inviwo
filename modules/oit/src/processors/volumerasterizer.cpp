@@ -104,7 +104,7 @@ void VolumeRasterizer::initializeResources() {
     shader_.build();
 }
 
-void VolumeRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
+void VolumeRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
     if (tf_.tf_.isModified()) {
         tfLookup_->calculate(tf_.tf_.get());
     }

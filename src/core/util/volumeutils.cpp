@@ -92,9 +92,9 @@ size3_t getVolumeDimensions(const std::shared_ptr<const Volume>& volume) {
 double voxelVolume(const Volume& volume) {
     auto basis = volume.getBasis();
     auto dims = volume.getDimensions();
-    auto a = basis[0] / static_cast<float>(dims.x);
-    auto b = basis[1] / static_cast<float>(dims.y);
-    auto c = basis[2] / static_cast<float>(dims.z);
+    auto a = basis[0] / static_cast<double>(dims.x);
+    auto b = basis[1] / static_cast<double>(dims.y);
+    auto c = basis[2] / static_cast<double>(dims.z);
     return glm::dot(glm::cross(a, b), c);
 }
 

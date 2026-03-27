@@ -44,11 +44,14 @@ namespace inviwo {
  */
 class IVW_CORE_API SkewedPerspectiveCamera final : public Camera {
 public:
-    SkewedPerspectiveCamera(
-        dvec3 lookFrom = cameradefaults::lookFrom, dvec3 lookTo = cameradefaults::lookTo,
-        dvec3 lookUp = cameradefaults::lookUp, double nearPlane = cameradefaults::nearPlane,
-        double farPlane = cameradefaults::farPlane, double aspectRatio = cameradefaults::aspectRatio,
-        float fieldOfView = cameradefaults::fieldOfView, vec2 frustumOffset = vec2(0.0f, 0.0f));
+    SkewedPerspectiveCamera(dvec3 lookFrom = cameradefaults::lookFrom,
+                            dvec3 lookTo = cameradefaults::lookTo,
+                            dvec3 lookUp = cameradefaults::lookUp,
+                            double nearPlane = cameradefaults::nearPlane,
+                            double farPlane = cameradefaults::farPlane,
+                            double aspectRatio = cameradefaults::aspectRatio,
+                            double fieldOfView = cameradefaults::fieldOfView,
+                            dvec2 frustumOffset = dvec2(0.0, 0.0));
     virtual ~SkewedPerspectiveCamera() = default;
     SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other);
     SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other);
@@ -59,11 +62,11 @@ public:
     virtual void updateFrom(const Camera& source) override;
     virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
 
-    float getFovy() const;
-    void setFovy(float val);
+    double getFovy() const;
+    void setFovy(double val);
 
-    const vec2& getOffset() const;
-    void setOffset(vec2 val);
+    const dvec2& getOffset() const;
+    void setOffset(dvec2 val);
     virtual void zoom(const ZoomOptions& opts) override;
 
     virtual void setLookFrom(dvec3 val) override;
@@ -78,11 +81,11 @@ protected:
     virtual dmat4 calculateProjectionMatrix() const override;
 
     // Left, right, bottom, top view volume
-    float fovy_;
-    vec2 offset_;
+    double fovy_;
+    dvec2 offset_;
 };
 
-inline float SkewedPerspectiveCamera::getFovy() const { return fovy_; }
-inline const vec2& SkewedPerspectiveCamera::getOffset() const { return offset_; }
+inline double SkewedPerspectiveCamera::getFovy() const { return fovy_; }
+inline const dvec2& SkewedPerspectiveCamera::getOffset() const { return offset_; }
 
 }  // namespace inviwo

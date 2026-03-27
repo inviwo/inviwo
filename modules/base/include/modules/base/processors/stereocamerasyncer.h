@@ -53,7 +53,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    FloatProperty separation_;
+    DoubleProperty separation_;
     CameraProperty master_;
     CameraProperty left_;
     CameraProperty right_;

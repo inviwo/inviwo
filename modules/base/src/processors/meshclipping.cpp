@@ -164,16 +164,16 @@ void MeshClipping::process() {
 
         if (movePointAlongNormal_) {
             // Set new plane position based on offset
-            vec3 offsetPlaneDiff = plane->getNormal() * pointPlaneMove_.get();
+            const vec3 offsetPlaneDiff = plane->getNormal() * pointPlaneMove_.get();
             plane->setPoint(plane->getPoint() + offsetPlaneDiff);
             // Move camera along the offset as well
             if (moveCameraAlongNormal_) {
 
-                float planeMoveDiff = pointPlaneMove_.get() - previousPointPlaneMove_;
+                const double planeMoveDiff = pointPlaneMove_.get() - previousPointPlaneMove_;
                 // Move camera half of the plane movement distance.
                 // Ensures that lookAt position is centered in the mesh,
                 // assuming that initial lookAt position is in the center of the mesh.
-                vec3 lookOffset = plane->getNormal() * planeMoveDiff * 0.5f;
+                const dvec3 lookOffset = dvec3{plane->getNormal()} * planeMoveDiff * 0.5;
                 camera_.setLook(camera_.getLookFrom() + lookOffset,
                                 camera_.getLookTo() + lookOffset, camera_.getLookUp());
             }

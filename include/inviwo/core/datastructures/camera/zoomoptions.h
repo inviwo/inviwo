@@ -42,8 +42,8 @@ namespace inviwo {
 struct IVW_CORE_API ZoomOptions {
     enum class Bounded : std::uint8_t { Yes, No };
 
-    glm::vec2 factor = glm::vec2{1.0f, 1.0f};
-    std::optional<glm::vec2> origin = std::nullopt;
+    glm::dvec2 factor = glm::dvec2{1.0f, 1.0f};
+    std::optional<glm::dvec2> origin = std::nullopt;
     Bounded bounded = Bounded::No;
     std::function<std::optional<glm::dmat4>()> boundingBox = nullptr;
 };

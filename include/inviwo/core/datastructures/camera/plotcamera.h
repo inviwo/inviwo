@@ -49,7 +49,7 @@ public:
                         double nearPlane = cameradefaults::nearPlane,
                         double farPlane = cameradefaults::farPlane,
                         double aspectRatio = cameradefaults::aspectRatio,
-                        vec2 size = vec2{300, 300});
+                        dvec2 size = dvec2{300, 300});
     virtual ~PlotCamera() = default;
     PlotCamera(const PlotCamera& other);
     PlotCamera& operator=(const PlotCamera& other);
@@ -62,8 +62,8 @@ public:
     virtual void updateFrom(const Camera& source) override;
     virtual void configureProperties(CameraProperty& cp, bool attach) override;
 
-    vec2 getSize() const { return size_; }
-    void setSize(vec2 size);
+    dvec2 getSize() const { return size_; }
+    void setSize(dvec2 size);
     virtual void zoom(const ZoomOptions& opts) override;
 
     virtual dvec4 getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const override;
@@ -75,7 +75,7 @@ protected:
     virtual bool equal(const Camera& other) const override;
     virtual dmat4 calculateProjectionMatrix() const override;
 
-    vec2 size_;
+    dvec2 size_;
 };
 
 }  // namespace inviwo

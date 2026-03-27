@@ -234,7 +234,9 @@ TrackballObject& PointLightInteractionHandler::setLook(dvec3 lookFrom, dvec3 loo
     return *this;
 }
 
-double PointLightInteractionHandler::getNearPlaneDist() const { return camera_->getNearPlaneDist(); }
+double PointLightInteractionHandler::getNearPlaneDist() const {
+    return camera_->getNearPlaneDist();
+}
 
 double PointLightInteractionHandler::getFarPlaneDist() const { return camera_->getFarPlaneDist(); }
 
@@ -283,25 +285,25 @@ void PointLightInteractionHandler::setHandleEventsOptions(int option) {
 }
 
 void PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& normalizedScreenCoord) {
-    vec2 deviceCoord(2.f * (normalizedScreenCoord - 0.5f));
+    dvec2 deviceCoord(2. * (dvec2{normalizedScreenCoord} - 0.5));
     // Flip vertical axis since mouse event y position starts at top of screen
     deviceCoord.y *= -1.f;
     // Use half distance between look from and look to positions as scene radius.
-    float sceneRadius = 0.5f * glm::length(camera_->getLookTo() - camera_->getLookFrom());
-    vec3 rayOrigin = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 0.f));
-    vec3 rayDir = glm::normalize(
-        camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 1.f)) - rayOrigin);
+    const auto sceneRadius = 0.5 * glm::length(camera_->getLookTo() - camera_->getLookFrom());
+    const auto rayOrigin = camera_->getWorldPosFromNormalizedDeviceCoords(dvec3(deviceCoord, 0.));
+    const auto rayDir = glm::normalize(
+        camera_->getWorldPosFromNormalizedDeviceCoords(dvec3(deviceCoord, 1.)) - rayOrigin);
 
-    float lightRadius = glm::length(lightPosition_->get());
-    auto res = raySphereIntersection(vec3(0.f), sceneRadius, rayOrigin, rayDir, 0.0f,
-                                     std::numeric_limits<float>::max());
+    const double lightRadius = glm::length(lightPosition_->get());
+    const auto res = raySphereIntersection(dvec3(0.), sceneRadius, rayOrigin, rayDir, 0.0,
+                                           std::numeric_limits<double>::max());
     if (res.first) {
         lightPosition_->updatePosition(
             glm::normalize(rayOrigin + res.second * rayDir) * lightRadius, CoordinateSpace::World);
     } else {
         auto res2 = rayPlaneIntersection(
             camera_->getLookTo(), glm::normalize(camera_->getLookTo() - camera_->getLookFrom()),
-            rayOrigin, rayDir, 0.0f, std::numeric_limits<float>::max());
+            rayOrigin, rayDir, 0.0, std::numeric_limits<double>::max());
         if (res2.first) {
             // Project it to the edge of the sphere
             lightPosition_->updatePosition(

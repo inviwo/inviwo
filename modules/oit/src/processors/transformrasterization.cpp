@@ -65,7 +65,7 @@ TransformRasterization::TransformRasterization()
     transformSetting_.setCollapsed(false);
 }
 
-void TransformRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
+void TransformRasterization::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
 
     if (auto p = inport_.getData()) {
         p->rasterize(imageSize, transformSetting_.getMatrix() * worldMatrixTransform);

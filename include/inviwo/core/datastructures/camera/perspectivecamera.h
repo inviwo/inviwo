@@ -44,7 +44,7 @@ public:
                       double nearPlane = cameradefaults::nearPlane,
                       double farPlane = cameradefaults::farPlane,
                       double aspectRatio = cameradefaults::aspectRatio,
-                      float fieldOfView = cameradefaults::fieldOfView);
+                      double fieldOfView = cameradefaults::fieldOfView);
     virtual ~PerspectiveCamera() = default;
     PerspectiveCamera(const PerspectiveCamera& other);
     PerspectiveCamera& operator=(const PerspectiveCamera& other);
@@ -55,8 +55,8 @@ public:
     virtual void updateFrom(const Camera& source) override;
     virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
 
-    float getFovy() const;
-    void setFovy(float val);
+    double getFovy() const;
+    void setFovy(double val);
 
     virtual void zoom(const ZoomOptions& opts) override;
 
@@ -67,16 +67,13 @@ protected:
     virtual bool equal(const Camera& other) const override;
     virtual dmat4 calculateProjectionMatrix() const override;
 
-    float fovy_;
+    double fovy_;
 };
 
-inline float PerspectiveCamera::getFovy() const { return fovy_; }
+inline double PerspectiveCamera::getFovy() const { return fovy_; }
 
 inline dmat4 PerspectiveCamera::calculateProjectionMatrix() const {
-    return glm::perspective(static_cast<double>(glm::radians(fovy_)),
-                            aspectRatio_,
-                            nearPlaneDist_,
-                            farPlaneDist_);
+    return glm::perspective(glm::radians(fovy_), aspectRatio_, nearPlaneDist_, farPlaneDist_);
 }
 
 }  // namespace inviwo

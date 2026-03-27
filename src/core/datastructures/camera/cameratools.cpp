@@ -33,19 +33,20 @@
 #include <inviwo/core/util/glm.h>
 
 namespace inviwo::util {
-FloatRefProperty* getCameraFovProperty(CameraProperty& comp) {
-    return dynamic_cast<FloatRefProperty*>(comp.getCameraProperty("fov"));
+DoubleRefProperty* getCameraFovProperty(CameraProperty& comp) {
+    return dynamic_cast<DoubleRefProperty*>(comp.getCameraProperty("fov"));
 }
-std::unique_ptr<FloatRefProperty> createCameraFovProperty(std::function<float()> get,
-                                                          std::function<void(const float&)> set) {
-    return std::make_unique<FloatRefProperty>(
+std::unique_ptr<DoubleRefProperty> createCameraFovProperty(std::function<double()> get,
+                                                           std::function<void(const double&)> set) {
+    return std::make_unique<DoubleRefProperty>(
         "fov", "FOV", "The perspective field of view in the vertical direction"_help, get, set,
-        std::pair<float, ConstraintBehavior>{0.0f, ConstraintBehavior::Immutable},
-        std::pair<float, ConstraintBehavior>{180.0f, ConstraintBehavior::Immutable}, 0.1f);
+        std::pair<double, ConstraintBehavior>{0.0, ConstraintBehavior::Immutable},
+        std::pair<double, ConstraintBehavior>{180.0, ConstraintBehavior::Immutable}, 0.1);
 }
 
-FloatRefProperty* updateOrCreateCameraFovProperty(CameraProperty& comp, std::function<float()> get,
-                                                  std::function<void(const float&)> set) {
+DoubleRefProperty* updateOrCreateCameraFovProperty(CameraProperty& comp,
+                                                   std::function<double()> get,
+                                                   std::function<void(const double&)> set) {
     auto fov = getCameraFovProperty(comp);
     if (fov) {
         fov->setGetAndSet(get, set);
@@ -58,21 +59,21 @@ FloatRefProperty* updateOrCreateCameraFovProperty(CameraProperty& comp, std::fun
     return fov;
 }
 
-FloatRefProperty* getCameraWidthProperty(CameraProperty& comp) {
-    return dynamic_cast<FloatRefProperty*>(comp.getCameraProperty("width"));
+DoubleRefProperty* getCameraWidthProperty(CameraProperty& comp) {
+    return dynamic_cast<DoubleRefProperty*>(comp.getCameraProperty("width"));
 }
 
-std::unique_ptr<FloatRefProperty> createCameraWidthProperty(std::function<float()> get,
-                                                            std::function<void(const float&)> set) {
-    return std::make_unique<FloatRefProperty>(
+std::unique_ptr<DoubleRefProperty> createCameraWidthProperty(
+    std::function<double()> get, std::function<void(const double&)> set) {
+    return std::make_unique<DoubleRefProperty>(
         "width", "Width", "The viewport width in world space"_help, get, set,
-        std::pair<float, ConstraintBehavior>{0.0f, ConstraintBehavior::Immutable},
-        std::pair<float, ConstraintBehavior>{1000.0f, ConstraintBehavior::Ignore}, 0.1f);
+        std::pair<double, ConstraintBehavior>{0.0, ConstraintBehavior::Immutable},
+        std::pair<double, ConstraintBehavior>{1000.0, ConstraintBehavior::Ignore}, 0.1);
 }
 
-FloatRefProperty* updateOrCreateCameraWidthProperty(CameraProperty& comp,
-                                                    std::function<float()> get,
-                                                    std::function<void(const float&)> set) {
+DoubleRefProperty* updateOrCreateCameraWidthProperty(CameraProperty& comp,
+                                                     std::function<double()> get,
+                                                     std::function<void(const double&)> set) {
     auto width = getCameraWidthProperty(comp);
     if (width) {
         width->setGetAndSet(get, set);
@@ -85,21 +86,20 @@ FloatRefProperty* updateOrCreateCameraWidthProperty(CameraProperty& comp,
     return width;
 }
 
-FloatVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty& comp) {
-    return dynamic_cast<FloatVec2RefProperty*>(comp.getCameraProperty("offset"));
+DoubleVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty& comp) {
+    return dynamic_cast<DoubleVec2RefProperty*>(comp.getCameraProperty("offset"));
 }
 
-std::unique_ptr<FloatVec2RefProperty> createCameraEyeOffsetProperty(
-    std::function<vec2()> get, std::function<void(const vec2&)> set) {
-    return std::make_unique<FloatVec2RefProperty>(
+std::unique_ptr<DoubleVec2RefProperty> createCameraEyeOffsetProperty(
+    std::function<dvec2()> get, std::function<void(const dvec2&)> set) {
+    return std::make_unique<DoubleVec2RefProperty>(
         "offset", "Eye Offset", "Offset from the view direction to the eye in world space"_help,
-        get, set, std::pair<vec2, ConstraintBehavior>{vec2(-10.0f), ConstraintBehavior::Ignore},
-        std::pair<vec2, ConstraintBehavior>{vec2(10.0f), ConstraintBehavior::Ignore}, vec2(0.01f));
+        get, set, std::pair<dvec2, ConstraintBehavior>{dvec2(-10.0), ConstraintBehavior::Ignore},
+        std::pair<dvec2, ConstraintBehavior>{dvec2(10.0), ConstraintBehavior::Ignore}, dvec2(0.01));
 }
 
-FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(CameraProperty& comp,
-                                                            std::function<vec2()> get,
-                                                            std::function<void(const vec2&)> set) {
+DoubleVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
+    CameraProperty& comp, std::function<dvec2()> get, std::function<void(const dvec2&)> set) {
 
     auto offset = getCameraEyeOffsetProperty(comp);
     if (offset) {
@@ -113,28 +113,28 @@ FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(CameraProperty& comp
     return offset;
 }
 
-float fovyToWidth(float fovy, float distance, float aspect) {
-    return 2.0f * distance * std::tan(0.5f * glm::radians(fovy)) * aspect;
+double fovyToWidth(double fovy, double distance, double aspect) {
+    return 2.0 * distance * std::tan(0.5 * glm::radians(fovy)) * aspect;
 }
 
-vec2 fovyToSize(float fovy, float distance, float aspect) {
-    const auto height = 2.0f * distance * std::tan(0.5f * glm::radians(fovy));
+dvec2 fovyToSize(double fovy, double distance, double aspect) {
+    const auto height = 2.0 * distance * std::tan(0.5 * glm::radians(fovy));
     return {height * aspect, height};
 }
 
-float widthToFovy(float width, float distance, float aspect) {
-    return glm::degrees(2.0f * std::atan(width / aspect / 2.0f / distance));
+double widthToFovy(double width, double distance, double aspect) {
+    return glm::degrees(2.0 * std::atan(width / aspect / 2.0 / distance));
 }
 
-float widthToViewDist(float width, float fov, float aspect) {
-    return width / (2.0f * aspect * std::tan(0.5f * glm::radians(fov)));
+double widthToViewDist(double width, double fov, double aspect) {
+    return width / (2.0 * aspect * std::tan(0.5 * glm::radians(fov)));
 }
 
 namespace {
 
-constexpr bool overlap(vec2 r1, vec2 r2) { return r1.y >= r2.x && r2.y >= r1.x; };
+constexpr bool overlap(dvec2 r1, dvec2 r2) { return r1.y >= r2.x && r2.y >= r1.x; };
 
-constexpr std::array<vec3, 8> corners{
+constexpr std::array<dvec3, 8> corners{
     {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};
 
 constexpr std::array<std::pair<int, int>, 12> edges{{{0, 1},
@@ -224,7 +224,7 @@ FovBounds calculateFovBounds(const dmat4& boundingBox, const dvec3& lookFrom, co
             .farPlaneClipped = farPlaneClipped};
 }
 
-bool canZoomBounded(const FovBounds& fovBounds, vec2 fov, float zoomFactor) {
+bool canZoomBounded(const FovBounds& fovBounds, dvec2 fov, double zoomFactor) {
 
     if (!fovBounds.bounds) {  // we have zoomed in to far
         if (fovBounds.nearPlaneClipped) {

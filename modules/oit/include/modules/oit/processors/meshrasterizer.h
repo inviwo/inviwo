@@ -81,7 +81,7 @@ public:
 
     virtual void initializeResources() override;
 
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
+    virtual void rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) override;
 
     virtual UseFragmentList usesFragmentLists() const override {
         return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists() ? UseFragmentList::Yes

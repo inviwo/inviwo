@@ -40,7 +40,7 @@
 namespace inviwo {
 
 OrthographicCamera::OrthographicCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane,
-                                       double farPlane, double aspectRatio, float width)
+                                       double farPlane, double aspectRatio, double width)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), width_{width} {}
 
 OrthographicCamera::OrthographicCamera(const OrthographicCamera&) = default;
@@ -51,7 +51,7 @@ OrthographicCamera* OrthographicCamera::clone() const { return new OrthographicC
 
 std::string_view OrthographicCamera::getClassIdentifier() const { return classIdentifier; }
 
-void OrthographicCamera::setWidth(float width) {
+void OrthographicCamera::setWidth(double width) {
     if (width_ != width) {
         width_ = width;
         invalidateProjectionMatrix();
@@ -64,7 +64,7 @@ void OrthographicCamera::setWidth(float width) {
 }
 
 void OrthographicCamera::zoom(const ZoomOptions& opts) {
-    setWidth(width_ * (1.0f - opts.factor.y));
+    setWidth(width_ * (1.0 - opts.factor.y));
 }
 
 void OrthographicCamera::updateFrom(const Camera& source) {
@@ -74,12 +74,10 @@ void OrthographicCamera::updateFrom(const Camera& source) {
     } else if (const auto* plc = dynamic_cast<const PlotCamera*>(&source)) {
         setWidth(plc->getSize().x);
     } else if (const auto* pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
-        setWidth(util::fovyToWidth(pc->getFovy(),
-                                   static_cast<float>(glm::distance(getLookTo(), getLookFrom())),
+        setWidth(util::fovyToWidth(pc->getFovy(), glm::distance(getLookTo(), getLookFrom()),
                                    getAspectRatio()));
     } else if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
-        setWidth(util::fovyToWidth(sc->getFovy(),
-                                   static_cast<float>(glm::distance(getLookTo(), getLookFrom())),
+        setWidth(util::fovyToWidth(sc->getFovy(), glm::distance(getLookTo(), getLookFrom()),
                                    getAspectRatio()));
     }
 }
@@ -89,7 +87,7 @@ void OrthographicCamera::configureProperties(CameraProperty& cp, bool attach) {
     if (attach) {
         util::updateOrCreateCameraWidthProperty(
             cp, [this]() { return getWidth(); },
-            [this](const float& val) {
+            [this](const double& val) {
                 if (width_ != val) {
                     width_ = val;
                     invalidateProjectionMatrix();
@@ -111,8 +109,8 @@ bool OrthographicCamera::equal(const Camera& other) const {
 dmat4 OrthographicCamera::calculateProjectionMatrix() const {
     const double halfWidth = 0.5 * width_;
     const double halfHeight = halfWidth / aspectRatio_;
-    return glm::ortho(-halfWidth, +halfWidth, -halfHeight, +halfHeight,
-                      nearPlaneDist_, farPlaneDist_);
+    return glm::ortho(-halfWidth, +halfWidth, -halfHeight, +halfHeight, nearPlaneDist_,
+                      farPlaneDist_);
 }
 
 dvec4 OrthographicCamera::getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {
