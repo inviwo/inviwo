@@ -48,6 +48,4 @@ std::string_view enumToStr(CodeState cs) {
                     static_cast<int>(cs));
 }
 
-std::ostream& operator<<(std::ostream& ss, CodeState cs) { return ss << enumToStr(cs); }
-
 }  // namespace inviwo
