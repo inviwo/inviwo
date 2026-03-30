@@ -198,6 +198,7 @@ public:
     BoolProperty allowWheelZooming_;  ///< Enable/disable zooming using the mouse wheel
     BoolProperty boundedZooming_;
     BoolProperty mouseCenteredZoom_;
+    BoolProperty mouseUniformZoom_;
 
     // Options to restrict rotation around view-space axes.
     BoolProperty allowHorizontalRotation_;  ///< Enable/disable rotation around horizontal axis
@@ -247,7 +248,7 @@ private:
                         customWorldUp_, verticalAngleLimit_, handleInteractionEvents_,
                         allowHorizontalPanning_, allowVerticalPanning_, boundedPanning_,
                         allowZooming_, allowWheelZooming_, boundedZooming_, mouseCenteredZoom_,
-                        allowHorizontalRotation_, allowVerticalRotation_,
+                        mouseUniformZoom_, allowHorizontalRotation_, allowVerticalRotation_,
                         allowViewDirectionRotation_, allowRecenterView_, animate_);
     }
     auto props() const {
@@ -255,7 +256,7 @@ private:
                         customWorldUp_, verticalAngleLimit_, handleInteractionEvents_,
                         allowHorizontalPanning_, allowVerticalPanning_, boundedPanning_,
                         allowZooming_, allowWheelZooming_, boundedZooming_, mouseCenteredZoom_,
-                        allowHorizontalRotation_, allowVerticalRotation_,
+                        mouseUniformZoom_, allowHorizontalRotation_, allowVerticalRotation_,
                         allowViewDirectionRotation_, allowRecenterView_, animate_);
     }
 

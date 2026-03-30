@@ -86,6 +86,7 @@ Trackball::Trackball(std::string_view identifier, std::string_view displayName,
     , allowWheelZooming_("allowWheelZoom", "Mouse Wheel Zoom enabled", true)
     , boundedZooming_("boundedZooming", "Limit Zoom Range", false)
     , mouseCenteredZoom_("mouseCenteredZoom", "Mouse Centered Zoom", false)
+    , mouseUniformZoom_("mouseUniformZoom", "Mouse Uniform Zoom", false)
     , allowHorizontalRotation_("allowHorziontalRotation", "Rotation around horizontal axis", true)
     , allowVerticalRotation_("allowVerticalRotation", "Rotation around vertical axis", true)
     , allowViewDirectionRotation_("allowViewAxisRotation", "Rotation around view axis", true)
@@ -191,6 +192,7 @@ Trackball::Trackball(const Trackball& rhs)
     , allowWheelZooming_(rhs.allowWheelZooming_)
     , boundedZooming_(rhs.boundedZooming_)
     , mouseCenteredZoom_(rhs.mouseCenteredZoom_)
+    , mouseUniformZoom_(rhs.mouseUniformZoom_)
     , allowHorizontalRotation_(rhs.allowHorizontalRotation_)
     , allowVerticalRotation_(rhs.allowVerticalRotation_)
     , allowViewDirectionRotation_(rhs.allowViewDirectionRotation_)
@@ -543,7 +545,11 @@ void Trackball::zoom(MouseEvent* event) {
         pressNDC_ = curNDC;
     } else if (curNDC != lastNDC_) {
         // use the difference in mouse y-position to determine amount of zoom
-        const auto zoomFactor = curNDC - lastNDC_;
+        auto zoomFactor = vec2{curNDC - lastNDC_};
+        if (mouseUniformZoom_) {
+            zoomFactor = vec2{zoomFactor.y};
+        }
+
         object_->zoom(
             {.factor = zoomFactor,
              .origin = mouseCenteredZoom_.get() ? std::optional<glm::vec2>{pressNDC_}
@@ -986,8 +992,13 @@ void Trackball::panDown(Event* event) {
 void Trackball::zoomWheel(WheelEvent* event) {
     if (!allowWheelZooming_) return;
 
+    auto zoomFactor = static_cast<vec2>(event->delta()) * stepSize;
+    if (mouseUniformZoom_) {
+        zoomFactor = vec2{zoomFactor.y};
+    }
+
     object_->zoom(
-        {.factor = static_cast<vec2>(event->delta()) * stepSize,
+        {.factor = zoomFactor,
          .origin = mouseCenteredZoom_.get()
                        ? std::optional<glm::vec2>{static_cast<vec2>(event->ndc())}
                        : std::optional<glm::vec2>{},
