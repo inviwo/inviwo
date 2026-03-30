@@ -8,7 +8,6 @@ import argparse
 import requests
 from pathlib import Path
 
-
 try:
     import colorama
     colorama.init()
@@ -40,42 +39,41 @@ class ImageTest:
         self.ref_mode = "RGBA"
         self.__dict__.update(entries)
 
-
-def updateImg(src, dst, auth):
-    img = requests.get(src, auth=auth)
-    with open(dst, "wb") as f:
-        f.write(img.content)
-
-
 def main():
     desc = '''Script for updating the regression test images. Example call:\n\n
-     python.exe ./update-regression-images.py --user <github username> --token <github token>\n
-            --save --min 0.00 --max 0.05 -j "http://jenkins.inviwo.org:8080/job/inviwo/job/feature%252Fworkspaces2"\n
-            -r inviwo=<path to repo> modules=<path to repo>\n
-    Tokens can be created at https://github.com/settings/tokens and needs user access to authenticate with jenkins
+     python.exe ./update-regression-images.py --save --min_percent 0.00 --max_percent 0.05 
+            -j "https://inviwo.org/regression/macos/refs/pull/1928/merge"\n
+            -m "<module dir> [<module dir>...]
     '''
 
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('-u', '--user', help='Github user name', required=True)
-    parser.add_argument(
-        '-t', '--token', help='Github password token (see https://github.com/settings/tokens)', required=True)
     parser.add_argument('-j', '--job', help='Jenkins url to job', required=True)
-    parser.add_argument('-r', '--repos', required=True, nargs='+',
-                        help='List of name=repo "inviwo=C:/.../inviwo"')
+    parser.add_argument('-m', '--modules', nargs='*', type=Path, default=[],
+                        help='List of module directories"')
     parser.add_argument('-s', '--save', action="store_true", help="Save local reference images")
-    parser.add_argument('--min', type=float, default=0.0,
-                        help='Only images with errors larger then min')
-    parser.add_argument('--max', type=float, default=0.1,
-                        help='Only images with errors smaller then max')
+    parser.add_argument('-v', '--verbose', action="store_true", help="Print verbose output")
+    parser.add_argument('--min_percent', type=float, default=0.0,
+                        help='Only images with errors larger then min_percent')
+    parser.add_argument('--max_percent', type=float, default=1.0,
+                        help='Only images with errors smaller then max_percent')
+
+    parser.add_argument('--min_pixels', type=int, default=0,
+                        help='Only images with errors larger then min_pixels')
+    parser.add_argument('--max_pixels', type=int, default=1024**3,
+                        help='Only images with errors smaller then max_pixels')
 
     args = parser.parse_args()
 
-    auth = (args.user, args.token)
+    if args.job.endswith("/report.html"):
+        baseDir = args.job[:-len("/report.html")]
+    elif args.job.endswith("/report.json"):
+        baseDir = args.job[:-len("/report.json")]
+    elif args.job.endswith("/"):
+        baseDir = args.job[:-len("/")]
+    else:
+        baseDir = args.job
 
-    localRepos = {x.split('=')[0]: Path(x.split('=')[1]) for x in args.repos}
-    jsonReport = Path('Regression', 'report.json')
-
-    request = requests.get(args.job + "/" + jsonReport.as_posix(), auth=auth)
+    request = requests.get(baseDir + "/report.json")
     if not request.ok:
         print_error(f"Request failed: {request.status_code} {request.reason}")
         exit(1)
@@ -83,16 +81,21 @@ def main():
     report = request.json()
     imgcount = 0
 
-    for testName, testResult in report.items():
-        basedir, testdir = [Path(x) for x in testResult['outputdir'].split('/regress/')]
-        srcdir = Path(testResult['path'])
-        repo = srcdir.relative_to(basedir).parts[0]
-        if repo not in localRepos.keys():
-            print_error("Can't find local path for repo: '{}'".format(repo))
-            parser.print_help()
-            exit(1)
+    def findLocalPath(moduleName: str):
+        for modDir in args.modules:
+            for subDir in modDir.iterdir():
+                if subDir.is_dir() and subDir.name == moduleName:
+                    return subDir / "tests" / "regression"
+                    
+        print_error(f"Could nof find local directory for module: {module}")
+        exit(1)   
 
-        localdir = localRepos[repo] / srcdir.relative_to(basedir / repo)
+
+    for testName, testResult in report.items():
+        module = testResult['module']
+        name = testResult['name']
+
+        [_, testDir] = testResult['outputdir'].split(f"/{module}/{name}/")
 
         for imageTest in testResult['images']['tests']:
             test = ImageTest(**imageTest)
@@ -101,22 +104,33 @@ def main():
                 print(testName)
                 print_error(
                     "   {0.image} has wrong size: {0.test_size} != {0.ref_size}".format(test))
-            elif (test.difference_percent < args.max and test.difference_percent > args.min
-                  and test.difference_percent > 0.0):
+            elif (test.difference_percent > args.min_percent and 
+                  test.difference_percent <= args.max_percent and 
+                  test.difference_pixels > args.min_pixels and
+                  test.difference_pixels <= args.max_pixels):
                 imgcount += 1
                 print_error(testName)
                 print_warn(f"   {test.image:30} Diff: {test.difference_percent:<9.4}%,"
                            + f" Max: {test.max_differences}, "
                            + f"#Pixels: {test.difference_pixels}")
-                src = (args.job + "/"
-                       + (Path('Regression') / testdir / 'imgtest' / test.image).as_posix())
-                dst = localdir / test.image
+
+                src = testResult['images']['imgs-map'][test.image]
+                #src = f"{baseDir}/{module}/{name}/{testDir}/imgtest/{test.image}"
+                dst = findLocalPath(module) / name / test.image
+
                 print(f"   src: {src}")
                 print(f"   dst: {dst}")
                 if args.save:
                     print_warn("   reference image saved")
-                    updateImg(src, dst, auth)
-
+                    img = requests.get(src)
+                    with open(dst, "wb") as f:
+                        f.write(img.content)
+            elif args.verbose:
+                print(testName)
+                print(f"   {test.image:30} Diff: {test.difference_percent:<9.4}%,"
+                      + f" Max: {test.max_differences}, "
+                      + f"#Pixels: {test.difference_pixels}")
+                        
     print_warn("\n{} errors found".format(imgcount))
 
 
