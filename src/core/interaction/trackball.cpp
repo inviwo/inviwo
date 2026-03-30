@@ -87,6 +87,7 @@ Trackball::Trackball(std::string_view identifier, std::string_view displayName,
     , allowWheelZooming_("allowWheelZoom", "Mouse Wheel Zoom enabled", true)
     , boundedZooming_("boundedZooming", "Limit Zoom Range", false)
     , mouseCenteredZoom_("mouseCenteredZoom", "Mouse Centered Zoom", false)
+    , mouseUniformZoom_("mouseUniformZoom", "Mouse Uniform Zoom", false)
     , allowHorizontalRotation_("allowHorziontalRotation", "Rotation around horizontal axis", true)
     , allowVerticalRotation_("allowVerticalRotation", "Rotation around vertical axis", true)
     , allowViewDirectionRotation_("allowViewAxisRotation", "Rotation around view axis", true)
@@ -192,6 +193,7 @@ Trackball::Trackball(const Trackball& rhs)
     , allowWheelZooming_(rhs.allowWheelZooming_)
     , boundedZooming_(rhs.boundedZooming_)
     , mouseCenteredZoom_(rhs.mouseCenteredZoom_)
+    , mouseUniformZoom_(rhs.mouseUniformZoom_)
     , allowHorizontalRotation_(rhs.allowHorizontalRotation_)
     , allowVerticalRotation_(rhs.allowVerticalRotation_)
     , allowViewDirectionRotation_(rhs.allowViewDirectionRotation_)
@@ -547,11 +549,15 @@ void Trackball::zoom(MouseEvent* event) {
         pressNDC_ = curNDC;
     } else if (curNDC != lastNDC_) {
         // use the difference in mouse y-position to determine amount of zoom
-        const auto zoomFactor = curNDC - lastNDC_;
+        auto zoomFactor = dvec2{curNDC - lastNDC_};
+        if (mouseUniformZoom_) {
+            zoomFactor = dvec2{zoomFactor.y};
+        }
+
         object_->zoom(
-            {.factor = vec2(zoomFactor),
-             .origin = mouseCenteredZoom_.get() ? std::optional<glm::vec2>{vec2(pressNDC_)}
-                                                : std::optional<glm::vec2>{},
+            {.factor = zoomFactor,
+             .origin = mouseCenteredZoom_.get() ? std::optional<glm::dvec2>{dvec2{pressNDC_}}
+                                                : std::optional<glm::dvec2>{},
              .bounded = boundedZooming_ ? ZoomOptions::Bounded::Yes : ZoomOptions::Bounded::No});
     }
 
@@ -608,7 +614,7 @@ void Trackball::reset(Event* event) {
 }
 
 void Trackball::stepRotate(Direction dir) {
-    const dvec2 origin = dvec2(0.5, 0.5);
+    const dvec2 origin(0.5, 0.5);
     dvec2 direction = origin;
 
     switch (dir) {
@@ -647,7 +653,7 @@ void Trackball::stepZoom(Direction dir, const int numSteps) {
 }
 
 void Trackball::stepPan(Direction dir) {
-    const dvec2 origin = dvec2(0.5, 0.5);
+    const dvec2 origin(0.5, 0.5);
     dvec2 destination = origin;
 
     switch (dir) {
@@ -684,15 +690,15 @@ void Trackball::stepPan(Direction dir) {
  * The Trackball Method Dropdown is NOT influencing touch inputs!
  */
 void Trackball::touchGesture(Event* event) {
-
-    TouchEvent* touchEvent = static_cast<TouchEvent*>(event);
+    auto* touchEvent = static_cast<TouchEvent*>(event);
 
     // Use the two closest points to extract translation, scaling and rotation
     const auto& touchPoints = touchEvent->touchPoints();
     if (touchPoints.empty()) return;
 
-    TouchDevice::DeviceType type = touchEvent->getDevice() ? touchEvent->getDevice()->getType()
-                                                           : TouchDevice::DeviceType::TouchScreen;
+    const TouchDevice::DeviceType type = touchEvent->getDevice()
+                                             ? touchEvent->getDevice()->getType()
+                                             : TouchDevice::DeviceType::TouchScreen;
     bool rotation = false;
     bool panZoom = false;
     // Use different approaches depending on device
@@ -851,7 +857,7 @@ void Trackball::rotateTrackBall(const dvec3& fromTrackBallPos, const dvec3& toTr
     const dvec3 Pc =
         toTrackBallPos.x * right + toTrackBallPos.y * getLookUp() + toTrackBallPos.z * view;
     // Compute the rotation that transforms coordinates
-    const glm::dquat quaternion = glm::dquat(glm::normalize(Pc), glm::normalize(Pa));
+    const glm::dquat quaternion(glm::normalize(Pc), glm::normalize(Pa));
     setLook(getLookTo() + glm::rotate(quaternion, getLookFrom() - getLookTo()), getLookTo(),
             glm::rotate(quaternion, getLookUp()));
 }
@@ -990,11 +996,15 @@ void Trackball::panDown(Event* event) {
 void Trackball::zoomWheel(WheelEvent* event) {
     if (!allowWheelZooming_) return;
 
+    auto zoomFactor = event->delta() * stepSize;
+    if (mouseUniformZoom_) {
+        zoomFactor = dvec2{zoomFactor.y};
+    }
+
     object_->zoom(
-        {.factor = static_cast<vec2>(event->delta()) * stepSize,
-         .origin = mouseCenteredZoom_.get()
-                       ? std::optional<glm::vec2>{static_cast<vec2>(event->ndc())}
-                       : std::optional<glm::vec2>{},
+        {.factor = zoomFactor,
+         .origin = mouseCenteredZoom_.get() ? std::optional<glm::dvec2>{dvec2{event->ndc()}}
+                                            : std::optional<glm::dvec2>{},
          .bounded = boundedZooming_ ? ZoomOptions::Bounded::Yes : ZoomOptions::Bounded::No});
 }
 
