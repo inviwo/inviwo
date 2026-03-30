@@ -121,9 +121,11 @@ void PlotCamera::configureProperties(CameraProperty& cp, bool attach) {
         } else {
             auto newSize = std::make_unique<FloatVec2RefProperty>(
                 "size", "Size", "The viewport size in world space"_help, get, set,
-                std::pair<vec2, ConstraintBehavior>{vec2{0.0f}, ConstraintBehavior::Immutable},
-                std::pair<vec2, ConstraintBehavior>{vec2{1000.0f}, ConstraintBehavior::Ignore},
-                vec2{0.1f});
+                std::pair<vec2, ConstraintBehavior>{
+                    vec2{100.0f * std::numeric_limits<float>::epsilon()},
+                    ConstraintBehavior::Immutable},
+                std::pair<vec2, ConstraintBehavior>{vec2{100.0f}, ConstraintBehavior::Ignore},
+                vec2{0.01f});
             sizeProp = newSize.get();
             cp.addCamerapProperty(std::move(newSize));
         }
