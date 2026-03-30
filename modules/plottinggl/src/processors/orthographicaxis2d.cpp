@@ -32,12 +32,19 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/datastructures/camera/plotcamera.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/image/imagegl.h>
 
 #include <inviwo/core/interaction/events/axisrangeevent.h>
 
+#include <algorithm>
+#include <initializer_list>
+
 namespace inviwo {
+
+#pragma optimize("", off)
 
 const ProcessorInfo OrthographicAxis2D::processorInfo_{
     "org.inviwo.OrthographicAxis2D",  // Class identifier
@@ -47,6 +54,9 @@ const ProcessorInfo OrthographicAxis2D::processorInfo_{
     Tags::GL | Tag{"Plotting"},       // Tags
     R"(This processor draws a pair of axes that are mapped to world space.
        The use case is for plotting data using a Orthographic Camera.
+
+       One of the Mesh, Layer, or Volume inports must be connected for obtaining the world space
+       transformation.
        )"_unindentHelp,
 };
 
@@ -55,7 +65,9 @@ const ProcessorInfo& OrthographicAxis2D::getProcessorInfo() const { return proce
 OrthographicAxis2D::OrthographicAxis2D()
     : Processor{}
     , inport_{"inport"}
-    , mesh_{"mesh", "A mesh to extract a World to Model matrix from"_help}
+    , mesh_{"mesh", "Mesh providing the World to Model matrix and axis information"_help}
+    , layer_{"layer", "Layer providing the World to Model matrix and axis information"_help}
+    , volume_{"volume", "Volume providing World to Model matrix and axis information"_help}
     , outport_{"outport"}
     , style_{"style", "Global Style"}
     , backgroundColor_{"backgroundColor", "Background Color",
@@ -94,7 +106,27 @@ OrthographicAxis2D::OrthographicAxis2D()
     style_.addProperties(antialiasing_, clipContent_);
     boxSelectionProperty_.setCollapsed(true);
 
-    addPorts(inport_, mesh_, outport_);
+    mesh_.setOptional(true);
+    layer_.setOptional(true);
+    volume_.setOptional(true);
+
+    isReady_.setUpdate([this]() -> ProcessorStatus {
+        if (auto connectedPorts = std::ranges::fold_left(
+                std::initializer_list<const Inport*>{&mesh_, &layer_, &volume_}, 0,
+                [](int count, const Inport* port) {
+                    if (port->isConnected()) {
+                        return count + 1;
+                    }
+                    return count;
+                });
+            connectedPorts != 1) {
+            return {ProcessorStatus::Error,
+                    "Excactly one of the Mesh, Layer, or Volume inports must be connected"};
+        }
+        return allInportsAreReady();
+    });
+
+    addPorts(inport_, mesh_, layer_, volume_, outport_);
     addProperties(style_, axis1_, axis2_, margins_, axisMargin_, boxSelectionProperty_, camera_,
                   trackball_);
     util::for_each_in_tuple([this](auto& e) { boxSelectionProperty_.addProperty(e); },
@@ -135,6 +167,24 @@ OrthographicAxis2D::OrthographicAxis2D()
 }
 
 void OrthographicAxis2D::process() {
+    auto [w2m, axes] = [this]() -> std::pair<mat4, std::array<const Axis*, 2>> {
+        if (mesh_.hasData()) {
+            const auto data = mesh_.getData();
+            return {data->getCoordinateTransformer().getWorldToModelMatrix(),
+                    {{data->getAxis(0), data->getAxis(1)}}};
+        } else if (layer_.hasData()) {
+            const auto data = layer_.getData();
+            return {data->getCoordinateTransformer().getWorldToModelMatrix(),
+                    {{data->getAxis(0), data->getAxis(1)}}};
+        } else if (volume_.hasData()) {
+            const auto data = volume_.getData();
+            return {data->getCoordinateTransformer().getWorldToModelMatrix(),
+                    {{data->getAxis(0), data->getAxis(1)}}};
+        } else {
+            throw Exception{"None of the connected optional inports is ready."};
+        }
+    }();
+
     const auto dims = outport_.getDimensions();
 
     const auto padding = axisMargin_.get();
@@ -175,9 +225,6 @@ void OrthographicAxis2D::process() {
         2.0f * vec3{dvec2{xStart.x, yStart.y} / dvec2{dims}, 0.5} - vec3{1.0, 1.0, 1.0};
     const auto end = 2.0f * vec3{dvec2{xEnd.x, yEnd.y} / dvec2{dims}, 0.5} - vec3{1.0, 1.0, 1.0};
 
-    const auto data = mesh_.getData();
-
-    auto w2m = data->getCoordinateTransformer().getWorldToModelMatrix();
     const auto wStart =
         w2m * vec4{camera_.get().getWorldPosFromNormalizedDeviceCoords(start), 1.0f};
     const auto wEnd = w2m * vec4{camera_.get().getWorldPosFromNormalizedDeviceCoords(end), 1.0f};
@@ -185,10 +232,8 @@ void OrthographicAxis2D::process() {
     axis1_.setRange(dvec2{wStart.x, wEnd.x});
     axis2_.setRange(dvec2{wStart.y, wEnd.y});
 
-    axis1_.captionSettings_.title_.set(
-        fmt::format("{}{: [}", data->getAxis(0)->name, data->getAxis(0)->unit));
-    axis2_.captionSettings_.title_.set(
-        fmt::format("{}{: [}", data->getAxis(1)->name, data->getAxis(1)->unit));
+    axis1_.captionSettings_.title_.set(fmt::format("{}{: [}", axes[0]->name, axes[0]->unit));
+    axis2_.captionSettings_.title_.set(fmt::format("{}{: [}", axes[1]->name, axes[1]->unit));
 
     const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
 

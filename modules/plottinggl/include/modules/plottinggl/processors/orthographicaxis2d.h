@@ -33,6 +33,8 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/layerport.h>
+#include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/marginproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -60,6 +62,8 @@ public:
 private:
     ImageInport inport_;
     MeshInport mesh_;
+    LayerInport layer_;
+    VolumeInport volume_;
     ImageOutport outport_;
 
     plot::AxisStyleProperty style_;
