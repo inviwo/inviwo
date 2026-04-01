@@ -412,6 +412,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/unitsettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/sharedlibrary.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/shuntingyard.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/scientificcolormaps.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singlefileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singleton.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/sourcecontext.h
@@ -800,6 +801,7 @@ set(SOURCE_FILES
     util/settings/unitsettings.cpp
     util/sharedlibrary.cpp
     util/shuntingyard.cpp
+    util/scientificcolormaps.cpp
     util/singlefileobserver.cpp
     util/sourcecontext.cpp
     util/spatial4dsampler.cpp
