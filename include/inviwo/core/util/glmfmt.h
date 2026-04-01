@@ -30,9 +30,12 @@
 
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmutils.h>
 #include <glm/detail/type_quat.hpp>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
+
+#include <optional>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -57,103 +60,150 @@ struct fmt::is_tuple_like<::glm::mat<C, R, T, Q>> : std::false_type {};
 template <typename T, glm::qualifier Q>
 struct fmt::is_tuple_like<::glm::qua<T, Q>> : std::false_type {};
 
-template <typename T>
-struct GlmFormatter {
-    fmt::formatter<fmt::string_view> overallFormatter;
-    fmt::formatter<T> elementFormatter;
+namespace inviwo {
 
-    constexpr auto parse(fmt::format_parse_context& ctx) -> fmt::format_parse_context::iterator {
-        const auto it = ctx.begin();
-        const auto end = ctx.end();
+namespace detail {
 
-        const auto range = std::string_view(it, end - it);
-        const auto endPos = range.find_first_of(":}");
-        const auto endIt =
-            endPos != std::string_view::npos ? it + endPos + (range[endPos] == ':' ? 1 : 0) : end;
-        const auto overallFormat = range.substr(0, endPos);
+//  Advance past a single nested replacement field "{...}", respecting depth.
+//  Returns iterator just past the closing '}'.
+template <typename It>
+constexpr It skipNestedField(It it, It end) {
+    int depth = 0;
+    while (it != end) {
+        if (*it == '{') {
+            ++depth;
+            ++it;
+        } else if (*it == '}') {
+            --depth;
+            ++it;
+            if (depth == 0) return it;
+        }
+    }
+    throw fmt::format_error("unterminated nested replacement field");
+}
 
-        fmt::format_parse_context overallCtx{overallFormat};
-        overallFormatter.parse(overallCtx);
+//  Locate the ':' that separates overallSpec from elementSpec, skipping over
+//  any nested replacement fields { } in the process.
+//  Returns end if there is no such separator.
+template <typename It>
+constexpr std::optional<It> findSpecSeparator(It it, It end) {
+    while (it != end) {
+        if (*it == '}') return std::nullopt;
+        if (*it == ':') return it;
+        if (*it == '{')
+            it = skipNestedField(it, end);
+        else
+            ++it;
+    }
+    return std::nullopt;
+}
 
-        ctx.advance_to(endIt);
-        return elementFormatter.parse(ctx);
+struct StringFormatter {
+private:
+    fmt::detail::dynamic_format_specs<char> specs_;
+
+public:
+    constexpr auto parse(fmt::parse_context<char>& ctx,
+                         std::optional<decltype(ctx.begin())> maybeEnd = std::nullopt) -> const
+        char* {
+        auto end = maybeEnd.value_or(ctx.end());
+        if (ctx.begin() == end || *ctx.begin() == '}') return ctx.begin();
+        end = parse_format_specs(ctx.begin(), end, specs_, ctx, fmt::detail::type::string_type);
+        return end;
     }
 
-    template <typename F>
-    auto write(fmt::format_context& ctx, F writeElements) const {
+    constexpr void set_debug_format(bool set = true) {
+        specs_.set_type(set ? fmt::presentation_type::debug : fmt::presentation_type::none);
+    }
+
+    constexpr auto format(const std::string_view& val, fmt::format_context& ctx) const
+        -> decltype(ctx.out()) {
+        if (!specs_.dynamic()) return write<char>(ctx.out(), val, specs_, ctx.locale());
+        auto specs = fmt::format_specs(specs_);
+        handle_dynamic_spec(specs.dynamic_width(), specs.width, specs_.width_ref, ctx);
+        handle_dynamic_spec(specs.dynamic_precision(), specs.precision, specs_.precision_ref, ctx);
+        return fmt::detail::write<char>(ctx.out(), val, specs, ctx.locale());
+    }
+};
+
+}  // namespace detail
+
+template <typename GlmType, typename T = typename GlmType::value_type>
+struct GlmFormatter {
+    detail::StringFormatter overallFormatter;
+    fmt::formatter<T> elementFormatter;
+
+    // ── parse ─────────────────────────────────────────────────────────────────
+    constexpr auto parse(fmt::format_parse_context& ctx) -> fmt::format_parse_context::iterator {
+        auto it = ctx.begin();
+        auto end = ctx.end();
+
+        auto sep = detail::findSpecSeparator(it, end);
+        it = overallFormatter.parse(ctx, sep);
+
+        if (sep) {
+            it = ++*sep;
+            ctx.advance_to(it);
+            it = elementFormatter.parse(ctx);
+        }
+
+        if (it != end && *it != '}') throw fmt::format_error("invalid glm formatter spec");
+
+        return it;
+    }
+
+    auto format(const GlmType& obj, fmt::format_context& ctx) const
+        -> fmt::format_context::iterator {
         fmt::memory_buffer buff;
         auto out = fmt::appender(buff);
-        fmt::format_context elementContext{out, ctx.args()};
+        auto elemCtx = fmt::format_context(out, ctx.args(), ctx.locale());
 
-        writeElements(out, elementFormatter, elementContext);
+        *out++ = '[';
+        if constexpr (inviwo::util::rank_v<GlmType> == 2) {
+            constexpr auto C = GlmType::length();
+            constexpr auto R = GlmType::col_type::length();
+            *out++ = '[';
+            elementFormatter.format(obj[0][0], elemCtx);
+            for (glm::length_t i = 1; i < R; ++i) {
+                *out++ = ',';
+                *out++ = ' ';
+                elementFormatter.format(obj[0][i], elemCtx);
+            }
+            *out++ = ']';
+
+            for (glm::length_t j = 1; j < C; ++j) {
+                *out++ = ',';
+                *out++ = '[';
+                elementFormatter.format(obj[j][0], elemCtx);
+                for (glm::length_t i = 1; i < R; ++i) {
+                    *out++ = ',';
+                    *out++ = ' ';
+                    elementFormatter.format(obj[j][i], elemCtx);
+                }
+                *out++ = ']';
+            }
+        } else {
+            elementFormatter.format(obj[0], elemCtx);
+            for (glm::length_t i = 1; i < GlmType::length(); ++i) {
+                *out++ = ',';
+                *out++ = ' ';
+                elementFormatter.format(obj[i], elemCtx);
+            }
+        }
+        *out++ = ']';
 
         return overallFormatter.format(std::string_view{buff.data(), buff.size()}, ctx);
     }
 };
+}  // namespace inviwo
 
 template <glm::length_t L, typename T, glm::qualifier Q>
-struct fmt::formatter<glm::vec<L, T, Q>> : GlmFormatter<T> {
-    auto format(const glm::vec<L, T, Q>& v, format_context& ctx) const -> format_context::iterator {
-        return GlmFormatter<T>::write(ctx,
-                                      [&v](auto it, auto& elementFormatter, auto& elementContext) {
-                                          *it++ = '[';
-                                          elementFormatter.format(v[0], elementContext);
-                                          for (glm::length_t i = 1; i < L; ++i) {
-                                              *it++ = ',';
-                                              *it++ = ' ';
-                                              elementFormatter.format(v[i], elementContext);
-                                          }
-                                          *it++ = ']';
-                                      });
-    }
-};
+struct fmt::formatter<glm::vec<L, T, Q>> : inviwo::GlmFormatter<glm::vec<L, T, Q>> {};
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-struct fmt::formatter<glm::mat<C, R, T, Q>> : GlmFormatter<T> {
-    auto format(const glm::mat<C, R, T, Q>& m, format_context& ctx) const
-        -> format_context::iterator {
-        return GlmFormatter<T>::write(ctx,
-                                      [&m](auto it, auto& elementFormatter, auto& elementContext) {
-                                          *it++ = '[';
-                                          *it++ = '[';
-                                          elementFormatter.format(m[0][0], elementContext);
-                                          for (glm::length_t i = 1; i < R; ++i) {
-                                              *it++ = ',';
-                                              *it++ = ' ';
-                                              elementFormatter.format(m[0][i], elementContext);
-                                          }
-                                          *it++ = ']';
-
-                                          for (glm::length_t j = 1; j < C; ++j) {
-                                              *it++ = ',';
-                                              *it++ = '[';
-                                              elementFormatter.format(m[j][0], elementContext);
-                                              for (glm::length_t i = 1; i < R; ++i) {
-                                                  *it++ = ',';
-                                                  *it++ = ' ';
-                                                  elementFormatter.format(m[j][i], elementContext);
-                                              }
-                                              *it++ = ']';
-                                          }
-                                          *it++ = ']';
-                                      });
-    }
-};
+struct fmt::formatter<glm::mat<C, R, T, Q>> : inviwo::GlmFormatter<glm::mat<C, R, T, Q>> {};
 
 template <typename T, glm::qualifier Q>
-struct fmt::formatter<glm::qua<T, Q>> : GlmFormatter<T> {
-    auto format(const glm::qua<T, Q>& q, format_context& ctx) const -> format_context::iterator {
-        return GlmFormatter<T>::write(ctx,
-                                      [&q](auto it, auto& elementFormatter, auto& elementContext) {
-                                          *it++ = '[';
-                                          elementFormatter.format(q[0], elementContext);
-                                          for (glm::length_t i = 1; i < 4; ++i) {
-                                              *it++ = ',';
-                                              *it++ = ' ';
-                                              elementFormatter.format(q[i], elementContext);
-                                          }
-                                          *it++ = ']';
-                                      });
-    }
-};
+struct fmt::formatter<glm::qua<T, Q>> : inviwo::GlmFormatter<glm::qua<T, Q>> {};
+
 #endif
