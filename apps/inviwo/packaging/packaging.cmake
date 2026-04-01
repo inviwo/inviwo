@@ -97,13 +97,22 @@ if(UNIX AND NOT APPLE AND IVW_PACKAGE_INSTALLER)
     set(CPACK_APPIMAGE_NO_APPSTREAM ON)
     set(CPACK_PACKAGING_INSTALL_PREFIX /usr)
     install(FILES "${IVW_ROOT_DIR}/resources/inviwo.desktop" 
-            DESTINATION "${IVW_SHARE_INSTALL_DIR}/applications" COMPONENT Application)
+            DESTINATION "${IVW_SHARE_INSTALL_DIR}/applications"
+            COMPONENT Application)
+    install(FILES "${CMAKE_CURRENT_LIST_DIR}/AppRun"
+            DESTINATION ".."
+            COMPONENT Application)
     install(FILES "${IVW_ROOT_DIR}/resources/inviwo.appdata.xml" 
-            DESTINATION "${IVW_SHARE_INSTALL_DIR}/metainfo" COMPONENT Application)
+            DESTINATION "${IVW_SHARE_INSTALL_DIR}/metainfo"
+            COMPONENT Application)
     install(FILES "${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.png" 
-            DESTINATION "${IVW_SHARE_INSTALL_DIR}/icons/hicolor/64x64/apps/" RENAME "inviwo.png" COMPONENT Application)
+            DESTINATION "${IVW_SHARE_INSTALL_DIR}/icons/hicolor/64x64/apps/"
+            RENAME "inviwo.png"
+            COMPONENT Application)
     install(FILES "${IVW_ROOT_DIR}/resources/inviwo/inviwo-logo-light.svg" 
-            DESTINATION "${IVW_SHARE_INSTALL_DIR}/icons/hicolor/scalable/apps/" RENAME "inviwo.svg" COMPONENT Application)
+            DESTINATION "${IVW_SHARE_INSTALL_DIR}/icons/hicolor/scalable/apps/"
+            RENAME "inviwo.svg"
+            COMPONENT Application)
 endif()
 
 # Debian settings
