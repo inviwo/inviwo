@@ -63,21 +63,21 @@ public:
 
     CameraProperty(std::string_view identifier, std::string_view displayName, Document help,
                    std::function<std::optional<dmat4>()> getBoundingBox,
-                   dvec3 eye = dvec3(0.0, 0.0, 2.0), dvec3 center = dvec3(0.0),
-                   dvec3 lookUp = dvec3(0.0, 1.0, 0.0),
+                   dvec3 lookFrom = cameradefaults::lookFrom, dvec3 lookTo = cameradefaults::lookTo,
+                   dvec3 lookUp = cameradefaults::lookUp,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
     CameraProperty(std::string_view identifier, std::string_view displayName,
                    std::function<std::optional<dmat4>()> getBoundingBox,
-                   dvec3 eye = dvec3(0.0, 0.0, 2.0), dvec3 center = dvec3(0.0),
-                   dvec3 lookUp = dvec3(0.0, 1.0, 0.0),
+                   dvec3 lookFrom = cameradefaults::lookFrom, dvec3 lookTo = cameradefaults::lookTo,
+                   dvec3 lookUp = cameradefaults::lookUp,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
     CameraProperty(std::string_view identifier, std::string_view displayName,
-                   dvec3 eye = dvec3(0.0, 0.0, 2.0), dvec3 center = dvec3(0.0),
-                   dvec3 lookUp = dvec3(0.0, 1.0, 0.0), Inport* inport = nullptr,
+                   dvec3 lookFrom = cameradefaults::lookFrom, dvec3 lookTo = cameradefaults::lookTo,
+                   dvec3 lookUp = cameradefaults::lookUp, Inport* inport = nullptr,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
@@ -117,7 +117,8 @@ public:
      * Locks and unlocks processor network before and after changing property values.
      * @note Parameters will be capped by their min/max.
      */
-    virtual TrackballObject& setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp) override;  // NOLINT
+    virtual TrackballObject& setLook(dvec3 lookFrom, dvec3 lookTo,
+                                     dvec3 lookUp) override;  // NOLINT
 
     virtual double getNearPlaneDist() const override;
     virtual double getFarPlaneDist() const override;

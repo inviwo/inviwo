@@ -198,8 +198,8 @@ void setShaderUniforms(Shader& shader, const CameraProperty& property, std::stri
     shader.setUniform(buff.replace("{}.clipToWorld", name),
                       property.inverseViewMatrix() * property.inverseProjectionMatrix());
     shader.setUniform(buff.replace("{}.position", name), property.getLookFrom());
-    shader.setUniform(buff.replace("{}.nearPlane", name), static_cast<float>(property.getNearPlaneDist()));
-    shader.setUniform(buff.replace("{}.farPlane", name), static_cast<float>(property.getFarPlaneDist()));
+    shader.setUniform(buff.replace("{}.nearPlane", name), property.getNearPlaneDist());
+    shader.setUniform(buff.replace("{}.farPlane", name), property.getFarPlaneDist());
 }
 
 void setShaderUniforms(Shader& shader, const Camera& camera, std::string_view name) {
@@ -214,8 +214,8 @@ void setShaderUniforms(Shader& shader, const Camera& camera, std::string_view na
     shader.setUniform(buff.replace("{}.clipToWorld", name),
                       camera.getInverseViewMatrix() * camera.getInverseProjectionMatrix());
     shader.setUniform(buff.replace("{}.position", name), camera.getLookFrom());
-    shader.setUniform(buff.replace("{}.nearPlane", name), static_cast<float>(camera.getNearPlaneDist()));
-    shader.setUniform(buff.replace("{}.farPlane", name), static_cast<float>(camera.getFarPlaneDist()));
+    shader.setUniform(buff.replace("{}.nearPlane", name), camera.getNearPlaneDist());
+    shader.setUniform(buff.replace("{}.farPlane", name), camera.getFarPlaneDist());
 }
 
 void addShaderDefines(Shader& shader, const RaycastingProperty& property) {

@@ -81,8 +81,9 @@ void VolumeMasker::preProcess(TextureUnitContainer& cont, Shader& shader,
     if (useWorldSpace_) {
         IVW_ASSERT(inport_.has_value(), "Inport should be constructed");
         shader.setUniform(
-            "texTrafo", mat4(mask_.getData()->getCoordinateTransformer().getWorldToDataMatrix() *
-                             inport_->getData()->getCoordinateTransformer().getDataToWorldMatrix()));
+            "texTrafo",
+            mat4(mask_.getData()->getCoordinateTransformer().getWorldToDataMatrix() *
+                 inport_->getData()->getCoordinateTransformer().getDataToWorldMatrix()));
     } else {
         shader.setUniform("texTrafo", mat4(1.0f));
     }

@@ -99,10 +99,14 @@ const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const
 
     volumeStruct->modelToWorld = mat4(volume->getCoordinateTransformer().getModelToWorldMatrix());
     volumeStruct->worldToModel = mat4(volume->getCoordinateTransformer().getWorldToModelMatrix());
-    volumeStruct->worldToTexture = mat4(volume->getCoordinateTransformer().getWorldToTextureMatrix());
-    volumeStruct->textureToWorld = mat4(volume->getCoordinateTransformer().getTextureToWorldMatrix());
-    volumeStruct->textureToIndex = mat4(volume->getCoordinateTransformer().getTextureToIndexMatrix());
-    volumeStruct->indexToTexture = mat4(volume->getCoordinateTransformer().getIndexToTextureMatrix());
+    volumeStruct->worldToTexture =
+        mat4(volume->getCoordinateTransformer().getWorldToTextureMatrix());
+    volumeStruct->textureToWorld =
+        mat4(volume->getCoordinateTransformer().getTextureToWorldMatrix());
+    volumeStruct->textureToIndex =
+        mat4(volume->getCoordinateTransformer().getTextureToIndexMatrix());
+    volumeStruct->indexToTexture =
+        mat4(volume->getCoordinateTransformer().getIndexToTextureMatrix());
     auto gradientSpacing = volume->getWorldSpaceGradientSpacing();
     // Transform the world space gradient spacing to texture space.
     // Wold space gradient spacing is given by:

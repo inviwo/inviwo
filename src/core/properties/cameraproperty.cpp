@@ -54,7 +54,7 @@ std::string_view CameraProperty::getClassIdentifier() const { return classIdenti
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
                                Document help, std::function<std::optional<dmat4>()> getBoundingBox,
-                               dvec3 eye, dvec3 center, dvec3 lookUp,
+                               dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel, semantics}
     , factory_{InviwoApplication::getPtr()->getCameraFactory()}
@@ -69,7 +69,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                           "The type of camera to use, defaults to a Perspective camera"_help;
                       return opts;
                   }())
-    , camera_{factory_->create(cameraType_, eye, center, lookUp)}
+    , camera_{factory_->create(cameraType_, lookFrom, lookTo, lookUp)}
     , defaultCamera_{camera_->clone()}
     , cameraActions_("actions", "Actions",
                      "Make automatic viewport adjustments. This requires that the camera gets "
@@ -78,15 +78,13 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
     , lookFrom_(
           "lookFrom", "Look from", "Position in world space of the camera"_help,
           []() { return dvec3{}; }, [](const dvec3&) {},
-          {-dvec3(100.0), ConstraintBehavior::Ignore},
-          {dvec3(100.0), ConstraintBehavior::Ignore}, dvec3(0.1), InvalidationLevel::InvalidOutput,
-          PropertySemantics{"Spherical"})
+          {-dvec3(100.0), ConstraintBehavior::Ignore}, {dvec3(100.0), ConstraintBehavior::Ignore},
+          dvec3(0.1), InvalidationLevel::InvalidOutput, PropertySemantics{"Spherical"})
     , lookTo_(
           "lookTo", "Look to", "Focus point of the camera in world space"_help,
           []() { return dvec3{}; }, [](const dvec3&) {},
-          {-dvec3(100.0), ConstraintBehavior::Ignore},
-          {dvec3(100.0), ConstraintBehavior::Ignore}, dvec3(0.1), InvalidationLevel::InvalidOutput,
-          PropertySemantics::Default)
+          {-dvec3(100.0), ConstraintBehavior::Ignore}, {dvec3(100.0), ConstraintBehavior::Ignore},
+          dvec3(0.1), InvalidationLevel::InvalidOutput, PropertySemantics::Default)
     , lookUp_(
           "lookUp", "Look up",
           "Up direction for the camera, should be orthogonal to lookTo - LookFrom"_help,

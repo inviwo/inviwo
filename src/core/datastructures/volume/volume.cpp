@@ -195,7 +195,7 @@ Document Volume::getInfo() const {
     return doc;
 }
 
-vec3 Volume::getWorldSpaceGradientSpacing() const {
+dvec3 Volume::getWorldSpaceGradientSpacing() const {
     const auto textureToWorld = dmat3(getCoordinateTransformer().getTextureToWorldMatrix());
     // Basis vectors with a length of one voxel.
     // Basis vectors may be non-orthogonal
@@ -220,9 +220,8 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
         return (std::abs(x1) >= std::abs(x2)) ? x1 : x2;
     };
 
-    const vec3 ds{static_cast<float>(signedMax(a.x, signedMax(b.x, c.x))),
-                  static_cast<float>(signedMax(a.y, signedMax(b.y, c.y))),
-                  static_cast<float>(signedMax(a.z, signedMax(b.z, c.z)))};
+    const dvec3 ds{signedMax(a.x, signedMax(b.x, c.x)), signedMax(a.y, signedMax(b.y, c.y)),
+                   signedMax(a.z, signedMax(b.z, c.z))};
 
     // Return the spacing in world space,
     // actually given by:

@@ -43,8 +43,8 @@
 
 namespace inviwo {
 
-SGCTCamera::SGCTCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane,
-                       double aspectRatio, double fieldOfView)
+SGCTCamera::SGCTCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane,
+                       double farPlane, double aspectRatio, double fieldOfView)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), fovy_(fieldOfView) {}
 
 SGCTCamera* SGCTCamera::clone() const { return new SGCTCamera(*this); }
@@ -178,9 +178,7 @@ void SGCTCamera::setExternal(const sgct::RenderData& renderData) {
     }
 }
 
-void SGCTCamera::zoom(const ZoomOptions& opts) {
-    util::perspectiveZoom(*this, opts);
-}
+void SGCTCamera::zoom(const ZoomOptions& opts) { util::perspectiveZoom(*this, opts); }
 
 dmat4 SGCTCamera::calculateViewMatrix() const {
     return extView_ * extModel_ * glm::lookAt(lookFrom_, lookTo_, lookUp_);

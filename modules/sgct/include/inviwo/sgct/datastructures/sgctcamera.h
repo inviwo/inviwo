@@ -43,7 +43,8 @@ namespace inviwo {
 class IVW_MODULE_SGCT_API SGCTCamera final : public Camera {
 public:
     explicit SGCTCamera(dvec3 lookFrom = cameradefaults::lookFrom,
-                        dvec3 lookTo = cameradefaults::lookTo, dvec3 lookUp = cameradefaults::lookUp,
+                        dvec3 lookTo = cameradefaults::lookTo,
+                        dvec3 lookUp = cameradefaults::lookUp,
                         double nearPlane = cameradefaults::nearPlane,
                         double farPlane = cameradefaults::farPlane,
                         double aspectRatio = cameradefaults::aspectRatio,
