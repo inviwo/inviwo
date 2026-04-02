@@ -39,12 +39,13 @@ namespace inviwo {
 
 class IVW_CORE_API PerspectiveCamera final : public Camera {
 public:
-    PerspectiveCamera(dvec3 lookFrom = cameradefaults::lookFrom,
-                      dvec3 lookTo = cameradefaults::lookTo, dvec3 lookUp = cameradefaults::lookUp,
-                      double nearPlane = cameradefaults::nearPlane,
-                      double farPlane = cameradefaults::farPlane,
-                      double aspectRatio = cameradefaults::aspectRatio,
-                      double fieldOfView = cameradefaults::fieldOfView);
+    explicit PerspectiveCamera(dvec3 lookFrom = cameradefaults::lookFrom,
+                               dvec3 lookTo = cameradefaults::lookTo,
+                               dvec3 lookUp = cameradefaults::lookUp,
+                               double nearPlane = cameradefaults::nearPlane,
+                               double farPlane = cameradefaults::farPlane,
+                               double aspectRatio = cameradefaults::aspectRatio,
+                               double fieldOfView = cameradefaults::fieldOfView);
     virtual ~PerspectiveCamera() = default;
     PerspectiveCamera(const PerspectiveCamera& other);
     PerspectiveCamera& operator=(const PerspectiveCamera& other);

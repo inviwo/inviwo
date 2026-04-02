@@ -42,12 +42,13 @@ namespace inviwo {
  */
 class IVW_CORE_API OrthographicCamera final : public Camera {
 public:
-    OrthographicCamera(dvec3 lookFrom = cameradefaults::lookFrom,
-                       dvec3 lookTo = cameradefaults::lookTo, dvec3 lookUp = cameradefaults::lookUp,
-                       double nearPlane = cameradefaults::nearPlane,
-                       double farPlane = cameradefaults::farPlane,
-                       double aspectRatio = cameradefaults::aspectRatio,
-                       double width = cameradefaults::width);
+    explicit OrthographicCamera(dvec3 lookFrom = cameradefaults::lookFrom,
+                                dvec3 lookTo = cameradefaults::lookTo,
+                                dvec3 lookUp = cameradefaults::lookUp,
+                                double nearPlane = cameradefaults::nearPlane,
+                                double farPlane = cameradefaults::farPlane,
+                                double aspectRatio = cameradefaults::aspectRatio,
+                                double width = cameradefaults::width);
     virtual ~OrthographicCamera() = default;
     OrthographicCamera(const OrthographicCamera& other);
     OrthographicCamera& operator=(const OrthographicCamera& other);
