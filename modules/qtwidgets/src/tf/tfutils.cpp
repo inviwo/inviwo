@@ -49,6 +49,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/colorbrewer.h>
+#include <inviwo/core/util/scientificcolormaps.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/filedialogstate.h>
 #include <inviwo/core/util/fileextension.h>
@@ -430,6 +431,85 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
     return presets;
 }
 
+QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
+                                         TransferFunctionProperty* property) {
+
+    if (!parent || !menu || !property) {
+        return nullptr;
+    }
+
+    auto presets = menu->addMenu("&Scientific Colormap Presets");
+    presets->setObjectName("TF");
+    presets->setEnabled(!property->getReadOnly());
+    const int iconWidth = utilqt::emToPx(presets, 11);
+    // need to set the stylesheet explicitely since Qt _only_ supports 'px' for icon sizes
+    presets->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
+
+    auto addAction = [iconWidth, parent, property](QMenu* menu, std::span<const glm::vec3> points,
+                                                   std::string_view name) {
+        auto action = menu->addAction(utilqt::toQString(name));
+
+        const TransferFunction tf{std::views::zip(std::views::iota(0uz), points) |
+                                  std::views::transform([&](auto&& elem) {
+                                      auto&& [i, c] = elem;
+                                      return TFPrimitiveData{
+                                          .pos = static_cast<double>(i) /
+                                                 static_cast<double>(points.size() - 1),
+                                          .color = {c, 1.0f}};
+                                  }) |
+                                  std::ranges::to<std::vector>()};
+
+        action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
+
+        QObject::connect(action, &QAction::triggered, parent, [property, tf2 = std::move(tf)]() {
+            NetworkLock lock(property);
+            property->set(tf2);
+        });
+    };
+
+    QObject::connect(
+        presets, &QMenu::aboutToShow, presets,
+        [presets, iconWidth, addAction]() {
+            {
+                auto* category = presets->addMenu("Continuous");
+                category->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
+
+                for (auto cm : scm::allContinuous()) {
+                    addAction(category, scm::get(cm), format_as(cm));
+                }
+            }
+            {
+                auto* category = presets->addMenu("Cyclic");
+                category->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
+
+                for (auto cm : scm::allCyclic()) {
+                    addAction(category, scm::get(cm), format_as(cm));
+                }
+            }
+            {
+                auto* category = presets->addMenu("Categorical");
+                category->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
+
+                for (auto cm : scm::allCategorical()) {
+                    addAction(category, scm::get(cm), format_as(cm));
+                }
+            }
+            {
+                for (auto size : scm::allDiscreteSize()) {
+                    auto* category =
+                        presets->addMenu(utilqt::toQString(fmt::format("Discrete {}", size)));
+                    category->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
+
+                    for (auto cm : scm::allDiscrete()) {
+                        addAction(category, scm::get(cm, size), format_as(cm));
+                    }
+                }
+            }
+        },
+        Qt::SingleShotConnection);
+
+    return presets;
+}
 }  // namespace util
 
 }  // namespace inviwo

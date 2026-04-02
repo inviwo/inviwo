@@ -86,6 +86,9 @@ IVW_MODULE_QTWIDGETS_API QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu,
 IVW_MODULE_QTWIDGETS_API QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
                                                             TransferFunctionProperty* property);
 
+IVW_MODULE_QTWIDGETS_API QMenu* addScientificColorMapsPresetsMenu(
+    QWidget* parent, QMenu* menu, TransferFunctionProperty* property);
+
 }  // namespace util
 
 }  // namespace inviwo

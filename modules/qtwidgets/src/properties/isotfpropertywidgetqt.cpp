@@ -133,6 +133,7 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
 
     util::addTFPresetsMenu(this, menu.get(), &isoTfProperty()->tf_);
     util::addTFColorbrewerPresetsMenu(this, menu.get(), &isoTfProperty()->tf_);
+    util::addScientificColorMapsPresetsMenu(this, menu.get(), &isoTfProperty()->tf_);
 
     menu->addSeparator();
 
