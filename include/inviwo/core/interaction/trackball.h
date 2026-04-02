@@ -75,16 +75,16 @@ public:
 
     virtual void invokeEvent(Event* event) override;
 
-    const dvec3 getLookTo() const;
-    const dvec3 getLookFrom() const;
-    const dvec3 getLookUp() const;
-    const dvec3 getLookRight() const;
+    dvec3 getLookTo() const;
+    dvec3 getLookFrom() const;
+    dvec3 getLookUp() const;
+    dvec3 getLookRight() const;
 
-    const dvec3 getLookFromMinValue() const;
-    const dvec3 getLookFromMaxValue() const;
+    dvec3 getLookFromMinValue() const;
+    dvec3 getLookFromMaxValue() const;
 
-    const dvec3 getLookToMinValue() const;
-    const dvec3 getLookToMaxValue() const;
+    dvec3 getLookToMinValue() const;
+    dvec3 getLookToMaxValue() const;
 
     void setLookTo(dvec3 lookTo);
     void setLookFrom(dvec3 lookFrom);
@@ -127,7 +127,7 @@ protected:
     void moveForward(Event* event);
     void moveBackward(Event* event);
 
-    const dvec3 getWorldUp() const;
+    dvec3 getWorldUp() const;
     dmat4 roll(float radians) const;
     dmat4 pitch(float radians) const;
     dmat4 yaw(float radians) const;

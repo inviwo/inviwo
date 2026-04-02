@@ -251,18 +251,18 @@ void Trackball::invokeEvent(Event* event) {
     CompositeProperty::invokeEvent(event);
 }
 
-const dvec3 Trackball::getLookTo() const { return object_->getLookTo(); }
+dvec3 Trackball::getLookTo() const { return object_->getLookTo(); }
 
-const dvec3 Trackball::getLookFrom() const { return object_->getLookFrom(); }
+dvec3 Trackball::getLookFrom() const { return object_->getLookFrom(); }
 
-const dvec3 Trackball::getLookUp() const { return object_->getLookUp(); }
+dvec3 Trackball::getLookUp() const { return object_->getLookUp(); }
 
-const dvec3 Trackball::getLookRight() const {
+dvec3 Trackball::getLookRight() const {
     return glm::normalize(glm::cross(getLookTo() - getLookFrom(), getLookUp()));
 }
 
 /* @brief Returns the World Up Vector according to `worldUp_` property. */
-const dvec3 Trackball::getWorldUp() const {
+dvec3 Trackball::getWorldUp() const {
     switch (worldUp_) {
         case 0:
             return dvec3(1, 0, 0);
@@ -277,13 +277,13 @@ const dvec3 Trackball::getWorldUp() const {
     }
 }
 
-const dvec3 Trackball::getLookFromMinValue() const { return object_->getLookFromMinValue(); }
+dvec3 Trackball::getLookFromMinValue() const { return object_->getLookFromMinValue(); }
 
-const dvec3 Trackball::getLookFromMaxValue() const { return object_->getLookFromMaxValue(); }
+dvec3 Trackball::getLookFromMaxValue() const { return object_->getLookFromMaxValue(); }
 
-const dvec3 Trackball::getLookToMinValue() const { return object_->getLookToMinValue(); }
+dvec3 Trackball::getLookToMinValue() const { return object_->getLookToMinValue(); }
 
-const dvec3 Trackball::getLookToMaxValue() const { return object_->getLookToMaxValue(); }
+dvec3 Trackball::getLookToMaxValue() const { return object_->getLookToMaxValue(); }
 
 void Trackball::setLookTo(dvec3 lookTo) { object_->setLookTo(lookTo); }
 
@@ -309,7 +309,7 @@ dvec3 Trackball::mapNormalizedMousePosToTrackball(const dvec2& mousePos, double 
         z = ((r * r) / (2.0 * std::sqrt(norm)));
     }
 
-    return dvec3(centerOffset.x, centerOffset.y, z);
+    return {centerOffset.x, centerOffset.y, z};
 }
 
 dvec3 Trackball::getWorldSpaceTranslationFromNDCSpace(const dvec3& fromNDC, const dvec3& toNDC) {
@@ -350,7 +350,7 @@ void Trackball::rotate(MouseEvent* event) {
 
 /* @brief Maps the mouse inputs to camera movement according to the Two Axis Valuator method */
 void Trackball::rotateTAV(MouseEvent* mouseEvent) {
-    const auto ndc = static_cast<dvec3>(mouseEvent->ndc());
+    const auto ndc = mouseEvent->ndc();
 
     const auto curNDC =
         dvec3(allowHorizontalRotation_ ? ndc.x : 0.0, allowVerticalRotation_ ? ndc.y : 0.0, 1.0);
@@ -379,7 +379,7 @@ void Trackball::rotateTAV(MouseEvent* mouseEvent) {
         // Build rotation quaternions
         const glm::dquat rot_around_up =
             glm::angleAxis(-sensitivity_ * diff.x, fixUp_ ? wUp : getLookUp());
-        glm::dquat rot_around_right = glm::angleAxis(vAngle, getLookRight());
+        const glm::dquat rot_around_right = glm::angleAxis(vAngle, getLookRight());
 
         const dvec3 newFrom =
             rot_around_right * rot_around_up * camDir;  // Rotate camDir (normalized lookFrom)
@@ -403,7 +403,7 @@ void Trackball::rotateArc(MouseEvent* mouseEvent, bool followObjectDuringRotatio
     if (!allowHorizontalRotation_ && !allowVerticalRotation_) return;
     timer_.stop();
 
-    const auto ndc = static_cast<dvec3>(mouseEvent->ndc());
+    const auto ndc = mouseEvent->ndc();
 
     const auto curNDC =
         dvec3(allowHorizontalRotation_ ? ndc.x : 0.0, allowVerticalRotation_ ? ndc.y : 0.0,
@@ -446,7 +446,7 @@ void Trackball::rotateArc(MouseEvent* mouseEvent, bool followObjectDuringRotatio
 
 /* @brief Maps the mouse inputs to first person camera movement */
 void Trackball::rotateFPS(MouseEvent* mouseEvent) {
-    const auto ndc = static_cast<dvec3>(mouseEvent->ndc());
+    const auto ndc = mouseEvent->ndc();
 
     const auto curNDC =
         dvec3(allowHorizontalRotation_ ? ndc.x : 0.0, allowVerticalRotation_ ? ndc.y : 0.0, 1.0);
@@ -539,7 +539,7 @@ void Trackball::zoom(MouseEvent* event) {
     if (!allowZooming_) return;
     timer_.stop();
 
-    const auto curNDC = static_cast<dvec3>(event->ndc());
+    const auto curNDC = event->ndc();
 
     // disable movements on first press
     if (!isMouseBeingPressedAndHold_) {
@@ -563,7 +563,7 @@ void Trackball::pan(MouseEvent* mouseEvent) {
     if (!allowHorizontalPanning_ && !allowVerticalPanning_) return;
 
     timer_.stop();
-    auto curNDC = static_cast<dvec3>(mouseEvent->ndc());
+    auto curNDC = mouseEvent->ndc();
 
     // disable movements on first press
     if (!isMouseBeingPressedAndHold_) {
@@ -722,7 +722,7 @@ void Trackball::touchGesture(Event* event) {
         if (!allowHorizontalRotation_ && !allowVerticalRotation_) return;
         timer_.stop();
 
-        const auto ndc = static_cast<dvec3>(point.ndc());
+        const auto ndc = point.ndc();
         const auto curNDC = dvec3(allowHorizontalRotation_ ? ndc.x : 0.0,
                                   allowVerticalRotation_ ? ndc.y : 0.0, ndc.z);
 
@@ -823,15 +823,14 @@ void Trackball::touchGesture(Event* event) {
         zoom = getBoundedZoom(getLookFrom(), getLookTo(), static_cast<float>(zoom));
         const dvec3 newLookFrom = getLookFrom() + zoom * (direction);
 
-        dvec3 boundedWorldSpaceTranslation(
+        const dvec3 boundedWorldSpaceTranslation(
             getBoundedTranslation(newLookFrom, getLookTo(), worldSpaceTranslation));
         // Rotating using angle from screen space is equivalent to rotating
         // around the direction in world space since we are looking into the screen.
         dvec3 newLookUp;
         if (allowViewDirectionRotation_) {
-            dvec3 direction2 = (getLookTo() - getLookFrom());
-            newLookUp = glm::normalize(
-                glm::rotate(getLookUp(), static_cast<double>(angle), glm::normalize(direction2)));
+            const dvec3 direction2 = (getLookTo() - getLookFrom());
+            newLookUp = glm::normalize(glm::rotate(getLookUp(), angle, glm::normalize(direction2)));
         } else {
             newLookUp = getLookUp();
         }

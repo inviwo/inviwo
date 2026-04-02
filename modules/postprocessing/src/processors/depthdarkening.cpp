@@ -135,8 +135,8 @@ void DepthDarkening::process() {
                 return {glm::min(mm.x, v), glm::max(mm.y, v)};
             });
 
-        float z_n = static_cast<float>(cam_.getNearPlaneDist());
-        float z_f = static_cast<float>(cam_.getFarPlaneDist());
+        const auto z_n = static_cast<float>(cam_.getNearPlaneDist());
+        const auto z_f = static_cast<float>(cam_.getFarPlaneDist());
         TextureUnit inportTexture0;
         utilgl::bindDepthTexture(inport_, inportTexture0.getEnum());
         utilgl::activateTarget(*linearDepth_);

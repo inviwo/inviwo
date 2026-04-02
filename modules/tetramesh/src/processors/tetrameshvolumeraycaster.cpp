@@ -45,7 +45,7 @@
 
 namespace inviwo {
 
-namespace detail {
+namespace {
 
 std::function<std::optional<dmat4>()> boundingBox(const TetraMeshInport& tetra) {
     return [port = &tetra]() -> std::optional<dmat4> {
@@ -58,7 +58,7 @@ std::function<std::optional<dmat4>()> boundingBox(const TetraMeshInport& tetra) 
     };
 }
 
-}  // namespace detail
+}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TetraMeshVolumeRaycaster::processorInfo_{
@@ -78,7 +78,7 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
     , inport_{"inport", "Tetra mesh data used for volume rendering"_help}
     , imageInport_{"background", "Optional background image"_help}
     , outport_{"outport", "Rendered output image"_help}
-    , camera_{"camera", "Camera", detail::boundingBox(inport_)}
+    , camera_{"camera", "Camera", boundingBox(inport_)}
     , trackball_{&camera_}
     , lighting_{"lighting", "Lighting", &camera_}
     , tf_{"transferFunction", "Transfer Function"}

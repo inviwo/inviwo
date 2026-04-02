@@ -130,8 +130,8 @@ void VolumeSubset::process() {
             volume->addRepresentation(VolumeRAMSubSet::apply(vol, dim, offset));
 
             if (adjustBasisAndOffset_.get()) {
-                dvec3 volOffset = inport_.getData()->getOffset();
-                dmat3 volBasis = inport_.getData()->getBasis();
+                const dvec3 volOffset = inport_.getData()->getOffset();
+                const dmat3 volBasis = inport_.getData()->getBasis();
 
                 const dvec3 newOffset =
                     volOffset + volBasis * (static_cast<dvec3>(offset) / static_cast<dvec3>(dims_));
