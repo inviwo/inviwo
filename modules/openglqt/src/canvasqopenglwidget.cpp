@@ -172,8 +172,8 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
         interactionEventMapper->handleGestures(gestures.get());
     };
 
-    settings.enableTouchProperty_.onChange(setHandleTouch);
-    settings.enableGesturesProperty_.onChange(setHandleTouch);
+    touchCallback_ = settings.enableTouchProperty_.onChangeScoped(setHandleTouch);
+    gestureCallback_ = settings.enableGesturesProperty_.onChangeScoped(setHandleTouch);
     setHandleTouch();
 
     installEventFilter(new utilqt::WidgetCloseEventFilter(this));
