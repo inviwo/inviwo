@@ -484,7 +484,8 @@ void VolumeSliceGL::process() {
         }
         if (texToWorld_ !=
             mat4(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix())) {
-            texToWorld_ = mat4(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
+            texToWorld_ =
+                mat4(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
             planeSettingsChanged();
         }
     }
@@ -710,8 +711,8 @@ void VolumeSliceGL::updateMaxSliceNumber() {
 
     const dmat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
 
-    vec3 max(vec3(texToWorld * dvec4(1.0)));
-    vec3 min(vec3(texToWorld * dvec4(0.0, 0.0, 0.0, 1.0)));
+    const vec3 max(vec3(texToWorld * dvec4(1.0)));
+    const vec3 min(vec3(texToWorld * dvec4(0.0, 0.0, 0.0, 1.0)));
     // Rotation/mirroring may change the sign so apply min/max
     worldPosition_.setMaxValue(glm::max(min, max));
     worldPosition_.setMinValue(glm::min(min, max));
@@ -770,7 +771,7 @@ void VolumeSliceGL::eventUpdateMousePos(Event* event) {
         // convert normalized volume position to voxel coords
         const dmat4 textureToIndex(volume->getCoordinateTransformer().getTextureToIndexMatrix());
         const dvec4 texturePos(dvec3(volPos), 1.0);
-        ivec3 indexPos(ivec3(dvec3(textureToIndex * texturePos)));
+        const ivec3 indexPos(ivec3(dvec3(textureToIndex * texturePos)));
 
         const ivec3 volDim(volume->getDimensions());
 
@@ -866,11 +867,13 @@ void VolumeSliceGL::updateFromWorldPosition() {
 
         const dmat4 worldToTexture(
             inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix());
-        const vec3 texturePos = vec3(dvec3(worldToTexture * dvec4(dvec3(worldPosition_.get()), 1.0)));
+        const vec3 texturePos =
+            vec3(dvec3(worldToTexture * dvec4(dvec3(worldPosition_.get()), 1.0)));
 
         const dmat4 worldToIndex(
             inport_.getData()->getCoordinateTransformer().getWorldToIndexMatrix());
-        const ivec3 indexPos(ivec3(dvec3(worldToIndex * dvec4(dvec3(worldPosition_.get()), 1.0))) + ivec3(1));
+        const ivec3 indexPos(ivec3(dvec3(worldToIndex * dvec4(dvec3(worldPosition_.get()), 1.0))) +
+                             ivec3(1));
 
         NetworkLock lock(this);
         sliceX_.set(indexPos.x);

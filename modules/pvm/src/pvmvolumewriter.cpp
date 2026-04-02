@@ -98,12 +98,12 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::filesystem::path&
     const VolumeRAM* vr = data->getRepresentation<VolumeRAM>();
     const unsigned char* dataPtr = (const unsigned char*)vr->getData();
 
-    size3_t dim = vr->getDimensions();
+    const size3_t dim = vr->getDimensions();
+    const dmat3 basis = data->getBasis();
     vec3 spacing(1.f);
-    dmat3 basis = data->getBasis();
-    spacing.x = static_cast<float>(basis[0][0]) / dim.x;
-    spacing.y = static_cast<float>(basis[1][1]) / dim.y;
-    spacing.z = static_cast<float>(basis[2][2]) / dim.z;
+    spacing.x = static_cast<float>(basis[0][0]) / static_cast<float>(dim.x);
+    spacing.y = static_cast<float>(basis[1][1]) / static_cast<float>(dim.y);
+    spacing.z = static_cast<float>(basis[2][2]) / static_cast<float>(dim.z);
 
     unsigned char* data2Ptr = nullptr;
     if (components == 2) {

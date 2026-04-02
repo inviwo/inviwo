@@ -128,14 +128,14 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
 }
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
-                               std::function<std::optional<dmat4>()> getBoundingBox, dvec3 eye,
-                               dvec3 center, dvec3 lookUp, InvalidationLevel invalidationLevel,
+                               std::function<std::optional<dmat4>()> getBoundingBox, dvec3 lookFrom,
+                               dvec3 lookTo, dvec3 lookUp, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
     : CameraProperty(identifier, displayName, "Camera settings"_help, std::move(getBoundingBox),
-                     eye, center, lookUp, invalidationLevel, semantics) {}
+                     lookFrom, lookTo, lookUp, invalidationLevel, semantics) {}
 
-CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName, dvec3 eye,
-                               dvec3 center, dvec3 lookUp, Inport* inport,
+CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
+                               dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CameraProperty(
           identifier, displayName,
@@ -148,7 +148,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                   return nullptr;
               }
           }(),
-          eye, center, lookUp, invalidationLevel, semantics) {}
+          lookFrom, lookTo, lookUp, invalidationLevel, semantics) {}
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)

@@ -87,16 +87,16 @@ void Camera::setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp) {  // NOLINT
     setLookUp(lookUp);
 }
 
-void Camera::setNearPlaneDist(double val) {
-    if (nearPlaneDist_ != val) {
-        nearPlaneDist_ = val;
+void Camera::setNearPlaneDist(double distance) {
+    if (nearPlaneDist_ != distance) {
+        nearPlaneDist_ = distance;
         invalidateProjectionMatrix();
         if (camprop_) camprop_->nearPlane_.propertyModified();
     }
 }
-void Camera::setFarPlaneDist(double val) {
-    if (farPlaneDist_ != val) {
-        farPlaneDist_ = val;
+void Camera::setFarPlaneDist(double distance) {
+    if (farPlaneDist_ != distance) {
+        farPlaneDist_ = distance;
         invalidateProjectionMatrix();
         if (camprop_) camprop_->farPlane_.propertyModified();
     }
@@ -144,24 +144,24 @@ const dmat4& Camera::getInverseProjectionMatrix() const {
 }
 
 dvec3 Camera::getWorldPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {
-    dvec4 clipCoords = getClipPosFromNormalizedDeviceCoords(ndcCoords);
-    dvec4 eyeCoords = getInverseProjectionMatrix() * clipCoords;
-    dvec4 worldCoords = getInverseViewMatrix() * eyeCoords;
+    const auto clipCoords = getClipPosFromNormalizedDeviceCoords(ndcCoords);
+    const auto eyeCoords = getInverseProjectionMatrix() * clipCoords;
+    auto worldCoords = getInverseViewMatrix() * eyeCoords;
     worldCoords /= worldCoords.w;
-    return dvec3(worldCoords);
+    return {worldCoords};
 }
 
 dvec4 Camera::getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {
     const auto& projection = getProjectionMatrix();
     const double clipW = projection[2][3] / (ndcCoords.z - (projection[2][2] / projection[3][2]));
-    return dvec4(ndcCoords * clipW, clipW);
+    return {ndcCoords * clipW, clipW};
 }
 
 dvec3 Camera::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
     const dvec2& normalizedScreenCoord) const {
     // Default to using focus point for depth
-    dvec4 lookToClipCoord = getProjectionMatrix() * getViewMatrix() * dvec4(getLookTo(), 1.0);
-    return dvec3(2.0 * normalizedScreenCoord - 1.0, lookToClipCoord.z / lookToClipCoord.w);
+    const auto lookToClipCoord = getProjectionMatrix() * getViewMatrix() * dvec4(getLookTo(), 1.0);
+    return {2.0 * normalizedScreenCoord - 1.0, lookToClipCoord.z / lookToClipCoord.w};
 }
 
 void Camera::serialize(Serializer& s) const {

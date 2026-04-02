@@ -102,7 +102,8 @@ dmat4 minExtentBoundingBox(dmat4 boundingBox) {
     return boundingBox;
 }
 
-std::optional<dmat4> boundingBoxUnion(const std::optional<dmat4>& a, const std::optional<dmat4>& b) {
+std::optional<dmat4> boundingBoxUnion(const std::optional<dmat4>& a,
+                                      const std::optional<dmat4>& b) {
     if (!a && !b) return std::nullopt;
     if (a && !b) return a;
     if (b && !a) return b;
@@ -113,9 +114,9 @@ std::optional<dmat4> boundingBoxUnion(const std::optional<dmat4>& a, const std::
     const std::array<dvec3, 8> corners = {dvec3{0, 0, 0}, dvec3{1, 0, 0}, dvec3{1, 1, 0},
                                           dvec3{0, 1, 0}, dvec3{0, 0, 1}, dvec3{1, 0, 1},
                                           dvec3{1, 1, 1}, dvec3{0, 1, 1}};
-    for (const auto& bb : {a, b}) {
+    for (const auto& bb : {*a, *b}) {
         for (const auto& corner : corners) {
-            const auto point = dvec3(*bb * dvec4(corner, 1.0));
+            const auto point = dvec3(bb * dvec4(corner, 1.0));
             worldMin = glm::min(worldMin, point);
             worldMax = glm::max(worldMax, point);
         }
@@ -134,7 +135,7 @@ dmat4 boundingBox(const Layer& layer) {
 }
 
 dmat4 boundingBox(const std::vector<std::shared_ptr<Layer>>& layers) {
-    if (layers.empty()) return dmat4(0.0);
+    if (layers.empty()) return {0.0};
 
     dvec3 worldMin(std::numeric_limits<double>::max());
     dvec3 worldMax(std::numeric_limits<double>::lowest());
@@ -192,7 +193,7 @@ dmat4 boundingBox(const Mesh& mesh) {
 }
 
 dmat4 boundingBox(const std::vector<std::shared_ptr<const Mesh>>& meshes) {
-    if (meshes.empty()) return dmat4(0.0);
+    if (meshes.empty()) return {0.0};
 
     dvec3 worldMin(std::numeric_limits<double>::max());
     dvec3 worldMax(std::numeric_limits<double>::lowest());
@@ -218,7 +219,7 @@ dmat4 boundingBox(const Volume& volume) {
 }
 
 dmat4 boundingBox(const std::vector<std::shared_ptr<Volume>>& volumes) {
-    if (volumes.empty()) return dmat4(0.0);
+    if (volumes.empty()) return {0.0};
 
     dvec3 worldMin(std::numeric_limits<double>::max());
     dvec3 worldMax(std::numeric_limits<double>::lowest());

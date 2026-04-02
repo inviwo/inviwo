@@ -61,19 +61,19 @@ std::string_view enumToStr(CoordinateSpace s) {
 std::ostream& operator<<(std::ostream& ss, CoordinateSpace s) { return ss << enumToStr(s); }
 
 glm::dvec3 SpatialCoordinateTransformer::transformPosition(const dvec3& pos, CoordinateSpace from,
-                                                          CoordinateSpace to) const {
+                                                           CoordinateSpace to) const {
     const dvec4 result = getMatrix(from, to) * dvec4{pos, 1.0};
     return dvec3{result} / result.w;
 }
 
 glm::dvec4 SpatialCoordinateTransformer::transformPositionHomogeneous(const dvec4& pos,
-                                                                     CoordinateSpace from,
-                                                                     CoordinateSpace to) const {
+                                                                      CoordinateSpace from,
+                                                                      CoordinateSpace to) const {
     return getMatrix(from, to) * pos;
 }
 
 glm::dvec3 SpatialCoordinateTransformer::transformNormal(const dvec3& normal, CoordinateSpace from,
-                                                        CoordinateSpace to) const {
+                                                         CoordinateSpace to) const {
     const dmat3 m{
         glm::transpose(glm::inverse(dmat3{SpatialCoordinateTransformer::getMatrix(from, to)}))};
     return m * normal;
@@ -102,7 +102,7 @@ glm::dmat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, Coordin
         case CoordinateSpace::Data:
             switch (to) {
                 case CoordinateSpace::Data:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::Model:
                     return getDataToModelMatrix();
                 case CoordinateSpace::World:
@@ -117,7 +117,7 @@ glm::dmat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, Coordin
                 case CoordinateSpace::Data:
                     return getModelToDataMatrix();
                 case CoordinateSpace::Model:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 default:
@@ -132,7 +132,7 @@ glm::dmat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, Coordin
                 case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
                 case CoordinateSpace::World:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -145,12 +145,12 @@ glm::dmat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, Coordin
 }
 
 glm::dmat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
-                                                     CoordinateSpace to) const {
+                                                      CoordinateSpace to) const {
     switch (from) {
         case CoordinateSpace::Index:
             switch (to) {
                 case CoordinateSpace::Index:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::Data:
                     return getIndexToDataMatrix();
                 case CoordinateSpace::Model:
@@ -167,7 +167,7 @@ glm::dmat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Index:
                     return getDataToIndexMatrix();
                 case CoordinateSpace::Data:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::Model:
                     return getDataToModelMatrix();
                 case CoordinateSpace::World:
@@ -184,7 +184,7 @@ glm::dmat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Data:
                     return getModelToDataMatrix();
                 case CoordinateSpace::Model:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 default:
@@ -201,7 +201,7 @@ glm::dmat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
                 case CoordinateSpace::World:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -214,12 +214,12 @@ glm::dmat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
 }
 
 glm::dmat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
-                                                        CoordinateSpace to) const {
+                                                         CoordinateSpace to) const {
     switch (from) {
         case CoordinateSpace::Data:
             switch (to) {
                 case CoordinateSpace::Data:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::Model:
                     return getDataToModelMatrix();
                 case CoordinateSpace::World:
@@ -238,7 +238,7 @@ glm::dmat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Data:
                     return getModelToDataMatrix();
                 case CoordinateSpace::Model:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 case CoordinateSpace::View:
@@ -257,7 +257,7 @@ glm::dmat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
                 case CoordinateSpace::World:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::View:
                     return getWorldToViewMatrix();
                 case CoordinateSpace::Clip:
@@ -276,7 +276,7 @@ glm::dmat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::World:
                     return getViewToWorldMatrix();
                 case CoordinateSpace::View:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::Clip:
                     return getViewToClipMatrix();
                 default:
@@ -295,7 +295,7 @@ glm::dmat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::View:
                     return getClipToViewMatrix();
                 case CoordinateSpace::Clip:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -308,12 +308,12 @@ glm::dmat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
 }
 
 glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
-                                                           CoordinateSpace to) const {
+                                                            CoordinateSpace to) const {
     switch (from) {
         case CoordinateSpace::Index:
             switch (to) {
                 case CoordinateSpace::Index:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::Data:
                     return getIndexToDataMatrix();
                 case CoordinateSpace::Model:
@@ -334,7 +334,7 @@ glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from
                 case CoordinateSpace::Index:
                     return getDataToIndexMatrix();
                 case CoordinateSpace::Data:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::Model:
                     return getDataToModelMatrix();
                 case CoordinateSpace::World:
@@ -355,7 +355,7 @@ glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from
                 case CoordinateSpace::Data:
                     return getModelToDataMatrix();
                 case CoordinateSpace::Model:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 case CoordinateSpace::View:
@@ -376,7 +376,7 @@ glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from
                 case CoordinateSpace::Model:
                     return getWorldToModelMatrix();
                 case CoordinateSpace::World:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::View:
                     return getWorldToViewMatrix();
                 case CoordinateSpace::Clip:
@@ -397,7 +397,7 @@ glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from
                 case CoordinateSpace::World:
                     return getViewToWorldMatrix();
                 case CoordinateSpace::View:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 case CoordinateSpace::Clip:
                     return getViewToClipMatrix();
                 default:
@@ -418,7 +418,7 @@ glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from
                 case CoordinateSpace::View:
                     return getClipToViewMatrix();
                 case CoordinateSpace::Clip:
-                    return glm::dmat4(1.0);
+                    return {1.0};
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
