@@ -72,7 +72,7 @@ public:
     /**
      * @copydoc TetraMesh::getBoundingBox
      */
-    virtual mat4 getBoundingBox() const override;
+    virtual dmat4 getBoundingBox() const override;
 
     /**
      * @copydoc TetraMesh::getDataRange

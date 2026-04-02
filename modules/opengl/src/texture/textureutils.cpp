@@ -395,20 +395,20 @@ void setShaderUniforms(Shader& shader, const Layer& layer, std::string_view samp
     const auto& ct = layer.getCoordinateTransformer();
 
     StrBuffer buff;
-    shader.setUniform(buff.replace("{}.dataToModel", samplerID), mat4(ct.getDataToModelMatrix()));
-    shader.setUniform(buff.replace("{}.modelToData", samplerID), mat4(ct.getModelToDataMatrix()));
+    shader.setUniform(buff.replace("{}.dataToModel", samplerID), ct.getDataToModelMatrix());
+    shader.setUniform(buff.replace("{}.modelToData", samplerID), ct.getModelToDataMatrix());
 
-    shader.setUniform(buff.replace("{}.dataToWorld", samplerID), mat4(ct.getDataToWorldMatrix()));
-    shader.setUniform(buff.replace("{}.worldToData", samplerID), mat4(ct.getWorldToDataMatrix()));
+    shader.setUniform(buff.replace("{}.dataToWorld", samplerID), ct.getDataToWorldMatrix());
+    shader.setUniform(buff.replace("{}.worldToData", samplerID), ct.getWorldToDataMatrix());
 
-    shader.setUniform(buff.replace("{}.modelToWorld", samplerID), mat4(ct.getModelToWorldMatrix()));
-    shader.setUniform(buff.replace("{}.worldToModel", samplerID), mat4(ct.getWorldToModelMatrix()));
+    shader.setUniform(buff.replace("{}.modelToWorld", samplerID), ct.getModelToWorldMatrix());
+    shader.setUniform(buff.replace("{}.worldToModel", samplerID), ct.getWorldToModelMatrix());
 
-    shader.setUniform(buff.replace("{}.worldToTexture", samplerID), mat4(ct.getWorldToTextureMatrix()));
-    shader.setUniform(buff.replace("{}.textureToWorld", samplerID), mat4(ct.getTextureToWorldMatrix()));
+    shader.setUniform(buff.replace("{}.worldToTexture", samplerID), ct.getWorldToTextureMatrix());
+    shader.setUniform(buff.replace("{}.textureToWorld", samplerID), ct.getTextureToWorldMatrix());
 
-    shader.setUniform(buff.replace("{}.textureToIndex", samplerID), mat4(ct.getTextureToIndexMatrix()));
-    shader.setUniform(buff.replace("{}.indexToTexture", samplerID), mat4(ct.getIndexToTextureMatrix()));
+    shader.setUniform(buff.replace("{}.textureToIndex", samplerID), ct.getTextureToIndexMatrix());
+    shader.setUniform(buff.replace("{}.indexToTexture", samplerID), ct.getIndexToTextureMatrix());
 
     const vec2 dimensions = vec2(layer.getDimensions());
     shader.setUniform(buff.replace("{}.dimensions", samplerID), dimensions);

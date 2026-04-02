@@ -45,7 +45,8 @@ namespace inviwo {
 class IVW_CORE_API PlotCamera final : public Camera {
 public:
     explicit PlotCamera(dvec3 lookFrom = cameradefaults::lookFrom,
-                        dvec3 lookTo = cameradefaults::lookTo, dvec3 lookUp = cameradefaults::lookUp,
+                        dvec3 lookTo = cameradefaults::lookTo,
+                        dvec3 lookUp = cameradefaults::lookUp,
                         double nearPlane = cameradefaults::nearPlane,
                         double farPlane = cameradefaults::farPlane,
                         double aspectRatio = cameradefaults::aspectRatio,
