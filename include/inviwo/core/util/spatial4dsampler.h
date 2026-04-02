@@ -108,8 +108,8 @@ ReturnType Spatial4DSampler<ReturnType>::sample(const dvec4& pos, CoordinateSpac
     auto dataPos = dvec3(pos);
     if (space != CoordinateSpace::Data) {
         auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, CoordinateSpace::Data);
-        auto p = m * vec4(static_cast<vec3>(pos), 1.0);
-        dataPos = vec3(p) / p.w;
+        auto p = m * dvec4(static_cast<dvec3>(pos), 1.0);
+        dataPos = dvec3(p) / p.w;
     }
 
     return sampleDataSpace(dvec4(dataPos, pos.w));
@@ -125,8 +125,8 @@ bool Spatial4DSampler<ReturnType>::withinBounds(const dvec4& pos, CoordinateSpac
     auto dataPos = dvec3(pos);
     if (space != CoordinateSpace::Data) {
         auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, CoordinateSpace::Data);
-        auto p = m * vec4(static_cast<vec3>(dataPos), 1.0f);
-        dataPos = vec3(p) / p.w;
+        auto p = m * dvec4(static_cast<dvec3>(dataPos), 1.0);
+        dataPos = dvec3(p) / p.w;
     }
 
     return withinBoundsDataSpace(dvec4(dataPos, pos.w));

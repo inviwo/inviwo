@@ -32,7 +32,7 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/datastructures/camera/zoomoptions.h>
 #include <inviwo/core/util/glmvec.h>
-#include <glm/mat4x4.hpp>
+#include <inviwo/core/util/glmmat.h>
 #include <glm/mat4x4.hpp>
 
 #include <optional>
@@ -40,17 +40,15 @@
 
 namespace inviwo {
 
-using mat4 = glm::mat4;
-
 namespace cameradefaults {
-constexpr vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f);
-constexpr vec3 lookTo = vec3(0.0f);
-constexpr vec3 lookUp = vec3(0.0f, 1.0f, 0.0f);
-constexpr float nearPlane = 0.1f;
-constexpr float farPlane = 100.0f;
-constexpr float fieldOfView = 38.f;
-constexpr float aspectRatio = 1.f;
-constexpr float width = 10.f;
+constexpr dvec3 lookFrom = dvec3(0.0, 0.0, 2.0);
+constexpr dvec3 lookTo = dvec3(0.0);
+constexpr dvec3 lookUp = dvec3(0.0, 1.0, 0.0);
+constexpr double nearPlane = 0.1;
+constexpr double farPlane = 100.0;
+constexpr double fieldOfView = 38.0;
+constexpr double aspectRatio = 1.0;
+constexpr double width = 10.0;
 }  // namespace cameradefaults
 
 class CameraProperty;
@@ -79,8 +77,8 @@ public:
      * @param farPlane Camera far clip-plane
      * @param aspectRatio Camera aspect ratio
      */
-    Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane,
-           float aspectRatio);
+    Camera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane,
+           double aspectRatio);
     virtual ~Camera() = default;
     Camera(const Camera& other) = default;
     Camera& operator=(const Camera& other) = default;
@@ -92,52 +90,52 @@ public:
     virtual void updateFrom(const Camera& source);
     virtual void configureProperties(CameraProperty& cameraProperty, bool attach);
 
-    const vec3& getLookFrom() const;
-    virtual void setLookFrom(vec3 val);
+    const dvec3& getLookFrom() const;
+    virtual void setLookFrom(dvec3 val);
 
-    const vec3& getLookTo() const;
-    virtual void setLookTo(vec3 val);
+    const dvec3& getLookTo() const;
+    virtual void setLookTo(dvec3 val);
 
-    const vec3& getLookUp() const;
-    virtual void setLookUp(vec3 val);
+    const dvec3& getLookUp() const;
+    virtual void setLookUp(dvec3 val);
 
-    void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp);
+    void setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp);
 
-    virtual float getAspectRatio() const;
-    virtual void setAspectRatio(float val);
+    virtual double getAspectRatio() const;
+    virtual void setAspectRatio(double val);
 
     virtual void zoom(const ZoomOptions& opts) = 0;
 
-    vec3 getLookRight() const;
+    dvec3 getLookRight() const;
 
     /**
      * @brief Get unnormalized direction of camera: lookTo - lookFrom
      */
-    vec3 getDirection() const;
+    dvec3 getDirection() const;
 
     /**
      * @brief Set distance to the near plane from lookFrom.
      */
-    virtual void setNearPlaneDist(float distance);
-    float getNearPlaneDist() const;
+    virtual void setNearPlaneDist(double distance);
+    double getNearPlaneDist() const;
 
     /**
      * @brief Set distance to the far plane from lookFrom.
      */
-    virtual void setFarPlaneDist(float distance);
-    float getFarPlaneDist() const;
+    virtual void setFarPlaneDist(double distance);
+    double getFarPlaneDist() const;
 
-    const mat4& getViewMatrix() const;
-    const mat4& getProjectionMatrix() const;
-    const mat4& getInverseViewMatrix() const;
-    const mat4& getInverseProjectionMatrix() const;
+    const dmat4& getViewMatrix() const;
+    const dmat4& getProjectionMatrix() const;
+    const dmat4& getInverseViewMatrix() const;
+    const dmat4& getInverseProjectionMatrix() const;
 
     /**
      * @brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
      * @param ndcCoords Coordinates in [-1 1]
      * @return World space position
      */
-    vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
+    dvec3 getWorldPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const;
 
     /**
      * @brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates,
@@ -148,10 +146,10 @@ public:
      * perspective division.
      * @return Clip space position
      */
-    virtual vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
+    virtual dvec4 getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const;
 
-    vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
-        const vec2& normalizedScreenCoord) const;
+    dvec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+        const dvec2& normalizedScreenCoord) const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -172,43 +170,43 @@ protected:
      * @see PerspectiveCamera
      * @see OrthographicCamera
      */
-    virtual mat4 calculateProjectionMatrix() const = 0;
+    virtual dmat4 calculateProjectionMatrix() const = 0;
 
-    virtual mat4 calculateViewMatrix() const;
+    virtual dmat4 calculateViewMatrix() const;
 
     void invalidateViewMatrix();
     void invalidateProjectionMatrix();
 
-    vec3 lookFrom_;
-    vec3 lookTo_;
-    vec3 lookUp_;
+    dvec3 lookFrom_;
+    dvec3 lookTo_;
+    dvec3 lookUp_;
 
-    float nearPlaneDist_;  ///< Distance to the near plane from lookFrom.
-    float farPlaneDist_;   ///< Distance to the far plane from lookFrom.
+    double nearPlaneDist_;  ///< Distance to the near plane from lookFrom.
+    double farPlaneDist_;   ///< Distance to the far plane from lookFrom.
 
-    float aspectRatio_;
+    double aspectRatio_;
 
     // Make mutable to allow then to be changed even though they are called from const function.
     // This allows us to perform lazy evaluation.
     mutable bool invalidViewMatrix_;
     mutable bool invalidProjectionMatrix_;
-    mutable mat4 viewMatrix_;
-    mutable mat4 projectionMatrix_;
-    mutable mat4 inverseViewMatrix_;
-    mutable mat4 inverseProjectionMatrix_;
+    mutable dmat4 viewMatrix_;
+    mutable dmat4 projectionMatrix_;
+    mutable dmat4 inverseViewMatrix_;
+    mutable dmat4 inverseProjectionMatrix_;
     CameraProperty* camprop_ = nullptr;
 };
 
 // Implementation details
-inline const vec3& Camera::getLookFrom() const { return lookFrom_; }
-inline const vec3& Camera::getLookTo() const { return lookTo_; }
-inline const vec3& Camera::getLookUp() const { return lookUp_; }
-inline vec3 Camera::getLookRight() const {
+inline const dvec3& Camera::getLookFrom() const { return lookFrom_; }
+inline const dvec3& Camera::getLookTo() const { return lookTo_; }
+inline const dvec3& Camera::getLookUp() const { return lookUp_; }
+inline dvec3 Camera::getLookRight() const {
     return glm::cross(glm::normalize(getDirection()), glm::normalize(lookUp_));
 }
-inline vec3 Camera::getDirection() const { return lookTo_ - lookFrom_; }
-inline float Camera::getNearPlaneDist() const { return nearPlaneDist_; }
-inline float Camera::getFarPlaneDist() const { return farPlaneDist_; }
-inline float Camera::getAspectRatio() const { return aspectRatio_; }
+inline dvec3 Camera::getDirection() const { return lookTo_ - lookFrom_; }
+inline double Camera::getNearPlaneDist() const { return nearPlaneDist_; }
+inline double Camera::getFarPlaneDist() const { return farPlaneDist_; }
+inline double Camera::getAspectRatio() const { return aspectRatio_; }
 
 }  // namespace inviwo

@@ -92,11 +92,11 @@ void setShaderUniforms(Shader& shader, const Volume& volume, std::string_view sa
     // which means that the transformation is equal to scaling
     // the world to texture matrix.
     shader.setUniform(buff.replace("{}.textureSpaceGradientSpacing", samplerID),
-                      mat3(glm::scale(ct.getWorldToTextureMatrix(), gradientSpacing)));
+                      glm::scale(ct.getWorldToTextureMatrix(), gradientSpacing));
 
-    const vec3 dimF = static_cast<vec3>(volume.getDimensions());
+    const auto dimF = static_cast<dvec3>(volume.getDimensions());
     shader.setUniform(buff.replace("{}.dimensions", samplerID), dimF);
-    shader.setUniform(buff.replace("{}.reciprocalDimensions", samplerID), vec3(1.f) / dimF);
+    shader.setUniform(buff.replace("{}.reciprocalDimensions", samplerID), dvec3(1.0) / dimF);
 
     shader.setUniform(buff.replace("{}.worldSpaceGradientSpacing", samplerID), gradientSpacing);
 

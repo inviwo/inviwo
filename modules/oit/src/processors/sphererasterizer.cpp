@@ -163,7 +163,7 @@ UseFragmentList SphereRasterizer::usesFragmentLists() const {
                : UseFragmentList::No;
 }
 
-void SphereRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
+void SphereRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
 
     bnl_.update();
     labels_.update();
@@ -209,6 +209,6 @@ Document SphereRasterizer::getInfo() const {
     return doc;
 }
 
-std::optional<mat4> SphereRasterizer::boundingBox() const { return util::boundingBox(inport_)(); }
+std::optional<dmat4> SphereRasterizer::boundingBox() const { return util::boundingBox(inport_)(); }
 
 }  // namespace inviwo

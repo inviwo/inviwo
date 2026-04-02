@@ -39,6 +39,7 @@
 
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
+#include <pybind11/native_enum.h>
 
 #include <fmt/format.h>
 
@@ -50,21 +51,24 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
 
     auto cameraModule = main.def_submodule("camerautil", "Camera utilities");
 
-    py::enum_<camerautil::Side>(cameraModule, "Side")
+    py::native_enum<camerautil::Side>(cameraModule, "Side", "enum.Enum")
         .value("XNegative", camerautil::Side::XNegative)
         .value("XPositive", camerautil::Side::XPositive)
         .value("YNegative", camerautil::Side::YNegative)
         .value("YPositive", camerautil::Side::YPositive)
         .value("ZNegative", camerautil::Side::ZNegative)
-        .value("ZPositive", camerautil::Side::ZPositive);
+        .value("ZPositive", camerautil::Side::ZPositive)
+        .finalize();
 
-    py::enum_<camerautil::UpdateNearFar>(cameraModule, "UpdateNearFar")
+    py::native_enum<camerautil::UpdateNearFar>(cameraModule, "UpdateNearFar", "enum.Enum")
         .value("Yes", camerautil::UpdateNearFar::Yes)
-        .value("No", camerautil::UpdateNearFar::No);
+        .value("No", camerautil::UpdateNearFar::No)
+        .finalize();
 
-    py::enum_<camerautil::UpdateLookRanges>(cameraModule, "UpdateLookRanges")
+    py::native_enum<camerautil::UpdateLookRanges>(cameraModule, "UpdateLookRanges", "enum.Enum")
         .value("Yes", camerautil::UpdateLookRanges::Yes)
-        .value("No", camerautil::UpdateLookRanges::No);
+        .value("No", camerautil::UpdateLookRanges::No)
+        .finalize();
 
     cameraModule.def("setCameraLookRanges", &camerautil::setCameraLookRanges);
     cameraModule.def("computeCameraNearFar", &camerautil::computeCameraNearFar);
@@ -72,45 +76,46 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
 
     cameraModule.def(
         "setCameraView",
-        [](CameraProperty& cam, const mat4& boundingBox, float fitRatio,
+        [](CameraProperty& cam, const dmat4& boundingBox, double fitRatio,
            camerautil::UpdateNearFar updateNearFar, camerautil::UpdateLookRanges updateLookRanges) {
             camerautil::setCameraView(cam, boundingBox, fitRatio, updateNearFar, updateLookRanges);
         },
-        py::arg("cameraProperty"), py::arg("boundingBox"), py::arg("fitRatio") = 1.05f,
+        py::arg("cameraProperty"), py::arg("boundingBox"), py::arg("fitRatio") = 1.05,
         py::arg("updateNearFar") = camerautil::UpdateNearFar::No,
         py::arg("updateLookRanges") = camerautil::UpdateLookRanges::No);
 
     cameraModule.def(
         "setCameraView",
-        [](CameraProperty& cam, const mat4& boundingBox, camerautil::Side side, float fitRatio,
+        [](CameraProperty& cam, const dmat4& boundingBox, camerautil::Side side, double fitRatio,
            camerautil::UpdateNearFar updateNearFar, camerautil::UpdateLookRanges updateLookRanges) {
             camerautil::setCameraView(cam, boundingBox, side, fitRatio, updateNearFar,
                                       updateLookRanges);
         },
         py::arg("cameraProperty"), py::arg("boundingBox"), py::arg("side"),
-        py::arg("fitRatio") = 1.05f, py::arg("updateNearFar") = camerautil::UpdateNearFar::No,
+        py::arg("fitRatio") = 1.05, py::arg("updateNearFar") = camerautil::UpdateNearFar::No,
         py::arg("updateLookRanges") = camerautil::UpdateLookRanges::No);
 
     cameraModule.def(
         "setCameraView",
-        [](CameraProperty& cam, const mat4& boundingBox, mat3 view, float fitRatio,
+        [](CameraProperty& cam, const dmat4& boundingBox, dmat3 view, double fitRatio,
            camerautil::UpdateNearFar updateNearFar, camerautil::UpdateLookRanges updateLookRanges) {
             camerautil::setCameraView(cam, boundingBox, view, fitRatio, updateNearFar,
                                       updateLookRanges);
         },
         py::arg("cameraProperty"), py::arg("boundingBox"), py::arg("view"),
-        py::arg("fitRatio") = 1.05f, py::arg("updateNearFar") = camerautil::UpdateNearFar::No,
+        py::arg("fitRatio") = 1.05, py::arg("updateNearFar") = camerautil::UpdateNearFar::No,
         py::arg("updateLookRanges") = camerautil::UpdateLookRanges::No);
 
     py::classh<CameraProperty, CompositeProperty>(properties, "CameraProperty")
-        .def(py::init([](const std::string& identifier, const std::string& displayName, vec3 eye,
-                         vec3 center, vec3 lookUp, Inport* inport,
+        .def(py::init([](std::string_view identifier, std::string_view displayName, dvec3 lookFrom,
+                         dvec3 lookTo, dvec3 lookUp, Inport* inport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                 return new CameraProperty(identifier, displayName, eye, center, lookUp, inport,
-                                           invalidationLevel, semantics);
+                 return new CameraProperty(identifier, displayName, lookFrom, lookTo, lookUp,
+                                           inport, invalidationLevel, semantics);
              }),
-             py::arg("identifier"), py::arg("displayName"), py::arg("eye") = vec3(0.0f, 0.0f, 2.0f),
-             py::arg("center") = vec3(0.0f), py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f),
+             py::arg("identifier"), py::arg("displayName"),
+             py::arg("lookFrom") = cameradefaults::lookFrom,
+             py::arg("lookTo") = cameradefaults::lookTo, py::arg("lookUp") = cameradefaults::lookUp,
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
              py::arg("semantics") = PropertySemantics::Default)
@@ -120,15 +125,15 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
                                static_cast<Camera& (CameraProperty::*)()>(&CameraProperty::get))
         .def_property(
             "lookFrom", &CameraProperty::getLookFrom,
-            [](CameraProperty* cam, vec3 val) { cam->setLookFrom(val); },
+            [](CameraProperty* cam, dvec3 val) { cam->setLookFrom(val); },
             py::return_value_policy::copy)
         .def_property(
             "lookTo", &CameraProperty::getLookTo,
-            [](CameraProperty* cam, vec3 val) { cam->setLookTo(val); },
+            [](CameraProperty* cam, dvec3 val) { cam->setLookTo(val); },
             py::return_value_policy::copy)
         .def_property(
             "lookUp", &CameraProperty::getLookUp,
-            [](CameraProperty* cam, vec3 val) { cam->setLookUp(val); },
+            [](CameraProperty* cam, dvec3 val) { cam->setLookUp(val); },
             py::return_value_policy::copy)
         .def_property_readonly("lookRight", &CameraProperty::getLookRight)
         .def_property("aspectRatio", &CameraProperty::getAspectRatio,
@@ -137,8 +142,8 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
                       &CameraProperty::setNearPlaneDist)
         .def_property("farPlane", &CameraProperty::getFarPlaneDist,
                       &CameraProperty::setFarPlaneDist)
-        .def("setLook",
-             [](CameraProperty* cam, vec3 from, vec3 to, vec3 up) { cam->setLook(from, to, up); })
+        .def("setLook", [](CameraProperty* cam, dvec3 from, dvec3 to,
+                           dvec3 up) { cam->setLook(from, to, up); })
         .def_property_readonly("lookFromMinValue", &CameraProperty::getLookFromMinValue)
         .def_property_readonly("lookFromMaxValue", &CameraProperty::getLookFromMaxValue)
         .def_property_readonly("lookToMinValue", &CameraProperty::getLookToMinValue)

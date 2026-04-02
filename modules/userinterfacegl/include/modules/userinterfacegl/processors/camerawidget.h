@@ -91,8 +91,8 @@ public:
 private:
     // initial state of camera when an interaction is triggered to keep the rotation axis consistent
     struct CameraState {
-        vec3 dir{0.0f, 0.0f, -1.0f};
-        vec3 up{0.0f, 1.0f, 0.0f};
+        dvec3 dir{0.0, 0.0, -1.0};
+        dvec3 up{0.0, 1.0, 0.0};
     };
 
     void updateWidgetTexture(const ivec2& widgetSize);
@@ -108,16 +108,16 @@ private:
 
     void freeRotation(dvec2 mouseDelta);
     void axisRotation(RotationAxis dir, dvec2 mouseDelta);
-    void rotation(vec3 axis, float degrees);
+    void rotation(dvec3 axis, double degrees);
     void stepRotation(RotationAxis dir, bool clockwise);
     void dragZoom(dvec2 delta);
     void stepZoom(bool zoomIn);
 
-    void updateOutput(const mat4& rotation);
+    void updateOutput(const dmat4& rotation);
 
     std::vector<ButtonGroupProperty::Button> buttons();
 
-    static vec3 rotationAxis(RotationAxis rot, bool alignToObject, const CameraState& cam);
+    static dvec3 rotationAxis(RotationAxis rot, bool alignToObject, const CameraState& cam);
 
     ImageInport inport_;
     ImageOutport outport_;
@@ -131,8 +131,8 @@ private:
     BoolProperty showRollWidget_;
     BoolProperty showDollyWidget_;
     BoolProperty showRotWidget_;
-    FloatProperty speed_;
-    FloatProperty angleIncrement_;
+    DoubleProperty speed_;
+    DoubleProperty angleIncrement_;
     IntProperty minTouchMovement_;
 
     CompositeProperty appearance_;
@@ -146,7 +146,7 @@ private:
 
     CompositeProperty outputProps_;
     CameraProperty camera_;
-    FloatMat4Property rotMatrix_;
+    DoubleMat4Property rotMatrix_;
 
     CompositeProperty internalProps_;
     PerspectiveCamera internalCamera_;
@@ -196,26 +196,26 @@ private:
     ImageGL* widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead
 
     struct Continuous {
-        vec3 axis{};
-        float step{};
+        dvec3 axis{};
+        double step{};
     };
     struct Swing {
-        vec3 axis{};
-        vec3 dir{};
-        vec3 up{};
-        float amplitude{};
+        dvec3 axis{};
+        dvec3 dir{};
+        dvec3 up{};
+        double amplitude{};
         EasingType easing = EasingType::quadratic;
-        float step{};
-        float current{};
+        double step{};
+        double current{};
     };
     struct Goal {
-        glm::quat start{};
-        glm::quat stop{};
-        vec3 dir{};
-        vec3 up{};
+        glm::dquat start{};
+        glm::dquat stop{};
+        dvec3 dir{};
+        dvec3 up{};
         EasingType easing = EasingType::cubic;
-        float step{};
-        float current{};
+        double step{};
+        double current{};
         std::function<std::variant<std::monostate, Continuous, Swing, Goal>(Camera&)> done =
             [](Camera&) { return std::monostate{}; };
     };
@@ -248,8 +248,8 @@ private:
         OptionProperty<RotationAxis> type;
         OptionProperty<Mode> mode;
         OptionProperty<EasingType> easing;
-        FloatProperty increment;
-        FloatProperty amplitude;
+        DoubleProperty increment;
+        DoubleProperty amplitude;
         EventProperty playPause;
 
         Animation paused{};

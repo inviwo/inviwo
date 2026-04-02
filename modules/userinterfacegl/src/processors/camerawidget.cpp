@@ -205,16 +205,16 @@ CameraWidget::CameraWidget()
                        "Shows an additional widget for camera dolly"_help, false}
     , showRotWidget_{"showRotWidget", "Camera Rotation", true}
     , speed_{"speed", "Speed (deg per pixel)",
-             util::ordinalScale(0.25f, 5.0f)
+             util::ordinalScale(0.25, 5.0)
                  .set("Scaling factor (sensitivity) for rotation with a mouse drag"_help)
                  .set(InvalidationLevel::Valid)}
     , angleIncrement_{"angleIncrement",
                       "Angle (deg) per Click",
                       "Rotation angle in degrees when a rotation is triggered by a mouse click"_help,
-                      15.0f,
-                      {-90.0f, ConstraintBehavior::Immutable},
-                      {90.0f, ConstraintBehavior::Immutable},
-                      0.5f,
+                      15.0,
+                      {-90.0, ConstraintBehavior::Immutable},
+                      {90.0, ConstraintBehavior::Immutable},
+                      0.5,
                       InvalidationLevel::Valid}
     , minTouchMovement_{"minTouchMovement", "Min Touch Movement (pixel)",
                         util::ordinalLength(5, 25)
@@ -251,13 +251,12 @@ CameraWidget::CameraWidget()
     , rotMatrix_{"rotMatrix",
                  "Rotation Matrix",
                  "Matrix representing the camera orientation"_help,
-                 mat4(1.0f),
-                 {util::filled<mat4>(-10.0f), ConstraintBehavior::Ignore},
-                 {util::filled<mat4>(+10.0f), ConstraintBehavior::Ignore}}
+                 dmat4(1.0),
+                 {util::filled<dmat4>(-10.0), ConstraintBehavior::Ignore},
+                 {util::filled<dmat4>(+10.0), ConstraintBehavior::Ignore}}
 
     , internalProps_("internalProperties", "Internal Properties")
-    , internalCamera_(vec3(0.0f, 0.0f, 14.6f), vec3(0.0f), vec3(0.0f, 1.0f, 0.0f), 1.0f, 30.0f,
-                      1.0f, 38.0f)
+    , internalCamera_(dvec3(0.0, 0.0, 14.6), dvec3(0.0), dvec3(0.0, 1.0, 0.0), 1.0, 30.0, 1.0, 38.0)
     , lightingProperty_("internalLighting", "Lighting",
                         "Lighting setup for shading the widget"_help,
                         LightingConfig{
@@ -469,7 +468,7 @@ void CameraWidget::drawWidgetTexture() {
 void CameraWidget::objectPicked(PickingEvent* p) { pickingState_.objectPicked(p, *this); }
 
 namespace {
-vec3 findANiceNewLookUpForAxisAndCurrentUp(ivec3 newDir, vec3 currentUp) {
+dvec3 findANiceNewLookUpForAxisAndCurrentUp(ivec3 newDir, dvec3 currentUp) {
     static constexpr std::array primaryCandidates{ivec3{1, 0, 0},  ivec3{0, 1, 0},
                                                   ivec3{0, 0, 1},  ivec3{-1, 0, 0},
                                                   ivec3{0, -1, 0}, ivec3{0, 0, -1}};
@@ -495,11 +494,11 @@ vec3 findANiceNewLookUpForAxisAndCurrentUp(ivec3 newDir, vec3 currentUp) {
     };
 
     const auto orthogonal = [&](const ivec3& v) { return dot(v, newDir) == 0; };
-    const auto closest = [&](const ivec3& v) { return glm::dot(vec3{v}, currentUp); };
+    const auto closest = [&](const ivec3& v) { return glm::dot(dvec3{v}, currentUp); };
 
     const auto best = [&](auto&& range) {
         if (!range) return currentUp;
-        return glm::normalize(vec3{std::ranges::max(range, std::ranges::less{}, closest)});
+        return glm::normalize(dvec3{std::ranges::max(range, std::ranges::less{}, closest)});
     };
 
     // We assume that newDir is a permutation of -1, 0, 1;
@@ -553,11 +552,11 @@ void CameraWidget::cubePicked(PickingEvent* p) {
             const auto newDir = im(static_cast<int>(p->getPickedId())) - ivec3{1};
             const auto newUp = findANiceNewLookUpForAxisAndCurrentUp(newDir, cam.getLookUp());
 
-            const glm::quat rotDir =
-                glm::rotation(glm::normalize(-cam.getDirection()), glm::normalize(vec3{newDir}));
+            const glm::dquat rotDir =
+                glm::rotation(glm::normalize(-cam.getDirection()), glm::normalize(dvec3{newDir}));
 
             const auto tmpUp = rotDir * cam.getLookUp();
-            const glm::quat rotUp = glm::rotation(glm::normalize(tmpUp), glm::normalize(newUp));
+            const glm::dquat rotUp = glm::rotation(glm::normalize(tmpUp), glm::normalize(newUp));
 
             animator_.setAnimation(
                 Goal{.start = glm::quat_identity<float, glm::defaultp>(),
@@ -751,30 +750,29 @@ void CameraWidget::axisRotation(RotationAxis dir, dvec2 mouseDelta) {
 }
 
 void CameraWidget::freeRotation(dvec2 mouseDelta) {
-    const auto distance = static_cast<float>(glm::length(mouseDelta));
+    const auto distance = glm::length(mouseDelta);
     const auto& cam = camera_.get();
-    const auto rotAxis =
-        glm::normalize(-static_cast<float>(mouseDelta.y) *
-                           glm::normalize(glm::cross(cam.getDirection(), cam.getLookUp())) +
-                       static_cast<float>(mouseDelta.x) * cam.getLookUp());
+    const auto rotAxis = glm::normalize(
+        -mouseDelta.y * glm::normalize(glm::cross(cam.getDirection(), cam.getLookUp())) +
+        mouseDelta.x * cam.getLookUp());
     rotation(rotAxis, distance);
 }
 
-void CameraWidget::rotation(vec3 rotAxis, float degrees) {
-    if (std::abs(degrees) < glm::epsilon<float>()) {  // practically no change
+void CameraWidget::rotation(dvec3 rotAxis, double degrees) {
+    if (std::abs(degrees) < glm::epsilon<double>()) {  // practically no change
         return;
     }
 
     const auto angle =
-        glm::radians(degrees) * speed_.get() * (invertDirections_.get() ? -1.0f : 1.0f);
+        glm::radians(degrees) * speed_.get() * (invertDirections_.get() ? -1.0 : 1.0);
     const auto rotMatrix = glm::rotate(-angle, rotAxis);
     updateOutput(rotMatrix);
 }
 
 void CameraWidget::stepRotation(RotationAxis dir, bool clockwise) {
     const auto rotAxis = rotationAxis(dir, useWorldAxis_, cameraState(camera_));
-    const auto angle = glm::radians(angleIncrement_.get()) * (clockwise ? -1.0f : 1.0f) *
-                       (invertDirections_.get() ? -1.0f : 1.0f);
+    const auto angle = glm::radians(angleIncrement_.get()) * (clockwise ? -1.0 : 1.0) *
+                       (invertDirections_.get() ? -1.0 : 1.0);
     const auto rotMatrix = glm::rotate(-angle, rotAxis);
     updateOutput(rotMatrix);
 }
@@ -785,16 +783,15 @@ void CameraWidget::dragZoom(dvec2 delta) {
 }
 
 void CameraWidget::stepZoom(bool zoomIn) {
-    const auto factor = abs(angleIncrement_.get()) / 90.0f * (zoomIn ? -1.0f : 1.0f);
-    camera_.get().zoom({.factor = vec2{factor}});
+    const auto factor = abs(angleIncrement_.get()) / 90.0 * (zoomIn ? -1.0 : 1.0);
+    camera_.get().zoom({.factor = dvec2{factor}});
 }
 
-void CameraWidget::updateOutput(const mat4& rotation) {
+void CameraWidget::updateOutput(const dmat4& rotation) {
     // update camera
-    mat3 m(rotation);
+    const dmat3 m = rotation;
     auto& cam = camera_.get();
-    vec3 v(cam.getDirection());
-    camera_.setLook(cam.getLookTo() - m * v, cam.getLookTo(), m * cam.getLookUp());
+    camera_.setLook(cam.getLookTo() - m * cam.getDirection(), cam.getLookTo(), m * cam.getLookUp());
 
     // update rotation matrix
     rotMatrix_.set(rotation * rotMatrix_.get());
@@ -827,7 +824,7 @@ std::vector<ButtonGroupProperty::Button> CameraWidget::buttons() {
     }};
 }
 
-vec3 CameraWidget::rotationAxis(RotationAxis rot, bool alignToObject, const CameraState& cam) {
+dvec3 CameraWidget::rotationAxis(RotationAxis rot, bool alignToObject, const CameraState& cam) {
     const auto camAxis = [&]() {
         switch (rot) {
             case RotationAxis::Yaw:
@@ -846,9 +843,9 @@ vec3 CameraWidget::rotationAxis(RotationAxis rot, bool alignToObject, const Came
         const auto ind = std::ranges::max(order, std::ranges::less{},
                                           [&](size_t i) { return std::abs(camAxis[i]); });
 
-        static constexpr std::array axes{vec3{1.0f, 0.0f, 0.0f}, vec3{0.0f, 1.0f, 0.0f},
-                                         vec3{0.0f, 0.0f, 1.0f}};
-        return axes[ind] * std::copysignf(1.0f, glm::dot(camAxis, axes[ind]));
+        static constexpr std::array axes{dvec3{1.0, 0.0, 0.0}, dvec3{0.0, 1.0, 0.0},
+                                         dvec3{0.0, 0.0, 1.0}};
+        return axes[ind] * std::copysign(1.0, glm::dot(camAxis, axes[ind]));
     } else {
         return camAxis;
     }
@@ -862,8 +859,9 @@ void CameraWidget::Animator::animate() {
         util::overloaded{
             [](std::monostate) {},
             [&](Continuous& continuous) {
-                const auto rot = mat3(glm::rotate(-glm::radians(continuous.step), continuous.axis));
-                const auto dir = vec3(camera->getDirection());
+                const auto rot =
+                    dmat3(glm::rotate(-glm::radians(continuous.step), continuous.axis));
+                const auto dir = dvec3(camera->getDirection());
                 camera->setLook(camera->getLookTo() - rot * dir, camera->getLookTo(),
                                 rot * camera->getLookUp());
             },
@@ -874,27 +872,27 @@ void CameraWidget::Animator::animate() {
                 swing.current += swing.step;
 
                 const auto angle =
-                    std::copysignf(swing.amplitude, swing.current) *
+                    std::copysign(swing.amplitude, swing.current) *
                     util::ease(
-                        std::clamp(std::abs(swing.current) / std::abs(swing.amplitude), 0.0f, 1.0f),
+                        std::clamp(std::abs(swing.current) / std::abs(swing.amplitude), 0.0, 1.0),
                         {swing.easing, EasingMode::out});
 
                 // Rotate LookFrom around LookTo using axis
-                const auto rotation = mat3(glm::rotate(-glm::radians(angle), swing.axis));
+                const auto rotation = dmat3(glm::rotate(-glm::radians(angle), swing.axis));
                 const auto to = camera->getLookTo();
                 camera->setLook(to - rotation * swing.dir, to, rotation * swing.up);
             },
             [&](Goal& goal) {
                 const auto t =
                     util::ease(goal.current, {.type = goal.easing, .mode = EasingMode::inOut});
-                const glm::quat current = glm::slerp(goal.start, goal.stop, t);
+                const glm::dquat current = glm::slerp(goal.start, goal.stop, t);
                 camera->setLook(camera->getLookTo() + current * goal.dir, camera->getLookTo(),
                                 current * goal.up);
 
                 if (goal.current >= 1.0) {
                     setAnimation(goal.done(*camera));
                 } else {
-                    goal.current = std::clamp(goal.current + goal.step, 0.0f, 1.0f);
+                    goal.current = std::clamp(goal.current + goal.step, 0.0, 1.0);
                 }
             }},
         animation);
@@ -937,12 +935,12 @@ CameraWidget::Animate::Animate(CameraWidget& aWidget)
              InvalidationLevel::Valid}
 
     , increment{"increment", "Degrees per frame",
-                util::ordinalSymmetricVector(1.0f, 5.0f)
+                util::ordinalSymmetricVector(1.0, 5.0)
                     .set(InvalidationLevel::Valid)
-                    .setInc(0.01f)
+                    .setInc(0.01)
                     .set("Rotation angle in degrees per frame"_help)}
     , amplitude{"amplitude", "Max Rotation",
-                util::ordinalLength(45.0f, 360.0f)
+                util::ordinalLength(45.0, 360.0)
                     .set(InvalidationLevel::Valid)
                     .set("Max Rotation angle in degrees, for use in Swing Mode. "
                          "The animation will rotate between -amplitude to +amplitude degrees"_help)}
@@ -978,7 +976,7 @@ void CameraWidget::Animate::startStopAnimation(bool start) {
                                    .up = widget->camera_.getLookUp(),
                                    .amplitude = amplitude.get(),
                                    .step = increment.get(),
-                                   .current = 0.0f};
+                                   .current = 0.0};
             widget->animator_.setAnimation(ani);
         }
     } else {
@@ -1026,7 +1024,7 @@ auto CameraWidget::resume(Animation animation, const Camera& camera, RotationAxi
                              ani.axis = rotationAxis(axis, objectAxis, cameraState(camera));
                              ani.dir = camera.getDirection();
                              ani.up = camera.getLookUp();
-                             ani.current = 0.0f;
+                             ani.current = 0.0;
                              return ani;
                          },
                          [&](const Goal&) -> Animation { return std::monostate{}; }},

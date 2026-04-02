@@ -165,20 +165,20 @@ void EmbeddedVolumeSlice::handlePicking(PickingEvent* p) {
 
         const vec3 ndc1{p->getNDC().x, p->getNDC().y, -1.0};
         const auto worldPos1 = camera_.getWorldPosFromNormalizedDeviceCoords(ndc1);
-        const auto dataPos1 = vec3{ct.getWorldToDataMatrix() * vec4{worldPos1, 1.0f}};
+        const auto dataPos1 = vec3{ct.getWorldToDataMatrix() * dvec4{dvec3(worldPos1), 1.0}};
 
         const vec3 ndc2{p->getNDC().x, p->getNDC().y, 1.0};
         const auto worldPos2 = camera_.getWorldPosFromNormalizedDeviceCoords(ndc2);
-        const auto dataPos2 = vec3{ct.getWorldToDataMatrix() * vec4{worldPos2, 1.0f}};
+        const auto dataPos2 = vec3{ct.getWorldToDataMatrix() * dvec4{dvec3(worldPos2), 1.0}};
 
         if (const auto dataPoint = plane.getIntersection(dataPos1, dataPos2); dataPoint) {
             const auto index =
-                static_cast<size3_t>(vec3{ct.getDataToIndexMatrix() * vec4{*dataPoint, 1.0f}});
+                static_cast<size3_t>(vec3{ct.getDataToIndexMatrix() * dvec4{dvec3(*dataPoint), 1.0}});
 
             const auto cind = glm::clamp(index, size3_t{0}, data->getDimensions() - size3_t{1});
             const auto value = data->getRepresentation<VolumeRAM>()->getAsDVec4(cind);
 
-            const auto worldPos = vec3{ct.getDataToWorldMatrix() * vec4{*dataPoint, 1.0f}};
+            const auto worldPos = vec3{ct.getDataToWorldMatrix() * dvec4{dvec3(*dataPoint), 1.0}};
 
             p->setToolTip(fmt::format("<div>{}\n<pre>Index: {}\nWorld: {}\nValue: {}</pre></div>",
                                       getDisplayName(), index, worldPos, value));

@@ -35,14 +35,14 @@ CameraSettings::CameraSettings()
     : Settings("Camera Settings")
     , updateNearFar{"updateNearFar", "Update Near/Far Distances On Fit", true}
     , updateLookRanges{"updateLookRanges", "Update Look-to/-from Ranges On Fit", true}
-    , fittingRatio{"fittingRatio", "Fitting Ratio", 1.05f, 0, 2, 0.01f}
+    , fittingRatio{"fittingRatio", "Fitting Ratio", 1.05, 0, 2, 0.01}
     , zoomFactor{"zoomFactor", "Zoom Factor",
-                 util::ordinalScale(camerautil::defaultZoomFactor, 10000.0f)
-                     .setMin(1.0f)
+                 util::ordinalScale(camerautil::defaultZoomFactor, 10000.0)
+                     .setMin(1.0)
                      .set("The far plane will be placed at 'Zoom Factor' times the largest"
                           " extent of the bounding box"_help)}
     , farNearRatio{"farNearRatio", "Far Near Ratio",
-                   util::ordinalScale(camerautil::defaultFarNearRatio, 1.0e6f).setMin(1.0f)} {
+                   util::ordinalScale(camerautil::defaultFarNearRatio, 1.0e6).setMin(1.0)} {
 
     addProperties(updateNearFar, updateLookRanges, fittingRatio, zoomFactor, farNearRatio);
 

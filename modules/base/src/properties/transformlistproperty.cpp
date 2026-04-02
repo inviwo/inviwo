@@ -76,8 +76,8 @@ TransformationList::TransformationList(std::string_view identifier, std::string_
 std::string_view TransformationList::getClassIdentifier() const { return classIdentifier; }
 TransformationList* TransformationList::clone() const { return new TransformationList(*this); }
 
-mat4 TransformationList::getMatrix() const {
-    mat4 total{1.0f};
+dmat4 TransformationList::getMatrix() const {
+    dmat4 total{1.0};
     for (const auto& p : *this) {
         if (auto* prop = dynamic_cast<transform::TransformProperty*>(p)) {
             total = prop->getMatrix() * total;
@@ -94,10 +94,10 @@ TransformListProperty::TransformListProperty(std::string_view identifier,
                         std::move(semantics))
     , transforms_("internalTransforms", "Transformations")
     , result_(
-          "result", "Result", mat4(1.0f),
-          {util::filled<mat4>(std::numeric_limits<float>::lowest()), ConstraintBehavior::Ignore},
-          {util::filled<mat4>(std::numeric_limits<float>::max()), ConstraintBehavior::Ignore},
-          util::filled<mat4>(0.001f), InvalidationLevel::Valid, PropertySemantics::Text) {
+          "result", "Result", dmat4(1.0),
+          {util::filled<dmat4>(std::numeric_limits<double>::lowest()), ConstraintBehavior::Ignore},
+          {util::filled<dmat4>(std::numeric_limits<double>::max()), ConstraintBehavior::Ignore},
+          util::filled<dmat4>(0.001), InvalidationLevel::Valid, PropertySemantics::Text) {
 
     result_.setReadOnly(true);
     result_.setCurrentStateAsDefault();
@@ -128,7 +128,7 @@ TransformListProperty* TransformListProperty::clone() const {
     return new TransformListProperty(*this);
 }
 
-const mat4& TransformListProperty::getMatrix() const { return result_.get(); }
+const dmat4& TransformListProperty::getMatrix() const { return result_.get(); }
 
 namespace transform {
 
@@ -140,8 +140,9 @@ TransformProperty::TransformProperty(std::string_view identifier, std::string_vi
 std::string_view TranslateProperty::getClassIdentifier() const { return classIdentifier; }
 
 TranslateProperty::TranslateProperty(std::string_view identifier, std::string_view displayName,
-                                     const vec3& value, const vec3& minValue, const vec3& maxValue,
-                                     const vec3& increment, InvalidationLevel invalidationLevel,
+                                     const dvec3& value, const dvec3& minValue,
+                                     const dvec3& maxValue, const dvec3& increment,
+                                     InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : TransformProperty(identifier, displayName, invalidationLevel, semantics)
     , translate("translate_", "Translate", value, {minValue, ConstraintBehavior::Ignore},
@@ -157,19 +158,19 @@ TranslateProperty::TranslateProperty(const TranslateProperty& rhs)
 
 TranslateProperty* TranslateProperty::clone() const { return new TranslateProperty(*this); }
 
-mat4 TranslateProperty::getMatrix() const { return glm::translate(*translate); }
+dmat4 TranslateProperty::getMatrix() const { return glm::translate(*translate); }
 
 std::string_view RotateProperty::getClassIdentifier() const { return classIdentifier; }
 
 RotateProperty::RotateProperty(std::string_view identifier, std::string_view displayName,
-                               const vec3& axisValue, const float angleValue, const float minAngle,
-                               const float maxAngle, const float increment,
+                               const dvec3& axisValue, const double angleValue,
+                               const double minAngle, const double maxAngle, const double increment,
                                AngleMeasure angleMeasure, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
     : TransformProperty(identifier, displayName, invalidationLevel, semantics)
     , mode("mode", "Angle Measure",
            {{"rad", "Radians", AngleMeasure::Radians}, {"deg", "Degrees", AngleMeasure::Degrees}})
-    , axis("axis", "Axis", glm::normalize(axisValue), vec3{-1.0f}, vec3{1.0f})
+    , axis("axis", "Axis", glm::normalize(axisValue), dvec3{-1.0}, dvec3{1.0})
     , angle("angle", "Angle", angleValue, {minAngle, ConstraintBehavior::Ignore},
             {maxAngle, ConstraintBehavior::Ignore}, increment) {
     mode.setSelectedValue(angleMeasure);
@@ -204,16 +205,16 @@ RotateProperty::RotateProperty(const RotateProperty& rhs)
 
 RotateProperty* RotateProperty::clone() const { return new RotateProperty(*this); }
 
-mat4 RotateProperty::getMatrix() const {
-    const float angleRad = (mode == AngleMeasure::Radians ? angle : glm::radians(*angle));
+dmat4 RotateProperty::getMatrix() const {
+    const double angleRad = (mode == AngleMeasure::Radians ? angle : glm::radians(*angle));
     return glm::rotate(angleRad, *axis);
 }
 
 std::string_view ScaleProperty::getClassIdentifier() const { return classIdentifier; }
 
 ScaleProperty::ScaleProperty(std::string_view identifier, std::string_view displayName,
-                             const vec3& value, const vec3& minValue, const vec3& maxValue,
-                             const vec3& increment, InvalidationLevel invalidationLevel,
+                             const dvec3& value, const dvec3& minValue, const dvec3& maxValue,
+                             const dvec3& increment, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
     : TransformProperty(identifier, displayName, invalidationLevel, semantics)
     , scale("scale", "Scale", value, {minValue, ConstraintBehavior::Ignore},
@@ -228,14 +229,14 @@ ScaleProperty::ScaleProperty(const ScaleProperty& rhs) : TransformProperty(rhs),
 
 ScaleProperty* ScaleProperty::clone() const { return new ScaleProperty(*this); }
 
-mat4 ScaleProperty::getMatrix() const { return glm::scale(*scale); }
+dmat4 ScaleProperty::getMatrix() const { return glm::scale(*scale); }
 
 std::string_view CustomTransformProperty::getClassIdentifier() const { return classIdentifier; }
 
 CustomTransformProperty::CustomTransformProperty(std::string_view identifier,
-                                                 std::string_view displayName, const mat4& value,
-                                                 const mat4& minValue, const mat4& maxValue,
-                                                 const mat4& increment,
+                                                 std::string_view displayName, const dmat4& value,
+                                                 const dmat4& minValue, const dmat4& maxValue,
+                                                 const dmat4& increment,
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
     : TransformProperty(identifier, displayName, invalidationLevel, semantics)
@@ -254,7 +255,7 @@ CustomTransformProperty* CustomTransformProperty::clone() const {
     return new CustomTransformProperty(*this);
 }
 
-mat4 CustomTransformProperty::getMatrix() const { return matrix; }
+dmat4 CustomTransformProperty::getMatrix() const { return matrix; }
 
 std::string_view PortTransformProperty::getClassIdentifier() const { return classIdentifier; }
 
@@ -266,10 +267,10 @@ PortTransformProperty::PortTransformProperty(std::string_view identifier,
     , port{"inport"}
     , matrix{"matrix",
              "Matrix",
-             mat4{1.0},
-             {util::filled<mat4>(-1.e6f), ConstraintBehavior::Ignore},
-             {util::filled<mat4>(1.e6f), ConstraintBehavior::Ignore},
-             util::filled<mat4>(0.001f),
+             dmat4{1.0},
+             {util::filled<dmat4>(-1.e6), ConstraintBehavior::Ignore},
+             {util::filled<dmat4>(1.e6), ConstraintBehavior::Ignore},
+             util::filled<dmat4>(0.001),
              InvalidationLevel::InvalidResources} {
     matrix.setReadOnly(true);
 
@@ -279,7 +280,7 @@ PortTransformProperty::PortTransformProperty(std::string_view identifier,
         if (auto data = port.getData()) {
             matrix.set(*data);
         } else {
-            matrix.set(mat4{1.0f});
+            matrix.set(dmat4{1.0});
         }
     });
 }
@@ -293,7 +294,7 @@ PortTransformProperty::PortTransformProperty(const PortTransformProperty& rhs)
         if (auto data = port.getData()) {
             matrix.set(*data);
         } else {
-            matrix.set(mat4{1.0f});
+            matrix.set(dmat4{1.0});
         }
     });
 }
@@ -310,11 +311,11 @@ void PortTransformProperty::setOwner(PropertyOwner* owner) {
     }
 }
 
-mat4 PortTransformProperty::getMatrix() const {
+dmat4 PortTransformProperty::getMatrix() const {
     if (auto data = port.getData()) {
         return *data;
     } else {
-        return mat4{1.0f};
+        return dmat4{1.0};
     }
 }
 

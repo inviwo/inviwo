@@ -31,7 +31,7 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/util/glmcomp.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/exception.h>
@@ -44,20 +44,21 @@ namespace inviwo {
 
 namespace detail {
 
-mat4 tetraBoundingBox(const Volume& volume) {
-    mat3 basis{volume.getBasis()};
-    vec3 offset{volume.getOffset()};
+dmat4 tetraBoundingBox(const Volume& volume) {
+    dmat3 basis{volume.getBasis()};
+    dvec3 offset{volume.getOffset()};
     // adjust basis and offset by half a voxel inward since the tetramesh nodes are located in
     // between voxels
     size3_t dims{volume.getDimensions()};
-    mat3 voxelOffset{basis[0] / static_cast<float>(dims.x), basis[1] / static_cast<float>(dims.y),
-                     basis[2] / static_cast<float>(dims.z)};
+    dmat3 voxelOffset{basis[0] / static_cast<double>(dims.x),
+                      basis[1] / static_cast<double>(dims.y),
+                      basis[2] / static_cast<double>(dims.z)};
 
     basis -= voxelOffset;
-    offset += (voxelOffset[0] + voxelOffset[1] + voxelOffset[2]) * 0.5f;
+    offset += (voxelOffset[0] + voxelOffset[1] + voxelOffset[2]) * 0.5;
 
-    mat4 bbox{basis};
-    bbox[3] = vec4{offset, 1.0f};
+    dmat4 bbox{dmat3(basis)};
+    bbox[3] = dvec4{dvec3(offset), 1.0};
 
     return bbox;
 }
@@ -82,7 +83,7 @@ void VolumeTetraMesh::setData(const std::shared_ptr<const Volume>& volume, int c
     volume_ = volume;
     channel_ = channel;
     setModelMatrix(detail::tetraBoundingBox(*volume_));
-    setWorldMatrix(mat4(1.0f));
+    setWorldMatrix(dmat4(1.0));
 }
 
 int VolumeTetraMesh::getNumberOfCells() const {
@@ -160,7 +161,7 @@ void VolumeTetraMesh::get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds)
     }
 }
 
-mat4 VolumeTetraMesh::getBoundingBox() const {
+dmat4 VolumeTetraMesh::getBoundingBox() const {
     return getCoordinateTransformer().getDataToWorldMatrix();
 }
 

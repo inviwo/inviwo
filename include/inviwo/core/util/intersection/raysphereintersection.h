@@ -48,10 +48,10 @@ namespace inviwo {
  */
 
 template <typename T, glm::precision P>
-std::pair<bool, float> raySphereIntersection(const glm::tvec3<T, P>& sphereCenter, const T radius,
-                                             const glm::tvec3<T, P>& origin,
-                                             const glm::tvec3<T, P>& direction, const T t0,
-                                             const T t1) {
+std::pair<bool, T> raySphereIntersection(const glm::tvec3<T, P>& sphereCenter, const T radius,
+                                         const glm::tvec3<T, P>& origin,
+                                         const glm::tvec3<T, P>& direction, const T t0,
+                                         const T t1) {
     glm::tvec3<T, P> m = origin - sphereCenter;
     T b = glm::dot(m, direction);
     T c = glm::dot(m, m) - radius * radius;

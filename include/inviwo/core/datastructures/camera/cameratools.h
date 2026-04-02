@@ -50,15 +50,15 @@ namespace util {
  * @see PerspectiveCamera
  * @see SkewedPerspectiveCamera
  */
-IVW_CORE_API FloatRefProperty* getCameraFovProperty(CameraProperty& cameraProperty);
+IVW_CORE_API DoubleRefProperty* getCameraFovProperty(CameraProperty& cameraProperty);
 
 /**
  * @brief Create a vertical fov property for use in a camera property
  * @see PerspectiveCamera
  * @see SkewedPerspectiveCamera
  */
-IVW_CORE_API std::unique_ptr<FloatRefProperty> createCameraFovProperty(
-    std::function<float()> get, std::function<void(const float&)> set);
+IVW_CORE_API std::unique_ptr<DoubleRefProperty> createCameraFovProperty(
+    std::function<double()> get, std::function<void(const double&)> set);
 
 /**
  * @brief Either return an existing vertical fov property updated with the provided get and set
@@ -66,9 +66,9 @@ IVW_CORE_API std::unique_ptr<FloatRefProperty> createCameraFovProperty(
  * @see PerspectiveCamera
  * @see SkewedPerspectiveCamera
  */
-IVW_CORE_API FloatRefProperty* updateOrCreateCameraFovProperty(
-    CameraProperty& cameraProperty, std::function<float()> get,
-    std::function<void(const float&)> set);
+IVW_CORE_API DoubleRefProperty* updateOrCreateCameraFovProperty(
+    CameraProperty& cameraProperty, std::function<double()> get,
+    std::function<void(const double&)> set);
 
 /**
  * @brief Find the width property in the cameraProperty
@@ -76,23 +76,23 @@ IVW_CORE_API FloatRefProperty* updateOrCreateCameraFovProperty(
  * @return the width property if found, nullptr otherwise
  * @see OrthographicCamera
  */
-IVW_CORE_API FloatRefProperty* getCameraWidthProperty(CameraProperty& cameraProperty);
+IVW_CORE_API DoubleRefProperty* getCameraWidthProperty(CameraProperty& cameraProperty);
 
 /**
  * @brief Create a width property for use in a CameraProperty
  * @see OrthographicCamera
  */
-IVW_CORE_API std::unique_ptr<FloatRefProperty> createCameraWidthProperty(
-    std::function<float()> get, std::function<void(const float&)> set);
+IVW_CORE_API std::unique_ptr<DoubleRefProperty> createCameraWidthProperty(
+    std::function<double()> get, std::function<void(const double&)> set);
 
 /**
  * @brief Either return an existing width property updated with the provided get and set functions
  * or create a new one. The new one will automatically be added to the camera property
  * @see OrthographicCamera
  */
-IVW_CORE_API FloatRefProperty* updateOrCreateCameraWidthProperty(
-    CameraProperty& cameraProperty, std::function<float()> get,
-    std::function<void(const float&)> set);
+IVW_CORE_API DoubleRefProperty* updateOrCreateCameraWidthProperty(
+    CameraProperty& cameraProperty, std::function<double()> get,
+    std::function<void(const double&)> set);
 
 /**
  * @brief Find the eye offset property in the cameraProperty
@@ -100,40 +100,40 @@ IVW_CORE_API FloatRefProperty* updateOrCreateCameraWidthProperty(
  * @return the eye offset property if found, nullptr otherwise
  * @see SkewedPerspectiveCamera
  */
-IVW_CORE_API FloatVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty& cameraProperty);
+IVW_CORE_API DoubleVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty& cameraProperty);
 
 /**
  * @brief Create an eye offset property for use in a camera property
  * @see SkewedPerspectiveCamera
  */
-IVW_CORE_API std::unique_ptr<FloatVec2RefProperty> createCameraEyeOffsetProperty(
-    std::function<vec2()> get, std::function<void(const vec2&)> set);
+IVW_CORE_API std::unique_ptr<DoubleVec2RefProperty> createCameraEyeOffsetProperty(
+    std::function<dvec2()> get, std::function<void(const dvec2&)> set);
 
 /**
  * @brief Either return an existing eye offset property updated with the provided get and set
  * functions or create a new one. The new one will automatically be added to the camera property
  * @see SkewedPerspectiveCamera
  */
-IVW_CORE_API FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
-    CameraProperty& cameraProperty, std::function<vec2()> get,
-    std::function<void(const vec2&)> set);
+IVW_CORE_API DoubleVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
+    CameraProperty& cameraProperty, std::function<dvec2()> get,
+    std::function<void(const dvec2&)> set);
 
-IVW_CORE_API vec2 fovyToSize(float fovy, float distance, float aspect);
-IVW_CORE_API float fovyToWidth(float fovy, float distance, float aspect);
-IVW_CORE_API float widthToFovy(float width, float distance, float aspect);
-IVW_CORE_API float widthToViewDist(float width, float fov, float aspect);
+IVW_CORE_API dvec2 fovyToSize(double fovy, double distance, double aspect);
+IVW_CORE_API double fovyToWidth(double fovy, double distance, double aspect);
+IVW_CORE_API double widthToFovy(double width, double distance, double aspect);
+IVW_CORE_API double widthToViewDist(double width, double fov, double aspect);
 
 struct IVW_CORE_API FovBounds {
-    std::optional<std::pair<vec2, vec2>> bounds;
+    std::optional<std::pair<dvec2, dvec2>> bounds;
     bool nearPlaneClipped;
     bool farPlaneClipped;
 };
 
-IVW_CORE_API FovBounds calculateFovBounds(const glm::mat4& boundingBox, const glm::vec3& lookFrom,
-                                          const glm::vec3& lookTo, const glm::vec3& lookUp,
-                                          float nearPlane, float farPlane);
+IVW_CORE_API FovBounds calculateFovBounds(const glm::dmat4& boundingBox, const glm::dvec3& lookFrom,
+                                          const glm::dvec3& lookTo, const glm::dvec3& lookUp,
+                                          double nearPlane, double farPlane);
 
-IVW_CORE_API bool canZoomBounded(const FovBounds& bounds, vec2 fov, float zoomFactor);
+IVW_CORE_API bool canZoomBounded(const FovBounds& bounds, glm::dvec2 fov, double zoomFactor);
 
 template <typename CamType>
 void perspectiveZoom(CamType& cam, const ZoomOptions& opts) {
@@ -143,14 +143,14 @@ void perspectiveZoom(CamType& cam, const ZoomOptions& opts) {
         const auto up = cam.getLookUp();
         const auto dir = -glm::normalize(cam.getDirection());
         const auto right = glm::cross(up, dir);
-        const auto basis = mat3(right, up, dir);
+        const auto basis = dmat3(right, up, dir);
 
         const auto size =
             fovyToSize(cam.getFovy(), glm::length(cam.getDirection()), cam.getAspectRatio());
-        const auto translate = glm::translate(vec3{0.5f * size * opts.origin.value(), 0.f});
-        const auto scale = glm::scale(vec3{1.0f - opts.factor.y, 1.0f - opts.factor.y, 1.f});
+        const auto translate = glm::translate(dvec3{0.5 * size * opts.origin.value(), 0.0});
+        const auto scale = glm::scale(dvec3{1.0 - opts.factor.y, 1.0 - opts.factor.y, 1.0});
         const auto m = translate * scale * glm::inverse(translate);
-        const auto offset = basis * vec3{m * vec4{0.f, 0.f, 0.f, 1.f}};
+        const auto offset = basis * dvec3{m * dvec4{0.0, 0.0, 0.0, 1.0}};
 
         cam.setLook(cam.getLookFrom() + offset - direction * opts.factor.y,
                     cam.getLookTo() + offset, cam.getLookUp());
@@ -159,7 +159,7 @@ void perspectiveZoom(CamType& cam, const ZoomOptions& opts) {
 
         if (opts.bounded == ZoomOptions::Bounded::Yes && opts.boundingBox &&
             !opts.boundingBox()
-                 .transform([&](const mat4& bb) {
+                 .transform([&](const dmat4& bb) {
                      const auto bounds =
                          calculateFovBounds(bb, newFrom, cam.getLookTo(), cam.getLookUp(),
                                             cam.getNearPlaneDist(), cam.getFarPlaneDist());

@@ -100,7 +100,7 @@ private:
 
     void onSelectionChange();
     void onBasisSelecionChange();
-    mat4 getBasisFromMeta(MetaData);
+    dmat4 getBasisFromMeta(MetaData);
     std::string getDescription(const MetaData& meta);
 
     std::vector<MetaData> volumeMatches_;
@@ -117,8 +117,8 @@ private:
 
     CompositeProperty basisGroup_;
     OptionPropertyString basisSelection_;
-    FloatMat4Property basis_;
-    FloatVec3Property spacing_;
+    DoubleMat4Property basis_;
+    DoubleVec3Property spacing_;
 
     CompositeProperty information_;
     DoubleMinMaxProperty dataRange_;

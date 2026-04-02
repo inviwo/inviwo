@@ -241,7 +241,7 @@ InstanceRenderer::InstanceRenderer()
              portPrefabs()}
     , vecPorts_{}
     , camera_("camera", "Camera",
-              [this]() -> std::optional<mat4> {
+              [this]() -> std::optional<dmat4> {
                   if (!isReady()) return std::nullopt;
                   if (boundingBox_) return boundingBox_;
                   rendercontext::activateDefault();
@@ -699,15 +699,15 @@ void forEach(const MeshGL& meshGL, Shader& shader, auto& ports, size_t nInstance
     }
 }
 
-mat4 calculateBoundingBox(std::span<const vec4> data) {
+dmat4 calculateBoundingBox(std::span<const vec4> data) {
     using Pair = std::pair<vec4, vec4>;
     const auto [min, max] = std::accumulate(
         data.begin(), data.end(), Pair{DataFormat<vec4>::max(), DataFormat<vec4>::lowest()},
         [](const Pair& mm, const vec4& v) -> Pair {
             return {glm::min(mm.first, v), glm::max(mm.second, v)};
         });
-    auto boundingBox = glm::scale(vec3{max} - vec3{min});
-    boundingBox[3] = vec4(vec3{min}, 1.0f);
+    auto boundingBox = glm::scale(dvec3{max} - dvec3{min});
+    boundingBox[3] = dvec4(dvec3{min}, 1.0);
     return boundingBox;
 }
 
@@ -726,7 +726,7 @@ void InstanceRenderer::process() {
     render(false);
 }
 
-std::optional<mat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
+std::optional<dmat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
     utilgl::activateTargetAndClearOrCopySource(outport_, background_);
     util::OnScopeExit deactivate(utilgl::deactivateCurrentTarget);
 

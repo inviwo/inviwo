@@ -60,13 +60,13 @@ const ProcessorInfo& StereoCameraSyncer::getProcessorInfo() const { return proce
 
 StereoCameraSyncer::StereoCameraSyncer()
     : Processor()
-    , separation_("separation", "Separation", 0.1f, 0.f, 1.f, 0.01f, InvalidationLevel::Valid)
-    , master_("master", "Master", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
-              nullptr, InvalidationLevel::Valid)
-    , left_("left", "Left", master_.getLookFrom() + separation_.get() / 2.0f, master_.getLookTo(),
+    , separation_("separation", "Separation", 0.1, 0., 1., 0.01, InvalidationLevel::Valid)
+    , master_("master", "Master", dvec3(0.0, 0.0, -2.0), dvec3(0.0), dvec3(0.0, 1.0, 0.0), nullptr,
+              InvalidationLevel::Valid)
+    , left_("left", "Left", master_.getLookFrom() + separation_.get() / 2.0, master_.getLookTo(),
             master_.getLookUp(), nullptr, InvalidationLevel::Valid)
-    , right_("right", "Right", master_.getLookFrom() - separation_.get() / 2.0f,
-             master_.getLookTo(), master_.getLookUp(), nullptr, InvalidationLevel::Valid) {
+    , right_("right", "Right", master_.getLookFrom() - separation_.get() / 2.0, master_.getLookTo(),
+             master_.getLookUp(), nullptr, InvalidationLevel::Valid) {
     addProperty(separation_);
 
     addProperty(master_);
@@ -76,40 +76,37 @@ StereoCameraSyncer::StereoCameraSyncer()
     separation_.onChange([&]() {
         if (isChanging) return;
         util::KeepTrueWhileInScope guard(&isChanging);
-        left_.setLookFrom(master_.getLookFrom() -
-                          0.5f * master_.getLookRight() * separation_.get());
+        left_.setLookFrom(master_.getLookFrom() - 0.5 * master_.getLookRight() * separation_.get());
         right_.setLookFrom(master_.getLookFrom() +
-                           0.5f * master_.getLookRight() * separation_.get());
+                           0.5 * master_.getLookRight() * separation_.get());
     });
 
     master_.onChange([&]() {
         if (isChanging) return;
         util::KeepTrueWhileInScope guard(&isChanging);
         left_.set(&master_);
-        left_.setLookFrom(master_.getLookFrom() -
-                          0.5f * master_.getLookRight() * separation_.get());
+        left_.setLookFrom(master_.getLookFrom() - 0.5 * master_.getLookRight() * separation_.get());
         right_.set(&master_);
         right_.setLookFrom(master_.getLookFrom() +
-                           0.5f * master_.getLookRight() * separation_.get());
+                           0.5 * master_.getLookRight() * separation_.get());
     });
 
     left_.onChange([&]() {
         if (isChanging) return;
         util::KeepTrueWhileInScope guard(&isChanging);
         master_.set(&left_);
-        master_.setLookFrom(left_.getLookFrom() + 0.5f * left_.getLookRight() * separation_.get());
+        master_.setLookFrom(left_.getLookFrom() + 0.5 * left_.getLookRight() * separation_.get());
         right_.set(&left_);
-        right_.setLookFrom(left_.getLookFrom() + 1.0f * left_.getLookRight() * separation_.get());
+        right_.setLookFrom(left_.getLookFrom() + 1.0 * left_.getLookRight() * separation_.get());
     });
 
     right_.onChange([&]() {
         if (isChanging) return;
         util::KeepTrueWhileInScope guard(&isChanging);
         master_.set(&right_);
-        master_.setLookFrom(right_.getLookFrom() -
-                            0.5f * right_.getLookRight() * separation_.get());
+        master_.setLookFrom(right_.getLookFrom() - 0.5 * right_.getLookRight() * separation_.get());
         left_.set(&right_);
-        left_.setLookFrom(right_.getLookFrom() - 1.0f * right_.getLookRight() * separation_.get());
+        left_.setLookFrom(right_.getLookFrom() - 1.0 * right_.getLookRight() * separation_.get());
     });
 }
 

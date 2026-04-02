@@ -62,22 +62,22 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.CameraProperty"};
 
     CameraProperty(std::string_view identifier, std::string_view displayName, Document help,
-                   std::function<std::optional<mat4>()> getBoundingBox,
-                   vec3 eye = vec3(0.0f, 0.0f, 2.0f), vec3 center = vec3(0.0f),
-                   vec3 lookUp = vec3(0.0f, 1.0f, 0.0f),
+                   std::function<std::optional<dmat4>()> getBoundingBox,
+                   dvec3 lookFrom = cameradefaults::lookFrom, dvec3 lookTo = cameradefaults::lookTo,
+                   dvec3 lookUp = cameradefaults::lookUp,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
     CameraProperty(std::string_view identifier, std::string_view displayName,
-                   std::function<std::optional<mat4>()> getBoundingBox,
-                   vec3 eye = vec3(0.0f, 0.0f, 2.0f), vec3 center = vec3(0.0f),
-                   vec3 lookUp = vec3(0.0f, 1.0f, 0.0f),
+                   std::function<std::optional<dmat4>()> getBoundingBox,
+                   dvec3 lookFrom = cameradefaults::lookFrom, dvec3 lookTo = cameradefaults::lookTo,
+                   dvec3 lookUp = cameradefaults::lookUp,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
     CameraProperty(std::string_view identifier, std::string_view displayName,
-                   vec3 eye = vec3(0.0f, 0.0f, 2.0f), vec3 center = vec3(0.0f),
-                   vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), Inport* inport = nullptr,
+                   dvec3 lookFrom = cameradefaults::lookFrom, dvec3 lookTo = cameradefaults::lookTo,
+                   dvec3 lookUp = cameradefaults::lookUp, Inport* inport = nullptr,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
@@ -95,49 +95,50 @@ public:
     CameraProperty& setCamera(std::string_view cameraIdentifier);
     CameraProperty& setCamera(std::unique_ptr<Camera> camera);
 
-    virtual vec3 getLookFrom() const override;
-    virtual TrackballObject& setLookFrom(vec3 lookFrom) override;
-    virtual vec3 getLookTo() const override;
-    virtual TrackballObject& setLookTo(vec3 lookTo) override;
-    virtual vec3 getLookUp() const override;
-    virtual TrackballObject& setLookUp(vec3 lookUp) override;
+    virtual dvec3 getLookFrom() const override;
+    virtual TrackballObject& setLookFrom(dvec3 lookFrom) override;
+    virtual dvec3 getLookTo() const override;
+    virtual TrackballObject& setLookTo(dvec3 lookTo) override;
+    virtual dvec3 getLookUp() const override;
+    virtual TrackballObject& setLookUp(dvec3 lookUp) override;
 
-    vec3 getLookRight() const;
+    dvec3 getLookRight() const;
 
     /**
      * @brief Get unnormalized direction of camera: lookTo - lookFrom
      */
-    vec3 getDirection() const;
+    dvec3 getDirection() const;
 
-    CameraProperty& setAspectRatio(float aspectRatio);
-    float getAspectRatio() const;
+    CameraProperty& setAspectRatio(double aspectRatio);
+    double getAspectRatio() const;
 
     /**
      * Sets given camera properties while respecting their min/max ranges.
      * Locks and unlocks processor network before and after changing property values.
      * @note Parameters will be capped by their min/max.
      */
-    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;  // NOLINT
+    virtual TrackballObject& setLook(dvec3 lookFrom, dvec3 lookTo,
+                                     dvec3 lookUp) override;  // NOLINT
 
-    virtual float getNearPlaneDist() const override;
-    virtual float getFarPlaneDist() const override;
+    virtual double getNearPlaneDist() const override;
+    virtual double getFarPlaneDist() const override;
 
-    CameraProperty& setNearPlaneDist(float v);
-    CameraProperty& setFarPlaneDist(float v);
+    CameraProperty& setNearPlaneDist(double v);
+    CameraProperty& setFarPlaneDist(double v);
 
     /**
      * Set near and far plane distance values and adjust their min/max ranges.
      * Adjusts the min/max ranges of the properties to e.g. 0.1/10 times the given value.
      * Locks and unlocks processor network before and after changing property values.
      */
-    CameraProperty& setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
-                                        float minMaxRatio = 10.f);
+    CameraProperty& setNearFarPlaneDist(double nearPlaneDist, double farPlaneDist,
+                                        double minMaxRatio = 10.0);
 
-    virtual vec3 getLookFromMinValue() const override;
-    virtual vec3 getLookFromMaxValue() const override;
+    virtual dvec3 getLookFromMinValue() const override;
+    virtual dvec3 getLookFromMaxValue() const override;
 
-    virtual vec3 getLookToMinValue() const override;
-    virtual vec3 getLookToMaxValue() const override;
+    virtual dvec3 getLookToMinValue() const override;
+    virtual dvec3 getLookToMaxValue() const override;
 
     virtual void zoom(const ZoomOptions& opts) override;
 
@@ -146,7 +147,7 @@ public:
      * @param ndcCoords Coordinates in [-1 1]
      * @return World space position
      */
-    virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
+    virtual dvec3 getWorldPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const override;
 
     /**
      * @brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates.
@@ -154,15 +155,15 @@ public:
      * perspective division.
      * @return Clip space position
      */
-    vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
+    dvec4 getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const;
 
-    virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
-        const vec2& normalizedScreenCoord) const override;
+    virtual dvec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+        const dvec2& normalizedScreenCoord) const override;
 
-    const mat4& viewMatrix() const;
-    const mat4& projectionMatrix() const;
-    const mat4& inverseViewMatrix() const;
-    const mat4& inverseProjectionMatrix() const;
+    const dmat4& viewMatrix() const;
+    const dmat4& projectionMatrix() const;
+    const dmat4& inverseViewMatrix() const;
+    const dmat4& inverseProjectionMatrix() const;
 
     void invokeEvent(Event* event) override;
 
@@ -237,12 +238,12 @@ public:
     // with the camera.
     // Use NetworkLock if editing multiple properties at the same time
 
-    FloatVec3RefProperty lookFrom_;
-    FloatVec3RefProperty lookTo_;
-    FloatVec3RefProperty lookUp_;
-    FloatRefProperty aspectRatio_;
-    FloatRefProperty nearPlane_;
-    FloatRefProperty farPlane_;
+    DoubleVec3RefProperty lookFrom_;
+    DoubleVec3RefProperty lookTo_;
+    DoubleVec3RefProperty lookUp_;
+    DoubleRefProperty aspectRatio_;
+    DoubleRefProperty nearPlane_;
+    DoubleRefProperty farPlane_;
 
 private:
     bool changeCamera(const std::string& name);
@@ -251,7 +252,7 @@ private:
     std::vector<ButtonGroupProperty::Button> buttons();
     void updateFittingVisibility();
 
-    std::function<std::optional<mat4>()> getBoundingBox_;
+    std::function<std::optional<dmat4>()> getBoundingBox_;
     bool aspectSupplier_ = false;
 };
 

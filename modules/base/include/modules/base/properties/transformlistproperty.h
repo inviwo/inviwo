@@ -68,7 +68,7 @@ public:
 
     virtual TransformationList* clone() const override;
 
-    mat4 getMatrix() const;
+    dmat4 getMatrix() const;
 };
 
 class IVW_MODULE_BASE_API TransformListProperty : public CompositeProperty {
@@ -87,10 +87,10 @@ public:
 
     virtual TransformListProperty* clone() const override;
 
-    const mat4& getMatrix() const;
+    const dmat4& getMatrix() const;
 
     TransformationList transforms_;
-    FloatMat4Property result_;
+    DoubleMat4Property result_;
 };
 
 namespace transform {
@@ -102,7 +102,7 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
     virtual ~TransformProperty() = default;
 
-    virtual mat4 getMatrix() const = 0;
+    virtual dmat4 getMatrix() const = 0;
 };
 
 class IVW_MODULE_BASE_API TranslateProperty : public TransformProperty {
@@ -111,17 +111,17 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.trafo.TranslateProperty"};
 
     TranslateProperty(std::string_view identifier, std::string_view displayName,
-                      const vec3& value = vec3{0.0f}, const vec3& minValue = vec3{-1.e6f},
-                      const vec3& maxValue = vec3{1.e6f}, const vec3& increment = vec3{0.001f},
+                      const dvec3& value = dvec3{0.0}, const dvec3& minValue = dvec3{-1.e6},
+                      const dvec3& maxValue = dvec3{1.e6}, const dvec3& increment = dvec3{0.001},
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
     TranslateProperty(const TranslateProperty& rhs);
     virtual TranslateProperty* clone() const override;
     virtual ~TranslateProperty() = default;
 
-    virtual mat4 getMatrix() const override;
+    virtual dmat4 getMatrix() const override;
 
-    FloatVec3Property translate;
+    DoubleVec3Property translate;
 };
 
 class IVW_MODULE_BASE_API RotateProperty : public TransformProperty {
@@ -132,9 +132,9 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.trafo.RotateProperty"};
 
     RotateProperty(std::string_view identifier, std::string_view displayName,
-                   const vec3& axis = vec3{1.0f, 0.0f, 0.0f}, const float angle = 0.0f,
-                   const float minAngle = -glm::pi<float>(),
-                   const float maxAngle = glm::pi<float>(), const float increment = 0.001f,
+                   const dvec3& axis = dvec3{1.0, 0.0, 0.0}, const double angle = 0.0,
+                   const double minAngle = -glm::pi<double>(),
+                   const double maxAngle = glm::pi<double>(), const double increment = 0.001,
                    AngleMeasure angleMeasure = AngleMeasure::Radians,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
@@ -142,11 +142,11 @@ public:
     virtual RotateProperty* clone() const override;
     virtual ~RotateProperty() = default;
 
-    virtual mat4 getMatrix() const override;
+    virtual dmat4 getMatrix() const override;
 
     OptionProperty<AngleMeasure> mode;
-    FloatVec3Property axis;
-    FloatProperty angle;
+    DoubleVec3Property axis;
+    DoubleProperty angle;
 };
 
 class IVW_MODULE_BASE_API ScaleProperty : public TransformProperty {
@@ -155,17 +155,17 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.trafo.ScaleProperty"};
 
     ScaleProperty(std::string_view identifier, std::string_view displayName,
-                  const vec3& value = vec3{1.0f}, const vec3& minValue = vec3{-1.e3f},
-                  const vec3& maxValue = vec3{1.e3f}, const vec3& increment = vec3{0.001f},
+                  const dvec3& value = dvec3{1.0}, const dvec3& minValue = dvec3{-1.e3},
+                  const dvec3& maxValue = dvec3{1.e3}, const dvec3& increment = dvec3{0.001},
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
     ScaleProperty(const ScaleProperty& rhs);
     virtual ScaleProperty* clone() const override;
     virtual ~ScaleProperty() = default;
 
-    virtual mat4 getMatrix() const override;
+    virtual dmat4 getMatrix() const override;
 
-    FloatVec3Property scale;
+    DoubleVec3Property scale;
 };
 
 class IVW_MODULE_BASE_API CustomTransformProperty : public TransformProperty {
@@ -174,19 +174,19 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.trafo.CustomTransformProperty"};
 
     CustomTransformProperty(
-        std::string_view identifier, std::string_view displayName, const mat4& value = mat4{1.0f},
-        const mat4& minValue = util::filled<mat4>(-1.e6f),
-        const mat4& maxValue = util::filled<mat4>(1.e6f),
-        const mat4& increment = util::filled<mat4>(0.001f),
+        std::string_view identifier, std::string_view displayName, const dmat4& value = dmat4{1.0},
+        const dmat4& minValue = util::filled<dmat4>(-1.e6),
+        const dmat4& maxValue = util::filled<dmat4>(1.e6),
+        const dmat4& increment = util::filled<dmat4>(0.001),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     CustomTransformProperty(const CustomTransformProperty& rhs);
     virtual CustomTransformProperty* clone() const override;
     virtual ~CustomTransformProperty() = default;
 
-    virtual mat4 getMatrix() const override;
+    virtual dmat4 getMatrix() const override;
 
-    FloatMat4Property matrix;
+    DoubleMat4Property matrix;
 };
 
 class IVW_MODULE_BASE_API PortTransformProperty : public TransformProperty {
@@ -201,12 +201,12 @@ public:
     virtual PortTransformProperty* clone() const override;
     virtual ~PortTransformProperty() = default;
 
-    virtual mat4 getMatrix() const override;
+    virtual dmat4 getMatrix() const override;
 
     virtual void setOwner(PropertyOwner* owner) override;
 
-    DataInport<mat4> port;
-    FloatMat4Property matrix;
+    DataInport<dmat4> port;
+    DoubleMat4Property matrix;
 };
 
 }  // namespace transform

@@ -115,7 +115,7 @@ TEST(Nifti1, avg152T1_LR) {
     ASSERT_EQ(dvec2(0, 255), vol->dataMap.valueRange);
 
     // The x-axis should be flipped to ensure neurological convention
-    ASSERT_EQ(mat3(vec3(182, 0, 0), vec3(0, 218, 0), vec3(0, 0, 182)), vol->getBasis());
+    ASSERT_EQ(dmat3(dvec3(182, 0, 0), dvec3(0, 218, 0), dvec3(0, 0, 182)), vol->getBasis());
 }
 TEST(Nifti1, avg152T1_RL) {
     // Stored in neurological convention. Should be displayed identically to avg152T1_LR
@@ -181,7 +181,7 @@ TEST(Nifti1, avg152T1_RL) {
     ASSERT_EQ(dvec2(0, 255), vol->dataMap.dataRange);
     ASSERT_EQ(dvec2(0, 255), vol->dataMap.valueRange);
 
-    ASSERT_EQ(mat3(vec3(182, 0, 0), vec3(0, 218, 0), vec3(0, 0, 182)), vol->getBasis());
+    ASSERT_EQ(dmat3(dvec3(182, 0, 0), dvec3(0, 218, 0), dvec3(0, 0, 182)), vol->getBasis());
 }
 
 TEST(Nifti1, zstat1) {

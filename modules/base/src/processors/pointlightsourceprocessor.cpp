@@ -181,7 +181,7 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
     , screenPosEnabled_(screenPosEnabled)
     , screenPos_(screenPos)
     , lookUp_(camera_->getLookUp())
-    , lookTo_(0.f)
+    , lookTo_(0.0)
     , trackball_(this)
     , interactionEventOption_(0) {
     // static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
@@ -190,66 +190,68 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
 
 PointLightInteractionHandler::~PointLightInteractionHandler() = default;
 
-vec3 PointLightInteractionHandler::getLookTo() const { return lookTo_; }
+dvec3 PointLightInteractionHandler::getLookTo() const { return lookTo_; }
 
-vec3 PointLightInteractionHandler::getLookFrom() const { return lightPosition_->get(); }
+dvec3 PointLightInteractionHandler::getLookFrom() const { return lightPosition_->get(); }
 
-vec3 PointLightInteractionHandler::getLookUp() const { return lookUp_; }
+dvec3 PointLightInteractionHandler::getLookUp() const { return lookUp_; }
 
-TrackballObject& PointLightInteractionHandler::setLookTo(vec3 lookTo) {
+TrackballObject& PointLightInteractionHandler::setLookTo(dvec3 lookTo) {
     lookTo_ = lookTo;
     return *this;
 }
 
-TrackballObject& PointLightInteractionHandler::setLookFrom(vec3 lookFrom) {
+TrackballObject& PointLightInteractionHandler::setLookFrom(dvec3 lookFrom) {
     lightPosition_->updatePosition(lookFrom, CoordinateSpace::World);
     return *this;
 }
 
-TrackballObject& PointLightInteractionHandler::setLookUp(vec3 lookUp) {
+TrackballObject& PointLightInteractionHandler::setLookUp(dvec3 lookUp) {
     lookUp_ = lookUp;
     return *this;
 }
 
-vec3 PointLightInteractionHandler::getLookFromMinValue() const {
+dvec3 PointLightInteractionHandler::getLookFromMinValue() const {
     return camera_->lookFrom_.getMinValue();
 }
 
-vec3 PointLightInteractionHandler::getLookFromMaxValue() const {
+dvec3 PointLightInteractionHandler::getLookFromMaxValue() const {
     return camera_->lookFrom_.getMaxValue();
 }
 
-vec3 PointLightInteractionHandler::getLookToMinValue() const {
+dvec3 PointLightInteractionHandler::getLookToMinValue() const {
     return camera_->lookTo_.getMinValue();
 }
 
-vec3 PointLightInteractionHandler::getLookToMaxValue() const {
+dvec3 PointLightInteractionHandler::getLookToMaxValue() const {
     return camera_->lookTo_.getMaxValue();
 }
 
-TrackballObject& PointLightInteractionHandler::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
+TrackballObject& PointLightInteractionHandler::setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp) {
     lightPosition_->updatePosition(lookFrom, CoordinateSpace::World);
     lookTo_ = lookTo;
     lookUp_ = lookUp;
     return *this;
 }
 
-float PointLightInteractionHandler::getNearPlaneDist() const { return camera_->getNearPlaneDist(); }
+double PointLightInteractionHandler::getNearPlaneDist() const {
+    return camera_->getNearPlaneDist();
+}
 
-float PointLightInteractionHandler::getFarPlaneDist() const { return camera_->getFarPlaneDist(); }
+double PointLightInteractionHandler::getFarPlaneDist() const { return camera_->getFarPlaneDist(); }
 
 void PointLightInteractionHandler::zoom(const ZoomOptions& opts) {
     const auto direction = getLookFrom() - getLookTo();
     setLookFrom(getLookFrom() - direction * opts.factor.y);
 }
 
-vec3 PointLightInteractionHandler::getWorldPosFromNormalizedDeviceCoords(
-    const vec3& ndcCoords) const {
+dvec3 PointLightInteractionHandler::getWorldPosFromNormalizedDeviceCoords(
+    const dvec3& ndcCoords) const {
     return camera_->getWorldPosFromNormalizedDeviceCoords(ndcCoords);
 }
 
-vec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
-    const vec2& normalizedScreenCoord) const {
+dvec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+    const dvec2& normalizedScreenCoord) const {
     return camera_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord);
 }
 
@@ -283,25 +285,25 @@ void PointLightInteractionHandler::setHandleEventsOptions(int option) {
 }
 
 void PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& normalizedScreenCoord) {
-    vec2 deviceCoord(2.f * (normalizedScreenCoord - 0.5f));
+    dvec2 deviceCoord(2. * (dvec2{normalizedScreenCoord} - 0.5));
     // Flip vertical axis since mouse event y position starts at top of screen
     deviceCoord.y *= -1.f;
     // Use half distance between look from and look to positions as scene radius.
-    float sceneRadius = 0.5f * glm::length(camera_->getLookTo() - camera_->getLookFrom());
-    vec3 rayOrigin = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 0.f));
-    vec3 rayDir = glm::normalize(
-        camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 1.f)) - rayOrigin);
+    const auto sceneRadius = 0.5 * glm::length(camera_->getLookTo() - camera_->getLookFrom());
+    const auto rayOrigin = camera_->getWorldPosFromNormalizedDeviceCoords(dvec3(deviceCoord, 0.));
+    const auto rayDir = glm::normalize(
+        camera_->getWorldPosFromNormalizedDeviceCoords(dvec3(deviceCoord, 1.)) - rayOrigin);
 
-    float lightRadius = glm::length(lightPosition_->get());
-    auto res = raySphereIntersection(vec3(0.f), sceneRadius, rayOrigin, rayDir, 0.0f,
-                                     std::numeric_limits<float>::max());
+    const double lightRadius = glm::length(lightPosition_->get());
+    const auto res = raySphereIntersection(dvec3(0.), sceneRadius, rayOrigin, rayDir, 0.0,
+                                           std::numeric_limits<double>::max());
     if (res.first) {
         lightPosition_->updatePosition(
             glm::normalize(rayOrigin + res.second * rayDir) * lightRadius, CoordinateSpace::World);
     } else {
         auto res2 = rayPlaneIntersection(
             camera_->getLookTo(), glm::normalize(camera_->getLookTo() - camera_->getLookFrom()),
-            rayOrigin, rayDir, 0.0f, std::numeric_limits<float>::max());
+            rayOrigin, rayDir, 0.0, std::numeric_limits<double>::max());
         if (res2.first) {
             // Project it to the edge of the sphere
             lightPosition_->updatePosition(

@@ -62,15 +62,15 @@ class Camera:
             inviwoqt.update()
     """
 
-    def __init__(self, cameraProperty, lookfrom=None, lookto=None, lookup=None):
+    def __init__(self, cameraProperty, lookFrom=None, lookTo=None, lookUp=None):
         self.cam = cameraProperty
-        self.oldlookfrom = cameraProperty.lookFrom
-        self.oldlookto = cameraProperty.lookTo
-        self.oldlookup = cameraProperty.lookUp
+        self.oldLookFrom = cameraProperty.lookFrom
+        self.oldLookTo = cameraProperty.lookTo
+        self.oldLookUp = cameraProperty.lookUp
 
-        self.lookfrom = lookfrom if lookfrom is not None else self.oldlookfrom
-        self.lookto = lookto if lookto is not None else self.oldlookto
-        self.lookup = lookup if lookup is not None else self.oldlookup
+        self.lookFrom = lookFrom if lookFrom is not None else self.oldLookFrom
+        self.lookTo = lookTo if lookTo is not None else self.oldLookTo
+        self.lookUp = lookUp if lookUp is not None else self.oldLookUp
 
     def __enter__(self):
         self.set()
@@ -80,23 +80,23 @@ class Camera:
         self.restore()
 
     def set(self):
-        self.cam.setLook(self.lookfrom, self.lookto, self.lookup)
+        self.cam.setLook(self.lookFrom, self.lookTo, self.lookUp)
 
     def restore(self):
-        self.cam.setLook(self.oldlookfrom, self.oldlookto, self.oldlookup)
+        self.cam.setLook(self.oldLookFrom, self.oldLookTo, self.oldLookUp)
 
     def rotate(self, delta=math.pi / 30, steps=60, axis=None):
         if axis is None:
-            axis = self.lookup
+            axis = self.lookUp
 
-        vec = self.lookfrom - self.lookto
+        vec = self.lookFrom - self.lookTo
 
         mat = rotation_matrix(axis, delta)
 
         for i in range(1, steps + 1):
             vec = mat * vec
-            up = mat * self.lookup
-            self.lookfrom = vec + self.lookto
-            self.lookup = up
+            up = mat * self.lookUp
+            self.lookFrom = vec + self.lookTo
+            self.lookUp = up
             self.set()
             yield i

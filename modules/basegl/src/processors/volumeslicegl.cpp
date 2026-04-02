@@ -404,7 +404,7 @@ void VolumeSliceGL::planeSettingsChanged() {
 
     // In worldSpace, ignoring translation because it should not affect rotation (fixes issue #875)
     const mat4 texToWorld(
-        mat3(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()));
+        mat3(mat4(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix())));
 
     const vec3 worldNormal(
         glm::normalize(vec3(glm::inverseTranspose(texToWorld) * vec4(normal, 0.0f))));
@@ -483,8 +483,9 @@ void VolumeSliceGL::process() {
             modeChange();
         }
         if (texToWorld_ !=
-            inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()) {
-            texToWorld_ = inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
+            mat4(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix())) {
+            texToWorld_ =
+                mat4(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
             planeSettingsChanged();
         }
     }
@@ -527,7 +528,7 @@ void VolumeSliceGL::process() {
         // convert world volume position to voxel coords
         const auto volume = inport_.getData();
         const auto worldToIndex = volume->getCoordinateTransformer().getWorldToIndexMatrix();
-        const auto indexPos = vec3{worldToIndex * vec4{worldPosition_.get(), 1.0f}};
+        const auto indexPos = vec3{worldToIndex * dvec4{dvec3(worldPosition_.get()), 1.0}};
         const auto* const volumeRAM = volume->getRepresentation<VolumeRAM>();
 
         const auto index = glm::clamp(size3_t{glm::round(indexPos)}, size3_t{0},
@@ -708,10 +709,10 @@ void VolumeSliceGL::updateMaxSliceNumber() {
         sliceZ_.set(static_cast<int>(dims.z) / 2);
     }
 
-    mat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
+    const dmat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
 
-    vec3 max(texToWorld * vec4(1.0f));
-    vec3 min(texToWorld * vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    const vec3 max(vec3(texToWorld * dvec4(1.0)));
+    const vec3 min(vec3(texToWorld * dvec4(0.0, 0.0, 0.0, 1.0)));
     // Rotation/mirroring may change the sign so apply min/max
     worldPosition_.setMaxValue(glm::max(min, max));
     worldPosition_.setMinValue(glm::min(min, max));
@@ -768,9 +769,9 @@ void VolumeSliceGL::eventUpdateMousePos(Event* event) {
 
         auto volPos = convertScreenPosToVolume(vec2(mouseEvent->posNormalized()), false);
         // convert normalized volume position to voxel coords
-        const mat4 textureToIndex(volume->getCoordinateTransformer().getTextureToIndexMatrix());
-        const vec4 texturePos(volPos, 1.0);
-        ivec3 indexPos(ivec3(textureToIndex * texturePos));
+        const dmat4 textureToIndex(volume->getCoordinateTransformer().getTextureToIndexMatrix());
+        const dvec4 texturePos(dvec3(volPos), 1.0);
+        const ivec3 indexPos(ivec3(dvec3(textureToIndex * texturePos)));
 
         const ivec3 volDim(volume->getDimensions());
 
@@ -793,14 +794,14 @@ void VolumeSliceGL::sliceChange() {
     if (!inport_.hasData() || updating_) return;
     util::KeepTrueWhileInScope guard(&updating_);
 
-    const mat4 indexToTexture(
+    const dmat4 indexToTexture(
         inport_.getData()->getCoordinateTransformer().getIndexToTextureMatrix());
-    const ivec4 indexPos(sliceX_.get() - 1, sliceY_.get() - 1, sliceZ_.get() - 1, 1.0);
-    const vec3 texturePos(vec3(indexToTexture * vec4(indexPos)));
+    const dvec4 indexPos(sliceX_.get() - 1, sliceY_.get() - 1, sliceZ_.get() - 1, 1.0);
+    const vec3 texturePos(vec3(dvec3(indexToTexture * indexPos)));
 
-    const mat4 indexToWorld(inport_.getData()->getCoordinateTransformer().getIndexToWorldMatrix());
+    const dmat4 indexToWorld(inport_.getData()->getCoordinateTransformer().getIndexToWorldMatrix());
     const vec3 worldPos =
-        vec3(indexToWorld * vec4(sliceX_.get(), sliceY_.get(), sliceZ_.get(), 1.0f));
+        vec3(dvec3(indexToWorld * dvec4(sliceX_.get(), sliceY_.get(), sliceZ_.get(), 1.0)));
 
     {
         NetworkLock lock(this);
@@ -813,14 +814,14 @@ void VolumeSliceGL::positionChange() {
     if (!inport_.hasData() || updating_) return;
     util::KeepTrueWhileInScope guard(&updating_);
 
-    const mat4 textureToIndex(
+    const dmat4 textureToIndex(
         inport_.getData()->getCoordinateTransformer().getTextureToIndexMatrix());
-    const vec4 texturePos(planePosition_.get(), 1.0);
-    const ivec3 indexPos(ivec3(textureToIndex * texturePos) + ivec3(1));
+    const dvec4 texturePos(dvec3(planePosition_.get()), 1.0);
+    const ivec3 indexPos(ivec3(dvec3(textureToIndex * texturePos)) + ivec3(1));
 
-    const mat4 textureToWorld(
+    const dmat4 textureToWorld(
         inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
-    const vec3 worldPos = vec3(textureToWorld * vec4(planePosition_.get(), 1.0f));
+    const vec3 worldPos = vec3(dvec3(textureToWorld * dvec4(dvec3(planePosition_.get()), 1.0)));
 
     {
         NetworkLock lock(this);
@@ -864,13 +865,15 @@ void VolumeSliceGL::updateFromWorldPosition() {
     if (inport_.hasData()) {
         util::KeepTrueWhileInScope guard(&updating_);
 
-        const mat4 worldToTexture(
+        const dmat4 worldToTexture(
             inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix());
-        const vec3 texturePos = vec3(worldToTexture * vec4(worldPosition_.get(), 1.0f));
+        const vec3 texturePos =
+            vec3(dvec3(worldToTexture * dvec4(dvec3(worldPosition_.get()), 1.0)));
 
-        const mat4 worldToIndex(
+        const dmat4 worldToIndex(
             inport_.getData()->getCoordinateTransformer().getWorldToIndexMatrix());
-        const ivec3 indexPos(ivec3(worldToIndex * vec4(worldPosition_.get(), 1.0f)) + ivec3(1));
+        const ivec3 indexPos(ivec3(dvec3(worldToIndex * dvec4(dvec3(worldPosition_.get()), 1.0))) +
+                             ivec3(1));
 
         NetworkLock lock(this);
         sliceX_.set(indexPos.x);

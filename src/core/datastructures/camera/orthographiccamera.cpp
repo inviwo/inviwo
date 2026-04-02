@@ -39,8 +39,8 @@
 
 namespace inviwo {
 
-OrthographicCamera::OrthographicCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
-                                       float farPlane, float aspectRatio, float width)
+OrthographicCamera::OrthographicCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane,
+                                       double farPlane, double aspectRatio, double width)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), width_{width} {}
 
 OrthographicCamera::OrthographicCamera(const OrthographicCamera&) = default;
@@ -51,7 +51,7 @@ OrthographicCamera* OrthographicCamera::clone() const { return new OrthographicC
 
 std::string_view OrthographicCamera::getClassIdentifier() const { return classIdentifier; }
 
-void OrthographicCamera::setWidth(float width) {
+void OrthographicCamera::setWidth(double width) {
     if (width_ != width) {
         width_ = width;
         invalidateProjectionMatrix();
@@ -64,7 +64,7 @@ void OrthographicCamera::setWidth(float width) {
 }
 
 void OrthographicCamera::zoom(const ZoomOptions& opts) {
-    setWidth(width_ * (1.0f - opts.factor.y));
+    setWidth(width_ * (1.0 - opts.factor.y));
 }
 
 void OrthographicCamera::updateFrom(const Camera& source) {
@@ -87,7 +87,7 @@ void OrthographicCamera::configureProperties(CameraProperty& cp, bool attach) {
     if (attach) {
         util::updateOrCreateCameraWidthProperty(
             cp, [this]() { return getWidth(); },
-            [this](const float& val) {
+            [this](const double& val) {
                 if (width_ != val) {
                     width_ = val;
                     invalidateProjectionMatrix();
@@ -106,15 +106,15 @@ bool OrthographicCamera::equal(const Camera& other) const {
     }
 }
 
-mat4 OrthographicCamera::calculateProjectionMatrix() const {
-    const float halfWidth = 0.5f * width_;
-    const float halfHeight = halfWidth / aspectRatio_;
+dmat4 OrthographicCamera::calculateProjectionMatrix() const {
+    const double halfWidth = 0.5 * width_;
+    const double halfHeight = halfWidth / aspectRatio_;
     return glm::ortho(-halfWidth, +halfWidth, -halfHeight, +halfHeight, nearPlaneDist_,
                       farPlaneDist_);
 }
 
-vec4 OrthographicCamera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
-    return vec4{ndcCoords, 1.0f};
+dvec4 OrthographicCamera::getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {
+    return dvec4{ndcCoords, 1.0};
 }
 
 void OrthographicCamera::serialize(Serializer& s) const {

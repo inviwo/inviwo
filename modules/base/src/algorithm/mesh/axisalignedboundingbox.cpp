@@ -48,14 +48,14 @@ namespace inviwo {
 
 namespace meshutil {
 
-std::pair<vec3, vec3> axisAlignedBoundingBox(
+std::pair<dvec3, dvec3> axisAlignedBoundingBox(
     const std::vector<std::shared_ptr<const Mesh>>& meshes) {
     if (meshes.empty()) {
-        return {vec3(0.f), vec3(0.f)};
+        return {dvec3(0.), dvec3(0.)};
     }
 
-    vec3 worldMin(std::numeric_limits<float>::max());
-    vec3 worldMax(std::numeric_limits<float>::lowest());
+    dvec3 worldMin(std::numeric_limits<float>::max());
+    dvec3 worldMax(std::numeric_limits<float>::lowest());
     for (const auto& mesh : meshes) {
         auto minmax = axisAlignedBoundingBox(*mesh);
         worldMin = glm::min(worldMin, minmax.first);
@@ -64,9 +64,9 @@ std::pair<vec3, vec3> axisAlignedBoundingBox(
     return {worldMin, worldMax};
 }
 
-std::pair<vec3, vec3> axisAlignedBoundingBox(const Mesh& mesh) {
-    vec3 worldMin(std::numeric_limits<float>::max());
-    vec3 worldMax(std::numeric_limits<float>::lowest());
+std::pair<dvec3, dvec3> axisAlignedBoundingBox(const Mesh& mesh) {
+    dvec3 worldMin(std::numeric_limits<float>::max());
+    dvec3 worldMax(std::numeric_limits<float>::lowest());
 
     const auto& buffers = mesh.getBuffers();
     auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
@@ -75,12 +75,12 @@ std::pair<vec3, vec3> axisAlignedBoundingBox(const Mesh& mesh) {
     if (it != buffers.end() && it->second->getSize() > 0) {
         auto minmax = util::bufferMinMax(it->second.get());
 
-        mat4 trans = mesh.getCoordinateTransformer().getDataToWorldMatrix();
-        worldMin = glm::min(worldMin, vec3(trans * vec4(vec3(minmax.first), 1.f)));
-        worldMax = glm::max(worldMax, vec3(trans * vec4(vec3(minmax.second), 1.f)));
+        const dmat4 trans = mesh.getCoordinateTransformer().getDataToWorldMatrix();
+        worldMin = glm::min(worldMin, dvec3(trans * dvec4(dvec3(minmax.first), 1.0)));
+        worldMax = glm::max(worldMax, dvec3(trans * dvec4(dvec3(minmax.second), 1.0)));
     } else {
         // No vertices, use same values for min/max
-        worldMin = worldMax = mesh.getOffset();
+        worldMin = worldMax = dvec3(mesh.getOffset());
     }
     return {worldMin, worldMax};
 }

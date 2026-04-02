@@ -38,124 +38,125 @@
 namespace inviwo::util {
 
 namespace {
-vec3 orthvec(const vec3& vec) {
-    const vec3 u(1.0f, 0.0f, 0.0f);
-    const vec3 n = glm::normalize(vec);
-    const float p = glm::dot(u, n);
-    if (std::abs(p) != 1.0f) {
+dvec3 orthvec(const dvec3& vec) {
+    const dvec3 u(1.0, 0.0, 0.0);
+    const dvec3 n = glm::normalize(vec);
+    const double p = glm::dot(u, n);
+    if (std::abs(p) != 1.0) {
         return glm::normalize(u - p * n);
     } else {
-        return {0.0f, 1.0f, 0.0f};
+        return {0.0, 1.0, 0.0};
     }
 }
 
 }  // namespace
 
-mat4 minExtentBoundingBox(mat4 boundingBox) {
-    const float maxAspectRatio = 1000.0f;
-    vec3 extent{
-        glm::length(vec3{boundingBox[0]}),
-        glm::length(vec3{boundingBox[1]}),
-        glm::length(vec3{boundingBox[2]}),
+dmat4 minExtentBoundingBox(dmat4 boundingBox) {
+    const double maxAspectRatio = 1000.0;
+    dvec3 extent{
+        glm::length(dvec3{boundingBox[0]}),
+        glm::length(dvec3{boundingBox[1]}),
+        glm::length(dvec3{boundingBox[2]}),
     };
-    const float maxExtent = glm::compMax(extent);
-    const float minExtent = maxExtent / maxAspectRatio;
+    const double maxExtent = glm::compMax(extent);
+    const double minExtent = maxExtent / maxAspectRatio;
 
-    if (util::almostEqual(maxExtent, 0.0f)) {
+    if (util::almostEqual(maxExtent, 0.0)) {
         // bounding box with zero extent
-        mat4 m{1.0f};
-        if (glm::length2(vec3{boundingBox[3]}) > 0.0f) {
+        dmat4 m{1.0};
+        if (glm::length2(dvec3{boundingBox[3]}) > 0.0) {
             m[3] = boundingBox[3];
         } else {
-            m[3] = vec4{-0.5f, -0.5f, -0.5f, 1.0f};
+            m[3] = dvec4{-0.5, -0.5, -0.5, 1.0};
         }
         return m;
     }
 
-    if (util::almostEqual(extent[0], 0.0f)) {
-        if (util::almostEqual(extent[1], 0.0f)) {
-            boundingBox[1] = vec4{orthvec(vec3{boundingBox[2]}) * minExtent, 0.0f};
+    if (util::almostEqual(extent[0], 0.0)) {
+        if (util::almostEqual(extent[1], 0.0)) {
+            boundingBox[1] = dvec4{orthvec(dvec3{boundingBox[2]}) * minExtent, 0.0};
             extent[1] = minExtent;
-        } else if (util::almostEqual(extent[2], 0.0f)) {
-            boundingBox[2] = vec4{orthvec(vec3{boundingBox[1]}) * minExtent, 0.0f};
+        } else if (util::almostEqual(extent[2], 0.0)) {
+            boundingBox[2] = dvec4{orthvec(dvec3{boundingBox[1]}) * minExtent, 0.0};
             extent[2] = minExtent;
         }
-        const vec3 v =
-            glm::cross(vec3{boundingBox[1]} / extent[1], vec3{boundingBox[2]} / extent[2]) *
+        const dvec3 v =
+            glm::cross(dvec3{boundingBox[1]} / extent[1], dvec3{boundingBox[2]} / extent[2]) *
             minExtent;
-        boundingBox[0] = vec4{v, 0.0f};
-    } else if (util::almostEqual(extent[1], 0.0f)) {
-        if (util::almostEqual(extent[2], 0.0f)) {
-            boundingBox[2] = vec4{orthvec(vec3{boundingBox[0]}) * minExtent, 0.0f};
+        boundingBox[0] = dvec4{v, 0.0};
+    } else if (util::almostEqual(extent[1], 0.0)) {
+        if (util::almostEqual(extent[2], 0.0)) {
+            boundingBox[2] = dvec4{orthvec(dvec3{boundingBox[0]}) * minExtent, 0.0};
             extent[2] = minExtent;
         }
-        const vec3 v =
-            glm::cross(vec3{boundingBox[2]} / extent[2], vec3{boundingBox[0]} / extent[0]) *
+        const dvec3 v =
+            glm::cross(dvec3{boundingBox[2]} / extent[2], dvec3{boundingBox[0]} / extent[0]) *
             minExtent;
-        boundingBox[1] = vec4{v, 0.0f};
-    } else if (util::almostEqual(extent[2], 0.0f)) {
-        const vec3 v =
-            glm::cross(vec3{boundingBox[0]} / extent[0], vec3{boundingBox[1]} / extent[1]) *
+        boundingBox[1] = dvec4{v, 0.0};
+    } else if (util::almostEqual(extent[2], 0.0)) {
+        const dvec3 v =
+            glm::cross(dvec3{boundingBox[0]} / extent[0], dvec3{boundingBox[1]} / extent[1]) *
             minExtent;
-        boundingBox[2] = vec4{v, 0.0f};
+        boundingBox[2] = dvec4{v, 0.0};
     }
     return boundingBox;
 }
 
-std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a, const std::optional<mat4>& b) {
+std::optional<dmat4> boundingBoxUnion(const std::optional<dmat4>& a,
+                                      const std::optional<dmat4>& b) {
     if (!a && !b) return std::nullopt;
     if (a && !b) return a;
     if (b && !a) return b;
 
-    vec3 worldMin(std::numeric_limits<float>::max());
-    vec3 worldMax(std::numeric_limits<float>::lowest());
+    dvec3 worldMin(std::numeric_limits<double>::max());
+    dvec3 worldMax(std::numeric_limits<double>::lowest());
 
-    constexpr std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
-                                             vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
-                                             vec3{1, 1, 1}, vec3{0, 1, 1}};
-    for (const auto& bb : {a, b}) {
+    const std::array<dvec3, 8> corners = {dvec3{0, 0, 0}, dvec3{1, 0, 0}, dvec3{1, 1, 0},
+                                          dvec3{0, 1, 0}, dvec3{0, 0, 1}, dvec3{1, 0, 1},
+                                          dvec3{1, 1, 1}, dvec3{0, 1, 1}};
+    for (const auto& bb : {*a, *b}) {
         for (const auto& corner : corners) {
-            const auto point = vec3(*bb * vec4(corner, 1.f));
+            const auto point = dvec3(bb * dvec4(corner, 1.0));
             worldMin = glm::min(worldMin, point);
             worldMax = glm::max(worldMax, point);
         }
     }
     auto m = glm::scale(worldMax - worldMin);
-    m[3] = vec4(worldMin, 1.0f);
+    m[3] = dvec4(worldMin, 1.0);
     return m;
 }
 
-mat4 boundingBox(const Layer& layer) {
-    mat4 m = layer.getCoordinateTransformer().getDataToModelMatrix();
-    const vec3 z = glm::cross(vec3{m[0]}, vec3{m[1]});
-    m[2] = vec4{z * 0.0001f, 0.0f};
+dmat4 boundingBox(const Layer& layer) {
+    auto m = layer.getCoordinateTransformer().getDataToModelMatrix();
+    const auto z = glm::cross(dvec3{m[0]}, dvec3{m[1]});
+    m[2] = dvec4{z * 0.0001, 0.0};
 
     return layer.getCoordinateTransformer().getModelToWorldMatrix() * m;
 }
 
-mat4 boundingBox(const std::vector<std::shared_ptr<Layer>>& layers) {
-    if (layers.empty()) return mat4(0.f);
+dmat4 boundingBox(const std::vector<std::shared_ptr<Layer>>& layers) {
+    if (layers.empty()) return {0.0};
 
-    vec3 worldMin(std::numeric_limits<float>::max());
-    vec3 worldMax(std::numeric_limits<float>::lowest());
+    dvec3 worldMin(std::numeric_limits<double>::max());
+    dvec3 worldMax(std::numeric_limits<double>::lowest());
 
-    const std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
-                                         vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
-                                         vec3{1, 1, 1}, vec3{0, 1, 1}};
+    const std::array<dvec3, 8> corners = {dvec3{0, 0, 0}, dvec3{1, 0, 0}, dvec3{1, 1, 0},
+                                          dvec3{0, 1, 0}, dvec3{0, 0, 1}, dvec3{1, 0, 1},
+                                          dvec3{1, 1, 1}, dvec3{0, 1, 1}};
     for (const auto& layer : layers) {
         auto bb = boundingBox(*layer);
         for (const auto& corner : corners) {
-            const auto point = vec3(bb * vec4(corner, 1.f));
+            const auto point = dvec3(bb * dvec4(corner, 1.0));
             worldMin = glm::min(worldMin, point);
             worldMax = glm::max(worldMax, point);
         }
     }
     auto m = glm::scale(worldMax - worldMin);
-    m[3] = vec4(worldMin, 1.0f);
+    m[3] = dvec4(worldMin, 1.0);
     return m;
 }
 
-mat4 boundingBox(const Mesh& mesh) {
+dmat4 boundingBox(const Mesh& mesh) {
     const auto& buffers = mesh.getBuffers();
     auto it = std::ranges::find_if(
         buffers, [](const auto& buff) { return buff.first.type == BufferType::PositionAttrib; });
@@ -178,69 +179,69 @@ mat4 boundingBox(const Mesh& mesh) {
                                                    util::glm_convert<dvec4>(minmax.second)};
                 });
 
-        const vec3 dataMin = vec3(minmax.first);
-        const vec3 dataMax = vec3(minmax.second);
+        const dvec3 dataMin = dvec3(minmax.first);
+        const dvec3 dataMax = dvec3(minmax.second);
         auto m = glm::scale(dataMax - dataMin);
-        m[3] = vec4(dataMin, 1.0f);
+        m[3] = dvec4(dataMin, 1.0);
         return mesh.getCoordinateTransformer().getDataToWorldMatrix() * m;
 
     } else {
-        mat4 m{0.0};
-        m[3] = vec4(mesh.getOffset(), 1.0f);
+        dmat4 m{0.0};
+        m[3] = dvec4(dvec3(mesh.getOffset()), 1.0);
         return m;
     }
 }
 
-mat4 boundingBox(const std::vector<std::shared_ptr<const Mesh>>& meshes) {
-    if (meshes.empty()) return mat4(0.f);
+dmat4 boundingBox(const std::vector<std::shared_ptr<const Mesh>>& meshes) {
+    if (meshes.empty()) return {0.0};
 
-    vec3 worldMin(std::numeric_limits<float>::max());
-    vec3 worldMax(std::numeric_limits<float>::lowest());
+    dvec3 worldMin(std::numeric_limits<double>::max());
+    dvec3 worldMax(std::numeric_limits<double>::lowest());
 
-    const std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
-                                         vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
-                                         vec3{1, 1, 1}, vec3{0, 1, 1}};
+    const std::array<dvec3, 8> corners = {dvec3{0, 0, 0}, dvec3{1, 0, 0}, dvec3{1, 1, 0},
+                                          dvec3{0, 1, 0}, dvec3{0, 0, 1}, dvec3{1, 0, 1},
+                                          dvec3{1, 1, 1}, dvec3{0, 1, 1}};
     for (const auto& mesh : meshes) {
         auto bb = boundingBox(*mesh);
         for (const auto& corner : corners) {
-            const auto point = vec3(bb * vec4(corner, 1.f));
+            const auto point = dvec3(bb * dvec4(corner, 1.0));
             worldMin = glm::min(worldMin, point);
             worldMax = glm::max(worldMax, point);
         }
     }
     auto m = glm::scale(worldMax - worldMin);
-    m[3] = vec4(worldMin, 1.0f);
+    m[3] = dvec4(worldMin, 1.0);
     return m;
 }
 
-mat4 boundingBox(const Volume& volume) {
+dmat4 boundingBox(const Volume& volume) {
     return volume.getCoordinateTransformer().getDataToWorldMatrix();
 }
 
-mat4 boundingBox(const std::vector<std::shared_ptr<Volume>>& volumes) {
-    if (volumes.empty()) return mat4(0.f);
+dmat4 boundingBox(const std::vector<std::shared_ptr<Volume>>& volumes) {
+    if (volumes.empty()) return {0.0};
 
-    vec3 worldMin(std::numeric_limits<float>::max());
-    vec3 worldMax(std::numeric_limits<float>::lowest());
+    dvec3 worldMin(std::numeric_limits<double>::max());
+    dvec3 worldMax(std::numeric_limits<double>::lowest());
 
-    const std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
-                                         vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
-                                         vec3{1, 1, 1}, vec3{0, 1, 1}};
+    const std::array<dvec3, 8> corners = {dvec3{0, 0, 0}, dvec3{1, 0, 0}, dvec3{1, 1, 0},
+                                          dvec3{0, 1, 0}, dvec3{0, 0, 1}, dvec3{1, 0, 1},
+                                          dvec3{1, 1, 1}, dvec3{0, 1, 1}};
     for (const auto& volume : volumes) {
         auto bb = boundingBox(*volume);
         for (const auto& corner : corners) {
-            const auto point = vec3(bb * vec4(corner, 1.f));
+            const auto point = dvec3(bb * dvec4(corner, 1.0));
             worldMin = glm::min(worldMin, point);
             worldMax = glm::max(worldMax, point);
         }
     }
     auto m = glm::scale(worldMax - worldMin);
-    m[3] = vec4(worldMin, 1.0f);
+    m[3] = dvec4(worldMin, 1.0);
     return m;
 }
 
-std::function<std::optional<mat4>()> boundingBox(const DataInport<Layer>& layer) {
-    return [port = &layer]() -> std::optional<mat4> {
+std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer>& layer) {
+    return [port = &layer]() -> std::optional<dmat4> {
         if (port->hasData()) {
             return boundingBox(*port->getData());
         } else {
@@ -248,8 +249,8 @@ std::function<std::optional<mat4>()> boundingBox(const DataInport<Layer>& layer)
         }
     };
 }
-std::function<std::optional<mat4>()> boundingBox(const DataInport<Layer, 0>& layers) {
-    return [port = &layers]() -> std::optional<mat4> {
+std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer, 0>& layers) {
+    return [port = &layers]() -> std::optional<dmat4> {
         if (port->hasData()) {
             return boundingBox(*port->getData());
         } else {
@@ -257,8 +258,8 @@ std::function<std::optional<mat4>()> boundingBox(const DataInport<Layer, 0>& lay
         }
     };
 }
-std::function<std::optional<mat4>()> boundingBox(const DataInport<Layer, 0, true>& layers) {
-    return [port = &layers]() -> std::optional<mat4> {
+std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer, 0, true>& layers) {
+    return [port = &layers]() -> std::optional<dmat4> {
         if (port->hasData()) {
             return boundingBox(*port->getData());
         } else {
@@ -266,45 +267,8 @@ std::function<std::optional<mat4>()> boundingBox(const DataInport<Layer, 0, true
         }
     };
 }
-std::function<std::optional<mat4>()> boundingBox(const DataOutport<Layer>& layer) {
-    return [port = &layer]() -> std::optional<mat4> {
-        if (port->hasData()) {
-            return boundingBox(*port->getData());
-        } else {
-            return std::nullopt;
-        }
-    };
-}
-
-std::function<std::optional<mat4>()> boundingBox(const DataInport<Mesh>& mesh) {
-    return [port = &mesh]() -> std::optional<mat4> {
-        if (port->hasData()) {
-            return boundingBox(*port->getData());
-        } else {
-            return std::nullopt;
-        }
-    };
-}
-std::function<std::optional<mat4>()> boundingBox(const DataInport<Mesh, 0>& meshes) {
-    return [port = &meshes]() -> std::optional<mat4> {
-        if (port->hasData()) {
-            return boundingBox(port->getVectorData());
-        } else {
-            return std::nullopt;
-        }
-    };
-}
-std::function<std::optional<mat4>()> boundingBox(const DataInport<Mesh, 0, true>& meshes) {
-    return [port = &meshes]() -> std::optional<mat4> {
-        if (port->hasData()) {
-            return boundingBox(port->getVectorData());
-        } else {
-            return std::nullopt;
-        }
-    };
-}
-std::function<std::optional<mat4>()> boundingBox(const DataOutport<Mesh>& mesh) {
-    return [port = &mesh]() -> std::optional<mat4> {
+std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Layer>& layer) {
+    return [port = &layer]() -> std::optional<dmat4> {
         if (port->hasData()) {
             return boundingBox(*port->getData());
         } else {
@@ -313,8 +277,8 @@ std::function<std::optional<mat4>()> boundingBox(const DataOutport<Mesh>& mesh) 
     };
 }
 
-std::function<std::optional<mat4>()> boundingBox(const DataInport<Volume>& volume) {
-    return [port = &volume]() -> std::optional<mat4> {
+std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh>& mesh) {
+    return [port = &mesh]() -> std::optional<dmat4> {
         if (port->hasData()) {
             return boundingBox(*port->getData());
         } else {
@@ -322,9 +286,46 @@ std::function<std::optional<mat4>()> boundingBox(const DataInport<Volume>& volum
         }
     };
 }
-std::function<std::optional<mat4>()> boundingBox(
+std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh, 0>& meshes) {
+    return [port = &meshes]() -> std::optional<dmat4> {
+        if (port->hasData()) {
+            return boundingBox(port->getVectorData());
+        } else {
+            return std::nullopt;
+        }
+    };
+}
+std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh, 0, true>& meshes) {
+    return [port = &meshes]() -> std::optional<dmat4> {
+        if (port->hasData()) {
+            return boundingBox(port->getVectorData());
+        } else {
+            return std::nullopt;
+        }
+    };
+}
+std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Mesh>& mesh) {
+    return [port = &mesh]() -> std::optional<dmat4> {
+        if (port->hasData()) {
+            return boundingBox(*port->getData());
+        } else {
+            return std::nullopt;
+        }
+    };
+}
+
+std::function<std::optional<dmat4>()> boundingBox(const DataInport<Volume>& volume) {
+    return [port = &volume]() -> std::optional<dmat4> {
+        if (port->hasData()) {
+            return boundingBox(*port->getData());
+        } else {
+            return std::nullopt;
+        }
+    };
+}
+std::function<std::optional<dmat4>()> boundingBox(
     const DataInport<std::vector<std::shared_ptr<Volume>>>& volumes) {
-    return [port = &volumes]() -> std::optional<mat4> {
+    return [port = &volumes]() -> std::optional<dmat4> {
         if (port->hasData()) {
             return boundingBox(*port->getData());
         } else {
@@ -333,8 +334,8 @@ std::function<std::optional<mat4>()> boundingBox(
     };
 }
 
-std::function<std::optional<mat4>()> boundingBox(const DataOutport<Volume>& volume) {
-    return [port = &volume]() -> std::optional<mat4> {
+std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Volume>& volume) {
+    return [port = &volume]() -> std::optional<dmat4> {
         if (port->hasData()) {
             return boundingBox(*port->getData());
         } else {
@@ -342,10 +343,10 @@ std::function<std::optional<mat4>()> boundingBox(const DataOutport<Volume>& volu
         }
     };
 }
-std::function<std::optional<mat4>()> boundingBox(
+std::function<std::optional<dmat4>()> boundingBox(
     const DataOutport<std::vector<std::shared_ptr<Volume>>>& volumes) {
 
-    return [port = &volumes]() -> std::optional<mat4> {
+    return [port = &volumes]() -> std::optional<dmat4> {
         if (port->hasData()) {
             return boundingBox(*port->getData());
         } else {

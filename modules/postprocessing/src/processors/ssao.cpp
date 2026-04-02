@@ -270,8 +270,8 @@ void SSAO::process() {
         initFramebuffers(width, height);
     }
 
-    projParam_.nearplane = camera_.getNearPlaneDist();
-    projParam_.farplane = camera_.getFarPlaneDist();
+    projParam_.nearplane = static_cast<float>(camera_.getNearPlaneDist());
+    projParam_.farplane = static_cast<float>(camera_.getFarPlaneDist());
     projParam_.matrix = camera_.projectionMatrix();
 
     auto persp_camera = dynamic_cast<PerspectiveCamera*>(&camera_.get());

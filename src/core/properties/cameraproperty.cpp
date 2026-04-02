@@ -53,8 +53,8 @@ namespace inviwo {
 std::string_view CameraProperty::getClassIdentifier() const { return classIdentifier; }
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
-                               Document help, std::function<std::optional<mat4>()> getBoundingBox,
-                               vec3 eye, vec3 center, vec3 lookUp,
+                               Document help, std::function<std::optional<dmat4>()> getBoundingBox,
+                               dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel, semantics}
     , factory_{InviwoApplication::getPtr()->getCameraFactory()}
@@ -69,7 +69,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                           "The type of camera to use, defaults to a Perspective camera"_help;
                       return opts;
                   }())
-    , camera_{factory_->create(cameraType_, eye, center, lookUp)}
+    , camera_{factory_->create(cameraType_, lookFrom, lookTo, lookUp)}
     , defaultCamera_{camera_->clone()}
     , cameraActions_("actions", "Actions",
                      "Make automatic viewport adjustments. This requires that the camera gets "
@@ -77,35 +77,35 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                      buttons(), InvalidationLevel::Valid)
     , lookFrom_(
           "lookFrom", "Look from", "Position in world space of the camera"_help,
-          []() { return vec3{}; }, [](const vec3&) {}, {-vec3(100.0f), ConstraintBehavior::Ignore},
-          {vec3(100.0f), ConstraintBehavior::Ignore}, vec3(0.1f), InvalidationLevel::InvalidOutput,
-          PropertySemantics{"Spherical"})
+          []() { return dvec3{}; }, [](const dvec3&) {},
+          {-dvec3(100.0), ConstraintBehavior::Ignore}, {dvec3(100.0), ConstraintBehavior::Ignore},
+          dvec3(0.1), InvalidationLevel::InvalidOutput, PropertySemantics{"Spherical"})
     , lookTo_(
           "lookTo", "Look to", "Focus point of the camera in world space"_help,
-          []() { return vec3{}; }, [](const vec3&) {}, {-vec3(100.0f), ConstraintBehavior::Ignore},
-          {vec3(100.0f), ConstraintBehavior::Ignore}, vec3(0.1f), InvalidationLevel::InvalidOutput,
-          PropertySemantics::Default)
+          []() { return dvec3{}; }, [](const dvec3&) {},
+          {-dvec3(100.0), ConstraintBehavior::Ignore}, {dvec3(100.0), ConstraintBehavior::Ignore},
+          dvec3(0.1), InvalidationLevel::InvalidOutput, PropertySemantics::Default)
     , lookUp_(
           "lookUp", "Look up",
           "Up direction for the camera, should be orthogonal to lookTo - LookFrom"_help,
-          []() { return vec3(1.0f, 1.0f, 1.0f); }, [](const vec3&) {},
-          {-vec3(1.0f), ConstraintBehavior::Immutable}, {vec3(1.0f), ConstraintBehavior::Immutable},
-          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::Default)
+          []() { return dvec3(1.0, 1.0, 1.0); }, [](const dvec3&) {},
+          {-dvec3(1.0), ConstraintBehavior::Immutable}, {dvec3(1.0), ConstraintBehavior::Immutable},
+          dvec3(0.1), InvalidationLevel::InvalidOutput, PropertySemantics::Default)
     , aspectRatio_(
           "aspectRatio", "Aspect Ratio",
           "Aspect ratio (width / height) of the camera viewport. This is automatically set "
           "through resize events."_help,
-          []() { return 1.0f; }, [](const float&) {}, {0.0f, ConstraintBehavior::Immutable},
-          {std::numeric_limits<float>::max(), ConstraintBehavior::Immutable}, 0.01f,
+          []() { return 1.0; }, [](const double&) {}, {0.0, ConstraintBehavior::Immutable},
+          {std::numeric_limits<double>::max(), ConstraintBehavior::Immutable}, 0.01,
           InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , nearPlane_(
           "near", "Near Plane", "Near plane distance in world coordinates"_help,
-          []() { return 0.001f; }, [](const float&) {}, {0.001f, ConstraintBehavior::Ignore},
-          {10.0f, ConstraintBehavior::Ignore}, 0.001f)
+          []() { return 0.001; }, [](const double&) {}, {0.001, ConstraintBehavior::Ignore},
+          {10.0, ConstraintBehavior::Ignore}, 0.001)
     , farPlane_(
-          "far", "Far Plane", "Far plane distance in world coordinates"_help, []() { return 1.0f; },
-          [](const float&) {}, {1.0f, ConstraintBehavior::Ignore},
-          {1000.0f, ConstraintBehavior::Ignore}, 1.0f)
+          "far", "Far Plane", "Far plane distance in world coordinates"_help, []() { return 1.0; },
+          [](const double&) {}, {1.0, ConstraintBehavior::Ignore},
+          {1000.0, ConstraintBehavior::Ignore}, 1.0)
 
     , getBoundingBox_{std::move(getBoundingBox)} {
 
@@ -128,18 +128,18 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
 }
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
-                               std::function<std::optional<mat4>()> getBoundingBox, vec3 eye,
-                               vec3 center, vec3 lookUp, InvalidationLevel invalidationLevel,
+                               std::function<std::optional<dmat4>()> getBoundingBox, dvec3 lookFrom,
+                               dvec3 lookTo, dvec3 lookUp, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
     : CameraProperty(identifier, displayName, "Camera settings"_help, std::move(getBoundingBox),
-                     eye, center, lookUp, invalidationLevel, semantics) {}
+                     lookFrom, lookTo, lookUp, invalidationLevel, semantics) {}
 
-CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName, vec3 eye,
-                               vec3 center, vec3 lookUp, Inport* inport,
+CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
+                               dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CameraProperty(
           identifier, displayName,
-          [&]() -> std::function<std::optional<mat4>()> {
+          [&]() -> std::function<std::optional<dmat4>()> {
               if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
                   return util::boundingBox(*vp);
               } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
@@ -148,7 +148,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                   return nullptr;
               }
           }(),
-          eye, center, lookUp, invalidationLevel, semantics) {}
+          lookFrom, lookTo, lookUp, invalidationLevel, semantics) {}
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
@@ -242,28 +242,28 @@ CameraProperty& CameraProperty::setCamera(std::unique_ptr<Camera> newCamera) {
     return *this;
 }
 
-TrackballObject& CameraProperty::setLookFrom(vec3 lookFrom) {
+TrackballObject& CameraProperty::setLookFrom(dvec3 lookFrom) {
     lookFrom_.set(lookFrom);
     return *this;
 }
 
-TrackballObject& CameraProperty::setLookTo(vec3 lookTo) {
+TrackballObject& CameraProperty::setLookTo(dvec3 lookTo) {
     lookTo_.set(lookTo);
     return *this;
 }
 
-TrackballObject& CameraProperty::setLookUp(vec3 lookUp) {
+TrackballObject& CameraProperty::setLookUp(dvec3 lookUp) {
     lookUp_.set(lookUp);
     return *this;
 }
 
-CameraProperty& CameraProperty::setAspectRatio(float aspectRatio) {
+CameraProperty& CameraProperty::setAspectRatio(double aspectRatio) {
     aspectRatio_.set(aspectRatio);
     return *this;
 }
-float CameraProperty::getAspectRatio() const { return camera_->getAspectRatio(); }
+double CameraProperty::getAspectRatio() const { return camera_->getAspectRatio(); }
 
-TrackballObject& CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {  // NOLINT
+TrackballObject& CameraProperty::setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp) {  // NOLINT
     const NetworkLock lock(this);
     setLookFrom(lookFrom);
     setLookTo(lookTo);
@@ -271,22 +271,22 @@ TrackballObject& CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp
     return *this;
 }
 
-float CameraProperty::getNearPlaneDist() const { return nearPlane_.get(); }
+double CameraProperty::getNearPlaneDist() const { return nearPlane_.get(); }
 
-float CameraProperty::getFarPlaneDist() const { return farPlane_.get(); }
+double CameraProperty::getFarPlaneDist() const { return farPlane_.get(); }
 
-CameraProperty& CameraProperty::setNearPlaneDist(float v) {
+CameraProperty& CameraProperty::setNearPlaneDist(double v) {
     nearPlane_.set(v);
     return *this;
 }
 
-CameraProperty& CameraProperty::setFarPlaneDist(float v) {
+CameraProperty& CameraProperty::setFarPlaneDist(double v) {
     farPlane_.set(v);
     return *this;
 }
 
-CameraProperty& CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
-                                                    float minMaxRatio) {
+CameraProperty& CameraProperty::setNearFarPlaneDist(double nearPlaneDist, double farPlaneDist,
+                                                    double minMaxRatio) {
     const NetworkLock lock(this);
 
     nearPlane_.set(nearPlaneDist, std::min(nearPlane_.getMinValue(), nearPlaneDist / minMaxRatio),
@@ -299,13 +299,13 @@ CameraProperty& CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float f
     return *this;
 }
 
-vec3 CameraProperty::getLookFromMinValue() const { return lookFrom_.getMinValue(); }
+dvec3 CameraProperty::getLookFromMinValue() const { return lookFrom_.getMinValue(); }
 
-vec3 CameraProperty::getLookFromMaxValue() const { return lookFrom_.getMaxValue(); }
+dvec3 CameraProperty::getLookFromMaxValue() const { return lookFrom_.getMaxValue(); }
 
-vec3 CameraProperty::getLookToMinValue() const { return lookTo_.getMinValue(); }
+dvec3 CameraProperty::getLookToMinValue() const { return lookTo_.getMinValue(); }
 
-vec3 CameraProperty::getLookToMaxValue() const { return lookTo_.getMaxValue(); }
+dvec3 CameraProperty::getLookToMaxValue() const { return lookTo_.getMaxValue(); }
 
 void CameraProperty::zoom(const ZoomOptions& opts) {
     if (getBoundingBox_ && !opts.boundingBox) {
@@ -318,16 +318,16 @@ void CameraProperty::zoom(const ZoomOptions& opts) {
 }
 
 // XYZ between -1 -> 1
-vec3 CameraProperty::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
+dvec3 CameraProperty::getWorldPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {
     return get().getWorldPosFromNormalizedDeviceCoords(ndcCoords);
 }
 
-vec4 CameraProperty::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
+dvec4 CameraProperty::getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {
     return get().getClipPosFromNormalizedDeviceCoords(ndcCoords);
 }
 
-vec3 CameraProperty::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
-    const vec2& normalizedScreenCoord) const {
+dvec3 CameraProperty::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+    const dvec2& normalizedScreenCoord) const {
     return camera_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord);
 }
 
@@ -339,7 +339,7 @@ void CameraProperty::invokeEvent(Event* event) {
         if (canvasSize.x > 0 && canvasSize.y > 0) {
             const double width{static_cast<double>(canvasSize[0])};
             const double height{static_cast<double>(canvasSize[1])};
-            setAspectRatio(static_cast<float>(width / height));
+            setAspectRatio(width / height);
         }
     } else if (auto ve = event->getAs<ViewEvent>(); ve && getBoundingBox_) {
         std::visit(util::overloaded{[&](camerautil::Side side) { setView(side); },
@@ -421,23 +421,23 @@ void CameraProperty::deserialize(Deserializer& d) {
     CompositeProperty::deserialize(d);
 }
 
-vec3 CameraProperty::getLookFrom() const { return camera_->getLookFrom(); }
+dvec3 CameraProperty::getLookFrom() const { return camera_->getLookFrom(); }
 
-vec3 CameraProperty::getLookTo() const { return camera_->getLookTo(); }
+dvec3 CameraProperty::getLookTo() const { return camera_->getLookTo(); }
 
-vec3 CameraProperty::getLookUp() const { return camera_->getLookUp(); }
+dvec3 CameraProperty::getLookUp() const { return camera_->getLookUp(); }
 
-vec3 CameraProperty::getLookRight() const { return camera_->getLookRight(); }
+dvec3 CameraProperty::getLookRight() const { return camera_->getLookRight(); }
 
-vec3 CameraProperty::getDirection() const { return camera_->getDirection(); }
+dvec3 CameraProperty::getDirection() const { return camera_->getDirection(); }
 
-const mat4& CameraProperty::viewMatrix() const { return camera_->getViewMatrix(); }
+const dmat4& CameraProperty::viewMatrix() const { return camera_->getViewMatrix(); }
 
-const mat4& CameraProperty::projectionMatrix() const { return camera_->getProjectionMatrix(); }
+const dmat4& CameraProperty::projectionMatrix() const { return camera_->getProjectionMatrix(); }
 
-const mat4& CameraProperty::inverseViewMatrix() const { return camera_->getInverseViewMatrix(); }
+const dmat4& CameraProperty::inverseViewMatrix() const { return camera_->getInverseViewMatrix(); }
 
-const mat4& CameraProperty::inverseProjectionMatrix() const {
+const dmat4& CameraProperty::inverseProjectionMatrix() const {
     return camera_->getInverseProjectionMatrix();
 }
 
@@ -522,7 +522,7 @@ void CameraProperty::flipUp() { setLookUp(-getLookUp()); }
 void CameraProperty::flipView() { setLookFrom(getDirection()); }
 
 void CameraProperty::roll(float radians) {
-    setLookUp(glm::rotate(getLookUp(), radians, getDirection()));
+    setLookUp(glm::rotate(getLookUp(), static_cast<double>(radians), getDirection()));
 }
 
 void CameraProperty::setNearFar() {

@@ -143,22 +143,22 @@ void HDF5ToVolume::process() {
         }
         case 1: {  // User defined spacing
             const auto dim = volume_->getDimensions();
-            const vec4 diag(vec3(dim) * spacing_.get(), 1.0f);
-            mat4 basis = glm::diagonal4x4(diag);
-            vec3 offset = -0.5f * vec3(basis[0] + basis[1] + basis[2]);
-            basis[3] = vec4(offset, 1.0f);
+            const auto diag = dvec4{dvec3(dim) * spacing_.get(), 1.0};
+            auto basis = glm::diagonal4x4(diag);
+            const auto offset = -0.5 * dvec3(basis[0] + basis[1] + basis[2]);
+            basis[3] = dvec4(offset, 1.0);
             basis_.set(basis);
             break;
         }
         default: {
-            mat4 basis = getBasisFromMeta(basisMatches_[basisSelection_.getSelectedIndex() - 2]);
+            const auto basis = getBasisFromMeta(basisMatches_[basisSelection_.getSelectedIndex() - 2]);
             basis_.set(basis);
             break;
         }
     }
 
     if (selection_.adjustBasis_) {
-        mat4 basis = basis_;
+        dmat4 basis = basis_;
 
         auto sel = selection_.getSelection();
         auto maxSel = selection_.getMaxSelection();
@@ -168,8 +168,8 @@ void HDF5ToVolume::process() {
             if (sel[i].end - sel[i].start <= 1) continue;
             if (j > 2) throw Exception("Invalid selection, resulting rank > 3");
 
-            basis[j] *= static_cast<float>(sel[i].end - sel[i].start) /
-                        static_cast<float>(maxSel[i].end - maxSel[i].start);
+            basis[j] *= static_cast<double>(sel[i].end - sel[i].start) /
+                        static_cast<double>(maxSel[i].end - maxSel[i].start);
             ++j;
         }
 
@@ -193,8 +193,8 @@ void HDF5ToVolume::process() {
     volume_->dataMap.valueAxis.unit = units::unit_from_string(valueUnit_.get());
 }
 
-mat4 HDF5ToVolume::getBasisFromMeta(MetaData meta) {
-    mat4 basis(1.0f);
+dmat4 HDF5ToVolume::getBasisFromMeta(MetaData meta) {
+    dmat4 basis(1.0);
 
     if (inport_.hasData()) {
         const auto data = inport_.getData();
@@ -208,17 +208,17 @@ mat4 HDF5ToVolume::getBasisFromMeta(MetaData meta) {
         std::vector<hsize_t> dims(rank);
         space.getSimpleExtentDims(dims.data());
         if (dims[0] == 3 && dims[1] == 3) {
-            mat3 bas;
-            dataset.read(glm::value_ptr(bas), H5::PredType::NATIVE_FLOAT);
+            dmat3 bas;
+            dataset.read(glm::value_ptr(bas), H5::PredType::NATIVE_DOUBLE);
 
-            vec3 offset = -0.5f * vec3(bas[0] + bas[1] + bas[2]);
-            basis[0] = vec4(bas[0], 0.0f);
-            basis[1] = vec4(bas[1], 0.0f);
-            basis[2] = vec4(bas[2], 0.0f);
-            basis[3] = vec4(offset, 1.0f);
+            dvec3 offset = -0.5 * dvec3(bas[0] + bas[1] + bas[2]);
+            basis[0] = dvec4(bas[0], 0.0);
+            basis[1] = dvec4(bas[1], 0.0);
+            basis[2] = dvec4(bas[2], 0.0);
+            basis[3] = dvec4(offset, 1.0);
 
         } else if (dims[0] == 4 && dims[1] == 4) {
-            dataset.read(glm::value_ptr(basis), H5::PredType::NATIVE_FLOAT);
+            dataset.read(glm::value_ptr(basis), H5::PredType::NATIVE_DOUBLE);
         } else {
             throw DataReaderException(SourceContext{},
                                       "Could not create Basis from: {} Invalid dimensions",

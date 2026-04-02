@@ -59,33 +59,33 @@ OptionPropertyState<AxisRangeMode> rangeModeState(bool hasDims, bool hasBounding
     return {.options = rangeOptions, .help = "Determines axis ranges"_help};
 }
 
-float calcScaleFactor3D(const glm::mat4& matrix, OffsetScaling mode) {
-    const auto l = vec3{glm::length(matrix[0]), glm::length(matrix[1]), glm::length(matrix[2])};
+float calcScaleFactor3D(const glm::dmat4& matrix, OffsetScaling mode) {
+    const auto l = dvec3{glm::length(matrix[0]), glm::length(matrix[1]), glm::length(matrix[2])};
     switch (mode) {
         case OffsetScaling::MinExtent:
-            return glm::compMin(l) / 100.0f;
+            return static_cast<float>(glm::compMin(l) / 100.0);
         case OffsetScaling::MaxExtent:
-            return glm::compMax(l) / 100.0f;
+            return static_cast<float>(glm::compMax(l) / 100.0);
         case OffsetScaling::MeanExtent:
-            return glm::compAdd(l) / (3.0f * 100.0f);
+            return static_cast<float>(glm::compAdd(l) / (3.0 * 100.0));
         case OffsetScaling::Diagonal:
-            return glm::length(matrix[0] + matrix[1] + matrix[2]) / 100.0f;
+            return static_cast<float>(glm::length(matrix[0] + matrix[1] + matrix[2]) / 100.0);
         case OffsetScaling::None:
         default:
             return 1.0f;
     }
 }
-float calcScaleFactor2D(const glm::mat4& matrix, OffsetScaling mode) {
-    const auto l = vec2{glm::length(matrix[0]), glm::length(matrix[1])};
+float calcScaleFactor2D(const glm::dmat4& matrix, OffsetScaling mode) {
+    const auto l = dvec2{glm::length(matrix[0]), glm::length(matrix[1])};
     switch (mode) {
         case OffsetScaling::MinExtent:
-            return glm::compMin(l) / 100.0f;
+            return static_cast<float>(glm::compMin(l) / 100.0);
         case OffsetScaling::MaxExtent:
-            return glm::compMax(l) / 100.0f;
+            return static_cast<float>(glm::compMax(l) / 100.0);
         case OffsetScaling::MeanExtent:
-            return glm::compAdd(l) / (2.0f * 100.0f);
+            return static_cast<float>(glm::compAdd(l) / (2.0 * 100.0));
         case OffsetScaling::Diagonal:
-            return glm::length(matrix[0] + matrix[1]) / 100.0f;
+            return static_cast<float>(glm::length(matrix[0] + matrix[1]) / 100.0);
         case OffsetScaling::None:
         default:
             return 1.0f;
@@ -118,7 +118,7 @@ std::array<dvec2, 3> getRangeBasisOffset(const SpatialEntity& entity) {
 }
 
 std::array<dvec2, 3> getRangeWorld(const SpatialEntity& entity) {
-    const auto d2w = dmat4{entity.getCoordinateTransformer().getDataToWorldMatrix()};
+    const auto d2w = entity.getCoordinateTransformer().getDataToWorldMatrix();
 
     return {dvec2{d2w[3].x, d2w[3].x + glm::length(d2w[0])},
             dvec2{d2w[3].y, d2w[3].y + glm::length(d2w[1])},
@@ -126,11 +126,11 @@ std::array<dvec2, 3> getRangeWorld(const SpatialEntity& entity) {
 }
 
 std::array<dvec2, 3> getRangeBoundingBox(CoordinateSpace destSpace, const SpatialEntity& entity,
-                                         std::optional<mat4> worldBoundingBox) {
+                                         std::optional<dmat4> worldBoundingBox) {
     if (worldBoundingBox) {
         const auto bb =
-            dmat4{entity.getCoordinateTransformer().getMatrix(CoordinateSpace::World, destSpace)} *
-            dmat4{worldBoundingBox.value()};
+            entity.getCoordinateTransformer().getMatrix(CoordinateSpace::World, destSpace) *
+            worldBoundingBox.value();
 
         return {dvec2{bb[3].x, bb[3].x + glm::length(bb[0])},
                 dvec2{bb[3].y, bb[3].y + glm::length(bb[1])},
@@ -143,7 +143,7 @@ std::array<dvec2, 3> getRangeBoundingBox(CoordinateSpace destSpace, const Spatia
 }  // namespace
 
 std::array<dvec2, 3> calcAxisRanges(const SpatialEntity& entity,
-                                    std::optional<mat4> worldBoundingBox, AxisRangeMode mode) {
+                                    std::optional<dmat4> worldBoundingBox, AxisRangeMode mode) {
 
     switch (mode) {
         case AxisRangeMode::Dims:
@@ -164,14 +164,14 @@ std::array<dvec2, 3> calcAxisRanges(const SpatialEntity& entity,
     return {dvec2{0.0, 1.0}, dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
 }
 
-dmat4 getTransform(const SpatialEntity& entity, std::optional<mat4> worldBoundingBox,
+dmat4 getTransform(const SpatialEntity& entity, std::optional<dmat4> worldBoundingBox,
                    AxisRangeMode mode) {
 
     const dmat4 m = entity.getCoordinateTransformer().getDataToWorldMatrix();
     using enum AxisRangeMode;
     if (std::ranges::contains(std::to_array({DataBoundingBox, ModelBoundingBox, WorldBoundingBox}),
                               mode)) {
-        return worldBoundingBox.transform([](const mat4& bbox) { return dmat4{bbox}; }).value_or(m);
+        return worldBoundingBox.value_or(m);
     } else {
         return m;
     }

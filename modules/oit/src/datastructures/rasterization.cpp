@@ -62,7 +62,7 @@ UseFragmentList Rasterization::usesFragmentLists() const {
     }
 }
 
-std::optional<mat4> Rasterization::boundingBox() const {
+std::optional<dmat4> Rasterization::boundingBox() const {
     if (auto p = getProcessor()) {
         return p->boundingBox();
     } else {

@@ -53,7 +53,7 @@ namespace meshutil {
  * minMaxRatio*|value|)
  */
 IVW_MODULE_BASE_API void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
-                                            CameraProperty& camera, float minMaxRatio = 10.f);
+                                            CameraProperty& camera, double minMaxRatio = 10.);
 /**
  * @brief Compute near and far plane parameters covering the bounding box when maximally zoomed out.
  *
@@ -66,9 +66,9 @@ IVW_MODULE_BASE_API void centerViewOnMeshes(const std::vector<std::shared_ptr<co
  * @param nearFarRatio Ratio between near and far plane. 1:10000 is commonly used by game engines.
  * @return Near and far plane distances.
  */
-IVW_MODULE_BASE_API std::pair<float, float> computeNearFarPlanes(
-    std::pair<vec3, vec3> worldSpaceBoundingBox, const CameraProperty& camera,
-    float nearFarRatio = 1.f / 10000.f);
+IVW_MODULE_BASE_API std::pair<double, double> computeNearFarPlanes(
+    std::pair<dvec3, dvec3> worldSpaceBoundingBox, const CameraProperty& camera,
+    double nearFarRatio = 1. / 10000.);
 
 }  // namespace meshutil
 
