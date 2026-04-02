@@ -78,7 +78,7 @@ public:
      * box is represented using a mat4, where all positions are between `bbox * (x,y,z,1)` where x,
      * y, and z are between 0 and 1.
      */
-    virtual mat4 getBoundingBox() const = 0;
+    virtual dmat4 getBoundingBox() const = 0;
 
     /**
      * Return the data range of the scalar values
