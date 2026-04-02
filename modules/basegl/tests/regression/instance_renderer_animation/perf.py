@@ -1,7 +1,7 @@
 # Inviwo Python script
 import inviwopy
 from inviwopy import qt as inviwoqt
-from inviwopy.glm import size2_t, size3_t, ivec2, vec3
+from inviwopy.glm import size2_t, size3_t, ivec2, dvec3
 
 import math
 import time
@@ -25,16 +25,16 @@ for size in [1024, 512, 256]:
             network.MeshCreator.res.value = ivec2(m)
 
             with ivw.camera.Camera(network.InstanceRenderer.camera,
-                                   lookfrom=vec3(0, 8, 0),
-                                   lookto=vec3(0, 0, 0),
-                                   lookup=vec3(0, 0, 1)) as c:
+                                   lookFrom=dvec3(0, 8, 0),
+                                   lookTo=dvec3(0, 0, 0),
+                                   lookUp=dvec3(0, 0, 1)) as c:
 
                 start = time.perf_counter()
-                for step in c.rotate(math.pi / steps, steps, vec3(0, 1, 0)):
+                for step in c.rotate(math.pi / steps, steps, dvec3(0, 1, 0)):
                     inviwoqt.update()
                 end = time.perf_counter()
-                frametime = (end - start) / steps
-                fps = 1.0 / frametime
+                frameTime = (end - start) / steps
+                fps = 1.0 / frameTime
 
                 print(f"FPS {size:4}x{size:4} instances {np**3:4} mesh resolution {m:2} {fps}")
         
