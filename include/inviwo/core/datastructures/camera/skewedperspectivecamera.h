@@ -44,14 +44,14 @@ namespace inviwo {
  */
 class IVW_CORE_API SkewedPerspectiveCamera final : public Camera {
 public:
-    SkewedPerspectiveCamera(dvec3 lookFrom = cameradefaults::lookFrom,
-                            dvec3 lookTo = cameradefaults::lookTo,
-                            dvec3 lookUp = cameradefaults::lookUp,
-                            double nearPlane = cameradefaults::nearPlane,
-                            double farPlane = cameradefaults::farPlane,
-                            double aspectRatio = cameradefaults::aspectRatio,
-                            double fieldOfView = cameradefaults::fieldOfView,
-                            dvec2 frustumOffset = dvec2(0.0, 0.0));
+    explicit SkewedPerspectiveCamera(dvec3 lookFrom = cameradefaults::lookFrom,
+                                     dvec3 lookTo = cameradefaults::lookTo,
+                                     dvec3 lookUp = cameradefaults::lookUp,
+                                     double nearPlane = cameradefaults::nearPlane,
+                                     double farPlane = cameradefaults::farPlane,
+                                     double aspectRatio = cameradefaults::aspectRatio,
+                                     double fieldOfView = cameradefaults::fieldOfView,
+                                     dvec2 frustumOffset = dvec2(0.0, 0.0));
     virtual ~SkewedPerspectiveCamera() = default;
     SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other);
     SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other);

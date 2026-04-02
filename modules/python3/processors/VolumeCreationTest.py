@@ -108,8 +108,8 @@ See also [python3/processors/PythonVolumeExample.py](file:///~modulePath~/proces
 
         # create a Volume from the representation
         volume = ivw.data.Volume(volumerep)
-        volume.basis = ivw.glm.mat3(1)
-        volume.offset = ivw.glm.vec3(-0.5, -0.5, -0.5)
+        volume.basis = ivw.glm.dmat3(1)
+        volume.offset = ivw.glm.dvec3(-0.5, -0.5, -0.5)
 
         volume.dataMap.dataRange = ivw.glm.dvec2(0.0, npData.max())
         volume.dataMap.valueRange = ivw.glm.dvec2(0.0, npData.max())
