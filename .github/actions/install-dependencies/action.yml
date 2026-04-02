@@ -57,6 +57,37 @@ runs:
                          libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libegl1-mesa-dev \
                          libwayland-dev wayland-protocols libwayland-egl1-mesa libgles2-mesa-dev mesa-common-dev
 
+    - name: "Install CMake"
+      shell: bash
+      if: runner.os == 'Linux'
+      run: |
+        #!/bin/bash
+        set -e
+
+        # Get the latest CMake version from the GitHub API
+        CMAKE_VERSION=$(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
+
+        echo "Latest CMake version: $CMAKE_VERSION"
+
+        # Download the latest binary
+        wget -q "https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz" -O /tmp/cmake.tar.gz
+
+        # Extract to /opt
+        sudo tar -zxf /tmp/cmake.tar.gz -C /opt
+        sudo mv /opt/cmake-${CMAKE_VERSION}-linux-x86_64 /opt/cmake-${CMAKE_VERSION}
+
+        # Symlink all binaries to /usr/local/bin
+        sudo ln -sf /opt/cmake-${CMAKE_VERSION}/bin/* /usr/local/bin/
+
+        # Clean up
+        rm /tmp/cmake.tar.gz
+
+        export GITHUB_PATH=/usr/local/bin:$GITHUB_PATH
+        echo "Path to CMAKE $(which cmake)"
+        # Verify
+        echo "Installed CMake version:"
+        cmake --version
+
     - name: "Setup GCC ${{ inputs.gcc-version }}"
       shell: bash
       if: runner.os == 'Linux' && inputs.linux-compilter == 'gcc'
