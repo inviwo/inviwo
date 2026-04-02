@@ -58,19 +58,16 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
         .value("YPositive", camerautil::Side::YPositive)
         .value("ZNegative", camerautil::Side::ZNegative)
         .value("ZPositive", camerautil::Side::ZPositive)
-        .export_values()
         .finalize();
 
     py::native_enum<camerautil::UpdateNearFar>(cameraModule, "UpdateNearFar", "enum.Enum")
         .value("Yes", camerautil::UpdateNearFar::Yes)
         .value("No", camerautil::UpdateNearFar::No)
-        .export_values()
         .finalize();
 
     py::native_enum<camerautil::UpdateLookRanges>(cameraModule, "UpdateLookRanges", "enum.Enum")
         .value("Yes", camerautil::UpdateLookRanges::Yes)
         .value("No", camerautil::UpdateLookRanges::No)
-        .export_values()
         .finalize();
 
     cameraModule.def("setCameraLookRanges", &camerautil::setCameraLookRanges);
@@ -113,8 +110,8 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
         .def(py::init([](std::string_view identifier, std::string_view displayName, dvec3 lookFrom,
                          dvec3 lookTo, dvec3 lookUp, Inport* inport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                 return new CameraProperty(identifier, displayName, eye, center, lookUp, inport,
-                                           invalidationLevel, semantics);
+                 return new CameraProperty(identifier, displayName, lookFrom, lookTo, lookUp,
+                                           inport, invalidationLevel, semantics);
              }),
              py::arg("identifier"), py::arg("displayName"),
              py::arg("lookFrom") = cameradefaults::lookFrom,

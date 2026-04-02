@@ -161,7 +161,7 @@ void VolumeTetraMesh::get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds)
     }
 }
 
-mat4 VolumeTetraMesh::getBoundingBox() const {
+dmat4 VolumeTetraMesh::getBoundingBox() const {
     return getCoordinateTransformer().getDataToWorldMatrix();
 }
 
