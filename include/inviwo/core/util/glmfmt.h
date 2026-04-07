@@ -90,10 +90,11 @@ constexpr std::optional<It> findSpecSeparator(It it, It end) {
     while (it != end) {
         if (*it == '}') return std::nullopt;
         if (*it == ':') return it;
-        if (*it == '{')
+        if (*it == '{') {
             it = skipNestedField(it, end);
-        else
+        } else {
             ++it;
+        }
     }
     return std::nullopt;
 }
@@ -106,7 +107,7 @@ public:
     constexpr auto parse(fmt::parse_context<char>& ctx,
                          std::optional<decltype(ctx.begin())> maybeEnd = std::nullopt) -> const
         char* {
-        auto end = maybeEnd.value_or(ctx.end());
+        const auto* end = maybeEnd.value_or(ctx.end());
         if (ctx.begin() == end || *ctx.begin() == '}') return ctx.begin();
         end = parse_format_specs(ctx.begin(), end, specs_, ctx, fmt::detail::type::string_type);
         return end;
@@ -135,8 +136,8 @@ struct GlmFormatter {
 
     // ── parse ─────────────────────────────────────────────────────────────────
     constexpr auto parse(fmt::format_parse_context& ctx) -> fmt::format_parse_context::iterator {
-        auto it = ctx.begin();
-        auto end = ctx.end();
+        const auto* it = ctx.begin();
+        const auto* end = ctx.end();
 
         auto sep = detail::findSpecSeparator(it, end);
         it = overallFormatter.parse(ctx, sep);
