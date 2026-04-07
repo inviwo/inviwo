@@ -105,6 +105,8 @@ protected:
 
 private:
     std::function<bool(QMenu&, ContextMenuCategories)> contextMenuCallback_;
+    std::shared_ptr<std::function<void()>> gestureCallback_;
+    std::shared_ptr<std::function<void()>> touchCallback_;
 
     std::string name_;
 };

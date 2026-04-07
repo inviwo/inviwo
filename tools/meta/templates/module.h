@@ -35,7 +35,11 @@ namespace inviwo {
 
 class {{ module/api }} {{ module/name }}Module : public InviwoModule {
 public:
-    {{ module/name }}Module(InviwoApplication* app);
+    explicit {{ module/name }}Module(InviwoApplication* app);
+    {{ module/name }}Module(const {{ module/name }}Module&) = delete;
+    {{ module/name }}Module({{ module/name }}Module&&) = delete;
+    {{ module/name }}Module& operator=(const {{ module/name }}Module&) = delete;
+    {{ module/name }}Module& operator=({{ module/name }}Module&&) = delete;
     virtual ~{{ module/name }}Module() = default;
 };
 
