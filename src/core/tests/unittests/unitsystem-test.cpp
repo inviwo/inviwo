@@ -73,4 +73,16 @@ TEST(Unitsystem, unitsystem) {
     EXPECT_EQ(fmt::format("{:all}", chargeDensity * length.pow(3)), "e");
 }
 
+TEST(Unitsystem, simplification) {
+    Unit kmPerSec = units::unit_from_string("km/s");
+    Unit meterPerMilliSec = units::unit_from_string("m/ms");
+
+    EXPECT_EQ(fmt::format("{}", kmPerSec), "km/s");
+    EXPECT_EQ(fmt::format("{}", meterPerMilliSec), "km/s");
+
+    Unit kN = units::unit_from_string("kN");
+    EXPECT_EQ(fmt::format("{:si}", kN), "kgkm/s²");
+    EXPECT_EQ(fmt::format("{:ext}", kN), "kN");
+}
+
 }  // namespace inviwo
