@@ -99,6 +99,11 @@ constexpr std::optional<It> findSpecSeparator(It it, It end) {
     return std::nullopt;
 }
 
+// "Copy" of native_formatter from in fmt/base.h
+// Adds an additional `maybeEnd` argument to `parse` to be able to parse a subrange of the input
+// given in `ctx`. This avoid having to create a copy of the context with the subrange. The problem
+// with creating a context copy is that any "dynamic" (width/precision) arguments will not be
+// tracked correctly.
 struct StringFormatter {
 private:
     fmt::detail::dynamic_format_specs<char> specs_;
@@ -120,7 +125,7 @@ public:
     constexpr auto format(const std::string_view& val, fmt::format_context& ctx) const
         -> decltype(ctx.out()) {
         if (!specs_.dynamic()) return write<char>(ctx.out(), val, specs_, ctx.locale());
-        auto specs = fmt::format_specs(specs_);
+        auto specs = fmt::format_specs(specs_);  // NOLINT(cppcoreguidelines-slicing)
         handle_dynamic_spec(specs.dynamic_width(), specs.width, specs_.width_ref, ctx);
         handle_dynamic_spec(specs.dynamic_precision(), specs.precision, specs_.precision_ref, ctx);
         return fmt::detail::write<char>(ctx.out(), val, specs, ctx.locale());
