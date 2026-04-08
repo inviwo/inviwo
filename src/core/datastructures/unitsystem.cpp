@@ -55,6 +55,35 @@ constexpr std::array<
                {"count", "#", [](units::detail::unit_data u) { return u.count(); }},
                {"radian", "rad", [](units::detail::unit_data u) { return u.radian(); }}}};
 
+/**
+ * Compare two units @p a and @p b where positive units are preferred
+ */
+bool lessThan(const units::detail::unit_data& a, const units::detail::unit_data& b) {
+    if (a.meter() != b.meter()) {
+        return a.meter() > b.meter();
+    } else if (a.kg() != b.kg()) {
+        return a.kg() > b.kg();
+    } else if (a.second() != b.second()) {
+        return a.second() > b.second();
+    } else if (a.ampere() != b.ampere()) {
+        return a.ampere() > b.ampere();
+    } else if (a.kelvin() != b.kelvin()) {
+        return a.kelvin() > b.kelvin();
+    } else if (a.mole() != b.mole()) {
+        return a.mole() > b.mole();
+    } else if (a.candela() != b.candela()) {
+        return a.candela() > b.candela();
+    } else if (a.currency() != b.currency()) {
+        return a.currency() > b.currency();
+    } else if (a.count() != b.count()) {
+        return a.count() > b.count();
+    } else if (a.radian() != b.radian()) {
+        return a.radian() > b.radian();
+    } else {
+        return false;
+    }
+}
+
 template <typename OP>
 constexpr bool any(units::detail::unit_data a, units::detail::unit_data b, OP op) {
     for (auto&& [name, abbr, getter] : baseUnits) {
@@ -155,6 +184,7 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
     for (const auto& [base, descs] : groups) {
         bases.push_back(base);
     }
+    std::ranges::sort(bases, lessThan);
 
     std::vector<std::vector<std::pair<units::detail::unit_data, int>>> matches;
     {
