@@ -87,10 +87,10 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , meshProperties_("geometry", "Geometry Rendering Properties")
     , cullFace_("cullFace", "Cull Face",
-                {{"culldisable", "Disable", GL_NONE},
-                 {"cullfront", "Front", GL_FRONT},
-                 {"cullback", "Back", GL_BACK},
-                 {"cullfrontback", "Front & Back", GL_FRONT_AND_BACK}},
+                {{"culldisable", "Disable", static_cast<int>(GL_NONE)},
+                 {"cullfront", "Front", static_cast<int>(GL_FRONT)},
+                 {"cullback", "Back", static_cast<int>(GL_BACK)},
+                 {"cullfrontback", "Front & Back", static_cast<int>(GL_FRONT_AND_BACK)}},
                 0)
     , enableDepthTest_("enableDepthTest_", "Enable Depth Test",
                        "Toggles the depth test during rendering"_help, true)
