@@ -82,7 +82,7 @@ public:
     const ivec4& getViewport() const;
 
     BlendMode getBlendMode() const;
-    GLint getBlendModeGL() const;
+    GLenum getBlendModeGL() const;
 
 private:
     virtual void deserialize(Deserializer& d) override;

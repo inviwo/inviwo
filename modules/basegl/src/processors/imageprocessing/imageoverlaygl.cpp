@@ -151,7 +151,7 @@ const ivec4& OverlayProperty::getViewport() const { return viewport_; }
 
 auto OverlayProperty::getBlendMode() const -> BlendMode { return blendMode_; }
 
-GLint OverlayProperty::getBlendModeGL() const { return static_cast<GLint>(blendMode_.get()); }
+GLenum OverlayProperty::getBlendModeGL() const { return static_cast<GLenum>(blendMode_.get()); }
 
 void OverlayProperty::deserialize(Deserializer& d) {
     isDeserializing_ = true;
