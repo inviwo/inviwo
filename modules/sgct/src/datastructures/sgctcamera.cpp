@@ -114,7 +114,7 @@ void SGCTCamera::configureProperties(CameraProperty& cameraProperty, bool attach
     if (attach) {
         util::updateOrCreateCameraFovProperty(
             cameraProperty, [this]() { return getFovy(); },
-            [this](const doubledouble& val) { setFovy(val); });
+            [this](const double& val) { setFovy(val); });
 
     } else if (auto* fov = util::getCameraFovProperty(cameraProperty)) {
         fov->setGetAndSet([val = fov->get()]() { return val; }, [](const double&) {});

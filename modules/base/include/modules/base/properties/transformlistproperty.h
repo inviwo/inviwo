@@ -132,10 +132,9 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.trafo.RotateProperty"};
 
     RotateProperty(std::string_view identifier, std::string_view displayName,
-                   const dvec3& axis = dvec3{1.0, 0.0, 0.0}, const double angle = 0.0,
-                   const double minAngle = -glm::pi<double>(),
-                   const double maxAngle = glm::pi<double>(), const double increment = 0.001,
-                   AngleMeasure angleMeasure = AngleMeasure::Radians,
+                   const dvec3& axis = dvec3{1.0, 0.0, 0.0}, double angle = 0.0,
+                   double minAngle = -glm::pi<double>(), double maxAngle = glm::pi<double>(),
+                   double increment = 0.001, AngleMeasure angleMeasure = AngleMeasure::Radians,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
     RotateProperty(const RotateProperty& rhs);

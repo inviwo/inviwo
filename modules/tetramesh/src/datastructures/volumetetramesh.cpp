@@ -42,7 +42,7 @@
 
 namespace inviwo {
 
-namespace detail {
+namespace {
 
 dmat4 tetraBoundingBox(const Volume& volume) {
     dmat3 basis{volume.getBasis()};
@@ -63,7 +63,7 @@ dmat4 tetraBoundingBox(const Volume& volume) {
     return bbox;
 }
 
-}  // namespace detail
+}  // namespace
 
 VolumeTetraMesh::VolumeTetraMesh(const std::shared_ptr<const Volume>& volume, int channel)
     : channel_{0} {
@@ -82,7 +82,7 @@ void VolumeTetraMesh::setData(const std::shared_ptr<const Volume>& volume, int c
 
     volume_ = volume;
     channel_ = channel;
-    setModelMatrix(detail::tetraBoundingBox(*volume_));
+    setModelMatrix(tetraBoundingBox(*volume_));
     setWorldMatrix(dmat4(1.0));
 }
 

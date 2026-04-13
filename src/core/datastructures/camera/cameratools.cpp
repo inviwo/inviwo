@@ -36,8 +36,8 @@ namespace inviwo::util {
 DoubleRefProperty* getCameraFovProperty(CameraProperty& comp) {
     return dynamic_cast<DoubleRefProperty*>(comp.getCameraProperty("fov"));
 }
-std::unique_ptr<DoubleRefProperty> createCameraFovProperty(std::function<double()> get,
-                                                           std::function<void(const double&)> set) {
+std::unique_ptr<DoubleRefProperty> createCameraFovProperty(
+    const std::function<double()>& get, const std::function<void(const double&)>& set) {
     return std::make_unique<DoubleRefProperty>(
         "fov", "FOV", "The perspective field of view in the vertical direction"_help, get, set,
         std::pair<double, ConstraintBehavior>{0.0, ConstraintBehavior::Immutable},
@@ -45,8 +45,8 @@ std::unique_ptr<DoubleRefProperty> createCameraFovProperty(std::function<double(
 }
 
 DoubleRefProperty* updateOrCreateCameraFovProperty(CameraProperty& comp,
-                                                   std::function<double()> get,
-                                                   std::function<void(const double&)> set) {
+                                                   const std::function<double()>& get,
+                                                   const std::function<void(const double&)>& set) {
     auto fov = getCameraFovProperty(comp);
     if (fov) {
         fov->setGetAndSet(get, set);
@@ -64,16 +64,16 @@ DoubleRefProperty* getCameraWidthProperty(CameraProperty& comp) {
 }
 
 std::unique_ptr<DoubleRefProperty> createCameraWidthProperty(
-    std::function<double()> get, std::function<void(const double&)> set) {
+    const std::function<double()>& get, const std::function<void(const double&)>& set) {
     return std::make_unique<DoubleRefProperty>(
         "width", "Width", "The viewport width in world space"_help, get, set,
         std::pair<double, ConstraintBehavior>{0.0, ConstraintBehavior::Immutable},
         std::pair<double, ConstraintBehavior>{1000.0, ConstraintBehavior::Ignore}, 0.1);
 }
 
-DoubleRefProperty* updateOrCreateCameraWidthProperty(CameraProperty& comp,
-                                                     std::function<double()> get,
-                                                     std::function<void(const double&)> set) {
+DoubleRefProperty* updateOrCreateCameraWidthProperty(
+    CameraProperty& comp, const std::function<double()>& get,
+    const std::function<void(const double&)>& set) {
     auto width = getCameraWidthProperty(comp);
     if (width) {
         width->setGetAndSet(get, set);
@@ -91,7 +91,7 @@ DoubleVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty& comp) {
 }
 
 std::unique_ptr<DoubleVec2RefProperty> createCameraEyeOffsetProperty(
-    std::function<dvec2()> get, std::function<void(const dvec2&)> set) {
+    const std::function<dvec2()>& get, const std::function<void(const dvec2&)>& set) {
     return std::make_unique<DoubleVec2RefProperty>(
         "offset", "Eye Offset", "Offset from the view direction to the eye in world space"_help,
         get, set, std::pair<dvec2, ConstraintBehavior>{dvec2(-10.0), ConstraintBehavior::Ignore},
@@ -99,7 +99,8 @@ std::unique_ptr<DoubleVec2RefProperty> createCameraEyeOffsetProperty(
 }
 
 DoubleVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
-    CameraProperty& comp, std::function<dvec2()> get, std::function<void(const dvec2&)> set) {
+    CameraProperty& comp, const std::function<dvec2()>& get,
+    const std::function<void(const dvec2&)>& set) {
 
     auto offset = getCameraEyeOffsetProperty(comp);
     if (offset) {

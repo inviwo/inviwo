@@ -58,7 +58,7 @@ IVW_CORE_API DoubleRefProperty* getCameraFovProperty(CameraProperty& cameraPrope
  * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API std::unique_ptr<DoubleRefProperty> createCameraFovProperty(
-    std::function<double()> get, std::function<void(const double&)> set);
+    const std::function<double()>& get, const std::function<void(const double&)>& set);
 
 /**
  * @brief Either return an existing vertical fov property updated with the provided get and set
@@ -67,8 +67,8 @@ IVW_CORE_API std::unique_ptr<DoubleRefProperty> createCameraFovProperty(
  * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API DoubleRefProperty* updateOrCreateCameraFovProperty(
-    CameraProperty& cameraProperty, std::function<double()> get,
-    std::function<void(const double&)> set);
+    CameraProperty& cameraProperty, const std::function<double()>& get,
+    const std::function<void(const double&)>& set);
 
 /**
  * @brief Find the width property in the cameraProperty
@@ -83,7 +83,7 @@ IVW_CORE_API DoubleRefProperty* getCameraWidthProperty(CameraProperty& cameraPro
  * @see OrthographicCamera
  */
 IVW_CORE_API std::unique_ptr<DoubleRefProperty> createCameraWidthProperty(
-    std::function<double()> get, std::function<void(const double&)> set);
+    const std::function<double()>& get, const std::function<void(const double&)>& set);
 
 /**
  * @brief Either return an existing width property updated with the provided get and set functions
@@ -91,8 +91,8 @@ IVW_CORE_API std::unique_ptr<DoubleRefProperty> createCameraWidthProperty(
  * @see OrthographicCamera
  */
 IVW_CORE_API DoubleRefProperty* updateOrCreateCameraWidthProperty(
-    CameraProperty& cameraProperty, std::function<double()> get,
-    std::function<void(const double&)> set);
+    CameraProperty& cameraProperty, const std::function<double()>& get,
+    const std::function<void(const double&)>& set);
 
 /**
  * @brief Find the eye offset property in the cameraProperty
@@ -107,7 +107,7 @@ IVW_CORE_API DoubleVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty& c
  * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API std::unique_ptr<DoubleVec2RefProperty> createCameraEyeOffsetProperty(
-    std::function<dvec2()> get, std::function<void(const dvec2&)> set);
+    const std::function<dvec2()>& get, const std::function<void(const dvec2&)>& set);
 
 /**
  * @brief Either return an existing eye offset property updated with the provided get and set
@@ -115,8 +115,8 @@ IVW_CORE_API std::unique_ptr<DoubleVec2RefProperty> createCameraEyeOffsetPropert
  * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API DoubleVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
-    CameraProperty& cameraProperty, std::function<dvec2()> get,
-    std::function<void(const dvec2&)> set);
+    CameraProperty& cameraProperty, const std::function<dvec2()>& get,
+    const std::function<void(const dvec2&)>& set);
 
 IVW_CORE_API dvec2 fovyToSize(double fovy, double distance, double aspect);
 IVW_CORE_API double fovyToWidth(double fovy, double distance, double aspect);

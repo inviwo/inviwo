@@ -728,7 +728,7 @@ void Shader::setUniform(std::string_view name, std::span<const vec4> values) con
 // The values will be converted to single precision before being sent to the shader.
 void Shader::setUniform(std::string_view name, double value) const {
     const auto location = findUniformLocation(name);
-    if (location != -1) glUniform1f(location, value);
+    if (location != -1) glUniform1f(location, static_cast<float>(value));
 }
 void Shader::setUniform(std::string_view name, std::span<const double> values) const {
     if (values.empty()) return;
@@ -740,7 +740,8 @@ void Shader::setUniform(std::string_view name, std::span<const double> values) c
 }
 void Shader::setUniform(std::string_view name, dvec2 value) const {
     const auto location = findUniformLocation(name);
-    if (location != -1) glUniform2f(location, value[0], value[1]);
+    if (location != -1)
+        glUniform2f(location, static_cast<float>(value[0]), static_cast<float>(value[1]));
 }
 void Shader::setUniform(std::string_view name, std::span<const dvec2> values) const {
     if (values.empty()) return;
@@ -752,7 +753,9 @@ void Shader::setUniform(std::string_view name, std::span<const dvec2> values) co
 }
 void Shader::setUniform(std::string_view name, dvec3 value) const {
     const auto location = findUniformLocation(name);
-    if (location != -1) glUniform3f(location, value[0], value[1], value[2]);
+    if (location != -1)
+        glUniform3f(location, static_cast<float>(value[0]), static_cast<float>(value[1]),
+                    static_cast<float>(value[2]));
 }
 void Shader::setUniform(std::string_view name, std::span<const dvec3> values) const {
     if (values.empty()) return;
@@ -764,7 +767,9 @@ void Shader::setUniform(std::string_view name, std::span<const dvec3> values) co
 }
 void Shader::setUniform(std::string_view name, dvec4 value) const {
     const auto location = findUniformLocation(name);
-    if (location != -1) glUniform4f(location, value[0], value[1], value[2], value[3]);
+    if (location != -1)
+        glUniform4f(location, static_cast<float>(value[0]), static_cast<float>(value[1]),
+                    static_cast<float>(value[2]), static_cast<float>(value[3]));
 }
 void Shader::setUniform(std::string_view name, std::span<const dvec4> values) const {
     if (values.empty()) return;

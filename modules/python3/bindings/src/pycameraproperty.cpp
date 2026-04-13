@@ -111,7 +111,7 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
                          dvec3 lookTo, dvec3 lookUp, Inport* inport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new CameraProperty(identifier, displayName, lookFrom, lookTo, lookUp,
-                                           inport, invalidationLevel, semantics);
+                                           inport, invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"),
              py::arg("lookFrom") = cameradefaults::lookFrom,

@@ -117,7 +117,7 @@ std::tuple<dvec3, dvec3, dvec3> fitPerspectiveCameraView(const dmat4& boundingBo
     const auto maxDist = std::ranges::max(corners | std::views::transform(dist));
 
     const auto& [right, up, forward] = glm::inverse(view);
-    return {lookTo + forward * maxDist * static_cast<double>(fitRatio), lookTo, up};
+    return {lookTo + forward * maxDist * fitRatio, lookTo, up};
 }
 
 }  // namespace
@@ -208,8 +208,8 @@ void setCameraLookRanges(CameraProperty& cam, const dmat4& boundingBox, double z
     const dvec3 dy(boundingBox[1]);
     const dvec3 dz(boundingBox[2]);
 
-    auto p0 = lookTo + (dx + dy + dz) * static_cast<double>(zoomRange);
-    auto p1 = lookTo - (dx + dy + dz) * static_cast<double>(zoomRange);
+    auto p0 = lookTo + (dx + dy + dz) * zoomRange;
+    auto p1 = lookTo - (dx + dy + dz) * zoomRange;
     cam.lookFrom_.setMinValue(glm::min(p0, p1));
     cam.lookFrom_.setMaxValue(glm::max(p0, p1));
     p0 = lookTo + (dx + dy + dz);

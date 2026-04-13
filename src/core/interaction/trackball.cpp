@@ -265,15 +265,15 @@ dvec3 Trackball::getLookRight() const {
 dvec3 Trackball::getWorldUp() const {
     switch (worldUp_) {
         case 0:
-            return dvec3(1, 0, 0);
+            return {1, 0, 0};
         case 1:
-            return dvec3(0, 1, 0);
+            return {0, 1, 0};
         case 2:
-            return dvec3(0, 0, 1);
+            return {0, 0, 1};
         case 3:
             return glm::normalize(dvec3(customWorldUp_.get()));
         default:
-            return dvec3(0, 1, 0);
+            return {0, 1, 0};
     }
 }
 
@@ -937,9 +937,8 @@ double Trackball::getBoundedZoom(const dvec3& lookFrom, const dvec3& zoomTo, dou
         // Clamp so that the user does not zoom outside of the bounds and not
         // further than, or onto, the lookTo point.
 
-        return static_cast<float>(
-            glm::clamp(static_cast<double>(zoom), maxZoomOut,
-                       directionLength - std::max(0.0, object_->getNearPlaneDist())));
+        return static_cast<float>(glm::clamp(
+            zoom, maxZoomOut, directionLength - std::max(0.0, object_->getNearPlaneDist())));
     }
 }
 
@@ -1053,8 +1052,9 @@ void Trackball::animate() {
                     (lastRot_.y - identity.y) * (lastRot_.y - identity.y) +
                     (lastRot_.z - identity.z) * (lastRot_.z - identity.z) +
                     (lastRot_.w - identity.w) * (lastRot_.w - identity.w) <
-                0.000001)
+                0.000001) {
                 timer_.stop();
+            }
             this->evaluated_ = true;
         });
     }

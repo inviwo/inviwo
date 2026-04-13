@@ -132,7 +132,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                                dvec3 lookTo, dvec3 lookUp, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
     : CameraProperty(identifier, displayName, "Camera settings"_help, std::move(getBoundingBox),
-                     lookFrom, lookTo, lookUp, invalidationLevel, semantics) {}
+                     lookFrom, lookTo, lookUp, invalidationLevel, std::move(semantics)) {}
 
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
                                dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, Inport* inport,
@@ -148,7 +148,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                   return nullptr;
               }
           }(),
-          lookFrom, lookTo, lookUp, invalidationLevel, semantics) {}
+          lookFrom, lookTo, lookUp, invalidationLevel, std::move(semantics)) {}
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
