@@ -177,7 +177,7 @@ bool configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
     using namespace debug;
 
     auto set = [](bool n, bool l, bool m, bool h) {
-        auto g = [](Severity s) { return static_cast<std::underlying_type<Severity>::type>(s); };
+        auto g = [](Severity s) { return static_cast<GLenum>(static_cast<unsigned int>(s)); };
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, g(Severity::Notification), 0, nullptr, n);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, g(Severity::Low), 0, nullptr, l);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, g(Severity::Medium), 0, nullptr, m);

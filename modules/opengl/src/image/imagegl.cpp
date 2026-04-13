@@ -278,7 +278,7 @@ bool ImageGL::updateFrom(const ImageGL* source) {
     }
 
     // Picking texture
-    if (!pickingCopied && pickingAttachmentID_ != GLuint{0}) {
+    if (!pickingCopied && pickingAttachmentID_) {
         auto sPicking = source->getPickingLayerGL()->getTexture();
         auto tPicking = target->getPickingLayerGL()->getTexture();
 

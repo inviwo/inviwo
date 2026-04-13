@@ -47,42 +47,42 @@ namespace debug {
 enum class Mode { Off, Debug, DebugSynchronous };
 enum class BreakLevel { Off, High, Medium, Low, Notification };
 
-enum class Source : GLenum {
-    Api = GL_DEBUG_SOURCE_API,
-    WindowSystem = GL_DEBUG_SOURCE_WINDOW_SYSTEM,
-    ShaderCompiler = GL_DEBUG_SOURCE_SHADER_COMPILER,
-    ThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY,
-    Application = GL_DEBUG_SOURCE_APPLICATION,
-    Other = GL_DEBUG_SOURCE_OTHER,
-    DontCare = GL_DONT_CARE
+enum class Source : unsigned int {
+    Api = static_cast<unsigned int>(GL_DEBUG_SOURCE_API),
+    WindowSystem = static_cast<unsigned int>(GL_DEBUG_SOURCE_WINDOW_SYSTEM),
+    ShaderCompiler = static_cast<unsigned int>(GL_DEBUG_SOURCE_SHADER_COMPILER),
+    ThirdParty = static_cast<unsigned int>(GL_DEBUG_SOURCE_THIRD_PARTY),
+    Application = static_cast<unsigned int>(GL_DEBUG_SOURCE_APPLICATION),
+    Other = static_cast<unsigned int>(GL_DEBUG_SOURCE_OTHER),
+    DontCare = static_cast<unsigned int>(GL_DONT_CARE)
 };
 
-enum class Type : GLenum {
-    Error = GL_DEBUG_TYPE_ERROR,
-    DeprecatedBehavior = GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR,
-    UndefinedBehavior = GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR,
-    Portability = GL_DEBUG_TYPE_PORTABILITY,
-    Performance = GL_DEBUG_TYPE_PERFORMANCE,
-    Marker = GL_DEBUG_TYPE_MARKER,
-    PushGroup = GL_DEBUG_TYPE_PUSH_GROUP,
-    PopGroup = GL_DEBUG_TYPE_POP_GROUP,
-    Other = GL_DEBUG_TYPE_OTHER,
-    DontCare = GL_DONT_CARE
+enum class Type : unsigned int {
+    Error = static_cast<unsigned int>(GL_DEBUG_TYPE_ERROR),
+    DeprecatedBehavior = static_cast<unsigned int>(GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR),
+    UndefinedBehavior = static_cast<unsigned int>(GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR),
+    Portability = static_cast<unsigned int>(GL_DEBUG_TYPE_PORTABILITY),
+    Performance = static_cast<unsigned int>(GL_DEBUG_TYPE_PERFORMANCE),
+    Marker = static_cast<unsigned int>(GL_DEBUG_TYPE_MARKER),
+    PushGroup = static_cast<unsigned int>(GL_DEBUG_TYPE_PUSH_GROUP),
+    PopGroup = static_cast<unsigned int>(GL_DEBUG_TYPE_POP_GROUP),
+    Other = static_cast<unsigned int>(GL_DEBUG_TYPE_OTHER),
+    DontCare = static_cast<unsigned int>(GL_DONT_CARE)
 };
 
-enum class Severity : GLenum {
-    Notification = GL_DEBUG_SEVERITY_NOTIFICATION,
-    Low = GL_DEBUG_SEVERITY_LOW,
-    Medium = GL_DEBUG_SEVERITY_MEDIUM,
-    High = GL_DEBUG_SEVERITY_HIGH,
-    DontCare = GL_DONT_CARE
+enum class Severity : unsigned int {
+    Notification = static_cast<unsigned int>(GL_DEBUG_SEVERITY_NOTIFICATION),
+    Low = static_cast<unsigned int>(GL_DEBUG_SEVERITY_LOW),
+    Medium = static_cast<unsigned int>(GL_DEBUG_SEVERITY_MEDIUM),
+    High = static_cast<unsigned int>(GL_DEBUG_SEVERITY_HIGH),
+    DontCare = static_cast<unsigned int>(GL_DONT_CARE)
 };
 
-inline Source toSouce(GLenum val) { return static_cast<Source>(val); }
+inline Source toSouce(GLenum val) { return static_cast<Source>(static_cast<unsigned int>(val)); }
 
-inline Type toType(GLenum val) { return static_cast<Type>(val); }
+inline Type toType(GLenum val) { return static_cast<Type>(static_cast<unsigned int>(val)); }
 
-inline Severity toSeverity(GLenum val) { return static_cast<Severity>(val); }
+inline Severity toSeverity(GLenum val) { return static_cast<Severity>(static_cast<unsigned int>(val)); }
 
 inline LogLevel toLogLevel(Severity s) {
     switch (s) {
