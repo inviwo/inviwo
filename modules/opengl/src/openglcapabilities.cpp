@@ -50,6 +50,7 @@
 #include <algorithm>
 #include <cctype>
 #include <functional>
+#include <set>
 
 #include <fmt/core.h>
 
@@ -240,12 +241,18 @@ OpenGLCapabilities::GLSLShaderVersion OpenGLCapabilities::getShaderVersion(size_
 size_t OpenGLCapabilities::getCurrentShaderIndex() const { return currentGlobalGLSLVersionIdx_; }
 
 bool OpenGLCapabilities::isExtensionSupported(const char* name) {
-    const auto extensions = glbinding::aux::ContextInfo::extensions();
+    // Cache extensions to avoid repeated retrieval on every call
+    static std::set<gl::GLextension> cachedExtensions;
+    static bool extensionsCached = false;
+    if (!extensionsCached) {
+        cachedExtensions = glbinding::aux::ContextInfo::extensions();
+        extensionsCached = true;
+    }
     const std::string nameStr(name);
     // glbinding extension names always include the "GL_" prefix
     const std::string fullName =
         (nameStr.substr(0, 3) != "GL_") ? "GL_" + nameStr : nameStr;
-    for (const auto& ext : extensions) {
+    for (const auto& ext : cachedExtensions) {
         if (glbinding::aux::Meta::getString(ext) == fullName) return true;
     }
     return false;
