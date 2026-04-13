@@ -50,22 +50,22 @@ namespace inviwo {
 namespace utilgl {
 
 std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask) {
-    auto convertToGL = [](ImageChannel channel) {
+    auto convertToGL = [](ImageChannel channel) -> GLint {
         switch (channel) {
             case ImageChannel::Red:
-                return GL_RED;
+                return static_cast<GLint>(GL_RED);
             case ImageChannel::Green:
-                return GL_GREEN;
+                return static_cast<GLint>(GL_GREEN);
             case ImageChannel::Blue:
-                return GL_BLUE;
+                return static_cast<GLint>(GL_BLUE);
             case ImageChannel::Alpha:
-                return GL_ALPHA;
+                return static_cast<GLint>(GL_ALPHA);
             case ImageChannel::Zero:
-                return GL_ZERO;
+                return static_cast<GLint>(GL_ZERO);
             case ImageChannel::One:
-                return GL_ONE;
+                return static_cast<GLint>(GL_ONE);
             default:
-                return GL_ZERO;
+                return static_cast<GLint>(GL_ZERO);
         }
     };
     std::array<GLint, 4> swizzleMaskGL;
@@ -118,13 +118,13 @@ InterpolationType convertInterpolationFromGL(GLenum interpolation) {
             return InterpolationType::Nearest;
         default:
             throw OpenGLException(SourceContext{}, "Unsupported filtering mode encountered ({:x})",
-                                  interpolation);
+                                  static_cast<unsigned int>(interpolation));
     }
 }
 
 SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL) {
     auto convertFromGL = [](GLint channel) {
-        switch (channel) {
+        switch (static_cast<GLenum>(channel)) {
             case GL_RED:
                 return ImageChannel::Red;
             case GL_GREEN:

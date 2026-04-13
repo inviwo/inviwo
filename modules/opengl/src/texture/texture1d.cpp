@@ -50,7 +50,7 @@ Texture1D::Texture1D(size_t width, GLFormat glFormat, GLenum filtering,
               std::span<const GLenum, 1>(&wrapping, 1), level)
     , width_(width) {}
 
-Texture1D::Texture1D(size_t width, GLint format, GLint internalformat, GLenum dataType,
+Texture1D::Texture1D(size_t width, GLenum format, GLenum internalformat, GLenum dataType,
                      GLenum filtering, const SwizzleMask& swizzleMask, GLenum wrapping, GLint level)
     : Texture(GL_TEXTURE_1D, format, internalformat, dataType, filtering, swizzleMask,
               std::span<const GLenum, 1>(&wrapping, 1), level)

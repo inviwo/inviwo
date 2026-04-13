@@ -59,7 +59,7 @@ Texture3D::Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering,
     }
 }
 
-Texture3D::Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
+Texture3D::Texture3D(size3_t dimensions, GLenum format, GLenum internalformat, GLenum dataType,
                      GLenum filtering, const SwizzleMask& swizzleMask,
                      const std::array<GLenum, 3>& wrapping, GLint level)
     : Texture(GL_TEXTURE_3D, format, internalformat, dataType, filtering, swizzleMask,

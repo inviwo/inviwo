@@ -100,16 +100,20 @@ Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, const Swizz
     glBindTexture(target_, id_);
     auto swizzleMaskGL = utilgl::convertSwizzleMaskToGL(swizzleMask);
     glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
-    glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
-    glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &filtering);
+    {
+        auto f = static_cast<GLuint>(filtering);
+        glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &f);
+        glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &f);
+    }
 
     for (auto [i, wrap] : util::enumerate(wrapping)) {
-        glTexParameteri(target_, wrapNames[i], wrap);
+        auto w = static_cast<GLuint>(wrap);
+        glTexParameterIuiv(target_, wrapNames[i], &w);
     }
     glBindTexture(target_, 0);
 }
 
-Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType,
+Texture::Texture(GLenum target, GLenum format, GLenum internalformat, GLenum dataType,
                  GLenum filtering, const SwizzleMask& swizzleMask, std::span<const GLenum> wrapping,
                  GLint level)
     : TextureBase(target)
@@ -126,10 +130,14 @@ Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataT
     glBindTexture(target_, id_);
     auto swizzleMaskGL = utilgl::convertSwizzleMaskToGL(swizzleMask);
     glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
-    glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
-    glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &filtering);
+    {
+        auto f = static_cast<GLuint>(filtering);
+        glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &f);
+        glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &f);
+    }
     for (auto [i, wrap] : util::enumerate(wrapping)) {
-        glTexParameteri(target_, wrapNames[i], wrap);
+        auto w = static_cast<GLuint>(wrap);
+        glTexParameterIuiv(target_, wrapNames[i], &w);
     }
     glBindTexture(target_, 0);
 }
@@ -147,10 +155,10 @@ Texture::Texture(const Texture& other)
     glGenBuffers(1, &pboBack_);
 
     std::array<GLint, 4> swizzleMaskGL;
-    GLenum minfiltering;
-    GLenum magfiltering;
+    GLuint minfiltering;
+    GLuint magfiltering;
 
-    std::array<GLenum, 3> wrapping;
+    std::array<GLuint, 3> wrapping;
     const auto dims = targetDims(target_);
 
     glBindTexture(other.target_, other.id_);
@@ -194,10 +202,10 @@ Texture& Texture::operator=(const Texture& rhs) {
         dataType_ = rhs.dataType_;
 
         std::array<GLint, 4> swizzleMaskGL;
-        GLenum minfiltering;
-        GLenum magfiltering;
+        GLuint minfiltering;
+        GLuint magfiltering;
 
-        std::array<GLenum, 3> wrapping;
+        std::array<GLuint, 3> wrapping;
         const auto dims = targetDims(target_);
 
         glBindTexture(rhs.target_, rhs.id_);
@@ -268,11 +276,11 @@ const DataFormatBase* Texture::getDataFormat() const {
 }
 
 GLenum Texture::getFiltering() const {
-    GLenum filtering;
+    GLuint filtering;
     bind();
     glGetTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
     unbind();
-    return filtering;
+    return static_cast<GLenum>(filtering);
 }
 
 GLint Texture::getLevel() const { return level_; }
@@ -300,25 +308,26 @@ SwizzleMask Texture::getSwizzleMask() const {
 }
 
 void Texture::setInterpolation(InterpolationType interpolation) {
-    auto filtering = utilgl::convertInterpolationToGL(interpolation);
+    auto f = static_cast<GLuint>(utilgl::convertInterpolationToGL(interpolation));
     bind();
-    glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
-    glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &filtering);
+    glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &f);
+    glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &f);
     unbind();
 }
 
 InterpolationType Texture::getInterpolation() const {
-    GLenum filtering;
+    GLuint filtering;
     bind();
     glGetTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
     unbind();
-    return utilgl::convertInterpolationFromGL(filtering);
+    return utilgl::convertInterpolationFromGL(static_cast<GLenum>(filtering));
 }
 
 void Texture::setWrapping(std::span<const GLenum> wrapping) {
     bind();
     for (auto [i, wrap] : util::enumerate(wrapping)) {
-        glTexParameteri(target_, wrapNames[i], wrap);
+        auto w = static_cast<GLuint>(wrap);
+        glTexParameterIuiv(target_, wrapNames[i], &w);
     }
     unbind();
 }
@@ -326,7 +335,9 @@ void Texture::setWrapping(std::span<const GLenum> wrapping) {
 void Texture::getWrapping(std::span<GLenum> wrapping) const {
     bind();
     for (auto&& [i, wrap] : util::enumerate(wrapping)) {
-        glGetTexParameterIuiv(target_, wrapNames[i], &wrap);
+        GLuint val;
+        glGetTexParameterIuiv(target_, wrapNames[i], &val);
+        wrap = static_cast<GLenum>(val);
     }
     unbind();
 }

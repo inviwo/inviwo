@@ -51,7 +51,7 @@ Texture2D::Texture2D(size2_t dimensions, GLFormat glFormat, GLenum filtering,
     : Texture(GL_TEXTURE_2D, glFormat, filtering, swizzleMask, std::span(wrapping), level)
     , dimensions_(dimensions) {}
 
-Texture2D::Texture2D(size2_t dimensions, GLint format, GLint internalformat, GLenum dataType,
+Texture2D::Texture2D(size2_t dimensions, GLenum format, GLenum internalformat, GLenum dataType,
                      GLenum filtering, const SwizzleMask& swizzleMask,
                      const std::array<GLenum, 2>& wrapping, GLint level)
     : Texture(GL_TEXTURE_2D, format, internalformat, dataType, filtering, swizzleMask,

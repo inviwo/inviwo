@@ -51,7 +51,7 @@ Texture2DArray::Texture2DArray(size3_t dimensions, GLFormat glFormat, GLenum fil
     : Texture(GL_TEXTURE_2D_ARRAY, glFormat, filtering, swizzleMask, std::span(wrap), level)
     , dimensions_(dimensions) {}
 
-Texture2DArray::Texture2DArray(size3_t dimensions, GLint format, GLint internalformat,
+Texture2DArray::Texture2DArray(size3_t dimensions, GLenum format, GLenum internalformat,
                                GLenum dataType, GLenum filtering, const SwizzleMask& swizzleMask,
                                const std::array<GLenum, 2>& wrap, GLint level)
     : Texture(GL_TEXTURE_2D_ARRAY, format, internalformat, dataType, filtering, swizzleMask,

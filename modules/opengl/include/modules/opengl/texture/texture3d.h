@@ -49,7 +49,7 @@ public:
               const std::array<GLenum, 3>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,
                                                        GL_CLAMP_TO_EDGE},
               GLint level = 0);
-    Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
+    Texture3D(size3_t dimensions, GLenum format, GLenum internalformat, GLenum dataType,
               GLenum filtering, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
               const std::array<GLenum, 3>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,
                                                        GL_CLAMP_TO_EDGE},
