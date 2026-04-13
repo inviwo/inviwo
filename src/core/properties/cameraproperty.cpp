@@ -134,6 +134,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
     : CameraProperty(identifier, displayName, "Camera settings"_help, std::move(getBoundingBox),
                      lookFrom, lookTo, lookUp, invalidationLevel, std::move(semantics)) {}
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 CameraProperty::CameraProperty(std::string_view identifier, std::string_view displayName,
                                dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)

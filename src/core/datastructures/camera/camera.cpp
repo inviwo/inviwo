@@ -41,6 +41,7 @@
 
 namespace inviwo {
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 Camera::Camera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane,
                double aspectRatio)
     : lookFrom_(lookFrom)

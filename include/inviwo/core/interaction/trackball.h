@@ -110,7 +110,7 @@ protected:
     void rotateTrackBall(const dvec3& fromTrackballPos, const dvec3& toTrackballPos);
     dvec3 getBoundedTranslation(const dvec3& lookFrom, const dvec3& lookTo, dvec3 translation);
     double getBoundedZoom(const dvec3& lookFrom, const dvec3& zoomTo, double zoom);
-    std::pair<bool, dvec3> getTrackBallIntersection(const dvec2 pos) const;
+    std::pair<bool, dvec3> getTrackBallIntersection(dvec2 pos) const;
 
     void rotate(MouseEvent* event);
     void rotateTAV(MouseEvent* event);

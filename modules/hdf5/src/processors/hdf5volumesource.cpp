@@ -151,7 +151,8 @@ void HDF5ToVolume::process() {
             break;
         }
         default: {
-            const auto basis = getBasisFromMeta(basisMatches_[basisSelection_.getSelectedIndex() - 2]);
+            const auto basis =
+                getBasisFromMeta(basisMatches_[basisSelection_.getSelectedIndex() - 2]);
             basis_.set(basis);
             break;
         }
@@ -211,7 +212,7 @@ dmat4 HDF5ToVolume::getBasisFromMeta(MetaData meta) {
             dmat3 bas;
             dataset.read(glm::value_ptr(bas), H5::PredType::NATIVE_DOUBLE);
 
-            dvec3 offset = -0.5 * dvec3(bas[0] + bas[1] + bas[2]);
+            const dvec3 offset = -0.5 * dvec3(bas[0] + bas[1] + bas[2]);
             basis[0] = dvec4(bas[0], 0.0);
             basis[1] = dvec4(bas[1], 0.0);
             basis[2] = dvec4(bas[2], 0.0);
