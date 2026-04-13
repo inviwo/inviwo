@@ -86,7 +86,7 @@ struct IVW_MODULE_OPENGL_API TexParameter {
     ~TexParameter();
 
 private:
-    GLint unit_;
+    GLenum unit_;
     GLenum target_;
     GLenum name_;
     int oldValue_;
@@ -109,7 +109,7 @@ struct IVW_MODULE_OPENGL_API TexEnv {
     ~TexEnv();
 
 private:
-    GLint unit_;
+    GLenum unit_;
     GLenum target_;
     GLenum name_;
     int oldValue_;
@@ -535,11 +535,15 @@ IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width);
 namespace detail {
 
 struct DepthFuncPolicy {
-    using value_type = GLint;
+    using value_type = GLenum;
     using setter_type = GLenum;
-    static void get(GLint* v) { glGetIntegerv(GL_DEPTH_FUNC, v); }
+    static void get(GLenum* v) {
+        GLint val;
+        glGetIntegerv(GL_DEPTH_FUNC, &val);
+        *v = static_cast<GLenum>(val);
+    }
     static void set(GLenum v) { glDepthFunc(v); }
-    static GLint validate(GLint v) { return v; }
+    static GLenum validate(GLenum v) { return v; }
 };
 
 struct DepthMaskPolicy {

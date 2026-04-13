@@ -53,16 +53,16 @@ enum class Normalization : char { None, Normalized, SignNormalized };
 
 struct IVW_MODULE_OPENGL_API GLFormat {
     constexpr GLFormat()
-        : format{0}
-        , internalFormat{0}
-        , type{0}
+        : format{GLenum{0}}
+        , internalFormat{GLenum{0}}
+        , type{GLenum{0}}
         , channels{0}
         , typeSize{0}
         , normalization{utilgl::Normalization::None}
         , layoutQualifier{}
         , valid{false} {}
 
-    constexpr GLFormat(GLint format, GLint internalFormat, GLenum type,
+    constexpr GLFormat(GLenum format, GLenum internalFormat, GLenum type,
                        std::string_view layoutQualifier, GLuint channels, GLuint typeSize,
                        utilgl::Normalization normalization)
         : format{format}
@@ -74,8 +74,8 @@ struct IVW_MODULE_OPENGL_API GLFormat {
         , layoutQualifier{layoutQualifier}
         , valid{true} {}
 
-    GLint format;
-    GLint internalFormat;
+    GLenum format;
+    GLenum internalFormat;
     GLenum type;
     GLuint channels;
     GLuint typeSize;

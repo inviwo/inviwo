@@ -122,11 +122,11 @@ void VolumeRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatri
     shader_.setUniform("meshDataToVolData", meshDataToVolumeData);
 
     {
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_FALSE);
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
         utilgl::DepthMaskState depthMask(GL_FALSE);
 
         utilgl::CullFaceState culling(GL_NONE);
-        utilgl::GlBoolState blend(GL_BLEND, GL_FALSE);
+        utilgl::GlBoolState blend(GL_BLEND, false);
 
         auto transform = CompositeTransform(boundingMesh->getModelMatrix(),
                                             boundingMesh->getWorldMatrix() * worldMatrixTransform);

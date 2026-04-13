@@ -476,7 +476,7 @@ void OpacityOptimization::process() {
 
     {
         // use first pass to write to depth buffer...
-        const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
+        const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
 
         // clear coefficient buffers
         clear_.activate();
@@ -489,7 +489,7 @@ void OpacityOptimization::process() {
     }
 
     // ... then turn off depth test
-    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_FALSE);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
 
     // Optional smoothing of importance coefficients
     if (units.gaussianKernel) {

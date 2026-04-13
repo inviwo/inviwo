@@ -131,7 +131,7 @@ void FragmentListRenderer::prePass(const size2_t& screenSize) {
     auto& texUnit = textureUnits_.emplace_back();
     setUniforms(clear_, texUnit);
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     utilgl::DepthMaskState depthMask(GL_TRUE);
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::CullFaceState culling(GL_NONE);
@@ -188,7 +188,7 @@ bool FragmentListRenderer::postPass(bool useIllustration, const Image* backgroun
             display_.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
         }
         utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
         utilgl::DepthMaskState depthMask(GL_TRUE);
         utilgl::DepthFuncState depthFunc(GL_ALWAYS);
         utilgl::CullFaceState culling(GL_NONE);

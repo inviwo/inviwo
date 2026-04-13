@@ -171,7 +171,7 @@ PolygonModeState::PolygonModeState(PolygonModeState&& rhs)
 }
 
 PolygonModeState::PolygonModeState(GLenum mode, GLfloat lineWidth, GLfloat pointSize)
-    : mode_(mode)
+    : mode_(static_cast<GLint>(mode))
     , lineWidth_(lineWidth)
     , pointSize_(pointSize)
     , oldMode_(0)
@@ -180,9 +180,9 @@ PolygonModeState::PolygonModeState(GLenum mode, GLfloat lineWidth, GLfloat point
     // Only GL_FRONT_AND_BACK in core profile.
     glGetIntegerv(GL_POLYGON_MODE, &oldMode_);
 
-    if (static_cast<int>(mode) != oldMode_) glPolygonMode(GL_FRONT_AND_BACK, mode);
+    if (static_cast<GLint>(mode) != oldMode_) glPolygonMode(GL_FRONT_AND_BACK, mode);
 
-    switch (mode_) {
+    switch (static_cast<GLenum>(mode_)) {
         case GL_POINT: {
             glGetFloatv(GL_POINT_SIZE, &oldPointSize_);
             if (pointSize_ != oldPointSize_) {
@@ -204,8 +204,8 @@ PolygonModeState::PolygonModeState(GLenum mode, GLfloat lineWidth, GLfloat point
 }
 
 PolygonModeState::~PolygonModeState() {
-    if (mode_ != GL_NONE) {
-        switch (mode_) {
+    if (mode_ != static_cast<GLint>(GL_NONE)) {
+        switch (static_cast<GLenum>(mode_)) {
             case GL_POINT: {
                 if (pointSize_ != oldPointSize_) {
                     glPointSize(oldPointSize_);
@@ -222,7 +222,7 @@ PolygonModeState::~PolygonModeState() {
             default:
                 break;
         }
-        if (mode_ != oldMode_) glPolygonMode(GL_FRONT_AND_BACK, oldMode_);
+        if (mode_ != oldMode_) glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(oldMode_));
     }
 }
 
@@ -241,18 +241,18 @@ CullFaceState::CullFaceState(CullFaceState&& rhs)
     rhs.mode_ = rhs.oldMode_;
 }
 
-CullFaceState::CullFaceState(GLint mode) : GlBoolState(GL_CULL_FACE, mode != GL_NONE), mode_(mode) {
+CullFaceState::CullFaceState(GLint mode) : GlBoolState(GL_CULL_FACE, mode != static_cast<GLint>(GL_NONE)), mode_(mode) {
     if (state_) {
         glGetIntegerv(GL_CULL_FACE_MODE, &oldMode_);
         if (oldMode_ != mode) {
-            glCullFace(mode);
+            glCullFace(static_cast<GLenum>(mode));
         }
     }
 }
 
 CullFaceState::~CullFaceState() {
     if (state_ && oldMode_ != mode_) {
-        glCullFace(oldMode_);
+        glCullFace(static_cast<GLenum>(oldMode_));
     }
 }
 
@@ -260,7 +260,7 @@ GLint CullFaceState::getMode() { return mode_; }
 
 GlBoolState& GlBoolState::operator=(GlBoolState&& that) {
     if (this != &that) {
-        target_ = 0;
+        target_ = GLenum{0};
         std::swap(target_, that.target_);
         state_ = that.oldState_;
         std::swap(state_, that.state_);
@@ -305,9 +305,9 @@ TexParameter::TexParameter(const TextureUnit& unit, GLenum target, GLenum name, 
 
 TexParameter& TexParameter::operator=(TexParameter&& that) {
     if (this != &that) {
-        unit_ = 0;
+        unit_ = GLenum{0};
         std::swap(unit_, that.unit_);
-        target_ = 0;
+        target_ = GLenum{0};
         std::swap(target_, that.target_);
         name_ = that.name_;
         oldValue_ = that.oldValue_;
@@ -317,11 +317,11 @@ TexParameter& TexParameter::operator=(TexParameter&& that) {
 
 TexParameter::TexParameter(TexParameter&& rhs)
     : unit_(rhs.unit_), target_(rhs.target_), name_(rhs.name_), oldValue_(rhs.oldValue_) {
-    rhs.target_ = 0;
+    rhs.target_ = GLenum{0};
 }
 
 TexParameter::~TexParameter() {
-    if (unit_ != 0 && target_ != 0) {
+    if (unit_ != GLenum{0} && target_ != GLenum{0}) {
         glActiveTexture(unit_);
         glTexParameteri(target_, name_, oldValue_);
         TextureUnit::setZeroUnit();
@@ -330,9 +330,9 @@ TexParameter::~TexParameter() {
 
 TexEnv& TexEnv::operator=(TexEnv&& that) {
     if (this != &that) {
-        unit_ = 0;
+        unit_ = GLenum{0};
         std::swap(unit_, that.unit_);
-        target_ = 0;
+        target_ = GLenum{0};
         std::swap(target_, that.target_);
         name_ = that.name_;
         oldValue_ = that.oldValue_;
@@ -342,7 +342,7 @@ TexEnv& TexEnv::operator=(TexEnv&& that) {
 
 TexEnv::TexEnv(TexEnv&& rhs)
     : unit_(rhs.unit_), target_(rhs.target_), name_(rhs.name_), oldValue_(rhs.oldValue_) {
-    rhs.target_ = 0;
+    rhs.target_ = GLenum{0};
 }
 
 TexEnv::TexEnv(const TextureUnit& unit, GLenum target, GLenum name, GLint value)
@@ -353,7 +353,7 @@ TexEnv::TexEnv(const TextureUnit& unit, GLenum target, GLenum name, GLint value)
 }
 
 TexEnv::~TexEnv() {
-    if (unit_ != 0 && target_ != 0) {
+    if (unit_ != GLenum{0} && target_ != GLenum{0}) {
         glActiveTexture(unit_);
         glTexEnvi(target_, name_, oldValue_);
         TextureUnit::setZeroUnit();
@@ -372,7 +372,10 @@ BlendModeState::BlendModeState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GL
         glGetIntegerv(GL_BLEND_DST_ALPHA, &old_.dst.alpha);
         if (old_.src.rgb != curr_.src.rgb || old_.dst.rgb != curr_.dst.rgb ||
             old_.src.alpha != curr_.src.alpha || old_.dst.alpha != curr_.dst.alpha) {
-            glBlendFuncSeparate(curr_.src.rgb, curr_.dst.rgb, curr_.src.alpha, curr_.dst.alpha);
+            glBlendFuncSeparate(static_cast<GLenum>(curr_.src.rgb),
+                                static_cast<GLenum>(curr_.dst.rgb),
+                                static_cast<GLenum>(curr_.src.alpha),
+                                static_cast<GLenum>(curr_.dst.alpha));
         }
     }
 }
@@ -398,7 +401,10 @@ BlendModeState::BlendModeState(BlendModeState&& rhs)
 BlendModeState::~BlendModeState() {
     if (state_ && (old_.src.rgb != curr_.src.rgb || old_.dst.rgb != curr_.dst.rgb ||
                    old_.src.alpha != curr_.src.alpha || old_.dst.alpha != curr_.dst.alpha)) {
-        glBlendFuncSeparate(old_.src.rgb, old_.dst.rgb, old_.src.alpha, old_.dst.alpha);
+        glBlendFuncSeparate(static_cast<GLenum>(old_.src.rgb),
+                            static_cast<GLenum>(old_.dst.rgb),
+                            static_cast<GLenum>(old_.src.alpha),
+                            static_cast<GLenum>(old_.dst.alpha));
     }
 }
 
@@ -412,7 +418,7 @@ BlendModeEquationState::BlendModeEquationState(GLenum srcRGB, GLenum srcAlpha, G
         glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &old_.alpha);
     }
     if (old_.rgb != curr_.rgb || old_.alpha != curr_.alpha) {
-        glBlendEquationSeparate(curr_.rgb, curr_.alpha);
+        glBlendEquationSeparate(static_cast<GLenum>(curr_.rgb), static_cast<GLenum>(curr_.alpha));
     }
 }
 
@@ -436,7 +442,7 @@ BlendModeEquationState::BlendModeEquationState(BlendModeEquationState&& rhs)
 
 BlendModeEquationState::~BlendModeEquationState() {
     if (state_ && (old_.rgb != curr_.rgb || old_.alpha != curr_.alpha)) {
-        glBlendEquationSeparate(old_.rgb, old_.alpha);
+        glBlendEquationSeparate(static_cast<GLenum>(old_.rgb), static_cast<GLenum>(old_.alpha));
     }
 }
 

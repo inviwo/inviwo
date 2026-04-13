@@ -294,7 +294,7 @@ void Shader::linkShader(bool notifyRebuild) {
 bool Shader::checkLinkStatus() const {
     GLint res;
     glGetProgramiv(program_.id, GL_LINK_STATUS, &res);
-    return res == GL_TRUE;
+    return res != 0;
 }
 
 void Shader::bindAttributes() {

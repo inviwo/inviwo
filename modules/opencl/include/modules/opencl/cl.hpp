@@ -125,7 +125,6 @@ using namespace gl;
 #include <OpenCL/opencl.h>
 #include <libkern/OSAtomic.h>
 #else
-#include <GL/gl.h>
 #include <CL/opencl.h>
 #endif // !__APPLE__
 

@@ -92,7 +92,7 @@ void VolumeFragmentListRenderer::prePass(const size2_t& screenSize) {
     auto& texUnit = textureUnits_.emplace_back();
     setUniforms(clear_, texUnit);
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     utilgl::DepthMaskState depthMask(GL_TRUE);
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::CullFaceState culling(GL_NONE);
@@ -159,7 +159,7 @@ bool VolumeFragmentListRenderer::postPass(
         }
         LGL_ERROR;
         utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
         utilgl::DepthMaskState depthMask(GL_TRUE);
         utilgl::DepthFuncState depthFunc(GL_ALWAYS);
         utilgl::CullFaceState culling(GL_NONE);

@@ -142,7 +142,7 @@ void BufferObjectArray::unbind() const { glBindVertexArray(0); }
 
 bool BufferObjectArray::isActive() const {
     checkContext("VAO used in a different context"sv, creationContext_);
-    return glIsVertexArray(id_);
+    return glIsVertexArray(id_) != GL_FALSE;
 }
 
 void BufferObjectArray::attachBufferObject(const BufferObject* bufferObject, GLuint location,

@@ -40,13 +40,14 @@ namespace inviwo {
 
 std::array<std::atomic<bool>, 128> TextureUnit::textureUnits_{false};
 
-TextureUnit::TextureUnit() : unitEnum_(0), unitNumber_(0) {
+TextureUnit::TextureUnit() : unitEnum_(GLenum{0}), unitNumber_(0) {
     // check which texture unit is available
     for (size_t i = 1; i < maxTextureImageUnits(); i++) {
         bool expected = false;
         if (textureUnits_[i].compare_exchange_weak(expected, true)) {
             unitNumber_ = static_cast<GLint>(i);
-            unitEnum_ = GL_TEXTURE0 + unitNumber_;
+            unitEnum_ = GLenum{static_cast<unsigned int>(GL_TEXTURE0) +
+                               static_cast<unsigned int>(unitNumber_)};
             return;
         }
     }
@@ -56,7 +57,7 @@ TextureUnit::TextureUnit() : unitEnum_(0), unitNumber_(0) {
 
 TextureUnit::TextureUnit(TextureUnit&& rhs) noexcept
     : unitEnum_(rhs.unitEnum_), unitNumber_(rhs.unitNumber_) {
-    rhs.unitEnum_ = 0;
+    rhs.unitEnum_ = GLenum{0};
     rhs.unitNumber_ = 0;
 }
 
@@ -65,7 +66,7 @@ TextureUnit& TextureUnit::operator=(TextureUnit&& that) noexcept {
         if (textureUnits_.size() > static_cast<size_t>(unitNumber_)) {
             textureUnits_[static_cast<size_t>(unitNumber_)] = false;
         }
-        unitEnum_ = 0;
+        unitEnum_ = GLenum{0};
         unitNumber_ = 0;
         std::swap(unitEnum_, that.unitEnum_);
         std::swap(unitNumber_, that.unitNumber_);

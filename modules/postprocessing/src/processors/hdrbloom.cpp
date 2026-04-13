@@ -205,7 +205,8 @@ void HdrBloom::process() {
     compose_.setUniform("bloomStrength", strength_.get());
     compose_.setUniform("bloomRadius", radius_.get());
     for (int i = 0; i < levels_; i++) {
-        glActiveTexture(GL_TEXTURE0 + i);
+        glActiveTexture(GLenum{static_cast<unsigned int>(GL_TEXTURE0) +
+                                static_cast<unsigned int>(i)});
         vertical_[i].tex.bind();
         compose_.setUniform("tex" + std::to_string(i), i);
     }
