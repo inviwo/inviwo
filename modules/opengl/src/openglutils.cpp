@@ -241,7 +241,7 @@ CullFaceState::CullFaceState(CullFaceState&& rhs)
     rhs.mode_ = rhs.oldMode_;
 }
 
-CullFaceState::CullFaceState(GLint mode) : GlBoolState(GL_CULL_FACE, mode != static_cast<GLint>(GL_NONE)), mode_(mode) {
+CullFaceState::CullFaceState(GLenum mode) : GlBoolState(GL_CULL_FACE, mode != GL_NONE), mode_(static_cast<GLint>(mode)) {
     if (state_) {
         glGetIntegerv(GL_CULL_FACE_MODE, &oldMode_);
         if (oldMode_ != mode) {

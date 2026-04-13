@@ -216,7 +216,7 @@ void MeshPicking::render() {
     shader_.setUniform("dataToClip", dataToClip);
 
     {
-        utilgl::CullFaceState culling(cullFace_.get());
+        utilgl::CullFaceState culling(static_cast<GLenum>(cullFace_.get()));
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
         utilgl::DepthFuncState depthfunc(GL_LESS);
 

@@ -173,7 +173,7 @@ void MeshRenderProcessorGL::process() {
     shader_.activate();
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_);
-    utilgl::CullFaceState culling(cullFace_);
+    utilgl::CullFaceState culling(static_cast<GLenum>(cullFace_.get()));
     utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     utilgl::setUniforms(shader_, camera_, lightingProperty_, overrideColor_);

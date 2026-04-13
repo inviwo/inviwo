@@ -144,7 +144,7 @@ protected:
  * @see glCullFace, GL_CULL_FACE
  */
 struct IVW_MODULE_OPENGL_API CullFaceState : protected GlBoolState {
-    CullFaceState(GLint mode);
+    CullFaceState(GLenum mode);
 
     CullFaceState() = delete;
     CullFaceState(CullFaceState const&) = delete;

@@ -75,20 +75,20 @@ ShaderType ShaderType::typeFromExtension(std::string_view ext) {
     else if (ext == "comp")
         return Compute;
     else
-        return ShaderType(0);
+        return ShaderType(GLenum{0});
 }
 
 ShaderType ShaderType::typeFromString(std::string_view str) {
     for (auto& [ext, type] : extToShaderType) {
         if (str.ends_with(ext)) return type;
     }
-    return ShaderType(0);
+    return ShaderType(GLenum{0});
 }
 ShaderType ShaderType::typeFromFile(const std::filesystem::path& file) {
     for (auto& [ext, type] : extToShaderType) {
         if (file.extension() == ext) return type;
     }
-    return ShaderType(0);
+    return ShaderType(GLenum{0});
 }
 
 }  // namespace inviwo

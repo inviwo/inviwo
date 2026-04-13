@@ -224,25 +224,25 @@ void bindDepthTexture(const ImageOutport& outport, GLenum texUnit) {
 }
 
 void bindPickingTexture(const Image& image, GLenum texUnit) {
-    bindTextures(image, false, false, true, 0, 0, texUnit);
+    bindTextures(image, false, false, true, GLenum{0}, GLenum{0}, texUnit);
 }
 void bindPickingTexture(const ImageInport& inport, GLenum texUnit) {
-    bindTextures(*inport.getData(), false, false, true, 0, 0, texUnit);
+    bindTextures(*inport.getData(), false, false, true, GLenum{0}, GLenum{0}, texUnit);
 }
 void bindPickingTexture(const ImageOutport& outport, GLenum texUnit) {
-    bindTextures(*outport.getData(), false, false, true, 0, 0, texUnit);
+    bindTextures(*outport.getData(), false, false, true, GLenum{0}, GLenum{0}, texUnit);
 }
 
 void bindTextures(const Image& image, GLenum colorTexUnit, GLenum depthTexUnit) {
-    bindTextures(image, true, true, false, colorTexUnit, depthTexUnit, 0);
+    bindTextures(image, true, true, false, colorTexUnit, depthTexUnit, GLenum{0});
 }
 
 void bindTextures(const ImageInport& inport, GLenum colorTexUnit, GLenum depthTexUnit) {
-    bindTextures(*inport.getData(), true, true, false, colorTexUnit, depthTexUnit, 0);
+    bindTextures(*inport.getData(), true, true, false, colorTexUnit, depthTexUnit, GLenum{0});
 }
 
 void bindTextures(const ImageOutport& outport, GLenum colorTexUnit, GLenum depthTexUnit) {
-    bindTextures(*outport.getData(), true, true, false, colorTexUnit, depthTexUnit, 0);
+    bindTextures(*outport.getData(), true, true, false, colorTexUnit, depthTexUnit, GLenum{0});
 }
 
 void bindTextures(const Image& image, GLenum colorTexUnit, GLenum depthTexUnit,
