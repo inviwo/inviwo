@@ -42,7 +42,9 @@
 #include <modules/opengl/texture/textureunit.h>
 
 #include <glbinding/glbinding.h>
+#include <glbinding/getProcAddress.h>
 #include <glbinding-aux/ContextInfo.h>
+#include <glbinding-aux/Meta.h>
 #include <glbinding/gl/extension.h>
 
 #include <algorithm>
@@ -203,7 +205,7 @@ bool OpenGLCapabilities::hasOpenGLVersion() { return (glVersion_ > 0); }
 
 void OpenGLCapabilities::initializeGL() {
     if (!hasSupportedOpenGLVersion()) {
-        glbinding::initialize(nullptr, false);  // resolve all functions lazily
+        glbinding::initialize(glbinding::getProcAddress);
         const GLubyte* glversion = glGetString(GL_VERSION);
         if (glversion == 0) {
             // There was an error retrieving the version. Executing further OpenGl calls may
@@ -239,9 +241,12 @@ size_t OpenGLCapabilities::getCurrentShaderIndex() const { return currentGlobalG
 
 bool OpenGLCapabilities::isExtensionSupported(const char* name) {
     const auto extensions = glbinding::aux::ContextInfo::extensions();
-    // Try to find the extension by matching the string representation
+    const std::string nameStr(name);
+    // glbinding extension names always include the "GL_" prefix
+    const std::string fullName =
+        (nameStr.substr(0, 3) != "GL_") ? "GL_" + nameStr : nameStr;
     for (const auto& ext : extensions) {
-        if (glbinding::aux::Meta::getString(ext) == name) return true;
+        if (glbinding::aux::Meta::getString(ext) == fullName) return true;
     }
     return false;
 }

@@ -29,7 +29,7 @@
 
 #include <modules/openglqt/hiddencanvasqt.h>
 
-// Ensure we only include Qt OpenGL stuff, no Glew OpenGL
+// Qt OpenGL includes
 #include <QApplication>
 #include <QCoreApplication>
 #include <QOffscreenSurface>
