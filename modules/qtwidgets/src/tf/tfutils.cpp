@@ -446,23 +446,39 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
     presets->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
 
     auto addAction = [iconWidth, parent, property](QMenu* menu, std::span<const glm::vec3> points,
-                                                   std::string_view name) {
-        auto action = menu->addAction(utilqt::toQString(name));
+                                                   std::string_view name, bool discrete) {
+        auto* action = menu->addAction(utilqt::toQString(name));
 
-        const TransferFunction tf{std::views::zip(std::views::iota(0uz), points) |
-                                  std::views::transform([&](auto&& elem) {
-                                      auto&& [i, c] = elem;
-                                      return TFPrimitiveData{
-                                          .pos = static_cast<double>(i) /
-                                                 static_cast<double>(points.size() - 1),
-                                          .color = {c, 1.0f}};
-                                  }) |
-                                  std::ranges::to<std::vector>()};
+        const auto tf = [&]() {
+            if (discrete) {
+                const auto n = static_cast<double>(points.size());
+                const double delta = 1e-2 / static_cast<double>(points.size());
+                return TransferFunction{
+                    std::views::zip(std::views::iota(0uz), points) |
+                    std::views::transform([&](auto&& elem) {
+                        auto&& [i, c] = elem;
+                        return std::array<TFPrimitiveData, 2>{
+                            {{.pos = static_cast<double>(i) / n, .color = {c, 1.0f}},
+                             {.pos = static_cast<double>(i + 1) / n - delta, .color = {c, 1.0f}}}};
+                    }) |
+                    std::views::join | std::ranges::to<std::vector>()};
+            } else {
+                const auto n = static_cast<double>(points.size() - 1);
+                return TransferFunction{std::views::zip(std::views::iota(0uz), points) |
+                                        std::views::transform([&](auto&& elem) {
+                                            auto&& [i, c] = elem;
+                                            return TFPrimitiveData{
+                                                .pos = static_cast<double>(i) / n,
+                                                .color = {c, 1.0f}};
+                                        }) |
+                                        std::ranges::to<std::vector>()};
+            }
+        }();
 
         action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
 
         QObject::connect(action, &QAction::triggered, parent, [property, tf2 = std::move(tf)]() {
-            NetworkLock lock(property);
+            const NetworkLock lock(property);
             property->set(tf2);
         });
     };
@@ -475,7 +491,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
                 category->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
 
                 for (auto cm : scm::allContinuous()) {
-                    addAction(category, scm::get(cm), format_as(cm));
+                    addAction(category, scm::get(cm), format_as(cm), false);
                 }
             }
             {
@@ -483,7 +499,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
                 category->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
 
                 for (auto cm : scm::allCyclic()) {
-                    addAction(category, scm::get(cm), format_as(cm));
+                    addAction(category, scm::get(cm), format_as(cm), false);
                 }
             }
             {
@@ -491,7 +507,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
                 category->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
 
                 for (auto cm : scm::allCategorical()) {
-                    addAction(category, scm::get(cm), format_as(cm));
+                    addAction(category, scm::get(cm), format_as(cm), true);
                 }
             }
             {
@@ -501,7 +517,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
                     category->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
 
                     for (auto cm : scm::allDiscrete()) {
-                        addAction(category, scm::get(cm, size), format_as(cm));
+                        addAction(category, scm::get(cm, size), format_as(cm), true);
                     }
                 }
             }
