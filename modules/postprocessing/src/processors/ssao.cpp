@@ -363,10 +363,12 @@ void SSAO::initFramebuffers(int width, int height) {
 
 #if USE_AO_SPECIAL_BLUR
     GLenum formatAO = GL_RG16F;
-    GLint swizzle[4] = {GL_RED, GL_GREEN, GL_ZERO, GL_ZERO};
+    GLint swizzle[4] = {static_cast<GLint>(GL_RED), static_cast<GLint>(GL_GREEN),
+                        static_cast<GLint>(GL_ZERO), static_cast<GLint>(GL_ZERO)};
 #else
     GLenum formatAO = GL_R8;
-    GLint swizzle[4] = {GL_RED, GL_RED, GL_RED, GL_RED};
+    GLint swizzle[4] = {static_cast<GLint>(GL_RED), static_cast<GLint>(GL_RED),
+                        static_cast<GLint>(GL_RED), static_cast<GLint>(GL_RED)};
 #endif
 
     newTexture(textures_.hbaoResult);
