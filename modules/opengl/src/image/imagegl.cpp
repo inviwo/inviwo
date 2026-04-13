@@ -234,11 +234,13 @@ bool ImageGL::updateFrom(const ImageGL* source) {
     sourceFBO->setReadBlit();
     targetFBO->setDrawBlit();
 
-    GLbitfield mask = GL_COLOR_BUFFER_BIT;
-    if (sourceFBO->hasDepthAttachment() && targetFBO->hasDepthAttachment())
-        mask |= GL_DEPTH_BUFFER_BIT;
-    if (sourceFBO->hasStencilAttachment() && targetFBO->hasStencilAttachment())
-        mask |= GL_STENCIL_BUFFER_BIT;
+    const bool copyDepth =
+        sourceFBO->hasDepthAttachment() && targetFBO->hasDepthAttachment();
+    const bool copyStencil =
+        sourceFBO->hasStencilAttachment() && targetFBO->hasStencilAttachment();
+    auto mask = GL_COLOR_BUFFER_BIT;
+    if (copyDepth) mask |= GL_DEPTH_BUFFER_BIT;
+    if (copyStencil) mask |= GL_STENCIL_BUFFER_BIT;
 
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
@@ -248,13 +250,14 @@ bool ImageGL::updateFrom(const ImageGL* source) {
     bool pickingCopied = false;
     for (GLuint i = 1; i < FrameBufferObject::maxColorAttachments(); i++) {
         if (sourceBuffers[i] != 0 && targetBuffers[i] != 0) {
-            glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
-            glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
+            const auto attachment =
+                static_cast<GLenum>(static_cast<GLuint>(GL_COLOR_ATTACHMENT0) + i);
+            glReadBuffer(attachment);
+            glDrawBuffer(attachment);
             glBlitFramebuffer(0, 0, sourceDim.x, sourceDim.y, 0, 0, targetDim.x, targetDim.y,
                               GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-            if (pickingAttachmentID_ &&
-                GL_COLOR_ATTACHMENT0 + i == static_cast<GLuint>(*pickingAttachmentID_)) {
+            if (pickingAttachmentID_ && attachment == *pickingAttachmentID_) {
                 pickingCopied = true;
             }
         }
@@ -267,7 +270,7 @@ bool ImageGL::updateFrom(const ImageGL* source) {
 
     // Secondary copy using PBO
     // Depth texture
-    if ((mask & GL_DEPTH_BUFFER_BIT) == 0) {
+    if (!copyDepth) {
         auto sDepth = source->getDepthLayerGL()->getTexture();
         auto tDepth = target->getDepthLayerGL()->getTexture();
 
@@ -428,7 +431,8 @@ dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
             break;
         case LayerType::Color:
         default:
-            glReadBuffer(GL_COLOR_ATTACHMENT0 + static_cast<GLenum>(index));
+            glReadBuffer(static_cast<GLenum>(static_cast<GLuint>(GL_COLOR_ATTACHMENT0) +
+                                           static_cast<GLuint>(index)));
             break;
     }
 
