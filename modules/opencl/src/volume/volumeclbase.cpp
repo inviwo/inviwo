@@ -116,7 +116,7 @@ const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const
     // which means that the transformation is equal to scaling
     // the world to texture matrix.
     volumeStruct->textureSpaceGradientSpacing =
-        glm::scale(volumeStruct->worldToTexture, gradientSpacing);
+        glm::scale(volumeStruct->worldToTexture, static_cast<vec3>(gradientSpacing));
     volumeStruct->worldSpaceGradientSampleSpacing = vec4(gradientSpacing, 0.f);
 
     // Compute scaling and offset for datatypes that will be sampled
