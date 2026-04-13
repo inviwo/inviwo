@@ -177,7 +177,7 @@ void LorenzSystem::process() {
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dims.x), static_cast<GLsizei>(dims.y));
 
-    std::array<GLenum, 3> drawBuffers{0};
+    std::array<GLenum, 3> drawBuffers{GLenum{0}, GLenum{0}, GLenum{0}};
 
     auto* volGL = velocityVolume->getEditableRepresentation<VolumeGL>();
     drawBuffers[0] = fbo_.attachColorTexture(volGL->getTexture().get(), 0);

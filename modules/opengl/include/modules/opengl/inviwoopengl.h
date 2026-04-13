@@ -34,6 +34,7 @@
 #include <string>
 #include <string_view>
 #include <typeinfo>
+#include <type_traits>
 
 #include <glbinding/gl/gl.h>
 #include <glbinding/gl/extension.h>
@@ -47,6 +48,22 @@ using namespace gl;
 #define APIENTRY
 #endif
 #endif
+
+#include <fmt/format.h>
+
+/**
+ * fmt::formatter specialization for glbinding's GLenum enum class.
+ * glbinding uses strongly-typed enum classes instead of plain integers.
+ * This formatter enables direct use of GLenum in fmt::format, log messages, and exceptions
+ * by formatting it as its underlying unsigned int value.
+ */
+template <>
+struct fmt::formatter<gl::GLenum> : fmt::formatter<std::underlying_type_t<gl::GLenum>> {
+    auto format(gl::GLenum val, fmt::format_context& ctx) const {
+        return fmt::formatter<std::underlying_type_t<gl::GLenum>>::format(
+            static_cast<std::underlying_type_t<gl::GLenum>>(val), ctx);
+    }
+};
 
 namespace inviwo {
 
