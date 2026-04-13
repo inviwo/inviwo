@@ -227,7 +227,7 @@ class ColormapConverter:
         """Full definition for the .cpp file."""
         out = f"constexpr std::array<glm::vec3, {len(colors)}> {name} = {{{{\n"
         for i, (r, g, b) in enumerate(colors):
-            out += f"    glm::vec3{{{r:.6f}f, {g:.6f}f, {b:.6f}f}}"
+            out += f"    {{{r:.6f}f, {g:.6f}f, {b:.6f}f}}"
             out += ",\n" if i < len(colors) - 1 else "\n"
         out += "}};\n"
         return out
@@ -274,11 +274,13 @@ class ColormapConverter:
         h += f"namespace {ns} {{\n\n"
 
         # ---- enums ----
+        h += "// clang-format off\n\n"
         h += self._gen_enum("Continuous", [san(n) for n in sorted_names])
         h += self._gen_enum("Cyclic", [san(n) for n in cyclic_names])
         h += self._gen_enum("DiscreteSize", [f"N{n}" for n in self.DISCRETE_SIZES])
         h += self._gen_enum("Discrete", [san(n) for n in disc_names])
         h += self._gen_enum("Categorical", [san(n) for n in cat_names])
+        h += "// clang-format on\n\n"
 
         api = f"{self.api_macro} " if self.api_macro else ""
 
@@ -323,28 +325,35 @@ class ColormapConverter:
         c += self._block_comment(self._MIT_LICENSE, width=83) + "\n"
         c += f"#include {self.include_path}\n"
         c += f"#include <array>\n\n"
+ 
+        c += "// clang-format off\n\n"
+ 
         c += f"namespace {ns} {{\n\n"
         c += "namespace {\n\n"
+    
+        c += "// NOLINTBEGIN(modernize-use-std-numbers)\n\n"
 
         # ---- data definitions ----
-        c += "// --- Continuous data ---\n\n"
+        c += "// --- Continuous data ---\n"
         for name in sorted_names:
             c += self._write_array_def(f"{san(name)}_data", self.entries[name].continuous)
             c += "\n"
 
-        c += "// --- Discrete data ---\n\n"
+        c += "// --- Discrete data ---\n"
         for name in sorted_names:
             entry = self.entries[name]
             for n in sorted(entry.discrete.keys()):
                 c += self._write_array_def(f"{san(name)}_d{n}_data", entry.discrete[n])
                 c += "\n"
 
-        c += "// --- Categorical data ---\n\n"
+        c += "// --- Categorical data ---\n"
         for name in sorted_names:
             entry = self.entries[name]
             if entry.categorical:
                 c += self._write_array_def(f"{san(name)}_cat_data", entry.categorical)
                 c += "\n"
+
+        c += "// NOLINTEND(modernize-use-std-numbers)\n\n"
 
         c += "}  // namespace\n\n"
 
@@ -406,6 +415,9 @@ class ColormapConverter:
         c += self._gen_format_as("Categorical", cat_names)
 
         c += f"}}  // namespace {ns}\n"
+
+        c += "// clang-format on\n\n"
+
         return c
 
     # ------------------------------------------------------------------
@@ -413,7 +425,7 @@ class ColormapConverter:
     # ------------------------------------------------------------------
 
     def _gen_enum(self, name: str, values: List[str]) -> str:
-        h = f"enum class {name} {{\n"
+        h = f"enum class {name} : std::uint8_t {{\n"
         for i, v in enumerate(values):
             h += f"    {v}"
             h += ",\n" if i < len(values) - 1 else "\n"

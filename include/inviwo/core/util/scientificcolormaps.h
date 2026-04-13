@@ -40,7 +40,9 @@
 
 namespace inviwo::scm {
 
-enum class Continuous {
+// clang-format off
+
+enum class Continuous : std::uint8_t {
     acton,
     bam,
     bamO,
@@ -83,7 +85,7 @@ enum class Continuous {
     vikO
 };
 
-enum class Cyclic {
+enum class Cyclic : std::uint8_t {
     bamO,
     brocO,
     corkO,
@@ -91,14 +93,14 @@ enum class Cyclic {
     vikO
 };
 
-enum class DiscreteSize {
+enum class DiscreteSize : std::uint8_t {
     N10,
     N25,
     N50,
     N100
 };
 
-enum class Discrete {
+enum class Discrete : std::uint8_t {
     acton,
     bam,
     bamO,
@@ -141,7 +143,7 @@ enum class Discrete {
     vikO
 };
 
-enum class Categorical {
+enum class Categorical : std::uint8_t {
     acton,
     bamako,
     batlow,
@@ -165,6 +167,8 @@ enum class Categorical {
     tokyo,
     turku
 };
+
+// clang-format on
 
 IVW_CORE_API std::span<const glm::vec3> get(Continuous type);
 IVW_CORE_API std::span<const glm::vec3> get(Cyclic type);
