@@ -70,7 +70,7 @@ void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID 
 }
 
 extern "C" {
-static void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint id,
+static void APIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint id,
                                                   GLenum eseverity, GLsizei /*length*/,
                                                   const GLchar* message, const void* /*module*/) {
 

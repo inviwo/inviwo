@@ -31,15 +31,22 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 
-#ifdef __APPLE__
-#define GLEW_NO_GLU
-#endif
-
 #include <string>
 #include <string_view>
 #include <typeinfo>
 
-#include <GL/glew.h>
+#include <glbinding/gl/gl.h>
+#include <glbinding/gl/extension.h>
+using namespace gl;
+
+// Provide APIENTRY macro for callback signatures
+#ifndef APIENTRY
+#ifdef _WIN32
+#define APIENTRY __stdcall
+#else
+#define APIENTRY
+#endif
+#endif
 
 namespace inviwo {
 

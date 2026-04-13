@@ -19,7 +19,7 @@
     "eigen3",
     "fmt",
     "freetype",
-    "glew",
+    "glbinding",
     "glfw3",
     "glm",
     "gtest",

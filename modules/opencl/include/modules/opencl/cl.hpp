@@ -118,7 +118,8 @@
 #include <CL/cl_ext.h>
 #endif
 
-#include <GL/glew.h>
+#include <glbinding/gl/gl.h>
+using namespace gl;
 #if defined(__APPLE__) || defined(__MACOSX)
 #include <OpenGL/OpenGL.h>
 #include <OpenCL/opencl.h>

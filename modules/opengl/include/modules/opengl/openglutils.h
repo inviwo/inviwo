@@ -462,57 +462,60 @@ T passThrough(T x) {
     return x;
 }
 
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1) = &passThrough<T1>>
+/**
+ * @brief Policy-based RAII object for OpenGL state
+ *
+ * @tparam Policy A struct that provides:
+ *   - value_type: The type used for getting the state (e.g. GLint, GLfloat, GLboolean)
+ *   - setter_type: The type used for setting the state (e.g. GLenum, GLfloat, GLboolean)
+ *   - static void get(value_type* v): Gets the current state
+ *   - static void set(setter_type v): Sets the state
+ *   - static value_type validate(value_type v): Validates/adjusts the value (optional identity)
+ */
+template <typename Policy>
 struct SimpleState {
+    using value_type = typename Policy::value_type;
+    using setter_type = typename Policy::setter_type;
 
     SimpleState() = delete;
-    SimpleState(SimpleState<T1, T2, Entity, Getter, Setter, Validator> const&) = delete;
-    SimpleState<T1, T2, Entity, Getter, Setter, Validator>& operator=(
-        SimpleState<T1, T2, Entity, Getter, Setter, Validator> const& that) = delete;
+    SimpleState(SimpleState const&) = delete;
+    SimpleState& operator=(SimpleState const&) = delete;
 
-    SimpleState(T1 value);
-    SimpleState(SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& rhs);
-    SimpleState<T1, T2, Entity, Getter, Setter, Validator>& operator=(
-        SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& that);
+    SimpleState(value_type value);
+    SimpleState(SimpleState&& rhs);
+    SimpleState& operator=(SimpleState&& that);
 
-    operator T1();
+    operator value_type();
     virtual ~SimpleState();
 
 protected:
-    T1 oldState_;
-    T1 state_;
+    value_type oldState_;
+    value_type state_;
 };
 
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>::SimpleState(T1 value)
-    : state_(Validator(value)) {
-    Getter(Entity, &oldState_);
+template <typename Policy>
+SimpleState<Policy>::SimpleState(value_type value)
+    : state_(Policy::validate(value)) {
+    Policy::get(&oldState_);
     if (oldState_ != state_) {
-        Setter(state_);
+        Policy::set(static_cast<setter_type>(state_));
     }
 }
 
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>::~SimpleState() {
+template <typename Policy>
+SimpleState<Policy>::~SimpleState() {
     if (state_ != oldState_) {
-        Setter(static_cast<T2>(oldState_));
+        Policy::set(static_cast<setter_type>(oldState_));
     }
 }
 
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>::operator T1() {
+template <typename Policy>
+SimpleState<Policy>::operator value_type() {
     return state_;
 }
 
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>&
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>::operator=(
-    SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& that) {
+template <typename Policy>
+SimpleState<Policy>& SimpleState<Policy>::operator=(SimpleState<Policy>&& that) {
     if (this != &that) {
         state_ = that.oldState_;
         std::swap(state_, that.state_);
@@ -520,28 +523,62 @@ SimpleState<T1, T2, Entity, Getter, Setter, Validator>::operator=(
     }
     return *this;
 }
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>::SimpleState(
-    SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& rhs)
+
+template <typename Policy>
+SimpleState<Policy>::SimpleState(SimpleState<Policy>&& rhs)
     : oldState_(rhs.oldState_), state_(rhs.state_) {
     rhs.state_ = rhs.oldState_;
 }
 
 IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width);
 
+namespace detail {
+
+struct DepthFuncPolicy {
+    using value_type = GLint;
+    using setter_type = GLenum;
+    static void get(GLint* v) { glGetIntegerv(GL_DEPTH_FUNC, v); }
+    static void set(GLenum v) { glDepthFunc(v); }
+    static GLint validate(GLint v) { return v; }
+};
+
+struct DepthMaskPolicy {
+    using value_type = GLboolean;
+    using setter_type = GLboolean;
+    static void get(GLboolean* v) { glGetBooleanv(GL_DEPTH_WRITEMASK, v); }
+    static void set(GLboolean v) { glDepthMask(v); }
+    static GLboolean validate(GLboolean v) { return v; }
+};
+
+struct LineWidthPolicy {
+    using value_type = GLfloat;
+    using setter_type = GLfloat;
+    static void get(GLfloat* v) { glGetFloatv(GL_LINE_WIDTH, v); }
+    static void set(GLfloat v) { glLineWidth(v); }
+    static GLfloat validate(GLfloat v) { return validateLineWidth(v); }
+};
+
+struct PointSizePolicy {
+    using value_type = GLfloat;
+    using setter_type = GLfloat;
+    static void get(GLfloat* v) { glGetFloatv(GL_POINT_SIZE, v); }
+    static void set(GLfloat v) { glPointSize(v); }
+    static GLfloat validate(GLfloat v) { return v; }
+};
+
+}  // namespace detail
+
 /**
  * @brief RAII object for OpenGL depth func state
  * @see glDepthFunc, GL_DEPTH_FUNC
  */
-using DepthFuncState = SimpleState<GLint, GLenum, GL_DEPTH_FUNC, glGetIntegerv, glDepthFunc>;
+using DepthFuncState = SimpleState<detail::DepthFuncPolicy>;
 
 /**
  * @brief RAII object for OpenGL depth mask to enable/disable writing depth
  * @see glDepthMask, GL_DEPTH_WRITEMASK
  */
-using DepthMaskState =
-    SimpleState<GLboolean, GLboolean, GL_DEPTH_WRITEMASK, glGetBooleanv, glDepthMask>;
+using DepthMaskState = SimpleState<detail::DepthMaskPolicy>;
 
 /**
  * @brief RAII object for OpenGL line width
@@ -550,13 +587,13 @@ using DepthMaskState =
 
 using LineWidthState [[deprecated(
     "glLineWidth is not supported by all OpenGL implementations for widths different from 1.0")]] =
-    SimpleState<GLfloat, GLfloat, GL_LINE_WIDTH, glGetFloatv, glLineWidth, validateLineWidth>;
+    SimpleState<detail::LineWidthPolicy>;
 
 /**
  * @brief RAII object for OpenGL point size
  * @see glPointSize, GL_POINT_SIZE
  */
-using PointSizeState = SimpleState<GLfloat, GLfloat, GL_POINT_SIZE, glGetFloatv, glPointSize>;
+using PointSizeState = SimpleState<detail::PointSizePolicy>;
 
 template <typename T>
 // requires can enable/disable const

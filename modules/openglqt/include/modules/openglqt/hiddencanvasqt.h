@@ -80,7 +80,7 @@ public:
     virtual ~HiddenCanvasQt();
 
     void createContext();
-    void initializeGLEW();
+    void initializeGL();
 
     /*
      * Does nothing

@@ -41,6 +41,10 @@
 #include <modules/opengl/openglsettings.h>
 #include <modules/opengl/texture/textureunit.h>
 
+#include <glbinding/glbinding.h>
+#include <glbinding-aux/ContextInfo.h>
+#include <glbinding/gl/extension.h>
+
 #include <algorithm>
 #include <cctype>
 #include <functional>
@@ -51,7 +55,7 @@ namespace inviwo {
 
 // Our minimal opengl version is 3.3 and glsl version 330
 
-bool OpenGLCapabilities::glewInitialized_ = false;
+bool OpenGLCapabilities::glInitialized_ = false;
 int OpenGLCapabilities::glVersion_ = 0;
 std::string OpenGLCapabilities::glVersionStr_ = "0";
 
@@ -109,7 +113,7 @@ OpenGLCapabilities::OpenGLCapabilities(OpenGLSettings* settings)
 
 OpenGLCapabilities::~OpenGLCapabilities() {
     // reset stuff.
-    glewInitialized_ = false;
+    glInitialized_ = false;
     glVersion_ = 0;
     glVersionStr_ = "0";
 }
@@ -197,30 +201,22 @@ bool OpenGLCapabilities::hasSupportedOpenGLVersion() { return (glVersion_ >= 330
 
 bool OpenGLCapabilities::hasOpenGLVersion() { return (glVersion_ > 0); }
 
-void OpenGLCapabilities::initializeGLEW() {
+void OpenGLCapabilities::initializeGL() {
     if (!hasSupportedOpenGLVersion()) {
-        // Ensure that all extensions with valid entry points will be exposed
-        glewExperimental = GL_TRUE;
-        GLenum glewError = glewInit();
-        if (GLEW_OK == glewError) {
-            const GLubyte* glversion = glGetString(GL_VERSION);
-            if (glversion == 0) {
-                // There was an error retrieving the version. Executing further OpenGl calls may
-                // crash the application
-                throw OpenGLInitException(fmt::format(
-                    "Initialized GLEW but failed to retrieve OpenGL Version, glError {}",
-                    getGLErrorString(glGetError())));
-            }
-            glVersionStr_ = std::string(
-                (glversion != nullptr ? reinterpret_cast<const char*>(glversion) : "INVALID"));
-            glVersion_ = parseAndRetrieveVersion(glVersionStr_);
-        } else {
-            throw OpenGLInitException(
-                fmt::format("Failed to initialize GLEW: {}",
-                            reinterpret_cast<const char*>(glewGetErrorString(glewError))));
+        glbinding::initialize(nullptr, false);  // resolve all functions lazily
+        const GLubyte* glversion = glGetString(GL_VERSION);
+        if (glversion == 0) {
+            // There was an error retrieving the version. Executing further OpenGl calls may
+            // crash the application
+            throw OpenGLInitException(fmt::format(
+                "Initialized glbinding but failed to retrieve OpenGL Version, glError {}",
+                getGLErrorString(glGetError())));
         }
+        glVersionStr_ = std::string(
+            (glversion != nullptr ? reinterpret_cast<const char*>(glversion) : "INVALID"));
+        glVersion_ = parseAndRetrieveVersion(glVersionStr_);
         LGL_ERROR;
-        glewInitialized_ = true;
+        glInitialized_ = true;
     }
 }
 
@@ -242,10 +238,15 @@ OpenGLCapabilities::GLSLShaderVersion OpenGLCapabilities::getShaderVersion(size_
 size_t OpenGLCapabilities::getCurrentShaderIndex() const { return currentGlobalGLSLVersionIdx_; }
 
 bool OpenGLCapabilities::isExtensionSupported(const char* name) {
-    return bool(glewIsSupported(name));
+    const auto extensions = glbinding::aux::ContextInfo::extensions();
+    // Try to find the extension by matching the string representation
+    for (const auto& ext : extensions) {
+        if (glbinding::aux::Meta::getString(ext) == name) return true;
+    }
+    return false;
 }
 
-bool OpenGLCapabilities::isSupported(const char* name) { return bool(glewIsSupported(name)); }
+bool OpenGLCapabilities::isSupported(const char* name) { return isExtensionSupported(name); }
 bool OpenGLCapabilities::isTexturesSupported() const { return texSupported_; }
 bool OpenGLCapabilities::isTextureArraysSupported() const { return texArraySupported_; }
 bool OpenGLCapabilities::is3DTexturesSupported() const { return tex3DSupported_; }
@@ -293,13 +294,9 @@ size_t OpenGLCapabilities::getCurrentAvailableTextureMem() {
         GLint nCurAvailMemoryInKB[4] = {0};
 
         if (glVendor_ == GlVendor::Nvidia) {
-#ifdef GL_NVX_gpu_memory_info
             glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, nCurAvailMemoryInKB);
-#endif
         } else if (glVendor_ == GlVendor::Amd) {
-#ifdef GL_ATI_meminfo
             glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, nCurAvailMemoryInKB);
-#endif
         }
 
         currentAvailableTexMeminBytes =
@@ -316,33 +313,14 @@ size_t OpenGLCapabilities::getTotalAvailableTextureMem() {
 
     try {
         if (glVendor_ == GlVendor::Nvidia) {
-#ifdef GL_NVX_gpu_memory_info
             GLint nTotalAvailMemoryInKB[4] = {0};
             glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, nTotalAvailMemoryInKB);
             totalAvailableTexMemInBytes =
                 util::kilobytes_to_bytes(static_cast<size_t>(nTotalAvailMemoryInKB[0]));
-#endif
-        } else if (glVendor_ == GlVendor::Amd) {
-#if defined(WGL_AMD_gpu_association)
-            UINT n = wglGetGPUIDsAMD(0, 0);
-            UINT* ids = new UINT[n];
-            size_t total_mem_mb = 0;
-            wglGetGPUIDsAMD(n, ids);
-            wglGetGPUInfoAMD(ids[0], WGL_GPU_RAM_AMD, GL_UNSIGNED_INT, sizeof(size_t),
-                             &total_mem_mb);
-            totalAvailableTexMemInBytes =
-                util::megabytes_to_bytes(static_cast<size_t>(total_mem_mb));
-#elif defined(GLX_AMD_gpu_association)
-            UINT n = glXGetGPUIDsAMD(0, 0);
-            UINT* ids = new UINT[n];
-            size_t total_mem_mb = 0;
-            glXGetGPUIDsAMD(n, ids);
-            glXGetGPUInfoAMD(ids[0], GLX_GPU_RAM_AMD, GL_UNSIGNED_INT, sizeof(size_t),
-                             &total_mem_mb);
-            totalAvailableTexMemInBytes =
-                util::megabytes_to_bytes(static_cast<size_t>(total_mem_mb));
-#endif
         }
+        // Note: AMD GPU memory detection via WGL/GLX_AMD_gpu_association is not available
+        // with glbinding. The AMD ATI_meminfo extension only provides current free memory,
+        // not total memory.
     } catch (const Exception& e) {
         log::warn("Failed to fetch total available texture memory: {}", e.what());
     }
@@ -399,7 +377,6 @@ void OpenGLCapabilities::retrieveStaticInfo() {
 
     GLint numberOfSupportedVersions = 0;
     const GLubyte* glslStrByte = nullptr;
-#ifdef GL_VERSION_4_3
     if (glVersion_ >= 430) {
         glslStrByte = glGetString(GL_SHADING_LANGUAGE_VERSION);
         glslVersionStr_ = std::string(
@@ -415,7 +392,6 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         std::sort(supportedShaderVersions_.begin(), supportedShaderVersions_.end(),
                   &GLSLShaderVersion::sortHighestFirst);
     }
-#endif
 
     if (numberOfSupportedVersions == 0) {
         if (isShadersSupported())
@@ -428,46 +404,24 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         int glslVersion = parseAndRetrieveVersion(glslVersionStr_);
 
         if (glslVersion != 0) {
-#ifdef GL_VERSION_4_4
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(440, "core"), glslVersion);
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(440, "compatibility"), glslVersion);
-#endif
-#ifdef GL_VERSION_4_3
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(430, "core"), glslVersion);
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(430, "compatibility"), glslVersion);
-#endif
-#ifdef GL_VERSION_4_2
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(420, "core"), glslVersion);
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(420, "compatibility"), glslVersion);
-#endif
-#ifdef GL_VERSION_4_1
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(410, "core"), glslVersion);
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(410, "compatibility"), glslVersion);
-#endif
-#ifdef GL_VERSION_4_0
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(400, "core"), glslVersion);
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(400, "compatibility"), glslVersion);
-#endif
-#ifdef GL_VERSION_3_3
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(330, "core"), glslVersion);
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(330, "compatibility"), glslVersion);
-#endif
-#ifdef GL_VERSION_3_2
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(150, "core"), glslVersion);
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(150, "compatibility"), glslVersion);
-#endif
-#ifdef GL_VERSION_3_1
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(140), glslVersion);
-#endif
-#ifdef GL_VERSION_3_0
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(130), glslVersion);
-#endif
-#ifdef GL_VERSION_2_1
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(120), glslVersion);
-#endif
-#ifdef GL_VERSION_2_0
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(110), glslVersion);
-#endif
         }
     }
 
@@ -486,7 +440,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
 
     maxProgramLoopCount_ = -1;
 
-    if (GLEW_NV_fragment_program2) {
+    if (isExtensionSupported("GL_NV_fragment_program2")) {
         GLint i = -1;
         glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB, GL_MAX_PROGRAM_LOOP_COUNT_NV, &i);
 
@@ -506,44 +460,27 @@ void OpenGLCapabilities::retrieveStaticInfo() {
                       static_cast<GLint*>(&geometryShadersMaxTotalOutputComponents_));
     }
 
-// Texturing
-#ifdef GL_VERSION_1_1
+    // Texturing
+    // With glbinding, all GL constants are available; use runtime version checks instead
     texSupported_ = true;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, (GLint*)&maxTexSize_);
-#else
-    texSupported_ = isExtensionSupported("GL_EXT_texture");
-    maxTexSize_ = 0;
-#endif
-#ifdef GL_VERSION_1_2
+
     tex3DSupported_ = true;
     glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, (GLint*)&max3DTexSize_);
-#else
-    tex3DSupported_ = isExtensionSupported("GL_EXT_texture3D");
 
-    if (is3DTexturesSupported())
-        glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, (GLint*)&max3DTexSize_);
-    else
-        max3DTexSize_ = 0;
-
-#endif
-#ifdef GL_VERSION_2_0
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint*)&maxArrayVertexAttribs_);
-#endif
-#ifdef GL_VERSION_3_0
+
     if (glVersion_ >= 300) {
         texArraySupported_ = true;
         glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, (GLint*)&maxArrayTexSize_);
     } else {
-#endif
         texArraySupported_ = isExtensionSupported("GL_EXT_texture_array");
 
         if (isTextureArraysSupported())
             glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, (GLint*)&maxArrayTexSize_);
         else
             maxArrayTexSize_ = 0;
-#ifdef GL_VERSION_3_0
     }
-#endif
     numTexUnits_ = -1;
 
     if (isShadersSupported()) glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, (GLint*)&numTexUnits_);

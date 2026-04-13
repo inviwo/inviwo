@@ -73,7 +73,7 @@ public:
     virtual void printInfo() override;
     void printDetailedInfo();
 
-    static void initializeGLEW();
+    static void initializeGL();
     static int getOpenGLVersion();
 
     // Minimal support is OpenGL 3.3 at the moment
@@ -138,7 +138,7 @@ protected:
     static int parseAndRetrieveVersion(std::string);
 
 private:
-    static bool glewInitialized_;
+    static bool glInitialized_;
     static int glVersion_;
     static std::string glVersionStr_;
 
