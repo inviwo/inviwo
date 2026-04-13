@@ -231,6 +231,7 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
                     // remove basepath and trailing directory separator from filename
                     auto action = presets->addAction(utilqt::toQString(file.string()));
                     action->setIcon(QIcon(utilqt::toQPixmap(*tf, QSize{iconWidth, 20})));
+                    action->setIconVisibleInMenu(true);
                     QObject::connect(action, &QAction::triggered, parent,
                                      [property, tf = std::move(tf)]() {
                                          NetworkLock lock(property);
@@ -345,6 +346,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
                                                    std::string_view name) {
         auto action = menu->addAction(utilqt::toQString(name));
         action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
+        action->setIconVisibleInMenu(true);
 
         QObject::connect(action, &QAction::triggered, parent, [property, tf2 = std::move(tf)]() {
             NetworkLock lock(property);
@@ -408,6 +410,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
                         auto maxtf =
                             colorbrewer::getTransferFunction(category, family, max, discrete, 0.5);
                         familyMenu->setIcon(QIcon(utilqt::toQPixmap(maxtf, QSize{iconWidth, 20})));
+                        familyMenu->menuAction()->setIconVisibleInMenu(true);
 
                         for (auto n = min; n < max; ++n) {
                             addAction(familyMenu,
@@ -422,6 +425,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
                     }
                     if (!categoryMenu->actions().empty()) {
                         categoryMenu->setIcon(categoryMenu->actions().front()->icon());
+                        categoryMenu->menuAction()->setIconVisibleInMenu(true);
                     }
                 }
             }
@@ -442,7 +446,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
     presets->setObjectName("TF");
     presets->setEnabled(!property->getReadOnly());
     const int iconWidth = utilqt::emToPx(presets, 11);
-    // need to set the stylesheet explicitely since Qt _only_ supports 'px' for icon sizes
+    // need to set the stylesheet explicitly since Qt _only_ supports 'px' for icon sizes
     presets->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
 
     auto addAction = [iconWidth, parent, property](QMenu* menu, std::span<const glm::vec3> points,
@@ -476,6 +480,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
         }();
 
         action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
+        action->setIconVisibleInMenu(true);
 
         QObject::connect(action, &QAction::triggered, parent, [property, tf2 = std::move(tf)]() {
             const NetworkLock lock(property);
