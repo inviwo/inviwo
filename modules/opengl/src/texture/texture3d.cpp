@@ -85,7 +85,7 @@ Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimen
                            static_cast<GLsizei>(dimensions_.x), static_cast<GLsizei>(dimensions_.y),
                            static_cast<GLsizei>(dimensions_.z));
 
-        syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+        syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
 
     } else {  // Copy data through PBO
         loadFromPBO(&rhs);
@@ -111,7 +111,7 @@ Texture3D& Texture3D::operator=(const Texture3D& rhs) {
                                static_cast<GLsizei>(rhs.dimensions_.y),
                                static_cast<GLsizei>(rhs.dimensions_.z));
 
-            syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+            syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
         } else {  // Copy data through PBO
             loadFromPBO(&rhs);
         }

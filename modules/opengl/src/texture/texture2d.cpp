@@ -70,7 +70,7 @@ Texture2D::Texture2D(const Texture2D& rhs) : Texture(rhs), dimensions_(rhs.dimen
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
                            static_cast<GLsizei>(dimensions_.x), static_cast<GLsizei>(dimensions_.y),
                            1);
-        syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+        syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
     } else {  // Copy data through PBO
         loadFromPBO(&rhs);
     }
@@ -94,7 +94,7 @@ Texture2D& Texture2D::operator=(const Texture2D& rhs) {
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
                                0, static_cast<GLsizei>(rhs.dimensions_.x),
                                static_cast<GLsizei>(rhs.dimensions_.y), 1);
-            syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+            syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
 
         } else {  // Copy data through PBO
             loadFromPBO(&rhs);

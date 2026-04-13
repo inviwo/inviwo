@@ -155,7 +155,7 @@ PolygonModeState& PolygonModeState::operator=(PolygonModeState&& that) {
         oldLineWidth_ = that.oldLineWidth_;
         oldPointSize_ = that.oldPointSize_;
 
-        that.mode_ = GL_NONE;
+        that.mode_ = static_cast<GLint>(GL_NONE);
     }
     return *this;
 }
@@ -167,7 +167,7 @@ PolygonModeState::PolygonModeState(PolygonModeState&& rhs)
     , oldMode_(rhs.oldMode_)
     , oldLineWidth_(rhs.oldLineWidth_)
     , oldPointSize_(rhs.oldPointSize_) {
-    rhs.mode_ = GL_NONE;
+    rhs.mode_ = static_cast<GLint>(GL_NONE);
 }
 
 PolygonModeState::PolygonModeState(GLenum mode, GLfloat lineWidth, GLfloat pointSize)
@@ -563,7 +563,7 @@ void ColorMaski::get() {
         drawBuffers[i] = static_cast<GLenum>(value);
     }
 
-    glDrawBuffer(buf_);
+    glDrawBuffer(static_cast<GLenum>(buf_));
     glGetBooleanv(GL_COLOR_WRITEMASK, mask_.data());
 
     // restore draw buffers

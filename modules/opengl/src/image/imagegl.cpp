@@ -460,7 +460,7 @@ dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
 }
 
 GLenum ImageGL::getPickingAttachmentID() const {
-    return pickingAttachmentID_ ? *pickingAttachmentID_ : 0;
+    return pickingAttachmentID_ ? *pickingAttachmentID_ : GLenum{0};
 }
 
 }  // namespace inviwo

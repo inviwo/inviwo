@@ -67,7 +67,7 @@ Texture1D::Texture1D(const Texture1D& rhs) : Texture(rhs), width_(rhs.width_) {
 
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
                            static_cast<GLsizei>(width_), 1, 1);
-        syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+        syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
     } else {  // Copy data through PBO
         loadFromPBO(&rhs);
     }
@@ -90,7 +90,7 @@ Texture1D& Texture1D::operator=(const Texture1D& rhs) {
 
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
                                0, static_cast<GLsizei>(rhs.width_), 1, 1);
-            syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+            syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
 
         } else {  // Copy data through PBO
             loadFromPBO(&rhs);

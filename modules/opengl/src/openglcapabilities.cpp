@@ -365,9 +365,11 @@ void OpenGLCapabilities::retrieveStaticInfo() {
 
     GLint contextMask = 0;
     glGetIntegerv(GL_CONTEXT_PROFILE_MASK, (GLint*)&contextMask);
-    if (contextMask & GL_CONTEXT_CORE_PROFILE_BIT) {
+    if (static_cast<unsigned int>(contextMask) &
+        static_cast<unsigned int>(GL_CONTEXT_CORE_PROFILE_BIT)) {
         glProfileStr_ = "core";
-    } else if (contextMask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT) {
+    } else if (static_cast<unsigned int>(contextMask) &
+               static_cast<unsigned int>(GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)) {
         glProfileStr_ = "compatibility";
     } else {
         static constexpr auto err = IVW_UNINDENT(R"(

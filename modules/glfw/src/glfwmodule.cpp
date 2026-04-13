@@ -128,7 +128,7 @@ void GLFWModule::onProcessorNetworkEvaluationEnd() {
     // its work before we continue. This is needed to make sure that we have textures that are upto
     // data when we render the canvases.
 
-    auto syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    auto syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
 
     const GLuint64 timeoutInNanoSec = 50'000'000;  // 50ms
 

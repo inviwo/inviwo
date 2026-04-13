@@ -349,7 +349,7 @@ std::string Shader::processLog(std::string log) const {
     std::istringstream stream(log);
     std::ostringstream result;
     std::string line;
-    ShaderType type(0);
+    ShaderType type(GLenum{0});
 
     while (std::getline(stream, line)) {
         // This log matching needs more testing. Mostly guessing here.
