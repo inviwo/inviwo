@@ -67,7 +67,10 @@ class Outport;
 class IVW_MODULE_BASEGL_API OverlayProperty : public CompositeProperty {
 public:
     enum class Positioning { Relative, Absolute };
-    enum class BlendMode : GLint { Replace = GL_NONE, Over = GL_SRC_ALPHA };
+    enum class BlendMode : GLint {
+        Replace = static_cast<GLint>(GL_NONE),
+        Over = static_cast<GLint>(GL_SRC_ALPHA)
+    };
 
     OverlayProperty(std::string identifier, std::string displayName,
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
