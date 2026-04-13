@@ -36,8 +36,7 @@
 
 #include <limits>
 #include <type_traits>
-
-namespace glm {}  // namespace glm
+#include <inviwo/core/util/glmfmt.h>
 
 namespace inviwo {
 
@@ -489,6 +488,42 @@ TEST(GLMTest, AlmostEqual) {
     EXPECT_FALSE(util::almostEqual(1.0, 2.0));
     EXPECT_FALSE(util::almostEqual(vec3{1.0f}, vec3{2.0f}));
     EXPECT_FALSE(util::almostEqual(ivec3{1}, ivec3{2}));
+}
+
+TEST(GLMTest, Formatting) {
+    EXPECT_EQ(fmt::format("{}", glm::ivec2{5, 6}), "[5, 6]");
+    EXPECT_EQ(fmt::format("{:}", glm::ivec2{5, 6}), "[5, 6]");
+    EXPECT_EQ(fmt::format("{::}", glm::ivec2{5, 6}), "[5, 6]");
+    EXPECT_EQ(fmt::format("{:10}", glm::ivec2{5, 6}), "[5, 6]    ");
+    EXPECT_EQ(fmt::format("{:<10}", glm::ivec2{5, 6}), "[5, 6]    ");
+    EXPECT_EQ(fmt::format("{:>10}", glm::ivec2{5, 6}), "    [5, 6]");
+    EXPECT_EQ(fmt::format("{:^10}", glm::ivec2{5, 6}), "  [5, 6]  ");
+    EXPECT_EQ(fmt::format("{::5}", glm::ivec2{5, 6}), "[    5,     6]");
+    EXPECT_EQ(fmt::format("{::>5}", glm::ivec2{5, 6}), "[    5,     6]");
+    EXPECT_EQ(fmt::format("{::<5}", glm::ivec2{5, 6}), "[5    , 6    ]");
+    EXPECT_EQ(fmt::format("{::^5}", glm::ivec2{5, 6}), "[  5  ,   6  ]");
+
+    EXPECT_EQ(fmt::format("{:20:^5}", glm::ivec2{5, 6}), "[  5  ,   6  ]      ");
+    EXPECT_EQ(fmt::format("{:<20:^5}", glm::ivec2{5, 6}), "[  5  ,   6  ]      ");
+    EXPECT_EQ(fmt::format("{:>20:^5}", glm::ivec2{5, 6}), "      [  5  ,   6  ]");
+    EXPECT_EQ(fmt::format("{:^20:^5}", glm::ivec2{5, 6}), "   [  5  ,   6  ]   ");
+
+    EXPECT_EQ(fmt::format("{:{}}", glm::ivec2{5, 6}, 10), "[5, 6]    ");
+    EXPECT_EQ(fmt::format("{:{}}", glm::ivec2{5, 6}, 10), "[5, 6]    ");
+
+    EXPECT_EQ(fmt::format("{:{}:{}}", glm::ivec2{5, 6}, 12, 3), "[  5,   6]  ");
+
+    EXPECT_EQ(fmt::format("{} {:{}}", "pre", glm::ivec2{5, 6}, 10), "pre [5, 6]    ");
+    EXPECT_EQ(fmt::format("{:{}} {}", glm::ivec2{5, 6}, 10, "post"), "[5, 6]     post");
+    EXPECT_EQ(fmt::format("{} {:{}} {}", "pre", glm::ivec2{5, 6}, 10, "post"),
+              "pre [5, 6]     post");
+
+    EXPECT_EQ(fmt::format("{}", glm::vec2{5.1f, 6.2f}), "[5.1, 6.2]");
+    EXPECT_EQ(fmt::format("{}", glm::vec2{5.1111f, 6.2222f}), "[5.1111, 6.2222]");
+    EXPECT_EQ(fmt::format("{::.1f}", glm::vec2{5.1111f, 6.2222f}), "[5.1, 6.2]");
+    EXPECT_EQ(fmt::format("{::4.1f}", glm::vec2{5.1111f, 6.2222f}), "[ 5.1,  6.2]");
+    EXPECT_EQ(fmt::format("{::5.{}f}", glm::vec2{5.1111f, 6.2222f}, 2), "[ 5.11,  6.22]");
+    EXPECT_EQ(fmt::format("{::{}.{}f}", glm::vec2{5.1111f, 6.2222f}, 5, 2), "[ 5.11,  6.22]");
 }
 
 }  // namespace inviwo
