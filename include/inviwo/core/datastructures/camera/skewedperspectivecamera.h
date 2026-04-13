@@ -66,7 +66,7 @@ public:
     void setFovy(double val);
 
     const dvec2& getOffset() const;
-    void setOffset(dvec2 val);
+    void setOffset(dvec2 offset);
     virtual void zoom(const ZoomOptions& opts) override;
 
     virtual void setLookFrom(dvec3 val) override;
