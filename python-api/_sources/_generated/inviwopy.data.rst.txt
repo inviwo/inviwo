@@ -147,6 +147,7 @@ inviwopy.data
       MeshSequenceOutport
       OrthographicCamera
       PerspectiveCamera
+      PlotCamera
       PosTexColorMesh
       SkewedPerspectiveCamera
       SpatialEntity
@@ -174,4 +175,5 @@ inviwopy.data
       VolumeSequenceMultiInport
       VolumeSequenceOutport
       Wrapping
+      ZoomOptions
    
