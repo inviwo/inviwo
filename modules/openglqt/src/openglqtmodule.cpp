@@ -89,7 +89,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     sharedCanvas_.activate();
     sharedCanvas_.initializeGL();
 
-    if (!glFenceSync) {  // Make sure we have setup the opengl function pointers.
+    if (!static_cast<bool>(glFenceSync)) {  // Make sure we have setup the opengl function pointers.
         throw OpenGLInitException("Unable to initiate OpenGL");
     }
 
@@ -159,6 +159,8 @@ void OpenGLQtModule::onProcessorNetworkEvaluationEnd() {
             log::error("Error syncing with opengl 'GL_WAIT_FAILED'");
             break;
         case GL_CONDITION_SATISFIED:  // Queue done.
+            break;
+        default:
             break;
     }
 
