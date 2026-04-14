@@ -57,36 +57,29 @@ runs:
                          libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libegl1-mesa-dev \
                          libwayland-dev wayland-protocols libwayland-egl1-mesa libgles2-mesa-dev mesa-common-dev
 
-    - name: "Install CMake"
+    - name: "Install Latest CMake"
       shell: bash
       if: runner.os == 'Linux'
       run: |
-        #!/bin/bash
-        set -e
-
         # Get the latest CMake version from the GitHub API
         CMAKE_VERSION=$(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
-
         echo "Latest CMake version: $CMAKE_VERSION"
 
-        # Download the latest binary
-        wget -q "https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz" -O /tmp/cmake.tar.gz
+        curl -L -o install_cmake.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh
+        chmod +x install_cmake.sh
+        sudo ./install_cmake.sh --skip-license --prefix=/usr/local
 
-        # Extract to /opt
-        sudo tar -zxf /tmp/cmake.tar.gz -C /opt
-        sudo mv /opt/cmake-${CMAKE_VERSION}-linux-x86_64 /opt/cmake-${CMAKE_VERSION}
-
-        # Symlink all binaries to /usr/local/bin
-        sudo ln -sf /opt/cmake-${CMAKE_VERSION}/bin/* /usr/local/bin/
-
-        # Clean up
-        rm /tmp/cmake.tar.gz
-
-        export GITHUB_PATH=/usr/local/bin:$GITHUB_PATH
-        # Verify
-        echo "Installed CMake version:"
         echo "Path to CMAKE $(which cmake)"
+        echo "Installed CMake version:"
         cmake --version
+
+    - name: "AppImageTool and New CMake 4.2+ with AppImage support"
+      shell: bash
+      if: runner.os == 'Linux'
+      run: |
+        curl -L -o appimagetool.AppImage https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+        chmod +x appimagetool.AppImage
+        sudo mv appimagetool.AppImage /usr/local/bin/appimagetool
 
     - name: "Setup GCC ${{ inputs.gcc-version }}"
       shell: bash

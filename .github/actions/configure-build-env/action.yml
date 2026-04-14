@@ -13,7 +13,7 @@ inputs:
     required: false
     default: true
   gh-token:
-    description: "github actions token for access to the octokit api to be able to remove onld caches"
+    description: "github actions token for access to the octokit api to be able to remove old caches"
     default: false
     required: false
 
@@ -65,6 +65,14 @@ runs:
         restore-keys: |
           inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}
 
+    - name: "Configure Ccache Debug"
+      if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}"
+      shell: bash
+      run: |
+          echo "CCACHE_DEBUG=true" >> $GITHUB_ENV
+          echo "CCACHE_LOGFILE=${{ github.workspace }}/ccache-debug/ccache.log" >> $GITHUB_ENV
+          echo "CCACHE_DEBUGDIR=${{ github.workspace }}/ccache-debug" >> $GITHUB_ENV
+
     - name: "Copy ccache"
       shell: bash
       if: runner.os == 'Windows' && inputs.ccache
@@ -72,11 +80,3 @@ runs:
         mkdir build
         cp ${{ steps.ccache.outputs.executable }} build/cl.exe
 
-    - name: "AppImageTool and New CMake 4.2+ with AppImage support"
-      shell: bash
-      if: runner.os == 'Linux'
-      run: |
-        echo "Path to CMAKE $(which cmake)"
-        curl -L -o appimagetool.AppImage https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
-        chmod +x appimagetool.AppImage
-        sudo mv appimagetool.AppImage /usr/local/bin/appimagetool
