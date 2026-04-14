@@ -80,3 +80,26 @@ runs:
         mkdir build
         cp ${{ steps.ccache.outputs.executable }} build/cl.exe
 
+    - name: "Install Latest CMake"
+      shell: bash
+      if: runner.os == 'Linux'
+      run: |
+        # Get the latest CMake version from the GitHub API
+        CMAKE_VERSION=$(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
+        echo "Latest CMake version: $CMAKE_VERSION"
+
+        curl -L -o install_cmake.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh
+        chmod +x install_cmake.sh
+        ./install_cmake.sh --skip-license --prefix=/usr/local
+
+        echo "Path to CMAKE $(which cmake)"
+        echo "Installed CMake version:"
+        cmake --version
+
+    - name: "Install AppImageTool"
+      shell: bash
+      if: runner.os == 'Linux'
+      run: |
+        curl -L -o appimagetool.AppImage https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+        chmod +x appimagetool.AppImage
+        mv appimagetool.AppImage /usr/local/bin/appimagetool
