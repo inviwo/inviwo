@@ -279,12 +279,11 @@ std::string WheelEventMatcher::displayString() const {
     }
 }
 
-GestureEventMatcher::GestureEventMatcher(GestureTypes types, GestureStates states, int numFingers,
+GestureEventMatcher::GestureEventMatcher(GestureTypes types, GestureStates states,
                                          KeyModifiers modifiers, ModifierMatchingBehavior matching)
     : EventMatcher{}
     , types_{"types", types}
     , states_{"states", states}
-    , numFingers_{"numFingers", numFingers}
     , modifiers_{"modifiers", modifiers}
     , matching_{matching} {}
 
@@ -293,11 +292,9 @@ GestureEventMatcher* GestureEventMatcher::clone() const { return new GestureEven
 bool GestureEventMatcher::operator()(Event* e) {
     if (const auto* ge = e->getAs<GestureEvent>(); ge && types_.value & ge->type()) {
         if (states_.value & ge->state()) {
-            if (numFingers_ == -1 || numFingers_ == ge->numFingers()) {
-                if (modifiers_ == KeyModifiers(flags::any) ||
-                    match(matching_, modifiers_, ge->modifiers())) {
-                    return true;
-                }
+            if (modifiers_ == KeyModifiers(flags::any) ||
+                match(matching_, modifiers_, ge->modifiers())) {
+                return true;
             }
         }
     }
@@ -311,34 +308,27 @@ void GestureEventMatcher::setTypes(GestureTypes types) { types_ = types; }
 GestureStates GestureEventMatcher::states() const { return states_; }
 void GestureEventMatcher::setStates(GestureState states) { states_ = states; }
 
-int GestureEventMatcher::numFingers() const { return numFingers_; }
-void GestureEventMatcher::setNumFingers(int numFingers) { numFingers_ = numFingers; }
-
 KeyModifiers GestureEventMatcher::modifiers() const { return modifiers_; }
 void GestureEventMatcher::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
 
 void GestureEventMatcher::setCurrentStateAsDefault() {
-    util::for_each_argument([](auto& x) { x.setAsDefault(); }, types_, states_, numFingers_,
-                            modifiers_);
+    util::for_each_argument([](auto& x) { x.setAsDefault(); }, types_, states_, modifiers_);
 }
 void GestureEventMatcher::resetToDefaultState() {
-    util::for_each_argument([](auto& x) { x.reset(); }, types_, states_, numFingers_, modifiers_);
+    util::for_each_argument([](auto& x) { x.reset(); }, types_, states_, modifiers_);
 }
 
 bool GestureEventMatcher::isDefaultState() const {
-    return types_.isDefault() && states_.isDefault() && numFingers_.isDefault() &&
-           modifiers_.isDefault();
+    return types_.isDefault() && states_.isDefault() && modifiers_.isDefault();
 }
 
 void GestureEventMatcher::serialize(Serializer& s) const {
     EventMatcher::serialize(s);
-    util::for_each_argument([&s](const auto& x) { x.serialize(s); }, types_, states_, numFingers_,
-                            modifiers_);
+    util::for_each_argument([&s](const auto& x) { x.serialize(s); }, types_, states_, modifiers_);
 }
 void GestureEventMatcher::deserialize(Deserializer& d) {
     EventMatcher::deserialize(d);
-    util::for_each_argument([&d](auto& x) { x.deserialize(d); }, types_, states_, numFingers_,
-                            modifiers_);
+    util::for_each_argument([&d](auto& x) { x.deserialize(d); }, types_, states_, modifiers_);
 }
 
 bool GestureEventMatcher::assign(const EventMatcher* src) {

@@ -44,6 +44,7 @@
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/logcentral.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/mousecursorutils.h>
@@ -130,7 +131,7 @@ const TouchDevice* mapTouchDevice(QTouchEvent* touch) {
 }  // namespace
 
 InteractionEventMapperQt::InteractionEventMapperQt(
-    QObject* parent, EventPropagator* propagator, std::function<size2_t()> canvasDimensions,
+    QWidget* parent, EventPropagator* propagator, std::function<size2_t()> canvasDimensions,
     std::function<size2_t()> imageDimensions, std::function<double(dvec2)> depth,
     ContextMenuCallback contextMenu, std::function<void(Qt::CursorShape)> cursorChange)
     : QObject(parent)
@@ -139,7 +140,8 @@ InteractionEventMapperQt::InteractionEventMapperQt(
     , imageDimensions_{imageDimensions}
     , depth_{std::move(depth)}
     , contextMenu_{std::move(contextMenu)}
-    , cursorChange_{std::move(cursorChange)} {}
+    , cursorChange_{std::move(cursorChange)}
+    , widget_{parent} {}
 
 bool InteractionEventMapperQt::eventFilter(QObject*, QEvent* e) {
     switch (e->type()) {
@@ -174,7 +176,7 @@ bool InteractionEventMapperQt::eventFilter(QObject*, QEvent* e) {
 
 bool InteractionEventMapperQt::mapMousePressEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
 
     const auto pos = normalizePosition(e, canvasDimensions_());
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Press,
@@ -192,7 +194,7 @@ bool InteractionEventMapperQt::mapMousePressEvent(QMouseEvent* e) {
 
 bool InteractionEventMapperQt::mapMouseDoubleClickEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
 
     const auto pos = normalizePosition(e, canvasDimensions_());
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::DoubleClick,
@@ -208,7 +210,7 @@ bool InteractionEventMapperQt::mapMouseDoubleClickEvent(QMouseEvent* e) {
 
 bool InteractionEventMapperQt::mapMouseReleaseEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
 
     const auto pos = normalizePosition(e, canvasDimensions_());
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Release,
@@ -229,7 +231,7 @@ bool InteractionEventMapperQt::mapMouseReleaseEvent(QMouseEvent* e) {
 
 bool InteractionEventMapperQt::mapMouseMoveEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
     const auto pos = normalizePosition(e, canvasDimensions_());
 
     MouseEvent mouseEvent(MouseButton::None, MouseState::Move, utilqt::getMouseButtons(e),
@@ -244,7 +246,7 @@ bool InteractionEventMapperQt::mapMouseMoveEvent(QMouseEvent* e) {
 
 bool InteractionEventMapperQt::mapWheelEvent(QWheelEvent* e) {
     // if (e->source() != Qt::MouseEventNotSynthesized) return true;
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
     QPoint numPixels = e->pixelDelta();
     QPoint numDegrees = e->angleDelta() / 8 / 15;
 
@@ -267,7 +269,7 @@ bool InteractionEventMapperQt::mapWheelEvent(QWheelEvent* e) {
 }
 
 bool InteractionEventMapperQt::mapKeyPressEvent(QKeyEvent* keyEvent) {
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
     KeyboardEvent event(utilqt::getKeyButton(keyEvent), KeyState::Press,
                         utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                         utilqt::fromQString(keyEvent->text()));
@@ -292,7 +294,7 @@ bool InteractionEventMapperQt::mapKeyPressEvent(QKeyEvent* keyEvent) {
 }
 
 bool InteractionEventMapperQt::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
     KeyboardEvent event(utilqt::getKeyButton(keyEvent), KeyState::Release,
                         utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                         utilqt::fromQString(keyEvent->text()));
@@ -308,7 +310,7 @@ bool InteractionEventMapperQt::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
 
 bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
     if (!handleTouch_) return false;
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
 
     // Copy touch points
     std::vector<TouchPoint> touchPoints;
@@ -346,9 +348,6 @@ bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
     TouchEvent touchEvent(touchPoints, device, utilqt::getModifiers(touch));
     touch->accept();
 
-    lastNumFingers_ = static_cast<int>(touch->points().size());
-    screenPositionNormalized_ = touchEvent.centerPointNormalized();
-
     propagator_->propagateEvent(&touchEvent, nullptr);
     return true;
 }
@@ -356,66 +355,54 @@ bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
 bool InteractionEventMapperQt::mapGestureEvent(QGestureEvent* ge) {
     if (!handleGestures_) return false;
 
-    QPanGesture* panGesture = nullptr;
-    QPinchGesture* pinchGesture = nullptr;
-
-    if (auto gesture = ge->gesture(Qt::PanGesture)) {
-        panGesture = static_cast<QPanGesture*>(gesture);
+    if (auto* gesture = ge->gesture(Qt::PanGesture)) {
+        auto* panGesture = static_cast<QPanGesture*>(gesture);
+        mapPanTriggered(panGesture);
     }
-    if (auto gesture = ge->gesture(Qt::PinchGesture)) {
-        pinchGesture = static_cast<QPinchGesture*>(gesture);
+    if (auto* gesture = ge->gesture(Qt::PinchGesture)) {
+        auto* pinchGesture = static_cast<QPinchGesture*>(gesture);
+        mapPinchTriggered(pinchGesture);
     }
     ge->accept();
-
-    if (panGesture && pinchGesture) {
-        double absDeltaDist = glm::abs(static_cast<double>(pinchGesture->scaleFactor()) - 1.0);
-        if (absDeltaDist > 0.05 || (lastType_ == Qt::PinchGesture || lastType_ != Qt::PanGesture)) {
-            lastType_ = Qt::PinchGesture;
-            return mapPinchTriggered(pinchGesture);
-        } else {
-            lastType_ = Qt::PanGesture;
-            return mapPanTriggered(panGesture);
-        }
-    } else if (panGesture) {
-        lastType_ = Qt::PanGesture;
-        return mapPanTriggered(panGesture);
-    } else if (pinchGesture) {
-        double absDeltaDist = glm::abs(static_cast<double>(pinchGesture->scaleFactor()) - 1.0);
-        if (absDeltaDist > 0.05) lastType_ = Qt::PinchGesture;
-        return mapPinchTriggered(pinchGesture);
-    }
     return true;
 }
 
 bool InteractionEventMapperQt::mapPanTriggered(QPanGesture* gesture) {
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
 
     // determine delta position, use canvas dimensions here for normalization
-    auto deltaPos =
-        dvec2((gesture->lastOffset().x() - gesture->offset().x()) / (canvasDimensions_().x - 1),
-              (gesture->offset().y() - gesture->lastOffset().y()) / (canvasDimensions_().y - 1));
+    const auto canvasDim = canvasDimensions_();
+    const auto deltaNorm =
+        dvec2{1.0, -1.0} * utilqt::toGLM(gesture->delta()) / dvec2{canvasDim - size2_t{1}};
+    const auto offsetNorm =
+        dvec2{1.0, -1.0} * utilqt::toGLM(gesture->offset()) / dvec2{canvasDim - size2_t{1}};
 
-    if (deltaPos == dvec2(0.f)) return true;
+    const auto localHotSpot = widget_->mapFromGlobal(gesture->hotSpot());
+    const auto hotSpotNorm = normalizePosition(localHotSpot, canvasDim);
 
-    GestureEvent ge(deltaPos, 0.0, GestureType::Pan, utilqt::getGestureState(gesture),
-                    lastNumFingers_, screenPositionNormalized_, imageDimensions_(),
-                    depth_(screenPositionNormalized_));
+    GestureEvent gestureEvent(deltaNorm, 0.0, GestureType::Pan, utilqt::getGestureState(gesture),
+                              lastNumFingers_, hotSpotNorm + offsetNorm, imageDimensions_(),
+                              depth_(hotSpotNorm + offsetNorm));
 
-    propagator_->propagateEvent(&ge, nullptr);
+    propagator_->propagateEvent(&gestureEvent, nullptr);
     return true;
 }
 
 bool InteractionEventMapperQt::mapPinchTriggered(QPinchGesture* gesture) {
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
 
-    const auto center = gesture->centerPoint();
+    const auto localCenter = widget_->mapFromGlobal(gesture->centerPoint());
+    const auto localLastCenter = widget_->mapFromGlobal(gesture->lastCenterPoint());
 
-    GestureEvent ge(dvec2(center.x(), center.y()),
-                    static_cast<double>(gesture->scaleFactor()) - 1.0, GestureType::Pinch,
-                    utilqt::getGestureState(gesture), lastNumFingers_, screenPositionNormalized_,
-                    imageDimensions_(), depth_(screenPositionNormalized_));
+    const auto screenPosNorm = normalizePosition(localCenter, canvasDimensions_());
+    const auto lastScreenPosNorm = normalizePosition(localLastCenter, canvasDimensions_());
 
-    propagator_->propagateEvent(&ge, nullptr);
+    GestureEvent gestureEvent(screenPosNorm - lastScreenPosNorm,
+                              static_cast<double>(gesture->scaleFactor()) - 1.0, GestureType::Pinch,
+                              utilqt::getGestureState(gesture), screenPosNorm, imageDimensions_(),
+                              depth_(screenPosNorm));
+
+    propagator_->propagateEvent(&gestureEvent, nullptr);
     return true;
 }
 

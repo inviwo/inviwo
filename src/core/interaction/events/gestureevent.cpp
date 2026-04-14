@@ -34,12 +34,10 @@
 namespace inviwo {
 
 GestureEvent::GestureEvent(dvec2 deltaPos, double deltaDistance, GestureType type,
-                           GestureState state, int numFingers, dvec2 screenPosNorm,
-                           uvec2 canvasSize, double depth)
+                           GestureState state, dvec2 screenPosNorm, uvec2 canvasSize, double depth)
     : InteractionEvent()
     , type_(type)
     , state_(state)
-    , numFingers_(numFingers)
     , deltaPos_(deltaPos)
     , deltaDistance_(deltaDistance)
     , screenPosNorm_(screenPosNorm)
@@ -55,8 +53,6 @@ double GestureEvent::deltaDistance() const { return deltaDistance_; }
 inviwo::GestureType GestureEvent::type() const { return type_; }
 
 inviwo::GestureState GestureEvent::state() const { return state_; }
-
-int GestureEvent::numFingers() const { return numFingers_; }
 
 dvec2 GestureEvent::screenPosNormalized() const { return screenPosNorm_; }
 
@@ -81,11 +77,12 @@ void GestureEvent::setScreenPosNormalized(dvec2 posNorm) { screenPosNorm_ = posN
 uint64_t GestureEvent::hash() const { return chash(); }
 
 void GestureEvent::print(fmt::memory_buffer& buff) const {
-    util::printEvent(buff, "GestureEvent", std::make_pair("state", state_),
-                     std::make_pair("type", type_), std::make_pair("pos", screenPosNorm_),
-                     std::make_pair("depth", depth_), std::make_pair("canvasSize", canvasSize_),
-                     std::make_pair("deltaPos", deltaPos_),
-                     std::make_pair("modifiers", modifiers_));
+    fmt::format_to(std::back_inserter(buff),
+                   "{:14} {:6} {:8} type: {:8} pos: {:14:5.1f} depth: {:5.3f} size: "
+                   "{:12:4} delta: {:14:5.3f} modifiers: {}",
+                   "GestureEvent", hasBeenUsed() ? "Used" : "Unused", state_, type_,
+                   screenPosNorm_ * dvec2(canvasSize_ - uvec2(1)), depth_, canvasSize_, deltaPos_,
+                   modifiers_);
 }
 
 }  // namespace inviwo
