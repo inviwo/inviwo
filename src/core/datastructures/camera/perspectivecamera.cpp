@@ -42,8 +42,8 @@
 
 namespace inviwo {
 
-PerspectiveCamera::PerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
-                                     float farPlane, float aspectRatio, float fieldOfView)
+PerspectiveCamera::PerspectiveCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane,
+                                     double farPlane, double aspectRatio, double fieldOfView)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), fovy_(fieldOfView) {}
 
 PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& other) = default;
@@ -69,7 +69,7 @@ void PerspectiveCamera::updateFrom(const Camera& source) {
     }
 }
 
-void PerspectiveCamera::setFovy(float val) {
+void PerspectiveCamera::setFovy(double val) {
     if (fovy_ != val) {
         fovy_ = val;
         invalidateProjectionMatrix();
@@ -88,7 +88,7 @@ void PerspectiveCamera::configureProperties(CameraProperty& cp, bool attach) {
     if (attach) {
         util::updateOrCreateCameraFovProperty(
             cp, [this]() { return getFovy(); },
-            [this](const float& val) {
+            [this](const double& val) {
                 if (fovy_ != val) {
                     fovy_ = val;
                     invalidateProjectionMatrix();

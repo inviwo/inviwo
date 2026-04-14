@@ -160,9 +160,9 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
 
     // Create new volume
     auto volume = std::make_shared<Volume>(mdim, mformat);
-    glm::mat3 basis = volumes[0]->getBasis();
+    glm::dmat3 basis = volumes[0]->getBasis();
     volume->setBasis(basis);
-    volume->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
+    volume->setOffset(-0.5 * (basis[0] + basis[1] + basis[2]));
     volume->copyMetaDataFrom(*volumes[0]);
 
     // Merge descriptions but ignore the rest

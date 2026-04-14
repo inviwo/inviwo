@@ -39,12 +39,13 @@ namespace inviwo {
 
 class IVW_CORE_API PerspectiveCamera final : public Camera {
 public:
-    PerspectiveCamera(vec3 lookFrom = cameradefaults::lookFrom,
-                      vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
-                      float nearPlane = cameradefaults::nearPlane,
-                      float farPlane = cameradefaults::farPlane,
-                      float aspectRatio = cameradefaults::aspectRatio,
-                      float fieldOfView = cameradefaults::fieldOfView);
+    explicit PerspectiveCamera(dvec3 lookFrom = cameradefaults::lookFrom,
+                               dvec3 lookTo = cameradefaults::lookTo,
+                               dvec3 lookUp = cameradefaults::lookUp,
+                               double nearPlane = cameradefaults::nearPlane,
+                               double farPlane = cameradefaults::farPlane,
+                               double aspectRatio = cameradefaults::aspectRatio,
+                               double fieldOfView = cameradefaults::fieldOfView);
     virtual ~PerspectiveCamera() = default;
     PerspectiveCamera(const PerspectiveCamera& other);
     PerspectiveCamera& operator=(const PerspectiveCamera& other);
@@ -55,8 +56,8 @@ public:
     virtual void updateFrom(const Camera& source) override;
     virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
 
-    float getFovy() const;
-    void setFovy(float val);
+    double getFovy() const;
+    void setFovy(double val);
 
     virtual void zoom(const ZoomOptions& opts) override;
 
@@ -65,14 +66,14 @@ public:
 
 protected:
     virtual bool equal(const Camera& other) const override;
-    virtual mat4 calculateProjectionMatrix() const override;
+    virtual dmat4 calculateProjectionMatrix() const override;
 
-    float fovy_;
+    double fovy_;
 };
 
-inline float PerspectiveCamera::getFovy() const { return fovy_; }
+inline double PerspectiveCamera::getFovy() const { return fovy_; }
 
-inline mat4 PerspectiveCamera::calculateProjectionMatrix() const {
+inline dmat4 PerspectiveCamera::calculateProjectionMatrix() const {
     return glm::perspective(glm::radians(fovy_), aspectRatio_, nearPlaneDist_, farPlaneDist_);
 }
 

@@ -35,7 +35,7 @@ namespace inviwo {
 
 PackedLightSource baseLightToPackedLight(const LightSource* lightsource, float radianceScale) {
     PackedLightSource light;
-    light.tm = lightsource->getCoordinateTransformer().getModelToWorldMatrix();
+    light.tm = mat4{lightsource->getCoordinateTransformer().getModelToWorldMatrix()};
     light.radiance = vec4(radianceScale * lightsource->getIntensity(), 1.f);
     light.type = static_cast<int>(lightsource->getLightSourceType());
     light.area = lightsource->getArea();
@@ -47,7 +47,8 @@ PackedLightSource baseLightToPackedLight(const LightSource* lightsource, float r
 PackedLightSource baseLightToPackedLight(const LightSource* lightsource, float radianceScale,
                                          const mat4& transformLightMat) {
     PackedLightSource light;
-    light.tm = transformLightMat * lightsource->getCoordinateTransformer().getModelToWorldMatrix();
+    light.tm =
+        transformLightMat * mat4{lightsource->getCoordinateTransformer().getModelToWorldMatrix()};
     light.radiance = vec4(radianceScale * lightsource->getIntensity(), 1.f);
     light.type = static_cast<int>(lightsource->getLightSourceType());
     light.area = lightsource->getArea();

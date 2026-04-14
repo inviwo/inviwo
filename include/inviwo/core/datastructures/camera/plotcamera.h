@@ -44,12 +44,13 @@ namespace inviwo {
  */
 class IVW_CORE_API PlotCamera final : public Camera {
 public:
-    explicit PlotCamera(vec3 lookFrom = cameradefaults::lookFrom,
-                        vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
-                        float nearPlane = cameradefaults::nearPlane,
-                        float farPlane = cameradefaults::farPlane,
-                        float aspectRatio = cameradefaults::aspectRatio,
-                        vec2 size = vec2{300, 300});
+    explicit PlotCamera(dvec3 lookFrom = cameradefaults::lookFrom,
+                        dvec3 lookTo = cameradefaults::lookTo,
+                        dvec3 lookUp = cameradefaults::lookUp,
+                        double nearPlane = cameradefaults::nearPlane,
+                        double farPlane = cameradefaults::farPlane,
+                        double aspectRatio = cameradefaults::aspectRatio,
+                        dvec2 size = dvec2{300, 300});
     virtual ~PlotCamera() = default;
     PlotCamera(const PlotCamera& other);
     PlotCamera& operator=(const PlotCamera& other);
@@ -62,20 +63,20 @@ public:
     virtual void updateFrom(const Camera& source) override;
     virtual void configureProperties(CameraProperty& cp, bool attach) override;
 
-    vec2 getSize() const { return size_; }
-    void setSize(vec2 size);
+    dvec2 getSize() const { return size_; }
+    void setSize(dvec2 size);
     virtual void zoom(const ZoomOptions& opts) override;
 
-    virtual vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
+    virtual dvec4 getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 protected:
     virtual bool equal(const Camera& other) const override;
-    virtual mat4 calculateProjectionMatrix() const override;
+    virtual dmat4 calculateProjectionMatrix() const override;
 
-    vec2 size_;
+    dvec2 size_;
 };
 
 }  // namespace inviwo

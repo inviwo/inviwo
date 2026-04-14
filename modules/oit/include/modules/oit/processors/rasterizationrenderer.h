@@ -74,7 +74,7 @@ protected:
     virtual DispatcherHandle<void()> addInitializeShaderCallback(
         std::function<void()> callback) override;
 
-    std::optional<mat4> boundingBox() const;
+    std::optional<dmat4> boundingBox() const;
 
     RasterizationInport rasterizations_;
     ImageInport background_;

@@ -49,7 +49,7 @@ class TextureUnitContainer;
  */
 class IVW_MODULE_BASEGL_API CameraComponent : public ShaderComponent {
 public:
-    CameraComponent(std::string_view name, std::function<std::optional<mat4>()> boundingBox);
+    CameraComponent(std::string_view name, std::function<std::optional<dmat4>()> boundingBox);
 
     virtual std::string_view getName() const override;
 

@@ -32,10 +32,13 @@
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
+#include <pybind11/native_enum.h>
 
 #include <inviwo/core/datastructures/camera/camera.h>
 #include <inviwo/core/datastructures/camera/orthographiccamera.h>
 #include <inviwo/core/datastructures/camera/perspectivecamera.h>
+
+#include <inviwo/core/datastructures/camera/plotcamera.h>
 #include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
 
 #include <modules/python3/opaquetypes.h>
@@ -45,6 +48,18 @@ namespace inviwo {
 
 void exposeCamera(pybind11::module& m) {
     namespace py = pybind11;
+
+    auto zo = py::classh<ZoomOptions>(m, "ZoomOptions")
+                  .def_readwrite("factor", &ZoomOptions::factor)
+                  .def_readwrite("origin", &ZoomOptions::origin)
+                  .def_readwrite("bounded", &ZoomOptions::bounded)
+                  .def_readwrite("boundingBox", &ZoomOptions::boundingBox);
+
+    py::native_enum<ZoomOptions::Bounded>(zo, "Bounded", "enum.Enum")
+        .value("Yes", ZoomOptions::Bounded::Yes)
+        .value("No", ZoomOptions::Bounded::No)
+        .export_values()
+        .finalize();
 
     py::classh<Camera>(m, "Camera")
         .def("clone", &Camera::clone)
@@ -59,6 +74,8 @@ void exposeCamera(pybind11::module& m) {
         .def_property_readonly("projectionMatrix", &Camera::getProjectionMatrix)
         .def_property_readonly("inverseViewMatrix", &Camera::getInverseViewMatrix)
         .def_property_readonly("inverseProjectionMatrix", &Camera::getInverseProjectionMatrix)
+        .def("zoom", &Camera::zoom, py::arg("options"))
+        .def("getLookRight", &Camera::getLookRight)
         .def("getDirection", &Camera::getDirection)
         .def("getWorldPosFromNormalizedDeviceCoords",
              &Camera::getWorldPosFromNormalizedDeviceCoords)
@@ -67,29 +84,47 @@ void exposeCamera(pybind11::module& m) {
              &Camera::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth);
 
     py::classh<PerspectiveCamera, Camera>(m, "PerspectiveCamera")
-        .def(py::init<vec3, vec3, vec3, float, float, float, float>(),
-             py::arg("lookFrom") = vec3(0.0f, 0.0f, 2.0f), py::arg("lookTo") = vec3(0.0f),
-             py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f), py::arg("nearPlane") = 0.01f,
-             py::arg("farPlane") = 10000.0f, py::arg("aspectRatio") = 1.f,
-             py::arg("fieldOfView") = 60.f)
+        .def(py::init<dvec3, dvec3, dvec3, double, double, double, double>(),
+             py::arg("lookFrom") = cameradefaults::lookFrom,
+             py::arg("lookTo") = cameradefaults::lookTo, py::arg("lookUp") = cameradefaults::lookUp,
+             py::arg("nearPlane") = cameradefaults::nearPlane,
+             py::arg("farPlane") = cameradefaults::farPlane,
+             py::arg("aspectRatio") = cameradefaults::aspectRatio,
+             py::arg("fieldOfView") = cameradefaults::fieldOfView)
         .def_property("fovy", &PerspectiveCamera::getFovy, &PerspectiveCamera::setFovy);
 
     py::classh<OrthographicCamera, Camera>(m, "OrthographicCamera")
-        .def(py::init<vec3, vec3, vec3, float, float, float, float>(),
-             py::arg("lookFrom") = vec3(0.0f, 0.0f, 2.0f), py::arg("lookTo") = vec3(0.0f),
-             py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f), py::arg("nearPlane") = 0.01f,
-             py::arg("farPlane") = 10000.0f, py::arg("aspectRatio") = 1.f, py::arg("width") = 60.f)
+        .def(py::init<dvec3, dvec3, dvec3, double, double, double, double>(),
+             py::arg("lookFrom") = cameradefaults::lookFrom,
+             py::arg("lookTo") = cameradefaults::lookTo, py::arg("lookUp") = cameradefaults::lookUp,
+             py::arg("nearPlane") = cameradefaults::nearPlane,
+             py::arg("farPlane") = cameradefaults::farPlane,
+             py::arg("aspectRatio") = cameradefaults::aspectRatio,
+             py::arg("width") = cameradefaults::width)
         .def_property("width", &OrthographicCamera::getWidth, &OrthographicCamera::setWidth);
 
     py::classh<SkewedPerspectiveCamera, Camera>(m, "SkewedPerspectiveCamera")
-        .def(py::init<vec3, vec3, vec3, float, float, float, float, vec2>(),
-             py::arg("lookFrom") = vec3(0.0f, 0.0f, 2.0f), py::arg("lookTo") = vec3(0.0f),
-             py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f), py::arg("nearPlane") = 0.01f,
-             py::arg("farPlane") = 10000.0f, py::arg("aspectRatio") = 1.f,
-             py::arg("fieldOfView") = 60.f, py::arg("frustumOffset") = vec2(0.0f, 0.0f))
+        .def(py::init<dvec3, dvec3, dvec3, double, double, double, double, vec2>(),
+             py::arg("lookFrom") = cameradefaults::lookFrom,
+             py::arg("lookTo") = cameradefaults::lookTo, py::arg("lookUp") = cameradefaults::lookUp,
+             py::arg("nearPlane") = cameradefaults::nearPlane,
+             py::arg("farPlane") = cameradefaults::farPlane,
+             py::arg("aspectRatio") = cameradefaults::aspectRatio,
+             py::arg("fieldOfView") = cameradefaults::fieldOfView,
+             py::arg("frustumOffset") = dvec2(0.0, 0.0))
         .def_property("fovy", &SkewedPerspectiveCamera::getFovy, &SkewedPerspectiveCamera::setFovy)
         .def_property("offset", &SkewedPerspectiveCamera::getOffset,
                       &SkewedPerspectiveCamera::setOffset);
+
+    py::classh<PlotCamera, Camera>(m, "PlotCamera")
+        .def(py::init<dvec3, dvec3, dvec3, double, double, double, dvec2>(),
+             py::arg("lookFrom") = cameradefaults::lookFrom,
+             py::arg("lookTo") = cameradefaults::lookTo, py::arg("lookUp") = cameradefaults::lookUp,
+             py::arg("nearPlane") = cameradefaults::nearPlane,
+             py::arg("farPlane") = cameradefaults::farPlane,
+             py::arg("aspectRatio") = cameradefaults::aspectRatio,
+             py::arg("size") = dvec2{300, 300})
+        .def_property("size", &PlotCamera::getSize, &PlotCamera::setSize);
 }
 
 }  // namespace inviwo

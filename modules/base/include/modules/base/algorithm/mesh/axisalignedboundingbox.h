@@ -48,7 +48,7 @@ namespace meshutil {
  * @return Minimum and maximum vertex points of meshes in (x,y,z) world space, or zero if vector is
  * empty.
  */
-IVW_MODULE_BASE_API std::pair<vec3, vec3> axisAlignedBoundingBox(
+IVW_MODULE_BASE_API std::pair<dvec3, dvec3> axisAlignedBoundingBox(
     const std::vector<std::shared_ptr<const Mesh>>& meshes);
 
 /**
@@ -58,7 +58,7 @@ IVW_MODULE_BASE_API std::pair<vec3, vec3> axisAlignedBoundingBox(
  * @return Minimum and maximum vertex points of mesh in (x,y,z), or mesh offset if no vertices
  * exist.
  */
-IVW_MODULE_BASE_API std::pair<vec3, vec3> axisAlignedBoundingBox(const Mesh& mesh);
+IVW_MODULE_BASE_API std::pair<dvec3, dvec3> axisAlignedBoundingBox(const Mesh& mesh);
 
 }  // namespace meshutil
 

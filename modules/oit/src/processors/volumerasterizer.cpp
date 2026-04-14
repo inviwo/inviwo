@@ -104,7 +104,7 @@ void VolumeRasterizer::initializeResources() {
     shader_.build();
 }
 
-void VolumeRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
+void VolumeRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
     if (tf_.tf_.isModified()) {
         tfLookup_->calculate(tf_.tf_.get());
     }
@@ -112,8 +112,8 @@ void VolumeRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrix
     const auto boundingMesh = meshInport_.getData();
 
     const mat4 meshDataToVolumeData =
-        volumeInport_.getData()->getCoordinateTransformer().getWorldToDataMatrix() *
-        boundingMesh->getCoordinateTransformer().getDataToWorldMatrix();
+        mat4(volumeInport_.getData()->getCoordinateTransformer().getWorldToDataMatrix() *
+             boundingMesh->getCoordinateTransformer().getDataToWorldMatrix());
 
     const utilgl::Activate activate{&shader_};
 
@@ -138,7 +138,7 @@ void VolumeRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrix
     }
 }
 
-std::optional<mat4> VolumeRasterizer::boundingBox() const {
+std::optional<dmat4> VolumeRasterizer::boundingBox() const {
     return util::boundingBox(volumeInport_)();
 }
 

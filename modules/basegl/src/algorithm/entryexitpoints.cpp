@@ -103,8 +103,8 @@ void EntryExitPointsHelper::operator()(Image& entryPoints, Image& exitPoints, co
                                        const Volume& volume, const Mesh& mesh,
                                        CapNearClip capNearClip, IncludeNormals includeNormals) {
     const mat4 meshDataToVolumeData =
-        volume.getCoordinateTransformer(camera).getWorldToDataMatrix() *
-        mesh.getCoordinateTransformer().getDataToWorldMatrix();
+        mat4(volume.getCoordinateTransformer(camera).getWorldToDataMatrix() *
+             mesh.getCoordinateTransformer().getDataToWorldMatrix());
 
     if (capNearClip == CapNearClip::Yes) {
         createCappedEntryExitPoints(*entryPoints.getEditableRepresentation<ImageGL>(),
@@ -122,8 +122,8 @@ void EntryExitPointsHelper::operator()(ImageGL& entryPoints, ImageGL& exitPoints
                                        CapNearClip capNearClip, IncludeNormals includeNormals) {
 
     const mat4 meshDataToVolumeData =
-        volume.getCoordinateTransformer(camera).getWorldToDataMatrix() *
-        mesh.getCoordinateTransformer().getDataToWorldMatrix();
+        mat4(volume.getCoordinateTransformer(camera).getWorldToDataMatrix() *
+             mesh.getCoordinateTransformer().getDataToWorldMatrix());
 
     if (capNearClip == CapNearClip::Yes) {
         createCappedEntryExitPoints(entryPoints, exitPoints, camera, mesh, includeNormals,
@@ -148,7 +148,7 @@ void EntryExitPointsHelper::createEntryExitPoints(ImageGL& entryPoints, ImageGL&
     auto& entryExitShader = getEntryExitShader(includeNormals, applyTrafo);
 
     entryExitShader.activate();
-    const mat4 dataToClipMatrix = mesh.getCoordinateTransformer(camera).getDataToClipMatrix();
+    const mat4 dataToClipMatrix = mat4(mesh.getCoordinateTransformer(camera).getDataToClipMatrix());
     entryExitShader.setUniform("dataToClip", dataToClipMatrix);
     entryExitShader.setUniform("meshDataToVolData", meshDataToVolumeData);
 
@@ -189,7 +189,7 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
     auto& entryExitShader = getEntryExitShader(includeNormals, applyTrafo);
 
     entryExitShader.activate();
-    const mat4 dataToClipMatrix = mesh.getCoordinateTransformer(camera).getDataToClipMatrix();
+    const mat4 dataToClipMatrix = mat4(mesh.getCoordinateTransformer(camera).getDataToClipMatrix());
     entryExitShader.setUniform("dataToClip", dataToClipMatrix);
     entryExitShader.setUniform("meshDataToVolData", meshDataToVolumeData);
 
@@ -260,7 +260,7 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
 
     // the rendered plane is specified in camera coordinates
     // thus we must transform from camera to world to texture coordinates
-    mat4 clipToTexMat = mesh.getCoordinateTransformer(camera).getClipToDataMatrix();
+    const auto clipToTexMat = mesh.getCoordinateTransformer(camera).getClipToDataMatrix();
     nearClipShader.setUniform("NDCToTextureMat", clipToTexMat);
     nearClipShader.setUniform("nearDist", camera.getNearPlaneDist());
     nearClipShader.setUniform("mViewDir", -glm::normalize(camera.getDirection()));

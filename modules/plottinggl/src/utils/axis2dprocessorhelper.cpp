@@ -87,7 +87,7 @@ std::array<AxisParams, 2> findAxisPositions(dvec3 viewDirection) {
 namespace plot {
 
 Axis2DProcessorHelper::Axis2DProcessorHelper(
-    const std::function<std::optional<mat4>()>& getBoundingBox, DimsRangeMode useDimsRange)
+    const std::function<std::optional<dmat4>()>& getBoundingBox, DimsRangeMode useDimsRange)
     : offsetScaling_{"offsetScaling",
                      "Offset Scaling",
                      R"(Offset scaling affects tick lengths and offsets of axis captions and labels.
@@ -190,7 +190,7 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(
 
 void Axis2DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& entity) {
 
-    const auto maybeBB = std::optional<mat4>{getBoundingBox_ ? getBoundingBox_() : std::nullopt};
+    const auto maybeBB = std::optional<dmat4>{getBoundingBox_ ? getBoundingBox_() : std::nullopt};
     auto d2w = plot::getTransform(entity, maybeBB, rangeMode_.get());
     // ensure non-zero columns in model matrix which are caused by zero-length basis vectors
     // FIXME: coordinate transformer should take care of this for the model matrix
@@ -261,10 +261,10 @@ void Axis2DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
     if (visibility_.isChecked()) {  // automatic selection
         // transform camera to data space since findAxisPositions uses a uniform square centered at
         // the origin to determine the visible faces
-        const mat4 trafo{glm::inverse(d2w)};
+        const dmat4 trafo{glm::inverse(d2w)};
         const auto axes =
-            findAxisPositions(glm::normalize(vec3(trafo * vec4(camera_.getLookFrom(), 1.0f)) -
-                                             vec3(trafo * vec4(camera_.getLookTo(), 1.0f))));
+            findAxisPositions(glm::normalize(vec3(trafo * dvec4(camera_.getLookFrom(), 1.0)) -
+                                             vec3(trafo * dvec4(camera_.getLookTo(), 1.0))));
         for (auto&& [i, axis] : util::enumerate(axes)) {
             render(axis, i);
         }

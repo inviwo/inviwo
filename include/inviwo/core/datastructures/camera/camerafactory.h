@@ -42,12 +42,12 @@ public:
 
     using StandardFactory<Camera, CameraFactoryObject>::create;
 
-    std::unique_ptr<Camera> create(std::string_view key, vec3 lookFrom,
-                                   vec3 lookTo = cameradefaults::lookTo,
-                                   vec3 lookUp = cameradefaults::lookUp,
-                                   float nearPlane = cameradefaults::nearPlane,
-                                   float farPlane = cameradefaults::farPlane,
-                                   float aspectRatio = cameradefaults::aspectRatio) const {
+    std::unique_ptr<Camera> create(std::string_view key, dvec3 lookFrom,
+                                   dvec3 lookTo = cameradefaults::lookTo,
+                                   dvec3 lookUp = cameradefaults::lookUp,
+                                   double nearPlane = cameradefaults::nearPlane,
+                                   double farPlane = cameradefaults::farPlane,
+                                   double aspectRatio = cameradefaults::aspectRatio) const {
         auto it = this->map_.find(key);
         if (it != end(this->map_)) {
             return it->second->create(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio);

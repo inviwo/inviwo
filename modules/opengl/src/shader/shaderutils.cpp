@@ -386,19 +386,19 @@ void setShaderUniforms(Shader& shader, const RaycastingProperty& property, std::
 void setShaderUniforms(Shader& shader, const SpatialEntity& object, std::string_view name) {
     const SpatialCoordinateTransformer& ct = object.getCoordinateTransformer();
 
-    mat4 dataToWorldMatrix = ct.getDataToWorldMatrix();
-    mat4 modelToWorldMatrix = ct.getModelToWorldMatrix();
+    const mat4 dataToWorldMatrix = mat4(ct.getDataToWorldMatrix());
+    const mat4 modelToWorldMatrix = mat4(ct.getModelToWorldMatrix());
 
     StrBuffer buff;
 
-    shader.setUniform(buff.replace("{}.dataToModel", name), ct.getDataToModelMatrix());
-    shader.setUniform(buff.replace("{}.modelToData", name), ct.getModelToDataMatrix());
+    shader.setUniform(buff.replace("{}.dataToModel", name), mat4(ct.getDataToModelMatrix()));
+    shader.setUniform(buff.replace("{}.modelToData", name), mat4(ct.getModelToDataMatrix()));
 
     shader.setUniform(buff.replace("{}.dataToWorld", name), dataToWorldMatrix);
-    shader.setUniform(buff.replace("{}.worldToData", name), ct.getWorldToDataMatrix());
+    shader.setUniform(buff.replace("{}.worldToData", name), mat4(ct.getWorldToDataMatrix()));
 
     shader.setUniform(buff.replace("{}.modelToWorld", name), modelToWorldMatrix);
-    shader.setUniform(buff.replace("{}.worldToModel", name), ct.getWorldToModelMatrix());
+    shader.setUniform(buff.replace("{}.worldToModel", name), mat4(ct.getWorldToModelMatrix()));
     shader.setUniform(buff.replace("{}.modelToWorldNormalMatrix", name),
                       glm::mat3(glm::transpose(glm::inverse(modelToWorldMatrix))));
 

@@ -76,7 +76,7 @@ public:
      * @param imageSize Size in pixels.
      * @param worldMatrixTransform Additional transform to be applied before rendering.
      */
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) = 0;
+    virtual void rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) = 0;
 
     /**
      * @brief Query whether fragments will be emitted.
@@ -87,7 +87,7 @@ public:
     /**
      * @brief Return the world space bounding box of the rendered geometry.
      */
-    virtual std::optional<mat4> boundingBox() const { return std::nullopt; }
+    virtual std::optional<dmat4> boundingBox() const { return std::nullopt; }
 
     /**
      * @brief Query raycasting state used for volume rendering.

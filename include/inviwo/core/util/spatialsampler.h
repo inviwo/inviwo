@@ -63,9 +63,9 @@ public:
     bool withinBounds(const dvec2& pos, CoordinateSpace space) const;
     bool withinBounds(const vec2& pos, CoordinateSpace space) const;
 
-    mat3 getBasis() const;
-    mat4 getModelMatrix() const;
-    mat4 getWorldMatrix() const;
+    dmat3 getBasis() const;
+    dmat4 getModelMatrix() const;
+    dmat4 getWorldMatrix() const;
 
     const SpatialCoordinateTransformer& getCoordinateTransformer() const;
 
@@ -220,17 +220,17 @@ const SpatialCoordinateTransformer& SpatialSampler<ReturnType>::getCoordinateTra
 }
 
 template <typename ReturnType>
-mat4 SpatialSampler<ReturnType>::getWorldMatrix() const {
+dmat4 SpatialSampler<ReturnType>::getWorldMatrix() const {
     return spatialEntity_.getWorldMatrix();
 }
 
 template <typename ReturnType>
-mat4 SpatialSampler<ReturnType>::getModelMatrix() const {
+dmat4 SpatialSampler<ReturnType>::getModelMatrix() const {
     return spatialEntity_.getModelMatrix();
 }
 
 template <typename ReturnType>
-mat3 SpatialSampler<ReturnType>::getBasis() const {
+dmat3 SpatialSampler<ReturnType>::getBasis() const {
     return spatialEntity_.getBasis();
 }
 

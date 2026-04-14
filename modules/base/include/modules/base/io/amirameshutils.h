@@ -104,7 +104,7 @@ IVW_MODULE_BASE_API AmiraMeshHeader parseAmiraMeshHeader(std::string_view str);
  * @return bounding box min, max
  * @throw DataReaderException if BoundingBox definition is missing or the dimensions are invalid
  */
-IVW_MODULE_BASE_API std::pair<vec3, vec3> getBoundingBox(const AmiraDict& params);
+IVW_MODULE_BASE_API std::pair<dvec3, dvec3> getBoundingBox(const AmiraDict& params);
 
 /**
  * Extract the materials from AmiraMesh Parameters.

@@ -50,7 +50,7 @@ bool MeshEntryExitPointsCL::computeEntryExitPoints(
     }
     // the rendered plane is specified in camera coordinates
     // thus we must transform from camera to world to texture coordinates
-    mat4 worldToTexMat = mesh->getCoordinateTransformer().getWorldToDataMatrix();
+    mat4 worldToTexMat = mat4(mesh->getCoordinateTransformer().getWorldToDataMatrix());
     uvec2 outportDim = entryPoints->getDimensions();
     mat4 NDCToTextureMat = worldToTexMat * glm::inverse(worldToView) * glm::inverse(viewToClip);
 

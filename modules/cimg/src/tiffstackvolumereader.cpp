@@ -74,12 +74,12 @@ std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::filesystem::p
     volume->dataMap.dataRange = dvec2{header.format->getLowest(), header.format->getMax()};
     volume->dataMap.valueRange = dvec2{header.format->getLowest(), header.format->getMax()};
 
-    vec3 extent{vec3{header.dimensions} / vec3{header.resolution, glm::compMin(header.resolution)}};
+    dvec3 extent{dvec3{header.dimensions} / dvec3{header.resolution, glm::compMin(header.resolution)}};
     if (header.resolutionUnit == cimgutil::TIFFResolutionUnit::Centimeter) {
-        extent *= 2.54f;
+        extent *= 2.54;
     }
     volume->setBasis(glm::scale(extent));
-    volume->setOffset(-extent * 0.5f);
+    volume->setOffset(-extent * 0.5);
 
     volumeDisk->setLoader(new TIFFStackVolumeRAMLoader(localPath));
     volume->addRepresentation(volumeDisk);

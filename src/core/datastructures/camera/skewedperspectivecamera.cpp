@@ -42,9 +42,10 @@
 
 namespace inviwo {
 
-SkewedPerspectiveCamera::SkewedPerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp,
-                                                 float nearPlane, float farPlane, float aspectRatio,
-                                                 float fieldOfView, vec2 offset)
+SkewedPerspectiveCamera::SkewedPerspectiveCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp,
+                                                 double nearPlane, double farPlane,
+                                                 double aspectRatio, double fieldOfView,
+                                                 dvec2 offset)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio)
     , fovy_(fieldOfView)
     , offset_(offset) {}
@@ -59,17 +60,17 @@ SkewedPerspectiveCamera* SkewedPerspectiveCamera::clone() const {
 
 std::string_view SkewedPerspectiveCamera::getClassIdentifier() const { return classIdentifier; }
 
-void SkewedPerspectiveCamera::setLookFrom(vec3 val) {
+void SkewedPerspectiveCamera::setLookFrom(dvec3 val) {
     Camera::setLookFrom(val);
     invalidateProjectionMatrix();
 }
 
-void SkewedPerspectiveCamera::setLookTo(vec3 val) {
+void SkewedPerspectiveCamera::setLookTo(dvec3 val) {
     Camera::setLookTo(val);
     invalidateProjectionMatrix();
 }
 
-void SkewedPerspectiveCamera::setFovy(float val) {
+void SkewedPerspectiveCamera::setFovy(double val) {
     if (fovy_ != val) {
         fovy_ = val;
         invalidateProjectionMatrix();
@@ -81,7 +82,7 @@ void SkewedPerspectiveCamera::setFovy(float val) {
     }
 }
 
-void SkewedPerspectiveCamera::setOffset(vec2 offset) {
+void SkewedPerspectiveCamera::setOffset(dvec2 offset) {
     if (offset_ != offset) {
         offset_ = offset;
         invalidateViewMatrix();
@@ -118,7 +119,7 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
     if (attach) {
         util::updateOrCreateCameraFovProperty(
             cp, [this]() { return getFovy(); },
-            [this](const float& val) {
+            [this](const double& val) {
                 if (fovy_ != val) {
                     fovy_ = val;
                     invalidateProjectionMatrix();
@@ -127,7 +128,7 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
 
         util::updateOrCreateCameraEyeOffsetProperty(
             cp, [this]() { return getOffset(); },
-            [this](const vec2& val) {
+            [this](const dvec2& val) {
                 if (offset_ != val) {
                     offset_ = val;
                     invalidateViewMatrix();
@@ -145,9 +146,9 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
     }
 }
 
-mat4 SkewedPerspectiveCamera::calculateViewMatrix() const {
-    const vec3 xoffset{offset_.x * glm::normalize(glm::cross(lookTo_ - lookFrom_, lookUp_))};
-    const vec3 yoffset{offset_.y * lookUp_};
+dmat4 SkewedPerspectiveCamera::calculateViewMatrix() const {
+    const dvec3 xoffset{offset_.x * glm::normalize(glm::cross(lookTo_ - lookFrom_, lookUp_))};
+    const dvec3 yoffset{offset_.y * lookUp_};
     return glm::lookAt(lookFrom_ + xoffset + yoffset, lookTo_ + xoffset + yoffset, lookUp_);
 }
 
@@ -159,18 +160,18 @@ bool SkewedPerspectiveCamera::equal(const Camera& other) const {
     }
 }
 
-mat4 SkewedPerspectiveCamera::calculateProjectionMatrix() const {
-    const float halfHeight = nearPlaneDist_ * std::tan(0.5f * glm::radians(fovy_));
-    const float halfWidth = halfHeight * aspectRatio_;
+dmat4 SkewedPerspectiveCamera::calculateProjectionMatrix() const {
+    const auto halfHeight = nearPlaneDist_ * std::tan(0.5 * glm::radians(fovy_));
+    const auto halfWidth = halfHeight * aspectRatio_;
 
-    const float scale = nearPlaneDist_ / glm::distance(lookTo_, lookFrom_);
+    const auto scale = nearPlaneDist_ / glm::distance(lookTo_, lookFrom_);
 
     // Move the frustum in the opposite direction as the lookFrom.
-    const float left = -halfWidth - offset_.x * scale;
-    const float right = +halfWidth - offset_.x * scale;
+    const auto left = -halfWidth - offset_.x * scale;
+    const auto right = +halfWidth - offset_.x * scale;
 
-    const float bottom = -halfHeight - offset_.y * scale;
-    const float top = +halfHeight - offset_.y * scale;
+    const auto bottom = -halfHeight - offset_.y * scale;
+    const auto top = +halfHeight - offset_.y * scale;
 
     return glm::frustum(left, right, bottom, top, nearPlaneDist_, farPlaneDist_);
 }

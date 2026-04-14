@@ -43,20 +43,20 @@ public:
     CameraFactoryObject(std::string_view classIdentifier);
     virtual ~CameraFactoryObject() = default;
 
-    std::unique_ptr<Camera> create(vec3 lookFrom = cameradefaults::lookFrom,
-                                   vec3 lookTo = cameradefaults::lookTo,
-                                   vec3 lookUp = cameradefaults::lookUp,
-                                   float nearPlane = cameradefaults::nearPlane,
-                                   float farPlane = cameradefaults::farPlane,
-                                   float aspectRatio = cameradefaults::aspectRatio) const {
+    std::unique_ptr<Camera> create(dvec3 lookFrom = cameradefaults::lookFrom,
+                                   dvec3 lookTo = cameradefaults::lookTo,
+                                   dvec3 lookUp = cameradefaults::lookUp,
+                                   double nearPlane = cameradefaults::nearPlane,
+                                   double farPlane = cameradefaults::farPlane,
+                                   double aspectRatio = cameradefaults::aspectRatio) const {
         return createImpl(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio);
     }
     std::string_view getClassIdentifier() const;
 
 protected:
-    virtual std::unique_ptr<Camera> createImpl(vec3 lookFrom, vec3 lookTo, vec3 lookUp,
-                                               float nearPlane, float farPlane,
-                                               float aspectRatio) const = 0;
+    virtual std::unique_ptr<Camera> createImpl(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp,
+                                               double nearPlane, double farPlane,
+                                               double aspectRatio) const = 0;
 
 private:
     std::string classIdentifier_;
@@ -67,9 +67,9 @@ public:
     CameraFactoryObjectTemplate(std::string_view classIdentifier)
         : CameraFactoryObject(classIdentifier) {}
 
-    virtual std::unique_ptr<Camera> createImpl(vec3 lookFrom, vec3 lookTo, vec3 lookUp,
-                                               float nearPlane, float farPlane,
-                                               float aspectRatio) const override {
+    virtual std::unique_ptr<Camera> createImpl(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp,
+                                               double nearPlane, double farPlane,
+                                               double aspectRatio) const override {
         return std::make_unique<T>(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio);
     }
 };

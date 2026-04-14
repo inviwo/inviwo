@@ -27,30 +27,11 @@
 #
 # ********************************************************************************
 
+from numpy import angle
+
 import inviwopy
 import math
-from inviwopy.glm import mat3
-
-
-def rotation_matrix(axis, angle):
-    a = inviwopy.glm.normalize(axis)
-    v = a * math.sin(0.5 * angle)
-    w = math.cos(0.5 * angle)
-
-    m = mat3()
-    m[0][0] = 1 - (2) * (v[1] * v[1] + v[2] * v[2])
-    m[1][0] = 2 * (v[0] * v[1] + v[2] * w)
-    m[2][0] = 2 * (v[2] * v[0] - v[1] * w)
-
-    m[0][1] = 2 * (v[0] * v[1] - v[2] * w)
-    m[1][1] = 1 - (2) * (v[2] * v[2] + v[0] * v[0])
-    m[2][1] = 2 * (v[1] * v[2] + v[0] * w)
-
-    m[0][2] = 2 * (v[2] * v[0] + v[1] * w)
-    m[1][2] = 2 * (v[1] * v[2] - v[0] * w)
-    m[2][2] = 1 - (2) * (v[1] * v[1] + v[0] * v[0])
-
-    return m
+from inviwopy.glm import dmat3, dvec3
 
 
 class Camera:
@@ -62,15 +43,15 @@ class Camera:
             inviwoqt.update()
     """
 
-    def __init__(self, cameraProperty, lookfrom=None, lookto=None, lookup=None):
+    def __init__(self, cameraProperty, lookFrom=None, lookTo=None, lookUp=None):
         self.cam = cameraProperty
-        self.oldlookfrom = cameraProperty.lookFrom
-        self.oldlookto = cameraProperty.lookTo
-        self.oldlookup = cameraProperty.lookUp
+        self.oldLookFrom: dvec3 = cameraProperty.lookFrom
+        self.oldLookTo: dvec3 = cameraProperty.lookTo
+        self.oldLookUp: dvec3 = cameraProperty.lookUp
 
-        self.lookfrom = lookfrom if lookfrom is not None else self.oldlookfrom
-        self.lookto = lookto if lookto is not None else self.oldlookto
-        self.lookup = lookup if lookup is not None else self.oldlookup
+        self.lookFrom: dvec3 = lookFrom if lookFrom is not None else self.oldLookFrom
+        self.lookTo: dvec3 = lookTo if lookTo is not None else self.oldLookTo
+        self.lookUp: dvec3 = lookUp if lookUp is not None else self.oldLookUp
 
     def __enter__(self):
         self.set()
@@ -80,23 +61,43 @@ class Camera:
         self.restore()
 
     def set(self):
-        self.cam.setLook(self.lookfrom, self.lookto, self.lookup)
+        self.cam.setLook(self.lookFrom, self.lookTo, self.lookUp)
 
     def restore(self):
-        self.cam.setLook(self.oldlookfrom, self.oldlookto, self.oldlookup)
+        self.cam.setLook(self.oldLookFrom, self.oldLookTo, self.oldLookUp)
 
-    def rotate(self, delta=math.pi / 30, steps=60, axis=None):
+    @staticmethod
+    def rotation_matrix(axis: dvec3, angle: float) -> dmat3:
+        a = inviwopy.glm.normalize(axis)
+        v = a * math.sin(0.5 * angle)
+        w = math.cos(0.5 * angle)
+
+        m = dmat3()
+        m[0][0] = 1 - (2) * (v[1] * v[1] + v[2] * v[2])
+        m[1][0] = 2 * (v[0] * v[1] + v[2] * w)
+        m[2][0] = 2 * (v[2] * v[0] - v[1] * w)
+
+        m[0][1] = 2 * (v[0] * v[1] - v[2] * w)
+        m[1][1] = 1 - (2) * (v[2] * v[2] + v[0] * v[0])
+        m[2][1] = 2 * (v[1] * v[2] + v[0] * w)
+
+        m[0][2] = 2 * (v[2] * v[0] + v[1] * w)
+        m[1][2] = 2 * (v[1] * v[2] - v[0] * w)
+        m[2][2] = 1 - (2) * (v[1] * v[1] + v[0] * v[0])
+
+        return m
+
+    def rotate(self, delta: float = math.pi / 30, steps: int = 60, axis: dvec3 = None):
         if axis is None:
-            axis = self.lookup
+            axis = self.lookUp
 
-        vec = self.lookfrom - self.lookto
-
-        mat = rotation_matrix(axis, delta)
+        vec = self.lookFrom - self.lookTo
+        mat = self.rotation_matrix(axis, delta)
 
         for i in range(1, steps + 1):
             vec = mat * vec
-            up = mat * self.lookup
-            self.lookfrom = vec + self.lookto
-            self.lookup = up
+            up = mat * self.lookUp
+            self.lookFrom = vec + self.lookTo
+            self.lookUp = up
             self.set()
             yield i

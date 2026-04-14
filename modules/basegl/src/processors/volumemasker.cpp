@@ -84,7 +84,7 @@ void VolumeMasker::preProcess(TextureUnitContainer& cont, Shader& shader,
             "texTrafo", mask_.getData()->getCoordinateTransformer().getWorldToDataMatrix() *
                             inport_->getData()->getCoordinateTransformer().getDataToWorldMatrix());
     } else {
-        shader.setUniform("texTrafo", mat4(1.0f));
+        shader.setUniform("texTrafo", dmat4{1.0});
     }
     shader.setUniform("textureWrap", textureWrap_);
 }

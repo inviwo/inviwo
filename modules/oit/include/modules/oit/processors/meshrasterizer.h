@@ -81,14 +81,14 @@ public:
 
     virtual void initializeResources() override;
 
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
+    virtual void rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) override;
 
     virtual UseFragmentList usesFragmentLists() const override {
         return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists() ? UseFragmentList::Yes
                                                                               : UseFragmentList::No;
     }
 
-    virtual std::optional<mat4> boundingBox() const override;
+    virtual std::optional<dmat4> boundingBox() const override;
 
     virtual Document getInfo() const override;
 

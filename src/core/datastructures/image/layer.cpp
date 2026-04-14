@@ -167,15 +167,15 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
 }
 
 vec3 Layer::getWorldSpaceGradientSpacing() const {
-    const auto textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
+    const auto textureToWorld = dmat3(getCoordinateTransformer().getTextureToWorldMatrix());
 
-    const vec3 extent{glm::length2(textureToWorld[0]), glm::length2(textureToWorld[1]),
-                      glm::length2(textureToWorld[2])};
+    const dvec3 extent{glm::length2(textureToWorld[0]), glm::length2(textureToWorld[1]),
+                       glm::length2(textureToWorld[2])};
 
     // basis vectors with a length of one texel, may be non-orthogonal
     const auto dimensions = getDimensions();
-    const vec3 a = textureToWorld[0] / static_cast<float>(dimensions[0]);
-    const vec3 b = textureToWorld[1] / static_cast<float>(dimensions[1]);
+    const dvec3 a = textureToWorld[0] / static_cast<double>(dimensions[0]);
+    const dvec3 b = textureToWorld[1] / static_cast<double>(dimensions[1]);
 
     // Project the texel basis vectors
     // onto the world space x/y axes,

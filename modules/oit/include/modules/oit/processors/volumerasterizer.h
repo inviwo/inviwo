@@ -51,14 +51,14 @@ public:
 
     virtual void initializeResources() override;
 
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
+    virtual void rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) override;
 
     virtual UseFragmentList usesFragmentLists() const override {
         return VolumeFragmentListRenderer::supportsFragmentLists() ? UseFragmentList::Yes
                                                                    : UseFragmentList::No;
     }
 
-    virtual std::optional<mat4> boundingBox() const override;
+    virtual std::optional<dmat4> boundingBox() const override;
 
     virtual std::optional<RaycastingState> getRaycastingState() const override;
 

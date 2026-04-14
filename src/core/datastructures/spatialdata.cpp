@@ -32,12 +32,12 @@
 
 namespace inviwo {
 
-SpatialEntity::SpatialEntity() : SpatialEntity{mat4(1.0f), mat4(1.0f)} {}
+SpatialEntity::SpatialEntity() : SpatialEntity{dmat4(1.0), dmat4(1.0)} {}
 
-SpatialEntity::SpatialEntity(const glm::mat4& modelMatrix)
-    : SpatialEntity{modelMatrix, mat4(1.0f)} {}
+SpatialEntity::SpatialEntity(const glm::dmat4& modelMatrix)
+    : SpatialEntity{modelMatrix, dmat4(1.0)} {}
 
-SpatialEntity::SpatialEntity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix)
+SpatialEntity::SpatialEntity(const glm::dmat4& modelMatrix, const glm::dmat4& worldMatrix)
     : cameraTransformer_(nullptr), modelMatrix_(modelMatrix), worldMatrix_(worldMatrix) {}
 
 SpatialEntity::SpatialEntity(const SpatialEntity& rhs)
@@ -53,8 +53,8 @@ SpatialEntity& SpatialEntity::operator=(const SpatialEntity& that) {
 
 SpatialEntity::~SpatialEntity() = default;
 
-glm::vec3 SpatialEntity::getOffset() const {
-    glm::vec3 offset(0.0f);
+glm::dvec3 SpatialEntity::getOffset() const {
+    glm::dvec3 offset(0.0);
 
     for (unsigned int i = 0; i < 3; i++) {
         offset[i] = modelMatrix_[3][i];
@@ -62,14 +62,14 @@ glm::vec3 SpatialEntity::getOffset() const {
 
     return offset;
 }
-void SpatialEntity::setOffset(const glm::vec3& offset) {
+void SpatialEntity::setOffset(const glm::dvec3& offset) {
     for (unsigned int i = 0; i < 3; i++) {
         modelMatrix_[3][i] = offset[i];
     }
 }
 
-glm::mat3 SpatialEntity::getBasis() const {
-    glm::mat3 basis(1.0f);
+glm::dmat3 SpatialEntity::getBasis() const {
+    glm::dmat3 basis(1.0);
 
     for (unsigned int i = 0; i < 3; i++) {
         for (unsigned int j = 0; j < 3; j++) {
@@ -79,7 +79,7 @@ glm::mat3 SpatialEntity::getBasis() const {
     return basis;
 }
 
-void SpatialEntity::setBasis(const glm::mat3& basis) {
+void SpatialEntity::setBasis(const glm::dmat3& basis) {
     for (unsigned int i = 0; i < 3; i++) {
         for (unsigned int j = 0; j < 3; j++) {
             modelMatrix_[i][j] = basis[i][j];
@@ -87,12 +87,12 @@ void SpatialEntity::setBasis(const glm::mat3& basis) {
     }
 }
 
-glm::mat4 SpatialEntity::getModelMatrix() const { return modelMatrix_; }
+glm::dmat4 SpatialEntity::getModelMatrix() const { return modelMatrix_; }
 
-void SpatialEntity::setModelMatrix(const glm::mat4& modelMatrix) { modelMatrix_ = modelMatrix; }
+void SpatialEntity::setModelMatrix(const glm::dmat4& modelMatrix) { modelMatrix_ = modelMatrix; }
 
-glm::mat4 SpatialEntity::getWorldMatrix() const { return worldMatrix_; }
-void SpatialEntity::setWorldMatrix(const glm::mat4& worldMatrix) { worldMatrix_ = worldMatrix; }
+glm::dmat4 SpatialEntity::getWorldMatrix() const { return worldMatrix_; }
+void SpatialEntity::setWorldMatrix(const glm::dmat4& worldMatrix) { worldMatrix_ = worldMatrix; }
 
 const SpatialCoordinateTransformer& SpatialEntity::getCoordinateTransformer() const {
     if (!transformer_) {
@@ -112,12 +112,12 @@ const SpatialCameraCoordinateTransformer& SpatialEntity::getCoordinateTransforme
     return *cameraTransformer_;
 }
 
-SpatialIdentity::SpatialIdentity() : SpatialEntity{mat4(1.0f), mat4(1.0f)} {}
+SpatialIdentity::SpatialIdentity() : SpatialEntity{dmat4(1.0), dmat4(1.0)} {}
 
-SpatialIdentity::SpatialIdentity(const glm::mat4& modelMatrix)
-    : SpatialIdentity{modelMatrix, mat4(1.0f)} {}
+SpatialIdentity::SpatialIdentity(const glm::dmat4& modelMatrix)
+    : SpatialIdentity{modelMatrix, dmat4(1.0)} {}
 
-SpatialIdentity::SpatialIdentity(const glm::mat4& modelMatrix, const glm::mat4& worldMatrix)
+SpatialIdentity::SpatialIdentity(const glm::dmat4& modelMatrix, const glm::dmat4& worldMatrix)
     : SpatialEntity{modelMatrix, worldMatrix} {}
 
 SpatialIdentity::SpatialIdentity(const SpatialIdentity& rhs) : SpatialEntity{rhs} {}

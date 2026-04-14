@@ -40,8 +40,8 @@
 
 namespace inviwo {
 
-PlotCamera::PlotCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane,
-                       float aspectRatio, vec2 size)
+PlotCamera::PlotCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane,
+                       double farPlane, double aspectRatio, dvec2 size)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), size_{size} {}
 
 PlotCamera::PlotCamera(const PlotCamera&) = default;
@@ -56,13 +56,13 @@ PlotCamera* PlotCamera::clone() const { return new PlotCamera(*this); }
 
 std::string_view PlotCamera::getClassIdentifier() const { return classIdentifier; }
 
-void PlotCamera::setSize(vec2 size) {
+void PlotCamera::setSize(dvec2 size) {
     if (size_ != size) {
         size_ = size;
         invalidateProjectionMatrix();
         if (camprop_) {
             if (auto* p =
-                    dynamic_cast<FloatVec2RefProperty*>(camprop_->getCameraProperty("size"))) {
+                    dynamic_cast<DoubleVec2RefProperty*>(camprop_->getCameraProperty("size"))) {
                 p->propertyModified();
             }
         }
@@ -75,15 +75,15 @@ void PlotCamera::zoom(const ZoomOptions& opts) {
         const auto up = getLookUp();
         const auto dir = -glm::normalize(getDirection());
         const auto right = glm::cross(up, dir);
-        const auto basis = mat3(right, up, dir);
+        const auto basis = dmat3(right, up, dir);
 
-        const auto translate = glm::translate(vec3{0.5f * size_ * opts.origin.value(), 0.f});
-        const auto scale = glm::scale(vec3{1.0f - opts.factor, 1.f});
+        const auto translate = glm::translate(dvec3{0.5 * size_ * opts.origin.value(), 0.0});
+        const auto scale = glm::scale(dvec3{1.0 - opts.factor.x, 1.0 - opts.factor.y, 1.0});
         const auto m = translate * scale * glm::inverse(translate);
-        const auto offset = basis * vec3{m * vec4{0.f, 0.f, 0.f, 1.f}};
+        const auto offset = basis * dvec3{m * dvec4{0.0, 0.0, 0.0, 1.0}};
         setLook(getLookFrom() + offset, getLookTo() + offset, getLookUp());
     }
-    setSize(size_ * (1.0f - opts.factor));
+    setSize(size_ * (1.0 - opts.factor));
 }
 
 void PlotCamera::updateFrom(const Camera& source) {
@@ -91,15 +91,15 @@ void PlotCamera::updateFrom(const Camera& source) {
     if (const auto* plc = dynamic_cast<const PlotCamera*>(&source)) {
         setSize(plc->getSize());
     } else if (const auto* oc = dynamic_cast<const OrthographicCamera*>(&source)) {
-        setSize(vec2{oc->getWidth(), oc->getWidth() / getAspectRatio()});
+        setSize(dvec2{oc->getWidth(), oc->getWidth() / getAspectRatio()});
     } else if (const auto* pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         const auto width = util::fovyToWidth(
             pc->getFovy(), glm::distance(getLookTo(), getLookFrom()), getAspectRatio());
-        setSize(vec2{width, width / getAspectRatio()});
+        setSize(dvec2{width, width / getAspectRatio()});
     } else if (const auto* sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
         const auto width = util::fovyToWidth(
             sc->getFovy(), glm::distance(getLookTo(), getLookFrom()), getAspectRatio());
-        setSize(vec2{width, width / getAspectRatio()});
+        setSize(dvec2{width, width / getAspectRatio()});
     }
 }
 
@@ -107,7 +107,7 @@ void PlotCamera::configureProperties(CameraProperty& cp, bool attach) {
     Camera::configureProperties(cp, attach);
 
     const auto get = [this]() { return getSize(); };
-    const auto set = [this](const vec2& val) {
+    const auto set = [this](const dvec2& val) {
         if (size_ != val) {
             size_ = val;
             invalidateProjectionMatrix();
@@ -115,20 +115,21 @@ void PlotCamera::configureProperties(CameraProperty& cp, bool attach) {
     };
 
     if (attach) {
-        auto* sizeProp = dynamic_cast<FloatVec2RefProperty*>(cp.getCameraProperty("size"));
+        auto* sizeProp = dynamic_cast<DoubleVec2RefProperty*>(cp.getCameraProperty("size"));
         if (sizeProp) {
             sizeProp->setGetAndSet(get, set);
         } else {
-            auto newSize = std::make_unique<FloatVec2RefProperty>(
+            auto newSize = std::make_unique<DoubleVec2RefProperty>(
                 "size", "Size", "The viewport size in world space"_help, get, set,
-                std::pair<vec2, ConstraintBehavior>{vec2{0.0f}, ConstraintBehavior::Immutable},
-                std::pair<vec2, ConstraintBehavior>{vec2{1000.0f}, ConstraintBehavior::Ignore},
-                vec2{0.1f});
+                std::pair<dvec2, ConstraintBehavior>{dvec2{0.0}, ConstraintBehavior::Immutable},
+                std::pair<dvec2, ConstraintBehavior>{dvec2{1000.0}, ConstraintBehavior::Ignore},
+                dvec2{0.1});
             sizeProp = newSize.get();
             cp.addCamerapProperty(std::move(newSize));
         }
         sizeProp->setVisible(true);
-    } else if (auto* sizeProp = dynamic_cast<FloatVec2RefProperty*>(cp.getCameraProperty("size"))) {
+    } else if (auto* sizeProp =
+                   dynamic_cast<DoubleVec2RefProperty*>(cp.getCameraProperty("size"))) {
         sizeProp->disconnectSetAndGet();
     }
 }
@@ -141,15 +142,15 @@ bool PlotCamera::equal(const Camera& other) const {
     }
 }
 
-mat4 PlotCamera::calculateProjectionMatrix() const {
-    const float halfWidth = 0.5f * size_.x;
-    const float halfHeight = 0.5f * size_.y;
+dmat4 PlotCamera::calculateProjectionMatrix() const {
+    const double halfWidth = 0.5 * size_.x;
+    const double halfHeight = 0.5 * size_.y;
     return glm::ortho(-halfWidth, +halfWidth, -halfHeight, +halfHeight, nearPlaneDist_,
                       farPlaneDist_);
 }
 
-vec4 PlotCamera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
-    return vec4{ndcCoords, 1.0f};
+dvec4 PlotCamera::getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const {
+    return dvec4{ndcCoords, 1.0};
 }
 
 void PlotCamera::serialize(Serializer& s) const {

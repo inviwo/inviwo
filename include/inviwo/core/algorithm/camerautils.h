@@ -68,11 +68,11 @@ constexpr std::string_view format_as(Side s) {
     throw Exception(SourceContext{}, "Found invalid Side");
 }
 
-static constexpr float defaultZoomFactor = 125.f;
-static constexpr float defaultFarNearRatio = 2000.f;
+static constexpr double defaultZoomFactor = 125.;
+static constexpr double defaultFarNearRatio = 2000.;
 
-IVW_CORE_API float fovxFrom(float fovy, float aspect);
-IVW_CORE_API float fovxDegreesFrom(float fovyDegrees, float aspect);
+IVW_CORE_API double fovxFrom(double fovy, double aspect);
+IVW_CORE_API double fovxDegreesFrom(double fovyDegrees, double aspect);
 
 /**
  * Setup the camera parameters such that the whole boundingBox spanned by basis and offset
@@ -91,12 +91,12 @@ IVW_CORE_API float fovxDegreesFrom(float fovyDegrees, float aspect);
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBox, glm::mat3 view,
-                                float fitRatio = 1.05f,
+IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::dmat4& boundingBox, glm::dmat3 view,
+                                double fitRatio = 1.05,
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No,
-                                float maxZoomFactor = defaultZoomFactor,
-                                float farNearRatio = defaultFarNearRatio);
+                                double maxZoomFactor = defaultZoomFactor,
+                                double farNearRatio = defaultFarNearRatio);
 
 /**
  * Setup the camera parameters such that the whole boundingBox spanned by basis and offset
@@ -113,12 +113,12 @@ IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBo
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBox,
-                                float fitRatio = 1.05f,
+IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::dmat4& boundingBox,
+                                double fitRatio = 1.05,
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No,
-                                float maxZoomFactor = defaultZoomFactor,
-                                float farNearRatio = defaultFarNearRatio);
+                                double maxZoomFactor = defaultZoomFactor,
+                                double farNearRatio = defaultFarNearRatio);
 
 /**
  * Setup the camera parameters such that the whole boundingBox spanned by basis and offset
@@ -136,12 +136,12 @@ IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBo
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBox, Side side,
-                                float fitRatio = 1.05f,
+IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::dmat4& boundingBox, Side side,
+                                double fitRatio = 1.05,
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No,
-                                float maxZoomFactor = defaultZoomFactor,
-                                float farNearRatio = defaultFarNearRatio);
+                                double maxZoomFactor = defaultZoomFactor,
+                                double farNearRatio = defaultFarNearRatio);
 
 /**
  * Set the ranges of the look to and look from properties of the camera. Will center around the
@@ -154,8 +154,8 @@ IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBo
  * @param maxZoomFactor determines how far away from the volume the user will be able to zoom
  * out.
  */
-IVW_CORE_API void setCameraLookRanges(CameraProperty& cam, const glm::mat4& boundingBox,
-                                      float maxZoomFactor = defaultZoomFactor);
+IVW_CORE_API void setCameraLookRanges(CameraProperty& cam, const glm::dmat4& boundingBox,
+                                      double maxZoomFactor = defaultZoomFactor);
 
 /**
  * Computes appropriate near and far clip distances for the given bounding box and zoom factor.
@@ -163,9 +163,9 @@ IVW_CORE_API void setCameraLookRanges(CameraProperty& cam, const glm::mat4& boun
  * factor.
  * @see setCameraLookRanges
  */
-IVW_CORE_API std::pair<float, float> computeCameraNearFar(const glm::mat4& boundingBox,
-                                                          float maxZoomFactor = defaultZoomFactor,
-                                                          float farNearRatio = defaultFarNearRatio);
+IVW_CORE_API std::pair<double, double> computeCameraNearFar(
+    const glm::dmat4& boundingBox, double maxZoomFactor = defaultZoomFactor,
+    double farNearRatio = defaultFarNearRatio);
 
 /**
  * Sets the near and far clip distances of the camera based on the given bounding volume and
@@ -174,9 +174,9 @@ IVW_CORE_API std::pair<float, float> computeCameraNearFar(const glm::mat4& bound
  * @see computeCameraNearFar
  * @see setCameraLookRanges
  */
-IVW_CORE_API void setCameraNearFar(CameraProperty& cam, const glm::mat4& boundingBox,
-                                   float maxZoomFactor = defaultZoomFactor,
-                                   float farNearRatio = defaultFarNearRatio);
+IVW_CORE_API void setCameraNearFar(CameraProperty& cam, const glm::dmat4& boundingBox,
+                                   double maxZoomFactor = defaultZoomFactor,
+                                   double farNearRatio = defaultFarNearRatio);
 
 }  // namespace camerautil
 

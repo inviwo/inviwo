@@ -156,7 +156,7 @@ public:
      * mat3(glm::scale(worldToTextureMatrix, getWorldSpaceGradientSpacing()));
      * @return Step size for gradient computation in world space.
      */
-    vec3 getWorldSpaceGradientSpacing() const;
+    dvec3 getWorldSpaceGradientSpacing() const;
 
     /**
      * @copydoc SpatialEntity::getAxis

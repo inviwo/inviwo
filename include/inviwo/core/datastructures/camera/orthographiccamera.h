@@ -42,12 +42,13 @@ namespace inviwo {
  */
 class IVW_CORE_API OrthographicCamera final : public Camera {
 public:
-    OrthographicCamera(vec3 lookFrom = cameradefaults::lookFrom,
-                       vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
-                       float nearPlane = cameradefaults::nearPlane,
-                       float farPlane = cameradefaults::farPlane,
-                       float aspectRatio = cameradefaults::aspectRatio,
-                       float width = cameradefaults::width);
+    explicit OrthographicCamera(dvec3 lookFrom = cameradefaults::lookFrom,
+                                dvec3 lookTo = cameradefaults::lookTo,
+                                dvec3 lookUp = cameradefaults::lookUp,
+                                double nearPlane = cameradefaults::nearPlane,
+                                double farPlane = cameradefaults::farPlane,
+                                double aspectRatio = cameradefaults::aspectRatio,
+                                double width = cameradefaults::width);
     virtual ~OrthographicCamera() = default;
     OrthographicCamera(const OrthographicCamera& other);
     OrthographicCamera& operator=(const OrthographicCamera& other);
@@ -58,22 +59,22 @@ public:
     virtual void updateFrom(const Camera& source) override;
     virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
 
-    float getWidth() const;
-    void setWidth(float width);
+    double getWidth() const;
+    void setWidth(double width);
     virtual void zoom(const ZoomOptions& opts) override;
 
-    virtual vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
+    virtual dvec4 getClipPosFromNormalizedDeviceCoords(const dvec3& ndcCoords) const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 protected:
     virtual bool equal(const Camera& other) const override;
-    virtual mat4 calculateProjectionMatrix() const override;
+    virtual dmat4 calculateProjectionMatrix() const override;
 
-    float width_;
+    double width_;
 };
 
-inline float OrthographicCamera::getWidth() const { return width_; }
+inline double OrthographicCamera::getWidth() const { return width_; }
 
 }  // namespace inviwo

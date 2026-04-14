@@ -170,13 +170,6 @@ public:
 
     void setUniform(std::string_view name, bool value) const;
     void setUniform(std::string_view name, std::span<const bool> values) const;
-    void setUniform(std::string_view name, int value) const;
-    void setUniform(std::string_view name, std::span<const int> values) const;
-    void setUniform(std::string_view name, unsigned int value) const;
-    void setUniform(std::string_view name, std::span<const unsigned int> values) const;
-    void setUniform(std::string_view name, float value) const;
-    void setUniform(std::string_view name, std::span<const float> values) const;
-
     void setUniform(std::string_view name, bvec2 value) const;
     void setUniform(std::string_view name, std::span<const bvec2> values) const;
     void setUniform(std::string_view name, bvec3 value) const;
@@ -184,6 +177,8 @@ public:
     void setUniform(std::string_view name, bvec4 value) const;
     void setUniform(std::string_view name, std::span<const bvec4> values) const;
 
+    void setUniform(std::string_view name, int value) const;
+    void setUniform(std::string_view name, std::span<const int> values) const;
     void setUniform(std::string_view name, ivec2 value) const;
     void setUniform(std::string_view name, std::span<const ivec2> values) const;
     void setUniform(std::string_view name, ivec3 value) const;
@@ -191,6 +186,8 @@ public:
     void setUniform(std::string_view name, ivec4 value) const;
     void setUniform(std::string_view name, std::span<const ivec4> values) const;
 
+    void setUniform(std::string_view name, unsigned int value) const;
+    void setUniform(std::string_view name, std::span<const unsigned int> values) const;
     void setUniform(std::string_view name, uvec2 value) const;
     void setUniform(std::string_view name, std::span<const uvec2> values) const;
     void setUniform(std::string_view name, uvec3 value) const;
@@ -198,12 +195,25 @@ public:
     void setUniform(std::string_view name, uvec4 value) const;
     void setUniform(std::string_view name, std::span<const uvec4> values) const;
 
+    void setUniform(std::string_view name, float value) const;
+    void setUniform(std::string_view name, std::span<const float> values) const;
     void setUniform(std::string_view name, vec2 value) const;
     void setUniform(std::string_view name, std::span<const vec2> values) const;
     void setUniform(std::string_view name, vec3 value) const;
     void setUniform(std::string_view name, std::span<const vec3> values) const;
     void setUniform(std::string_view name, vec4 value) const;
     void setUniform(std::string_view name, std::span<const vec4> values) const;
+
+    // We don't use double precision in shaders, but we provide the interface for it.
+    // The values will be converted to single precision before being sent to the shader.
+    void setUniform(std::string_view name, double value) const;
+    void setUniform(std::string_view name, std::span<const double> values) const;
+    void setUniform(std::string_view name, dvec2 value) const;
+    void setUniform(std::string_view name, std::span<const dvec2> values) const;
+    void setUniform(std::string_view name, dvec3 value) const;
+    void setUniform(std::string_view name, std::span<const dvec3> values) const;
+    void setUniform(std::string_view name, dvec4 value) const;
+    void setUniform(std::string_view name, std::span<const dvec4> values) const;
 
     void setUniform(std::string_view name, const mat2& value) const;
     void setUniform(std::string_view name, std::span<const mat2> values) const;
