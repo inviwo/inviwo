@@ -142,7 +142,7 @@ VolumeSliceExtractor::VolumeSliceExtractor()
     , gestureShiftSlice_(
           "gestureShiftSlice", "Gesture Slice Shift",
           [this](Event* e) { eventGestureShiftSlice(e); },
-          std::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3)) {
+          std::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any))) {
 
     addPort(inport_);
     addPort(outport_);
