@@ -124,7 +124,7 @@ $(function(){initNavTree('classinviwo_1_1transform_1_1PortTransformProperty.html
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a70c0e31ed8ffbccb66b4023ca5751748" id="r_a70c0e31ed8ffbccb66b4023ca5751748"><td class="memItemLeft">virtual PortTransformProperty *&#160;</td><td class="memItemRight"><a class="el" href="#a70c0e31ed8ffbccb66b4023ca5751748">clone</a> () const override</td></tr>
 <tr class="memitem:ac210ad1e36d9724e3b7ea5ab67253033" id="r_ac210ad1e36d9724e3b7ea5ab67253033"><td class="memItemLeft">virtual std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#ac210ad1e36d9724e3b7ea5ab67253033">getClassIdentifier</a> () const override</td></tr>
-<tr class="memitem:a72c79a928820a0b4b8e999de999e4ec1" id="r_a72c79a928820a0b4b8e999de999e4ec1"><td class="memItemLeft">virtual mat4&#160;</td><td class="memItemRight"><a class="el" href="#a72c79a928820a0b4b8e999de999e4ec1">getMatrix</a> () const override</td></tr>
+<tr class="memitem:ac98bdc6aad0d37373c523d5b8d47f2c7" id="r_ac98bdc6aad0d37373c523d5b8d47f2c7"><td class="memItemLeft">virtual dmat4&#160;</td><td class="memItemRight"><a class="el" href="#ac98bdc6aad0d37373c523d5b8d47f2c7">getMatrix</a> () const override</td></tr>
 <tr class="memitem:a7dca1b9767f81e1aff63ae19b9c1bb91" id="r_a7dca1b9767f81e1aff63ae19b9c1bb91"><td class="memItemLeft"><a id="a7dca1b9767f81e1aff63ae19b9c1bb91" name="a7dca1b9767f81e1aff63ae19b9c1bb91"></a>
 &#160;</td><td class="memItemRight"><b>PortTransformProperty</b> (const PortTransformProperty &amp;rhs)</td></tr>
 <tr class="memitem:a3df788e144ba7f7bcdb31e5bf2d35124" id="r_a3df788e144ba7f7bcdb31e5bf2d35124"><td class="memItemLeft"><a id="a3df788e144ba7f7bcdb31e5bf2d35124" name="a3df788e144ba7f7bcdb31e5bf2d35124"></a>
@@ -417,10 +417,10 @@ void&#160;</td><td class="memItemRight"><b>removeObserver</b> (<a class="el" hre
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ae784d29ea9c2ec46574cb97b42fddb25" id="r_ae784d29ea9c2ec46574cb97b42fddb25"><td class="memItemLeft"><a id="ae784d29ea9c2ec46574cb97b42fddb25" name="ae784d29ea9c2ec46574cb97b42fddb25"></a>
-FloatMat4Property&#160;</td><td class="memItemRight"><b>matrix</b></td></tr>
-<tr class="memitem:a6fdf430c5264a26aacfff445a9d5a40e" id="r_a6fdf430c5264a26aacfff445a9d5a40e"><td class="memItemLeft"><a id="a6fdf430c5264a26aacfff445a9d5a40e" name="a6fdf430c5264a26aacfff445a9d5a40e"></a>
-<a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt; mat4 &gt;&#160;</td><td class="memItemRight"><b>port</b></td></tr>
+<tr class="memitem:a163831cd21f8843a27fb527cc2eb68c9" id="r_a163831cd21f8843a27fb527cc2eb68c9"><td class="memItemLeft"><a id="a163831cd21f8843a27fb527cc2eb68c9" name="a163831cd21f8843a27fb527cc2eb68c9"></a>
+DoubleMat4Property&#160;</td><td class="memItemRight"><b>matrix</b></td></tr>
+<tr class="memitem:aa0a9e6e19818bfe15ec74ec7090e247c" id="r_aa0a9e6e19818bfe15ec74ec7090e247c"><td class="memItemLeft"><a id="aa0a9e6e19818bfe15ec74ec7090e247c" name="aa0a9e6e19818bfe15ec74ec7090e247c"></a>
+<a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt; dmat4 &gt;&#160;</td><td class="memItemRight"><b>port</b></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -574,8 +574,8 @@ std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> *
 
 </div>
 </div>
-<a id="a72c79a928820a0b4b8e999de999e4ec1" name="a72c79a928820a0b4b8e999de999e4ec1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a72c79a928820a0b4b8e999de999e4ec1">&#9670;&#160;</a></span>getMatrix()</h2>
+<a id="ac98bdc6aad0d37373c523d5b8d47f2c7" name="ac98bdc6aad0d37373c523d5b8d47f2c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac98bdc6aad0d37373c523d5b8d47f2c7">&#9670;&#160;</a></span>getMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -584,7 +584,7 @@ std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> *
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual mat4 inviwo::transform::PortTransformProperty::getMatrix </td>
+          <td class="memname">virtual dmat4 inviwo::transform::PortTransformProperty::getMatrix </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>

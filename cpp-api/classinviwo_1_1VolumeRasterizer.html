@@ -118,15 +118,15 @@ $(function(){initNavTree('classinviwo_1_1VolumeRasterizer.html','','classinviwo_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a18f005cdeada0cd7e1190ff72737ecff" id="r_a18f005cdeada0cd7e1190ff72737ecff"><td class="memItemLeft">virtual std::optional&lt; mat4 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a18f005cdeada0cd7e1190ff72737ecff">boundingBox</a> () const override</td></tr>
-<tr class="memdesc:a18f005cdeada0cd7e1190ff72737ecff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the world space bounding box of the rendered geometry.  <br /></td></tr>
+<tr class="memitem:a24358d9f92f4d4ad92113792fc7de9b8" id="r_a24358d9f92f4d4ad92113792fc7de9b8"><td class="memItemLeft">virtual std::optional&lt; dmat4 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a24358d9f92f4d4ad92113792fc7de9b8">boundingBox</a> () const override</td></tr>
+<tr class="memdesc:a24358d9f92f4d4ad92113792fc7de9b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the world space bounding box of the rendered geometry.  <br /></td></tr>
 <tr class="memitem:a7981704610f754a839b64b56da233b5e" id="r_a7981704610f754a839b64b56da233b5e"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7981704610f754a839b64b56da233b5e">getInfo</a> () const override</td></tr>
 <tr class="memitem:a51f1b84b9f91cae175e396624d9f005f" id="r_a51f1b84b9f91cae175e396624d9f005f"><td class="memItemLeft">virtual const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a51f1b84b9f91cae175e396624d9f005f">getProcessorInfo</a> () const override</td></tr>
 <tr class="memitem:a1edbc3ea428cf2e593b70fde4f08aae7" id="r_a1edbc3ea428cf2e593b70fde4f08aae7"><td class="memItemLeft">virtual std::optional&lt; <a class="el" href="structinviwo_1_1RaycastingState.html">RaycastingState</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a1edbc3ea428cf2e593b70fde4f08aae7">getRaycastingState</a> () const override</td></tr>
 <tr class="memdesc:a1edbc3ea428cf2e593b70fde4f08aae7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query raycasting state used for volume rendering.  <br /></td></tr>
 <tr class="memitem:a03e449edf3d040d2c49f0100fe80c360" id="r_a03e449edf3d040d2c49f0100fe80c360"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a03e449edf3d040d2c49f0100fe80c360">initializeResources</a> () override</td></tr>
-<tr class="memitem:af82c24581b38ca8d7a1af67dde71ea11" id="r_af82c24581b38ca8d7a1af67dde71ea11"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#af82c24581b38ca8d7a1af67dde71ea11">rasterize</a> (const ivec2 &amp;imageSize, const mat4 &amp;worldMatrixTransform) override</td></tr>
-<tr class="memdesc:af82c24581b38ca8d7a1af67dde71ea11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render the fragments, with all setup and evaluation taken care of. If opaque is set, a standard render call instead.  <br /></td></tr>
+<tr class="memitem:a79c3e1e0f26373d82b291c3da1fdf6d2" id="r_a79c3e1e0f26373d82b291c3da1fdf6d2"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a79c3e1e0f26373d82b291c3da1fdf6d2">rasterize</a> (const ivec2 &amp;imageSize, const dmat4 &amp;worldMatrixTransform) override</td></tr>
+<tr class="memdesc:a79c3e1e0f26373d82b291c3da1fdf6d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render the fragments, with all setup and evaluation taken care of. If opaque is set, a standard render call instead.  <br /></td></tr>
 <tr class="memitem:ad1e447972485d81f500b78d75a25bc25" id="r_ad1e447972485d81f500b78d75a25bc25"><td class="memItemLeft">virtual UseFragmentList&#160;</td><td class="memItemRight"><a class="el" href="#ad1e447972485d81f500b78d75a25bc25">usesFragmentLists</a> () const override</td></tr>
 <tr class="memdesc:ad1e447972485d81f500b78d75a25bc25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query whether fragments will be emitted.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Rasterizer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Rasterizer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Rasterizer.html">inviwo::Rasterizer</a></td></tr>
@@ -510,8 +510,8 @@ using&#160;</td><td class="memItemRight"><b>iterator</b> = std::vector&lt;<a cla
 static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html">ProcessorStatus</a>()&gt;&#160;</td><td class="memItemRight"><b>getDefaultIsReadyUpdater</b> (<a class="el" href="classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6">Processor</a> *)</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a18f005cdeada0cd7e1190ff72737ecff" name="a18f005cdeada0cd7e1190ff72737ecff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a18f005cdeada0cd7e1190ff72737ecff">&#9670;&#160;</a></span>boundingBox()</h2>
+<a id="a24358d9f92f4d4ad92113792fc7de9b8" name="a24358d9f92f4d4ad92113792fc7de9b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24358d9f92f4d4ad92113792fc7de9b8">&#9670;&#160;</a></span>boundingBox()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -520,7 +520,7 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::optional&lt; mat4 &gt; inviwo::VolumeRasterizer::boundingBox </td>
+          <td class="memname">virtual std::optional&lt; dmat4 &gt; inviwo::VolumeRasterizer::boundingBox </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -535,7 +535,7 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 
 <p>Return the world space bounding box of the rendered geometry. </p>
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1Rasterizer.html#ae865e126a3c01ae1041a606acc12acd3">inviwo::Rasterizer</a>.</p>
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Rasterizer.html#af0cb226b93f7440625514655c10dd710">inviwo::Rasterizer</a>.</p>
 
 </div>
 </div>
@@ -651,8 +651,8 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 
 </div>
 </div>
-<a id="af82c24581b38ca8d7a1af67dde71ea11" name="af82c24581b38ca8d7a1af67dde71ea11"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af82c24581b38ca8d7a1af67dde71ea11">&#9670;&#160;</a></span>rasterize()</h2>
+<a id="a79c3e1e0f26373d82b291c3da1fdf6d2" name="a79c3e1e0f26373d82b291c3da1fdf6d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79c3e1e0f26373d82b291c3da1fdf6d2">&#9670;&#160;</a></span>rasterize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -668,7 +668,7 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const mat4 &amp;</td>          <td class="paramname"><span class="paramname"><em>worldMatrixTransform</em></span>&#160;)</td>
+          <td class="paramtype">const dmat4 &amp;</td>          <td class="paramname"><span class="paramname"><em>worldMatrixTransform</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -687,7 +687,7 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classinviwo_1_1Rasterizer.html#a736905e639988b999f764f0e5bf7b98a">inviwo::Rasterizer</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Rasterizer.html#ad9dd6222bd4e19400448cdaa978fd116">inviwo::Rasterizer</a>.</p>
 
 </div>
 </div>

@@ -114,26 +114,26 @@ $(function(){initNavTree('classinviwo_1_1SpatialCoordinateTransformer.html','','
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1f059ff08489ca8921920152d3be5792" id="r_a1f059ff08489ca8921920152d3be5792"><td class="memItemLeft"><a id="a1f059ff08489ca8921920152d3be5792" name="a1f059ff08489ca8921920152d3be5792"></a>
 virtual SpatialCoordinateTransformer *&#160;</td><td class="memItemRight"><b>clone</b> () const =0</td></tr>
-<tr class="memitem:a697750581eba2c12a3628756aac61430" id="r_a697750581eba2c12a3628756aac61430"><td class="memItemLeft">virtual glm::mat4&#160;</td><td class="memItemRight"><a class="el" href="#a697750581eba2c12a3628756aac61430">getDataToModelMatrix</a> () const =0</td></tr>
-<tr class="memitem:ae61c68db5deafdb779a13977ed8a6913" id="r_ae61c68db5deafdb779a13977ed8a6913"><td class="memItemLeft">virtual glm::mat4&#160;</td><td class="memItemRight"><a class="el" href="#ae61c68db5deafdb779a13977ed8a6913">getDataToWorldMatrix</a> () const =0</td></tr>
-<tr class="memitem:a83fd085c5cbb30b6e9ae43e18a00c58c" id="r_a83fd085c5cbb30b6e9ae43e18a00c58c"><td class="memItemLeft">glm::mat3&#160;</td><td class="memItemRight"><a class="el" href="#a83fd085c5cbb30b6e9ae43e18a00c58c">getInverseMetricTensor</a> () const</td></tr>
-<tr class="memdesc:a83fd085c5cbb30b6e9ae43e18a00c58c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the inverse metric tensor for the dataToWorld basis. This it useful for gradient computation.  <br /></td></tr>
-<tr class="memitem:acf235741499508c67af469e48e23925e" id="r_acf235741499508c67af469e48e23925e"><td class="memItemLeft">virtual glm::mat4&#160;</td><td class="memItemRight"><a class="el" href="#acf235741499508c67af469e48e23925e">getMatrix</a> (<a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
-<tr class="memitem:a00703550f4fc9315435b567ac728ac38" id="r_a00703550f4fc9315435b567ac728ac38"><td class="memItemLeft"><a id="a00703550f4fc9315435b567ac728ac38" name="a00703550f4fc9315435b567ac728ac38"></a>
-glm::mat3&#160;</td><td class="memItemRight"><b>getMetricTensor</b> () const</td></tr>
-<tr class="memdesc:a00703550f4fc9315435b567ac728ac38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the metric tensor for the dataToWorld basis. <br /></td></tr>
-<tr class="memitem:a5aa02e6256aa57f831d2da83f908233d" id="r_a5aa02e6256aa57f831d2da83f908233d"><td class="memItemLeft">virtual glm::mat4&#160;</td><td class="memItemRight"><a class="el" href="#a5aa02e6256aa57f831d2da83f908233d">getModelToDataMatrix</a> () const =0</td></tr>
-<tr class="memitem:a9d938bc064fe8eddb43fff6aff4448e0" id="r_a9d938bc064fe8eddb43fff6aff4448e0"><td class="memItemLeft">virtual glm::mat4&#160;</td><td class="memItemRight"><a class="el" href="#a9d938bc064fe8eddb43fff6aff4448e0">getModelToWorldMatrix</a> () const =0</td></tr>
-<tr class="memitem:a1b2b93e03f3ed49288d6c3572056414a" id="r_a1b2b93e03f3ed49288d6c3572056414a"><td class="memItemLeft">virtual glm::mat4&#160;</td><td class="memItemRight"><a class="el" href="#a1b2b93e03f3ed49288d6c3572056414a">getWorldToDataMatrix</a> () const =0</td></tr>
-<tr class="memitem:a4addce4e16e56f465ef9924600004d9a" id="r_a4addce4e16e56f465ef9924600004d9a"><td class="memItemLeft">virtual glm::mat4&#160;</td><td class="memItemRight"><a class="el" href="#a4addce4e16e56f465ef9924600004d9a">getWorldToModelMatrix</a> () const =0</td></tr>
-<tr class="memitem:a26e9398c87df3cb23eba881af89ca5c6" id="r_a26e9398c87df3cb23eba881af89ca5c6"><td class="memItemLeft">virtual glm::vec3&#160;</td><td class="memItemRight"><a class="el" href="#a26e9398c87df3cb23eba881af89ca5c6">transformNormal</a> (const vec3 &amp;normal, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
-<tr class="memitem:a541d5f2a2077016727e05a789e8190d6" id="r_a541d5f2a2077016727e05a789e8190d6"><td class="memItemLeft">virtual glm::vec3&#160;</td><td class="memItemRight"><a class="el" href="#a541d5f2a2077016727e05a789e8190d6">transformPosition</a> (const vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
-<tr class="memitem:a57b586843c79f3e08bc86883d26fae56" id="r_a57b586843c79f3e08bc86883d26fae56"><td class="memItemLeft">virtual glm::vec4&#160;</td><td class="memItemRight"><a class="el" href="#a57b586843c79f3e08bc86883d26fae56">transformPositionHomogeneous</a> (const vec4 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
+<tr class="memitem:a19dab4e46840b66b0245af5cdada94b3" id="r_a19dab4e46840b66b0245af5cdada94b3"><td class="memItemLeft">virtual glm::dmat4&#160;</td><td class="memItemRight"><a class="el" href="#a19dab4e46840b66b0245af5cdada94b3">getDataToModelMatrix</a> () const =0</td></tr>
+<tr class="memitem:afcceff13d083f8352ce5292dc38f154a" id="r_afcceff13d083f8352ce5292dc38f154a"><td class="memItemLeft">virtual glm::dmat4&#160;</td><td class="memItemRight"><a class="el" href="#afcceff13d083f8352ce5292dc38f154a">getDataToWorldMatrix</a> () const =0</td></tr>
+<tr class="memitem:a60c61026d54cc8271647160888517032" id="r_a60c61026d54cc8271647160888517032"><td class="memItemLeft">glm::dmat3&#160;</td><td class="memItemRight"><a class="el" href="#a60c61026d54cc8271647160888517032">getInverseMetricTensor</a> () const</td></tr>
+<tr class="memdesc:a60c61026d54cc8271647160888517032"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the inverse metric tensor for the dataToWorld basis. This it useful for gradient computation.  <br /></td></tr>
+<tr class="memitem:ad9f2df7cfb6020e9f317e5b4a2bfe3c6" id="r_ad9f2df7cfb6020e9f317e5b4a2bfe3c6"><td class="memItemLeft">virtual glm::dmat4&#160;</td><td class="memItemRight"><a class="el" href="#ad9f2df7cfb6020e9f317e5b4a2bfe3c6">getMatrix</a> (<a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
+<tr class="memitem:a1a55bc6b345cd2bd7cc16cfa75eafbca" id="r_a1a55bc6b345cd2bd7cc16cfa75eafbca"><td class="memItemLeft"><a id="a1a55bc6b345cd2bd7cc16cfa75eafbca" name="a1a55bc6b345cd2bd7cc16cfa75eafbca"></a>
+glm::dmat3&#160;</td><td class="memItemRight"><b>getMetricTensor</b> () const</td></tr>
+<tr class="memdesc:a1a55bc6b345cd2bd7cc16cfa75eafbca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the metric tensor for the dataToWorld basis. <br /></td></tr>
+<tr class="memitem:afd3a5b3589063de6c116cc59e70bf640" id="r_afd3a5b3589063de6c116cc59e70bf640"><td class="memItemLeft">virtual glm::dmat4&#160;</td><td class="memItemRight"><a class="el" href="#afd3a5b3589063de6c116cc59e70bf640">getModelToDataMatrix</a> () const =0</td></tr>
+<tr class="memitem:a9e820eb3cff1b598fb2738fd9dbb4212" id="r_a9e820eb3cff1b598fb2738fd9dbb4212"><td class="memItemLeft">virtual glm::dmat4&#160;</td><td class="memItemRight"><a class="el" href="#a9e820eb3cff1b598fb2738fd9dbb4212">getModelToWorldMatrix</a> () const =0</td></tr>
+<tr class="memitem:a77a0aeb305f85da6d2e7a85a274c4086" id="r_a77a0aeb305f85da6d2e7a85a274c4086"><td class="memItemLeft">virtual glm::dmat4&#160;</td><td class="memItemRight"><a class="el" href="#a77a0aeb305f85da6d2e7a85a274c4086">getWorldToDataMatrix</a> () const =0</td></tr>
+<tr class="memitem:afff578a4780fe9d808eaff6a8417a416" id="r_afff578a4780fe9d808eaff6a8417a416"><td class="memItemLeft">virtual glm::dmat4&#160;</td><td class="memItemRight"><a class="el" href="#afff578a4780fe9d808eaff6a8417a416">getWorldToModelMatrix</a> () const =0</td></tr>
+<tr class="memitem:aa51442701fdfa998ee84e2ac8201bf92" id="r_aa51442701fdfa998ee84e2ac8201bf92"><td class="memItemLeft">virtual glm::dvec3&#160;</td><td class="memItemRight"><a class="el" href="#aa51442701fdfa998ee84e2ac8201bf92">transformNormal</a> (const dvec3 &amp;normal, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
+<tr class="memitem:a0fbca73d8e23bd6d9a23785a8498d63b" id="r_a0fbca73d8e23bd6d9a23785a8498d63b"><td class="memItemLeft">virtual glm::dvec3&#160;</td><td class="memItemRight"><a class="el" href="#a0fbca73d8e23bd6d9a23785a8498d63b">transformPosition</a> (const dvec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
+<tr class="memitem:a0642bb9f3932e64d9d6236faf7f5cc5a" id="r_a0642bb9f3932e64d9d6236faf7f5cc5a"><td class="memItemLeft">virtual glm::dvec4&#160;</td><td class="memItemRight"><a class="el" href="#a0642bb9f3932e64d9d6236faf7f5cc5a">transformPositionHomogeneous</a> (const dvec4 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ac10b181c8190513a87b13d83076b6736" id="r_ac10b181c8190513a87b13d83076b6736"><td class="memItemLeft">static glm::mat3&#160;</td><td class="memItemRight"><a class="el" href="#ac10b181c8190513a87b13d83076b6736">getMetricTensor</a> (glm::mat3 basis)</td></tr>
-<tr class="memdesc:ac10b181c8190513a87b13d83076b6736"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the metric tensor g_ij from a set of basis vectors.  <br /></td></tr>
+<tr class="memitem:a1b46831129bcf69a390093e3603e9d37" id="r_a1b46831129bcf69a390093e3603e9d37"><td class="memItemLeft">static glm::dmat3&#160;</td><td class="memItemRight"><a class="el" href="#a1b46831129bcf69a390093e3603e9d37">getMetricTensor</a> (glm::dmat3 basis)</td></tr>
+<tr class="memdesc:a1b46831129bcf69a390093e3603e9d37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the metric tensor g_ij from a set of basis vectors.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -147,8 +147,8 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 &#160;</td><td class="memItemRight"><b>SpatialCoordinateTransformer</b> (SpatialCoordinateTransformer &amp;&amp;)=delete</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a697750581eba2c12a3628756aac61430" name="a697750581eba2c12a3628756aac61430"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a697750581eba2c12a3628756aac61430">&#9670;&#160;</a></span>getDataToModelMatrix()</h2>
+<a id="a19dab4e46840b66b0245af5cdada94b3" name="a19dab4e46840b66b0245af5cdada94b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19dab4e46840b66b0245af5cdada94b3">&#9670;&#160;</a></span>getDataToModelMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -157,7 +157,7 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual glm::mat4 inviwo::SpatialCoordinateTransformer::getDataToModelMatrix </td>
+          <td class="memname">virtual glm::dmat4 inviwo::SpatialCoordinateTransformer::getDataToModelMatrix </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -171,12 +171,12 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 </div><div class="memdoc">
 <p>Returns the matrix transformation mapping from raw data numbers to model space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (data min, data max) </p>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#abb441ceaf52ab5b7f780381cbca900b4">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#a6af8dda9388394b7b58a4ccbdee6a97d">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae2063d24561c8c4875b43411ed1d96d4">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#a9e3a94d91442aa60083312dd1f1d1770">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#aed827843a1f30674672e0ecb04891d7e">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#a0d0a2c9dac94b832706e8d8739dced75">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#a29b1aede8ded2461a7054865cfb717c4">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#ad3db2b76e955854d6d36f360a2ce1b44">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
 
 </div>
 </div>
-<a id="ae61c68db5deafdb779a13977ed8a6913" name="ae61c68db5deafdb779a13977ed8a6913"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae61c68db5deafdb779a13977ed8a6913">&#9670;&#160;</a></span>getDataToWorldMatrix()</h2>
+<a id="afcceff13d083f8352ce5292dc38f154a" name="afcceff13d083f8352ce5292dc38f154a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcceff13d083f8352ce5292dc38f154a">&#9670;&#160;</a></span>getDataToWorldMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -185,7 +185,7 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual glm::mat4 inviwo::SpatialCoordinateTransformer::getDataToWorldMatrix </td>
+          <td class="memname">virtual glm::dmat4 inviwo::SpatialCoordinateTransformer::getDataToWorldMatrix </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -199,18 +199,18 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 </div><div class="memdoc">
 <p>Returns the matrix transformation mapping from raw data numbers to world space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (-inf, inf) </p>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#aa29c88ff066082f7342c91161a4a1402">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#affdba6f243f75602f585a437645ab789">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#a7cb28529ac4bddaa0e72a9f8bc446bf3">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#a1cdc25ff014c9a57f2b25a7b91e9e8fc">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a7e5ef4164d73e0d247f95524b3d742c2">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#a909320d8e3033e8a1f6f747c7ea55f96">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#a57863d810e8d873efdc1eefe2f4cd0f5">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#a6358564bfa0a21ea7ee6f2e9ab26948d">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
 
 </div>
 </div>
-<a id="a83fd085c5cbb30b6e9ae43e18a00c58c" name="a83fd085c5cbb30b6e9ae43e18a00c58c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a83fd085c5cbb30b6e9ae43e18a00c58c">&#9670;&#160;</a></span>getInverseMetricTensor()</h2>
+<a id="a60c61026d54cc8271647160888517032" name="a60c61026d54cc8271647160888517032"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60c61026d54cc8271647160888517032">&#9670;&#160;</a></span>getInverseMetricTensor()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">glm::mat3 inviwo::SpatialCoordinateTransformer::getInverseMetricTensor </td>
+          <td class="memname">glm::dmat3 inviwo::SpatialCoordinateTransformer::getInverseMetricTensor </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -224,8 +224,8 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 
 </div>
 </div>
-<a id="acf235741499508c67af469e48e23925e" name="acf235741499508c67af469e48e23925e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf235741499508c67af469e48e23925e">&#9670;&#160;</a></span>getMatrix()</h2>
+<a id="ad9f2df7cfb6020e9f317e5b4a2bfe3c6" name="ad9f2df7cfb6020e9f317e5b4a2bfe3c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9f2df7cfb6020e9f317e5b4a2bfe3c6">&#9670;&#160;</a></span>getMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,7 +234,7 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual glm::mat4 inviwo::SpatialCoordinateTransformer::getMatrix </td>
+          <td class="memname">virtual glm::dmat4 inviwo::SpatialCoordinateTransformer::getMatrix </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a></td>          <td class="paramname"><span class="paramname"><em>from</em></span>, </td>
         </tr>
@@ -252,12 +252,12 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 </div><div class="memdoc">
 <p>Returns the matrix transformation mapping from <code class="param">from</code> coordinates to <code class="param">to</code> coordinates </p>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformer.html#adab0692795077a8204e98c2dae13aaea">inviwo::SpatialCameraCoordinateTransformer</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformer.html#ac7106182a8701621ad79c2f380cd2894">inviwo::StructuredCameraCoordinateTransformer</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformer.html#a3e142ba85ad9ecc01953202e4a747628">inviwo::StructuredCoordinateTransformer</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformer.html#af8639ea5cf813f1decc02522e1eb156b">inviwo::SpatialCameraCoordinateTransformer</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformer.html#a614a2bf2ca28afb5ebc4d4a023830414">inviwo::StructuredCameraCoordinateTransformer</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformer.html#affcba6660c235d090169bb74b896b748">inviwo::StructuredCoordinateTransformer</a>.</p>
 
 </div>
 </div>
-<a id="ac10b181c8190513a87b13d83076b6736" name="ac10b181c8190513a87b13d83076b6736"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac10b181c8190513a87b13d83076b6736">&#9670;&#160;</a></span>getMetricTensor()</h2>
+<a id="a1b46831129bcf69a390093e3603e9d37" name="a1b46831129bcf69a390093e3603e9d37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b46831129bcf69a390093e3603e9d37">&#9670;&#160;</a></span>getMetricTensor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -266,9 +266,9 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">glm::mat3 inviwo::SpatialCoordinateTransformer::getMetricTensor </td>
+          <td class="memname">glm::dmat3 inviwo::SpatialCoordinateTransformer::getMetricTensor </td>
           <td>(</td>
-          <td class="paramtype">glm::mat3</td>          <td class="paramname"><span class="paramname"><em>basis</em></span></td><td>)</td>
+          <td class="paramtype">glm::dmat3</td>          <td class="paramname"><span class="paramname"><em>basis</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -292,8 +292,8 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 
 </div>
 </div>
-<a id="a5aa02e6256aa57f831d2da83f908233d" name="a5aa02e6256aa57f831d2da83f908233d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5aa02e6256aa57f831d2da83f908233d">&#9670;&#160;</a></span>getModelToDataMatrix()</h2>
+<a id="afd3a5b3589063de6c116cc59e70bf640" name="afd3a5b3589063de6c116cc59e70bf640"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd3a5b3589063de6c116cc59e70bf640">&#9670;&#160;</a></span>getModelToDataMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -302,7 +302,7 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual glm::mat4 inviwo::SpatialCoordinateTransformer::getModelToDataMatrix </td>
+          <td class="memname">virtual glm::dmat4 inviwo::SpatialCoordinateTransformer::getModelToDataMatrix </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -316,12 +316,12 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 </div><div class="memdoc">
 <p>Returns the matrix transformation mapping from model space coordinates to raw data numbers, i.e. from (data min, data max) to generally (-inf, inf), ([0,1] for textures) </p>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a09af5aadeda4386548aa519b5cadc5cb">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#a163974eee8efac34f18c4f8a2e748b2f">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#af0b74f782fa6397321e88f0fecf42ffc">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#a15668a61a23752038e7300b842ca4266">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#ab2635b9b42309783df4fcf62219ab2da">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#aaa71789fbb16f9ae48df66a75b87ee97">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#a05a51174165a4c89e7d0c45e692154c0">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#aff63d5ed68da022ecd868087c275d8a8">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
 
 </div>
 </div>
-<a id="a9d938bc064fe8eddb43fff6aff4448e0" name="a9d938bc064fe8eddb43fff6aff4448e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9d938bc064fe8eddb43fff6aff4448e0">&#9670;&#160;</a></span>getModelToWorldMatrix()</h2>
+<a id="a9e820eb3cff1b598fb2738fd9dbb4212" name="a9e820eb3cff1b598fb2738fd9dbb4212"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e820eb3cff1b598fb2738fd9dbb4212">&#9670;&#160;</a></span>getModelToWorldMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -330,7 +330,7 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual glm::mat4 inviwo::SpatialCoordinateTransformer::getModelToWorldMatrix </td>
+          <td class="memname">virtual glm::dmat4 inviwo::SpatialCoordinateTransformer::getModelToWorldMatrix </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -344,12 +344,12 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 </div><div class="memdoc">
 <p>Returns the matrix transformation mapping from model space coordinates to world space coordinates, i.e. from (data min, data max) to (-inf, inf) </p>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#af82ee8e6e7e16c8379a8061b8ab834ba">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#aedc7c608ee478566fd67b46a12b44dc4">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#a75c0fcce7df18b5ca2e28e931ec74809">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#a6ecc137bd1d2f5baddfa4155b0080b00">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a369134c12997badd77f66e4e0397c5d1">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#a35f280032bf185c4115b74c033f25cd1">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#acd507ebec1a637715ce7f8a11ab1c395">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#a0d5f8ca74ff1f353072507e2aee63c1e">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
 
 </div>
 </div>
-<a id="a1b2b93e03f3ed49288d6c3572056414a" name="a1b2b93e03f3ed49288d6c3572056414a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b2b93e03f3ed49288d6c3572056414a">&#9670;&#160;</a></span>getWorldToDataMatrix()</h2>
+<a id="a77a0aeb305f85da6d2e7a85a274c4086" name="a77a0aeb305f85da6d2e7a85a274c4086"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77a0aeb305f85da6d2e7a85a274c4086">&#9670;&#160;</a></span>getWorldToDataMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -358,7 +358,7 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual glm::mat4 inviwo::SpatialCoordinateTransformer::getWorldToDataMatrix </td>
+          <td class="memname">virtual glm::dmat4 inviwo::SpatialCoordinateTransformer::getWorldToDataMatrix </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -372,12 +372,12 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 </div><div class="memdoc">
 <p>Returns the matrix transformation mapping from world space coordinates to raw data numbers, i.e. from (-inf, inf) to generally (-inf, inf), ([0,1] for textures) </p>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a0f17678f0d72a5bc18a824e1c0a627aa">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#a79c1a27050a45ee97aaea64c9c888e51">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#a7dfdae6401aa19725aaa5e16af7ab3e2">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#a26174b7ab6e0cafb507182a28cdfc0ee">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a89924f541526a2c05cd87a6e9f4acc0c">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#a88fcabdebbcbcf692b3d434dd8b9f820">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#a6832d627ef8c6bfe0ce01e929126bef4">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#aa0f43f922b086a4e5f6584f9a8d17fe7">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
 
 </div>
 </div>
-<a id="a4addce4e16e56f465ef9924600004d9a" name="a4addce4e16e56f465ef9924600004d9a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4addce4e16e56f465ef9924600004d9a">&#9670;&#160;</a></span>getWorldToModelMatrix()</h2>
+<a id="afff578a4780fe9d808eaff6a8417a416" name="afff578a4780fe9d808eaff6a8417a416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afff578a4780fe9d808eaff6a8417a416">&#9670;&#160;</a></span>getWorldToModelMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -386,7 +386,7 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual glm::mat4 inviwo::SpatialCoordinateTransformer::getWorldToModelMatrix </td>
+          <td class="memname">virtual glm::dmat4 inviwo::SpatialCoordinateTransformer::getWorldToModelMatrix </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -400,12 +400,12 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 </div><div class="memdoc">
 <p>Returns the matrix transformation mapping from world space coordinates to model space coordinates, i.e. from (-inf, inf) to (data min, data max) </p>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a7ebc27bce1582dd9ea360e08a5969f71">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#a73b99d887dcfc44ee664ec73ffa40ac3">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ab61261462563635f2a6d8beb14c9c879">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#aebf0c3d58f322206956d4caeb65fdd24">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a75ddc18446f5da6e33fafd737fe4b3fc">inviwo::SpatialCameraCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1SpatialCoordinateTransformerImpl.html#abbdf2ebd03f83cccf0f79bc615832529">inviwo::SpatialCoordinateTransformerImpl</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#a4b737b6dc459b6f903f051f46e9a9abc">inviwo::StructuredCameraCoordinateTransformerImpl&lt; N &gt;</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#a0b2da4bc216487e3b88f8395a5def58b">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
 
 </div>
 </div>
-<a id="a26e9398c87df3cb23eba881af89ca5c6" name="a26e9398c87df3cb23eba881af89ca5c6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a26e9398c87df3cb23eba881af89ca5c6">&#9670;&#160;</a></span>transformNormal()</h2>
+<a id="aa51442701fdfa998ee84e2ac8201bf92" name="aa51442701fdfa998ee84e2ac8201bf92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa51442701fdfa998ee84e2ac8201bf92">&#9670;&#160;</a></span>transformNormal()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -414,9 +414,9 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual glm::vec3 inviwo::SpatialCoordinateTransformer::transformNormal </td>
+          <td class="memname">virtual glm::dvec3 inviwo::SpatialCoordinateTransformer::transformNormal </td>
           <td>(</td>
-          <td class="paramtype">const vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>normal</em></span>, </td>
+          <td class="paramtype">const dvec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>normal</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -439,8 +439,8 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 
 </div>
 </div>
-<a id="a541d5f2a2077016727e05a789e8190d6" name="a541d5f2a2077016727e05a789e8190d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a541d5f2a2077016727e05a789e8190d6">&#9670;&#160;</a></span>transformPosition()</h2>
+<a id="a0fbca73d8e23bd6d9a23785a8498d63b" name="a0fbca73d8e23bd6d9a23785a8498d63b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fbca73d8e23bd6d9a23785a8498d63b">&#9670;&#160;</a></span>transformPosition()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -449,9 +449,9 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual glm::vec3 inviwo::SpatialCoordinateTransformer::transformPosition </td>
+          <td class="memname">virtual glm::dvec3 inviwo::SpatialCoordinateTransformer::transformPosition </td>
           <td>(</td>
-          <td class="paramtype">const vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span>, </td>
+          <td class="paramtype">const dvec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -474,8 +474,8 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
 
 </div>
 </div>
-<a id="a57b586843c79f3e08bc86883d26fae56" name="a57b586843c79f3e08bc86883d26fae56"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a57b586843c79f3e08bc86883d26fae56">&#9670;&#160;</a></span>transformPositionHomogeneous()</h2>
+<a id="a0642bb9f3932e64d9d6236faf7f5cc5a" name="a0642bb9f3932e64d9d6236faf7f5cc5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0642bb9f3932e64d9d6236faf7f5cc5a">&#9670;&#160;</a></span>transformPositionHomogeneous()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -484,9 +484,9 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight"><b>operato
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual glm::vec4 inviwo::SpatialCoordinateTransformer::transformPositionHomogeneous </td>
+          <td class="memname">virtual glm::dvec4 inviwo::SpatialCoordinateTransformer::transformPositionHomogeneous </td>
           <td>(</td>
-          <td class="paramtype">const vec4 &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span>, </td>
+          <td class="paramtype">const dvec4 &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

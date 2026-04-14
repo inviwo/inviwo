@@ -4,7 +4,7 @@ var searchData=
   ['nanorzero_1',['NanOrZero',['../classinviwo_1_1CSVReader.html#a64f39e3ad1f7c7af5e91e99a6a28a4f7ad6844b8b4bd544627fa650e3951efa9e',1,'inviwo::CSVReader']]],
   ['native_2',['Native',['../classinviwo_1_1BufferObject.html#a921af5da3bd96e4a003087e3cfb692c6a925641e0b76c28cc940e8f3ca178d826',1,'inviwo::BufferObject']]],
   ['ndc_3',['ndc',['../classinviwo_1_1GestureEvent.html#af8a8ec2481d3e497440da66822a6ab6a',1,'inviwo::GestureEvent::ndc()'],['../classinviwo_1_1MouseInteractionEvent.html#a0eea64cff82e417ce0a7da3bc929f478',1,'inviwo::MouseInteractionEvent::ndc()'],['../classinviwo_1_1TouchPoint.html#ab17bb87a2f41e0d2bdfd4c8e6f5f6b55',1,'inviwo::TouchPoint::ndc()']]],
-  ['nearplanedist_5f_4',['nearPlaneDist_',['../classinviwo_1_1Camera.html#a08c6dcd7d5cf3941c9c1c3dde828c683',1,'inviwo::Camera']]],
+  ['nearplanedist_5f_4',['nearPlaneDist_',['../classinviwo_1_1Camera.html#ac58b0a3c6a00ba15c044c364158397ac',1,'inviwo::Camera']]],
   ['needsserialization_5',['needsSerialization',['../classinviwo_1_1CameraProperty.html#a6c53f7a1e7ec11eff5b65bf951b1213c',1,'inviwo::CameraProperty::needsSerialization()'],['../classinviwo_1_1CompositeProperty.html#a969faf3cde079d8ee7d502c40a6385d6',1,'inviwo::CompositeProperty::needsSerialization()'],['../classinviwo_1_1ListProperty.html#a1438ebdaff8395fe419d8f359907f91f',1,'inviwo::ListProperty::needsSerialization()'],['../classinviwo_1_1Property.html#a5933d478d96b4d32cae4addc9278ca0d',1,'inviwo::Property::needsSerialization()']]],
   ['neighborlistfiltering_6',['NeighborListFiltering',['../classinviwo_1_1NeighborListFiltering.html',1,'inviwo']]],
   ['networkautomation_7',['NetworkAutomation',['../classinviwo_1_1NetworkAutomation.html',1,'inviwo']]],

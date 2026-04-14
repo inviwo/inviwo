@@ -37,7 +37,7 @@ var searchData=
   ['maxsize_34',['maxSize',['../classinviwo_1_1BufferObjectArray.html#a466c3f07385df96bf731373832b6bc92',1,'inviwo::BufferObjectArray']]],
   ['md2doc_35',['md2doc',['../namespaceinviwo_1_1util.html#ae84a9ec3e9841aca2ea06fa34aaaed50',1,'inviwo::util']]],
   ['min_36',['min',['../classinviwo_1_1BitSet.html#a8beb156da38b56beb3b91748d224308d',1,'inviwo::BitSet']]],
-  ['minextentboundingbox_37',['minExtentBoundingBox',['../namespaceinviwo_1_1util.html#a4dd2955122b137fe4ce5e573d25a4e27',1,'inviwo::util']]],
+  ['minextentboundingbox_37',['minExtentBoundingBox',['../namespaceinviwo_1_1util.html#a8a14a7558e0da4bfc9982899b3f53672',1,'inviwo::util']]],
   ['minmaxpropertywidgetcef_38',['MinMaxPropertyWidgetCEF',['../classinviwo_1_1MinMaxPropertyWidgetCEF.html#a9b8a58e9cb0f5345fd52af9124f82d73',1,'inviwo::MinMaxPropertyWidgetCEF']]],
   ['moveaction_39',['moveAction',['../classinviwo_1_1glui_1_1Element.html#aba8a9e2319cffa85f97f4ba04a6fe5d2',1,'inviwo::glui::Element']]],
   ['movehandle_40',['moveHandle',['../classinviwo_1_1plot_1_1PCPAxisSettings.html#aa6ffe0d9bc67b39dc9ee0caddf17648f',1,'inviwo::plot::PCPAxisSettings']]],

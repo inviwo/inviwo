@@ -116,77 +116,77 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af8ce76d67db3e3eaeb030183f539be78" id="r_af8ce76d67db3e3eaeb030183f539be78"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#af8ce76d67db3e3eaeb030183f539be78">configureProperties</a> (<a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;cameraProperty, bool attach) override</td></tr>
 <tr class="memitem:ab332b5a41fb7f7baf98a57d743b61f23" id="r_ab332b5a41fb7f7baf98a57d743b61f23"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ab332b5a41fb7f7baf98a57d743b61f23">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
 <tr class="memitem:a46fb984a2842e99b15aba6576b7ac2d2" id="r_a46fb984a2842e99b15aba6576b7ac2d2"><td class="memItemLeft">virtual std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a46fb984a2842e99b15aba6576b7ac2d2">getClassIdentifier</a> () const override</td></tr>
-<tr class="memitem:ad5e9d9cc00d3d6a14879e5ed7032576c" id="r_ad5e9d9cc00d3d6a14879e5ed7032576c"><td class="memItemLeft">virtual vec4&#160;</td><td class="memItemRight"><a class="el" href="#ad5e9d9cc00d3d6a14879e5ed7032576c">getClipPosFromNormalizedDeviceCoords</a> (const vec3 &amp;ndcCoords) const override</td></tr>
-<tr class="memdesc:ad5e9d9cc00d3d6a14879e5ed7032576c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates, where z value of -1 correspond to the near plane and 1 to the far plane. Coordinates outside of the [-1 1]^3 range will be clipped.  <br /></td></tr>
-<tr class="memitem:add7385f4a5aa4daccda6526eb3af549b" id="r_add7385f4a5aa4daccda6526eb3af549b"><td class="memItemLeft"><a id="add7385f4a5aa4daccda6526eb3af549b" name="add7385f4a5aa4daccda6526eb3af549b"></a>
-float&#160;</td><td class="memItemRight"><b>getWidth</b> () const</td></tr>
+<tr class="memitem:a8191aafe27533c0e9a5782aa30f4b7a2" id="r_a8191aafe27533c0e9a5782aa30f4b7a2"><td class="memItemLeft">virtual dvec4&#160;</td><td class="memItemRight"><a class="el" href="#a8191aafe27533c0e9a5782aa30f4b7a2">getClipPosFromNormalizedDeviceCoords</a> (const dvec3 &amp;ndcCoords) const override</td></tr>
+<tr class="memdesc:a8191aafe27533c0e9a5782aa30f4b7a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates, where z value of -1 correspond to the near plane and 1 to the far plane. Coordinates outside of the [-1 1]^3 range will be clipped.  <br /></td></tr>
+<tr class="memitem:a3b2542e37f8ea3b72240c1e23ea3dc7e" id="r_a3b2542e37f8ea3b72240c1e23ea3dc7e"><td class="memItemLeft"><a id="a3b2542e37f8ea3b72240c1e23ea3dc7e" name="a3b2542e37f8ea3b72240c1e23ea3dc7e"></a>
+double&#160;</td><td class="memItemRight"><b>getWidth</b> () const</td></tr>
 <tr class="memitem:a975c61cf7998b27781b70d29430bead5" id="r_a975c61cf7998b27781b70d29430bead5"><td class="memItemLeft"><a id="a975c61cf7998b27781b70d29430bead5" name="a975c61cf7998b27781b70d29430bead5"></a>
 OrthographicCamera &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const OrthographicCamera &amp;other)</td></tr>
 <tr class="memitem:a5e6b3bd17e7eaef8a557bd347be58ae5" id="r_a5e6b3bd17e7eaef8a557bd347be58ae5"><td class="memItemLeft"><a id="a5e6b3bd17e7eaef8a557bd347be58ae5" name="a5e6b3bd17e7eaef8a557bd347be58ae5"></a>
 &#160;</td><td class="memItemRight"><b>OrthographicCamera</b> (const OrthographicCamera &amp;other)</td></tr>
-<tr class="memitem:aedbe3e7f64aa60f688109adaecb47247" id="r_aedbe3e7f64aa60f688109adaecb47247"><td class="memItemLeft"><a id="aedbe3e7f64aa60f688109adaecb47247" name="aedbe3e7f64aa60f688109adaecb47247"></a>
-&#160;</td><td class="memItemRight"><b>OrthographicCamera</b> (vec3 lookFrom=cameradefaults::lookFrom, vec3 lookTo=cameradefaults::lookTo, vec3 lookUp=cameradefaults::lookUp, float nearPlane=cameradefaults::nearPlane, float farPlane=cameradefaults::farPlane, float aspectRatio=cameradefaults::aspectRatio, float width=cameradefaults::width)</td></tr>
+<tr class="memitem:aea24c4a5da3e9957823b1eb27d6d5b63" id="r_aea24c4a5da3e9957823b1eb27d6d5b63"><td class="memItemLeft"><a id="aea24c4a5da3e9957823b1eb27d6d5b63" name="aea24c4a5da3e9957823b1eb27d6d5b63"></a>
+&#160;</td><td class="memItemRight"><b>OrthographicCamera</b> (dvec3 lookFrom=cameradefaults::lookFrom, dvec3 lookTo=cameradefaults::lookTo, dvec3 lookUp=cameradefaults::lookUp, double nearPlane=cameradefaults::nearPlane, double farPlane=cameradefaults::farPlane, double aspectRatio=cameradefaults::aspectRatio, double width=cameradefaults::width)</td></tr>
 <tr class="memitem:ab3aeeb3bbb18e048e2fc6fc2c2d4a423" id="r_ab3aeeb3bbb18e048e2fc6fc2c2d4a423"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ab3aeeb3bbb18e048e2fc6fc2c2d4a423">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
-<tr class="memitem:aaf4ed0c6ecd6cfe56da66091d8fafe92" id="r_aaf4ed0c6ecd6cfe56da66091d8fafe92"><td class="memItemLeft"><a id="aaf4ed0c6ecd6cfe56da66091d8fafe92" name="aaf4ed0c6ecd6cfe56da66091d8fafe92"></a>
-void&#160;</td><td class="memItemRight"><b>setWidth</b> (float width)</td></tr>
-<tr class="memitem:a3c509c3df5585b8a7f1b80b152ba56d1" id="r_a3c509c3df5585b8a7f1b80b152ba56d1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a3c509c3df5585b8a7f1b80b152ba56d1">updateFrom</a> (const <a class="el" href="classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767">Camera</a> &amp;source) override</td></tr>
+<tr class="memitem:a615e3074640aac784dd94904b898ab67" id="r_a615e3074640aac784dd94904b898ab67"><td class="memItemLeft"><a id="a615e3074640aac784dd94904b898ab67" name="a615e3074640aac784dd94904b898ab67"></a>
+void&#160;</td><td class="memItemRight"><b>setWidth</b> (double width)</td></tr>
+<tr class="memitem:a3c509c3df5585b8a7f1b80b152ba56d1" id="r_a3c509c3df5585b8a7f1b80b152ba56d1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a3c509c3df5585b8a7f1b80b152ba56d1">updateFrom</a> (const <a class="el" href="classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e">Camera</a> &amp;source) override</td></tr>
 <tr class="memitem:a60a38267918d944957ac5fae0704d116" id="r_a60a38267918d944957ac5fae0704d116"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a60a38267918d944957ac5fae0704d116">zoom</a> (const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;opts) override</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Camera"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Camera')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Camera.html">inviwo::Camera</a></td></tr>
 <tr class="memitem:ae01bd9b25f771997ddbda43e90c3acb1 inherit pub_methods_classinviwo_1_1Camera" id="r_ae01bd9b25f771997ddbda43e90c3acb1"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>Camera</b> (Camera &amp;&amp;other) noexcept=default</td></tr>
 <tr class="memitem:a1f138ccff852fc72743b138df3abc117 inherit pub_methods_classinviwo_1_1Camera" id="r_a1f138ccff852fc72743b138df3abc117"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>Camera</b> (const Camera &amp;other)=default</td></tr>
-<tr class="memitem:a923ef63c3558c0e980670b8a4f8fa767 inherit pub_methods_classinviwo_1_1Camera" id="r_a923ef63c3558c0e980670b8a4f8fa767"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767">Camera</a> (vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane, float aspectRatio)</td></tr>
-<tr class="memdesc:a923ef63c3558c0e980670b8a4f8fa767 inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a camera.  <br /></td></tr>
-<tr class="memitem:a3869dce482dd976ed13f1fc9ead59b3c inherit pub_methods_classinviwo_1_1Camera" id="r_a3869dce482dd976ed13f1fc9ead59b3c"><td class="memItemLeft">
-virtual float&#160;</td><td class="memItemRight"><b>getAspectRatio</b> () const</td></tr>
-<tr class="memitem:a7b51272f130a1940999f96af2ad8dca4 inherit pub_methods_classinviwo_1_1Camera" id="r_a7b51272f130a1940999f96af2ad8dca4"><td class="memItemLeft">
-vec3&#160;</td><td class="memItemRight"><b>getDirection</b> () const</td></tr>
-<tr class="memdesc:a7b51272f130a1940999f96af2ad8dca4 inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get unnormalized direction of camera: lookTo - lookFrom. <br /></td></tr>
-<tr class="memitem:ad1e1d76a8d56aa305082125e1d252096 inherit pub_methods_classinviwo_1_1Camera" id="r_ad1e1d76a8d56aa305082125e1d252096"><td class="memItemLeft">
-float&#160;</td><td class="memItemRight"><b>getFarPlaneDist</b> () const</td></tr>
-<tr class="memitem:ae121a07e2b2c53a3633b48d3e3031c82 inherit pub_methods_classinviwo_1_1Camera" id="r_ae121a07e2b2c53a3633b48d3e3031c82"><td class="memItemLeft">
-const mat4 &amp;&#160;</td><td class="memItemRight"><b>getInverseProjectionMatrix</b> () const</td></tr>
-<tr class="memitem:aa995f33460377eacef33ac5deb43774c inherit pub_methods_classinviwo_1_1Camera" id="r_aa995f33460377eacef33ac5deb43774c"><td class="memItemLeft">
-const mat4 &amp;&#160;</td><td class="memItemRight"><b>getInverseViewMatrix</b> () const</td></tr>
-<tr class="memitem:ab53313bd3ee5564fe5f56724b0d2376f inherit pub_methods_classinviwo_1_1Camera" id="r_ab53313bd3ee5564fe5f56724b0d2376f"><td class="memItemLeft">
-const vec3 &amp;&#160;</td><td class="memItemRight"><b>getLookFrom</b> () const</td></tr>
-<tr class="memitem:ad9e5bc3e714d89038b4f5c62659155a6 inherit pub_methods_classinviwo_1_1Camera" id="r_ad9e5bc3e714d89038b4f5c62659155a6"><td class="memItemLeft">
-vec3&#160;</td><td class="memItemRight"><b>getLookRight</b> () const</td></tr>
-<tr class="memitem:a2d63f95d901f02a2892c86bf5dec5a2d inherit pub_methods_classinviwo_1_1Camera" id="r_a2d63f95d901f02a2892c86bf5dec5a2d"><td class="memItemLeft">
-const vec3 &amp;&#160;</td><td class="memItemRight"><b>getLookTo</b> () const</td></tr>
-<tr class="memitem:a5e2c4aece78e6a4c093ff7541c3fa652 inherit pub_methods_classinviwo_1_1Camera" id="r_a5e2c4aece78e6a4c093ff7541c3fa652"><td class="memItemLeft">
-const vec3 &amp;&#160;</td><td class="memItemRight"><b>getLookUp</b> () const</td></tr>
-<tr class="memitem:ac91574494947b1ac7823fac1f738e123 inherit pub_methods_classinviwo_1_1Camera" id="r_ac91574494947b1ac7823fac1f738e123"><td class="memItemLeft">
-float&#160;</td><td class="memItemRight"><b>getNearPlaneDist</b> () const</td></tr>
-<tr class="memitem:ae00b8f3baffebe636fd4add8f9df17af inherit pub_methods_classinviwo_1_1Camera" id="r_ae00b8f3baffebe636fd4add8f9df17af"><td class="memItemLeft">
-vec3&#160;</td><td class="memItemRight"><b>getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth</b> (const vec2 &amp;normalizedScreenCoord) const</td></tr>
-<tr class="memitem:a3a6e7e2caec9e3ee48aaa66630742bb6 inherit pub_methods_classinviwo_1_1Camera" id="r_a3a6e7e2caec9e3ee48aaa66630742bb6"><td class="memItemLeft">
-const mat4 &amp;&#160;</td><td class="memItemRight"><b>getProjectionMatrix</b> () const</td></tr>
-<tr class="memitem:a890d32297395eaf374e904a58054f3b4 inherit pub_methods_classinviwo_1_1Camera" id="r_a890d32297395eaf374e904a58054f3b4"><td class="memItemLeft">
-const mat4 &amp;&#160;</td><td class="memItemRight"><b>getViewMatrix</b> () const</td></tr>
-<tr class="memitem:a1a9064422b3837317a1d1d0d8ed98992 inherit pub_methods_classinviwo_1_1Camera" id="r_a1a9064422b3837317a1d1d0d8ed98992"><td class="memItemLeft">vec3&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Camera.html#a1a9064422b3837317a1d1d0d8ed98992">getWorldPosFromNormalizedDeviceCoords</a> (const vec3 &amp;ndcCoords) const</td></tr>
-<tr class="memdesc:a1a9064422b3837317a1d1d0d8ed98992 inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.  <br /></td></tr>
+<tr class="memitem:a04bdac1db684a8ce15f70c7cfaac634e inherit pub_methods_classinviwo_1_1Camera" id="r_a04bdac1db684a8ce15f70c7cfaac634e"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e">Camera</a> (dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane, double aspectRatio)</td></tr>
+<tr class="memdesc:a04bdac1db684a8ce15f70c7cfaac634e inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a camera.  <br /></td></tr>
+<tr class="memitem:a79a7c33016150e8912868b2c5bbc1388 inherit pub_methods_classinviwo_1_1Camera" id="r_a79a7c33016150e8912868b2c5bbc1388"><td class="memItemLeft">
+virtual double&#160;</td><td class="memItemRight"><b>getAspectRatio</b> () const</td></tr>
+<tr class="memitem:afb9766644fd73e14041375f04d42ba9d inherit pub_methods_classinviwo_1_1Camera" id="r_afb9766644fd73e14041375f04d42ba9d"><td class="memItemLeft">
+dvec3&#160;</td><td class="memItemRight"><b>getDirection</b> () const</td></tr>
+<tr class="memdesc:afb9766644fd73e14041375f04d42ba9d inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get unnormalized direction of camera: lookTo - lookFrom. <br /></td></tr>
+<tr class="memitem:a141c264212e9b85fd03943217189139a inherit pub_methods_classinviwo_1_1Camera" id="r_a141c264212e9b85fd03943217189139a"><td class="memItemLeft">
+double&#160;</td><td class="memItemRight"><b>getFarPlaneDist</b> () const</td></tr>
+<tr class="memitem:ab7c0c8bc3514671b35df37f2e4414dbc inherit pub_methods_classinviwo_1_1Camera" id="r_ab7c0c8bc3514671b35df37f2e4414dbc"><td class="memItemLeft">
+const dmat4 &amp;&#160;</td><td class="memItemRight"><b>getInverseProjectionMatrix</b> () const</td></tr>
+<tr class="memitem:a8f424056ef746847b26e82f5a655958a inherit pub_methods_classinviwo_1_1Camera" id="r_a8f424056ef746847b26e82f5a655958a"><td class="memItemLeft">
+const dmat4 &amp;&#160;</td><td class="memItemRight"><b>getInverseViewMatrix</b> () const</td></tr>
+<tr class="memitem:aa1084520d968bd5213fc390a41087080 inherit pub_methods_classinviwo_1_1Camera" id="r_aa1084520d968bd5213fc390a41087080"><td class="memItemLeft">
+const dvec3 &amp;&#160;</td><td class="memItemRight"><b>getLookFrom</b> () const</td></tr>
+<tr class="memitem:aded34515691790bc5bc4b3c8b8592cfb inherit pub_methods_classinviwo_1_1Camera" id="r_aded34515691790bc5bc4b3c8b8592cfb"><td class="memItemLeft">
+dvec3&#160;</td><td class="memItemRight"><b>getLookRight</b> () const</td></tr>
+<tr class="memitem:a98b81a5504d50df15ae96370014a59e3 inherit pub_methods_classinviwo_1_1Camera" id="r_a98b81a5504d50df15ae96370014a59e3"><td class="memItemLeft">
+const dvec3 &amp;&#160;</td><td class="memItemRight"><b>getLookTo</b> () const</td></tr>
+<tr class="memitem:a77630fc1145eaf650f629c8114796c68 inherit pub_methods_classinviwo_1_1Camera" id="r_a77630fc1145eaf650f629c8114796c68"><td class="memItemLeft">
+const dvec3 &amp;&#160;</td><td class="memItemRight"><b>getLookUp</b> () const</td></tr>
+<tr class="memitem:a04a9732b0ee20eee65ac19e7141c9aba inherit pub_methods_classinviwo_1_1Camera" id="r_a04a9732b0ee20eee65ac19e7141c9aba"><td class="memItemLeft">
+double&#160;</td><td class="memItemRight"><b>getNearPlaneDist</b> () const</td></tr>
+<tr class="memitem:ab1e1fabb927bf64236cbeaa1b12da8ab inherit pub_methods_classinviwo_1_1Camera" id="r_ab1e1fabb927bf64236cbeaa1b12da8ab"><td class="memItemLeft">
+dvec3&#160;</td><td class="memItemRight"><b>getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth</b> (const dvec2 &amp;normalizedScreenCoord) const</td></tr>
+<tr class="memitem:adbf8b120ab9fd2aa3f3ed957ebefad41 inherit pub_methods_classinviwo_1_1Camera" id="r_adbf8b120ab9fd2aa3f3ed957ebefad41"><td class="memItemLeft">
+const dmat4 &amp;&#160;</td><td class="memItemRight"><b>getProjectionMatrix</b> () const</td></tr>
+<tr class="memitem:a89fea8432d2a38757cee4f3f70c65481 inherit pub_methods_classinviwo_1_1Camera" id="r_a89fea8432d2a38757cee4f3f70c65481"><td class="memItemLeft">
+const dmat4 &amp;&#160;</td><td class="memItemRight"><b>getViewMatrix</b> () const</td></tr>
+<tr class="memitem:af88b5d4aa5e8f43f4cff735a36119b67 inherit pub_methods_classinviwo_1_1Camera" id="r_af88b5d4aa5e8f43f4cff735a36119b67"><td class="memItemLeft">dvec3&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Camera.html#af88b5d4aa5e8f43f4cff735a36119b67">getWorldPosFromNormalizedDeviceCoords</a> (const dvec3 &amp;ndcCoords) const</td></tr>
+<tr class="memdesc:af88b5d4aa5e8f43f4cff735a36119b67 inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.  <br /></td></tr>
 <tr class="memitem:a8e740098955de0e19f1deb36f8533aa1 inherit pub_methods_classinviwo_1_1Camera" id="r_a8e740098955de0e19f1deb36f8533aa1"><td class="memItemLeft">
-<a class="el" href="classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767">Camera</a> &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (<a class="el" href="classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767">Camera</a> &amp;&amp;other) noexcept=default</td></tr>
+<a class="el" href="classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e">Camera</a> &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (<a class="el" href="classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e">Camera</a> &amp;&amp;other) noexcept=default</td></tr>
 <tr class="memitem:a5851cb85f34bad7a3a5ee1dafcc09862 inherit pub_methods_classinviwo_1_1Camera" id="r_a5851cb85f34bad7a3a5ee1dafcc09862"><td class="memItemLeft">
-<a class="el" href="classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767">Camera</a> &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767">Camera</a> &amp;other)=default</td></tr>
-<tr class="memitem:ab10d2c4838a68239ab22189c48f98fcd inherit pub_methods_classinviwo_1_1Camera" id="r_ab10d2c4838a68239ab22189c48f98fcd"><td class="memItemLeft">
-virtual void&#160;</td><td class="memItemRight"><b>setAspectRatio</b> (float val)</td></tr>
-<tr class="memitem:a9b6752e4640ea77f4d9696b749ca7a45 inherit pub_methods_classinviwo_1_1Camera" id="r_a9b6752e4640ea77f4d9696b749ca7a45"><td class="memItemLeft">
-virtual void&#160;</td><td class="memItemRight"><b>setFarPlaneDist</b> (float distance)</td></tr>
-<tr class="memdesc:a9b6752e4640ea77f4d9696b749ca7a45 inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set distance to the far plane from lookFrom. <br /></td></tr>
-<tr class="memitem:adfcd8aee92ae001ed445280c9b4a5bce inherit pub_methods_classinviwo_1_1Camera" id="r_adfcd8aee92ae001ed445280c9b4a5bce"><td class="memItemLeft">
-void&#160;</td><td class="memItemRight"><b>setLook</b> (vec3 lookFrom, vec3 lookTo, vec3 lookUp)</td></tr>
-<tr class="memitem:a8ee844ba2e9f78f2e658fff1a5cdbbbf inherit pub_methods_classinviwo_1_1Camera" id="r_a8ee844ba2e9f78f2e658fff1a5cdbbbf"><td class="memItemLeft">
-virtual void&#160;</td><td class="memItemRight"><b>setLookFrom</b> (vec3 val)</td></tr>
-<tr class="memitem:a8db80aa8023feea44cb1289915bb8499 inherit pub_methods_classinviwo_1_1Camera" id="r_a8db80aa8023feea44cb1289915bb8499"><td class="memItemLeft">
-virtual void&#160;</td><td class="memItemRight"><b>setLookTo</b> (vec3 val)</td></tr>
-<tr class="memitem:a0ac3fb12728deab1bca01c1f9666e3e2 inherit pub_methods_classinviwo_1_1Camera" id="r_a0ac3fb12728deab1bca01c1f9666e3e2"><td class="memItemLeft">
-virtual void&#160;</td><td class="memItemRight"><b>setLookUp</b> (vec3 val)</td></tr>
-<tr class="memitem:abc6d5736c7ef193509f9d3aff770d580 inherit pub_methods_classinviwo_1_1Camera" id="r_abc6d5736c7ef193509f9d3aff770d580"><td class="memItemLeft">
-virtual void&#160;</td><td class="memItemRight"><b>setNearPlaneDist</b> (float distance)</td></tr>
-<tr class="memdesc:abc6d5736c7ef193509f9d3aff770d580 inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set distance to the near plane from lookFrom. <br /></td></tr>
+<a class="el" href="classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e">Camera</a> &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e">Camera</a> &amp;other)=default</td></tr>
+<tr class="memitem:a92a9e2e711ad0a6331aaf0392b09d537 inherit pub_methods_classinviwo_1_1Camera" id="r_a92a9e2e711ad0a6331aaf0392b09d537"><td class="memItemLeft">
+virtual void&#160;</td><td class="memItemRight"><b>setAspectRatio</b> (double val)</td></tr>
+<tr class="memitem:a9a91321dce1fd3ae08da8a1738a2ff6c inherit pub_methods_classinviwo_1_1Camera" id="r_a9a91321dce1fd3ae08da8a1738a2ff6c"><td class="memItemLeft">
+virtual void&#160;</td><td class="memItemRight"><b>setFarPlaneDist</b> (double distance)</td></tr>
+<tr class="memdesc:a9a91321dce1fd3ae08da8a1738a2ff6c inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set distance to the far plane from lookFrom. <br /></td></tr>
+<tr class="memitem:aceb7822b566295178b85512685949d5d inherit pub_methods_classinviwo_1_1Camera" id="r_aceb7822b566295178b85512685949d5d"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>setLook</b> (dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp)</td></tr>
+<tr class="memitem:af44f1ca4fce34d78f88c80184e0f7440 inherit pub_methods_classinviwo_1_1Camera" id="r_af44f1ca4fce34d78f88c80184e0f7440"><td class="memItemLeft">
+virtual void&#160;</td><td class="memItemRight"><b>setLookFrom</b> (dvec3 val)</td></tr>
+<tr class="memitem:adfccf85c1320cb562d8a8025e2927fb5 inherit pub_methods_classinviwo_1_1Camera" id="r_adfccf85c1320cb562d8a8025e2927fb5"><td class="memItemLeft">
+virtual void&#160;</td><td class="memItemRight"><b>setLookTo</b> (dvec3 val)</td></tr>
+<tr class="memitem:a6f2a012f20487f4b8575d77943ced5a2 inherit pub_methods_classinviwo_1_1Camera" id="r_a6f2a012f20487f4b8575d77943ced5a2"><td class="memItemLeft">
+virtual void&#160;</td><td class="memItemRight"><b>setLookUp</b> (dvec3 val)</td></tr>
+<tr class="memitem:accd7b6b53258ac231162b190a6151ff0 inherit pub_methods_classinviwo_1_1Camera" id="r_accd7b6b53258ac231162b190a6151ff0"><td class="memItemLeft">
+virtual void&#160;</td><td class="memItemRight"><b>setNearPlaneDist</b> (double distance)</td></tr>
+<tr class="memdesc:accd7b6b53258ac231162b190a6151ff0 inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set distance to the near plane from lookFrom. <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -195,14 +195,14 @@ static constexpr std::string_view&#160;</td><td class="memItemRight"><b>classIde
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:acc580b976faf34b1d69469dca84b0bb9" id="r_acc580b976faf34b1d69469dca84b0bb9"><td class="memItemLeft">virtual mat4&#160;</td><td class="memItemRight"><a class="el" href="#acc580b976faf34b1d69469dca84b0bb9">calculateProjectionMatrix</a> () const override</td></tr>
-<tr class="memdesc:acc580b976faf34b1d69469dca84b0bb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate and return the projection matrix for the camera.  <br /></td></tr>
-<tr class="memitem:a88a9666c14629c895425b79723a940e4" id="r_a88a9666c14629c895425b79723a940e4"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a88a9666c14629c895425b79723a940e4">equal</a> (const <a class="el" href="classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767">Camera</a> &amp;other) const override</td></tr>
+<tr class="memitem:ab4628976bd583ac3933a3b98cbcee61e" id="r_ab4628976bd583ac3933a3b98cbcee61e"><td class="memItemLeft">virtual dmat4&#160;</td><td class="memItemRight"><a class="el" href="#ab4628976bd583ac3933a3b98cbcee61e">calculateProjectionMatrix</a> () const override</td></tr>
+<tr class="memdesc:ab4628976bd583ac3933a3b98cbcee61e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate and return the projection matrix for the camera.  <br /></td></tr>
+<tr class="memitem:a88a9666c14629c895425b79723a940e4" id="r_a88a9666c14629c895425b79723a940e4"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a88a9666c14629c895425b79723a940e4">equal</a> (const <a class="el" href="classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e">Camera</a> &amp;other) const override</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Camera"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Camera')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Camera.html">inviwo::Camera</a></td></tr>
-<tr class="memitem:ac383e7d60514c617fe9ec94a113bd0ee inherit pro_methods_classinviwo_1_1Camera" id="r_ac383e7d60514c617fe9ec94a113bd0ee"><td class="memItemLeft">
-virtual mat4&#160;</td><td class="memItemRight"><b>calculateViewMatrix</b> () const</td></tr>
+<tr class="memitem:a4c3fb8dc0b34623984b7c996c8a40431 inherit pro_methods_classinviwo_1_1Camera" id="r_a4c3fb8dc0b34623984b7c996c8a40431"><td class="memItemLeft">
+virtual dmat4&#160;</td><td class="memItemRight"><b>calculateViewMatrix</b> () const</td></tr>
 <tr class="memitem:a697c603a996e9221066ffe95277cf597 inherit pro_methods_classinviwo_1_1Camera" id="r_a697c603a996e9221066ffe95277cf597"><td class="memItemLeft">
-bool&#160;</td><td class="memItemRight"><b>equalTo</b> (const <a class="el" href="classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767">Camera</a> &amp;other) const</td></tr>
+bool&#160;</td><td class="memItemRight"><b>equalTo</b> (const <a class="el" href="classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e">Camera</a> &amp;other) const</td></tr>
 <tr class="memitem:a3ffe0dd8862f6993ae06ae5982b3b9e6 inherit pro_methods_classinviwo_1_1Camera" id="r_a3ffe0dd8862f6993ae06ae5982b3b9e6"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>invalidateProjectionMatrix</b> ()</td></tr>
 <tr class="memitem:a2e5cf9febb0e9327fe94a766dcd175f0 inherit pro_methods_classinviwo_1_1Camera" id="r_a2e5cf9febb0e9327fe94a766dcd175f0"><td class="memItemLeft">
@@ -210,37 +210,37 @@ void&#160;</td><td class="memItemRight"><b>invalidateViewMatrix</b> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a151bf307e0cb4ade28ad974dd3aad18d" id="r_a151bf307e0cb4ade28ad974dd3aad18d"><td class="memItemLeft"><a id="a151bf307e0cb4ade28ad974dd3aad18d" name="a151bf307e0cb4ade28ad974dd3aad18d"></a>
-float&#160;</td><td class="memItemRight"><b>width_</b></td></tr>
+<tr class="memitem:a921faa9d61139b7c6d56564842f7aa4f" id="r_a921faa9d61139b7c6d56564842f7aa4f"><td class="memItemLeft"><a id="a921faa9d61139b7c6d56564842f7aa4f" name="a921faa9d61139b7c6d56564842f7aa4f"></a>
+double&#160;</td><td class="memItemRight"><b>width_</b></td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1Camera"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1Camera')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1Camera.html">inviwo::Camera</a></td></tr>
-<tr class="memitem:a5a2a9207af7932871d84afa56c887d6e inherit pro_attribs_classinviwo_1_1Camera" id="r_a5a2a9207af7932871d84afa56c887d6e"><td class="memItemLeft">
-float&#160;</td><td class="memItemRight"><b>aspectRatio_</b></td></tr>
+<tr class="memitem:a9f71920af777cd18d2dee38e6dd05d05 inherit pro_attribs_classinviwo_1_1Camera" id="r_a9f71920af777cd18d2dee38e6dd05d05"><td class="memItemLeft">
+double&#160;</td><td class="memItemRight"><b>aspectRatio_</b></td></tr>
 <tr class="memitem:a8f71f9e8375fe19b8fb217bf4e39aac0 inherit pro_attribs_classinviwo_1_1Camera" id="r_a8f71f9e8375fe19b8fb217bf4e39aac0"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> *&#160;</td><td class="memItemRight"><b>camprop_</b> = nullptr</td></tr>
-<tr class="memitem:a4823d919759dcfcbd2b6566dd295675e inherit pro_attribs_classinviwo_1_1Camera" id="r_a4823d919759dcfcbd2b6566dd295675e"><td class="memItemLeft">
-float&#160;</td><td class="memItemRight"><b>farPlaneDist_</b></td></tr>
-<tr class="memdesc:a4823d919759dcfcbd2b6566dd295675e inherit pro_attribs_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance to the far plane from lookFrom. <br /></td></tr>
+<tr class="memitem:a808cee9e80ff2424715e2e2a2032e83e inherit pro_attribs_classinviwo_1_1Camera" id="r_a808cee9e80ff2424715e2e2a2032e83e"><td class="memItemLeft">
+double&#160;</td><td class="memItemRight"><b>farPlaneDist_</b></td></tr>
+<tr class="memdesc:a808cee9e80ff2424715e2e2a2032e83e inherit pro_attribs_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance to the far plane from lookFrom. <br /></td></tr>
 <tr class="memitem:a75c66c53041c34c8ee20e4911ff343d9 inherit pro_attribs_classinviwo_1_1Camera" id="r_a75c66c53041c34c8ee20e4911ff343d9"><td class="memItemLeft">
 bool&#160;</td><td class="memItemRight"><b>invalidProjectionMatrix_</b></td></tr>
 <tr class="memitem:abbb7798ea6d6391dafdceed6fe5b527d inherit pro_attribs_classinviwo_1_1Camera" id="r_abbb7798ea6d6391dafdceed6fe5b527d"><td class="memItemLeft">
 bool&#160;</td><td class="memItemRight"><b>invalidViewMatrix_</b></td></tr>
-<tr class="memitem:a345f62ebce4fc14337c34640c1b4e943 inherit pro_attribs_classinviwo_1_1Camera" id="r_a345f62ebce4fc14337c34640c1b4e943"><td class="memItemLeft">
-mat4&#160;</td><td class="memItemRight"><b>inverseProjectionMatrix_</b></td></tr>
-<tr class="memitem:a13fa45666ae17ffa7aa0544d27bb5689 inherit pro_attribs_classinviwo_1_1Camera" id="r_a13fa45666ae17ffa7aa0544d27bb5689"><td class="memItemLeft">
-mat4&#160;</td><td class="memItemRight"><b>inverseViewMatrix_</b></td></tr>
-<tr class="memitem:a2d0f264980a77b2ffe9dc99e69efdf2d inherit pro_attribs_classinviwo_1_1Camera" id="r_a2d0f264980a77b2ffe9dc99e69efdf2d"><td class="memItemLeft">
-vec3&#160;</td><td class="memItemRight"><b>lookFrom_</b></td></tr>
-<tr class="memitem:a75f0af22081313b9ee963ee20720c8bd inherit pro_attribs_classinviwo_1_1Camera" id="r_a75f0af22081313b9ee963ee20720c8bd"><td class="memItemLeft">
-vec3&#160;</td><td class="memItemRight"><b>lookTo_</b></td></tr>
-<tr class="memitem:a2fa6f2a6ccb5269a37c0bd759a16ff03 inherit pro_attribs_classinviwo_1_1Camera" id="r_a2fa6f2a6ccb5269a37c0bd759a16ff03"><td class="memItemLeft">
-vec3&#160;</td><td class="memItemRight"><b>lookUp_</b></td></tr>
-<tr class="memitem:a08c6dcd7d5cf3941c9c1c3dde828c683 inherit pro_attribs_classinviwo_1_1Camera" id="r_a08c6dcd7d5cf3941c9c1c3dde828c683"><td class="memItemLeft">
-float&#160;</td><td class="memItemRight"><b>nearPlaneDist_</b></td></tr>
-<tr class="memdesc:a08c6dcd7d5cf3941c9c1c3dde828c683 inherit pro_attribs_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance to the near plane from lookFrom. <br /></td></tr>
-<tr class="memitem:ac789b2727b5d7bb60908b1816afd73e5 inherit pro_attribs_classinviwo_1_1Camera" id="r_ac789b2727b5d7bb60908b1816afd73e5"><td class="memItemLeft">
-mat4&#160;</td><td class="memItemRight"><b>projectionMatrix_</b></td></tr>
-<tr class="memitem:acac28cff668daa5292659a963ba1ad5f inherit pro_attribs_classinviwo_1_1Camera" id="r_acac28cff668daa5292659a963ba1ad5f"><td class="memItemLeft">
-mat4&#160;</td><td class="memItemRight"><b>viewMatrix_</b></td></tr>
+<tr class="memitem:a4f50221e9438795c7b9341c071155a96 inherit pro_attribs_classinviwo_1_1Camera" id="r_a4f50221e9438795c7b9341c071155a96"><td class="memItemLeft">
+dmat4&#160;</td><td class="memItemRight"><b>inverseProjectionMatrix_</b></td></tr>
+<tr class="memitem:aa75f47a976e529d86ae7cfe4805fb65f inherit pro_attribs_classinviwo_1_1Camera" id="r_aa75f47a976e529d86ae7cfe4805fb65f"><td class="memItemLeft">
+dmat4&#160;</td><td class="memItemRight"><b>inverseViewMatrix_</b></td></tr>
+<tr class="memitem:a8611526ed99bd1b7b3654ca989ed66ff inherit pro_attribs_classinviwo_1_1Camera" id="r_a8611526ed99bd1b7b3654ca989ed66ff"><td class="memItemLeft">
+dvec3&#160;</td><td class="memItemRight"><b>lookFrom_</b></td></tr>
+<tr class="memitem:aa491a4dbd1237be916f3f68107e2a6f5 inherit pro_attribs_classinviwo_1_1Camera" id="r_aa491a4dbd1237be916f3f68107e2a6f5"><td class="memItemLeft">
+dvec3&#160;</td><td class="memItemRight"><b>lookTo_</b></td></tr>
+<tr class="memitem:a71e31563d0031bf7ea09ff59fe107381 inherit pro_attribs_classinviwo_1_1Camera" id="r_a71e31563d0031bf7ea09ff59fe107381"><td class="memItemLeft">
+dvec3&#160;</td><td class="memItemRight"><b>lookUp_</b></td></tr>
+<tr class="memitem:ac58b0a3c6a00ba15c044c364158397ac inherit pro_attribs_classinviwo_1_1Camera" id="r_ac58b0a3c6a00ba15c044c364158397ac"><td class="memItemLeft">
+double&#160;</td><td class="memItemRight"><b>nearPlaneDist_</b></td></tr>
+<tr class="memdesc:ac58b0a3c6a00ba15c044c364158397ac inherit pro_attribs_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance to the near plane from lookFrom. <br /></td></tr>
+<tr class="memitem:af1b560f0b42fb1a57268f45716591fb5 inherit pro_attribs_classinviwo_1_1Camera" id="r_af1b560f0b42fb1a57268f45716591fb5"><td class="memItemLeft">
+dmat4&#160;</td><td class="memItemRight"><b>projectionMatrix_</b></td></tr>
+<tr class="memitem:a83e39e7f6622da2c5f466cc643d294a1 inherit pro_attribs_classinviwo_1_1Camera" id="r_a83e39e7f6622da2c5f466cc643d294a1"><td class="memItemLeft">
+dmat4&#160;</td><td class="memItemRight"><b>viewMatrix_</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classinviwo_1_1Camera.html" title="Base class for cameras. Override this class to set your own projection matrix.">Camera</a> with no perspective projection. Objects far away will appear as large as objects close. </p>
@@ -248,8 +248,8 @@ mat4&#160;</td><td class="memItemRight"><b>viewMatrix_</b></td></tr>
 <dd>
 <a class="el" href="classinviwo_1_1OrthographicCamera.html" title="Camera with no perspective projection. Objects far away will appear as large as objects close.">OrthographicCamera</a> </dd></dl>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="acc580b976faf34b1d69469dca84b0bb9" name="acc580b976faf34b1d69469dca84b0bb9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc580b976faf34b1d69469dca84b0bb9">&#9670;&#160;</a></span>calculateProjectionMatrix()</h2>
+<a id="ab4628976bd583ac3933a3b98cbcee61e" name="ab4628976bd583ac3933a3b98cbcee61e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4628976bd583ac3933a3b98cbcee61e">&#9670;&#160;</a></span>calculateProjectionMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -258,7 +258,7 @@ mat4&#160;</td><td class="memItemRight"><b>viewMatrix_</b></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual mat4 inviwo::OrthographicCamera::calculateProjectionMatrix </td>
+          <td class="memname">virtual dmat4 inviwo::OrthographicCamera::calculateProjectionMatrix </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -276,7 +276,7 @@ mat4&#160;</td><td class="memItemRight"><b>viewMatrix_</b></td></tr>
 <dd>
 <a class="el" href="classinviwo_1_1OrthographicCamera.html" title="Camera with no perspective projection. Objects far away will appear as large as objects close.">OrthographicCamera</a> </dd></dl>
 
-<p>Implements <a class="el" href="classinviwo_1_1Camera.html#a60375053c59df21395765217dd0880c4">inviwo::Camera</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Camera.html#a1b0c5668315ee13bce13cfac7645af2c">inviwo::Camera</a>.</p>
 
 </div>
 </div>
@@ -377,7 +377,7 @@ mat4&#160;</td><td class="memItemRight"><b>viewMatrix_</b></td></tr>
         <tr>
           <td class="memname">virtual bool inviwo::OrthographicCamera::equal </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767">Camera</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>other</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e">Camera</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>other</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -419,8 +419,8 @@ mat4&#160;</td><td class="memItemRight"><b>viewMatrix_</b></td></tr>
 
 </div>
 </div>
-<a id="ad5e9d9cc00d3d6a14879e5ed7032576c" name="ad5e9d9cc00d3d6a14879e5ed7032576c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5e9d9cc00d3d6a14879e5ed7032576c">&#9670;&#160;</a></span>getClipPosFromNormalizedDeviceCoords()</h2>
+<a id="a8191aafe27533c0e9a5782aa30f4b7a2" name="a8191aafe27533c0e9a5782aa30f4b7a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8191aafe27533c0e9a5782aa30f4b7a2">&#9670;&#160;</a></span>getClipPosFromNormalizedDeviceCoords()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -429,9 +429,9 @@ mat4&#160;</td><td class="memItemRight"><b>viewMatrix_</b></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual vec4 inviwo::OrthographicCamera::getClipPosFromNormalizedDeviceCoords </td>
+          <td class="memname">virtual dvec4 inviwo::OrthographicCamera::getClipPosFromNormalizedDeviceCoords </td>
           <td>(</td>
-          <td class="paramtype">const vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>ndcCoords</em></span></td><td>)</td>
+          <td class="paramtype">const dvec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>ndcCoords</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -451,7 +451,7 @@ mat4&#160;</td><td class="memItemRight"><b>viewMatrix_</b></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Clip space position </dd></dl>
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1Camera.html#aa99d2337b8fd1f1bf1220c3f93f41cd8">inviwo::Camera</a>.</p>
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Camera.html#ad4d373e3d5547646edc09c37cb29ab34">inviwo::Camera</a>.</p>
 
 </div>
 </div>
@@ -494,7 +494,7 @@ mat4&#160;</td><td class="memItemRight"><b>viewMatrix_</b></td></tr>
         <tr>
           <td class="memname">virtual void inviwo::OrthographicCamera::updateFrom </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767">Camera</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>source</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e">Camera</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>source</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>

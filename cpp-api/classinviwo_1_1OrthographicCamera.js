@@ -1,5 +1,5 @@
 var classinviwo_1_1OrthographicCamera =
 [
-    [ "calculateProjectionMatrix", "classinviwo_1_1OrthographicCamera.html#acc580b976faf34b1d69469dca84b0bb9", null ],
-    [ "getClipPosFromNormalizedDeviceCoords", "classinviwo_1_1OrthographicCamera.html#ad5e9d9cc00d3d6a14879e5ed7032576c", null ]
+    [ "calculateProjectionMatrix", "classinviwo_1_1OrthographicCamera.html#ab4628976bd583ac3933a3b98cbcee61e", null ],
+    [ "getClipPosFromNormalizedDeviceCoords", "classinviwo_1_1OrthographicCamera.html#a8191aafe27533c0e9a5782aa30f4b7a2", null ]
 ];

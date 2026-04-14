@@ -19,15 +19,15 @@ var group__datastructures =
       [ "getSizeOfElement", "classinviwo_1_1BufferRepresentation.html#a6ad1703f51dbdca289f0638bd0a76582", null ]
     ] ],
     [ "inviwo::Camera", "classinviwo_1_1Camera.html", [
-      [ "Camera", "classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767", null ],
-      [ "calculateProjectionMatrix", "classinviwo_1_1Camera.html#a60375053c59df21395765217dd0880c4", null ],
-      [ "getClipPosFromNormalizedDeviceCoords", "classinviwo_1_1Camera.html#aa99d2337b8fd1f1bf1220c3f93f41cd8", null ],
-      [ "getDirection", "classinviwo_1_1Camera.html#a7b51272f130a1940999f96af2ad8dca4", null ],
-      [ "getWorldPosFromNormalizedDeviceCoords", "classinviwo_1_1Camera.html#a1a9064422b3837317a1d1d0d8ed98992", null ],
-      [ "setFarPlaneDist", "classinviwo_1_1Camera.html#a9b6752e4640ea77f4d9696b749ca7a45", null ],
-      [ "setNearPlaneDist", "classinviwo_1_1Camera.html#abc6d5736c7ef193509f9d3aff770d580", null ],
-      [ "farPlaneDist_", "classinviwo_1_1Camera.html#a4823d919759dcfcbd2b6566dd295675e", null ],
-      [ "nearPlaneDist_", "classinviwo_1_1Camera.html#a08c6dcd7d5cf3941c9c1c3dde828c683", null ]
+      [ "Camera", "classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e", null ],
+      [ "calculateProjectionMatrix", "classinviwo_1_1Camera.html#a1b0c5668315ee13bce13cfac7645af2c", null ],
+      [ "getClipPosFromNormalizedDeviceCoords", "classinviwo_1_1Camera.html#ad4d373e3d5547646edc09c37cb29ab34", null ],
+      [ "getDirection", "classinviwo_1_1Camera.html#afb9766644fd73e14041375f04d42ba9d", null ],
+      [ "getWorldPosFromNormalizedDeviceCoords", "classinviwo_1_1Camera.html#af88b5d4aa5e8f43f4cff735a36119b67", null ],
+      [ "setFarPlaneDist", "classinviwo_1_1Camera.html#a9a91321dce1fd3ae08da8a1738a2ff6c", null ],
+      [ "setNearPlaneDist", "classinviwo_1_1Camera.html#accd7b6b53258ac231162b190a6151ff0", null ],
+      [ "farPlaneDist_", "classinviwo_1_1Camera.html#a808cee9e80ff2424715e2e2a2032e83e", null ],
+      [ "nearPlaneDist_", "classinviwo_1_1Camera.html#ac58b0a3c6a00ba15c044c364158397ac", null ]
     ] ],
     [ "inviwo::CategoricalColumn", "classinviwo_1_1CategoricalColumn.html", [
       [ "addCategory", "classinviwo_1_1CategoricalColumn.html#afb53092033c650af6c5ba82ac2f5de0c", null ],
@@ -214,7 +214,7 @@ var group__datastructures =
     ] ],
     [ "inviwo::TetraMesh", "classinviwo_1_1TetraMesh.html", [
       [ "get", "classinviwo_1_1TetraMesh.html#a30eee0cb8da04c164b144336da062020", null ],
-      [ "getBoundingBox", "classinviwo_1_1TetraMesh.html#ac7c7b1ff0cac8fc73b27fbfeeb7e5cfd", null ],
+      [ "getBoundingBox", "classinviwo_1_1TetraMesh.html#af28f30231e504d04b3338c90b4d551f5", null ],
       [ "getDataRange", "classinviwo_1_1TetraMesh.html#a5cffd83b9a73015ded6808b144800e60", null ]
     ] ],
     [ "inviwo::TFPrimitiveSet", "classinviwo_1_1TFPrimitiveSet.html", [
@@ -256,7 +256,7 @@ var group__datastructures =
     [ "inviwo::Volume", "classinviwo_1_1Volume.html", [
       [ "Volume", "classinviwo_1_1Volume.html#a9b4f6c0253fbef968715478ff006346d", null ],
       [ "getAxis", "classinviwo_1_1Volume.html#ae35f92051c747d90698af086b553db0d", null ],
-      [ "getWorldSpaceGradientSpacing", "classinviwo_1_1Volume.html#aafefe072dff4ed87f4a77046a9305b20", null ],
+      [ "getWorldSpaceGradientSpacing", "classinviwo_1_1Volume.html#a145d6382043e432103e3ef509f9bed2a", null ],
       [ "setDataFormat", "classinviwo_1_1Volume.html#a971717c1d60d35828f36214ee028132f", null ],
       [ "setDimensions", "classinviwo_1_1Volume.html#af24450063e3e7369126ef7552cd480af", null ],
       [ "setSwizzleMask", "classinviwo_1_1Volume.html#a4e386d26f4fad54c9a0df34f6eaa9800", null ]
@@ -285,7 +285,7 @@ var group__datastructures =
     [ "inviwo::VolumeTetraMesh", "classinviwo_1_1VolumeTetraMesh.html", [
       [ "get", "classinviwo_1_1VolumeTetraMesh.html#aeda37d2fa8020a7920d5c621a0626f3e", null ],
       [ "getAxis", "classinviwo_1_1VolumeTetraMesh.html#aabda8b3ec7baba6b6fa75c1d05f69895", null ],
-      [ "getBoundingBox", "classinviwo_1_1VolumeTetraMesh.html#addf8f3924248adcf2f476bc76814da57", null ],
+      [ "getBoundingBox", "classinviwo_1_1VolumeTetraMesh.html#a18d8a7a0287655fd18fb69f8008800cd", null ],
       [ "getDataRange", "classinviwo_1_1VolumeTetraMesh.html#abe3cd1a8801029771b762afeab897505", null ],
       [ "setData", "classinviwo_1_1VolumeTetraMesh.html#a1e7d021b6485855ed842c2704e880a12", null ]
     ] ]

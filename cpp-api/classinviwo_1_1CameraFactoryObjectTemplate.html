@@ -108,18 +108,18 @@ $(function(){initNavTree('classinviwo_1_1CameraFactoryObjectTemplate.html','','c
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8d962f28e1a945a5f11ff1b3a883e2d8" id="r_a8d962f28e1a945a5f11ff1b3a883e2d8"><td class="memItemLeft"><a id="a8d962f28e1a945a5f11ff1b3a883e2d8" name="a8d962f28e1a945a5f11ff1b3a883e2d8"></a>
 &#160;</td><td class="memItemRight"><b>CameraFactoryObjectTemplate</b> (std::string_view classIdentifier)</td></tr>
-<tr class="memitem:a8d6690194242729f63754bb51078efcd" id="r_a8d6690194242729f63754bb51078efcd"><td class="memItemLeft">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a8d6690194242729f63754bb51078efcd">createImpl</a> (vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane, float aspectRatio) const override</td></tr>
+<tr class="memitem:aea9df2d2e8330889f4187c0ae0157474" id="r_aea9df2d2e8330889f4187c0ae0157474"><td class="memItemLeft">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aea9df2d2e8330889f4187c0ae0157474">createImpl</a> (dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane, double aspectRatio) const override</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1CameraFactoryObject"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1CameraFactoryObject')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1CameraFactoryObject.html">inviwo::CameraFactoryObject</a></td></tr>
 <tr class="memitem:a71a0192fdb52918f9ad9bf8effb36581 inherit pub_methods_classinviwo_1_1CameraFactoryObject" id="r_a71a0192fdb52918f9ad9bf8effb36581"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>CameraFactoryObject</b> (std::string_view classIdentifier)</td></tr>
-<tr class="memitem:a8877e3af07ce327f34304f92e722fba6 inherit pub_methods_classinviwo_1_1CameraFactoryObject" id="r_a8877e3af07ce327f34304f92e722fba6"><td class="memItemLeft">
-std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &gt;&#160;</td><td class="memItemRight"><b>create</b> (vec3 lookFrom=cameradefaults::lookFrom, vec3 lookTo=cameradefaults::lookTo, vec3 lookUp=cameradefaults::lookUp, float nearPlane=cameradefaults::nearPlane, float farPlane=cameradefaults::farPlane, float aspectRatio=cameradefaults::aspectRatio) const</td></tr>
+<tr class="memitem:a9701a113847eb6149450da91e50588c1 inherit pub_methods_classinviwo_1_1CameraFactoryObject" id="r_a9701a113847eb6149450da91e50588c1"><td class="memItemLeft">
+std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &gt;&#160;</td><td class="memItemRight"><b>create</b> (dvec3 lookFrom=cameradefaults::lookFrom, dvec3 lookTo=cameradefaults::lookTo, dvec3 lookUp=cameradefaults::lookUp, double nearPlane=cameradefaults::nearPlane, double farPlane=cameradefaults::farPlane, double aspectRatio=cameradefaults::aspectRatio) const</td></tr>
 <tr class="memitem:afee0e831388a048677880c7abf540489 inherit pub_methods_classinviwo_1_1CameraFactoryObject" id="r_afee0e831388a048677880c7abf540489"><td class="memItemLeft">
 std::string_view&#160;</td><td class="memItemRight"><b>getClassIdentifier</b> () const</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a8d6690194242729f63754bb51078efcd" name="a8d6690194242729f63754bb51078efcd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d6690194242729f63754bb51078efcd">&#9670;&#160;</a></span>createImpl()</h2>
+<a id="aea9df2d2e8330889f4187c0ae0157474" name="aea9df2d2e8330889f4187c0ae0157474"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea9df2d2e8330889f4187c0ae0157474">&#9670;&#160;</a></span>createImpl()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -132,32 +132,32 @@ template&lt;typename T&gt; </div>
         <tr>
           <td class="memname">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &gt; <a class="el" href="classinviwo_1_1CameraFactoryObjectTemplate.html">inviwo::CameraFactoryObjectTemplate</a>&lt; T &gt;::createImpl </td>
           <td>(</td>
-          <td class="paramtype">vec3</td>          <td class="paramname"><span class="paramname"><em>lookFrom</em></span>, </td>
+          <td class="paramtype">dvec3</td>          <td class="paramname"><span class="paramname"><em>lookFrom</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">vec3</td>          <td class="paramname"><span class="paramname"><em>lookTo</em></span>, </td>
+          <td class="paramtype">dvec3</td>          <td class="paramname"><span class="paramname"><em>lookTo</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">vec3</td>          <td class="paramname"><span class="paramname"><em>lookUp</em></span>, </td>
+          <td class="paramtype">dvec3</td>          <td class="paramname"><span class="paramname"><em>lookUp</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>nearPlane</em></span>, </td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>nearPlane</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>farPlane</em></span>, </td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>farPlane</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>aspectRatio</em></span>&#160;) const</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>aspectRatio</em></span>&#160;) const</td>
         </tr>
       </table>
   </td>
