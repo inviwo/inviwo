@@ -537,6 +537,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         if (concept_->hasTF()) {
             util::addTFPresetsMenu(e->widget(), &menu, concept_->getTFProperty());
             util::addTFColorbrewerPresetsMenu(e->widget(), &menu, concept_->getTFProperty());
+            util::addScientificColorMapsPresetsMenu(e->widget(), &menu, concept_->getTFProperty());
             menu.addSeparator();
         }
 

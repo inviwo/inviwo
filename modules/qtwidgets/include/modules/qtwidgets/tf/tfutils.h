@@ -30,7 +30,10 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
+#include <inviwo/core/util/glmvec.h>
+
 #include <memory>
+#include <span>
 
 class QMenu;
 class QWidget;
@@ -85,6 +88,12 @@ IVW_MODULE_QTWIDGETS_API QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu,
 
 IVW_MODULE_QTWIDGETS_API QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
                                                             TransferFunctionProperty* property);
+
+IVW_MODULE_QTWIDGETS_API QMenu* addScientificColorMapsPresetsMenu(
+    QWidget* parent, QMenu* menu, TransferFunctionProperty* property);
+
+IVW_MODULE_QTWIDGETS_API TransferFunction colorListToTF(std::span<const glm::vec3> points,
+                                                        bool discrete);
 
 }  // namespace util
 

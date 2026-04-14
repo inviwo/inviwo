@@ -148,6 +148,7 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
 
     util::addTFPresetsMenu(this, menu.get(), tfProperty());
     util::addTFColorbrewerPresetsMenu(this, menu.get(), tfProperty());
+    util::addScientificColorMapsPresetsMenu(this, menu.get(), tfProperty());
 
     menu->addSeparator();
 

@@ -189,7 +189,7 @@ namespace log {
 
 namespace detail {
 IVW_CORE_API void logDirectly(LogLevel level, SourceContext context, std::string_view message);
-}
+}  // namespace detail
 
 inline void report(Logger& logger, LogLevel level, SourceContext context,
                    std::string_view message) {
@@ -362,15 +362,23 @@ void logError(SourceContext context, fmt::format_string<Args...> format, Args&&.
 }
 
 template <typename F>
-void exceptionGuard(F&& fun) noexcept {
+auto exceptionGuard(F&& fun) noexcept {
+    using R = std::invoke_result_t<F>;
     try {
-        std::forward<F>(fun)();
+        return std::forward<F>(fun)();
     } catch (const Exception& e) {
         log::exception(e);
     } catch (const std::exception& e) {
         log::exception(e);
     } catch (...) {
         log::exception();
+    }
+    if constexpr (std::is_void_v<R>) {
+        return;
+    } else {
+        static_assert(std::is_default_constructible_v<R>,
+                      "Return type must be default constructible if an exception is thrown");
+        return R{};
     }
 }
 
