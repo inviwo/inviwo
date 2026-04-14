@@ -181,28 +181,20 @@ struct SM {
             return base.viewIdx != activeView;
         };
 
-        static constexpr auto zeroMB = [](const auto& base) -> bool {
-            return base.event.numFingers() == 0;
-        };
-        static constexpr auto hasMB = [](const auto& base) -> bool {
-            return base.event.numFingers() > 0;
-        };
-
         // clang-format off
         return sml::make_transition_table(
-            *state<Idle>    + event<NoGesture>                   / (updateView, sendEvent) = state<Idle>,
-            state<Idle>     + event<Started>                     / (updateView, sendEvent) = state<Active>,
-            state<Idle>     + event<Updated>                     / (updateView, sendEvent) = state<Active>,
-            state<Idle>     + event<Finished>                    / (updateView, sendEvent) = state<Idle>,
-            state<Idle>     + event<Canceled>                    / (updateView, sendEvent) = state<Idle>,
+            *state<Idle>    + event<NoGesture>         / (updateView, sendEvent) = state<Idle>,
+            state<Idle>     + event<Started>           / (updateView, sendEvent) = state<Active>,
+            state<Idle>     + event<Updated>           / (updateView, sendEvent) = state<Active>,
+            state<Idle>     + event<Finished>          / (updateView, sendEvent) = state<Idle>,
+            state<Idle>     + event<Canceled>          / (updateView, sendEvent) = state<Idle>,
 
-            state<Active> + event<NoGesture>                     / (sendEvent, updateView) = state<Idle>,
-            state<Active> + event<Started>                       / (sendEvent)             = state<Active>,
-            state<Active> + event<Updated>                       / (sendEvent)             = state<Active>,
-            state<Active> + event<Finished> [hasMB]              / (sendEvent)             = state<Active>,
-            state<Active> + event<Finished> [sameView && zeroMB] / (sendEvent)             = state<Idle>,
-            state<Active> + event<Finished> [diffView && zeroMB] / (sendEvent, updateView) = state<Idle>,
-            state<Active> + event<Canceled>                      / (sendEvent)             = state<Idle>
+            state<Active> + event<NoGesture>           / (sendEvent, updateView) = state<Idle>,
+            state<Active> + event<Started>             / (sendEvent)             = state<Active>,
+            state<Active> + event<Updated>             / (sendEvent)             = state<Active>,
+            state<Active> + event<Finished> [sameView] / (sendEvent)             = state<Idle>,
+            state<Active> + event<Finished> [diffView] / (sendEvent, updateView) = state<Idle>,
+            state<Active> + event<Canceled>            / (sendEvent)             = state<Idle>
         );
         // clang-format on
     }
