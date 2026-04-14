@@ -90,7 +90,7 @@ runs:
 
         curl -L -o install_cmake.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh
         chmod +x install_cmake.sh
-        ./install_cmake.sh --skip-license --prefix=/usr/local
+        sudo ./install_cmake.sh --skip-license --prefix=/usr/local
 
         echo "Path to CMAKE $(which cmake)"
         echo "Installed CMake version:"
@@ -102,4 +102,4 @@ runs:
       run: |
         curl -L -o appimagetool.AppImage https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
         chmod +x appimagetool.AppImage
-        mv appimagetool.AppImage /usr/local/bin/appimagetool
+        sudo mv appimagetool.AppImage /usr/local/bin/appimagetool
