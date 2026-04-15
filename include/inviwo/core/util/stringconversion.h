@@ -33,6 +33,7 @@
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/unindent.h>
 #include <inviwo/core/util/transparentmaps.h>
+#include <inviwo/core/util/utfutils.h>
 
 #include <algorithm>
 #include <string>
@@ -457,8 +458,6 @@ IVW_CORE_API bool iCaseCmp(std::string_view l, std::string_view r);
  * @return true if the alphabetical order in the first string is less than the second string.
  */
 IVW_CORE_API bool iCaseLess(std::string_view l, std::string_view r);
-
-#include <inviwo/core/util/utfutils.h>
 
 /**
  * @brief Transparent string case insensitive hashing for use in unordered containers with string

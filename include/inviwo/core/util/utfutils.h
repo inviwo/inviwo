@@ -42,17 +42,16 @@
 
 namespace inviwo {
 
-namespace detail {
-
 template <typename R>
 concept CharRange = std::ranges::range<R> && std::same_as<std::ranges::range_value_t<R>, char>;
 
 template <typename R>
-concept WCharRange =
-    std::ranges::range<R> && std::same_as<std::ranges::range_value_t<R>, wchar_t>;
+concept WCharRange = std::ranges::range<R> && std::same_as<std::ranges::range_value_t<R>, wchar_t>;
 
 template <typename R>
 concept StringRange = CharRange<R> || WCharRange<R>;
+
+namespace detail {
 
 template <std::input_iterator Iter, std::sentinel_for<Iter> Sentinel>
 class Utf8CodePointIterator {
@@ -63,55 +62,59 @@ public:
     using pointer = const int32_t*;
     using reference = int32_t;
 
-    Utf8CodePointIterator() = default;
-    Utf8CodePointIterator(Iter it, Sentinel end) : it_{it}, end_{end} {
+    constexpr Utf8CodePointIterator() = default;
+    constexpr Utf8CodePointIterator(Iter it, Sentinel end) : it_{it}, end_{end} {
         if (it_ != end_) decode();
     }
 
-    int32_t operator*() const { return current_; }
+    constexpr int32_t operator*() const { return current_; }
 
-    Utf8CodePointIterator& operator++() {
+    constexpr Utf8CodePointIterator& operator++() {
         if (it_ != end_)
             decode();
         else
             current_ = -1;
         return *this;
     }
-    Utf8CodePointIterator operator++(int) {
+    constexpr Utf8CodePointIterator operator++(int) {
         auto tmp = *this;
         ++(*this);
         return tmp;
     }
 
-    bool operator==(const Utf8CodePointIterator& other) const { return it_ == other.it_; }
-    bool operator!=(const Utf8CodePointIterator& other) const { return !(*this == other); }
+    constexpr bool operator==(const Utf8CodePointIterator& other) const { return it_ == other.it_; }
 
 private:
-    void decode() { current_ = static_cast<int32_t>(utf8::next(it_, end_)); }
+    constexpr void decode() { current_ = static_cast<int32_t>(utf8::next(it_, end_)); }
     Iter it_{};
     Sentinel end_{};
     int32_t current_{-1};
 };
 
-template <CharRange R>
-class Utf8CodePointRange : public std::ranges::view_interface<Utf8CodePointRange<R>> {
+template <CharRange View>
+class Utf8CodePointRange : public std::ranges::view_interface<Utf8CodePointRange<View>> {
 public:
-    using Iter = std::ranges::iterator_t<R>;
-    using Sentinel = std::ranges::sentinel_t<R>;
+    using Iter = std::ranges::iterator_t<View>;
+    using Sentinel = std::ranges::sentinel_t<View>;
 
-    Utf8CodePointRange() = default;
-    explicit Utf8CodePointRange(R&& r)
-        : begin_{std::ranges::begin(r)}, end_{std::ranges::end(r)} {}
-    explicit Utf8CodePointRange(R& r)
-        : begin_{std::ranges::begin(r)}, end_{std::ranges::end(r)} {}
+    constexpr Utf8CodePointRange() = default;
+    constexpr explicit Utf8CodePointRange(View view) : view_{std::move(view)} {}
 
-    auto begin() const { return Utf8CodePointIterator<Iter, Sentinel>{begin_, end_}; }
-    auto end() const { return Utf8CodePointIterator<Iter, Sentinel>{end_, end_}; }
+    constexpr auto begin() const {
+        return Utf8CodePointIterator<Iter, Sentinel>{std::ranges::begin(view_),
+                                                     std::ranges::end(view_)};
+    }
+    constexpr auto end() const {
+        return Utf8CodePointIterator<Iter, Sentinel>{std::ranges::end(view_),
+                                                     std::ranges::end(view_)};
+    }
 
 private:
-    Iter begin_{};
-    Sentinel end_{};
+    View view_;
 };
+
+template <CharRange Range>
+Utf8CodePointRange(Range&&) -> Utf8CodePointRange<std::views::all_t<Range>>;
 
 /**
  * Range adaptor that transforms a range of char (UTF-8) or wchar_t into a range of int32_t
@@ -123,10 +126,10 @@ private:
  * for (int32_t cp : detail::codePoints(myWstring)) { ... }
  */
 struct CodePointsAdaptor : std::ranges::range_adaptor_closure<CodePointsAdaptor> {
-    auto operator()(CharRange auto&& r) const {
-        return Utf8CodePointRange<decltype(r)>{std::forward<decltype(r)>(r)};
+    constexpr auto operator()(CharRange auto&& r) const {
+        return Utf8CodePointRange<std::views::all_t<decltype(r)>>{std::forward<decltype(r)>(r)};
     }
-    auto operator()(WCharRange auto&& r) const {
+    constexpr auto operator()(WCharRange auto&& r) const {
         return std::forward<decltype(r)>(r) |
                std::views::transform([](wchar_t c) -> int32_t { return static_cast<int32_t>(c); });
     }
@@ -134,30 +137,25 @@ struct CodePointsAdaptor : std::ranges::range_adaptor_closure<CodePointsAdaptor>
 
 inline constexpr CodePointsAdaptor codePoints{};
 
-inline std::wint_t toLower(int32_t cp) {
-    return std::towlower(static_cast<std::wint_t>(cp));
+inline constexpr int codePointToLower(int cp) noexcept {
+    return cp > std::numeric_limits<unsigned char>::max() ? cp : std::tolower(cp);
 }
-inline int32_t noTransform(int32_t cp) { return cp; }
+inline constexpr int noTransform(int cp) noexcept { return cp; }
 
 template <StringRange A, StringRange B, typename Transform>
-int compareImpl(A&& a, B&& b, Transform transform) {
+constexpr auto compareImpl(A&& a, B&& b, Transform transform) {
     auto ra = codePoints(std::forward<A>(a));
     auto rb = codePoints(std::forward<B>(b));
-    auto ait = std::ranges::begin(ra), aend = std::ranges::end(ra);
-    auto bit = std::ranges::begin(rb), bend = std::ranges::end(rb);
-    while (ait != aend && bit != bend) {
-        auto cpA = transform(*ait);
-        auto cpB = transform(*bit);
-        if (cpA != cpB) return (cpA < cpB) ? -1 : 1;
-        ++ait;
-        ++bit;
-    }
-    if (ait != aend) return 1;
-    if (bit != bend) return -1;
-    return 0;
+    return std::lexicographical_compare_three_way(
+        ra.begin(), ra.end(), rb.begin(), rb.end(),
+        [&](int32_t x, int32_t y) { return transform(x) <=> transform(y); });
 }
 
 }  // namespace detail
+
+namespace views {
+inline constexpr detail::CodePointsAdaptor codePoints{};
+}
 
 /**
  * @brief Case-insensitive equality comparison.
@@ -165,17 +163,9 @@ int compareImpl(A&& a, B&& b, Transform transform) {
  * Uses utf8cpp to correctly decode multi-byte UTF-8 sequences.
  */
 struct IVW_CORE_API CaseInsensitiveEqual {
-    bool operator()(std::string_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::toLower) == 0;
-    }
-    bool operator()(std::string_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::toLower) == 0;
-    }
-    bool operator()(std::wstring_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::toLower) == 0;
-    }
-    bool operator()(std::wstring_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::toLower) == 0;
+    constexpr bool operator()(StringRange auto&& a, StringRange auto&& b) const {
+        return detail::compareImpl(std::forward<decltype(a)>(a), std::forward<decltype(b)>(b),
+                                   detail::codePointToLower) == 0;
     }
     using is_transparent = int;
 };
@@ -185,17 +175,9 @@ struct IVW_CORE_API CaseInsensitiveEqual {
  * Suitable for use as comparator in std::map, std::set etc.
  */
 struct IVW_CORE_API CaseInsensitiveLess {
-    bool operator()(std::string_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::toLower) < 0;
-    }
-    bool operator()(std::string_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::toLower) < 0;
-    }
-    bool operator()(std::wstring_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::toLower) < 0;
-    }
-    bool operator()(std::wstring_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::toLower) < 0;
+    constexpr bool operator()(StringRange auto&& a, StringRange auto&& b) const {
+        return detail::compareImpl(std::forward<decltype(a)>(a), std::forward<decltype(b)>(b),
+                                   detail::codePointToLower) < 0;
     }
     using is_transparent = int;
 };
@@ -205,17 +187,9 @@ struct IVW_CORE_API CaseInsensitiveLess {
  * Supports all combinations of std::string_view (UTF-8) and std::wstring_view.
  */
 struct IVW_CORE_API CaseSensitiveEqual {
-    bool operator()(std::string_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::noTransform) == 0;
-    }
-    bool operator()(std::string_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::noTransform) == 0;
-    }
-    bool operator()(std::wstring_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::noTransform) == 0;
-    }
-    bool operator()(std::wstring_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::noTransform) == 0;
+    constexpr bool operator()(StringRange auto&& a, StringRange auto&& b) const {
+        return detail::compareImpl(std::forward<decltype(a)>(a), std::forward<decltype(b)>(b),
+                                   detail::noTransform) == 0;
     }
     using is_transparent = int;
 };
@@ -225,17 +199,9 @@ struct IVW_CORE_API CaseSensitiveEqual {
  * Suitable for use as comparator in ordered containers.
  */
 struct IVW_CORE_API CaseSensitiveLess {
-    bool operator()(std::string_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::noTransform) < 0;
-    }
-    bool operator()(std::string_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::noTransform) < 0;
-    }
-    bool operator()(std::wstring_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::noTransform) < 0;
-    }
-    bool operator()(std::wstring_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::noTransform) < 0;
+    constexpr bool operator()(StringRange auto&& a, StringRange auto&& b) const {
+        return detail::compareImpl(std::forward<decltype(a)>(a), std::forward<decltype(b)>(b),
+                                   detail::noTransform) < 0;
     }
     using is_transparent = int;
 };

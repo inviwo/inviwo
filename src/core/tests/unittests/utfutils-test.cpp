@@ -43,7 +43,6 @@
 #include <cwctype>
 
 using namespace std::string_view_literals;
-using namespace std::wstring_view_literals;
 
 namespace inviwo {
 
@@ -76,26 +75,24 @@ TEST(UtfUtils, CodePointsAdaptorWChar) {
 
 TEST(UtfUtils, CodePointsWithRangesCountIf) {
     std::string_view u8str = "H\xC3\xA9llo W\xC3\xB6rld";  // Héllo Wörld
-    auto nonAscii = std::ranges::count_if(u8str | detail::codePoints,
-                                          [](int32_t cp) { return cp > 127; });
+    auto nonAscii =
+        std::ranges::count_if(u8str | detail::codePoints, [](int32_t cp) { return cp > 127; });
     EXPECT_EQ(nonAscii, 2);
 }
 
 TEST(UtfUtils, CodePointsWithRangesEqual) {
     std::string_view u8str = "caf\xC3\xA9";
     std::wstring_view wstr = L"caf\u00E9";
-    EXPECT_TRUE(
-        std::ranges::equal(u8str | detail::codePoints, wstr | detail::codePoints));
+    EXPECT_TRUE(std::ranges::equal(u8str | detail::codePoints, wstr | detail::codePoints));
 }
 
 TEST(UtfUtils, CodePointsWithViewsTransform) {
     // All code points lowercased
     std::string_view u8str = "ABC";
     std::vector<int32_t> lower;
-    for (auto cp : u8str | detail::codePoints |
-                       std::views::transform([](int32_t c) -> int32_t {
-                           return std::towlower(static_cast<std::wint_t>(c));
-                       })) {
+    for (auto cp : u8str | detail::codePoints | std::views::transform([](int32_t c) -> int32_t {
+                       return std::towlower(static_cast<std::wint_t>(c));
+                   })) {
         lower.push_back(cp);
     }
     EXPECT_EQ(lower, (std::vector<int32_t>{'a', 'b', 'c'}));
@@ -189,11 +186,13 @@ TEST(UtfUtils, CaseSensitiveLessBasic) {
 TEST(UtfUtils, CaseInsensitiveEqualImplicitConversions) {
     constexpr CaseInsensitiveEqual eq;
     // All of these should compile and work via implicit conversion to string_view/wstring_view
-    EXPECT_TRUE(eq("hello", "HELLO"));                              // const char* vs const char*
-    EXPECT_TRUE(eq(std::string{"hello"}, "HELLO"));                 // string vs const char*
-    EXPECT_TRUE(eq("hello", L"HELLO"));                             // const char* vs const wchar_t*
-    EXPECT_TRUE(eq(std::string{"hello"}, std::wstring{L"HELLO"}));  // string vs wstring
-    EXPECT_TRUE(eq(L"hello", "HELLO"));                             // const wchar_t* vs const char*
+    EXPECT_TRUE(eq("hello", "HELLO"));  // const char* vs const char*
+    const auto hello = std::string{"hello"};
+    EXPECT_TRUE(eq(hello, "HELLO"));      // string vs const char*
+    EXPECT_TRUE(eq("hello", L"HELLO"));  // const char* vs const wchar_t*
+    const auto whello = std::wstring{L"HELLO"};
+    EXPECT_TRUE(eq(hello, whello));      // string vs wstring
+    EXPECT_TRUE(eq(L"hello", "HELLO"));  // const wchar_t* vs const char*
 }
 
 }  // namespace inviwo
