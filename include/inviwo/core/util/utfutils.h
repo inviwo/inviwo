@@ -56,7 +56,7 @@ namespace detail {
 template <std::input_iterator Iter, std::sentinel_for<Iter> Sentinel>
 class Utf8CodePointIterator {
 public:
-    using iterator_category = std::input_iterator_tag;
+    using iterator_category = std::forward_iterator_tag;
     using value_type = int32_t;
     using difference_type = std::ptrdiff_t;
     using pointer = const int32_t*;
@@ -94,8 +94,8 @@ private:
 template <CharRange View>
 class Utf8CodePointRange : public std::ranges::view_interface<Utf8CodePointRange<View>> {
 public:
-    using Iter = std::ranges::iterator_t<View>;
-    using Sentinel = std::ranges::sentinel_t<View>;
+    using Iter = std::ranges::iterator_t<const View>;
+    using Sentinel = std::ranges::sentinel_t<const View>;
 
     constexpr Utf8CodePointRange() = default;
     constexpr explicit Utf8CodePointRange(View view) : view_{std::move(view)} {}
