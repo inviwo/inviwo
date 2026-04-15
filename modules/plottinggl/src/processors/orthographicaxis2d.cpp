@@ -44,8 +44,6 @@
 
 namespace inviwo {
 
-#pragma optimize("", off)
-
 const ProcessorInfo OrthographicAxis2D::processorInfo_{
     "org.inviwo.OrthographicAxis2D",  // Class identifier
     "Orthographic Axis2D",            // Display name
@@ -167,7 +165,7 @@ OrthographicAxis2D::OrthographicAxis2D()
 }
 
 void OrthographicAxis2D::process() {
-    auto [w2m, axes] = [this]() -> std::pair<mat4, std::array<const Axis*, 2>> {
+    auto [w2m, axes] = [this]() -> std::pair<dmat4, std::array<const Axis*, 2>> {
         if (mesh_.hasData()) {
             const auto data = mesh_.getData();
             return {data->getCoordinateTransformer().getWorldToModelMatrix(),
@@ -222,12 +220,12 @@ void OrthographicAxis2D::process() {
     const auto yEnd = size2_t(lowerLeft.x, upperRight.y - padding);
 
     const auto start =
-        2.0f * vec3{dvec2{xStart.x, yStart.y} / dvec2{dims}, 0.5} - vec3{1.0, 1.0, 1.0};
-    const auto end = 2.0f * vec3{dvec2{xEnd.x, yEnd.y} / dvec2{dims}, 0.5} - vec3{1.0, 1.0, 1.0};
+        2.0 * dvec3{dvec2{xStart.x, yStart.y} / dvec2{dims}, 0.5} - dvec3{1.0, 1.0, 1.0};
+    const auto end = 2.0 * dvec3{dvec2{xEnd.x, yEnd.y} / dvec2{dims}, 0.5} - dvec3{1.0, 1.0, 1.0};
 
     const auto wStart =
-        w2m * vec4{camera_.get().getWorldPosFromNormalizedDeviceCoords(start), 1.0f};
-    const auto wEnd = w2m * vec4{camera_.get().getWorldPosFromNormalizedDeviceCoords(end), 1.0f};
+        w2m * dvec4{camera_.get().getWorldPosFromNormalizedDeviceCoords(start), 1.0};
+    const auto wEnd = w2m * dvec4{camera_.get().getWorldPosFromNormalizedDeviceCoords(end), 1.0};
 
     axis1_.setRange(dvec2{wStart.x, wEnd.x});
     axis2_.setRange(dvec2{wStart.y, wEnd.y});
