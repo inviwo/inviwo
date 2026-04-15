@@ -89,7 +89,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     sharedCanvas_.activate();
     sharedCanvas_.initializeGL();
 
-    if (!static_cast<bool>(glFenceSync)) {  // Make sure we have setup the opengl function pointers.
+    if (!glFenceSync.isResolved()) {  // Make sure we have setup the opengl function pointers.
         throw OpenGLInitException("Unable to initiate OpenGL");
     }
 

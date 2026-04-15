@@ -97,7 +97,7 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
         holder_ = RenderContext::getPtr()->setDefaultRenderContext(GLFWSharedCanvas_.get());
     }
     OpenGLCapabilities::initializeGL();
-    if (!static_cast<bool>(glFenceSync)) {  // Make sure we have setup the opengl function pointers.
+    if (!glFenceSync.isResolved()) {  // Make sure we have setup the opengl function pointers.
         throw GLFWInitException("Unable to initiate OpenGL");
     }
     CanvasGL::defaultGLState();

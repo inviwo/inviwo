@@ -123,7 +123,7 @@ void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
 }
 
 bool setOpenGLDebugMode(debug::Mode mode, debug::Severity severity) {
-    if (!static_cast<bool>(glDebugMessageCallback)) return false;
+    if (!glDebugMessageCallback.isResolved()) return false;
 
     switch (mode) {
         case debug::Mode::Off:
@@ -172,7 +172,7 @@ void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
 }
 
 bool configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
-    if (!static_cast<bool>(glDebugMessageControl)) return false;
+    if (!glDebugMessageControl.isResolved()) return false;
 
     using namespace debug;
 
