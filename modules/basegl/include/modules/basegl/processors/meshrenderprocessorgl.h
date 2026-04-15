@@ -69,7 +69,7 @@ protected:
     CameraProperty camera_;
 
     CompositeProperty meshProperties_;
-    OptionPropertyInt cullFace_;
+    OptionProperty<GLenum> cullFace_;
     BoolProperty enableDepthTest_;
     BoolProperty overrideColorBuffer_;
     FloatVec4Property overrideColor_;

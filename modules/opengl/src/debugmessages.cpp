@@ -73,8 +73,8 @@ void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID 
 
 extern "C" {
 static void APIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint id,
-                                                  GLenum eseverity, GLsizei /*length*/,
-                                                  const GLchar* message, const void* /*module*/) {
+                                                GLenum eseverity, GLsizei /*length*/,
+                                                const GLchar* message, const void* /*module*/) {
 
     const auto source = debug::toSouce(esource);
     const auto type = debug::toType(etype);
@@ -92,8 +92,9 @@ static void APIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GL
     LogCentral::getPtr()->log("OpenGL Debug", toLogLevel(severity), LogAudience::Developer,
                               __FILE__, __FUNCTION__, __LINE__, error);
 
-    if (auto app = InviwoApplication::getPtr()) {
-        if (auto openglSettings = app->getSettingsByType<OpenGLSettings>()) {
+    if (InviwoApplication::isInitialized()) {
+        if (auto* openglSettings =
+                InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>()) {
             auto mode = openglSettings->debugMessages_.getSelectedValue();
             if (mode == debug::Mode::DebugSynchronous) {
                 const auto debugbreak = openglSettings->breakOnMessage_.getSelectedValue();
