@@ -208,6 +208,15 @@ bool isComponentKind(std::string_view kind) {
                                [&](auto k) { return CaseInsensitiveEqual{}(k, kind); });
 }
 
+template <typename T>
+T parse(std::string_view s, std::string_view key) {
+    return util::fromStr<T>(s)
+        .or_else([&](std::string_view error) -> std::expected<T, std::string_view> {
+            throw Exception(SourceContext{}, "Error parsing key: '{}' got '{}'. {}", key, s, error);
+        })
+        .value();
+}
+
 NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
     NrrdState state;
 
@@ -247,8 +256,6 @@ NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
         if (line[0] == '#') continue;
 
         // Determine separator: ":=" for key-value pairs, ":" for fields
-        std::string key;
-        std::string value;
         auto colonEq = line.find(":=");
         if (colonEq != std::string::npos) {
             // key-value pair (not a field specification, skip)
@@ -257,30 +264,28 @@ NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
         auto colon = line.find(':');
         if (colon == std::string::npos) continue;
 
-        key = toLower(util::trim(line.substr(0, colon)));
-        value = util::trim(line.substr(colon + 1));
+        std::string key = toLower(util::trim(line.substr(0, colon)));
+        const auto value = util::trim(line.substr(colon + 1));
 
         if (key == "type") {
             typeStr = value;
         } else if (key == "dimension") {
-            state.dimension = std::stoi(value);
+            state.dimension = parse<int>(value, "dimension");
         } else if (key == "sizes") {
-            std::stringstream ss(value);
-            size_t sz;
-            while (ss >> sz) {
-                state.sizes.push_back(sz);
-            }
+            util::forEachStringPart(value, " ", [&](std::string_view part) {
+                state.sizes.push_back(parse<size_t>(part, "sizes"));
+            });
+
         } else if (key == "spacings") {
             state.spacings.emplace();
-            std::stringstream ss(value);
-            std::string tok;
-            while (ss >> tok) {
-                if (toLower(tok) == "nan" || tok == "NaN") {
-                    state.spacings->push_back(1.0);  // default for non-spatial axes
-                } else {
-                    state.spacings->push_back(std::stod(tok));
-                }
-            }
+            util::forEachStringPart(value, " ", [&](std::string_view part) {
+                state.spacings->push_back(parse<double>(part, "spacings"));
+            });
+
+            // default for non-spatial axes
+            std::ranges::transform(*state.spacings, state.spacings->begin(),
+                                   [](double s) { return std::isnan(s) ? 1.0 : s; });
+
         } else if (key == "space directions") {
             state.spaceDirections.emplace();
             auto tokens = splitRespectingParens(value);
@@ -310,9 +315,9 @@ NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
         } else if (key == "data file" || key == "datafile") {
             state.dataFile = value;
         } else if (key == "line skip" || key == "lineskip") {
-            state.lineSkip = static_cast<size_t>(std::stoul(value));
+            state.lineSkip = parse<size_t>(value, "line skip");
         } else if (key == "byte skip" || key == "byteskip") {
-            state.byteSkip = static_cast<size_t>(std::stoul(value));
+            state.byteSkip = parse<size_t>(value, "byte skip");
         } else if (key == "kinds") {
             auto tokens = splitRespectingParens(value);
             for (auto& t : tokens) {
@@ -415,8 +420,7 @@ size_t resolveDataOffset(const NrrdState& state) {
 std::pair<mat3, vec3> buildSpatialInfo(const NrrdState& state) {
     auto sSizes = state.spatialSizes();
 
-    mat3 basis{2.0f};  // default: 2-unit cube centered at origin
-    std::optional<vec3> offset;
+    dmat3 basis{1.0f};  // default: 2-unit cube centered at origin
 
     if (state.spaceDirections) {
         // space directions: each vector (per spatial axis) defines the direction
@@ -429,10 +433,9 @@ std::pair<mat3, vec3> buildSpatialInfo(const NrrdState& state) {
             if (dir.empty()) continue;  // "none" axis (component axis)
             if (spatialIdx >= 3) break;
             if (dir.size() >= 3 && spatialIdx < sSizes.size()) {
-                basis[static_cast<int>(spatialIdx)] =
-                    vec3{static_cast<float>(dir[0]) * static_cast<float>(sSizes[spatialIdx]),
-                         static_cast<float>(dir[1]) * static_cast<float>(sSizes[spatialIdx]),
-                         static_cast<float>(dir[2]) * static_cast<float>(sSizes[spatialIdx])};
+                basis[spatialIdx] = dvec3{dir[0] * static_cast<double>(sSizes[spatialIdx]),
+                                          dir[1] * static_cast<double>(sSizes[spatialIdx]),
+                                          dir[2] * static_cast<double>(sSizes[spatialIdx])};
             }
             spatialIdx++;
         }
@@ -441,30 +444,25 @@ std::pair<mat3, vec3> buildSpatialInfo(const NrrdState& state) {
         size_t spatialStart = (state.components > 1) ? 1 : 0;
         for (size_t i = 0;
              i < 3 && (i + spatialStart) < state.spacings->size() && i < sSizes.size(); ++i) {
-            float sp = static_cast<float>((*state.spacings)[i + spatialStart]);
-            basis[static_cast<int>(i)] = vec3{0.0f};
-            basis[static_cast<int>(i)][static_cast<int>(i)] = sp * static_cast<float>(sSizes[i]);
+            const auto sp = (*state.spacings)[i + spatialStart];
+            basis[i][i] = sp * static_cast<double>(sSizes[i]);
         }
     } else {
         // No spatial info: unit spacing
         for (size_t i = 0; i < 3 && i < sSizes.size(); ++i) {
-            basis[static_cast<int>(i)] = vec3{0.0f};
-            basis[static_cast<int>(i)][static_cast<int>(i)] = static_cast<float>(sSizes[i]);
+            basis[i][i] = static_cast<double>(sSizes[i]);
         }
     }
 
+    dvec3 offset{};
     if (state.spaceOrigin && state.spaceOrigin->size() >= 3) {
-        offset = vec3{static_cast<float>((*state.spaceOrigin)[0]),
-                      static_cast<float>((*state.spaceOrigin)[1]),
-                      static_cast<float>((*state.spaceOrigin)[2])};
+        offset = dvec3{(*state.spaceOrigin)[0], (*state.spaceOrigin)[1], (*state.spaceOrigin)[2]};
+    } else {
+        // Default offset: center the data at origin
+        offset = -0.5 * (basis[0] + basis[1] + basis[2]);
     }
 
-    // Default offset: center the data at origin
-    if (!offset) {
-        offset = -0.5f * (basis[0] + basis[1] + basis[2]);
-    }
-
-    return {basis, *offset};
+    return {basis, offset};
 }
 
 SwizzleMask swizzleMaskForComponents(size_t components) {
