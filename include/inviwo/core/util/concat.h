@@ -184,7 +184,6 @@ class concat_view : public std::ranges::view_interface<concat_view<Rs...>> {
         }
 
         bool operator==(const Iterator& other) const { return current_ == other.current_; }
-        bool operator!=(const Iterator& other) const { return !(*this == other); }
     };
 
 public:
