@@ -17,9 +17,6 @@ env:
   CCACHE_BASEDIR: ${{ github.workspace }}
   CCACHE_NODIRECT: true
   CCACHE_NODEPEND: true
-  # CCACHE_DEBUG: 1
-  # CCACHE_LOGFILE: ${{ github.workspace }}/ccache-debug/ccache.log
-  # CCACHE_DEBUGDIR: ${{ github.workspace }}/ccache-debug
 
   # QT_DEBUG_PLUGINS: 1    # print qt plugin debug info
 

@@ -13,7 +13,7 @@ inputs:
     required: false
     default: true
   gh-token:
-    description: "github actions token for access to the octokit api to be able to remove onld caches"
+    description: "github actions token for access to the octokit api to be able to remove old caches"
     default: false
     required: false
 
@@ -65,6 +65,14 @@ runs:
         restore-keys: |
           inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}
 
+    - name: "Configure Ccache Debug"
+      if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}"
+      shell: bash
+      run: |
+          echo "CCACHE_DEBUG=true" >> $GITHUB_ENV
+          echo "CCACHE_LOGFILE=${{ github.workspace }}/ccache-debug/ccache.log" >> $GITHUB_ENV
+          echo "CCACHE_DEBUGDIR=${{ github.workspace }}/ccache-debug" >> $GITHUB_ENV
+
     - name: "Copy ccache"
       shell: bash
       if: runner.os == 'Windows' && inputs.ccache
@@ -72,14 +80,26 @@ runs:
         mkdir build
         cp ${{ steps.ccache.outputs.executable }} build/cl.exe
 
-    - name: "AppImageTool and New CMake 4.2+ with AppImage support"
+    - name: "Install Latest CMake"
       shell: bash
       if: runner.os == 'Linux'
       run: |
-        curl -L -o install_cmake.sh https://github.com/Kitware/CMake/releases/download/v4.2.1/cmake-4.2.1-linux-x86_64.sh
+        # Get the latest CMake version from the GitHub API
+        CMAKE_VERSION=$(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
+        echo "Latest CMake version: $CMAKE_VERSION"
+
+        curl -L -o install_cmake.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh
         chmod +x install_cmake.sh
         sudo ./install_cmake.sh --skip-license --prefix=/usr/local
 
+        echo "Path to CMAKE $(which cmake)"
+        echo "Installed CMake version:"
+        cmake --version
+
+    - name: "Install AppImageTool"
+      shell: bash
+      if: runner.os == 'Linux'
+      run: |
         curl -L -o appimagetool.AppImage https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
         chmod +x appimagetool.AppImage
         sudo mv appimagetool.AppImage /usr/local/bin/appimagetool
