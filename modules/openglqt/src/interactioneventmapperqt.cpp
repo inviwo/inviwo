@@ -381,7 +381,7 @@ bool InteractionEventMapperQt::mapPanTriggered(QPanGesture* gesture) {
     const auto hotSpotNorm = normalizePosition(localHotSpot, canvasDim);
 
     GestureEvent gestureEvent(deltaNorm, 0.0, GestureType::Pan, utilqt::getGestureState(gesture),
-                              lastNumFingers_, hotSpotNorm + offsetNorm, imageDimensions_(),
+                              hotSpotNorm + offsetNorm, imageDimensions_(),
                               depth_(hotSpotNorm + offsetNorm));
 
     propagator_->propagateEvent(&gestureEvent, nullptr);

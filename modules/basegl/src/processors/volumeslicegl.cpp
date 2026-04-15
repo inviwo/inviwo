@@ -247,7 +247,7 @@ VolumeSliceGL::VolumeSliceGL()
     , gestureShiftSlice_(
           "gestureShiftSlice", "Gesture Slice Shift",
           [this](Event* e) { eventGestureShiftSlice(e); },
-          std::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3))
+          std::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any)))
     , meshDirty_(true)
     , updating_(false)
     , sliceRotation_(1.0f)
