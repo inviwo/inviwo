@@ -45,6 +45,8 @@
 
 #include <fmt/base.h>
 
+#include <glbinding/Binding.h>
+
 namespace inviwo {
 
 namespace utilgl {
@@ -123,7 +125,7 @@ void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
 }
 
 bool setOpenGLDebugMode(debug::Mode mode, debug::Severity severity) {
-    if (!glDebugMessageCallback.isResolved()) return false;
+    if (!glbinding::Binding::DebugMessageCallback.isResolved()) return false;
 
     switch (mode) {
         case debug::Mode::Off:
@@ -172,7 +174,7 @@ void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
 }
 
 bool configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
-    if (!glDebugMessageControl.isResolved()) return false;
+    if (!glbinding::Binding::DebugMessageControl.isResolved()) return false;
 
     using namespace debug;
 

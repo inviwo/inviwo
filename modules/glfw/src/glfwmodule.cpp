@@ -48,6 +48,8 @@
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/sharedopenglresources.h>
 
+#include <glbinding/Binding.h>
+
 #include <functional>
 #include <future>
 #include <memory>
@@ -97,7 +99,7 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
         holder_ = RenderContext::getPtr()->setDefaultRenderContext(GLFWSharedCanvas_.get());
     }
     OpenGLCapabilities::initializeGL();
-    if (!glFenceSync.isResolved()) {  // Make sure we have setup the opengl function pointers.
+    if (!glbinding::Binding::FenceSync.isResolved()) {  // Make sure we have setup the opengl function pointers.
         throw GLFWInitException("Unable to initiate OpenGL");
     }
     CanvasGL::defaultGLState();

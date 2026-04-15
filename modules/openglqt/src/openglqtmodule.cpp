@@ -59,6 +59,8 @@
 #include <modules/openglqt/properties/glslpropertywidgetqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <glbinding/Binding.h>
+
 #include <memory>
 #include <string_view>
 #include <vector>
@@ -89,7 +91,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     sharedCanvas_.activate();
     sharedCanvas_.initializeGL();
 
-    if (!glFenceSync.isResolved()) {  // Make sure we have setup the opengl function pointers.
+    if (!glbinding::Binding::FenceSync.isResolved()) {  // Make sure we have setup the opengl function pointers.
         throw OpenGLInitException("Unable to initiate OpenGL");
     }
 
