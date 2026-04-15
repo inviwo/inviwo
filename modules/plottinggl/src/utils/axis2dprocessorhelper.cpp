@@ -113,7 +113,8 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(
                  rangeModeState(useDimsRange == DimsRangeMode::Yes, getBoundingBox != nullptr)}
 
     , captionType_("captionType", "Caption Type", captionTypeState())
-    , customCaption_("customCaption", "Custom Caption", "{n}{u: [}")
+    , customCaption_("customCaption", "Custom Caption",
+                     util::unindentMd2doc(plot::formatAxisCaptionHelp), "{n}{u: [}")
     , labelScale_{"labelScale", "Label Scaling", labelScaleState()}
 
     , visibility_{"visibility", "Axis Visibility",

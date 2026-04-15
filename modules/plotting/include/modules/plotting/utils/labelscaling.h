@@ -31,17 +31,14 @@
 #include <modules/plotting/plottingmoduledefine.h>
 
 #include <inviwo/core/properties/optionproperty.h>
-
 #include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <glm/gtx/component_wise.hpp>
-
-#include <fmt/base.h>
 
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <array>
 
 namespace inviwo::plot {
 
@@ -89,6 +86,41 @@ IVW_MODULE_PLOTTING_API OptionPropertyState<CaptionType> captionTypeState();
 
 IVW_MODULE_PLOTTING_API OptionPropertyState<LabelScale> labelScaleState();
 
+constexpr std::string_view formatAxisCaptionHelp = util::trim(R"(
+Formatting of axis captions along with units.
+
+The following format string names are recognized:
+ * `{n}`  axis name
+ * `{u}`  unit, supports the Units Format Specification Mini-Language.
+        For example, `{s: [}` will add a leading space and surround the unit with `[]`
+ * `{su}` unit scaled with 10^exponent. For example, `10^3 m` will be represented as `km`. Also
+        supports the Units Format Specification Mini-Language.
+ * `{s}`  scaling factor, corrsponds to 10^exponent
+ * `{e}`  exponent
+)");
+
+/**
+ * Formats the caption of the given axis @p axis. The formatting is chosen depending on @p
+ * captionType.
+ *
+ * The following format string names are recognized:
+ * {n}  axis name
+ * {u}  unit, supports the Units Format Specification Mini-Language.
+ *      For example, "{s: [}" will add a leading space and surround the unit with "[]"
+ * {su} unit scaled with 10^exponent. For example 10^3 m will be represented as "km". Also supports
+ *      the Units Format Specification Mini-Language.
+ * {s}  scaling factor, corrsponds to 10^exponent
+ * {e}  exponent
+ *
+ * @param axis         the axis whose caption and Unit will be formatted
+ * @param captionType  determines the formatting of the caption string. If @p captionType is
+ *                     CaptionType::Data, "{n}{su: [}" is used.
+ * @param labelScale   determines whether the unit should be scaled with the @p exponent
+ * @param customFormat custom formatting string, used if @p captionType is CaptionType::Custom
+ * @param exponent     exponent in base 10 that is accompanying the axis Unit
+ * @param origCaption  original caption, used if @p captionType is CaptionType::String
+ * @return formatted caption
+ */
 IVW_MODULE_PLOTTING_API std::string formatAxisCaption(const Axis& axis, CaptionType captionType,
                                                       LabelScale labelScale,
                                                       std::string_view customFormat, int exponent,

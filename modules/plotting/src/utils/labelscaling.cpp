@@ -31,6 +31,8 @@
 
 #include <inviwo/core/util/logcentral.h>
 
+#include <fmt/base.h>
+
 namespace inviwo::plot {
 
 namespace {
