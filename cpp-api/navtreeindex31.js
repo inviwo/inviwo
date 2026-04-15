@@ -1,5 +1,6 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1InviwoDefaults_3_01short_01_4.html":[2,0,0,489],
 "structinviwo_1_1InviwoDefaults_3_01short_01_4.html":[4,0,1,498],
 "structinviwo_1_1InviwoDefaults_3_01size__t_01_4.html":[2,0,0,490],
 "structinviwo_1_1InviwoDefaults_3_01size__t_01_4.html":[4,0,1,499],
@@ -248,6 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1PtrHash.html":[4,0,1,947],
 "structinviwo_1_1PythonProcessorFactoryObjectData.html":[2,0,0,958],
 "structinviwo_1_1PythonProcessorFactoryObjectData.html":[4,0,1,967],
-"structinviwo_1_1RAMCache.html":[2,0,0,971],
-"structinviwo_1_1RAMCache.html":[4,0,1,980]
+"structinviwo_1_1RAMCache.html":[2,0,0,971]
 };

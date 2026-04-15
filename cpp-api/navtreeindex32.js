@@ -1,5 +1,6 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1RAMCache.html":[4,0,1,980],
 "structinviwo_1_1RAMCache_1_1Item.html":[2,0,0,971,0],
 "structinviwo_1_1RAMCache_1_1Item.html":[4,0,1,980,0],
 "structinviwo_1_1RasterizationRenderer_1_1IllustrationSettings.html":[2,0,0,979,0],
@@ -248,6 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1equalPtr.html":[4,0,1,316],
 "structinviwo_1_1ffmpeg_1_1Error.html":[4,0,1,13,2],
 "structinviwo_1_1ffmpeg_1_1NoMoveCopy.html":[4,0,1,13,5],
-"structinviwo_1_1ffmpeg_1_1OutputStream.html":[4,0,1,13,7],
-"structinviwo_1_1ffmpeg_1_1OutputStream_1_1Options.html":[4,0,1,13,7,0]
+"structinviwo_1_1ffmpeg_1_1OutputStream.html":[4,0,1,13,7]
 };

@@ -33,6 +33,7 @@ var namespaceinviwo_1_1plot =
     [ "TextData", "structinviwo_1_1plot_1_1TextData.html", null ],
     [ "TickData", "structinviwo_1_1plot_1_1TickData.html", null ],
     [ "VolumeAxis", "classinviwo_1_1plot_1_1VolumeAxis.html", "classinviwo_1_1plot_1_1VolumeAxis" ],
+    [ "formatAxisCaption", "namespaceinviwo_1_1plot.html#aafef6b153a6464b00b7ed378adfb91e1", null ],
     [ "generateAxisMesh3D", "namespaceinviwo_1_1plot.html#ac559334e3d34c51d6bc3f0918b8e6f28", null ],
     [ "generateTicksMesh", "namespaceinviwo_1_1plot.html#a302bcec5a18245575f77acd14b4032e9", null ],
     [ "labelingExtendedWilkinson", "namespaceinviwo_1_1plot.html#a3d42e926f7958d88daf19efafb048bbc", null ],

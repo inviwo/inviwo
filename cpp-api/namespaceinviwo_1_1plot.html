@@ -196,8 +196,7 @@ IVW_MODULE_PLOTTINGGL_API float&#160;</td><td class="memItemRight"><b>calcScaleF
 IVW_MODULE_PLOTTINGGL_API float&#160;</td><td class="memItemRight"><b>calcScaleFactor3D</b> (const glm::dmat4 &amp;matrix, OffsetScaling mode)</td></tr>
 <tr class="memitem:a3fd975bd17f2f107361724cd41f3a04d" id="r_a3fd975bd17f2f107361724cd41f3a04d"><td class="memItemLeft"><a id="a3fd975bd17f2f107361724cd41f3a04d" name="a3fd975bd17f2f107361724cd41f3a04d"></a>
 IVW_MODULE_PLOTTING_API <a class="el" href="structinviwo_1_1OptionPropertyState.html">OptionPropertyState</a>&lt; CaptionType &gt;&#160;</td><td class="memItemRight"><b>captionTypeState</b> ()</td></tr>
-<tr class="memitem:aafef6b153a6464b00b7ed378adfb91e1" id="r_aafef6b153a6464b00b7ed378adfb91e1"><td class="memItemLeft"><a id="aafef6b153a6464b00b7ed378adfb91e1" name="aafef6b153a6464b00b7ed378adfb91e1"></a>
-IVW_MODULE_PLOTTING_API std::string&#160;</td><td class="memItemRight"><b>formatAxisCaption</b> (const <a class="el" href="structinviwo_1_1Axis.html">Axis</a> &amp;axis, CaptionType captionType, LabelScale labelScale, std::string_view customFormat, int exponent, std::string_view origCaption)</td></tr>
+<tr class="memitem:aafef6b153a6464b00b7ed378adfb91e1" id="r_aafef6b153a6464b00b7ed378adfb91e1"><td class="memItemLeft">IVW_MODULE_PLOTTING_API std::string&#160;</td><td class="memItemRight"><a class="el" href="#aafef6b153a6464b00b7ed378adfb91e1">formatAxisCaption</a> (const <a class="el" href="structinviwo_1_1Axis.html">Axis</a> &amp;axis, CaptionType captionType, LabelScale labelScale, std::string_view customFormat, int exponent, std::string_view origCaption)</td></tr>
 <tr class="memitem:ac559334e3d34c51d6bc3f0918b8e6f28" id="r_ac559334e3d34c51d6bc3f0918b8e6f28"><td class="memItemLeft">IVW_MODULE_PLOTTING_API std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ac559334e3d34c51d6bc3f0918b8e6f28">generateAxisMesh3D</a> (const vec3 &amp;startPos, const vec3 &amp;endPos, const size_t &amp;pickingId=std::numeric_limits&lt; size_t &gt;::max())</td></tr>
 <tr class="memitem:a302bcec5a18245575f77acd14b4032e9" id="r_a302bcec5a18245575f77acd14b4032e9"><td class="memItemLeft">IVW_MODULE_PLOTTING_API std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a302bcec5a18245575f77acd14b4032e9">generateTicksMesh</a> (const std::vector&lt; double &gt; &amp;tickMarks, dvec2 axisRange, TickData::Style style)</td></tr>
 <tr class="memdesc:a302bcec5a18245575f77acd14b4032e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">utility function to create a mesh for a given set of tick mark positions  <br /></td></tr>
@@ -243,6 +242,7 @@ Variables</h2></td></tr>
 constexpr std::string_view&#160;</td><td class="memItemRight"><b>defaultFormat</b> = &quot;{:.1f}&quot;</td></tr>
 <tr class="memitem:a3248874aa4d0f105a259316c0864adf8" id="r_a3248874aa4d0f105a259316c0864adf8"><td class="memItemLeft"><a id="a3248874aa4d0f105a259316c0864adf8" name="a3248874aa4d0f105a259316c0864adf8"></a>
 constexpr LabelingAlgorithm&#160;</td><td class="memItemRight"><b>defaultLabeling</b> = LabelingAlgorithm::Matplotlib</td></tr>
+<tr class="memitem:a252372ffadb260ccb53d7d5c869ffb54" id="r_a252372ffadb260ccb53d7d5c869ffb54"><td class="memItemLeft">constexpr std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a252372ffadb260ccb53d7d5c869ffb54">formatAxisCaptionHelp</a></td></tr>
 <tr class="memitem:a37c6c55c5cfbae6e3180f8b554189ad3" id="r_a37c6c55c5cfbae6e3180f8b554189ad3"><td class="memItemLeft"><a id="a37c6c55c5cfbae6e3180f8b554189ad3" name="a37c6c55c5cfbae6e3180f8b554189ad3"></a>
 constexpr std::array&#160;</td><td class="memItemRight"><b>stepsMatplotlib</b> = {1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0}</td></tr>
 <tr class="memitem:a52ba4a5a8ffe679486099fba19df80a9" id="r_a52ba4a5a8ffe679486099fba19df80a9"><td class="memItemLeft"><a id="a52ba4a5a8ffe679486099fba19df80a9" name="a52ba4a5a8ffe679486099fba19df80a9"></a>
@@ -251,6 +251,61 @@ constexpr std::array&#160;</td><td class="memItemRight"><b>stepsTalbot</b> = {1.
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>plot </p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="aafef6b153a6464b00b7ed378adfb91e1" name="aafef6b153a6464b00b7ed378adfb91e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafef6b153a6464b00b7ed378adfb91e1">&#9670;&#160;</a></span>formatAxisCaption()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_PLOTTING_API std::string inviwo::plot::formatAxisCaption </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1Axis.html">Axis</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>axis</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">CaptionType</td>          <td class="paramname"><span class="paramname"><em>captionType</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">LabelScale</td>          <td class="paramname"><span class="paramname"><em>labelScale</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>customFormat</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>exponent</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>origCaption</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Formats the caption of the given axis <code class="param">axis</code>. The formatting is chosen depending on <code class="param">captionType</code>.</p>
+<p>The following format string names are recognized: {n} axis name {u} unit, supports the Units Format Specification Mini-Language. For example, "{s: [}" will add a leading space and surround the unit with "[]" {su} unit scaled with 10^exponent. For example 10^3 m will be represented as "km". Also supports the Units Format Specification Mini-Language. {s} scaling factor, corrsponds to 10^exponent {e} exponent</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">axis</td><td>the axis whose caption and Unit will be formatted </td></tr>
+    <tr><td class="paramname">captionType</td><td>determines the formatting of the caption string. If <code class="param">captionType</code> is CaptionType::Data, "{n}{su: [}" is used. </td></tr>
+    <tr><td class="paramname">labelScale</td><td>determines whether the unit should be scaled with the <code class="param">exponent</code> </td></tr>
+    <tr><td class="paramname">customFormat</td><td>custom formatting string, used if <code class="param">captionType</code> is CaptionType::Custom </td></tr>
+    <tr><td class="paramname">exponent</td><td>exponent in base 10 that is accompanying the axis Unit </td></tr>
+    <tr><td class="paramname">origCaption</td><td>original caption, used if <code class="param">captionType</code> is CaptionType::String </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>formatted caption </dd></dl>
+
+</div>
+</div>
 <a id="ac559334e3d34c51d6bc3f0918b8e6f28" name="ac559334e3d34c51d6bc3f0918b8e6f28"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac559334e3d34c51d6bc3f0918b8e6f28">&#9670;&#160;</a></span>generateAxisMesh3D()</h2>
 
@@ -526,6 +581,42 @@ constexpr std::array&#160;</td><td class="memItemRight"><b>stepsTalbot</b> = {1.
 <dl class="section return"><dt>Returns</dt><dd>linear range [start, start + step, ..., stop] </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>it the range is invalid (start &gt; stop and step &gt; 0) or similar, the result is empty </dd></dl>
 
+</div>
+</div>
+<a name="doc-var-members" id="doc-var-members"></a><h2 id="header-doc-var-members" class="groupheader">Variable Documentation</h2>
+<a id="a252372ffadb260ccb53d7d5c869ffb54" name="a252372ffadb260ccb53d7d5c869ffb54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a252372ffadb260ccb53d7d5c869ffb54">&#9670;&#160;</a></span>formatAxisCaptionHelp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view inviwo::plot::formatAxisCaptionHelp</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">                                                 = <a class="code hl_function" href="namespaceinviwo_1_1util.html#aeb3562b94700f15c08e99b826745258a">util::trim</a>(R<span class="stringliteral">&quot;(</span></div>
+<div class="line"><span class="stringliteral">Formatting of axis captions along with units.</span></div>
+<div class="line"><span class="stringliteral"></span> </div>
+<div class="line"><span class="stringliteral">The following format string names are recognized:</span></div>
+<div class="line"><span class="stringliteral"> * `{n}`  axis name</span></div>
+<div class="line"><span class="stringliteral"> * `{u}`  unit, supports the Units Format Specification Mini-Language.</span></div>
+<div class="line"><span class="stringliteral">        For example, `{s: [}` will add a leading space and surround the unit with `[]`</span></div>
+<div class="line"><span class="stringliteral"> * `{su}` unit scaled with 10^exponent. For example, `10^3 m` will be represented as `km`. Also</span></div>
+<div class="line"><span class="stringliteral">        supports the Units Format Specification Mini-Language.</span></div>
+<div class="line"><span class="stringliteral"> * `{s}`  scaling factor, corrsponds to 10^exponent</span></div>
+<div class="line"><span class="stringliteral"> * `{e}`  exponent</span></div>
+<div class="line"><span class="stringliteral">)&quot;)</span></div>
+<div class="ttc" id="anamespaceinviwo_1_1util_html_aeb3562b94700f15c08e99b826745258a"><div class="ttname"><a href="namespaceinviwo_1_1util.html#aeb3562b94700f15c08e99b826745258a">inviwo::util::trim</a></div><div class="ttdeci">constexpr std::string_view trim(std::string_view str) noexcept</div><div class="ttdoc">trims str from beginning and end by removing white spaces</div><div class="ttdef"><b>Definition</b> stringconversion.h:202</div></div>
+</div><!-- fragment -->
 </div>
 </div>
 </div><!-- contents -->
