@@ -33,28 +33,31 @@
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/concat.h>
 
 #include <ostream>
 #include <filesystem>
+#include <ranges>
+#include <algorithm>
 
 namespace inviwo {
 
 FileExtension FileExtension::createFileExtensionFromString(std::string_view str) {
     // try to split extension string
-    std::size_t extStart = str.find('(');
+    const auto extStart = str.find('(');
     if (extStart == std::string_view::npos) {
         // could not find extension inside ()
         return {};
     }
 
-    std::size_t extEnd = str.rfind(')');
+    const auto extEnd = str.rfind(')');
     if (extEnd == std::string_view::npos) {
         // not matching ')' for extension string
         return {};
     }
     std::string_view desc{str.substr(0, extStart)};
     // trim trailing white spaces
-    std::size_t whiteSpacePos = desc.find_last_not_of(" \t\n\r(");
+    const auto whiteSpacePos = desc.find_last_not_of(" \t\n\r(");
     if (whiteSpacePos != std::string_view::npos) {
         desc = desc.substr(0, whiteSpacePos + 1);
     } else {
@@ -71,7 +74,7 @@ FileExtension FileExtension::createFileExtensionFromString(std::string_view str)
         ext = std::string_view{};
     }
     // get rid of '*.'
-    if (ext.compare(0, 2, "*.") == 0) {
+    if (ext.starts_with("*.")) {
         ext = ext.substr(2);
     }
 
@@ -91,7 +94,11 @@ bool FileExtension::matches(const std::filesystem::path& path) const {
     if (extension.empty()) {
         return true;  // wildcard '*' matches everything
     }
-    return util::iCaseEndsWith(path.string(), extension);
+
+    return std::ranges::ends_with(
+        path.native() | views::codePoints,
+        views::concat(std::string_view{"."}, extension.view()) | views::codePoints,
+        std::ranges::equal_to{}, detail::codePointToLower, detail::codePointToLower);
 }
 
 void FileExtension::serialize(Serializer& s) const {
