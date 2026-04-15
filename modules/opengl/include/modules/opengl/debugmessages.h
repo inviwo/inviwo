@@ -178,6 +178,19 @@ IVW_MODULE_OPENGL_API void handleOpenGLDebugMode(Canvas::ContextID context);
 IVW_MODULE_OPENGL_API bool setOpenGLDebugMode(debug::Mode mode, debug::Severity severity);
 IVW_MODULE_OPENGL_API void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity);
 IVW_MODULE_OPENGL_API bool configureOpenGLDebugMessages(utilgl::debug::Severity severity);
+
+/**
+ * Enable or disable per-call glGetError() checking for the current OpenGL context.
+ * When enabled, glGetError() is called after every OpenGL function call and errors are
+ * logged to LogCentral. If @p breakOnError is true, util::debugBreak() is also called.
+ */
+IVW_MODULE_OPENGL_API void setOpenGLErrorChecking(bool enable, bool breakOnError);
+
+/**
+ * Apply OpenGL per-call error checking settings to all existing contexts.
+ * Called when the corresponding OpenGLSettings properties change.
+ */
+IVW_MODULE_OPENGL_API void handleOpenGLErrorCheckingChange(bool enable, bool breakOnError);
 }  // namespace utilgl
 
 }  // namespace inviwo

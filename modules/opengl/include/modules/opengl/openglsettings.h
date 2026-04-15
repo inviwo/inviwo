@@ -53,6 +53,9 @@ public:
     OptionProperty<utilgl::debug::Mode> debugMessages_;
     OptionProperty<utilgl::debug::Severity> debugSeverity_;
     OptionProperty<utilgl::debug::BreakLevel> breakOnMessage_;
+
+    BoolProperty errorChecking_;
+    BoolProperty breakOnError_;
 };
 
 }  // namespace inviwo

@@ -46,6 +46,8 @@
 #include <fmt/base.h>
 
 #include <glbinding/Binding.h>
+#include <glbinding/CallbackMask.h>
+#include <glbinding/FunctionCall.h>
 
 namespace inviwo {
 
@@ -219,7 +221,46 @@ void handleOpenGLDebugMode(Canvas::ContextID context) {
     if (mode != debug::Mode::Off) {
         logDebugMode(mode, severity, context);
     }
+    // Apply error checking setting for this new context
+    setOpenGLErrorChecking(openglSettings->errorChecking_.get(),
+                           openglSettings->breakOnError_.get());
 }
+
+void handleOpenGLErrorCheckingChange(bool enable, bool breakOnError) {
+    if (RenderContext::getPtr()->hasDefaultRenderContext()) {
+        RenderContext::getPtr()->forEachContext(
+            [enable, breakOnError](Canvas::ContextID /*id*/, const std::string& /*name*/,
+                                   ContextHolder* canvas, std::thread::id threadId) {
+                if (threadId == std::this_thread::get_id()) {
+                    canvas->activate();
+                    setOpenGLErrorChecking(enable, breakOnError);
+                }
+            });
+        RenderContext::getPtr()->activateDefaultRenderContext();
+    }
+}
+
+void setOpenGLErrorChecking(bool enable, bool breakOnError) {
+    if (enable) {
+        // Install the global after callback. When settings change, this is called again to
+        // reinstall with the updated breakOnError value.
+        glbinding::Binding::setAfterCallback([breakOnError](const glbinding::FunctionCall& call) {
+            GLenum err;
+            while ((err = glGetError()) != GL_NO_ERROR) {
+                LogCentral::getPtr()->log(
+                    "OpenGL Error Check", LogLevel::Error, LogAudience::Developer, "", "", 0,
+                    fmt::format("glGetError() = {} after {}", getGLErrorString(err),
+                                call.function->name()));
+                if (breakOnError) util::debugBreak();
+            }
+        });
+        // Enable the After callback for all functions in this context except glGetError itself
+        glbinding::Binding::addCallbackMaskExcept(glbinding::CallbackMask::After, {"glGetError"});
+    } else {
+        glbinding::Binding::removeCallbackMask(glbinding::CallbackMask::After);
+    }
+}
+
 
 namespace debug {
 

@@ -68,7 +68,9 @@ OpenGLSettings::OpenGLSettings()
                       {utilgl::debug::BreakLevel::Off, utilgl::debug::BreakLevel::High,
                        utilgl::debug::BreakLevel::Medium, utilgl::debug::BreakLevel::Low,
                        utilgl::debug::BreakLevel::Notification},
-                      0) {
+                      0)
+    , errorChecking_("errorChecking", "Error Checking (glGetError)", false)
+    , breakOnError_("breakOnError", "Break on Error", false) {
 
     addProperty(shaderReloadingProperty_);
     addProperty(btnOpenGLInfo_);
@@ -77,8 +79,11 @@ OpenGLSettings::OpenGLSettings()
     addProperty(debugMessages_);
     addProperty(debugSeverity_);
     addProperty(breakOnMessage_);
+    addProperty(errorChecking_);
+    addProperty(breakOnError_);
 
     breakOnMessage_.setVisible(false);
+    breakOnError_.setVisible(false);
 
     debugSeverity_.onChange(
         [&]() { utilgl::handleOpenGLDebugMessagesChange(debugSeverity_.getSelectedValue()); });
@@ -92,6 +97,14 @@ OpenGLSettings::OpenGLSettings()
         utilgl::handleOpenGLDebugModeChange(debugMessages_.getSelectedValue(),
                                             debugSeverity_.getSelectedValue());
     });
+
+    errorChecking_.onChange([this]() {
+        breakOnError_.setVisible(errorChecking_.get());
+        utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get());
+    });
+
+    breakOnError_.onChange(
+        [this]() { utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get()); });
 
     load();
 }
