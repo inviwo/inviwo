@@ -458,31 +458,7 @@ IVW_CORE_API bool iCaseCmp(std::string_view l, std::string_view r);
  */
 IVW_CORE_API bool iCaseLess(std::string_view l, std::string_view r);
 
-/**
- * @brief Case insensitive less comparison of two strings to be used for template arguments.
- */
-struct IVW_CORE_API CaseInsensitiveLess {
-    bool operator()(std::string_view l, std::string_view r) const {
-        return std::lexicographical_compare(
-            l.cbegin(), l.cend(), r.cbegin(), r.cend(),
-            [](std::string_view::value_type l1, std::string_view::value_type r1) {
-                return std::tolower(l1) < std::tolower(r1);
-            });
-    }
-    using is_transparent = int;
-};
-/**
- * @brief Case insensitive equal comparison of two strings to be used for template arguments.
- */
-struct IVW_CORE_API CaseInsensitiveEqual {
-    bool operator()(std::string_view l, std::string_view r) const {
-        return std::equal(l.cbegin(), l.cend(), r.cbegin(), r.cend(),
-                          [](std::string_view::value_type l1, std::string_view::value_type r1) {
-                              return std::tolower(l1) == std::tolower(r1);
-                          });
-    }
-    using is_transparent = int;
-};
+#include <inviwo/core/util/utfutils.h>
 
 /**
  * @brief Transparent string case insensitive hashing for use in unordered containers with string
