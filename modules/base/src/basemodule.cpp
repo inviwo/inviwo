@@ -69,6 +69,7 @@
 #include <modules/base/io/datvolumewriter.h>
 #include <modules/base/io/ivfvolumereader.h>
 #include <modules/base/io/ivfvolumewriter.h>
+#include <modules/base/io/nrrdreader.h>
 #include <modules/base/io/stlwriter.h>
 #include <modules/base/io/wavefrontwriter.h>
 // Processors
@@ -340,6 +341,11 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerDataReader(std::make_unique<DatVolumeSequenceReader>());
     registerDataReader(std::make_unique<IvfVolumeReader>());
     registerDataReader(std::make_unique<IvfVolumeSequenceReader>());
+
+    registerDataReader(std::make_unique<NrrdVolumeReader>());
+    registerDataReader(std::make_unique<NrrdVolumeSequenceReader>());
+    registerDataReader(std::make_unique<NrrdLayerReader>());
+
     // Register Data writers
     registerDataWriter(std::make_unique<DatVolumeWriter>());
     registerDataWriter(std::make_unique<IvfVolumeWriter>());

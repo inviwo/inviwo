@@ -45,7 +45,7 @@
 namespace inviwo::util {
 
 template <typename T>
-[[nodiscard]] std::expected<T, std::string> fromStr(std::string_view value) {
+[[nodiscard]] std::expected<T, std::string_view> fromStr(std::string_view value) {
     const auto* const end = value.data() + value.size();
 
     T dest{};
@@ -65,11 +65,10 @@ template <typename T>
             } else if (value == "-nan" || value == "-nan(ind)") {
                 dest = -std::numeric_limits<T>::quiet_NaN();
             } else {
-                return std::unexpected(
-                    fmt::format("Error parsing floating point number ({})", value));
+                return std::unexpected("Error parsing floating point number");
             }
         } else {
-            return std::unexpected(fmt::format("Error parsing number ({})", value));
+            return std::unexpected("Error parsing number");
         }
     }
     return dest;
@@ -78,8 +77,8 @@ template <typename T>
 template <typename T>
 void fromStr(std::string_view value, T& dest) {
     dest = fromStr<T>(value)
-               .or_else([](const std::string& error) -> std::expected<T, std::string> {
-                   throw Exception(SourceContext{}, "{}", error);
+               .or_else([&](std::string_view error) -> std::expected<T, std::string_view> {
+                   throw Exception(SourceContext{}, "{} ({})", error, value);
                })
                .value();
 }
