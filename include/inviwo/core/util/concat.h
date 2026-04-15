@@ -113,9 +113,6 @@ class concat_view : public std::ranges::view_interface<concat_view<Rs...>> {
         template <std::size_t I>
         using RangeAt = std::tuple_element_t<I, Ranges_>;
 
-        template <std::size_t I>
-        using IterAt = std::ranges::iterator_t<RangeAt<I>>;
-
         using IterVariant =
             typename detail::concat_iter_variant_helper<Ranges_,
                                                         std::index_sequence_for<Rs...>>::type;
@@ -130,7 +127,7 @@ class concat_view : public std::ranges::view_interface<concat_view<Rs...>> {
             if constexpr (I < N) {
                 if (current_.index() == I) {
                     auto& r = std::get<I>(parent_->ranges_);
-                    if (std::get<IterAt<I>>(current_) == std::ranges::end(r)) {
+                    if (std::get<I>(current_) == std::ranges::end(r)) {
                         if constexpr (I + 1 < N) {
                             current_.template emplace<I + 1>(
                                 std::ranges::begin(std::get<I + 1>(parent_->ranges_)));
@@ -156,8 +153,7 @@ class concat_view : public std::ranges::view_interface<concat_view<Rs...>> {
         // Constructs the begin iterator (range 0, then satisfies forward)
         Iterator(Parent& parent, detail::begin_tag_t)
             : parent_{&parent}
-            , current_{std::in_place_index<0>,
-                       std::ranges::begin(std::get<0>(parent.ranges_))} {
+            , current_{std::in_place_index<0>, std::ranges::begin(std::get<0>(parent.ranges_))} {
             satisfyForward<0>();
         }
 
@@ -201,7 +197,7 @@ public:
 template <typename... Rs>
 concat_view(Rs&&...) -> concat_view<std::views::all_t<Rs>...>;
 
-namespace util {
+namespace detail {
 
 /**
  * @brief Lazily concatenate two or more ranges into a single range.
@@ -218,17 +214,20 @@ struct concat_fn {
         requires(sizeof...(Rs) >= 1) &&
                 requires { typename detail::concat_reference_t<std::views::all_t<Rs>...>; }
     [[nodiscard]] auto operator()(Rs&&... rs) const {
-        return concat_view<std::views::all_t<Rs>...>{
-            std::views::all(std::forward<Rs>(rs))...};
+        return concat_view<std::views::all_t<Rs>...>{std::views::all(std::forward<Rs>(rs))...};
     }
 };
+
+}  // namespace detail
+
+namespace views {
 
 /**
  * @brief Range factory / adaptor for lazy concatenation.
  * @see concat_view
  */
-inline constexpr concat_fn concat{};
+inline constexpr detail::concat_fn concat{};
 
-}  // namespace util
+}  // namespace views
 
 }  // namespace inviwo

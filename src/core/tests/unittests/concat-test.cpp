@@ -49,7 +49,7 @@ TEST(ConcatView, TwoVectors) {
     std::vector<int> a{1, 2, 3};
     std::vector<int> b{4, 5, 6};
     std::vector<int> result;
-    for (int x : util::concat(a, b)) result.push_back(x);
+    for (int x : views::concat(a, b)) result.push_back(x);
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3, 4, 5, 6}));
 }
 
@@ -58,7 +58,7 @@ TEST(ConcatView, ThreeRanges) {
     std::array<int, 2> b{3, 4};
     std::vector<int> c{5, 6};
     std::vector<int> result;
-    for (int x : util::concat(a, b, c)) result.push_back(x);
+    for (int x : views::concat(a, b, c)) result.push_back(x);
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3, 4, 5, 6}));
 }
 
@@ -66,7 +66,7 @@ TEST(ConcatView, FirstRangeEmpty) {
     std::vector<int> a{};
     std::vector<int> b{1, 2, 3};
     std::vector<int> result;
-    for (int x : util::concat(a, b)) result.push_back(x);
+    for (int x : views::concat(a, b)) result.push_back(x);
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3}));
 }
 
@@ -74,7 +74,7 @@ TEST(ConcatView, SecondRangeEmpty) {
     std::vector<int> a{1, 2, 3};
     std::vector<int> b{};
     std::vector<int> result;
-    for (int x : util::concat(a, b)) result.push_back(x);
+    for (int x : views::concat(a, b)) result.push_back(x);
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3}));
 }
 
@@ -83,21 +83,21 @@ TEST(ConcatView, MiddleRangeEmpty) {
     std::vector<int> b{};
     std::vector<int> c{3, 4};
     std::vector<int> result;
-    for (int x : util::concat(a, b, c)) result.push_back(x);
+    for (int x : views::concat(a, b, c)) result.push_back(x);
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3, 4}));
 }
 
 TEST(ConcatView, AllRangesEmpty) {
     std::vector<int> a{}, b{}, c{};
     std::vector<int> result;
-    for (int x : util::concat(a, b, c)) result.push_back(x);
+    for (int x : views::concat(a, b, c)) result.push_back(x);
     EXPECT_TRUE(result.empty());
 }
 
 TEST(ConcatView, SingleRange) {
     std::vector<int> a{1, 2, 3};
     std::vector<int> result;
-    for (int x : util::concat(a)) result.push_back(x);
+    for (int x : views::concat(a)) result.push_back(x);
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3}));
 }
 
@@ -105,7 +105,7 @@ TEST(ConcatView, VectorAndArray) {
     std::vector<int> a{1, 2};
     std::array<int, 3> b{3, 4, 5};
     std::vector<int> result;
-    for (int x : util::concat(a, b)) result.push_back(x);
+    for (int x : views::concat(a, b)) result.push_back(x);
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3, 4, 5}));
 }
 
@@ -113,21 +113,22 @@ TEST(ConcatView, RangesAlgorithmEqual) {
     std::vector<int> a{1, 2, 3};
     std::vector<int> b{4, 5, 6};
     std::vector<int> expected{1, 2, 3, 4, 5, 6};
-    EXPECT_TRUE(std::ranges::equal(util::concat(a, b), expected));
+    EXPECT_TRUE(std::ranges::equal(views::concat(a, b), expected));
 }
 
 TEST(ConcatView, RangesCountIf) {
     std::vector<int> a{1, 2, 3};
     std::vector<int> b{4, 5, 6};
-    auto evens = std::ranges::count_if(util::concat(a, b), [](int x) { return x % 2 == 0; });
+    auto evens = std::ranges::count_if(views::concat(a, b), [](int x) { return x % 2 == 0; });
     EXPECT_EQ(evens, 3);
 }
 
 TEST(ConcatView, RangesFind) {
     std::vector<int> a{1, 2, 3};
     std::vector<int> b{4, 5, 6};
-    auto it = std::ranges::find(util::concat(a, b), 4);
-    EXPECT_NE(it, std::ranges::end(util::concat(a, b)));
+    auto c = views::concat(a, b);
+    auto it = std::ranges::find(c, 4);
+    EXPECT_NE(it, std::ranges::end(c));
     EXPECT_EQ(*it, 4);
 }
 
@@ -135,7 +136,7 @@ TEST(ConcatView, PipeWithFilter) {
     std::vector<int> a{1, 2, 3};
     std::vector<int> b{4, 5, 6};
     std::vector<int> result;
-    for (int x : util::concat(a, b) | std::views::filter([](int x) { return x % 2 == 0; })) {
+    for (int x : views::concat(a, b) | std::views::filter([](int x) { return x % 2 == 0; })) {
         result.push_back(x);
     }
     EXPECT_EQ(result, (std::vector<int>{2, 4, 6}));
@@ -145,7 +146,7 @@ TEST(ConcatView, PipeWithTransform) {
     std::vector<int> a{1, 2};
     std::vector<int> b{3, 4};
     std::vector<int> result;
-    for (int x : util::concat(a, b) | std::views::transform([](int x) { return x * 2; })) {
+    for (int x : views::concat(a, b) | std::views::transform([](int x) { return x * 2; })) {
         result.push_back(x);
     }
     EXPECT_EQ(result, (std::vector<int>{2, 4, 6, 8}));
@@ -155,7 +156,7 @@ TEST(ConcatView, ListRanges) {
     std::list<int> a{1, 2, 3};
     std::list<int> b{4, 5};
     std::vector<int> result;
-    for (int x : util::concat(a, b)) result.push_back(x);
+    for (int x : views::concat(a, b)) result.push_back(x);
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3, 4, 5}));
 }
 
@@ -163,23 +164,23 @@ TEST(ConcatView, StringViews) {
     std::string a = "Hello";
     std::string b = " World";
     std::string result;
-    for (char c : util::concat(a, b)) result.push_back(c);
+    for (char c : views::concat(a, b)) result.push_back(c);
     EXPECT_EQ(result, "Hello World");
 }
 
 TEST(ConcatView, EmptyHelper) {
     std::vector<int> a{};
     std::vector<int> b{};
-    EXPECT_TRUE(util::concat(a, b).empty());
+    EXPECT_TRUE(views::concat(a, b).empty());
 
     std::vector<int> c{1};
-    EXPECT_FALSE(util::concat(a, c).empty());
+    EXPECT_FALSE(views::concat(a, c).empty());
 }
 
 TEST(ConcatView, ConstIteration) {
     std::vector<int> a{1, 2};
     std::vector<int> b{3, 4};
-    const auto view = util::concat(a, b);
+    const auto view = views::concat(a, b);
     std::vector<int> result;
     for (int x : view) result.push_back(x);
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3, 4}));
@@ -187,7 +188,7 @@ TEST(ConcatView, ConstIteration) {
 
 TEST(ConcatView, Temporaries) {
     std::vector<int> result;
-    for (int x : util::concat(std::vector<int>{1, 2}, std::vector<int>{3, 4})) {
+    for (int x : views::concat(std::vector<int>{1, 2}, std::vector<int>{3, 4})) {
         result.push_back(x);
     }
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3, 4}));
@@ -197,7 +198,7 @@ TEST(ConcatView, RangesCopy) {
     std::vector<int> a{1, 2, 3};
     std::vector<int> b{4, 5};
     std::vector<int> result;
-    std::ranges::copy(util::concat(a, b), std::back_inserter(result));
+    std::ranges::copy(views::concat(a, b), std::back_inserter(result));
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3, 4, 5}));
 }
 
