@@ -96,7 +96,7 @@ BUILTIN_STL_SUPPORT    = YES
 
 CASE_SENSE_NAMES       = YES
 
-INPUT                  = ${ARG_DOXY_DIR}/markdown/Index.md \\
+INPUT                  = ${IVW_ROOT_DIR}/README.md \\
                          ${inputs}
 
 ENABLE_PREPROCESSING   = YES
