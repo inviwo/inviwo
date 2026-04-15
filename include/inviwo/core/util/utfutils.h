@@ -137,7 +137,7 @@ inline constexpr CodePointsAdaptor codePoints{};
 inline std::wint_t toLower(int32_t cp) {
     return std::towlower(static_cast<std::wint_t>(cp));
 }
-inline int32_t identity(int32_t cp) { return cp; }
+inline int32_t noTransform(int32_t cp) { return cp; }
 
 template <StringRange A, StringRange B, typename Transform>
 int compareImpl(A&& a, B&& b, Transform transform) {
@@ -206,16 +206,16 @@ struct IVW_CORE_API CaseInsensitiveLess {
  */
 struct IVW_CORE_API CaseSensitiveEqual {
     bool operator()(std::string_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::identity) == 0;
+        return detail::compareImpl(a, b, detail::noTransform) == 0;
     }
     bool operator()(std::string_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::identity) == 0;
+        return detail::compareImpl(a, b, detail::noTransform) == 0;
     }
     bool operator()(std::wstring_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::identity) == 0;
+        return detail::compareImpl(a, b, detail::noTransform) == 0;
     }
     bool operator()(std::wstring_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::identity) == 0;
+        return detail::compareImpl(a, b, detail::noTransform) == 0;
     }
     using is_transparent = int;
 };
@@ -226,16 +226,16 @@ struct IVW_CORE_API CaseSensitiveEqual {
  */
 struct IVW_CORE_API CaseSensitiveLess {
     bool operator()(std::string_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::identity) < 0;
+        return detail::compareImpl(a, b, detail::noTransform) < 0;
     }
     bool operator()(std::string_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::identity) < 0;
+        return detail::compareImpl(a, b, detail::noTransform) < 0;
     }
     bool operator()(std::wstring_view a, std::string_view b) const {
-        return detail::compareImpl(a, b, detail::identity) < 0;
+        return detail::compareImpl(a, b, detail::noTransform) < 0;
     }
     bool operator()(std::wstring_view a, std::wstring_view b) const {
-        return detail::compareImpl(a, b, detail::identity) < 0;
+        return detail::compareImpl(a, b, detail::noTransform) < 0;
     }
     using is_transparent = int;
 };
