@@ -56,7 +56,7 @@ void MouseEvent::print(fmt::memory_buffer& buff) const {
     util::printEvent(buff, "MouseEvent", std::make_pair("state", state_),
                      std::make_pair("button", button_), std::make_pair("pos", pos()),
                      std::make_pair("depth", depth()), std::make_pair("size", canvasSize()),
-                     std::make_pair("sState", buttonState()),
+                     std::make_pair("state", buttonState()),
                      std::make_pair("modifiers", modifiers_));
 }
 
