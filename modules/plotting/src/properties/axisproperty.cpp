@@ -159,9 +159,8 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     majorTicks_.setCollapsed(true);
     minorTicks_.setCollapsed(true);
 
-    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_,
-                  mirrored_, labelingAlgorithm_, captionSettings_, labelSettings_, majorTicks_,
-                  minorTicks_);
+    addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, mirrored_,
+                  labelingAlgorithm_, captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
     BoolCompositeProperty::setCollapsed(true);
     set(orientation, mirrored_.get());
@@ -304,26 +303,38 @@ void AxisProperty::update(AxisData& data) const {
 }
 
 void AxisProperty::invokeEvent(Event* event) {
-    if (auto* keyEvent = event->getAs<KeyboardEvent>()) {
-        if (keyEvent->key() == IvwKey::Plus && keyEvent->modifiers() == KeyModifier::Control &&
-            keyEvent->state() == KeyState::Release) {
+    if (const auto* keyEvent = event->getAs<KeyboardEvent>()) {
+        // check key press for Ctrl + Plus, Ctrl + Numpad Plus, Ctrl + Equal
+        // as well as Ctrl + Shift + Plus to consider various keyboard layouts
+        const bool ctrlPlusPressed =
+            ((keyEvent->key() == IvwKey::Plus || keyEvent->key() == IvwKey::KPAdd ||
+              keyEvent->key() == IvwKey::Equal) &&
+             keyEvent->modifiers() == KeyModifier::Control);
+        const bool ctrlShiftPlusPressed =
+            keyEvent->key() == IvwKey::Plus &&
+            keyEvent->modifiers() == (KeyModifier::Control | KeyModifier::Shift);
+        
+        const bool ctrlMinusPressed =
+            (keyEvent->key() == IvwKey::Minus || keyEvent->key() == IvwKey::KPSubtract) &&
+            keyEvent->modifiers() == KeyModifier::Control;
+        const bool ctrlShiftMinusPressed =
+            keyEvent->key() == IvwKey::Underscore &&
+            keyEvent->modifiers() == (KeyModifier::Control | KeyModifier::Shift);
 
+        if ((ctrlPlusPressed || ctrlShiftPlusPressed) && keyEvent->state() == KeyState::Release) {
             captionSettings_.font_.fontSize_.set(
                 std::min(1000, captionSettings_.font_.fontSize_.get() + 1));
             labelSettings_.font_.fontSize_.set(
                 std::min(1000, labelSettings_.font_.fontSize_.get() + 1));
-        } else if ((keyEvent->key() == IvwKey::Minus || keyEvent->key() == IvwKey::Underscore) &&
-                   keyEvent->modifiers() == KeyModifier::Control &&
+        } else if ((ctrlMinusPressed || ctrlShiftMinusPressed) &&
                    keyEvent->state() == KeyState::Release) {
-
             captionSettings_.font_.fontSize_.set(
                 std::max(0, captionSettings_.font_.fontSize_.get() - 1));
             labelSettings_.font_.fontSize_.set(
                 std::max(0, labelSettings_.font_.fontSize_.get() - 1));
-        } else if (keyEvent->key() == IvwKey::Num0 &&
+        } else if ((keyEvent->key() == IvwKey::Num0 || keyEvent->key() == IvwKey::KP0) &&
                    keyEvent->modifiers() == KeyModifier::Control &&
                    keyEvent->state() == KeyState::Release) {
-
             captionSettings_.font_.fontSize_.resetToDefaultState();
             labelSettings_.font_.fontSize_.resetToDefaultState();
         }
