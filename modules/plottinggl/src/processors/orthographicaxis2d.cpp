@@ -117,7 +117,7 @@ OrthographicAxis2D::OrthographicAxis2D()
                     }
                     return count;
                 });
-            connectedPorts != 1) {
+            connectedPorts > 1) {
             return {ProcessorStatus::Error,
                     "Excactly one of the Mesh, Layer, or Volume inports must be connected"};
         }
