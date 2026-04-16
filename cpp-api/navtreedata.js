@@ -49,47 +49,48 @@ var NAVTREE =
         [ "Typedefs", "functions_type.html", null ],
         [ "Enumerations", "functions_enum.html", null ]
       ] ]
-    ] ]
+    ] ],
+    [ "Examples", "examples.html", "examples" ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"annotated.html",
+"D_1_2a_2inviwo_2inviwo_2inviwo_2include_2inviwo_2core_2util_2concat_8h-example.html",
 "classinviwo_1_1BrushingAndLinkingManager.html#a4736f2d2856441c37ee094ebe1ffbf6a",
-"classinviwo_1_1Camera.html#accd7b6b53258ac231162b190a6151ff0",
+"classinviwo_1_1Camera.html#ac58b0a3c6a00ba15c044c364158397ac",
 "classinviwo_1_1ColumnOptionProperty.html#ae1d48fac4ff8ced2e3db870912c9172e",
-"classinviwo_1_1DataFrameTableVisualizer.html",
-"classinviwo_1_1DisjointSets.html",
-"classinviwo_1_1FontFaceOptionProperty.html#aa200414f61972f6d95f5be638e9a7d00",
-"classinviwo_1_1ImageColorMapping.html",
-"classinviwo_1_1ImageVisualizer.html#a6135f3dba053dbb1f080a6431ba4a3c1",
-"classinviwo_1_1InviwoModule.html#aec618a62fbfac6fbc67dd951f58bb178",
+"classinviwo_1_1DataFrameTableView.html",
+"classinviwo_1_1DiscardShortLines.html#a7688a9f7e2275efdd91d1b7012ab67e2",
+"classinviwo_1_1FontFaceOptionProperty.html",
+"classinviwo_1_1ImageChannelSelect.html#aa84afa3c7de88c727e68eccb62f7338b",
+"classinviwo_1_1ImageVisualizer.html#a46866aab8873e56e4ea978b7e1a3136d",
+"classinviwo_1_1InviwoModule.html#ad08053fc1d110a251aeb18311846a569",
 "classinviwo_1_1LayerInformationVisualizer.html#aad8b72992576a87d384851397c78ec28",
-"classinviwo_1_1ListProperty.html#ad8e5dd2d52ff89171f35def07c567c17",
+"classinviwo_1_1ListProperty.html#ad777edf5c387cea6c15321c9ed03b552",
 "classinviwo_1_1MinMaxPropertyWidgetCEF.html",
 "classinviwo_1_1OpenGLSettings.html",
 "classinviwo_1_1PickingEvent.html#a5536037c5c052167f31657c0921df6d2",
 "classinviwo_1_1ProcessorFactoryObjectTemplate.html",
 "classinviwo_1_1PropertyOwner.html#a7ef71a38a3ee39b12f2cbf5bdf991803",
 "classinviwo_1_1RepresentationConverterFactory.html",
-"classinviwo_1_1ShaderManager.html",
-"classinviwo_1_1SplitterRenderer.html",
+"classinviwo_1_1ShaderComponentProcessorBase.html#ac016361959d03a9706a94d85f8453f78",
+"classinviwo_1_1SplitterProperty.html#a82441a3819e8497587a45a2e9f0dddcf",
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#adad55175af93ddeee4b75125f6cf76dc",
 "classinviwo_1_1TemplateJSONConverter.html#a61204ff5f7326e1c72031a556992d65b",
-"classinviwo_1_1TouchPoint.html#ac89d637fa161eef884338c468ab129bf",
+"classinviwo_1_1TouchPoint.html#ab17bb87a2f41e0d2bdfd4c8e6f5f6b55",
 "classinviwo_1_1ViewEvent.html",
 "classinviwo_1_1VolumeRaycaster.html#a414ade847d1808e995ed67d809262d3c",
 "classinviwo_1_1animation_1_1Animation.html#ac93506c64f230c931eeea1a262f799f1",
 "classinviwo_1_1animation_1_1SequenceEditorFactoryObjectTemplate.html",
-"classinviwo_1_1plot_1_1ImagePlotProcessor.html",
-"index.html",
-"namespaceinviwo_1_1util.html#a0baa816930736caaf0d8b9f4e0733723",
-"namespaceinviwo_1_1utilgl.html#a25c7c3b66b8c4cc490159490288758a5",
-"structinviwo_1_1InviwoDefaults_3_01short_01_4.html",
-"structinviwo_1_1RAMCache.html",
-"structinviwo_1_1ffmpeg_1_1OutputStream_1_1Options.html",
-"structinviwo_1_1utildoc_1_1TableBuilder_1_1Header.html"
+"classinviwo_1_1plot_1_1DataFrameColumnToColorVector.html",
+"group__typedmesh.html#ga2d8fc4330041da81252febcd0a8c0dac",
+"namespaceinviwo_1_1util.html#a04708c4c24b525baa5e4fa486b1d4355",
+"namespaceinviwo_1_1utilgl.html#a01ba6d71bea79602047826daf38988ae",
+"structinviwo_1_1InviwoDefaults_3_01float_01_4.html",
+"structinviwo_1_1PtrHash.html",
+"structinviwo_1_1dispatching_1_1detail_1_1Filter.html",
+"structinviwo_1_1util_1_1same__extent.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

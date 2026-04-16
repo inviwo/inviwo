@@ -270,6 +270,7 @@ var namespaceinviwo =
     [ "CompositeSource", "classinviwo_1_1CompositeSource.html", "classinviwo_1_1CompositeSource" ],
     [ "CompositeSourceBase", "classinviwo_1_1CompositeSourceBase.html", "classinviwo_1_1CompositeSourceBase" ],
     [ "CompositeTransform", "structinviwo_1_1CompositeTransform.html", "structinviwo_1_1CompositeTransform" ],
+    [ "concat_view", "classinviwo_1_1concat__view.html", null ],
     [ "ConnectionGraphicsItem", "classinviwo_1_1ConnectionGraphicsItem.html", "classinviwo_1_1ConnectionGraphicsItem" ],
     [ "ConnectionInDragHelper", "classinviwo_1_1ConnectionInDragHelper.html", null ],
     [ "ConnectionInportDragGraphicsItem", "classinviwo_1_1ConnectionInportDragGraphicsItem.html", null ],

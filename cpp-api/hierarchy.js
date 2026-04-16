@@ -127,6 +127,7 @@ var hierarchy =
         [ "inviwo::RepresentationFactoryObjectTemplate< Representation, Derived >", "classinviwo_1_1RepresentationFactoryObjectTemplate.html", null ]
       ] ]
     ] ],
+    [ "inviwo::detail::begin_tag_t", "structinviwo_1_1detail_1_1begin__tag__t.html", null ],
     [ "inviwo::BitSet::BitSetIterator", "classinviwo_1_1BitSet_1_1BitSetIterator.html", null ],
     [ "inviwo::plot::BoxSelection", "classinviwo_1_1plot_1_1BoxSelection.html", null ],
     [ "inviwo::plot::BoxSelectionData", "structinviwo_1_1plot_1_1BoxSelectionData.html", null ],
@@ -233,6 +234,9 @@ var hierarchy =
     [ "inviwo::CommandLineParser", "classinviwo_1_1CommandLineParser.html", null ],
     [ "inviwo::ComparePointers&lt; T &gt;", "classinviwo_1_1ComparePointers.html", null ],
     [ "inviwo::comparePtr", "structinviwo_1_1comparePtr.html", null ],
+    [ "inviwo::detail::concat_fn", "structinviwo_1_1detail_1_1concat__fn.html", null ],
+    [ "inviwo::detail::concat_iter_variant_helper&lt; Ranges, Seq &gt;", "structinviwo_1_1detail_1_1concat__iter__variant__helper.html", null ],
+    [ "inviwo::detail::concat_iter_variant_helper&lt; Ranges, std::index_sequence&lt; Is... &gt; &gt;", "structinviwo_1_1detail_1_1concat__iter__variant__helper_3_01Ranges_00_01std_1_1index__sequence_3_01Is_8_8_8_01_4_01_4.html", null ],
     [ "inviwo::marching::Config", "structinviwo_1_1marching_1_1Config.html", null ],
     [ "inviwo::utilgl::BlendModeState::Config", "structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html", null ],
     [ "inviwo::dispatching::detail::Cons&lt; typename, typename &gt;", "structinviwo_1_1dispatching_1_1detail_1_1Cons.html", null ],
@@ -902,6 +906,7 @@ var hierarchy =
       [ "inviwo::ProcessorDocsLoader", "classinviwo_1_1ProcessorDocsLoader.html", null ],
       [ "inviwo::WorkspaceInfoLoader", "classinviwo_1_1WorkspaceInfoLoader.html", null ]
     ] ],
+    [ "inviwo::detail::end_tag_t", "structinviwo_1_1detail_1_1end__tag__t.html", null ],
     [ "inviwo::algorithm::EntryExitPointsHelper", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html", null ],
     [ "inviwo::EnumTraits&lt; T &gt;", "structinviwo_1_1EnumTraits.html", null ],
     [ "inviwo::EnumTraits&lt; filters::NumberComp &gt;", "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html", null ],
@@ -3697,6 +3702,9 @@ var hierarchy =
       [ "inviwo::TraversingVersionConverter", "classinviwo_1_1TraversingVersionConverter.html", null ]
     ] ],
     [ "inviwo::ViewManager::View", "structinviwo_1_1ViewManager_1_1View.html", null ],
+    [ "std::ranges::view_interface", null, [
+      [ "inviwo::concat_view< Rs >", "classinviwo_1_1concat__view.html", null ]
+    ] ],
     [ "inviwo::ViewManager", "classinviwo_1_1ViewManager.html", null ],
     [ "inviwo::utilgl::Viewport", "structinviwo_1_1utilgl_1_1Viewport.html", null ],
     [ "inviwo::utilgl::ViewportState", "structinviwo_1_1utilgl_1_1ViewportState.html", null ],

@@ -166,6 +166,7 @@ var annotated_dup =
         [ "Node", "structinviwo_1_1deserializer_1_1Node.html", null ]
       ] ],
       [ "detail", null, [
+        [ "begin_tag_t", "structinviwo_1_1detail_1_1begin__tag__t.html", null ],
         [ "Build", "classinviwo_1_1detail_1_1Build.html", null ],
         [ "ColorConverter", "structinviwo_1_1detail_1_1ColorConverter.html", null ],
         [ "ColorConverter&lt; dvec3 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01dvec3_01_4.html", null ],
@@ -174,8 +175,12 @@ var annotated_dup =
         [ "ColorConverter&lt; ivec4 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01ivec4_01_4.html", null ],
         [ "ColorConverter&lt; vec3 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01vec3_01_4.html", null ],
         [ "ColorConverter&lt; vec4 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01vec4_01_4.html", null ],
+        [ "concat_fn", "structinviwo_1_1detail_1_1concat__fn.html", null ],
+        [ "concat_iter_variant_helper", "structinviwo_1_1detail_1_1concat__iter__variant__helper.html", null ],
+        [ "concat_iter_variant_helper&lt; Ranges, std::index_sequence&lt; Is... &gt; &gt;", "structinviwo_1_1detail_1_1concat__iter__variant__helper_3_01Ranges_00_01std_1_1index__sequence_3_01Is_8_8_8_01_4_01_4.html", null ],
         [ "DynPort", "structinviwo_1_1detail_1_1DynPort.html", null ],
         [ "DynUniform", "structinviwo_1_1detail_1_1DynUniform.html", null ],
+        [ "end_tag_t", "structinviwo_1_1detail_1_1end__tag__t.html", null ],
         [ "hasProcessorInfo", "classinviwo_1_1detail_1_1hasProcessorInfo.html", null ],
         [ "helper", "structinviwo_1_1detail_1_1helper.html", null ],
         [ "helper&lt; F, 0 &gt;", "structinviwo_1_1detail_1_1helper_3_01F_00_010_01_4.html", null ],
@@ -672,6 +677,7 @@ var annotated_dup =
       [ "CompositeSource", "classinviwo_1_1CompositeSource.html", "classinviwo_1_1CompositeSource" ],
       [ "CompositeSourceBase", "classinviwo_1_1CompositeSourceBase.html", "classinviwo_1_1CompositeSourceBase" ],
       [ "CompositeTransform", "structinviwo_1_1CompositeTransform.html", "structinviwo_1_1CompositeTransform" ],
+      [ "concat_view", "classinviwo_1_1concat__view.html", null ],
       [ "ConnectionGraphicsItem", "classinviwo_1_1ConnectionGraphicsItem.html", "classinviwo_1_1ConnectionGraphicsItem" ],
       [ "ConnectionInDragHelper", "classinviwo_1_1ConnectionInDragHelper.html", null ],
       [ "ConnectionInportDragGraphicsItem", "classinviwo_1_1ConnectionInportDragGraphicsItem.html", null ],

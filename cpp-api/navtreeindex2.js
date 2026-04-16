@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"classinviwo_1_1Camera.html#ac58b0a3c6a00ba15c044c364158397ac":[1,1,6,8],
 "classinviwo_1_1Camera.html#accd7b6b53258ac231162b190a6151ff0":[1,1,6,6],
 "classinviwo_1_1Camera.html#ad4d373e3d5547646edc09c37cb29ab34":[1,1,6,2],
 "classinviwo_1_1Camera.html#af88b5d4aa5e8f43f4cff735a36119b67":[1,1,6,4],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "classinviwo_1_1ColumnOptionProperty.html#a9b770e71fc753988a59521f66a1d6d6c":[2,0,0,146,8],
 "classinviwo_1_1ColumnOptionProperty.html#a9b770e71fc753988a59521f66a1d6d6c":[4,0,1,155,8],
 "classinviwo_1_1ColumnOptionProperty.html#ab6da9b284353a72f273bf6ece441e7d5":[2,0,0,146,3],
-"classinviwo_1_1ColumnOptionProperty.html#ab6da9b284353a72f273bf6ece441e7d5":[4,0,1,155,3],
-"classinviwo_1_1ColumnOptionProperty.html#ae1d48fac4ff8ced2e3db870912c9172e":[2,0,0,146,10]
+"classinviwo_1_1ColumnOptionProperty.html#ab6da9b284353a72f273bf6ece441e7d5":[4,0,1,155,3]
 };

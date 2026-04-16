@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"classinviwo_1_1BrushingAndLinkingManager.html#a4736f2d2856441c37ee094ebe1ffbf6a":[2,0,0,69,21],
 "classinviwo_1_1BrushingAndLinkingManager.html#a4736f2d2856441c37ee094ebe1ffbf6a":[4,0,1,78,21],
 "classinviwo_1_1BrushingAndLinkingManager.html#a4ebd2d912a4060d8920ecedc4eff37c1":[2,0,0,69,33],
 "classinviwo_1_1BrushingAndLinkingManager.html#a4ebd2d912a4060d8920ecedc4eff37c1":[4,0,1,78,33],
@@ -218,14 +219,14 @@ var NAVTREEINDEX1 =
 "classinviwo_1_1CSVReader.html#ad8e16060dca686b74f35c5b72bc4a2d4":[1,0,6,9],
 "classinviwo_1_1CSVReader.html#ae2fd26930ac7af73f0d87e9504023093":[1,0,6,10],
 "classinviwo_1_1CSVReader.html#aef49d59c00fa1415180e7692e3c9582c":[1,0,6,11],
-"classinviwo_1_1CSVSource.html":[2,0,0,181],
-"classinviwo_1_1CSVSource.html":[4,0,1,190],
-"classinviwo_1_1CSVSource.html#aff145a6aa2d0de5bc024ef95499c437b":[2,0,0,181,0],
-"classinviwo_1_1CSVSource.html#aff145a6aa2d0de5bc024ef95499c437b":[4,0,1,190,0],
-"classinviwo_1_1CSVWriter.html":[2,0,0,182],
-"classinviwo_1_1CSVWriter.html":[4,0,1,191],
-"classinviwo_1_1CSVWriter.html#af433414bd5c722586fa37bc7385ecb50":[2,0,0,182,0],
-"classinviwo_1_1CSVWriter.html#af433414bd5c722586fa37bc7385ecb50":[4,0,1,191,0],
+"classinviwo_1_1CSVSource.html":[2,0,0,182],
+"classinviwo_1_1CSVSource.html":[4,0,1,191],
+"classinviwo_1_1CSVSource.html#aff145a6aa2d0de5bc024ef95499c437b":[2,0,0,182,0],
+"classinviwo_1_1CSVSource.html#aff145a6aa2d0de5bc024ef95499c437b":[4,0,1,191,0],
+"classinviwo_1_1CSVWriter.html":[2,0,0,183],
+"classinviwo_1_1CSVWriter.html":[4,0,1,192],
+"classinviwo_1_1CSVWriter.html#af433414bd5c722586fa37bc7385ecb50":[2,0,0,183,0],
+"classinviwo_1_1CSVWriter.html#af433414bd5c722586fa37bc7385ecb50":[4,0,1,192,0],
 "classinviwo_1_1CacheBase.html":[2,0,0,95],
 "classinviwo_1_1CacheBase.html":[4,0,1,104],
 "classinviwo_1_1CacheBase.html#a00045f48b3f5ecd54bee777f50e0410a":[2,0,0,95,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "classinviwo_1_1Camera.html#a04bdac1db684a8ce15f70c7cfaac634e":[1,1,6,0],
 "classinviwo_1_1Camera.html#a1b0c5668315ee13bce13cfac7645af2c":[1,1,6,1],
 "classinviwo_1_1Camera.html#a808cee9e80ff2424715e2e2a2032e83e":[1,1,6,7],
-"classinviwo_1_1Camera.html#a9a91321dce1fd3ae08da8a1738a2ff6c":[1,1,6,5],
-"classinviwo_1_1Camera.html#ac58b0a3c6a00ba15c044c364158397ac":[1,1,6,8]
+"classinviwo_1_1Camera.html#a9a91321dce1fd3ae08da8a1738a2ff6c":[1,1,6,5]
 };
