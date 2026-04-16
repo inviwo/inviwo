@@ -145,7 +145,8 @@ void SyncCLGL::releaseAllGLObjects(const std::vector<cl::Event>* waitForEvents, 
             cl::Event* releaseEventPtr = event != nullptr ? event : &releaseEvent;
             queue_.enqueueReleaseGLObjects(&syncedObjects_, waitForEvents, releaseEventPtr);
             // Synchronize OpenCL and OpenGL
-            GLsync clSync = glCreateSyncFromCLeventARB(context_(), (*releaseEventPtr)(), 0);
+            GLsync clSync =
+                glCreateSyncFromCLeventARB(context_(), (*releaseEventPtr)(), gl::UnusedMask{0});
             // without stalling CPU-thread:
             glWaitSync(clSync, GL_UNUSED_BIT, GL_TIMEOUT_IGNORED);
         } else {

@@ -4190,7 +4190,7 @@ public:
         object_ = ::clCreateFromGLTexture(
             context(), 
             flags, 
-            target,
+            static_cast<int>(target),
             miplevel,
             texobj,
             &error);
