@@ -68,6 +68,9 @@ var group__dataio =
     [ "inviwo::JSONDataFrameWriter", "classinviwo_1_1JSONDataFrameWriter.html", [
       [ "writeData", "classinviwo_1_1JSONDataFrameWriter.html#abbaa06d8e0b82d71a58ae10d71a3c30e", null ]
     ] ],
+    [ "inviwo::NrrdLayerReader", "classinviwo_1_1NrrdLayerReader.html", null ],
+    [ "inviwo::NrrdVolumeReader", "classinviwo_1_1NrrdVolumeReader.html", null ],
+    [ "inviwo::NrrdVolumeSequenceReader", "classinviwo_1_1NrrdVolumeSequenceReader.html", null ],
     [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", null ],
     [ "inviwo::TextFileReader", "classinviwo_1_1TextFileReader.html", [
       [ "read", "classinviwo_1_1TextFileReader.html#a5d85a6c7f74a6b75c4faa7b482edf5f5", null ],

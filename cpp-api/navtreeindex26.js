@@ -1,5 +1,8 @@
 var NAVTREEINDEX26 =
 {
+"classinviwo_1_1animation_1_1SequenceEditorFactory.html":[4,0,1,2,70],
+"classinviwo_1_1animation_1_1SequenceEditorFactoryObject.html":[2,0,0,0,70],
+"classinviwo_1_1animation_1_1SequenceEditorFactoryObject.html":[4,0,1,2,71],
 "classinviwo_1_1animation_1_1SequenceEditorFactoryObjectTemplate.html":[2,0,0,0,71],
 "classinviwo_1_1animation_1_1SequenceEditorFactoryObjectTemplate.html":[4,0,1,2,72],
 "classinviwo_1_1animation_1_1SequenceEditorPanel.html":[2,0,0,0,72],
@@ -246,8 +249,5 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1ColorScaleLegend.html":[2,0,0,15,14],
 "classinviwo_1_1plot_1_1ColorScaleLegend.html":[4,0,1,22,15],
 "classinviwo_1_1plot_1_1ColorScaleLegend.html#a0175fcb6e1489583d3cc08cbb235d000":[2,0,0,15,14,0],
-"classinviwo_1_1plot_1_1ColorScaleLegend.html#a0175fcb6e1489583d3cc08cbb235d000":[4,0,1,22,15,0],
-"classinviwo_1_1plot_1_1ColorScaleLegend.html#affa758eea9f75dd7c2d792e59fbdeb94":[2,0,0,15,14,1],
-"classinviwo_1_1plot_1_1ColorScaleLegend.html#affa758eea9f75dd7c2d792e59fbdeb94":[4,0,1,22,15,1],
-"classinviwo_1_1plot_1_1DataFrameColumnToColorVector.html":[2,0,0,15,15]
+"classinviwo_1_1plot_1_1ColorScaleLegend.html#a0175fcb6e1489583d3cc08cbb235d000":[4,0,1,22,15,0]
 };

@@ -330,12 +330,14 @@ var hierarchy =
         [ "inviwo::DatVolumeReader", "classinviwo_1_1DatVolumeReader.html", null ],
         [ "inviwo::IvfVolumeReader", "classinviwo_1_1IvfVolumeReader.html", null ],
         [ "inviwo::MPVMVolumeReader", "classinviwo_1_1MPVMVolumeReader.html", null ],
+        [ "inviwo::NrrdVolumeReader", "classinviwo_1_1NrrdVolumeReader.html", null ],
         [ "inviwo::PVMVolumeReader", "classinviwo_1_1PVMVolumeReader.html", null ],
         [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", null ],
         [ "inviwo::TIFFStackVolumeReader", "classinviwo_1_1TIFFStackVolumeReader.html", null ]
       ] ],
       [ "inviwo::DataReaderType< Layer >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::CImgLayerReader", "classinviwo_1_1CImgLayerReader.html", null ],
+        [ "inviwo::NrrdLayerReader", "classinviwo_1_1NrrdLayerReader.html", null ],
         [ "inviwo::PNGLayerReader", "classinviwo_1_1PNGLayerReader.html", null ],
         [ "inviwo::TIFFLayerReader", "classinviwo_1_1TIFFLayerReader.html", null ]
       ] ],
@@ -346,7 +348,8 @@ var hierarchy =
       [ "inviwo::DataReaderType< VolumeSequence >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::DatVolumeSequenceReader", "classinviwo_1_1DatVolumeSequenceReader.html", null ],
         [ "inviwo::IvfVolumeSequenceReader", "classinviwo_1_1IvfVolumeSequenceReader.html", null ],
-        [ "inviwo::NiftiReader", "classinviwo_1_1NiftiReader.html", null ]
+        [ "inviwo::NiftiReader", "classinviwo_1_1NiftiReader.html", null ],
+        [ "inviwo::NrrdVolumeSequenceReader", "classinviwo_1_1NrrdVolumeSequenceReader.html", null ]
       ] ],
       [ "inviwo::DataReaderType< IsoValueCollection >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::IsoValueCollectionIIVReader", "classinviwo_1_1IsoValueCollectionIIVReader.html", null ]

@@ -46,10 +46,13 @@ var searchData=
   ['notifyaftertextureinitialization_43',['notifyAfterTextureInitialization',['../classinviwo_1_1TextureObserver.html#ae0df43dec71ab95ff7036dd945c3753d',1,'inviwo::TextureObserver']]],
   ['notifybeforetextureinitialization_44',['notifyBeforeTextureInitialization',['../classinviwo_1_1TextureObserver.html#ad249a53fb5ab3f67099e29a12993b385',1,'inviwo::TextureObserver']]],
   ['noweighting_45',['NoWeighting',['../namespaceinviwo_1_1meshutil.html#aa1547c4667e1a4f6526e80d174ccb3b0ac335ee5ec90d22a6584db23c0ff36dda',1,'inviwo::meshutil::NoWeighting'],['../namespaceinviwo_1_1meshutil.html#aa1547c4667e1a4f6526e80d174ccb3b0ac335ee5ec90d22a6584db23c0ff36dda',1,'inviwo::meshutil::NoWeighting'],['../namespaceinviwo_1_1meshutil.html#aa1547c4667e1a4f6526e80d174ccb3b0ac335ee5ec90d22a6584db23c0ff36dda',1,'inviwo::meshutil::NoWeighting'],['../namespaceinviwo_1_1meshutil.html#aa1547c4667e1a4f6526e80d174ccb3b0ac335ee5ec90d22a6584db23c0ff36dda',1,'inviwo::meshutil::NoWeighting']]],
-  ['nullpointerexception_46',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
-  ['numberlineedit_47',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]],
-  ['numberwidget_48',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
-  ['numberwidgetconfig_49',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]],
-  ['numerictype_50',['numericType',['../classinviwo_1_1DataFormat.html#a55ba223de5afd6e44eb26dfb70923c78',1,'inviwo::DataFormat']]],
-  ['numericvaluefromstring_51',['numericValueFromString',['../namespaceinviwo_1_1utilqt.html#a4e4f204db5ef145c73f1b6ca2a404e96',1,'inviwo::utilqt']]]
+  ['nrrdlayerreader_46',['NrrdLayerReader',['../classinviwo_1_1NrrdLayerReader.html',1,'inviwo']]],
+  ['nrrdvolumereader_47',['NrrdVolumeReader',['../classinviwo_1_1NrrdVolumeReader.html',1,'inviwo']]],
+  ['nrrdvolumesequencereader_48',['NrrdVolumeSequenceReader',['../classinviwo_1_1NrrdVolumeSequenceReader.html',1,'inviwo']]],
+  ['nullpointerexception_49',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
+  ['numberlineedit_50',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]],
+  ['numberwidget_51',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
+  ['numberwidgetconfig_52',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]],
+  ['numerictype_53',['numericType',['../classinviwo_1_1DataFormat.html#a55ba223de5afd6e44eb26dfb70923c78',1,'inviwo::DataFormat']]],
+  ['numericvaluefromstring_54',['numericValueFromString',['../namespaceinviwo_1_1utilqt.html#a4e4f204db5ef145c73f1b6ca2a404e96',1,'inviwo::utilqt']]]
 ];
