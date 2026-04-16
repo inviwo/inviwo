@@ -1006,6 +1006,7 @@ void Trackball::zoomWheel(WheelEvent* event) {
          .origin = mouseCenteredZoom_.get() ? std::optional<glm::dvec2>{dvec2{event->ndc()}}
                                             : std::optional<glm::dvec2>{},
          .bounded = boundedZooming_ ? ZoomOptions::Bounded::Yes : ZoomOptions::Bounded::No});
+    event->markAsUsed();
 }
 
 void Trackball::zoomIn(Event* event, const int numSteps) {
