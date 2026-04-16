@@ -63,17 +63,19 @@ public:
     using reference = int32_t;
 
     constexpr Utf8CodePointIterator() = default;
-    constexpr Utf8CodePointIterator(Iter it, Sentinel end) : it_{it}, end_{end} {
+    constexpr Utf8CodePointIterator(Iter it, Sentinel end) : it_{it}, next_{it}, end_{end} {
         if (it_ != end_) decode();
     }
 
     constexpr int32_t operator*() const { return current_; }
 
     constexpr Utf8CodePointIterator& operator++() {
-        if (it_ != end_)
+        if (next_ != end_) {
+            it_ = next_;
             decode();
-        else
+        } else {
             current_ = -1;
+        }
         return *this;
     }
     constexpr Utf8CodePointIterator operator++(int) {
@@ -85,8 +87,9 @@ public:
     constexpr bool operator==(const Utf8CodePointIterator& other) const { return it_ == other.it_; }
 
 private:
-    constexpr void decode() { current_ = static_cast<int32_t>(utf8::next(it_, end_)); }
+    constexpr void decode() { current_ = static_cast<int32_t>(utf8::next(next_, end_)); }
     Iter it_{};
+    Iter next_{};
     Sentinel end_{};
     int32_t current_{-1};
 };
@@ -98,19 +101,16 @@ public:
     using Sentinel = std::ranges::sentinel_t<const View>;
 
     constexpr Utf8CodePointRange() = default;
-    constexpr explicit Utf8CodePointRange(View view) : view_{std::move(view)} {}
+    constexpr explicit Utf8CodePointRange(const View view)
+        : begin_{std::ranges::begin(view), std::ranges::end(view)}
+        , end_{std::ranges::end(view), std::ranges::end(view)} {}
 
-    constexpr auto begin() const {
-        return Utf8CodePointIterator<Iter, Sentinel>{std::ranges::begin(view_),
-                                                     std::ranges::end(view_)};
-    }
-    constexpr auto end() const {
-        return Utf8CodePointIterator<Iter, Sentinel>{std::ranges::end(view_),
-                                                     std::ranges::end(view_)};
-    }
+    constexpr auto begin() const { return begin_; }
+    constexpr auto end() const { return end_; }
 
 private:
-    View view_;
+    Utf8CodePointIterator<Iter, Sentinel> begin_;
+    Utf8CodePointIterator<Iter, Sentinel> end_;
 };
 
 template <CharRange Range>
@@ -155,7 +155,7 @@ constexpr auto compareImpl(A&& a, B&& b, Transform transform) {
 
 namespace views {
 inline constexpr detail::CodePointsAdaptor codePoints{};
-}
+}  // namespace views
 
 /**
  * @brief Case-insensitive equality comparison.
