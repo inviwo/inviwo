@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/io/datareader.h>
@@ -101,7 +102,7 @@ struct NrrdState {
     // Spatial sizes (excluding the component axis)
     std::vector<size_t> spatialSizes() const {
         if (components > 1 && !sizes.empty()) {
-            return std::vector<size_t>(sizes.begin() + 1, sizes.end());
+            return {sizes.begin() + 1, sizes.end()};
         }
         return sizes;
     }
@@ -177,7 +178,7 @@ std::vector<std::string> splitRespectingParens(std::string_view s) {
     std::vector<std::string> tokens;
     std::string current;
     int depth = 0;
-    for (char c : s) {
+    for (const char c : s) {
         if (c == '(') {
             depth++;
             current += c;
@@ -264,7 +265,7 @@ NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
         auto colon = line.find(':');
         if (colon == std::string::npos) continue;
 
-        std::string key = toLower(util::trim(line.substr(0, colon)));
+        const std::string key = toLower(util::trim(line.substr(0, colon)));
         const auto value = util::trim(line.substr(colon + 1));
 
         if (key == "type") {
@@ -420,12 +421,10 @@ size_t resolveDataOffset(const NrrdState& state) {
 std::pair<mat3, vec3> buildSpatialInfo(const NrrdState& state) {
     auto sSizes = state.spatialSizes();
 
-    dmat3 basis{1.0f};  // default: 2-unit cube centered at origin
+    dmat3 basis{1.0};
 
     if (state.spaceDirections) {
-        // space directions: each vector (per spatial axis) defines the direction
-        // and spacing for that axis. The basis column i = spaceDirections[i] * sizes[i]
-        // But actually in NRRD, space directions already encode the per-sample step,
+        // in NRRD, space directions already encode the per-sample step,
         // so basis column i = spaceDirections[spatialIdx] * sizes[spatialIdx]
         size_t spatialIdx = 0;
         for (size_t i = 0; i < state.spaceDirections->size(); ++i) {
@@ -441,7 +440,7 @@ std::pair<mat3, vec3> buildSpatialInfo(const NrrdState& state) {
         }
     } else if (state.spacings) {
         // spacings: use as diagonal scaling
-        size_t spatialStart = (state.components > 1) ? 1 : 0;
+        const size_t spatialStart = (state.components > 1) ? 1 : 0;
         for (size_t i = 0;
              i < 3 && (i + spatialStart) < state.spacings->size() && i < sSizes.size(); ++i) {
             const auto sp = (*state.spacings)[i + spatialStart];
@@ -464,24 +463,7 @@ std::pair<mat3, vec3> buildSpatialInfo(const NrrdState& state) {
 
     return {basis, offset};
 }
-
-SwizzleMask swizzleMaskForComponents(size_t components) {
-    switch (components) {
-        case 1:
-            return swizzlemasks::luminance;
-        case 2:
-            return swizzlemasks::luminanceAlpha;
-        case 3:
-            return swizzlemasks::rgb;
-        case 4:
-        default:
-            return swizzlemasks::rgba;
-    }
-}
-
 }  // namespace
-
-// --- NrrdLayerReader ---
 
 NrrdLayerReader::NrrdLayerReader() : DataReaderType<Layer>() {
     addExtension(FileExtension("nrrd", "NRRD file format (Layer)"));
@@ -509,7 +491,7 @@ std::shared_ptr<Layer> NrrdLayerReader::readData(const std::filesystem::path& fi
     const auto dataPath = resolveDataFile(state, localPath, filePath);
     const auto dataOff = resolveDataOffset(state);
     const auto compression = encodingToCompression(state.encoding);
-    const auto swizzle = swizzleMaskForComponents(state.components);
+    const auto swizzle = swizzlemasks::defaultData(state.components);
 
     const size_t bytes = dimensions.x * dimensions.y * state.format->getSizeInBytes();
 
@@ -574,13 +556,13 @@ std::shared_ptr<Volume> NrrdVolumeReader::readData(const std::filesystem::path& 
     auto [basis, offset] = buildSpatialInfo(state);
 
     auto volume = std::make_shared<Volume>(dimensions, state.format,
-                                           swizzleMaskForComponents(state.components),
+                                           swizzlemasks::defaultData(state.components),
                                            InterpolationType::Linear, wrapping3d::clampAll);
     volume->setBasis(basis);
     volume->setOffset(offset);
 
     auto volumeDisk = std::make_shared<VolumeDisk>(localPath, dimensions, state.format,
-                                                   swizzleMaskForComponents(state.components),
+                                                   swizzlemasks::defaultData(state.components),
                                                    InterpolationType::Linear, wrapping3d::clampAll);
     auto loader =
         std::make_unique<RawVolumeRAMLoader>(dataPath, dataOff, state.byteOrder, compression);
@@ -647,13 +629,13 @@ std::shared_ptr<VolumeSequence> NrrdVolumeSequenceReader::readData(
 
     for (size_t t = 0; t < timeSteps; ++t) {
         auto volume = std::make_shared<Volume>(dimensions, state.format,
-                                               swizzleMaskForComponents(state.components),
+                                               swizzlemasks::defaultData(state.components),
                                                InterpolationType::Linear, wrapping3d::clampAll);
         volume->setBasis(basis);
         volume->setOffset(offset);
 
         auto volumeDisk = std::make_shared<VolumeDisk>(
-            localPath, dimensions, state.format, swizzleMaskForComponents(state.components),
+            localPath, dimensions, state.format, swizzlemasks::defaultData(state.components),
             InterpolationType::Linear, wrapping3d::clampAll);
         auto loader = std::make_unique<RawVolumeRAMLoader>(dataPath, dataOff + t * bytesPerVolume,
                                                            state.byteOrder, compression);
