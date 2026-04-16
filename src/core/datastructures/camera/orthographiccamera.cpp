@@ -56,7 +56,7 @@ void OrthographicCamera::setWidth(double width) {
         width_ = width;
         invalidateProjectionMatrix();
         if (camprop_) {
-            if (auto p = util::getCameraWidthProperty(*camprop_)) {
+            if (auto* p = util::getCameraWidthProperty(*camprop_)) {
                 p->propertyModified();
             }
         }
@@ -64,19 +64,31 @@ void OrthographicCamera::setWidth(double width) {
 }
 
 void OrthographicCamera::zoom(const ZoomOptions& opts) {
+    if (opts.origin) {
+        const auto up = getLookUp();
+        const auto dir = -glm::normalize(getDirection());
+        const auto right = glm::cross(up, dir);
+        const auto basis = dmat3(right, up, dir);
+
+        const auto translate = glm::translate(dvec3{0.5 * width_ * opts.origin.value(), 0.0});
+        const auto scale = glm::scale(dvec3{1.0 - opts.factor.y, 1.0 - opts.factor.y, 1.0});
+        const auto m = translate * scale * glm::inverse(translate);
+        const auto offset = basis * dvec3{m * dvec4{0.0, 0.0, 0.0, 1.0}};
+        setLook(getLookFrom() + offset, getLookTo() + offset, getLookUp());
+    }
     setWidth(width_ * (1.0 - opts.factor.y));
 }
 
 void OrthographicCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);
-    if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
+    if (const auto* oc = dynamic_cast<const OrthographicCamera*>(&source)) {
         setWidth(oc->getWidth());
     } else if (const auto* plc = dynamic_cast<const PlotCamera*>(&source)) {
         setWidth(plc->getSize().x);
     } else if (const auto* pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         setWidth(util::fovyToWidth(pc->getFovy(), glm::distance(getLookTo(), getLookFrom()),
                                    getAspectRatio()));
-    } else if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
+    } else if (const auto* sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
         setWidth(util::fovyToWidth(sc->getFovy(), glm::distance(getLookTo(), getLookFrom()),
                                    getAspectRatio()));
     }
@@ -93,13 +105,13 @@ void OrthographicCamera::configureProperties(CameraProperty& cp, bool attach) {
                     invalidateProjectionMatrix();
                 }
             });
-    } else if (auto width = util::getCameraWidthProperty(cp)) {
+    } else if (auto* width = util::getCameraWidthProperty(cp)) {
         width->disconnectSetAndGet();
     }
 }
 
 bool OrthographicCamera::equal(const Camera& other) const {
-    if (auto rhs = dynamic_cast<const OrthographicCamera*>(&other)) {
+    if (const auto* rhs = dynamic_cast<const OrthographicCamera*>(&other)) {
         return equalTo(other) && width_ == rhs->width_;
     } else {
         return false;
