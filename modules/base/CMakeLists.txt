@@ -56,6 +56,7 @@ set(HEADER_FILES
     include/modules/base/io/datvolumewriter.h
     include/modules/base/io/ivfvolumereader.h
     include/modules/base/io/ivfvolumewriter.h
+    include/modules/base/io/nrrdreader.h
     include/modules/base/io/stlwriter.h
     include/modules/base/io/wavefrontwriter.h
     include/modules/base/processors/buffertomeshprocessor.h
@@ -215,6 +216,7 @@ set(SOURCE_FILES
     src/io/datvolumewriter.cpp
     src/io/ivfvolumereader.cpp
     src/io/ivfvolumewriter.cpp
+    src/io/nrrdreader.cpp
     src/io/stlwriter.cpp
     src/io/wavefrontwriter.cpp
     src/processors/buffertomeshprocessor.cpp
