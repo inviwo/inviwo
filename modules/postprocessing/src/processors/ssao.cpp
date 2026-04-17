@@ -372,7 +372,7 @@ void SSAO::initFramebuffers(int width, int height) {
     newTexture(textures_.hbaoResult);
     glBindTexture(GL_TEXTURE_2D, textures_.hbaoResult);
     glTexStorage2D(GL_TEXTURE_2D, 1, formatAO, width, height);
-    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
+    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle.data());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -380,7 +380,7 @@ void SSAO::initFramebuffers(int width, int height) {
     newTexture(textures_.hbaoBlur);
     glBindTexture(GL_TEXTURE_2D, textures_.hbaoBlur);
     glTexStorage2D(GL_TEXTURE_2D, 1, formatAO, width, height);
-    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
+    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle.data());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
