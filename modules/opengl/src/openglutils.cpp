@@ -241,11 +241,12 @@ CullFaceState::CullFaceState(CullFaceState&& rhs)
     rhs.mode_ = rhs.oldMode_;
 }
 
-CullFaceState::CullFaceState(GLenum mode) : GlBoolState(GL_CULL_FACE, mode != GL_NONE), mode_(static_cast<GLint>(mode)) {
+CullFaceState::CullFaceState(GLenum mode)
+    : GlBoolState(GL_CULL_FACE, mode != GL_NONE), mode_(static_cast<GLint>(mode)) {
     if (state_) {
         glGetIntegerv(GL_CULL_FACE_MODE, &oldMode_);
         if (oldMode_ != mode) {
-            glCullFace(static_cast<GLenum>(mode));
+            glCullFace(mode);
         }
     }
 }
@@ -372,10 +373,9 @@ BlendModeState::BlendModeState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GL
         glGetIntegerv(GL_BLEND_DST_ALPHA, &old_.dst.alpha);
         if (old_.src.rgb != curr_.src.rgb || old_.dst.rgb != curr_.dst.rgb ||
             old_.src.alpha != curr_.src.alpha || old_.dst.alpha != curr_.dst.alpha) {
-            glBlendFuncSeparate(static_cast<GLenum>(curr_.src.rgb),
-                                static_cast<GLenum>(curr_.dst.rgb),
-                                static_cast<GLenum>(curr_.src.alpha),
-                                static_cast<GLenum>(curr_.dst.alpha));
+            glBlendFuncSeparate(
+                static_cast<GLenum>(curr_.src.rgb), static_cast<GLenum>(curr_.dst.rgb),
+                static_cast<GLenum>(curr_.src.alpha), static_cast<GLenum>(curr_.dst.alpha));
         }
     }
 }
@@ -401,8 +401,7 @@ BlendModeState::BlendModeState(BlendModeState&& rhs)
 BlendModeState::~BlendModeState() {
     if (state_ && (old_.src.rgb != curr_.src.rgb || old_.dst.rgb != curr_.dst.rgb ||
                    old_.src.alpha != curr_.src.alpha || old_.dst.alpha != curr_.dst.alpha)) {
-        glBlendFuncSeparate(static_cast<GLenum>(old_.src.rgb),
-                            static_cast<GLenum>(old_.dst.rgb),
+        glBlendFuncSeparate(static_cast<GLenum>(old_.src.rgb), static_cast<GLenum>(old_.dst.rgb),
                             static_cast<GLenum>(old_.src.alpha),
                             static_cast<GLenum>(old_.dst.alpha));
     }
@@ -558,7 +557,7 @@ void ColorMaski::get() {
     for (int i = 0; i < maxDrawBuffers; ++i) {
         GLint value;
         glGetIntegerv(static_cast<GLenum>(static_cast<unsigned int>(GL_DRAW_BUFFER0) +
-                                        static_cast<unsigned int>(i)),
+                                          static_cast<unsigned int>(i)),
                       &value);
         drawBuffers[i] = static_cast<GLenum>(value);
     }

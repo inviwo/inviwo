@@ -119,7 +119,7 @@
 #endif
 
 #include <glbinding/gl/gl.h>
-using namespace gl;
+using namespace gl; // NOLINT(google-build-using-namespace)
 #if defined(__APPLE__) || defined(__MACOSX)
 #include <OpenGL/OpenGL.h>
 #include <OpenCL/opencl.h>

@@ -208,7 +208,7 @@ void OpenGLCapabilities::initializeGL() {
     if (!hasSupportedOpenGLVersion()) {
         glbinding::initialize(glbinding::getProcAddress);
         const GLubyte* glversion = glGetString(GL_VERSION);
-        if (glversion == 0) {
+        if (glversion == nullptr) {
             // There was an error retrieving the version. Executing further OpenGl calls may
             // crash the application
             throw OpenGLInitException(fmt::format(
@@ -250,12 +250,11 @@ bool OpenGLCapabilities::isExtensionSupported(const char* name) {
     }
     const std::string nameStr(name);
     // glbinding extension names always include the "GL_" prefix
-    const std::string fullName =
-        (nameStr.substr(0, 3) != "GL_") ? "GL_" + nameStr : nameStr;
-    for (const auto& ext : cachedExtensions) {
-        if (glbinding::aux::Meta::getString(ext) == fullName) return true;
-    }
-    return false;
+    const std::string fullName = (nameStr.substr(0, 3) != "GL_") ? "GL_" + nameStr : nameStr;
+
+    return std::ranges::any_of(cachedExtensions, [&fullName](const auto& ext) {
+        return glbinding::aux::Meta::getString(ext) == fullName;
+    });
 }
 
 bool OpenGLCapabilities::isSupported(const char* name) { return isExtensionSupported(name); }

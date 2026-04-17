@@ -92,6 +92,7 @@ Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, const Swizz
     , internalformat_(glFormat.internalFormat)
     , dataType_(glFormat.type)
     , level_(level)
+    , pboBack_{0}
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
@@ -113,6 +114,7 @@ Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, const Swizz
     glBindTexture(target_, 0);
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 Texture::Texture(GLenum target, GLenum format, GLenum internalformat, GLenum dataType,
                  GLenum filtering, const SwizzleMask& swizzleMask, std::span<const GLenum> wrapping,
                  GLint level)
@@ -122,6 +124,7 @@ Texture::Texture(GLenum target, GLenum format, GLenum internalformat, GLenum dat
     , internalformat_(internalformat)
     , dataType_(dataType)
     , level_(level)
+    , pboBack_{0}
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
@@ -152,13 +155,11 @@ Texture::Texture(const Texture& other)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
-    glGenBuffers(1, &pboBack_);
-
     std::array<GLint, 4> swizzleMaskGL;
-    GLuint minfiltering;
-    GLuint magfiltering;
+    GLuint minfiltering = 0;
+    GLuint magfiltering = 0;
 
-    std::array<GLuint, 3> wrapping;
+    std::array<GLuint, 3> wrapping{};
     const auto dims = targetDims(target_);
 
     glBindTexture(other.target_, other.id_);
@@ -202,10 +203,10 @@ Texture& Texture::operator=(const Texture& rhs) {
         dataType_ = rhs.dataType_;
 
         std::array<GLint, 4> swizzleMaskGL;
-        GLuint minfiltering;
-        GLuint magfiltering;
+        GLuint minfiltering = 0;
+        GLuint magfiltering = 0;
 
-        std::array<GLuint, 3> wrapping;
+        std::array<GLuint, 3> wrapping{};
         const auto dims = targetDims(target_);
 
         glBindTexture(rhs.target_, rhs.id_);
@@ -276,7 +277,7 @@ const DataFormatBase* Texture::getDataFormat() const {
 }
 
 GLenum Texture::getFiltering() const {
-    GLuint filtering;
+    GLuint filtering = 0;
     bind();
     glGetTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
     unbind();
@@ -316,7 +317,7 @@ void Texture::setInterpolation(InterpolationType interpolation) {
 }
 
 InterpolationType Texture::getInterpolation() const {
-    GLuint filtering;
+    GLuint filtering = 0;
     bind();
     glGetTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
     unbind();
@@ -335,7 +336,7 @@ void Texture::setWrapping(std::span<const GLenum> wrapping) {
 void Texture::getWrapping(std::span<GLenum> wrapping) const {
     bind();
     for (auto&& [i, wrap] : util::enumerate(wrapping)) {
-        GLuint val;
+        GLuint val = 0;
         glGetTexParameterIuiv(target_, wrapNames[i], &val);
         wrap = static_cast<GLenum>(val);
     }

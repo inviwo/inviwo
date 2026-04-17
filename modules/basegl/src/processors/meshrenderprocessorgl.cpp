@@ -172,9 +172,9 @@ void MeshRenderProcessorGL::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
     shader_.activate();
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_);
-    utilgl::CullFaceState culling(cullFace_.get());
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_);
+    const utilgl::CullFaceState culling(cullFace_.get());
+    const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     utilgl::setUniforms(shader_, camera_, lightingProperty_, overrideColor_);
     for (auto mesh : inport_) {

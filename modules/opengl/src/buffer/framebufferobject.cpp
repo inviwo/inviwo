@@ -167,7 +167,7 @@ void FrameBufferObject::deregisterAttachment(GLenum attachmentID) {
 }
 
 GLenum FrameBufferObject::firstFreeAttachmentID() const {
-    const auto it = std::find(attachedColorIds_.begin(), attachedColorIds_.end(), GLuint{0});
+    const auto it = std::ranges::find(attachedColorIds_, GLuint{0});
     if (it == attachedColorIds_.end()) {
         throw OpenGLException("Maximum number of color attachments reached.");
     }

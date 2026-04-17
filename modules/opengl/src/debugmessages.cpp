@@ -245,7 +245,7 @@ void setOpenGLErrorChecking(bool enable, bool breakOnError) {
         // Install the global after callback. When settings change, this is called again to
         // reinstall with the updated breakOnError value.
         glbinding::Binding::setAfterCallback([breakOnError](const glbinding::FunctionCall& call) {
-            GLenum err;
+            GLenum err{GL_NO_ERROR};
             while ((err = glGetError()) != GL_NO_ERROR) {
                 LogCentral::getPtr()->log(
                     "OpenGL Error Check", LogLevel::Error, LogAudience::Developer, "", "", 0,
@@ -260,7 +260,6 @@ void setOpenGLErrorChecking(bool enable, bool breakOnError) {
         glbinding::Binding::removeCallbackMask(glbinding::CallbackMask::After);
     }
 }
-
 
 namespace debug {
 

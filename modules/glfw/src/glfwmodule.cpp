@@ -99,7 +99,8 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
         holder_ = RenderContext::getPtr()->setDefaultRenderContext(GLFWSharedCanvas_.get());
     }
     OpenGLCapabilities::initializeGL();
-    if (!glbinding::Binding::FenceSync.isResolved()) {  // Make sure we have setup the opengl function pointers.
+    if (!glbinding::Binding::FenceSync
+             .isResolved()) {  // Make sure we have setup the opengl function pointers.
         throw GLFWInitException("Unable to initiate OpenGL");
     }
     CanvasGL::defaultGLState();
@@ -107,7 +108,6 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     registerProcessorWidget<CanvasProcessorWidgetGLFW, CanvasProcessorGL>();
 
     app->getProcessorNetworkEvaluator()->addObserver(this);
-
 
     // restart the pool to ensure that all background threads have a proper render context
     app->waitForPool();
@@ -130,7 +130,7 @@ void GLFWModule::onProcessorNetworkEvaluationEnd() {
     // its work before we continue. This is needed to make sure that we have textures that are upto
     // data when we render the canvases.
 
-    auto syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
+    auto* syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
 
     const GLuint64 timeoutInNanoSec = 50'000'000;  // 50ms
 
@@ -140,15 +140,15 @@ void GLFWModule::onProcessorNetworkEvaluationEnd() {
     }
 
     switch (res) {
-        case GL_ALREADY_SIGNALED:  // No queue to wait for
-            break;
-        case GL_TIMEOUT_EXPIRED:  // Handled above
-            break;
         case GL_WAIT_FAILED:
             log::error("Error syncing with opengl 'GL_WAIT_FAILED'");
             break;
+        case GL_ALREADY_SIGNALED:  // No queue to wait for
+            [[fallthrough]];
+        case GL_TIMEOUT_EXPIRED:  // Handled above
+            [[fallthrough]];
         case GL_CONDITION_SATISFIED:  // Queue done.
-            break;
+            [[fallthrough]];
         default:
             break;
     }

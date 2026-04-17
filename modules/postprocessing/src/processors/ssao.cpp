@@ -80,7 +80,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/texture2d.h>                     // IWYU pragma: keep
+#include <modules/opengl/texture/texture2d.h>  // IWYU pragma: keep
 
 #include <algorithm>
 #include <array>
@@ -363,12 +363,10 @@ void SSAO::initFramebuffers(int width, int height) {
 
 #if USE_AO_SPECIAL_BLUR
     GLenum formatAO = GL_RG16F;
-    GLint swizzle[4] = {static_cast<GLint>(GL_RED), static_cast<GLint>(GL_GREEN),
-                        static_cast<GLint>(GL_ZERO), static_cast<GLint>(GL_ZERO)};
+    std::array<GLenum, 4> swizzle{GL_RED, GL_GREEN, GL_ZERO, GL_ZERO};
 #else
     GLenum formatAO = GL_R8;
-    GLint swizzle[4] = {static_cast<GLint>(GL_RED), static_cast<GLint>(GL_RED),
-                        static_cast<GLint>(GL_RED), static_cast<GLint>(GL_RED)};
+    std::array<GLenum, 4> swizzle{GL_RED, GL_RED, GL_RED, GL_RED};
 #endif
 
     newTexture(textures_.hbaoResult);

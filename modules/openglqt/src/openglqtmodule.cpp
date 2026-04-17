@@ -91,7 +91,8 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     sharedCanvas_.activate();
     sharedCanvas_.initializeGL();
 
-    if (!glbinding::Binding::FenceSync.isResolved()) {  // Make sure we have setup the opengl function pointers.
+    if (!glbinding::Binding::FenceSync
+             .isResolved()) {  // Make sure we have setup the opengl function pointers.
         throw OpenGLInitException("Unable to initiate OpenGL");
     }
 
@@ -144,7 +145,7 @@ void OpenGLQtModule::onProcessorNetworkEvaluationEnd() {
     // This is called after the network is evaluated, here we make sure that the gpu is done with
     // its work before we continue. This is needed to make sure that we have textures that are upto
     // data when we render the canvases.
-    auto syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
+    auto* syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
 
     const GLuint64 timeoutInNanoSec = 50'000'000;  // 50ms
 
@@ -153,15 +154,15 @@ void OpenGLQtModule::onProcessorNetworkEvaluationEnd() {
         res = glClientWaitSync(syncObj, GL_SYNC_FLUSH_COMMANDS_BIT, timeoutInNanoSec);
     }
     switch (res) {
-        case GL_ALREADY_SIGNALED:  // No queue to wait for
-            break;
-        case GL_TIMEOUT_EXPIRED:  // Handled above
-            break;
         case GL_WAIT_FAILED:
             log::error("Error syncing with opengl 'GL_WAIT_FAILED'");
             break;
+        case GL_ALREADY_SIGNALED:  // No queue to wait for
+            [[fallthrough]];
+        case GL_TIMEOUT_EXPIRED:  // Handled above
+            [[fallthrough]];
         case GL_CONDITION_SATISFIED:  // Queue done.
-            break;
+            [[fallthrough]];
         default:
             break;
     }
