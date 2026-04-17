@@ -130,7 +130,7 @@ jobs:
             linkage: static
             configuration: Debug
 
-      fail-fast: true
+      fail-fast: false
       
     runs-on: ${{ matrix.os }}
     timeout-minutes: 360
