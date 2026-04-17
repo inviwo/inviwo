@@ -155,6 +155,7 @@ struct Fsm {
         const auto uidm = uid<Move>();
         const auto uidp = uid<Press>();
         const auto uidr = uid<Release>();
+        const auto uidw = uid<Wheel>();
 
         using S = PickingState;
         using P = PickingPressState;
@@ -215,6 +216,8 @@ struct Fsm {
             pressing + event<DblClk>       / (send<DblClk>(S::Updated, P::DoubleClick, H::None)),
 
             hasId + event<Wheel> [sameId] / (send<Wheel>(S::Updated, P::None, H::None)),
+            hasId + event<Wheel> [zeroId] / (send<Wheel>(S::Finished, P::None, H::Exit), uidw) = idle,
+            hasId + event<Wheel> [diffId] / (send<Wheel>(S::Finished, P::None, H::Exit), uidw, send<Wheel>(S::Started, P::None, H::Enter)),
             pressing + event<Wheel>       / (send<Wheel>(S::Updated, P::None, H::None))
         );
         // clang-format on

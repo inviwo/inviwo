@@ -71,7 +71,6 @@ void PlotCamera::setSize(dvec2 size) {
 
 void PlotCamera::zoom(const ZoomOptions& opts) {
     if (opts.origin) {
-
         const auto up = getLookUp();
         const auto dir = -glm::normalize(getDirection());
         const auto right = glm::cross(up, dir);
@@ -122,8 +121,8 @@ void PlotCamera::configureProperties(CameraProperty& cp, bool attach) {
             auto newSize = std::make_unique<DoubleVec2RefProperty>(
                 "size", "Size", "The viewport size in world space"_help, get, set,
                 std::pair<dvec2, ConstraintBehavior>{
-                	dvec2{100.0 * std::numeric_limits<double>::epsilon()}, 
-                	ConstraintBehavior::Immutable},
+                    dvec2{100.0 * std::numeric_limits<double>::epsilon()},
+                    ConstraintBehavior::Immutable},
                 std::pair<dvec2, ConstraintBehavior>{dvec2{1000.0}, ConstraintBehavior::Ignore},
                 dvec2{0.1});
             sizeProp = newSize.get();

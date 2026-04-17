@@ -116,7 +116,7 @@ std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* o
     util::trySetProperty<FloatVec4Property>(bak, "bgColor2", vec4(0.831f, 0.831f, 0.831f, 1.0f));
 
     util::trySetProperty<OptionProperty<ShadingMode>>(vrc, "shadingMode", ShadingMode::None, true);
-    util::trySetProperty<FloatVec3RefProperty>(vrc, "lookFrom", vec3(0.0f, 0.0f, 30.0f), true);
+    util::trySetProperty<DoubleVec3RefProperty>(vrc, "lookFrom", vec3(0.0f, 0.0f, 30.0f), true);
     util::trySetProperty<FloatProperty>(lrp, "lineSettings.lineWidth", 1.5f);
 
     net->addConnection(outport, cpg->getInports()[0]);
