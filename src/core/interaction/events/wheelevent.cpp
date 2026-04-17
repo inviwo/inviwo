@@ -47,10 +47,10 @@ void WheelEvent::setDelta(dvec2 delta) { delta_ = delta; }
 uint64_t WheelEvent::hash() const { return chash(); }
 
 void WheelEvent::print(fmt::memory_buffer& buff) const {
-    util::printEvent(buff, "WheelEvent", std::make_pair("delta", delta_),
-                     std::make_pair("pos", pos()), std::make_pair("depth", depth()),
-                     std::make_pair("size", canvasSize()), std::make_pair("state", buttonState()),
-                     std::make_pair("modifiers", modifiers_));
+    util::printEvent(
+        buff, "WheelEvent", std::make_pair("delta", delta_), std::make_pair("pos", pos()),
+        std::make_pair("depth", depth()), std::make_pair("size", canvasSize()),
+        std::make_pair("buttonstate", buttonState()), std::make_pair("modifiers", modifiers_));
 }
 
 }  // namespace inviwo
