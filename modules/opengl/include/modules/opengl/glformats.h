@@ -62,7 +62,7 @@ struct IVW_MODULE_OPENGL_API GLFormat {
         , layoutQualifier{}
         , valid{false} {}
 
-    // NOLISTNEXTLINE(bugprone-easily-swappable-parameters)
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
     constexpr GLFormat(GLenum format, GLenum internalFormat, GLenum type,
                        std::string_view layoutQualifier, GLuint channels, GLuint typeSize,
                        utilgl::Normalization normalization)

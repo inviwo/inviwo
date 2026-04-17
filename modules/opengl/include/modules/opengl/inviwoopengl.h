@@ -38,7 +38,7 @@
 
 #include <glbinding/gl/gl.h>
 #include <glbinding/gl/extension.h>
-using namespace gl;  // NOLINT(google-build-using-namespace)
+using namespace gl;  // NOLINT(google-build-using-namespace, google-global-names-in-headers)
 
 // Provide APIENTRY macro for callback signatures
 #ifndef APIENTRY

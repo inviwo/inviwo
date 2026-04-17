@@ -47,6 +47,7 @@ namespace debug {
 enum class Mode { Off, Debug, DebugSynchronous };
 enum class BreakLevel { Off, High, Medium, Low, Notification };
 
+// NOLINTBEGIN(performance-enum-size)
 enum class Source : unsigned int {
     Api = static_cast<unsigned int>(GL_DEBUG_SOURCE_API),
     WindowSystem = static_cast<unsigned int>(GL_DEBUG_SOURCE_WINDOW_SYSTEM),
@@ -77,12 +78,15 @@ enum class Severity : unsigned int {
     High = static_cast<unsigned int>(GL_DEBUG_SEVERITY_HIGH),
     DontCare = static_cast<unsigned int>(GL_DONT_CARE)
 };
+// NOLINTEND(performance-enum-size)
 
 inline Source toSouce(GLenum val) { return static_cast<Source>(static_cast<unsigned int>(val)); }
 
 inline Type toType(GLenum val) { return static_cast<Type>(static_cast<unsigned int>(val)); }
 
-inline Severity toSeverity(GLenum val) { return static_cast<Severity>(static_cast<unsigned int>(val)); }
+inline Severity toSeverity(GLenum val) {
+    return static_cast<Severity>(static_cast<unsigned int>(val));
+}
 
 inline LogLevel toLogLevel(Severity s) {
     switch (s) {

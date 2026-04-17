@@ -486,12 +486,12 @@ struct SimpleState {
     SimpleState& operator=(SimpleState&& that) noexcept;
 
     operator value_type();  // NOLINT(google-explicit-constructor)
-)
+
     virtual ~SimpleState();
 
 protected:
-value_type oldState_;
-value_type state_;
+    value_type oldState_;
+    value_type state_;
 };
 
 template <typename Policy>

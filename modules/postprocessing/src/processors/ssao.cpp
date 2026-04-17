@@ -363,10 +363,10 @@ void SSAO::initFramebuffers(int width, int height) {
 
 #if USE_AO_SPECIAL_BLUR
     GLenum formatAO = GL_RG16F;
-    std::array<GLenum, 4> swizzle{GL_RED, GL_GREEN, GL_ZERO, GL_ZERO};
+    const std::array<GLenum, 4> swizzle{GL_RED, GL_GREEN, GL_ZERO, GL_ZERO};
 #else
     GLenum formatAO = GL_R8;
-    std::array<GLenum, 4> swizzle{GL_RED, GL_RED, GL_RED, GL_RED};
+    const std::array<GLenum, 4> swizzle{GL_RED, GL_RED, GL_RED, GL_RED};
 #endif
 
     newTexture(textures_.hbaoResult);
