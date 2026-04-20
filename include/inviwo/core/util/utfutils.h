@@ -108,16 +108,17 @@ public:
     using Sentinel = std::ranges::sentinel_t<const View>;
 
     constexpr Utf8CodePointRange() = default;
-    constexpr explicit Utf8CodePointRange(const View view)
-        : begin_{std::ranges::begin(view), std::ranges::end(view)}
-        , end_{std::ranges::end(view), std::ranges::end(view)} {}
+    constexpr explicit Utf8CodePointRange(View view) : view_{std::move(view)} {}
 
-    constexpr auto begin() const { return begin_; }
-    constexpr auto end() const { return end_; }
+    constexpr Utf8CodePointIterator<Iter, Sentinel> begin() const {
+        return {std::ranges::begin(view_), std::ranges::end(view_)};
+    }
+    constexpr Utf8CodePointIterator<Iter, Sentinel> end() const {
+        return {std::ranges::end(view_), std::ranges::end(view_)};
+    }
 
 private:
-    Utf8CodePointIterator<Iter, Sentinel> begin_;
-    Utf8CodePointIterator<Iter, Sentinel> end_;
+    View view_;
 };
 
 template <CharRange Range>
