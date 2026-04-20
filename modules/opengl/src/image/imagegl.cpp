@@ -47,7 +47,7 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/sharedopenglresources.h>
-#include <modules/opengl/texture/texture2d.h>                           // IWYU pragma: keep
+#include <modules/opengl/texture/texture2d.h>  // IWYU pragma: keep
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 
@@ -234,10 +234,8 @@ bool ImageGL::updateFrom(const ImageGL* source) {
     sourceFBO->setReadBlit();
     targetFBO->setDrawBlit();
 
-    const bool copyDepth =
-        sourceFBO->hasDepthAttachment() && targetFBO->hasDepthAttachment();
-    const bool copyStencil =
-        sourceFBO->hasStencilAttachment() && targetFBO->hasStencilAttachment();
+    const bool copyDepth = sourceFBO->hasDepthAttachment() && targetFBO->hasDepthAttachment();
+    const bool copyStencil = sourceFBO->hasStencilAttachment() && targetFBO->hasStencilAttachment();
     auto mask = GL_COLOR_BUFFER_BIT;
     if (copyDepth) mask |= GL_DEPTH_BUFFER_BIT;
     if (copyStencil) mask |= GL_STENCIL_BUFFER_BIT;
@@ -432,7 +430,7 @@ dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
         case LayerType::Color:
         default:
             glReadBuffer(static_cast<GLenum>(static_cast<GLuint>(GL_COLOR_ATTACHMENT0) +
-                                           static_cast<GLuint>(index)));
+                                             static_cast<GLuint>(index)));
             break;
     }
 

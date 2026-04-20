@@ -302,7 +302,8 @@ void bindPickingTexture(const ImageOutport& outport, const TextureUnit& texUnit)
 
 void bindTextures(const Image& image, const TextureUnit& colorTexUnit,
                   const TextureUnit& depthTexUnit) {
-    bindTextures(image, true, true, false, colorTexUnit.getEnum(), depthTexUnit.getEnum(), GLenum{0});
+    bindTextures(image, true, true, false, colorTexUnit.getEnum(), depthTexUnit.getEnum(),
+                 GLenum{0});
 }
 
 void bindTextures(const ImageInport& inport, const TextureUnit& colorTexUnit,

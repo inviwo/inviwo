@@ -277,7 +277,7 @@ void VolumeRegionShrink::process() {
     for (int i = 1; i < iterations_; ++i) {
         std::swap(src, dst);
         glDrawBuffer(static_cast<GLenum>(static_cast<GLuint>(GL_COLOR_ATTACHMENT0) +
-                                       static_cast<GLuint>(dst)));
+                                         static_cast<GLuint>(dst)));
         TextureUnitContainer cont;
         utilgl::bindAndSetUniforms(shader_, cont, *out_[src], "volume");
         utilgl::setShaderUniforms(shader_, *out_[dst], "dstParameters");

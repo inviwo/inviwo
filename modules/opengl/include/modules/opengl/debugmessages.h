@@ -36,59 +36,121 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/util/fmtutils.h>
 
-#include <iosfwd>
-
-namespace inviwo {
-
-namespace utilgl {
+namespace inviwo::utilgl {
 
 namespace debug {
 
-enum class Mode { Off, Debug, DebugSynchronous };
-enum class BreakLevel { Off, High, Medium, Low, Notification };
+enum class Mode : std::uint8_t { Off, Debug, DebugSynchronous };
+enum class BreakLevel : std::uint8_t { Off, High, Medium, Low, Notification };
 
-// NOLINTBEGIN(performance-enum-size)
-enum class Source : unsigned int {
-    Api = static_cast<unsigned int>(GL_DEBUG_SOURCE_API),
-    WindowSystem = static_cast<unsigned int>(GL_DEBUG_SOURCE_WINDOW_SYSTEM),
-    ShaderCompiler = static_cast<unsigned int>(GL_DEBUG_SOURCE_SHADER_COMPILER),
-    ThirdParty = static_cast<unsigned int>(GL_DEBUG_SOURCE_THIRD_PARTY),
-    Application = static_cast<unsigned int>(GL_DEBUG_SOURCE_APPLICATION),
-    Other = static_cast<unsigned int>(GL_DEBUG_SOURCE_OTHER),
-    DontCare = static_cast<unsigned int>(GL_DONT_CARE)
+enum class Source : std::uint8_t {
+    Api,
+    WindowSystem,
+    ShaderCompiler,
+    ThirdParty,
+    Application,
+    Other,
+    DontCare
 };
 
-enum class Type : unsigned int {
-    Error = static_cast<unsigned int>(GL_DEBUG_TYPE_ERROR),
-    DeprecatedBehavior = static_cast<unsigned int>(GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR),
-    UndefinedBehavior = static_cast<unsigned int>(GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR),
-    Portability = static_cast<unsigned int>(GL_DEBUG_TYPE_PORTABILITY),
-    Performance = static_cast<unsigned int>(GL_DEBUG_TYPE_PERFORMANCE),
-    Marker = static_cast<unsigned int>(GL_DEBUG_TYPE_MARKER),
-    PushGroup = static_cast<unsigned int>(GL_DEBUG_TYPE_PUSH_GROUP),
-    PopGroup = static_cast<unsigned int>(GL_DEBUG_TYPE_POP_GROUP),
-    Other = static_cast<unsigned int>(GL_DEBUG_TYPE_OTHER),
-    DontCare = static_cast<unsigned int>(GL_DONT_CARE)
+enum class Type : std::uint8_t {
+    Error,
+    DeprecatedBehavior,
+    UndefinedBehavior,
+    Portability,
+    Performance,
+    Marker,
+    PushGroup,
+    PopGroup,
+    Other,
+    DontCare
 };
 
-enum class Severity : unsigned int {
-    Notification = static_cast<unsigned int>(GL_DEBUG_SEVERITY_NOTIFICATION),
-    Low = static_cast<unsigned int>(GL_DEBUG_SEVERITY_LOW),
-    Medium = static_cast<unsigned int>(GL_DEBUG_SEVERITY_MEDIUM),
-    High = static_cast<unsigned int>(GL_DEBUG_SEVERITY_HIGH),
-    DontCare = static_cast<unsigned int>(GL_DONT_CARE)
-};
-// NOLINTEND(performance-enum-size)
+enum class Severity : std::uint8_t { Notification, Low, Medium, High, DontCare };
 
-inline Source toSouce(GLenum val) { return static_cast<Source>(static_cast<unsigned int>(val)); }
-
-inline Type toType(GLenum val) { return static_cast<Type>(static_cast<unsigned int>(val)); }
-
-inline Severity toSeverity(GLenum val) {
-    return static_cast<Severity>(static_cast<unsigned int>(val));
+constexpr Source toSource(GLenum val) {
+    switch (val) {
+        case GL_DEBUG_SOURCE_API:
+            return Source::Api;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+            return Source::WindowSystem;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER:
+            return Source::ShaderCompiler;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:
+            return Source::ThirdParty;
+        case GL_DEBUG_SOURCE_APPLICATION:
+            return Source::Application;
+        case GL_DEBUG_SOURCE_OTHER:
+            return Source::Other;
+        case GL_DONT_CARE:
+            [[fallthrough]];
+        default:
+            return Source::DontCare;
+    }
 }
 
-inline LogLevel toLogLevel(Severity s) {
+constexpr Type toType(GLenum val) {
+    switch (val) {
+        case GL_DEBUG_TYPE_ERROR:
+            return Type::Error;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+            return Type::DeprecatedBehavior;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+            return Type::UndefinedBehavior;
+        case GL_DEBUG_TYPE_PORTABILITY:
+            return Type::Portability;
+        case GL_DEBUG_TYPE_PERFORMANCE:
+            return Type::Performance;
+        case GL_DEBUG_TYPE_MARKER:
+            return Type::Marker;
+        case GL_DEBUG_TYPE_PUSH_GROUP:
+            return Type::PushGroup;
+        case GL_DEBUG_TYPE_POP_GROUP:
+            return Type::PopGroup;
+        case GL_DEBUG_TYPE_OTHER:
+            return Type::Other;
+        case GL_DONT_CARE:
+            [[fallthrough]];
+        default:
+            return Type::DontCare;
+    }
+}
+
+constexpr Severity toSeverity(GLenum val) {
+    switch (val) {
+        case GL_DEBUG_SEVERITY_HIGH:
+            return Severity::High;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            return Severity::Medium;
+        case GL_DEBUG_SEVERITY_LOW:
+            return Severity::Low;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            return Severity::Notification;
+        case GL_DONT_CARE:
+            [[fallthrough]];
+        default:
+            return Severity::DontCare;
+    }
+}
+
+constexpr GLenum toGL(Severity s) {
+    switch (s) {
+        case Severity::High:
+            return GL_DEBUG_SEVERITY_HIGH;
+        case Severity::Medium:
+            return GL_DEBUG_SEVERITY_MEDIUM;
+        case Severity::Low:
+            return GL_DEBUG_SEVERITY_LOW;
+        case Severity::Notification:
+            return GL_DEBUG_SEVERITY_NOTIFICATION;
+        case Severity::DontCare:
+            [[fallthrough]];
+        default:
+            return GL_DONT_CARE;
+    }
+}
+
+constexpr LogLevel toLogLevel(Severity s) {
     switch (s) {
         case Severity::High:
             return LogLevel::Error;
@@ -97,6 +159,7 @@ inline LogLevel toLogLevel(Severity s) {
         case Severity::Low:
         case Severity::Notification:
         case Severity::DontCare:
+            [[fallthrough]];
         default:
             return LogLevel::Info;
     }
@@ -104,7 +167,7 @@ inline LogLevel toLogLevel(Severity s) {
 
 namespace detail {
 
-inline int toInt(Severity s) {
+constexpr int toInt(Severity s) {
     switch (s) {
         case Severity::Notification:
             return 1;
@@ -114,13 +177,13 @@ inline int toInt(Severity s) {
             return 3;
         case Severity::High:
             return 4;
-        case Severity::DontCare:
+        case Severity::DontCare:  // NOLINT(bugprone-branch-clone)
             return 0;
         default:
             return 0;
     }
 }
-inline int toInt(BreakLevel b) {
+constexpr int toInt(BreakLevel b) {
     switch (b) {
         case BreakLevel::Off:
             return 5;
@@ -138,43 +201,24 @@ inline int toInt(BreakLevel b) {
 }
 }  // namespace detail
 
-inline bool operator==(const Severity& s, const BreakLevel& b) {
+constexpr bool operator==(const Severity& s, const BreakLevel& b) {
     const int bi = detail::toInt(b);
     const int si = detail::toInt(s);
     return si == bi;
 }
-inline bool operator!=(const Severity& s, const BreakLevel& b) { return !(s == b); }
-
-inline bool operator<(const Severity& s, const BreakLevel& b) {
+constexpr auto operator<=>(const Severity& s, const BreakLevel& b) {
     const int bi = detail::toInt(b);
     const int si = detail::toInt(s);
-    return si < bi;
+    return si <=> bi;
 }
-inline bool operator<=(const Severity& s, const BreakLevel& b) { return s < b || s == b; }
-inline bool operator>(const Severity& s, const BreakLevel& b) { return !(s < b); }
-inline bool operator>=(const Severity& s, const BreakLevel& b) { return s > b || s == b; }
+constexpr bool operator==(const BreakLevel& b, const Severity& s) { return s == b; }
+constexpr auto operator<=>(const BreakLevel& b, const Severity& s) { return s <=> b; }
 
-inline bool operator==(const BreakLevel& b, const Severity& s) { return s == b; }
-inline bool operator!=(const BreakLevel& b, const Severity& s) { return s != b; }
-inline bool operator<(const BreakLevel& b, const Severity& s) { return s > b; }
-inline bool operator<=(const BreakLevel& b, const Severity& s) { return s >= b; }
-inline bool operator>(const BreakLevel& b, const Severity& s) { return s < b; }
-inline bool operator>=(const BreakLevel& b, const Severity& s) { return s <= b; }
-
-IVW_MODULE_OPENGL_API std::string_view enumToStr(Mode s);
-IVW_MODULE_OPENGL_API std::string_view enumToStr(BreakLevel t);
-IVW_MODULE_OPENGL_API std::string_view enumToStr(Source s);
-IVW_MODULE_OPENGL_API std::string_view enumToStr(Type t);
-IVW_MODULE_OPENGL_API std::string_view enumToStr(Severity s);
-
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Mode m);
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, BreakLevel b);
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Source s);
-
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Type t);
-
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Severity s);
-
+IVW_MODULE_OPENGL_API std::string_view format_as(Mode s);
+IVW_MODULE_OPENGL_API std::string_view format_as(BreakLevel t);
+IVW_MODULE_OPENGL_API std::string_view format_as(Source s);
+IVW_MODULE_OPENGL_API std::string_view format_as(Type t);
+IVW_MODULE_OPENGL_API std::string_view format_as(Severity s);
 }  // namespace debug
 
 IVW_MODULE_OPENGL_API void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity);
@@ -195,26 +239,4 @@ IVW_MODULE_OPENGL_API void setOpenGLErrorChecking(bool enable, bool breakOnError
  * Called when the corresponding OpenGLSettings properties change.
  */
 IVW_MODULE_OPENGL_API void handleOpenGLErrorCheckingChange(bool enable, bool breakOnError);
-}  // namespace utilgl
-
-}  // namespace inviwo
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-template <>
-struct fmt::formatter<inviwo::utilgl::debug::Mode>
-    : inviwo::FlagFormatter<inviwo::utilgl::debug::Mode> {};
-template <>
-struct fmt::formatter<inviwo::utilgl::debug::BreakLevel>
-    : inviwo::FlagFormatter<inviwo::utilgl::debug::BreakLevel> {};
-
-template <>
-struct fmt::formatter<inviwo::utilgl::debug::Source>
-    : inviwo::FlagFormatter<inviwo::utilgl::debug::Source> {};
-template <>
-struct fmt::formatter<inviwo::utilgl::debug::Type>
-    : inviwo::FlagFormatter<inviwo::utilgl::debug::Type> {};
-
-template <>
-struct fmt::formatter<inviwo::utilgl::debug::Severity>
-    : inviwo::FlagFormatter<inviwo::utilgl::debug::Severity> {};
-#endif
+}  // namespace inviwo::utilgl

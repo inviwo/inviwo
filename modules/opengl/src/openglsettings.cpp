@@ -103,8 +103,9 @@ OpenGLSettings::OpenGLSettings()
         utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get());
     });
 
-    breakOnError_.onChange(
-        [this]() { utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get()); });
+    breakOnError_.onChange([this]() {
+        utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get());
+    });
 
     load();
 }

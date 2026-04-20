@@ -35,6 +35,7 @@
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/stacktrace.h>
 #include <modules/opengl/openglsettings.h>
 
 #include <ostream>
@@ -49,9 +50,7 @@
 #include <glbinding/CallbackMask.h>
 #include <glbinding/FunctionCall.h>
 
-namespace inviwo {
-
-namespace utilgl {
+namespace inviwo::utilgl {
 
 void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID context) {
     const auto rc = RenderContext::getPtr();
@@ -78,21 +77,20 @@ static void APIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GL
                                                 GLenum eseverity, GLsizei /*length*/,
                                                 const GLchar* message, const void* /*module*/) {
 
-    const auto source = debug::toSouce(esource);
+    const auto source = debug::toSource(esource);
     const auto type = debug::toType(etype);
     const auto severity = debug::toSeverity(eseverity);
 
     std::string error = fmt::format("{}\n[Severity: {}. Type: {}, Source: {}, Id: {}", message,
                                     severity, type, source, id);
-    if (const auto rc = RenderContext::getPtr()) {
-        const auto context = rc->activeContext();
+    if (const auto* rc = RenderContext::getPtr()) {
+        const auto* context = rc->activeContext();
         fmt::format_to(std::back_inserter(error), "Context: {} ({})", rc->getContextName(context),
                        context);
     }
     fmt::format_to(std::back_inserter(error), "]");
 
-    LogCentral::getPtr()->log("OpenGL Debug", toLogLevel(severity), LogAudience::Developer,
-                              __FILE__, __FUNCTION__, __LINE__, error);
+    log::report(toLogLevel(severity), error);
 
     if (InviwoApplication::isInitialized()) {
         if (auto* openglSettings =
@@ -160,7 +158,7 @@ void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
             [severity](Canvas::ContextID id, const std::string& /*name*/, ContextHolder* canvas,
                        std::thread::id threadId) {
                 if (threadId == std::this_thread::get_id()) {
-                    const auto rc = RenderContext::getPtr();
+                    const auto* rc = RenderContext::getPtr();
                     canvas->activate();
                     if (configureOpenGLDebugMessages(severity)) {
                         log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
@@ -179,30 +177,29 @@ void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
 bool configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
     if (!glbinding::Binding::DebugMessageControl.isResolved()) return false;
 
-    using namespace debug;
+    using enum debug::Severity;
 
     auto set = [](bool n, bool l, bool m, bool h) {
-        auto g = [](Severity s) { return static_cast<GLenum>(static_cast<unsigned int>(s)); };
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, g(Severity::Notification), 0, nullptr, n);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, g(Severity::Low), 0, nullptr, l);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, g(Severity::Medium), 0, nullptr, m);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, g(Severity::High), 0, nullptr, h);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, toGL(Notification), 0, nullptr, n);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, toGL(Low), 0, nullptr, l);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, toGL(Medium), 0, nullptr, m);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, toGL(High), 0, nullptr, h);
     };
 
     switch (severity) {
-        case Severity::Notification:
+        case Notification:
             set(true, true, true, true);
             break;
-        case Severity::Low:
+        case Low:
             set(false, true, true, true);
             break;
-        case Severity::Medium:
+        case Medium:
             set(false, false, true, true);
             break;
-        case Severity::High:
+        case High:
             set(false, false, false, true);
             break;
-        case Severity::DontCare: {
+        case DontCare: {
             glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, true);
             break;
         }
@@ -214,7 +211,7 @@ bool configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
 }
 
 void handleOpenGLDebugMode(Canvas::ContextID context) {
-    auto openglSettings = InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>();
+    auto* openglSettings = InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>();
     auto mode = openglSettings->debugMessages_.getSelectedValue();
     auto severity = openglSettings->debugSeverity_.getSelectedValue();
     setOpenGLDebugMode(mode, severity);
@@ -247,10 +244,13 @@ void setOpenGLErrorChecking(bool enable, bool breakOnError) {
         glbinding::Binding::setAfterCallback([breakOnError](const glbinding::FunctionCall& call) {
             GLenum err{GL_NO_ERROR};
             while ((err = glGetError()) != GL_NO_ERROR) {
-                LogCentral::getPtr()->log(
-                    "OpenGL Error Check", LogLevel::Error, LogAudience::Developer, "", "", 0,
-                    fmt::format("glGetError() = {} after {}", getGLErrorString(err),
-                                call.function->name()));
+                log::report(LogLevel::Error, SourceContext("OpenGL Error Check"_sl),
+                            "OpenGL error {} after calling {}()", getGLErrorString(err),
+                            call.function->name());
+                for (auto& line : getStackTrace()) {
+                    log::report(LogLevel::Error, SourceContext("OpenGL Error Check"_sl), line);
+                }
+
                 if (breakOnError) util::debugBreak();
             }
         });
@@ -263,7 +263,7 @@ void setOpenGLErrorChecking(bool enable, bool breakOnError) {
 
 namespace debug {
 
-std::string_view enumToStr(Mode m) {
+std::string_view format_as(Mode m) {
     switch (m) {
         case Mode::Off:
             return "Off";
@@ -275,7 +275,7 @@ std::string_view enumToStr(Mode m) {
             return "";
     }
 }
-std::string_view enumToStr(BreakLevel b) {
+std::string_view format_as(BreakLevel b) {
     switch (b) {
         case BreakLevel::Off:
             return "Off";
@@ -291,7 +291,7 @@ std::string_view enumToStr(BreakLevel b) {
             return "";
     }
 }
-std::string_view enumToStr(Source s) {
+std::string_view format_as(Source s) {
     switch (s) {
         case Source::Api:
             return "Api";
@@ -311,7 +311,7 @@ std::string_view enumToStr(Source s) {
             return "";
     }
 }
-std::string_view enumToStr(Type t) {
+std::string_view format_as(Type t) {
     switch (t) {
         case Type::Error:
             return "Error";
@@ -337,7 +337,7 @@ std::string_view enumToStr(Type t) {
             return "";
     }
 }
-std::string_view enumToStr(Severity s) {
+std::string_view format_as(Severity s) {
     switch (s) {
         case Severity::Low:
             return "Low";
@@ -354,14 +354,6 @@ std::string_view enumToStr(Severity s) {
     }
 }
 
-std::ostream& operator<<(std::ostream& ss, Mode m) { return ss << enumToStr(m); }
-std::ostream& operator<<(std::ostream& ss, BreakLevel b) { return ss << enumToStr(b); }
-std::ostream& operator<<(std::ostream& ss, Source s) { return ss << enumToStr(s); }
-std::ostream& operator<<(std::ostream& ss, Type t) { return ss << enumToStr(t); }
-std::ostream& operator<<(std::ostream& ss, Severity s) { return ss << enumToStr(s); }
-
 }  // namespace debug
 
-}  // namespace utilgl
-
-}  // namespace inviwo
+}  // namespace inviwo::utilgl
