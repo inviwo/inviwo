@@ -41,6 +41,7 @@
 
 #include <functional>
 #include <optional>
+#include <ranges>
 
 namespace inviwo {
 
@@ -64,51 +65,99 @@ IVW_CORE_API dmat4 minExtentBoundingBox(dmat4 boundingBox);
 IVW_CORE_API std::optional<dmat4> boundingBoxUnion(const std::optional<dmat4>& a,
                                                    const std::optional<dmat4>& b);
 /**
- * Calculate a bounding box of the @p layer in world space. The bounding box is represented using a
- * mat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z are between 0 and 1.
- * The bounding box will have a depth equal to a 1000th of the length of the cross product of the
- * layer's first two basis vectors.
+ * Calculate a bounding box of the @p layer in world space. The bounding box is represented
+ * using a mat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z are
+ * between 0 and 1. The bounding box will have a depth equal to a 1000th of the length of the
+ * cross product of the layer's first two basis vectors.
  */
-IVW_CORE_API dmat4 boundingBox(const Layer& layer);
+IVW_CORE_API std::optional<dmat4> calcBoundingBox(const Layer& layer);
 
 /**
  * Calculate a bounding box of all layers in world space. The bounding box is
- * represented using a dmat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z
- * are between 0 and 1.
+ * represented using a dmat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and
+ * z are between 0 and 1.
  */
-IVW_CORE_API dmat4 boundingBox(const std::vector<std::shared_ptr<Layer>>& layers);
+IVW_CORE_API std::optional<dmat4> calcBoundingBox(
+    const std::vector<std::shared_ptr<Layer>>& layers);
 
 /**
- * Calculate a bounding box of the position buffer of the mesh in world space. The bounding box is
- * represented using a dmat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z
- * are between 0 and 1.
- */
-IVW_CORE_API dmat4 boundingBox(const Mesh& mesh);
-
-/**
- * Calculate a bounding box of the position buffers of all the meshes in world space. The bounding
- * box is represented using a dmat4, where all positions are between `bbox * (x,y,z,1)` where x, y,
+ * Calculate a bounding box of the position buffer of the mesh in world space. The bounding box
+ * is represented using a dmat4, where all positions are between `bbox * (x,y,z,1)` where x, y,
  * and z are between 0 and 1.
  */
-IVW_CORE_API dmat4 boundingBox(const std::vector<std::shared_ptr<const Mesh>>& meshes);
+IVW_CORE_API std::optional<dmat4> calcBoundingBox(const Mesh& mesh);
+
+/**
+ * Calculate a bounding box of the position buffers of all the meshes in world space. The
+ * bounding box is represented using a dmat4, where all positions are between `bbox * (x,y,z,1)`
+ * where x, y, and z are between 0 and 1.
+ */
+IVW_CORE_API std::optional<dmat4> calcBoundingBox(
+    const std::vector<std::shared_ptr<const Mesh>>& meshes);
 
 /**
  * Calculate a bounding box of the volume in world space. The bounding box is
- * represented using a dmat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z
- * are between 0 and 1.
+ * represented using a dmat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and
+ * z are between 0 and 1.
  */
-IVW_CORE_API dmat4 boundingBox(const Volume& volume);
+IVW_CORE_API std::optional<dmat4> calcBoundingBox(const Volume& volume);
 
 /**
  * Calculate a bounding box of all the volumes in world space. The bounding box is
- * represented using a dmat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z
- * are between 0 and 1.
+ * represented using a dmat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and
+ * z are between 0 and 1.
  */
-IVW_CORE_API dmat4 boundingBox(const std::vector<std::shared_ptr<Volume>>& volumes);
+IVW_CORE_API std::optional<dmat4> calcBoundingBox(
+    const std::vector<std::shared_ptr<Volume>>& volumes);
 
 /**
- * Constructs a function that returns the bounding box of the data in the port. If the port is empty
- * the function should return std::nullopt;
+ * Calculate a bounding box union of the data in the range [begin, end) in world space.
+ */
+template <typename const_iterator, std::sentinel_for<const_iterator> sentinel>
+    requires requires(const_iterator it) {
+        { calcBoundingBox(*it) } -> std::convertible_to<std::optional<dmat4>>;
+    }
+constexpr std::optional<dmat4> calcBoundingBox(const_iterator begin, sentinel end) {
+    if (begin == end) return std::nullopt;
+
+    dvec3 worldMin(std::numeric_limits<float>::max());
+    dvec3 worldMax(std::numeric_limits<float>::lowest());
+
+    constexpr std::array<dvec3, 8> corners = {dvec3{0, 0, 0}, dvec3{1, 0, 0}, dvec3{1, 1, 0},
+                                              dvec3{0, 1, 0}, dvec3{0, 0, 1}, dvec3{1, 0, 1},
+                                              dvec3{1, 1, 1}, dvec3{0, 1, 1}};
+    bool valid = false;
+    for (; begin != end; ++begin) {
+        if (const auto bb = calcBoundingBox(*begin)) {
+            for (const auto& corner : corners) {
+                const auto point = dvec3(*bb * dvec4(corner, 1.));
+                worldMin = glm::min(worldMin, point);
+                worldMax = glm::max(worldMax, point);
+                valid = true;
+            }
+        }
+    }
+
+    if (!valid) return std::nullopt;
+
+    auto m = glm::scale(worldMax - worldMin);
+    m[3] = dvec4(worldMin, 1.0);
+    return m;
+}
+
+template <typename Range>
+    requires requires(const Range& range) {
+        {
+            calcBoundingBox(std::ranges::begin(range), std::ranges::end(range))
+        } -> std::convertible_to<std::optional<dmat4>>;
+    }
+constexpr std::optional<dmat4> calcBoundingBox(const Range& range) {
+    return calcBoundingBox(std::ranges::begin(range), std::ranges::end(range));
+}
+
+/**
+ * Constructs a function that returns the bounding box of the data in the port. If the port is
+ * empty the function should return std::nullopt;
  */
 /**@{*/
 IVW_CORE_API std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer>& layer);
