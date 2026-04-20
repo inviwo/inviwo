@@ -148,7 +148,7 @@ Outport* Inport::getConnectedOutport() const {
     }
 }
 
-const std::vector<Outport*>& Inport::getConnectedOutports() const { return connectedOutports_; }
+const std::vector<Outport*>& Inport::getConnectedOutports() const noexcept { return connectedOutports_; }
 
 void Inport::callOnChangeIfChanged() const {
     if (isChanged()) {

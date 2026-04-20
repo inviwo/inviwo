@@ -33,9 +33,7 @@
 #include <utility>
 #include <iterator>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 template <class Iter>
 struct iter_range : std::pair<Iter, Iter> {
@@ -43,34 +41,32 @@ struct iter_range : std::pair<Iter, Iter> {
     using const_iterator = Iter;
     using iterator = Iter;
     using std::pair<Iter, Iter>::pair;
-    iter_range(const std::pair<Iter, Iter>& x) : std::pair<Iter, Iter>(x) {}
-    Iter begin() const { return this->first; }
-    Iter end() const { return this->second; }
+    constexpr explicit iter_range(const std::pair<Iter, Iter>& x) noexcept : std::pair<Iter, Iter>(x) {}
+    constexpr Iter begin() const noexcept { return this->first; }
+    constexpr Iter end() const noexcept { return this->second; }
 };
 
 template <class Iter>
-inline iter_range<Iter> as_range(Iter begin, Iter end) {
+constexpr iter_range<Iter> as_range(Iter begin, Iter end) {
     return iter_range<Iter>(std::make_pair(begin, end));
 }
 
 template <class Iter>
-inline iter_range<Iter> as_range(std::pair<Iter, Iter> const& x) {
+constexpr iter_range<Iter> as_range(const std::pair<Iter, Iter>& x) {
     return iter_range<Iter>(x);
 }
 
 template <class Container>
-inline iter_range<typename Container::iterator> as_range(Container& c) {
+constexpr iter_range<typename Container::iterator> as_range(Container& c) {
     using std::begin;
     using std::end;
     return iter_range<typename Container::iterator>(std::make_pair(begin(c), end(c)));
 }
 template <class Container>
-inline iter_range<typename Container::const_iterator> as_range(const Container& c) {
+constexpr iter_range<typename Container::const_iterator> as_range(const Container& c) {
     using std::begin;
     using std::end;
     return iter_range<typename Container::const_iterator>(std::make_pair(begin(c), end(c)));
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

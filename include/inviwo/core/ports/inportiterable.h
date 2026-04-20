@@ -49,6 +49,7 @@ public:
         using DataIter = typename OutportIterable<T>::const_iterator;
 
     public:
+        const_iterator_base() = default;
         explicit const_iterator_base(PortIter pIterBegin, PortIter pIterEnd)
             : pIter_{pIterBegin}, pEnd_{pIterEnd}, dIter_{}, dEnd_{} {
             if (pIter_ != pEnd_) {
@@ -104,6 +105,7 @@ public:
         using pointer = std::shared_ptr<const T>;
         using reference = std::shared_ptr<const T>;
 
+        const_iterator() = default;
         const_iterator(PortIter pIterBegin, PortIter pIterEnd) : Base(pIterBegin, pIterEnd) {}
         reference operator*() const { return *Base::dIter_; }
         pointer operator->() const { return *Base::dIter_; }
@@ -120,6 +122,7 @@ public:
         using reference = std::pair<Outport*, std::shared_ptr<const T>>;
         using pointer = void;
 
+        const_iterator_port() = default;
         const_iterator_port(PortIter pIterBegin, PortIter pIterEnd) : Base(pIterBegin, pIterEnd) {}
 
         reference operator*() const { return reference{*Base::pIter_, *Base::dIter_}; }
@@ -136,6 +139,7 @@ public:
         using reference = std::pair<bool, std::shared_ptr<const T>>;
         using pointer = void;
 
+        const_iterator_changed() = default;
         const_iterator_changed(PortIter pIterBegin, PortIter pIterEnd, const InportType& inport)
             : Base(pIterBegin, pIterEnd), inport{inport} {}
 
@@ -148,7 +152,7 @@ public:
         const InportType& inport;
     };
 
-    util::iter_range<const_iterator_port> outportAndData() const {
+    util::iter_range<const_iterator_port> outportAndData() const noexcept {
         return util::iter_range<const_iterator_port>{
             const_iterator_port{self().getConnectedOutports().begin(),
                                 self().getConnectedOutports().end()},
@@ -156,7 +160,7 @@ public:
                                 self().getConnectedOutports().end()}};
     }
 
-    util::iter_range<const_iterator_changed> changedAndData() const {
+    util::iter_range<const_iterator_changed> changedAndData() const noexcept {
         return util::iter_range<const_iterator_changed>{
             const_iterator_changed{self().getConnectedOutports().begin(),
                                    self().getConnectedOutports().end(), self()},
@@ -164,11 +168,11 @@ public:
                                    self().getConnectedOutports().end(), self()}};
     }
 
-    const_iterator begin() const {
+    const_iterator begin() const noexcept {
         return const_iterator(self().getConnectedOutports().begin(),
                               self().getConnectedOutports().end());
     }
-    const_iterator end() const {
+    const_iterator end() const noexcept {
         return const_iterator(self().getConnectedOutports().end(),
                               self().getConnectedOutports().end());
     }
@@ -194,6 +198,7 @@ public:
         using PortIter = typename std::vector<Outport*>::const_iterator;
 
     public:
+        const_iterator_base() = default;
         explicit const_iterator_base(PortIter pIterBegin) : pIter_(pIterBegin) {}
         self& operator++() {
             ++pIter_;
@@ -232,6 +237,7 @@ public:
         using pointer = std::shared_ptr<const T>;
         using reference = std::shared_ptr<const T>;
 
+        const_iterator() = default;
         const_iterator(PortIter pIterBegin) : Base(pIterBegin) {}
 
         std::shared_ptr<const T> operator*() const {
@@ -253,6 +259,7 @@ public:
         using reference = std::pair<Outport*, std::shared_ptr<const T>>;
         using pointer = void;
 
+        const_iterator_port() = default;
         const_iterator_port(PortIter pIterBegin) : Base(pIterBegin) {}
 
         reference operator*() const {
@@ -271,6 +278,7 @@ public:
         using reference = std::pair<bool, std::shared_ptr<const T>>;
         using pointer = void;
 
+        const_iterator_changed() = default;
         const_iterator_changed(PortIter pIterBegin, const InportType& inport)
             : Base(pIterBegin), inport{inport} {}
 
@@ -282,24 +290,28 @@ public:
         const InportType& inport;
     };
 
-    util::iter_range<const_iterator_port> outportAndData() const {
+    util::iter_range<const_iterator_port> outportAndData() const noexcept {
         return util::iter_range<const_iterator_port>{
             const_iterator_port{self().getConnectedOutports().begin()},
             const_iterator_port{self().getConnectedOutports().end()}};
     }
 
-    util::iter_range<const_iterator_changed> changedAndData() const {
+    util::iter_range<const_iterator_changed> changedAndData() const noexcept {
         return util::iter_range<const_iterator_changed>{
             const_iterator_changed{self().getConnectedOutports().begin(), self()},
             const_iterator_changed{self().getConnectedOutports().end(), self()}};
     }
 
-    const_iterator begin() const { return const_iterator(self().getConnectedOutports().begin()); }
-    const_iterator end() const { return const_iterator(self().getConnectedOutports().end()); }
+    const_iterator begin() const noexcept {
+        return const_iterator(self().getConnectedOutports().begin());
+    }
+    const_iterator end() const noexcept {
+        return const_iterator(self().getConnectedOutports().end());
+    }
 
 private:
-    InportType& self() { return static_cast<InportType&>(*this); }
-    const InportType& self() const { return static_cast<const InportType&>(*this); }
+    InportType& self() noexcept { return static_cast<InportType&>(*this); }
+    const InportType& self() const noexcept { return static_cast<const InportType&>(*this); }
 };
 
 #endif
