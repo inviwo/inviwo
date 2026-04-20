@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,9 +50,9 @@ namespace inviwo {
 
 TEST(UtfUtils, CodePointsAdaptorUtf8FunctionCall) {
     // ASCII: each char is one code point
-    std::string_view ascii = "Hello";
+    const std::string_view ascii = "Hello";
     auto cps = detail::codePoints(ascii);
-    std::vector<int32_t> result(cps.begin(), cps.end());
+    const std::vector<int32_t> result(cps.begin(), cps.end());
     EXPECT_EQ(result, (std::vector<int32_t>{'H', 'e', 'l', 'l', 'o'}));
 }
 
@@ -60,14 +60,14 @@ TEST(UtfUtils, CodePointsAdaptorUtf8PipeSyntax) {
     // Pipe syntax, multi-byte: "é" = U+00E9
     std::string_view u8str = "caf\xC3\xA9";  // "café"
     std::vector<int32_t> result;
-    for (int32_t cp : u8str | detail::codePoints) result.push_back(cp);
+    for (const int32_t cp : u8str | detail::codePoints) result.push_back(cp);
     EXPECT_EQ(result, (std::vector<int32_t>{'c', 'a', 'f', 0x00E9}));
 }
 
 TEST(UtfUtils, CodePointsAdaptorWChar) {
     std::wstring_view wstr = L"caf\u00E9";
     std::vector<int32_t> result;
-    for (int32_t cp : wstr | detail::codePoints) result.push_back(cp);
+    for (const int32_t cp : wstr | detail::codePoints) result.push_back(cp);
     EXPECT_EQ(result, (std::vector<int32_t>{'c', 'a', 'f', 0x00E9}));
 }
 
@@ -91,7 +91,7 @@ TEST(UtfUtils, CodePointsWithViewsTransform) {
     std::string_view u8str = "ABC";
     std::vector<int32_t> lower;
     for (auto cp : u8str | detail::codePoints | std::views::transform([](int32_t c) -> int32_t {
-                       return std::towlower(static_cast<std::wint_t>(c));
+                       return detail::codePointToLower(c);
                    })) {
         lower.push_back(cp);
     }
@@ -179,7 +179,7 @@ TEST(UtfUtils, CaseInsensitiveEqualImplicitConversions) {
     // All of these should compile and work via implicit conversion to string_view/wstring_view
     EXPECT_TRUE(eq("hello", "HELLO"));  // const char* vs const char*
     const auto hello = std::string_view{"hello"};
-    EXPECT_TRUE(eq(hello, ("HELLO")));      // string vs const char*
+    EXPECT_TRUE(eq(hello, ("HELLO")));     // string vs const char*
     EXPECT_TRUE(eq("hello", (L"HELLO")));  // const char* vs const wchar_t*
     const auto whello = std::wstring{L"HELLO"};
     EXPECT_TRUE(eq(hello, whello));      // string vs wstring

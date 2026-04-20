@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 #include <cstdint>
 #include <string_view>
 #include <ranges>
+#include <algorithm>
 #include <iterator>
 #include <concepts>
 
@@ -145,10 +146,10 @@ struct CodePointsAdaptor : std::ranges::range_adaptor_closure<CodePointsAdaptor>
 
 inline constexpr CodePointsAdaptor codePoints{};
 
-inline constexpr int codePointToLower(int cp) noexcept {
+constexpr int codePointToLower(int cp) noexcept {
     return cp > std::numeric_limits<unsigned char>::max() ? cp : std::tolower(cp);
 }
-inline constexpr int noTransform(int cp) noexcept { return cp; }
+constexpr int noTransform(int cp) noexcept { return cp; }
 
 template <StringRange A, StringRange B, typename Transform>
 constexpr auto stringCompare(A&& a, B&& b, Transform transform) {
