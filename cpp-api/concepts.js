@@ -23,10 +23,13 @@ var concepts =
         [ "RangeOfVec", "conceptinviwo_1_1util_1_1RangeOfVec.html", null ],
         [ "Vec2D", "conceptinviwo_1_1util_1_1Vec2D.html", null ]
       ] ],
+      [ "CharRange", "conceptinviwo_1_1CharRange.html", null ],
       [ "DataType", "conceptinviwo_1_1DataType.html", null ],
       [ "Gettable", "conceptinviwo_1_1Gettable.html", null ],
       [ "JSONConvertable", "conceptinviwo_1_1JSONConvertable.html", null ],
       [ "RepresentationOf", "conceptinviwo_1_1RepresentationOf.html", null ],
-      [ "Settable", "conceptinviwo_1_1Settable.html", null ]
+      [ "Settable", "conceptinviwo_1_1Settable.html", null ],
+      [ "StringRange", "conceptinviwo_1_1StringRange.html", null ],
+      [ "WCharRange", "conceptinviwo_1_1WCharRange.html", null ]
     ] ]
 ];

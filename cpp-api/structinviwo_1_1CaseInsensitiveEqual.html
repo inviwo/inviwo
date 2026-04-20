@@ -94,10 +94,10 @@ $(function(){initNavTree('structinviwo_1_1CaseInsensitiveEqual.html','','structi
 </div><!--header-->
 <div class="contents">
 
-<p>Case insensitive equal comparison of two strings to be used for template arguments.  
+<p>Case-insensitive equality comparison. Supports all combinations of std::string_view (UTF-8) and std::wstring_view. Uses utf8cpp to correctly decode multi-byte UTF-8 sequences.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;inviwo/core/util/stringconversion.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/utfutils.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -106,13 +106,19 @@ using&#160;</td><td class="memItemRight"><b>is_transparent</b> = int</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a820093b9046d624167194a52336ff2a5" id="r_a820093b9046d624167194a52336ff2a5"><td class="memItemLeft"><a id="a820093b9046d624167194a52336ff2a5" name="a820093b9046d624167194a52336ff2a5"></a>
-bool&#160;</td><td class="memItemRight"><b>operator()</b> (std::string_view l, std::string_view r) const</td></tr>
+<tr class="memitem:a1e16f86a118fc83842dc78eb8c25f60c" id="r_a1e16f86a118fc83842dc78eb8c25f60c"><td class="memItemLeft"><a id="a1e16f86a118fc83842dc78eb8c25f60c" name="a1e16f86a118fc83842dc78eb8c25f60c"></a>
+constexpr bool&#160;</td><td class="memItemRight"><b>operator()</b> (std::string_view a, std::string_view b) const</td></tr>
+<tr class="memitem:a474be27c9a05cff91fb72eb62d5e0d06" id="r_a474be27c9a05cff91fb72eb62d5e0d06"><td class="memItemLeft"><a id="a474be27c9a05cff91fb72eb62d5e0d06" name="a474be27c9a05cff91fb72eb62d5e0d06"></a>
+constexpr bool&#160;</td><td class="memItemRight"><b>operator()</b> (std::string_view a, std::wstring_view b) const</td></tr>
+<tr class="memitem:a65b753b865a32c518a159463f205264e" id="r_a65b753b865a32c518a159463f205264e"><td class="memItemLeft"><a id="a65b753b865a32c518a159463f205264e" name="a65b753b865a32c518a159463f205264e"></a>
+constexpr bool&#160;</td><td class="memItemRight"><b>operator()</b> (std::wstring_view a, std::string_view b) const</td></tr>
+<tr class="memitem:a18f2ee6a26df1e82b11d66133ee81c72" id="r_a18f2ee6a26df1e82b11d66133ee81c72"><td class="memItemLeft"><a id="a18f2ee6a26df1e82b11d66133ee81c72" name="a18f2ee6a26df1e82b11d66133ee81c72"></a>
+constexpr bool&#160;</td><td class="memItemRight"><b>operator()</b> (std::wstring_view a, std::wstring_view b) const</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Case insensitive equal comparison of two strings to be used for template arguments. </p>
+<div class="textblock"><p>Case-insensitive equality comparison. Supports all combinations of std::string_view (UTF-8) and std::wstring_view. Uses utf8cpp to correctly decode multi-byte UTF-8 sequences. </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/inviwo/core/util/<b>stringconversion.h</b></li>
+<li>include/inviwo/core/util/<b>utfutils.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

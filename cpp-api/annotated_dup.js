@@ -168,6 +168,7 @@ var annotated_dup =
       [ "detail", null, [
         [ "begin_tag_t", "structinviwo_1_1detail_1_1begin__tag__t.html", null ],
         [ "Build", "classinviwo_1_1detail_1_1Build.html", null ],
+        [ "CodePointsAdaptor", "structinviwo_1_1detail_1_1CodePointsAdaptor.html", null ],
         [ "ColorConverter", "structinviwo_1_1detail_1_1ColorConverter.html", null ],
         [ "ColorConverter&lt; dvec3 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01dvec3_01_4.html", null ],
         [ "ColorConverter&lt; dvec4 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01dvec4_01_4.html", null ],
@@ -195,6 +196,8 @@ var annotated_dup =
         [ "static_size_t", "structinviwo_1_1detail_1_1static__size__t.html", null ],
         [ "static_size_t&lt; char[N]&gt;", "structinviwo_1_1detail_1_1static__size__t_3_01char_0fN_0e_4.html", null ],
         [ "static_size_t&lt; StaticString&lt; N &gt; &gt;", "structinviwo_1_1detail_1_1static__size__t_3_01StaticString_3_01N_01_4_01_4.html", null ],
+        [ "Utf8CodePointIterator", "classinviwo_1_1detail_1_1Utf8CodePointIterator.html", null ],
+        [ "Utf8CodePointRange", "classinviwo_1_1detail_1_1Utf8CodePointRange.html", null ],
         [ "VolumeConf", "structinviwo_1_1detail_1_1VolumeConf.html", null ]
       ] ],
       [ "dispatching", "namespaceinviwo_1_1dispatching.html", [
@@ -639,6 +642,8 @@ var annotated_dup =
       [ "CaseInsensitiveEqual", "structinviwo_1_1CaseInsensitiveEqual.html", null ],
       [ "CaseInsensitiveLess", "structinviwo_1_1CaseInsensitiveLess.html", null ],
       [ "CaseInsensitiveStringHash", "structinviwo_1_1CaseInsensitiveStringHash.html", null ],
+      [ "CaseSensitiveEqual", "structinviwo_1_1CaseSensitiveEqual.html", null ],
+      [ "CaseSensitiveLess", "structinviwo_1_1CaseSensitiveLess.html", null ],
       [ "CategoricalColumn", "classinviwo_1_1CategoricalColumn.html", "classinviwo_1_1CategoricalColumn" ],
       [ "CefImageConverter", "classinviwo_1_1CefImageConverter.html", "classinviwo_1_1CefImageConverter" ],
       [ "CEFInteractionHandler", "classinviwo_1_1CEFInteractionHandler.html", null ],

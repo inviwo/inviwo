@@ -94,10 +94,10 @@ $(function(){initNavTree('structinviwo_1_1CaseInsensitiveLess.html','','structin
 </div><!--header-->
 <div class="contents">
 
-<p>Case insensitive less comparison of two strings to be used for template arguments.  
+<p>Case-insensitive less-than comparison. Suitable for use as comparator in std::map, std::set etc.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;inviwo/core/util/stringconversion.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/utfutils.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -106,13 +106,19 @@ using&#160;</td><td class="memItemRight"><b>is_transparent</b> = int</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7183cb2af6b456bc675e9b013d4e3d71" id="r_a7183cb2af6b456bc675e9b013d4e3d71"><td class="memItemLeft"><a id="a7183cb2af6b456bc675e9b013d4e3d71" name="a7183cb2af6b456bc675e9b013d4e3d71"></a>
-bool&#160;</td><td class="memItemRight"><b>operator()</b> (std::string_view l, std::string_view r) const</td></tr>
+<tr class="memitem:a57e05903eb63143fb56eb3afa1d71bbc" id="r_a57e05903eb63143fb56eb3afa1d71bbc"><td class="memItemLeft"><a id="a57e05903eb63143fb56eb3afa1d71bbc" name="a57e05903eb63143fb56eb3afa1d71bbc"></a>
+constexpr bool&#160;</td><td class="memItemRight"><b>operator()</b> (std::string_view a, std::string_view b) const</td></tr>
+<tr class="memitem:add3e1ce18f5cb03ff25853acb99b5399" id="r_add3e1ce18f5cb03ff25853acb99b5399"><td class="memItemLeft"><a id="add3e1ce18f5cb03ff25853acb99b5399" name="add3e1ce18f5cb03ff25853acb99b5399"></a>
+constexpr bool&#160;</td><td class="memItemRight"><b>operator()</b> (std::string_view a, std::wstring_view b) const</td></tr>
+<tr class="memitem:aaff50a16f1dca967b1549bbcd5a592b3" id="r_aaff50a16f1dca967b1549bbcd5a592b3"><td class="memItemLeft"><a id="aaff50a16f1dca967b1549bbcd5a592b3" name="aaff50a16f1dca967b1549bbcd5a592b3"></a>
+constexpr bool&#160;</td><td class="memItemRight"><b>operator()</b> (std::wstring_view a, std::string_view b) const</td></tr>
+<tr class="memitem:a6751247c2792fccf88edd72fa65d0b5d" id="r_a6751247c2792fccf88edd72fa65d0b5d"><td class="memItemLeft"><a id="a6751247c2792fccf88edd72fa65d0b5d" name="a6751247c2792fccf88edd72fa65d0b5d"></a>
+constexpr bool&#160;</td><td class="memItemRight"><b>operator()</b> (std::wstring_view a, std::wstring_view b) const</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Case insensitive less comparison of two strings to be used for template arguments. </p>
+<div class="textblock"><p>Case-insensitive less-than comparison. Suitable for use as comparator in std::map, std::set etc. </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/inviwo/core/util/<b>stringconversion.h</b></li>
+<li>include/inviwo/core/util/<b>utfutils.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

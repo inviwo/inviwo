@@ -1,5 +1,6 @@
 var NAVTREEINDEX26 =
 {
+"classinviwo_1_1animation_1_1SequenceEditorFactory.html":[2,0,0,0,69],
 "classinviwo_1_1animation_1_1SequenceEditorFactory.html":[4,0,1,2,70],
 "classinviwo_1_1animation_1_1SequenceEditorFactoryObject.html":[2,0,0,0,70],
 "classinviwo_1_1animation_1_1SequenceEditorFactoryObject.html":[4,0,1,2,71],
@@ -91,15 +92,17 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1colorbrewer_1_1ColorBrewerException.html":[4,0,1,6,0],
 "classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html":[2,0,0,4,1],
 "classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html":[4,0,1,6,1],
-"classinviwo_1_1concat__view.html":[2,0,0,163],
-"classinviwo_1_1concat__view.html":[4,0,1,172],
+"classinviwo_1_1concat__view.html":[2,0,0,165],
+"classinviwo_1_1concat__view.html":[4,0,1,174],
 "classinviwo_1_1detail_1_1Build.html":[4,0,1,11,1],
-"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,11,20],
-"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01DataSequence_3_01T_01_4_01_4.html":[4,0,1,11,21],
-"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html":[4,0,1,11,25],
-"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,1,11,22],
-"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,1,11,23],
-"classinviwo_1_1detail_1_1hasProcessorInfo.html":[4,0,1,11,15],
+"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,11,21],
+"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01DataSequence_3_01T_01_4_01_4.html":[4,0,1,11,22],
+"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html":[4,0,1,11,26],
+"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,1,11,23],
+"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,1,11,24],
+"classinviwo_1_1detail_1_1Utf8CodePointIterator.html":[4,0,1,11,30],
+"classinviwo_1_1detail_1_1Utf8CodePointRange.html":[4,0,1,11,31],
+"classinviwo_1_1detail_1_1hasProcessorInfo.html":[4,0,1,11,16],
 "classinviwo_1_1dispatching_1_1DispatchException.html":[2,0,0,8,1],
 "classinviwo_1_1dispatching_1_1DispatchException.html":[4,0,1,12,1],
 "classinviwo_1_1ffmpeg_1_1Codec.html":[4,0,1,13,0],
@@ -246,8 +249,5 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1CategoricalAxisProperty.html":[4,0,1,22,14],
 "classinviwo_1_1plot_1_1CategoricalAxisProperty.html#a9873271be8a752d3c892a4490d68ea8f":[2,0,0,15,13,0],
 "classinviwo_1_1plot_1_1CategoricalAxisProperty.html#a9873271be8a752d3c892a4490d68ea8f":[4,0,1,22,14,0],
-"classinviwo_1_1plot_1_1ColorScaleLegend.html":[2,0,0,15,14],
-"classinviwo_1_1plot_1_1ColorScaleLegend.html":[4,0,1,22,15],
-"classinviwo_1_1plot_1_1ColorScaleLegend.html#a0175fcb6e1489583d3cc08cbb235d000":[2,0,0,15,14,0],
-"classinviwo_1_1plot_1_1ColorScaleLegend.html#a0175fcb6e1489583d3cc08cbb235d000":[4,0,1,22,15,0]
+"classinviwo_1_1plot_1_1ColorScaleLegend.html":[2,0,0,15,14]
 };

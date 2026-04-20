@@ -242,11 +242,15 @@ Classes</h2></td></tr>
 <tr class="memitem:CanvasWithPropertiesProcessorWidgetQt" id="r_CanvasWithPropertiesProcessorWidgetQt"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1CanvasWithPropertiesProcessorWidgetQt.html">CanvasWithPropertiesProcessorWidgetQt</a></td></tr>
 <tr class="memitem:Capabilities" id="r_Capabilities"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Capabilities.html">Capabilities</a></td></tr>
 <tr class="memitem:CaseInsensitiveEqual" id="r_CaseInsensitiveEqual"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1CaseInsensitiveEqual.html">CaseInsensitiveEqual</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case insensitive equal comparison of two strings to be used for template arguments.  <a href="structinviwo_1_1CaseInsensitiveEqual.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case-insensitive equality comparison. Supports all combinations of std::string_view (UTF-8) and std::wstring_view. Uses utf8cpp to correctly decode multi-byte UTF-8 sequences.  <a href="structinviwo_1_1CaseInsensitiveEqual.html#details">More...</a><br /></td></tr>
 <tr class="memitem:CaseInsensitiveLess" id="r_CaseInsensitiveLess"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1CaseInsensitiveLess.html">CaseInsensitiveLess</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case insensitive less comparison of two strings to be used for template arguments.  <a href="structinviwo_1_1CaseInsensitiveLess.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case-insensitive less-than comparison. Suitable for use as comparator in std::map, std::set etc.  <a href="structinviwo_1_1CaseInsensitiveLess.html#details">More...</a><br /></td></tr>
 <tr class="memitem:CaseInsensitiveStringHash" id="r_CaseInsensitiveStringHash"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1CaseInsensitiveStringHash.html">CaseInsensitiveStringHash</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transparent string case insensitive hashing for use in unordered containers with string keys.  <a href="structinviwo_1_1CaseInsensitiveStringHash.html#details">More...</a><br /></td></tr>
+<tr class="memitem:CaseSensitiveEqual" id="r_CaseSensitiveEqual"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1CaseSensitiveEqual.html">CaseSensitiveEqual</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case-sensitive equality comparison. Supports all combinations of std::string_view (UTF-8) and std::wstring_view.  <a href="structinviwo_1_1CaseSensitiveEqual.html#details">More...</a><br /></td></tr>
+<tr class="memitem:CaseSensitiveLess" id="r_CaseSensitiveLess"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1CaseSensitiveLess.html">CaseSensitiveLess</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case-sensitive less-than comparison. Suitable for use as comparator in ordered containers.  <a href="structinviwo_1_1CaseSensitiveLess.html#details">More...</a><br /></td></tr>
 <tr class="memitem:CategoricalColumn" id="r_CategoricalColumn"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1CategoricalColumn.html">CategoricalColumn</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialized data column representing categorical values, i.e. strings. Categorical values are internally mapped to a number representation.  <a href="classinviwo_1_1CategoricalColumn.html#details">More...</a><br /></td></tr>
 <tr class="memitem:CefImageConverter" id="r_CefImageConverter"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1CefImageConverter.html">CefImageConverter</a></td></tr>
@@ -1745,11 +1749,14 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-concepts" class="groupheader"><a id="concepts" name="concepts"></a>
 Concepts</h2></td></tr>
+<tr class="memitem:CharRange" id="r_CharRange"><td class="memItemLeft">concept &#160;</td><td class="memItemRight"><a class="el" href="conceptinviwo_1_1CharRange.html">CharRange</a></td></tr>
 <tr class="memitem:DataType" id="r_DataType"><td class="memItemLeft">concept &#160;</td><td class="memItemRight"><a class="el" href="conceptinviwo_1_1DataType.html">DataType</a></td></tr>
 <tr class="memitem:Gettable" id="r_Gettable"><td class="memItemLeft">concept &#160;</td><td class="memItemRight"><a class="el" href="conceptinviwo_1_1Gettable.html">Gettable</a></td></tr>
 <tr class="memitem:JSONConvertable" id="r_JSONConvertable"><td class="memItemLeft">concept &#160;</td><td class="memItemRight"><a class="el" href="conceptinviwo_1_1JSONConvertable.html">JSONConvertable</a></td></tr>
 <tr class="memitem:RepresentationOf" id="r_RepresentationOf"><td class="memItemLeft">concept &#160;</td><td class="memItemRight"><a class="el" href="conceptinviwo_1_1RepresentationOf.html">RepresentationOf</a></td></tr>
 <tr class="memitem:Settable" id="r_Settable"><td class="memItemLeft">concept &#160;</td><td class="memItemRight"><a class="el" href="conceptinviwo_1_1Settable.html">Settable</a></td></tr>
+<tr class="memitem:StringRange" id="r_StringRange"><td class="memItemLeft">concept &#160;</td><td class="memItemRight"><a class="el" href="conceptinviwo_1_1StringRange.html">StringRange</a></td></tr>
+<tr class="memitem:WCharRange" id="r_WCharRange"><td class="memItemLeft">concept &#160;</td><td class="memItemRight"><a class="el" href="conceptinviwo_1_1WCharRange.html">WCharRange</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>

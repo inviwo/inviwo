@@ -177,6 +177,8 @@ var hierarchy =
     [ "inviwo::CaseInsensitiveEqual", "structinviwo_1_1CaseInsensitiveEqual.html", null ],
     [ "inviwo::CaseInsensitiveLess", "structinviwo_1_1CaseInsensitiveLess.html", null ],
     [ "inviwo::CaseInsensitiveStringHash", "structinviwo_1_1CaseInsensitiveStringHash.html", null ],
+    [ "inviwo::CaseSensitiveEqual", "structinviwo_1_1CaseSensitiveEqual.html", null ],
+    [ "inviwo::CaseSensitiveLess", "structinviwo_1_1CaseSensitiveLess.html", null ],
     [ "CefApp", null, [
       [ "inviwo::WebBrowserApp", "classinviwo_1_1WebBrowserApp.html", null ]
     ] ],
@@ -3074,6 +3076,9 @@ var hierarchy =
     [ "inviwo::util::RandomCubicalPointGeneration", "structinviwo_1_1util_1_1RandomCubicalPointGeneration.html", null ],
     [ "inviwo::util::detail::RandomNumberRangeValues", "structinviwo_1_1util_1_1detail_1_1RandomNumberRangeValues.html", null ],
     [ "inviwo::util::RandomSphericalPointGeneration", "structinviwo_1_1util_1_1RandomSphericalPointGeneration.html", null ],
+    [ "std::ranges::range_adaptor_closure", null, [
+      [ "inviwo::detail::CodePointsAdaptor", "structinviwo_1_1detail_1_1CodePointsAdaptor.html", null ]
+    ] ],
     [ "inviwo::utilgl::RangeConversionMap", "structinviwo_1_1utilgl_1_1RangeConversionMap.html", null ],
     [ "std::rank", null, [
       [ "inviwo::util::rank< const T >", "structinviwo_1_1util_1_1rank_3_01const_01T_01_4.html", null ],
@@ -3695,6 +3700,7 @@ var hierarchy =
     [ "inviwo::UnitDesc", "structinviwo_1_1UnitDesc.html", null ],
     [ "inviwo::OpacityOptimization::Units", "structinviwo_1_1OpacityOptimization_1_1Units.html", null ],
     [ "inviwo::command::Update", "structinviwo_1_1command_1_1Update.html", null ],
+    [ "inviwo::detail::Utf8CodePointIterator&lt; Iter, Sentinel &gt;", "classinviwo_1_1detail_1_1Utf8CodePointIterator.html", null ],
     [ "inviwo::util::value_type&lt; T &gt;", "structinviwo_1_1util_1_1value__type.html", null ],
     [ "inviwo::ValueWrapper&lt; T &gt;", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper&lt; TransferFunction &gt;", "structinviwo_1_1ValueWrapper_3_01TransferFunction_01_4.html", null ],
@@ -3706,7 +3712,8 @@ var hierarchy =
     ] ],
     [ "inviwo::ViewManager::View", "structinviwo_1_1ViewManager_1_1View.html", null ],
     [ "std::ranges::view_interface", null, [
-      [ "inviwo::concat_view< Rs >", "classinviwo_1_1concat__view.html", null ]
+      [ "inviwo::concat_view< Rs >", "classinviwo_1_1concat__view.html", null ],
+      [ "inviwo::detail::Utf8CodePointRange< View >", "classinviwo_1_1detail_1_1Utf8CodePointRange.html", null ]
     ] ],
     [ "inviwo::ViewManager", "classinviwo_1_1ViewManager.html", null ],
     [ "inviwo::utilgl::Viewport", "structinviwo_1_1utilgl_1_1Viewport.html", null ],

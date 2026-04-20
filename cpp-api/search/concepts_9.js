@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['vec2d_0',['Vec2D',['../conceptinviwo_1_1util_1_1Vec2D.html',1,'inviwo::util']]]
+  ['scalar_0',['Scalar',['../conceptinviwo_1_1animation_1_1detail_1_1Scalar.html',1,'inviwo::animation::detail']]],
+  ['settable_1',['Settable',['../conceptinviwo_1_1Settable.html',1,'inviwo']]],
+  ['stringrange_2',['StringRange',['../conceptinviwo_1_1StringRange.html',1,'inviwo']]]
 ];

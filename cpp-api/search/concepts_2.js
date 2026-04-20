@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hasramrepresentation_0',['hasRAMrepresentation',['../conceptinviwo_1_1util_1_1hasRAMrepresentation.html',1,'inviwo::util']]]
+  ['gettable_0',['Gettable',['../conceptinviwo_1_1Gettable.html',1,'inviwo']]]
 ];
