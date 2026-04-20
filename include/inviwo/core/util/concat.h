@@ -146,7 +146,7 @@ class concat_view : public std::ranges::view_interface<concat_view<Rs...>> {
         using value_type = detail::concat_value_t<Rs...>;
         using reference = Ref;
         using difference_type = std::ptrdiff_t;
-        using iterator_category = detail::concat_iterator_category_t<Rs...>;
+        using iterator_category = std::forward_iterator_tag;
 
         Iterator() = default;
 

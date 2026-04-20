@@ -97,7 +97,7 @@ class Git:
 
     def date(self, path):
         out, err = self.run(path, ["log", "-n1", "--pretty=format:%cI"])
-        return datetime.datetime.strptime(out[:-6], "%Y-%m-%dT%H:%M:%S")
+        return datetime.datetime.fromisoformat(out)
 
     def author(self, path):
         out, err = self.run(path, ["log", "-n1", "--pretty=format:%cn"])

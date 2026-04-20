@@ -435,6 +435,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unicodefloatingpoint.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unindent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/utfutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesampler.h
@@ -890,6 +891,7 @@ set(TEST_FILES
     tests/unittests/tfprimitiveset-test.cpp
     tests/unittests/typedmesh-test.cpp
     tests/unittests/unitsystem-test.cpp
+    tests/unittests/utfutils-test.cpp
     tests/unittests/utilities-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/zip-test.cpp
@@ -994,10 +996,10 @@ target_link_libraries(inviwo-core
         llnl-units::units
         FastFloat::fast_float
         curlcpp::curlcpp
+        utf8cpp::utf8cpp
     PRIVATE
         roaring::roaring
         md4c::md4c
-        utf8cpp::utf8cpp
         BZip2::BZip2
         ZLIB::ZLIB
         liblzma::liblzma
