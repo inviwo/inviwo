@@ -89,13 +89,13 @@ void GLFWWindowHandler::provideExternalContext(GLFWwindow* sharedContext) {
 GLFWwindow* GLFWWindowHandler::sharedContext() { return sharedContext_; }
 
 GLFWwindow* GLFWWindowHandler::createWindow(const std::string& title, uvec2 dimensions) {
-    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
 #ifdef __APPLE__
     if (!sharedContext_) {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     }
 #endif
@@ -124,7 +124,7 @@ CanvasGLFW::CanvasGLFW(const std::string& title, uvec2 dimensions)
 
     // register callbacks
     glfwSetWindowCloseCallback(glWindow_, [](GLFWwindow* window) {
-        glfwSetWindowShouldClose(window, GL_FALSE);
+        glfwSetWindowShouldClose(window, GLFW_FALSE);
         getCanvasGLFW(window)->setVisible(false);
     });
     glfwSetWindowSizeCallback(glWindow_, [](GLFWwindow* window, int width, int height) {

@@ -162,13 +162,13 @@ ivw_add_unittest(${TEST_FILES})
 
 # Create module
 ivw_create_module(
-    PACKAGES GLEW OpenGL
+    PACKAGES glbinding OpenGL
     FILES ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES}
 )
 
-find_package(GLEW REQUIRED)
-ivw_vcpkg_install(glew MODULE OpenGL)
-target_link_libraries(inviwo-module-opengl PUBLIC GLEW::GLEW)
+find_package(glbinding REQUIRED)
+ivw_vcpkg_install(glbinding MODULE OpenGL)
+target_link_libraries(inviwo-module-opengl PUBLIC glbinding::glbinding glbinding::glbinding-aux)
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(inviwo-module-opengl PUBLIC ${OPENGL_LIBRARIES})

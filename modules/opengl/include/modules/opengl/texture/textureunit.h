@@ -52,7 +52,7 @@ public:
     TextureUnit(TextureUnit&& rhs) noexcept;
     TextureUnit& operator=(TextureUnit&& that) noexcept;
 
-    GLint getEnum() const { return unitEnum_; }
+    GLenum getEnum() const { return unitEnum_; }
     GLint getUnitNumber() const { return unitNumber_; }
 
     void activate() const { glActiveTexture(unitEnum_); }
@@ -62,7 +62,7 @@ private:
     static std::array<std::atomic_bool, 128> textureUnits_;
     static size_t maxTextureImageUnits();
 
-    GLint unitEnum_;
+    GLenum unitEnum_;
     GLint unitNumber_;
 };
 

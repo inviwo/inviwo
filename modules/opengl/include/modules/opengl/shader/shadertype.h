@@ -72,7 +72,7 @@ public:
     static const ShaderType Compute;
 
 private:
-    GLenum type_ = 0;
+    GLenum type_ = GLenum{0};
 };
 
 constexpr std::string_view format_as(ShaderType type) { return type.name(); }

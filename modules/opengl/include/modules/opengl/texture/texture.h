@@ -71,7 +71,7 @@ class IVW_MODULE_OPENGL_API Texture : public TextureBase, public Observable<Text
 public:
     Texture(GLenum target, GLFormat glFormat, GLenum filtering, const SwizzleMask& swizzleMask,
             std::span<const GLenum> wrapping, GLint level);
-    Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType, GLenum filtering,
+    Texture(GLenum target, GLenum format, GLenum internalformat, GLenum dataType, GLenum filtering,
             const SwizzleMask& swizzleMask, std::span<const GLenum> wrapping, GLint level);
     Texture(const Texture& other);
     Texture(Texture&& other);

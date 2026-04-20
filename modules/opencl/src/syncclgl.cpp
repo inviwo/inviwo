@@ -73,7 +73,7 @@ SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
 
         // Get sync point from OpenGL to be used when acquiring objects
         // Note that glFenceSync is supported since it exit in OpenGl 3.2 and higher
-        glFenceSync_ = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+        glFenceSync_ = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
     } else {
         // clCreateEventFromGLsync not supported.
         // We need to use a slower synchronization
@@ -145,9 +145,10 @@ void SyncCLGL::releaseAllGLObjects(const std::vector<cl::Event>* waitForEvents, 
             cl::Event* releaseEventPtr = event != nullptr ? event : &releaseEvent;
             queue_.enqueueReleaseGLObjects(&syncedObjects_, waitForEvents, releaseEventPtr);
             // Synchronize OpenCL and OpenGL
-            GLsync clSync = glCreateSyncFromCLeventARB(context_(), (*releaseEventPtr)(), 0);
+            GLsync clSync =
+                glCreateSyncFromCLeventARB(context_(), (*releaseEventPtr)(), gl::UnusedMask{0});
             // without stalling CPU-thread:
-            glWaitSync(clSync, 0, GL_TIMEOUT_IGNORED);
+            glWaitSync(clSync, GL_UNUSED_BIT, GL_TIMEOUT_IGNORED);
         } else {
             queue_.enqueueReleaseGLObjects(&syncedObjects_, waitForEvents, event);
             queue_.finish();

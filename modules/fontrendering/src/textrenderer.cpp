@@ -348,7 +348,7 @@ std::tuple<utilgl::DepthMaskState, utilgl::GlBoolState, utilgl::BlendModeState, 
 TextRenderer::setupRenderState(std::shared_ptr<Texture2D> texture, std::optional<vec4> clearColor) {
     // disable depth test and writing depth
     utilgl::DepthMaskState depthMask(GL_FALSE);
-    utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
+    utilgl::GlBoolState depth(GL_DEPTH_TEST, false);
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::ActivateFBO fbo(fbo_);
 

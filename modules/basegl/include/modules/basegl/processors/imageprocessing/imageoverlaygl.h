@@ -66,8 +66,8 @@ class Outport;
 //    this will require the image dimensions of the source and the overlay
 class IVW_MODULE_BASEGL_API OverlayProperty : public CompositeProperty {
 public:
-    enum class Positioning { Relative, Absolute };
-    enum class BlendMode : GLint { Replace = GL_NONE, Over = GL_SRC_ALPHA };
+    enum class Positioning : std::uint8_t { Relative, Absolute };
+    enum class BlendMode : std::uint8_t { Replace, Over };
 
     OverlayProperty(std::string identifier, std::string displayName,
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -79,7 +79,7 @@ public:
     const ivec4& getViewport() const;
 
     BlendMode getBlendMode() const;
-    GLint getBlendModeGL() const;
+    GLenum getBlendModeGL() const;
 
 private:
     virtual void deserialize(Deserializer& d) override;

@@ -80,7 +80,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/texture2d.h>                     // IWYU pragma: keep
+#include <modules/opengl/texture/texture2d.h>  // IWYU pragma: keep
 
 #include <algorithm>
 #include <array>
@@ -363,16 +363,16 @@ void SSAO::initFramebuffers(int width, int height) {
 
 #if USE_AO_SPECIAL_BLUR
     GLenum formatAO = GL_RG16F;
-    GLint swizzle[4] = {GL_RED, GL_GREEN, GL_ZERO, GL_ZERO};
+    const std::array<GLenum, 4> swizzle{GL_RED, GL_GREEN, GL_ZERO, GL_ZERO};
 #else
     GLenum formatAO = GL_R8;
-    GLint swizzle[4] = {GL_RED, GL_RED, GL_RED, GL_RED};
+    const std::array<GLenum, 4> swizzle{GL_RED, GL_RED, GL_RED, GL_RED};
 #endif
 
     newTexture(textures_.hbaoResult);
     glBindTexture(GL_TEXTURE_2D, textures_.hbaoResult);
     glTexStorage2D(GL_TEXTURE_2D, 1, formatAO, width, height);
-    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
+    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle.data());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -380,7 +380,7 @@ void SSAO::initFramebuffers(int width, int height) {
     newTexture(textures_.hbaoBlur);
     glBindTexture(GL_TEXTURE_2D, textures_.hbaoBlur);
     glTexStorage2D(GL_TEXTURE_2D, 1, formatAO, width, height);
-    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
+    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle.data());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);

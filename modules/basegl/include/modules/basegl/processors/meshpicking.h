@@ -77,7 +77,7 @@ private:
     ImageInport imageInport_;
     ImageOutport outport_;
 
-    OptionPropertyInt cullFace_;
+    OptionProperty<GLenum> cullFace_;
 
     FloatVec3Property position_;
     FloatVec4Property highlightColor_;

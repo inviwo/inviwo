@@ -609,9 +609,9 @@ void ShaderObject::upload() {
 
 bool ShaderObject::isReady() const {
     if (id_ == 0) return false;
-    GLint res = GL_FALSE;
+    GLint res = 0;
     glGetShaderiv(id_, GL_COMPILE_STATUS, &res);
-    return res == GL_TRUE;
+    return res != 0;
 }
 
 void ShaderObject::compile() {

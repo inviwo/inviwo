@@ -470,7 +470,7 @@ void MeshRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixT
     const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
     const utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
 
-    const utilgl::CullFaceState culling([&showFace]() -> GLint {
+    const utilgl::CullFaceState culling([&showFace]() -> GLenum {
         if (!showFace[0] && showFace[1]) {
             return GL_FRONT;
         } else if (showFace[0] && !showFace[1]) {

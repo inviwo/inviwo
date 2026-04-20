@@ -29,7 +29,7 @@
 
 #include <modules/openglqt/hiddencanvasqt.h>
 
-// Ensure we only include Qt OpenGL stuff, no Glew OpenGL
+// Qt OpenGL includes
 #include <QApplication>
 #include <QCoreApplication>
 #include <QOffscreenSurface>
@@ -71,7 +71,7 @@ HiddenCanvasQt::~HiddenCanvasQt() {
 }
 
 void HiddenCanvasQt::createContext() { context_->create(); }
-void HiddenCanvasQt::initializeGLEW() { OpenGLCapabilities::initializeGLEW(); }
+void HiddenCanvasQt::initializeGL() { OpenGLCapabilities::initializeGL(); }
 
 void HiddenCanvasQt::update() {}
 void HiddenCanvasQt::activate() {
@@ -112,9 +112,9 @@ std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenQtCanvas() {
     // Wait for the context to be created
     auto newContext = res.get();
 
-    // Activate the context to initialize GLEW in this thread
+    // Activate the context to initialize GL in this thread
     newContext->activate();
-    newContext->initializeGLEW();
+    newContext->initializeGL();
 
     // Since the qt context has to be created on the main thread and moved to the background we need
     // to update the registered thread id to the correct one here

@@ -47,7 +47,7 @@ public:
               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
               GLenum wrapping = GL_CLAMP_TO_EDGE,
               GLint level = 0);
-    Texture1D(size_t width, GLint format, GLint internalFormat, GLenum dataType,
+    Texture1D(size_t width, GLenum format, GLenum internalFormat, GLenum dataType,
               GLenum filtering, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
               GLenum wrapping = GL_CLAMP_TO_EDGE,
               GLint level = 0);

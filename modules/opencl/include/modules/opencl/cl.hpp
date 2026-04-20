@@ -118,13 +118,13 @@
 #include <CL/cl_ext.h>
 #endif
 
-#include <GL/glew.h>
+#include <glbinding/gl/gl.h>
+using namespace gl; // NOLINT(google-build-using-namespace, google-global-names-in-headers)
 #if defined(__APPLE__) || defined(__MACOSX)
 #include <OpenGL/OpenGL.h>
 #include <OpenCL/opencl.h>
 #include <libkern/OSAtomic.h>
 #else
-#include <GL/gl.h>
 #include <CL/opencl.h>
 #endif // !__APPLE__
 
@@ -4190,7 +4190,7 @@ public:
         object_ = ::clCreateFromGLTexture(
             context(), 
             flags, 
-            target,
+            static_cast<int>(target),
             miplevel,
             texobj,
             &error);

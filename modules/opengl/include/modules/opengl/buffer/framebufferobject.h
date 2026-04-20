@@ -310,8 +310,12 @@ public:
     void setDrawBlit(bool set = true);
 
 private:
-    static GLuint enumToNumber(GLenum attachmentID) { return attachmentID - GL_COLOR_ATTACHMENT0; }
-    static GLenum numberToEnum(GLuint number) { return GL_COLOR_ATTACHMENT0 + number; }
+    static GLuint enumToNumber(GLenum attachmentID) {
+        return static_cast<GLuint>(attachmentID) - static_cast<GLuint>(GL_COLOR_ATTACHMENT0);
+    }
+    static GLenum numberToEnum(GLuint number) {
+        return static_cast<GLenum>(static_cast<GLuint>(GL_COLOR_ATTACHMENT0) + number);
+    }
 
     void registerAttachment(GLenum attachmentID, GLuint texId);
     void deregisterAttachment(GLenum attachmentID);

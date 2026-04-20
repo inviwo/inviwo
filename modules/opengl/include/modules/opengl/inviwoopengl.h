@@ -31,15 +31,39 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 
-#ifdef __APPLE__
-#define GLEW_NO_GLU
-#endif
-
 #include <string>
 #include <string_view>
 #include <typeinfo>
+#include <type_traits>
 
-#include <GL/glew.h>
+#include <glbinding/gl/gl.h>
+#include <glbinding/gl/extension.h>
+using namespace gl;  // NOLINT(google-build-using-namespace, google-global-names-in-headers)
+
+// Provide APIENTRY macro for callback signatures
+#ifndef APIENTRY
+#ifdef _WIN32
+#define APIENTRY __stdcall
+#else
+#define APIENTRY
+#endif
+#endif
+
+#include <fmt/format.h>
+
+/**
+ * fmt::formatter specialization for glbinding's GLenum enum class.
+ * glbinding uses strongly-typed enum classes instead of plain integers.
+ * This formatter enables direct use of GLenum in fmt::format, log messages, and exceptions
+ * by formatting it as its underlying unsigned int value.
+ */
+template <>
+struct fmt::formatter<gl::GLenum> : fmt::formatter<std::underlying_type_t<gl::GLenum>> {
+    auto format(gl::GLenum val, fmt::format_context& ctx) const {
+        return fmt::formatter<std::underlying_type_t<gl::GLenum>>::format(
+            static_cast<std::underlying_type_t<gl::GLenum>>(val), ctx);
+    }
+};
 
 namespace inviwo {
 

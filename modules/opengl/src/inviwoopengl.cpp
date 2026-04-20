@@ -32,8 +32,6 @@
 #include <inviwo/core/util/demangle.h>
 #include <inviwo/core/util/logcentral.h>
 
-#include <GL/glew.h>
-
 namespace inviwo {
 
 std::string_view getGLErrorString(GLenum err) {

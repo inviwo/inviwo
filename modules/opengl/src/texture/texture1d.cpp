@@ -50,7 +50,7 @@ Texture1D::Texture1D(size_t width, GLFormat glFormat, GLenum filtering,
               std::span<const GLenum, 1>(&wrapping, 1), level)
     , width_(width) {}
 
-Texture1D::Texture1D(size_t width, GLint format, GLint internalformat, GLenum dataType,
+Texture1D::Texture1D(size_t width, GLenum format, GLenum internalformat, GLenum dataType,
                      GLenum filtering, const SwizzleMask& swizzleMask, GLenum wrapping, GLint level)
     : Texture(GL_TEXTURE_1D, format, internalformat, dataType, filtering, swizzleMask,
               std::span<const GLenum, 1>(&wrapping, 1), level)
@@ -67,7 +67,7 @@ Texture1D::Texture1D(const Texture1D& rhs) : Texture(rhs), width_(rhs.width_) {
 
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
                            static_cast<GLsizei>(width_), 1, 1);
-        syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+        syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
     } else {  // Copy data through PBO
         loadFromPBO(&rhs);
     }
@@ -90,7 +90,7 @@ Texture1D& Texture1D::operator=(const Texture1D& rhs) {
 
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
                                0, static_cast<GLsizei>(rhs.width_), 1, 1);
-            syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+            syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, GL_UNUSED_BIT);
 
         } else {  // Copy data through PBO
             loadFromPBO(&rhs);

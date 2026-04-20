@@ -75,8 +75,8 @@ std::array<Wrapping, N> convertWrappingFromGL(const std::array<GLenum, N>& wrapp
  */
 struct IVW_MODULE_OPENGL_API TexParameter {
     TexParameter() = delete;
-    TexParameter(TexParameter const&) = delete;
-    TexParameter& operator=(TexParameter const& that) = delete;
+    TexParameter(const TexParameter&) = delete;
+    TexParameter& operator=(const TexParameter& that) = delete;
 
     TexParameter(const TextureUnit& unit, GLenum target, GLenum name, GLint value);
 
@@ -86,7 +86,7 @@ struct IVW_MODULE_OPENGL_API TexParameter {
     ~TexParameter();
 
 private:
-    GLint unit_;
+    GLenum unit_;
     GLenum target_;
     GLenum name_;
     int oldValue_;
@@ -98,8 +98,8 @@ private:
  */
 struct IVW_MODULE_OPENGL_API TexEnv {
     TexEnv() = delete;
-    TexEnv(TexEnv const&) = delete;
-    TexEnv& operator=(TexEnv const& that) = delete;
+    TexEnv(const TexEnv&) = delete;
+    TexEnv& operator=(const TexEnv& that) = delete;
 
     TexEnv(const TextureUnit& unit, GLenum target, GLenum name, GLint value);
 
@@ -109,7 +109,7 @@ struct IVW_MODULE_OPENGL_API TexEnv {
     ~TexEnv();
 
 private:
-    GLint unit_;
+    GLenum unit_;
     GLenum target_;
     GLenum name_;
     int oldValue_;
@@ -123,8 +123,8 @@ struct IVW_MODULE_OPENGL_API GlBoolState {
     GlBoolState(GLenum target, bool state);
 
     GlBoolState() = delete;
-    GlBoolState(GlBoolState const&) = delete;
-    GlBoolState& operator=(GlBoolState const& that) = delete;
+    GlBoolState(const GlBoolState&) = delete;
+    GlBoolState& operator=(const GlBoolState& that) = delete;
     GlBoolState(GlBoolState&& rhs);
     GlBoolState& operator=(GlBoolState&& that);
 
@@ -144,11 +144,11 @@ protected:
  * @see glCullFace, GL_CULL_FACE
  */
 struct IVW_MODULE_OPENGL_API CullFaceState : protected GlBoolState {
-    CullFaceState(GLint mode);
+    explicit CullFaceState(GLenum mode);
 
     CullFaceState() = delete;
-    CullFaceState(CullFaceState const&) = delete;
-    CullFaceState& operator=(CullFaceState const& that) = delete;
+    CullFaceState(const CullFaceState&) = delete;
+    CullFaceState& operator=(const CullFaceState& that) = delete;
     CullFaceState(CullFaceState&& rhs);
     CullFaceState& operator=(CullFaceState&& that);
 
@@ -171,8 +171,8 @@ struct IVW_MODULE_OPENGL_API PolygonModeState {
     PolygonModeState(GLenum mode, GLfloat lineWidth, GLfloat pointSize);
 
     PolygonModeState() = delete;
-    PolygonModeState(PolygonModeState const&) = delete;
-    PolygonModeState& operator=(PolygonModeState const& that) = delete;
+    PolygonModeState(const PolygonModeState&) = delete;
+    PolygonModeState& operator=(const PolygonModeState& that) = delete;
     PolygonModeState(PolygonModeState&& rhs);
     PolygonModeState& operator=(PolygonModeState&& that);
 
@@ -198,8 +198,8 @@ struct IVW_MODULE_OPENGL_API BlendModeState : protected GlBoolState {
     BlendModeState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GLenum dstAlpha);
 
     BlendModeState() = delete;
-    BlendModeState(BlendModeState const&) = delete;
-    BlendModeState& operator=(BlendModeState const& that) = delete;
+    BlendModeState(const BlendModeState&) = delete;
+    BlendModeState& operator=(const BlendModeState& that) = delete;
     BlendModeState(BlendModeState&& rhs);
     BlendModeState& operator=(BlendModeState&& that);
 
@@ -228,8 +228,8 @@ struct IVW_MODULE_OPENGL_API BlendModeEquationState : protected BlendModeState {
                            GLenum eqnRGB, GLenum eqnAlpha);
 
     BlendModeEquationState() = delete;
-    BlendModeEquationState(BlendModeEquationState const&) = delete;
-    BlendModeEquationState& operator=(BlendModeEquationState const& that) = delete;
+    BlendModeEquationState(const BlendModeEquationState&) = delete;
+    BlendModeEquationState& operator=(const BlendModeEquationState& that) = delete;
     BlendModeEquationState(BlendModeEquationState&& rhs);
     BlendModeEquationState& operator=(BlendModeEquationState&& that);
     ~BlendModeEquationState();
@@ -252,8 +252,8 @@ struct IVW_MODULE_OPENGL_API ClearColor {
     ClearColor(vec4 color);
 
     ClearColor() = delete;
-    ClearColor(ClearColor const&) = delete;
-    ClearColor& operator=(ClearColor const& that) = delete;
+    ClearColor(const ClearColor&) = delete;
+    ClearColor& operator=(const ClearColor& that) = delete;
     ClearColor(ClearColor&& rhs) = default;
     ClearColor& operator=(ClearColor&& that) = default;
     ~ClearColor();
@@ -270,8 +270,8 @@ struct IVW_MODULE_OPENGL_API ClearDepth {
     ClearDepth(float depth);
 
     ClearDepth() = delete;
-    ClearDepth(ClearDepth const&) = delete;
-    ClearDepth& operator=(ClearDepth const& that) = delete;
+    ClearDepth(const ClearDepth&) = delete;
+    ClearDepth& operator=(const ClearDepth& that) = delete;
     ClearDepth(ClearDepth&& rhs) = default;
     ClearDepth& operator=(ClearDepth&& that) = default;
     ~ClearDepth();
@@ -462,57 +462,60 @@ T passThrough(T x) {
     return x;
 }
 
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1) = &passThrough<T1>>
+/**
+ * @brief Policy-based RAII object for OpenGL state
+ *
+ * @tparam Policy A struct that provides:
+ *   - value_type: The type used for getting the state (e.g. GLint, GLfloat, GLboolean)
+ *   - setter_type: The type used for setting the state (e.g. GLenum, GLfloat, GLboolean)
+ *   - static void get(value_type* v): Gets the current state
+ *   - static void set(setter_type v): Sets the state
+ *   - static value_type validate(value_type v): Validates/adjusts the value (optional identity)
+ */
+template <typename Policy>
 struct SimpleState {
+    using value_type = typename Policy::value_type;
+    using setter_type = typename Policy::setter_type;
 
     SimpleState() = delete;
-    SimpleState(SimpleState<T1, T2, Entity, Getter, Setter, Validator> const&) = delete;
-    SimpleState<T1, T2, Entity, Getter, Setter, Validator>& operator=(
-        SimpleState<T1, T2, Entity, Getter, Setter, Validator> const& that) = delete;
+    SimpleState(const SimpleState&) = delete;
+    SimpleState& operator=(const SimpleState&) = delete;
 
-    SimpleState(T1 value);
-    SimpleState(SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& rhs);
-    SimpleState<T1, T2, Entity, Getter, Setter, Validator>& operator=(
-        SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& that);
+    explicit SimpleState(value_type value);
+    SimpleState(SimpleState&& rhs) noexcept;
+    SimpleState& operator=(SimpleState&& that) noexcept;
 
-    operator T1();
+    operator value_type();  // NOLINT(google-explicit-constructor)
+
     virtual ~SimpleState();
 
 protected:
-    T1 oldState_;
-    T1 state_;
+    value_type oldState_;
+    value_type state_;
 };
 
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>::SimpleState(T1 value)
-    : state_(Validator(value)) {
-    Getter(Entity, &oldState_);
+template <typename Policy>
+SimpleState<Policy>::SimpleState(value_type value) : state_(Policy::validate(value)) {
+    Policy::get(&oldState_);
     if (oldState_ != state_) {
-        Setter(state_);
+        Policy::set(static_cast<setter_type>(state_));
     }
 }
 
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>::~SimpleState() {
+template <typename Policy>
+SimpleState<Policy>::~SimpleState() {
     if (state_ != oldState_) {
-        Setter(static_cast<T2>(oldState_));
+        Policy::set(static_cast<setter_type>(oldState_));
     }
 }
 
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>::operator T1() {
+template <typename Policy>
+SimpleState<Policy>::operator value_type() {
     return state_;
 }
 
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>&
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>::operator=(
-    SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& that) {
+template <typename Policy>
+SimpleState<Policy>& SimpleState<Policy>::operator=(SimpleState<Policy>&& that) noexcept {
     if (this != &that) {
         state_ = that.oldState_;
         std::swap(state_, that.state_);
@@ -520,28 +523,66 @@ SimpleState<T1, T2, Entity, Getter, Setter, Validator>::operator=(
     }
     return *this;
 }
-template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
-          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
-SimpleState<T1, T2, Entity, Getter, Setter, Validator>::SimpleState(
-    SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& rhs)
+
+template <typename Policy>
+SimpleState<Policy>::SimpleState(SimpleState<Policy>&& rhs) noexcept
     : oldState_(rhs.oldState_), state_(rhs.state_) {
     rhs.state_ = rhs.oldState_;
 }
 
 IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width);
 
+namespace detail {
+
+struct DepthFuncPolicy {
+    using value_type = GLenum;
+    using setter_type = GLenum;
+    static void get(GLenum* v) {
+        GLint val = 0;
+        glGetIntegerv(GL_DEPTH_FUNC, &val);
+        *v = static_cast<GLenum>(val);
+    }
+    static void set(GLenum v) { glDepthFunc(v); }
+    static GLenum validate(GLenum v) { return v; }
+};
+
+struct DepthMaskPolicy {
+    using value_type = GLboolean;
+    using setter_type = GLboolean;
+    static void get(GLboolean* v) { glGetBooleanv(GL_DEPTH_WRITEMASK, v); }
+    static void set(GLboolean v) { glDepthMask(v); }
+    static GLboolean validate(GLboolean v) { return v; }
+};
+
+struct LineWidthPolicy {
+    using value_type = GLfloat;
+    using setter_type = GLfloat;
+    static void get(GLfloat* v) { glGetFloatv(GL_LINE_WIDTH, v); }
+    static void set(GLfloat v) { glLineWidth(v); }
+    static GLfloat validate(GLfloat v) { return validateLineWidth(v); }
+};
+
+struct PointSizePolicy {
+    using value_type = GLfloat;
+    using setter_type = GLfloat;
+    static void get(GLfloat* v) { glGetFloatv(GL_POINT_SIZE, v); }
+    static void set(GLfloat v) { glPointSize(v); }
+    static GLfloat validate(GLfloat v) { return v; }
+};
+
+}  // namespace detail
+
 /**
  * @brief RAII object for OpenGL depth func state
  * @see glDepthFunc, GL_DEPTH_FUNC
  */
-using DepthFuncState = SimpleState<GLint, GLenum, GL_DEPTH_FUNC, glGetIntegerv, glDepthFunc>;
+using DepthFuncState = SimpleState<detail::DepthFuncPolicy>;
 
 /**
  * @brief RAII object for OpenGL depth mask to enable/disable writing depth
  * @see glDepthMask, GL_DEPTH_WRITEMASK
  */
-using DepthMaskState =
-    SimpleState<GLboolean, GLboolean, GL_DEPTH_WRITEMASK, glGetBooleanv, glDepthMask>;
+using DepthMaskState = SimpleState<detail::DepthMaskPolicy>;
 
 /**
  * @brief RAII object for OpenGL line width
@@ -550,13 +591,13 @@ using DepthMaskState =
 
 using LineWidthState [[deprecated(
     "glLineWidth is not supported by all OpenGL implementations for widths different from 1.0")]] =
-    SimpleState<GLfloat, GLfloat, GL_LINE_WIDTH, glGetFloatv, glLineWidth, validateLineWidth>;
+    SimpleState<detail::LineWidthPolicy>;
 
 /**
  * @brief RAII object for OpenGL point size
  * @see glPointSize, GL_POINT_SIZE
  */
-using PointSizeState = SimpleState<GLfloat, GLfloat, GL_POINT_SIZE, glGetFloatv, glPointSize>;
+using PointSizeState = SimpleState<detail::PointSizePolicy>;
 
 template <typename T>
 // requires can enable/disable const

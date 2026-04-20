@@ -189,10 +189,10 @@ VolumeSliceGL::VolumeSliceGL()
           "volumeWrapping", "Volume Texture Wrapping",
           "Texture wrapping mode used for extracting the image slice "
           "(use fill color, repeat edge values, repeat the contents, mirror contents)"_help,
-          {{"color", "Fill with Color", GL_CLAMP_TO_EDGE},
-           {"edge", "Fill with Edge", GL_CLAMP_TO_EDGE},
-           {"repeat", "Repeat", GL_REPEAT},
-           {"m-repeat", "Mirrored Repeat", GL_MIRRORED_REPEAT}},
+          {{"color", "Fill with Color", static_cast<int>(GL_CLAMP_TO_EDGE)},
+           {"edge", "Fill with Edge", static_cast<int>(GL_CLAMP_TO_EDGE)},
+           {"repeat", "Repeat", static_cast<int>(GL_REPEAT)},
+           {"m-repeat", "Mirrored Repeat", static_cast<int>(GL_MIRRORED_REPEAT)}},
           0)
     , fillColor_("fillColor", "Fill Color",
                  util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 0.0f))

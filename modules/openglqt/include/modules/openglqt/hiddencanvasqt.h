@@ -41,8 +41,7 @@
 #include <string_view>
 
 class QOffscreenSurface;
-class QOpenGLContext;  // Include causes: warning qopenglfunctions.h is not compatible with GLEW,
-                       // GLEW defines will be undefined
+class QOpenGLContext;
 
 namespace inviwo {
 
@@ -80,7 +79,7 @@ public:
     virtual ~HiddenCanvasQt();
 
     void createContext();
-    void initializeGLEW();
+    void initializeGL();
 
     /*
      * Does nothing

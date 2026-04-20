@@ -294,7 +294,7 @@ void Shader::linkShader(bool notifyRebuild) {
 bool Shader::checkLinkStatus() const {
     GLint res;
     glGetProgramiv(program_.id, GL_LINK_STATUS, &res);
-    return res == GL_TRUE;
+    return res != 0;
 }
 
 void Shader::bindAttributes() {
@@ -349,7 +349,7 @@ std::string Shader::processLog(std::string log) const {
     std::istringstream stream(log);
     std::ostringstream result;
     std::string line;
-    ShaderType type(0);
+    ShaderType type(GLenum{0});
 
     while (std::getline(stream, line)) {
         // This log matching needs more testing. Mostly guessing here.

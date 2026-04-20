@@ -187,7 +187,7 @@ CanvasQOpenGLWidget::~CanvasQOpenGLWidget() {
 void CanvasQOpenGLWidget::activate() { makeCurrent(); }
 
 void CanvasQOpenGLWidget::initializeGL() {
-    OpenGLCapabilities::initializeGLEW();
+    OpenGLCapabilities::initializeGL();
     // QOpenGLWidget docs:
     // There is no need to call makeCurrent() because this has already been done
     // when this function is called.

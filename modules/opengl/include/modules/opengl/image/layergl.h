@@ -91,7 +91,7 @@ public:
 
 private:
     std::shared_ptr<Texture2D> texture_;  // Can be shared
-    mutable GLenum texUnit_ = 0;
+    mutable GLenum texUnit_ = GLenum{0};
 };
 
 }  // namespace inviwo
