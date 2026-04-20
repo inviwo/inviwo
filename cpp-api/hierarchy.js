@@ -495,6 +495,8 @@ var hierarchy =
     [ "inviwo::util::DefaultTraversalFilter", "structinviwo_1_1util_1_1DefaultTraversalFilter.html", null ],
     [ "inviwo::Defaultvalues&lt; T &gt;", "structinviwo_1_1Defaultvalues.html", null ],
     [ "inviwo::Delay", "classinviwo_1_1Delay.html", null ],
+    [ "inviwo::utilgl::detail::DepthFuncPolicy", "structinviwo_1_1utilgl_1_1detail_1_1DepthFuncPolicy.html", null ],
+    [ "inviwo::utilgl::detail::DepthMaskPolicy", "structinviwo_1_1utilgl_1_1detail_1_1DepthMaskPolicy.html", null ],
     [ "inviwo::DeserializationErrorHandle&lt; T &gt;", "classinviwo_1_1DeserializationErrorHandle.html", null ],
     [ "inviwo::util::detail::detector&lt; Default, AlwaysVoid, Op, Args &gt;", "structinviwo_1_1util_1_1detail_1_1detector.html", null ],
     [ "inviwo::util::detail::detector&lt; Default, std::void_t&lt; Op&lt; Args... &gt; &gt;, Op, Args... &gt;", "structinviwo_1_1util_1_1detail_1_1detector_3_01Default_00_01std_1_1void__t_3_01Op_3_01Args_8_8_8ec404f54ae48f65ab9e0d13e37a28e5f.html", null ],
@@ -1279,6 +1281,7 @@ var hierarchy =
     [ "inviwo::util::for_each_type_pair&lt; std::tuple&lt; ATypes... &gt;, std::tuple&lt; BTypes... &gt; &gt;", "structinviwo_1_1util_1_1for__each__type__pair_3_01std_1_1tuple_3_01ATypes_8_8_8_01_4_00_01std_1_980543efefbc8ab89773d2539d3c1f94.html", null ],
     [ "inviwo::utilgl::FormatConversion", "structinviwo_1_1utilgl_1_1FormatConversion.html", null ],
     [ "fmt::formatter", null, [
+      [ "fmt::formatter< gl::GLenum >", "structfmt_1_1formatter_3_01gl_1_1GLenum_01_4.html", null ],
       [ "fmt::formatter< inviwo::UnicodeFloat >", "structfmt_1_1formatter_3_01inviwo_1_1UnicodeFloat_01_4.html", null ],
       [ "inviwo::FlagArrayFormatter< T >", "structinviwo_1_1FlagArrayFormatter.html", null ],
       [ "inviwo::FlagFormatter< T >", "structinviwo_1_1FlagFormatter.html", null ],
@@ -1630,6 +1633,8 @@ var hierarchy =
     [ "inviwo::LineData", "structinviwo_1_1LineData.html", null ],
     [ "inviwo::LineNumberResolver", "structinviwo_1_1LineNumberResolver.html", null ],
     [ "inviwo::algorithm::LineRenderer", "classinviwo_1_1algorithm_1_1LineRenderer.html", null ],
+    [ "inviwo::utilgl::detail::LineWidthPolicy", "structinviwo_1_1utilgl_1_1detail_1_1LineWidthPolicy.html", null ],
+    [ "inviwo::utilgl::LineWidthPolicy", "structinviwo_1_1utilgl_1_1LineWidthPolicy.html", null ],
     [ "inviwo::LinkDialogTreeItem", "classinviwo_1_1LinkDialogTreeItem.html", [
       [ "inviwo::GraphicsItemData< Processor >", "classinviwo_1_1GraphicsItemData.html", [
         [ "inviwo::LinkDialogProcessorGraphicsItem", "classinviwo_1_1LinkDialogProcessorGraphicsItem.html", null ]
@@ -1795,6 +1800,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< ClipSide >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Transform >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< MeshType >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< GLenum >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< NormalSource >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ColorSource >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< HatchingMode >", "classinviwo_1_1OptionProperty.html", null ],
@@ -2667,6 +2673,7 @@ var hierarchy =
     [ "inviwo::Plane", "classinviwo_1_1Plane.html", null ],
     [ "inviwo::util::PMRDeleter", "structinviwo_1_1util_1_1PMRDeleter.html", null ],
     [ "inviwo::plot::ScatterPlotGL::Points", "structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html", null ],
+    [ "inviwo::utilgl::detail::PointSizePolicy", "structinviwo_1_1utilgl_1_1detail_1_1PointSizePolicy.html", null ],
     [ "inviwo::Polygon&lt; T &gt;", "classinviwo_1_1Polygon.html", null ],
     [ "inviwo::utilgl::PolygonModeState", "structinviwo_1_1utilgl_1_1PolygonModeState.html", null ],
     [ "inviwo::PortConnection", "classinviwo_1_1PortConnection.html", null ],
@@ -3198,6 +3205,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< ClipSide >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Transform >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< MeshType >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< GLenum >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< NormalSource >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ColorSource >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< HatchingMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3474,7 +3482,7 @@ var hierarchy =
     [ "inviwo::util::SharedSequenceData", "structinviwo_1_1util_1_1SharedSequenceData.html", null ],
     [ "inviwo::util::detail::Shower", "structinviwo_1_1util_1_1detail_1_1Shower.html", null ],
     [ "inviwo::SimpleMeshCreator", "classinviwo_1_1SimpleMeshCreator.html", null ],
-    [ "inviwo::utilgl::SimpleState&lt; T1, T2, Entity,,, Validator &gt;", "structinviwo_1_1utilgl_1_1SimpleState.html", null ],
+    [ "inviwo::utilgl::SimpleState&lt; Policy &gt;", "structinviwo_1_1utilgl_1_1SimpleState.html", null ],
     [ "inviwo::SinglePropertySetting", "classinviwo_1_1SinglePropertySetting.html", null ],
     [ "inviwo::Singleton&lt; T &gt;", "classinviwo_1_1Singleton.html", null ],
     [ "inviwo::Singleton&lt; InviwoApplication &gt;", "classinviwo_1_1Singleton.html", [

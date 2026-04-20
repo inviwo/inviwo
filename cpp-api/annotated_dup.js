@@ -1,6 +1,7 @@
 var annotated_dup =
 [
     [ "fmt", null, [
+      [ "formatter&lt; gl::GLenum &gt;", "structfmt_1_1formatter_3_01gl_1_1GLenum_01_4.html", null ],
       [ "formatter&lt; inviwo::UnicodeFloat &gt;", "structfmt_1_1formatter_3_01inviwo_1_1UnicodeFloat_01_4.html", null ],
       [ "formatter&lt; std::filesystem::file_time_type, char &gt;", "structfmt_1_1formatter_3_01std_1_1filesystem_1_1file__time__type_00_01char_01_4.html", null ]
     ] ],
@@ -504,6 +505,12 @@ var annotated_dup =
         [ "TableBuilder", "classinviwo_1_1utildoc_1_1TableBuilder.html", "classinviwo_1_1utildoc_1_1TableBuilder" ]
       ] ],
       [ "utilgl", "namespaceinviwo_1_1utilgl.html", [
+        [ "detail", null, [
+          [ "DepthFuncPolicy", "structinviwo_1_1utilgl_1_1detail_1_1DepthFuncPolicy.html", null ],
+          [ "DepthMaskPolicy", "structinviwo_1_1utilgl_1_1detail_1_1DepthMaskPolicy.html", null ],
+          [ "LineWidthPolicy", "structinviwo_1_1utilgl_1_1detail_1_1LineWidthPolicy.html", null ],
+          [ "PointSizePolicy", "structinviwo_1_1utilgl_1_1detail_1_1PointSizePolicy.html", null ]
+        ] ],
         [ "Activate", "structinviwo_1_1utilgl_1_1Activate.html", null ],
         [ "ActivateFBO", "classinviwo_1_1utilgl_1_1ActivateFBO.html", null ],
         [ "BlendModeEquationState", "structinviwo_1_1utilgl_1_1BlendModeEquationState.html", "structinviwo_1_1utilgl_1_1BlendModeEquationState" ],
@@ -519,6 +526,7 @@ var annotated_dup =
         [ "Enable", "structinviwo_1_1utilgl_1_1Enable.html", null ],
         [ "FormatConversion", "structinviwo_1_1utilgl_1_1FormatConversion.html", null ],
         [ "GlBoolState", "structinviwo_1_1utilgl_1_1GlBoolState.html", null ],
+        [ "LineWidthPolicy", "structinviwo_1_1utilgl_1_1LineWidthPolicy.html", null ],
         [ "NormalizationMap", "structinviwo_1_1utilgl_1_1NormalizationMap.html", null ],
         [ "PolygonModeState", "structinviwo_1_1utilgl_1_1PolygonModeState.html", null ],
         [ "RangeConversionMap", "structinviwo_1_1utilgl_1_1RangeConversionMap.html", null ],

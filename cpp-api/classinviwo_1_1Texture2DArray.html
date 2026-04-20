@@ -125,10 +125,10 @@ Texture2DArray &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (Textur
 void&#160;</td><td class="memItemRight"><b>setWrapping</b> (const std::array&lt; GLenum, 2 &gt; &amp;wrapping)</td></tr>
 <tr class="memitem:a0382bdc68009f66747dc993ac224e303" id="r_a0382bdc68009f66747dc993ac224e303"><td class="memItemLeft"><a id="a0382bdc68009f66747dc993ac224e303" name="a0382bdc68009f66747dc993ac224e303"></a>
 &#160;</td><td class="memItemRight"><b>Texture2DArray</b> (const Texture2DArray &amp;other)</td></tr>
+<tr class="memitem:adddd8bb284c53b974d51e255776944ce" id="r_adddd8bb284c53b974d51e255776944ce"><td class="memItemLeft"><a id="adddd8bb284c53b974d51e255776944ce" name="adddd8bb284c53b974d51e255776944ce"></a>
+&#160;</td><td class="memItemRight"><b>Texture2DArray</b> (size3_t dimensions, GLenum format, GLenum internalformat, GLenum dataType, GLenum filtering, const SwizzleMask &amp;swizzleMask=swizzlemasks::rgba, const std::array&lt; GLenum, 2 &gt; &amp;wrapping={GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE}, GLint level=0)</td></tr>
 <tr class="memitem:ae5945d927bb042af4213a56f6feae8a7" id="r_ae5945d927bb042af4213a56f6feae8a7"><td class="memItemLeft"><a id="ae5945d927bb042af4213a56f6feae8a7" name="ae5945d927bb042af4213a56f6feae8a7"></a>
 &#160;</td><td class="memItemRight"><b>Texture2DArray</b> (size3_t dimensions, <a class="el" href="structinviwo_1_1GLFormat.html">GLFormat</a> glFormat, GLenum filtering, const SwizzleMask &amp;swizzleMask=swizzlemasks::rgba, const std::array&lt; GLenum, 2 &gt; &amp;wrapping={GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE}, GLint level=0)</td></tr>
-<tr class="memitem:a7f30f8aa06a9787372b8364c4eb9fc60" id="r_a7f30f8aa06a9787372b8364c4eb9fc60"><td class="memItemLeft"><a id="a7f30f8aa06a9787372b8364c4eb9fc60" name="a7f30f8aa06a9787372b8364c4eb9fc60"></a>
-&#160;</td><td class="memItemRight"><b>Texture2DArray</b> (size3_t dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, const SwizzleMask &amp;swizzleMask=swizzlemasks::rgba, const std::array&lt; GLenum, 2 &gt; &amp;wrapping={GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE}, GLint level=0)</td></tr>
 <tr class="memitem:ae441749365dd39da7fd71a99f7c49abb" id="r_ae441749365dd39da7fd71a99f7c49abb"><td class="memItemLeft"><a id="ae441749365dd39da7fd71a99f7c49abb" name="ae441749365dd39da7fd71a99f7c49abb"></a>
 &#160;</td><td class="memItemRight"><b>Texture2DArray</b> (Texture2DArray &amp;&amp;other)</td></tr>
 <tr class="memitem:a740f67970ba28ad403a1e18e43dd15e1" id="r_a740f67970ba28ad403a1e18e43dd15e1"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a740f67970ba28ad403a1e18e43dd15e1">upload</a> (const void *data)</td></tr>
@@ -175,10 +175,10 @@ void&#160;</td><td class="memItemRight"><b>setSwizzleMask</b> (SwizzleMask mask)
 void&#160;</td><td class="memItemRight"><b>setWrapping</b> (std::span&lt; const GLenum &gt; wrapping)</td></tr>
 <tr class="memitem:aa2c1181c48fe5394aae1e96b826565ce inherit pub_methods_classinviwo_1_1Texture" id="r_aa2c1181c48fe5394aae1e96b826565ce"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>Texture</b> (const Texture &amp;other)</td></tr>
+<tr class="memitem:aa803b8aabd7af3db70e74c2948b34e7d inherit pub_methods_classinviwo_1_1Texture" id="r_aa803b8aabd7af3db70e74c2948b34e7d"><td class="memItemLeft">
+&#160;</td><td class="memItemRight"><b>Texture</b> (GLenum target, GLenum format, GLenum internalformat, GLenum dataType, GLenum filtering, const SwizzleMask &amp;swizzleMask, std::span&lt; const GLenum &gt; wrapping, GLint level)</td></tr>
 <tr class="memitem:ad2ca3b504d737a907a5fb0e0c36478ab inherit pub_methods_classinviwo_1_1Texture" id="r_ad2ca3b504d737a907a5fb0e0c36478ab"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>Texture</b> (GLenum target, <a class="el" href="structinviwo_1_1GLFormat.html">GLFormat</a> glFormat, GLenum filtering, const SwizzleMask &amp;swizzleMask, std::span&lt; const GLenum &gt; wrapping, GLint level)</td></tr>
-<tr class="memitem:a24012f213e985762b6f2887ea5fbc738 inherit pub_methods_classinviwo_1_1Texture" id="r_a24012f213e985762b6f2887ea5fbc738"><td class="memItemLeft">
-&#160;</td><td class="memItemRight"><b>Texture</b> (GLenum target, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, const SwizzleMask &amp;swizzleMask, std::span&lt; const GLenum &gt; wrapping, GLint level)</td></tr>
 <tr class="memitem:a1dd1bff5d2b2d7fed1b253434401781e inherit pub_methods_classinviwo_1_1Texture" id="r_a1dd1bff5d2b2d7fed1b253434401781e"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>Texture</b> (Texture &amp;&amp;other)</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1TextureBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1TextureBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1TextureBase.html">inviwo::TextureBase</a></td></tr>

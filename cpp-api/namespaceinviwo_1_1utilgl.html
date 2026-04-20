@@ -123,6 +123,7 @@ Classes</h2></td></tr>
 <tr class="memitem:FormatConversion" id="r_FormatConversion"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1utilgl_1_1FormatConversion.html">FormatConversion</a></td></tr>
 <tr class="memitem:GlBoolState" id="r_GlBoolState"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1utilgl_1_1GlBoolState.html">GlBoolState</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII object for OpenGL bool states.  <a href="structinviwo_1_1utilgl_1_1GlBoolState.html#details">More...</a><br /></td></tr>
+<tr class="memitem:LineWidthPolicy" id="r_LineWidthPolicy"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1utilgl_1_1LineWidthPolicy.html">LineWidthPolicy</a></td></tr>
 <tr class="memitem:NormalizationMap" id="r_NormalizationMap"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1utilgl_1_1NormalizationMap.html">NormalizationMap</a></td></tr>
 <tr class="memitem:PolygonModeState" id="r_PolygonModeState"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1utilgl_1_1PolygonModeState.html">PolygonModeState</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII object for OpenGL polygon mode as well as line width and point size Will set the polygon mode for GL_FRONT_AND_BACK since this is the only mode supported by the OpenGL core profile.  <a href="structinviwo_1_1utilgl_1_1PolygonModeState.html#details">More...</a><br /></td></tr>
@@ -132,6 +133,7 @@ Classes</h2></td></tr>
 <tr class="memitem:ScissorState" id="r_ScissorState"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1utilgl_1_1ScissorState.html">ScissorState</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII object for OpenGL scissor state.  <a href="structinviwo_1_1utilgl_1_1ScissorState.html#details">More...</a><br /></td></tr>
 <tr class="memitem:SimpleState" id="r_SimpleState"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Policy-based RAII object for OpenGL state.  <a href="structinviwo_1_1utilgl_1_1SimpleState.html#details">More...</a><br /></td></tr>
 <tr class="memitem:TexEnv" id="r_TexEnv"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1utilgl_1_1TexEnv.html">TexEnv</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII object for texture environments of a texture bound to a given texture unit.  <a href="structinviwo_1_1utilgl_1_1TexEnv.html#details">More...</a><br /></td></tr>
 <tr class="memitem:TexParameter" id="r_TexParameter"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1utilgl_1_1TexParameter.html">TexParameter</a></td></tr>
@@ -143,12 +145,12 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a25c7c3b66b8c4cc490159490288758a5" id="r_a25c7c3b66b8c4cc490159490288758a5"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a25c7c3b66b8c4cc490159490288758a5">DepthFuncState</a> = <a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a>&lt;GLint, GLenum, GL_DEPTH_FUNC, glGetIntegerv, glDepthFunc&gt;</td></tr>
-<tr class="memdesc:a25c7c3b66b8c4cc490159490288758a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII object for OpenGL depth func state.  <br /></td></tr>
-<tr class="memitem:a9a61fe7a8372a93346866cc7e749d601" id="r_a9a61fe7a8372a93346866cc7e749d601"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a9a61fe7a8372a93346866cc7e749d601">DepthMaskState</a></td></tr>
-<tr class="memdesc:a9a61fe7a8372a93346866cc7e749d601"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII object for OpenGL depth mask to enable/disable writing depth.  <br /></td></tr>
-<tr class="memitem:a161f5ee005aede17d3bbed0d9ded5e97" id="r_a161f5ee005aede17d3bbed0d9ded5e97"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a161f5ee005aede17d3bbed0d9ded5e97">PointSizeState</a> = <a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a>&lt;GLfloat, GLfloat, GL_POINT_SIZE, glGetFloatv, glPointSize&gt;</td></tr>
-<tr class="memdesc:a161f5ee005aede17d3bbed0d9ded5e97"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII object for OpenGL point size.  <br /></td></tr>
+<tr class="memitem:af3e791368011710e469b8f6d274aec50" id="r_af3e791368011710e469b8f6d274aec50"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#af3e791368011710e469b8f6d274aec50">DepthFuncState</a> = <a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a>&lt;<a class="el" href="structinviwo_1_1utilgl_1_1detail_1_1DepthFuncPolicy.html">detail::DepthFuncPolicy</a>&gt;</td></tr>
+<tr class="memdesc:af3e791368011710e469b8f6d274aec50"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII object for OpenGL depth func state.  <br /></td></tr>
+<tr class="memitem:a20bbd67f8052eb650daaa303af18cbc8" id="r_a20bbd67f8052eb650daaa303af18cbc8"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a20bbd67f8052eb650daaa303af18cbc8">DepthMaskState</a> = <a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a>&lt;<a class="el" href="structinviwo_1_1utilgl_1_1detail_1_1DepthMaskPolicy.html">detail::DepthMaskPolicy</a>&gt;</td></tr>
+<tr class="memdesc:a20bbd67f8052eb650daaa303af18cbc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII object for OpenGL depth mask to enable/disable writing depth.  <br /></td></tr>
+<tr class="memitem:a1c8a6f1aefe8940c13e76d22215ca1c5" id="r_a1c8a6f1aefe8940c13e76d22215ca1c5"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a1c8a6f1aefe8940c13e76d22215ca1c5">PointSizeState</a> = <a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a>&lt;<a class="el" href="structinviwo_1_1utilgl_1_1detail_1_1PointSizePolicy.html">detail::PointSizePolicy</a>&gt;</td></tr>
+<tr class="memdesc:a1c8a6f1aefe8940c13e76d22215ca1c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII object for OpenGL point size.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -365,6 +367,7 @@ IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><b>handleOpenGLDeb
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><b>handleOpenGLDebugMode</b> (Canvas::ContextID context)</td></tr>
 <tr class="memitem:a51a06ae667dd70d234060d7cbb096c42" id="r_a51a06ae667dd70d234060d7cbb096c42"><td class="memItemLeft"><a id="a51a06ae667dd70d234060d7cbb096c42" name="a51a06ae667dd70d234060d7cbb096c42"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><b>handleOpenGLDebugModeChange</b> (debug::Mode mode, debug::Severity severity)</td></tr>
+<tr class="memitem:a30e2c16a7ceb4ece3c2941dc8913d862" id="r_a30e2c16a7ceb4ece3c2941dc8913d862"><td class="memItemLeft">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><a class="el" href="#a30e2c16a7ceb4ece3c2941dc8913d862">handleOpenGLErrorCheckingChange</a> (bool enable, bool breakOnError)</td></tr>
 <tr class="memitem:a1f97a21b07263e03ee154fb747a58ccb" id="r_a1f97a21b07263e03ee154fb747a58ccb"><td class="memItemLeft">IVW_MODULE_OPENGL_API std::pair&lt; <a class="el" href="classinviwo_1_1ShaderType.html">ShaderType</a>, std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a1f97a21b07263e03ee154fb747a58ccb">imgIdentityVert</a> ()</td></tr>
 <tr class="memitem:a751670fdd22c933312fb8a1c28d78a6f" id="r_a751670fdd22c933312fb8a1c28d78a6f"><td class="memItemLeft">IVW_MODULE_OPENGL_API std::pair&lt; <a class="el" href="classinviwo_1_1ShaderType.html">ShaderType</a>, std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a751670fdd22c933312fb8a1c28d78a6f">imgQuadFrag</a> ()</td></tr>
 <tr class="memitem:addb288c7189078cbbe76d05a6a5c3782" id="r_addb288c7189078cbbe76d05a6a5c3782"><td class="memItemLeft">IVW_MODULE_OPENGL_API std::pair&lt; <a class="el" href="classinviwo_1_1ShaderType.html">ShaderType</a>, std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#addb288c7189078cbbe76d05a6a5c3782">imgQuadVert</a> ()</td></tr>
@@ -386,6 +389,7 @@ template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a01ba6d71bea79602047826daf38988ae" id="r_a01ba6d71bea79602047826daf38988ae"><td class="memItemLeft">IVW_MODULE_OPENGL_API std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a01ba6d71bea79602047826daf38988ae">planeRect</a> ()</td></tr>
 <tr class="memitem:a27f071f65df0bb1cc8fc29e2a7dee591" id="r_a27f071f65df0bb1cc8fc29e2a7dee591"><td class="memItemLeft"><a id="a27f071f65df0bb1cc8fc29e2a7dee591" name="a27f071f65df0bb1cc8fc29e2a7dee591"></a>
 IVW_MODULE_OPENGL_API bool&#160;</td><td class="memItemRight"><b>setOpenGLDebugMode</b> (debug::Mode mode, debug::Severity severity)</td></tr>
+<tr class="memitem:aa98a52faa2d327f1566bb662e843060d" id="r_aa98a52faa2d327f1566bb662e843060d"><td class="memItemLeft">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><a class="el" href="#aa98a52faa2d327f1566bb662e843060d">setOpenGLErrorChecking</a> (bool enable, bool breakOnError)</td></tr>
 <tr class="memitem:a219ff443aaba1404d17cb887789ca390" id="r_a219ff443aaba1404d17cb887789ca390"><td class="memItemLeft"><a id="a219ff443aaba1404d17cb887789ca390" name="a219ff443aaba1404d17cb887789ca390"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><b>setShaderDefines</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; RaycastingProperty::GradientComputation &gt; &amp;property, bool voxelClassification=false)</td></tr>
 <tr class="memitem:ad32aae4c7b36ea43224ecebc08e0b527" id="r_ad32aae4c7b36ea43224ecebc08e0b527"><td class="memItemLeft"><a id="ad32aae4c7b36ea43224ecebc08e0b527" name="ad32aae4c7b36ea43224ecebc08e0b527"></a>
@@ -500,20 +504,18 @@ IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><b>unbindTextures<
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><b>updateAndActivateTarget</b> (<a class="el" href="classinviwo_1_1ImageOutport.html">ImageOutport</a> &amp;targetOutport, ImageInport &amp;sourceInport)</td></tr>
 <tr class="memitem:aa7818ff26d54458b7a3fb47568a57c10" id="r_aa7818ff26d54458b7a3fb47568a57c10"><td class="memItemLeft"><a id="aa7818ff26d54458b7a3fb47568a57c10" name="aa7818ff26d54458b7a3fb47568a57c10"></a>
 IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight"><b>validateLineWidth</b> (GLfloat width)</td></tr>
-<tr class="memitem:aa7818ff26d54458b7a3fb47568a57c10" id="r_aa7818ff26d54458b7a3fb47568a57c10"><td class="memItemLeft"><a id="aa7818ff26d54458b7a3fb47568a57c10" name="aa7818ff26d54458b7a3fb47568a57c10"></a>
-IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight"><b>validateLineWidth</b> (GLfloat width)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>utilgl </p>
 </div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
-<a id="a25c7c3b66b8c4cc490159490288758a5" name="a25c7c3b66b8c4cc490159490288758a5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25c7c3b66b8c4cc490159490288758a5">&#9670;&#160;</a></span>DepthFuncState</h2>
+<a id="af3e791368011710e469b8f6d274aec50" name="af3e791368011710e469b8f6d274aec50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3e791368011710e469b8f6d274aec50">&#9670;&#160;</a></span>DepthFuncState</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="#a25c7c3b66b8c4cc490159490288758a5">inviwo::utilgl::DepthFuncState</a> = <a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a>&lt;GLint, GLenum, GL_DEPTH_FUNC, glGetIntegerv, glDepthFunc&gt;</td>
+          <td class="memname">using <a class="el" href="#af3e791368011710e469b8f6d274aec50">inviwo::utilgl::DepthFuncState</a> = <a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a>&lt;<a class="el" href="structinviwo_1_1utilgl_1_1detail_1_1DepthFuncPolicy.html">detail::DepthFuncPolicy</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -523,34 +525,31 @@ IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight"><b>validateLine
 
 </div>
 </div>
-<a id="a9a61fe7a8372a93346866cc7e749d601" name="a9a61fe7a8372a93346866cc7e749d601"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a61fe7a8372a93346866cc7e749d601">&#9670;&#160;</a></span>DepthMaskState</h2>
+<a id="a20bbd67f8052eb650daaa303af18cbc8" name="a20bbd67f8052eb650daaa303af18cbc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20bbd67f8052eb650daaa303af18cbc8">&#9670;&#160;</a></span>DepthMaskState</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="#a9a61fe7a8372a93346866cc7e749d601">inviwo::utilgl::DepthMaskState</a></td>
+          <td class="memname">using <a class="el" href="#a20bbd67f8052eb650daaa303af18cbc8">inviwo::utilgl::DepthMaskState</a> = <a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a>&lt;<a class="el" href="structinviwo_1_1utilgl_1_1detail_1_1DepthMaskPolicy.html">detail::DepthMaskPolicy</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"> </div>
-<div class="line"><a class="code hl_struct" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState&lt;GLboolean, GLboolean, GL_DEPTH_WRITEMASK, glGetBooleanv, glDepthMask&gt;</a></div>
-<div class="ttc" id="astructinviwo_1_1utilgl_1_1SimpleState_html"><div class="ttname"><a href="structinviwo_1_1utilgl_1_1SimpleState.html">inviwo::utilgl::SimpleState</a></div><div class="ttdef"><b>Definition</b> openglutils.h:467</div></div>
-</div><!-- fragment -->
+
 <p>RAII object for OpenGL depth mask to enable/disable writing depth. </p>
 <dl class="section see"><dt>See also</dt><dd>glDepthMask, GL_DEPTH_WRITEMASK </dd></dl>
 
 </div>
 </div>
-<a id="a161f5ee005aede17d3bbed0d9ded5e97" name="a161f5ee005aede17d3bbed0d9ded5e97"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a161f5ee005aede17d3bbed0d9ded5e97">&#9670;&#160;</a></span>PointSizeState</h2>
+<a id="a1c8a6f1aefe8940c13e76d22215ca1c5" name="a1c8a6f1aefe8940c13e76d22215ca1c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c8a6f1aefe8940c13e76d22215ca1c5">&#9670;&#160;</a></span>PointSizeState</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="#a161f5ee005aede17d3bbed0d9ded5e97">inviwo::utilgl::PointSizeState</a> = <a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a>&lt;GLfloat, GLfloat, GL_POINT_SIZE, glGetFloatv, glPointSize&gt;</td>
+          <td class="memname">using <a class="el" href="#a1c8a6f1aefe8940c13e76d22215ca1c5">inviwo::utilgl::PointSizeState</a> = <a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a>&lt;<a class="el" href="structinviwo_1_1utilgl_1_1detail_1_1PointSizePolicy.html">detail::PointSizePolicy</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -624,6 +623,28 @@ IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight"><b>validateLine
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>struct containing the parameters for the format conversion</dd></dl>
 <dl class="section see"><dt>See also</dt><dd>mapFromNormalizedGLToValue, <a class="el" href="#ab351f9645f49307051507867b7a0b091">mapFromValueToGLOutput</a> </dd></dl>
+
+</div>
+</div>
+<a id="a30e2c16a7ceb4ece3c2941dc8913d862" name="a30e2c16a7ceb4ece3c2941dc8913d862"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30e2c16a7ceb4ece3c2941dc8913d862">&#9670;&#160;</a></span>handleOpenGLErrorCheckingChange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_OPENGL_API void inviwo::utilgl::handleOpenGLErrorCheckingChange </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>enable</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>breakOnError</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Apply OpenGL per-call error checking settings to all existing contexts. Called when the corresponding <a class="el" href="classinviwo_1_1OpenGLSettings.html">OpenGLSettings</a> properties change. </p>
 
 </div>
 </div>
@@ -858,6 +879,28 @@ template&lt;typename T&gt; </div>
 </div><div class="memdoc">
 <p>Creates an indexed triangle strip mesh with points and texture coordinates. (-1,1)-&mdash;(1, 1) | | (-1,1)-&mdash;(1,-1)</p>
 <dl class="section return"><dt>Returns</dt><dd>std::unique_ptr&lt;Mesh&gt; </dd></dl>
+
+</div>
+</div>
+<a id="aa98a52faa2d327f1566bb662e843060d" name="aa98a52faa2d327f1566bb662e843060d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa98a52faa2d327f1566bb662e843060d">&#9670;&#160;</a></span>setOpenGLErrorChecking()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_OPENGL_API void inviwo::utilgl::setOpenGLErrorChecking </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>enable</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>breakOnError</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="structinviwo_1_1utilgl_1_1Enable.html">Enable</a> or disable per-call glGetError() checking for the current OpenGL context. When enabled, glGetError() is called after every OpenGL function call and errors are logged to <a class="el" href="classinviwo_1_1LogCentral.html">LogCentral</a>. If <code class="param">breakOnError</code> is true, util::debugBreak() is also called. </p>
 
 </div>
 </div>

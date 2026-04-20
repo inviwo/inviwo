@@ -1,5 +1,8 @@
 var NAVTREEINDEX33 =
 {
+"structinviwo_1_1detail_1_1ColorConverter_3_01vec3_01_4.html":[4,0,1,11,8],
+"structinviwo_1_1detail_1_1ColorConverter_3_01vec4_01_4.html":[4,0,1,11,9],
+"structinviwo_1_1detail_1_1DynPort.html":[4,0,1,11,13],
 "structinviwo_1_1detail_1_1DynUniform.html":[4,0,1,11,14],
 "structinviwo_1_1detail_1_1LayerConf.html":[4,0,1,11,19],
 "structinviwo_1_1detail_1_1MeshConf.html":[4,0,1,11,20],
@@ -246,8 +249,5 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1util_1_1identifier.html":[4,0,1,30,29],
 "structinviwo_1_1util_1_1identity.html":[2,0,0,20,26],
 "structinviwo_1_1util_1_1identity.html":[4,0,1,30,30],
-"structinviwo_1_1util_1_1is__constructible.html":[2,0,0,20,32],
-"structinviwo_1_1util_1_1is__constructible.html":[4,0,1,30,36],
-"structinviwo_1_1util_1_1is__dereferenceable.html":[2,0,0,20,34],
-"structinviwo_1_1util_1_1is__dereferenceable.html":[4,0,1,30,38]
+"structinviwo_1_1util_1_1is__constructible.html":[2,0,0,20,32]
 };

@@ -1,5 +1,8 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[2,0,0,928],
+"structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[4,0,1,937],
+"structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[2,0,0,929],
 "structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[4,0,1,938],
 "structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[2,0,0,930],
 "structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[4,0,1,939],
@@ -246,8 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1detail_1_1ColorConverter_3_01dvec3_01_4.html":[4,0,1,11,4],
 "structinviwo_1_1detail_1_1ColorConverter_3_01dvec4_01_4.html":[4,0,1,11,5],
 "structinviwo_1_1detail_1_1ColorConverter_3_01ivec3_01_4.html":[4,0,1,11,6],
-"structinviwo_1_1detail_1_1ColorConverter_3_01ivec4_01_4.html":[4,0,1,11,7],
-"structinviwo_1_1detail_1_1ColorConverter_3_01vec3_01_4.html":[4,0,1,11,8],
-"structinviwo_1_1detail_1_1ColorConverter_3_01vec4_01_4.html":[4,0,1,11,9],
-"structinviwo_1_1detail_1_1DynPort.html":[4,0,1,11,13]
+"structinviwo_1_1detail_1_1ColorConverter_3_01ivec4_01_4.html":[4,0,1,11,7]
 };

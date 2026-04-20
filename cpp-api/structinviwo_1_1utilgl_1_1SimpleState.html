@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Inviwo: inviwo::utilgl::SimpleState&lt; T1, T2, Entity,,, Validator &gt; Struct Template Reference</title>
+<title>Inviwo: inviwo::utilgl::SimpleState&lt; Policy &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -90,33 +90,61 @@ $(function(){initNavTree('structinviwo_1_1utilgl_1_1SimpleState.html','','struct
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">inviwo::utilgl::SimpleState&lt; T1, T2, Entity,,, Validator &gt; Struct Template Reference</div></div>
+  <div class="headertitle"><div class="title">inviwo::utilgl::SimpleState&lt; Policy &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Policy-based RAII object for OpenGL state.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;modules/opengl/openglutils.h&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a6c72cadf8f8ed39bf387205197157ec3" id="r_a6c72cadf8f8ed39bf387205197157ec3"><td class="memItemLeft"><a id="a6c72cadf8f8ed39bf387205197157ec3" name="a6c72cadf8f8ed39bf387205197157ec3"></a>
+using&#160;</td><td class="memItemRight"><b>setter_type</b> = typename Policy::setter_type</td></tr>
+<tr class="memitem:a7c1cbdd24f464b89d69ccd4e171c27ad" id="r_a7c1cbdd24f464b89d69ccd4e171c27ad"><td class="memItemLeft"><a id="a7c1cbdd24f464b89d69ccd4e171c27ad" name="a7c1cbdd24f464b89d69ccd4e171c27ad"></a>
+using&#160;</td><td class="memItemRight"><b>value_type</b> = typename Policy::value_type</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab21b4ff421caf7d08dca9111263e4639" id="r_ab21b4ff421caf7d08dca9111263e4639"><td class="memItemLeft"><a id="ab21b4ff421caf7d08dca9111263e4639" name="ab21b4ff421caf7d08dca9111263e4639"></a>
-&#160;</td><td class="memItemRight"><b>operator T1</b> ()</td></tr>
-<tr class="memitem:ac65d24142822fcdd2b7a4ad23c9e647b" id="r_ac65d24142822fcdd2b7a4ad23c9e647b"><td class="memItemLeft"><a id="ac65d24142822fcdd2b7a4ad23c9e647b" name="ac65d24142822fcdd2b7a4ad23c9e647b"></a>
-SimpleState&lt; T1, T2, Entity, Getter, Setter, Validator &gt; &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (SimpleState&lt; T1, T2, Entity, Getter, Setter, Validator &gt; &amp;&amp;that)</td></tr>
-<tr class="memitem:a443966bcc15808943b364a38d605841c" id="r_a443966bcc15808943b364a38d605841c"><td class="memItemLeft"><a id="a443966bcc15808943b364a38d605841c" name="a443966bcc15808943b364a38d605841c"></a>
-SimpleState&lt; T1, T2, Entity, Getter, Setter, Validator &gt; &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (SimpleState&lt; T1, T2, Entity, Getter, Setter, Validator &gt; const &amp;that)=delete</td></tr>
-<tr class="memitem:a5d69e3457936b96c5f680cd7f90b3ff4" id="r_a5d69e3457936b96c5f680cd7f90b3ff4"><td class="memItemLeft"><a id="a5d69e3457936b96c5f680cd7f90b3ff4" name="a5d69e3457936b96c5f680cd7f90b3ff4"></a>
-&#160;</td><td class="memItemRight"><b>SimpleState</b> (SimpleState&lt; T1, T2, Entity, Getter, Setter, Validator &gt; &amp;&amp;rhs)</td></tr>
-<tr class="memitem:a0c254a220d9c145187ecf9ae3ded21a3" id="r_a0c254a220d9c145187ecf9ae3ded21a3"><td class="memItemLeft"><a id="a0c254a220d9c145187ecf9ae3ded21a3" name="a0c254a220d9c145187ecf9ae3ded21a3"></a>
-&#160;</td><td class="memItemRight"><b>SimpleState</b> (SimpleState&lt; T1, T2, Entity, Getter, Setter, Validator &gt; const &amp;)=delete</td></tr>
-<tr class="memitem:ab097bc0d12584f7717a92fc875eabcdf" id="r_ab097bc0d12584f7717a92fc875eabcdf"><td class="memItemLeft"><a id="ab097bc0d12584f7717a92fc875eabcdf" name="ab097bc0d12584f7717a92fc875eabcdf"></a>
-&#160;</td><td class="memItemRight"><b>SimpleState</b> (T1 value)</td></tr>
+<tr class="memitem:ab5da0f5e0471600c14dae13eed0569f6" id="r_ab5da0f5e0471600c14dae13eed0569f6"><td class="memItemLeft"><a id="ab5da0f5e0471600c14dae13eed0569f6" name="ab5da0f5e0471600c14dae13eed0569f6"></a>
+&#160;</td><td class="memItemRight"><b>operator value_type</b> ()</td></tr>
+<tr class="memitem:a94bf729016bb35dc7bb86c5227fd33c3" id="r_a94bf729016bb35dc7bb86c5227fd33c3"><td class="memItemLeft"><a id="a94bf729016bb35dc7bb86c5227fd33c3" name="a94bf729016bb35dc7bb86c5227fd33c3"></a>
+SimpleState &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const SimpleState &amp;)=delete</td></tr>
+<tr class="memitem:a6ede9343bc9467d44daa51c6fdefae39" id="r_a6ede9343bc9467d44daa51c6fdefae39"><td class="memItemLeft"><a id="a6ede9343bc9467d44daa51c6fdefae39" name="a6ede9343bc9467d44daa51c6fdefae39"></a>
+SimpleState &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (SimpleState &amp;&amp;that) noexcept</td></tr>
+<tr class="memitem:a9492f0ee58ecef7cc347a2397a11f471" id="r_a9492f0ee58ecef7cc347a2397a11f471"><td class="memItemLeft"><a id="a9492f0ee58ecef7cc347a2397a11f471" name="a9492f0ee58ecef7cc347a2397a11f471"></a>
+&#160;</td><td class="memItemRight"><b>SimpleState</b> (const SimpleState &amp;)=delete</td></tr>
+<tr class="memitem:a85c05d9f3ea367109cb50fedf67486c5" id="r_a85c05d9f3ea367109cb50fedf67486c5"><td class="memItemLeft"><a id="a85c05d9f3ea367109cb50fedf67486c5" name="a85c05d9f3ea367109cb50fedf67486c5"></a>
+&#160;</td><td class="memItemRight"><b>SimpleState</b> (SimpleState &amp;&amp;rhs) noexcept</td></tr>
+<tr class="memitem:a45bfeae6465d4d911d9ba7060b98a309" id="r_a45bfeae6465d4d911d9ba7060b98a309"><td class="memItemLeft"><a id="a45bfeae6465d4d911d9ba7060b98a309" name="a45bfeae6465d4d911d9ba7060b98a309"></a>
+&#160;</td><td class="memItemRight"><b>SimpleState</b> (value_type value)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:ae1ad01612033384a1182a6140ca9ee45" id="r_ae1ad01612033384a1182a6140ca9ee45"><td class="memItemLeft"><a id="ae1ad01612033384a1182a6140ca9ee45" name="ae1ad01612033384a1182a6140ca9ee45"></a>
-T1&#160;</td><td class="memItemRight"><b>oldState_</b></td></tr>
-<tr class="memitem:a411fd1e12b7d102735a1df94fe2116e9" id="r_a411fd1e12b7d102735a1df94fe2116e9"><td class="memItemLeft"><a id="a411fd1e12b7d102735a1df94fe2116e9" name="a411fd1e12b7d102735a1df94fe2116e9"></a>
-T1&#160;</td><td class="memItemRight"><b>state_</b></td></tr>
+<tr class="memitem:a292b8e9707d849543647eefc1a69cb60" id="r_a292b8e9707d849543647eefc1a69cb60"><td class="memItemLeft"><a id="a292b8e9707d849543647eefc1a69cb60" name="a292b8e9707d849543647eefc1a69cb60"></a>
+value_type&#160;</td><td class="memItemRight"><b>oldState_</b></td></tr>
+<tr class="memitem:a9a245777cdf7e713f3f6411013653e84" id="r_a9a245777cdf7e713f3f6411013653e84"><td class="memItemLeft"><a id="a9a245777cdf7e713f3f6411013653e84" name="a9a245777cdf7e713f3f6411013653e84"></a>
+value_type&#160;</td><td class="memItemRight"><b>state_</b></td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Policy&gt;<br />
+struct inviwo::utilgl::SimpleState&lt; Policy &gt;</div><p>Policy-based RAII object for OpenGL state. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Policy</td><td>A struct that provides:<ul>
+<li>value_type: The type used for getting the state (e.g. GLint, GLfloat, GLboolean)</li>
+<li>setter_type: The type used for setting the state (e.g. GLenum, GLfloat, GLboolean)</li>
+<li>static void get(value_type* v): Gets the current state</li>
+<li>static void set(setter_type v): Sets the state</li>
+<li>static value_type validate(value_type v): Validates/adjusts the value (optional identity) </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>modules/opengl/include/modules/opengl/<b>openglutils.h</b></li>
 </ul>
 </div><!-- contents -->
