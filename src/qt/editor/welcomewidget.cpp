@@ -83,9 +83,12 @@
 #include <QSplitterHandle>
 #include <QMainWindow>
 
+#include <md4c-html.h>
+
 #include <string_view>
 #include <algorithm>
 #include <functional>
+#include <string>
 
 #ifndef INVIWO_ALL_DYN_LINK
 struct InitQtChangelogResources {
@@ -97,6 +100,54 @@ struct InitQtChangelogResources {
 #endif
 
 namespace {
+
+std::string markdownToHtml(std::string_view markdown) {
+    // Strip leading "Here we document changes..." line (matches Python script behavior)
+    constexpr std::string_view changelogBegin = "Here we document changes";
+    if (markdown.starts_with(changelogBegin)) {
+        auto pos = markdown.find('\n');
+        if (pos != std::string_view::npos) {
+            pos = markdown.find('\n', pos + 1);  // skip two lines (the intro paragraph)
+            if (pos != std::string_view::npos) markdown = markdown.substr(pos + 1);
+        }
+    }
+
+    constexpr std::string_view htmlHeader =
+        R"(<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style type="text/css">
+    body {color: #9d9995;}
+    a {color: #268bd2;}
+    a:visited { color: #1E6A9E; }
+    h1 { font-size: xx-large; color: #268bd2; margin-bottom:1em; }
+    h2 { font-size: larger; color: #268bd2; margin-top:1em; margin-bottom:0em; }
+    p { margin-bottom: 0.2em; margin-top: 0.1em; }
+</style>
+</head>
+<body>
+)";
+    constexpr std::string_view htmlFooter = "\n</body>\n</html>\n";
+
+    std::string body;
+    body.reserve(markdown.size() * 2);  // 2x is a reasonable estimate for HTML tags and entities
+
+    const unsigned parserFlags =
+        MD_FLAG_TABLES | MD_FLAG_STRIKETHROUGH | MD_FLAG_TASKLISTS | MD_FLAG_AUTOLINKS;
+
+    // md4c guarantees non-null str and userdata in the callback
+    auto appendOutput = [](const MD_CHAR* str, MD_SIZE size, void* userdata) {
+        static_cast<std::string*>(userdata)->append(str, size);
+    };
+
+    if (md_html(markdown.data(), static_cast<MD_SIZE>(markdown.size()), appendOutput, &body,
+                parserFlags, 0) != 0) {
+        return {};
+    }
+
+    return std::string(htmlHeader) + body + std::string(htmlFooter);
+}
 
 inline void setTabOrder(std::initializer_list<QWidget*> widgets) {
 #if QT_VERSION < QT_VERSION_CHECK(6, 6, 0)
@@ -156,12 +207,17 @@ public:
     }
 
     void loadLog() {
-        QFile file(":/changelog.html");
+        QFile file(":/changelog.md");
         if (file.open(QFile::ReadOnly | QFile::Text) && file.size() > 0) {
-            setHtml(file.readAll());
-        } else {
-            setHtml(utilqt::toQString(placeholder));
+            const auto data = file.readAll();
+            const std::string_view md{data.constData(), static_cast<size_t>(data.size())};
+            const auto html = markdownToHtml(md);
+            if (!html.empty()) {
+                setHtml(utilqt::toQString(html));
+                return;
+            }
         }
+        setHtml(utilqt::toQString(placeholder));
     }
 
 protected:
