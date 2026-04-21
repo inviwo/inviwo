@@ -133,8 +133,7 @@ std::string markdownToHtml(std::string_view markdown) {
     std::string body;
     body.reserve(markdown.size() * 2);  // 2x is a reasonable estimate for HTML tags and entities
 
-    const unsigned parserFlags =
-        MD_FLAG_TABLES | MD_FLAG_STRIKETHROUGH | MD_FLAG_TASKLISTS | MD_FLAG_AUTOLINKS;
+    const unsigned parserFlags = MD_DIALECT_GITHUB;
 
     // md4c guarantees non-null str and userdata in the callback
     auto appendOutput = [](const MD_CHAR* str, MD_SIZE size, void* userdata) {
