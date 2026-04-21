@@ -1,5 +1,72 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-04-20 Unicode-aware string comparison and `CodePointsAdaptor` range adaptor
+A new header `include/inviwo/core/util/utfutils.h` has been added, replacing the ASCII-only `CaseInsensitiveEqual`/`CaseInsensitiveLess` in `stringconversion.h` with Unicode-correct implementations backed by utf8cpp. Two new case-sensitive counterparts are also added.
+
+- **`detail::CodePointsAdaptor`** — C++23 `range_adaptor_closure` that decodes `char` (UTF-8) or `wchar_t` ranges into `int32_t` code points; supports both call and pipe syntax
+- **`CaseInsensitiveEqual` / `CaseInsensitiveLess`** — Unicode-aware, replacing the old `std::tolower` byte-level comparisons; handle all four `string_view`/`wstring_view` cross-type overloads
+- **`CaseSensitiveEqual` / `CaseSensitiveLess`** — new, same cross-type overload structure
+- All four functors carry `using is_transparent = int` for heterogeneous container lookup
+
+```cpp
+// Pipe syntax over UTF-8
+for (int32_t cp : "café"sv | views::codePoints) { ... }
+```
+
+## 2026-04-17 Trackball uniform zoom and mouse-centered OrthographicCamera zoom
+- **Trackball**: optional uniform zoom mode (scales all axes equally instead of perspective-aware zoom)
+- **OrthographicCamera**: optional mouse-centered zoom — the point under the cursor stays fixed during scroll zoom
+
+## 2026-04-16 NRRD file format reader
+A NRRD (Nearly Raw Raster Data) volume reader has been added to the Base module, enabling loading of `.nrrd` and `.nhdr` files directly into Inviwo.
+
+## 2026-04-16 Portable `util::concat` range adaptor (`std::views::concat` backport)
+A new header `include/inviwo/core/util/concat.h` provides a portable implementation of `std::views::concat` (C++26), which is not yet available in Clang/libc++. Only providing forward_iterators.
+
+- **`concat_view`** — variant-based iterator that lazily concatenates multiple ranges of a common reference type; supports input/forward/bidirectional iteration and `std::ranges::view_interface` helpers
+- **`util::concat`** — factory function wrapping each range via `std::views::all` so temporaries are handled safely; works with pipe composition
+
+```cpp
+std::vector<int> a{1, 2, 3};
+std::array<int, 2> b{4, 5};
+
+for (int x : util::concat(a, b)) { ... }  // 1 2 3 4 5
+
+auto evens = util::concat(a, b)
+           | std::views::filter([](int x){ return x % 2 == 0; });
+```
+
+## 2026-04-15 `OrthographicAxis2D` Volume/Layer ports
+- **`OrthographicAxis2D`** processor now exposes optional `MeshInport`, `VolumeInport`, and `LayerInport` so axis ranges can be driven directly from a Mesh, Volume, or Layer data extents
+
+## 2026-04-14 Scientific color maps added to utilities and the TF presets menus
+A large collection of perceptually uniform scientific color maps created by Fabio Crameri ([fabiocrameri.ch/colourmaps/](https://fabiocrameri.ch/colourmaps/)) has been added to the Base module, expanding the set of built-in transfer functions available in Inviwo.
+
+## 2026-04-14 `SpatialEntity` and `Camera` promoted to double precision ([#1928](https://github.com/inviwo/inviwo/pull/1928))
+All spatial state in `SpatialEntity` and `Camera` (and their subclasses) has been promoted from `float`/`mat4`/`vec3` to `double`/`dmat4`/`dvec3`. This is a **breaking API change** — downstream code that passes or receives spatial matrices, camera parameters, or bounding boxes must be updated.
+
+### Key changes
+- **`SpatialEntity`**: `modelMatrix_`/`worldMatrix_` → `dmat4`; `getOffset`/`getBasis` → `dvec3`/`dmat3`
+- **`StructuredGridEntity`**: `getIndexMatrix()` → `dmat4`
+- **`Camera`** and all subclasses (`PerspectiveCamera`, `OrthographicCamera`, `SkewedPerspectiveCamera`, `PlotCamera`, `SGCTCamera`): `lookFrom_`/`lookTo_`/`lookUp_` → `dvec3`; view/projection matrices → `dmat4`; `nearPlaneDist_`/`farPlaneDist_`/`aspectRatio_` → `double`
+- **`cameradefaults`**: all constants promoted to `dvec3`/`double`
+- **`CameraProperty`**: `FloatVec3RefProperty` → `DoubleVec3RefProperty`; `FloatRefProperty` → `DoubleRefProperty`; bounding-box functor `std::function<mat4()>` → `std::function<dmat4()>`
+- **Coordinate transformers**: `getMatrix`, `getDataToWorldMatrix`, `getModelToWorldMatrix`, etc. → `dmat4`
+- **`TrackballObject`** interface: all `vec3` → `dvec3`
+- **Algorithms**: `camerautil::setCameraView`, `util::boundingBox`, `util::minExtentBoundingBox`, etc. now return/accept `dmat4`
+
+```cpp
+// Before
+Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane, float aspectRatio);
+const mat4& getViewMatrix() const;
+mat4 boundingBox(const Volume& volume);
+
+// After
+Camera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane, double aspectRatio);
+const dmat4& getViewMatrix() const;
+dmat4 boundingBox(const Volume& volume);
+```
+
 ## 2026-03-23 Box selection in Parallel Coordinates Plot and OrthographicAxis2D
 Box selection was added to the Parallel Coordinates Plot (PCP). It supports selecting lines anywhere in the PCP or data values located on the columns.
 The `Orthographic Axis2D` processor also supports a box selection and propagates these interactions with `AxisRangeEvents`. For an example implementation check out the `DataFrame To Mesh` processor, which uses `AxisRangeEvents` to select and filter a DataFrame.
