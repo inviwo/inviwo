@@ -1,0 +1,58 @@
+name: "Changelog Check"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Minimal permissions: read repo content, comment on PRs, call GitHub Models
+permissions:
+  contents: read
+  pull-requests: write
+  models: read
+
+jobs:
+  changelog:
+    name: "Changelog Check"
+    runs-on: ubuntu-latest
+    # Skip drafts and PRs explicitly labelled as not needing a changelog entry
+    if: |
+      github.event.pull_request.draft == false &&
+      !contains(github.event.pull_request.labels.*.name, 'no-changelog')
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Check if CHANGELOG.md was modified"
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh pr diff ${{ github.event.pull_request.number }} --name-only 2>/dev/null \
+              | grep -qx 'CHANGELOG.md'; then
+            echo "changed=true"  >> "$GITHUB_OUTPUT"
+            echo "✅ CHANGELOG.md was updated in this PR — no suggestion needed."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️  CHANGELOG.md was NOT updated in this PR."
+          fi
+
+      - name: "Set up Python"
+        if: steps.check.outputs.changed == 'false'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: "Install Python dependencies"
+        if: steps.check.outputs.changed == 'false'
+        run: pip install openai --quiet
+
+      - name: "Generate and post changelog suggestion"
+        if: steps.check.outputs.changed == 'false'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER:    ${{ github.event.pull_request.number }}
+          PR_TITLE:     ${{ github.event.pull_request.title }}
+          PR_BODY:      ${{ github.event.pull_request.body }}
+          REPO:         ${{ github.repository }}
+        run: python3 .github/scripts/generate_changelog_suggestion.py
