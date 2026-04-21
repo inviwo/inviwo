@@ -38,17 +38,24 @@
 #include <inviwo/core/util/stacktrace.h>
 #include <modules/opengl/openglsettings.h>
 
-#include <ostream>
-#include <string>
-#include <thread>
-#include <type_traits>
-#include <unordered_map>
-
 #include <fmt/base.h>
 
 #include <glbinding/Binding.h>
 #include <glbinding/CallbackMask.h>
 #include <glbinding/FunctionCall.h>
+#include <glbinding-aux/types_to_string.h>
+
+#include <ostream>
+#include <string>
+#include <thread>
+#include <type_traits>
+#include <unordered_map>
+#include <ranges>
+
+#ifdef __cpp_lib_stacktrace
+#include <stacktrace>
+#endif
+
 
 namespace inviwo::utilgl {
 
@@ -237,6 +244,36 @@ void handleOpenGLErrorCheckingChange(bool enable, bool breakOnError) {
     }
 }
 
+namespace {
+std::string argsToString(const glbinding::FunctionCall& call) {
+    std::stringstream ss;
+    for (unsigned i = 0; i < call.parameters.size(); ++i) {
+        ss << call.parameters[i].get();
+        if (i < call.parameters.size() - 1) ss << ", ";
+    }
+    return std::move(ss).str();
+}
+
+void logStackTrace(size_t count) {
+#ifdef __cpp_lib_stacktrace
+
+    auto stack = std::stacktrace::current();
+    auto items = stack | std::views::drop_while([](auto& entry) {
+                     return !entry.description().contains("glbinding");
+                 }) |
+                 std::views::drop_while(
+                     [](auto& entry) { return entry.description().contains("glbinding"); }) |
+                 std::views::take(count);
+
+    for (auto&& entry : items) {
+        log::report(LogLevel::Error, SourceContext("OpenGL Error Check"_sl), "{}({}): {}",
+                    entry.source_file(), entry.source_line(), entry.description());
+    }
+#endif
+}
+
+}  // namespace
+
 void setOpenGLErrorChecking(bool enable, bool breakOnError) {
     if (enable) {
         // Install the global after callback. When settings change, this is called again to
@@ -244,20 +281,22 @@ void setOpenGLErrorChecking(bool enable, bool breakOnError) {
         glbinding::Binding::setAfterCallback([breakOnError](const glbinding::FunctionCall& call) {
             GLenum err{GL_NO_ERROR};
             while ((err = glGetError()) != GL_NO_ERROR) {
+
                 log::report(LogLevel::Error, SourceContext("OpenGL Error Check"_sl),
-                            "OpenGL error {} after calling {}()", getGLErrorString(err),
-                            call.function->name());
-                for (auto& line : getStackTrace()) {
-                    log::report(LogLevel::Error, SourceContext("OpenGL Error Check"_sl), line);
-                }
+                            "OpenGL error {} after calling {}({})", getGLErrorString(err),
+                            call.function->name(), argsToString(call));
+                logStackTrace(5);
 
                 if (breakOnError) util::debugBreak();
             }
         });
         // Enable the After callback for all functions in this context except glGetError itself
-        glbinding::Binding::addCallbackMaskExcept(glbinding::CallbackMask::After, {"glGetError"});
+        glbinding::Binding::addCallbackMaskExcept(
+            glbinding::CallbackMask::After | glbinding::CallbackMask::ParametersAndReturnValue,
+            {"glGetError"});
     } else {
-        glbinding::Binding::removeCallbackMask(glbinding::CallbackMask::After);
+        glbinding::Binding::removeCallbackMask(glbinding::CallbackMask::After |
+                                               glbinding::CallbackMask::ParametersAndReturnValue);
     }
 }
 
