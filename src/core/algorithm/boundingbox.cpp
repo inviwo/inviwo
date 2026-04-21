@@ -31,15 +31,11 @@
 
 #include <inviwo/core/datastructures/image/layer.h>
 
+#include <inviwo/core/algorithm/rangeutils.h>
+
 #include <numeric>
 #include <utility>
 #include <ranges>
-
-namespace inviwo::views {
-
-inline constexpr auto deref =
-    std::views::transform([](auto ptr) -> decltype(auto) { return *ptr; });
-}  // namespace inviwo::views
 
 namespace inviwo::util {
 

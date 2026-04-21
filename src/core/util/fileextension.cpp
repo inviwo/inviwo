@@ -34,6 +34,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/concat.h>
+#include <inviwo/core/algorithm/rangeutils.h>
 
 #include <ostream>
 #include <filesystem>
@@ -95,7 +96,7 @@ bool FileExtension::matches(const std::filesystem::path& path) const {
         return true;  // wildcard '*' matches everything
     }
 
-    return std::ranges::ends_with(
+    return util::ends_with(
         path.native() | views::codePoints,
         views::concat(std::string_view{"."}, extension.view()) | views::codePoints,
         std::ranges::equal_to{}, detail::codePointToLower, detail::codePointToLower);
