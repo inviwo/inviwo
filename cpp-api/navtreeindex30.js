@@ -1,14 +1,15 @@
 var NAVTREEINDEX30 =
 {
-"namespaceinviwo_1_1util.html#af3c2e1caf7ae7eb2ed27584c20c8882c":[2,0,0,20,170],
-"namespaceinviwo_1_1util.html#af6fa91973f804cd02c1e28fb635202d1":[2,0,0,20,293],
-"namespaceinviwo_1_1util.html#af74c8c14214ac56aeafc8d0165333c57":[2,0,0,20,175],
-"namespaceinviwo_1_1util.html#af791b6c40d260174cfe13d1b910a2997":[2,0,0,20,150],
-"namespaceinviwo_1_1util.html#af84d061d989c94549b2515228784d390":[2,0,0,20,204],
-"namespaceinviwo_1_1util.html#af9162a4e2c222f4eb070608e9159a299":[2,0,0,20,221],
-"namespaceinviwo_1_1util.html#afaa3e4c9abdac91937ddd9f54296e200":[2,0,0,20,210],
-"namespaceinviwo_1_1util.html#afcd77e28823a1e07aac632f41f561225":[2,0,0,20,185],
-"namespaceinviwo_1_1util.html#affde4cc8898104cab744510b78002611":[2,0,0,20,90],
+"namespaceinviwo_1_1util.html#af2faab1f347a6ec696b4d7dd494c23e2":[2,0,0,20,225],
+"namespaceinviwo_1_1util.html#af3c2e1caf7ae7eb2ed27584c20c8882c":[2,0,0,20,173],
+"namespaceinviwo_1_1util.html#af6fa91973f804cd02c1e28fb635202d1":[2,0,0,20,296],
+"namespaceinviwo_1_1util.html#af74c8c14214ac56aeafc8d0165333c57":[2,0,0,20,178],
+"namespaceinviwo_1_1util.html#af791b6c40d260174cfe13d1b910a2997":[2,0,0,20,153],
+"namespaceinviwo_1_1util.html#af84d061d989c94549b2515228784d390":[2,0,0,20,207],
+"namespaceinviwo_1_1util.html#af9162a4e2c222f4eb070608e9159a299":[2,0,0,20,224],
+"namespaceinviwo_1_1util.html#afaa3e4c9abdac91937ddd9f54296e200":[2,0,0,20,213],
+"namespaceinviwo_1_1util.html#afcd77e28823a1e07aac632f41f561225":[2,0,0,20,188],
+"namespaceinviwo_1_1util.html#affde4cc8898104cab744510b78002611":[2,0,0,20,92],
 "namespaceinviwo_1_1utilcl.html":[2,0,0,21],
 "namespaceinviwo_1_1utildoc.html":[2,0,0,22],
 "namespaceinviwo_1_1utilgl.html":[2,0,0,23],
@@ -248,6 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1GLFormat.html":[2,0,0,369],
 "structinviwo_1_1GLFormat.html":[4,0,1,378],
 "structinviwo_1_1Histogram1D.html":[2,0,0,394],
-"structinviwo_1_1Histogram1D.html":[4,0,1,403],
-"structinviwo_1_1Histogram2D.html":[2,0,0,395]
+"structinviwo_1_1Histogram1D.html":[4,0,1,403]
 };

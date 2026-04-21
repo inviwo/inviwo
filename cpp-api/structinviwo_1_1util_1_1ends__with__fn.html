@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Inviwo: Member List</title>
+<title>Inviwo: inviwo::util::ends_with_fn Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -64,7 +64,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(function(){initNavTree('classinviwo_1_1InportIterable.html','',''); });
+$(function(){initNavTree('structinviwo_1_1util_1_1ends__with__fn.html','','structinviwo_1_1util_1_1ends__with__fn-members'); });
 </script>
 <div id="container">
 <div id="doc-content">
@@ -90,24 +90,36 @@ $(function(){initNavTree('classinviwo_1_1InportIterable.html','',''); });
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">inviwo::InportIterable&lt; InportType, T, Flat &gt; Member List</div></div>
+  <div class="headertitle"><div class="title">inviwo::util::ends_with_fn Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
-
-<p>This is the complete list of members for <a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a>, including all inherited members.</p>
-<table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>begin</b>() const noexcept (defined in <a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>changedAndData</b>() const noexcept (defined in <a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>end</b>() const noexcept (defined in <a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>InportIterable</b>()=default (defined in <a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>outportAndData</b>() const noexcept (defined in <a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>~InportIterable</b>()=default (defined in <a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1InportIterable.html">inviwo::InportIterable&lt; InportType, T, Flat &gt;</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-</table></div><!-- contents -->
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a70e87c0b1405b144c2ec2ea8aba99332" id="r_a70e87c0b1405b144c2ec2ea8aba99332"><td class="memTemplParams" colspan="2"><a id="a70e87c0b1405b144c2ec2ea8aba99332" name="a70e87c0b1405b144c2ec2ea8aba99332"></a>
+template&lt;std::input_iterator I1, std::sentinel_for&lt; I1 &gt; S1, std::input_iterator I2, std::sentinel_for&lt; I2 &gt; S2, class Pred = std::ranges::equal_to, class Proj1 = std::identity, class Proj2 = std::identity&gt; </td></tr>
+<tr class="memitem:a70e87c0b1405b144c2ec2ea8aba99332 template"><td class="memItemLeft">constexpr bool&#160;</td><td class="memItemRight"><b>operator()</b> (I1 first1, S1 last1, I2 first2, S2 last2, Pred pred={}, Proj1 proj1={}, Proj2 proj2={}) const</td></tr>
+<tr class="memitem:a64a967535ab696bebe7771348c970084" id="r_a64a967535ab696bebe7771348c970084"><td class="memTemplParams" colspan="2"><a id="a64a967535ab696bebe7771348c970084" name="a64a967535ab696bebe7771348c970084"></a>
+template&lt;std::ranges::input_range R1, std::ranges::input_range R2, class Pred = std::ranges::equal_to, class Proj1 = std::identity, class Proj2 = std::identity&gt; </td></tr>
+<tr class="memitem:a64a967535ab696bebe7771348c970084 template"><td class="memItemLeft">constexpr bool&#160;</td><td class="memItemRight"><b>operator()</b> (R1 &amp;&amp;r1, R2 &amp;&amp;r2, Pred pred={}, Proj1 proj1={}, Proj2 proj2={}) const</td></tr>
+</table>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>include/inviwo/core/algorithm/<b>rangeutils.h</b></li>
+</ul>
+</div><!-- contents -->
 </div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
 </div><!-- container -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a href="namespaceinviwo.html">inviwo</a></li><li class="navelem"><a href="namespaceinviwo_1_1util.html">util</a></li><li class="navelem"><a href="structinviwo_1_1util_1_1ends__with__fn.html">ends_with_fn</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.16.1 </li>
   </ul>
 </div>

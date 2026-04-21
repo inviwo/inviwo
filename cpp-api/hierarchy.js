@@ -914,6 +914,7 @@ var hierarchy =
       [ "inviwo::WorkspaceInfoLoader", "classinviwo_1_1WorkspaceInfoLoader.html", null ]
     ] ],
     [ "inviwo::detail::end_tag_t", "structinviwo_1_1detail_1_1end__tag__t.html", null ],
+    [ "inviwo::util::ends_with_fn", "structinviwo_1_1util_1_1ends__with__fn.html", null ],
     [ "inviwo::algorithm::EntryExitPointsHelper", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html", null ],
     [ "inviwo::EnumTraits&lt; T &gt;", "structinviwo_1_1EnumTraits.html", null ],
     [ "inviwo::EnumTraits&lt; filters::NumberComp &gt;", "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html", null ],
@@ -3562,6 +3563,7 @@ var hierarchy =
     ] ],
     [ "inviwo::StandardEvaluationErrorHandler", "structinviwo_1_1StandardEvaluationErrorHandler.html", null ],
     [ "inviwo::StandardExceptionHandler", "structinviwo_1_1StandardExceptionHandler.html", null ],
+    [ "inviwo::util::starts_with_fn", "structinviwo_1_1util_1_1starts__with__fn.html", null ],
     [ "inviwo::pool::detail::State", "structinviwo_1_1pool_1_1detail_1_1State.html", [
       [ "inviwo::pool::detail::StateTemplate< Result, Done >", "structinviwo_1_1pool_1_1detail_1_1StateTemplate.html", null ]
     ] ],

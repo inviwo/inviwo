@@ -1,5 +1,6 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1Histogram2D.html":[2,0,0,395],
 "structinviwo_1_1Histogram2D.html":[4,0,1,404],
 "structinviwo_1_1HistogramCache_1_1Result.html":[2,0,0,396,0],
 "structinviwo_1_1HistogramCache_1_1Result.html":[4,0,1,405,0],
@@ -248,6 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1PropertyObserverDelegate.html":[4,0,1,926],
 "structinviwo_1_1PropertyTraits.html":[2,0,0,926],
 "structinviwo_1_1PropertyTraits.html":[4,0,1,935],
-"structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html":[2,0,0,927],
-"structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html":[4,0,1,936]
+"structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html":[2,0,0,927]
 };
