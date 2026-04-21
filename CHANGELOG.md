@@ -1,6 +1,6 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
-## 2026-04-20 Unicode-aware string comparison and `CodePointsAdaptor` range adaptor ([#1943](https://github.com/inviwo/inviwo/pull/1943))
+## 2026-04-20 Unicode-aware string comparison and `CodePointsAdaptor` range adaptor
 A new header `include/inviwo/core/util/utfutils.h` has been added, replacing the ASCII-only `CaseInsensitiveEqual`/`CaseInsensitiveLess` in `stringconversion.h` with Unicode-correct implementations backed by utf8cpp. Two new case-sensitive counterparts are also added.
 
 - **`detail::CodePointsAdaptor`** — C++23 `range_adaptor_closure` that decodes `char` (UTF-8) or `wchar_t` ranges into `int32_t` code points; supports both call and pipe syntax
@@ -10,27 +10,18 @@ A new header `include/inviwo/core/util/utfutils.h` has been added, replacing the
 
 ```cpp
 // Pipe syntax over UTF-8
-for (int32_t cp : "café"sv | detail::codePoints) { ... }
-
-// Cross-type case-insensitive comparison (UTF-8 vs wide)
-CaseInsensitiveEqual eq;
-eq("ström"sv, L"STRÖM"sv);  // true — ö == Ö
-
-// Transparent comparator in ordered containers
-std::map
+for (int32_t cp : "café"sv | views::codePoints) { ... }
 ```
 
-## 2026-04-17 Trackball uniform zoom and mouse-centered OrthographicCamera zoom ([#1945](https://github.com/inviwo/inviwo/pull/1945))
+## 2026-04-17 Trackball uniform zoom and mouse-centered OrthographicCamera zoom
 - **Trackball**: optional uniform zoom mode (scales all axes equally instead of perspective-aware zoom)
 - **OrthographicCamera**: optional mouse-centered zoom — the point under the cursor stays fixed during scroll zoom
-- Labeling keyboard shortcuts adjusted to work correctly across different keyboard layouts
-- Various event handling and visualizer fixes
 
-## 2026-04-16 NRRD file format reader ([#1942](https://github.com/inviwo/inviwo/pull/1942))
+## 2026-04-16 NRRD file format reader
 A NRRD (Nearly Raw Raster Data) volume reader has been added to the Base module, enabling loading of `.nrrd` and `.nhdr` files directly into Inviwo.
 
-## 2026-04-16 Portable `util::concat` range adaptor (`std::views::concat` backport) ([#1944](https://github.com/inviwo/inviwo/pull/1944))
-A new header `include/inviwo/core/util/concat.h` provides a portable implementation of `std::views::concat` (C++26), which is not yet available in Clang/libc++.
+## 2026-04-16 Portable `util::concat` range adaptor (`std::views::concat` backport)
+A new header `include/inviwo/core/util/concat.h` provides a portable implementation of `std::views::concat` (C++26), which is not yet available in Clang/libc++. Only providing forward_iterators.
 
 - **`concat_view`** — variant-based iterator that lazily concatenates multiple ranges of a common reference type; supports input/forward/bidirectional iteration and `std::ranges::view_interface` helpers
 - **`util::concat`** — factory function wrapping each range via `std::views::all` so temporaries are handled safely; works with pipe composition
@@ -45,12 +36,11 @@ auto evens = util::concat(a, b)
            | std::views::filter([](int x){ return x % 2 == 0; });
 ```
 
-## 2026-04-15 `OrthographicAxis2D` Volume/Layer ports and `PlotCamera` fix ([#1940](https://github.com/inviwo/inviwo/pull/1940))
-- **`OrthographicAxis2D`** processor now exposes optional `VolumeInport` and `LayerInport` so axis ranges can be driven directly from Volume or Layer data extents
-- Fixed a division-by-zero crash in `PlotCamera`
+## 2026-04-15 `OrthographicAxis2D` Volume/Layer ports and `PlotCamera` fix
+- **`OrthographicAxis2D`** processor now exposes optional `MeshInport", `VolumeInport`, and `LayerInport` so axis ranges can be driven directly from a Mesh, Volume, or Layer data extents
 
-## 2026-04-14 Scientific colour maps added to Base module ([#1939](https://github.com/inviwo/inviwo/pull/1939))
-A large collection of perceptually uniform and scientifically accurate colour maps has been added to the Base module, expanding the set of built-in transfer functions available in Inviwo.
+## 2026-04-14 Scientific color maps added to utilities, and to TF presets menus
+A large collection of perceptually uniform and scientifically accurate color maps has been added to the Base module, expanding the set of built-in transfer functions available in Inviwo.
 
 ## 2026-04-14 `SpatialEntity` and `Camera` promoted to double precision ([#1928](https://github.com/inviwo/inviwo/pull/1928))
 All spatial state in `SpatialEntity` and `Camera` (and their subclasses) has been promoted from `float`/`mat4`/`vec3` to `double`/`dmat4`/`dvec3`. This is a **breaking API change** — downstream code that passes or receives spatial matrices, camera parameters, or bounding boxes must be updated.

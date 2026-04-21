@@ -33,6 +33,64 @@
 </style>
 </head>
 <body>
+<h2>2026-04-20 Unicode-aware string comparison and <code class="notranslate">CodePointsAdaptor</code> range adaptor</h2>
+<p>A new header <code class="notranslate">include/inviwo/core/util/utfutils.h</code> has been added, replacing the ASCII-only <code class="notranslate">CaseInsensitiveEqual</code>/<code class="notranslate">CaseInsensitiveLess</code> in <code class="notranslate">stringconversion.h</code> with Unicode-correct implementations backed by utf8cpp. Two new case-sensitive counterparts are also added.</p>
+<ul>
+<li><strong><code class="notranslate">detail::CodePointsAdaptor</code></strong> — C++23 <code class="notranslate">range_adaptor_closure</code> that decodes <code class="notranslate">char</code> (UTF-8) or <code class="notranslate">wchar_t</code> ranges into <code class="notranslate">int32_t</code> code points; supports both call and pipe syntax</li>
+<li><strong><code class="notranslate">CaseInsensitiveEqual</code> / <code class="notranslate">CaseInsensitiveLess</code></strong> — Unicode-aware, replacing the old <code class="notranslate">std::tolower</code> byte-level comparisons; handle all four <code class="notranslate">string_view</code>/<code class="notranslate">wstring_view</code> cross-type overloads</li>
+<li><strong><code class="notranslate">CaseSensitiveEqual</code> / <code class="notranslate">CaseSensitiveLess</code></strong> — new, same cross-type overload structure</li>
+<li>All four functors carry <code class="notranslate">using is_transparent = int</code> for heterogeneous container lookup</li>
+</ul>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-c"><span class="pl-c">//</span> Pipe syntax over UTF-8</span>
+<span class="pl-k">for</span> (<span class="pl-c1">int32_t</span> cp : <span class="pl-s"><span class="pl-pds">"</span>café<span class="pl-pds">"</span></span>sv | views::codePoints) { ... }</pre></div>
+<h2>2026-04-17 Trackball uniform zoom and mouse-centered OrthographicCamera zoom</h2>
+<ul>
+<li><strong>Trackball</strong>: optional uniform zoom mode (scales all axes equally instead of perspective-aware zoom)</li>
+<li><strong>OrthographicCamera</strong>: optional mouse-centered zoom — the point under the cursor stays fixed during scroll zoom</li>
+</ul>
+<h2>2026-04-16 NRRD file format reader</h2>
+<p>A NRRD (Nearly Raw Raster Data) volume reader has been added to the Base module, enabling loading of <code class="notranslate">.nrrd</code> and <code class="notranslate">.nhdr</code> files directly into Inviwo.</p>
+<h2>2026-04-16 Portable <code class="notranslate">util::concat</code> range adaptor (<code class="notranslate">std::views::concat</code> backport)</h2>
+<p>A new header <code class="notranslate">include/inviwo/core/util/concat.h</code> provides a portable implementation of <code class="notranslate">std::views::concat</code> (C++26), which is not yet available in Clang/libc++. Only providing forward_iterators.</p>
+<ul>
+<li><strong><code class="notranslate">concat_view</code></strong> — variant-based iterator that lazily concatenates multiple ranges of a common reference type; supports input/forward/bidirectional iteration and <code class="notranslate">std::ranges::view_interface</code> helpers</li>
+<li><strong><code class="notranslate">util::concat</code></strong> — factory function wrapping each range via <code class="notranslate">std::views::all</code> so temporaries are handled safely; works with pipe composition</li>
+</ul>
+<div class="highlight highlight-source-c++"><pre class="notranslate">std::vector&lt;<span class="pl-k">int</span>&gt; a{<span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>};
+std::array&lt;<span class="pl-k">int</span>, <span class="pl-c1">2</span>&gt; b{<span class="pl-c1">4</span>, <span class="pl-c1">5</span>};
+
+<span class="pl-k">for</span> (<span class="pl-k">int</span> x : util::concat(a, b)) { ... }  <span class="pl-c"><span class="pl-c">//</span> 1 2 3 4 5</span>
+
+<span class="pl-k">auto</span> evens = util::concat(a, b)
+           | std::views::filter([](<span class="pl-k">int</span> x){ <span class="pl-k">return</span> x % <span class="pl-c1">2</span> == <span class="pl-c1">0</span>; });</pre></div>
+<h2>2026-04-15 <code class="notranslate">OrthographicAxis2D</code> Volume/Layer ports and <code class="notranslate">PlotCamera</code> fix</h2>
+<ul>
+<li><strong><code class="notranslate">OrthographicAxis2D</code></strong> processor now exposes optional <code class="notranslate">MeshInport", </code>VolumeInport<code class="notranslate">, and </code>LayerInport` so axis ranges can be driven directly from a Mesh, Volume, or Layer data extents</li>
+</ul>
+<h2>2026-04-14 Scientific color maps added to utilities, and to TF presets menus</h2>
+<p>A large collection of perceptually uniform and scientifically accurate color maps has been added to the Base module, expanding the set of built-in transfer functions available in Inviwo.</p>
+<h2>2026-04-14 <code class="notranslate">SpatialEntity</code> and <code class="notranslate">Camera</code> promoted to double precision (<a href="https://github.com/inviwo/inviwo/pull/1928" data-hovercard-type="pull_request" data-hovercard-url="/inviwo/inviwo/pull/1928/hovercard">#1928</a>)</h2>
+<p>All spatial state in <code class="notranslate">SpatialEntity</code> and <code class="notranslate">Camera</code> (and their subclasses) has been promoted from <code class="notranslate">float</code>/<code class="notranslate">mat4</code>/<code class="notranslate">vec3</code> to <code class="notranslate">double</code>/<code class="notranslate">dmat4</code>/<code class="notranslate">dvec3</code>. This is a <strong>breaking API change</strong> — downstream code that passes or receives spatial matrices, camera parameters, or bounding boxes must be updated.</p>
+<h3>Key changes</h3>
+<ul>
+<li><strong><code class="notranslate">SpatialEntity</code></strong>: <code class="notranslate">modelMatrix_</code>/<code class="notranslate">worldMatrix_</code> → <code class="notranslate">dmat4</code>; <code class="notranslate">getOffset</code>/<code class="notranslate">getBasis</code> → <code class="notranslate">dvec3</code>/<code class="notranslate">dmat3</code></li>
+<li><strong><code class="notranslate">StructuredGridEntity</code></strong>: <code class="notranslate">getIndexMatrix()</code> → <code class="notranslate">dmat4</code></li>
+<li><strong><code class="notranslate">Camera</code></strong> and all subclasses (<code class="notranslate">PerspectiveCamera</code>, <code class="notranslate">OrthographicCamera</code>, <code class="notranslate">SkewedPerspectiveCamera</code>, <code class="notranslate">PlotCamera</code>, <code class="notranslate">SGCTCamera</code>): <code class="notranslate">lookFrom_</code>/<code class="notranslate">lookTo_</code>/<code class="notranslate">lookUp_</code> → <code class="notranslate">dvec3</code>; view/projection matrices → <code class="notranslate">dmat4</code>; <code class="notranslate">nearPlaneDist_</code>/<code class="notranslate">farPlaneDist_</code>/<code class="notranslate">aspectRatio_</code> → <code class="notranslate">double</code></li>
+<li><strong><code class="notranslate">cameradefaults</code></strong>: all constants promoted to <code class="notranslate">dvec3</code>/<code class="notranslate">double</code></li>
+<li><strong><code class="notranslate">CameraProperty</code></strong>: <code class="notranslate">FloatVec3RefProperty</code> → <code class="notranslate">DoubleVec3RefProperty</code>; <code class="notranslate">FloatRefProperty</code> → <code class="notranslate">DoubleRefProperty</code>; bounding-box functor <code class="notranslate">std::function&lt;mat4()&gt;</code> → <code class="notranslate">std::function&lt;dmat4()&gt;</code></li>
+<li><strong>Coordinate transformers</strong>: <code class="notranslate">getMatrix</code>, <code class="notranslate">getDataToWorldMatrix</code>, <code class="notranslate">getModelToWorldMatrix</code>, etc. → <code class="notranslate">dmat4</code></li>
+<li><strong><code class="notranslate">TrackballObject</code></strong> interface: all <code class="notranslate">vec3</code> → <code class="notranslate">dvec3</code></li>
+<li><strong>Algorithms</strong>: <code class="notranslate">camerautil::setCameraView</code>, <code class="notranslate">util::boundingBox</code>, <code class="notranslate">util::minExtentBoundingBox</code>, etc. now return/accept <code class="notranslate">dmat4</code></li>
+</ul>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-c"><span class="pl-c">//</span> Before</span>
+<span class="pl-en">Camera</span>(vec3 lookFrom, vec3 lookTo, vec3 lookUp, <span class="pl-k">float</span> nearPlane, <span class="pl-k">float</span> farPlane, <span class="pl-k">float</span> aspectRatio);
+<span class="pl-k">const</span> mat4&amp; <span class="pl-en">getViewMatrix</span>() <span class="pl-k">const</span>;
+mat4 <span class="pl-en">boundingBox</span>(<span class="pl-k">const</span> Volume&amp; volume);
+
+<span class="pl-c"><span class="pl-c">//</span> After</span>
+<span class="pl-en">Camera</span>(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, <span class="pl-k">double</span> nearPlane, <span class="pl-k">double</span> farPlane, <span class="pl-k">double</span> aspectRatio);
+<span class="pl-k">const</span> dmat4&amp; <span class="pl-en">getViewMatrix</span>() <span class="pl-k">const</span>;
+dmat4 <span class="pl-en">boundingBox</span>(<span class="pl-k">const</span> Volume&amp; volume);</pre></div>
 <h2>2026-03-23 Box selection in Parallel Coordinates Plot and OrthographicAxis2D</h2>
 <p>Box selection was added to the Parallel Coordinates Plot (PCP). It supports selecting lines anywhere in the PCP or data values located on the columns.<br>
 The <code class="notranslate">Orthographic Axis2D</code> processor also supports a box selection and propagates these interactions with <code class="notranslate">AxisRangeEvents</code>. For an example implementation check out the <code class="notranslate">DataFrame To Mesh</code> processor, which uses <code class="notranslate">AxisRangeEvents</code> to select and filter a DataFrame.</p>
