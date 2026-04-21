@@ -63,12 +63,12 @@ std::array&lt;<span class="pl-k">int</span>, <span class="pl-c1">2</span>&gt; b{
 
 <span class="pl-k">auto</span> evens = util::concat(a, b)
            | std::views::filter([](<span class="pl-k">int</span> x){ <span class="pl-k">return</span> x % <span class="pl-c1">2</span> == <span class="pl-c1">0</span>; });</pre></div>
-<h2>2026-04-15 <code class="notranslate">OrthographicAxis2D</code> Volume/Layer ports and <code class="notranslate">PlotCamera</code> fix</h2>
+<h2>2026-04-15 <code class="notranslate">OrthographicAxis2D</code> Volume/Layer ports</h2>
 <ul>
-<li><strong><code class="notranslate">OrthographicAxis2D</code></strong> processor now exposes optional <code class="notranslate">MeshInport", </code>VolumeInport<code class="notranslate">, and </code>LayerInport` so axis ranges can be driven directly from a Mesh, Volume, or Layer data extents</li>
+<li><strong><code class="notranslate">OrthographicAxis2D</code></strong> processor now exposes optional <code class="notranslate">MeshInport</code>, <code class="notranslate">VolumeInport</code>, and <code class="notranslate">LayerInport</code> so axis ranges can be driven directly from a Mesh, Volume, or Layer data extents</li>
 </ul>
-<h2>2026-04-14 Scientific color maps added to utilities, and to TF presets menus</h2>
-<p>A large collection of perceptually uniform and scientifically accurate color maps has been added to the Base module, expanding the set of built-in transfer functions available in Inviwo.</p>
+<h2>2026-04-14 Scientific color maps added to utilities and the TF presets menus</h2>
+<p>A large collection of perceptually uniform scientific color maps created by Fabio Crameri (<a href="https://fabiocrameri.ch/colourmaps/" rel="nofollow">fabiocrameri.ch/colourmaps/</a>) has been added to the Base module, expanding the set of built-in transfer functions available in Inviwo.</p>
 <h2>2026-04-14 <code class="notranslate">SpatialEntity</code> and <code class="notranslate">Camera</code> promoted to double precision (<a href="https://github.com/inviwo/inviwo/pull/1928" data-hovercard-type="pull_request" data-hovercard-url="/inviwo/inviwo/pull/1928/hovercard">#1928</a>)</h2>
 <p>All spatial state in <code class="notranslate">SpatialEntity</code> and <code class="notranslate">Camera</code> (and their subclasses) has been promoted from <code class="notranslate">float</code>/<code class="notranslate">mat4</code>/<code class="notranslate">vec3</code> to <code class="notranslate">double</code>/<code class="notranslate">dmat4</code>/<code class="notranslate">dvec3</code>. This is a <strong>breaking API change</strong> — downstream code that passes or receives spatial matrices, camera parameters, or bounding boxes must be updated.</p>
 <h3>Key changes</h3>
