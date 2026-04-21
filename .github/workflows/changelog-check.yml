@@ -16,7 +16,7 @@ jobs:
     name: "Changelog Check"
     runs-on: ubuntu-slim
     # Skip PRs explicitly labelled as not needing a changelog entry
-    if: !contains(github.event.pull_request.labels.*.name, 'no-changelog')
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'no-changelog') }}
 
     steps:
       - name: "Checkout"
