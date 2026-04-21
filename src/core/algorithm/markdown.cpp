@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/algorithm/markdown.h>
+#include <inviwo/core/algorithm/syntaxhighlight.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/unindent.h>
@@ -67,7 +68,11 @@ void renderAttribute(const MD_ATTRIBUTE& attr, StrBuffer& strBuffer,
 }  // namespace
 
 Document util::md2doc(std::string_view markdown) {
-    using State = std::vector<Document::DocumentHandle>;
+    struct State {
+        std::vector<Document::DocumentHandle> handles;
+        std::string codeLang;  ///< non-empty while accumulating a highlighted code block
+        std::string codeText;  ///< code text accumulated from md4c text callbacks
+    };
 
     auto enter_block_callback = [](MD_BLOCKTYPE type, void* detail, void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
@@ -76,34 +81,35 @@ Document util::md2doc(std::string_view markdown) {
 
         switch (type) {
             case MD_BLOCK_DOC:
-                state->push_back(state->back().append("div"));
+                state->handles.push_back(state->handles.back().append("div"));
                 break;
             case MD_BLOCK_QUOTE:
-                state->push_back(state->back().append("blockquote"));
+                state->handles.push_back(state->handles.back().append("blockquote"));
                 break;
             case MD_BLOCK_UL:
-                state->push_back(state->back().append("ul"));
+                state->handles.push_back(state->handles.back().append("ul"));
                 break;
             case MD_BLOCK_OL: {
                 auto* blockDetail = static_cast<MD_BLOCK_OL_DETAIL*>(detail);
 
                 if (blockDetail->start == 1) {
-                    state->push_back(state->back().append("ol"));
+                    state->handles.push_back(state->handles.back().append("ol"));
                 } else {
-                    state->push_back(state->back().append(
+                    state->handles.push_back(state->handles.back().append(
                         "ol", "", {{"start", fmt::format("{}", blockDetail->start)}}));
                 }
                 break;
             }
             case MD_BLOCK_LI:
-                state->push_back(state->back().append("li"));
+                state->handles.push_back(state->handles.back().append("li"));
                 break;
             case MD_BLOCK_HR:
-                state->push_back(state->back().append("hr"));
+                state->handles.push_back(state->handles.back().append("hr"));
                 break;
             case MD_BLOCK_H: {
                 auto* blockDetail = static_cast<MD_BLOCK_H_DETAIL*>(detail);
-                state->push_back(state->back().append(fmt::format("h{}", blockDetail->level)));
+                state->handles.push_back(
+                    state->handles.back().append(fmt::format("h{}", blockDetail->level)));
                 break;
             }
             case MD_BLOCK_CODE: {
@@ -111,41 +117,44 @@ Document util::md2doc(std::string_view markdown) {
                 if (blockDetail->lang.text != nullptr) {
                     StrBuffer buff;
                     renderAttribute(blockDetail->lang, buff, util::htmlEncodeTo);
-                    state->push_back(
-                        state->back()
+                    state->codeLang = std::string{buff.view()};
+                    state->codeText.clear();
+                    state->handles.push_back(
+                        state->handles.back()
                             .append("code", "",
                                     {{"class", fmt::format("language-{}", buff.view())}})
                             .append("pre"));
                 } else {
-                    state->push_back(state->back().append("code").append("pre"));
+                    state->handles.push_back(
+                        state->handles.back().append("code").append("pre"));
                 }
                 break;
             }
             case MD_BLOCK_HTML:
-                state->push_back(state->back().append("div"));
+                state->handles.push_back(state->handles.back().append("div"));
                 break;
             case MD_BLOCK_P:
-                state->push_back(state->back().append("p"));
+                state->handles.push_back(state->handles.back().append("p"));
                 break;
             case MD_BLOCK_TABLE:
-                state->push_back(state->back().append("table"));
+                state->handles.push_back(state->handles.back().append("table"));
                 break;
             case MD_BLOCK_THEAD:
-                state->push_back(state->back().append("thead"));
+                state->handles.push_back(state->handles.back().append("thead"));
                 break;
             case MD_BLOCK_TBODY:
-                state->push_back(state->back().append("tbody"));
+                state->handles.push_back(state->handles.back().append("tbody"));
                 break;
             case MD_BLOCK_TR:
-                state->push_back(state->back().append("tr"));
+                state->handles.push_back(state->handles.back().append("tr"));
                 break;
             case MD_BLOCK_TH: {
                 auto* blockDetail = static_cast<MD_BLOCK_TD_DETAIL*>(detail);
                 if (blockDetail->align == MD_ALIGN_DEFAULT) {
-                    state->push_back(state->back().append("th"));
+                    state->handles.push_back(state->handles.back().append("th"));
 
                 } else {
-                    state->push_back(state->back().append(
+                    state->handles.push_back(state->handles.back().append(
                         "th", "",
                         {{"align", std::string{align[static_cast<int>(blockDetail->align)]}}}));
                 }
@@ -154,10 +163,10 @@ Document util::md2doc(std::string_view markdown) {
             case MD_BLOCK_TD: {
                 auto* blockDetail = static_cast<MD_BLOCK_TD_DETAIL*>(detail);
                 if (blockDetail->align == MD_ALIGN_DEFAULT) {
-                    state->push_back(state->back().append("td"));
+                    state->handles.push_back(state->handles.back().append("td"));
 
                 } else {
-                    state->push_back(state->back().append(
+                    state->handles.push_back(state->handles.back().append(
                         "td", "",
                         {{"align", std::string{align[static_cast<int>(blockDetail->align)]}}}));
                 }
@@ -167,9 +176,14 @@ Document util::md2doc(std::string_view markdown) {
 
         return 0;
     };
-    auto leave_block_callback = [](MD_BLOCKTYPE, void*, void* userdata) -> int {
+    auto leave_block_callback = [](MD_BLOCKTYPE type, void*, void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
-        state->pop_back();
+        if (type == MD_BLOCK_CODE && !state->codeLang.empty()) {
+            util::highlightCode(state->handles.back(), state->codeText, state->codeLang);
+            state->codeLang.clear();
+            state->codeText.clear();
+        }
+        state->handles.pop_back();
         return 0;
     };
     auto enter_span_callback = [](MD_SPANTYPE type, void* detail, void* userdata) -> int {
@@ -177,13 +191,13 @@ Document util::md2doc(std::string_view markdown) {
 
         switch (type) {
             case MD_SPAN_EM:
-                state->push_back(state->back().append("em"));
+                state->handles.push_back(state->handles.back().append("em"));
                 break;
             case MD_SPAN_STRONG:
-                state->push_back(state->back().append("strong"));
+                state->handles.push_back(state->handles.back().append("strong"));
                 break;
             case MD_SPAN_U:
-                state->push_back(state->back().append("u"));
+                state->handles.push_back(state->handles.back().append("u"));
                 break;
             case MD_SPAN_A: {
                 auto* blockDetail = static_cast<MD_SPAN_A_DETAIL*>(detail);
@@ -197,7 +211,7 @@ Document util::md2doc(std::string_view markdown) {
                     attr.emplace("title", buff.view());
                 }
 
-                state->push_back(state->back().append("a", "", attr));
+                state->handles.push_back(state->handles.back().append("a", "", attr));
                 break;
             }
             case MD_SPAN_IMG: {
@@ -211,23 +225,24 @@ Document util::md2doc(std::string_view markdown) {
                     renderAttribute(blockDetail->title, buff, util::htmlEncodeTo);
                     attr.emplace("title", buff.view());
                 }
-                state->push_back(state->back().append("img", "", attr));
+                state->handles.push_back(state->handles.back().append("img", "", attr));
                 break;
             }
             case MD_SPAN_CODE:
-                state->push_back(state->back().append("code"));
+                state->handles.push_back(state->handles.back().append("code"));
                 break;
             case MD_SPAN_DEL:
-                state->push_back(state->back().append("del"));
+                state->handles.push_back(state->handles.back().append("del"));
                 break;
             case MD_SPAN_LATEXMATH:
-                state->push_back(state->back().append("x-equation"));
+                state->handles.push_back(state->handles.back().append("x-equation"));
                 break;
             case MD_SPAN_LATEXMATH_DISPLAY:
-                state->push_back(state->back().append("x-equation", "", {{"type", "display"}}));
+                state->handles.push_back(
+                    state->handles.back().append("x-equation", "", {{"type", "display"}}));
                 break;
             case MD_SPAN_WIKILINK:  // dummy
-                state->push_back(state->back().append("div"));
+                state->handles.push_back(state->handles.back().append("div"));
                 break;
         }
 
@@ -235,15 +250,18 @@ Document util::md2doc(std::string_view markdown) {
     };
     auto leave_span_callback = [](MD_SPANTYPE, void*, void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
-        state->pop_back();
+        state->handles.pop_back();
         return 0;
     };
     auto text_callback = [](MD_TEXTTYPE, const MD_CHAR* text, MD_SIZE size, void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
-        if (state->back().element().name() == "img") {
-            state->back().element().attributes().emplace("alt", std::string_view(text, size));
+        if (state->handles.back().element().name() == "img") {
+            state->handles.back().element().attributes().emplace("alt",
+                                                                  std::string_view(text, size));
+        } else if (!state->codeLang.empty()) {
+            state->codeText.append(text, size);
         } else {
-            state->back() += std::string_view(text, size);
+            state->handles.back() += std::string_view(text, size);
         }
         return 0;
     };
@@ -263,7 +281,7 @@ Document util::md2doc(std::string_view markdown) {
         nullptr};
 
     Document doc;
-    State state{doc.handle()};
+    State state{{doc.handle()}};
     md_parse(markdown.data(), static_cast<MD_SIZE>(markdown.size()), &parser,
              static_cast<void*>(&state));
 
