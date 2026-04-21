@@ -36,11 +36,11 @@ auto evens = util::concat(a, b)
            | std::views::filter([](int x){ return x % 2 == 0; });
 ```
 
-## 2026-04-15 `OrthographicAxis2D` Volume/Layer ports and `PlotCamera` fix
-- **`OrthographicAxis2D`** processor now exposes optional `MeshInport", `VolumeInport`, and `LayerInport` so axis ranges can be driven directly from a Mesh, Volume, or Layer data extents
+## 2026-04-15 `OrthographicAxis2D` Volume/Layer ports
+- **`OrthographicAxis2D`** processor now exposes optional `MeshInport`, `VolumeInport`, and `LayerInport` so axis ranges can be driven directly from a Mesh, Volume, or Layer data extents
 
-## 2026-04-14 Scientific color maps added to utilities, and to TF presets menus
-A large collection of perceptually uniform and scientifically accurate color maps has been added to the Base module, expanding the set of built-in transfer functions available in Inviwo.
+## 2026-04-14 Scientific color maps added to utilities and the TF presets menus
+A large collection of perceptually uniform scientific color maps created by Fabio Crameri ([fabiocrameri.ch/colourmaps/](https://fabiocrameri.ch/colourmaps/)) has been added to the Base module, expanding the set of built-in transfer functions available in Inviwo.
 
 ## 2026-04-14 `SpatialEntity` and `Camera` promoted to double precision ([#1928](https://github.com/inviwo/inviwo/pull/1928))
 All spatial state in `SpatialEntity` and `Camera` (and their subclasses) has been promoted from `float`/`mat4`/`vec3` to `double`/`dmat4`/`dvec3`. This is a **breaking API change** — downstream code that passes or receives spatial matrices, camera parameters, or bounding boxes must be updated.
