@@ -3,7 +3,8 @@ name: "Changelog Check"
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-
+  workflow_dispatch:
+  
 # Minimal permissions: read repo content, comment on PRs, call GitHub Models
 permissions:
   contents: read
@@ -13,15 +14,13 @@ permissions:
 jobs:
   changelog:
     name: "Changelog Check"
-    runs-on: ubuntu-latest
-    # Skip drafts and PRs explicitly labelled as not needing a changelog entry
-    if: |
-      github.event.pull_request.draft == false &&
-      !contains(github.event.pull_request.labels.*.name, 'no-changelog')
+    runs-on: ubuntu-slim
+    # Skip PRs explicitly labelled as not needing a changelog entry
+    if: !contains(github.event.pull_request.labels.*.name, 'no-changelog')
 
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: "Check if CHANGELOG.md was modified"
         id: check
