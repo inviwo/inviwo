@@ -35,6 +35,8 @@
 
 namespace inviwo {
 
+class Outport;
+
 template <typename InportType, typename T, bool Flat>
 class InportIterable {
 public:
