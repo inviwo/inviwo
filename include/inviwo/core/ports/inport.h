@@ -91,7 +91,7 @@ public:
 
     virtual bool isConnectedTo(const Outport* outport) const;
     virtual Outport* getConnectedOutport() const;
-    virtual const std::vector<Outport*>& getConnectedOutports() const;
+    const std::vector<Outport*>& getConnectedOutports() const noexcept;
     virtual size_t getMaxNumberOfConnections() const = 0;
     virtual size_t getNumberOfConnections() const;
     virtual const std::vector<const Outport*>& getChangedOutports() const;

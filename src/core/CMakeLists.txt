@@ -14,6 +14,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/linearmap.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/markdown.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/permutations.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/rangeutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/searchdsl.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/factoryutil.h
@@ -459,6 +460,7 @@ set(SOURCE_FILES
     algorithm/linearmap.cpp
     algorithm/markdown.cpp
     algorithm/permutations.cpp
+    algorithm/rangeutils.cpp
     algorithm/searchdsl.cpp
     common/factoryutil.cpp
     common/inviwoapplication.cpp

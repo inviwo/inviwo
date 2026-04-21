@@ -68,9 +68,8 @@ std::function<std::optional<dmat4>()> PeriodicityGL::boundingBox(MeshFlatMultiIn
                 const auto d2w = port->getData()->getCoordinateTransformer().getDataToWorldMatrix();
                 const auto scale = glm::scale(dvec3(repeat.get()));
                 return d2w * scale * dmat4(basis.get());
-
             } else {
-                return util::boundingBox(port->getVectorData());
+                return util::calcBoundingBox(port->getVectorData());
             }
         } else {
             return std::nullopt;

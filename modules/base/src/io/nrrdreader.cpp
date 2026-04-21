@@ -241,11 +241,12 @@ NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
     std::string typeStr;
 
     // Parse header fields
-    std::string line;
-    while (std::getline(file, line)) {
+    std::string lineStr;
+    while (std::getline(file, lineStr)) {
+        std::string_view line = util::trim(lineStr);
         // Remove trailing \r
         if (!line.empty() && line.back() == '\r') {
-            line.pop_back();
+            line.remove_suffix(1);
         }
 
         // Blank line terminates the header
@@ -265,7 +266,7 @@ NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
         auto colon = line.find(':');
         if (colon == std::string::npos) continue;
 
-        const std::string key = toLower(util::trim(line.substr(0, colon)));
+        const auto key = toLower(util::trim(line.substr(0, colon)));
         const auto value = util::trim(line.substr(colon + 1));
 
         if (key == "type") {

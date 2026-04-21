@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,47 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/algorithm/rangeutils.h>
 
-#include <utility>
-#include <iterator>
-
-namespace inviwo::util {
-
-template <class Iter>
-struct iter_range : std::pair<Iter, Iter> {
-    using value_type = typename std::iterator_traits<Iter>::value_type;
-    using const_iterator = Iter;
-    using iterator = Iter;
-    using std::pair<Iter, Iter>::pair;
-    constexpr explicit iter_range(const std::pair<Iter, Iter>& x) noexcept : std::pair<Iter, Iter>(x) {}
-    constexpr Iter begin() const noexcept { return this->first; }
-    constexpr Iter end() const noexcept { return this->second; }
-};
-
-template <class Iter>
-constexpr iter_range<Iter> as_range(Iter begin, Iter end) {
-    return iter_range<Iter>(std::make_pair(begin, end));
-}
-
-template <class Iter>
-constexpr iter_range<Iter> as_range(const std::pair<Iter, Iter>& x) {
-    return iter_range<Iter>(x);
-}
-
-template <class Container>
-constexpr iter_range<typename Container::iterator> as_range(Container& c) {
-    using std::begin;
-    using std::end;
-    return iter_range<typename Container::iterator>(std::make_pair(begin(c), end(c)));
-}
-template <class Container>
-constexpr iter_range<typename Container::const_iterator> as_range(const Container& c) {
-    using std::begin;
-    using std::end;
-    return iter_range<typename Container::const_iterator>(std::make_pair(begin(c), end(c)));
-}
-
-}  // namespace inviwo::util
+namespace inviwo {}  // namespace inviwo

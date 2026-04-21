@@ -31,6 +31,8 @@
 
 #include <inviwo/core/datastructures/image/layer.h>
 
+#include <inviwo/core/algorithm/rangeutils.h>
+
 #include <numeric>
 #include <utility>
 #include <ranges>
@@ -126,7 +128,7 @@ std::optional<dmat4> boundingBoxUnion(const std::optional<dmat4>& a,
     return m;
 }
 
-dmat4 boundingBox(const Layer& layer) {
+std::optional<dmat4> calcBoundingBox(const Layer& layer) {
     auto m = layer.getCoordinateTransformer().getDataToModelMatrix();
     const auto z = glm::cross(dvec3{m[0]}, dvec3{m[1]});
     m[2] = dvec4{z * 0.0001, 0.0};
@@ -134,29 +136,11 @@ dmat4 boundingBox(const Layer& layer) {
     return layer.getCoordinateTransformer().getModelToWorldMatrix() * m;
 }
 
-dmat4 boundingBox(const std::vector<std::shared_ptr<Layer>>& layers) {
-    if (layers.empty()) return {0.0};
-
-    dvec3 worldMin(std::numeric_limits<double>::max());
-    dvec3 worldMax(std::numeric_limits<double>::lowest());
-
-    const std::array<dvec3, 8> corners = {dvec3{0, 0, 0}, dvec3{1, 0, 0}, dvec3{1, 1, 0},
-                                          dvec3{0, 1, 0}, dvec3{0, 0, 1}, dvec3{1, 0, 1},
-                                          dvec3{1, 1, 1}, dvec3{0, 1, 1}};
-    for (const auto& layer : layers) {
-        auto bb = boundingBox(*layer);
-        for (const auto& corner : corners) {
-            const auto point = dvec3(bb * dvec4(corner, 1.0));
-            worldMin = glm::min(worldMin, point);
-            worldMax = glm::max(worldMax, point);
-        }
-    }
-    auto m = glm::scale(worldMax - worldMin);
-    m[3] = dvec4(worldMin, 1.0);
-    return m;
+std::optional<dmat4> calcBoundingBox(const std::vector<std::shared_ptr<Layer>>& layers) {
+    return calcBoundingBox(layers | views::deref);
 }
 
-dmat4 boundingBox(const Mesh& mesh) {
+std::optional<dmat4> calcBoundingBox(const Mesh& mesh) {
     const auto& buffers = mesh.getBuffers();
     auto it = std::ranges::find_if(
         buffers, [](const auto& buff) { return buff.first.type == BufferType::PositionAttrib; });
@@ -186,64 +170,26 @@ dmat4 boundingBox(const Mesh& mesh) {
         return mesh.getCoordinateTransformer().getDataToWorldMatrix() * m;
 
     } else {
-        dmat4 m{0.0};
-        m[3] = dvec4(dvec3(mesh.getOffset()), 1.0);
-        return m;
+        return std::nullopt;
     }
 }
 
-dmat4 boundingBox(const std::vector<std::shared_ptr<const Mesh>>& meshes) {
-    if (meshes.empty()) return {0.0};
-
-    dvec3 worldMin(std::numeric_limits<double>::max());
-    dvec3 worldMax(std::numeric_limits<double>::lowest());
-
-    const std::array<dvec3, 8> corners = {dvec3{0, 0, 0}, dvec3{1, 0, 0}, dvec3{1, 1, 0},
-                                          dvec3{0, 1, 0}, dvec3{0, 0, 1}, dvec3{1, 0, 1},
-                                          dvec3{1, 1, 1}, dvec3{0, 1, 1}};
-    for (const auto& mesh : meshes) {
-        auto bb = boundingBox(*mesh);
-        for (const auto& corner : corners) {
-            const auto point = dvec3(bb * dvec4(corner, 1.0));
-            worldMin = glm::min(worldMin, point);
-            worldMax = glm::max(worldMax, point);
-        }
-    }
-    auto m = glm::scale(worldMax - worldMin);
-    m[3] = dvec4(worldMin, 1.0);
-    return m;
+std::optional<dmat4> calcBoundingBox(const std::vector<std::shared_ptr<const Mesh>>& meshes) {
+    return calcBoundingBox(meshes | views::deref);
 }
 
-dmat4 boundingBox(const Volume& volume) {
+std::optional<dmat4> calcBoundingBox(const Volume& volume) {
     return volume.getCoordinateTransformer().getDataToWorldMatrix();
 }
 
-dmat4 boundingBox(const std::vector<std::shared_ptr<Volume>>& volumes) {
-    if (volumes.empty()) return {0.0};
-
-    dvec3 worldMin(std::numeric_limits<double>::max());
-    dvec3 worldMax(std::numeric_limits<double>::lowest());
-
-    const std::array<dvec3, 8> corners = {dvec3{0, 0, 0}, dvec3{1, 0, 0}, dvec3{1, 1, 0},
-                                          dvec3{0, 1, 0}, dvec3{0, 0, 1}, dvec3{1, 0, 1},
-                                          dvec3{1, 1, 1}, dvec3{0, 1, 1}};
-    for (const auto& volume : volumes) {
-        auto bb = boundingBox(*volume);
-        for (const auto& corner : corners) {
-            const auto point = dvec3(bb * dvec4(corner, 1.0));
-            worldMin = glm::min(worldMin, point);
-            worldMax = glm::max(worldMax, point);
-        }
-    }
-    auto m = glm::scale(worldMax - worldMin);
-    m[3] = dvec4(worldMin, 1.0);
-    return m;
+std::optional<dmat4> calcBoundingBox(const std::vector<std::shared_ptr<Volume>>& volumes) {
+    return calcBoundingBox(volumes | views::deref);
 }
 
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer>& layer) {
     return [port = &layer]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(*port->getData());
+            return calcBoundingBox(*port->getData());
         } else {
             return std::nullopt;
         }
@@ -252,7 +198,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer>& layer
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer, 0>& layers) {
     return [port = &layers]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(*port->getData());
+            return calcBoundingBox(*port->getData());
         } else {
             return std::nullopt;
         }
@@ -261,7 +207,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer, 0>& la
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer, 0, true>& layers) {
     return [port = &layers]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(*port->getData());
+            return calcBoundingBox(*port->getData());
         } else {
             return std::nullopt;
         }
@@ -270,7 +216,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer, 0, tru
 std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Layer>& layer) {
     return [port = &layer]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(*port->getData());
+            return calcBoundingBox(*port->getData());
         } else {
             return std::nullopt;
         }
@@ -280,7 +226,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Layer>& laye
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh>& mesh) {
     return [port = &mesh]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(*port->getData());
+            return calcBoundingBox(*port->getData());
         } else {
             return std::nullopt;
         }
@@ -289,7 +235,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh>& mesh) 
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh, 0>& meshes) {
     return [port = &meshes]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(port->getVectorData());
+            return calcBoundingBox(port->getVectorData());
         } else {
             return std::nullopt;
         }
@@ -298,7 +244,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh, 0>& mes
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh, 0, true>& meshes) {
     return [port = &meshes]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(port->getVectorData());
+            return calcBoundingBox(port->getVectorData());
         } else {
             return std::nullopt;
         }
@@ -307,7 +253,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh, 0, true
 std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Mesh>& mesh) {
     return [port = &mesh]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(*port->getData());
+            return calcBoundingBox(*port->getData());
         } else {
             return std::nullopt;
         }
@@ -317,7 +263,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Mesh>& mesh)
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Volume>& volume) {
     return [port = &volume]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(*port->getData());
+            return calcBoundingBox(*port->getData());
         } else {
             return std::nullopt;
         }
@@ -327,7 +273,7 @@ std::function<std::optional<dmat4>()> boundingBox(
     const DataInport<std::vector<std::shared_ptr<Volume>>>& volumes) {
     return [port = &volumes]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(*port->getData());
+            return calcBoundingBox(*port->getData());
         } else {
             return std::nullopt;
         }
@@ -337,7 +283,7 @@ std::function<std::optional<dmat4>()> boundingBox(
 std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Volume>& volume) {
     return [port = &volume]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(*port->getData());
+            return calcBoundingBox(*port->getData());
         } else {
             return std::nullopt;
         }
@@ -348,7 +294,7 @@ std::function<std::optional<dmat4>()> boundingBox(
 
     return [port = &volumes]() -> std::optional<dmat4> {
         if (port->hasData()) {
-            return boundingBox(*port->getData());
+            return calcBoundingBox(*port->getData());
         } else {
             return std::nullopt;
         }
