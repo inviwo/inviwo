@@ -59,12 +59,13 @@ in LineGeom {
     flat vec4 pickColor;
     float segmentLength; // total length of the current line segment in screen space
     float distanceWorld;  // distance in world coords to segment start
+    float lineWidthHalf;  // interpolated half line width for antialiasing
 } fragment;
 
 void main() {
     vec4 color = fragment.color;
 
-    float linewidthHalf = lineWidth * 0.5;
+    float linewidthHalf = fragment.lineWidthHalf;
 
     // make joins round by using the texture coords
     float distance = abs(fragment.texCoord.y);

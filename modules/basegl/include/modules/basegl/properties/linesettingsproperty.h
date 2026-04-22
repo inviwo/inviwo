@@ -65,6 +65,7 @@ public:
     FloatProperty antialiasing;
     FloatProperty miterLimit;
     BoolProperty roundCaps;
+    BoolProperty useRadii;
 
     BoolProperty pseudoLighting;
     BoolProperty roundDepthProfile;

@@ -58,6 +58,7 @@ uniform SelectionColor bnlHighlight;
 in LineVert {
     vec4 worldPosition;
     vec4 color;
+    flat float radius;  // half-width in screen pixels
     flat uint pickID;
     flat uint index;
 } inVertices[];
@@ -68,6 +69,7 @@ out LineGeom {
     flat vec4 pickColor;
     float segmentLength; // total length of the current line segment in screen space
     float distanceWorld;  // distance in world coords to segment start
+    float lineWidthHalf;  // interpolated half line width for antialiasing
 } outLine;
 
 struct Vertex {
@@ -112,12 +114,13 @@ Vertex createVertex(in vec2 pos, in float depth, in vec2 texCoord, in vec4 color
  }
 
 // emit vertex data consisting of position in NDC, texture coord, and color
-void emit(in Vertex vertex, in uint pickID, in float segmentLength) {
+void emit(in Vertex vertex, in uint pickID, in float segmentLength, in float lineWidthHalf) {
     gl_Position = vertex.pos;
     outLine.segmentLength = segmentLength;
     outLine.distanceWorld = vertex.distanceWorld;
     outLine.texCoord = vertex.texCoord;
     outLine.color = vertex.color;
+    outLine.lineWidthHalf = lineWidthHalf;
     outLine.pickColor = vec4(pickingIndexToColor(pickID), pickID == 0 ? 0.0 : 1.0);
     EmitVertex();
 }
@@ -267,7 +270,8 @@ void main(void) {
 
     vec2 depth = vec2(p1ndc.z, p2ndc.z);
 
-    float w = lineWidth * 0.5 + 1.2 * antialiasing;
+    float w1 = inVertices[index1].radius + 1.2 * antialiasing;
+    float w2 = inVertices[index2].radius + 1.2 * antialiasing;
     float segmentLength = length(p2 - p1);
     // segment length in world space
     float lineLengthWorld = length(inVertices[index2].worldPosition - inVertices[index1].worldPosition);
@@ -285,8 +289,8 @@ void main(void) {
     vec2 miterEnd = normalize(n1 + n2); // miter at end of current segment
 
     // Determine the length of the miter by projecting it onto normal
-    float length_a = w / dot(miterBegin, n1);
-    float length_b = w / dot(miterEnd, n1);
+    float length_a = w1 / dot(miterBegin, n1);
+    float length_b = w2 / dot(miterEnd, n1);
 
     bool capBegin = (p0 == p1);
     bool capEnd = (p2 == p3);
@@ -299,31 +303,27 @@ void main(void) {
     // corner between previous segment and current one
     if (dot(v0, v1) < -miterLimit) {
         miterBegin = normalize(-n0 + n1);
-        length_a = lineWidth * 0.5;
-
-        length_a = w / dot(miterBegin, n1);
+        length_a = w1 / dot(miterBegin, n1);
     }
     // corner between current segment and next one
     if (dot(v1, v2) < -miterLimit) {
         miterEnd = normalize(-n2 + n1);
-        length_b = lineWidth * 0.5;
-
-        length_b = w / dot(miterEnd, n1);
+        length_b = w2 / dot(miterEnd, n1);
     }
 
     vec2 leftTop, leftBottom;
     vec2 texCoord;
     if (capBegin) {
         // compute start position at p1
-        leftTop = p1 + w * n1;
-        leftBottom = p1 - w * n1;
+        leftTop = p1 + w1 * n1;
+        leftBottom = p1 - w1 * n1;
         texCoord = vec2(0);
 
         if (roundCaps) {
             // extend segment beyond p1 by radius for cap
-            leftTop -= w * v1;
-            leftBottom -= w * v1;
-            texCoord -= w;
+            leftTop -= w1 * v1;
+            leftBottom -= w1 * v1;
+            texCoord -= w1;
         }
     }
     else {
@@ -337,26 +337,26 @@ void main(void) {
     // set pick ID equivalent to first vertex
     uint pickID = inVertices[index1].pickID;    
 
-    Vertex vOut1 = createVertex(leftTop, vertexDepth.x, vec2(texCoord.x, w), 
+    Vertex vOut1 = createVertex(leftTop, vertexDepth.x, vec2(texCoord.x, w1), 
                                 color1, screenToWorldFactor);
-    Vertex vOut2 = createVertex(leftBottom, vertexDepth.y, vec2(texCoord.y, -w), 
+    Vertex vOut2 = createVertex(leftBottom, vertexDepth.y, vec2(texCoord.y, -w1), 
                                 color1, screenToWorldFactor);
 
-    emit(vOut1, pickID, segmentLength);
-    emit(vOut2, pickID, segmentLength);
+    emit(vOut1, pickID, segmentLength, inVertices[index1].radius);
+    emit(vOut2, pickID, segmentLength, inVertices[index1].radius);
 
     vec2 rightTop, rightBottom;
     if (capEnd) {
         // compute end position at p2
-        rightTop = p2 + w * n1;
-        rightBottom = p2 - w * n1;
+        rightTop = p2 + w2 * n1;
+        rightBottom = p2 - w2 * n1;
         texCoord = vec2(segmentLength);
 
         if (roundCaps) {
             // extend segment beyond p2 by radius for cap
-            rightTop += w * v1;
-            rightBottom += w * v1;
-            texCoord += w;
+            rightTop += w2 * v1;
+            rightBottom += w2 * v1;
+            texCoord += w2;
         }
     }
     else {
@@ -368,13 +368,13 @@ void main(void) {
 
     vertexDepth = slopeDepth * texCoord + depth.x;
 
-    Vertex vOut3 = createVertex(rightTop, vertexDepth.x, vec2(texCoord.x, w), 
+    Vertex vOut3 = createVertex(rightTop, vertexDepth.x, vec2(texCoord.x, w2), 
                                 color2, screenToWorldFactor);
-    Vertex vOut4 = createVertex(rightBottom, vertexDepth.y, vec2(texCoord.y, -w), 
+    Vertex vOut4 = createVertex(rightBottom, vertexDepth.y, vec2(texCoord.y, -w2), 
                                 color2, screenToWorldFactor);
 
-    emit(vOut3, pickID, segmentLength);
-    emit(vOut4, pickID, segmentLength);
+    emit(vOut3, pickID, segmentLength, inVertices[index2].radius);
+    emit(vOut4, pickID, segmentLength, inVertices[index2].radius);
 
     EndPrimitive();
 }

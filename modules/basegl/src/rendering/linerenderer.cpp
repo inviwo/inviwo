@@ -71,6 +71,7 @@ std::vector<MeshShaderCache::Requirement> defaultRequirements(
         {BufferType::IndexAttrib, MeshShaderCache::Optional, "uint"},
         {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
         {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"},
+        {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
         {[](const Mesh&, Mesh::MeshInfo mi) -> int {
              return mi.ct == ConnectivityType::Adjacency ||
                             mi.ct == ConnectivityType::StripAdjacency
@@ -115,6 +116,7 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
                            settings_.overrideColor != settings.overrideColor ||
                            settings_.overrideAlpha != settings.overrideAlpha ||
                            settings_.useMetaColor != settings.useMetaColor ||
+                           settings_.useRadii != settings.useRadii ||
                            settings_.stippling.mode != settings.stippling.mode;
 
     // Changes to these settings require updating the transfer function lookup
@@ -198,6 +200,8 @@ void LineRenderer::configureShader(Shader& shader) const {
     shader[ShaderType::Vertex]->setShaderDefine("OVERRIDE_COLOR", settings_.overrideColor);
     shader[ShaderType::Vertex]->setShaderDefine("OVERRIDE_ALPHA", settings_.overrideAlpha);
     shader[ShaderType::Vertex]->setShaderDefine("USE_SCALARMETACOLOR", settings_.useMetaColor);
+    shader[ShaderType::Vertex]->setShaderDefine("USE_RADII", settings_.useRadii);
+    shader[ShaderType::Geometry]->setShaderDefine("USE_RADII", settings_.useRadii);
 
     utilgl::addShaderDefines(shader, settings_.stippling.mode);
     shader.build();
