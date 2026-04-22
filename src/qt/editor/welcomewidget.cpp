@@ -40,6 +40,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/algorithm/searchdsl.h>
+#include <inviwo/core/algorithm/markdown.h>
 
 #include <inviwo/qt/editor/workspacetreemodel.h>
 #include <inviwo/qt/editor/workspacetreeview.h>
@@ -82,6 +83,9 @@
 #include <QApplication>
 #include <QSplitterHandle>
 #include <QMainWindow>
+#include <QFileSystemWatcher>
+#include <QDesktopServices>
+#include <QTextBrowser>
 
 #include <md4c-html.h>
 
@@ -99,7 +103,49 @@ struct InitQtChangelogResources {
 } initQtChangelogResources;
 #endif
 
+namespace inviwo {
+
 namespace {
+
+constexpr std::string_view htmlHeader =
+    R"(<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style type="text/css">
+    body {color: #9d9995;}
+    a {color: #268bd2;}
+    a:visited { color: #1E6A9E; }
+    h1 { font-size:  xx-large; color: #268bd2; margin-bottom:1em; }
+    h2 { font-size: large; color: #268bd2; margin-top:1em; margin-bottom:0em; }
+    p { margin-bottom: 0.2em; margin-top: 0.1em; }
+    li { margin-bottom: 0.2em; }
+    div { margin: 0; padding: 0; }
+    pre {
+        margin-top: 0.3em;
+        margin-bottom: 0.3em;
+        line-height:120%;
+        background-color: #4a4a4f;
+    }
+    code {
+        color: #c8c8c2; 
+        background-color: #4a4a4f;
+    }
+    .tk-kw  { color: #66d9ef; }
+    .tk-str { color: #e6db74; }
+    .tk-num { color: #f92672; }
+    .tk-com { color: #a6a8aa; }
+    .tk-fun { color: #a6e22e; }
+</style>
+</head>
+<body>
+)";
+constexpr std::string_view htmlFooter = "\n</body>\n</html>\n";
+
+constexpr std::string_view placeholder = R"(
+<p>For latest changes see <a href='https://github.com/inviwo/inviwo/blob/master/CHANGELOG.md'>
+https://github.com/inviwo/inviwo/blob/master/CHANGELOG.md</a>.
+</p>)";
 
 std::string markdownToHtml(std::string_view markdown) {
     // Strip leading "Here we document changes..." line (matches Python script behavior)
@@ -112,40 +158,8 @@ std::string markdownToHtml(std::string_view markdown) {
         }
     }
 
-    constexpr std::string_view htmlHeader =
-        R"(<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<style type="text/css">
-    body {color: #9d9995;}
-    a {color: #268bd2;}
-    a:visited { color: #1E6A9E; }
-    h1 { font-size: xx-large; color: #268bd2; margin-bottom:1em; }
-    h2 { font-size: larger; color: #268bd2; margin-top:1em; margin-bottom:0em; }
-    p { margin-bottom: 0.2em; margin-top: 0.1em; }
-</style>
-</head>
-<body>
-)";
-    constexpr std::string_view htmlFooter = "\n</body>\n</html>\n";
-
-    std::string body;
-    body.reserve(markdown.size() * 2);  // 2x is a reasonable estimate for HTML tags and entities
-
-    const unsigned parserFlags = MD_DIALECT_GITHUB;
-
-    // md4c guarantees non-null str and userdata in the callback
-    auto appendOutput = [](const MD_CHAR* str, MD_SIZE size, void* userdata) {
-        static_cast<std::string*>(userdata)->append(str, size);
-    };
-
-    if (md_html(markdown.data(), static_cast<MD_SIZE>(markdown.size()), appendOutput, &body,
-                parserFlags, 0) != 0) {
-        return {};
-    }
-
-    return std::string(htmlHeader) + body + std::string(htmlFooter);
+    const auto doc = util::md2doc(markdown);
+    return fmt::format("{}{}{}", htmlHeader, doc.str(), htmlFooter);
 }
 
 inline void setTabOrder(std::initializer_list<QWidget*> widgets) {
@@ -165,48 +179,55 @@ inline void setTabOrder(std::initializer_list<QWidget*> widgets) {
 }
 }  // namespace
 
-namespace inviwo {
-
-constexpr std::string_view placeholder = R"(<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<style type="text/css">
-    body {color: #9d9995;}
-    a {color: #268bd2;}
-    a:visited { color: #1E6A9E; }
-    h1 { font-size: xx-large; color: #268bd2; margin-bottom:1em; }
-    h2 { font-size: larger; color: #268bd2; margin-top:1em; margin-bottom:0em; }
-    p { margin-bottom: 0.2em; margin-top: 0.1em; }
-</style>
-</head>
-<body >
-<p>For latest changes see <a href='https://github.com/inviwo/inviwo/blob/master/CHANGELOG.md'>
-https://github.com/inviwo/inviwo/blob/master/CHANGELOG.md</a>.
-</body>
-</html>
-)";
-
-class ChangeLog : public QTextEdit {
+class ChangeLog : public QTextBrowser {
 public:
-    ChangeLog(QWidget* parent) : QTextEdit(parent) {
+    ChangeLog(QWidget* parent) : QTextBrowser(parent), fileWatcher_{this} {
         setObjectName("Changelog");
         setFrameShape(QFrame::NoFrame);
         setTextInteractionFlags(Qt::TextBrowserInteraction);
+        setReadOnly(true);
+        setUndoRedoEnabled(false);
+        setAcceptRichText(false);
+        setOpenExternalLinks(true);
         document()->setIndentWidth(utilqt::emToPx(this, 1.5));
         document()->setDocumentMargin(0.0);
         setContentsMargins(0, 0, 0, 0);
+
+        if (auto changelog = findChangelog()) {
+            fileWatcher_.addPath(utilqt::toQString(*changelog));
+            connect(&fileWatcher_, &QFileSystemWatcher::fileChanged, this,
+                    [this](const QString& path) {
+                        auto file = QFile{path};
+                        if (file.exists()) {
+                            loadLog(file);
+
+                            if (!fileWatcher_.files().contains(path)) {
+                                fileWatcher_.addPath(path);
+                            }
+                        }
+                    });
+        }
     }
 
     void resizeEvent(QResizeEvent* event) override {
         if (!document() || document()->isEmpty()) {
-            loadLog();
+            QFile file{findChangelog()
+                           .transform([](const auto& file) { return utilqt::toQString(file); })
+                           .value_or(QString{":/changelog.md"})};
+            loadLog(file);
         }
         QTextEdit::resizeEvent(event);
     }
 
-    void loadLog() {
-        QFile file(":/changelog.md");
+    std::optional<std::filesystem::path> findChangelog() {
+        auto changelog = filesystem::findBasePath() / "CHANGELOG.md";
+        if (std::filesystem::is_regular_file(changelog)) {
+            return changelog;
+        }
+        return std::nullopt;
+    }
+
+    void loadLog(QFile& file) {
         if (file.open(QFile::ReadOnly | QFile::Text) && file.size() > 0) {
             const auto data = file.readAll();
             const std::string_view md{data.constData(), static_cast<size_t>(data.size())};
@@ -216,7 +237,7 @@ public:
                 return;
             }
         }
-        setHtml(utilqt::toQString(placeholder));
+        setHtml(utilqt::toQString(fmt::format("{}{}{}", htmlHeader, placeholder, htmlFooter)));
     }
 
 protected:
@@ -234,6 +255,8 @@ protected:
         }
         return QTextEdit::loadResource(type, name);
     }
+
+    QFileSystemWatcher fileWatcher_;
 };
 
 using Role = WorkspaceTreeModel::Role;
@@ -717,9 +740,9 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     splitterMoved(sizes()[0], 1);
     workspaceSplitter_->restoreState(getSetting("workspaceSplitter").toByteArray());
 
-    ::setTabOrder({filterLineEdit_, workspaceTreeView_, workspaceGridView_, loadWorkspaceBtn_,
-                   appendWorkspaceBtn_, newButton_, openButton_, restoreButton_, details_,
-                   changelog_});
+    setTabOrder({filterLineEdit_, workspaceTreeView_, workspaceGridView_, loadWorkspaceBtn_,
+                 appendWorkspaceBtn_, newButton_, openButton_, restoreButton_, details_,
+                 changelog_});
     setFocusProxy(filterLineEdit_);
 }
 

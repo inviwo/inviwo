@@ -70,8 +70,8 @@ void renderAttribute(const MD_ATTRIBUTE& attr, StrBuffer& strBuffer,
 Document util::md2doc(std::string_view markdown) {
     struct State {
         std::vector<Document::DocumentHandle> handles;
-        std::string codeLang;  ///< non-empty while accumulating a highlighted code block
-        std::string codeText;  ///< code text accumulated from md4c text callbacks
+        std::string codeLang{};  ///< non-empty while accumulating a highlighted code block
+        std::string codeText{};  ///< code text accumulated from md4c text callbacks
     };
 
     auto enter_block_callback = [](MD_BLOCKTYPE type, void* detail, void* userdata) -> int {
@@ -125,8 +125,7 @@ Document util::md2doc(std::string_view markdown) {
                                     {{"class", fmt::format("language-{}", buff.view())}})
                             .append("pre"));
                 } else {
-                    state->handles.push_back(
-                        state->handles.back().append("code").append("pre"));
+                    state->handles.push_back(state->handles.back().append("code").append("pre"));
                 }
                 break;
             }
@@ -257,7 +256,7 @@ Document util::md2doc(std::string_view markdown) {
         auto* state = static_cast<State*>(userdata);
         if (state->handles.back().element().name() == "img") {
             state->handles.back().element().attributes().emplace("alt",
-                                                                  std::string_view(text, size));
+                                                                 std::string_view(text, size));
         } else if (!state->codeLang.empty()) {
             state->codeText.append(text, size);
         } else {
@@ -269,16 +268,16 @@ Document util::md2doc(std::string_view markdown) {
         log::error("Markdown Error: {}", msg);
     };
 
-    MD_PARSER parser = {
-        0,
-        MD_FLAG_NOHTML | MD_FLAG_PERMISSIVEAUTOLINKS | MD_FLAG_TABLES | MD_FLAG_STRIKETHROUGH,
-        enter_block_callback,
-        leave_block_callback,
-        enter_span_callback,
-        leave_span_callback,
-        text_callback,
-        debug_log_callback,
-        nullptr};
+    MD_PARSER parser = {.abi_version = 0,
+                        .flags = MD_FLAG_NOHTML | MD_FLAG_PERMISSIVEAUTOLINKS | MD_FLAG_TABLES |
+                                 MD_FLAG_STRIKETHROUGH,
+                        .enter_block = enter_block_callback,
+                        .leave_block = leave_block_callback,
+                        .enter_span = enter_span_callback,
+                        .leave_span = leave_span_callback,
+                        .text = text_callback,
+                        .debug_log = debug_log_callback,
+                        .syntax = nullptr};
 
     Document doc;
     State state{{doc.handle()}};

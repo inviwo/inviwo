@@ -42,18 +42,7 @@ namespace inviwo::util {
 
 namespace {
 
-// ---------------------------------------------------------------------------
-// Colour palette (mirrors the GitHub .pl-* CSS classes)
-// ---------------------------------------------------------------------------
-constexpr std::string_view kKeywordColor  = "#66d9ef";  // .pl-k
-constexpr std::string_view kStringColor   = "#e6db74";  // .pl-s
-constexpr std::string_view kNumberColor   = "#f92672";  // .pl-c1
-constexpr std::string_view kCommentColor  = "#f6f8fa";  // .pl-c
-constexpr std::string_view kFunctionColor = "#a6e22e";  // .pl-en
-
-// ---------------------------------------------------------------------------
 // Character helpers
-// ---------------------------------------------------------------------------
 constexpr bool isIdStart(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
@@ -63,11 +52,10 @@ constexpr bool isHexDigit(char c) {
 }
 constexpr bool isIdContinue(char c) { return isIdStart(c) || isDigit(c); }
 
-// ---------------------------------------------------------------------------
 // Keyword lists (must remain lexicographically sorted – verified by
 // static_assert below each array)
-// ---------------------------------------------------------------------------
 
+// clang-format off
 // C++ keywords and fundamental types
 constexpr auto kCppKeywords = std::to_array<std::string_view>({
     "alignas",        "alignof",     "and",          "and_eq",     "asm",
@@ -135,10 +123,9 @@ constexpr auto kGlslKeywords = std::to_array<std::string_view>({
     "while",
 });
 static_assert(std::ranges::is_sorted(kGlslKeywords));
+// clang-format on
 
-// ---------------------------------------------------------------------------
 // Language detection
-// ---------------------------------------------------------------------------
 enum class Language { Cpp, Python, Glsl, Unknown };
 
 Language detectLang(std::string_view lang) {
@@ -167,30 +154,13 @@ bool isKeyword(std::string_view word, Language lang) {
     }
 }
 
-// ---------------------------------------------------------------------------
 // Token representation
-// ---------------------------------------------------------------------------
-enum class TokenKind { Default, Keyword, String, Number, Comment, Function };
+enum class TokenKind : std::uint8_t { Default, Keyword, String, Number, Comment, Function };
 
 struct Token {
     std::string_view text;
     TokenKind kind;
 };
-
-constexpr std::string_view tokenColor(TokenKind kind) {
-    switch (kind) {
-        case TokenKind::Keyword:  return kKeywordColor;
-        case TokenKind::String:   return kStringColor;
-        case TokenKind::Number:   return kNumberColor;
-        case TokenKind::Comment:  return kCommentColor;
-        case TokenKind::Function: return kFunctionColor;
-        default:                  return {};
-    }
-}
-
-// ---------------------------------------------------------------------------
-// Tokenizer
-// ---------------------------------------------------------------------------
 
 std::vector<Token> tokenize(std::string_view code, Language lang) {
     std::vector<Token> tokens;
@@ -204,53 +174,44 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
         std::string_view text = code.substr(start, i - start);
         if (!tokens.empty() && tokens.back().kind == TokenKind::Default) {
             // Extend the previous default token in-place (both views are into `code`).
-            tokens.back().text =
-                code.substr(tokens.back().text.data() - code.data(),
-                            text.data() + text.size() - tokens.back().text.data());
+            tokens.back().text = code.substr(tokens.back().text.data() - code.data(),
+                                             text.data() + text.size() - tokens.back().text.data());
         } else {
-            tokens.push_back({text, TokenKind::Default});
+            tokens.emplace_back(text, TokenKind::Default);
         }
     };
 
     while (i < n) {
         const size_t start = i;
 
-        // ----------------------------------------------------------------
         // Single-line comment: // (C++/GLSL)
-        // ----------------------------------------------------------------
-        if ((lang == Language::Cpp || lang == Language::Glsl) && code[i] == '/' &&
-            i + 1 < n && code[i + 1] == '/') {
+        if ((lang == Language::Cpp || lang == Language::Glsl) && code[i] == '/' && i + 1 < n &&
+            code[i + 1] == '/') {
             i += 2;
             while (i < n && code[i] != '\n') ++i;
-            tokens.push_back({code.substr(start, i - start), TokenKind::Comment});
+            tokens.emplace_back(code.substr(start, i - start), TokenKind::Comment);
             continue;
         }
 
-        // ----------------------------------------------------------------
         // Block comment: /* ... */ (C++/GLSL)
-        // ----------------------------------------------------------------
-        if ((lang == Language::Cpp || lang == Language::Glsl) && code[i] == '/' &&
-            i + 1 < n && code[i + 1] == '*') {
+        if ((lang == Language::Cpp || lang == Language::Glsl) && code[i] == '/' && i + 1 < n &&
+            code[i + 1] == '*') {
             i += 2;
             while (i + 1 < n && !(code[i] == '*' && code[i + 1] == '/')) ++i;
             if (i + 1 < n) i += 2;  // consume '*/'
-            tokens.push_back({code.substr(start, i - start), TokenKind::Comment});
+            tokens.emplace_back(code.substr(start, i - start), TokenKind::Comment);
             continue;
         }
 
-        // ----------------------------------------------------------------
         // Python comment: # ...
-        // ----------------------------------------------------------------
         if (lang == Language::Python && code[i] == '#') {
             ++i;
             while (i < n && code[i] != '\n') ++i;
-            tokens.push_back({code.substr(start, i - start), TokenKind::Comment});
+            tokens.emplace_back(code.substr(start, i - start), TokenKind::Comment);
             continue;
         }
 
-        // ----------------------------------------------------------------
         // C++/GLSL preprocessor directive: # at the start of a line
-        // ----------------------------------------------------------------
         if ((lang == Language::Cpp || lang == Language::Glsl) && code[i] == '#' &&
             (i == 0 || code[i - 1] == '\n')) {
             ++i;
@@ -261,15 +222,13 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
                     ++i;
                 }
             }
-            tokens.push_back({code.substr(start, i - start), TokenKind::Keyword});
+            tokens.emplace_back(code.substr(start, i - start), TokenKind::Keyword);
             continue;
         }
 
-        // ----------------------------------------------------------------
         // C++ raw string: R"delim(...)delim"
         // Optional prefix chars before R are handled below in the identifier
         // branch; here we handle bare R"
-        // ----------------------------------------------------------------
         if (lang == Language::Cpp && code[i] == 'R' && i + 1 < n && code[i + 1] == '"') {
             i += 2;
             const size_t delimStart = i;
@@ -286,30 +245,25 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
                 }
                 ++i;
             }
-            tokens.push_back({code.substr(start, i - start), TokenKind::String});
+            tokens.emplace_back(code.substr(start, i - start), TokenKind::String);
             continue;
         }
 
-        // ----------------------------------------------------------------
         // Python triple-quoted strings: """ ... """ or ''' ... '''
-        // ----------------------------------------------------------------
         if (lang == Language::Python &&
             ((code[i] == '"' && i + 2 < n && code[i + 1] == '"' && code[i + 2] == '"') ||
              (code[i] == '\'' && i + 2 < n && code[i + 1] == '\'' && code[i + 2] == '\''))) {
             const char q = code[i];
             i += 3;
-            while (i + 2 < n &&
-                   !(code[i] == q && code[i + 1] == q && code[i + 2] == q)) {
+            while (i + 2 < n && !(code[i] == q && code[i + 1] == q && code[i + 2] == q)) {
                 ++i;
             }
             if (i + 2 < n) i += 3;
-            tokens.push_back({code.substr(start, i - start), TokenKind::String});
+            tokens.emplace_back(code.substr(start, i - start), TokenKind::String);
             continue;
         }
 
-        // ----------------------------------------------------------------
         // Double-quoted string: "..."
-        // ----------------------------------------------------------------
         if (code[i] == '"') {
             ++i;
             while (i < n && code[i] != '"' && code[i] != '\n') {
@@ -317,13 +271,11 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
                 ++i;
             }
             if (i < n && code[i] == '"') ++i;
-            tokens.push_back({code.substr(start, i - start), TokenKind::String});
+            tokens.emplace_back(code.substr(start, i - start), TokenKind::String);
             continue;
         }
 
-        // ----------------------------------------------------------------
         // Single-quoted literal: '...'
-        // ----------------------------------------------------------------
         if (code[i] == '\'') {
             ++i;
             while (i < n && code[i] != '\'' && code[i] != '\n') {
@@ -331,21 +283,17 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
                 ++i;
             }
             if (i < n && code[i] == '\'') ++i;
-            tokens.push_back({code.substr(start, i - start), TokenKind::String});
+            tokens.emplace_back(code.substr(start, i - start), TokenKind::String);
             continue;
         }
 
-        // ----------------------------------------------------------------
         // Numeric literal: digit, or '.' followed by a digit
-        // ----------------------------------------------------------------
         if (isDigit(code[i]) || (code[i] == '.' && i + 1 < n && isDigit(code[i + 1]))) {
-            if (code[i] == '0' && i + 1 < n &&
-                (code[i + 1] == 'x' || code[i + 1] == 'X')) {
+            if (code[i] == '0' && i + 1 < n && (code[i + 1] == 'x' || code[i + 1] == 'X')) {
                 // Hexadecimal
                 i += 2;
                 while (i < n && isHexDigit(code[i])) ++i;
-            } else if (code[i] == '0' && i + 1 < n &&
-                       (code[i + 1] == 'b' || code[i + 1] == 'B')) {
+            } else if (code[i] == '0' && i + 1 < n && (code[i + 1] == 'b' || code[i + 1] == 'B')) {
                 // Binary
                 i += 2;
                 while (i < n && (code[i] == '0' || code[i] == '1')) ++i;
@@ -364,37 +312,35 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
             }
             // Optional suffix: f, u, l, ul, ull, etc.
             while (i < n && isIdContinue(code[i])) ++i;
-            tokens.push_back({code.substr(start, i - start), TokenKind::Number});
+            tokens.emplace_back(code.substr(start, i - start), TokenKind::Number);
             continue;
         }
 
-        // ----------------------------------------------------------------
         // Identifier, keyword, or string-prefix + literal
-        // ----------------------------------------------------------------
         if (isIdStart(code[i])) {
             ++i;
-            while (i < n && isIdContinue(code[i])) ++i;
+            while (i < n && (isIdContinue(code[i]) || (lang == Language::Cpp && code[i] == ':'))) {
+                ++i;
+            }
             const std::string_view word = code.substr(start, i - start);
 
-            // Detect a string prefix that immediately precedes a quote.
+            // Detect a string prefix that immediately precedes a quote."<#help#>"_help
             // Handles: L"", u"", U"", u8"", f"", r"", b"", rb"", fr"", …
             if (i < n && (code[i] == '"' || code[i] == '\'')) {
                 // Consume the string after the prefix
                 const char q = code[i];
                 ++i;
-                if (lang == Language::Python && q == '"' && i + 1 < n &&
-                    code[i] == '"' && code[i + 1] == '"') {
+                if (lang == Language::Python && q == '"' && i + 1 < n && code[i] == '"' &&
+                    code[i + 1] == '"') {
                     // Triple-quoted after prefix
                     i += 2;
-                    while (i + 2 < n &&
-                           !(code[i] == q && code[i + 1] == q && code[i + 2] == q))
+                    while (i + 2 < n && !(code[i] == q && code[i + 1] == q && code[i + 2] == q))
                         ++i;
                     if (i + 2 < n) i += 3;
-                } else if (lang == Language::Python && q == '\'' && i + 1 < n &&
-                           code[i] == '\'' && code[i + 1] == '\'') {
+                } else if (lang == Language::Python && q == '\'' && i + 1 < n && code[i] == '\'' &&
+                           code[i + 1] == '\'') {
                     i += 2;
-                    while (i + 2 < n &&
-                           !(code[i] == q && code[i + 1] == q && code[i + 2] == q))
+                    while (i + 2 < n && !(code[i] == q && code[i + 1] == q && code[i + 2] == q))
                         ++i;
                     if (i + 2 < n) i += 3;
                 } else {
@@ -404,13 +350,13 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
                     }
                     if (i < n && code[i] == q) ++i;
                 }
-                tokens.push_back({code.substr(start, i - start), TokenKind::String});
+                tokens.emplace_back(code.substr(start, i - start), TokenKind::String);
                 continue;
             }
 
             // Keyword check
             if (isKeyword(word, lang)) {
-                tokens.push_back({word, TokenKind::Keyword});
+                tokens.emplace_back(word, TokenKind::Keyword);
                 continue;
             }
 
@@ -418,19 +364,17 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
             size_t j = i;
             while (j < n && (code[j] == ' ' || code[j] == '\t')) ++j;
             if (j < n && code[j] == '(') {
-                tokens.push_back({word, TokenKind::Function});
+                tokens.emplace_back(word, TokenKind::Function);
                 continue;
             }
 
             // Plain identifier
-            tokens.push_back({word, TokenKind::Default});
+            tokens.emplace_back(word, TokenKind::Default);
             continue;
         }
 
-        // ----------------------------------------------------------------
         // Default: single character (operators, punctuation, whitespace)
         // Merge with the previous Default token when possible.
-        // ----------------------------------------------------------------
         ++i;
         emitDefault(start);
     }
@@ -438,13 +382,26 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
     return tokens;
 }
 
+constexpr std::string_view tokenClass(TokenKind kind) {
+    switch (kind) {
+        case TokenKind::Keyword:
+            return "tk-kw";
+        case TokenKind::String:
+            return "tk-str";
+        case TokenKind::Number:
+            return "tk-num";
+        case TokenKind::Comment:
+            return "tk-com";
+        case TokenKind::Function:
+            return "tk-fun";
+        default:
+            return {};
+    }
+}
+
 }  // namespace
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-void highlightCode(Document::DocumentHandle handle, std::string_view code,
-                   std::string_view lang) {
+void highlightCode(Document::DocumentHandle handle, std::string_view code, std::string_view lang) {
     const Language language = detectLang(lang);
 
     if (language == Language::Unknown) {
@@ -454,13 +411,12 @@ void highlightCode(Document::DocumentHandle handle, std::string_view code,
     }
 
     for (const Token& token : tokenize(code, language)) {
-        const std::string_view color = tokenColor(token.kind);
-        const std::string encoded = htmlEncode(token.text);
-        if (color.empty()) {
+        const auto tc = tokenClass(token.kind);
+        const auto encoded = htmlEncode(token.text);
+        if (tc.empty()) {
             handle += encoded;
         } else {
-            handle.append("span", encoded,
-                          {{"style", fmt::format("color:{}", color)}});
+            handle.append("span", encoded, {{"class", std::string{tc}}});
         }
     }
 }

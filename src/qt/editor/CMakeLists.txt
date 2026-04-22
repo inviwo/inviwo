@@ -175,12 +175,8 @@ ivw_define_standard_properties(QT inviwo-qteditor)
 
 # Optimize compilation with pre-compilied headers
 ivw_compile_optimize_on_target(inviwo-qteditor)
-
-
 ivw_deploy_qt(inviwo-qteditor)
-
 ivw_default_install_targets(inviwo-qteditor)
-
 ivw_register_license_file(NAME "DocumentWindow" MODULE QtWidgets
     URL "https://wiki.qt.io/Assigning_a_file_type_to_an_Application_on_Windows"
     TYPE "Simplified BSD License"
