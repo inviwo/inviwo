@@ -58,7 +58,7 @@ uniform SelectionColor bnlHighlight;
 in LineVert {
     vec4 worldPosition;
     vec4 color;
-    flat float radius;  // half-width in screen pixels
+    flat float radius;  // half-width in screen pixels; when USE_RADII is active, unit matches RadiiAttrib buffer
     flat uint pickID;
     flat uint index;
 } inVertices[];
