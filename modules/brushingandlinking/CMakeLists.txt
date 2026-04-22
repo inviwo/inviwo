@@ -10,6 +10,7 @@ set(HEADER_FILES
     include/modules/brushingandlinking/datastructures/indexlist.h
     include/modules/brushingandlinking/ports/brushingandlinkingports.h
     include/modules/brushingandlinking/processors/brushingandlinkingprocessor.h
+    include/modules/brushingandlinking/processors/propertytobrushing.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -21,6 +22,7 @@ set(SOURCE_FILES
     src/datastructures/indexlist.cpp
     src/ports/brushingandlinkingports.cpp
     src/processors/brushingandlinkingprocessor.cpp
+    src/processors/propertytobrushing.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

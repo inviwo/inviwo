@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,28 +27,37 @@
  *
  *********************************************************************************/
 
-#include <modules/brushingandlinking/brushingandlinkingmodule.h>
+#pragma once
 
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/exception.h>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-#include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
-
-#include <memory>
-#include <modules/brushingandlinking/processors/propertytobrushing.h>
 
 namespace inviwo {
-class InviwoApplication;
 
-BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app)
-    : InviwoModule(app, "BrushingAndLinking") {
-    // Processors
-    registerProcessor<BrushingAndLinkingProcessor>();
-    registerProcessor<PropertyToBrushing>();
+class IVW_MODULE_BRUSHINGANDLINKING_API PropertyToBrushing : public Processor {
+public:
+    PropertyToBrushing();
 
-    // Ports
-    registerPort<BrushingAndLinkingOutport>();
-    registerPort<BrushingAndLinkingInport>();
-}
+    virtual void process() override;
+
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+
+    void updateBrushing();
+
+    BrushingAndLinkingInport inport_;
+
+    BoolProperty enable_;
+    OrdinalProperty<uint32_t> index_;
+    OrdinalProperty<uint32_t> before_;
+    OrdinalProperty<uint32_t> after_;
+};
 
 }  // namespace inviwo
