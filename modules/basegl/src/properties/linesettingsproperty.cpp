@@ -46,6 +46,9 @@ LineSettingsProperty::LineSettingsProperty(std::string_view identifier,
                                            InvalidationLevel invalidationLevel,
                                            PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, invalidationLevel, semantics}
+    , overrideLineWidth{"overrideLineWidth", "Override Line Width",
+                        "Enable a fixed user-defined with for the line"_help, false,
+                        InvalidationLevel::InvalidResources}
     , lineWidth{"lineWidth", "Line Width (pixel)",
                 util::ordinalLength(1.0f, 50.0f).set("width of the rendered lines (in pixel)"_help)}
     , antialiasing{"antialiasing", "Antialiasing (pixel)",
@@ -61,10 +64,6 @@ LineSettingsProperty::LineSettingsProperty(std::string_view identifier,
                  0.1f}
     , roundCaps{"roundCaps", "Round Caps",
                 "If enabled, round caps are drawn at the end of each line"_help, true}
-    , useRadii{"useRadii", "Use Radius Attribute",
-               "If enabled and the mesh has a RadiiAttrib buffer, use per-vertex radii as line "
-               "widths"_help,
-               false, InvalidationLevel::InvalidResources}
     , pseudoLighting{"pseudoLighting", "Pseudo Lighting",
                      "enables radial shading as depth cue, i.e. tube like appearance"_help, true,
                      InvalidationLevel::InvalidResources}
@@ -90,18 +89,18 @@ LineSettingsProperty::LineSettingsProperty(std::string_view identifier,
     overrideAlpha.addProperty(alpha);
     useMetaColor.addProperty(metaColor);
 
-    addProperties(lineWidth, antialiasing, miterLimit, roundCaps, useRadii, pseudoLighting,
+    addProperties(overrideLineWidth, lineWidth, antialiasing, miterLimit, roundCaps, pseudoLighting,
                   roundDepthProfile, defaultColor, overrideColor, overrideAlpha, useMetaColor,
                   stippling);
 }
 
 LineSettingsProperty::LineSettingsProperty(const LineSettingsProperty& rhs)
     : CompositeProperty{rhs}
+    , overrideLineWidth{rhs.overrideLineWidth}
     , lineWidth{rhs.lineWidth}
     , antialiasing{rhs.antialiasing}
     , miterLimit{rhs.miterLimit}
     , roundCaps{rhs.roundCaps}
-    , useRadii{rhs.useRadii}
     , pseudoLighting{rhs.pseudoLighting}
     , roundDepthProfile{rhs.roundDepthProfile}
     , defaultColor{rhs.defaultColor}
@@ -117,7 +116,7 @@ LineSettingsProperty::LineSettingsProperty(const LineSettingsProperty& rhs)
     overrideAlpha.addProperty(alpha);
     useMetaColor.addProperty(metaColor);
 
-    addProperties(lineWidth, antialiasing, miterLimit, roundCaps, useRadii, pseudoLighting,
+    addProperties(overrideLineWidth, lineWidth, antialiasing, miterLimit, roundCaps, pseudoLighting,
                   roundDepthProfile, defaultColor, overrideColor, overrideAlpha, useMetaColor,
                   stippling);
 }
@@ -127,11 +126,11 @@ LineSettingsProperty* LineSettingsProperty::clone() const {
 }
 
 void LineSettingsProperty::update(LineData& data) const {
+    data.overrideLineWidth = overrideLineWidth.get();
     data.lineWidth = lineWidth.get();
     data.antialiasing = antialiasing.get();
     data.miterLimit = miterLimit.get();
     data.roundCaps = roundCaps.get();
-    data.useRadii = useRadii.get();
     data.pseudoLighting = pseudoLighting.get();
     data.roundDepthProfile = roundDepthProfile.get();
     data.overrideColor = overrideColor.isChecked();

@@ -44,7 +44,6 @@ layout(triangle_strip, max_vertices=5) out;
 
 uniform vec2 screenDim = vec2(512, 512);
 uniform float antialiasing = 0.5; // width of antialised edged [pixel]
-uniform float lineWidth = 2.0; // line width [pixel]
 uniform float miterLimit = 0.8; // limit for miter joins, i.e. cutting off joints between parallel lines 
 uniform bool roundCaps = false;
 
@@ -58,7 +57,7 @@ uniform SelectionColor bnlHighlight;
 in LineVert {
     vec4 worldPosition;
     vec4 color;
-    flat float radius;  // half-width in screen pixels; when USE_RADII is active, unit matches RadiiAttrib buffer
+    flat float radius;  // half-width in screen pixels; when HAS_RADII is active, unit matches RadiiAttrib buffer
     flat uint pickID;
     flat uint index;
 } inVertices[];
@@ -149,8 +148,8 @@ void homogeneousClip(inout vec4 p1, inout vec4 p2, int axis, float sign,
 }
 
 #if defined(ENABLE_BNL)
-void applyBrushingAndLinking(in uint index1, inout vec4 color1, 
-                             in uint index2, inout vec4 color2) {
+void applyBrushingAndLinking(in uint index1, inout vec4 color1, inout float scale1,
+                             in uint index2, inout vec4 color2, inout float scale2) {
     int bnlSize = textureSize(bnl);
     uint flags1 = index1 < bnlSize ? texelFetch(bnl, int(index1)).x : uint(0);
     uint flags2 = index2 < bnlSize ? texelFetch(bnl, int(index2)).x : uint(0);
@@ -164,6 +163,22 @@ void applyBrushingAndLinking(in uint index1, inout vec4 color1,
     } else if (flags1 == 1 && flags2 == 1) {
         color1 = applySelectionColor(color1, bnlSelect);
         color2 = applySelectionColor(color2, bnlSelect);
+    }
+
+    if (flags1 == 3) {
+        scale1 *= bnlFilter.scale;
+    } else if (flags1 == 2) {
+        scale1 *= bnlHighlight.scale;
+    } else if (flags1 == 1) {
+        scale1 *= bnlSelect.scale;
+    }
+
+    if (flags2 == 3) {
+        scale2 *= bnlFilter.scale;
+    } else if (flags2 == 2) {
+        scale2 *= bnlHighlight.scale;
+    } else if (flags2 == 1) {
+        scale2 *= bnlSelect.scale;
     }
 }
 #endif // ENABLE_BNL
@@ -194,8 +209,12 @@ void main(void) {
     vec4 color1 = inVertices[index1].color;
     vec4 color2 = inVertices[index2].color;
 
+    float scale1 = 1.0;
+    float scale2 = 1.0;
+
 #if defined(ENABLE_BNL)
-    applyBrushingAndLinking(inVertices[index1].index, color1, inVertices[index2].index, color2);
+    applyBrushingAndLinking(inVertices[index1].index, color1, scale1,
+                            inVertices[index2].index, color2, scale2);
 #endif
 
     if (color1.a <= 0.0 && color2.a <= 0.0) {
@@ -270,8 +289,8 @@ void main(void) {
 
     vec2 depth = vec2(p1ndc.z, p2ndc.z);
 
-    float w1 = inVertices[index1].radius + 1.2 * antialiasing;
-    float w2 = inVertices[index2].radius + 1.2 * antialiasing;
+    float w1 = inVertices[index1].radius * scale1 + 1.2 * antialiasing;
+    float w2 = inVertices[index2].radius * scale2 + 1.2 * antialiasing;
     float segmentLength = length(p2 - p1);
     // segment length in world space
     float lineLengthWorld = length(inVertices[index2].worldPosition - inVertices[index1].worldPosition);

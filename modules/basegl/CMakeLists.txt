@@ -323,6 +323,7 @@ set(SHADER_FILES
     glsl/sphereglyph.vert
     glsl/splitter.geom
     glsl/splitter.vert
+    glsl/splitter.frag
     glsl/splittertriangle.geom
     glsl/tuberendering.frag
     glsl/tuberendering.geom

@@ -51,7 +51,7 @@ uniform sampler2D metaColor;
 out LineVert {
     vec4 worldPosition;
     vec4 color;
-    flat float radius;  // half-width in screen pixels; when USE_RADII is active, unit matches RadiiAttrib buffer
+    flat float radius;  // half-width in screen pixels; when HAS_RADII is active, unit matches RadiiAttrib buffer
     flat uint pickID;
     flat uint index;
 } vertex;
@@ -87,7 +87,7 @@ void main() {
     vertex.pickID = defaultPickID;
 #endif
 
-#if defined(HAS_RADII) && defined(USE_RADII)
+#if defined(HAS_RADII) && !defined(OVERRIDE_LINE_WIDTH)
     vertex.radius = in_Radii;
 #else
     vertex.radius = lineWidth * 0.5;
