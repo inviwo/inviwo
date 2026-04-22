@@ -32,7 +32,6 @@
 #include "utils/structs.glsl"
 #include "utils/selectioncolor.glsl"
 
-
 struct Config {
     vec3 color;
     float alpha;
@@ -96,10 +95,13 @@ void main(void) {
 
     if (flags == 3) {
         sphere.color = applySelectionColor(sphere.color, bnlFilter);
+        sphere.radius *= bnlFilter.scale;
     } else if (flags == 2) {
         sphere.color = applySelectionColor(sphere.color, bnlHighlight);
+        sphere.radius *= bnlHighlight.scale;
     } else if (flags == 1) {
         sphere.color = applySelectionColor(sphere.color, bnlSelect);
+        sphere.radius *= bnlSelect.scale;
     }
 #endif
 
@@ -108,9 +110,9 @@ void main(void) {
 #else
     sphere.pickID = 0;
 #endif
-    
+
     gl_Position = vec4(in_Position.xyz, 1.0);
-    
+
 #if defined(ENABLE_PERIODICITY)
     instance = gl_InstanceID;
 #endif

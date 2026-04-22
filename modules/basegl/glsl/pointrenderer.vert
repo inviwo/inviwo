@@ -106,12 +106,15 @@ void main(void) {
     if (flags == 3) {
         point.color = applySelectionColor(point.color, bnlFilter);
         point.borderAlpha = applySelectionColorAlphaOnly(borderColor, bnlFilter);
+        point.radius *= bnlFilter.scale;
     } else if (flags == 2) {
         point.color = applySelectionColor(point.color, bnlHighlight);
         point.borderAlpha = applySelectionColorAlphaOnly(borderColor, bnlHighlight);
+        point.radius *= bnlHighlight.scale;
     } else if (flags == 1) {
         point.color = applySelectionColor(point.color, bnlSelect);
         point.borderAlpha = applySelectionColorAlphaOnly(borderColor, bnlSelect);
+        point.radius *= bnlSelect.scale;
     } else {
         point.borderAlpha = borderColor.a;
     }

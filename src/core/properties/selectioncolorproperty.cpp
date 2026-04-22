@@ -53,16 +53,19 @@ SelectionColorProperty::SelectionColorProperty(std::string_view identifier,
     , intensity_(
           "intensity", "Mixing",
           "Blending factor for mixing the overlay color with the item's original color."_help, 0.7f,
-          {0.0f, ConstraintBehavior::Immutable}, {1.0f, ConstraintBehavior::Immutable}, 0.001f) {
-    addProperties(color_, alpha_, intensity_);
+          {0.0f, ConstraintBehavior::Immutable}, {1.0f, ConstraintBehavior::Immutable}, 0.001f)
+    , scale_("scale", "Scale", "Scaling factor for the object."_help, 1.0f,
+             {0.0f, ConstraintBehavior::Immutable}, {10.0f, ConstraintBehavior::Ignore}, 0.01f) {
+    addProperties(color_, alpha_, intensity_, scale_);
 }
 
 SelectionColorProperty::SelectionColorProperty(const SelectionColorProperty& rhs)
     : BoolCompositeProperty(rhs)
     , color_(rhs.color_)
     , alpha_(rhs.alpha_)
-    , intensity_(rhs.intensity_) {
-    addProperties(color_, alpha_, intensity_);
+    , intensity_(rhs.intensity_)
+    , scale_{rhs.scale_} {
+    addProperties(color_, alpha_, intensity_, scale_);
 }
 
 SelectionColorProperty* SelectionColorProperty::clone() const {
@@ -70,11 +73,16 @@ SelectionColorProperty* SelectionColorProperty::clone() const {
 }
 
 SelectionColorState SelectionColorProperty::getState() const {
-    return {getColor(), getMixIntensity(), isChecked()};
+    return {.color = getColor(),
+            .colorMixIn = getMixIntensity(),
+            .scale = getScale(),
+            .visible = isChecked()};
 }
 
 vec4 SelectionColorProperty::getColor() const { return vec4{color_.get(), alpha_.get()}; }
 
-float SelectionColorProperty::getMixIntensity() const { return intensity_; }
+float SelectionColorProperty::getMixIntensity() const { return intensity_.get(); }
+
+float SelectionColorProperty::getScale() const { return scale_.get(); }
 
 }  // namespace inviwo
