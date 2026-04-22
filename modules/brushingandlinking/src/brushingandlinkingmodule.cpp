@@ -37,6 +37,7 @@
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
 #include <memory>
+#include <modules/brushingandlinking/processors/propertytobrushing.h>
 
 namespace inviwo {
 class InviwoApplication;
@@ -179,6 +180,7 @@ BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app)
     // Processors
     registerProcessor<BrushingAndLinkingProcessor>();
     registerProcessor<CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>>();
+    registerProcessor<PropertyToBrushing>();
 
     // Ports
     registerPort<BrushingAndLinkingOutport>();
