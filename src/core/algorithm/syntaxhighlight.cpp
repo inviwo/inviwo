@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -135,7 +135,7 @@ Language detectLang(std::string_view lang) {
     if (lang == "python" || lang == "py") {
         return Language::Python;
     }
-    if (lang == "glsl" || lang == "frag" || lang == "vert" || lang == "comp") {
+    if (lang == "glsl" || lang == "frag" || lang == "vert" || lang == "comp" || lang == "geom") {
         return Language::Glsl;
     }
     return Language::Unknown;

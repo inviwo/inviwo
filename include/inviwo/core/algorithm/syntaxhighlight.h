@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,19 +42,11 @@ namespace inviwo::util {
  * Supported languages (case-sensitive lang tag):
  *   C++  : "cpp", "c++", "cxx", "cc", "c"
  *   Python: "python", "py"
- *   GLSL  : "glsl", "frag", "vert", "comp"
+ *   GLSL  : "glsl", "frag", "vert", "comp", "geom"
  *
  * For unrecognised language tags the code is appended as HTML-escaped plain text
- * without any colour markup.
- *
- * The colour mapping mirrors the GitHub `.pl-*` CSS classes used by the Linguist
- * highlighter:
- *   keywords           → #66d9ef  (.pl-k)
- *   string literals    → #e6db74  (.pl-s)
- *   numeric literals   → #f92672  (.pl-c1)
- *   comments           → #f6f8fa  (.pl-c)
- *   function names     → #a6e22e  (.pl-en)
- *
+ * without any color markup.
+ * *
  * @param handle  DocumentHandle for the element that will receive the tokens as children.
  * @param code    Raw (unescaped) source-code text.
  * @param lang    Fenced-code-block language tag (e.g. "cpp", "python", "glsl").
