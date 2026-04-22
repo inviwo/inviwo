@@ -734,7 +734,11 @@ void Shader::setUniform(std::string_view name, std::span<const double> values) c
     if (values.empty()) return;
     const auto location = findUniformLocation(name);
     if (location != -1) {
+#include <warn/push>
+#include <warn/ignore/conversion>
+        // MSVC triggers warning C4244 due to initialization conversion from double to float
         std::vector<float> tmp(values.begin(), values.end());
+#include <warn/pop>
         glUniform1fv(location, static_cast<GLsizei>(tmp.size()), tmp.data());
     }
 }

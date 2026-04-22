@@ -511,7 +511,9 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
 
         if (keyEvent->key() == Qt::Key_D) {
             keyEvent->accept();
-
+#include <warn/push>
+#include <warn/ignore/deprecated-declarations>
+            // suppress MSVC implicit conversion warning between a QList::iterator and a raw pointer
             const auto selected = selectedItems() | std::views::transform([](auto* p) {
                                       return qgraphicsitem_cast<ProcessorGraphicsItem*>(p);
                                   }) |
@@ -519,6 +521,7 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
                                   std::views::take(1) |
                                   std::views::transform([](auto* p) { return p->getProcessor(); }) |
                                   std::ranges::to<std::vector>();
+#include <warn/pop>
 
             if (!selected.empty()) {
                 mainWindow_->getProcessorTreeWidget()->setPredecessorProcessor(
