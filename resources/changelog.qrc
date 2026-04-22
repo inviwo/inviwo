@@ -1,7 +1,7 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource prefix="/">
-        <file>changelog.html</file>
+        <file alias="changelog.md">../CHANGELOG.md</file>
     </qresource>
      <qresource prefix="/resources/changelog/">
         <file alias="camera-cube.jpg">changelog/camera-cube.jpg</file>

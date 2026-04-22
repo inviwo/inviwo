@@ -134,6 +134,7 @@ source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/changelog.qrc ${QRC_FIL
 source_group("CMake Files" FILES CMakeLists.txt)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg SvgWidgets)
+find_package(md4c CONFIG REQUIRED)
 qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 
 source_group("MOC Files" FILES ${MOCED_FILES})
@@ -160,6 +161,7 @@ target_link_libraries(inviwo-qteditor PUBLIC
     Qt6::Widgets 
     Qt6::Svg
     Qt6::SvgWidgets
+    md4c::md4c-html
 )
 
 if(TARGET inviwo::meta)
@@ -173,40 +175,8 @@ ivw_define_standard_properties(QT inviwo-qteditor)
 
 # Optimize compilation with pre-compilied headers
 ivw_compile_optimize_on_target(inviwo-qteditor)
-
-# Generate html version of changelog (for the welcome widget), if python is available
-find_package(Python3 COMPONENTS Interpreter)
-set(IVW_CFG_BUILD_CHANGELOG ${Python3_Interpreter_FOUND} CACHE BOOL 
-    "Generate html version of changelog (for the welcome widget)")
-if(IVW_CFG_BUILD_CHANGELOG)
-    find_package(Python3 COMPONENTS Interpreter REQUIRED)
-
-    set(srcFile ${IVW_ROOT_DIR}/CHANGELOG.md)
-    set(buildFile ${CMAKE_CURRENT_BINARY_DIR}/changelog.html)
-    set(destFile ${IVW_RESOURCES_DIR}/changelog.html)
-
-    add_custom_command(
-        OUTPUT ${buildFile}
-        COMMAND ${Python3_EXECUTABLE}
-             ${IVW_ROOT_DIR}/tools/changelog-to-html.py 
-            -i ${srcFile}
-            -o ${buildFile}
-            -o ${destFile}
-        WORKING_DIRECTORY ${IVW_ROOT_DIR}
-        MAIN_DEPENDENCY ${srcFile}
-        DEPENDS ${IVW_ROOT_DIR}/tools/changelog-to-html.py
-        COMMENT "Generating HTML version of the Inviwo Changelog"
-        VERBATIM
-    )
-
-    target_sources(inviwo-qteditor PRIVATE ${buildFile})
-
-endif()
-
 ivw_deploy_qt(inviwo-qteditor)
-
 ivw_default_install_targets(inviwo-qteditor)
-
 ivw_register_license_file(NAME "DocumentWindow" MODULE QtWidgets
     URL "https://wiki.qt.io/Assigning_a_file_type_to_an_Application_on_Windows"
     TYPE "Simplified BSD License"

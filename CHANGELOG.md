@@ -21,7 +21,7 @@ for (int32_t cp : "café"sv | views::codePoints) { ... }
 A NRRD (Nearly Raw Raster Data) volume reader has been added to the Base module, enabling loading of `.nrrd` and `.nhdr` files directly into Inviwo.
 
 ## 2026-04-16 Portable `util::concat` range adaptor (`std::views::concat` backport)
-A new header `include/inviwo/core/util/concat.h` provides a portable implementation of `std::views::concat` (C++26), which is not yet available in Clang/libc++. Only providing forward_iterators.
+A new header `include/inviwo/core/util/concat.h` provides a portable implementation of `std::views::concat` (C++26), which is not yet available in Clang/libc++. It only implements forward_iterators.
 
 - **`concat_view`** — variant-based iterator that lazily concatenates multiple ranges of a common reference type; supports input/forward/bidirectional iteration and `std::ranges::view_interface` helpers
 - **`util::concat`** — factory function wrapping each range via `std::views::all` so temporaries are handled safely; works with pipe composition
@@ -37,12 +37,12 @@ auto evens = util::concat(a, b)
 ```
 
 ## 2026-04-15 `OrthographicAxis2D` Volume/Layer ports
-- **`OrthographicAxis2D`** processor now exposes optional `MeshInport`, `VolumeInport`, and `LayerInport` so axis ranges can be driven directly from a Mesh, Volume, or Layer data extents
+`OrthographicAxis2D` processor now exposes optional `MeshInport`, `VolumeInport`, and `LayerInport` so axis ranges can be driven directly from a Mesh, Volume, or Layer data extents
 
 ## 2026-04-14 Scientific color maps added to utilities and the TF presets menus
-A large collection of perceptually uniform scientific color maps created by Fabio Crameri ([fabiocrameri.ch/colourmaps/](https://fabiocrameri.ch/colourmaps/)) has been added to the Base module, expanding the set of built-in transfer functions available in Inviwo.
+A large collection of perceptually uniform scientific color maps created by Fabio Crameri ([https://fabiocrameri.ch/colourmaps/](https://fabiocrameri.ch/colourmaps/)) has been added to the Base module, expanding the set of built-in transfer functions available in Inviwo.
 
-## 2026-04-14 `SpatialEntity` and `Camera` promoted to double precision ([#1928](https://github.com/inviwo/inviwo/pull/1928))
+## 2026-04-14 `SpatialEntity` and `Camera` promoted to double precision
 All spatial state in `SpatialEntity` and `Camera` (and their subclasses) has been promoted from `float`/`mat4`/`vec3` to `double`/`dmat4`/`dvec3`. This is a **breaking API change** — downstream code that passes or receives spatial matrices, camera parameters, or bounding boxes must be updated.
 
 ### Key changes
@@ -57,12 +57,14 @@ All spatial state in `SpatialEntity` and `Camera` (and their subclasses) has bee
 
 ```cpp
 // Before
-Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane, float aspectRatio);
+Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, 
+       float nearPlane, float farPlane, float aspectRatio);
 const mat4& getViewMatrix() const;
 mat4 boundingBox(const Volume& volume);
 
 // After
-Camera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane, double aspectRatio);
+Camera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, 
+       double nearPlane, double farPlane, double aspectRatio);
 const dmat4& getViewMatrix() const;
 dmat4 boundingBox(const Volume& volume);
 ```
@@ -101,7 +103,9 @@ See `RandomMeshGenerator::invokeEvent()` and `PythonPickingExample.py` for its u
 
 ## 2025-05-05 CameraWidget
 The CameraWidget gained new functionality to animate the camera either in a continuous fashion or by swinging back and forth.
+
 ![Camera Cube](resources/changelog/camera-cube.jpg)
+
 It also got a new "Cube" interaction widget to easily set various view directions. 
 
 ## 2025-05-05 Easing
@@ -210,58 +214,32 @@ The existing macro based logging functions `LogInfo`, `LogWarn`, `LogError` and 
 The new log functions all live in the `inviwo::log` namespace. They either take an explicit `SourceContext` argument, or automatically extract one from the call site. All functions that take a `fmt::format_string` do compile time format checks.
 
 #### Basic logging
- * ```cpp
-   log::info(fmt::format_string<Args...>, Args&&...)
-   ```
- * ```cpp
-   log::warn(fmt::format_string<Args...>, Args&&...)
-   ```
- * ```cpp
-   log::error(fmt::format_string<Args...>, Args&&...)
-   ```
-
+```cpp
+log::info(fmt::format_string<Args...>, Args&&...)
+log::warn(fmt::format_string<Args...>, Args&&...)
+log::error(fmt::format_string<Args...>, Args&&...)
+```
 #### Runtime Log Level
- * ```cpp
-   log::report(LogLevel, SourceContext, fmt::format_string, Args&&...)
-   ```
- * ```cpp
-   log::report(LogLevel, SourceContext, std::string_view)
-   ```
- * ```cpp
-   log::report(LogLevel, std::string_view)
-   ```
- * ```cpp
-   log::message(LogLevel level, fmt::format_string<Args...>, Args&&...)
-   ```
- 
+```cpp
+log::report(LogLevel, SourceContext, fmt::format_string, Args&&...)
+log::report(LogLevel, SourceContext, std::string_view)
+log::report(LogLevel, std::string_view)
+log::message(LogLevel level, fmt::format_string<Args...>, Args&&...)
+```
 #### Log Exceptions
- * ```cpp
-   log::exception(const Exception&)
-   ```
- * ```cpp
-   log::exception(const std::exception&)
-   ```
- * ```cpp
-   log::exception(std::string_view)
-   ```
- * ```cpp
-   log::exception()
-   ```
-
+ ```cpp
+log::exception(const Exception&)
+log::exception(const std::exception&)
+log::exception(std::string_view)
+log::exception()
+```
 #### Log to a custom logger
- * ```cpp
-   log::report(Logger&, LogLevel, SourceContext, fmt::format_string, Args&&...)
-   ```
- * ```cpp
-   log::report(Logger&, LogLevel, SourceContext, std::string_view)
-   ```
- * ```cpp
-   log::report(Logger&, LogLevel, std::string_view)
-   ```
- * ```cpp
-   log::message(Logger&, LogLevel level, fmt::format_string<Args...>, Args&&...)
-   ```
-
+```cpp
+log::report(Logger&, LogLevel, SourceContext, fmt::format_string, Args&&...)
+log::report(Logger&, LogLevel, SourceContext, std::string_view)
+log::report(Logger&, LogLevel, std::string_view)
+log::message(Logger&, LogLevel level, fmt::format_string<Args...>, Args&&...)
+```
 
 ## 2024-12-09 __Breaking__ change: string_view class identifiers
 All base classes that have a `virtual std::string getClassIdentifier() const` were refactored into `virtual std::string_view getClassIdentifier() const`. This is done to avoid string allocations. 
@@ -275,7 +253,9 @@ virtual const std::string_view getClassIdentifier() const override;
 ```
 In most cases the corresponding implementation can just return a string literal:
 ```cpp
-const std::string_view MyClass::getClassIdentifier() const { return "org.something.myclass" };
+const std::string_view MyClass::getClassIdentifier() const {
+   return "org.something.myclass" 
+};
 ```
 If the the return value depends on a template parameter, consider doing something similar to `include/inviwo/core/properties/ordinalproperty.h`
 
@@ -434,7 +414,7 @@ This change potentially breaks existing Python processors handling either image 
 *Note:* Numpy arrays must be C-contiguous in order to be used by Inviwo. If they are not, the conversion from Numpy to Inviwo will fail and throw an exception (`Buffer`, `LayerPy`, `VolumePy`, etc.). Bear in mind that in Python the right-most index is the fastest.
 ```python
 l = [ [ 0, 1, 2 ], [ 3, 4, 5 ] ]
-const ProcessorInfo& ::getProcessorInfo() const { return processorInfo_; }l[0][2]) # [2] refers to the fastest running index
+print(l[0][2]) # [2] refers to the fastest running index
 
 n = numpy.array(l)
 print(n.flatten()) # -> [ 0, 1, 2, 3, 4, 5 ]
@@ -554,7 +534,7 @@ R"(
     in a set of properties.
     
     Example network:
-    [basegl/instance_renderer.inv](file:~modulePath~/data/workspaces/instance_renderer.inv)
+    [basegl/instances.inv](file:~modulePath~/data/workspaces/instances.inv)
 )"_unindentHelp};
 ```
 The `_unindentHelp`  suffix will remove any leading indent and parse the string as a markdown document and then convert it to an inviwo document, which is what is expected by the `ProcessorInfo` struct.
@@ -564,7 +544,7 @@ One can refer to images like so:
 ```
 or networks
 ```c++
-"[basegl/instance_renderer.inv](file:~modulePath~/data/workspaces/instance_renderer.inv)"
+"[basegl/instances.inv](file:~modulePath~/data/workspaces/instances.inv)"
 ```
 Images will be shown inline, and clicking on processor network will append them to the current network. 
 To be able to refer to files there are two placeholder `~basePath~` and `~modulePath~` the former will refer to the base path of the inviwo installation and the latter to the current module. Make sure that any resources linked are also included in the installer. By default the `data` directory and the `docs` folders are always included in the installer. 
@@ -579,10 +559,11 @@ For Properties a new constructor with a new third help argument after the identi
 ```cpp
 customInputDimensions_{"customInputDimensions",
                        "Image Size",
-                       "The size of the image that will be generated. This can be larger "
-                       "or smaller than the canvas size. A smaller size will generate a "
-                       "blurrier canvas, but render faster. A larger size will render "
-                       "slower."_help,
+                       "The size of the image that will be generated. "
+                       "This can be larger or smaller than the canvas "
+                       "size. A smaller size will generate a blurrier "
+                       "canvas, but render faster. A larger size will "
+                       "render slower."_help,
                        size2_t(256, 256),
                        {size2_t(1, 1), ConstraintBehavior::Immutable},
                        {size2_t(10000, 10000), ConstraintBehavior::Ignore},
@@ -872,11 +853,14 @@ To specify the behavior a new Constructor has been added to the OrdinalProperty:
 OrdinalProperty(const std::string& identifier, const std::string& displayName,
                 const T& value = Defaultvalues<T>::getVal(),
                 const std::pair<T, ConstraintBehavior>& minValue =
-                    std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
+                    std::pair{Defaultvalues<T>::getMin(), 
+                              ConstraintBehavior::Editable},
                 const std::pair<T, ConstraintBehavior>& maxValue =
-                    std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
+                    std::pair{Defaultvalues<T>::getMax(), 
+                              ConstraintBehavior::Editable},
                 const T& increment = Defaultvalues<T>::getInc(),
-                InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                InvalidationLevel invalidationLevel = 
+                    InvalidationLevel::InvalidOutput,
                 PropertySemantics semantics = PropertySemantics::Default);
 ```
 where the `ConstraintBehavior` can be specified together with the `minValue` and `maxValue`. 
@@ -887,7 +871,8 @@ Added functionality to retrieve which processor is responsible for the browser A
 ## 2019-12-02 PoolProcessor
 Added a processor base class to make background processing easier. Here is a basic example of how the process function might look like:
 ```c++
-const auto calc = [image = inport_.getData()](pool::Stop stop, pool::Progress progress) 
+const auto calc = [image = inport_.getData()](pool::Stop stop, 
+                                              pool::Progress progress) 
     -> std::shared_ptr<const Image> {
     if (stop) return nullptr;
     auto newImage = std::shared_ptr<Image>(image->clone());
@@ -999,7 +984,8 @@ class PythonExample(ivw.Processor):
         self.outport = ivw.data.VolumeOutport("outport")
         self.addOutport(self.outport)
 
-        self.slider = ivw.properties.IntProperty("slider", "slider", 0, 0, 100, 1)
+        self.slider = ivw.properties.IntProperty("slider", "slider",
+                                                 0, 0, 100, 1)
         self.addProperty(self.slider)
 
     @staticmethod
@@ -1282,9 +1268,12 @@ This also works when using different types of properties as prefab objects:
 ListProperty listProperty("myListProperty", "My List Property", 
     []() {
         std::vector<std::unique_ptr<Property>> v = {
-            std::make_unique<BoolProperty>("boolProperty1", "Boolean Flag", true);
-            std::make_unique<TransferFunctionProperty>("customTF1", "Transfer Function");
-            std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10);
+            std::make_unique<BoolProperty>("boolProperty1", 
+                                           "Boolean Flag", true);
+            std::make_unique<TransferFunctionProperty>(
+                "customTF1", "Transfer Function");
+            std::make_unique<IntProperty>("template1", "Template 1",
+                                          5, 0, 10);
         };
         return v;
     }());
@@ -1587,7 +1576,8 @@ public:
 ```
 And then pass that on to the base class together with the module name
 ```cpp
-BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL") {
+BaseGLModule::BaseGLModule(InviwoApplication* app) 
+  : InviwoModule(app, "BaseGL") {
 ```
 There is also not any `initialize()` do `deinitialize()` function anymore, just use the constructor and destructor.
 
@@ -1694,7 +1684,9 @@ void VolumeSubsample::process() {
         result_ = dispatchPool(
             [this](const VolumeRAM* v, VolumeRAMSubSample::Factor f) 
                 -> std::unique_ptr<Volume> {
-                auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
+                auto volume = util::make_unique<Volume>(
+                  VolumeRAMSubSample::apply(v, f)
+                );
                 dispatchFront([this]() { invalidate(INVALID_OUTPUT); });
                 return volume;
             },
