@@ -890,6 +890,7 @@ IVW_CORE_API bool&#160;</td><td class="memItemRight"><b>hasTimestamps</b> (const
 <tr class="memitem:a84700445b4e279e926156e7539163a11" id="r_a84700445b4e279e926156e7539163a11"><td class="memTemplParams" colspan="2"><a id="a84700445b4e279e926156e7539163a11" name="a84700445b4e279e926156e7539163a11"></a>
 template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:a84700445b4e279e926156e7539163a11 template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><b>hide</b> (Args &amp;&amp;... args)</td></tr>
+<tr class="memitem:a4cf5815c2544c315646a7c3f91bd3cb0" id="r_a4cf5815c2544c315646a7c3f91bd3cb0"><td class="memItemLeft">IVW_CORE_API void&#160;</td><td class="memItemRight"><a class="el" href="#a4cf5815c2544c315646a7c3f91bd3cb0">highlightCode</a> (<a class="el" href="classinviwo_1_1Document_1_1DocumentHandle.html">Document::DocumentHandle</a> handle, std::string_view code, std::string_view lang)</td></tr>
 <tr class="memitem:ac3f9833eb188a10608194ca675005df7" id="r_ac3f9833eb188a10608194ca675005df7"><td class="memItemLeft"><a id="ac3f9833eb188a10608194ca675005df7" name="ac3f9833eb188a10608194ca675005df7"></a>
 IVW_CORE_API std::string&#160;</td><td class="memItemRight"><b>htmlEncode</b> (std::string_view data)</td></tr>
 <tr class="memitem:a139147c9ad3222c2474c569fb3378ba0" id="r_a139147c9ad3222c2474c569fb3378ba0"><td class="memItemLeft"><a id="a139147c9ad3222c2474c569fb3378ba0" name="a139147c9ad3222c2474c569fb3378ba0"></a>
@@ -5422,6 +5423,45 @@ template&lt;class T&gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Function to combine several hash values <a href="http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x">http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x</a> </p>
+
+</div>
+</div>
+<a id="a4cf5815c2544c315646a7c3f91bd3cb0" name="a4cf5815c2544c315646a7c3f91bd3cb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf5815c2544c315646a7c3f91bd3cb0">&#9670;&#160;</a></span>highlightCode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_CORE_API void inviwo::util::highlightCode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Document_1_1DocumentHandle.html">Document::DocumentHandle</a></td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>code</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>lang</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Applies syntax highlighting to source code and appends the resulting HTML tokens as child nodes (plain text nodes and colored <span class="tt">&lt;span&gt;</span> elements) to <code class="param">handle</code>.</p>
+<p>Supported languages (case-sensitive lang tag): C++ : "cpp", "c++", "cxx", "cc", "c" Python: "python", "py" GLSL : "glsl", "frag", "vert", "comp", "geom"</p>
+<p>For unrecognised language tags the code is appended as HTML-escaped plain text without any color markup.</p><ul>
+<li><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>DocumentHandle for the element that will receive the tokens as children. </td></tr>
+    <tr><td class="paramname">code</td><td>Raw (unescaped) source-code text. </td></tr>
+    <tr><td class="paramname">lang</td><td>Fenced-code-block language tag (e.g. "cpp", "python", "glsl"). </td></tr>
+  </table>
+  </dd>
+</dl>
+</li>
+</ul>
 
 </div>
 </div>

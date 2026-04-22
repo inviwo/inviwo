@@ -86,11 +86,11 @@ var NAVTREEINDEX =
 "classinviwo_1_1plot_1_1ColorScaleLegend.html",
 "functions_v.html",
 "namespaceinviwo_1_1pool.html#a9d13e28d8b8012a39177819e13aaaa5b",
-"namespaceinviwo_1_1util.html#af2faab1f347a6ec696b4d7dd494c23e2",
-"structinviwo_1_1Histogram2D.html",
+"namespaceinviwo_1_1util.html#af1136c71f85d4df4b2b2449aee7121b0",
+"structinviwo_1_1Histogram1D.html",
 "structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html",
-"structinviwo_1_1detail_1_1ColorConverter_3_01ivec4_01_4.html",
-"structinviwo_1_1util_1_1identity.html"
+"structinviwo_1_1detail_1_1ColorConverter_3_01ivec3_01_4.html",
+"structinviwo_1_1util_1_1identifier.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

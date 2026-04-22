@@ -64,11 +64,12 @@ var searchData=
   ['hidewidget_61',['hideWidget',['../classinviwo_1_1OrdinalLikePropertySettingsWidgetQt.html#ac3b807a9c7d955c98394fffcf586e75a',1,'inviwo::OrdinalLikePropertySettingsWidgetQt::hideWidget()'],['../classinviwo_1_1MinMaxPropertySettingsWidgetQt.html#a792a4b0ee350abd1a3c94b0d34427698',1,'inviwo::MinMaxPropertySettingsWidgetQt::hideWidget()']]],
   ['highlight_62',['Highlight',['../namespaceinviwo.html#a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1',1,'inviwo']]],
   ['highlight_63',['highlight',['../classinviwo_1_1BrushingAndLinkingManager.html#a60466f7008bd34b45e2c4d4ac8b79f39',1,'inviwo::BrushingAndLinkingManager']]],
-  ['histogram1d_64',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
-  ['histogram2d_65',['Histogram2D',['../structinviwo_1_1Histogram2D.html',1,'inviwo']]],
-  ['histogramcache_66',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
-  ['histogramtodataframe_67',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
-  ['hsl2rgb_68',['hsl2rgb',['../namespaceinviwo_1_1color.html#a8d0e0863995cedb80bc5799c3f149048',1,'inviwo::color']]],
-  ['hsv2rgb_69',['hsv2rgb',['../namespaceinviwo_1_1color.html#a0da20ba4dfc221f8708ad12ab20ffe06',1,'inviwo::color']]],
-  ['htmlpropertywidgetqt_70',['HTMLPropertyWidgetQt',['../classinviwo_1_1HTMLPropertyWidgetQt.html',1,'inviwo']]]
+  ['highlightcode_64',['highlightCode',['../namespaceinviwo_1_1util.html#a4cf5815c2544c315646a7c3f91bd3cb0',1,'inviwo::util']]],
+  ['histogram1d_65',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
+  ['histogram2d_66',['Histogram2D',['../structinviwo_1_1Histogram2D.html',1,'inviwo']]],
+  ['histogramcache_67',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
+  ['histogramtodataframe_68',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
+  ['hsl2rgb_69',['hsl2rgb',['../namespaceinviwo_1_1color.html#a8d0e0863995cedb80bc5799c3f149048',1,'inviwo::color']]],
+  ['hsv2rgb_70',['hsv2rgb',['../namespaceinviwo_1_1color.html#a0da20ba4dfc221f8708ad12ab20ffe06',1,'inviwo::color']]],
+  ['htmlpropertywidgetqt_71',['HTMLPropertyWidgetQt',['../classinviwo_1_1HTMLPropertyWidgetQt.html',1,'inviwo']]]
 ];

@@ -1,5 +1,6 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html":[2,0,0,927],
 "structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html":[4,0,1,936],
 "structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[2,0,0,928],
 "structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[4,0,1,937],
@@ -248,6 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1detail_1_1CodePointsAdaptor.html":[4,0,1,11,2],
 "structinviwo_1_1detail_1_1ColorConverter.html":[4,0,1,11,3],
 "structinviwo_1_1detail_1_1ColorConverter_3_01dvec3_01_4.html":[4,0,1,11,4],
-"structinviwo_1_1detail_1_1ColorConverter_3_01dvec4_01_4.html":[4,0,1,11,5],
-"structinviwo_1_1detail_1_1ColorConverter_3_01ivec3_01_4.html":[4,0,1,11,6]
+"structinviwo_1_1detail_1_1ColorConverter_3_01dvec4_01_4.html":[4,0,1,11,5]
 };

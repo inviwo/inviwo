@@ -1,8 +1,9 @@
 var NAVTREEINDEX30 =
 {
+"namespaceinviwo_1_1util.html#af1136c71f85d4df4b2b2449aee7121b0":[2,0,0,20,272],
 "namespaceinviwo_1_1util.html#af2faab1f347a6ec696b4d7dd494c23e2":[2,0,0,20,225],
 "namespaceinviwo_1_1util.html#af3c2e1caf7ae7eb2ed27584c20c8882c":[2,0,0,20,173],
-"namespaceinviwo_1_1util.html#af6fa91973f804cd02c1e28fb635202d1":[2,0,0,20,296],
+"namespaceinviwo_1_1util.html#af6fa91973f804cd02c1e28fb635202d1":[2,0,0,20,297],
 "namespaceinviwo_1_1util.html#af74c8c14214ac56aeafc8d0165333c57":[2,0,0,20,178],
 "namespaceinviwo_1_1util.html#af791b6c40d260174cfe13d1b910a2997":[2,0,0,20,153],
 "namespaceinviwo_1_1util.html#af84d061d989c94549b2515228784d390":[2,0,0,20,207],
@@ -248,6 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html":[4,0,1,370,0],
 "structinviwo_1_1GLFormat.html":[2,0,0,369],
 "structinviwo_1_1GLFormat.html":[4,0,1,378],
-"structinviwo_1_1Histogram1D.html":[2,0,0,394],
-"structinviwo_1_1Histogram1D.html":[4,0,1,403]
+"structinviwo_1_1Histogram1D.html":[2,0,0,394]
 };
