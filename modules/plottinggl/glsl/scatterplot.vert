@@ -51,7 +51,7 @@ uniform vec2 minmaxC;
 uniform vec2 minmaxR;
 uniform vec4 default_color;
 
-uniform SelectionColor secondaryColor = SelectionColor(vec4(0.0), 0.0, 0.0, true);
+uniform SelectionColor secondaryColor = SelectionColor(vec4(0.0), 0.0, 0.0, 1.0, true);
 
 uniform float minRadius;
 uniform float maxRadius;
@@ -80,6 +80,8 @@ void main(void) {
     } else {
         vRadius = maxRadius;
     }
+    vRadius *= secondaryColor.scale;
+
     vDepth = 0.5;
 
     float x = norm(X, minmaxX);
