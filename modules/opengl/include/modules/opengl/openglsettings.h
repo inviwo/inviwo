@@ -32,6 +32,7 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <modules/opengl/openglcapabilities.h>
@@ -55,6 +56,7 @@ public:
     OptionProperty<utilgl::debug::BreakLevel> breakOnMessage_;
 
     BoolProperty errorChecking_;
+    OrdinalProperty<size_t> stackSize_;
     BoolProperty breakOnError_;
 };
 

@@ -79,17 +79,45 @@ void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID 
     }
 }
 
-extern "C" {
-static void APIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint id,
-                                                GLenum eseverity, GLsizei /*length*/,
-                                                const GLchar* message, const void* /*module*/) {
+namespace {
+
+std::string argsToString(const glbinding::FunctionCall& call) {
+    std::stringstream ss;
+    for (unsigned i = 0; i < call.parameters.size(); ++i) {
+        ss << call.parameters[i].get();
+        if (i < call.parameters.size() - 1) ss << ", ";
+    }
+    return std::move(ss).str();
+}
+
+void logStackTrace(size_t count) {
+#ifdef __cpp_lib_stacktrace
+
+    auto stack = std::stacktrace::current();
+    auto items = stack | std::views::drop_while([](auto& entry) {
+                     return !entry.description().contains("glbinding");
+                 }) |
+                 std::views::drop_while(
+                     [](auto& entry) { return entry.description().contains("glbinding"); }) |
+                 std::views::take(count);
+
+    for (auto&& entry : items) {
+        log::report(LogLevel::Error, SourceContext("OpenGL Error Check"_sl), "{}({}): {}",
+                    entry.source_file(), entry.source_line(), entry.description());
+    }
+#endif
+}
+
+void GL_APIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint id,
+                                            GLenum eseverity, GLsizei /*length*/,
+                                            const GLchar* message, const void* /*module*/) {
 
     const auto source = debug::toSource(esource);
     const auto type = debug::toType(etype);
     const auto severity = debug::toSeverity(eseverity);
 
-    std::string error = fmt::format("{}\n[Severity: {}. Type: {}, Source: {}, Id: {}", message,
-                                    severity, type, source, id);
+    auto error = fmt::format("{}\n[Severity: {}. Type: {}, Source: {}, Id: {}", message, severity,
+                             type, source, id);
     if (const auto* rc = RenderContext::getPtr()) {
         const auto* context = rc->activeContext();
         fmt::format_to(std::back_inserter(error), "Context: {} ({})", rc->getContextName(context),
@@ -110,7 +138,7 @@ static void APIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GL
         }
     }
 }
-}
+}  // namespace
 
 void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
     if (RenderContext::getPtr()->hasDefaultRenderContext()) {
@@ -227,69 +255,39 @@ void handleOpenGLDebugMode(Canvas::ContextID context) {
     }
     // Apply error checking setting for this new context
     setOpenGLErrorChecking(openglSettings->errorChecking_.get(),
-                           openglSettings->breakOnError_.get());
+                           openglSettings->breakOnError_.get(), openglSettings->stackSize_.get());
 }
 
-void handleOpenGLErrorCheckingChange(bool enable, bool breakOnError) {
+void handleOpenGLErrorCheckingChange(bool enable, bool breakOnError, size_t stackSize) {
     if (RenderContext::getPtr()->hasDefaultRenderContext()) {
         RenderContext::getPtr()->forEachContext(
-            [enable, breakOnError](Canvas::ContextID /*id*/, const std::string& /*name*/,
-                                   ContextHolder* canvas, std::thread::id threadId) {
+            [enable, breakOnError, stackSize](Canvas::ContextID /*id*/, const std::string& /*name*/,
+                                              ContextHolder* canvas, std::thread::id threadId) {
                 if (threadId == std::this_thread::get_id()) {
                     canvas->activate();
-                    setOpenGLErrorChecking(enable, breakOnError);
+                    setOpenGLErrorChecking(enable, breakOnError, stackSize);
                 }
             });
         RenderContext::getPtr()->activateDefaultRenderContext();
     }
 }
 
-namespace {
-std::string argsToString(const glbinding::FunctionCall& call) {
-    std::stringstream ss;
-    for (unsigned i = 0; i < call.parameters.size(); ++i) {
-        ss << call.parameters[i].get();
-        if (i < call.parameters.size() - 1) ss << ", ";
-    }
-    return std::move(ss).str();
-}
-
-void logStackTrace(size_t count) {
-#ifdef __cpp_lib_stacktrace
-
-    auto stack = std::stacktrace::current();
-    auto items = stack | std::views::drop_while([](auto& entry) {
-                     return !entry.description().contains("glbinding");
-                 }) |
-                 std::views::drop_while(
-                     [](auto& entry) { return entry.description().contains("glbinding"); }) |
-                 std::views::take(count);
-
-    for (auto&& entry : items) {
-        log::report(LogLevel::Error, SourceContext("OpenGL Error Check"_sl), "{}({}): {}",
-                    entry.source_file(), entry.source_line(), entry.description());
-    }
-#endif
-}
-
-}  // namespace
-
-void setOpenGLErrorChecking(bool enable, bool breakOnError) {
+void setOpenGLErrorChecking(bool enable, bool breakOnError, size_t stackSize) {
     if (enable) {
         // Install the global after callback. When settings change, this is called again to
         // reinstall with the updated breakOnError value.
-        glbinding::Binding::setAfterCallback([breakOnError](const glbinding::FunctionCall& call) {
-            GLenum err{GL_NO_ERROR};
-            while ((err = glGetError()) != GL_NO_ERROR) {
+        glbinding::Binding::setAfterCallback(
+            [breakOnError, stackSize](const glbinding::FunctionCall& call) {
+                GLenum err{GL_NO_ERROR};
+                while ((err = glGetError()) != GL_NO_ERROR) {
 
-                log::report(LogLevel::Error, SourceContext("OpenGL Error Check"_sl),
-                            "OpenGL error {} after calling {}({})", getGLErrorString(err),
-                            call.function->name(), argsToString(call));
-                logStackTrace(5);
-
-                if (breakOnError) util::debugBreak();
-            }
-        });
+                    log::report(LogLevel::Error, SourceContext("OpenGL Error Check"_sl),
+                                "OpenGL error {} after calling {}({})", getGLErrorString(err),
+                                call.function->name(), argsToString(call));
+                    if (stackSize > 0) logStackTrace(stackSize);
+                    if (breakOnError) util::debugBreak();
+                }
+            });
         // Enable the After callback for all functions in this context except glGetError itself
         glbinding::Binding::addCallbackMaskExcept(
             glbinding::CallbackMask::After | glbinding::CallbackMask::ParametersAndReturnValue,

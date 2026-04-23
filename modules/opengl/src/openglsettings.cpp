@@ -69,42 +69,37 @@ OpenGLSettings::OpenGLSettings()
                        utilgl::debug::BreakLevel::Medium, utilgl::debug::BreakLevel::Low,
                        utilgl::debug::BreakLevel::Notification},
                       0)
-    , errorChecking_("errorChecking", "Error Checking (glGetError)", false)
-    , breakOnError_("breakOnError", "Break on Error", false) {
+    , errorChecking_("errorChecking", "Error Checking",
+                     "This will call glGetError after every OpenGL call and log any errors"_help,
+                     false)
+    , breakOnError_("breakOnError", "Break on Error", false)
+    , stackSize_{"stackSize", "Stacktrace Size",
+                 "Append a stracktrace of the first N frames to the log message"_help} {
 
-    addProperty(shaderReloadingProperty_);
-    addProperty(btnOpenGLInfo_);
-    addProperty(uniformWarnings_);
-    addProperty(shaderObjectErrors_);
-    addProperty(debugMessages_);
-    addProperty(debugSeverity_);
-    addProperty(breakOnMessage_);
-    addProperty(errorChecking_);
-    addProperty(breakOnError_);
-
-    breakOnMessage_.setVisible(false);
-    breakOnError_.setVisible(false);
+    addProperties(shaderReloadingProperty_, btnOpenGLInfo_, uniformWarnings_, shaderObjectErrors_,
+                  debugMessages_, debugSeverity_, breakOnMessage_, errorChecking_, breakOnError_,
+                  stackSize_);
 
     debugSeverity_.onChange(
         [&]() { utilgl::handleOpenGLDebugMessagesChange(debugSeverity_.getSelectedValue()); });
 
     debugMessages_.onChange([this]() {
-        if (debugMessages_.getSelectedValue() == utilgl::debug::Mode::DebugSynchronous) {
-            breakOnMessage_.setVisible(true);
-        } else {
-            breakOnMessage_.setVisible(false);
-        }
         utilgl::handleOpenGLDebugModeChange(debugMessages_.getSelectedValue(),
                                             debugSeverity_.getSelectedValue());
     });
 
     errorChecking_.onChange([this]() {
-        breakOnError_.setVisible(errorChecking_.get());
-        utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get());
+        utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get(),
+                                                stackSize_.get());
     });
 
     breakOnError_.onChange([this]() {
-        utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get());
+        utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get(),
+                                                stackSize_.get());
+    });
+    stackSize_.onChange([this]() {
+        utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get(),
+                                                stackSize_.get());
     });
 
     load();
