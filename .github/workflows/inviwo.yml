@@ -682,3 +682,44 @@ jobs:
         tag: latest
         overwrite: true
         body: "The latest inviwo build, updated for every merged pull request."
+
+
+  regression-linux:
+    name: "Regression Linux"
+    # if: github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: [regression, linux]
+    permissions:
+      pull-requests: write
+    timeout-minutes: 320
+
+    steps:
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v6
+      with:
+        path: inviwo
+
+    - name: "Download AppImage"
+      uses: actions/download-artifact@v8
+      with:
+        name: inviwo-installer-linux
+
+    - name: "Extract AppImage"
+      shell: bash
+      run: |
+        app=$(ls inviwo-*.AppImage)
+        chmod +x ./${app}
+        echo "INVIWO_APP=${app}" >> $GITHUB_ENV
+
+    - name: "Regression Tests"
+      id: regression
+      continue-on-error: true
+      shell: bash
+      run: |
+        mkdir -p regression/linux/${{ github.ref }}
+        python3 inviwo/tools/regression.py \
+          --inviwo ${{ env.INVIWO_APP }} \
+          --repos inviwo \
+          --build_type Release \
+          --output regression/linux/${{ github.ref }} \
+          --summary
