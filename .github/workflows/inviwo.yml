@@ -719,6 +719,7 @@ jobs:
         set +x
         echo "APP: ${{ env.INVIWO_APP }}"
         echo "VENV: $VIRTUAL_ENV"
+        source ${VIRTUAL_ENV}/bin/activate
         which python3
         env
         rm -rf regression
