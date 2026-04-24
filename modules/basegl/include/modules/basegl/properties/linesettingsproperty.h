@@ -61,7 +61,9 @@ public:
 
     void update(LineData&) const;
 
+    BoolProperty overrideLineWidth;
     FloatProperty lineWidth;
+    
     FloatProperty antialiasing;
     FloatProperty miterLimit;
     BoolProperty roundCaps;

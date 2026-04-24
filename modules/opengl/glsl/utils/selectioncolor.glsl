@@ -34,6 +34,7 @@ struct SelectionColor {
     vec4 color;
     float colorMixIn;
     float alphaMixIn;
+    float scale;
     bool visible;
 };
 

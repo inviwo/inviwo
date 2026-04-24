@@ -44,7 +44,6 @@ layout(triangle_strip, max_vertices=5) out;
 
 uniform vec2 screenDim = vec2(512, 512);
 uniform float antialiasing = 0.5; // width of antialised edged [pixel]
-uniform float lineWidth = 2.0; // line width [pixel]
 uniform float miterLimit = 0.8; // limit for miter joins, i.e. cutting off joints between parallel lines 
 uniform bool roundCaps = false;
 
@@ -58,6 +57,7 @@ uniform SelectionColor bnlHighlight;
 in LineVert {
     vec4 worldPosition;
     vec4 color;
+    flat float radius;  // half-width in screen pixels; when HAS_RADII is active, unit matches RadiiAttrib buffer
     flat uint pickID;
     flat uint index;
 } inVertices[];
@@ -68,6 +68,7 @@ out LineGeom {
     flat vec4 pickColor;
     float segmentLength; // total length of the current line segment in screen space
     float distanceWorld;  // distance in world coords to segment start
+    float lineWidthHalf;  // interpolated half line width for antialiasing
 } outLine;
 
 struct Vertex {
@@ -112,12 +113,13 @@ Vertex createVertex(in vec2 pos, in float depth, in vec2 texCoord, in vec4 color
  }
 
 // emit vertex data consisting of position in NDC, texture coord, and color
-void emit(in Vertex vertex, in uint pickID, in float segmentLength) {
+void emit(in Vertex vertex, in uint pickID, in float segmentLength, in float lineWidthHalf) {
     gl_Position = vertex.pos;
     outLine.segmentLength = segmentLength;
     outLine.distanceWorld = vertex.distanceWorld;
     outLine.texCoord = vertex.texCoord;
     outLine.color = vertex.color;
+    outLine.lineWidthHalf = lineWidthHalf;
     outLine.pickColor = vec4(pickingIndexToColor(pickID), pickID == 0 ? 0.0 : 1.0);
     EmitVertex();
 }
@@ -146,8 +148,8 @@ void homogeneousClip(inout vec4 p1, inout vec4 p2, int axis, float sign,
 }
 
 #if defined(ENABLE_BNL)
-void applyBrushingAndLinking(in uint index1, inout vec4 color1, 
-                             in uint index2, inout vec4 color2) {
+void applyBrushingAndLinking(in uint index1, inout vec4 color1, inout float scale1,
+                             in uint index2, inout vec4 color2, inout float scale2) {
     int bnlSize = textureSize(bnl);
     uint flags1 = index1 < bnlSize ? texelFetch(bnl, int(index1)).x : uint(0);
     uint flags2 = index2 < bnlSize ? texelFetch(bnl, int(index2)).x : uint(0);
@@ -161,6 +163,22 @@ void applyBrushingAndLinking(in uint index1, inout vec4 color1,
     } else if (flags1 == 1 && flags2 == 1) {
         color1 = applySelectionColor(color1, bnlSelect);
         color2 = applySelectionColor(color2, bnlSelect);
+    }
+
+    if (flags1 == 3) {
+        scale1 *= bnlFilter.scale;
+    } else if (flags1 == 2) {
+        scale1 *= bnlHighlight.scale;
+    } else if (flags1 == 1) {
+        scale1 *= bnlSelect.scale;
+    }
+
+    if (flags2 == 3) {
+        scale2 *= bnlFilter.scale;
+    } else if (flags2 == 2) {
+        scale2 *= bnlHighlight.scale;
+    } else if (flags2 == 1) {
+        scale2 *= bnlSelect.scale;
     }
 }
 #endif // ENABLE_BNL
@@ -191,8 +209,12 @@ void main(void) {
     vec4 color1 = inVertices[index1].color;
     vec4 color2 = inVertices[index2].color;
 
+    float scale1 = 1.0;
+    float scale2 = 1.0;
+
 #if defined(ENABLE_BNL)
-    applyBrushingAndLinking(inVertices[index1].index, color1, inVertices[index2].index, color2);
+    applyBrushingAndLinking(inVertices[index1].index, color1, scale1,
+                            inVertices[index2].index, color2, scale2);
 #endif
 
     if (color1.a <= 0.0 && color2.a <= 0.0) {
@@ -267,7 +289,8 @@ void main(void) {
 
     vec2 depth = vec2(p1ndc.z, p2ndc.z);
 
-    float w = lineWidth * 0.5 + 1.2 * antialiasing;
+    float w1 = inVertices[index1].radius * scale1 + 1.2 * antialiasing;
+    float w2 = inVertices[index2].radius * scale2 + 1.2 * antialiasing;
     float segmentLength = length(p2 - p1);
     // segment length in world space
     float lineLengthWorld = length(inVertices[index2].worldPosition - inVertices[index1].worldPosition);
@@ -285,8 +308,8 @@ void main(void) {
     vec2 miterEnd = normalize(n1 + n2); // miter at end of current segment
 
     // Determine the length of the miter by projecting it onto normal
-    float length_a = w / dot(miterBegin, n1);
-    float length_b = w / dot(miterEnd, n1);
+    float length_a = w1 / dot(miterBegin, n1);
+    float length_b = w2 / dot(miterEnd, n1);
 
     bool capBegin = (p0 == p1);
     bool capEnd = (p2 == p3);
@@ -299,31 +322,27 @@ void main(void) {
     // corner between previous segment and current one
     if (dot(v0, v1) < -miterLimit) {
         miterBegin = normalize(-n0 + n1);
-        length_a = lineWidth * 0.5;
-
-        length_a = w / dot(miterBegin, n1);
+        length_a = w1 / dot(miterBegin, n1);
     }
     // corner between current segment and next one
     if (dot(v1, v2) < -miterLimit) {
         miterEnd = normalize(-n2 + n1);
-        length_b = lineWidth * 0.5;
-
-        length_b = w / dot(miterEnd, n1);
+        length_b = w2 / dot(miterEnd, n1);
     }
 
     vec2 leftTop, leftBottom;
     vec2 texCoord;
     if (capBegin) {
         // compute start position at p1
-        leftTop = p1 + w * n1;
-        leftBottom = p1 - w * n1;
+        leftTop = p1 + w1 * n1;
+        leftBottom = p1 - w1 * n1;
         texCoord = vec2(0);
 
         if (roundCaps) {
             // extend segment beyond p1 by radius for cap
-            leftTop -= w * v1;
-            leftBottom -= w * v1;
-            texCoord -= w;
+            leftTop -= w1 * v1;
+            leftBottom -= w1 * v1;
+            texCoord -= w1;
         }
     }
     else {
@@ -337,26 +356,26 @@ void main(void) {
     // set pick ID equivalent to first vertex
     uint pickID = inVertices[index1].pickID;    
 
-    Vertex vOut1 = createVertex(leftTop, vertexDepth.x, vec2(texCoord.x, w), 
+    Vertex vOut1 = createVertex(leftTop, vertexDepth.x, vec2(texCoord.x, w1), 
                                 color1, screenToWorldFactor);
-    Vertex vOut2 = createVertex(leftBottom, vertexDepth.y, vec2(texCoord.y, -w), 
+    Vertex vOut2 = createVertex(leftBottom, vertexDepth.y, vec2(texCoord.y, -w1), 
                                 color1, screenToWorldFactor);
 
-    emit(vOut1, pickID, segmentLength);
-    emit(vOut2, pickID, segmentLength);
+    emit(vOut1, pickID, segmentLength, inVertices[index1].radius);
+    emit(vOut2, pickID, segmentLength, inVertices[index1].radius);
 
     vec2 rightTop, rightBottom;
     if (capEnd) {
         // compute end position at p2
-        rightTop = p2 + w * n1;
-        rightBottom = p2 - w * n1;
+        rightTop = p2 + w2 * n1;
+        rightBottom = p2 - w2 * n1;
         texCoord = vec2(segmentLength);
 
         if (roundCaps) {
             // extend segment beyond p2 by radius for cap
-            rightTop += w * v1;
-            rightBottom += w * v1;
-            texCoord += w;
+            rightTop += w2 * v1;
+            rightBottom += w2 * v1;
+            texCoord += w2;
         }
     }
     else {
@@ -368,13 +387,13 @@ void main(void) {
 
     vertexDepth = slopeDepth * texCoord + depth.x;
 
-    Vertex vOut3 = createVertex(rightTop, vertexDepth.x, vec2(texCoord.x, w), 
+    Vertex vOut3 = createVertex(rightTop, vertexDepth.x, vec2(texCoord.x, w2), 
                                 color2, screenToWorldFactor);
-    Vertex vOut4 = createVertex(rightBottom, vertexDepth.y, vec2(texCoord.y, -w), 
+    Vertex vOut4 = createVertex(rightBottom, vertexDepth.y, vec2(texCoord.y, -w2), 
                                 color2, screenToWorldFactor);
 
-    emit(vOut3, pickID, segmentLength);
-    emit(vOut4, pickID, segmentLength);
+    emit(vOut3, pickID, segmentLength, inVertices[index2].radius);
+    emit(vOut4, pickID, segmentLength, inVertices[index2].radius);
 
     EndPrimitive();
 }

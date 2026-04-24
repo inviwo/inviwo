@@ -413,8 +413,8 @@ void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
     }
 
     if (!points_.indices.empty()) {
-        utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        utilgl::DepthFuncState depthFunc(GL_LEQUAL);
+        const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        const utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
         TextureUnitContainer cont;
         shader_.activate();
@@ -427,15 +427,21 @@ void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
         indicesGL->bind();
 
         // filtered, regular, selected, highlighted
-        std::array<vec4, 4> secondaryColor = {
+        const std::array<vec4, 4> secondaryColor = {
             properties_.showFiltered_.getColor(), properties_.color_.get(),
             properties_.showSelected_.getColor(), properties_.showHighlighted_.getColor()};
-        std::array<float, 4> mixColor = {properties_.showFiltered_.getMixIntensity(), 0.0f,
-                                         properties_.showSelected_.getMixIntensity(),
-                                         properties_.showHighlighted_.getMixIntensity()};
-        std::array<float, 4> mixAlpha = {1.0, 0.0f, 1.0f, 1.0f};
-        std::array<bool, 4> enabled = {properties_.showFiltered_, true, properties_.showSelected_,
-                                       properties_.showHighlighted_};
+        const std::array<float, 4> mixColor = {properties_.showFiltered_.getMixIntensity(), 0.0f,
+                                               properties_.showSelected_.getMixIntensity(),
+                                               properties_.showHighlighted_.getMixIntensity()};
+        const std::array<float, 4> mixAlpha = {1.0, 0.0f, 1.0f, 1.0f};
+
+        const std::array<float, 4> secondaryScale = {properties_.showFiltered_.getScale(), 1.0,
+                                                     properties_.showSelected_.getScale(),
+                                                     properties_.showHighlighted_.getScale()};
+
+        const std::array<bool, 4> enabled = {properties_.showFiltered_, true,
+                                             properties_.showSelected_,
+                                             properties_.showHighlighted_};
 
         for (size_t i = properties_.showFiltered_ ? 0 : 1; i < points_.offsets.size() - 1; ++i) {
             if (!enabled[i]) continue;
@@ -446,6 +452,7 @@ void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
             shader_.setUniform("secondaryColor.color", secondaryColor[i]);
             shader_.setUniform("secondaryColor.colorMixIn", mixColor[i]);
             shader_.setUniform("secondaryColor.alphaMixIn", mixAlpha[i]);
+            shader_.setUniform("secondaryColor.scale", secondaryScale[i]);
 
             glDrawElements(GL_POINTS, static_cast<uint32_t>(end - begin),
                            indicesGL->getFormatType(),

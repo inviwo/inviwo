@@ -47,6 +47,7 @@ struct IVW_MODULE_BASEGL_API LineData {
     bool overrideColor = false;
     bool overrideAlpha = false;
     bool useMetaColor = false;
+    bool overrideLineWidth = false;
     StipplingData stippling;
     vec4 defaultColor = vec4{1.0f, 0.7f, 0.2f, 1.0f};
     vec3 overrideColorValue = vec3{0.7f, 0.7f, 0.7f};

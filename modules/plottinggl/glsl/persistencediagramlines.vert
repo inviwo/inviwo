@@ -44,9 +44,12 @@ uniform vec2 minmaxY;
 
 uniform bool pickingEnabled = false;
 
+uniform float lineWidth = 2.0;
+
 out LineVert {
     vec4 worldPosition;
     vec4 color;
+    flat float radius;
     flat uint pickID;
     flat uint index;
 } vertex;
@@ -63,6 +66,8 @@ void main() {
 #else
     vertex.index = gl_VertexID;
 #endif
+
+    vertex.radius = lineWidth;
 
     vec2 point = vec2(norm(in_Vertex.x, minmaxX), norm(in_Vertex.y, minmaxY));
     gl_Position = vec4(getGLPositionFromPixel(getPixelCoordsWithSpacing(point)), 0.5, 1.0);

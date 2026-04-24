@@ -76,7 +76,7 @@ namespace inviwo {
 
 SplitterRenderer::SplitterRenderer(Processor* processor)
     : processor_(processor)
-    , shader_("splitter.vert", "splitter.geom", "linerenderer.frag")
+    , shader_("splitter.vert", "splitter.geom", "splitter.frag")
     , triShader_("splitter.vert", "splittertriangle.geom", "standard.frag")
     , mesh_(DrawType::Points, ConnectivityType::None)
     , pickingMapper_(processor_, 1, [&](PickingEvent* e) { handlePickingEvent(e); }) {

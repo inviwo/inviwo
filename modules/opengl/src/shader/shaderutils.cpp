@@ -598,6 +598,7 @@ void setShaderUniforms(Shader& shader, const SelectionColorState& state, std::st
     shader.setUniform(buff.replace("{}.color", name), state.color);
     shader.setUniform(buff.replace("{}.colorMixIn", name), state.colorMixIn);
     shader.setUniform(buff.replace("{}.alphaMixIn", name), 1.0f);
+    shader.setUniform(buff.replace("{}.scale", name), state.scale);
     shader.setUniform(buff.replace("{}.visible", name), state.visible);
 }
 

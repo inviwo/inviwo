@@ -38,6 +38,7 @@ uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), m
 
 uniform uint defaultPickID = 0;
 uniform vec4 defaultColor = vec4(1, 1, 1, 1);
+uniform float lineWidth = 2.0; // line width [pixel], used when RadiiAttrib is not available or USE_RADII is disabled
 
 struct Config {
     vec3 color;
@@ -50,6 +51,7 @@ uniform sampler2D metaColor;
 out LineVert {
     vec4 worldPosition;
     vec4 color;
+    flat float radius;  // half-width in screen pixels; when HAS_RADII is active, unit matches RadiiAttrib buffer
     flat uint pickID;
     flat uint index;
 } vertex;
@@ -83,5 +85,11 @@ void main() {
     vertex.pickID = in_Picking;
 #else 
     vertex.pickID = defaultPickID;
+#endif
+
+#if defined(HAS_RADII) && !defined(OVERRIDE_LINE_WIDTH)
+    vertex.radius = in_Radii;
+#else
+    vertex.radius = lineWidth * 0.5;
 #endif
 }

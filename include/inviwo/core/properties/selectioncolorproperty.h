@@ -38,6 +38,7 @@ namespace inviwo {
 struct IVW_CORE_API SelectionColorState {
     vec4 color;
     float colorMixIn;
+    float scale;
     bool visible;
 };
 
@@ -74,9 +75,12 @@ public:
      */
     float getMixIntensity() const;
 
+    float getScale() const;
+
     FloatVec3Property color_;
     FloatProperty alpha_;
     FloatProperty intensity_;
+    FloatProperty scale_;
 };
 
 }  // namespace inviwo

@@ -299,7 +299,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<SimpleRaycastingProperty>();
     registerProperty<VolumeIndicatorProperty>();
 
-    using Scalars = std::tuple<float, double, int, glm::i64, size_t>;
+    using Scalars = std::tuple<float, double, int, unsigned int, glm::i64, size_t>;
     using Vec2s = std::tuple<vec2, dvec2, ivec2, size2_t>;
     using Vec3s = std::tuple<vec3, dvec3, ivec3, size3_t>;
     using Vec4s = std::tuple<vec4, dvec4, ivec4, size4_t>;

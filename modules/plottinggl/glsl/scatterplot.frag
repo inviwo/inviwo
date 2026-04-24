@@ -39,7 +39,7 @@ uniform int circle = 1;
 uniform float borderWidth = 1;
 uniform vec4 borderColor;
 
-uniform SelectionColor secondaryColor = SelectionColor(vec4(0.0), 0.0, 0.0, true);
+uniform SelectionColor secondaryColor = SelectionColor(vec4(0.0), 0.0, 0.0, 1.0, true);
 
 uniform float antialiasing = 1.5; // [pixel]
 
@@ -61,7 +61,7 @@ void main(void) {
     vec4 color = gColor;
     if (borderWidth > 0.0) {
         float borderValue = clamp(mix(0.0, 1.0, (r - innerGlyphRadius) / 1.0), 0.0, 1.0);
-        float alpha = mix(borderColor.a, secondaryColor.color.a, secondaryColor.alphaMixIn);
+        float alpha = applySelectionColorAlphaOnly(borderColor, secondaryColor);
         color = mix(color, vec4(borderColor.rgb, alpha), borderValue);
     }
     float borderAlpha = clamp(mix(1.0, 0.0, (r - gR) / antialiasing), 0.0, 1.0);
