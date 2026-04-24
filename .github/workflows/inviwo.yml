@@ -687,7 +687,7 @@ jobs:
   regression-linux:
     name: "Regression Linux"
     # if: github.ref == 'refs/heads/master'
-    # needs: build
+    needs: build
     runs-on: [regression, linux]
     permissions:
       pull-requests: write
@@ -699,17 +699,17 @@ jobs:
       with:
         path: inviwo
 
-    #- name: "Download AppImage"
-    #  uses: actions/download-artifact@v8
-    #  with:
-    #    name: inviwo-installer-linux
+    - name: "Download AppImage"
+      uses: actions/download-artifact@v8
+      with:
+        name: inviwo-installer-linux
 
-    #- name: "Extract AppImage"
-    #  shell: bash
-    #  run: |
-    #    app=$(ls inviwo-*.AppImage)
-    #    chmod +x ./${app}
-    #    echo "INVIWO_APP=${app}" >> $GITHUB_ENV
+    - name: "Extract AppImage"
+      shell: bash
+      run: |
+        app=$(ls inviwo-*.AppImage)
+        chmod +x ./${app}
+        echo "INVIWO_APP=${app}" >> $GITHUB_ENV
 
     - name: "Regression Tests"
       id: regression
@@ -720,8 +720,6 @@ jobs:
         echo "APP: ${{ env.INVIWO_APP }}"
         echo "VENV: $VIRTUAL_ENV"
         source ${VIRTUAL_ENV}/bin/activate
-        which python3
-        env
         rm -rf regression
         mkdir -p regression
         python3 inviwo/tools/regression.py \
