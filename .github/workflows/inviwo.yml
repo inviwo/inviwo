@@ -724,7 +724,5 @@ jobs:
         mkdir -p regression
         python3 inviwo/tools/regression.py \
           --inviwo ${{ env.INVIWO_APP }} \
-          --repos inviwo \
-          --build_type Release \
+          --modules inviwo/modules \
           --output regression
-          --summary
