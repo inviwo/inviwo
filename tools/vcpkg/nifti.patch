@@ -1,0 +1,10 @@
+--- portfile.cmake.org	2026-04-24 19:10:03
++++ portfile.cmake	2026-04-24 19:10:17
+@@ -6,6 +6,7 @@
+     HEAD_REF master
+     PATCHES
+         zlib_include.patch
++        libm.patch
+ )
+ 
+ if(VCPKG_TARGET_IS_WINDOWS)

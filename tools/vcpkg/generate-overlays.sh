@@ -23,3 +23,20 @@ rm -rf "${OVERLAY_PORT}"
 cp -R "${SOURCE_PORT}" "${OVERLAY_PORT}"
 
 patch --ignore-whitespace --directory "${OVERLAY_PORT}" -p1 < "${SCRIPT_DIR}/python3-fix.patch"
+
+
+SOURCE_PORT="${VCPKG_ROOT}/ports/nifticlib"
+OVERLAY_PORT="${SCRIPT_DIR}/nifticlib"
+
+if [[ ! -d "${SOURCE_PORT}" ]]; then
+    echo "Could not find nifticlib port at ${SOURCE_PORT}" >&2
+    exit 1
+fi
+
+rm -rf "${OVERLAY_PORT}"
+cp -R "${SOURCE_PORT}" "${OVERLAY_PORT}"
+
+cp ${SCRIPT_DIR}/nifti-libm.patch ${OVERLAY_PORT}/libm.patch
+patch --ignore-whitespace --directory "${OVERLAY_PORT}" -p1 < "${SCRIPT_DIR}/nifti.patch"
+
+

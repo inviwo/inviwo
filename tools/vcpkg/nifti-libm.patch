@@ -1,0 +1,11 @@
+--- CMakeLists.txt.org	2026-04-24 18:46:29
++++ CMakeLists.txt	2026-04-24 19:06:44
+@@ -155,7 +155,7 @@
+ if(EMSCRIPTEN OR WASI)
+     set(NIFTI_SYSTEM_MATH_LIB m)
+ elseif(NOT WIN32)
+-    find_library(NIFTI_SYSTEM_MATH_LIB m)
++    set(NIFTI_SYSTEM_MATH_LIB m)
+ else()
+     set(NIFTI_SYSTEM_MATH_LIB "")
+ endif()
