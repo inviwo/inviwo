@@ -32,7 +32,7 @@ var namespaceinviwo_1_1utilgl =
     [ "createGLFormatRenormalization", "namespaceinviwo_1_1utilgl.html#a3d09cbb3a0c406ef52827f62bcf965ae", null ],
     [ "createGLOutputConversion", "namespaceinviwo_1_1utilgl.html#a4769941605263491f479a0ab2981b82a", null ],
     [ "framebufferStatusToString", "namespaceinviwo_1_1utilgl.html#aea7669ac2172ee07baaadcc5b57e99d7", null ],
-    [ "handleOpenGLErrorCheckingChange", "namespaceinviwo_1_1utilgl.html#a30e2c16a7ceb4ece3c2941dc8913d862", null ],
+    [ "handleOpenGLErrorCheckingChange", "namespaceinviwo_1_1utilgl.html#a4c86da20475a1d2387e7b252985b47be", null ],
     [ "imgIdentityVert", "namespaceinviwo_1_1utilgl.html#a1f97a21b07263e03ee154fb747a58ccb", null ],
     [ "imgQuadFrag", "namespaceinviwo_1_1utilgl.html#a751670fdd22c933312fb8a1c28d78a6f", null ],
     [ "imgQuadVert", "namespaceinviwo_1_1utilgl.html#addb288c7189078cbbe76d05a6a5c3782", null ],
@@ -41,7 +41,7 @@ var namespaceinviwo_1_1utilgl =
     [ "mapFromGLInputToValue", "namespaceinviwo_1_1utilgl.html#a7c5204c0697b7a5b83f6de756e4e65ea", null ],
     [ "mapFromValueToGLOutput", "namespaceinviwo_1_1utilgl.html#ab351f9645f49307051507867b7a0b091", null ],
     [ "planeRect", "namespaceinviwo_1_1utilgl.html#a01ba6d71bea79602047826daf38988ae", null ],
-    [ "setOpenGLErrorChecking", "namespaceinviwo_1_1utilgl.html#aa98a52faa2d327f1566bb662e843060d", null ],
+    [ "setOpenGLErrorChecking", "namespaceinviwo_1_1utilgl.html#a45350d813d19f58296da7852a554a4f4", null ],
     [ "setShaderUniforms", "namespaceinviwo_1_1utilgl.html#ad0989204ab71fccc9fc50b3dce9a975a", null ],
     [ "setShaderUniforms", "namespaceinviwo_1_1utilgl.html#a74da414d1d373950b127ce0d9cf44466", null ]
 ];

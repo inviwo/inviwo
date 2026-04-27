@@ -87,7 +87,7 @@ var searchData=
   ['setnormalizechannels_84',['setNormalizeChannels',['../classinviwo_1_1VolumeNormalization.html#a4487172e12562a302f5156fa08dfea75',1,'inviwo::VolumeNormalization']]],
   ['setnotify_85',['setNotify',['../classinviwo_1_1StateCoordinator.html#a1b81aef5bfbd0ace825ba98ec3fd5be8',1,'inviwo::StateCoordinator']]],
   ['setnumberofexamplerows_86',['setNumberOfExampleRows',['../classinviwo_1_1CSVReader.html#aef49d59c00fa1415180e7692e3c9582c',1,'inviwo::CSVReader']]],
-  ['setopenglerrorchecking_87',['setOpenGLErrorChecking',['../namespaceinviwo_1_1utilgl.html#aa98a52faa2d327f1566bb662e843060d',1,'inviwo::utilgl']]],
+  ['setopenglerrorchecking_87',['setOpenGLErrorChecking',['../namespaceinviwo_1_1utilgl.html#a45350d813d19f58296da7852a554a4f4',1,'inviwo::utilgl']]],
   ['setoption_88',['setOption',['../classinviwo_1_1DataReader.html#a0ac5d98ed2647ec10447661f4f371148',1,'inviwo::DataReader::setOption()'],['../classinviwo_1_1DataWriter.html#ad2352d071b77129614c1e0d172dd2099',1,'inviwo::DataWriter::setOption()'],['../classinviwo_1_1AssimpReader.html#aed86b7a704398c48d49eeb32c1f9744f',1,'inviwo::AssimpReader::setOption()'],['../classinviwo_1_1CSVReader.html#acee32cf51fa4c83067cb787fa9d5ed92',1,'inviwo::CSVReader::setOption()']]],
   ['setoptional_89',['setOptional',['../classinviwo_1_1Inport.html#afe1660c34699d0c8dfcd79d4ef8d8495',1,'inviwo::Inport']]],
   ['setoptions_90',['setOptions',['../classinviwo_1_1ColumnOptionProperty.html#a27ff091db8895a72379df403e134977e',1,'inviwo::ColumnOptionProperty']]],

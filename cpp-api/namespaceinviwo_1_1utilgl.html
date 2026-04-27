@@ -367,7 +367,7 @@ IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><b>handleOpenGLDeb
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><b>handleOpenGLDebugMode</b> (Canvas::ContextID context)</td></tr>
 <tr class="memitem:a51a06ae667dd70d234060d7cbb096c42" id="r_a51a06ae667dd70d234060d7cbb096c42"><td class="memItemLeft"><a id="a51a06ae667dd70d234060d7cbb096c42" name="a51a06ae667dd70d234060d7cbb096c42"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><b>handleOpenGLDebugModeChange</b> (debug::Mode mode, debug::Severity severity)</td></tr>
-<tr class="memitem:a30e2c16a7ceb4ece3c2941dc8913d862" id="r_a30e2c16a7ceb4ece3c2941dc8913d862"><td class="memItemLeft">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><a class="el" href="#a30e2c16a7ceb4ece3c2941dc8913d862">handleOpenGLErrorCheckingChange</a> (bool enable, bool breakOnError)</td></tr>
+<tr class="memitem:a4c86da20475a1d2387e7b252985b47be" id="r_a4c86da20475a1d2387e7b252985b47be"><td class="memItemLeft">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><a class="el" href="#a4c86da20475a1d2387e7b252985b47be">handleOpenGLErrorCheckingChange</a> (bool enable, bool breakOnError, size_t stackSize)</td></tr>
 <tr class="memitem:a1f97a21b07263e03ee154fb747a58ccb" id="r_a1f97a21b07263e03ee154fb747a58ccb"><td class="memItemLeft">IVW_MODULE_OPENGL_API std::pair&lt; <a class="el" href="classinviwo_1_1ShaderType.html">ShaderType</a>, std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a1f97a21b07263e03ee154fb747a58ccb">imgIdentityVert</a> ()</td></tr>
 <tr class="memitem:a751670fdd22c933312fb8a1c28d78a6f" id="r_a751670fdd22c933312fb8a1c28d78a6f"><td class="memItemLeft">IVW_MODULE_OPENGL_API std::pair&lt; <a class="el" href="classinviwo_1_1ShaderType.html">ShaderType</a>, std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a751670fdd22c933312fb8a1c28d78a6f">imgQuadFrag</a> ()</td></tr>
 <tr class="memitem:addb288c7189078cbbe76d05a6a5c3782" id="r_addb288c7189078cbbe76d05a6a5c3782"><td class="memItemLeft">IVW_MODULE_OPENGL_API std::pair&lt; <a class="el" href="classinviwo_1_1ShaderType.html">ShaderType</a>, std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#addb288c7189078cbbe76d05a6a5c3782">imgQuadVert</a> ()</td></tr>
@@ -389,7 +389,7 @@ template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a01ba6d71bea79602047826daf38988ae" id="r_a01ba6d71bea79602047826daf38988ae"><td class="memItemLeft">IVW_MODULE_OPENGL_API std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a01ba6d71bea79602047826daf38988ae">planeRect</a> ()</td></tr>
 <tr class="memitem:a27f071f65df0bb1cc8fc29e2a7dee591" id="r_a27f071f65df0bb1cc8fc29e2a7dee591"><td class="memItemLeft"><a id="a27f071f65df0bb1cc8fc29e2a7dee591" name="a27f071f65df0bb1cc8fc29e2a7dee591"></a>
 IVW_MODULE_OPENGL_API bool&#160;</td><td class="memItemRight"><b>setOpenGLDebugMode</b> (debug::Mode mode, debug::Severity severity)</td></tr>
-<tr class="memitem:aa98a52faa2d327f1566bb662e843060d" id="r_aa98a52faa2d327f1566bb662e843060d"><td class="memItemLeft">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><a class="el" href="#aa98a52faa2d327f1566bb662e843060d">setOpenGLErrorChecking</a> (bool enable, bool breakOnError)</td></tr>
+<tr class="memitem:a45350d813d19f58296da7852a554a4f4" id="r_a45350d813d19f58296da7852a554a4f4"><td class="memItemLeft">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><a class="el" href="#a45350d813d19f58296da7852a554a4f4">setOpenGLErrorChecking</a> (bool enable, bool breakOnError, size_t stackSize)</td></tr>
 <tr class="memitem:a219ff443aaba1404d17cb887789ca390" id="r_a219ff443aaba1404d17cb887789ca390"><td class="memItemLeft"><a id="a219ff443aaba1404d17cb887789ca390" name="a219ff443aaba1404d17cb887789ca390"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight"><b>setShaderDefines</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; RaycastingProperty::GradientComputation &gt; &amp;property, bool voxelClassification=false)</td></tr>
 <tr class="memitem:ad32aae4c7b36ea43224ecebc08e0b527" id="r_ad32aae4c7b36ea43224ecebc08e0b527"><td class="memItemLeft"><a id="ad32aae4c7b36ea43224ecebc08e0b527" name="ad32aae4c7b36ea43224ecebc08e0b527"></a>
@@ -626,8 +626,8 @@ IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight"><b>validateLine
 
 </div>
 </div>
-<a id="a30e2c16a7ceb4ece3c2941dc8913d862" name="a30e2c16a7ceb4ece3c2941dc8913d862"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a30e2c16a7ceb4ece3c2941dc8913d862">&#9670;&#160;</a></span>handleOpenGLErrorCheckingChange()</h2>
+<a id="a4c86da20475a1d2387e7b252985b47be" name="a4c86da20475a1d2387e7b252985b47be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c86da20475a1d2387e7b252985b47be">&#9670;&#160;</a></span>handleOpenGLErrorCheckingChange()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -640,7 +640,12 @@ IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight"><b>validateLine
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>breakOnError</em></span>&#160;)</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>breakOnError</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>stackSize</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -882,8 +887,8 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a id="aa98a52faa2d327f1566bb662e843060d" name="aa98a52faa2d327f1566bb662e843060d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa98a52faa2d327f1566bb662e843060d">&#9670;&#160;</a></span>setOpenGLErrorChecking()</h2>
+<a id="a45350d813d19f58296da7852a554a4f4" name="a45350d813d19f58296da7852a554a4f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45350d813d19f58296da7852a554a4f4">&#9670;&#160;</a></span>setOpenGLErrorChecking()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -896,7 +901,12 @@ template&lt;typename T&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>breakOnError</em></span>&#160;)</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>breakOnError</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>stackSize</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
