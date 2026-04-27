@@ -34,11 +34,9 @@
 #include <inviwo/core/properties/compositepropertyobserver.h>
 #include <inviwo/core/properties/propertyobserver.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
-#include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 
 #include <functional>
-#include <vector>
 
 namespace inviwo {
 
@@ -80,7 +78,7 @@ void BoolCompositePropertyWidgetQt::initState() {
     CollapsibleGroupBoxWidgetQt::setCollapsed(boolCompProperty_->isCollapsed());
     CollapsibleGroupBoxWidgetQt::setChecked(boolCompProperty_->getBoolProperty()->get());
 
-    for (auto& prop : boolCompProperty_->getProperties()) {
+    for (const auto& prop : boolCompProperty_->getProperties()) {
         if (prop != boolCompProperty_->getBoolProperty()) {
             addProperty(prop);
         }
@@ -108,12 +106,8 @@ void BoolCompositePropertyWidgetQt::updateFromProperty() {
     CollapsibleGroupBoxWidgetQt::setChecked(boolCompProperty_->getBoolProperty()->get());
 }
 
-void BoolCompositePropertyWidgetQt::onSetDisplayName(Property*, const std::string& displayName) {
-    displayName_ = displayName;
-    label_->setText(displayName);
-}
-
 bool BoolCompositePropertyWidgetQt::isChecked() const { return boolCompProperty_->isChecked(); }
+
 void BoolCompositePropertyWidgetQt::setChecked(bool checked) {
     CollapsibleGroupBoxWidgetQt::setChecked(checked);
     util::exceptionGuard([&]() { boolCompProperty_->setChecked(checked); });
