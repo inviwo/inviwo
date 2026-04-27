@@ -1040,7 +1040,7 @@ function(ivw_deploy_qt target)
             if (BUILD_SHARED_LIBS OR (target_type STREQUAL "EXECUTABLE"))
                 find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${QTDIR} ENV QTDIR PATH_SUFFIXES bin)
 
-                get_filename_component(qt_bin_dir ${WINDEPLOYQT_EXECUTABLE} DIRECTORY  )
+                get_filename_component(qt_bin_dir ${WINDEPLOYQT_EXECUTABLE} DIRECTORY)
 
                 # in case of environment variable QTDIR not set
                 if(NOT EXISTS ${WINDEPLOYQT_EXECUTABLE})

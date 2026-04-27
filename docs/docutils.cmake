@@ -58,7 +58,7 @@ function(ivw_private_make_doxyfile)
     ivw_set_if(COND ARG_GENERATE_IMG TRUEVAL "YES" FALSEVAL "NO" RETVAL generate_images)
 
     if(DOXYGEN_DOT_FOUND)
-        get_filename_component(DOXYGEN_DOT_PATH ${DOXYGEN_DOT_EXECUTABLE} PATH)
+        get_filename_component(DOXYGEN_DOT_PATH ${DOXYGEN_DOT_EXECUTABLE} DIRECTORY)
     endif()
 
     set(doxyfile "\

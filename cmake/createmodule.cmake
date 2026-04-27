@@ -110,7 +110,7 @@ function(ivw_create_module)
             ${mod_nonheader_files}
     )
 
-    get_filename_component(base_parent ${${mod}_base} PATH)
+    get_filename_component(base_parent ${${mod}_base} DIRECTORY)
     target_include_directories(${${mod}_target} PUBLIC 
         $<$<BOOL:${LEGACY}>:${${mod}_base}>
         $<$<BOOL:${LEGACY}>:${base_parent}>
