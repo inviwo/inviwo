@@ -56,8 +56,8 @@ public:
     OptionProperty<utilgl::debug::BreakLevel> breakOnMessage_;
 
     BoolProperty errorChecking_;
-    OrdinalProperty<size_t> stackSize_;
     BoolProperty breakOnError_;
+    OrdinalProperty<size_t> stackSize_;
 };
 
 }  // namespace inviwo

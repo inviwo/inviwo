@@ -238,5 +238,6 @@ IVW_MODULE_OPENGL_API void setOpenGLErrorChecking(bool enable, bool breakOnError
  * Apply OpenGL per-call error checking settings to all existing contexts.
  * Called when the corresponding OpenGLSettings properties change.
  */
-IVW_MODULE_OPENGL_API void handleOpenGLErrorCheckingChange(bool enable, bool breakOnError, size_t stackSize);
+IVW_MODULE_OPENGL_API void handleOpenGLErrorCheckingChange(bool enable, bool breakOnError,
+                                                           size_t stackSize);
 }  // namespace inviwo::utilgl
