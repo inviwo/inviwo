@@ -46,12 +46,11 @@ class Property;
 class IVW_MODULE_QTWIDGETS_API BoolCompositePropertyWidgetQt : public CollapsibleGroupBoxWidgetQt,
                                                                public CompositePropertyObserver {
 public:
-    BoolCompositePropertyWidgetQt(BoolCompositeProperty* property);
+    explicit BoolCompositePropertyWidgetQt(BoolCompositeProperty* property);
 
     virtual bool isChecked() const override;
     virtual bool isCollapsed() const override;
 
-    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
     virtual void onSetCollapsed(bool value) override;
 
     virtual void initState() override;
