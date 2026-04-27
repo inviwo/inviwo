@@ -278,12 +278,12 @@ void Shader::linkShader(bool notifyRebuild) {
     glLinkProgram(program_.id);
 
     if (!checkLinkStatus()) {
-        throw OpenGLException(SourceContext{}, "Id: {} {}", program_.id,
+        throw OpenGLException(SourceContext{}, "Id: {} {} {}", program_.id, shaderNames(),
                               processLog(utilgl::getProgramInfoLog(program_.id)));
     }
 
     if (auto log = utilgl::getProgramInfoLog(program_.id); !log.empty()) {
-        log::info("Id: {} ({}) {}", program_.id, shaderNames(), processLog(log));
+        log::info("Id: {} {} {}", program_.id, shaderNames(), processLog(log));
     }
 
     LGL_ERROR_CLASS;

@@ -232,11 +232,12 @@ IVW_MODULE_OPENGL_API bool configureOpenGLDebugMessages(utilgl::debug::Severity 
  * When enabled, glGetError() is called after every OpenGL function call and errors are
  * logged to LogCentral. If @p breakOnError is true, util::debugBreak() is also called.
  */
-IVW_MODULE_OPENGL_API void setOpenGLErrorChecking(bool enable, bool breakOnError);
+IVW_MODULE_OPENGL_API void setOpenGLErrorChecking(bool enable, bool breakOnError, size_t stackSize);
 
 /**
  * Apply OpenGL per-call error checking settings to all existing contexts.
  * Called when the corresponding OpenGLSettings properties change.
  */
-IVW_MODULE_OPENGL_API void handleOpenGLErrorCheckingChange(bool enable, bool breakOnError);
+IVW_MODULE_OPENGL_API void handleOpenGLErrorCheckingChange(bool enable, bool breakOnError,
+                                                           size_t stackSize);
 }  // namespace inviwo::utilgl

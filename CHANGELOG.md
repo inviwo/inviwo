@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-04-23 Line renderer: per-vertex line width via `RadiiAttrib` buffer
+The line renderer in the BaseGL module now supports per-vertex line widths, enabling tapered or varying-width lines. This feature is enabled if the mesh has a `RadiiAttrib` buffer and can be suppressed via the `overrideLineWidth` flag in `LineData` and `LineSettingsProperty`.
+
 ## 2026-04-20 Unicode-aware string comparison and `CodePointsAdaptor` range adaptor
 A new header `include/inviwo/core/util/utfutils.h` has been added, replacing the ASCII-only `CaseInsensitiveEqual`/`CaseInsensitiveLess` in `stringconversion.h` with Unicode-correct implementations backed by utf8cpp. Two new case-sensitive counterparts are also added.
 
