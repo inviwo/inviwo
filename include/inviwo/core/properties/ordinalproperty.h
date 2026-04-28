@@ -47,6 +47,9 @@
 
 namespace inviwo {
 
+template <typename M>
+concept isMatrix = requires { util::rank_v<M> > 1; };
+
 /**
  * A helper struct to construct ordinal properties @see OrdinalProperty
  */
@@ -81,6 +84,13 @@ struct OrdinalPropertyState {
     }
     auto setMax(ConstraintBehavior newMaxConstraint) -> OrdinalPropertyState& {
         maxConstraint = newMaxConstraint;
+        return *this;
+    }
+    template <typename S>
+        requires isMatrix<T> && (util::rank_v<S> == 0)
+    auto setInc(S scalarIncrement) -> OrdinalPropertyState& {
+        using V = util::value_type_t<T>;
+        increment = T{V{0}} + static_cast<V>(scalarIncrement);
         return *this;
     }
     auto setInc(T newIncrement) -> OrdinalPropertyState& {
@@ -386,6 +396,63 @@ OrdinalPropertyState<T> ordinalScale(const T& value = T{0}, const U& max = U{100
             T{max / static_cast<U>(256)},
             InvalidationLevel::InvalidOutput,
             PropertySemantics::Default};
+}
+
+/**
+ * A factory function for configuring a OrdinalProperty representing a generic matrix initialized
+ * with @p value, with a symmetric range around zero, and Ignored boundary constraints.
+ * The invalidation level defaults to InvalidOutput, and the property semantics to Default.
+ * @param value the default value for the property
+ * @param minMax used to construct the range of the property like min = util::filled<M>(-minMax),
+ * max = util::filled<M>(minMax). The constraint behavior will be Ignore.
+ */
+template <typename M, typename U = typename M::value_type>
+    requires isMatrix<M>
+OrdinalPropertyState<M> ordinalMatrix(const M& value = {0}, const U& minMax = U{100}) {
+    using V = util::value_type_t<M>;
+    if constexpr (std::is_floating_point_v<util::value_type_t<V>>) {
+        return {value,
+                M{V{0}} - minMax,
+                ConstraintBehavior::Ignore,
+                M{V{0}} + minMax,
+                ConstraintBehavior::Ignore,
+                M{V{0}} + static_cast<V>(0.1),
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::Default};
+    } else if constexpr (std::is_signed_v<util::value_type_t<V>>) {
+        return {value,
+                M{V{0}} - minMax,
+                ConstraintBehavior::Ignore,
+                M{V{0}} + minMax,
+                ConstraintBehavior::Ignore,
+                M{V{0}} + static_cast<V>(1),
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::Default};
+    } else {
+        return {value,
+                M{V{0}},
+                ConstraintBehavior::Ignore,
+                M{minMax},
+                ConstraintBehavior::Ignore,
+                M{V{0}} + static_cast<V>(1),
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::Default};
+    }
+}
+
+/**
+ * A factory function for configuring a OrdinalProperty representing a generic matrix filled with
+ * the given value @p value, with a symmetric range around zero, and Ignored boundary constraints.
+ * The invalidation level defaults to InvalidOutput, and the property semantics to Default.
+ * @param value the default value for the property
+ * @param minMax used to construct the range of the property like min = util::filled<M>(-minMax),
+ * max = util::filled<M>(minMax). The constraint behavior will be Ignore.
+ */
+template <typename M, typename T = typename M::value_type, typename U = T>
+    requires isMatrix<M>
+OrdinalPropertyState<M> ordinalFilledMatrix(const T& value = {0}, const U& minMax = U{100}) {
+    using V = util::value_type_t<M>;
+    return ordinalMatrix<M>(M{V{0}} + static_cast<V>(value), minMax);
 }
 
 }  // namespace util
