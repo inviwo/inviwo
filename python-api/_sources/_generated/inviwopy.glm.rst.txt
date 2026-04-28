@@ -37,8 +37,10 @@ inviwopy.glm
       lessThanEqual
       normalize
       rotate
+      scale
       sin
       tan
+      translate
       transpose
    
    .. rubric:: Classes
