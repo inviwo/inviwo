@@ -34,7 +34,6 @@
 
 #include <flags/flags.h>
 #include <string_view>
-#include <iosfwd>
 
 namespace inviwo {
 
@@ -50,8 +49,6 @@ ALLOW_FLAGS_FOR_ENUM(TouchState)
 using TouchStates = flags::flags<TouchState>;
 
 IVW_CORE_API std::string_view enumToStr(TouchState b);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, TouchState s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, TouchStates s);
 
 }  // namespace inviwo
 

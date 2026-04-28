@@ -1,5 +1,32 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-04-27 Removed `std::ostream` operators from core types
+All `std::ostream` operators for core types have been removed to reduce unnecessary dependencies on `ostream` and streamline the codebase. This affects several classes and enums across the framework, including but not limited to:
+
+- `Mesh::BufferInfo`
+- `ImageType`, `LayerType`, `ImageChannel`, `SwizzleMask`, `InterpolationType`, `Wrapping`
+- `GestureType`, `GestureState`, `GestureTypes`, `GestureStates`
+- `KeyModifier`, `KeyModifiers`, `KeyState`, `KeyStates`, `IvwKey`
+- `MouseButton`, `MouseState`, `MouseButtons`, `MouseStates`
+- `MouseCursor`
+- `TouchState`, `TouchStates`
+- `PickingState`, `PickingStates`, `PickingPressItem`, `PickingPressState`, `PickingHoverState`
+- `CodeState`
+- `FileProperty`, `OrdinalProperty`, `OrdinalRefProperty`, `TemplateProperty`
+- `Document`
+- Logging-related enums: `LogLevel`, `LogAudience`, `MessageBreakLevel`
+
+If your code relied on `std::ostream` operators for any of the affected types, you will need to replace them with `fmt::format`, `fmt::print` etc. 
+
+#### Example
+```cpp
+// Old usage (removed)
+std::cout << myImageType << std::endl;
+
+// New usage
+fmt::println(myImageType);
+```
+
 ## 2026-04-23 Line renderer: per-vertex line width via `RadiiAttrib` buffer
 The line renderer in the BaseGL module now supports per-vertex line widths, enabling tapered or varying-width lines. This feature is enabled if the mesh has a `RadiiAttrib` buffer and can be suppressed via the `overrideLineWidth` flag in `LineData` and `LineSettingsProperty`.
 

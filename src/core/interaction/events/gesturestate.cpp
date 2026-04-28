@@ -28,11 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/gesturestate.h>
-#include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/exception.h>
-
-#include <iterator>
-#include <ostream>
 
 namespace inviwo {
 
@@ -63,17 +59,6 @@ std::string_view enumToStr(GestureState s) {
     }
     throw Exception(SourceContext{}, "Found invalid GestureState enum value '{}'",
                     static_cast<int>(s));
-}
-
-std::ostream& operator<<(std::ostream& ss, GestureType t) { return ss << enumToStr(t); }
-std::ostream& operator<<(std::ostream& ss, GestureState s) { return ss << enumToStr(s); }
-std::ostream& operator<<(std::ostream& ss, GestureTypes s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-std::ostream& operator<<(std::ostream& ss, GestureStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
 }
 
 }  // namespace inviwo

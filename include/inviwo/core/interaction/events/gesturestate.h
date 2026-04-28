@@ -33,7 +33,6 @@
 #include <inviwo/core/util/fmtutils.h>
 
 #include <flags/flags.h>
-#include <iosfwd>
 
 namespace inviwo {
 
@@ -55,11 +54,6 @@ using GestureStates = flags::flags<GestureState>;
 
 IVW_CORE_API std::string_view enumToStr(GestureType b);
 IVW_CORE_API std::string_view enumToStr(GestureState b);
-
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, GestureType t);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, GestureState s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, GestureTypes s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, GestureStates s);
 
 }  // namespace inviwo
 
