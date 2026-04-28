@@ -224,7 +224,9 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(
 }
 
 void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& entity) {
-    const auto maybeBB = std::optional<dmat4>{getBoundingBox_ ? getBoundingBox_() : std::nullopt};
+    const auto maybeBB =
+        std::optional<dmat4>{getBoundingBox_ ? getBoundingBox_() : std::nullopt}.transform(
+            util::minExtentBoundingBox);
     const auto d2w = plot::getTransform(entity, maybeBB, rangeMode_.get());
     const auto nD2W = dmat3{glm::transpose(glm::inverse(d2w))};
     const auto scale = plot::calcScaleFactor3D(d2w, offsetScaling_.get());
