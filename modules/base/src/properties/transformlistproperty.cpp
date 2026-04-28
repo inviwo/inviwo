@@ -246,6 +246,14 @@ CustomTransformProperty::CustomTransformProperty(std::string_view identifier,
     addProperty(matrix);
 }
 
+CustomTransformProperty::CustomTransformProperty(std::string_view identifier,
+                                                 std::string_view displayName,
+                                                 const OrdinalPropertyState<dmat4>& state)
+    : TransformProperty{identifier, displayName, state.invalidationLevel, state.semantics}
+    , matrix{"matrix", "Matrix", state} {
+    addProperty(matrix);
+}
+
 CustomTransformProperty::CustomTransformProperty(const CustomTransformProperty& rhs)
     : TransformProperty(rhs), matrix(rhs.matrix) {
     addProperty(matrix);

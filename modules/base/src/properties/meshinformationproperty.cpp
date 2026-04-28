@@ -68,14 +68,12 @@ namespace {
 constexpr auto transforms = util::generateTransforms(
     std::array{CoordinateSpace::Data, CoordinateSpace::Model, CoordinateSpace::World});
 
-std::array<FloatMat4Property, 6> transformProps() {
+std::array<DoubleMat4Property, 6> transformProps() {
     return util::make_array<6>([](auto index) {
         auto [from, to] = transforms[index];
-        return FloatMat4Property(fmt::format("{}2{}", from, to), fmt::format("{} To {}", from, to),
-                                 mat4(1.0f),
-                                 util::filled<mat4>(std::numeric_limits<float>::lowest()),
-                                 util::filled<mat4>(std::numeric_limits<float>::max()),
-                                 util::filled<mat4>(0.001f), InvalidationLevel::Valid);
+        return DoubleMat4Property{
+            fmt::format("{}2{}", from, to), fmt::format("{} To {}", from, to),
+            util::ordinalMatrix(dmat4{1.0}).setInc(0.001).set(InvalidationLevel::Valid)};
     });
 }
 
@@ -87,47 +85,50 @@ MeshInformationProperty::MeshInformationProperty(std::string_view identifier,
                                                  std::string_view displayName,
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, "Information about a mesh and its buffers"_help,
-                        invalidationLevel, semantics)
-    , defaultMeshInfo_("defaultMeshInfo", "Default Mesh Info")
-    , defaultDrawType_("defaultDrawType", "Draw Type")
-    , defaultConnectivity_("defaultConnectivity", "Connectivity")
+    : CompositeProperty{identifier, displayName, "Information about a mesh and its buffers"_help,
+                        invalidationLevel, semantics}
+    , defaultMeshInfo_{"defaultMeshInfo", "Default Mesh Info"}
+    , defaultDrawType_{"defaultDrawType", "Draw Type"}
+    , defaultConnectivity_{"defaultConnectivity", "Connectivity"}
     , numBuffers_("numBuffers", "Number of Buffers", 0, 0, std::numeric_limits<size_t>::max(), 1,
                   InvalidationLevel::Valid, PropertySemantics::Text)
     , numIndexBuffers_("numIndexBuffers", "Number of Index Buffers", 0, 0,
                        std::numeric_limits<size_t>::max(), 1, InvalidationLevel::Valid,
                        PropertySemantics::Text)
 
-    , transformations_("transformations", "Transformations")
-    , modelTransform_("modelTransform_", "Model Transform", mat4(1.0f),
-                      util::filled<mat4>(std::numeric_limits<float>::lowest()),
-                      util::filled<mat4>(std::numeric_limits<float>::max()),
-                      util::filled<mat4>(0.001f), InvalidationLevel::Valid)
-    , worldTransform_("worldTransform_", "World Transform", mat4(1.0f),
-                      util::filled<mat4>(std::numeric_limits<float>::lowest()),
-                      util::filled<mat4>(std::numeric_limits<float>::max()),
-                      util::filled<mat3>(0.001f), InvalidationLevel::Valid)
-    , basis_("basis", "Basis", mat3(1.0f), util::filled<mat3>(std::numeric_limits<float>::lowest()),
-             util::filled<mat3>(std::numeric_limits<float>::max()), util::filled<mat3>(0.001f),
-             InvalidationLevel::Valid)
-    , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
-              vec3(std::numeric_limits<float>::max()), vec3(0.001f), InvalidationLevel::Valid,
-              PropertySemantics::Text)
-    , spaceTransforms_(transformProps())
+    , transformations_{"transformations", "Transformations"}
+    , modelTransform_{"modelTransform_", "Model Transform",
+                      util::ordinalMatrix(dmat4{1.0}).setInc(0.001).set(InvalidationLevel::Valid)}
+    , worldTransform_{"worldTransform_", "World Transform",
+                      util::ordinalMatrix(dmat4{1.0}).setInc(0.001).set(InvalidationLevel::Valid)}
+    , basis_{"basis", "Basis",
+             util::ordinalMatrix(dmat3{1.0}).setInc(0.001).set(InvalidationLevel::Valid)}
+    , offset_{"offset", "Offset",
+              util::ordinalSymmetricVector(dvec3{0.0})
+                  .setInc(dvec3{0.001})
+                  .set(InvalidationLevel::Valid)
+                  .set(PropertySemantics::Text)}
+    , spaceTransforms_{transformProps()}
 
-    , meshProperties_("meshProperties", "Mesh Properties", false)
-    , min_("minPos", "Minimum Pos", vec3{0.0f}, vec3{std::numeric_limits<float>::lowest()},
-           vec3{std::numeric_limits<float>::max()}, vec3{0.01f}, InvalidationLevel::Valid,
-           PropertySemantics::Text)
-    , max_("maxPos", "Maximum Pos", vec3{0.0f}, vec3{std::numeric_limits<float>::lowest()},
-           vec3{std::numeric_limits<float>::max()}, vec3{0.01f}, InvalidationLevel::Valid,
-           PropertySemantics::Text)
-    , extent_("extent", "Extent", vec3{0.0f}, vec3{std::numeric_limits<float>::lowest()},
-              vec3{std::numeric_limits<float>::max()}, vec3{0.01f}, InvalidationLevel::Valid,
-              PropertySemantics::Text)
+    , meshProperties_{"meshProperties", "Mesh Properties", false}
+    , min_{"minPos", "Minimum Pos",
+           util::ordinalSymmetricVector(dvec3{0.0})
+               .setInc(dvec3{0.001})
+               .set(InvalidationLevel::Valid)
+               .set(PropertySemantics::Text)}
+    , max_{"maxPos", "Maximum Pos",
+           util::ordinalSymmetricVector(dvec3{0.0})
+               .setInc(dvec3{0.001})
+               .set(InvalidationLevel::Valid)
+               .set(PropertySemantics::Text)}
+    , extent_{"extent", "Extent",
+              util::ordinalSymmetricVector(dvec3{0.0})
+                  .setInc(dvec3{0.001})
+                  .set(InvalidationLevel::Valid)
+                  .set(PropertySemantics::Text)}
 
-    , buffers_("buffers", "Buffers")
-    , indexBuffers_("indexBuffers", "Index Buffers") {
+    , buffers_{"buffers", "Buffers"}
+    , indexBuffers_{"indexBuffers", "Index Buffers"} {
 
     util::for_each_in_tuple(
         [](auto& e) {
@@ -232,9 +233,9 @@ void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
 
     // general mesh information
     if (meshProperties_.isChecked()) {
-        auto posbuffer = mesh.findBuffer(BufferType::PositionAttrib);
-        if (posbuffer.first) {
-            auto minmax = util::bufferMinMax(posbuffer.first);
+        auto [buffer, location] = mesh.findBuffer(BufferType::PositionAttrib);
+        if (buffer) {
+            auto minmax = util::bufferMinMax(buffer);
             min_.set(minmax.first);
             max_.set(minmax.second);
             extent_.set(minmax.second - minmax.first);
@@ -261,7 +262,7 @@ void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
     const auto& buffers = mesh.getBuffers();
     for (size_t i = 0; i < numBuffers; ++i) {
         updateBufferProperty(static_cast<MeshBufferInformationProperty*>(bufferprops[i]),
-                             buffers[i], "Buffer " + std::to_string(i + 1));
+                             buffers[i], fmt::format("Buffer {}", i + 1));
     }
 
     // update index buffer information
@@ -269,10 +270,10 @@ void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
     const auto& indices = mesh.getIndexBuffers();
     for (size_t i = 0; i < numIndexBuffers; ++i) {
         updateBufferProperty(static_cast<IndexBufferInformationProperty*>(indexbufferprops[i]),
-                             indices[i], "Index Buffer " + std::to_string(i + 1));
+                             indices[i], fmt::format("Index Buffer {}", i + 1));
     }
 
-    util::for_each_in_tuple([&](auto& e) { e.setCurrentStateAsDefault(); }, props());
+    util::for_each_in_tuple([this](auto& e) { e.setCurrentStateAsDefault(); }, props());
 }
 
 }  // namespace inviwo
