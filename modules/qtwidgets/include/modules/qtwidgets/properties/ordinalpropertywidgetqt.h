@@ -210,23 +210,22 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
         }
     };
 
-    for (size_t row = 0; row < util::extent<T, 1>::value; row++) {
-        for (size_t col = 0; col < util::extent<T, 0>::value; col++) {
+    for (size_t row = 0; row < util::extent_v<T, 1>; row++) {
+        for (size_t col = 0; col < util::extent_v<T, 0>; col++) {
             auto editor = factory(row, col);
 
             auto layoutCol = col;
             auto layoutRow = row;
 
             // vectors should be drawn in row major while matrices are column major
-            if constexpr (util::extent<T, 1>::value > 1 &&
-                          Sem != OrdinalPropertyWidgetQtSemantics::Default) {
+            if constexpr (util::rank_v<T> > 1) {
                 std::swap(layoutCol, layoutRow);
             }
             gridLayout->addWidget(editor, static_cast<int>(layoutRow), static_cast<int>(layoutCol));
         }
     }
 
-    if ((gridLayout->count() > 0) && gridLayout->itemAt(0)->widget()) {
+    if (gridLayout->isEmpty() && gridLayout->itemAt(0)->widget()) {
         setFocusPolicy(gridLayout->itemAt(0)->widget()->focusPolicy());
         setFocusProxy(gridLayout->itemAt(0)->widget());
     }
