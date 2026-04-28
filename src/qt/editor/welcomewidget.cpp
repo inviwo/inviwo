@@ -229,8 +229,8 @@ public:
 
     void loadLog(QFile& file) {
         if (file.open(QFile::ReadOnly | QFile::Text) && file.size() > 0) {
-            const auto data = file.readAll();
-            const std::string_view md{data.constData(), static_cast<size_t>(data.size())};
+            const auto log = file.readAll();
+            const std::string_view md{log.constData(), static_cast<size_t>(log.size())};
             const auto html = markdownToHtml(md);
             if (!html.empty()) {
                 setHtml(utilqt::toQString(html));

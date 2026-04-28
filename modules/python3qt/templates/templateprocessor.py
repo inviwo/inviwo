@@ -11,12 +11,16 @@ class {name}(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
         self.inport = ivw.data.ImageInport("inport")
-        self.addInport(self.inport, owner=False)
+        self.addInport(self.inport)
         self.outport = ivw.data.ImageOutport("outport")
-        self.addOutport(self.outport, owner=False)
+        self.addOutport(self.outport)
 
-        self.slider = ivw.properties.IntProperty("slider", "slider", 0, 0, 100, 1)
-        self.addProperty(self.slider, owner=False)
+        cb = ivw.properties.ConstraintBehavior
+        self.slider = ivw.properties.IntProperty(
+            "slider", "Slider",
+            help=ivw.md2doc("Basic slider property"),
+            value=0, increment=1, min=(0, cb.Ignore), max=(100, cb.Ignore))
+        self.addProperties([self.slider])
 
     @staticmethod
     def processorInfo():
