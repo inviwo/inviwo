@@ -240,6 +240,10 @@ void vecx(py::module& m, std::string_view prefix, std::string_view name, std::st
             });
 
             m.def("rotate", [](const Vec& v, T angle, Vec& n) { return glm::rotate(v, angle, n); });
+
+            m.def("rotate", [](T angle, const Vec& v) { return glm::rotate(angle, v); });
+            m.def("scale", [](const Vec& v) { return glm::scale(v); });
+            m.def("translate", [](const Vec& v) { return glm::translate(v); });
         }
     }
 
