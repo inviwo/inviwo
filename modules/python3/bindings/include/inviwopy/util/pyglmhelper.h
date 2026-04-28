@@ -171,12 +171,12 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
                  return m[idx][idy] = t;
              })
 
-        .def_property_readonly(
-            "array",
-            [](Mat& self) {
-                return pybind11::array_t<T>(std::vector<size_t>{Rows, Cols}, glm::value_ptr(self));
-            })
-
+        .def_property_readonly("array",
+                               [](Mat& self) {
+                                   return pybind11::array_t<T>(std::vector<size_t>{Rows, Cols},
+                                                               glm::value_ptr(self));
+                               })
+        .def_static("filled", [](T v) { return util::filled<Mat>(v); })
         .def("__repr__", [](Mat& m) { return fmt::to_string(m); })
         .def_buffer([](Mat& mat) -> pybind11::buffer_info {
             return pybind11::buffer_info(

@@ -196,18 +196,27 @@ struct InviwoDefaults<glm::mat<C, R, T, Q>> {
     static constexpr auto get() {
         constexpr std::array<StaticString<1>, 4> num = {"1", "2", "3", "4"};
         constexpr auto t = InviwoDefaults<T>::get();
+
+        constexpr auto minVal = [&]() {
+            if constexpr (std::is_signed_v<T>) {
+                return type{-t.max};
+            } else {
+                return type{t.min};
+            }
+        }();
+
         if constexpr (C == R) {
             return InviwoDefaultData{t.name + "Mat" + num[C - 1],
                                      uvec2(C, R),
                                      type{0} + t.val,
-                                     type{0} + t.min,
+                                     type{0} + minVal,
                                      type{0} + t.max,
                                      type{0} + t.inc};
         } else {
             return InviwoDefaultData{t.name + "Mat" + num[C - 1] + "x" + num[R - 1],
                                      uvec2(C, R),
                                      type{0} + t.val,
-                                     type{0} + t.min,
+                                     type{0} + minVal,
                                      type{0} + t.max,
                                      type{0} + t.inc};
         }
