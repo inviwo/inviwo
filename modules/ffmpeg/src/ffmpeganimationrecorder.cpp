@@ -175,7 +175,7 @@ std::unique_ptr<animation::Recorder> FFmpegRecorderFactory::create(
     }
 
     return std::make_unique<FFmpegRecorder>(
-        file_.get(), format,
+        file, format,
         ffmpeg::OutputStream::Options{.codecId = codec_.getSelectedValue(),
                                       .width = static_cast<int>(opts.dimensions.x),
                                       .height = static_cast<int>(opts.dimensions.y),

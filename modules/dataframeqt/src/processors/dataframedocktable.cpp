@@ -198,6 +198,16 @@ DataFrameDockTable::DataFrameDockTable()
             setDockArea(widget, dockArea_.get());
         }
     });
+
+    isSink_.setUpdate([this]() { return processorWidget_ && processorWidget_->isVisible(); });
+    isReady_.setUpdate([this, defaultCheck = getDefaultIsReadyUpdater(this)]() -> ProcessorStatus {
+        if (!processorWidget_ || !processorWidget_->isVisible()) {
+            static constexpr std::string_view reason{"Table is not visible"};
+            return {ProcessorStatus::NotReady, reason};
+        } else {
+            return defaultCheck();
+        }
+    });
 }
 
 DataFrameDockTable::~DataFrameDockTable() {
