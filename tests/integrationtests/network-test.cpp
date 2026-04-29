@@ -42,7 +42,7 @@ namespace inviwo {
 
 class NetworkTest : public ::testing::Test {
 public:
-    NetworkTest() : network(InviwoApplication::getPtr()){};
+    NetworkTest() : network(InviwoApplication::getPtr()) {};
 
 protected:
     virtual void SetUp() {
@@ -106,7 +106,7 @@ TEST_F(NetworkTest, ProcessorGetPropertyByType) {
     const Processor* p = network.getProcessorByIdentifier("volumeSource");
     ASSERT_TRUE(p != nullptr);
 
-    const std::vector<FloatVec3Property*> props = p->getPropertiesByType<FloatVec3Property>(true);
+    const std::vector<DoubleVec3Property*> props = p->getPropertiesByType<DoubleVec3Property>(true);
     ASSERT_EQ(5, props.size());
 
     ASSERT_TRUE(props[0] != nullptr);
