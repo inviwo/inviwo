@@ -86,7 +86,7 @@ MeshInformationProperty::MeshInformationProperty(std::string_view identifier,
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, "Information about a mesh and its buffers"_help,
-                        invalidationLevel, semantics}
+                        invalidationLevel, std::move(semantics)}
     , defaultMeshInfo_{"defaultMeshInfo", "Default Mesh Info"}
     , defaultDrawType_{"defaultDrawType", "Draw Type"}
     , defaultConnectivity_{"defaultConnectivity", "Connectivity"}
@@ -273,7 +273,7 @@ void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
                              indices[i], fmt::format("Index Buffer {}", i + 1));
     }
 
-    util::for_each_in_tuple([this](auto& e) { e.setCurrentStateAsDefault(); }, props());
+    util::for_each_in_tuple([](auto& e) { e.setCurrentStateAsDefault(); }, props());
 }
 
 }  // namespace inviwo

@@ -150,8 +150,8 @@ void BasisProperty::updateForNewEntity(const dmat4& modelMatrix, size3_t dims, b
     overrideModel_.value = modelMatrix;
     overrideModel_.setAsDefault();
     load();
-    util::for_each_argument([this](auto& elem) { elem.setCurrentStateAsDefault(); }, size_, a_, b_,
-                            c_, offset_);
+    util::for_each_argument([](auto& elem) { elem.setCurrentStateAsDefault(); }, size_, a_, b_, c_,
+                            offset_);
 
     if (deserialize || !updateForNewEntry_) {
         overrideModel_.value = org;
