@@ -64,7 +64,12 @@ private:
 void FFmpegRecorder::record(const Layer& layer) {
     if (recorder) {
         try {
-            recorder->queueFrame(*layer.getRepresentation<LayerRAM>());
+            if (const auto* ram = layer.getRepresentation<LayerRAM>()) {
+                recorder->queueFrame(*ram);
+            } else {
+                log::error("Unable to get LayerRAM represenation");
+                recorder.reset();
+            }
         } catch (const Exception& e) {
             log::exception(e);
             recorder.reset();
