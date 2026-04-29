@@ -407,7 +407,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
     axisPicking_.resize(nColumns);
     lines_.axisFlipped.resize(nColumns);
 
-    for (const auto& [columnIndex, column] : util::enumerate(*data)) {
+    for (auto&& [columnIndex, column] : util::enumerate(*data)) {
         const auto& displayName = column->getHeader();
         const auto identifier = util::stripIdentifier(displayName);
 
@@ -992,7 +992,7 @@ BitSet ParallelCoordinates::lineIntersections(const std::array<dvec2, 2>& screen
     const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
     BitSet b;
-    for (const auto& [left, right] :
+    for (auto&& [left, right] :
          std::views::zip(enabledAxes_, enabledAxes_ | std::views::drop(1))) {
 
         const auto leftColumnId = axes_[left].pcp->columnId();
