@@ -1503,6 +1503,7 @@ var namespaceinviwo =
     [ "CharRange", "conceptinviwo_1_1CharRange.html", null ],
     [ "DataType", "conceptinviwo_1_1DataType.html", null ],
     [ "Gettable", "conceptinviwo_1_1Gettable.html", null ],
+    [ "isMatrix", "conceptinviwo_1_1isMatrix.html", null ],
     [ "JSONConvertable", "conceptinviwo_1_1JSONConvertable.html", null ],
     [ "RepresentationOf", "conceptinviwo_1_1RepresentationOf.html", null ],
     [ "Settable", "conceptinviwo_1_1Settable.html", null ],

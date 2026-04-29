@@ -1,5 +1,9 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1PropertyObserverDelegate.html":[2,0,0,917],
+"structinviwo_1_1PropertyObserverDelegate.html":[4,0,1,926],
+"structinviwo_1_1PropertyTraits.html":[2,0,0,926],
+"structinviwo_1_1PropertyTraits.html":[4,0,1,935],
 "structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html":[2,0,0,927],
 "structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html":[4,0,1,936],
 "structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[2,0,0,928],
@@ -245,9 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1deserializer_1_1IdentifierFunctions.html":[4,0,1,10,0],
 "structinviwo_1_1deserializer_1_1IndexFunctions.html":[4,0,1,10,1],
 "structinviwo_1_1deserializer_1_1MapFunctions.html":[4,0,1,10,2],
-"structinviwo_1_1deserializer_1_1Node.html":[4,0,1,10,3],
-"structinviwo_1_1detail_1_1CodePointsAdaptor.html":[4,0,1,11,2],
-"structinviwo_1_1detail_1_1ColorConverter.html":[4,0,1,11,3],
-"structinviwo_1_1detail_1_1ColorConverter_3_01dvec3_01_4.html":[4,0,1,11,4],
-"structinviwo_1_1detail_1_1ColorConverter_3_01dvec4_01_4.html":[4,0,1,11,5]
+"structinviwo_1_1deserializer_1_1Node.html":[4,0,1,10,3]
 };

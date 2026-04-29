@@ -154,8 +154,8 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight"><b>BasisProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidResources, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
 <tr class="memitem:a8163a2f51dbeaf6c7e585f1657d5cccd" id="r_a8163a2f51dbeaf6c7e585f1657d5cccd"><td class="memItemLeft">virtual BasisProperty *&#160;</td><td class="memItemRight"><a class="el" href="#a8163a2f51dbeaf6c7e585f1657d5cccd">clone</a> () const override</td></tr>
 <tr class="memitem:a43863e1b78dd2c90aa882941bc6344b5" id="r_a43863e1b78dd2c90aa882941bc6344b5"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a43863e1b78dd2c90aa882941bc6344b5">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
-<tr class="memitem:a00f32c2fce768a80ec15ee10581a952d" id="r_a00f32c2fce768a80ec15ee10581a952d"><td class="memItemLeft"><a id="a00f32c2fce768a80ec15ee10581a952d" name="a00f32c2fce768a80ec15ee10581a952d"></a>
-mat4&#160;</td><td class="memItemRight"><b>getBasisAndOffset</b> () const</td></tr>
+<tr class="memitem:a20243e27e1233dd1fe2364f86137e09f" id="r_a20243e27e1233dd1fe2364f86137e09f"><td class="memItemLeft"><a id="a20243e27e1233dd1fe2364f86137e09f" name="a20243e27e1233dd1fe2364f86137e09f"></a>
+dmat4&#160;</td><td class="memItemRight"><b>getBasisAndOffset</b> () const</td></tr>
 <tr class="memitem:afd1bcd21d6a84490ff09e72f8a5b9a2d" id="r_afd1bcd21d6a84490ff09e72f8a5b9a2d"><td class="memItemLeft">virtual std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#afd1bcd21d6a84490ff09e72f8a5b9a2d">getClassIdentifier</a> () const override</td></tr>
 <tr class="memitem:ac88cd38a463c661863d2e598e8adedcd" id="r_ac88cd38a463c661863d2e598e8adedcd"><td class="memItemLeft"><a id="ac88cd38a463c661863d2e598e8adedcd" name="ac88cd38a463c661863d2e598e8adedcd"></a>
 void&#160;</td><td class="memItemRight"><b>onResetOverride</b> ()</td></tr>
@@ -164,8 +164,8 @@ void&#160;</td><td class="memItemRight"><b>onResetOverride</b> ()</td></tr>
 <tr class="memitem:a7e11038b036a569e80c2cc3a634dc47c" id="r_a7e11038b036a569e80c2cc3a634dc47c"><td class="memItemLeft">virtual BasisProperty &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a7e11038b036a569e80c2cc3a634dc47c">setCurrentStateAsDefault</a> () override</td></tr>
 <tr class="memitem:a26f3ebfabc091ae6aeb71965f14e5a87" id="r_a26f3ebfabc091ae6aeb71965f14e5a87"><td class="memItemLeft"><a id="a26f3ebfabc091ae6aeb71965f14e5a87" name="a26f3ebfabc091ae6aeb71965f14e5a87"></a>
 void&#160;</td><td class="memItemRight"><b>updateEntity</b> (<a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;volume)</td></tr>
-<tr class="memitem:a7e698f7453cf630b1d7337c0b75fae62" id="r_a7e698f7453cf630b1d7337c0b75fae62"><td class="memItemLeft"><a id="a7e698f7453cf630b1d7337c0b75fae62" name="a7e698f7453cf630b1d7337c0b75fae62"></a>
-void&#160;</td><td class="memItemRight"><b>updateForNewEntity</b> (const mat4 &amp;modelMatrix, size3_t dims, bool deserialize)</td></tr>
+<tr class="memitem:aac9510a89e715e1ccd193cd500b9a71e" id="r_aac9510a89e715e1ccd193cd500b9a71e"><td class="memItemLeft"><a id="aac9510a89e715e1ccd193cd500b9a71e" name="aac9510a89e715e1ccd193cd500b9a71e"></a>
+void&#160;</td><td class="memItemRight"><b>updateForNewEntity</b> (const dmat4 &amp;modelMatrix, size3_t dims, bool deserialize)</td></tr>
 <tr class="memitem:a3e8fe95f60d3b0229934082f13d58984" id="r_a3e8fe95f60d3b0229934082f13d58984"><td class="memItemLeft"><a id="a3e8fe95f60d3b0229934082f13d58984" name="a3e8fe95f60d3b0229934082f13d58984"></a>
 void&#160;</td><td class="memItemRight"><b>updateForNewEntity</b> (const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;volume, bool deserialize)</td></tr>
 <tr class="memitem:aea9931be891ef15e3b6643e9991eeab4" id="r_aea9931be891ef15e3b6643e9991eeab4"><td class="memItemLeft"><a id="aea9931be891ef15e3b6643e9991eeab4" name="aea9931be891ef15e3b6643e9991eeab4"></a>
@@ -453,26 +453,26 @@ void&#160;</td><td class="memItemRight"><b>removeObserver</b> (<a class="el" hre
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ae5826fbb003f2eeee73bfadefac8162e" id="r_ae5826fbb003f2eeee73bfadefac8162e"><td class="memItemLeft"><a id="ae5826fbb003f2eeee73bfadefac8162e" name="ae5826fbb003f2eeee73bfadefac8162e"></a>
-FloatVec3Property&#160;</td><td class="memItemRight"><b>a_</b></td></tr>
+<tr class="memitem:a7ed988fb6fb754d824a0a62f562bac08" id="r_a7ed988fb6fb754d824a0a62f562bac08"><td class="memItemLeft"><a id="a7ed988fb6fb754d824a0a62f562bac08" name="a7ed988fb6fb754d824a0a62f562bac08"></a>
+DoubleVec3Property&#160;</td><td class="memItemRight"><b>a_</b></td></tr>
 <tr class="memitem:a919d58b7d7678d010681bcd792ca8a31" id="r_a919d58b7d7678d010681bcd792ca8a31"><td class="memItemLeft"><a id="a919d58b7d7678d010681bcd792ca8a31" name="a919d58b7d7678d010681bcd792ca8a31"></a>
 <a class="el" href="classinviwo_1_1BoolProperty.html">BoolProperty</a>&#160;</td><td class="memItemRight"><b>autoCenter_</b></td></tr>
-<tr class="memitem:a1eb9d172dd9868cc4576cb3fb2a0177a" id="r_a1eb9d172dd9868cc4576cb3fb2a0177a"><td class="memItemLeft"><a id="a1eb9d172dd9868cc4576cb3fb2a0177a" name="a1eb9d172dd9868cc4576cb3fb2a0177a"></a>
-FloatVec3Property&#160;</td><td class="memItemRight"><b>b_</b></td></tr>
-<tr class="memitem:a0daead8e76c2d808c42e3ffd0b1bcaca" id="r_a0daead8e76c2d808c42e3ffd0b1bcaca"><td class="memItemLeft"><a id="a0daead8e76c2d808c42e3ffd0b1bcaca" name="a0daead8e76c2d808c42e3ffd0b1bcaca"></a>
-FloatVec3Property&#160;</td><td class="memItemRight"><b>c_</b></td></tr>
+<tr class="memitem:a899d093ae88f1a91cf26198d9cb38d65" id="r_a899d093ae88f1a91cf26198d9cb38d65"><td class="memItemLeft"><a id="a899d093ae88f1a91cf26198d9cb38d65" name="a899d093ae88f1a91cf26198d9cb38d65"></a>
+DoubleVec3Property&#160;</td><td class="memItemRight"><b>b_</b></td></tr>
+<tr class="memitem:a8171fa750d8051ae9837b26ad797bc45" id="r_a8171fa750d8051ae9837b26ad797bc45"><td class="memItemLeft"><a id="a8171fa750d8051ae9837b26ad797bc45" name="a8171fa750d8051ae9837b26ad797bc45"></a>
+DoubleVec3Property&#160;</td><td class="memItemRight"><b>c_</b></td></tr>
 <tr class="memitem:aabccea36359bf9c356f976bce8168fc9" id="r_aabccea36359bf9c356f976bce8168fc9"><td class="memItemLeft"><a id="aabccea36359bf9c356f976bce8168fc9" name="aabccea36359bf9c356f976bce8168fc9"></a>
 <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; BasisPropertyMode &gt;&#160;</td><td class="memItemRight"><b>mode_</b></td></tr>
-<tr class="memitem:a1477b604e928e743da5a881dc2971b0b" id="r_a1477b604e928e743da5a881dc2971b0b"><td class="memItemLeft"><a id="a1477b604e928e743da5a881dc2971b0b" name="a1477b604e928e743da5a881dc2971b0b"></a>
-FloatVec3Property&#160;</td><td class="memItemRight"><b>offset_</b></td></tr>
+<tr class="memitem:a4763cff07fbcd7d2c4b8409ebc7f9042" id="r_a4763cff07fbcd7d2c4b8409ebc7f9042"><td class="memItemLeft"><a id="a4763cff07fbcd7d2c4b8409ebc7f9042" name="a4763cff07fbcd7d2c4b8409ebc7f9042"></a>
+DoubleVec3Property&#160;</td><td class="memItemRight"><b>offset_</b></td></tr>
 <tr class="memitem:a2c72b4f0c5801a854cb4dbea350e35a7" id="r_a2c72b4f0c5801a854cb4dbea350e35a7"><td class="memItemLeft"><a id="a2c72b4f0c5801a854cb4dbea350e35a7" name="a2c72b4f0c5801a854cb4dbea350e35a7"></a>
 <a class="el" href="classinviwo_1_1BoolProperty.html">BoolProperty</a>&#160;</td><td class="memItemRight"><b>overRideDefaults_</b></td></tr>
 <tr class="memitem:aceedb4bcecc162aa0cef5485a4fedc82" id="r_aceedb4bcecc162aa0cef5485a4fedc82"><td class="memItemLeft"><a id="aceedb4bcecc162aa0cef5485a4fedc82" name="aceedb4bcecc162aa0cef5485a4fedc82"></a>
 <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; BasisPropertyReference &gt;&#160;</td><td class="memItemRight"><b>reference_</b></td></tr>
 <tr class="memitem:ae22c2025f2895589874a05630af7ebbb" id="r_ae22c2025f2895589874a05630af7ebbb"><td class="memItemLeft"><a id="ae22c2025f2895589874a05630af7ebbb" name="ae22c2025f2895589874a05630af7ebbb"></a>
 <a class="el" href="classinviwo_1_1ButtonProperty.html">ButtonProperty</a>&#160;</td><td class="memItemRight"><b>resetOverride_</b></td></tr>
-<tr class="memitem:ae81d49a51e6c3d5b41eb13d2c4c7d48a" id="r_ae81d49a51e6c3d5b41eb13d2c4c7d48a"><td class="memItemLeft"><a id="ae81d49a51e6c3d5b41eb13d2c4c7d48a" name="ae81d49a51e6c3d5b41eb13d2c4c7d48a"></a>
-FloatVec3Property&#160;</td><td class="memItemRight"><b>size_</b></td></tr>
+<tr class="memitem:a3b4796620a8549d9da898fcda77c67fc" id="r_a3b4796620a8549d9da898fcda77c67fc"><td class="memItemLeft"><a id="a3b4796620a8549d9da898fcda77c67fc" name="a3b4796620a8549d9da898fcda77c67fc"></a>
+DoubleVec3Property&#160;</td><td class="memItemRight"><b>size_</b></td></tr>
 <tr class="memitem:ad83bfb55b1a3a90e7513d8efc85fe5e9" id="r_ad83bfb55b1a3a90e7513d8efc85fe5e9"><td class="memItemLeft"><a id="ad83bfb55b1a3a90e7513d8efc85fe5e9" name="ad83bfb55b1a3a90e7513d8efc85fe5e9"></a>
 <a class="el" href="classinviwo_1_1BoolProperty.html">BoolProperty</a>&#160;</td><td class="memItemRight"><b>updateForNewEntry_</b></td></tr>
 </table><table class="memberdecls">

@@ -67,12 +67,14 @@ var searchData=
   ['orcardinality_64',['orCardinality',['../classinviwo_1_1BitSet.html#aa257d565e5ee3d8c86903e3fc48ffcc4',1,'inviwo::BitSet']]],
   ['ordinalcolor_65',['ordinalColor',['../namespaceinviwo_1_1util.html#ada3f90c8cfa64a0898b021cca551de05',1,'inviwo::util']]],
   ['ordinalcount_66',['ordinalCount',['../namespaceinviwo_1_1util.html#ae6c3c7230deaaaa556873e2684e4303f',1,'inviwo::util']]],
-  ['ordinallength_67',['ordinalLength',['../namespaceinviwo_1_1util.html#aec0d6260ee968193442da41efb8fff79',1,'inviwo::util']]],
-  ['ordinalpropertywidgetcef_68',['OrdinalPropertyWidgetCEF',['../classinviwo_1_1OrdinalPropertyWidgetCEF.html#a677d96d1271176af06471594f6ee6530',1,'inviwo::OrdinalPropertyWidgetCEF']]],
-  ['ordinalrefcolor_69',['ordinalRefColor',['../namespaceinviwo_1_1util.html#a78fe508315d93a69417c6ee9614303d6',1,'inviwo::util']]],
-  ['ordinalrefsymmetricvector_70',['ordinalRefSymmetricVector',['../namespaceinviwo_1_1util.html#a6f57559577f5aec3ec856e38b2b4d58c',1,'inviwo::util']]],
-  ['ordinalscale_71',['ordinalScale',['../namespaceinviwo_1_1util.html#ae10672d3ce62a8142941c05a182ca335',1,'inviwo::util']]],
-  ['ordinalsymmetricvector_72',['ordinalSymmetricVector',['../namespaceinviwo_1_1util.html#aa58b65316e88fa13b51e3f2a3093b066',1,'inviwo::util']]],
-  ['outport_73',['Outport',['../classinviwo_1_1Outport.html#ad78341c428fbde3f94c9c53f3eca9ae5',1,'inviwo::Outport']]],
-  ['outputconfig_74',['outputConfig',['../classinviwo_1_1LayerColorMapping.html#a281e78e7f09db0e3867bbbf9ce81df6d',1,'inviwo::LayerColorMapping::outputConfig()'],['../classinviwo_1_1LayerGLProcessor.html#a70b327ac7d0eb87a39ad53949ff02d15',1,'inviwo::LayerGLProcessor::outputConfig()']]]
+  ['ordinalfilledmatrix_67',['ordinalFilledMatrix',['../namespaceinviwo_1_1util.html#a6b2cf831253629caf20f04919ab0881d',1,'inviwo::util']]],
+  ['ordinallength_68',['ordinalLength',['../namespaceinviwo_1_1util.html#aec0d6260ee968193442da41efb8fff79',1,'inviwo::util']]],
+  ['ordinalmatrix_69',['ordinalMatrix',['../namespaceinviwo_1_1util.html#a52ad554324207408994e45be20292176',1,'inviwo::util']]],
+  ['ordinalpropertywidgetcef_70',['OrdinalPropertyWidgetCEF',['../classinviwo_1_1OrdinalPropertyWidgetCEF.html#a677d96d1271176af06471594f6ee6530',1,'inviwo::OrdinalPropertyWidgetCEF']]],
+  ['ordinalrefcolor_71',['ordinalRefColor',['../namespaceinviwo_1_1util.html#a78fe508315d93a69417c6ee9614303d6',1,'inviwo::util']]],
+  ['ordinalrefsymmetricvector_72',['ordinalRefSymmetricVector',['../namespaceinviwo_1_1util.html#a6f57559577f5aec3ec856e38b2b4d58c',1,'inviwo::util']]],
+  ['ordinalscale_73',['ordinalScale',['../namespaceinviwo_1_1util.html#ae10672d3ce62a8142941c05a182ca335',1,'inviwo::util']]],
+  ['ordinalsymmetricvector_74',['ordinalSymmetricVector',['../namespaceinviwo_1_1util.html#aa58b65316e88fa13b51e3f2a3093b066',1,'inviwo::util']]],
+  ['outport_75',['Outport',['../classinviwo_1_1Outport.html#ad78341c428fbde3f94c9c53f3eca9ae5',1,'inviwo::Outport']]],
+  ['outputconfig_76',['outputConfig',['../classinviwo_1_1LayerColorMapping.html#a281e78e7f09db0e3867bbbf9ce81df6d',1,'inviwo::LayerColorMapping::outputConfig()'],['../classinviwo_1_1LayerGLProcessor.html#a70b327ac7d0eb87a39ad53949ff02d15',1,'inviwo::LayerGLProcessor::outputConfig()']]]
 ];

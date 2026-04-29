@@ -1,5 +1,9 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html":[4,0,1,370,0],
+"structinviwo_1_1GLFormat.html":[2,0,0,369],
+"structinviwo_1_1GLFormat.html":[4,0,1,378],
+"structinviwo_1_1Histogram1D.html":[2,0,0,394],
 "structinviwo_1_1Histogram1D.html":[4,0,1,403],
 "structinviwo_1_1Histogram2D.html":[2,0,0,395],
 "structinviwo_1_1Histogram2D.html":[4,0,1,404],
@@ -245,9 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1ProcessorTraits_3_01WorldTransformDeprecated_3_01Mesh_01_4_01_4.html":[2,0,0,893],
 "structinviwo_1_1ProcessorTraits_3_01WorldTransformDeprecated_3_01Mesh_01_4_01_4.html":[4,0,1,902],
 "structinviwo_1_1ProcessorTraits_3_01WorldTransformDeprecated_3_01Volume_01_4_01_4.html":[2,0,0,894],
-"structinviwo_1_1ProcessorTraits_3_01WorldTransformDeprecated_3_01Volume_01_4_01_4.html":[4,0,1,903],
-"structinviwo_1_1PropertyObserverDelegate.html":[2,0,0,917],
-"structinviwo_1_1PropertyObserverDelegate.html":[4,0,1,926],
-"structinviwo_1_1PropertyTraits.html":[2,0,0,926],
-"structinviwo_1_1PropertyTraits.html":[4,0,1,935]
+"structinviwo_1_1ProcessorTraits_3_01WorldTransformDeprecated_3_01Volume_01_4_01_4.html":[4,0,1,903]
 };
