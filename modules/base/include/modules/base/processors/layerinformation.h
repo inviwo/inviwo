@@ -58,15 +58,15 @@ private:
 
     std::array<DoubleMinMaxProperty, 4> minMax_;
 
-    FloatMat3Property basis_;
-    FloatVec3Property offset_;
+    DoubleMat3Property basis_;
+    DoubleVec3Property offset_;
     DoubleVec2Property texelSize_;
 
-    FloatMat4Property modelMatrix_;
-    FloatMat4Property worldMatrix_;
-    FloatMat4Property indexMatrix_;
+    DoubleMat4Property modelMatrix_;
+    DoubleMat4Property worldMatrix_;
+    DoubleMat4Property indexMatrix_;
 
-    std::array<FloatMat4Property, 12> spaceTransforms_;
+    std::array<DoubleMat4Property, 12> spaceTransforms_;
 
     BoolCompositeProperty perTexelProperties_;
     CompositeProperty transformations_;

@@ -176,9 +176,9 @@ MeshCreator::MeshCreator()
             prevNDC.z = refDepth;
 
             auto corrWorld =
-                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
+                camera_.getWorldPosFromNormalizedDeviceCoords(currNDC);
             auto prevWorld =
-                camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
+                camera_.getWorldPosFromNormalizedDeviceCoords(prevNDC);
             return (corrWorld - prevWorld);
         };
 
@@ -192,7 +192,7 @@ MeshCreator::MeshCreator()
             position2_.set(position2_.get() + delta);
         };
         auto updateBasis = [this, getDelta](const PickingEvent* p) {
-            basis_.offset_.set(basis_.offset_.get() + vec3{getDelta(p)});
+            basis_.offset_.set(basis_.offset_.get() + getDelta(p));
         };
 
         util::hide(position1_, position2_, normal_, basis_, meshScale_, meshRes_, lineSegments_,

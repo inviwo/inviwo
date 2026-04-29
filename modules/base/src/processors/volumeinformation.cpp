@@ -94,14 +94,12 @@ namespace {
 constexpr auto transforms = util::generateTransforms(std::array{
     CoordinateSpace::Data, CoordinateSpace::Model, CoordinateSpace::World, CoordinateSpace::Index});
 
-std::array<FloatMat4Property, 12> transformProps() {
+std::array<DoubleMat4Property, 12> transformProps() {
     return util::make_array<12>([](auto index) {
         auto [from, to] = transforms[index];
-        return FloatMat4Property(fmt::format("{}2{}", from, to), fmt::format("{} To {}", from, to),
-                                 mat4(1.0f),
-                                 util::filled<mat4>(std::numeric_limits<float>::lowest()),
-                                 util::filled<mat4>(std::numeric_limits<float>::max()),
-                                 util::filled<mat4>(0.001f), InvalidationLevel::Valid);
+        return DoubleMat4Property{
+            fmt::format("{}2{}", from, to), fmt::format("{} To {}", from, to),
+            util::ordinalMatrix(dmat4{1.0}).setInc(0.001).set(InvalidationLevel::Valid)};
     });
 }
 
@@ -143,50 +141,24 @@ VolumeInformation::VolumeInformation()
                               InvalidationLevel::Valid,
                               PropertySemantics::Text}
     , minMax_{minMaxProps()}
-    , basis_{"basis",
-             "Basis",
-             mat3(1.0f),
-             util::filled<mat3>(std::numeric_limits<float>::lowest()),
-             util::filled<mat3>(std::numeric_limits<float>::max()),
-             util::filled<mat3>(0.001f),
-             InvalidationLevel::Valid}
-    , offset_{"offset",
-              "Offset",
-              vec3(0.0f),
-              vec3(std::numeric_limits<float>::lowest()),
-              vec3(std::numeric_limits<float>::max()),
-              vec3(0.001f),
-              InvalidationLevel::Valid,
-              PropertySemantics::Text}
-    , voxelSize_{"voxelSize",
-                 "Voxel size",
-                 dvec3(0),
-                 dvec3(std::numeric_limits<float>::lowest()),
-                 dvec3(std::numeric_limits<float>::max()),
-                 dvec3(0.0001),
-                 InvalidationLevel::Valid,
-                 PropertySemantics::Text}
-    , modelMatrix_{"modelMatrix",
-                   "Model Matrix",
-                   mat4(1.0f),
-                   util::filled<mat4>(std::numeric_limits<float>::lowest()),
-                   util::filled<mat4>(std::numeric_limits<float>::max()),
-                   util::filled<mat4>(0.001f),
-                   InvalidationLevel::Valid}
-    , worldMatrix_{"worldTransform",
-                   "World Matrix",
-                   mat4(1.0f),
-                   util::filled<mat4>(std::numeric_limits<float>::lowest()),
-                   util::filled<mat4>(std::numeric_limits<float>::max()),
-                   util::filled<mat4>(0.001f),
-                   InvalidationLevel::Valid}
-    , indexMatrix_{"indexMatrix",
-                   "Index Matrix",
-                   mat4(1.0f),
-                   util::filled<mat4>(std::numeric_limits<float>::lowest()),
-                   util::filled<mat4>(std::numeric_limits<float>::max()),
-                   util::filled<mat4>(0.001f),
-                   InvalidationLevel::Valid}
+    , basis_{"basis", "Basis",
+             util::ordinalMatrix(dmat3{1.0}).setInc(0.001).set(InvalidationLevel::Valid)}
+    , offset_{"offset", "Offset",
+              util::ordinalSymmetricVector(dvec3{0.0})
+                  .setInc(dvec3{0.001})
+                  .set(InvalidationLevel::Valid)
+                  .set(PropertySemantics::Text)}
+    , voxelSize_{"voxelSize", "Voxel size",
+                 util::ordinalLength(dvec3{0.0})
+                     .setInc(0.0001)
+                     .set(InvalidationLevel::Valid)
+                     .set(PropertySemantics::Text)}
+    , modelMatrix_{"modelMatrix", "Model Matrix",
+                   util::ordinalMatrix(dmat4{1.0}).setInc(0.001).set(InvalidationLevel::Valid)}
+    , worldMatrix_{"worldTransform", "World Matrix",
+                   util::ordinalMatrix(dmat4{1.0}).setInc(0.001).set(InvalidationLevel::Valid)}
+    , indexMatrix_{"indexMatrix", "Index Matrix",
+                   util::ordinalMatrix(dmat4{1.0}).setInc(0.001).set(InvalidationLevel::Valid)}
     , spaceTransforms_{transformProps()}
     , perVoxelProperties_{"minmaxValues", "Aggregated per Voxel", false}
     , transformations_{"transformations", "Transformations"}
@@ -203,7 +175,7 @@ VolumeInformation::VolumeInformation()
     addProperty(perVoxelProperties_);
     perVoxelProperties_.setCollapsed(true);
     util::for_each_argument(
-        [&](auto& p) {
+        [this](auto& p) {
             p.setReadOnly(true);
             p.setSerializationMode(PropertySerializationMode::None);
             perVoxelProperties_.addProperty(p);
@@ -214,7 +186,7 @@ VolumeInformation::VolumeInformation()
     addProperty(transformations_);
     transformations_.setCollapsed(true);
     util::for_each_argument(
-        [&](auto& p) {
+        [this](auto& p) {
             p.setReadOnly(true);
             p.setSerializationMode(PropertySerializationMode::None);
             transformations_.addProperty(p);
@@ -250,10 +222,10 @@ void VolumeInformation::process() {
     util::updateDefaultState(offset_, volume->getOffset(), Yes);
 
     auto m = trans.getTextureToWorldMatrix();
-    vec4 dx = m * vec4(1.0f / dim.x, 0, 0, 0);
-    vec4 dy = m * vec4(0, 1.0f / dim.y, 0, 0);
-    vec4 dz = m * vec4(0, 0, 1.0f / dim.z, 0);
-    vec3 vs = {glm::length(dx), glm::length(dy), glm::length(dz)};
+    const dvec4 dx{m * dvec4{1.0 / static_cast<double>(dim.x), 0, 0, 0}};
+    const dvec4 dy{m * dvec4{0, 1.0 / static_cast<double>(dim.y), 0, 0}};
+    const dvec4 dz{m * dvec4{0, 0, 1.0 / static_cast<double>(dim.z), 0}};
+    const dvec3 vs{glm::length(dx), glm::length(dy), glm::length(dz)};
     voxelSize_.set(vs);
 
     for (auto&& [index, transform] : util::enumerate(spaceTransforms_)) {

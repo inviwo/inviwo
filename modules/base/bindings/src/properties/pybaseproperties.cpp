@@ -75,7 +75,7 @@ void exposeBaseProperties(pybind11::module& m) {
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
         .def("updateForNewEntity",
-             py::overload_cast<const mat4&, size3_t, bool>(&BasisProperty::updateForNewEntity))
+             py::overload_cast<const dmat4&, size3_t, bool>(&BasisProperty::updateForNewEntity))
         .def("updateForNewEntity", py::overload_cast<const StructuredGridEntity<3>&, bool>(
                                        &BasisProperty::updateForNewEntity))
         .def("updateForNewEntity", py::overload_cast<const StructuredGridEntity<2>&, bool>(

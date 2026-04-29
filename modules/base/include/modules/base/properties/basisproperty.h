@@ -86,14 +86,14 @@ public:
     virtual BasisProperty* clone() const override;
     virtual ~BasisProperty() = default;
 
-    void updateForNewEntity(const mat4& modelMatrix, size3_t dims, bool deserialize);
+    void updateForNewEntity(const dmat4& modelMatrix, size3_t dims, bool deserialize);
     void updateForNewEntity(const SpatialEntity& volume, bool deserialize);
     void updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize);
     void updateForNewEntity(const StructuredGridEntity<2>& volume, bool deserialize);
 
     void updateEntity(SpatialEntity& volume);
 
-    mat4 getBasisAndOffset() const;
+    dmat4 getBasisAndOffset() const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -107,12 +107,12 @@ public:
     BoolProperty overRideDefaults_;
     BoolProperty updateForNewEntry_;
 
-    FloatVec3Property size_;
-    FloatVec3Property a_;
-    FloatVec3Property b_;
-    FloatVec3Property c_;
+    DoubleVec3Property size_;
+    DoubleVec3Property a_;
+    DoubleVec3Property b_;
+    DoubleVec3Property c_;
     BoolProperty autoCenter_;
-    FloatVec3Property offset_;
+    DoubleVec3Property offset_;
     ButtonProperty resetOverride_;
 
 private:
@@ -130,9 +130,9 @@ private:
     void onOverrideChange();
     void onAutoCenterChange();
 
-    vec3 dimensions_{1.0f};
-    mat4 model_{1.0f};
-    ValueWrapper<mat4> overrideModel_;
+    dvec3 dimensions_{1.0};
+    dmat4 model_{1.0};
+    ValueWrapper<dmat4> overrideModel_;
     bool updating_ = false;
 };
 

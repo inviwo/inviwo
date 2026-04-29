@@ -73,16 +73,16 @@ public:
     IntSizeTProperty numIndexBuffers_;
 
     CompositeProperty transformations_;
-    FloatMat4Property modelTransform_;
-    FloatMat4Property worldTransform_;
-    FloatMat3Property basis_;
-    FloatVec3Property offset_;
-    std::array<FloatMat4Property, 6> spaceTransforms_;
+    DoubleMat4Property modelTransform_;
+    DoubleMat4Property worldTransform_;
+    DoubleMat3Property basis_;
+    DoubleVec3Property offset_;
+    std::array<DoubleMat4Property, 6> spaceTransforms_;
 
     BoolCompositeProperty meshProperties_;
-    FloatVec3Property min_;
-    FloatVec3Property max_;
-    FloatVec3Property extent_;
+    DoubleVec3Property min_;
+    DoubleVec3Property max_;
+    DoubleVec3Property extent_;
 
     CompositeProperty buffers_;
     CompositeProperty indexBuffers_;

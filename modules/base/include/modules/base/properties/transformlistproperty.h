@@ -179,6 +179,8 @@ public:
         const dmat4& increment = util::filled<dmat4>(0.001),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
+    CustomTransformProperty(std::string_view identifier, std::string_view displayName,
+                            const OrdinalPropertyState<dmat4>& state);
     CustomTransformProperty(const CustomTransformProperty& rhs);
     virtual CustomTransformProperty* clone() const override;
     virtual ~CustomTransformProperty() = default;

@@ -82,28 +82,25 @@ BasisProperty::BasisProperty(std::string_view identifier, std::string_view displ
                  0, InvalidationLevel::Valid)
     , overRideDefaults_("override", "Override", "Override the default basis values"_help, false)
     , updateForNewEntry_("update", "Update On New Data", true, InvalidationLevel::Valid)
-    , size_("size", "Size", util::ordinalSymmetricVector(vec3(1.0f)).set(InvalidationLevel::Valid))
-    , a_("a", "A",
-         util::ordinalSymmetricVector(vec3(1.0f, 0.0f, 0.0f)).set(InvalidationLevel::Valid))
-    , b_("b", "B",
-         util::ordinalSymmetricVector(vec3(0.0f, 1.0f, 0.0f)).set(InvalidationLevel::Valid))
-    , c_("c", "C",
-         util::ordinalSymmetricVector(vec3(0.0f, 0.0f, 1.0f)).set(InvalidationLevel::Valid))
+    , size_("size", "Size", util::ordinalSymmetricVector(dvec3(1.0)).set(InvalidationLevel::Valid))
+    , a_("a", "A", util::ordinalSymmetricVector(dvec3(1.0, 0.0, 0.0)).set(InvalidationLevel::Valid))
+    , b_("b", "B", util::ordinalSymmetricVector(dvec3(0.0, 1.0, 0.0)).set(InvalidationLevel::Valid))
+    , c_("c", "C", util::ordinalSymmetricVector(dvec3(0.0, 0.0, 1.0)).set(InvalidationLevel::Valid))
     , autoCenter_("autoCenter", "Center Automatically", true, InvalidationLevel::Valid)
     , offset_("offset", "Offset",
-              util::ordinalSymmetricVector(vec3(-0.5f)).set(InvalidationLevel::Valid))
+              util::ordinalSymmetricVector(dvec3(-0.5)).set(InvalidationLevel::Valid))
     , resetOverride_("restore", "Revert Override", InvalidationLevel::Valid)
-    , overrideModel_("overrideModel", mat4{1}) {
+    , overrideModel_("overrideModel", dmat4{1.0}) {
 
-    util::for_each_in_tuple([&](auto& e) { addProperty(e); }, props());
+    util::for_each_in_tuple([this](auto& e) { addProperty(e); }, props());
 
     size_.setVisible(false);
 
-    mode_.onChange([&]() { onModeChange(); });
-    reference_.onChange([&]() { load(); });
+    mode_.onChange([this]() { onModeChange(); });
+    reference_.onChange([this]() { load(); });
     overRideDefaults_.onChange([this]() { onOverrideChange(); });
-    autoCenter_.onChange([&]() { onAutoCenterChange(); });
-    resetOverride_.onChange([&]() { onResetOverride(); });
+    autoCenter_.onChange([this]() { onAutoCenterChange(); });
+    resetOverride_.onChange([this]() { onResetOverride(); });
 
     util::for_each_argument(
         [this](auto& elem) {
@@ -130,21 +127,21 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
     , model_(rhs.model_)
     , overrideModel_(rhs.overrideModel_) {
 
-    util::for_each_in_tuple([&](auto& e) { addProperty(e); }, props());
+    util::for_each_in_tuple([this](auto& e) { addProperty(e); }, props());
 
-    mode_.onChange([&]() { onModeChange(); });
-    reference_.onChange([&]() { load(); });
+    mode_.onChange([this]() { onModeChange(); });
+    reference_.onChange([this]() { load(); });
     overRideDefaults_.onChange([this]() { onOverrideChange(); });
-    autoCenter_.onChange([&]() { onAutoCenterChange(); });
-    resetOverride_.onChange([&]() { onResetOverride(); });
+    autoCenter_.onChange([this]() { onAutoCenterChange(); });
+    resetOverride_.onChange([this]() { onResetOverride(); });
     util::for_each_argument([this](auto& elem) { elem.onChange([this]() { this->save(); }); },
                             size_, a_, b_, c_, offset_);
 }
 
 BasisProperty* BasisProperty::clone() const { return new BasisProperty(*this); }
 
-void BasisProperty::updateForNewEntity(const mat4& modelMatrix, size3_t dims, bool deserialize) {
-    dimensions_ = static_cast<vec3>(dims);
+void BasisProperty::updateForNewEntity(const dmat4& modelMatrix, size3_t dims, bool deserialize) {
+    dimensions_ = static_cast<dvec3>(dims);
 
     // Set basis properties to the values from the new entity
     model_ = modelMatrix;
@@ -153,7 +150,7 @@ void BasisProperty::updateForNewEntity(const mat4& modelMatrix, size3_t dims, bo
     overrideModel_.value = modelMatrix;
     overrideModel_.setAsDefault();
     load();
-    util::for_each_argument([&](auto& elem) { elem.setCurrentStateAsDefault(); }, size_, a_, b_, c_,
+    util::for_each_argument([](auto& elem) { elem.setCurrentStateAsDefault(); }, size_, a_, b_, c_,
                             offset_);
 
     if (deserialize || !updateForNewEntry_) {
@@ -175,15 +172,15 @@ void BasisProperty::updateForNewEntity(const SpatialEntity& entity, bool deseria
 }
 
 void BasisProperty::load() {
-    mat3 basis{1};
-    vec3 offset{0};
+    dmat3 basis{1.0};
+    dvec3 offset{0.0};
 
     if (overRideDefaults_) {
-        basis = mat3{overrideModel_.value};
-        offset = vec3{overrideModel_.value[3]};
+        basis = dmat3{overrideModel_.value};
+        offset = dvec3{overrideModel_.value[3]};
     } else {
-        basis = mat3{model_};
-        offset = vec3{model_[3]};
+        basis = dmat3{model_};
+        offset = dvec3{model_[3]};
     }
 
     if (reference_ == BasisPropertyReference::Voxel) {
@@ -196,14 +193,14 @@ void BasisProperty::load() {
     b_.set(basis[1]);
     c_.set(basis[2]);
     offset_.set(offset);
-    size_.set(vec3{glm::length(basis[0]), glm::length(basis[1]), glm::length(basis[2])});
+    size_.set(dvec3{glm::length(basis[0]), glm::length(basis[1]), glm::length(basis[2])});
 }
 
 void BasisProperty::save() {
     if (!overRideDefaults_ || updating_) return;
 
-    mat3 basis{1};
-    vec3 offset{0};
+    dmat3 basis{1};
+    dvec3 offset{0};
     if (mode_ == BasisPropertyMode::Orthogonal) {
         basis = glm::diagonal3x3(size_.get());
     } else {
@@ -211,7 +208,7 @@ void BasisProperty::save() {
     }
 
     if (autoCenter_) {
-        offset = -0.5f * (basis[0] + basis[1] + basis[2]);
+        offset = -0.5 * (basis[0] + basis[1] + basis[2]);
         util::KeepTrueWhileInScope block(&updating_);
         offset_ = offset;
     } else {
@@ -223,8 +220,8 @@ void BasisProperty::save() {
         offset *= dimensions_;
     }
 
-    mat4 model(basis);
-    model[3] = vec4(offset, 1.0f);
+    dmat4 model(basis);
+    model[3] = dvec4(offset, 1.0);
     if (overrideModel_ != model) {
         overrideModel_ = model;
         invalidate(InvalidationLevel::InvalidOutput);
@@ -232,25 +229,25 @@ void BasisProperty::save() {
 }
 
 void BasisProperty::onOverrideChange() {
-    util::for_each_argument([&](auto& elem) { elem.setReadOnly(!overRideDefaults_.get()); }, size_,
-                            a_, b_, c_, offset_);
+    util::for_each_argument([this](auto& elem) { elem.setReadOnly(!overRideDefaults_.get()); },
+                            size_, a_, b_, c_, offset_);
     offset_.setReadOnly(autoCenter_ || !overRideDefaults_);
     load();
 }
 
 void BasisProperty::onAutoCenterChange() {
     if (autoCenter_) {
-        const auto basis = mat3{getBasisAndOffset()};
-        offset_ = -0.5f * (basis[0] + basis[1] + basis[2]);
+        const dmat3 basis{getBasisAndOffset()};
+        offset_ = -0.5 * (basis[0] + basis[1] + basis[2]);
     }
     offset_.setReadOnly(autoCenter_ || !overRideDefaults_);
 }
 
 void BasisProperty::onModeChange() {
     if (mode_ == BasisPropertyMode::Orthogonal) {
-        const auto basis = mat3{getBasisAndOffset()};
-        if (glm::dot(basis[0], basis[1]) != 0.0f || glm::dot(basis[0], basis[2]) != 0.0f ||
-            glm::dot(basis[0], basis[1]) != 0.0f) {
+        const auto basis = dmat3{getBasisAndOffset()};
+        if (glm::dot(basis[0], basis[1]) != 0.0 || glm::dot(basis[0], basis[2]) != 0.0 ||
+            glm::dot(basis[1], basis[2]) != 0.0) {
 
             mode_.set(BasisPropertyMode::General);
             return;
@@ -275,7 +272,7 @@ void BasisProperty::onResetOverride() {
     }
 }
 
-mat4 BasisProperty::getBasisAndOffset() const {
+dmat4 BasisProperty::getBasisAndOffset() const {
     if (overRideDefaults_) {
         return overrideModel_.value;
     } else {
