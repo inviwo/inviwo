@@ -95,26 +95,14 @@ LineRasterizer::LineRasterizer()
     , forceOpaque_("forceOpaque", "Shade Opaque",
                    "use simple depth checks instead of fragment lists"_help, false,
                    InvalidationLevel::InvalidResources)
-    , overwriteColor_("overwriteColor", "Overwrite Color", false,
-                      InvalidationLevel::InvalidResources)
-    , constantColor_{"constantColor",
-                     "Constant Color",
-                     vec4(1, 0.565f, 0.004f, 1),
-                     vec4(0.0f),
-                     vec4(1.0f),
-                     vec4(0.01f),
-                     InvalidationLevel::InvalidOutput,
-                     PropertySemantics::Color}
-    , useUniformAlpha_("useUniformAlpha", "Uniform Alpha", false,
-                       InvalidationLevel::InvalidResources)
-    , uniformAlpha_("alphaValue", "Alpha", 0.7f, 0, 1, 0.1f, InvalidationLevel::InvalidOutput)
     , lineShaders_{
-          {{ShaderType::Vertex, std::string{"linerenderer.vert"}},
-           {ShaderType::Geometry, std::string{"linerenderer.geom"}},
+          {{ShaderType::Vertex, std::string{"oit-linerenderer.vert"}},
+           {ShaderType::Geometry, std::string{"oit-linerenderer.geom"}},
            {ShaderType::Fragment, std::string{"oit-linerenderer.frag"}}},
           {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
            {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
            {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+           {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
            {[](const Mesh&, Mesh::MeshInfo mi) -> int {
                 return mi.ct == ConnectivityType::Adjacency ||
                                mi.ct == ConnectivityType::StripAdjacency
@@ -132,19 +120,11 @@ LineRasterizer::LineRasterizer()
 
     addPort(inport_);
 
-    addProperties(forceOpaque_, lineSettings_, overwriteColor_, constantColor_, useUniformAlpha_,
-                  uniformAlpha_);
+    addProperties(forceOpaque_, lineSettings_);
 
-    constantColor_.setVisible(overwriteColor_.get());
-    overwriteColor_.onChange([this]() {
-        constantColor_.setVisible(overwriteColor_.get());
-        uniformAlpha_.setVisible(false);
-    });
-    uniformAlpha_.setVisible(useUniformAlpha_.get());
-    useUniformAlpha_.onChange([this]() {
-        uniformAlpha_.setVisible(useUniformAlpha_.get());
-        constantColor_.setVisible(false);
-    });
+    lineSettings_.overrideLineWidth.setVisible(false);
+    lineSettings_.useMetaColor.setVisible(false);
+
     inport_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     invalidate(InvalidationLevel::InvalidResources);
@@ -158,15 +138,15 @@ void LineRasterizer::initializeResources() {
 
 void LineRasterizer::configureShader(Shader& shader) {
     Rasterizer::configureShader(shader);
-    auto fso = shader.getFragmentShaderObject();
+    auto* fso = shader.getFragmentShaderObject();
 
     fso->setShaderDefine("USE_FRAGMENT_LIST",
                          !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists());
 
     fso->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.pseudoLighting.get());
     fso->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.roundDepthProfile.get());
-    fso->setShaderDefine("UNIFORM_ALPHA", useUniformAlpha_.get());
-    fso->setShaderDefine("OVERWRITE_COLOR", overwriteColor_.get());
+    fso->setShaderDefine("OVERRIDE_ALPHA", lineSettings_.overrideAlpha.isChecked());
+    fso->setShaderDefine("OVERRIDE_COLOR", lineSettings_.overrideColor.isChecked());
 
     utilgl::addShaderDefines(shader, lineSettings_.stippling.mode.getSelectedValue());
 
@@ -185,16 +165,16 @@ void LineRasterizer::setUniforms(Shader& shader) {
     shader.setUniform("stippling.spacing", lineSettings_.stippling.spacing);
     shader.setUniform("stippling.offset", lineSettings_.stippling.offset);
     shader.setUniform("stippling.worldScale", lineSettings_.stippling.worldScale);
-    // Alpha
-    if (useUniformAlpha_.get()) shader.setUniform("uniformAlpha", uniformAlpha_.get());
-    if (overwriteColor_.get()) shader.setUniform("overwriteColor", constantColor_.get());
+
+    shader.setUniform("overrideAlpha", lineSettings_.alpha);
+    shader.setUniform("overrideColor", lineSettings_.color);
 }
 
 void LineRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
 
-    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::DepthMaskState depthMask(true);
-    utilgl::DepthFuncState depthFunc(GL_LEQUAL);
+    const utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::DepthFuncState depthFunc(GL_LEQUAL);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, usesFragmentLists() == UseFragmentList::No);
 
     auto setup = [&](Shader& shader, const auto& transform) {
         setUniforms(shader);
@@ -214,13 +194,13 @@ void LineRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixT
                 if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines) continue;
 
                 auto& shader = lineShaders_.getShader(*mesh, mesh->getIndexMeshInfo(i));
-                utilgl::Activate activate{&shader};
+                const utilgl::Activate activate{&shader};
                 setup(shader, transform);
                 drawer.draw(i);
             }
         } else if (mesh->getDefaultMeshInfo().dt == DrawType::Lines) {
             auto& shader = lineShaders_.getShader(*mesh);
-            utilgl::Activate activate{&shader};
+            const utilgl::Activate activate{&shader};
             setup(shader, transform);
             drawer.draw();
         }

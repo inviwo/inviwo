@@ -99,9 +99,9 @@ RasterizationRenderer::RasterizationRenderer()
     , trackball_{&camera_}
     , illustrationSettings_{}
     , flr_{[]() -> std::optional<FragmentListRenderer> {
-        if (FragmentListRenderer::supportsFragmentLists())
+        if (FragmentListRenderer::supportsFragmentLists()) {
             return std::optional<FragmentListRenderer>{std::in_place};
-        else {
+        } else {
             return std::nullopt;
         }
     }()} {

@@ -39,24 +39,19 @@ layout(early_fragment_tests) in;
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 #endif
 
-#if defined(ENABLE_ROUND_DEPTH_PROFILE)
-// enable conservative depth writes (supported since GLSL 4.20)
-#if defined(GLSL_VERSION_450) || defined(GLSL_VERSION_440) || defined(GLSL_VERSION_430) || \
-    defined(GLSL_VERSION_420)
-layout(depth_less) out float gl_FragDepth;
-#endif
+#if !defined M_PI
+#define M_PI 3.14159265358979323846
 #endif
 
-#if defined(UNIFORM_ALPHA)
-uniform float uniformAlpha;
+#if defined(OVERRIDE_ALPHA)
+uniform float overrideAlpha;
 #endif
-#if defined(OVERWRITE_COLOR)
-uniform vec4 overwriteColor;
+#if defined(OVERRIDE_COLOR)
+uniform vec4 overrideColor;
 #endif
 
 uniform vec2 screenDim = vec2(512, 512);
 uniform float antialiasing = 0.5;  // width of antialised edged [pixel]
-uniform float lineWidth = 2.0;     // line width [pixel]
 
 // initialize camera matrices with the identity matrix to enable default rendering
 // without any transformation, i.e. all lines in clip space
@@ -72,21 +67,22 @@ in LineGeom {
     flat vec4 pickColor;
     float segmentLength; // total length of the current line segment in screen space
     float distanceWorld;  // distance in world coords to segment start
+    float lineWidthHalf;  // interpolated half line width for antialiasing
 } fragment;
 
 void main() {
-#if defined(OVERWRITE_COLOR)
-    vec4 color = overwriteColor;
-
-#else //UNIFORM_ALPHA
+#if defined(OVERRIDE_COLOR)
+    vec4 color = overrideColor;
+#else
     vec4 color = fragment.color;
-#if defined(UNIFORM_ALPHA)
-    color.a = uniformAlpha;
-#endif // UNIFORM_ALPHA
-#endif // not OVERWRITE_COLOR
+#endif // not OVERRIDE_COLOR
+
+#if defined(OVERRIDE_ALPHA)
+    color.a = overrideAlpha;
+#endif // OVERRIDE_ALPHA
 
     if (color.a < 0.01) discard;
-    float linewidthHalf = lineWidth * 0.5;
+    float lineWidthHalf = fragment.lineWidthHalf;
 
     // make joins round by using the texture coords
     float distance = abs(fragment.texCoord.y);
@@ -96,11 +92,12 @@ void main() {
         distance = length(vec2(fragment.texCoord.x - fragment.segmentLength, fragment.texCoord.y));
     }
 
-    float d = distance - linewidthHalf + antialiasing;
+    float d = distance - lineWidthHalf + antialiasing;
 
     // apply pseudo lighting
 #if defined(ENABLE_PSEUDO_LIGHTING)
-    color.rgb *= cos(distance / (linewidthHalf + antialiasing) * 1.2);
+    float scaling = 0.8;
+    color.rgb *= cos(distance / (lineWidthHalf + antialiasing * 1.2) * M_PI * 0.5 * scaling);
 #endif
 
     float alpha = 1.0;
@@ -126,37 +123,38 @@ void main() {
 
     // antialiasing around the edges
     if (d > 0) {
-        // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics
-        // Techniques 2013]
+        // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
         d /= antialiasing;
-        alpha = exp(-d * d);
+        alpha = clamp(exp(-d * d), 0, 1);
     }
+
+    color.a *= alpha;
 
 #if defined(ENABLE_ROUND_DEPTH_PROFILE)
     // correct depth for a round profile, i.e. tube like appearance
     float depth = convertDepthScreenToView(camera, gl_FragCoord.z);
-    float maxDist = (linewidthHalf + antialiasing);
-    depth = depth - cos(distance / maxDist) * maxDist / screenDim.x * 0.5;
-    depth = convertDepthViewToScreen(camera, depth);
+
+    float maxDist = (lineWidthHalf + antialiasing * 1.2);
+    // assume circular profile of line
+    depth = convertDepthViewToScreen(camera, 
+        depth - cos(distance / maxDist * M_PI * 0.5) * maxDist / min(screenDim.x, screenDim.y));
 #else
     float depth = gl_FragCoord.z;
-#endif  // ENABLE_ROUND_DEPTH_PROFILE
+#endif // ENABLE_ROUND_DEPTH_PROFILE
 
 #if defined(USE_FRAGMENT_LIST)
     // fragment list rendering
     if (color.a > 0.0) {
         ivec2 coords = ivec2(gl_FragCoord.xy);
-
-        abufferMeshRender(coords, depth, vec4(color.xyz, color.a * alpha));
+        abufferMeshRender(coords, depth, color);
     }
     discard;
 
 #else  // USE_FRAGMENT_LIST
-
 #if defined(ENABLE_ROUND_DEPTH_PROFILE)
     gl_FragDepth = depth;
 #endif  // ENABLE_ROUND_DEPTH_PROFILE
-    FragData0 = vec4(color.xyz, color.a * alpha);
+    FragData0 = color;
     PickingData = fragment.pickColor;
 #endif // not USE_FRAGMENT_LIST
 }

@@ -31,13 +31,13 @@
 
 #if defined(ENABLE_ROUND_DEPTH_PROFILE)
 // enable conservative depth writes (supported since GLSL 4.20)
-#   if defined(GLSL_VERSION_450) || defined(GLSL_VERSION_440) || defined(GLSL_VERSION_430) || defined(GLSL_VERSION_420)
+#   if __VERSION__ >= 420
         layout (depth_less) out float gl_FragDepth;
 #   endif
+#endif
 
 #if !defined M_PI
 #define M_PI 3.14159265358979323846
-#endif
 #endif
 
 uniform vec2 screenDim = vec2(512, 512);
@@ -45,9 +45,8 @@ uniform float antialiasing = 0.5; // width of antialised edged [pixel]
 
 // initialize camera matrices with the identity matrix to enable default rendering
 // without any transformation, i.e. all lines in clip space
-uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
-                                    mat4(1), mat4(1), vec3(0), 0, 1);
-
+uniform CameraParameters camera = 
+    CameraParameters(mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), vec3(0), 0, 1);
 
 // line stippling
 uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
@@ -64,22 +63,22 @@ in LineGeom {
 void main() {
     vec4 color = fragment.color;
 
-    float linewidthHalf = fragment.lineWidthHalf;
+    float lineWidthHalf = fragment.lineWidthHalf;
 
     // make joins round by using the texture coords
     float distance = abs(fragment.texCoord.y);
     if (fragment.texCoord.x < 0.0) { 
         distance = length(fragment.texCoord); 
-    }
-    else if(fragment.texCoord.x > fragment.segmentLength) { 
+    } else if (fragment.texCoord.x > fragment.segmentLength) {
         distance = length(vec2(fragment.texCoord.x - fragment.segmentLength, fragment.texCoord.y)); 
     }
 
-    float d = distance - linewidthHalf + antialiasing;
+    float d = distance - lineWidthHalf + antialiasing;
 
     // apply pseudo lighting
 #if defined(ENABLE_PSEUDO_LIGHTING)
-    color.rgb *= cos(distance / (linewidthHalf + antialiasing) * 1.2);
+    float scaling = 0.8;
+    color.rgb *= cos(distance / (lineWidthHalf + antialiasing * 1.2) * M_PI * 0.5 * scaling);
 #endif
 
     float alpha = 1.0;
@@ -104,24 +103,26 @@ void main() {
 #endif // ENABLE_STIPPLING
 
     // antialiasing around the edges
-    if( d > 0) {
+    if (d > 0) {
         // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
         d /= antialiasing;
-        alpha = exp(-d*d);
+        alpha = exp(-d * d);
     }
     // prevent fragments with low alpha from being rendered
     if (alpha < 0.02) discard;
 
     color.rgb *= color.a;
-    FragData0 = color * alpha;
+    color *= alpha;
+
+    FragData0 = color;
 
 #if defined(ENABLE_ROUND_DEPTH_PROFILE)
     // correct depth for a round profile, i.e. tube like appearance
     float depth = convertDepthScreenToView(camera, gl_FragCoord.z);
-    float maxDist = (linewidthHalf + antialiasing);
+    float maxDist = (lineWidthHalf + antialiasing * 1.2);
     // assume circular profile of line
-    gl_FragDepth = convertDepthViewToScreen(camera, 
-        depth - cos(distance / maxDist * M_PI) * maxDist / screenDim.x * 0.5);
+    gl_FragDepth = convertDepthViewToScreen(camera,
+        depth - cos(distance / maxDist * M_PI * 0.5) * maxDist / min(screenDim.x, screenDim.y));
 #endif // ENABLE_ROUND_DEPTH_PROFILE
 
     PickingData = fragment.pickColor;
