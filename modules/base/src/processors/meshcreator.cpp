@@ -120,7 +120,9 @@ MeshCreator::MeshCreator()
                      util::ordinalSymmetricVector(0.0f, 180.0f)
                          .set("Angle of the binormal at the end position of the line"_help)}
     , meshScale_{"scale", "Size scaling",
-                 util::ordinalScale(1.0f).set("Scale parameter for various mesh types"_help)}
+                 util::ordinalScale(1.0f)
+                     .set("Scale parameter for various mesh types"_help)
+                     .setInc(0.001)}
     , meshRes_{"res", "Mesh resolution",
                util::ordinalCount(ivec2{16}).setMin(ivec2{1}).set(
                    "Mesh resolution parameter for some meshes"_help)}
@@ -175,10 +177,8 @@ MeshCreator::MeshCreator()
             currNDC.z = refDepth;
             prevNDC.z = refDepth;
 
-            auto corrWorld =
-                camera_.getWorldPosFromNormalizedDeviceCoords(currNDC);
-            auto prevWorld =
-                camera_.getWorldPosFromNormalizedDeviceCoords(prevNDC);
+            auto corrWorld = camera_.getWorldPosFromNormalizedDeviceCoords(currNDC);
+            auto prevWorld = camera_.getWorldPosFromNormalizedDeviceCoords(prevNDC);
             return (corrWorld - prevWorld);
         };
 
