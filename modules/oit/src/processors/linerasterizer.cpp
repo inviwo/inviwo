@@ -192,9 +192,9 @@ void LineRasterizer::setUniforms(Shader& shader) {
 
 void LineRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
 
-    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::DepthMaskState depthMask(true);
-    utilgl::DepthFuncState depthFunc(GL_LEQUAL);
+    const utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::DepthFuncState depthFunc(GL_LEQUAL);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, usesFragmentLists() == UseFragmentList::No);
 
     auto setup = [&](Shader& shader, const auto& transform) {
         setUniforms(shader);
@@ -214,13 +214,13 @@ void LineRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixT
                 if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines) continue;
 
                 auto& shader = lineShaders_.getShader(*mesh, mesh->getIndexMeshInfo(i));
-                utilgl::Activate activate{&shader};
+                const utilgl::Activate activate{&shader};
                 setup(shader, transform);
                 drawer.draw(i);
             }
         } else if (mesh->getDefaultMeshInfo().dt == DrawType::Lines) {
             auto& shader = lineShaders_.getShader(*mesh);
-            utilgl::Activate activate{&shader};
+            const utilgl::Activate activate{&shader};
             setup(shader, transform);
             drawer.draw();
         }
