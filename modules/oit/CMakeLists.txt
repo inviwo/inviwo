@@ -54,11 +54,18 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add shaders
 set(SHADER_FILES
+    glsl/fancymeshrenderer.frag
+    glsl/fancymeshrenderer.geom
+    glsl/fancymeshrenderer.vert
     glsl/illustration/display.frag
     glsl/illustration/illustrationbuffer.glsl
     glsl/illustration/neighbors.frag
     glsl/illustration/smooth.frag
     glsl/illustration/sortandfill.frag
+    glsl/oit-linerenderer.frag
+    glsl/oit-linerenderer.geom
+    glsl/oit-linerenderer.vert
+    glsl/oit-sphereglyph.frag
     glsl/oit/abufferlinkedlist.glsl
     glsl/oit/clear.frag
     glsl/oit/commons.glsl
@@ -66,13 +73,8 @@ set(SHADER_FILES
     glsl/oit/simplequad.vert
     glsl/oit/sort.glsl
     glsl/oit/volumeresolve.frag
-    glsl/fancymeshrenderer.frag
-    glsl/fancymeshrenderer.geom
-    glsl/fancymeshrenderer.vert
-    glsl/oit-linerenderer.frag
-    glsl/oit-sphereglyph.frag
-    glsl/volumerasterizer.vert
     glsl/volumerasterizer.frag
+    glsl/volumerasterizer.vert
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

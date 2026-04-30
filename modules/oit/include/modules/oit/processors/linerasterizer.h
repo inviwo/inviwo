@@ -32,23 +32,16 @@
 #include <modules/oit/oitmoduledefine.h>
 
 #include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
-#include <modules/base/properties/transformlistproperty.h>
 #include <modules/basegl/properties/linesettingsproperty.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
 #include <modules/oit/datastructures/rasterization.h>
 #include <modules/oit/ports/rasterizationport.h>
 #include <modules/oit/processors/rasterizer.h>
-
-#include <functional>
-#include <memory>
-#include <vector>
 
 namespace inviwo {
 class Mesh;
@@ -84,11 +77,6 @@ private:
     MeshFlatMultiInport inport_;
     LineSettingsProperty lineSettings_;
     BoolProperty forceOpaque_;
-
-    BoolProperty overwriteColor_;
-    FloatVec4Property constantColor_;
-    BoolProperty useUniformAlpha_;
-    FloatProperty uniformAlpha_;
 
     MeshShaderCache lineShaders_;
 };
