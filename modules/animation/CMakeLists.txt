@@ -47,6 +47,7 @@ set(HEADER_FILES
     include/modules/animation/factories/recorderfactory.h
     include/modules/animation/factories/trackfactory.h
     include/modules/animation/factories/trackfactoryobject.h
+    include/modules/animation/interpolation/cameraanimation.h
     include/modules/animation/interpolation/cameralinearinterpolation.h
     include/modules/animation/interpolation/camerasphericalinterpolation.h
     include/modules/animation/interpolation/constantinterpolation.h
@@ -102,6 +103,7 @@ set(SOURCE_FILES
     src/factories/recorderfactory.cpp
     src/factories/trackfactory.cpp
     src/factories/trackfactoryobject.cpp
+    src/interpolation/cameraanimation.cpp
     src/interpolation/cameralinearinterpolation.cpp
     src/interpolation/camerasphericalinterpolation.cpp
     src/interpolation/interpolation.cpp

@@ -78,6 +78,8 @@
 #include <modules/animation/workspaceanimations.h>
 #include <modules/animation/factories/imagerecorderfactory.h>
 
+#include <modules/animation/interpolation/cameraanimation.h>
+
 #include <cstddef>
 #include <functional>
 #include <map>
@@ -162,6 +164,7 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     propertyHelper<CameraProperty, CameraKeyframe>();
     interpolationHelper<CameraProperty, CameraSphericalInterpolation>();
     interpolationHelper<CameraProperty, CameraLinearInterpolation>();
+    interpolationHelper<CameraProperty, CameraAnimation>();
 
     propertyHelper<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>();
 
