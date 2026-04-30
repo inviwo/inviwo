@@ -376,14 +376,14 @@ void AnimationController::tick() {
 void AnimationController::render() {
     auto start = std::chrono::high_resolution_clock::now();
 
-    auto network = app_->getProcessorNetwork();
+    auto* network = app_->getProcessorNetwork();
     std::optional<NetworkLock> lock{network};
 
     setState(AnimationState::Rendering);
     renderAction.setReadOnly(true);
     renderActionStop.setReadOnly(false);
 
-    util::OnScopeExit reset{[&]() {
+    const util::OnScopeExit reset{[&]() {
         setState(AnimationState::Paused);
         renderAction.setReadOnly(false);
         renderActionStop.setReadOnly(true);
@@ -403,9 +403,9 @@ void AnimationController::render() {
         const auto& recorderFactories = manager_->getRecorderFactories();
 
         network->forEachProcessor([&](Processor* p) {
-            if (p->isSink()) {
-                if (auto imageExporter = dynamic_cast<ImageExporter*>(p)) {
-                    for (auto& key : recorderFactories.getKeyView()) {
+            if (p->isSink() && p->isReady()) {
+                if (auto* imageExporter = dynamic_cast<ImageExporter*>(p)) {
+                    for (const auto& key : recorderFactories.getKeyView()) {
                         auto* recorderFactory = recorderFactories.getFactoryObject(key);
                         if (recorderFactory->options()->isChecked()) {
                             std::shared_ptr<Recorder> recorder = recorderFactory->create(
@@ -416,13 +416,16 @@ void AnimationController::render() {
 
                             recordingFunctors.emplace_back(
                                 [recorder = std::move(recorder), imageExporter]() {
-                                    auto layer = imageExporter->getImage()->getColorLayer();
-                                    recorder->record(*layer);
+                                    if (auto image = imageExporter->getImage()) {
+                                        if (const auto* layer = image->getColorLayer()) {
+                                            recorder->record(*layer);
+                                        }
+                                    }
                                 });
                         }
                     }
                 }
-                if (auto exporter = dynamic_cast<Exporter*>(p)) {
+                if (auto* exporter = dynamic_cast<Exporter*>(p)) {
                     if (exportOptions_.isChecked()) {
                         auto base = exportBaseName_.get();
                         replaceInString(base, "UPN", p->getIdentifier());

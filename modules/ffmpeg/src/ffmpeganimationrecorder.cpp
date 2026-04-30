@@ -64,7 +64,12 @@ private:
 void FFmpegRecorder::record(const Layer& layer) {
     if (recorder) {
         try {
-            recorder->queueFrame(*layer.getRepresentation<LayerRAM>());
+            if (const auto* ram = layer.getRepresentation<LayerRAM>()) {
+                recorder->queueFrame(*ram);
+            } else {
+                log::error("Unable to get LayerRAM represenation");
+                recorder.reset();
+            }
         } catch (const Exception& e) {
             log::exception(e);
             recorder.reset();
@@ -170,7 +175,7 @@ std::unique_ptr<animation::Recorder> FFmpegRecorderFactory::create(
     }
 
     return std::make_unique<FFmpegRecorder>(
-        file_.get(), format,
+        file, format,
         ffmpeg::OutputStream::Options{.codecId = codec_.getSelectedValue(),
                                       .width = static_cast<int>(opts.dimensions.x),
                                       .height = static_cast<int>(opts.dimensions.y),

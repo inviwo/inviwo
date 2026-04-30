@@ -116,6 +116,16 @@ DataFrameTable::DataFrameTable()
             w->setFilteredRowsVisible(showFilteredRowCols_);
         }
     });
+
+    isSink_.setUpdate([this]() { return processorWidget_ && processorWidget_->isVisible(); });
+    isReady_.setUpdate([this, defaultCheck = getDefaultIsReadyUpdater(this)]() -> ProcessorStatus {
+        if (!processorWidget_ || !processorWidget_->isVisible()) {
+            static constexpr std::string_view reason{"Table is not visible"};
+            return {ProcessorStatus::NotReady, reason};
+        } else {
+            return defaultCheck();
+        }
+    });
 }
 
 DataFrameTable::~DataFrameTable() {
