@@ -52,11 +52,11 @@
 #include <glm/vec3.hpp>
 
 namespace inviwo {
-class Deserializer;
 
 namespace animation {
 
-CameraLinearInterpolation::CameraLinearInterpolation() {
+CameraLinearInterpolation::CameraLinearInterpolation(InviwoApplication* app)
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app, classIdentifier()) {
     for (size_t i = 0; i < Easing::typeCount; ++i) {
         auto type = static_cast<EasingType>(i);
         std::string id(format_as(type));
@@ -71,6 +71,15 @@ CameraLinearInterpolation::CameraLinearInterpolation() {
     }
     easingMode_.setSelectedValue(EasingMode::inOut);
     easingMode_.setCurrentStateAsDefault();
+
+    addProperties(easingType_, easingMode_);
+}
+
+CameraLinearInterpolation::CameraLinearInterpolation(const CameraLinearInterpolation& rhs)
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(rhs)
+    , easingType_(rhs.easingType_)
+    , easingMode_(rhs.easingMode_) {
+    addProperties(easingType_, easingMode_);
 }
 
 CameraLinearInterpolation* CameraLinearInterpolation::clone() const {
@@ -87,15 +96,6 @@ bool CameraLinearInterpolation::equal(const Interpolation& other) const {
 
 std::string_view CameraLinearInterpolation::classIdentifier() {
     return "org.inviwo.animation.cameralinearinterpolation";
-}
-
-std::vector<Property*> CameraLinearInterpolation::getProperties() {
-    return {&easingType_, &easingMode_};
-}
-
-void CameraLinearInterpolation::setLegacyEasing(Easing easing) {
-    easingType_.setSelectedValue(easing.type);
-    easingMode_.setSelectedValue(easing.mode);
 }
 
 void CameraLinearInterpolation::operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys,
@@ -129,13 +129,11 @@ void CameraLinearInterpolation::operator()(const std::vector<std::unique_ptr<Cam
 
 void CameraLinearInterpolation::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-    s.serialize(easingType_.getIdentifier(), easingType_);
-    s.serialize(easingMode_.getIdentifier(), easingMode_);
+    PropertyOwner::serialize(s);
 }
 
 void CameraLinearInterpolation::deserialize(Deserializer& d) {
-    d.deserialize(easingType_.getIdentifier(), easingType_);
-    d.deserialize(easingMode_.getIdentifier(), easingMode_);
+    PropertyOwner::deserialize(d);
 }
 
 }  // namespace animation

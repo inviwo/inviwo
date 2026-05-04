@@ -41,6 +41,8 @@
 
 namespace inviwo {
 
+class InviwoApplication;
+
 namespace animation {
 
 /**
@@ -51,11 +53,11 @@ namespace animation {
 template <typename Key, typename Result = typename Key::value_type>
 class LinearInterpolation : public InterpolationTyped<Key, Result> {
 public:
-    LinearInterpolation();
+    explicit LinearInterpolation(InviwoApplication* app = nullptr);
     virtual ~LinearInterpolation() = default;
 
-    LinearInterpolation(const LinearInterpolation&) = default;
-    LinearInterpolation& operator=(const LinearInterpolation&) = default;
+    LinearInterpolation(const LinearInterpolation&);
+    LinearInterpolation& operator=(const LinearInterpolation&) = delete;
 
     virtual LinearInterpolation<Key, Result>* clone() const override;
 
@@ -65,9 +67,6 @@ public:
     virtual std::string_view getClassIdentifier() const override;
 
     virtual bool equal(const Interpolation& other) const override;
-
-    virtual std::vector<Property*> getProperties() override;
-    virtual void setLegacyEasing(Easing easing) override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -84,7 +83,8 @@ private:
 };
 
 template <typename Key, typename Result>
-LinearInterpolation<Key, Result>::LinearInterpolation() {
+LinearInterpolation<Key, Result>::LinearInterpolation(InviwoApplication* app)
+    : InterpolationTyped<Key, Result>(app, std::string(classIdentifier())) {
     for (size_t i = 0; i < Easing::typeCount; ++i) {
         auto type = static_cast<EasingType>(i);
         std::string id(format_as(type));
@@ -99,6 +99,15 @@ LinearInterpolation<Key, Result>::LinearInterpolation() {
     }
     easingMode_.setSelectedValue(EasingMode::inOut);
     easingMode_.setCurrentStateAsDefault();
+
+    addProperties(easingType_, easingMode_);
+}
+
+template <typename Key, typename Result>
+LinearInterpolation<Key, Result>::LinearInterpolation(const LinearInterpolation& rhs)
+    : InterpolationTyped<Key, Result>(rhs), easingType_(rhs.easingType_), easingMode_(rhs.easingMode_) {
+    // Re-register member properties since PropertyOwner copy ctor does not copy non-owned ones
+    addProperties(easingType_, easingMode_);
 }
 
 template <typename Key, typename Result>
@@ -126,17 +135,6 @@ std::string_view LinearInterpolation<Key, Result>::classIdentifier() {
     static const auto cid = "org.inviwo.animation.linearinterpolation." +
                             Defaultvalues<typename Key::value_type>::getName();
     return cid;
-}
-
-template <typename Key, typename Result>
-std::vector<Property*> LinearInterpolation<Key, Result>::getProperties() {
-    return {&easingType_, &easingMode_};
-}
-
-template <typename Key, typename Result>
-void LinearInterpolation<Key, Result>::setLegacyEasing(Easing easing) {
-    easingType_.setSelectedValue(easing.type);
-    easingMode_.setSelectedValue(easing.mode);
 }
 
 template <typename Key, typename Result>
@@ -169,14 +167,12 @@ void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_
 template <typename Key, typename Result>
 void LinearInterpolation<Key, Result>::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-    s.serialize(easingType_.getIdentifier(), easingType_);
-    s.serialize(easingMode_.getIdentifier(), easingMode_);
+    PropertyOwner::serialize(s);
 }
 
 template <typename Key, typename Result>
 void LinearInterpolation<Key, Result>::deserialize(Deserializer& d) {
-    d.deserialize(easingType_.getIdentifier(), easingType_);
-    d.deserialize(easingMode_.getIdentifier(), easingMode_);
+    PropertyOwner::deserialize(d);
 }
 
 }  // namespace animation

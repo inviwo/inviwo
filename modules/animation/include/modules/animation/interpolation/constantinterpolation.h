@@ -50,7 +50,7 @@ namespace inviwo::animation {
 template <typename Key, typename Result = typename Key::value_type>
 class ConstantInterpolation : public InterpolationTyped<Key, Result> {
 public:
-    ConstantInterpolation() = default;
+    explicit ConstantInterpolation(InviwoApplication* app = nullptr);
     virtual ~ConstantInterpolation() = default;
 
     virtual ConstantInterpolation* clone() const override;
@@ -69,6 +69,10 @@ public:
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
                             Result& out) const override;
 };
+
+template <typename Key, typename Result>
+ConstantInterpolation<Key, Result>::ConstantInterpolation(InviwoApplication* app)
+    : InterpolationTyped<Key, Result>(app, std::string(classIdentifier())) {}
 
 template <typename Key, typename Result>
 ConstantInterpolation<Key, Result>* ConstantInterpolation<Key, Result>::clone() const {
@@ -138,19 +142,12 @@ void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::uniqu
 template <typename Key, typename Result>
 void ConstantInterpolation<Key, Result>::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    PropertyOwner::serialize(s);
 }
 
 template <typename Key, typename Result>
 void ConstantInterpolation<Key, Result>::deserialize(Deserializer& d) {
-    std::string className;
-    d.deserialize("type", className, SerializationTarget::Attribute);
-    if (className != getClassIdentifier()) {
-        std::string_view cid = getClassIdentifier();
-        throw SerializationException(SourceContext{},
-                                     "Deserialized interpolation: {} from a serialized "
-                                     "interpolation with a different class identifier: {}",
-                                     cid, className);
-    }
+    PropertyOwner::deserialize(d);
 }
 
 }  // namespace inviwo::animation

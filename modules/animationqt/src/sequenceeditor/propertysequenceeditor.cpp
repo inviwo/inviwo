@@ -210,7 +210,7 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
 
     auto& valseq = dynamic_cast<ValueKeyframeSequence&>(sequence);
     for (auto interpObj : valseq.getSupportedInterpolations(manager.getInterpolationFactory())) {
-        auto ip = interpObj->create();
+        auto ip = interpObj->create(nullptr);
         interpolation_->addItem(utilqt::toQString(ip->getName()),
                                 QVariant(utilqt::toQString(ip->getClassIdentifier())));
         if (valseq.getInterpolation().getClassIdentifier() == ip->getClassIdentifier()) {
@@ -262,7 +262,7 @@ void PropertySequenceEditor::rebuildInterpolationPropertyWidgets(ValueKeyframeSe
 
     // Build new widgets for the active interpolation's properties
     auto& factory = *util::getPropertyWidgetFactory();
-    auto props = const_cast<Interpolation&>(valseq.getInterpolation()).getProperties();
+    const auto& props = valseq.getInterpolation().getProperties();
     int row = 0;
     for (auto* prop : props) {
         auto created = factory.create(prop);
