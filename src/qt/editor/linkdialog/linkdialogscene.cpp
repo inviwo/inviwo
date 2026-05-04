@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
 
 #include <warn/push>
@@ -300,10 +301,11 @@ void LinkDialogGraphicsScene::offsetItems(double yIncrement, bool scrollLeft) {
 
 void LinkDialogGraphicsScene::addPropertyLink(Property* sProp, Property* eProp,
                                               bool bidirectional) {
-    network_->addLink(sProp, eProp);
-    network_->evaluateLinksFromProperty(sProp);
-
-    if (bidirectional) network_->addLink(eProp, sProp);
+    util::exceptionGuard([&] {
+        network_->addLink(sProp, eProp);
+        network_->evaluateLinksFromProperty(sProp);
+        if (bidirectional) network_->addLink(eProp, sProp);
+    });
 }
 
 void LinkDialogGraphicsScene::showHidden(bool val) {
