@@ -31,6 +31,7 @@
 #include <modules/animation/animationmoduledefine.h>
 
 #include <inviwo/core/algorithm/easing.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/interpolation/interpolation.h>
@@ -56,8 +57,12 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API CameraSphericalInterpolation
     : public InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type> {
 public:
-    CameraSphericalInterpolation() = default;
+    CameraSphericalInterpolation();
     virtual ~CameraSphericalInterpolation() = default;
+
+    CameraSphericalInterpolation(const CameraSphericalInterpolation&) = default;
+    CameraSphericalInterpolation& operator=(const CameraSphericalInterpolation&) = default;
+
     virtual CameraSphericalInterpolation* clone() const override;
 
     virtual std::string getName() const override;
@@ -67,8 +72,12 @@ public:
 
     virtual bool equal(const Interpolation& other) const override;
 
+    virtual std::vector<Property*> getProperties() override;
+    virtual void setLegacyEasing(Easing easing) override;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
+
     /*
      * Uses orbit between two key frames if lookFrom has changed and pan/tilt otherwise.
      * Orbit: Rotate the lookFrom around the lookAt position.
@@ -76,8 +85,12 @@ public:
      * Pan/tilt: Rotate lookAt between key frames.
      */
     virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
-                            Seconds to, Easing easing,
+                            Seconds to,
                             CameraKeyframe::value_type& out) const override;
+
+private:
+    OptionProperty<EasingType> easingType_{"easingType", "Easing Type"};
+    OptionProperty<EasingMode> easingMode_{"easingMode", "Easing Mode"};
 };
 
 }  // namespace animation

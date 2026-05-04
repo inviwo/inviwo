@@ -30,6 +30,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <inviwo/core/util/enumtraits.h>
 #include <inviwo/core/util/exception.h>
 #include <cstdint>
 #include <string_view>
@@ -58,6 +59,16 @@ enum class EasingType : std::uint8_t {
 };
 
 enum class EasingMode : std::uint8_t { in, out, inOut };
+
+template <>
+struct EnumTraits<EasingType> {
+    static constexpr std::string_view name() { return "EasingType"; }
+};
+
+template <>
+struct EnumTraits<EasingMode> {
+    static constexpr std::string_view name() { return "EasingMode"; }
+};
 
 struct IVW_CORE_API Easing {
     EasingType type = EasingType::linear;

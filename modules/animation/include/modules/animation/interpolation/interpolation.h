@@ -40,6 +40,7 @@
 
 namespace inviwo {
 class Deserializer;
+class Property;
 class Serializer;
 
 namespace animation {
@@ -58,6 +59,18 @@ public:
 
     virtual std::string_view getClassIdentifier() const = 0;
     virtual bool equal(const Interpolation& other) const = 0;
+
+    /**
+     * Returns the list of properties owned by this interpolation.
+     * These may be displayed in the GUI and are serialized with the interpolation.
+     */
+    virtual std::vector<Property*> getProperties() { return {}; }
+
+    /**
+     * Sets easing from a legacy (pre-refactor) Easing value.
+     * Concrete interpolation types that support easing should override this.
+     */
+    virtual void setLegacyEasing(Easing) {}
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
@@ -89,7 +102,7 @@ public:
 
     // Override this function to interpolate between key frames
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            Easing easing, Result& out) const = 0;
+                            Result& out) const = 0;
 };
 
 }  // namespace animation

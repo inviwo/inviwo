@@ -31,6 +31,7 @@
 
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/io/serialization/deserializer.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/interpolation/interpolation.h>
@@ -57,6 +58,23 @@ class Deserializer;
 
 namespace animation {
 
+CameraSphericalInterpolation::CameraSphericalInterpolation() {
+    for (size_t i = 0; i < Easing::typeCount; ++i) {
+        auto type = static_cast<EasingType>(i);
+        std::string id(format_as(type));
+        easingType_.addOption(id, id, type);
+    }
+    easingType_.setCurrentStateAsDefault();
+
+    for (size_t i = 0; i < Easing::modeCount; ++i) {
+        auto mode = static_cast<EasingMode>(i);
+        std::string id(format_as(mode));
+        easingMode_.addOption(id, id, mode);
+    }
+    easingMode_.setSelectedValue(EasingMode::inOut);
+    easingMode_.setCurrentStateAsDefault();
+}
+
 CameraSphericalInterpolation* CameraSphericalInterpolation::clone() const {
     return new CameraSphericalInterpolation(*this);
 }
@@ -75,9 +93,18 @@ std::string_view CameraSphericalInterpolation::classIdentifier() {
     return "org.inviwo.animation.camerasphericalinterpolation";
 }
 
+std::vector<Property*> CameraSphericalInterpolation::getProperties() {
+    return {&easingType_, &easingMode_};
+}
+
+void CameraSphericalInterpolation::setLegacyEasing(Easing easing) {
+    easingType_.setSelectedValue(easing.type);
+    easingMode_.setSelectedValue(easing.mode);
+}
+
 void CameraSphericalInterpolation::operator()(
     const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds /*from*/, Seconds to,
-    Easing easing, CameraKeyframe::value_type& out) const {
+    CameraKeyframe::value_type& out) const {
 
     auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
         return time < key->getTime();
@@ -89,6 +116,7 @@ void CameraSphericalInterpolation::operator()(
     const auto& v2 = *(*it);
     const auto& t2 = (*it)->getTime();
 
+    const Easing easing{easingType_.get(), easingMode_.get()};
     auto t = static_cast<float>(util::ease((to - t1) / (t2 - t1), easing));
 
     auto fromDir = glm::normalize(v1.getDirection());
@@ -120,9 +148,14 @@ void CameraSphericalInterpolation::operator()(
 
 void CameraSphericalInterpolation::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    s.serialize(easingType_.getIdentifier(), easingType_);
+    s.serialize(easingMode_.getIdentifier(), easingMode_);
 }
 
-void CameraSphericalInterpolation::deserialize(Deserializer&) {}
+void CameraSphericalInterpolation::deserialize(Deserializer& d) {
+    d.deserialize(easingType_.getIdentifier(), easingType_);
+    d.deserialize(easingMode_.getIdentifier(), easingMode_);
+}
 
 }  // namespace animation
 

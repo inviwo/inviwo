@@ -34,11 +34,14 @@
 #include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
 #include <string>
+#include <vector>
 
 class QComboBox;
-class QWidget;
+class QGridLayout;
 
 namespace inviwo {
+
+class PropertyWidgetQt;
 
 namespace animation {
 
@@ -59,11 +62,14 @@ protected:
     virtual QWidget* create(Keyframe* key) override;
 
     // ValueKeyframeSequenceObserver overloads
-    virtual void onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) override;
     virtual void onValueKeyframeSequenceInterpolationChanged(ValueKeyframeSequence* seq) override;
 
-    QComboBox* easingComboBox_{nullptr};
+private:
+    void rebuildInterpolationPropertyWidgets(ValueKeyframeSequence& valseq);
+
     QComboBox* interpolation_{nullptr};
+    QGridLayout* interpolationPropsLayout_{nullptr};
+    std::vector<PropertyWidgetQt*> interpolationPropertyWidgets_;
 };
 
 }  // namespace animation

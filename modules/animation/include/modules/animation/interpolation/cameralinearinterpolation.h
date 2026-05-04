@@ -31,6 +31,7 @@
 #include <modules/animation/animationmoduledefine.h>
 
 #include <inviwo/core/algorithm/easing.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/interpolation/interpolation.h>
@@ -56,8 +57,11 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API CameraLinearInterpolation
     : public InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type> {
 public:
-    CameraLinearInterpolation() = default;
+    CameraLinearInterpolation();
     virtual ~CameraLinearInterpolation() = default;
+
+    CameraLinearInterpolation(const CameraLinearInterpolation&) = default;
+    CameraLinearInterpolation& operator=(const CameraLinearInterpolation&) = default;
 
     virtual CameraLinearInterpolation* clone() const override;
 
@@ -68,6 +72,9 @@ public:
 
     virtual bool equal(const Interpolation& other) const override;
 
+    virtual std::vector<Property*> getProperties() override;
+    virtual void setLegacyEasing(Easing easing) override;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -75,8 +82,12 @@ public:
      * Returns linear interpolation of keyframe values at time t.
      */
     virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
-                            Seconds to, Easing easing,
+                            Seconds to,
                             CameraKeyframe::value_type& out) const override;
+
+private:
+    OptionProperty<EasingType> easingType_{"easingType", "Easing Type"};
+    OptionProperty<EasingMode> easingMode_{"easingMode", "Easing Mode"};
 };
 
 }  // namespace animation

@@ -32,6 +32,7 @@
 
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/algorithm/easing.h>
@@ -44,6 +45,7 @@
 #include <modules/animation/interpolation/linearinterpolation.h>
 
 #include <memory>
+#include <functional>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -99,14 +101,12 @@ class ValueKeyframeSequence;
 
 class IVW_MODULE_ANIMATION_API ValueKeyframeSequenceObserver : public Observer {
 public:
-    virtual void onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence*) {};
     virtual void onValueKeyframeSequenceInterpolationChanged(ValueKeyframeSequence*) {};
 };
 
 class IVW_MODULE_ANIMATION_API ValueKeyframeSequenceObserverble
     : public Observable<ValueKeyframeSequenceObserver> {
 protected:
-    void notifyValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq);
     void notifyValueKeyframeSequenceInterpolationChanged(ValueKeyframeSequence* seq);
 };
 
@@ -120,9 +120,6 @@ public:
 
     virtual std::vector<InterpolationFactoryObject*> getSupportedInterpolations(
         InterpolationFactory& factory) const = 0;
-
-    virtual Easing getEasingType() const = 0;
-    virtual void setEasingType(Easing easing) = 0;
 };
 
 /**
@@ -171,22 +168,21 @@ public:
     virtual std::vector<InterpolationFactoryObject*> getSupportedInterpolations(
         InterpolationFactory& factory) const override;
 
-    virtual Easing getEasingType() const override;
-    virtual void setEasingType(Easing easing) override;
-
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    Easing easing_{};
+    void registerInterpolationCallbacks();
+
     std::unique_ptr<InterpolationTyped<Key>> interpolation_{nullptr};
+    std::vector<std::shared_ptr<std::function<void()>>> interpolationPropertyCallbacks_;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <typename Key>
 bool operator==(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped<Key>& b) {
-    return a.getEasingType() == b.getEasingType() && a.getInterpolation() == b.getInterpolation() &&
+    return a.getInterpolation() == b.getInterpolation() &&
            std::equal(a.begin(), a.end(), b.begin(), b.end(),
                       [](const auto& a, const auto& b) { return a == b; });
 }
@@ -199,13 +195,17 @@ template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped()
     : BaseKeyframeSequence<Key>{}
     , ValueKeyframeSequence()
-    , interpolation_{std::move(detail::DefaultInterpolationCreator<Key>::create())} {}
+    , interpolation_{std::move(detail::DefaultInterpolationCreator<Key>::create())} {
+    registerInterpolationCallbacks();
+}
 
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes)
     : BaseKeyframeSequence<Key>{std::move(keyframes)}
     , ValueKeyframeSequence()
-    , interpolation_{std::move(detail::DefaultInterpolationCreator<Key>::create())} {}
+    , interpolation_{std::move(detail::DefaultInterpolationCreator<Key>::create())} {
+    registerInterpolationCallbacks();
+}
 
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(
@@ -214,14 +214,19 @@ KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(
     : BaseKeyframeSequence<Key>{std::move(keyframes)}
     , ValueKeyframeSequence()
     , interpolation_{interpolation ? std::move(interpolation)
-                                   : throw Exception("Interpolation must be specified")} {}
+                                   : throw Exception("Interpolation must be specified")} {
+    registerInterpolationCallbacks();
+}
+
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(const KeyframeSequenceTyped<Key>& rhs)
     : BaseKeyframeSequence<Key>(rhs)
     , ValueKeyframeSequence(rhs)
     , interpolation_(rhs.interpolation_
                          ? std::unique_ptr<InterpolationTyped<Key>>(rhs.interpolation_->clone())
-                         : nullptr) {}
+                         : nullptr) {
+    registerInterpolationCallbacks();
+}
 
 template <typename Key>
 KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(
@@ -235,8 +240,6 @@ KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(
         } else {
             setInterpolation(nullptr);
         }
-
-        setEasingType(that.easing_);
     }
     return *this;
 }
@@ -251,7 +254,7 @@ KeyframeSequenceTyped<Key>* KeyframeSequenceTyped<Key>::clone() const {
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::operator()(Seconds from, Seconds to, value_type& out) const {
-    (*interpolation_)(this->keyframes_, from, to, easing_, out);
+    (*interpolation_)(this->keyframes_, from, to, out);
 }
 
 template <typename Key>
@@ -265,7 +268,9 @@ void KeyframeSequenceTyped<Key>::setInterpolation(
     if (!interpolation) {
         throw Exception("Interpolation cannot be null");
     } else if (!interpolation_->equal(*interpolation)) {
+        interpolationPropertyCallbacks_.clear();
         interpolation_ = std::move(interpolation);
+        registerInterpolationCallbacks();
         notifyValueKeyframeSequenceInterpolationChanged(this);
     }
 }
@@ -286,22 +291,18 @@ std::vector<InterpolationFactoryObject*> KeyframeSequenceTyped<Key>::getSupporte
 }
 
 template <typename Key>
-Easing KeyframeSequenceTyped<Key>::getEasingType() const {
-    return easing_;
-}
-
-template <typename Key>
-void KeyframeSequenceTyped<Key>::setEasingType(Easing easing) {
-    if (easing_ != easing) {
-        easing_ = easing;
-        notifyValueKeyframeSequenceEasingChanged(this);
+void KeyframeSequenceTyped<Key>::registerInterpolationCallbacks() {
+    interpolationPropertyCallbacks_.clear();
+    if (!interpolation_) return;
+    for (auto* prop : interpolation_->getProperties()) {
+        interpolationPropertyCallbacks_.push_back(
+            prop->onChangeScoped([this]() { notifyValueKeyframeSequenceInterpolationChanged(this); }));
     }
 }
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::serialize(Serializer& s) const {
     BaseKeyframeSequence<Key>::serialize(s);
-    s.serialize("easing", easing_);
     s.serialize("interpolation", interpolation_);
 }
 
@@ -309,14 +310,18 @@ template <typename Key>
 void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
     BaseKeyframeSequence<Key>::deserialize(d);
     {
-        Easing easing = easing_;
-        d.deserialize("easing", easing);
-        setEasingType(easing);
-    }
-    {
         std::unique_ptr<InterpolationTyped<Key>> interpolation;
         d.deserializeAs<Interpolation>("interpolation", interpolation);
-        setInterpolation(std::move(interpolation));
+        if (interpolation) {
+            // Backward compat: if the old <easing> element exists at the sequence level,
+            // migrate it into the new interpolation property.
+            if (d.hasElement("easing")) {
+                Easing legacyEasing;
+                d.deserialize("easing", legacyEasing);
+                interpolation->setLegacyEasing(legacyEasing);
+            }
+            setInterpolation(std::move(interpolation));
+        }
     }
 }
 
