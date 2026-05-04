@@ -29,7 +29,6 @@
 
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
 
-#include <inviwo/core/algorithm/easing.h>
 #include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/property.h>
@@ -225,31 +224,13 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
                 valseq.setInterpolation(manager.getInterpolationFactory().create(id));
             });
 
-    easingComboBox_ = new QComboBox();
-    sublayout->addWidget(new QLabel("Easing"), 1, 0);
-    sublayout->addWidget(easingComboBox_, 1, 1);
+    // Interpolation property area: dynamically populated based on active interpolation
+    interpolationPropsLayout_ = new QGridLayout();
+    interpolationPropsLayout_->setContentsMargins(0, 0, 0, 0);
+    interpolationPropsLayout_->setSpacing(7);
+    layout->addLayout(interpolationPropsLayout_);
 
-    for (size_t t = 0; t < Easing::typeCount; ++t) {
-        for (size_t m = 0; m < Easing::modeCount; ++m) {
-            const auto e = Easing{static_cast<EasingType>(t), static_cast<EasingMode>(m)};
-            auto easingLabel = utilqt::toQString(format_as(e));
-            easingLabel.front() = easingLabel.front().toUpper();
-            easingComboBox_->addItem(easingLabel,
-                                     QVariant(QPoint{static_cast<int>(t), static_cast<int>(m)}));
-            if (valseq.getEasingType() == e) {
-                easingComboBox_->setCurrentIndex(easingComboBox_->count() - 1);
-            }
-        }
-    }
-
-    connect(easingComboBox_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, [&valseq, this](int) {
-                const auto tmp = easingComboBox_->currentData().value<QPoint>();
-                const auto e =
-                    Easing{static_cast<EasingType>(tmp.x()), static_cast<EasingMode>(tmp.y())};
-
-                valseq.setEasingType(e);
-            });
+    rebuildInterpolationPropertyWidgets(valseq);
 
     for (size_t i = 0; i < sequence_.size(); i++) {
         onKeyframeAdded(&sequence_[i], &sequence_);
@@ -262,22 +243,47 @@ QWidget* PropertySequenceEditor::create(Keyframe* key) {
     return new PropertyEditorWidget(*key, this);
 }
 
-void PropertySequenceEditor::onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) {
-    const QSignalBlocker block(easingComboBox_);
+void PropertySequenceEditor::rebuildInterpolationPropertyWidgets(ValueKeyframeSequence& valseq) {
+    // Remove old property widgets
+    for (auto* w : interpolationPropertyWidgets_) {
+        interpolationPropsLayout_->removeWidget(w);
+        delete w;
+    }
+    interpolationPropertyWidgets_.clear();
 
-    const auto e = seq->getEasingType();
-    const auto v = QVariant{QPoint{static_cast<int>(e.type), static_cast<int>(e.mode)}};
+    // Remove any labels that were added alongside the widgets
+    while (interpolationPropsLayout_->count() > 0) {
+        auto* item = interpolationPropsLayout_->takeAt(0);
+        if (auto* w = item->widget()) {
+            delete w;
+        }
+        delete item;
+    }
 
-    const auto index = easingComboBox_->findData(v);
-    easingComboBox_->setCurrentIndex(index);
+    // Build new widgets for the active interpolation's properties
+    auto& factory = *util::getPropertyWidgetFactory();
+    auto props = const_cast<Interpolation&>(valseq.getInterpolation()).getProperties();
+    int row = 0;
+    for (auto* prop : props) {
+        if (auto* widget = static_cast<PropertyWidgetQt*>(factory.create(prop).release())) {
+            interpolationPropsLayout_->addWidget(widget, row, 0, 1, 2);
+            interpolationPropertyWidgets_.push_back(widget);
+            ++row;
+        }
+    }
 }
 
 void PropertySequenceEditor::onValueKeyframeSequenceInterpolationChanged(
     ValueKeyframeSequence* seq) {
 
-    auto id = utilqt::toQString(seq->getInterpolation().getClassIdentifier());
-    auto ind = interpolation_->findData(id);
-    interpolation_->setCurrentIndex(ind);
+    {
+        const QSignalBlocker block(interpolation_);
+        auto id = utilqt::toQString(seq->getInterpolation().getClassIdentifier());
+        auto ind = interpolation_->findData(id);
+        interpolation_->setCurrentIndex(ind);
+    }
+
+    rebuildInterpolationPropertyWidgets(*seq);
 }
 
 std::string PropertySequenceEditor::classIdentifier() {

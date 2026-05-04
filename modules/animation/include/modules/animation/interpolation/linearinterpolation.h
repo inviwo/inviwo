@@ -31,6 +31,8 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <modules/animation/interpolation/interpolation.h>
 #include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/algorithm/easing.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 #include <algorithm>
 
@@ -44,12 +46,16 @@ namespace animation {
 /**
  * Linear interpolation function for key frames.
  * Performs linear interpolation between two neighboring key frames.
+ * Easing is controlled via the `easingType` and `easingMode` properties.
  */
 template <typename Key, typename Result = typename Key::value_type>
 class LinearInterpolation : public InterpolationTyped<Key, Result> {
 public:
-    LinearInterpolation() = default;
+    LinearInterpolation();
     virtual ~LinearInterpolation() = default;
+
+    LinearInterpolation(const LinearInterpolation&) = default;
+    LinearInterpolation& operator=(const LinearInterpolation&) = default;
 
     virtual LinearInterpolation<Key, Result>* clone() const override;
 
@@ -60,6 +66,9 @@ public:
 
     virtual bool equal(const Interpolation& other) const override;
 
+    virtual std::vector<Property*> getProperties() override;
+    virtual void setLegacyEasing(Easing easing) override;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -67,8 +76,46 @@ public:
      * Returns linear interpolation of keyframe values at time t.
      */
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            Easing easing, Result& out) const override;
+                            Result& out) const override;
+
+private:
+    OptionProperty<EasingType> easingType_{"easingType", "Easing Type"};
+    OptionProperty<EasingMode> easingMode_{"easingMode", "Easing Mode"};
 };
+
+namespace detail {
+
+template <typename T>
+std::vector<OptionPropertyOption<T>> makeEnumOptions(size_t count) {
+    std::vector<OptionPropertyOption<T>> opts;
+    opts.reserve(count);
+    for (size_t i = 0; i < count; ++i) {
+        auto val = static_cast<T>(i);
+        std::string id(format_as(val));
+        opts.emplace_back(id, id, val);
+    }
+    return opts;
+}
+
+}  // namespace detail
+
+template <typename Key, typename Result>
+LinearInterpolation<Key, Result>::LinearInterpolation() {
+    for (size_t i = 0; i < Easing::typeCount; ++i) {
+        auto type = static_cast<EasingType>(i);
+        std::string id(format_as(type));
+        easingType_.addOption(id, id, type);
+    }
+    easingType_.setCurrentStateAsDefault();
+
+    for (size_t i = 0; i < Easing::modeCount; ++i) {
+        auto mode = static_cast<EasingMode>(i);
+        std::string id(format_as(mode));
+        easingMode_.addOption(id, id, mode);
+    }
+    easingMode_.setSelectedValue(EasingMode::inOut);
+    easingMode_.setCurrentStateAsDefault();
+}
 
 template <typename Key, typename Result>
 LinearInterpolation<Key, Result>* LinearInterpolation<Key, Result>::clone() const {
@@ -98,8 +145,19 @@ std::string_view LinearInterpolation<Key, Result>::classIdentifier() {
 }
 
 template <typename Key, typename Result>
+std::vector<Property*> LinearInterpolation<Key, Result>::getProperties() {
+    return {&easingType_, &easingMode_};
+}
+
+template <typename Key, typename Result>
+void LinearInterpolation<Key, Result>::setLegacyEasing(Easing easing) {
+    easingType_.setSelectedValue(easing.type);
+    easingMode_.setSelectedValue(easing.mode);
+}
+
+template <typename Key, typename Result>
 void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                                  Seconds /*from*/, Seconds to, Easing easing,
+                                                  Seconds /*from*/, Seconds to,
                                                   Result& out) const {
 
     using VT = typename Key::value_type;
@@ -120,16 +178,22 @@ void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_
     const auto& dv1 = static_cast<DT>(v1);
     const auto& dv2 = static_cast<DT>(v2);
 
+    const Easing easing{easingType_.get(), easingMode_.get()};
     out = static_cast<VT>(glm::mix(dv1, dv2, util::ease((to - t1) / (t2 - t1), easing)));
 }
 
 template <typename Key, typename Result>
 void LinearInterpolation<Key, Result>::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    s.serialize(easingType_.getIdentifier(), easingType_);
+    s.serialize(easingMode_.getIdentifier(), easingMode_);
 }
 
 template <typename Key, typename Result>
-void LinearInterpolation<Key, Result>::deserialize(Deserializer&) {}
+void LinearInterpolation<Key, Result>::deserialize(Deserializer& d) {
+    d.deserialize(easingType_.getIdentifier(), easingType_);
+    d.deserialize(easingMode_.getIdentifier(), easingMode_);
+}
 
 }  // namespace animation
 
