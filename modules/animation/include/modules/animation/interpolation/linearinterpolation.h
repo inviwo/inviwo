@@ -83,22 +83,6 @@ private:
     OptionProperty<EasingMode> easingMode_{"easingMode", "Easing Mode"};
 };
 
-namespace detail {
-
-template <typename T>
-std::vector<OptionPropertyOption<T>> makeEnumOptions(size_t count) {
-    std::vector<OptionPropertyOption<T>> opts;
-    opts.reserve(count);
-    for (size_t i = 0; i < count; ++i) {
-        auto val = static_cast<T>(i);
-        std::string id(format_as(val));
-        opts.emplace_back(id, id, val);
-    }
-    return opts;
-}
-
-}  // namespace detail
-
 template <typename Key, typename Result>
 LinearInterpolation<Key, Result>::LinearInterpolation() {
     for (size_t i = 0; i < Easing::typeCount; ++i) {
