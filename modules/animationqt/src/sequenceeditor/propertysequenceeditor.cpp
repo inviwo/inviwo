@@ -265,7 +265,9 @@ void PropertySequenceEditor::rebuildInterpolationPropertyWidgets(ValueKeyframeSe
     auto props = const_cast<Interpolation&>(valseq.getInterpolation()).getProperties();
     int row = 0;
     for (auto* prop : props) {
-        if (auto* widget = static_cast<PropertyWidgetQt*>(factory.create(prop).release())) {
+        auto created = factory.create(prop);
+        if (auto* widget = dynamic_cast<PropertyWidgetQt*>(created.get())) {
+            created.release();
             interpolationPropsLayout_->addWidget(widget, row, 0, 1, 2);
             interpolationPropertyWidgets_.push_back(widget);
             ++row;
