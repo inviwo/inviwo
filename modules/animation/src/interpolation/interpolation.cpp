@@ -29,9 +29,21 @@
 
 #include <modules/animation/interpolation/interpolation.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+
 namespace inviwo {
 
 namespace animation {
+
+Interpolation::Interpolation(InviwoApplication* app, std::string_view identifier)
+    : app_(app), identifier_(identifier) {}
+
+Interpolation::Interpolation(const Interpolation& rhs)
+    : PropertyOwner(rhs), app_(rhs.app_), identifier_(rhs.identifier_) {}
+
+const std::string& Interpolation::getIdentifier() const { return identifier_; }
+
+InviwoApplication* Interpolation::getInviwoApplication() { return app_; }
 
 bool operator==(const Interpolation& a, const Interpolation& b) { return a.equal(b); }
 bool operator!=(const Interpolation& a, const Interpolation& b) { return !a.equal(b); }

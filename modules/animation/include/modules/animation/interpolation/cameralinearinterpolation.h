@@ -41,8 +41,7 @@
 #include <vector>
 
 namespace inviwo {
-class Deserializer;
-class Serializer;
+class InviwoApplication;
 
 namespace animation {
 
@@ -57,11 +56,11 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API CameraLinearInterpolation
     : public InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type> {
 public:
-    CameraLinearInterpolation();
+    explicit CameraLinearInterpolation(InviwoApplication* app = nullptr);
     virtual ~CameraLinearInterpolation() = default;
 
-    CameraLinearInterpolation(const CameraLinearInterpolation&) = default;
-    CameraLinearInterpolation& operator=(const CameraLinearInterpolation&) = default;
+    CameraLinearInterpolation(const CameraLinearInterpolation&);
+    CameraLinearInterpolation& operator=(const CameraLinearInterpolation&) = delete;
 
     virtual CameraLinearInterpolation* clone() const override;
 
@@ -71,9 +70,6 @@ public:
     virtual std::string_view getClassIdentifier() const override;
 
     virtual bool equal(const Interpolation& other) const override;
-
-    virtual std::vector<Property*> getProperties() override;
-    virtual void setLegacyEasing(Easing easing) override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

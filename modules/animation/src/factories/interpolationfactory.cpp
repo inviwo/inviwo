@@ -29,4 +29,20 @@
 
 #include <modules/animation/factories/interpolationfactory.h>
 
-namespace inviwo {}  // namespace inviwo
+#include <modules/animation/factories/interpolationfactoryobject.h>
+
+namespace inviwo {
+namespace animation {
+
+InterpolationFactory::InterpolationFactory(InviwoApplication* app) : app_(app) {}
+
+std::unique_ptr<Interpolation> InterpolationFactory::create(std::string_view key) const {
+    auto it = this->map_.find(key);
+    if (it != end(this->map_)) {
+        return it->second->create(app_);
+    }
+    return nullptr;
+}
+
+}  // namespace animation
+}  // namespace inviwo

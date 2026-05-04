@@ -40,12 +40,21 @@
 #include <vector>
 
 namespace inviwo {
+class InviwoApplication;
+
 namespace animation {
 
 class IVW_MODULE_ANIMATION_API InterpolationFactory
     : public StandardFactory<Interpolation, InterpolationFactoryObject> {
 public:
-    using StandardFactory<Interpolation, InterpolationFactoryObject>::create;
+    explicit InterpolationFactory(InviwoApplication* app);
+
+    /**
+     * Create an interpolation by class identifier.
+     * The stored InviwoApplication pointer is forwarded to the factory object's create() call,
+     * so the resulting interpolation has a valid application context.
+     */
+    virtual std::unique_ptr<Interpolation> create(std::string_view key) const override;
 
     template <typename Keyframe>
     std::vector<InterpolationFactoryObject*> getSupportedInterpolations() const {
@@ -57,6 +66,9 @@ public:
         }
         return interps;
     }
+
+private:
+    InviwoApplication* app_;
 };
 
 }  // namespace animation

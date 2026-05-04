@@ -30,27 +30,33 @@
 
 #include <modules/animation/animationmoduledefine.h>
 
-#include <inviwo/core/algorithm/easing.h>
-#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/properties/propertyowner.h>
 #include <modules/animation/datastructures/animationtime.h>
 
 #include <memory>
 #include <string>
-#include <vector>
+#include <string_view>
 
 namespace inviwo {
-class Deserializer;
-class Property;
-class Serializer;
+class InviwoApplication;
 
 namespace animation {
 
 /**
- *	Interface for keyframe interpolations.
+ * Interface for keyframe interpolations.
+ * Inherits PropertyOwner so that subclasses can expose their options as standard Inviwo
+ * properties, gaining serialization and GUI rendering for free.
  */
-class IVW_MODULE_ANIMATION_API Interpolation : public Serializable {
+class IVW_MODULE_ANIMATION_API Interpolation : public PropertyOwner {
 public:
-    Interpolation() = default;
+    /**
+     * @param app  The InviwoApplication. May be nullptr if created outside of a full application
+     *             context (e.g. for temporary introspection). The InterpolationFactory always
+     *             supplies the real application pointer.
+     * @param identifier  A stable string identifier for this interpolation instance, typically
+     *                    equal to the class identifier.
+     */
+    Interpolation(InviwoApplication* app, std::string_view identifier);
     virtual ~Interpolation() = default;
 
     virtual Interpolation* clone() const = 0;
@@ -60,20 +66,21 @@ public:
     virtual std::string_view getClassIdentifier() const = 0;
     virtual bool equal(const Interpolation& other) const = 0;
 
-    /**
-     * Returns the list of properties owned by this interpolation.
-     * These may be displayed in the GUI and are serialized with the interpolation.
-     */
-    virtual std::vector<Property*> getProperties() { return {}; }
-
-    /**
-     * Sets easing from a legacy (pre-refactor) Easing value.
-     * Concrete interpolation types that support easing should override this.
-     */
-    virtual void setLegacyEasing(Easing) {}
+    virtual const std::string& getIdentifier() const override;
+    virtual InviwoApplication* getInviwoApplication() override;
 
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
+
+protected:
+    /**
+     * Protected copy constructor for use by clone() in derived classes.
+     * Re-populating the property list is the responsibility of the derived class.
+     */
+    Interpolation(const Interpolation& rhs);
+
+    InviwoApplication* app_;
+    std::string identifier_;
 };
 
 IVW_MODULE_ANIMATION_API bool operator==(const Interpolation& a, const Interpolation& b);
@@ -91,7 +98,10 @@ class InterpolationTyped : public Interpolation {
 public:
     using key_type = Key;
     using result_type = Result;
-    InterpolationTyped() = default;
+
+    explicit InterpolationTyped(InviwoApplication* app, std::string_view identifier)
+        : Interpolation(app, identifier) {}
+
     virtual ~InterpolationTyped() = default;
 
     virtual InterpolationTyped* clone() const override = 0;
@@ -103,6 +113,9 @@ public:
     // Override this function to interpolate between key frames
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
                             Result& out) const = 0;
+
+protected:
+    InterpolationTyped(const InterpolationTyped& rhs) : Interpolation(rhs) {}
 };
 
 }  // namespace animation

@@ -54,11 +54,11 @@
 #include <glm/vector_relational.hpp>
 
 namespace inviwo {
-class Deserializer;
 
 namespace animation {
 
-CameraSphericalInterpolation::CameraSphericalInterpolation() {
+CameraSphericalInterpolation::CameraSphericalInterpolation(InviwoApplication* app)
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app, classIdentifier()) {
     for (size_t i = 0; i < Easing::typeCount; ++i) {
         auto type = static_cast<EasingType>(i);
         std::string id(format_as(type));
@@ -73,6 +73,15 @@ CameraSphericalInterpolation::CameraSphericalInterpolation() {
     }
     easingMode_.setSelectedValue(EasingMode::inOut);
     easingMode_.setCurrentStateAsDefault();
+
+    addProperties(easingType_, easingMode_);
+}
+
+CameraSphericalInterpolation::CameraSphericalInterpolation(const CameraSphericalInterpolation& rhs)
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(rhs)
+    , easingType_(rhs.easingType_)
+    , easingMode_(rhs.easingMode_) {
+    addProperties(easingType_, easingMode_);
 }
 
 CameraSphericalInterpolation* CameraSphericalInterpolation::clone() const {
@@ -91,15 +100,6 @@ bool CameraSphericalInterpolation::equal(const Interpolation& other) const {
 
 std::string_view CameraSphericalInterpolation::classIdentifier() {
     return "org.inviwo.animation.camerasphericalinterpolation";
-}
-
-std::vector<Property*> CameraSphericalInterpolation::getProperties() {
-    return {&easingType_, &easingMode_};
-}
-
-void CameraSphericalInterpolation::setLegacyEasing(Easing easing) {
-    easingType_.setSelectedValue(easing.type);
-    easingMode_.setSelectedValue(easing.mode);
 }
 
 void CameraSphericalInterpolation::operator()(
@@ -148,13 +148,11 @@ void CameraSphericalInterpolation::operator()(
 
 void CameraSphericalInterpolation::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-    s.serialize(easingType_.getIdentifier(), easingType_);
-    s.serialize(easingMode_.getIdentifier(), easingMode_);
+    PropertyOwner::serialize(s);
 }
 
 void CameraSphericalInterpolation::deserialize(Deserializer& d) {
-    d.deserialize(easingType_.getIdentifier(), easingType_);
-    d.deserialize(easingMode_.getIdentifier(), easingMode_);
+    PropertyOwner::deserialize(d);
 }
 
 }  // namespace animation

@@ -35,7 +35,6 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/observer.h>
-#include <inviwo/core/algorithm/easing.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/basekeyframesequence.h>
@@ -313,13 +312,6 @@ void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
         std::unique_ptr<InterpolationTyped<Key>> interpolation;
         d.deserializeAs<Interpolation>("interpolation", interpolation);
         if (interpolation) {
-            // Backward compat: if the old <easing> element exists at the sequence level,
-            // migrate it into the new interpolation property.
-            if (d.hasElement("easing")) {
-                Easing legacyEasing;
-                d.deserialize("easing", legacyEasing);
-                interpolation->setLegacyEasing(legacyEasing);
-            }
             setInterpolation(std::move(interpolation));
         }
     }
