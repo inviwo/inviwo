@@ -267,7 +267,6 @@ void KeyframeSequenceTyped<Key>::setInterpolation(
     if (!interpolation) {
         throw Exception("Interpolation cannot be null");
     } else if (!interpolation_->equal(*interpolation)) {
-        interpolationPropertyCallbacks_.clear();
         interpolation_ = std::move(interpolation);
         registerInterpolationCallbacks();
         notifyValueKeyframeSequenceInterpolationChanged(this);

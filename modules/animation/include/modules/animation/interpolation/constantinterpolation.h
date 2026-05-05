@@ -147,6 +147,15 @@ void ConstantInterpolation<Key, Result>::serialize(Serializer& s) const {
 
 template <typename Key, typename Result>
 void ConstantInterpolation<Key, Result>::deserialize(Deserializer& d) {
+    std::string className;
+    d.deserialize("type", className, SerializationTarget::Attribute);
+    if (className != getClassIdentifier()) {
+        std::string_view cid = getClassIdentifier();
+        throw SerializationException(SourceContext{},
+                                     "Deserialized interpolation: {} from a serialized "
+                                     "interpolation with a different class identifier: {}",
+                                     cid, className);
+    }
     PropertyOwner::deserialize(d);
 }
 

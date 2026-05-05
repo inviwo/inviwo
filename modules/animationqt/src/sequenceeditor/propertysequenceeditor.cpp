@@ -251,15 +251,6 @@ void PropertySequenceEditor::rebuildInterpolationPropertyWidgets(ValueKeyframeSe
     }
     interpolationPropertyWidgets_.clear();
 
-    // Remove any labels that were added alongside the widgets
-    while (interpolationPropsLayout_->count() > 0) {
-        auto* item = interpolationPropsLayout_->takeAt(0);
-        if (auto* w = item->widget()) {
-            delete w;
-        }
-        delete item;
-    }
-
     // Build new widgets for the active interpolation's properties
     auto& factory = *util::getPropertyWidgetFactory();
     const auto& props = valseq.getInterpolation().getProperties();
