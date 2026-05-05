@@ -130,16 +130,19 @@ void CameraAnimation::operator()(const std::vector<std::unique_ptr<CameraKeyfram
     const auto t = static_cast<double>((to - t1) / (t2 - t1));
 
     const auto f = 0.2;
-    const auto tmod = 1.0 / (f / 2.0) * std::abs(std::abs(std::fmod(t - f / 2.0, f)) - f / 2.0);
+    const auto tmod = 2.0 / f * std::abs(std::abs(std::fmod(t - f / 4.0, f)) - f / 2.0);
 
-    auto swing = Swing{.axis = rotationAxis(RotationAxis::Yaw, true, cameraState(v1)),
+
+    auto swing = Swing{.axis = dvec3{0.0, 0.0, 1.0}, //rotationAxis(RotationAxis::Yaw, true, cameraState(v1)),
                        .dir = v1.getDirection(),
                        .up = v1.getLookUp(), 
-                       .amplitude = 0.5,
+                       .amplitude = 0.25,
                        .step = 0.01,
                        .current = tmod};
 
-    const auto angle = swing.amplitude * (util::ease(swing.current, easingType) - 0.5);
+    const auto angle = swing.amplitude * (util::ease(tmod, easingType) - 0.5);
+
+    //log::info("{} {} {}", t, tmod, angle);
 
     // Rotate LookFrom around LookTo using axis
     const auto rotation = dmat3(glm::rotate(-angle, swing.axis));
