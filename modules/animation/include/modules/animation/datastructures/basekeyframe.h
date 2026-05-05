@@ -30,6 +30,7 @@
 
 #include <modules/animation/animationmoduledefine.h>
 
+#include <inviwo/core/algorithm/easing.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/keyframe.h>
 
@@ -53,6 +54,9 @@ public:
     virtual bool isSelected() const override;
     virtual void setSelected(bool selected) override;
 
+    Easing getEasing() const;
+    void setEasing(Easing easing);
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -65,6 +69,7 @@ protected:
 private:
     bool isSelected_{false};
     Seconds time_{0.0};
+    Easing easing_{EasingType::linear, EasingMode::inOut};
 };
 
 }  // namespace animation

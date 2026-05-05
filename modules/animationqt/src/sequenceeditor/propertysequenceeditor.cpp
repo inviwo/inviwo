@@ -29,6 +29,7 @@
 
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
 
+#include <inviwo/core/algorithm/easing.h>
 #include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/property.h>
@@ -36,6 +37,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <modules/animation/animationmanager.h>
 #include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/basekeyframe.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframeobserver.h>
 #include <modules/animation/datastructures/keyframesequence.h>
@@ -57,6 +59,7 @@
 #include <functional>
 #include <initializer_list>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <QComboBox>
@@ -85,6 +88,10 @@ public:
         setObjectName("KeyframeEditorWidget");
         setVisible(keyframe_.isSelected());
         keyframe.addObserver(this);
+
+        auto outerLayout = new QVBoxLayout();
+        outerLayout->setContentsMargins(0, 0, 0, 0);
+        outerLayout->setSpacing(utilqt::refSpacePx(this));
 
         auto layout = new QHBoxLayout();
         layout->setContentsMargins(0, 0, 0, 0);
@@ -137,7 +144,57 @@ public:
             }
         }
         layout->addWidget(propertyWidget_);
-        setLayout(layout);
+        outerLayout->addLayout(layout);
+
+        // Per-keyframe easing controls
+        if (auto* baseKey = dynamic_cast<BaseKeyframe*>(&keyframe_)) {
+            auto easingLayout = new QHBoxLayout();
+            easingLayout->setContentsMargins(0, 0, 0, 0);
+            easingLayout->setSpacing(utilqt::refSpacePx(this));
+
+            easingLayout->addWidget(new QLabel("Easing"));
+
+            easingTypeCombo_ = new QComboBox();
+            for (size_t i = 0; i < Easing::typeCount; ++i) {
+                auto type = static_cast<EasingType>(i);
+                easingTypeCombo_->addItem(utilqt::toQString(std::string(format_as(type))),
+                                          QVariant(static_cast<int>(i)));
+            }
+            easingTypeCombo_->setCurrentIndex(static_cast<int>(baseKey->getEasing().type));
+            connect(easingTypeCombo_,
+                    static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+                    [this](int idx) {
+                        if (auto* bk = dynamic_cast<BaseKeyframe*>(&keyframe_)) {
+                            auto e = bk->getEasing();
+                            e.type = static_cast<EasingType>(idx);
+                            bk->setEasing(e);
+                        }
+                    });
+            easingLayout->addWidget(easingTypeCombo_);
+
+            easingModeCombo_ = new QComboBox();
+            for (size_t i = 0; i < Easing::modeCount; ++i) {
+                auto mode = static_cast<EasingMode>(i);
+                easingModeCombo_->addItem(utilqt::toQString(std::string(format_as(mode))),
+                                          QVariant(static_cast<int>(i)));
+            }
+            easingModeCombo_->setCurrentIndex(static_cast<int>(baseKey->getEasing().mode));
+            connect(easingModeCombo_,
+                    static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+                    [this](int idx) {
+                        if (auto* bk = dynamic_cast<BaseKeyframe*>(&keyframe_)) {
+                            auto e = bk->getEasing();
+                            e.mode = static_cast<EasingMode>(idx);
+                            bk->setEasing(e);
+                        }
+                    });
+            easingLayout->addWidget(easingModeCombo_);
+            easingLayout->addStretch();
+
+            outerLayout->addLayout(easingLayout);
+        }
+
+        setLayout(outerLayout);
     }
 
     virtual ~PropertyEditorWidget() {
@@ -162,6 +219,19 @@ public:
         sequenceEditorWidget_->updateVisibility();
     }
 
+    virtual void onKeyframeEasingChanged(Keyframe* key) override {
+        if (auto* bk = dynamic_cast<BaseKeyframe*>(key)) {
+            if (easingTypeCombo_) {
+                const QSignalBlocker block(easingTypeCombo_);
+                easingTypeCombo_->setCurrentIndex(static_cast<int>(bk->getEasing().type));
+            }
+            if (easingModeCombo_) {
+                const QSignalBlocker block(easingModeCombo_);
+                easingModeCombo_->setCurrentIndex(static_cast<int>(bk->getEasing().mode));
+            }
+        }
+    }
+
 private:
     Keyframe& keyframe_;
     SequenceEditorWidget* sequenceEditorWidget_{nullptr};
@@ -169,6 +239,8 @@ private:
     std::unique_ptr<Property> property_{nullptr};
     PropertyWidgetQt* propertyWidget_{nullptr};
     DoubleValueDragSpinBox* timeSpinner_{nullptr};
+    QComboBox* easingTypeCombo_{nullptr};
+    QComboBox* easingModeCombo_{nullptr};
 };
 
 }  // namespace
@@ -224,14 +296,6 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
                 valseq.setInterpolation(manager.getInterpolationFactory().create(id));
             });
 
-    // Interpolation property area: dynamically populated based on active interpolation
-    interpolationPropsLayout_ = new QGridLayout();
-    interpolationPropsLayout_->setContentsMargins(0, 0, 0, 0);
-    interpolationPropsLayout_->setSpacing(7);
-    layout->addLayout(interpolationPropsLayout_);
-
-    rebuildInterpolationPropertyWidgets(valseq);
-
     for (size_t i = 0; i < sequence_.size(); i++) {
         onKeyframeAdded(&sequence_[i], &sequence_);
     }
@@ -243,41 +307,13 @@ QWidget* PropertySequenceEditor::create(Keyframe* key) {
     return new PropertyEditorWidget(*key, this);
 }
 
-void PropertySequenceEditor::rebuildInterpolationPropertyWidgets(ValueKeyframeSequence& valseq) {
-    // Remove old property widgets
-    for (auto* w : interpolationPropertyWidgets_) {
-        interpolationPropsLayout_->removeWidget(w);
-        delete w;
-    }
-    interpolationPropertyWidgets_.clear();
-
-    // Build new widgets for the active interpolation's properties
-    auto& factory = *util::getPropertyWidgetFactory();
-    const auto& props = valseq.getInterpolation().getProperties();
-    int row = 0;
-    for (auto* prop : props) {
-        auto created = factory.create(prop);
-        auto* widget = dynamic_cast<PropertyWidgetQt*>(created.get());
-        if (!widget) continue;
-        // Transfer ownership: Qt layout takes ownership of raw pointer
-        created.release();
-        interpolationPropsLayout_->addWidget(widget, row, 0, 1, 2);
-        interpolationPropertyWidgets_.push_back(widget);
-        ++row;
-    }
-}
-
 void PropertySequenceEditor::onValueKeyframeSequenceInterpolationChanged(
     ValueKeyframeSequence* seq) {
 
-    {
-        const QSignalBlocker block(interpolation_);
-        auto id = utilqt::toQString(seq->getInterpolation().getClassIdentifier());
-        auto ind = interpolation_->findData(id);
-        interpolation_->setCurrentIndex(ind);
-    }
-
-    rebuildInterpolationPropertyWidgets(*seq);
+    const QSignalBlocker block(interpolation_);
+    auto id = utilqt::toQString(seq->getInterpolation().getClassIdentifier());
+    auto ind = interpolation_->findData(id);
+    interpolation_->setCurrentIndex(ind);
 }
 
 std::string PropertySequenceEditor::classIdentifier() {
