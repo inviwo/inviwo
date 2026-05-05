@@ -48,7 +48,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API CameraAnimation
     : public InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type> {
 public:
-    CameraAnimation() = default;
+    CameraAnimation(InviwoApplication* app = nullptr);
     virtual ~CameraAnimation() = default;
     virtual CameraAnimation* clone() const override;
 
@@ -63,8 +63,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
-                            Seconds to, Easing easing,
-                            CameraKeyframe::value_type& out) const override;
+                            Seconds to, CameraKeyframe::value_type& out) const override;
 
     enum class RotationAxis : std::uint8_t { Yaw, Pitch, Roll };
 

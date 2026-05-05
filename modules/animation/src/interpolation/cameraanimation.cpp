@@ -99,6 +99,9 @@ CameraAnimation::CameraState cameraState(const CameraKeyframe& cam) {
 
 }  // namespace
 
+CameraAnimation::CameraAnimation(InviwoApplication* app)
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app, classIdentifier()) {}
+
 CameraAnimation* CameraAnimation::clone() const { return new CameraAnimation(*this); }
 
 std::string CameraAnimation::getName() const { return "Animate"; }
@@ -114,7 +117,7 @@ std::string_view CameraAnimation::classIdentifier() {
 }
 
 void CameraAnimation::operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys,
-                                 Seconds /*from*/, Seconds to, Easing easingType,
+                                 Seconds /*from*/, Seconds to,
                                  CameraKeyframe::value_type& out) const {
 
     auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
@@ -132,17 +135,18 @@ void CameraAnimation::operator()(const std::vector<std::unique_ptr<CameraKeyfram
     const auto f = 0.2;
     const auto tmod = 2.0 / f * std::abs(std::abs(std::fmod(t - f / 4.0, f)) - f / 2.0);
 
+    auto swing = Swing{
+        .axis = dvec3{0.0, 0.0, 1.0},  // rotationAxis(RotationAxis::Yaw, true, cameraState(v1)),
+        .dir = v1.getDirection(),
+        .up = v1.getLookUp(),
+        .amplitude = 0.25,
+        .step = 0.01,
+        .current = tmod};
 
-    auto swing = Swing{.axis = dvec3{0.0, 0.0, 1.0}, //rotationAxis(RotationAxis::Yaw, true, cameraState(v1)),
-                       .dir = v1.getDirection(),
-                       .up = v1.getLookUp(), 
-                       .amplitude = 0.25,
-                       .step = 0.01,
-                       .current = tmod};
+    const auto angle =
+        swing.amplitude * (util::ease(tmod, Easing{EasingType::sine, EasingMode::inOut}) - 0.5);
 
-    const auto angle = swing.amplitude * (util::ease(tmod, easingType) - 0.5);
-
-    //log::info("{} {} {}", t, tmod, angle);
+    // log::info("{} {} {}", t, tmod, angle);
 
     // Rotate LookFrom around LookTo using axis
     const auto rotation = dmat3(glm::rotate(-angle, swing.axis));
