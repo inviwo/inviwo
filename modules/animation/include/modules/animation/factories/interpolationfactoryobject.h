@@ -29,6 +29,7 @@
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
+#include <modules/animation/interpolation/interpolation.h>
 
 #include <memory>
 #include <string>
@@ -38,7 +39,6 @@ namespace inviwo {
 class InviwoApplication;
 
 namespace animation {
-class Interpolation;
 
 class IVW_MODULE_ANIMATION_API InterpolationFactoryObject {
 public:
