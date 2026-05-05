@@ -100,7 +100,7 @@ LinearInterpolation<Key, Result>::LinearInterpolation(InviwoApplication* app)
     easingMode_.setSelectedValue(EasingMode::inOut);
     easingMode_.setCurrentStateAsDefault();
 
-    addProperties(easingType_, easingMode_);
+    this->addProperties(easingType_, easingMode_);
 }
 
 template <typename Key, typename Result>
@@ -109,7 +109,7 @@ LinearInterpolation<Key, Result>::LinearInterpolation(const LinearInterpolation&
     // The PropertyOwner copy constructor copies the property ownership structure, but does not
     // re-register member properties (easingType_, easingMode_) that are part of this class.
     // They are initialized via the member initializer list, so we must explicitly add them back.
-    addProperties(easingType_, easingMode_);
+    this->addProperties(easingType_, easingMode_);
 }
 
 template <typename Key, typename Result>
