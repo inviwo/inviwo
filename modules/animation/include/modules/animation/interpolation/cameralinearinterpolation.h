@@ -30,8 +30,6 @@
 
 #include <modules/animation/animationmoduledefine.h>
 
-#include <inviwo/core/algorithm/easing.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/interpolation/interpolation.h>
@@ -76,14 +74,11 @@ public:
 
     /*
      * Returns linear interpolation of keyframe values at time t.
+     * Uses the easing stored on the outgoing keyframe for each interval.
      */
     virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
                             Seconds to,
                             CameraKeyframe::value_type& out) const override;
-
-private:
-    OptionProperty<EasingType> easingType_{"easingType", "Easing Type"};
-    OptionProperty<EasingMode> easingMode_{"easingMode", "Easing Mode"};
 };
 
 }  // namespace animation

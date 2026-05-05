@@ -29,6 +29,7 @@
 
 #include <modules/animation/interpolation/camerasphericalinterpolation.h>
 
+#include <inviwo/core/algorithm/easing.h>
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/io/serialization/deserializer.h>
@@ -58,31 +59,10 @@ namespace inviwo {
 namespace animation {
 
 CameraSphericalInterpolation::CameraSphericalInterpolation(InviwoApplication* app)
-    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app, classIdentifier()) {
-    for (size_t i = 0; i < Easing::typeCount; ++i) {
-        auto type = static_cast<EasingType>(i);
-        std::string id(format_as(type));
-        easingType_.addOption(id, id, type);
-    }
-    easingType_.setCurrentStateAsDefault();
-
-    for (size_t i = 0; i < Easing::modeCount; ++i) {
-        auto mode = static_cast<EasingMode>(i);
-        std::string id(format_as(mode));
-        easingMode_.addOption(id, id, mode);
-    }
-    easingMode_.setSelectedValue(EasingMode::inOut);
-    easingMode_.setCurrentStateAsDefault();
-
-    addProperties(easingType_, easingMode_);
-}
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app, classIdentifier()) {}
 
 CameraSphericalInterpolation::CameraSphericalInterpolation(const CameraSphericalInterpolation& rhs)
-    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(rhs)
-    , easingType_(rhs.easingType_)
-    , easingMode_(rhs.easingMode_) {
-    addProperties(easingType_, easingMode_);
-}
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(rhs) {}
 
 CameraSphericalInterpolation* CameraSphericalInterpolation::clone() const {
     return new CameraSphericalInterpolation(*this);
@@ -112,11 +92,11 @@ void CameraSphericalInterpolation::operator()(
 
     const auto& v1 = *(*std::prev(it));
     const auto& t1 = (*std::prev(it))->getTime();
+    const auto easing = (*std::prev(it))->getEasing();
 
     const auto& v2 = *(*it);
     const auto& t2 = (*it)->getTime();
 
-    const Easing easing{easingType_.get(), easingMode_.get()};
     auto t = static_cast<float>(util::ease((to - t1) / (t2 - t1), easing));
 
     auto fromDir = glm::normalize(v1.getDirection());
@@ -148,12 +128,9 @@ void CameraSphericalInterpolation::operator()(
 
 void CameraSphericalInterpolation::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-    PropertyOwner::serialize(s);
 }
 
-void CameraSphericalInterpolation::deserialize(Deserializer& d) {
-    PropertyOwner::deserialize(d);
-}
+void CameraSphericalInterpolation::deserialize(Deserializer& /*d*/) {}
 
 }  // namespace animation
 

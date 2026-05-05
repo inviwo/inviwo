@@ -48,6 +48,7 @@ BaseKeyframe& BaseKeyframe::operator=(const BaseKeyframe& that) {
         Keyframe::operator=(that);
         setTime(that.time_);
         setSelected(that.isSelected_);
+        setEasing(that.easing_);
     }
     return *this;
 }
@@ -69,9 +70,18 @@ void BaseKeyframe::setSelected(bool selected) {
     }
 }
 
+Easing BaseKeyframe::getEasing() const { return easing_; }
+void BaseKeyframe::setEasing(Easing easing) {
+    if (easing != easing_) {
+        easing_ = easing;
+        notifyKeyframeEasingChanged(this);
+    }
+}
+
 void BaseKeyframe::serialize(Serializer& s) const {
     s.serialize("time", time_.count());
     s.serialize("selected", isSelected_);
+    s.serialize("easing", easing_);
 }
 
 void BaseKeyframe::deserialize(Deserializer& d) {
@@ -84,6 +94,11 @@ void BaseKeyframe::deserialize(Deserializer& d) {
         bool isSelected = isSelected_;
         d.deserialize("selected", isSelected);
         setSelected(isSelected);
+    }
+    {
+        Easing easing = easing_;
+        d.deserialize("easing", easing);
+        setEasing(easing);
     }
 }
 

@@ -43,6 +43,10 @@ void KeyframeObservable::notifyKeyframeSelectionChanged(Keyframe* key) {
     forEachObserver([&](KeyframeObserver* o) { o->onKeyframeSelectionChanged(key); });
 }
 
+void KeyframeObservable::notifyKeyframeEasingChanged(Keyframe* key) {
+    forEachObserver([&](KeyframeObserver* o) { o->onKeyframeEasingChanged(key); });
+}
+
 }  // namespace animation
 
 }  // namespace inviwo
