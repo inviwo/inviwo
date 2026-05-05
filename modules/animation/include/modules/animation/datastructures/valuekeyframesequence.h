@@ -174,7 +174,7 @@ private:
     void registerInterpolationCallbacks();
 
     std::unique_ptr<InterpolationTyped<Key>> interpolation_{nullptr};
-    std::vector<std::shared_ptr<std::function<void()>>> interpolationPropertyCallbacks_;
+    std::vector<std::shared_ptr<std::function<void()>>> interpolationPropertyCallbackHandles_;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -290,10 +290,10 @@ std::vector<InterpolationFactoryObject*> KeyframeSequenceTyped<Key>::getSupporte
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::registerInterpolationCallbacks() {
-    interpolationPropertyCallbacks_.clear();
+    interpolationPropertyCallbackHandles_.clear();
     if (!interpolation_) return;
     for (auto* prop : interpolation_->getProperties()) {
-        interpolationPropertyCallbacks_.push_back(
+        interpolationPropertyCallbackHandles_.push_back(
             prop->onChangeScoped([this]() { notifyValueKeyframeSequenceInterpolationChanged(this); }));
     }
 }
