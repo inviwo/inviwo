@@ -147,7 +147,7 @@ public:
         outerLayout->addLayout(layout);
 
         // Per-keyframe easing controls
-        if (auto* baseKey = dynamic_cast<BaseKeyframe*>(&keyframe_)) {
+        if (baseKeyframe_) {
             auto easingLayout = new QHBoxLayout();
             easingLayout->setContentsMargins(0, 0, 0, 0);
             easingLayout->setSpacing(utilqt::refSpacePx(this));
@@ -160,15 +160,13 @@ public:
                 easingTypeCombo_->addItem(utilqt::toQString(std::string(format_as(type))),
                                           QVariant(static_cast<int>(i)));
             }
-            easingTypeCombo_->setCurrentIndex(static_cast<int>(baseKey->getEasing().type));
+            easingTypeCombo_->setCurrentIndex(static_cast<int>(baseKeyframe_->getEasing().type));
             connect(easingTypeCombo_,
                     static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
                     [this](int idx) {
-                        if (auto* bk = dynamic_cast<BaseKeyframe*>(&keyframe_)) {
-                            auto e = bk->getEasing();
-                            e.type = static_cast<EasingType>(idx);
-                            bk->setEasing(e);
-                        }
+                        auto e = baseKeyframe_->getEasing();
+                        e.type = static_cast<EasingType>(idx);
+                        baseKeyframe_->setEasing(e);
                     });
             easingLayout->addWidget(easingTypeCombo_);
 
@@ -178,15 +176,13 @@ public:
                 easingModeCombo_->addItem(utilqt::toQString(std::string(format_as(mode))),
                                           QVariant(static_cast<int>(i)));
             }
-            easingModeCombo_->setCurrentIndex(static_cast<int>(baseKey->getEasing().mode));
+            easingModeCombo_->setCurrentIndex(static_cast<int>(baseKeyframe_->getEasing().mode));
             connect(easingModeCombo_,
                     static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
                     [this](int idx) {
-                        if (auto* bk = dynamic_cast<BaseKeyframe*>(&keyframe_)) {
-                            auto e = bk->getEasing();
-                            e.mode = static_cast<EasingMode>(idx);
-                            bk->setEasing(e);
-                        }
+                        auto e = baseKeyframe_->getEasing();
+                        e.mode = static_cast<EasingMode>(idx);
+                        baseKeyframe_->setEasing(e);
                     });
             easingLayout->addWidget(easingModeCombo_);
             easingLayout->addStretch();
@@ -219,21 +215,23 @@ public:
         sequenceEditorWidget_->updateVisibility();
     }
 
-    virtual void onKeyframeEasingChanged(Keyframe* key) override {
-        if (auto* bk = dynamic_cast<BaseKeyframe*>(key)) {
+    virtual void onKeyframeEasingChanged(Keyframe*) override {
+        if (baseKeyframe_) {
             if (easingTypeCombo_) {
                 const QSignalBlocker block(easingTypeCombo_);
-                easingTypeCombo_->setCurrentIndex(static_cast<int>(bk->getEasing().type));
+                easingTypeCombo_->setCurrentIndex(static_cast<int>(baseKeyframe_->getEasing().type));
             }
             if (easingModeCombo_) {
                 const QSignalBlocker block(easingModeCombo_);
-                easingModeCombo_->setCurrentIndex(static_cast<int>(bk->getEasing().mode));
+                easingModeCombo_->setCurrentIndex(
+                    static_cast<int>(baseKeyframe_->getEasing().mode));
             }
         }
     }
 
 private:
     Keyframe& keyframe_;
+    BaseKeyframe* baseKeyframe_{dynamic_cast<BaseKeyframe*>(&keyframe_)};
     SequenceEditorWidget* sequenceEditorWidget_{nullptr};
 
     std::unique_ptr<Property> property_{nullptr};
