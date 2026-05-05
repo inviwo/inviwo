@@ -53,6 +53,7 @@ set(HEADER_FILES
     include/modules/animation/interpolation/constantinterpolation.h
     include/modules/animation/interpolation/interpolation.h
     include/modules/animation/interpolation/linearinterpolation.h
+    include/modules/animation/interpolation/transferfunctioninterpolation.h
     include/modules/animation/mainanimation.h
     include/modules/animation/workspaceanimations.h
 )
@@ -107,6 +108,7 @@ set(SOURCE_FILES
     src/interpolation/cameralinearinterpolation.cpp
     src/interpolation/camerasphericalinterpolation.cpp
     src/interpolation/interpolation.cpp
+    src/interpolation/transferfunctioninterpolation.cpp
     src/mainanimation.cpp
     src/workspaceanimations.cpp
 )

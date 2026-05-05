@@ -13,6 +13,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/histogram2d.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/linearmap.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/markdown.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/optimaltransport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/permutations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/rangeutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/searchdsl.h
@@ -407,6 +408,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/raiiutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/rendercontext.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/safecstr.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/scientificcolormaps.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/camerasettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/linksettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/settings.h
@@ -414,7 +416,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/unitsettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/sharedlibrary.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/shuntingyard.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/scientificcolormaps.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singlefileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singleton.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/sourcecontext.h
@@ -436,8 +437,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/typetraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unicodefloatingpoint.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unindent.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utfutils.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesampler.h
@@ -460,6 +461,7 @@ set(SOURCE_FILES
     algorithm/histogram2d.cpp
     algorithm/linearmap.cpp
     algorithm/markdown.cpp
+    algorithm/optimaltransport.cpp
     algorithm/permutations.cpp
     algorithm/rangeutils.cpp
     algorithm/searchdsl.cpp
@@ -799,6 +801,7 @@ set(SOURCE_FILES
     util/pmrutils.cpp
     util/rendercontext.cpp
     util/safecstr.cpp
+    util/scientificcolormaps.cpp
     util/settings/camerasettings.cpp
     util/settings/linksettings.cpp
     util/settings/settings.cpp
@@ -806,7 +809,6 @@ set(SOURCE_FILES
     util/settings/unitsettings.cpp
     util/sharedlibrary.cpp
     util/shuntingyard.cpp
-    util/scientificcolormaps.cpp
     util/singlefileobserver.cpp
     util/sourcecontext.cpp
     util/spatial4dsampler.cpp
