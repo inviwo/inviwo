@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -76,6 +77,7 @@ private:
     OptionProperty<Mode> mode_;
     DirectoryProperty directory_;
     ButtonProperty refresh_;
+    BoolProperty recursive_;
     StringProperty filter_;
     IntSizeTProperty selectedIndex_;
     IntSizeTProperty highlightIndex_;

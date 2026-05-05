@@ -68,6 +68,7 @@ FileList::FileList()
              {"both", "Files & Directories", Mode::Both}}}
     , directory_{"directory", "Directory"}
     , refresh_{"refresh", "Refresh"}
+    , recursive_{"recursive", "Recursive", false}
     , filter_{"filter", "Filter",
               "Set a regexp filter to match filenames to include in the list"_help}
     , selectedIndex_{"selectedIndex", "Selected Index", util::ordinalCount(size_t{0}, size_t{100})}
@@ -82,8 +83,8 @@ FileList::FileList()
     , running_{false} {
 
     addPorts(outport_, bnlInport_, bnlOutport_);
-    addProperties(mode_, directory_, refresh_, filter_, selectedIndex_, selected_, highlightIndex_,
-                  highlight_, cycleFiles_);
+    addProperties(mode_, directory_, refresh_, recursive_, filter_, selectedIndex_, selected_,
+                  highlightIndex_, highlight_, cycleFiles_);
 
     selected_.setReadOnly(true);
     highlight_.setReadOnly(true);
@@ -181,32 +182,48 @@ void FileList::setIndex(const std::weak_ptr<Processor>& pw, size_t i,
 }
 
 void FileList::process() {
+    if (!filter_.isModified() && !directory_.isModified() && !recursive_.isModified()) {
+        return;
+    }
+
     std::optional<std::regex> regex;
     if (!filter_.get().empty()) {
         regex.emplace(filter_.get());
     }
 
-    auto filetypeFilter = [mode =
-                               mode_.get()]() -> bool (*)(const std::filesystem::directory_entry&) {
+    const auto filetypeFilter =
+        [mode = mode_.get()]() -> bool (*)(const std::filesystem::directory_entry&) {
         switch (mode) {
             using enum Mode;
-            case Files:       return [](auto& item) { return item.is_regular_file(); };
+            case Files: return [](auto& item) { return item.is_regular_file(); };
             case Directories: return [](auto& item) { return item.is_directory(); };
-            case Both:        [[fallthrough]];
+            case Both: [[fallthrough]];
             default:
                 return [](auto& item) { return item.is_regular_file() || item.is_directory(); };
         }
     }();
 
-    files_ = std::filesystem::directory_iterator(directory_.get()) |
-             std::views::filter(filetypeFilter) | std::views::filter([&](auto& item) {
-                 return regex ? std::regex_search(item.path().generic_string(), *regex) : true;
-             }) |
-             std::ranges::to<std::vector>();
+    const auto filter =
+        std::views::filter(filetypeFilter) | std::views::filter([&](auto& item) {
+            return regex ? std::regex_search(item.path().generic_string(), *regex) : true;
+        });
+
+    if (recursive_) {
+        files_ = std::filesystem::recursive_directory_iterator(
+                     directory_.get(), std::filesystem::directory_options::skip_permission_denied) |
+                 filter | std::ranges::to<std::vector>();
+    } else {
+        files_ = std::filesystem::directory_iterator(
+                     directory_.get(), std::filesystem::directory_options::skip_permission_denied) |
+                 filter | std::ranges::to<std::vector>();
+    }
     std::ranges::sort(files_);
 
     const auto df = std::make_shared<DataFrame>();
 
+    df->addCategoricalColumn("Path", files_ | std::views::transform([](auto& item) {
+                                         return item.path().parent_path().generic_string();
+                                     }) | std::ranges::to<std::vector>());
     df->addCategoricalColumn("Name", files_ | std::views::transform([](auto& item) {
                                          return item.path().filename().generic_string();
                                      }) | std::ranges::to<std::vector>());
