@@ -325,7 +325,7 @@ void PropertySequenceEditor::rebuildInterpolationPropertyWidgets(ValueKeyframeSe
     // Build new widgets for the active interpolation's properties
     auto* factory = util::getPropertyWidgetFactory();
     if (!factory) {
-        log::warn("Property widget factory unavailable, interpolation properties will not be shown");
+        log::warn("Property widget factory unavailable, interpolation properties cannot be shown");
         return;
     }
     const auto& props = valseq.getInterpolation().getProperties();
@@ -334,7 +334,7 @@ void PropertySequenceEditor::rebuildInterpolationPropertyWidgets(ValueKeyframeSe
         auto created = factory->create(prop);
         if (auto* widget = dynamic_cast<PropertyWidgetQt*>(created.get())) {
             interpolationPropsLayout_->addWidget(widget, row, 0, 1, 2);
-            created.release();  // Ownership transferred to Qt via layout/widget parenting.
+            created.release();  // Ownership transferred to Qt via addWidget parent assignment.
             interpolationPropertyWidgets_.push_back(widget);
             ++row;
         }
