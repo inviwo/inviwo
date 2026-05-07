@@ -327,12 +327,12 @@ void PropertySequenceEditor::rebuildInterpolationPropertyWidgets(ValueKeyframeSe
     int row = 0;
     for (auto* prop : props) {
         auto created = factory.create(prop);
-        auto* widget = dynamic_cast<PropertyWidgetQt*>(created.get());
-        if (!widget) continue;
-        created.release();
-        interpolationPropsLayout_->addWidget(widget, row, 0, 1, 2);
-        interpolationPropertyWidgets_.push_back(widget);
-        ++row;
+        if (auto* widget = dynamic_cast<PropertyWidgetQt*>(created.get())) {
+            created.release();  // Ownership transferred to Qt parent/layout.
+            interpolationPropsLayout_->addWidget(widget, row, 0, 1, 2);
+            interpolationPropertyWidgets_.push_back(widget);
+            ++row;
+        }
     }
 }
 
