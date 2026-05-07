@@ -294,6 +294,14 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
                 valseq.setInterpolation(manager.getInterpolationFactory().create(id));
             });
 
+    // Interpolation property area: dynamically populated based on active interpolation
+    interpolationPropsLayout_ = new QGridLayout();
+    interpolationPropsLayout_->setContentsMargins(0, 0, 0, 0);
+    interpolationPropsLayout_->setSpacing(7);
+    layout->addLayout(interpolationPropsLayout_);
+
+    rebuildInterpolationPropertyWidgets(valseq);
+
     for (size_t i = 0; i < sequence_.size(); i++) {
         onKeyframeAdded(&sequence_[i], &sequence_);
     }
@@ -305,6 +313,29 @@ QWidget* PropertySequenceEditor::create(Keyframe* key) {
     return new PropertyEditorWidget(*key, this);
 }
 
+void PropertySequenceEditor::rebuildInterpolationPropertyWidgets(ValueKeyframeSequence& valseq) {
+    // Remove old property widgets
+    for (auto* w : interpolationPropertyWidgets_) {
+        interpolationPropsLayout_->removeWidget(w);
+        delete w;
+    }
+    interpolationPropertyWidgets_.clear();
+
+    // Build new widgets for the active interpolation's properties
+    auto& factory = *util::getPropertyWidgetFactory();
+    const auto& props = valseq.getInterpolation().getProperties();
+    int row = 0;
+    for (auto* prop : props) {
+        auto created = factory.create(prop);
+        auto* widget = dynamic_cast<PropertyWidgetQt*>(created.get());
+        if (!widget) continue;
+        created.release();
+        interpolationPropsLayout_->addWidget(widget, row, 0, 1, 2);
+        interpolationPropertyWidgets_.push_back(widget);
+        ++row;
+    }
+}
+
 void PropertySequenceEditor::onValueKeyframeSequenceInterpolationChanged(
     ValueKeyframeSequence* seq) {
 
@@ -312,6 +343,7 @@ void PropertySequenceEditor::onValueKeyframeSequenceInterpolationChanged(
     auto id = utilqt::toQString(seq->getInterpolation().getClassIdentifier());
     auto ind = interpolation_->findData(id);
     interpolation_->setCurrentIndex(ind);
+    rebuildInterpolationPropertyWidgets(*seq);
 }
 
 std::string PropertySequenceEditor::classIdentifier() {
