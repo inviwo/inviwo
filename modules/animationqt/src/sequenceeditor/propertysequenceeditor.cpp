@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <modules/animation/animationmanager.h>
 #include <modules/animation/datastructures/animationtime.h>
@@ -323,15 +324,17 @@ void PropertySequenceEditor::rebuildInterpolationPropertyWidgets(ValueKeyframeSe
 
     // Build new widgets for the active interpolation's properties
     auto* factory = util::getPropertyWidgetFactory();
-    if (!factory) return;
+    if (!factory) {
+        log::warn("Property widget factory unavailable, interpolation properties will not be shown");
+        return;
+    }
     const auto& props = valseq.getInterpolation().getProperties();
     int row = 0;
     for (auto* prop : props) {
         auto created = factory->create(prop);
         if (auto* widget = dynamic_cast<PropertyWidgetQt*>(created.get())) {
-            widget->setParent(this);
-            created.release();  // Ownership transferred to Qt parent widget.
             interpolationPropsLayout_->addWidget(widget, row, 0, 1, 2);
+            created.release();  // Ownership transferred to Qt via layout/widget parenting.
             interpolationPropertyWidgets_.push_back(widget);
             ++row;
         }
