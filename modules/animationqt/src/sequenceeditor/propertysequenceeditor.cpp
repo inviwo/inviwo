@@ -322,13 +322,15 @@ void PropertySequenceEditor::rebuildInterpolationPropertyWidgets(ValueKeyframeSe
     interpolationPropertyWidgets_.clear();
 
     // Build new widgets for the active interpolation's properties
-    auto& factory = *util::getPropertyWidgetFactory();
+    auto* factory = util::getPropertyWidgetFactory();
+    if (!factory) return;
     const auto& props = valseq.getInterpolation().getProperties();
     int row = 0;
     for (auto* prop : props) {
-        auto created = factory.create(prop);
+        auto created = factory->create(prop);
         if (auto* widget = dynamic_cast<PropertyWidgetQt*>(created.get())) {
-            created.release();  // Ownership transferred to Qt parent/layout.
+            widget->setParent(this);
+            created.release();  // Ownership transferred to Qt parent widget.
             interpolationPropsLayout_->addWidget(widget, row, 0, 1, 2);
             interpolationPropertyWidgets_.push_back(widget);
             ++row;
