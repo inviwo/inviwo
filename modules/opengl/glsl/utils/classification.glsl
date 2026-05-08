@@ -42,4 +42,29 @@ vec4 applyTF(sampler2D transferFunction, float intensity) {
     return texture(transferFunction, vec2(intensity, 0.5));
 }
 
+// Absolute TF mode: remap normalized voxel value through the volume's data range into TF texture
+// space. The TF texture covers [tfParams.rangeMin, tfParams.rangeMax] in data-space coordinates.
+vec4 applyTF(sampler2D transferFunction, TFParameters tfParams, NormalizationMap texToNormalized,
+             vec4 voxel) {
+    // Convert from normalized [0,1] back to data-space value
+    float absValue = voxel.r / texToNormalized.scale + texToNormalized.offset;
+    // Map from data-space to TF texture coordinate [0,1]
+    float tfCoord = (absValue - tfParams.rangeMin) / (tfParams.rangeMax - tfParams.rangeMin);
+    return texture(transferFunction, vec2(clamp(tfCoord, 0.0, 1.0), 0.5));
+}
+
+vec4 applyTF(sampler2D transferFunction, TFParameters tfParams, NormalizationMap texToNormalized,
+             vec4 voxel, int channel) {
+    float absValue = voxel[channel] / texToNormalized.scale + texToNormalized.offset;
+    float tfCoord = (absValue - tfParams.rangeMin) / (tfParams.rangeMax - tfParams.rangeMin);
+    return texture(transferFunction, vec2(clamp(tfCoord, 0.0, 1.0), 0.5));
+}
+
+vec4 applyTF(sampler2D transferFunction, TFParameters tfParams, NormalizationMap texToNormalized,
+             float intensity) {
+    float absValue = intensity / texToNormalized.scale + texToNormalized.offset;
+    float tfCoord = (absValue - tfParams.rangeMin) / (tfParams.rangeMax - tfParams.rangeMin);
+    return texture(transferFunction, vec2(clamp(tfCoord, 0.0, 1.0), 0.5));
+}
+
 #endif  // IVW_CLASSIFICATION_GLSL

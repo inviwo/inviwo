@@ -123,7 +123,7 @@ TFEditor::TFEditor(TFPropertyConcept* tfProperty, QWidget* parent)
 
     setItemIndexMethod(QGraphicsScene::NoIndex);
 
-    setSceneRect(0.0, 0.0, 1.0, 1.0);
+    updateSceneRect();
 
     for (auto* set : concept_->sets()) {
         auto& items = primitives_[set];
@@ -166,6 +166,7 @@ void TFEditor::onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) {
         items.connected = false;
         createAndInsertPrimitive<TFEditorIsovalue>(items.points, p, this, selectNewPrimitives_);
     }
+    if (isAbsolute()) updateSceneRect();
 }
 void TFEditor::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
     // remove point from all groups
@@ -187,6 +188,7 @@ void TFEditor::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
     if (items.connected) {
         updateConnections();
     }
+    if (isAbsolute()) updateSceneRect();
 }
 void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& primitive) {
     if (const auto* dm = concept_->getDataMap()) {
@@ -199,7 +201,9 @@ void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive
         }
     }
 }
-void TFEditor::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {}
+void TFEditor::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {
+    updateSceneRect();
+}
 
 void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
@@ -492,9 +496,13 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         auto* clearAction = maskMenu->addAction("&Clear");
 
         connect(maskBegin, &QAction::triggered, this,
-                [this, pos]() { concept_->setMask(pos.x() / width(), concept_->getMask().y); });
+                [this, pos]() {
+                    concept_->setMask(sceneToPos(pos), concept_->getMask().y);
+                });
         connect(maskEnd, &QAction::triggered, this,
-                [this, pos]() { concept_->setMask(concept_->getMask().x, pos.x() / width()); });
+                [this, pos]() {
+                    concept_->setMask(concept_->getMask().x, sceneToPos(pos));
+                });
 
         connect(clearAction, &QAction::triggered, this, [this]() { concept_->clearMask(); });
     }
@@ -566,10 +574,46 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 }
 
 double TFEditor::sceneToPos(const QPointF& pos) const {
+    if (isAbsolute()) {
+        return pos.x();  // scene x IS the data-space position in absolute mode
+    }
     return glm::clamp(pos.x() / width(), 0.0, 1.0);
 }
 double TFEditor::sceneToAlpha(const QPointF& pos) const {
     return glm::clamp(pos.y() / height(), 0.0, 1.0);
+}
+
+bool TFEditor::isAbsolute() const {
+    for (auto* set : concept_->sets()) {
+        if (set->getType() == TFPrimitiveSetType::Absolute) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void TFEditor::updateSceneRect() {
+    if (isAbsolute()) {
+        // For absolute mode, scene x range covers the TF data range with some padding
+        dvec2 range{0.0, 1.0};
+        bool first = true;
+        for (auto* set : concept_->sets()) {
+            const auto r = set->getRange();
+            if (first) {
+                range = r;
+                first = false;
+            } else {
+                range.x = std::min(range.x, r.x);
+                range.y = std::max(range.y, r.y);
+            }
+        }
+        // Add 5% padding on each side
+        const double extent = range.y - range.x;
+        const double padding = std::max(extent * 0.05, 0.01);
+        setSceneRect(range.x - padding, 0.0, extent + 2 * padding, 1.0);
+    } else {
+        setSceneRect(0.0, 0.0, 1.0, 1.0);
+    }
 }
 
 void TFEditor::addPoint(double pos, const vec4& color, TFPrimitiveSet* set) {
@@ -602,18 +646,27 @@ void TFEditor::addPeak(const QPointF& scenePos, TFPrimitiveSet* set) {
 
     const double normalizedOffset = viewDependentOffset().x * 5.0 / width();
 
-    // add point to the left
-    if (pos > 0.0) {
-        // compute intercept on alpha by using alpha - alpha / offset * pos
-        const double leftAlpha = std::max(0.0, alpha * (1.0 - pos / normalizedOffset));
-        set->add(std::max(pos - normalizedOffset, 0.0), leftAlpha);
-    }
+    if (isAbsolute()) {
+        // In absolute mode, offset is in data-space units
+        const double leftAlpha = std::max(0.0, alpha * 0.5);
+        set->add(pos - normalizedOffset, leftAlpha);
+        const double rightAlpha = std::max(0.0, alpha * 0.5);
+        set->add(pos + normalizedOffset, rightAlpha);
+    } else {
+        // add point to the left
+        if (pos > 0.0) {
+            // compute intercept on alpha by using alpha - alpha / offset * pos
+            const double leftAlpha = std::max(0.0, alpha * (1.0 - pos / normalizedOffset));
+            set->add(std::max(pos - normalizedOffset, 0.0), leftAlpha);
+        }
 
-    // add point to the right
-    if (pos < 1.0) {
-        // compute intercept on alpha by using alpha + alpha / offset * (pos - 1.0)
-        const double rightAlpha = std::max(0.0, alpha * (1.0 + (pos - 1.0) / normalizedOffset));
-        set->add(std::min(pos + normalizedOffset, 1.0), rightAlpha);
+        // add point to the right
+        if (pos < 1.0) {
+            // compute intercept on alpha by using alpha + alpha / offset * (pos - 1.0)
+            const double rightAlpha =
+                std::max(0.0, alpha * (1.0 + (pos - 1.0) / normalizedOffset));
+            set->add(std::min(pos + normalizedOffset, 1.0), rightAlpha);
+        }
     }
 }
 

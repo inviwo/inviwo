@@ -29,6 +29,10 @@
 
 #include <modules/basegl/shadercomponents/tfcomponent.h>
 
+#include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/stringconversion.h>
+
 namespace inviwo {
 
 TFComponent::TFComponent(std::string_view identifier, std::string_view name, Document help,
@@ -40,19 +44,42 @@ TFComponent::TFComponent(std::string_view identifier, std::string_view name, Doc
          TransferFunction(
              {{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
          &volume,
-         InvalidationLevel::InvalidResources} {}
+         InvalidationLevel::InvalidResources}
+    , volume_{volume} {}
 
 std::string_view TFComponent::getName() const { return tf.getIdentifier(); }
 
+void TFComponent::initializeResources(Shader& shader) {
+    const bool absolute = tf.get().getType() == TFPrimitiveSetType::Absolute;
+    const auto define = fmt::format("TF_ABSOLUTE_{}", toUpper(tf.getIdentifier()));
+    shader.getFragmentShaderObject()->setShaderDefine(define, absolute);
+}
+
 void TFComponent::process(Shader& shader, TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader, cont, tf);
+
+    if (tf.get().getType() == TFPrimitiveSetType::Absolute) {
+        const auto range = tf.get().getRange();
+        const auto name = tf.getIdentifier();
+        StrBuffer buff;
+        shader.setUniform(buff.replace("{}Params.rangeMin", name),
+                          static_cast<float>(range.x));
+        shader.setUniform(buff.replace("{}Params.rangeMax", name),
+                          static_cast<float>(range.y));
+    }
 }
 
 std::vector<Property*> TFComponent::getProperties() { return {&tf}; }
 
 auto TFComponent::getSegments() -> std::vector<Segment> {
-    return {Segment{fmt::format("uniform sampler2D {};", tf.getIdentifier()), placeholder::uniform,
-                    1050 + 1}};
+    std::vector<Segment> segments;
+    segments.push_back(
+        Segment{fmt::format("uniform sampler2D {};", tf.getIdentifier()), placeholder::uniform,
+                1050 + 1});
+    segments.push_back(
+        Segment{fmt::format("uniform TFParameters {}Params;", tf.getIdentifier()),
+                placeholder::uniform, 1050 + 2});
+    return segments;
 }
 
 }  // namespace inviwo

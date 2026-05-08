@@ -183,11 +183,17 @@ void TFEditorPrimitive::updateLabel() {
 
     QString label;
     if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
-        label = utilqt::toQString(
-            fmt::format("{:0.3g}{: [} ({:0.3g}) / {:0.3g}",
-                        tfe->getDataMapper().mapFromNormalizedToValue(getPosition()),
-                        tfe->getDataMapper().valueAxis.unit, getPosition(), getColor().a));
-
+        if (tfe->isAbsolute()) {
+            // In absolute mode, position is already in data space
+            label = utilqt::toQString(
+                fmt::format("{:0.4g}{: [} / {:0.3g}", getPosition(),
+                            tfe->getDataMapper().valueAxis.unit, getColor().a));
+        } else {
+            label = utilqt::toQString(
+                fmt::format("{:0.3g}{: [} ({:0.3g}) / {:0.3g}",
+                            tfe->getDataMapper().mapFromNormalizedToValue(getPosition()),
+                            tfe->getDataMapper().valueAxis.unit, getPosition(), getColor().a));
+        }
     } else {
         label = QString("%1 / %2").arg(getPosition(), 0, 'g', 3).arg(getColor().a, 0, 'g', 3);
     }
