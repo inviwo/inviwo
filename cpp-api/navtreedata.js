@@ -86,13 +86,13 @@ var NAVTREEINDEX =
 "classinviwo_1_1plot_1_1ColorScaleLegend.html",
 "functions_type.html",
 "namespaceinviwo_1_1pool.html#a0800098fbdf7e02da630f3fce3e74d39a912f4c96d4cbc86810c93cbf112db52c",
-"namespaceinviwo_1_1util.html#aec5a54031ffd03ed97bb957ca8f522d3",
+"namespaceinviwo_1_1util.html#aedde0f16b84fba22f20ff5f4decb2886",
 "structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html",
 "structinviwo_1_1PropertyObserverDelegate.html",
 "structinviwo_1_1detail_1_1CodePointsAdaptor.html",
 "structinviwo_1_1util_1_1glmtype_3_01T_00_01L_00_011_00_01P_01_4.html"
 ];
 
-var SYNCONMSG = 'click to disable panel synchronization';
-var SYNCOFFMSG = 'click to enable panel synchronization';
-var LISTOFALLMEMBERS = 'List of all members';
+const SYNCONMSG = 'click to disable panel synchronization';
+const SYNCOFFMSG = 'click to enable panel synchronization';
+const LISTOFALLMEMBERS = 'List of all members';

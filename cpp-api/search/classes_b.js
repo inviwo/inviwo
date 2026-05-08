@@ -76,7 +76,7 @@ var searchData=
   ['linerenderer_73',['LineRenderer',['../classinviwo_1_1algorithm_1_1LineRenderer.html',1,'inviwo::algorithm']]],
   ['linerendererprocessor_74',['LineRendererProcessor',['../classinviwo_1_1LineRendererProcessor.html',1,'inviwo']]],
   ['linesettingsproperty_75',['LineSettingsProperty',['../classinviwo_1_1LineSettingsProperty.html',1,'inviwo']]],
-  ['linewidthpolicy_76',['LineWidthPolicy',['../structinviwo_1_1utilgl_1_1detail_1_1LineWidthPolicy.html',1,'inviwo::utilgl::detail::LineWidthPolicy'],['../structinviwo_1_1utilgl_1_1LineWidthPolicy.html',1,'inviwo::utilgl::LineWidthPolicy']]],
+  ['linewidthpolicy_76',['LineWidthPolicy',['../structinviwo_1_1utilgl_1_1detail_1_1LineWidthPolicy.html',1,'inviwo::utilgl::detail']]],
   ['linkconnectiondraggraphicsitem_77',['LinkConnectionDragGraphicsItem',['../classinviwo_1_1LinkConnectionDragGraphicsItem.html',1,'inviwo']]],
   ['linkconnectiongraphicsitem_78',['LinkConnectionGraphicsItem',['../classinviwo_1_1LinkConnectionGraphicsItem.html',1,'inviwo']]],
   ['linkdialog_79',['LinkDialog',['../classinviwo_1_1LinkDialog.html',1,'inviwo']]],

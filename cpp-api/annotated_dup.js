@@ -528,7 +528,6 @@ var annotated_dup =
         [ "Enable", "structinviwo_1_1utilgl_1_1Enable.html", null ],
         [ "FormatConversion", "structinviwo_1_1utilgl_1_1FormatConversion.html", null ],
         [ "GlBoolState", "structinviwo_1_1utilgl_1_1GlBoolState.html", null ],
-        [ "LineWidthPolicy", "structinviwo_1_1utilgl_1_1LineWidthPolicy.html", null ],
         [ "NormalizationMap", "structinviwo_1_1utilgl_1_1NormalizationMap.html", null ],
         [ "PolygonModeState", "structinviwo_1_1utilgl_1_1PolygonModeState.html", null ],
         [ "RangeConversionMap", "structinviwo_1_1utilgl_1_1RangeConversionMap.html", null ],
