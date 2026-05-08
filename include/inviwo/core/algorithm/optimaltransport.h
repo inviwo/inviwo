@@ -62,7 +62,8 @@ namespace algorithm {
  * @return      The interpolated transfer function as a vector of TFPrimitiveData.
  */
 IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolation(
-    std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t);
+    std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
+    std::size_t samplesPerSegment = 16);
 
 /**
  * @brief Compute the Earth Mover's Distance (1-Wasserstein) between two transfer functions.
@@ -75,7 +76,8 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolation(
  * @return      The Earth Mover's Distance (non-negative).
  */
 IVW_CORE_API double earthMoversDistance(std::span<const TFPrimitiveData> tfA,
-                                        std::span<const TFPrimitiveData> tfB);
+                                        std::span<const TFPrimitiveData> tfB,
+                                        std::size_t samplesPerSegment = 16);
 
 }  // namespace algorithm
 

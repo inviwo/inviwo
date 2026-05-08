@@ -40,6 +40,10 @@
 
 #include <filesystem>
 
+namespace inviwo {
+class TransferFunction;
+}
+
 namespace inviwo::animation {
 
 /**
@@ -55,7 +59,8 @@ public:
 
     virtual ConstantInterpolation* clone() const override;
 
-    virtual std::string getName() const override;
+    virtual std::string_view getDisplayName() const override;
+    virtual std::string_view getIdentifier() const override { return "ConstantInterpolation"; }
 
     static std::string_view classIdentifier();
     virtual std::string_view getClassIdentifier() const override;
@@ -72,7 +77,7 @@ public:
 
 template <typename Key, typename Result>
 ConstantInterpolation<Key, Result>::ConstantInterpolation(InviwoApplication* app)
-    : InterpolationTyped<Key, Result>(app, std::string(classIdentifier())) {}
+    : InterpolationTyped<Key, Result>(app) {}
 
 template <typename Key, typename Result>
 ConstantInterpolation<Key, Result>* ConstantInterpolation<Key, Result>::clone() const {
@@ -89,6 +94,10 @@ std::string_view ConstantInterpolation<Key, Result>::classIdentifier() {
     } else if constexpr (std::is_same_v<V, std::filesystem::path>) {
         static const std::string identifier = "org.inviwo.animation.constantinterpolation.Path";
         return identifier;
+    } else if constexpr (std::is_same_v<V, TransferFunction>) {
+        static const std::string identifier =
+            "org.inviwo.animation.constantinterpolation.TransferFunction";
+        return identifier;
     } else {
         static const auto identifier =
             "org.inviwo.animation.constantinterpolation." + Defaultvalues<V>::getName();
@@ -102,7 +111,7 @@ std::string_view ConstantInterpolation<Key, Result>::getClassIdentifier() const 
 }
 
 template <typename Key, typename Result>
-std::string ConstantInterpolation<Key, Result>::getName() const {
+std::string_view ConstantInterpolation<Key, Result>::getDisplayName() const {
     return "Constant";
 }
 
@@ -112,8 +121,7 @@ bool ConstantInterpolation<Key, Result>::equal(const Interpolation& other) const
 }
 template <typename Key, typename Result>
 void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                                    Seconds from, Seconds to,
-                                                    Result& out) const {
+                                                    Seconds from, Seconds to, Result& out) const {
 
     if (to > from) {
         auto it = std::upper_bound(

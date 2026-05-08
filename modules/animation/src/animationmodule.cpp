@@ -45,6 +45,7 @@
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/util/glmmat.h>
@@ -58,10 +59,10 @@
 #include <modules/animation/datastructures/basetrack.h>
 #include <modules/animation/datastructures/buttonkeyframe.h>
 #include <modules/animation/datastructures/buttonkeyframesequence.h>
-#include <modules/animation/datastructures/buttontrack.h>             // IWYU pragma: keep
+#include <modules/animation/datastructures/buttontrack.h>  // IWYU pragma: keep
 #include <modules/animation/datastructures/callbacktrack.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
-#include <modules/animation/datastructures/cameratrack.h>             // IWYU pragma: keep
+#include <modules/animation/datastructures/cameratrack.h>  // IWYU pragma: keep
 #include <modules/animation/datastructures/controltrack.h>
 #include <modules/animation/datastructures/invalidationtrack.h>
 #include <modules/animation/datastructures/keyframe.h>
@@ -77,6 +78,7 @@
 #include <modules/animation/interpolation/linearinterpolation.h>
 #include <modules/animation/workspaceanimations.h>
 #include <modules/animation/factories/imagerecorderfactory.h>
+#include <modules/animation/interpolation/transferfunctioninterpolation.h>
 
 #include <modules/animation/interpolation/cameraanimation.h>
 
@@ -143,7 +145,8 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     });
 
     // Register properties that should not interpolate
-    util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
+    util::for_each_type<
+        std::tuple<BoolProperty, FileProperty, StringProperty, TransferFunctionProperty>>{}(
         [&]<typename PropertyType>() {
             propertyHelper<PropertyType>();
             using ValueType = typename PropertyType::value_type;
@@ -165,6 +168,8 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     interpolationHelper<CameraProperty, CameraSphericalInterpolation>();
     interpolationHelper<CameraProperty, CameraLinearInterpolation>();
     interpolationHelper<CameraProperty, CameraAnimation>();
+
+    interpolationHelper<TransferFunctionProperty, TransferFunctionInterpolation>();
 
     propertyHelper<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>();
 

@@ -52,7 +52,9 @@ public:
     virtual ~CameraAnimation() = default;
     virtual CameraAnimation* clone() const override;
 
-    virtual std::string getName() const override;
+    virtual std::string_view getDisplayName() const override;
+
+    virtual std::string_view getIdentifier() const override { return "CameraAnimation"; }
 
     static std::string_view classIdentifier();
     virtual std::string_view getClassIdentifier() const override;

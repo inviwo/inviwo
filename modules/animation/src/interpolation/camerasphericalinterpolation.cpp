@@ -59,7 +59,7 @@ namespace inviwo {
 namespace animation {
 
 CameraSphericalInterpolation::CameraSphericalInterpolation(InviwoApplication* app)
-    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app, classIdentifier()) {}
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app) {}
 
 CameraSphericalInterpolation::CameraSphericalInterpolation(const CameraSphericalInterpolation& rhs)
     : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(rhs) {}
@@ -68,7 +68,7 @@ CameraSphericalInterpolation* CameraSphericalInterpolation::clone() const {
     return new CameraSphericalInterpolation(*this);
 }
 
-std::string CameraSphericalInterpolation::getName() const { return "Orbit/Pan/Tilt"; }
+std::string_view CameraSphericalInterpolation::getDisplayName() const { return "Orbit/Pan/Tilt"; }
 
 std::string_view CameraSphericalInterpolation::getClassIdentifier() const {
     return classIdentifier();

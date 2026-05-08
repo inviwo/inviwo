@@ -282,7 +282,7 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
     auto& valseq = dynamic_cast<ValueKeyframeSequence&>(sequence);
     for (auto interpObj : valseq.getSupportedInterpolations(manager.getInterpolationFactory())) {
         auto ip = interpObj->create(nullptr);
-        interpolation_->addItem(utilqt::toQString(ip->getName()),
+        interpolation_->addItem(utilqt::toQString(ip->getDisplayName()),
                                 QVariant(utilqt::toQString(ip->getClassIdentifier())));
         if (valseq.getInterpolation().getClassIdentifier() == ip->getClassIdentifier()) {
             interpolation_->setCurrentIndex(interpolation_->count() - 1);

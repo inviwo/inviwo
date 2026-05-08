@@ -53,20 +53,17 @@ public:
      * @param app  The InviwoApplication. May be nullptr if created outside of a full application
      *             context (e.g. for temporary introspection). The InterpolationFactory always
      *             supplies the real application pointer.
-     * @param identifier  A stable string identifier for this interpolation instance, typically
-     *                    equal to the class identifier.
      */
-    Interpolation(InviwoApplication* app, std::string_view identifier);
+    Interpolation(InviwoApplication* app);
     virtual ~Interpolation() = default;
 
     virtual Interpolation* clone() const = 0;
 
-    virtual std::string getName() const = 0;
-
+    virtual std::string_view getDisplayName() const = 0;
     virtual std::string_view getClassIdentifier() const = 0;
+
     virtual bool equal(const Interpolation& other) const = 0;
 
-    virtual const std::string& getIdentifier() const override;
     virtual InviwoApplication* getInviwoApplication() override;
 
     virtual void serialize(Serializer& s) const override = 0;
@@ -78,9 +75,7 @@ protected:
      * Re-populating the property list is the responsibility of the derived class.
      */
     Interpolation(const Interpolation& rhs);
-
     InviwoApplication* app_;
-    std::string identifier_;
 };
 
 IVW_MODULE_ANIMATION_API bool operator==(const Interpolation& a, const Interpolation& b);
@@ -99,16 +94,9 @@ public:
     using key_type = Key;
     using result_type = Result;
 
-    explicit InterpolationTyped(InviwoApplication* app, std::string_view identifier)
-        : Interpolation(app, identifier) {}
+    using Interpolation::Interpolation;
 
-    virtual ~InterpolationTyped() = default;
-
-    virtual InterpolationTyped* clone() const override = 0;
-
-    virtual std::string_view getClassIdentifier() const override = 0;
-    virtual void serialize(Serializer& s) const override = 0;
-    virtual void deserialize(Deserializer& d) override = 0;
+    virtual InterpolationTyped* clone() const override = 0;  // Needed for covariant return type
 
     // Override this function to interpolate between key frames
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,

@@ -222,7 +222,8 @@ KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(const KeyframeSequenceTyped<Ke
     : BaseKeyframeSequence<Key>(rhs)
     , ValueKeyframeSequence(rhs)
     , interpolation_(rhs.interpolation_
-                         ? std::unique_ptr<InterpolationTyped<Key>>(rhs.interpolation_->clone())
+                         ? std::unique_ptr<InterpolationTyped<Key>>(
+                            rhs.interpolation_->clone())
                          : nullptr) {
     registerInterpolationCallbacks();
 }

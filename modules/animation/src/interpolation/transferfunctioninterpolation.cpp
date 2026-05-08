@@ -52,11 +52,27 @@ namespace animation {
 
 namespace {}  // namespace
 
+TransferFunctionInterpolation::TransferFunctionInterpolation(InviwoApplication* app)
+    : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app)
+    , segments{"segments", "Segments", util::ordinalCount(16uz)} {
+
+    addProperty(segments);
+}
+
+TransferFunctionInterpolation::TransferFunctionInterpolation(
+    const TransferFunctionInterpolation& rhs)
+    : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(rhs)
+    , segments{rhs.segments} {
+    addProperty(segments);
+}
+
 TransferFunctionInterpolation* TransferFunctionInterpolation::clone() const {
     return new TransferFunctionInterpolation(*this);
 }
 
-std::string TransferFunctionInterpolation::getName() const { return "Optimal Transport"; }
+std::string_view TransferFunctionInterpolation::getDisplayName() const {
+    return "Optimal Transport";
+}
 
 std::string_view TransferFunctionInterpolation::getClassIdentifier() const {
     return classIdentifier();
@@ -72,7 +88,7 @@ std::string_view TransferFunctionInterpolation::classIdentifier() {
 
 void TransferFunctionInterpolation::operator()(
     const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds /*from*/,
-    Seconds to, Easing easing, TransferFunction& out) const {
+    Seconds to, TransferFunction& out) const {
 
     auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
         return time < key->getTime();
@@ -87,7 +103,7 @@ void TransferFunctionInterpolation::operator()(
     const auto t = static_cast<double>((to - t1) / (t2 - t1));
 
     const auto interpolated = algorithm::optimalTransportInterpolation(
-        v1.getValue().get(), v2.getValue().get(), util::ease(t, easing));
+        v1.getValue().get(), v2.getValue().get(), t, segments.get());
 
     out.set(interpolated);
 }

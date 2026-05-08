@@ -35,13 +35,9 @@ namespace inviwo {
 
 namespace animation {
 
-Interpolation::Interpolation(InviwoApplication* app, std::string_view identifier)
-    : app_(app), identifier_(identifier) {}
+Interpolation::Interpolation(InviwoApplication* app) : app_(app) {}
 
-Interpolation::Interpolation(const Interpolation& rhs)
-    : PropertyOwner(rhs), app_(rhs.app_), identifier_(rhs.identifier_) {}
-
-const std::string& Interpolation::getIdentifier() const { return identifier_; }
+Interpolation::Interpolation(const Interpolation& rhs) : PropertyOwner(rhs), app_(rhs.app_) {}
 
 InviwoApplication* Interpolation::getInviwoApplication() { return app_; }
 

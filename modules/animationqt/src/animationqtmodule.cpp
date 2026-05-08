@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
@@ -50,7 +51,7 @@
 #include <modules/animation/datastructures/callbacktrack.h>
 #include <modules/animation/datastructures/invalidationtrack.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
-#include <modules/animation/datastructures/cameratrack.h>               // IWYU pragma: keep
+#include <modules/animation/datastructures/cameratrack.h>  // IWYU pragma: keep
 #include <modules/animation/datastructures/controltrack.h>
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
@@ -228,7 +229,8 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
     util::for_each_type<std::tuple<float, double, int, unsigned int, size_t, std::string>>{}(
         Reghelper<OptionProperty>{}, *this);
 
-    util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
+    util::for_each_type<
+        std::tuple<BoolProperty, FileProperty, StringProperty, TransferFunctionProperty>>{}(
         [&]<typename Prop>() {
             registerPropertyTrackHelper<Prop, ValueKeyframe<typename Prop::value_type>>(*this);
         });

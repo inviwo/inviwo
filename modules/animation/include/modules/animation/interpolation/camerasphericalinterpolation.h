@@ -62,7 +62,10 @@ public:
 
     virtual CameraSphericalInterpolation* clone() const override;
 
-    virtual std::string getName() const override;
+    virtual std::string_view getDisplayName() const override;
+    virtual std::string_view getIdentifier() const override {
+        return "CameraSphericalInterpolation";
+    }
 
     static std::string_view classIdentifier();
     virtual std::string_view getClassIdentifier() const override;
@@ -80,8 +83,7 @@ public:
      * Uses the easing stored on the outgoing keyframe for each interval.
      */
     virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
-                            Seconds to,
-                            CameraKeyframe::value_type& out) const override;
+                            Seconds to, CameraKeyframe::value_type& out) const override;
 };
 
 }  // namespace animation
