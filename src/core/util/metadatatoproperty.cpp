@@ -144,7 +144,7 @@ void MetaDataToProperty::updateProperty(CompositeProperty& parent, const MetaDat
     // Remove unused meta data properties
     std::vector<std::string> ids;
     for (auto p : parent.getProperties()) {
-        ids.push_back(p->getIdentifier());
+        ids.emplace_back(p->getIdentifier());
     }
     for (auto id : ids) {
         if (!metaDataMap->get(id)) {

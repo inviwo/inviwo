@@ -52,7 +52,7 @@ class QHBoxLayout;
 
 namespace inviwo {
 
-EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, const std::string& text,
+EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, std::string_view text,
                                  bool shortenText)
     : QWidget(parent)
     , label_{new QLabel(this)}
@@ -134,7 +134,7 @@ void EditableLabelQt::resizeEvent(QResizeEvent* event) {
 
 void EditableLabelQt::mouseDoubleClickEvent(QMouseEvent*) { edit(); }
 
-void EditableLabelQt::setText(const std::string& txt) {
+void EditableLabelQt::setText(std::string_view txt) {
     text_ = txt;
     updateLabel(text_);
 }

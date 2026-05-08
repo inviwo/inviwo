@@ -43,6 +43,7 @@
 #include <modules/animation/datastructures/track.h>
 #include <modules/animationqt/trackcontrolswidgetqt.h>
 #include <modules/animationqt/widgets/editorconstants.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <QAbstractItemView>
 #include <QAction>
@@ -76,7 +77,7 @@ namespace animation {
 class TrackItem : public QStandardItem {
 public:
     TrackItem(Track* track)
-        : QStandardItem(QString::fromStdString(track->getName())), track_(track) {}
+        : QStandardItem(utilqt::toQString(track->getName())), track_(track) {}
 
     Track* track_;
 };

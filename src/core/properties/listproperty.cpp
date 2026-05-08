@@ -172,22 +172,21 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
             [&](std::string_view id) { return getPropertyByIdentifier(id) == nullptr; }, ""));
 
         // if prefab has a trailing number in its display name, use number of identifier
-        std::string displayName = property->getDisplayName();
+        const auto displayName = property->getDisplayName();
         auto it = std::find_if(displayName.rbegin(), displayName.rend(),
                                [](char c) { return !std::isdigit(c); });
         std::string baseName = trim(std::string{displayName.begin(), it.base()});
         if (it.base() != displayName.end()) {
             // extract number from identifier
-            std::string identifier = property->getIdentifier();
+            const auto identifier = property->getIdentifier();
             auto itIdentifier = std::find_if(identifier.rbegin(), identifier.rend(),
                                              [](char c) { return !std::isdigit(c); });
             std::string number(itIdentifier.base(), identifier.end());
             if (!number.empty()) {
-                displayName = baseName + " " + number;
+                property->setDisplayName(baseName + " " + number);
             } else {
-                displayName = baseName + " 1";
+                property->setDisplayName(baseName + " 1");
             }
-            property->setDisplayName(displayName);
         }
 
         CompositeProperty::addProperty(property, true);

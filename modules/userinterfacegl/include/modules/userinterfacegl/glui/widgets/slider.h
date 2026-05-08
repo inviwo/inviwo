@@ -54,7 +54,7 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.glui.Slider"};
 
-    Slider(const std::string& label, int value, int minValue, int maxValue, Processor& processor,
+    Slider(std::string_view label, int value, int minValue, int maxValue, Processor& processor,
            Renderer& uiRenderer, const ivec2& extent = ivec2(100, 24),
            UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~Slider() = default;

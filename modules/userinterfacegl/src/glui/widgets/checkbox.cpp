@@ -55,7 +55,7 @@ namespace glui {
 
 std::string_view CheckBox::getClassIdentifier() const { return classIdentifier; }
 
-CheckBox::CheckBox(const std::string& label, Processor& processor, Renderer& uiRenderer,
+CheckBox::CheckBox(std::string_view label, Processor& processor, Renderer& uiRenderer,
                    const ivec2& extent)
     : Element(label, processor, uiRenderer) {
     widgetExtent_ = extent;

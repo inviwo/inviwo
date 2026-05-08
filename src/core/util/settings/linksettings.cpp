@@ -48,7 +48,7 @@ LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
     load();
 
     for (auto prop : linkProperties_.getProperties()) {
-        propertyMap_[prop->getIdentifier()] = static_cast<BoolProperty*>(prop);
+        propertyMap_.emplace(prop->getIdentifier(), static_cast<BoolProperty*>(prop));
         prop->setVisible(false);
     }
 

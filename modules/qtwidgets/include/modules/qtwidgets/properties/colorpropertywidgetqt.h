@@ -55,7 +55,7 @@
 #include <QString>
 #include <QToolButton>
 #include <QWidget>
-#include <QMenu>           // IWYU pragma: keep
+#include <QMenu>  // IWYU pragma: keep
 #include <Qt>
 
 #include <glm/common.hpp>
@@ -279,7 +279,7 @@ void ColorPropertyWidgetQt<T>::updateFromProperty() {
 
     if (colorDialog_) {
         QSignalBlocker block{colorDialog_};
-        colorDialog_->setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
+        colorDialog_->setWindowTitle(utilqt::toQString(property_->getDisplayName()));
         colorDialog_->setCurrentColor(currentColor_);
     }
 }

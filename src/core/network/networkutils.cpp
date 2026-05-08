@@ -375,7 +375,7 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
 
         std::map<std::string, std::string, std::less<>> processorIds;
         for (auto& p : processors) {
-            auto orgId = p->getIdentifier();
+            std::string orgId{p->getIdentifier()};
             network_->addProcessor(p);
             processorIds[orgId] = p->getIdentifier();
         }

@@ -150,21 +150,21 @@ public:
      * characters, "-" and "_".
      */
     virtual Property& setIdentifier(std::string_view identifier);
-    virtual const std::string& getIdentifier() const;
+    virtual std::string_view getIdentifier() const;
 
     /**
      * @brief Get the property path as string
      * @return string of dot separated identifiers starting with a processor identifier followed
      * by property identifiers.
      */
-    const std::string& getPath() const;
+    std::string_view getPath() const;
     void getPath(std::pmr::string& out) const;
 
     /**
      * @brief A property's name displayed to the user
      */
     virtual Property& setDisplayName(std::string_view displayName);
-    virtual const std::string& getDisplayName() const;
+    virtual std::string_view getDisplayName() const;
 
     /**
      * @brief Returns which property's widget should be used

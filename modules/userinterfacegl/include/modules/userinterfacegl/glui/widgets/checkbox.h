@@ -54,7 +54,7 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.glui.CheckBox"};
 
-    CheckBox(const std::string& label, Processor& processor, Renderer& uiRenderer,
+    CheckBox(std::string_view label, Processor& processor, Renderer& uiRenderer,
              const ivec2& extent = ivec2(24, 24));
     virtual ~CheckBox() = default;
 

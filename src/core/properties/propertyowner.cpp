@@ -420,11 +420,6 @@ void PropertyOwner::resetAllProperties() {
     for (auto& elem : properties_) elem->resetToDefaultState();
 }
 
-const std::string& PropertyOwner::getIdentifier() const {
-    static std::string id;
-    return id;
-}
-
 void PropertyOwner::invokeEvent(Event* event) {
     for (auto elem : eventProperties_) {
         elem->invokeEvent(event);

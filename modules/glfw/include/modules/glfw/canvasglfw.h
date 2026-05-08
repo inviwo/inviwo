@@ -53,7 +53,7 @@ namespace inviwo {
  */
 class IVW_MODULE_GLFW_API GLFWWindowHandler {
 public:
-    GLFWWindowHandler(Canvas* canvas, const std::string& title, uvec2 dimensions);
+    GLFWWindowHandler(Canvas* canvas, std::string_view title, uvec2 dimensions);
     ~GLFWWindowHandler();
 
     /**
@@ -63,7 +63,7 @@ public:
     static void provideExternalContext(GLFWwindow* sharedContext);
     static GLFWwindow* sharedContext();
 
-    static GLFWwindow* createWindow(const std::string& title, uvec2 dimensions);
+    static GLFWwindow* createWindow(std::string_view title, uvec2 dimensions);
 
     Canvas::ContextID getContextId() const { return static_cast<Canvas::ContextID>(glWindow_); }
 
@@ -77,7 +77,7 @@ class IVW_MODULE_GLFW_API CanvasGLFW : public GLFWWindowHandler, public CanvasGL
     friend class CanvasProcessorWidgetGLFW;
 
 public:
-    CanvasGLFW(const std::string& title = "", uvec2 dimensions = uvec2(128));
+    CanvasGLFW(std::string_view title = "", uvec2 dimensions = uvec2(128));
     virtual ~CanvasGLFW();
 
     virtual void update() override;

@@ -55,9 +55,9 @@ class IVW_MODULE_QTWIDGETS_API EditableLabelQt : public QWidget, public Property
     Q_OBJECT
 public:
     EditableLabelQt(PropertyWidgetQt* parent, Property* property, bool shortenText = true);
-    EditableLabelQt(PropertyWidgetQt* parent, const std::string& text, bool shortenText = true);
+    EditableLabelQt(PropertyWidgetQt* parent, std::string_view text, bool shortenText = true);
     std::string getText();
-    void setText(const std::string& txt);
+    void setText(std::string_view txt);
     void setShortenText(bool shorten);
 
     QSize sizeHint() const override;

@@ -78,7 +78,7 @@ public:
 
     virtual std::string_view getClassIdentifier() const = 0;
 
-    Element(const std::string& label, Processor& processor, Renderer& uiRenderer,
+    Element(std::string_view label, Processor& processor, Renderer& uiRenderer,
             UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~Element();
 
@@ -88,7 +88,7 @@ public:
     void setEnabled(bool enable = true);
     bool isEnabled() const;
 
-    void setLabel(const std::string& str);
+    void setLabel(std::string_view str);
     const std::string& getLabel() const;
 
     void setFontSize(int size);

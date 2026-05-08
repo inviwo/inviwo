@@ -223,14 +223,14 @@ void Processor::setIdentifier(std::string_view identifier) {
     }
 }
 
-const std::string& Processor::getIdentifier() const { return identifier_; }
+std::string_view Processor::getIdentifier() const { return identifier_; }
 
 auto Processor::onIdentifierChange(std::function<void(std::string_view, std::string_view)> callback)
     -> NameDispatcherHandle {
     return identifierDispatcher_.add(std::move(callback));
 }
 
-const std::string& Processor::getDisplayName() const { return displayName_; }
+std::string_view Processor::getDisplayName() const { return displayName_; }
 void Processor::setDisplayName(std::string_view displayName) {
     if (displayName_ != displayName) {
         const auto old = displayName_;

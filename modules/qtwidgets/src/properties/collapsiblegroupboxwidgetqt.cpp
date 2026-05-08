@@ -112,7 +112,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Settings* settings, boo
     : CollapsibleGroupBoxWidgetQt(nullptr, settings, settings->getIdentifier(), isCheckable) {}
 
 CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, PropertyOwner* owner,
-                                                         const std::string& displayName,
+                                                         std::string_view displayName,
                                                          bool isCheckable)
     : PropertyWidgetQt(property)
     , PropertyOwnerObserver()
@@ -273,7 +273,7 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
             std::stringstream ss;
             for (auto d : data) ss << d;
 
-            auto app = propertyOwner_->getInviwoApplication();
+            auto* app = propertyOwner_->getInviwoApplication();
             RenderContext::getPtr()->activateDefaultRenderContext();
             try {
                 auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");

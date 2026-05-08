@@ -40,6 +40,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/safecstr.h>
 #include <modules/glfw/glfwexception.h>
 #include <modules/glfw/glfwuserdata.h>
 #include <modules/opengl/canvasgl.h>
@@ -60,7 +61,7 @@ GLFWwindow* GLFWWindowHandler::sharedContext_ = nullptr;
 int CanvasGLFW::glfwWindowCount_ = 0;
 bool CanvasGLFW::alwaysOnTop_ = false;
 
-GLFWWindowHandler::GLFWWindowHandler(Canvas* canvas, const std::string& title, uvec2 dimensions)
+GLFWWindowHandler::GLFWWindowHandler(Canvas* canvas, std::string_view title, uvec2 dimensions)
     : glWindow_(createWindow(title, dimensions)) {
 
     if (!sharedContext_) {
@@ -88,7 +89,7 @@ void GLFWWindowHandler::provideExternalContext(GLFWwindow* sharedContext) {
 
 GLFWwindow* GLFWWindowHandler::sharedContext() { return sharedContext_; }
 
-GLFWwindow* GLFWWindowHandler::createWindow(const std::string& title, uvec2 dimensions) {
+GLFWwindow* GLFWWindowHandler::createWindow(std::string_view title, uvec2 dimensions) {
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
 #ifdef __APPLE__
@@ -101,14 +102,14 @@ GLFWwindow* GLFWWindowHandler::createWindow(const std::string& title, uvec2 dime
 #endif
 
     auto win = glfwCreateWindow(static_cast<int>(dimensions.x), static_cast<int>(dimensions.y),
-                                title.c_str(), nullptr, sharedContext_);
+                                SafeCStr{title}.c_str(), nullptr, sharedContext_);
     if (!win) {
         throw GLFWException("Could not create GLFW window.");
     }
     return win;
 }
 
-CanvasGLFW::CanvasGLFW(const std::string& title, uvec2 dimensions)
+CanvasGLFW::CanvasGLFW(std::string_view title, uvec2 dimensions)
     : GLFWWindowHandler(this, title, dimensions)
     , CanvasGL()
     , userdata_{glWindow_}

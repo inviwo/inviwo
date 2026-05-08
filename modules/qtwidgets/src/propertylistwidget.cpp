@@ -380,7 +380,7 @@ bool PropertyListWidget::event(QEvent* e) {
     }
 }
 
-PropertyListEvent::PropertyListEvent(Action aAction, std::string aIdentifier)
+PropertyListEvent::PropertyListEvent(Action aAction, std::string_view aIdentifier)
     : QEvent(PropertyListEvent::type()), action(aAction), identifier(aIdentifier) {}
 
 QEvent::Type PropertyListEvent::type() {

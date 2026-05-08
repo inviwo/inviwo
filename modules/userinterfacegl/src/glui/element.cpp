@@ -60,7 +60,7 @@ namespace inviwo {
 
 namespace glui {
 
-Element::Element(const std::string& label, Processor& processor, Renderer& uiRenderer,
+Element::Element(std::string_view label, Processor& processor, Renderer& uiRenderer,
                  UIOrientation orientation)
     : action_([]() {})
     , moveAction_([](const dvec2&) { return false; })
@@ -84,7 +84,7 @@ Element::Element(const std::string& label, Processor& processor, Renderer& uiRen
 
 Element::~Element() = default;
 
-void Element::setLabel(const std::string& str) {
+void Element::setLabel(std::string_view str) {
     if (str != labelStr_) {
         labelStr_ = str;
 

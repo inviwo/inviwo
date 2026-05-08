@@ -138,6 +138,7 @@ public:
 
     Seconds deltaTime() const;
 
+    virtual std::string_view getIdentifier() const override { return "AnimationController"; }
     InviwoApplication* getInviwoApplication() override { return app_; }
 
 public:

@@ -54,7 +54,7 @@ ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
     button_ = new QPushButton();
-    button_->setText(QString::fromStdString(property_->getDisplayName()));
+    button_->setText(utilqt::toQString(property_->getDisplayName()));
     connect(button_, &QPushButton::released, this, [&]() {
         if (!property_->getReadOnly()) {
             util::exceptionGuard([&]() { property_->pressButton(); });
@@ -74,7 +74,7 @@ void ButtonPropertyWidgetQt::onSetDisplayName(Property*, const std::string& disp
 }
 
 void ButtonPropertyWidgetQt::updateFromProperty() {
-    button_->setText(QString::fromStdString(property_->getDisplayName()));
+    button_->setText(utilqt::toQString(property_->getDisplayName()));
 }
 
 QPushButton* ButtonPropertyWidgetQt::getButton() { return button_; }

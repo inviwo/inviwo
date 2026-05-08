@@ -115,7 +115,7 @@ public:
      */
     virtual void clear();
 
-    virtual const std::string& getIdentifier() const;
+    virtual std::string_view getIdentifier() const = 0;
 
     const std::vector<Property*>& getProperties() const;
     const std::vector<CompositeProperty*>& getCompositeProperties() const;

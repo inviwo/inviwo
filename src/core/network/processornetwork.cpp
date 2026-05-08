@@ -71,7 +71,7 @@ Processor* ProcessorNetwork::addProcessor(std::shared_ptr<Processor> processor) 
         [&](std::string_view id) { return getProcessorByIdentifier(id) == nullptr; }, ""));
 
     notifyObserversProcessorNetworkWillAddProcessor(processor.get());
-    processors_[processor->getIdentifier()] = processor;
+    processors_.emplace(processor->getIdentifier(), processor);
     processor->setNetwork(this);
     processor->ProcessorObservable::addObserver(this);
     onIdChange_[processor.get()] =

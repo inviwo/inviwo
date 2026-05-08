@@ -60,6 +60,7 @@ public:
 
     void setFolder(const std::filesystem::path& path);
 
+    virtual std::string_view getIdentifier() const override { return "DemoController"; }
     virtual InviwoApplication* getInviwoApplication() override;
 
 protected:

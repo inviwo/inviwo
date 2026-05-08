@@ -68,7 +68,7 @@ public:
     CollapsibleGroupBoxWidgetQt(Processor* property, bool isCheckable = false);
     CollapsibleGroupBoxWidgetQt(Settings* property, bool isCheckable = false);
     CollapsibleGroupBoxWidgetQt(Property* property, PropertyOwner* owner,
-                                const std::string& displayName = "", bool isCheckable = false);
+                                std::string_view displayName = "", bool isCheckable = false);
 
     virtual std::string getDisplayName() const;
     virtual void setDisplayName(const std::string& displayName);
