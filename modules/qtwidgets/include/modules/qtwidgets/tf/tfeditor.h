@@ -94,6 +94,7 @@ public:
     TFMoveMode getMoveMode() const;
 
     const DataMapper& getDataMapper() const;
+    bool isAbsolute() const;
 
     std::vector<TFPrimitive*> getSelectedPrimitives() const;
 
@@ -141,6 +142,8 @@ private:
     void addPeak(const QPointF& scenePos, TFPrimitiveSet* set);
     double sceneToPos(const QPointF& pos) const;
     double sceneToAlpha(const QPointF& pos) const;
+
+    void updateSceneRect();
 
     TFPrimitiveSet* findSet(TFPrimitive*) const;
 

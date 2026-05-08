@@ -520,6 +520,17 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, TransferFunc
     bindTexture(tf, unit);
     shader.setUniform(tf.getIdentifier(), unit);
     cont.push_back(std::move(unit));
+
+    // Set TF range parameters for absolute mode
+    if (tf.get().getType() == TFPrimitiveSetType::Absolute) {
+        const auto range = tf.get().getRange();
+        StrBuffer buff;
+        const auto name = tf.getIdentifier();
+        shader.setUniform(buff.replace("{}Params.rangeMin", name),
+                          static_cast<float>(range.x));
+        shader.setUniform(buff.replace("{}Params.rangeMax", name),
+                          static_cast<float>(range.y));
+    }
 }
 
 void bindTexture(IsoTFProperty& property, const TextureUnit& texUnit) {

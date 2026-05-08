@@ -151,6 +151,10 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
 
     const NetworkLock lock(property_->getProperty());
 
+    const bool absolute = std::ranges::any_of(property_->sets(), [](const auto* set) {
+        return set->getType() == TFPrimitiveSetType::Absolute;
+    });
+
     if (event->modifiers() == Qt::ControlModifier) {
         // zoom only horizontally relative to wheel event position
         const double zoomFactor = std::pow(1.05, std::max(-15.0, std::min(15.0, -delta.y)));
@@ -165,7 +169,11 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
         const double lower = zoomCenter + (horizontal.x - zoomCenter) * zoomFactor;
         const double upper = zoomCenter + (horizontal.y - zoomCenter) * zoomFactor;
 
-        property_->setZoomH(std::max(0.0, lower), std::min(1.0, upper));
+        if (absolute) {
+            property_->setZoomH(lower, upper);
+        } else {
+            property_->setZoomH(std::max(0.0, lower), std::min(1.0, upper));
+        }
     } else {
         // vertical scrolling (+ optional horizontal if two-axis wheel)
 
@@ -182,14 +190,19 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
         delta *= scrollStep * extent;
 
         // separate horizontal and vertical scrolling
-        if (delta.x < 0.0) {
-            horizontal.x = std::max(0.0, horizontal.x + delta.x);
-            horizontal.y = horizontal.x + extent.x;
-        } else if (delta.x > 0.0) {
-            horizontal.y = std::min(1.0, horizontal.y + delta.x);
-            horizontal.x = horizontal.y - extent.x;
+        if (absolute) {
+            horizontal.x += delta.x;
+            horizontal.y += delta.x;
+        } else {
+            if (delta.x < 0.0) {
+                horizontal.x = std::max(0.0, horizontal.x + delta.x);
+                horizontal.y = horizontal.x + extent.x;
+            } else if (delta.x > 0.0) {
+                horizontal.y = std::min(1.0, horizontal.y + delta.x);
+                horizontal.x = horizontal.y - extent.x;
+            }
         }
-        // vertical
+        // vertical (always clamped to [0,1])
         if (delta.y < 0.0) {
             vertical.x = std::max(0.0, vertical.x + delta.y);
             vertical.y = vertical.x + extent.y;
@@ -361,7 +374,10 @@ void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPoly
     const utilqt::Save saved{painter};
     painter->setPen(utilqt::cosmeticPen(getColor(channel, nChannels, ColorType::Line), 2.0));
     painter->setBrush(QBrush{getColor(channel, nChannels, ColorType::Fill), Qt::SolidPattern});
-    painter->setTransform(QTransform::fromScale(sceneRect.width(), sceneRect.height()), true);
+    painter->setTransform(
+        QTransform::fromTranslate(sceneRect.x(), sceneRect.y()) *
+            QTransform::fromScale(sceneRect.width(), sceneRect.height()),
+        true);
     painter->drawPolygon(histogram);
 }
 
@@ -439,8 +455,20 @@ void TFEditorView::updateZoom() {
     const auto zh = property_->getZoomH();
     const auto zv = property_->getZoomV();
 
-    const QRectF newRect{QPointF{zh.x * rect.width(), zv.x * rect.height()},
+    const bool absolute = std::ranges::any_of(property_->sets(), [](const auto* set) {
+        return set->getType() == TFPrimitiveSetType::Absolute;
+    });
+
+    QRectF newRect;
+    if (absolute) {
+        // zoomH stores absolute data-space coordinates
+        newRect = QRectF{QPointF{zh.x, zv.x * rect.height()},
+                         QSizeF{zh.y - zh.x, (zv.y - zv.x) * rect.height()}};
+    } else {
+        // zoomH stores normalized [0,1] fractions of the scene rect
+        newRect = QRectF{QPointF{zh.x * rect.width(), zv.x * rect.height()},
                          QSizeF{(zh.y - zh.x) * rect.width(), (zv.y - zv.x) * rect.height()}};
+    }
 
     fitInView(newRect, Qt::IgnoreAspectRatio);
 }
