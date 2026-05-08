@@ -159,7 +159,7 @@ void SequenceProcessor::loadSubNetwork(const std::filesystem::path& file) {
         auto ifs = std::ifstream(file);
         auto d = wm->createWorkspaceDeserializer(
             ifs, filesystem::getPath(PathType::Workspaces) / "dummy.inv");
-        auto name = getDisplayName();
+        std::string name{getDisplayName()};
         d.deserialize("DisplayName", name);
         setDisplayName(name);
         d.deserialize("ProcessorNetwork", *subNetwork_);
@@ -309,7 +309,7 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
         }
     }();
 
-    auto superId = subProperty->getPath();
+    std::string superId{subProperty->getPath()};
     replaceInString(superId, ".", "_");
     superProperty->setIdentifier(superId);
     superProperty->setSerializationMode(PropertySerializationMode::All);
@@ -372,7 +372,7 @@ SequenceProcessor::PropertyHandler::~PropertyHandler() {
 
 void SequenceProcessor::onSetIdentifier(Property* subProperty, const std::string&) {
     if (auto* superProperty = getSuperProperty(subProperty)) {
-        auto superId = subProperty->getPath();
+        std::string superId{subProperty->getPath()};
         replaceInString(superId, ".", "_");
         superProperty->setIdentifier(superId);
     }
