@@ -150,10 +150,15 @@ std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrim
 void TransferFunction::interpolateAndStoreColors(std::span<vec4> data) const {
     TFPrimitiveSet::interpolateAndStoreColors(data);
     const auto size = static_cast<double>(data.size());
-    for (auto i = size_t{0}; i < static_cast<size_t>(maskMin_ * size); i++) {
+    const auto range = getRange();
+    const auto rangeInv = (range.y > range.x) ? 1.0 / (range.y - range.x) : 1.0;
+    // Convert mask positions to normalized texture fractions [0,1]
+    const auto normMaskMin = (maskMin_ - range.x) * rangeInv;
+    const auto normMaskMax = (maskMax_ - range.x) * rangeInv;
+    for (auto i = size_t{0}; i < static_cast<size_t>(normMaskMin * size); i++) {
         data[i].a = 0.0;
     }
-    for (auto i = static_cast<size_t>(maskMax_ * size); i < data.size(); i++) {
+    for (auto i = static_cast<size_t>(normMaskMax * size); i < data.size(); i++) {
         data[i].a = 0.0;
     }
 }
