@@ -153,28 +153,9 @@ public:
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 
-    friend bool operator<(const Track& a, const Track& b) {
-        return a.getFirstTime() < b.getFirstTime();
-    }
-    friend bool operator<=(const Track& a, const Track& b) {
-        return a.getFirstTime() <= b.getFirstTime();
-    }
-    friend bool operator>(const Track& a, const Track& b) {
-        return a.getFirstTime() > b.getFirstTime();
-    }
-    friend bool operator>=(const Track& a, const Track& b) {
-        return a.getFirstTime() >= b.getFirstTime();
-    }
-
-    friend bool operator<(const Track& a, const Seconds& b) { return a.getFirstTime() < b; }
-    friend bool operator<=(const Track& a, const Seconds& b) { return a.getFirstTime() <= b; }
-    friend bool operator>(const Track& a, const Seconds& b) { return a.getFirstTime() > b; }
-    friend bool operator>=(const Track& a, const Seconds& b) { return a.getFirstTime() >= b; }
-
-    friend bool operator<(const Seconds& a, const Track& b) { return a < b.getFirstTime(); }
-    friend bool operator<=(const Seconds& a, const Track& b) { return a <= b.getFirstTime(); }
-    friend bool operator>(const Seconds& a, const Track& b) { return a > b.getFirstTime(); }
-    friend bool operator>=(const Seconds& a, const Track& b) { return a >= b.getFirstTime(); }
+    auto operator<=>(const Track& other) const { return getFirstTime() <=> other.getFirstTime(); }
+    auto operator==(const Track& other) const = delete;
+    auto operator<=>(const Seconds& time) const { return getFirstTime() <=> time; }
 };
 
 /**

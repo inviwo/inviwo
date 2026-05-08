@@ -63,28 +63,9 @@ public:
     virtual void serialize(Serializer& s) const override = 0;
     virtual void deserialize(Deserializer& d) override = 0;
 
-    friend bool operator<(const Keyframe& a, const Keyframe& b) {
-        return a.getTime() < b.getTime();
-    }
-    friend bool operator>(const Keyframe& a, const Keyframe& b) {
-        return a.getTime() > b.getTime();
-    }
-    friend bool operator>=(const Keyframe& a, const Keyframe& b) {
-        return a.getTime() >= b.getTime();
-    }
-    friend bool operator<=(const Keyframe& a, const Keyframe& b) {
-        return a.getTime() <= b.getTime();
-    }
-
-    friend bool operator<(const Keyframe& a, const Seconds& b) { return a.getTime() < b; }
-    friend bool operator<=(const Keyframe& a, const Seconds& b) { return a.getTime() <= b; }
-    friend bool operator>(const Keyframe& a, const Seconds& b) { return a.getTime() > b; }
-    friend bool operator>=(const Keyframe& a, const Seconds& b) { return a.getTime() >= b; }
-
-    friend bool operator<(const Seconds& a, const Keyframe& b) { return a < b.getTime(); }
-    friend bool operator<=(const Seconds& a, const Keyframe& b) { return a <= b.getTime(); }
-    friend bool operator>(const Seconds& a, const Keyframe& b) { return a > b.getTime(); }
-    friend bool operator>=(const Seconds& a, const Keyframe& b) { return a >= b.getTime(); }
+    auto operator<=>(const Keyframe& other) const { return getTime() <=> other.getTime(); }
+    auto operator==(const Keyframe& other) const = delete;
+    auto operator<=>(const Seconds& time) const { return getTime() <=> time; }
 };
 
 }  // namespace animation
