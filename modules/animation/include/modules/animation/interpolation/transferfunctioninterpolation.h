@@ -31,6 +31,7 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/algorithm/easing.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/interpolation/interpolation.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
@@ -49,11 +50,15 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API TransferFunctionInterpolation
     : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
 public:
-    TransferFunctionInterpolation() = default;
+    TransferFunctionInterpolation(InviwoApplication* app = nullptr);
+    TransferFunctionInterpolation(const TransferFunctionInterpolation&);
     virtual ~TransferFunctionInterpolation() = default;
     virtual TransferFunctionInterpolation* clone() const override;
 
-    virtual std::string getName() const override;
+    virtual std::string_view getDisplayName() const override;
+    virtual std::string_view getIdentifier() const override {
+        return "TransferFunctionInterpolation";
+    }
 
     static std::string_view classIdentifier();
     virtual std::string_view getClassIdentifier() const override;
@@ -65,7 +70,9 @@ public:
 
     virtual void operator()(
         const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
-        Seconds to, Easing easing, TransferFunction& out) const override;
+        Seconds to, TransferFunction& out) const override;
+
+    OrdinalProperty<size_t> segments;
 };
 
 }  // namespace animation

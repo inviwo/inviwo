@@ -61,7 +61,8 @@ public:
 
     virtual LinearInterpolation<Key, Result>* clone() const override;
 
-    virtual std::string getName() const override;
+    virtual std::string_view getDisplayName() const override;
+    virtual std::string_view getIdentifier() const override { return "LinearInterpolation"; }
 
     static std::string_view classIdentifier();
     virtual std::string_view getClassIdentifier() const override;
@@ -82,7 +83,7 @@ public:
 
 template <typename Key, typename Result>
 LinearInterpolation<Key, Result>::LinearInterpolation(InviwoApplication* app)
-    : InterpolationTyped<Key, Result>(app, std::string(classIdentifier())) {}
+    : InterpolationTyped<Key, Result>(app) {}
 
 template <typename Key, typename Result>
 LinearInterpolation<Key, Result>* LinearInterpolation<Key, Result>::clone() const {
@@ -90,7 +91,7 @@ LinearInterpolation<Key, Result>* LinearInterpolation<Key, Result>::clone() cons
 }
 
 template <typename Key, typename Result>
-std::string LinearInterpolation<Key, Result>::getName() const {
+std::string_view LinearInterpolation<Key, Result>::getDisplayName() const {
     return "Linear";
 }
 
@@ -113,8 +114,7 @@ std::string_view LinearInterpolation<Key, Result>::classIdentifier() {
 
 template <typename Key, typename Result>
 void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                                  Seconds /*from*/, Seconds to,
-                                                  Result& out) const {
+                                                  Seconds /*from*/, Seconds to, Result& out) const {
 
     using VT = typename Key::value_type;
     using DT = typename util::same_extent<VT, double>::type;

@@ -100,11 +100,11 @@ CameraAnimation::CameraState cameraState(const CameraKeyframe& cam) {
 }  // namespace
 
 CameraAnimation::CameraAnimation(InviwoApplication* app)
-    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app, classIdentifier()) {}
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app) {}
 
 CameraAnimation* CameraAnimation::clone() const { return new CameraAnimation(*this); }
 
-std::string CameraAnimation::getName() const { return "Animate"; }
+std::string_view CameraAnimation::getDisplayName() const { return "Animate"; }
 
 std::string_view CameraAnimation::getClassIdentifier() const { return classIdentifier(); }
 

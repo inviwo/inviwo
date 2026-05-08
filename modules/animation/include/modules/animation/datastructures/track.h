@@ -82,8 +82,8 @@ public:
     /**
      * Set Track name. Used when displaying the track.
      */
-    virtual void setName(const std::string& name) = 0;
-    virtual const std::string& getName() const = 0;
+    virtual void setName(std::string_view name) = 0;
+    virtual std::string_view getName() const = 0;
 
     /**
      * Return Track priority (0 is highest)

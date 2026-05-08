@@ -57,7 +57,7 @@ namespace inviwo {
 namespace animation {
 
 CameraLinearInterpolation::CameraLinearInterpolation(InviwoApplication* app)
-    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app, classIdentifier()) {}
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app) {}
 
 CameraLinearInterpolation::CameraLinearInterpolation(const CameraLinearInterpolation& rhs)
     : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(rhs) {}
@@ -66,7 +66,7 @@ CameraLinearInterpolation* CameraLinearInterpolation::clone() const {
     return new CameraLinearInterpolation(*this);
 }
 
-std::string CameraLinearInterpolation::getName() const { return "Linear"; }
+std::string_view CameraLinearInterpolation::getDisplayName() const { return "Linear"; }
 
 std::string_view CameraLinearInterpolation::getClassIdentifier() const { return classIdentifier(); }
 
