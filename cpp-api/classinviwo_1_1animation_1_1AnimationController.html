@@ -159,6 +159,7 @@ const <a class="el" href="classinviwo_1_1animation_1_1Animation.html">Animation<
 <tr class="memdesc:a1335d8e6ddb069c2d6396b784aee96c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns controlled animation. <br /></td></tr>
 <tr class="memitem:a91a8051d1a1c2fd9d5845246d842092c" id="r_a91a8051d1a1c2fd9d5845246d842092c"><td class="memItemLeft"><a id="a91a8051d1a1c2fd9d5845246d842092c" name="a91a8051d1a1c2fd9d5845246d842092c"></a>
 Seconds&#160;</td><td class="memItemRight"><b>getCurrentTime</b> () const</td></tr>
+<tr class="memitem:ad90017ee8d3a47e9f795e50d9e3fb3c9" id="r_ad90017ee8d3a47e9f795e50d9e3fb3c9"><td class="memItemLeft">virtual std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#ad90017ee8d3a47e9f795e50d9e3fb3c9">getIdentifier</a> () const override</td></tr>
 <tr class="memitem:a28c88a3b968145b4e8e9ffa5d07d6b4b" id="r_a28c88a3b968145b4e8e9ffa5d07d6b4b"><td class="memItemLeft"><a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a28c88a3b968145b4e8e9ffa5d07d6b4b">getInviwoApplication</a> () override</td></tr>
 <tr class="memitem:a20989ddc89e8f917091b00e812bbfce9" id="r_a20989ddc89e8f917091b00e812bbfce9"><td class="memItemLeft"><a id="a20989ddc89e8f917091b00e812bbfce9" name="a20989ddc89e8f917091b00e812bbfce9"></a>
 PlaybackDirection&#160;</td><td class="memItemRight"><b>getPlaybackDirection</b> () const</td></tr>
@@ -235,8 +236,6 @@ const_iterator&#160;</td><td class="memItemRight"><b>end</b> () const</td></tr>
 const_iterator&#160;</td><td class="memItemRight"><b>find</b> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property) const</td></tr>
 <tr class="memitem:a2afe666106319c0b36fb26faf3aa72ca inherit pub_methods_classinviwo_1_1PropertyOwner" id="r_a2afe666106319c0b36fb26faf3aa72ca"><td class="memItemLeft">
 const std::vector&lt; <a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> * &gt; &amp;&#160;</td><td class="memItemRight"><b>getCompositeProperties</b> () const</td></tr>
-<tr class="memitem:a029daef6ac4665122440ad3665f2d6ab inherit pub_methods_classinviwo_1_1PropertyOwner" id="r_a029daef6ac4665122440ad3665f2d6ab"><td class="memItemLeft">
-virtual const std::string &amp;&#160;</td><td class="memItemRight"><b>getIdentifier</b> () const</td></tr>
 <tr class="memitem:a281a9928a3198dd25afbd3ff5196770c inherit pub_methods_classinviwo_1_1PropertyOwner" id="r_a281a9928a3198dd25afbd3ff5196770c"><td class="memItemLeft">
 <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a>&#160;</td><td class="memItemRight"><b>getInvalidationLevel</b> () const</td></tr>
 <tr class="memitem:a30d23b4a766fa6d89850934228076e7a inherit pub_methods_classinviwo_1_1PropertyOwner" id="r_a30d23b4a766fa6d89850934228076e7a"><td class="memItemLeft">
@@ -444,6 +443,33 @@ using&#160;</td><td class="memItemRight"><b>iterator</b> = std::vector&lt;<a cla
 <p>It keeps track of the animation time and state. When playing, it should adjust the step sizes to maintain a certain playback speed (frames per second).</p>
 <p>Furthermore, it allows to render the animation into an image sequence. </p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ad90017ee8d3a47e9f795e50d9e3fb3c9" name="ad90017ee8d3a47e9f795e50d9e3fb3c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad90017ee8d3a47e9f795e50d9e3fb3c9">&#9670;&#160;</a></span>getIdentifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string_view inviwo::animation::AnimationController::getIdentifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1PropertyOwner.html">inviwo::PropertyOwner</a>.</p>
+
+</div>
+</div>
 <a id="a28c88a3b968145b4e8e9ffa5d07d6b4b" name="a28c88a3b968145b4e8e9ffa5d07d6b4b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a28c88a3b968145b4e8e9ffa5d07d6b4b">&#9670;&#160;</a></span>getInviwoApplication()</h2>
 
