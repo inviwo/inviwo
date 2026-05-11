@@ -41,6 +41,12 @@ Interpolation::Interpolation(const Interpolation& rhs) : PropertyOwner(rhs), app
 
 InviwoApplication* Interpolation::getInviwoApplication() { return app_; }
 
+void Interpolation::serialize(Serializer& s) const {
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    PropertyOwner::serialize(s);
+}
+void Interpolation::deserialize(Deserializer& d) { PropertyOwner::deserialize(d); }
+
 bool operator==(const Interpolation& a, const Interpolation& b) { return a.equal(b); }
 bool operator!=(const Interpolation& a, const Interpolation& b) { return !a.equal(b); }
 

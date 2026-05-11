@@ -48,7 +48,8 @@ BaseKeyframe& BaseKeyframe::operator=(const BaseKeyframe& that) {
         Keyframe::operator=(that);
         setTime(that.time_);
         setSelected(that.isSelected_);
-        setEasing(that.easing_);
+        setEaseIn(that.easeIn_);
+        setEaseOut(that.easeOut_);
     }
     return *this;
 }
@@ -70,10 +71,17 @@ void BaseKeyframe::setSelected(bool selected) {
     }
 }
 
-Easing BaseKeyframe::getEasing() const { return easing_; }
-void BaseKeyframe::setEasing(Easing easing) {
-    if (easing != easing_) {
-        easing_ = easing;
+std::optional<EasingType> BaseKeyframe::getEaseIn() const { return easeIn_; }
+std::optional<EasingType> BaseKeyframe::getEaseOut() const { return easeOut_; };
+void BaseKeyframe::setEaseIn(std::optional<EasingType> easeIn) {
+    if (easeIn_ != easeIn) {
+        easeIn_ = easeIn;
+        notifyKeyframeEasingChanged(this);
+    }
+}
+void BaseKeyframe::setEaseOut(std::optional<EasingType> easeOut) {
+    if (easeOut_ != easeOut) {
+        easeOut_ = easeOut;
         notifyKeyframeEasingChanged(this);
     }
 }
@@ -81,7 +89,16 @@ void BaseKeyframe::setEasing(Easing easing) {
 void BaseKeyframe::serialize(Serializer& s) const {
     s.serialize("time", time_.count());
     s.serialize("selected", isSelected_);
-    s.serialize("easing", easing_);
+    if (easeIn_) {
+        s.serialize("easeIn", *easeIn_, SerializationTarget::Attribute);
+    } else {
+        s.serialize("easeIn", -1, SerializationTarget::Attribute);
+    }
+    if (easeOut_) {
+        s.serialize("easeOut", *easeOut_, SerializationTarget::Attribute);
+    } else {
+        s.serialize("easeOut", -1, SerializationTarget::Attribute);
+    }
 }
 
 void BaseKeyframe::deserialize(Deserializer& d) {
@@ -96,9 +113,22 @@ void BaseKeyframe::deserialize(Deserializer& d) {
         setSelected(isSelected);
     }
     {
-        Easing easing = easing_;
-        d.deserialize("easing", easing);
-        setEasing(easing);
+        int easeIn = easeIn_ ? static_cast<int>(*easeIn_) : -1;
+        d.deserialize("easeIn", easeIn, SerializationTarget::Attribute);
+        if (easeIn >= 0) {
+            setEaseIn(static_cast<EasingType>(easeIn));
+        } else {
+            setEaseIn(std::nullopt);
+        }
+    }
+    {
+        int easeOut = easeOut_ ? static_cast<int>(*easeOut_) : -1;
+        d.deserialize("easeOut", easeOut, SerializationTarget::Attribute);
+        if (easeOut >= 0) {
+            setEaseOut(static_cast<EasingType>(easeOut));
+        } else {
+            setEaseOut(std::nullopt);
+        }
     }
 }
 

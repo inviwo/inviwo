@@ -86,21 +86,23 @@ void CameraLinearInterpolation::operator()(const std::vector<std::unique_ptr<Cam
         return time < key->getTime();
     });
 
-    const auto& v1 = *(*std::prev(it));
-    const auto& t1 = (*std::prev(it))->getTime();
-    const auto easing = (*std::prev(it))->getEasing();
+    const auto& prev = *(*std::prev(it));
+    const auto& next = *(*it);
 
-    const auto& v2 = *(*it);
-    const auto& t2 = (*it)->getTime();
+    const auto t1 = prev.getTime();
+    const auto t2 = next.getTime();
 
-    auto t = util::ease((to - t1) / (t2 - t1), easing);
+    const auto easeIn = prev.getEaseIn();
+    const auto easeOut = next.getEaseOut();
 
-    auto lookTo = glm::mix(dvec3(v1.getLookTo()), dvec3(v2.getLookTo()), t);
-    auto lookFrom = glm::mix(dvec3(v1.getLookFrom()), dvec3(v2.getLookFrom()), t);
+    auto t = util::ease((to - t1) / (t2 - t1), easeIn, easeOut);
+
+    auto lookTo = glm::mix(dvec3(prev.getLookTo()), dvec3(next.getLookTo()), t);
+    auto lookFrom = glm::mix(dvec3(prev.getLookFrom()), dvec3(next.getLookFrom()), t);
     // Assume that lookUp vectors are normalized
     auto lookUpQ = glm::slerp(glm::quat_identity<double, glm::defaultp>(),
-                              glm::rotation(dvec3(v1.getLookUp()), dvec3(v2.getLookUp())), t);
-    auto lookUp = glm::normalize(lookUpQ * dvec3(v1.getLookUp()));
+                              glm::rotation(dvec3(prev.getLookUp()), dvec3(next.getLookUp())), t);
+    auto lookUp = glm::normalize(lookUpQ * dvec3(prev.getLookUp()));
 
     out.setLookFrom(lookFrom);
     out.setLookTo(lookTo);

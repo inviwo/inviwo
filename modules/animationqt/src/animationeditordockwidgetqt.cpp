@@ -425,6 +425,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     toolBar->addSeparator();
 
     controller_.AnimationControllerObservable::addObserver(this);
+
+    loadState();
 }
 
 AnimationEditorDockWidgetQt::~AnimationEditorDockWidgetQt() = default;

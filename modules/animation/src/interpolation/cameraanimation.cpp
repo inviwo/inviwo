@@ -62,49 +62,74 @@ namespace animation {
 
 namespace {
 
-dvec3 rotationAxis(CameraAnimation::RotationAxis rot, bool alignToObject,
-                   const CameraAnimation::CameraState& cam) {
-    const auto camAxis = [&]() {
-        switch (rot) {
-            case CameraAnimation::RotationAxis::Yaw:
-                return cam.up;
-            case CameraAnimation::RotationAxis::Pitch:
-                return glm::cross(cam.dir, cam.up);
-            case CameraAnimation::RotationAxis::Roll:
-                return cam.dir;
-            default:
-                return cam.up;
-        }
-    }();
+dvec3 rotationAxis(CameraAnimation::RotationAxis rot, dvec3 dir, dvec3 up) {
+    static constexpr std::array axes{dvec3{1.0, 0.0, 0.0}, dvec3{0.0, 1.0, 0.0},
+                                     dvec3{0.0, 0.0, 1.0}};
+    static constexpr std::array<size_t, 3> order{0, 1, 2};
 
-    if (alignToObject) {
-        std::array<size_t, 3> order{0, 1, 2};
+    static constexpr auto toObject = [](const dvec3& camdir) {
         const auto ind = std::ranges::max(order, std::ranges::less{},
-                                          [&](size_t i) { return std::abs(camAxis[i]); });
+                                          [&](size_t i) { return std::abs(camdir[i]); });
+        return axes[ind] * std::copysign(1.0, glm::dot(camdir, axes[ind]));
+    };
 
-        static constexpr std::array axes{dvec3{1.0, 0.0, 0.0}, dvec3{0.0, 1.0, 0.0},
-                                         dvec3{0.0, 0.0, 1.0}};
-        return axes[ind] * std::copysign(1.0, glm::dot(camAxis, axes[ind]));
-    } else {
-        return camAxis;
+    switch (rot) {
+        case CameraAnimation::RotationAxis::CameraYaw:
+            return up;
+        case CameraAnimation::RotationAxis::CameraPitch:
+            return glm::cross(dir, up);
+        case CameraAnimation::RotationAxis::CameraRoll:
+            return dir;
+
+        case CameraAnimation::RotationAxis::ObjectYaw:
+            return toObject(up);
+        case CameraAnimation::RotationAxis::ObjectPitch:
+            return toObject(glm::cross(dir, up));
+        case CameraAnimation::RotationAxis::ObjectRoll:
+            return toObject(dir);
+
+        case CameraAnimation::RotationAxis::WorldX:
+            return axes[0];
+        case CameraAnimation::RotationAxis::WorldY:
+            return axes[1];
+        case CameraAnimation::RotationAxis::WorldZ:
+            return axes[2];
+
+        default:
+            return axes[0];
     }
-}
-
-CameraAnimation::CameraState cameraState(const CameraKeyframe& cam) {
-    // save current camera vectors (direction, up) to be able to do absolute rotations
-    const vec3 camDir = glm::normalize(cam.getDirection());
-    const vec3 camUp = glm::normalize(cam.getLookUp());
-    return {.dir = camDir, .up = camUp};
 }
 
 }  // namespace
 
 CameraAnimation::CameraAnimation(InviwoApplication* app)
-    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app) {}
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app)
+    , amplitude{"amplitude", "Amplitude",
+                util::ordinalLength(15.0, 180.0).set("Maximum rotation angle in degrees"_help)}
+    , periods{"periods", "Periods",
+              util::ordinalLength(1.0, 20.0).setInc(0.01).set(
+                  "Number of periods during the animation"_help)}
+    , axis{"axis",
+           "Axis",
+           {RotationAxis::CameraYaw, RotationAxis::CameraPitch, RotationAxis::CameraRoll,
+            RotationAxis::ObjectYaw, RotationAxis::ObjectPitch, RotationAxis::ObjectRoll,
+            RotationAxis::WorldX, RotationAxis::WorldY, RotationAxis::WorldZ}} {
+
+    addProperties(amplitude, periods, axis);
+}
+
+CameraAnimation::CameraAnimation(const CameraAnimation& rhs)
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(rhs)
+    , amplitude{rhs.amplitude}
+    , periods{rhs.periods}
+    , axis{rhs.axis} {
+
+    addProperties(amplitude, periods, axis);
+}
 
 CameraAnimation* CameraAnimation::clone() const { return new CameraAnimation(*this); }
 
-std::string_view CameraAnimation::getDisplayName() const { return "Animate"; }
+std::string_view CameraAnimation::getDisplayName() const { return "Wiggle"; }
 
 std::string_view CameraAnimation::getClassIdentifier() const { return classIdentifier(); }
 
@@ -119,47 +144,37 @@ std::string_view CameraAnimation::classIdentifier() {
 void CameraAnimation::operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys,
                                  Seconds /*from*/, Seconds to,
                                  CameraKeyframe::value_type& out) const {
-
     auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
         return time < key->getTime();
     });
 
-    const auto& v1 = *(*std::prev(it));
-    const auto& t1 = (*std::prev(it))->getTime();
+    const auto& prev = *(*std::prev(it));
+    const auto& next = *(*it);
 
-    const auto& v2 = *(*it);
-    const auto& t2 = (*it)->getTime();
+    const auto t1 = prev.getTime();
+    const auto t2 = next.getTime();
+
+    const auto easeIn = prev.getEaseIn();
+    const auto easeOut = next.getEaseOut();
 
     const auto t = static_cast<double>((to - t1) / (t2 - t1));
 
-    const auto f = 0.2;
-    const auto tmod = 2.0 / f * std::abs(std::abs(std::fmod(t - f / 4.0, f)) - f / 2.0);
+    const auto freq =
+        periods.get() > 0.0 ? 1.0 / periods.get() : std::numeric_limits<double>::max();
+    const auto tmod = 2.0 / freq * std::abs(std::abs(std::fmod(t - freq / 4.0, freq)) - freq / 2.0);
+    const auto tease = util::ease(tmod, easeIn, easeOut);
 
-    auto swing = Swing{
-        .axis = dvec3{0.0, 0.0, 1.0},  // rotationAxis(RotationAxis::Yaw, true, cameraState(v1)),
-        .dir = v1.getDirection(),
-        .up = v1.getLookUp(),
-        .amplitude = 0.25,
-        .step = 0.01,
-        .current = tmod};
+    const dvec3 dir = prev.getDirection();
+    const dvec3 up = prev.getLookUp();
+    const dvec3 rotAxis = rotationAxis(axis.get(), glm::normalize(dir), up);
 
-    const auto angle =
-        swing.amplitude * (util::ease(tmod, Easing{EasingType::sine, EasingMode::inOut}) - 0.5);
+    const auto angle = glm::radians(amplitude.get()) * 2.0 * (tease - 0.5);
 
-    // log::info("{} {} {}", t, tmod, angle);
+    const auto rotation = dmat3(glm::rotate(-angle, rotAxis));
+    const auto lookTo = dvec3{prev.getLookTo()};
 
-    // Rotate LookFrom around LookTo using axis
-    const auto rotation = dmat3(glm::rotate(-angle, swing.axis));
-    const auto lookTo = dvec3{v1.getLookTo()};
-
-    out.setLook(lookTo - rotation * swing.dir, lookTo, rotation * swing.up);
+    out.setLook(lookTo - rotation * dir, lookTo, rotation * up);
 }
-
-void CameraAnimation::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-}
-
-void CameraAnimation::deserialize(Deserializer&) {}
 
 }  // namespace animation
 

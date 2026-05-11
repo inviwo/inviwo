@@ -66,8 +66,8 @@ public:
 
     virtual InviwoApplication* getInviwoApplication() override;
 
-    virtual void serialize(Serializer& s) const override = 0;
-    virtual void deserialize(Deserializer& d) override = 0;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
     /**

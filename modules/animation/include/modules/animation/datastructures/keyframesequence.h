@@ -107,7 +107,7 @@ public:
         return getFirstTime() <=> other.getFirstTime();
     }
     auto operator==(const KeyframeSequence& other) const = delete;
-    auto operator<=>(const Seconds& time) const { return getFirstTime() < time; }
+    auto operator<=>(const Seconds& time) const { return getFirstTime() <=> time; }
 };
 
 }  // namespace animation

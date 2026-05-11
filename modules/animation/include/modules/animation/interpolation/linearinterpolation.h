@@ -123,19 +123,24 @@ void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_
         return time < key->getTime();
     });
 
-    const auto& v1 = (*std::prev(it))->getValue();
-    const auto& t1 = (*std::prev(it))->getTime();
-    const auto easing = (*std::prev(it))->getEasing();
+    const auto& prev = *(*std::prev(it));
+    const auto& next = *(*it);
 
-    const auto& v2 = (*it)->getValue();
-    const auto& t2 = (*it)->getTime();
+    const auto t1 = prev.getTime();
+    const auto t2 = next.getTime();
+
+    const auto& v1 = prev.getValue();
+    const auto& v2 = next.getValue();
+
+    const auto easeIn = prev.getEaseIn();
+    const auto easeOut = next.getEaseOut();
 
     // We have to take special care here since we might have unsigned types.
     // Lets just convert everything to doubles.
     const auto& dv1 = static_cast<DT>(v1);
     const auto& dv2 = static_cast<DT>(v2);
 
-    out = static_cast<VT>(glm::mix(dv1, dv2, util::ease((to - t1) / (t2 - t1), easing)));
+    out = static_cast<VT>(glm::mix(dv1, dv2, util::ease((to - t1) / (t2 - t1), easeIn, easeOut)));
 }
 
 template <typename Key, typename Result>

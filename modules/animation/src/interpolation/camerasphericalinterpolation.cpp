@@ -90,39 +90,41 @@ void CameraSphericalInterpolation::operator()(
         return time < key->getTime();
     });
 
-    const auto& v1 = *(*std::prev(it));
-    const auto& t1 = (*std::prev(it))->getTime();
-    const auto easing = (*std::prev(it))->getEasing();
+    const auto& prev = *(*std::prev(it));
+    const auto& next = *(*it);
 
-    const auto& v2 = *(*it);
-    const auto& t2 = (*it)->getTime();
+    const auto t1 = prev.getTime();
+    const auto t2 = next.getTime();
 
-    auto t = static_cast<float>(util::ease((to - t1) / (t2 - t1), easing));
+    const auto easeIn = prev.getEaseIn();
+    const auto easeOut = next.getEaseOut();
 
-    auto fromDir = glm::normalize(v1.getDirection());
+    auto t = static_cast<float>(util::ease((to - t1) / (t2 - t1), easeIn, easeOut));
+
+    auto fromDir = glm::normalize(prev.getDirection());
     auto rotation = glm::slerp(glm::quat_identity<float, glm::defaultp>(),
-                               glm::rotation(fromDir, glm::normalize(v2.getDirection())), t);
+                               glm::rotation(fromDir, glm::normalize(next.getDirection())), t);
 
     // Adjust for different direction lengths
-    auto d = glm::mix(glm::length(v1.getDirection()), glm::length(v2.getDirection()), t);
+    auto d = glm::mix(glm::length(prev.getDirection()), glm::length(next.getDirection()), t);
 
-    if (glm::any(glm::notEqual(v1.getLookFrom(), v2.getLookFrom()))) {
+    if (glm::any(glm::notEqual(prev.getLookFrom(), next.getLookFrom()))) {
         // Assume that we are orbiting around lookAt
-        auto lookTo = glm::mix(v1.getLookTo(), v2.getLookTo(), t);
+        auto lookTo = glm::mix(prev.getLookTo(), next.getLookTo(), t);
         auto lookFrom = lookTo - glm::normalize(rotation * fromDir) * d;
         out.setLookFrom(lookFrom);
         out.setLookTo(lookTo);
     } else {
         // Pan/tilt (lookFrom's are equal)
-        const auto& lookFrom = v1.getLookFrom();
+        const auto& lookFrom = prev.getLookFrom();
         auto lookTo = lookFrom + glm::normalize(rotation * fromDir) * d;
         out.setLookFrom(lookFrom);
         out.setLookTo(lookTo);
     }
     // Assume that lookUp vectors are normalized
     auto lookUpQ = glm::slerp(glm::quat_identity<float, glm::defaultp>(),
-                              glm::rotation(v1.getLookUp(), v2.getLookUp()), t);
-    auto lookUp = glm::normalize(lookUpQ * v1.getLookUp());
+                              glm::rotation(prev.getLookUp(), next.getLookUp()), t);
+    auto lookUp = glm::normalize(lookUpQ * prev.getLookUp());
     out.setLookUp(lookUp);
 }
 

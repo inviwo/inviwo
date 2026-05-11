@@ -47,17 +47,17 @@ class Serializer;
 
 namespace animation {
 
-class IVW_MODULE_ANIMATION_API TransferFunctionInterpolation
+class IVW_MODULE_ANIMATION_API TFInterpolationOptimalTransport
     : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
 public:
-    TransferFunctionInterpolation(InviwoApplication* app = nullptr);
-    TransferFunctionInterpolation(const TransferFunctionInterpolation&);
-    virtual ~TransferFunctionInterpolation() = default;
-    virtual TransferFunctionInterpolation* clone() const override;
+    TFInterpolationOptimalTransport(InviwoApplication* app = nullptr);
+    TFInterpolationOptimalTransport(const TFInterpolationOptimalTransport&);
+    virtual ~TFInterpolationOptimalTransport() = default;
+    virtual TFInterpolationOptimalTransport* clone() const override;
 
     virtual std::string_view getDisplayName() const override;
     virtual std::string_view getIdentifier() const override {
-        return "TransferFunctionInterpolation";
+        return "TFInterpolationOptimalTransport";
     }
 
     static std::string_view classIdentifier();
@@ -65,14 +65,33 @@ public:
 
     virtual bool equal(const Interpolation& other) const override;
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
     virtual void operator()(
         const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
         Seconds to, TransferFunction& out) const override;
 
     OrdinalProperty<size_t> segments;
+    OrdinalProperty<double> simplify;
+};
+
+class IVW_MODULE_ANIMATION_API TFInterpolationBlend
+    : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
+public:
+    TFInterpolationBlend(InviwoApplication* app = nullptr);
+    TFInterpolationBlend(const TFInterpolationBlend&);
+    virtual ~TFInterpolationBlend() = default;
+    virtual TFInterpolationBlend* clone() const override;
+
+    virtual std::string_view getDisplayName() const override;
+    virtual std::string_view getIdentifier() const override { return "TFInterpolationBlend"; }
+
+    static std::string_view classIdentifier();
+    virtual std::string_view getClassIdentifier() const override;
+
+    virtual bool equal(const Interpolation& other) const override;
+
+    virtual void operator()(
+        const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
+        Seconds to, TransferFunction& out) const override;
 };
 
 }  // namespace animation
