@@ -37,10 +37,10 @@
 #include <vector>
 
 class QComboBox;
-class QGridLayout;
 
 namespace inviwo {
 class PropertyWidgetQt;
+class CollapsibleGroupBoxWidgetQt;
 
 namespace animation {
 
@@ -53,7 +53,7 @@ class IVW_MODULE_ANIMATIONQT_API PropertySequenceEditor : public SequenceEditorW
                                                           public ValueKeyframeSequenceObserver {
 public:
     PropertySequenceEditor(KeyframeSequence& sequence, Track& track, AnimationManager& manager);
-    virtual ~PropertySequenceEditor() = default;
+    virtual ~PropertySequenceEditor();
 
     static std::string classIdentifier();
 
@@ -61,14 +61,13 @@ protected:
     virtual QWidget* create(Keyframe* key) override;
 
     // ValueKeyframeSequenceObserver overloads
-    virtual void onValueKeyframeSequenceInterpolationChanged(ValueKeyframeSequence* seq) override;
+    virtual void onValueKeyframeSequenceInterpolationWillChange(
+        ValueKeyframeSequence* seq) override;
+    virtual void onValueKeyframeSequenceInterpolationDidChange(ValueKeyframeSequence* seq) override;
 
 private:
-    void rebuildInterpolationPropertyWidgets(ValueKeyframeSequence& valseq);
-
     QComboBox* interpolation_{nullptr};
-    QGridLayout* interpolationPropsLayout_{nullptr};
-    std::vector<PropertyWidgetQt*> interpolationPropertyWidgets_;
+    std::unique_ptr<CollapsibleGroupBoxWidgetQt> widgets_;
 };
 
 }  // namespace animation

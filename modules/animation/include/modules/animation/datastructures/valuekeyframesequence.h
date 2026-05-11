@@ -38,7 +38,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/basekeyframesequence.h>
-#include <modules/animation/factories/interpolationfactory.h>       // IWYU pragma: keep
+#include <modules/animation/factories/interpolationfactory.h>  // IWYU pragma: keep
 #include <modules/animation/interpolation/constantinterpolation.h>
 #include <modules/animation/interpolation/interpolation.h>
 #include <modules/animation/interpolation/linearinterpolation.h>
@@ -100,13 +100,15 @@ class ValueKeyframeSequence;
 
 class IVW_MODULE_ANIMATION_API ValueKeyframeSequenceObserver : public Observer {
 public:
-    virtual void onValueKeyframeSequenceInterpolationChanged(ValueKeyframeSequence*) {};
+    virtual void onValueKeyframeSequenceInterpolationWillChange(ValueKeyframeSequence*){};
+    virtual void onValueKeyframeSequenceInterpolationDidChange(ValueKeyframeSequence*){};
 };
 
 class IVW_MODULE_ANIMATION_API ValueKeyframeSequenceObserverble
     : public Observable<ValueKeyframeSequenceObserver> {
 protected:
-    void notifyValueKeyframeSequenceInterpolationChanged(ValueKeyframeSequence* seq);
+    void notifyValueKeyframeSequenceInterpolationWillChange(ValueKeyframeSequence* seq);
+    void notifyValueKeyframeSequenceInterpolationDidChange(ValueKeyframeSequence* seq);
 };
 
 class IVW_MODULE_ANIMATION_API ValueKeyframeSequence : public ValueKeyframeSequenceObserverble {
@@ -115,6 +117,7 @@ public:
     virtual ~ValueKeyframeSequence() = default;
 
     virtual const Interpolation& getInterpolation() const = 0;
+    virtual Interpolation& getInterpolation() = 0;
     virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) = 0;
 
     virtual std::vector<InterpolationFactoryObject*> getSupportedInterpolations(
@@ -161,6 +164,7 @@ public:
     virtual void operator()(Seconds from, Seconds to, value_type& out) const;
 
     virtual const InterpolationTyped<Key>& getInterpolation() const override;
+    virtual InterpolationTyped<Key>& getInterpolation() override;
     virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) override;
     void setInterpolation(std::unique_ptr<InterpolationTyped<Key, value_type>> interpolation);
 
@@ -171,10 +175,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    void registerInterpolationCallbacks();
-
     std::unique_ptr<InterpolationTyped<Key>> interpolation_{nullptr};
-    std::vector<std::shared_ptr<std::function<void()>>> interpolationPropertyCallbackHandles_;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -194,17 +195,13 @@ template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped()
     : BaseKeyframeSequence<Key>{}
     , ValueKeyframeSequence()
-    , interpolation_{std::move(detail::DefaultInterpolationCreator<Key>::create())} {
-    registerInterpolationCallbacks();
-}
+    , interpolation_{std::move(detail::DefaultInterpolationCreator<Key>::create())} {}
 
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes)
     : BaseKeyframeSequence<Key>{std::move(keyframes)}
     , ValueKeyframeSequence()
-    , interpolation_{std::move(detail::DefaultInterpolationCreator<Key>::create())} {
-    registerInterpolationCallbacks();
-}
+    , interpolation_{std::move(detail::DefaultInterpolationCreator<Key>::create())} {}
 
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(
@@ -213,20 +210,15 @@ KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(
     : BaseKeyframeSequence<Key>{std::move(keyframes)}
     , ValueKeyframeSequence()
     , interpolation_{interpolation ? std::move(interpolation)
-                                   : throw Exception("Interpolation must be specified")} {
-    registerInterpolationCallbacks();
-}
+                                   : throw Exception("Interpolation must be specified")} {}
 
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(const KeyframeSequenceTyped<Key>& rhs)
     : BaseKeyframeSequence<Key>(rhs)
     , ValueKeyframeSequence(rhs)
     , interpolation_(rhs.interpolation_
-                         ? std::unique_ptr<InterpolationTyped<Key>>(
-                            rhs.interpolation_->clone())
-                         : nullptr) {
-    registerInterpolationCallbacks();
-}
+                         ? std::unique_ptr<InterpolationTyped<Key>>(rhs.interpolation_->clone())
+                         : nullptr) {}
 
 template <typename Key>
 KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(
@@ -263,14 +255,19 @@ const InterpolationTyped<Key>& KeyframeSequenceTyped<Key>::getInterpolation() co
 }
 
 template <typename Key>
+InterpolationTyped<Key>& KeyframeSequenceTyped<Key>::getInterpolation() {
+    return *interpolation_;
+}
+
+template <typename Key>
 void KeyframeSequenceTyped<Key>::setInterpolation(
     std::unique_ptr<InterpolationTyped<Key, value_type>> interpolation) {
     if (!interpolation) {
         throw Exception("Interpolation cannot be null");
     } else if (!interpolation_->equal(*interpolation)) {
+        notifyValueKeyframeSequenceInterpolationWillChange(this);
         interpolation_ = std::move(interpolation);
-        registerInterpolationCallbacks();
-        notifyValueKeyframeSequenceInterpolationChanged(this);
+        notifyValueKeyframeSequenceInterpolationDidChange(this);
     }
 }
 template <typename Key>
@@ -290,16 +287,6 @@ std::vector<InterpolationFactoryObject*> KeyframeSequenceTyped<Key>::getSupporte
 }
 
 template <typename Key>
-void KeyframeSequenceTyped<Key>::registerInterpolationCallbacks() {
-    interpolationPropertyCallbackHandles_.clear();
-    if (!interpolation_) return;
-    for (auto* prop : interpolation_->getProperties()) {
-        interpolationPropertyCallbackHandles_.push_back(
-            prop->onChangeScoped([this]() { notifyValueKeyframeSequenceInterpolationChanged(this); }));
-    }
-}
-
-template <typename Key>
 void KeyframeSequenceTyped<Key>::serialize(Serializer& s) const {
     BaseKeyframeSequence<Key>::serialize(s);
     s.serialize("interpolation", interpolation_);
@@ -312,7 +299,9 @@ void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
         std::unique_ptr<InterpolationTyped<Key>> interpolation;
         d.deserializeAs<Interpolation>("interpolation", interpolation);
         if (interpolation) {
+            notifyValueKeyframeSequenceInterpolationWillChange(this);
             setInterpolation(std::move(interpolation));
+            notifyValueKeyframeSequenceInterpolationDidChange(this);
         }
     }
 }

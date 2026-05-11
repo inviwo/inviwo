@@ -30,6 +30,8 @@
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/algorithm/easing.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/interpolation/interpolation.h>
@@ -49,6 +51,7 @@ class IVW_MODULE_ANIMATION_API CameraAnimation
     : public InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type> {
 public:
     CameraAnimation(InviwoApplication* app = nullptr);
+    CameraAnimation(const CameraAnimation& rhs);
     virtual ~CameraAnimation() = default;
     virtual CameraAnimation* clone() const override;
 
@@ -61,29 +64,48 @@ public:
 
     virtual bool equal(const Interpolation& other) const override;
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
     virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
                             Seconds to, CameraKeyframe::value_type& out) const override;
 
-    enum class RotationAxis : std::uint8_t { Yaw, Pitch, Roll };
-
-    struct CameraState {
-        dvec3 dir{0.0, 0.0, -1.0};
-        dvec3 up{0.0, 1.0, 0.0};
+    enum class RotationAxis : std::uint8_t {
+        CameraYaw,
+        CameraPitch,
+        CameraRoll,
+        ObjectYaw,
+        ObjectPitch,
+        ObjectRoll,
+        WorldX,
+        WorldY,
+        WorldZ
     };
 
-    struct Swing {
-        dvec3 axis{};
-        dvec3 dir{};
-        dvec3 up{};
-        double amplitude{};
-        EasingType easing = EasingType::quadratic;
-        double step{};
-        double current{};
-    };
+    OrdinalProperty<double> amplitude;
+    OrdinalProperty<double> periods;
+    OptionProperty<RotationAxis> axis;
 };
+
+constexpr std::string_view format_as(CameraAnimation::RotationAxis axis) {
+    switch (axis) {
+        case CameraAnimation::RotationAxis::CameraYaw:
+            return "Camera Yaw";
+        case CameraAnimation::RotationAxis::CameraPitch:
+            return "Camera Pitch";
+        case CameraAnimation::RotationAxis::CameraRoll:
+            return "Camera Roll";
+        case CameraAnimation::RotationAxis::ObjectYaw:
+            return "Object Yaw";
+        case CameraAnimation::RotationAxis::ObjectPitch:
+            return "Object Pitch";
+        case CameraAnimation::RotationAxis::ObjectRoll:
+            return "Object Roll";
+        case CameraAnimation::RotationAxis::WorldX:
+            return "World X";
+        case CameraAnimation::RotationAxis::WorldY:
+            return "World Y";
+        case CameraAnimation::RotationAxis::WorldZ:
+            return "World Z";
+    }
+}
 
 }  // namespace animation
 }  // namespace inviwo

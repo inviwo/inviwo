@@ -54,8 +54,10 @@ public:
     virtual bool isSelected() const override;
     virtual void setSelected(bool selected) override;
 
-    Easing getEasing() const;
-    void setEasing(Easing easing);
+    std::optional<EasingType> getEaseIn() const;
+    std::optional<EasingType> getEaseOut() const;
+    void setEaseIn(std::optional<EasingType> easeIn);
+    void setEaseOut(std::optional<EasingType> easeOut);
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -69,7 +71,8 @@ protected:
 private:
     bool isSelected_{false};
     Seconds time_{0.0};
-    Easing easing_{EasingType::linear, EasingMode::inOut};
+    std::optional<EasingType> easeIn_;
+    std::optional<EasingType> easeOut_;
 };
 
 }  // namespace animation

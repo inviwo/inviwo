@@ -169,11 +169,12 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     interpolationHelper<CameraProperty, CameraLinearInterpolation>();
     interpolationHelper<CameraProperty, CameraAnimation>();
 
-    interpolationHelper<TransferFunctionProperty, TransferFunctionInterpolation>();
+    interpolationHelper<TransferFunctionProperty,
+                        ConstantInterpolation<ValueKeyframe<TransferFunction>>>();
+    interpolationHelper<TransferFunctionProperty, TFInterpolationBlend>();
+    interpolationHelper<TransferFunctionProperty, TFInterpolationOptimalTransport>();
 
     propertyHelper<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>();
-
-    // Todo: Add support for TransferFunctionProperty (special interpolation)
 
     registerTrack<CallbackTrack>();
     registerTrack<ControlTrack>();
