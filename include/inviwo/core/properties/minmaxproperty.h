@@ -602,4 +602,11 @@ Document MinMaxProperty<T>::getDescription() const {
     return doc;
 }
 
+// Scalar properties
+extern template class IVW_CORE_TMPL_EXP MinMaxProperty<float>;
+extern template class IVW_CORE_TMPL_EXP MinMaxProperty<int>;
+extern template class IVW_CORE_TMPL_EXP MinMaxProperty<size_t>;
+extern template class IVW_CORE_TMPL_EXP MinMaxProperty<glm::i64>;
+extern template class IVW_CORE_TMPL_EXP MinMaxProperty<double>;
+
 }  // namespace inviwo

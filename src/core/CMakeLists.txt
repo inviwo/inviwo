@@ -694,6 +694,7 @@ set(SOURCE_FILES
     properties/isovalueproperty.cpp
     properties/listproperty.cpp
     properties/marginproperty.cpp
+    properties/minmaxproperty.cpp
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
     properties/optionpropertytraits.cpp
