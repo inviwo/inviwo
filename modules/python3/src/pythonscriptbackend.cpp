@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,34 +26,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/python3qt/python3qtmoduledefine.h>
+#include <modules/python3/pythonscriptbackend.h>
 
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
+#include <modules/python3/pyanyconverter.h>
 
-#include <functional>
-#include <memory>
-#include <vector>
+#include <inviwo/core/util/exception.h>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/eval.h>
 
 namespace inviwo {
-class Property;
 
-/**
- * @brief A text editor with Python syntax highlighting
- * @see TextEditorDockWidget
- * @see PythonSyntaxHighlight
- */
-class IVW_MODULE_PYTHON3QT_API PythonEditorDockWidget : public TextEditorDockWidget {
-public:
-    /**
-     * @brief Create a text editor for @p property
-     * @pre Property has to be of type FileProperty, StringProperty, or ScriptProperty
-     */
-    PythonEditorDockWidget(Property* property);
+PythonScriptBackendFactoryObject::PythonScriptBackendFactoryObject(const PyAnyConverter& converter)
+    : ScriptBackendFactoryObject("python"), converter_{converter} {}
 
-private:
-    std::vector<std::shared_ptr<std::function<void()>>> callbacks_;
-};
+ScriptProperty::Backend PythonScriptBackendFactoryObject::create() const {
+    return [&converter = converter_](const std::string& source,
+                                     const std::vector<std::any>& args) -> std::any {
+        namespace py = pybind11;
+        const py::gil_scoped_acquire guard{};
+
+        py::dict globals = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+
+        py::list pyArgs;
+        for (const auto& arg : args) {
+            pyArgs.append(converter.toPyObject(arg));
+        }
+        globals["__args__"] = pyArgs;
+
+        try {
+            py::exec(source, globals, globals);
+        } catch (const py::error_already_set& e) {
+            throw Exception(IVW_CONTEXT_CUSTOM("PythonScriptBackend"),
+                            "Python script error: {}", e.what());
+        }
+
+        if (globals.contains("__result__")) {
+            return converter.toAny(globals["__result__"]);
+        }
+
+        return std::any{};
+    };
+}
 
 }  // namespace inviwo

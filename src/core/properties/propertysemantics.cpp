@@ -57,6 +57,7 @@ const PropertySemantics PropertySemantics::TextEditor("TextEditor");
 const PropertySemantics PropertySemantics::PythonEditor("PythonEditor");
 const PropertySemantics PropertySemantics::ImageEditor("ImageEditor");
 const PropertySemantics PropertySemantics::ShaderEditor("ShaderEditor");
+const PropertySemantics PropertySemantics::ScriptEditor("ScriptEditor");
 
 std::ostream& operator<<(std::ostream& ss, const PropertySemantics& obj) {
     ss << obj.getString();

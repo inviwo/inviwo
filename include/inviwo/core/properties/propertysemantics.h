@@ -61,6 +61,7 @@ public:
     static const PropertySemantics ImageEditor;
     static const PropertySemantics ShaderEditor;
     static const PropertySemantics PythonEditor;
+    static const PropertySemantics ScriptEditor;
 
     friend inline bool operator==(const PropertySemantics& lhs, const PropertySemantics& rhs) {
         return lhs.getString() == rhs.getString();

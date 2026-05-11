@@ -31,6 +31,7 @@
 
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/scriptproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/filedialogstate.h>
 #include <inviwo/core/util/filesystem.h>
@@ -70,6 +71,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     , property_{property}
     , fileProperty_{dynamic_cast<FileProperty*>(property)}
     , stringProperty_{dynamic_cast<StringProperty*>(property)}
+    , scriptProperty_{dynamic_cast<ScriptProperty*>(property)}
     , editor_(new CodeEdit{this})
     , fileObserver_{this, "Text Editor"} {
 
@@ -131,6 +133,8 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
         });
     } else if (stringProperty_) {
         propertyCallback_ = stringProperty_->onChangeScoped([this]() { propertyModified(); });
+    } else if (scriptProperty_) {
+        propertyCallback_ = scriptProperty_->onChangeScoped([this]() { propertyModified(); });
     }
 
     {
@@ -191,6 +195,8 @@ void TextEditorDockWidget::updateFromProperty() {
         }
     } else if (stringProperty_) {
         editor_->setPlainText(utilqt::toQString(stringProperty_->get()));
+    } else if (scriptProperty_) {
+        editor_->setPlainText(utilqt::toQString(scriptProperty_->getSource()));
     }
     editor_->document()->setModified(false);
 
@@ -234,6 +240,8 @@ void TextEditorDockWidget::updateWindowTitle() {
             return "Text Editor - " + fileProperty_->get().string();
         } else if (stringProperty_) {
             return "Text Editor - " + stringProperty_->getDisplayName();
+        } else if (scriptProperty_) {
+            return "Script Editor - " + scriptProperty_->getDisplayName();
         }
         return "Text Editor";
     }();
@@ -266,6 +274,9 @@ void TextEditorDockWidget::save() {
     } else if (stringProperty_) {
         util::exceptionGuard(
             [&]() { stringProperty_->set(utilqt::fromQString(editor_->toPlainText())); });
+    } else if (scriptProperty_) {
+        util::exceptionGuard(
+            [&]() { scriptProperty_->setSource(utilqt::fromQString(editor_->toPlainText())); });
     }
     editor_->document()->setModified(false);
 }

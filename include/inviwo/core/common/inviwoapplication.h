@@ -72,6 +72,7 @@ class OutportFactory;
 class InportFactory;
 class PortInspectorFactory;
 class PortInspectorManager;
+class ScriptBackendFactory;
 
 class DataVisualizerManager;
 class WorkspaceManager;
@@ -351,6 +352,14 @@ public:
     PropertyWidgetFactory* getPropertyWidgetFactory() const;
 
     /**
+     * ScriptBackend factory
+     * @see ScriptProperty
+     * @see ScriptBackendFactory
+     * @see ScriptBackendFactoryObject
+     */
+    ScriptBackendFactory* getScriptBackendFactory() const;
+
+    /**
      * Get a Representation factory for a specific kind of representation (Volume Representation,
      * Layer Representation, Buffer Representation, etc)
      * @see Data
@@ -474,6 +483,7 @@ protected:
     std::unique_ptr<PropertyConverterManager> propertyConverterManager_;
     std::unique_ptr<PropertyFactory> propertyFactory_;
     std::unique_ptr<PropertyWidgetFactory> propertyWidgetFactory_;
+    std::unique_ptr<ScriptBackendFactory> scriptBackendFactory_;
     std::unique_ptr<RepresentationMetaFactory> representationMetaFactory_;
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
     std::vector<Settings*> settingsRegistry_;
@@ -601,6 +611,10 @@ inline PropertyFactory* InviwoApplication::getPropertyFactory() const {
 
 inline PropertyWidgetFactory* InviwoApplication::getPropertyWidgetFactory() const {
     return propertyWidgetFactory_.get();
+}
+
+inline ScriptBackendFactory* InviwoApplication::getScriptBackendFactory() const {
+    return scriptBackendFactory_.get();
 }
 
 inline RepresentationMetaFactory* InviwoApplication::getRepresentationMetaFactory() const {

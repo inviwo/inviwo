@@ -79,6 +79,7 @@ class DataWriter;
 class PortInspectorFactoryObject;
 class MeshDrawer;
 class PropertyConverter;
+class ScriptBackendFactoryObject;
 class VersionConverter;
 class DataVisualizer;
 
@@ -267,6 +268,14 @@ public:
     void registerPropertyConverter(std::unique_ptr<PropertyConverter> propertyConverter);
 
     /**
+     * Register a ScriptBackendFactoryObject for creating script backends.
+     * @see ScriptBackendFactory
+     * @see ScriptBackendFactoryObject
+     * @see ScriptProperty
+     */
+    void registerScriptBackend(std::unique_ptr<ScriptBackendFactoryObject> backend);
+
+    /**
      * Register a representation factory object for creating representations with the respective
      * representation factory. The template type BaseRepr is used to select representation
      * factory. A representation factory object should implement RepresentationFactoryObject
@@ -379,6 +388,7 @@ private:
     std::vector<std::unique_ptr<PropertyConverter>> propertyConverters_;
     std::vector<std::unique_ptr<PropertyFactoryObject>> properties_;
     std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
+    std::vector<std::unique_ptr<ScriptBackendFactoryObject>> scriptBackends_;
 
     std::vector<std::unique_ptr<BaseRepresentationFactoryObject>> representationFactoryObjects_;
     std::vector<std::function<void()>> representationUnRegFunctors_;

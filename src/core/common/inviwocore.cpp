@@ -98,6 +98,7 @@
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/planeproperty.h>
 #include <inviwo/core/properties/positionproperty.h>
+#include <inviwo/core/properties/scriptproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/stringsproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -242,6 +243,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<ButtonGroupProperty>();
     registerProperty<ButtonProperty>();
     registerProperty<CameraProperty>();
+    registerProperty<ScriptProperty>();
     registerProperty<StringProperty>();
     registerProperty<Trackball>();
     registerProperty<CameraTrackball>();

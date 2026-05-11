@@ -46,6 +46,7 @@ namespace inviwo {
 class CodeEdit;
 class FileProperty;
 class Property;
+class ScriptProperty;
 class StringProperty;
 class SyntaxHighlighter;
 
@@ -56,7 +57,7 @@ class IVW_MODULE_QTWIDGETS_API TextEditorDockWidget : public PropertyEditorWidge
 public:
     /**
      * @brief Create a text editor for @p property
-     * @pre Property has to be of type FileProperty or StringProperty
+     * @pre Property has to be of type FileProperty, StringProperty, or ScriptProperty
      */
     explicit TextEditorDockWidget(Property* property);
     SyntaxHighlighter& getSyntaxHighlighter();
@@ -80,6 +81,7 @@ protected:
     Property* property_;
     FileProperty* fileProperty_;
     StringProperty* stringProperty_;
+    ScriptProperty* scriptProperty_;
     CodeEdit* editor_;
     std::shared_ptr<std::function<void()>> propertyCallback_;
     utilqt::EditorFileObserver fileObserver_;

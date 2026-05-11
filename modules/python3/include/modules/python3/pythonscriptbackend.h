@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,34 +26,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
-#include <modules/python3qt/python3qtmoduledefine.h>
-
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
-
-#include <functional>
-#include <memory>
-#include <vector>
+#include <modules/python3/python3moduledefine.h>
+#include <inviwo/core/properties/scriptbackendfactory.h>
 
 namespace inviwo {
-class Property;
+
+class PyAnyConverter;
 
 /**
- * @brief A text editor with Python syntax highlighting
- * @see TextEditorDockWidget
- * @see PythonSyntaxHighlight
+ * @brief ScriptBackendFactoryObject that creates Python script backends.
+ *
+ * Uses the PyAnyConverter from the Python3Module for type conversions between
+ * std::any and pybind11::object. The created backends execute Python scripts
+ * using pybind11::exec and return results via the `__result__` convention.
+ *
+ * @see ScriptBackendFactoryObject
+ * @see PyAnyConverter
+ * @see ScriptProperty
  */
-class IVW_MODULE_PYTHON3QT_API PythonEditorDockWidget : public TextEditorDockWidget {
+class IVW_MODULE_PYTHON3_API PythonScriptBackendFactoryObject : public ScriptBackendFactoryObject {
 public:
     /**
-     * @brief Create a text editor for @p property
-     * @pre Property has to be of type FileProperty, StringProperty, or ScriptProperty
+     * @param converter Reference to the PyAnyConverter for type conversions.
+     *        Must remain valid for the lifetime of any backends created by this factory object.
      */
-    PythonEditorDockWidget(Property* property);
+    explicit PythonScriptBackendFactoryObject(const PyAnyConverter& converter);
+
+    virtual ScriptProperty::Backend create() const override;
 
 private:
-    std::vector<std::shared_ptr<std::function<void()>>> callbacks_;
+    const PyAnyConverter& converter_;
 };
 
 }  // namespace inviwo
