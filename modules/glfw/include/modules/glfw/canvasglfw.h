@@ -77,7 +77,7 @@ class IVW_MODULE_GLFW_API CanvasGLFW : public GLFWWindowHandler, public CanvasGL
     friend class CanvasProcessorWidgetGLFW;
 
 public:
-    CanvasGLFW(std::string_view title = "", uvec2 dimensions = uvec2(128));
+    explicit CanvasGLFW(std::string_view title = "", uvec2 dimensions = uvec2(128));
     virtual ~CanvasGLFW();
 
     virtual void update() override;

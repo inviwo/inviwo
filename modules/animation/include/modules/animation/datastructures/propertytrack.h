@@ -39,7 +39,7 @@
 #include <modules/animation/datastructures/animationstate.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/basetrack.h>
-#include <modules/animation/datastructures/valuekeyframe.h>          // IWYU pragma: keep
+#include <modules/animation/datastructures/valuekeyframe.h>  // IWYU pragma: keep
 #include <modules/animation/datastructures/valuekeyframesequence.h>
 #include <modules/animation/interpolation/interpolation.h>
 
@@ -393,7 +393,7 @@ template <typename Prop, typename Key, typename Seq>
 void PropertyTrack<Prop, Key, Seq>::setProperty(Property* property) {
     if (auto prop = dynamic_cast<Prop*>(property)) {
         property_ = prop;
-        this->setName(property_->getDisplayName());
+        this->setName(std::string{property_->getDisplayName()});
     } else {
         throw Exception("Invalid property set to track");
     }

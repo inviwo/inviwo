@@ -64,7 +64,7 @@ PortInspector::PortInspector(std::string_view portClassIdentifier,
 
         for (auto processor : processors_) {
             // Set Identifiers
-            std::string newIdentifier =
+            const std::string newIdentifier =
                 fmt::format("{}PortInspector{}", dotSeperatedToPascalCase(getPortClassName()),
                             processor->getIdentifier());
             processor->setIdentifier(newIdentifier);
