@@ -72,7 +72,7 @@ public:
     virtual CompositeProperty* clone() const override;
     virtual ~CompositeProperty() = default;
 
-    virtual const std::string& getIdentifier() const override;
+    virtual std::string_view getIdentifier() const override;
 
     virtual std::string_view getClassIdentifierForWidget() const override;
 

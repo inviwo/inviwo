@@ -284,16 +284,16 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
 }
 
 void VolumeCombiner::updateProperties() {
-    std::stringstream desc;
+    std::string desc;
     std::vector<OptionPropertyIntOption> options;
     for (auto&& p : util::enumerate(inport_.getConnectedOutports())) {
-        const std::string str =
-            "v" + toString(p.first() + 1) + ": " + p.second()->getProcessor()->getDisplayName();
-        desc << str << "\n";
+        const auto str =
+            fmt::format("v{}: {}", p.first() + 1, p.second()->getProcessor()->getDisplayName());
+        fmt::format_to(std::back_inserter(desc), "{}\n", str);
         options.emplace_back("v" + toString(p.first() + 1), str, static_cast<int>(p.first()));
     }
     options.emplace_back("maxRange", "min/max {v1, v2, ...}", -1);
-    description_.set(desc.str());
+    description_.set(desc);
 
     rangeMode_.replaceOptions(options);
 }

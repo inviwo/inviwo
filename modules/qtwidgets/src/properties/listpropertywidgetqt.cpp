@@ -121,8 +121,8 @@ std::unique_ptr<QMenu> ListPropertyWidgetQt::getContextMenu() {
 
     if (listProperty_->getUIFlags() & ListPropertyUIFlag::Add) {
         if (listProperty_->getPrefabCount() == 1) {
-            auto addAction = menu->addAction(
-                utilqt::toQString("Add " + listProperty_->getPrefabs().front()->getDisplayName()));
+            auto* addAction = menu->addAction(utilqt::toQString(
+                fmt::format("Add {}", listProperty_->getPrefabs().front()->getDisplayName())));
             connect(addAction, &QAction::triggered, this, [this]() { addNewItem(0); });
         } else {
             auto addItemMenu = menu->addMenu("&Add Item");

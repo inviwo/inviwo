@@ -49,7 +49,7 @@ void Settings::insertProperty(size_t index, Property* property, bool owner) {
     property->onChange([this]() { save(); });
 }
 
-const std::string& Settings::getIdentifier() const { return identifier_; }
+std::string_view Settings::getIdentifier() const { return identifier_; }
 
 std::filesystem::path Settings::getFileName() const {
     auto settingname = identifier_;

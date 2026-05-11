@@ -412,7 +412,7 @@ void AnimationController::render() {
                                 {.dimensions = imageExporter->getImage()->getDimensions(),
                                  .frameRate = static_cast<int>(framesPerSecond.get()),
                                  .expectedNumberOfFrames = numFrames,
-                                 .sourceName = p->getIdentifier()});
+                                 .sourceName = std::string{p->getIdentifier()}});
 
                             recordingFunctors.emplace_back(
                                 [recorder = std::move(recorder), imageExporter]() {

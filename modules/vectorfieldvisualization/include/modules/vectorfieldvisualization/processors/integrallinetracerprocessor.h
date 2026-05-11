@@ -108,7 +108,7 @@ void IntegralLineTracerProcessor<Tracer>::process() {
     Tracer tracer(sampler, properties_);
 
     for (auto meta : annotationSamplers_.getSourceVectorData()) {
-        auto key = meta.first->getProcessor()->getIdentifier();
+        std::string key{meta.first->getProcessor()->getIdentifier()};
         key = util::stripIdentifier(key);
         tracer.addMetaDataSampler(key, meta.second);
     }
@@ -182,7 +182,8 @@ struct ProcessorTraits<PathLines3D> {
 
 template <typename Tracer>
 const ProcessorInfo& IntegralLineTracerProcessor<Tracer>::getProcessorInfo() const {
-    static const ProcessorInfo info{ProcessorTraits<IntegralLineTracerProcessor<Tracer>>::getProcessorInfo()};
+    static const ProcessorInfo info{
+        ProcessorTraits<IntegralLineTracerProcessor<Tracer>>::getProcessorInfo()};
     return info;
 }
 

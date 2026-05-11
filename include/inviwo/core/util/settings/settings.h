@@ -57,7 +57,7 @@ public:
      */
     void save();
 
-    virtual const std::string& getIdentifier() const override;
+    virtual std::string_view getIdentifier() const override;
     virtual InviwoApplication* getInviwoApplication() override;
 
 protected:

@@ -48,7 +48,8 @@ LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
     load();
 
     for (auto prop : linkProperties_.getProperties()) {
-        propertyMap_[prop->getIdentifier()] = static_cast<BoolProperty*>(prop);
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+        propertyMap_.emplace(prop->getIdentifier(), static_cast<BoolProperty*>(prop));
         prop->setVisible(false);
     }
 

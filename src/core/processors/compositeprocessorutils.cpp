@@ -124,8 +124,8 @@ std::shared_ptr<Source> addMetaSource(const std::vector<Inport*>& inports,
             portIdentifier.front() = static_cast<char>(std::toupper(portIdentifier.front()));
         }
 
-        auto id = util::stripIdentifier(inports.front()->getProcessor()->getDisplayName() +
-                                        portIdentifier);
+        auto id = util::stripIdentifier(
+            fmt::format("{}{}", inports.front()->getProcessor()->getDisplayName(), portIdentifier));
         metaSource->getSuperInport().setIdentifier(id);
 
         return metaSource;
@@ -148,7 +148,8 @@ std::shared_ptr<Sink> addMetaSink(Outport* outport, ProcessorNetwork& subNetwork
         if (!portIdentifier.empty()) {
             portIdentifier.front() = static_cast<char>(std::toupper(portIdentifier.front()));
         }
-        auto id = util::stripIdentifier(outport->getProcessor()->getDisplayName() + portIdentifier);
+        auto id = util::stripIdentifier(
+            fmt::format("{}{}", outport->getProcessor()->getDisplayName(), portIdentifier));
         metasink->getSuperOutport().setIdentifier(id);
         return metasink;
     } else {

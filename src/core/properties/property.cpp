@@ -137,7 +137,7 @@ Property::~Property() {
     }
 }
 
-const std::string& Property::getIdentifier() const { return identifier_; }
+std::string_view Property::getIdentifier() const { return identifier_; }
 Property& Property::setIdentifier(std::string_view identifier) {
     if (identifier_ != identifier) {
         identifier_ = identifier;
@@ -150,7 +150,7 @@ Property& Property::setIdentifier(std::string_view identifier) {
     return *this;
 }
 
-const std::string& Property::getPath() const {
+std::string_view Property::getPath() const {
     path_.clear();
 
     const auto traverse = [&](auto& self, PropertyOwner* owner) -> void {
@@ -179,7 +179,7 @@ void Property::getPath(std::pmr::string& out) const {
     out.append(identifier_);
 }
 
-const std::string& Property::getDisplayName() const { return displayName_; }
+std::string_view Property::getDisplayName() const { return displayName_.value; }
 
 Property& Property::setDisplayName(std::string_view displayName) {
     if (displayName_.value != displayName) {

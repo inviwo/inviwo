@@ -92,7 +92,7 @@ void NetworkSyncServer::onProcessorNetworkDidRemoveProcessor(Processor* processo
     collectPropertyChanges();
 
     const std::scoped_lock lock{commandsMutex_};
-    commands_.emplace_back(command::RemoveProcessor{processor->getIdentifier()});
+    commands_.emplace_back(command::RemoveProcessor{std::string{processor->getIdentifier()}});
 }
 void NetworkSyncServer::onProcessorNetworkDidAddConnection(const PortConnection& connection) {
     collectPropertyChanges();
@@ -204,7 +204,7 @@ void NetworkSyncServer::collectPropertyChanges() {
 
     std::vector<std::string> paths;
     std::transform(uniqueAfterLinks.begin(), uniqueAfterLinks.end(), std::back_inserter(paths),
-                   [](auto* p) { return p->getPath(); });
+                   [](auto* p) { return std::string{p->getPath()}; });
 
     if (settings_ && settings_->logModifiedProperties) {
         log::info("Modfifed:\n\t{}", fmt::join(paths, "\n\t"));

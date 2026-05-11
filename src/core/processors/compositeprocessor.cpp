@@ -147,7 +147,7 @@ void CompositeProcessor::loadSubNetwork(const std::filesystem::path& file) {
         auto ifs = std::ifstream(file);
         auto d = wm->createWorkspaceDeserializer(
             ifs, filesystem::getPath(PathType::Workspaces) / "dummy.inv");
-        auto name = getDisplayName();
+        std::string name{getDisplayName()};
         d.deserialize("DisplayName", name);
         setDisplayName(name);
         d.deserialize("ProcessorNetwork", *subNetwork_);
@@ -298,7 +298,7 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
         }
     }();
 
-    auto superId = subProperty->getPath();
+    std::string superId{subProperty->getPath()};
     replaceInString(superId, ".", "_");
     superProperty->setIdentifier(util::findUniqueIdentifier(
         superId, [&](std::string_view id) { return comp.getPropertyByIdentifier(id) == nullptr; },
@@ -386,7 +386,7 @@ CompositeProcessor::PropertyHandler::~PropertyHandler() {
 
 void CompositeProcessor::onSetIdentifier(Property* orgProp, const std::string&) {
     if (auto superProperty = getSuperProperty(orgProp)) {
-        auto superId = orgProp->getPath();
+        std::string superId{orgProp->getPath()};
         replaceInString(superId, ".", "_");
         superProperty->setIdentifier(superId);
     }

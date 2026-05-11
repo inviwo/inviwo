@@ -40,6 +40,8 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
 
+#include <fmt/std.h>
+
 #include <fstream>
 #include <vector>
 
@@ -231,9 +233,9 @@ void TextEditorDockWidget::setReadOnly(bool readonly) {
 void TextEditorDockWidget::updateWindowTitle() {
     auto str = [&]() -> std::string {
         if (fileProperty_) {
-            return "Text Editor - " + fileProperty_->get().string();
+            return fmt::format("Text Editor - {}", fileProperty_->get());
         } else if (stringProperty_) {
-            return "Text Editor - " + stringProperty_->getDisplayName();
+            return fmt::format("Text Editor - {}", stringProperty_->getDisplayName());
         }
         return "Text Editor";
     }();

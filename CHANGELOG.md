@@ -1,5 +1,20 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-05-08 `getIdentifier` now returns `std::string_view`
+The `getIdentifier` method in several core classes has been updated to return `std::string_view` instead of `const std::string&`. This change improves performance by avoiding unnecessary string copies and allocations.
+
+Affected classes include:
+- `Property`
+- `CompositeProperty`
+- `PropertyOwner`
+- `Processor`
+- `WorkspaceAnnotations`
+- `Settings`
+- Various classes in the Animation and BaseGL modules
+
+Additionally, methods such as `getDisplayName` and `getPath` in `Property` now also return `std::string_view`. Code relying on these methods may require adjustments.
+
+
 ## 2026-04-27 Removed `std::ostream` operators from core types
 All `std::ostream` operators for core types have been removed to reduce unnecessary dependencies on `ostream` and streamline the codebase. This affects several classes and enums across the framework, including but not limited to:
 

@@ -39,7 +39,7 @@
 #include <modules/animation/datastructures/animationstate.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/basetrack.h>
-#include <modules/animation/datastructures/valuekeyframe.h>          // IWYU pragma: keep
+#include <modules/animation/datastructures/valuekeyframe.h>  // IWYU pragma: keep
 #include <modules/animation/datastructures/valuekeyframesequence.h>
 #include <modules/animation/interpolation/interpolation.h>
 
@@ -354,13 +354,15 @@ PropertyTrack<Prop, Key, Seq>::PropertyTrack(ProcessorNetwork* net)
 
 template <typename Prop, typename Key, typename Seq>
 PropertyTrack<Prop, Key, Seq>::PropertyTrack(Prop* property)
-    : BaseTrack<Seq>{property->getDisplayName(), 100}
+    : BaseTrack<Seq>{std::string{property->getDisplayName()}, 100}
     , property_(property)
     , network_{property->getOwner()->getProcessor()->getNetwork()} {}
 
 template <typename Prop, typename Key, typename Seq>
 PropertyTrack<Prop, Key, Seq>::PropertyTrack(Prop* property, ProcessorNetwork* net)
-    : BaseTrack<Seq>{property->getDisplayName(), 100}, property_(property), network_{net} {}
+    : BaseTrack<Seq>{std::string{property->getDisplayName()}, 100}
+    , property_(property)
+    , network_{net} {}
 
 template <typename Prop, typename Key, typename Seq>
 PropertyTrack<Prop, Key, Seq>::~PropertyTrack() = default;
@@ -393,7 +395,7 @@ template <typename Prop, typename Key, typename Seq>
 void PropertyTrack<Prop, Key, Seq>::setProperty(Property* property) {
     if (auto prop = dynamic_cast<Prop*>(property)) {
         property_ = prop;
-        this->setName(property_->getDisplayName());
+        this->setName(std::string{property_->getDisplayName()});
     } else {
         throw Exception("Invalid property set to track");
     }

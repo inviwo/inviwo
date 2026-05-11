@@ -56,9 +56,9 @@ namespace glui {
 
 std::string_view Slider::getClassIdentifier() const { return classIdentifier; }
 
-Slider::Slider(const std::string& label, int value, int minValue, int maxValue,
-               Processor& processor, Renderer& uiRenderer, const ivec2& extent,
-               UIOrientation orientation)
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+Slider::Slider(std::string_view label, int value, int minValue, int maxValue, Processor& processor,
+               Renderer& uiRenderer, const ivec2& extent, UIOrientation orientation)
     : Element(label, processor, uiRenderer, orientation)
     , value_(value)
     , min_(minValue)

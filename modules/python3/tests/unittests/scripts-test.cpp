@@ -196,8 +196,8 @@ TEST(Python3Scripts, OptionPropertyTest) {
         auto optionProperty = static_cast<OptionPropertyInt*>(prop);
         ASSERT_TRUE(optionProperty != nullptr);
 
-        EXPECT_STREQ("test", optionProperty->getIdentifier().c_str());
-        EXPECT_STREQ("Test", optionProperty->getDisplayName().c_str());
+        EXPECT_EQ(std::string_view{"test"}, optionProperty->getIdentifier());
+        EXPECT_EQ(std::string_view{"Test"}, optionProperty->getDisplayName());
 
         EXPECT_EQ(2, optionProperty->size());
 

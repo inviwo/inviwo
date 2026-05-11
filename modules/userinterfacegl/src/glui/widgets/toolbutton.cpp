@@ -69,7 +69,7 @@ namespace glui {
 
 std::string_view ToolButton::getClassIdentifier() const { return classIdentifier; }
 
-ToolButton::ToolButton(const std::string& filename, Processor& processor, Renderer& uiRenderer,
+ToolButton::ToolButton(const std::filesystem::path& filename, Processor& processor, Renderer& uiRenderer,
                        const ivec2& extent)
     : AbstractButton("", processor, uiRenderer, extent)
     , labelImage_(loadImage(filename))

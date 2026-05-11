@@ -53,7 +53,7 @@ CompositeProperty::CompositeProperty(std::string_view identifier, std::string_vi
 
 CompositeProperty* CompositeProperty::clone() const { return new CompositeProperty(*this); }
 
-const std::string& CompositeProperty::getIdentifier() const { return Property::getIdentifier(); }
+std::string_view CompositeProperty::getIdentifier() const { return Property::getIdentifier(); }
 
 std::string_view CompositeProperty::getClassIdentifierForWidget() const {
     return CompositeProperty::classIdentifier;

@@ -101,6 +101,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    virtual std::string_view getIdentifier() const override { return "WorkspaceAnnotations"; }
+
     virtual InviwoApplication* getInviwoApplication() override;
 
     using ModifiedDispatcher = Dispatcher<void()>;

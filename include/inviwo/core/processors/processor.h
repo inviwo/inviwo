@@ -203,7 +203,7 @@ public:
      * @see util::findUniqueIdentifier
      */
     void setIdentifier(std::string_view identifier);
-    virtual const std::string& getIdentifier() const override;
+    virtual std::string_view getIdentifier() const override;
 
     /**
      * Get notified when the processor identifier changes. The callback happens after the identifier
@@ -218,7 +218,7 @@ public:
      * This name will be shown on various graphical representations.
      */
     void setDisplayName(std::string_view displayName);
-    const std::string& getDisplayName() const;
+    std::string_view getDisplayName() const;
 
     /**
      * Get notified when the processor display name changes. The callback happens after the display

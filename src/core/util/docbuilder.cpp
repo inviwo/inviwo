@@ -136,13 +136,13 @@ help::HelpProcessor help::buildProcessorHelp(Processor& processor) {
     LambdaNetworkVisitor visitor{
         [&](Property& property) {
             stack.back()->push_back(HelpProperty{std::string{property.getClassIdentifier()},
-                                                 property.getDisplayName(),
+                                                 std::string{property.getDisplayName()},
                                                  property.getHelp(),
                                                  {}});
         },
         [&](CompositeProperty& property, NetworkVisitorEnter) {
             stack.back()->push_back(HelpProperty{std::string{property.getClassIdentifier()},
-                                                 property.getDisplayName(),
+                                                 std::string{property.getDisplayName()},
                                                  property.getHelp(),
                                                  {}});
             stack.push_back(&stack.back()->back().properties);
@@ -154,7 +154,7 @@ help::HelpProcessor help::buildProcessorHelp(Processor& processor) {
     processor.accept(visitor);
 
     return HelpProcessor{processor.getClassIdentifier(),
-                         processor.getDisplayName(),
+                         std::string{processor.getDisplayName()},
                          processor.getProcessorInfo().help,
                          std::move(inports),
                          std::move(outports),

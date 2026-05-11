@@ -63,7 +63,7 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogTreeIte
     dispFont.setPixelSize(linkdialog::propertyLabelHeight);
     displayName->setFont(dispFont);
     displayName->setCrop(static_cast<int>(rect().width() - 2.0 * linkdialog::offset));
-    displayName->setText(QString::fromStdString(item_->getDisplayName()));
+    displayName->setText(utilqt::toQString(item_->getDisplayName()));
 
     auto classIdentifier = new LabelGraphicsItem(this);
     classIdentifier->setDefaultTextColor(Qt::black);
@@ -76,7 +76,7 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogTreeIte
                             QPointF(linkdialog::offset, -linkdialog::offset - offset));
     std::string className{item_->getClassIdentifier()};
     className = removeSubString(className, "Property");
-    classIdentifier->setText(QString::fromStdString(className));
+    classIdentifier->setText(utilqt::toQString(className));
 
     if (auto compProp = dynamic_cast<CompositeProperty*>(prop)) {
         QPointF newPos(0.0f, rect().height());

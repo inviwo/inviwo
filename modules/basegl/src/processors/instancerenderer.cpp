@@ -595,11 +595,11 @@ void InstanceRenderer::initializeResources() {
     vso->clearSegments();
 
     vso->addSegment(ShaderSegment{.placeholder = irplaceholder::setupVert,
-                                  .name = setupVert_.getIdentifier(),
+                                  .name = std::string{setupVert_.getIdentifier()},
                                   .snippet = setupVert_.get()});
 
     vso->addSegment(ShaderSegment{.placeholder = irplaceholder::commonCode,
-                                  .name = commonCode_.getIdentifier(),
+                                  .name = std::string{commonCode_.getIdentifier()},
                                   .snippet = commonCode_.get()});
 
     std::ranges::for_each(vecPorts_, [&](auto& port) { port.addUniform(*vso); });
@@ -610,7 +610,7 @@ void InstanceRenderer::initializeResources() {
     for (auto& transform : transforms_) {
         vso->addSegment(ShaderSegment{
             .placeholder = irplaceholder::transforms,
-            .name = transform.getIdentifier(),
+            .name = std::string{transform.getIdentifier()},
             .snippet = fmt::format("{} = {};", transform.getIdentifier(), transform.get()),
             .priority = prio});
         prio += 100;

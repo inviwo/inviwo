@@ -56,7 +56,7 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.glui.ToolButton"};
 
-    ToolButton(const std::string& filename, Processor& processor, Renderer& uiRenderer,
+    ToolButton(const std::filesystem::path& filename, Processor& processor, Renderer& uiRenderer,
                const ivec2& extent = ivec2(24, 24));
     ToolButton(std::shared_ptr<Texture2D> labelImage, Processor& processor, Renderer& uiRenderer,
                const ivec2& extent = ivec2(24, 24));

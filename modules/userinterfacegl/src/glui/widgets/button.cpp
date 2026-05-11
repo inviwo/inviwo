@@ -49,7 +49,7 @@ namespace glui {
 
 std::string_view Button::getClassIdentifier() const { return classIdentifier; }
 
-Button::Button(const std::string& label, Processor& processor, Renderer& uiRenderer,
+Button::Button(std::string_view label, Processor& processor, Renderer& uiRenderer,
                const ivec2& extent)
     : AbstractButton(label, processor, uiRenderer, extent) {}
 

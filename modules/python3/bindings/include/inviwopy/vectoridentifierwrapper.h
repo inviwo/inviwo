@@ -52,9 +52,9 @@ class VectorIdentifierWrapper {
 
     static decltype(auto) id(const value_type& elem) {
         if constexpr (Deref) {
-            return elem->getIdentifier();
+            return std::string{elem->getIdentifier()};
         } else {
-            return elem.getIdentifier();
+            return std::string{elem.getIdentifier()};
         }
     }
 

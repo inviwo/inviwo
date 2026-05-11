@@ -58,7 +58,8 @@ namespace glui {
 
 std::string_view RangeSlider::getClassIdentifier() const { return classIdentifier; }
 
-RangeSlider::RangeSlider(const std::string& label, const ivec2& value, int minValue, int maxValue,
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+RangeSlider::RangeSlider(std::string_view label, const ivec2& value, int minValue, int maxValue,
                          int minSeparation, Processor& processor, Renderer& uiRenderer,
                          const ivec2& extent, UIOrientation orientation)
     : Element(label, processor, uiRenderer, orientation)

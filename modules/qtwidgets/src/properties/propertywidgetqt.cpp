@@ -160,7 +160,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 
     if (auto app = util::getInviwoApplication(property_)) {
         // need to replace all '&' with '&&'. Otherwise Qt will interpret it as keyboard shortcut.
-        menu->addAction(QString::fromStdString(property_->getDisplayName()).replace("&", "&&"));
+        menu->addAction(utilqt::toQString(property_->getDisplayName()).replace("&", "&&"));
         menu->addSeparator();
 
         {
@@ -210,8 +210,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
             auto copyPathAction = menu->addAction("Copy Path");
             connect(copyPathAction, &QAction::triggered, this, [this]() {
                 if (!property_) return;
-                std::string path = property_->getPath();
-                QApplication::clipboard()->setText(path.c_str());
+                QApplication::clipboard()->setText(utilqt::toQString(property_->getPath()));
             });
         }
 

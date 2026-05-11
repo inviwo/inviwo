@@ -50,6 +50,7 @@ public:
                               InviwoApplication* app = util::getInviwoApplication());
     virtual ~DemoNavigatorDockWidgetQt();
 
+    virtual std::string_view getIdentifier() const override { return "DemoNavigatorDockWidgetQt"; }
     virtual InviwoApplication* getInviwoApplication() override;
 
 protected:

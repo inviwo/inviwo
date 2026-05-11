@@ -199,13 +199,16 @@ void TextOverlayGL::updateCache() {
     textRenderer_.setLineSpacing(font_.lineSpacing_.get());
 
     auto store = fmt::dynamic_format_arg_store<fmt::format_context>();
-    for (auto item : args_) {
+    std::vector<std::string> argNames{args_.size()};
+
+    for (auto&& [item, name] : util::zip(args_, argNames)) {
+        name = item->getIdentifier();
         if (auto sp = dynamic_cast<const StringProperty*>(item)) {
-            store.push_back(fmt::arg(sp->getIdentifier().c_str(), sp->get()));
+            store.push_back(fmt::arg(name.c_str(), sp->get()));
         } else if (auto ip = dynamic_cast<const IntProperty*>(item)) {
-            store.push_back(fmt::arg(ip->getIdentifier().c_str(), ip->get()));
+            store.push_back(fmt::arg(name.c_str(), ip->get()));
         } else if (auto dp = dynamic_cast<const DoubleProperty*>(item)) {
-            store.push_back(fmt::arg(dp->getIdentifier().c_str(), dp->get()));
+            store.push_back(fmt::arg(name.c_str(), dp->get()));
         }
     }
 

@@ -676,7 +676,7 @@ void NetworkEditor::addVisualizer(DataVisualizer* vis, Outport* outport) {
     util::offsetPosition(added, offset);
 }
 
-void NetworkEditor::editLabel(std::string_view type, const std::function<std::string()>& get,
+void NetworkEditor::editLabel(std::string_view type, const std::function<std::string_view()>& get,
                               const std::function<void(std::string_view)>& set) {
 
     bool ok{false};
@@ -684,11 +684,7 @@ void NetworkEditor::editLabel(std::string_view type, const std::function<std::st
                                             QLineEdit::Normal, utilqt::toQString(get()), &ok,
                                             Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
     if (ok && !text.isEmpty()) {
-        try {
-            set(utilqt::fromQString(text));
-        } catch (const Exception& e) {
-            log::exception(e);
-        }
+        util::exceptionGuarded([&] { set(utilqt::fromQString(text)); });
     }
 }
 
