@@ -40,6 +40,8 @@
 
 #include <string_view>
 #include <span>
+#include <iterator>
+#include <ranges>
 
 namespace inviwo {
 
@@ -142,11 +144,20 @@ public:
      */
     void set(const_iterator begin, const_iterator end);
 
+    template <std::forward_iterator Iter, std::sentinel_for<Iter> Sentinel>
+        requires std::convertible_to<std::iter_reference_t<Iter>, TFPrimitiveData>
+    void set(Iter sbegin, Sentinel send);
+
+    template <std::ranges::input_range R>
+        requires std::convertible_to<std::ranges::range_reference_t<R>, TFPrimitiveData>
+    void set(R range);
+
     /**
      * Access TFPrimitives as pair of vectors which can be used, e.g., for setting uniforms of a
      * shader.
      *
-     * @return vectors of TFPrimitives' position and color sorted increasingly regarding position
+     * @return vectors of TFPrimitives' position and color sorted increasingly regarding
+     * position
      */
     std::pair<std::vector<double>, std::vector<vec4>> getVectors() const;
 
@@ -298,6 +309,33 @@ private:
 };
 
 inline TFPrimitiveSetType TFPrimitiveSet::getType() const { return type_; }
+
+template <std::forward_iterator Iter, std::sentinel_for<Iter> Sentinel>
+    requires std::convertible_to<std::iter_reference_t<Iter>, TFPrimitiveData>
+void TFPrimitiveSet::set(Iter sbegin, Sentinel send) {
+    size_t targetSize = 0;
+
+    auto dbegin = values_.begin();
+    const auto dend = values_.end();
+    while (dbegin != dend && sbegin != send) {
+        verifyPoint(*sbegin);
+        **dbegin++ = *sbegin++;
+        ++targetSize;
+    }
+
+    while (sbegin != send) {
+        add(*sbegin++);
+        ++targetSize;
+    }
+    while (values_.size() > targetSize) {
+        remove(--values_.end());
+    }
+}
+template <std::ranges::input_range R>
+    requires std::convertible_to<std::ranges::range_reference_t<R>, TFPrimitiveData>
+void TFPrimitiveSet::set(R range) {
+    set(std::ranges::begin(range), std::ranges::end(range));
+}
 
 namespace util {
 
