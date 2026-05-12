@@ -32,6 +32,7 @@
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/algorithm/easing.h>
+#include <inviwo/core/util/union.h>
 
 #include <inviwo/core/algorithm/optimaltransport.h>
 
@@ -163,14 +164,10 @@ void TFInterpolationBlend::operator()(
     const auto easeOut = next.getEaseOut();
 
     const auto t = util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
+    static constexpr auto pos = std::views::transform([](const auto& item) { return item.pos; });
 
-    const auto p1 = v1.get() | std::views::transform([](const auto& item) { return item.pos; });
-    const auto p2 = v2.get() | std::views::transform([](const auto& item) { return item.pos; });
-    std::set<double> positions;
-    positions.insert(std::ranges::begin(p1), std::ranges::end(p1));
-    positions.insert(std::ranges::begin(p2), std::ranges::end(p2));
-
-    out.set(positions | std::views::transform([&](double pos) {
+    out.set(views::set_union(v1.get() | pos, v2.get() | pos) |
+            std::views::transform([&](double pos) {
                 return TFPrimitiveData{pos, glm::mix(v1.sample(pos), v2.sample(pos), t)};
             }));
 }
