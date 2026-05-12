@@ -42,8 +42,7 @@ IsoComponent::IsoComponent(std::string_view identifier, std::string_view name, D
                            VolumeInport& volume)
     : ShaderComponent()
     , iso{identifier, name, std::move(help),
-          IsoValueCollection{std::vector<TFPrimitiveData>{TFPrimitiveData{0.5, vec4{1}}}},
-          &volume}
+          IsoValueCollection{std::vector<TFPrimitiveData>{TFPrimitiveData{0.5, vec4{1}}}}, &volume}
     , volume_{volume} {}
 
 std::string_view IsoComponent::getName() const { return iso.getIdentifier(); }
@@ -55,11 +54,9 @@ void IsoComponent::process(Shader& shader, TextureUnitContainer&) {
 
     // For Absolute mode, normalize isovalue positions to [0,1] using volume's data range
     if (iso.get().getType() == TFPrimitiveSetType::Absolute && volume_.hasData()) {
-        const auto dataRange = volume_.getData()->dataMap.dataRange;
-        const auto invRange =
-            static_cast<float>(1.0 / (dataRange.y - dataRange.x));
+        const auto& dm = volume_.getData()->dataMap;
         for (auto& p : positions) {
-            p = (p - static_cast<float>(dataRange.x)) * invRange;
+            p = dm.mapFromValueToNormalized(p);
         }
     }
 

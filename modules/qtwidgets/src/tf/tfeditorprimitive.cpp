@@ -185,12 +185,12 @@ void TFEditorPrimitive::updateLabel() {
     if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
         if (tfe->isAbsolute()) {
             // In absolute mode, position is already in data space
-            label = utilqt::toQString(
-                fmt::format("{:0.4g}{: [} / {:0.3g}", getPosition(),
-                            tfe->getDataMapper().valueAxis.unit, getColor().a));
+            label =
+                utilqt::toQString(fmt::format("{:0.6g}{: [} / {:0.3g}", getPosition(),
+                                              tfe->getDataMapper().valueAxis.unit, getColor().a));
         } else {
             label = utilqt::toQString(
-                fmt::format("{:0.3g}{: [} ({:0.3g}) / {:0.3g}",
+                fmt::format("{:0.6g}{: [} ({:0.3g}) / {:0.3g}",
                             tfe->getDataMapper().mapFromNormalizedToValue(getPosition()),
                             tfe->getDataMapper().valueAxis.unit, getPosition(), getColor().a));
         }
