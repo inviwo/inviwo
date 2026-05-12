@@ -61,8 +61,6 @@ protected:
     virtual QWidget* create(Keyframe* key) override;
 
     // ValueKeyframeSequenceObserver overloads
-    virtual void onValueKeyframeSequenceInterpolationWillChange(
-        ValueKeyframeSequence* seq) override;
     virtual void onValueKeyframeSequenceInterpolationDidChange(ValueKeyframeSequence* seq) override;
 
 private:
