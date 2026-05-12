@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <modules/basegl/properties/linesettingsproperty.h>
 #include <modules/basegl/rendering/linerenderer.h>
+#include <modules/basegl/datastructures/linedata.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/texture/textureutils.h>

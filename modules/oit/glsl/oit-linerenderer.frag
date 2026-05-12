@@ -43,13 +43,6 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 #define M_PI 3.14159265358979323846
 #endif
 
-#if defined(OVERRIDE_ALPHA)
-uniform float overrideAlpha;
-#endif
-#if defined(OVERRIDE_COLOR)
-uniform vec4 overrideColor;
-#endif
-
 uniform vec2 screenDim = vec2(512, 512);
 uniform float antialiasing = 0.5;  // width of antialised edged [pixel]
 
@@ -71,17 +64,9 @@ in LineGeom {
 } fragment;
 
 void main() {
-#if defined(OVERRIDE_COLOR)
-    vec4 color = overrideColor;
-#else
     vec4 color = fragment.color;
-#endif // not OVERRIDE_COLOR
-
-#if defined(OVERRIDE_ALPHA)
-    color.a = overrideAlpha;
-#endif // OVERRIDE_ALPHA
-
     if (color.a < 0.01) discard;
+    
     float lineWidthHalf = fragment.lineWidthHalf;
 
     // make joins round by using the texture coords

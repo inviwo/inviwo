@@ -58,10 +58,12 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/image/layergl.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>
 
 #include <cstddef>
 #include <map>
@@ -95,35 +97,34 @@ LineRasterizer::LineRasterizer()
     , forceOpaque_("forceOpaque", "Shade Opaque",
                    "use simple depth checks instead of fragment lists"_help, false,
                    InvalidationLevel::InvalidResources)
-    , lineShaders_{
-          {{ShaderType::Vertex, std::string{"oit-linerenderer.vert"}},
-           {ShaderType::Geometry, std::string{"oit-linerenderer.geom"}},
-           {ShaderType::Fragment, std::string{"oit-linerenderer.frag"}}},
-          {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
-           {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
-           {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
-           {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
-           {[](const Mesh&, Mesh::MeshInfo mi) -> int {
-                return mi.ct == ConnectivityType::Adjacency ||
-                               mi.ct == ConnectivityType::StripAdjacency
-                           ? 1
-                           : 0;
-            },
-            [](int mode, Shader& shader) {
-                shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY",
-                                                              fmt::to_string(mode));
-            }}},
-          [this](Shader& shader) -> void {
-              shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-              configureShader(shader);
-          }} {
+    , lineShaders_{{{ShaderType::Vertex, std::string{"oit-linerenderer.vert"}},
+                    {ShaderType::Geometry, std::string{"oit-linerenderer.geom"}},
+                    {ShaderType::Fragment, std::string{"oit-linerenderer.frag"}}},
+                   {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+                    {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
+                    {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+                    {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"},
+                    {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
+                    {[](const Mesh&, Mesh::MeshInfo mi) -> int {
+                         return mi.ct == ConnectivityType::Adjacency ||
+                                        mi.ct == ConnectivityType::StripAdjacency
+                                    ? 1
+                                    : 0;
+                     },
+                     [](int mode, Shader& shader) {
+                         shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY",
+                                                                       fmt::to_string(mode));
+                     }}},
+                   [this](Shader& shader) -> void {
+                       shader.onReload(
+                           [this]() { invalidate(InvalidationLevel::InvalidResources); });
+                       configureShader(shader);
+                   }}
+    , tfLookup_{} {
 
     addPort(inport_);
 
     addProperties(forceOpaque_, lineSettings_);
-
-    lineSettings_.overrideLineWidth.setVisible(false);
-    lineSettings_.useMetaColor.setVisible(false);
 
     inport_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
@@ -137,18 +138,25 @@ void LineRasterizer::initializeResources() {
 }
 
 void LineRasterizer::configureShader(Shader& shader) {
+    LineData settings;
+    lineSettings_.update(settings);
+
     Rasterizer::configureShader(shader);
     auto* fso = shader.getFragmentShaderObject();
 
     fso->setShaderDefine("USE_FRAGMENT_LIST",
                          !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists());
 
-    fso->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.pseudoLighting.get());
-    fso->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.roundDepthProfile.get());
-    fso->setShaderDefine("OVERRIDE_ALPHA", lineSettings_.overrideAlpha.isChecked());
-    fso->setShaderDefine("OVERRIDE_COLOR", lineSettings_.overrideColor.isChecked());
+    fso->setShaderDefine("ENABLE_PSEUDO_LIGHTING", settings.pseudoLighting);
+    fso->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", settings.roundDepthProfile);
 
-    utilgl::addShaderDefines(shader, lineSettings_.stippling.mode.getSelectedValue());
+    auto* vso = shader.getVertexShaderObject();
+    vso->setShaderDefine("OVERRIDE_COLOR", settings.overrideColor);
+    vso->setShaderDefine("OVERRIDE_ALPHA", settings.overrideAlpha);
+    vso->setShaderDefine("USE_SCALARMETACOLOR", settings.useMetaColor);
+    vso->setShaderDefine("OVERRIDE_LINE_WIDTH", settings.overrideLineWidth);
+
+    utilgl::addShaderDefines(shader, settings.stippling.mode);
 
     shader.build();
 }
@@ -156,30 +164,50 @@ void LineRasterizer::configureShader(Shader& shader) {
 void LineRasterizer::setUniforms(Shader& shader) {
     Rasterizer::setUniforms(shader);
 
-    shader.setUniform("lineWidth", lineSettings_.lineWidth);
-    shader.setUniform("antialiasing", lineSettings_.antialiasing);
-    shader.setUniform("miterLimit", lineSettings_.miterLimit);
-    shader.setUniform("roundCaps", lineSettings_.roundCaps);
+    shader.setUniform("lineWidth", settings_.lineWidth);
+    shader.setUniform("antialiasing", settings_.antialiasing);
+    shader.setUniform("miterLimit", settings_.miterLimit);
+    shader.setUniform("roundCaps", settings_.roundCaps);
+    shader.setUniform("defaultColor", settings_.defaultColor);
+    shader.setUniform("config.color", settings_.overrideColorValue);
+    shader.setUniform("config.alpha", settings_.overrideAlphaValue);
     // Stippling settings
-    shader.setUniform("stippling.stippleLength", lineSettings_.stippling.length);
-    shader.setUniform("stippling.spacing", lineSettings_.stippling.spacing);
-    shader.setUniform("stippling.offset", lineSettings_.stippling.offset);
-    shader.setUniform("stippling.worldScale", lineSettings_.stippling.worldScale);
-
-    shader.setUniform("overrideAlpha", lineSettings_.alpha);
-    shader.setUniform("overrideColor", lineSettings_.color);
+    shader.setUniform("stippling.stippleLength", settings_.stippling.length);
+    shader.setUniform("stippling.spacing", settings_.stippling.spacing);
+    shader.setUniform("stippling.offset", settings_.stippling.offset);
+    shader.setUniform("stippling.worldScale", settings_.stippling.worldScale);
 }
 
 void LineRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
+    LineData settings;
+    lineSettings_.update(settings);
+
+    // Changes to these settings require updating the transfer function lookup
+    const bool updateLookup = settings_.useMetaColor != settings.useMetaColor ||
+                              settings_.metaColor != settings.metaColor;
+
+    settings_ = settings;
+
+    if (settings_.useMetaColor && updateLookup) {
+        tfLookup_.calculate(settings_.metaColor);
+    }
 
     const utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     const utilgl::DepthFuncState depthFunc(GL_LEQUAL);
     const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, usesFragmentLists() == UseFragmentList::No);
 
+    const TextureUnit texUnit;
+    if (settings_.useMetaColor) {
+        if (const auto* tfLayer = tfLookup_.getRepresentation<LayerGL>()) {
+            tfLayer->bindTexture(texUnit.getEnum());
+        }
+    }
+
     auto setup = [&](Shader& shader, const auto& transform) {
         setUniforms(shader);
         utilgl::setShaderUniforms(shader, transform, "geometry");
         shader.setUniform("screenDim", vec2(imageSize));
+        shader.setUniform("metaColor", texUnit.getUnitNumber());
     };
 
     for (auto mesh : inport_) {

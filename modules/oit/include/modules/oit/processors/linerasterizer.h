@@ -39,14 +39,14 @@
 #include <inviwo/core/util/glmvec.h>
 #include <modules/basegl/properties/linesettingsproperty.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/basegl/datastructures/linedata.h>
 #include <modules/oit/datastructures/rasterization.h>
 #include <modules/oit/ports/rasterizationport.h>
 #include <modules/oit/processors/rasterizer.h>
+#include <inviwo/core/datastructures/tflookuptable.h>
 
 namespace inviwo {
 class Mesh;
-class MeshShaderCache;
-class Shader;
 
 /**
  * @brief Renders input geometry with 2D lines
@@ -78,7 +78,9 @@ private:
     LineSettingsProperty lineSettings_;
     BoolProperty forceOpaque_;
 
+    LineData settings_;  //!< Local cache
     MeshShaderCache lineShaders_;
+    TFLookupTable tfLookup_;
 };
 
 }  // namespace inviwo
