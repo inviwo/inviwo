@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "utils/shading.glsl"
+#include "utils/blend.glsl"
 
 #if !defined(TEXCOORD_LAYER) && !defined(NORMALS_LAYER) \
     && !defined(VIEW_NORMALS_LAYER) && !defined(COLOR_LAYER)
@@ -37,6 +38,10 @@
 uniform LightParameters lighting;
 uniform CameraParameters camera;
 
+uniform bool enableTexturing;
+uniform sampler2D meshTexture;
+uniform float textureMixing;
+
 in vec4 worldPosition_;
 in vec3 normal_;
 in vec3 viewNormal_;
@@ -45,10 +50,17 @@ in vec4 color_;
 flat in vec4 pickColor_;
 
 void main() {
-    // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if (color_.a == 0) { discard; }
-
     vec4 fragColor = color_;
+    if (enableTexturing) {
+        vec4 tex = texture(meshTexture, texCoord_.xy);
+        fragColor = mix(fragColor, TEXTURING_BLEND_FUNC(tex, fragColor), textureMixing);
+    }
+
+    // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
+    if (fragColor.a == 0) { 
+        discard; 
+    }
+
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
     vec3 normal = orientedShadingNormal(normalize(normal_), worldPosition_.xyz);
 
