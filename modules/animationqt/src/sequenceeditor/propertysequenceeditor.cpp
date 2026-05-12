@@ -326,11 +326,6 @@ QWidget* PropertySequenceEditor::create(Keyframe* key) {
     return new PropertyEditorWidget(*key, this);
 }
 
-void PropertySequenceEditor::onValueKeyframeSequenceInterpolationWillChange(
-    ValueKeyframeSequence* seq) {
-    // widgets_.reset();
-}
-
 void PropertySequenceEditor::onValueKeyframeSequenceInterpolationDidChange(
     ValueKeyframeSequence* seq) {
 
