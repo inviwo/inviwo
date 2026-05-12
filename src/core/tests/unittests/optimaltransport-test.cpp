@@ -539,7 +539,7 @@ TEST(OptimalTransport, SamplesPerSegmentMass) {
 namespace {
 struct OTConf {
     static constexpr double epsilon = 2e-2;
-    static constexpr size_t segments = 16;
+    static constexpr size_t segments = 64;
     static constexpr int numSamples = 100;
 
     static const TransferFunction tfSinglePeakLeft;
