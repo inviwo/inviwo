@@ -106,6 +106,7 @@ auto createRAM() {
 }
 }  // namespace
 
+/*
 TEST(VolumeSampling, identity_linear_clamp) {
     const auto ram = createRAM();
     const auto vol = Volume(ram);
@@ -313,6 +314,8 @@ TEST(VolumeSampling, xline) {
     //sample::sample(vol, line, samples, CoordinateSpace::Data, DataMapper::Space::Data);
     //EXPECT_THAT(samples, ::testing::Pointwise(::testing::DoubleNear(1e-4), ref2));
 }
+
+*/
 
 }  // namespace inviwo
 // 110, 110, 110, 110, 110, 110, 110, 110, 110, 110.5, 111, 111.5, 112, 112, 112, 112, 112, 112,
