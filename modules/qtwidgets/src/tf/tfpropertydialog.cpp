@@ -522,25 +522,13 @@ void TFPropertyDialog::onTFTypeChangedInternal() {
             ? 1.0 / static_cast<double>(concept_->getTFProperty()->getLookUpTableSize())
             : 0.01;
 
-    if (allRelative) {
-        primitivePos_->setValueMapping(true, valueRange,
-                                       incr * (valueRange.y - valueRange.x));
-    } else {
-        // Absolute mode: position is already in data space, no mapping needed
-        primitivePos_->setValueMapping(false, valueRange,
-                                       incr * (valueRange.y - valueRange.x));
-    }
+    primitivePos_->setValueMapping(allRelative, valueRange, incr * (valueRange.y - valueRange.x));
 
-    zoomHSlider_->setTooltipFormat([sliderRange = sliderRange_, valueRange, allRelative](int,
-                                                                                         int val) {
-        if (allRelative) {
+    zoomHSlider_->setTooltipFormat(
+        [sliderRange = sliderRange_, valueRange, allRelative](int, int val) {
             return fmt::to_string(
                 glm::mix(valueRange.x, valueRange.y, static_cast<double>(val) / sliderRange));
-        } else {
-            return fmt::to_string(
-                glm::mix(valueRange.x, valueRange.y, static_cast<double>(val) / sliderRange));
-        }
-    });
+        });
 }
 
 void TFPropertyDialog::onZoomHChange(const dvec2& zoomH) {
