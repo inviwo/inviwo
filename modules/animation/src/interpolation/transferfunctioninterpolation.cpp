@@ -164,19 +164,15 @@ void TFInterpolationBlend::operator()(
 
     const auto t = util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
 
+    const auto p1 = v1.get() | std::views::transform([](const auto& item) { return item.pos; });
+    const auto p2 = v2.get() | std::views::transform([](const auto& item) { return item.pos; });
     std::set<double> positions;
-    positions.insert_range(v1.get() |
-                           std::views::transform([](const auto& item) { return item.pos; }));
-    positions.insert_range(v2.get() |
-                           std::views::transform([](const auto& item) { return item.pos; }));
+    positions.insert(std::ranges::begin(p1), std::ranges::end(p1));
+    positions.insert(std::ranges::begin(p2), std::ranges::end(p2));
 
-    const auto interpolated =
-        positions | std::views::transform([&](double pos) {
-            return TFPrimitiveData{pos, glm::mix(v1.sample(pos), v2.sample(pos), t)};
-        }) |
-        std::ranges::to<std::vector>();
-
-    out.set(interpolated);
+    out.set(positions | std::views::transform([&](double pos) {
+                return TFPrimitiveData{pos, glm::mix(v1.sample(pos), v2.sample(pos), t)};
+            }));
 }
 
 }  // namespace animation
