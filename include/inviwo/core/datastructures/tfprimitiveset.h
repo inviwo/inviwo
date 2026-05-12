@@ -137,17 +137,16 @@ public:
     // get a list of TF primitives in the order they were created
     std::vector<TFPrimitiveData> getUnsorted() const;
 
-    void set(std::span<const TFPrimitiveData>);
+    /**
+     * Set/update the list of TFPrimitives from given range
+     */
+    template <std::input_iterator Iter, std::sentinel_for<Iter> Sentinel>
+        requires std::convertible_to<std::iter_reference_t<Iter>, TFPrimitiveData>
+    void set(Iter sbegin, Sentinel send);
 
     /**
      * Set/update the list of TFPrimitives from given range
      */
-    void set(const_iterator begin, const_iterator end);
-
-    template <std::forward_iterator Iter, std::sentinel_for<Iter> Sentinel>
-        requires std::convertible_to<std::iter_reference_t<Iter>, TFPrimitiveData>
-    void set(Iter sbegin, Sentinel send);
-
     template <std::ranges::input_range R>
         requires std::convertible_to<std::ranges::range_reference_t<R>, TFPrimitiveData>
     void set(R range);
@@ -310,7 +309,7 @@ private:
 
 inline TFPrimitiveSetType TFPrimitiveSet::getType() const { return type_; }
 
-template <std::forward_iterator Iter, std::sentinel_for<Iter> Sentinel>
+template <std::input_iterator Iter, std::sentinel_for<Iter> Sentinel>
     requires std::convertible_to<std::iter_reference_t<Iter>, TFPrimitiveData>
 void TFPrimitiveSet::set(Iter sbegin, Sentinel send) {
     size_t targetSize = 0;
