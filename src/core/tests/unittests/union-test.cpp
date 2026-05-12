@@ -162,4 +162,52 @@ TEST(SetUnion, IteratorIncrementPostfixCompiles) {
     EXPECT_TRUE(it == std::default_sentinel);
 }
 
+using V = views::set_union<std::ranges::ref_view<std::vector<int>>,
+                          std::ranges::ref_view<std::vector<int>>>;
+
+static_assert(std::ranges::forward_range<V>);
+static_assert(std::forward_iterator<std::ranges::iterator_t<V>>);
+static_assert(std::ranges::common_range<V>);
+
+TEST(SetUnion, MultipassYieldsSameSequence) {
+    std::vector<int> a{1, 3, 5}, b{2, 3, 4};
+    auto v = views::set_union{std::views::all(a), std::views::all(b)};
+
+    std::vector<int> first, second;
+    for (auto x : v) first.push_back(x);
+    for (auto x : v) second.push_back(x);  // second pass
+    EXPECT_EQ(first, second);
+    EXPECT_EQ(first, (std::vector<int>{1, 2, 3, 4, 5}));
+}
+
+TEST(SetUnion, IteratorEquality) {
+    std::vector<int> a{1, 2}, b{1, 3};
+    auto v = views::set_union{std::views::all(a), std::views::all(b)};
+    auto i = v.begin();
+    auto j = v.begin();
+    EXPECT_TRUE(i == j);
+    ++i;
+    EXPECT_FALSE(i == j);
+    ++j;
+    EXPECT_TRUE(i == j);
+}
+
+TEST(SetUnion, EndIsIteratorAndDistanceWorks) {
+    std::vector<int> a{1, 3, 5}, b{2, 4, 6};
+    auto v = views::set_union{std::views::all(a), std::views::all(b)};
+    EXPECT_EQ(std::ranges::distance(v.begin(), v.end()), 6);
+    auto it = std::ranges::find(v, 4);
+    EXPECT_NE(it, v.end());
+    EXPECT_EQ(*it, 4);
+}
+
+TEST(SetUnion, PostIncrementReturnsCopy) {
+    std::vector<int> a{1, 2}, b{3};
+    auto v = views::set_union{std::views::all(a), std::views::all(b)};
+    auto it = v.begin();
+    auto old = it++;
+    EXPECT_EQ(*old, 1);
+    EXPECT_EQ(*it, 2);
+}
+
 }  // namespace inviwo

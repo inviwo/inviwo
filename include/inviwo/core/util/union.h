@@ -60,6 +60,12 @@ public:
                                                std::ranges::range_difference_t<V2>>;
 
 private:
+    static constexpr bool both_forward =
+        std::ranges::forward_range<V1> && std::ranges::forward_range<V2>;
+
+    static constexpr bool both_common =
+        std::ranges::common_range<V1> && std::ranges::common_range<V2>;
+
     V1 base1_{};
     V2 base2_{};
     Comp comp_{};
@@ -67,7 +73,11 @@ private:
 public:
     class iterator {
     public:
-        using iterator_concept = std::input_iterator_tag;
+        using iterator_concept =
+            std::conditional_t<both_forward, std::forward_iterator_tag, std::input_iterator_tag>;
+        // Stay at input_iterator_tag: operator* returns common_reference_t which may be a
+        // prvalue. C++20's iterator_category contract requires an lvalue reference for
+        // anything stronger than input.
         using iterator_category = std::input_iterator_tag;
         using value_type = set_union::value_type;
         using reference = set_union::reference;
@@ -85,6 +95,8 @@ public:
         It2 it2_{};
         Sen2 end2_{};
         Comp* comp_ = nullptr;
+
+        friend class set_union;
 
     public:
         iterator() = default;
@@ -122,10 +134,27 @@ public:
             return *this;
         }
 
-        void operator++(int) { ++(*this); }
+        // For input-only, operator++(int) must return void. For forward, it must return
+        // a copy of the iterator (the "multipass" post-increment).
+        decltype(auto) operator++(int) {
+            if constexpr (both_forward) {
+                auto tmp = *this;
+                ++(*this);
+                return tmp;
+            } else {
+                ++(*this);
+            }
+        }
 
         friend bool operator==(const iterator& it, std::default_sentinel_t) {
             return it.it1_ == it.end1_ && it.it2_ == it.end2_;
+        }
+
+        // Iterator/iterator equality: only meaningful (and only required) for forward.
+        friend bool operator==(const iterator& a, const iterator& b)
+            requires both_forward
+        {
+            return a.it1_ == b.it1_ && a.it2_ == b.it2_;
         }
     };
 
@@ -155,7 +184,16 @@ public:
                         std::ranges::begin(base2_), std::ranges::end(base2_), comp_};
     }
 
-    constexpr std::default_sentinel_t end() const noexcept { return std::default_sentinel; }
+    // When both bases are forward + common, expose a real end() iterator so the view
+    // models common_range. Otherwise fall back to default_sentinel.
+    constexpr auto end() {
+        if constexpr (both_forward && both_common) {
+            return iterator{std::ranges::end(base1_), std::ranges::end(base1_),
+                            std::ranges::end(base2_), std::ranges::end(base2_), comp_};
+        } else {
+            return std::default_sentinel;
+        }
+    }
 };
 
 template <std::ranges::viewable_range R1, std::ranges::viewable_range R2,
