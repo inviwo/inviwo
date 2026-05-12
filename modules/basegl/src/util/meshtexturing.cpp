@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-MeshTexturing::MeshTexturing(std::string_view identifier, Document help)
+MeshTexturing::MeshTexturing(std::string_view identifier, Document help, float blendingFactor)
     : inport{identifier, std::move(help), OutportDeterminesSize::Yes}
     , unitNumber{0}
     , texture{"texture", "Enable Texture", false}
@@ -52,11 +52,11 @@ MeshTexturing::MeshTexturing(std::string_view identifier, Document help)
                  {"overlay", "Overlay Blending", BlendMode::Overlay}},
                 2,
                 InvalidationLevel::InvalidResources}
-    , swap{"swap", "Swap src, dst", false, InvalidationLevel::InvalidResources}
+    , swap{"swap", "Swap Blend Source & Destination", false, InvalidationLevel::InvalidResources}
     , mix{"textureMixing",
           "Mixing",
           "Blending factor for mixing the texture with the item's original color."_help,
-          0.7f,
+          blendingFactor,
           {0.0f, ConstraintBehavior::Immutable},
           {1.0f, ConstraintBehavior::Immutable},
           0.001f} {
