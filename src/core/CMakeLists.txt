@@ -437,6 +437,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/typetraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unicodefloatingpoint.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unindent.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/union.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utfutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
@@ -826,6 +827,7 @@ set(SOURCE_FILES
     util/typetraits.cpp
     util/unicodefloatingpoint.cpp
     util/unindent.cpp
+    util/union.cpp
     util/utilities.cpp
     util/vectoroperations.cpp
     util/volumesampler.cpp
@@ -864,8 +866,8 @@ ivw_group("Header Files" BASE "${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/"
 
 set(TEST_FILES
     tests/unittests/bitset-test.cpp
-    tests/unittests/brickiterator-test.cpp
     tests/unittests/boundingbox-test.cpp
+    tests/unittests/brickiterator-test.cpp
     tests/unittests/colorconversion-test.cpp
     tests/unittests/commandlineparser-test.cpp
     tests/unittests/compositeproperty-test.cpp
@@ -899,6 +901,7 @@ set(TEST_FILES
     tests/unittests/tfprimitiveset-test.cpp
     tests/unittests/typedmesh-test.cpp
     tests/unittests/unitsystem-test.cpp
+    tests/unittests/union-test.cpp
     tests/unittests/utfutils-test.cpp
     tests/unittests/utilities-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
