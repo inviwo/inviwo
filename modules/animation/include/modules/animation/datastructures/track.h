@@ -158,23 +158,6 @@ public:
     auto operator<=>(const Seconds& time) const { return getFirstTime() <=> time; }
 };
 
-/**
- * Track containing KeyFrameSequence of a given KeyFrame type.
- * @see Track
- * @see KeyframeSequenceTyped
- */
-template <typename Key>
-class TrackTyped : public Track {
-public:
-    TrackTyped() = default;
-    virtual ~TrackTyped() = default;
-
-    virtual KeyframeSequenceTyped<Key>& operator[](size_t i) override = 0;
-    virtual const KeyframeSequenceTyped<Key>& operator[](size_t i) const override = 0;
-
-    virtual void addTyped(const KeyframeSequenceTyped<Key>& sequence) = 0;
-};
-
 }  // namespace animation
 
 }  // namespace inviwo

@@ -50,7 +50,7 @@ namespace inviwo {
 namespace animation {
 class Keyframe;
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 class BaseKeyframeSequence : public KeyframeSequence, public KeyframeObserver {
 public:
     using key_type = Key;
@@ -58,8 +58,6 @@ public:
     using iterator = util::IndirectIterator<typename std::vector<std::unique_ptr<Key>>::iterator>;
     using const_iterator =
         util::IndirectIterator<typename std::vector<std::unique_ptr<Key>>::const_iterator>;
-
-    static_assert(std::is_base_of<Keyframe, Key>::value, "Key has to derive from Keyframe");
 
     BaseKeyframeSequence();
     BaseKeyframeSequence(std::vector<std::unique_ptr<Key>> keyframes);
@@ -123,10 +121,10 @@ protected:
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 BaseKeyframeSequence<Key>::BaseKeyframeSequence() : KeyframeSequence(), keyframes_{} {}
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 BaseKeyframeSequence<Key>::BaseKeyframeSequence(std::vector<std::unique_ptr<Key>> keyframes)
     : KeyframeSequence(), keyframes_{std::move(keyframes)} {
     for (auto& key : keyframes_) {
@@ -134,7 +132,7 @@ BaseKeyframeSequence<Key>::BaseKeyframeSequence(std::vector<std::unique_ptr<Key>
     }
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 BaseKeyframeSequence<Key>::BaseKeyframeSequence(const BaseKeyframeSequence<Key>& rhs)
     : KeyframeSequence(rhs) {
     for (const auto& key : rhs.keyframes_) {
@@ -142,7 +140,7 @@ BaseKeyframeSequence<Key>::BaseKeyframeSequence(const BaseKeyframeSequence<Key>&
     }
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 BaseKeyframeSequence<Key>& BaseKeyframeSequence<Key>::operator=(
     const BaseKeyframeSequence<Key>& that) {
     if (this != &that) {
@@ -164,7 +162,7 @@ BaseKeyframeSequence<Key>& BaseKeyframeSequence<Key>::operator=(
     return *this;
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 BaseKeyframeSequence<Key>::~BaseKeyframeSequence() {
     while (size() > 0) {
         // Remove and notify that keyframe is removed.
@@ -172,7 +170,7 @@ BaseKeyframeSequence<Key>::~BaseKeyframeSequence() {
     }
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 void BaseKeyframeSequence<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds /*oldTime*/) {
     std::stable_sort(keyframes_.begin(), keyframes_.end(),
                      [](const auto& a, const auto& b) { return *a < *b; });
@@ -182,7 +180,7 @@ void BaseKeyframeSequence<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds /*o
     }
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 Key* BaseKeyframeSequence<Key>::add(std::unique_ptr<Keyframe> key) {
     if (auto k = util::dynamic_unique_ptr_cast<Key>(std::move(key))) {
         return add(std::move(k));
@@ -192,7 +190,7 @@ Key* BaseKeyframeSequence<Key>::add(std::unique_ptr<Keyframe> key) {
     return nullptr;
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 Key* BaseKeyframeSequence<Key>::add(std::unique_ptr<Key> key) {
     auto it =
         keyframes_.insert(std::upper_bound(keyframes_.begin(), keyframes_.end(), key,
@@ -204,7 +202,7 @@ Key* BaseKeyframeSequence<Key>::add(std::unique_ptr<Key> key) {
     return it->get();
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 std::unique_ptr<Keyframe> BaseKeyframeSequence<Key>::remove(size_t i) {
     if (i < keyframes_.size()) {
         auto key = std::move(keyframes_[i]);
@@ -216,7 +214,7 @@ std::unique_ptr<Keyframe> BaseKeyframeSequence<Key>::remove(size_t i) {
     }
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 std::unique_ptr<Keyframe> BaseKeyframeSequence<Key>::remove(Keyframe* key) {
     auto it = std::find_if(keyframes_.begin(), keyframes_.end(),
                            [&](auto& elem) { return elem.get() == key; });
@@ -230,26 +228,26 @@ std::unique_ptr<Keyframe> BaseKeyframeSequence<Key>::remove(Keyframe* key) {
     }
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 Key& BaseKeyframeSequence<Key>::getLast() {
     return *keyframes_.back();
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 const Key& BaseKeyframeSequence<Key>::getLast() const {
     return *keyframes_.back();
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 Key& BaseKeyframeSequence<Key>::getFirst() {
     return *keyframes_.front();
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 const Key& animation::BaseKeyframeSequence<Key>::getFirst() const {
     return *keyframes_.front();
 }
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 std::optional<Seconds> animation::BaseKeyframeSequence<Key>::getPrevTime(Seconds at) const {
     auto it = std::lower_bound(
         begin(), end(), at, [](const auto& key, const auto& time) { return key.getTime() < time; });
@@ -261,7 +259,7 @@ std::optional<Seconds> animation::BaseKeyframeSequence<Key>::getPrevTime(Seconds
     }
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 std::optional<Seconds> animation::BaseKeyframeSequence<Key>::getNextTime(Seconds at) const {
     auto it = std::upper_bound(
         begin(), end(), at, [](const auto& time, const auto& key) { return time < key.getTime(); });
@@ -273,42 +271,42 @@ std::optional<Seconds> animation::BaseKeyframeSequence<Key>::getNextTime(Seconds
     }
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 Key& BaseKeyframeSequence<Key>::operator[](size_t i) {
     return *keyframes_[i];
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 const Key& BaseKeyframeSequence<Key>::operator[](size_t i) const {
     return *keyframes_[i];
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 auto BaseKeyframeSequence<Key>::begin() -> iterator {
     return util::makeIndirectIterator<true>(keyframes_.begin());
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 auto BaseKeyframeSequence<Key>::begin() const -> const_iterator {
     return util::makeIndirectIterator<true>(keyframes_.begin());
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 auto BaseKeyframeSequence<Key>::end() -> iterator {
     return util::makeIndirectIterator<true>(keyframes_.end());
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 auto BaseKeyframeSequence<Key>::end() const -> const_iterator {
     return util::makeIndirectIterator<true>(keyframes_.end());
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 bool BaseKeyframeSequence<Key>::isSelected() const {
     return isSelected_;
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 void BaseKeyframeSequence<Key>::setSelected(bool selected) {
     if (selected != isSelected_) {
         isSelected_ = selected;
@@ -316,13 +314,13 @@ void BaseKeyframeSequence<Key>::setSelected(bool selected) {
     }
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 void BaseKeyframeSequence<Key>::serialize(Serializer& s) const {
     s.serialize("selected", isSelected_);
     s.serialize("keyframes", keyframes_, "keyframe");
 }
 
-template <typename Key>
+template <std::derived_from<Keyframe> Key>
 void BaseKeyframeSequence<Key>::deserialize(Deserializer& d) {
     {
         bool isSelected = isSelected_;

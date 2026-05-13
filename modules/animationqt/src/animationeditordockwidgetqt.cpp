@@ -88,6 +88,7 @@
 #include <QToolBar>
 #include <Qt>
 #include <QtGlobal>
+#include <QMimeData>
 #include <fmt/core.h>
 #include <fmt/std.h>
 
