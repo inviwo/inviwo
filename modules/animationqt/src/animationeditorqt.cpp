@@ -253,7 +253,7 @@ void AnimationEditorQt::copy() {
             // create
             std::vector<std::string> trackClassIds;
             for (auto& [track, seq] : sequences) {
-                trackClassIds.push_back(std::string(track->getClassIdentifier()));
+                trackClassIds.emplace_back(track->getClassIdentifier());
             }
             serializer.serialize("trackClassIds", trackClassIds, "id");
 
@@ -321,6 +321,8 @@ void AnimationEditorQt::paste() {
         QByteArray data = mimeData->data(seqMime);
         std::stringstream ss;
         for (auto d : data) ss << d;
+
+        log::info("xml {}", ss.str());
 
         try {
             auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");

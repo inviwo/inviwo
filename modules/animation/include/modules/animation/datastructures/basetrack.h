@@ -60,12 +60,12 @@ namespace detail {
  * Creates a KeyframeSequence using the provided keyframes.
  * Provide a template specialization to add custom KeyframeSequence creation behavior.
  */
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 struct DefaultSequenceCreator {
     using key_type = typename Seq::key_type;
     static std::unique_ptr<Seq> create(std::vector<std::unique_ptr<key_type>> keys);
 };
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 std::unique_ptr<Seq> DefaultSequenceCreator<Seq>::create(
     std::vector<std::unique_ptr<key_type>> keys) {
     return std::make_unique<Seq>(std::move(keys));
@@ -73,7 +73,7 @@ std::unique_ptr<Seq> DefaultSequenceCreator<Seq>::create(
 
 }  // namespace detail
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 class BaseTrack : public Track, public KeyframeSequenceObserver {
 public:
     using seq_type = Seq;
@@ -82,9 +82,6 @@ public:
     using iterator = util::IndirectIterator<typename std::vector<std::unique_ptr<Seq>>::iterator>;
     using const_iterator =
         util::IndirectIterator<typename std::vector<std::unique_ptr<Seq>>::const_iterator>;
-
-    static_assert(std::is_base_of<KeyframeSequence, Seq>::value,
-                  "Seq has to derive from KeyframeSequence");
 
     BaseTrack(std::string_view name, size_t priority = 0);
 
@@ -176,11 +173,11 @@ private:
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 BaseTrack<Seq>::BaseTrack(std::string_view name, size_t priority)
     : name_{name}, priority_{priority} {}
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 BaseTrack<Seq>::BaseTrack(const BaseTrack<Seq>& other)
     : KeyframeSequenceObserver(other)
     , enabled_{other.enabled_}
@@ -191,7 +188,7 @@ BaseTrack<Seq>::BaseTrack(const BaseTrack<Seq>& other)
     }
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 BaseTrack<Seq>& BaseTrack<Seq>::operator=(const BaseTrack<Seq>& that) {
     if (this != &that) {
         while (!sequences_.empty()) {
@@ -207,18 +204,18 @@ BaseTrack<Seq>& BaseTrack<Seq>::operator=(const BaseTrack<Seq>& that) {
     return *this;
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 BaseTrack<Seq>::~BaseTrack() {
     while (size() > 0) {
         remove(size() - 1);
     }
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 bool BaseTrack<Seq>::isEnabled() const {
     return enabled_;
 }
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 void BaseTrack<Seq>::setEnabled(bool enabled) {
     if (enabled_ != enabled) {
         enabled_ = enabled;
@@ -226,11 +223,11 @@ void BaseTrack<Seq>::setEnabled(bool enabled) {
     }
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 std::string_view BaseTrack<Seq>::getName() const {
     return name_;
 }
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 void BaseTrack<Seq>::setName(std::string_view name) {
     if (name_ != name) {
         name_ = name;
@@ -238,11 +235,11 @@ void BaseTrack<Seq>::setName(std::string_view name) {
     }
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 size_t BaseTrack<Seq>::getPriority() const {
     return priority_;
 }
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 void BaseTrack<Seq>::setPriority(size_t priority) {
     if (priority_ != priority) {
         priority_ = priority;
@@ -250,7 +247,7 @@ void BaseTrack<Seq>::setPriority(size_t priority) {
     }
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 Seconds BaseTrack<Seq>::getFirstTime() const {
     if (sequences_.empty()) {
         return Seconds{0.0};
@@ -258,7 +255,7 @@ Seconds BaseTrack<Seq>::getFirstTime() const {
         return sequences_.front()->getFirstTime();
     }
 }
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 Seconds BaseTrack<Seq>::getLastTime() const {
     if (sequences_.empty()) {
         return Seconds{0.0};
@@ -266,7 +263,7 @@ Seconds BaseTrack<Seq>::getLastTime() const {
         return sequences_.back()->getLastTime();
     }
 }
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 std::optional<Seconds> BaseTrack<Seq>::getPrevTime(Seconds at) const {
     std::optional<Seconds> prevKeyframeTime = std::nullopt;
     for (auto& sequence : sequences_) {
@@ -281,7 +278,7 @@ std::optional<Seconds> BaseTrack<Seq>::getPrevTime(Seconds at) const {
     return prevKeyframeTime;
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 std::optional<Seconds> BaseTrack<Seq>::getNextTime(Seconds at) const {
     std::optional<Seconds> nextKeyframeTime = std::nullopt;
     for (auto& sequence : sequences_) {
@@ -296,7 +293,7 @@ std::optional<Seconds> BaseTrack<Seq>::getNextTime(Seconds at) const {
     return nextKeyframeTime;
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 std::vector<Seconds> BaseTrack<Seq>::getAllTimes() const {
     std::vector<Seconds> result;
     for (const auto& seq : sequences_) {
@@ -308,58 +305,58 @@ std::vector<Seconds> BaseTrack<Seq>::getAllTimes() const {
     return result;
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 size_t BaseTrack<Seq>::size() const {
     return sequences_.size();
 }
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 bool BaseTrack<Seq>::empty() const {
     return sequences_.empty();
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 Seq& BaseTrack<Seq>::operator[](size_t i) {
     return *sequences_[i];
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 const Seq& BaseTrack<Seq>::operator[](size_t i) const {
     return *sequences_[i];
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 const Seq& BaseTrack<Seq>::getFirst() const {
     return *sequences_.front();
 }
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 Seq& BaseTrack<Seq>::getFirst() {
     return *sequences_.front();
 }
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 const Seq& BaseTrack<Seq>::getLast() const {
     return *sequences_.back();
 }
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 Seq& BaseTrack<Seq>::getLast() {
     return *sequences_.back();
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 auto BaseTrack<Seq>::begin() -> iterator {
     return util::makeIndirectIterator<true>(sequences_.begin());
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 auto BaseTrack<Seq>::begin() const -> const_iterator {
     return util::makeIndirectIterator<true>(sequences_.begin());
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 auto BaseTrack<Seq>::end() -> iterator {
     return util::makeIndirectIterator<true>(sequences_.end());
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 auto BaseTrack<Seq>::end() const -> const_iterator {
     return util::makeIndirectIterator<true>(sequences_.end());
 }
@@ -370,7 +367,7 @@ auto BaseTrack<Seq>::end() const -> const_iterator {
  * |- case 1-|-case 2----------------------|-case 2----------|-case 2------|
  *           |-case 2a---|---------case 2b-|
  */
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 typename BaseTrack<Seq>::key_type* BaseTrack<Seq>::add(Seconds time, bool asNewSequence) {
     auto addNew = [this](std::unique_ptr<key_type> key) -> key_type* {
         std::vector<std::unique_ptr<key_type>> keys;
@@ -413,7 +410,7 @@ typename BaseTrack<Seq>::key_type* BaseTrack<Seq>::add(Seconds time, bool asNewS
  * |- case 1-|-case 2----------------------|-case 2----------|-case 3------|
  *           |-case 2a-----------|-case 2b-|
  */
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 auto BaseTrack<Seq>::addToClosestSequence(std::unique_ptr<key_type> key) -> key_type* {
     // 'it' will be the first seq. with a first time larger then 'to'.
     auto it = std::upper_bound(this->begin(), this->end(), key->getTime());
@@ -434,7 +431,7 @@ auto BaseTrack<Seq>::addToClosestSequence(std::unique_ptr<key_type> key) -> key_
     }
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 Seq* BaseTrack<Seq>::add(std::unique_ptr<KeyframeSequence> sequence) {
     if (auto s = util::dynamic_unique_ptr_cast<Seq>(std::move(sequence))) {
         return add(std::move(s));
@@ -444,7 +441,7 @@ Seq* BaseTrack<Seq>::add(std::unique_ptr<KeyframeSequence> sequence) {
     return nullptr;
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 Seq* BaseTrack<Seq>::add(std::unique_ptr<Seq> sequence) {
     auto it = std::upper_bound(sequences_.begin(), sequences_.end(), sequence,
                                [](const auto& a, const auto& b) { return *a < *b; });
@@ -464,7 +461,7 @@ Seq* BaseTrack<Seq>::add(std::unique_ptr<Seq> sequence) {
     return inserted->get();
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(size_t i) {
     if (i < sequences_.size()) {
         auto seq = std::move(sequences_[i]);
@@ -476,7 +473,7 @@ std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(size_t i) {
     }
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 std::unique_ptr<Keyframe> BaseTrack<Seq>::remove(Keyframe* key) {
     for (auto& seq : sequences_) {
         if (auto res = seq->remove(key)) {
@@ -488,7 +485,7 @@ std::unique_ptr<Keyframe> BaseTrack<Seq>::remove(Keyframe* key) {
     }
     return nullptr;
 }
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(KeyframeSequence* seq) {
     auto it = std::find_if(sequences_.begin(), sequences_.end(),
                            [&](auto& elem) { return elem.get() == seq; });
@@ -502,13 +499,13 @@ std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(KeyframeSequence* seq) 
     }
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 std::unique_ptr<typename BaseTrack<Seq>::key_type> BaseTrack<Seq>::createKeyframe(
     Seconds time) const {
     return std::make_unique<key_type>(time);
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 void BaseTrack<Seq>::onKeyframeSequenceMoved(KeyframeSequence* seq) {
     const bool atFront = sequences_.front().get() == seq;
     const bool atBack = sequences_.back().get() == seq;
@@ -527,7 +524,7 @@ void BaseTrack<Seq>::onKeyframeSequenceMoved(KeyframeSequence* seq) {
     }
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 void BaseTrack<Seq>::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("name", name_);
@@ -536,7 +533,7 @@ void BaseTrack<Seq>::serialize(Serializer& s) const {
     s.serialize("sequences", sequences_, "sequence");
 }
 
-template <typename Seq>
+template <std::derived_from<KeyframeSequence> Seq>
 void BaseTrack<Seq>::deserialize(Deserializer& d) {
     {
         auto old = name_;
