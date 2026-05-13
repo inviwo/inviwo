@@ -387,8 +387,14 @@ void TFPrimitiveSet::interpolateAndStoreColors(std::span<vec4> data) const {
         std::fill(data.begin(), data.end(), front().getColor());
     } else {  // in case of more than 1 points
         const auto sizeM1 = static_cast<double>(data.size() - 1);
+        const auto range = getRange();
+        const auto rangeInv = (range.y > range.x) ? 1.0 / (range.y - range.x) : 1.0;
+        // Map position to normalized [0,1] within the TF range, then to pixel index
+        const auto toNorm = [&](const TFPrimitive& p) {
+            return (p.getPosition() - range.x) * rangeInv;
+        };
         const auto toInd = [&](const TFPrimitive& p) {
-            return static_cast<std::ptrdiff_t>(ceil(p.getPosition() * sizeM1));
+            return static_cast<std::ptrdiff_t>(ceil(toNorm(p) * sizeM1));
         };
 
         const auto leftX = toInd(front());
@@ -403,8 +409,8 @@ void TFPrimitiveSet::interpolateAndStoreColors(std::span<vec4> data) const {
         while (pRight != end()) {
             const auto lrgba = pLeft->getColor();
             const auto rrgba = pRight->getColor();
-            const auto lx = pLeft->getPosition() * sizeM1;
-            const auto rx = pRight->getPosition() * sizeM1;
+            const auto lx = toNorm(*pLeft) * sizeM1;
+            const auto rx = toNorm(*pRight) * sizeM1;
 
             for (std::ptrdiff_t n = toInd(*pLeft); n < toInd(*pRight); ++n) {
                 const auto x = static_cast<float>((static_cast<double>(n) - lx) / (rx - lx));

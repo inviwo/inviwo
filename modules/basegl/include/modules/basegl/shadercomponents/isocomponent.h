@@ -46,6 +46,9 @@ namespace inviwo {
 
 /**
  * Adds a IsoValueProperty, and binds it to uniforms in the shader.
+ * Supports both Relative and Absolute isovalue modes. In Absolute mode,
+ * isovalue positions are normalized by the volume's data range before
+ * passing to the shader.
  */
 class IsoComponent : public ShaderComponent {
 public:
@@ -59,6 +62,9 @@ public:
     virtual std::vector<Segment> getSegments() override;
 
     IsoValueProperty iso;
+
+private:
+    VolumeInport& volume_;
 };
 
 }  // namespace inviwo

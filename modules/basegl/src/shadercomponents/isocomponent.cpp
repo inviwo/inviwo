@@ -29,6 +29,9 @@
 
 #include <modules/basegl/shadercomponents/isocomponent.h>
 
+#include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+
 #include <algorithm>
 
 #include <fmt/core.h>
@@ -39,15 +42,24 @@ IsoComponent::IsoComponent(std::string_view identifier, std::string_view name, D
                            VolumeInport& volume)
     : ShaderComponent()
     , iso{identifier, name, std::move(help),
-          IsoValueCollection{std::vector<TFPrimitiveData>{TFPrimitiveData{0.5, vec4{1}}}},
-          &volume} {}
+          IsoValueCollection{std::vector<TFPrimitiveData>{TFPrimitiveData{0.5, vec4{1}}}}, &volume}
+    , volume_{volume} {}
 
 std::string_view IsoComponent::getName() const { return iso.getIdentifier(); }
 
 void IsoComponent::process(Shader& shader, TextureUnitContainer&) {
-    const auto positions = iso.get().getPositionsf();
+    auto positions = iso.get().getPositionsf();
     const auto colors = iso.get().getColors();
     const auto name = iso.getIdentifier();
+
+    // For Absolute mode, normalize isovalue positions to [0,1] using volume's data range
+    if (iso.get().getType() == TFPrimitiveSetType::Absolute && volume_.hasData()) {
+        const auto& dm = volume_.getData()->dataMap;
+        for (auto& p : positions) {
+            p = dm.mapFromValueToNormalized(p);
+        }
+    }
+
     StrBuffer buff;
     shader.setUniform(buff.replace("{}.values", name), positions);
     shader.setUniform(buff.replace("{}.colors", name), colors);

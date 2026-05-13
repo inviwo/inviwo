@@ -53,6 +53,9 @@ namespace inviwo {
 
 /**
  * Adds a TransferFunctionProperty, and binds it to uniforms in the shader.
+ * Supports both Relative (normalized [0,1]) and Absolute (data-space) TF modes.
+ * In Absolute mode, a TFParameters uniform is added and the shader define TF_ABSOLUTE_{ID}
+ * is set to enable the absolute-mode applyTF overloads.
  */
 class TFComponent : public ShaderComponent {
 public:
@@ -61,6 +64,7 @@ public:
 
     virtual std::string_view getName() const override;
 
+    virtual void initializeResources(Shader& shader) override;
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;
 
     virtual std::vector<Property*> getProperties() override;
@@ -68,6 +72,9 @@ public:
     virtual std::vector<Segment> getSegments() override;
 
     TransferFunctionProperty tf;
+
+private:
+    VolumeInport& volume_;
 };
 
 }  // namespace inviwo

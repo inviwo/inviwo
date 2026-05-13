@@ -405,8 +405,11 @@ void TFPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
 }
 
 void TFPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomMax) {
-    const auto zoomMinF = static_cast<double>(zoomMin) / sliderRange_;
-    const auto zoomMaxF = static_cast<double>(zoomMax) / sliderRange_;
+    const auto sceneRect = editor_->sceneRect();
+    const auto left = sceneRect.x();
+    const auto width = sceneRect.width();
+    const auto zoomMinF = left + (static_cast<double>(zoomMin) / sliderRange_) * width;
+    const auto zoomMaxF = left + (static_cast<double>(zoomMax) / sliderRange_) * width;
     concept_->setZoomH(zoomMinF, zoomMaxF);
 }
 
@@ -460,9 +463,9 @@ void TFPropertyDialog::onTFTypeChangedInternal() {
         valueRange = dataMap->valueRange;
     }
 
-    // TODO: how to handle different TF types?
-    // perform mapping only, if all TF are of relative type
-    const bool allRelative = true;
+    const bool allRelative = std::ranges::all_of(concept_->sets(), [](const auto* set) {
+        return set->getType() == TFPrimitiveSetType::Relative;
+    });
 
     // make increment depending on the size of the underlying TF texture
     const double incr =
@@ -472,15 +475,23 @@ void TFPropertyDialog::onTFTypeChangedInternal() {
 
     primitivePos_->setValueMapping(allRelative, valueRange, incr * (valueRange.y - valueRange.x));
 
-    zoomHSlider_->setTooltipFormat([sliderRange = sliderRange_, valueRange](int, int val) {
-        return fmt::to_string(
-            glm::mix(valueRange.x, valueRange.y, static_cast<double>(val) / sliderRange));
-    });
+    zoomHSlider_->setTooltipFormat(
+        [sliderRange = sliderRange_, valueRange, allRelative](int, int val) {
+            return fmt::to_string(
+                glm::mix(valueRange.x, valueRange.y, static_cast<double>(val) / sliderRange));
+        });
 }
 
 void TFPropertyDialog::onZoomHChange(const dvec2& zoomH) {
-    zoomHSlider_->setValue(static_cast<int>(zoomH.x * sliderRange_),
-                           static_cast<int>(zoomH.y * sliderRange_));
+    const auto sceneRect = editor_->sceneRect();
+    const auto left = sceneRect.x();
+    const auto width = sceneRect.width();
+    if (width > 0.0) {
+        const auto minNorm = (zoomH.x - left) / width;
+        const auto maxNorm = (zoomH.y - left) / width;
+        zoomHSlider_->setValue(static_cast<int>(minNorm * sliderRange_),
+                               static_cast<int>(maxNorm * sliderRange_));
+    }
 }
 
 void TFPropertyDialog::onZoomVChange(const dvec2& zoomV) {
