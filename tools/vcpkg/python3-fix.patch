@@ -1,0 +1,26 @@
+--- a/portfile.cmake
++++ b/portfile.cmake
+@@ -16,6 +16,8 @@ else()
+     set(PYTHON_HAS_EXTENSIONS OFF)
+ endif()
+ 
++vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY)
++
+ string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.([0-9]+)" PYTHON_VERSION "${VERSION}")
+ set(PYTHON_VERSION_MAJOR "${CMAKE_MATCH_1}")
+ set(PYTHON_VERSION_MINOR "${CMAKE_MATCH_2}")
+--- a/vcpkg-cmake-wrapper.cmake
++++ b/vcpkg-cmake-wrapper.cmake
+@@ -60,9 +60,9 @@ if(_PythonFinder_WantLibs)
+     find_library(
+         _${_PythonFinder_PREFIX}_LIBRARY_DEBUG
+         NAMES
+-        "python@PYTHON_VERSION_MAJOR@@PYTHON_VERSION_MINOR@_d"
+-        "python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@d"
+-        PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib"
++        "python@PYTHON_VERSION_MAJOR@@PYTHON_VERSION_MINOR@"
++        "python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@"
++        PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib"
+         NO_DEFAULT_PATH
+     )
+ 
