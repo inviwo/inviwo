@@ -153,7 +153,7 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.CanvasGL" identifier="Canvas2" displayName="Canvas">
+            <Processor type="org.inviwo.CanvasGL" identifier="Canvas" displayName="Canvas">
                 <PortGroups/>
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -199,7 +199,7 @@
             </Processor>
         </Processors>
         <Connections>
-            <Connection src="Background3.outport" dst="Canvas2.inport"/>
+            <Connection src="Background3.outport" dst="Canvas.inport"/>
             <Connection src="MeshCreator.outport" dst="MeshTextureRenderProcessorGL2.geometry"/>
             <Connection src="ImageSource.image" dst="MeshTextureRenderProcessorGL2.meshTexture"/>
             <Connection src="MeshTextureRenderProcessorGL2.image" dst="Background3.inport"/>
