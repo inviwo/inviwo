@@ -35,20 +35,10 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/inportiterable.h>
-#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/propertysemantics.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglutils.h>
@@ -57,13 +47,9 @@
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/textureunit.h>
 
-#include <cstddef>
-#include <functional>
 #include <memory>
-#include <string>
-#include <string_view>
-#include <type_traits>
 
 namespace inviwo {
 
@@ -73,57 +59,60 @@ const ProcessorInfo MeshRenderProcessorGL::processorInfo_{
     "Mesh Rendering",               // Category
     CodeState::Stable,              // Code state
     Tags::GL,                       // Tags
-    "Renders a set of meshes using OpenGL on top of an image. "
-    "Different rendering modes can be selected."_help};
+    "Renders a set of meshes using OpenGL on top of an image. Supports different rendering modes "
+    "and optional 2D texturing."_help,
+};
 
 const ProcessorInfo& MeshRenderProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 MeshRenderProcessorGL::MeshRenderProcessorGL()
-    : Processor()
-    , inport_("geometry", "Input meshes"_help)
-    , imageInport_("imageInport", "Background image (optional)"_help)
-    , outport_("image",
-               "Output image containing the rendered mesh and the optional input image"_help)
-    , camera_("camera", "Camera", util::boundingBox(inport_))
-    , meshProperties_("geometry", "Geometry Rendering Properties")
-    , cullFace_("cullFace", "Cull Face",
+    : Processor{}
+    , inport_{"geometry", "Input meshes"_help}
+    , imageInport_{"imageInport", "Background image (optional)"_help}
+    , outport_{"image",
+               "Output image containing the rendered mesh and the optional input image"_help}
+    , camera_{"camera", "Camera", util::boundingBox(inport_)}
+    , meshProperties_{"geometry", "Geometry Rendering Properties"}
+    , cullFace_{"cullFace",
+                "Cull Face",
                 {{"culldisable", "Disable", GL_NONE},
                  {"cullfront", "Front", GL_FRONT},
                  {"cullback", "Back", GL_BACK},
                  {"cullfrontback", "Front & Back", GL_FRONT_AND_BACK}},
-                0)
-    , enableDepthTest_("enableDepthTest_", "Enable Depth Test",
-                       "Toggles the depth test during rendering"_help, true)
-    , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false,
-                           InvalidationLevel::InvalidResources)
-    , overrideColor_("overrideColor", "Override Color", util::ordinalColor(0.75f, 0.75f, 0.75f))
-    , lightingProperty_("lighting", "Lighting", &camera_)
-    , trackball_(&camera_)
-    , layers_("layers", "Output Layers")
-    , colorLayer_("colorLayer", "Color", "Toggle output of color layer"_help, true,
-                  InvalidationLevel::InvalidResources)
-    , texCoordLayer_("texCoordLayer", "Texture Coordinates",
+                0}
+    , enableDepthTest_{"enableDepthTest_", "Enable Depth Test",
+                       "Toggles the depth test during rendering"_help, true}
+    , overrideColorBuffer_{"overrideColorBuffer", "Override Color Buffer", false,
+                           InvalidationLevel::InvalidResources}
+    , overrideColor_{"overrideColor", "Override Color", util::ordinalColor(0.75f, 0.75f, 0.75f)}
+    , texture_{"meshTexture", "2D Texture to apply to the input meshes (optional)"_help, 1.0f}
+    , lightingProperty_{"lighting", "Lighting", &camera_}
+    , trackball_{&camera_}
+    , layers_{"layers", "Output Layers"}
+    , colorLayer_{"colorLayer", "Color", "Toggle output of color layer"_help, true,
+                  InvalidationLevel::InvalidResources}
+    , texCoordLayer_{"texCoordLayer", "Texture Coordinates",
                      "Toggle output of texture coordinates"_help, false,
-                     InvalidationLevel::InvalidResources)
-    , normalsLayer_("normalsLayer", "Normals (World Space)",
+                     InvalidationLevel::InvalidResources}
+    , normalsLayer_{"normalsLayer", "Normals (World Space)",
                     "Toggle output of normals (world space)"_help, false,
-                    InvalidationLevel::InvalidResources)
-    , viewNormalsLayer_("viewNormalsLayer", "Normals (View space)",
+                    InvalidationLevel::InvalidResources}
+    , viewNormalsLayer_{"viewNormalsLayer", "Normals (View space)",
                         "Toggle output of view space normals"_help, false,
-                        InvalidationLevel::InvalidResources)
-    , shader_("meshrendering.vert", "meshrendering.frag", Shader::Build::No) {
+                        InvalidationLevel::InvalidResources}
+    , shader_{"meshrendering.vert", "meshrendering.frag", Shader::Build::No}
+    , hadTextureData_{false} {
 
-    addPort(inport_);
-    addPort(imageInport_).setOptional(true);
-    addPort(outport_);
+    addPorts(inport_, imageInport_, outport_);
+    imageInport_.setOptional(true);
+    addPort(texture_.inport, "Textures").setOptional(true);
 
     addProperties(camera_, meshProperties_, lightingProperty_, trackball_, layers_);
 
-    meshProperties_.addProperties(cullFace_, enableDepthTest_, overrideColorBuffer_,
-                                  overrideColor_);
+    meshProperties_.addProperties(cullFace_, enableDepthTest_, overrideColorBuffer_, overrideColor_,
+                                  texture_.texture);
 
-    overrideColor_.setSemantics(PropertySemantics::Color)
-        .visibilityDependsOn(overrideColorBuffer_, [](const BoolProperty p) { return p.get(); });
+    texture_.texture.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
 
     layers_.addProperties(colorLayer_, texCoordLayer_, normalsLayer_, viewNormalsLayer_);
 
@@ -133,10 +122,10 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
 MeshRenderProcessorGL::~MeshRenderProcessorGL() = default;
 
 void MeshRenderProcessorGL::initializeResources() {
-    utilgl::addShaderDefines(shader_, lightingProperty_);
+    utilgl::addDefines(shader_, lightingProperty_, texture_);
 
-    auto vert = shader_.getVertexShaderObject();
-    auto frag = shader_.getFragmentShaderObject();
+    auto* vert = shader_.getVertexShaderObject();
+    auto* frag = shader_.getFragmentShaderObject();
 
     vert->setShaderDefine("OVERRIDE_COLOR_BUFFER", overrideColorBuffer_);
     frag->setShaderDefine("COLOR_LAYER", colorLayer_);
@@ -144,13 +133,22 @@ void MeshRenderProcessorGL::initializeResources() {
     // first two layers (color and picking) are reserved
     int layerID = 2;
     frag->setShaderDefine("TEXCOORD_LAYER", texCoordLayer_);
-    if (texCoordLayer_) frag->addOutDeclaration("tex_coord_out", layerID++);
+    if (texCoordLayer_) {
+        frag->addOutDeclaration("tex_coord_out", layerID++);
+    }
 
     frag->setShaderDefine("NORMALS_LAYER", normalsLayer_);
-    if (normalsLayer_) frag->addOutDeclaration("normals_out", layerID++);
+    if (normalsLayer_) {
+        frag->addOutDeclaration("normals_out", layerID++);
+    }
 
     frag->setShaderDefine("VIEW_NORMALS_LAYER", viewNormalsLayer_);
-    if (viewNormalsLayer_) frag->addOutDeclaration("view_normals_out", layerID++);
+    if (viewNormalsLayer_) {
+        frag->addOutDeclaration("view_normals_out", layerID++);
+    }
+
+    hadTextureData_ = texture_.inport.hasData();
+    frag->setShaderDefine("ENABLE_TEXTURING", hadTextureData_ && texture_.texture);
 
     // get a hold of the current output data
     auto prevData = outport_.getData();
@@ -169,6 +167,10 @@ void MeshRenderProcessorGL::initializeResources() {
 }
 
 void MeshRenderProcessorGL::process() {
+    if (texture_.inport.hasData() != hadTextureData_) {
+        initializeResources();
+    }
+
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
     shader_.activate();
 
@@ -176,7 +178,9 @@ void MeshRenderProcessorGL::process() {
     const utilgl::CullFaceState culling(cullFace_.get());
     const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    utilgl::setUniforms(shader_, camera_, lightingProperty_, overrideColor_);
+    TextureUnitContainer cont;
+    utilgl::bind(cont, texture_);
+    utilgl::setUniforms(shader_, camera_, lightingProperty_, overrideColor_, texture_);
     for (auto mesh : inport_) {
         utilgl::setShaderUniforms(shader_, *mesh, "geometry");
         shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));

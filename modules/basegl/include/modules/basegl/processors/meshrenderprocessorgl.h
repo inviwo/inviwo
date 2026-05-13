@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/basegl/util/meshtexturing.h>
 
 namespace inviwo {
 
@@ -73,6 +74,8 @@ protected:
     BoolProperty enableDepthTest_;
     BoolProperty overrideColorBuffer_;
     FloatVec4Property overrideColor_;
+        
+    MeshTexturing texture_;
 
     SimpleLightingProperty lightingProperty_;
     CameraTrackball trackball_;
@@ -84,6 +87,7 @@ protected:
     BoolProperty viewNormalsLayer_;
 
     Shader shader_;
+    bool hadTextureData_;
 };
 
 }  // namespace inviwo

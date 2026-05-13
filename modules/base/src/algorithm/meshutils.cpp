@@ -891,11 +891,11 @@ std::shared_ptr<BasicMesh> square(const vec3& center, const vec3& normal, const 
     mesh->setModelMatrix(mat4(1.f));
     auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
 
-    vec3 right = detail::orthvec(normal);
-    vec3 up = glm::cross(right, normal);
+    const vec3 right = detail::orthvec(normal);
+    const vec3 up = glm::cross(right, normal);
 
-    vec3 start = center - 0.5f * extent.x * right - 0.5f * extent.y * up;
-    ivec2 res = segments + ivec2(1);
+    const vec3 start = center - 0.5f * extent.x * right - 0.5f * extent.y * up;
+    const ivec2 res = segments + ivec2(1);
 
     for (int j = 0; j < res.y; j++) {
         for (int i = 0; i < res.x; i++) {
@@ -908,13 +908,13 @@ std::shared_ptr<BasicMesh> square(const vec3& center, const vec3& normal, const 
                 color);
 
             if (i != segments.x && j != segments.y) {
+                inds->add(i + res.x * (j + 1));
+                inds->add(i + 1 + res.x * j);
                 inds->add(i + res.x * j);
-                inds->add(i + 1 + res.x * j);
-                inds->add(i + res.x * (j + 1));
 
-                inds->add(i + 1 + res.x * j);
-                inds->add(i + 1 + res.x * (j + 1));
                 inds->add(i + res.x * (j + 1));
+                inds->add(i + 1 + res.x * (j + 1));
+                inds->add(i + 1 + res.x * j);
             }
         }
     }

@@ -84,7 +84,7 @@ constexpr std::string_view format_as(BlendMode mode) {
 
 class IVW_MODULE_BASEGL_API MeshTexturing {
 public:
-    MeshTexturing(std::string_view identifier, Document help);
+    MeshTexturing(std::string_view identifier, Document help, float blendingFactor = 0.7f);
     void bind(TextureUnitContainer& cont);
 
     void setUniforms(Shader& shader) const;
