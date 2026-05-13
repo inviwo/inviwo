@@ -585,8 +585,8 @@ std::vector<TFPrimitiveData> optimalTransportInterpolation(std::span<const TFPri
     }
 
     // Final safety clamp.
-    for (auto& a : alpha) {
-        a = std::max(0.0, a);
+    for (auto& aVal : alpha) {
+        aVal = std::max(0.0, aVal);
     }
 
     // --- Step 6: Build the output TF ---
