@@ -27,9 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/editor/inviwoeditmenu.h>
-
-#include <inviwo/qt/editor/inviwomainwindow.h>
+#include <modules/qtwidgets/inviwoeditmenu.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,7 +41,7 @@
 
 namespace inviwo {
 
-InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) {
+InviwoEditMenu::InviwoEditMenu(QWidget* parent) : QMenu(tr("&Edit"), parent) {
     {
         auto cutAction = addAction(QIcon(":/svgicons/edit-cut.svg"), tr("Cu&t"));
         actions_[MenuItemType::cut] = cutAction;

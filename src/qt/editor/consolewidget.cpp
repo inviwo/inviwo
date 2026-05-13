@@ -64,7 +64,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/util/ostreamjoiner.h>
-#include <inviwo/qt/editor/inviwoeditmenu.h>
+#include <modules/qtwidgets/inviwoeditmenu.h>
 
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/processornetworkobserver.h>

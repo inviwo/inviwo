@@ -44,6 +44,8 @@ class QWidget;
 
 namespace inviwo {
 
+class InviwoEditMenu;
+class MenuItem;
 class TextLabelOverlay;
 
 namespace animation {
@@ -63,7 +65,8 @@ class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDock
 public:
     AnimationEditorDockWidgetQt(WorkspaceAnimations& animations, AnimationManager& manager,
                                 const std::string& widgetName, TrackWidgetQtFactory& widgetFactory,
-                                SequenceEditorFactory& editorFactory, QWidget* parent);
+                                SequenceEditorFactory& editorFactory, InviwoEditMenu* editMenu,
+                                QWidget* parent);
     AnimationEditorDockWidgetQt(const AnimationEditorDockWidgetQt&) = delete;
     AnimationEditorDockWidgetQt(AnimationEditorDockWidgetQt&&) = delete;
     AnimationEditorDockWidgetQt& operator=(const AnimationEditorDockWidgetQt&) = delete;
@@ -99,6 +102,7 @@ protected:
     TextLabelOverlay* overlay_;
     SequenceEditorPanel* sequenceEditorView_;
     QMainWindow* mainWindow_;
+    std::shared_ptr<MenuItem> editActionsHandle_;
     bool vScrolling_ = false;
 };
 

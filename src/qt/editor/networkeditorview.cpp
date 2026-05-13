@@ -34,7 +34,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
-#include <inviwo/qt/editor/inviwoeditmenu.h>
+#include <modules/qtwidgets/inviwoeditmenu.h>
 #include <inviwo/core/util/filesystem.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/textlabeloverlay.h>

@@ -66,6 +66,7 @@
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
 #include <modules/animationqt/widgets/controltrackwidgetqt.h>
 #include <modules/animationqt/widgets/propertytrackwidgetqt.h>
+#include <modules/qtwidgets/inviwoeditmenu.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <algorithm>
@@ -187,9 +188,11 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
 
         addWidgetLazy("Animation Editor", Qt::BottomDockWidgetArea, [this, win]() {
             auto* animationModule = util::getModuleByType<AnimationModule>();
+            auto* editMenu = win->findChild<InviwoEditMenu*>();
             editor_ = std::make_unique<AnimationEditorDockWidgetQt>(
                 animationModule->getWorkspaceAnimations(), animationModule->getAnimationManager(),
-                "Animation Editor", getTrackWidgetQtFactory(), getSequenceEditorFactory(), win);
+                "Animation Editor", getTrackWidgetQtFactory(), getSequenceEditorFactory(), editMenu,
+                win);
             // Release pointer if destroyed by Qt before module is destroyed
             QObject::connect(editor_.get(), &QObject::destroyed,
                              [this](QObject*) { editor_.release(); });
