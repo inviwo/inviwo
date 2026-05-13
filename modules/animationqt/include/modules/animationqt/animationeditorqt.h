@@ -65,6 +65,16 @@ public:
     // AnimationControllerObserver overload
     void onAnimationChanged(AnimationController*, Animation* oldAnim, Animation* newAnim) override;
 
+    void copy();
+    void paste();
+    void cut();
+
+    static constexpr std::string_view mimeKeyframes =
+        "application/x.vnd.inviwo.animation.keyframes+xml";
+    static constexpr std::string_view mimeKeyframeSequences =
+        "application/x.vnd.inviwo.animation.sequences+xml";
+    static constexpr std::string_view mimeTracks = "application/x.vnd.inviwo.animation.tracks+xml";
+
 protected:
     void updateSceneRect();
 
