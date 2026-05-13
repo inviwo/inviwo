@@ -86,44 +86,48 @@ const ProcessorInfo& Background::getProcessorInfo() const { return processorInfo
 
 Background::Background()
     : Processor()
-    , inport_("inport", "Input image"_help)
-    , outport_("outport", "Output image"_help)
-    , backgroundStyle_(
-          "backgroundStyle", "Style",
-          OptionPropertyState<BackgroundStyle>{
-              .options = {{"linearGradientVertical", "Linear gradient (Vertical)",
-                           BackgroundStyle::LinearVertical},
-                          {"linearGradientHorizontal", "Linear gradient (Horizontal)",
-                           BackgroundStyle::LinearHorizontal},
-                          {"linearGradientSpherical", "Linear gradient (Spherical)",
-                           BackgroundStyle::LinearSpherical},
-                          {"uniformColor", "Uniform color", BackgroundStyle::Uniform},
-                          {"checkerBoard", "Checkerboard", BackgroundStyle::CheckerBoard}},
-              .invalidationLevel = InvalidationLevel::InvalidResources,
-              .help =
-                  "The are three different styles to choose from Linear gradient, uniform color, and checkerboard."_help,
-          }
-              .setSelectedValue(BackgroundStyle::Uniform))
-    , bgColor1_(
-          "bgColor1", "Color 1",
-          util::ordinalColor(1.0f, 1.0f, 1.0f, 1.0f)
-              .set(
-                  "Used as the uniform color and as color 1 in the gradient and checkerboard."_help))
-    , bgColor2_("bgColor2", "Color 2",
+    , inport_{"inport", "Input image"_help}
+    , outport_{"outport", "Output image"_help}
+    , backgroundStyle_{"backgroundStyle", "Style",
+                       OptionPropertyState<BackgroundStyle>{
+                           .options = {{"linearGradientVertical", "Linear gradient (Vertical)",
+                                        BackgroundStyle::LinearVertical},
+                                       {"linearGradientHorizontal", "Linear gradient (Horizontal)",
+                                        BackgroundStyle::LinearHorizontal},
+                                       {"linearGradientSpherical", "Linear gradient (Spherical)",
+                                        BackgroundStyle::LinearSpherical},
+                                       {"uniformColor", "Uniform color", BackgroundStyle::Uniform},
+                                       {"checkerBoard", "Checkerboard",
+                                        BackgroundStyle::CheckerBoard}},
+                           .invalidationLevel = InvalidationLevel::InvalidResources,
+                           .help =
+                               "The are three different styles to choose from Linear gradient, uniform color, and checkerboard."_help,
+                       }
+                           .setSelectedValue(BackgroundStyle::Uniform)}
+    , bgColor1_{"bgColor1", "Color 1",
+                util::ordinalColor(1.0f, 1.0f, 1.0f, 1.0f)
+                    .set(
+                        "Used as the uniform color and as color 1 in the gradient and checkerboard."_help)}
+    , bgColor2_{"bgColor2", "Color 2",
                 util::ordinalColor(0.0f, 0.0f, 0.0f, 1.0f)
-                    .set("Used as color 2 in the gradient and checkerboard."_help))
-    , checkerBoardSize_("checkerBoardSize", "Checkerboard Size",
-                        "Size of the checkerboard cells in pixel."_help, ivec2(10, 10),
+                    .set("Used as color 2 in the gradient and checkerboard."_help)}
+    , checkerBoardSize_{"checkerBoardSize",
+                        "Checkerboard Size",
+                        "Size of the checkerboard cells in pixel."_help,
+                        ivec2{10, 10},
                         {ivec2(1, 1), ConstraintBehavior::Immutable},
-                        {ivec2(256, 256), ConstraintBehavior::Ignore})
-    , switchColors_("switchColors", "Switch Colors", "Toggle colors 1 and 2"_help,
-                    InvalidationLevel::Valid)
-    , blendMode_("blendMode", "Blend mode",
+                        {ivec2(256, 256), ConstraintBehavior::Ignore}}
+    , switchColors_{"switchColors", "Switch Colors", "Toggle colors 1 and 2"_help,
+                    InvalidationLevel::Valid}
+    , blendMode_{"blendMode",
+                 "Blend mode",
                  "Adjusts how the input image is blended with the background."_help,
                  {{"backtofront", "Back To Front (Pre-multiplied)", BlendMode::BackToFront},
                   {"alphamixing", "Alpha Compositing", BlendMode::AlphaMixing}},
-                 0, InvalidationLevel::InvalidResources)
-    , shader_("background.frag", Shader::Build::No) {
+                 0,
+                 InvalidationLevel::InvalidResources}
+    , shader_{"background.frag", Shader::Build::No}
+    , hadData_{false} {
 
     addPorts(inport_, outport_);
     inport_.setOptional(true);
@@ -142,7 +146,7 @@ Background::Background()
 Background::~Background() = default;
 
 void Background::initializeResources() {
-    auto fs = shader_.getFragmentShaderObject();
+    auto* fs = shader_.getFragmentShaderObject();
 
     std::string_view bgStyleValue;
     switch (backgroundStyle_.get()) {
@@ -239,7 +243,7 @@ void Background::process() {
         {
             // bind all additional color layers
             const auto numColorLayers = image->getNumberOfColorLayers();
-            auto imageGL = image->getRepresentation<ImageGL>();
+            const auto* imageGL = image->getRepresentation<ImageGL>();
             for (size_t i = 1; i < numColorLayers; ++i) {
                 TextureUnit texUnit;
                 imageGL->getColorLayerGL(i)->bindTexture(texUnit.getEnum());
@@ -257,7 +261,7 @@ void Background::process() {
 
 void Background::updateShaderInputs() {
     const auto numColorLayers = inport_.getData()->getNumberOfColorLayers();
-    auto fs = shader_.getFragmentShaderObject();
+    auto* fs = shader_.getFragmentShaderObject();
 
     if (numColorLayers > 1) {
         fs->addShaderDefine("ADDITIONAL_COLOR_LAYERS");

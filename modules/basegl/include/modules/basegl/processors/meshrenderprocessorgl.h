@@ -87,6 +87,7 @@ protected:
     BoolProperty viewNormalsLayer_;
 
     Shader shader_;
+    bool hadTextureData_;
 };
 
 }  // namespace inviwo

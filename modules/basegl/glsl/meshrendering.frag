@@ -38,7 +38,6 @@
 uniform LightParameters lighting;
 uniform CameraParameters camera;
 
-uniform bool enableTexturing;
 uniform sampler2D meshTexture;
 uniform float textureMixing;
 
@@ -51,10 +50,12 @@ flat in vec4 pickColor_;
 
 void main() {
     vec4 fragColor = color_;
-    if (enableTexturing) {
+#if defined(ENABLE_TEXTURING)
+    {
         vec4 tex = texture(meshTexture, texCoord_.xy);
         fragColor = mix(fragColor, TEXTURING_BLEND_FUNC(tex, fragColor), textureMixing);
     }
+#endif
 
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
     if (fragColor.a == 0) { 
