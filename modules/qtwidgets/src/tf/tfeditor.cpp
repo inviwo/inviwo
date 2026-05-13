@@ -341,9 +341,9 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     const auto pos(e->scenePos());
     auto* const primitiveUnderMouse = getTFPrimitiveItemAt(pos);
 
-    // change selection if primitive under the mouse is not yet in selection
+    // If right-clicking on an unselected primitive, add it to the selection.
+    // If right-clicking on empty space or an already selected primitive, keep the selection as-is.
     if (primitiveUnderMouse && !primitiveUnderMouse->isSelected()) {
-        clearSelection();
         primitiveUnderMouse->setSelected(true);
     }
 
@@ -383,6 +383,10 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         pasteAction->setEnabled(clipboard->mimeData() && clipboard->mimeData()->hasFormat(
                                                              QString::fromUtf8(mimeTFPrimitives)));
         connect(pasteAction, &QAction::triggered, this, [this, pos]() { paste(pos); });
+
+        auto selectAllAction =
+            menu.addAction(QIcon(":/svgicons/edit-selectall.svg"), tr("&Select All"));
+        connect(selectAllAction, &QAction::triggered, this, [this]() { selectAll(); });
     }
 
     menu.addSeparator();
@@ -843,15 +847,16 @@ void TFEditor::copy() {
         primitives.push_back(&item->getPrimitive());
     }
 
-    Serializer serializer("");
+    Serializer serializer("", tfCopyPasteRootElement);
     serializer.serialize("primitives", primitives, "primitive");
     std::stringstream ss;
     serializer.writeFile(ss);
-    auto str = ss.str();
+    const auto str = std::move(ss).str();
+    const auto dataArray = QByteArray(str.c_str(), static_cast<int>(str.length()));
 
     auto* mimeData = new QMimeData();
-    mimeData->setData(QString::fromUtf8(mimeTFPrimitives),
-                      QByteArray(str.c_str(), static_cast<int>(str.length())));
+    mimeData->setData(utilqt::toQString(mimeTFPrimitives), dataArray);
+    mimeData->setData(QString("text/plain"), dataArray);
     QApplication::clipboard()->setMimeData(mimeData);
 }
 
@@ -862,15 +867,23 @@ void TFEditor::paste(const QPointF& scenePos) { paste(std::optional{scenePos}); 
 void TFEditor::paste(std::optional<QPointF> scenePos) {
     auto* clipboard = QApplication::clipboard();
     auto* mimeData = clipboard->mimeData();
-    if (!mimeData || !mimeData->hasFormat(QString::fromUtf8(mimeTFPrimitives))) return;
+    if (!mimeData || !mimeData->hasFormat(utilqt::toQString(mimeTFPrimitives))) return;
 
-    QByteArray data = mimeData->data(QString::fromUtf8(mimeTFPrimitives));
+    QByteArray data;
+    if (mimeData->formats().contains(utilqt::toQString(mimeTFPrimitives))) {
+        data = mimeData->data(utilqt::toQString(mimeTFPrimitives));
+    } else if (mimeData->formats().contains(QString("text/plain"))) {
+        data = mimeData->data(QString("text/plain"));
+    }
     std::stringstream ss;
     for (auto d : data) ss << d;
 
-    Deserializer deserializer(ss, "");
     std::vector<std::unique_ptr<TFPrimitive>> primitives;
-    deserializer.deserialize("primitives", primitives, "primitive");
+
+    util::exceptionGuard([&]() {
+        Deserializer deserializer{ss, tfCopyPasteRootElement};
+        deserializer.deserialize("primitives", primitives, "primitive");
+    });
     if (primitives.empty()) return;
 
     if (scenePos) {

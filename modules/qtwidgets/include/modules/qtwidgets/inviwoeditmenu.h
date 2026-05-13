@@ -63,6 +63,7 @@ public:
  * Map the action to the focused widget
  */
 class IVW_MODULE_QTWIDGETS_API InviwoEditMenu : public QMenu {
+    Q_OBJECT
 public:
     InviwoEditMenu(QWidget* parent = nullptr);
     virtual ~InviwoEditMenu() = default;

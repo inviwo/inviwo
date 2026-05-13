@@ -55,6 +55,7 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>
+#include <modules/qtwidgets/inviwoeditmenu.h>
 
 #include <algorithm>
 #include <cmath>
@@ -114,6 +115,15 @@ QMainWindow* getApplicationMainWindow() {
     } else {
         return nullptr;
     }
+}
+
+InviwoEditMenu* getInviwoEditMenu() {
+    for (QWidget* item : QApplication::allWidgets()) {
+        if (auto* iem = item->findChild<InviwoEditMenu*>()) {
+            return iem;
+        }
+    }
+    return nullptr;
 }
 
 void paintCheckerBoard(QPainter& painter, const QRectF& rect) {
