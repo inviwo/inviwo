@@ -89,6 +89,7 @@ class TransferFunction;
 class TransferFunctionProperty;
 class TFPropertyConcept;
 class IsoTFProperty;
+class InviwoEditMenu;
 
 namespace utilqt {
 
@@ -242,6 +243,11 @@ IVW_MODULE_QTWIDGETS_API QPointF clamp(const QPointF& pos, const QRectF& rect);
  * @return The main window if the application contains the widget, otherwise null.
  */
 IVW_MODULE_QTWIDGETS_API QMainWindow* getApplicationMainWindow();
+
+
+IVW_MODULE_QTWIDGETS_API InviwoEditMenu* getInviwoEditMenu();
+
+
 
 /**
  * @brief Moves point to become relative to the main window and thereby visible.

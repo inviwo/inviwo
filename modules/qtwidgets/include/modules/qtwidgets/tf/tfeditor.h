@@ -104,8 +104,8 @@ public:
     void deleteSelection();
     void selectAll();
 
-    static constexpr std::string_view mimeTFPrimitives = "application/x.vnd.inviwo.tf.primitives";
-
+    static constexpr std::string_view mimeTFPrimitives = "application/x.vnd.inviwo.tf.primitives+xml";
+    static constexpr std::string_view tfCopyPasteRootElement = "InviwoTFPrimitives";
     void updateConnections();
 
 signals:

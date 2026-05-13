@@ -94,6 +94,8 @@
 #include <QVariant>
 #include <QWidget>
 #include <Qt>
+#include <QMainWindow>
+#include <QMimeData>
 #include <fmt/core.h>
 #include <glm/common.hpp>
 #include <glm/vec2.hpp>
@@ -173,9 +175,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    if (auto* editMenu = utilqt::getApplicationMainWindow()
-                             ? utilqt::getApplicationMainWindow()->findChild<InviwoEditMenu*>()
-                             : nullptr) {
+    if (auto* editMenu = utilqt::getInviwoEditMenu()) {
         editActionsHandle_ = editMenu->registerItem(std::make_shared<MenuItem>(
             view_,
             [this](MenuItemType t) -> bool {

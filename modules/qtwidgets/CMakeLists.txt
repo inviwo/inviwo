@@ -12,6 +12,7 @@ set(MOC_FILES
     include/modules/qtwidgets/filepathlineeditqt.h
     include/modules/qtwidgets/inviwodockwidget.h
     include/modules/qtwidgets/inviwodockwidgettitlebar.h
+    include/modules/qtwidgets/inviwoeditmenu.h
     include/modules/qtwidgets/inviwofiledialog.h
     include/modules/qtwidgets/inviwowidgetsqt.h
     include/modules/qtwidgets/lightpositionwidgetqt.h
@@ -41,7 +42,6 @@ set(HEADER_FILES
     include/modules/qtwidgets/codeedit.h
     include/modules/qtwidgets/editorfileobserver.h
     include/modules/qtwidgets/eventconverterqt.h
-    include/modules/qtwidgets/inviwoeditmenu.h
     include/modules/qtwidgets/inviwoqtutils.h
     include/modules/qtwidgets/keyboardutils.h
     include/modules/qtwidgets/labelgraphicsitem.h
