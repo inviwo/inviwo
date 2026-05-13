@@ -623,6 +623,170 @@ TEST(AnimationTests, AnimationSerializationTest) {
     processorFactory.unRegisterObject(&testPFO);
 }
 
+// Tests that exercise the "clone + serialize/deserialize" round-trip pattern
+// used by the animation editor's copy/paste implementation.
+
+TEST(AnimationTests, KeyframeCloneDeserializeRoundTrip) {
+    // Create a keyframe with specific values
+    ValueKeyframe<float> original{Seconds{2.5}, 42.0f};
+
+    // Serialize the original
+    const std::filesystem::path refPath = "/tmp";
+    Serializer s(refPath);
+    original.serialize(s);
+    std::stringstream ss;
+    s.writeFile(ss);
+
+    // Clone a different keyframe (simulating paste: clone a template to get the right type)
+    ValueKeyframe<float> templateKf{Seconds{0.0}, 0.0f};
+    auto cloned = std::unique_ptr<Keyframe>(templateKf.clone());
+
+    // Deserialize the original's data into the clone
+    Deserializer d(ss, refPath);
+    cloned->deserialize(d);
+
+    // Verify the clone now matches the original
+    auto* result = dynamic_cast<ValueKeyframe<float>*>(cloned.get());
+    ASSERT_NE(nullptr, result);
+    EXPECT_EQ(original, *result);
+}
+
+TEST(AnimationTests, KeyframeSequenceCloneDeserializeRoundTrip) {
+    InterpolationFactory factory{nullptr};
+    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<float>>> linearIFO;
+    factory.registerObject(&linearIFO);
+
+    // Create a sequence with multiple keyframes
+    using Seq = KeyframeSequenceTyped<ValueKeyframe<float>>;
+    std::vector<std::unique_ptr<ValueKeyframe<float>>> keys;
+    keys.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{1.0}, 10.0f));
+    keys.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{2.0}, 20.0f));
+    keys.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{3.0}, 30.0f));
+    Seq original{std::move(keys), std::make_unique<LinearInterpolation<ValueKeyframe<float>>>()};
+
+    // Serialize the original sequence
+    const std::filesystem::path refPath = "/tmp";
+    Serializer s(refPath);
+    original.serialize(s);
+    std::stringstream ss;
+    s.writeFile(ss);
+
+    // Clone a different sequence (simulating paste: clone from target track)
+    std::vector<std::unique_ptr<ValueKeyframe<float>>> otherKeys;
+    otherKeys.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{0.0}, 0.0f));
+    Seq templateSeq{std::move(otherKeys),
+                    std::make_unique<LinearInterpolation<ValueKeyframe<float>>>()};
+    auto cloned = std::unique_ptr<KeyframeSequence>(templateSeq.clone());
+
+    // Deserialize the original's data into the clone
+    Deserializer d(ss, refPath);
+    d.setExceptionHandler([](SourceContext) { throw; });
+    d.registerFactory(&factory);
+    cloned->deserialize(d);
+
+    // Verify
+    auto* result = dynamic_cast<Seq*>(cloned.get());
+    ASSERT_NE(nullptr, result);
+    EXPECT_EQ(original, *result);
+    EXPECT_EQ(3u, result->size());
+    EXPECT_EQ(Seconds{1.0}, (*result)[0].getTime());
+    EXPECT_EQ(10.0f, dynamic_cast<ValueKeyframe<float>&>((*result)[0]).getValue());
+    EXPECT_EQ(Seconds{3.0}, (*result)[2].getTime());
+    EXPECT_EQ(30.0f, dynamic_cast<ValueKeyframe<float>&>((*result)[2]).getValue());
+
+    factory.unRegisterObject(&linearIFO);
+}
+
+TEST(AnimationTests, KeyframeSerializeVectorDeserializeRange) {
+    // Tests serializing multiple keyframes into a vector and deserializing them individually
+    // via deserializeRange, matching the clipboard paste pattern.
+    ValueKeyframe<float> kf1{Seconds{1.0}, 100.0f};
+    ValueKeyframe<float> kf2{Seconds{2.0}, 200.0f};
+
+    const std::filesystem::path refPath = "/tmp";
+
+    // Serialize as a vector of pointers (same as copy() does)
+    Serializer s(refPath);
+    std::vector<const Keyframe*> kfs = {&kf1, &kf2};
+    s.serialize("keyframes", kfs, "keyframe");
+    std::stringstream ss;
+    s.writeFile(ss);
+
+    // Deserialize using deserializeRange (same as paste() does)
+    Deserializer d(ss, refPath);
+    d.setExceptionHandler([](SourceContext) { throw; });
+
+    std::vector<std::unique_ptr<ValueKeyframe<float>>> results;
+    d.deserializeRange("keyframes", "keyframe", [&](Deserializer& itemD, size_t) {
+        auto kf = std::make_unique<ValueKeyframe<float>>();
+        kf->deserialize(itemD);
+        results.push_back(std::move(kf));
+    });
+
+    ASSERT_EQ(2u, results.size());
+    EXPECT_EQ(kf1, *results[0]);
+    EXPECT_EQ(kf2, *results[1]);
+}
+
+TEST(AnimationTests, KeyframeSequenceSerializeVectorDeserializeRange) {
+    // Tests the full sequence copy/paste pattern: serialize multiple sequences,
+    // deserialize each via clone + deserializeRange.
+    InterpolationFactory factory{nullptr};
+    InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<float>>> linearIFO;
+    factory.registerObject(&linearIFO);
+
+    using Seq = KeyframeSequenceTyped<ValueKeyframe<float>>;
+
+    // Create two sequences
+    std::vector<std::unique_ptr<ValueKeyframe<float>>> keys1;
+    keys1.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{1.0}, 10.0f));
+    keys1.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{2.0}, 20.0f));
+    Seq seq1{std::move(keys1), std::make_unique<LinearInterpolation<ValueKeyframe<float>>>()};
+
+    std::vector<std::unique_ptr<ValueKeyframe<float>>> keys2;
+    keys2.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{5.0}, 50.0f));
+    keys2.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{6.0}, 60.0f));
+    keys2.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{7.0}, 70.0f));
+    Seq seq2{std::move(keys2), std::make_unique<LinearInterpolation<ValueKeyframe<float>>>()};
+
+    const std::filesystem::path refPath = "/tmp";
+
+    // Serialize as vector of pointers
+    Serializer s(refPath);
+    std::vector<const KeyframeSequence*> seqs = {&seq1, &seq2};
+    s.serialize("sequences", seqs, "sequence");
+    std::stringstream ss;
+    s.writeFile(ss);
+
+    // Deserialize via clone + deserializeRange (matching paste logic)
+    Deserializer d(ss, refPath);
+    d.setExceptionHandler([](SourceContext) { throw; });
+    d.registerFactory(&factory);
+
+    // Use seq1 as the "template" to clone from (simulating an existing track)
+    std::vector<std::unique_ptr<KeyframeSequence>> results;
+    d.deserializeRange("sequences", "sequence", [&](Deserializer& itemD, size_t) {
+        auto cloned = std::unique_ptr<KeyframeSequence>(seq1.clone());
+        cloned->deserialize(itemD);
+        results.push_back(std::move(cloned));
+    });
+
+    ASSERT_EQ(2u, results.size());
+
+    auto* r1 = dynamic_cast<Seq*>(results[0].get());
+    auto* r2 = dynamic_cast<Seq*>(results[1].get());
+    ASSERT_NE(nullptr, r1);
+    ASSERT_NE(nullptr, r2);
+
+    EXPECT_EQ(seq1, *r1);
+    EXPECT_EQ(seq2, *r2);
+
+    EXPECT_EQ(2u, r1->size());
+    EXPECT_EQ(3u, r2->size());
+
+    factory.unRegisterObject(&linearIFO);
+}
+
 }  // namespace animation
 
 }  // namespace inviwo
