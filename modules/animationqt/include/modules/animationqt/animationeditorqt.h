@@ -68,6 +68,7 @@ public:
     void copy();
     void paste();
     void cut();
+    void deleteSelection();
 
     static constexpr std::string_view mimeKeyframes =
         "application/x.vnd.inviwo.animation.keyframes+xml";

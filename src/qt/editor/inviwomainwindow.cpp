@@ -78,7 +78,7 @@
 #include <inviwo/qt/editor/annotationswidget.h>
 #include <inviwo/qt/editor/networksearch.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
-#include <inviwo/qt/editor/inviwoeditmenu.h>
+#include <modules/qtwidgets/inviwoeditmenu.h>
 #include <inviwo/qt/editor/welcomewidget.h>
 #include <inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h>
 #include <inviwo/qt/applicationbase/qtapptools.h>

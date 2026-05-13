@@ -161,16 +161,7 @@ void AnimationEditorQt::onTrackRemoved(Track* track) {
 void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
     int k = keyEvent->key();
     if (k == Qt::Key_Delete) {  // Delete selected
-        QList<QGraphicsItem*> itemList = selectedItems();
-        for (auto& elem : itemList) {
-            if (auto keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
-                auto& animation = controller_.getAnimation();
-                animation.remove(&(keyqt->getKeyframe()));
-            } else if (auto seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
-                auto& animation = controller_.getAnimation();
-                animation.remove(&(seqqt->getKeyframeSequence()));
-            }
-        }
+        deleteSelection();
         keyEvent->accept();
     } else if (keyEvent->matches(QKeySequence::Copy)) {
         copy();
@@ -421,6 +412,17 @@ void AnimationEditorQt::paste() {
 void AnimationEditorQt::cut() {
     copy();
     // Delete the selected items (same logic as Key_Delete)
+    QList<QGraphicsItem*> itemList = selectedItems();
+    for (auto& elem : itemList) {
+        if (auto keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
+            controller_.getAnimation().remove(&(keyqt->getKeyframe()));
+        } else if (auto seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
+            controller_.getAnimation().remove(&(seqqt->getKeyframeSequence()));
+        }
+    }
+}
+
+void AnimationEditorQt::deleteSelection() {
     QList<QGraphicsItem*> itemList = selectedItems();
     for (auto& elem : itemList) {
         if (auto keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {

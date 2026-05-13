@@ -41,6 +41,7 @@ set(HEADER_FILES
     include/modules/qtwidgets/codeedit.h
     include/modules/qtwidgets/editorfileobserver.h
     include/modules/qtwidgets/eventconverterqt.h
+    include/modules/qtwidgets/inviwoeditmenu.h
     include/modules/qtwidgets/inviwoqtutils.h
     include/modules/qtwidgets/keyboardutils.h
     include/modules/qtwidgets/labelgraphicsitem.h
@@ -109,6 +110,7 @@ set(SOURCE_FILES
     src/filepathlineeditqt.cpp
     src/inviwodockwidget.cpp
     src/inviwodockwidgettitlebar.cpp
+    src/inviwoeditmenu.cpp
     src/inviwofiledialog.cpp
     src/inviwoqtutils.cpp
     src/inviwowidgetsqt.cpp
