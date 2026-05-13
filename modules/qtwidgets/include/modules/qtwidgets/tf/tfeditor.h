@@ -39,6 +39,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <vector>
 #include <span>
 
@@ -96,6 +97,15 @@ public:
 
     std::vector<TFPrimitive*> getSelectedPrimitives() const;
 
+    void copy();
+    void paste();
+    void paste(const QPointF& scenePos);
+    void cut();
+    void deleteSelection();
+    void selectAll();
+
+    static constexpr std::string_view mimeTFPrimitives = "application/x.vnd.inviwo.tf.primitives";
+
     void updateConnections();
 
 signals:
@@ -123,6 +133,7 @@ protected:
     TFEditorPrimitive* getTFPrimitiveItemAt(const QPointF& pos) const;
 
 private:
+    void paste(std::optional<QPointF> scenePos);
     void addPoint(double pos, const vec4& color, TFPrimitiveSet* set);
     void addPoint(double pos, double alpha, TFPrimitiveSet* set);
     void addPoint(const QPointF& scenePos, TFPrimitiveSet* set);

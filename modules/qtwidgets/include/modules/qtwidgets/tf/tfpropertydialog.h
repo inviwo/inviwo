@@ -64,6 +64,7 @@ class TFEditorView;
 class TFLineEdit;
 class TFSelectionWatcher;
 class TFPropertyConcept;
+class MenuItem;
 
 class IVW_MODULE_QTWIDGETS_API TFPropertyDialog : public PropertyEditorWidgetQt,
                                                   public TFPrimitiveSetObserver,
@@ -140,6 +141,8 @@ private:
     Processor::NameDispatcherHandle onNameChange_;
 
     DispatcherHandle<void()> dataChangeHandle_;
+
+    std::shared_ptr<MenuItem> editActionsHandle_;
 };
 
 }  // namespace inviwo

@@ -61,6 +61,7 @@
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>
 #include <modules/qtwidgets/tf/tfselectionwatcher.h>
 #include <modules/qtwidgets/tf/tfmovemode.h>
+#include <modules/qtwidgets/inviwoeditmenu.h>
 
 #include <algorithm>
 #include <string_view>
@@ -70,6 +71,8 @@
 #include <QColor>
 #include <QColorDialog>
 #include <QComboBox>
+#include <QApplication>
+#include <QClipboard>
 #include <QFrame>
 #include <QGridLayout>
 #include <QHBoxLayout>
@@ -169,6 +172,52 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     view_->setMinimumSize(255, 100);
     view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    if (auto* editMenu = utilqt::getApplicationMainWindow()
+                             ? utilqt::getApplicationMainWindow()->findChild<InviwoEditMenu*>()
+                             : nullptr) {
+        editActionsHandle_ = editMenu->registerItem(std::make_shared<MenuItem>(
+            view_,
+            [this](MenuItemType t) -> bool {
+                switch (t) {
+                    case MenuItemType::cut:
+                    case MenuItemType::copy:
+                    case MenuItemType::del:
+                        return !editor_->selectedItems().isEmpty();
+                    case MenuItemType::paste: {
+                        auto* clipboard = QApplication::clipboard();
+                        auto* mimeData = clipboard->mimeData();
+                        return mimeData &&
+                               mimeData->hasFormat(QString::fromUtf8(TFEditor::mimeTFPrimitives));
+                    }
+                    case MenuItemType::select:
+                        return true;
+                    default:
+                        return false;
+                }
+            },
+            [this](MenuItemType t) -> void {
+                switch (t) {
+                    case MenuItemType::cut:
+                        editor_->cut();
+                        break;
+                    case MenuItemType::copy:
+                        editor_->copy();
+                        break;
+                    case MenuItemType::paste:
+                        editor_->paste();
+                        break;
+                    case MenuItemType::del:
+                        editor_->deleteSelection();
+                        break;
+                    case MenuItemType::select:
+                        editor_->selectAll();
+                        break;
+                    default:
+                        break;
+                }
+            }));
+    }
 
     zoomVSlider_ = new RangeSliderQt(Qt::Vertical, this, true);
     zoomVSlider_->setRange(0, verticalSliderRange_);
