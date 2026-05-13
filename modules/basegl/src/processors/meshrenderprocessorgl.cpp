@@ -100,7 +100,8 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , viewNormalsLayer_{"viewNormalsLayer", "Normals (View space)",
                         "Toggle output of view space normals"_help, false,
                         InvalidationLevel::InvalidResources}
-    , shader_{"meshrendering.vert", "meshrendering.frag", Shader::Build::No} {
+    , shader_{"meshrendering.vert", "meshrendering.frag", Shader::Build::No}
+    , hadTextureData_{false} {
 
     addPorts(inport_, imageInport_, outport_);
     imageInport_.setOptional(true);
@@ -110,6 +111,8 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
 
     meshProperties_.addProperties(cullFace_, enableDepthTest_, overrideColorBuffer_, overrideColor_,
                                   texture_.texture);
+
+    texture_.texture.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
 
     layers_.addProperties(colorLayer_, texCoordLayer_, normalsLayer_, viewNormalsLayer_);
 
@@ -144,6 +147,9 @@ void MeshRenderProcessorGL::initializeResources() {
         frag->addOutDeclaration("view_normals_out", layerID++);
     }
 
+    hadTextureData_ = texture_.inport.hasData();
+    frag->setShaderDefine("ENABLE_TEXTURING", hadTextureData_ && texture_.texture);
+
     // get a hold of the current output data
     auto prevData = outport_.getData();
     auto numLayers = static_cast<std::size_t>(layerID - 1);  // Don't count picking
@@ -161,6 +167,10 @@ void MeshRenderProcessorGL::initializeResources() {
 }
 
 void MeshRenderProcessorGL::process() {
+    if (texture_.inport.hasData() != hadTextureData_) {
+        initializeResources();
+    }
+
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
     shader_.activate();
 
@@ -171,7 +181,6 @@ void MeshRenderProcessorGL::process() {
     TextureUnitContainer cont;
     utilgl::bind(cont, texture_);
     utilgl::setUniforms(shader_, camera_, lightingProperty_, overrideColor_, texture_);
-    shader_.setUniform("enableTexturing", texture_.inport.hasData() && texture_.texture);
     for (auto mesh : inport_) {
         utilgl::setShaderUniforms(shader_, *mesh, "geometry");
         shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
