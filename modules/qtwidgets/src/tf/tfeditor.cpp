@@ -51,16 +51,22 @@
 #include <modules/qtwidgets/tf/tfutils.h>
 #include <modules/qtwidgets/tf/tfeditormask.h>
 
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdlib>
 #include <initializer_list>
 #include <iterator>
+#include <sstream>
 #include <type_traits>
 #include <utility>
 
 #include <QAction>
+#include <QApplication>
+#include <QClipboard>
 #include <QFlags>
 #include <QGraphicsItem>
 #include <QGraphicsSceneContextMenuEvent>
@@ -70,6 +76,7 @@
 #include <QKeyEvent>
 #include <QList>
 #include <QMenu>
+#include <QMimeData>
 #include <QPoint>
 #include <QRectF>
 #include <QSizeF>
@@ -281,15 +288,22 @@ void TFEditor::keyPressEvent(QKeyEvent* keyEvent) {
     const auto m = keyEvent->modifiers();
 
     if (k == Qt::Key_A && m == Qt::ControlModifier) {  // Select all
-        std::ranges::for_each(items(), [](auto* item) { item->setSelected(true); });
+        selectAll();
         keyEvent->accept();
     } else if (k == Qt::Key_D && m == Qt::ControlModifier) {  // Select none
         std::ranges::for_each(selectedItems(), [](auto* item) { item->setSelected(false); });
         keyEvent->accept();
     } else if (k == Qt::Key_Delete || k == Qt::Key_Backspace) {  // Delete selected
-        auto selection = getSelectedPrimitiveItems();
-        std::ranges::for_each(selection, [](auto* item) { item->setSelected(false); });
-        std::ranges::for_each(selection, [this](auto* item) { removeControlPoint(item); });
+        deleteSelection();
+        keyEvent->accept();
+    } else if (keyEvent->matches(QKeySequence::Copy)) {
+        copy();
+        keyEvent->accept();
+    } else if (keyEvent->matches(QKeySequence::Cut)) {
+        cut();
+        keyEvent->accept();
+    } else if (keyEvent->matches(QKeySequence::Paste)) {
+        paste();
         keyEvent->accept();
     } else if (handleMoveSelection(keyEvent)) {
         keyEvent->accept();
@@ -356,6 +370,24 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     menu.addSeparator();
 
     {
+        auto* cutAction = menu.addAction(QIcon(":/svgicons/edit-cut.svg"), "Cu&t");
+        cutAction->setEnabled(!selection.empty());
+        connect(cutAction, &QAction::triggered, this, [this]() { cut(); });
+
+        auto* copyAction = menu.addAction(QIcon(":/svgicons/edit-copy.svg"), "&Copy");
+        copyAction->setEnabled(!selection.empty());
+        connect(copyAction, &QAction::triggered, this, [this]() { copy(); });
+
+        auto* pasteAction = menu.addAction(QIcon(":/svgicons/edit-paste.svg"), "&Paste");
+        auto* clipboard = QApplication::clipboard();
+        pasteAction->setEnabled(clipboard->mimeData() && clipboard->mimeData()->hasFormat(
+                                                             QString::fromUtf8(mimeTFPrimitives)));
+        connect(pasteAction, &QAction::triggered, this, [this, pos]() { paste(pos); });
+    }
+
+    menu.addSeparator();
+
+    {
         auto* editColor = menu.addAction("Edit &Color");
         auto* duplicatePrimitive = menu.addAction("D&uplicate");
         auto* deletePrimitive = menu.addAction("&Delete");
@@ -368,24 +400,24 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         duplicatePrimitive->setEnabled(!selection.empty());
         connect(duplicatePrimitive, &QAction::triggered, this, [this, selection]() mutable {
             setSelected(selection, false);
-            NetworkLock const lock(concept_->getProperty());
-            util::KeepTrueWhileInScope const k(&selectNewPrimitives_);
+            const NetworkLock lock(concept_->getProperty());
+            const util::KeepTrueWhileInScope k(&selectNewPrimitives_);
             duplicate(selection);
         });
 
         deletePrimitive->setEnabled(!selection.empty());
         connect(deletePrimitive, &QAction::triggered, this, [this, selection]() mutable {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             setSelected(selection, false);
             std::ranges::for_each(selection, [this](auto* item) { removeControlPoint(item); });
         });
 
         connect(clearTF, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             std::ranges::for_each(concept_->sets(), [](auto* set) { set->clear(); });
         });
         connect(resetTF, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             concept_->getProperty()->resetToDefaultState();
         });
     }
@@ -410,52 +442,52 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         auto* interpolateAlpha = transformMenu->addAction("&Interpolate Alpha");
 
         connect(distributeAlphaEvenly, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             util::distributeAlphaEvenly(getAllOrSelectedPrimitives());
         });
 
         connect(distributePositionEvenly, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             util::distributePositionEvenly(getAllOrSelectedPrimitives());
         });
 
         connect(alignAlphaToMean, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             util::alignAlphaToMean(getAllOrSelectedPrimitives());
         });
 
         connect(alignAlphaToTop, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             util::alignAlphaToTop(getAllOrSelectedPrimitives());
         });
 
         connect(alignAlphaToBottom, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             util::alignAlphaToBottom(getAllOrSelectedPrimitives());
         });
 
         connect(alignPositionToMean, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             util::alignPositionToMean(getAllOrSelectedPrimitives());
         });
 
         connect(alignPositionToLeft, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             util::alignPositionToLeft(getAllOrSelectedPrimitives());
         });
 
         connect(alignPositionToRight, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             util::alignPositionToRight(getAllOrSelectedPrimitives());
         });
 
         connect(flipPositions, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             util::flipPositions(getAllOrSelectedPrimitives());
         });
 
         connect(interpolateAlpha, &QAction::triggered, this, [this]() {
-            NetworkLock const lock(concept_->getProperty());
+            const NetworkLock lock(concept_->getProperty());
             util::interpolateAlpha(getAllOrSelectedPrimitives());
         });
     }
@@ -469,7 +501,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         auto makeSimple = [this](double delta) {
             return [this, delta]() {
-                NetworkLock const lock(concept_->getProperty());
+                const NetworkLock lock(concept_->getProperty());
                 auto* tf = concept_->getTransferFunction();
                 auto simple = TransferFunction::simplify(tf->get(), delta);
                 tf->clear();
@@ -799,6 +831,86 @@ void TFEditor::move(std::span<TFEditorPrimitive*> primitives, const QTransform& 
     std::ranges::for_each(primitives, [&](TFEditorPrimitive* p) {
         p->setPos(utilqt::clamp(transform.map(p->pos()), rect));
     });
+}
+
+void TFEditor::copy() {
+    auto selection = getSelectedPrimitiveItems();
+    if (selection.empty()) return;
+
+    std::vector<TFPrimitive*> primitives;
+    primitives.reserve(selection.size());
+    for (auto* item : selection) {
+        primitives.push_back(&item->getPrimitive());
+    }
+
+    Serializer serializer("");
+    serializer.serialize("primitives", primitives, "primitive");
+    std::stringstream ss;
+    serializer.writeFile(ss);
+    auto str = ss.str();
+
+    auto* mimeData = new QMimeData();
+    mimeData->setData(QString::fromUtf8(mimeTFPrimitives),
+                      QByteArray(str.c_str(), static_cast<int>(str.length())));
+    QApplication::clipboard()->setMimeData(mimeData);
+}
+
+void TFEditor::paste() { paste(std::nullopt); }
+
+void TFEditor::paste(const QPointF& scenePos) { paste(std::optional{scenePos}); }
+
+void TFEditor::paste(std::optional<QPointF> scenePos) {
+    auto* clipboard = QApplication::clipboard();
+    auto* mimeData = clipboard->mimeData();
+    if (!mimeData || !mimeData->hasFormat(QString::fromUtf8(mimeTFPrimitives))) return;
+
+    QByteArray data = mimeData->data(QString::fromUtf8(mimeTFPrimitives));
+    std::stringstream ss;
+    for (auto d : data) ss << d;
+
+    Deserializer deserializer(ss, "");
+    std::vector<std::unique_ptr<TFPrimitive>> primitives;
+    deserializer.deserialize("primitives", primitives, "primitive");
+    if (primitives.empty()) return;
+
+    if (scenePos) {
+        // Offset all pasted primitives so their center aligns with the mouse position
+        auto [minIt, maxIt] = std::ranges::minmax_element(
+            primitives, {}, [](const auto& p) { return p->getPosition(); });
+        double center = ((*minIt)->getPosition() + (*maxIt)->getPosition()) / 2.0;
+        double targetPos = sceneToPos(*scenePos);
+        double offset = targetPos - center;
+        for (auto& p : primitives) {
+            p->setPosition(std::clamp(p->getPosition() + offset, 0.0, 1.0));
+        }
+    }
+
+    const NetworkLock lock(concept_->getProperty());
+    const util::KeepTrueWhileInScope k(&selectNewPrimitives_);
+    clearSelection();
+
+    auto* set = activeSet();
+    if (!set) return;
+
+    for (auto& p : primitives) {
+        set->add(*p);
+    }
+}
+
+void TFEditor::cut() {
+    copy();
+    deleteSelection();
+}
+
+void TFEditor::deleteSelection() {
+    const NetworkLock lock(concept_->getProperty());
+    auto selection = getSelectedPrimitiveItems();
+    std::ranges::for_each(selection, [](auto* item) { item->setSelected(false); });
+    std::ranges::for_each(selection, [this](auto* item) { removeControlPoint(item); });
+}
+
+void TFEditor::selectAll() {
+    std::ranges::for_each(items(), [](auto* item) { item->setSelected(true); });
 }
 
 void TFEditor::duplicate(std::span<TFEditorPrimitive*> primitives) {
