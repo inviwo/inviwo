@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,42 +29,35 @@
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-
+#include <inviwo/core/algorithm/easing.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/interpolation/interpolation.h>
+#include <modules/animation/datastructures/valuekeyframe.h>
 
 #include <memory>
 #include <string>
 #include <vector>
 
 namespace inviwo {
-class InviwoApplication;
+
+class Deserializer;
+class Serializer;
 
 namespace animation {
 
-/**
- * Spherical interpolation between two neighboring key frames.
- * 1. Orbit around lookAt if lookFrom's are different between key frames.
- * 2. Pan/tilt (rotate lookAt between key frames) otherwise.
- *
- * @note Only modifies lookFrom, lookAt, lookUp.
- * @see CameraPanTiltInterpolation
- */
-class IVW_MODULE_ANIMATION_API CameraSphericalInterpolation
-    : public InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type> {
+class IVW_MODULE_ANIMATION_API TFInterpolationOptimalTransport
+    : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
 public:
-    explicit CameraSphericalInterpolation(InviwoApplication* app = nullptr);
-    virtual ~CameraSphericalInterpolation() = default;
-
-    CameraSphericalInterpolation(const CameraSphericalInterpolation&);
-    CameraSphericalInterpolation& operator=(const CameraSphericalInterpolation&) = delete;
-
-    virtual CameraSphericalInterpolation* clone() const override;
+    TFInterpolationOptimalTransport(InviwoApplication* app = nullptr);
+    TFInterpolationOptimalTransport(const TFInterpolationOptimalTransport&);
+    virtual ~TFInterpolationOptimalTransport() = default;
+    virtual TFInterpolationOptimalTransport* clone() const override;
 
     virtual std::string_view getDisplayName() const override;
     virtual std::string_view getIdentifier() const override {
-        return "CameraSphericalInterpolation";
+        return "TFInterpolationOptimalTransport";
     }
 
     static std::string_view classIdentifier();
@@ -72,20 +65,34 @@ public:
 
     virtual bool equal(const Interpolation& other) const override;
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
+    virtual void operator()(
+        const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
+        Seconds to, TransferFunction& out) const override;
 
-    /*
-     * Uses orbit between two key frames if lookFrom has changed and pan/tilt otherwise.
-     * Orbit: Rotate the lookFrom around the lookAt position.
-     * lookAt position will be linearly interpolated.
-     * Pan/tilt: Rotate lookAt between key frames.
-     * Uses the easing stored on the outgoing keyframe for each interval.
-     */
-    virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
-                            Seconds to, CameraKeyframe::value_type& out) const override;
+    OrdinalProperty<size_t> segments;
+    OrdinalProperty<double> simplify;
+};
+
+class IVW_MODULE_ANIMATION_API TFInterpolationBlend
+    : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
+public:
+    TFInterpolationBlend(InviwoApplication* app = nullptr);
+    TFInterpolationBlend(const TFInterpolationBlend&);
+    virtual ~TFInterpolationBlend() = default;
+    virtual TFInterpolationBlend* clone() const override;
+
+    virtual std::string_view getDisplayName() const override;
+    virtual std::string_view getIdentifier() const override { return "TFInterpolationBlend"; }
+
+    static std::string_view classIdentifier();
+    virtual std::string_view getClassIdentifier() const override;
+
+    virtual bool equal(const Interpolation& other) const override;
+
+    virtual void operator()(
+        const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
+        Seconds to, TransferFunction& out) const override;
 };
 
 }  // namespace animation
-
 }  // namespace inviwo

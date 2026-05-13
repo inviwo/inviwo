@@ -33,16 +33,17 @@ namespace inviwo {
 
 namespace animation {
 
-void ValueKeyframeSequenceObserverble::notifyValueKeyframeSequenceEasingChanged(
-    ValueKeyframeSequence* seq) {
-    forEachObserver(
-        [&](ValueKeyframeSequenceObserver* o) { o->onValueKeyframeSequenceEasingChanged(seq); });
-}
-
-void ValueKeyframeSequenceObserverble::notifyValueKeyframeSequenceInterpolationChanged(
+void ValueKeyframeSequenceObserverble::notifyValueKeyframeSequenceInterpolationWillChange(
     ValueKeyframeSequence* seq) {
     forEachObserver([&](ValueKeyframeSequenceObserver* o) {
-        o->onValueKeyframeSequenceInterpolationChanged(seq);
+        o->onValueKeyframeSequenceInterpolationWillChange(seq);
+    });
+}
+
+void ValueKeyframeSequenceObserverble::notifyValueKeyframeSequenceInterpolationDidChange(
+    ValueKeyframeSequence* seq) {
+    forEachObserver([&](ValueKeyframeSequenceObserver* o) {
+        o->onValueKeyframeSequenceInterpolationDidChange(seq);
     });
 }
 

@@ -34,9 +34,11 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <modules/animation/animationmanager.h>
 #include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/basekeyframe.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframeobserver.h>
 #include <modules/animation/datastructures/keyframesequence.h>
@@ -58,6 +60,7 @@
 #include <functional>
 #include <initializer_list>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <QComboBox>
@@ -86,6 +89,10 @@ public:
         setObjectName("KeyframeEditorWidget");
         setVisible(keyframe_.isSelected());
         keyframe.addObserver(this);
+
+        auto outerLayout = new QVBoxLayout();
+        outerLayout->setContentsMargins(0, 0, 0, 0);
+        outerLayout->setSpacing(utilqt::refSpacePx(this));
 
         auto layout = new QHBoxLayout();
         layout->setContentsMargins(0, 0, 0, 0);
@@ -138,7 +145,55 @@ public:
             }
         }
         layout->addWidget(propertyWidget_);
-        setLayout(layout);
+        outerLayout->addLayout(layout);
+
+        // Per-keyframe easing controls
+        if (baseKeyframe_) {
+
+            easingOut_ = new QComboBox();
+            easingIn_ = new QComboBox();
+
+            easingOut_->addItem("None", QVariant::fromValue(std::optional<EasingType>{}));
+            easingIn_->addItem("None", QVariant::fromValue(std::optional<EasingType>{}));
+
+            for (size_t i = 0; i < Easing::typeCount; ++i) {
+                const auto type = static_cast<EasingType>(i);
+                const std::optional<EasingType> typeOpt = type;
+                easingOut_->addItem(utilqt::toQString(format_as(type)),
+                                    QVariant::fromValue(typeOpt));
+                easingIn_->addItem(utilqt::toQString(format_as(type)),
+                                   QVariant::fromValue(typeOpt));
+            }
+
+            setEasingComboBox(easingOut_, baseKeyframe_->getEaseOut());
+            setEasingComboBox(easingIn_, baseKeyframe_->getEaseIn());
+
+            connect(easingOut_,
+                    static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+                    [this](int) {
+                        const auto easeOut =
+                            easingOut_->currentData().value<std::optional<EasingType>>();
+                        baseKeyframe_->setEaseOut(easeOut);
+                    });
+            connect(
+                easingIn_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+                this, [this](int) {
+                    const auto easeIn = easingIn_->currentData().value<std::optional<EasingType>>();
+                    baseKeyframe_->setEaseIn(easeIn);
+                });
+
+            auto easingLayout = new QHBoxLayout();
+            easingLayout->setContentsMargins(0, 0, 0, 0);
+            easingLayout->setSpacing(utilqt::refSpacePx(this));
+            easingLayout->addWidget(new QLabel("Ease Out"));
+            easingLayout->addWidget(easingOut_);
+            easingLayout->addWidget(new QLabel("Ease In"));
+            easingLayout->addWidget(easingIn_);
+            easingLayout->addStretch();
+            outerLayout->addLayout(easingLayout);
+        }
+
+        setLayout(outerLayout);
     }
 
     virtual ~PropertyEditorWidget() {
@@ -148,6 +203,14 @@ public:
             // destroyed in QWidgets destructor which is called after this destructor, hence, the
             // property has been destroyed.
             delete propertyWidget_;
+        }
+    }
+
+    static void setEasingComboBox(QComboBox* comboBox, std::optional<EasingType> easing) {
+        if (easing) {
+            comboBox->setCurrentIndex(static_cast<int>(*easing) + 1);
+        } else {
+            comboBox->setCurrentIndex(0);
         }
     }
 
@@ -163,13 +226,29 @@ public:
         sequenceEditorWidget_->updateVisibility();
     }
 
+    virtual void onKeyframeEasingChanged(Keyframe*) override {
+        if (baseKeyframe_) {
+            if (easingOut_) {
+                const QSignalBlocker block(easingOut_);
+                setEasingComboBox(easingOut_, baseKeyframe_->getEaseOut());
+            }
+            if (easingIn_) {
+                const QSignalBlocker block(easingIn_);
+                setEasingComboBox(easingIn_, baseKeyframe_->getEaseIn());
+            }
+        }
+    }
+
 private:
     Keyframe& keyframe_;
+    BaseKeyframe* baseKeyframe_{dynamic_cast<BaseKeyframe*>(&keyframe_)};
     SequenceEditorWidget* sequenceEditorWidget_{nullptr};
 
     std::unique_ptr<Property> property_{nullptr};
     PropertyWidgetQt* propertyWidget_{nullptr};
     DoubleValueDragSpinBox* timeSpinner_{nullptr};
+    QComboBox* easingOut_{nullptr};
+    QComboBox* easingIn_{nullptr};
 };
 
 }  // namespace
@@ -211,8 +290,8 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
 
     auto& valseq = dynamic_cast<ValueKeyframeSequence&>(sequence);
     for (auto interpObj : valseq.getSupportedInterpolations(manager.getInterpolationFactory())) {
-        auto ip = interpObj->create();
-        interpolation_->addItem(utilqt::toQString(ip->getName()),
+        auto ip = interpObj->create(nullptr);
+        interpolation_->addItem(utilqt::toQString(ip->getDisplayName()),
                                 QVariant(utilqt::toQString(ip->getClassIdentifier())));
         if (valseq.getInterpolation().getClassIdentifier() == ip->getClassIdentifier()) {
             interpolation_->setCurrentIndex(interpolation_->count() - 1);
@@ -225,31 +304,14 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
                 valseq.setInterpolation(manager.getInterpolationFactory().create(id));
             });
 
-    easingComboBox_ = new QComboBox();
-    sublayout->addWidget(new QLabel("Easing"), 1, 0);
-    sublayout->addWidget(easingComboBox_, 1, 1);
-
-    for (size_t t = 0; t < Easing::typeCount; ++t) {
-        for (size_t m = 0; m < Easing::modeCount; ++m) {
-            const auto e = Easing{static_cast<EasingType>(t), static_cast<EasingMode>(m)};
-            auto easingLabel = utilqt::toQString(format_as(e));
-            easingLabel.front() = easingLabel.front().toUpper();
-            easingComboBox_->addItem(easingLabel,
-                                     QVariant(QPoint{static_cast<int>(t), static_cast<int>(m)}));
-            if (valseq.getEasingType() == e) {
-                easingComboBox_->setCurrentIndex(easingComboBox_->count() - 1);
-            }
-        }
+    widgets_ = std::make_unique<CollapsibleGroupBoxWidgetQt>(nullptr, &valseq.getInterpolation(),
+                                                             "Settings", false);
+    layout->addWidget(widgets_.get());
+    for (auto* prop : valseq.getInterpolation().getProperties()) {
+        widgets_->addProperty(prop);
     }
 
-    connect(easingComboBox_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, [&valseq, this](int) {
-                const auto tmp = easingComboBox_->currentData().value<QPoint>();
-                const auto e =
-                    Easing{static_cast<EasingType>(tmp.x()), static_cast<EasingMode>(tmp.y())};
-
-                valseq.setEasingType(e);
-            });
+    valseq.addObserver(this);
 
     for (size_t i = 0; i < sequence_.size(); i++) {
         onKeyframeAdded(&sequence_[i], &sequence_);
@@ -258,26 +320,30 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
     updateVisibility();
 }
 
+PropertySequenceEditor::~PropertySequenceEditor() = default;
+
 QWidget* PropertySequenceEditor::create(Keyframe* key) {
     return new PropertyEditorWidget(*key, this);
 }
 
-void PropertySequenceEditor::onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) {
-    const QSignalBlocker block(easingComboBox_);
-
-    const auto e = seq->getEasingType();
-    const auto v = QVariant{QPoint{static_cast<int>(e.type), static_cast<int>(e.mode)}};
-
-    const auto index = easingComboBox_->findData(v);
-    easingComboBox_->setCurrentIndex(index);
-}
-
-void PropertySequenceEditor::onValueKeyframeSequenceInterpolationChanged(
+void PropertySequenceEditor::onValueKeyframeSequenceInterpolationDidChange(
     ValueKeyframeSequence* seq) {
 
+    const QSignalBlocker block(interpolation_);
     auto id = utilqt::toQString(seq->getInterpolation().getClassIdentifier());
     auto ind = interpolation_->findData(id);
     interpolation_->setCurrentIndex(ind);
+
+    auto widgets = std::make_unique<CollapsibleGroupBoxWidgetQt>(nullptr, &seq->getInterpolation(),
+                                                                 "Settings", false);
+
+    layout()->removeWidget(widgets_.get());
+    layout()->addWidget(widgets.get());
+    for (auto* prop : seq->getInterpolation().getProperties()) {
+        widgets->addProperty(prop);
+    }
+
+    widgets_ = std::move(widgets);
 }
 
 std::string PropertySequenceEditor::classIdentifier() {

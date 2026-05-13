@@ -34,11 +34,13 @@
 #include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
 #include <string>
+#include <vector>
 
 class QComboBox;
-class QWidget;
 
 namespace inviwo {
+class PropertyWidgetQt;
+class CollapsibleGroupBoxWidgetQt;
 
 namespace animation {
 
@@ -51,7 +53,7 @@ class IVW_MODULE_ANIMATIONQT_API PropertySequenceEditor : public SequenceEditorW
                                                           public ValueKeyframeSequenceObserver {
 public:
     PropertySequenceEditor(KeyframeSequence& sequence, Track& track, AnimationManager& manager);
-    virtual ~PropertySequenceEditor() = default;
+    virtual ~PropertySequenceEditor();
 
     static std::string classIdentifier();
 
@@ -59,11 +61,11 @@ protected:
     virtual QWidget* create(Keyframe* key) override;
 
     // ValueKeyframeSequenceObserver overloads
-    virtual void onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) override;
-    virtual void onValueKeyframeSequenceInterpolationChanged(ValueKeyframeSequence* seq) override;
+    virtual void onValueKeyframeSequenceInterpolationDidChange(ValueKeyframeSequence* seq) override;
 
-    QComboBox* easingComboBox_{nullptr};
+private:
     QComboBox* interpolation_{nullptr};
+    std::unique_ptr<CollapsibleGroupBoxWidgetQt> widgets_;
 };
 
 }  // namespace animation

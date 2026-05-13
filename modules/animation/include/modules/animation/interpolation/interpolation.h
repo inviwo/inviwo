@@ -30,37 +30,52 @@
 
 #include <modules/animation/animationmoduledefine.h>
 
-#include <inviwo/core/algorithm/easing.h>
-#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/properties/propertyowner.h>
 #include <modules/animation/datastructures/animationtime.h>
 
 #include <memory>
 #include <string>
-#include <vector>
+#include <string_view>
 
 namespace inviwo {
-class Deserializer;
-class Serializer;
+class InviwoApplication;
 
 namespace animation {
 
 /**
- *	Interface for keyframe interpolations.
+ * Interface for keyframe interpolations.
+ * Inherits PropertyOwner so that subclasses can expose their options as standard Inviwo
+ * properties, gaining serialization and GUI rendering for free.
  */
-class IVW_MODULE_ANIMATION_API Interpolation : public Serializable {
+class IVW_MODULE_ANIMATION_API Interpolation : public PropertyOwner {
 public:
-    Interpolation() = default;
+    /**
+     * @param app  The InviwoApplication. May be nullptr if created outside of a full application
+     *             context (e.g. for temporary introspection). The InterpolationFactory always
+     *             supplies the real application pointer.
+     */
+    Interpolation(InviwoApplication* app);
     virtual ~Interpolation() = default;
 
     virtual Interpolation* clone() const = 0;
 
-    virtual std::string getName() const = 0;
-
+    virtual std::string_view getDisplayName() const = 0;
     virtual std::string_view getClassIdentifier() const = 0;
+
     virtual bool equal(const Interpolation& other) const = 0;
 
-    virtual void serialize(Serializer& s) const override = 0;
-    virtual void deserialize(Deserializer& d) override = 0;
+    virtual InviwoApplication* getInviwoApplication() override;
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
+protected:
+    /**
+     * Protected copy constructor for use by clone() in derived classes.
+     * Re-populating the property list is the responsibility of the derived class.
+     */
+    Interpolation(const Interpolation& rhs);
+    InviwoApplication* app_;
 };
 
 IVW_MODULE_ANIMATION_API bool operator==(const Interpolation& a, const Interpolation& b);
@@ -78,18 +93,17 @@ class InterpolationTyped : public Interpolation {
 public:
     using key_type = Key;
     using result_type = Result;
-    InterpolationTyped() = default;
-    virtual ~InterpolationTyped() = default;
 
-    virtual InterpolationTyped* clone() const override = 0;
+    using Interpolation::Interpolation;
 
-    virtual std::string_view getClassIdentifier() const override = 0;
-    virtual void serialize(Serializer& s) const override = 0;
-    virtual void deserialize(Deserializer& d) override = 0;
+    virtual InterpolationTyped* clone() const override = 0;  // Needed for covariant return type
 
     // Override this function to interpolate between key frames
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            Easing easing, Result& out) const = 0;
+                            Result& out) const = 0;
+
+protected:
+    InterpolationTyped(const InterpolationTyped& rhs) : Interpolation(rhs) {}
 };
 
 }  // namespace animation

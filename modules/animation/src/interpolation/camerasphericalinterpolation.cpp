@@ -29,8 +29,10 @@
 
 #include <modules/animation/interpolation/camerasphericalinterpolation.h>
 
+#include <inviwo/core/algorithm/easing.h>
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/io/serialization/deserializer.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/interpolation/interpolation.h>
@@ -53,15 +55,20 @@
 #include <glm/vector_relational.hpp>
 
 namespace inviwo {
-class Deserializer;
 
 namespace animation {
+
+CameraSphericalInterpolation::CameraSphericalInterpolation(InviwoApplication* app)
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app) {}
+
+CameraSphericalInterpolation::CameraSphericalInterpolation(const CameraSphericalInterpolation& rhs)
+    : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(rhs) {}
 
 CameraSphericalInterpolation* CameraSphericalInterpolation::clone() const {
     return new CameraSphericalInterpolation(*this);
 }
 
-std::string CameraSphericalInterpolation::getName() const { return "Orbit/Pan/Tilt"; }
+std::string_view CameraSphericalInterpolation::getDisplayName() const { return "Orbit/Pan/Tilt"; }
 
 std::string_view CameraSphericalInterpolation::getClassIdentifier() const {
     return classIdentifier();
@@ -77,44 +84,47 @@ std::string_view CameraSphericalInterpolation::classIdentifier() {
 
 void CameraSphericalInterpolation::operator()(
     const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds /*from*/, Seconds to,
-    Easing easing, CameraKeyframe::value_type& out) const {
+    CameraKeyframe::value_type& out) const {
 
     auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
         return time < key->getTime();
     });
 
-    const auto& v1 = *(*std::prev(it));
-    const auto& t1 = (*std::prev(it))->getTime();
+    const auto& prev = *(*std::prev(it));
+    const auto& next = *(*it);
 
-    const auto& v2 = *(*it);
-    const auto& t2 = (*it)->getTime();
+    const auto t1 = prev.getTime();
+    const auto t2 = next.getTime();
 
-    auto t = static_cast<float>(util::ease((to - t1) / (t2 - t1), easing));
+    const auto easeIn = prev.getEaseIn();
+    const auto easeOut = next.getEaseOut();
 
-    auto fromDir = glm::normalize(v1.getDirection());
+    auto t = static_cast<float>(util::ease((to - t1) / (t2 - t1), easeIn, easeOut));
+
+    auto fromDir = glm::normalize(prev.getDirection());
     auto rotation = glm::slerp(glm::quat_identity<float, glm::defaultp>(),
-                               glm::rotation(fromDir, glm::normalize(v2.getDirection())), t);
+                               glm::rotation(fromDir, glm::normalize(next.getDirection())), t);
 
     // Adjust for different direction lengths
-    auto d = glm::mix(glm::length(v1.getDirection()), glm::length(v2.getDirection()), t);
+    auto d = glm::mix(glm::length(prev.getDirection()), glm::length(next.getDirection()), t);
 
-    if (glm::any(glm::notEqual(v1.getLookFrom(), v2.getLookFrom()))) {
+    if (glm::any(glm::notEqual(prev.getLookFrom(), next.getLookFrom()))) {
         // Assume that we are orbiting around lookAt
-        auto lookTo = glm::mix(v1.getLookTo(), v2.getLookTo(), t);
+        auto lookTo = glm::mix(prev.getLookTo(), next.getLookTo(), t);
         auto lookFrom = lookTo - glm::normalize(rotation * fromDir) * d;
         out.setLookFrom(lookFrom);
         out.setLookTo(lookTo);
     } else {
         // Pan/tilt (lookFrom's are equal)
-        const auto& lookFrom = v1.getLookFrom();
+        const auto& lookFrom = prev.getLookFrom();
         auto lookTo = lookFrom + glm::normalize(rotation * fromDir) * d;
         out.setLookFrom(lookFrom);
         out.setLookTo(lookTo);
     }
     // Assume that lookUp vectors are normalized
     auto lookUpQ = glm::slerp(glm::quat_identity<float, glm::defaultp>(),
-                              glm::rotation(v1.getLookUp(), v2.getLookUp()), t);
-    auto lookUp = glm::normalize(lookUpQ * v1.getLookUp());
+                              glm::rotation(prev.getLookUp(), next.getLookUp()), t);
+    auto lookUp = glm::normalize(lookUpQ * prev.getLookUp());
     out.setLookUp(lookUp);
 }
 
@@ -122,7 +132,7 @@ void CameraSphericalInterpolation::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
 }
 
-void CameraSphericalInterpolation::deserialize(Deserializer&) {}
+void CameraSphericalInterpolation::deserialize(Deserializer& /*d*/) {}
 
 }  // namespace animation
 

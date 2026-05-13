@@ -40,6 +40,10 @@
 
 #include <filesystem>
 
+namespace inviwo {
+class TransferFunction;
+}
+
 namespace inviwo::animation {
 
 /**
@@ -50,12 +54,13 @@ namespace inviwo::animation {
 template <typename Key, typename Result = typename Key::value_type>
 class ConstantInterpolation : public InterpolationTyped<Key, Result> {
 public:
-    ConstantInterpolation() = default;
+    explicit ConstantInterpolation(InviwoApplication* app = nullptr);
     virtual ~ConstantInterpolation() = default;
 
     virtual ConstantInterpolation* clone() const override;
 
-    virtual std::string getName() const override;
+    virtual std::string_view getDisplayName() const override;
+    virtual std::string_view getIdentifier() const override { return "ConstantInterpolation"; }
 
     static std::string_view classIdentifier();
     virtual std::string_view getClassIdentifier() const override;
@@ -67,8 +72,12 @@ public:
 
     // keys should be sorted by time
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            Easing easing, Result& out) const override;
+                            Result& out) const override;
 };
+
+template <typename Key, typename Result>
+ConstantInterpolation<Key, Result>::ConstantInterpolation(InviwoApplication* app)
+    : InterpolationTyped<Key, Result>(app) {}
 
 template <typename Key, typename Result>
 ConstantInterpolation<Key, Result>* ConstantInterpolation<Key, Result>::clone() const {
@@ -85,6 +94,10 @@ std::string_view ConstantInterpolation<Key, Result>::classIdentifier() {
     } else if constexpr (std::is_same_v<V, std::filesystem::path>) {
         static const std::string identifier = "org.inviwo.animation.constantinterpolation.Path";
         return identifier;
+    } else if constexpr (std::is_same_v<V, TransferFunction>) {
+        static const std::string identifier =
+            "org.inviwo.animation.constantinterpolation.TransferFunction";
+        return identifier;
     } else {
         static const auto identifier =
             "org.inviwo.animation.constantinterpolation." + Defaultvalues<V>::getName();
@@ -98,7 +111,7 @@ std::string_view ConstantInterpolation<Key, Result>::getClassIdentifier() const 
 }
 
 template <typename Key, typename Result>
-std::string ConstantInterpolation<Key, Result>::getName() const {
+std::string_view ConstantInterpolation<Key, Result>::getDisplayName() const {
     return "Constant";
 }
 
@@ -108,8 +121,7 @@ bool ConstantInterpolation<Key, Result>::equal(const Interpolation& other) const
 }
 template <typename Key, typename Result>
 void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                                    Seconds from, Seconds to, Easing,
-                                                    Result& out) const {
+                                                    Seconds from, Seconds to, Result& out) const {
 
     if (to > from) {
         auto it = std::upper_bound(
@@ -138,6 +150,7 @@ void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::uniqu
 template <typename Key, typename Result>
 void ConstantInterpolation<Key, Result>::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    PropertyOwner::serialize(s);
 }
 
 template <typename Key, typename Result>
@@ -151,6 +164,7 @@ void ConstantInterpolation<Key, Result>::deserialize(Deserializer& d) {
                                      "interpolation with a different class identifier: {}",
                                      cid, className);
     }
+    PropertyOwner::deserialize(d);
 }
 
 }  // namespace inviwo::animation

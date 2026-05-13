@@ -173,6 +173,7 @@ class IVW_CORE_API TransferFunctionProperty : public Property,
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.TransferFunctionProperty"};
+    using value_type = TransferFunction;
 
     TransferFunctionProperty(
         std::string_view identifier, std::string_view displayName, Document help,

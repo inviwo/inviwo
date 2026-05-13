@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,48 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/animation/animationmoduledefine.h>
+#include <inviwo/core/util/union.h>
 
-#include <inviwo/core/io/serialization/serializable.h>
-#include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/datastructures/keyframeobserver.h>
-
-#include <chrono>
-
-namespace inviwo {
-class Deserializer;
-class Serializer;
-
-namespace animation {
-
-/**
- * Interface for keyframes in an animation Track.
- * A keyframe usually contain a snapshot of a value at a given time,
- * which will used for interpolation in a KeyFrameSequence.
- * Note that a keyframe could also be a script to be executed.
- * @see KeyFrameSequence
- * @see Track
- */
-class IVW_MODULE_ANIMATION_API Keyframe : public Serializable, public KeyframeObservable {
-public:
-    virtual Keyframe* clone() const = 0;
-
-    virtual void setTime(Seconds time) = 0;
-    virtual Seconds getTime() const = 0;
-
-    virtual bool isSelected() const = 0;
-    virtual void setSelected(bool selected) = 0;
-
-    virtual void serialize(Serializer& s) const override = 0;
-    virtual void deserialize(Deserializer& d) override = 0;
-
-    auto operator<=>(const Keyframe& other) const { return getTime() <=> other.getTime(); }
-    auto operator==(const Keyframe& other) const = delete;
-    auto operator<=>(const Seconds& time) const { return getTime() <=> time; }
-};
-
-}  // namespace animation
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

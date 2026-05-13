@@ -29,21 +29,34 @@
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
+#include <modules/animation/interpolation/interpolation.h>
 
 #include <memory>
 #include <string>
 #include <string_view>
 
 namespace inviwo {
+class InviwoApplication;
+
 namespace animation {
-class Interpolation;
 
 class IVW_MODULE_ANIMATION_API InterpolationFactoryObject {
 public:
     explicit InterpolationFactoryObject(std::string_view classIdentifier);
     virtual ~InterpolationFactoryObject() = default;
 
-    virtual std::unique_ptr<Interpolation> create() const = 0;
+    /**
+     * Create an interpolation without an application context.
+     * Delegates to create(nullptr). Provided for StandardFactory template compatibility.
+     */
+    virtual std::unique_ptr<Interpolation> create() const { return create(nullptr); }
+
+    /**
+     * Create an interpolation with the given application context.
+     * @param app  May be nullptr if no application context is available.
+     */
+    virtual std::unique_ptr<Interpolation> create(InviwoApplication* app) const = 0;
+
     std::string_view getClassIdentifier() const;
 
 protected:
@@ -81,8 +94,8 @@ public:
 
     virtual ~InterpolationFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Interpolation> create() const override {
-        return std::make_unique<InterpTyped>();
+    virtual std::unique_ptr<Interpolation> create(InviwoApplication* app) const override {
+        return std::make_unique<InterpTyped>(app);
     }
 };
 

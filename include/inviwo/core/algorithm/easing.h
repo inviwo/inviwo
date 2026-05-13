@@ -30,6 +30,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <inviwo/core/util/enumtraits.h>
 #include <inviwo/core/util/exception.h>
 #include <cstdint>
 #include <string_view>
@@ -59,6 +60,16 @@ enum class EasingType : std::uint8_t {
 
 enum class EasingMode : std::uint8_t { in, out, inOut };
 
+template <>
+struct EnumTraits<EasingType> {
+    static constexpr std::string_view name() { return "EasingType"; }
+};
+
+template <>
+struct EnumTraits<EasingMode> {
+    static constexpr std::string_view name() { return "EasingMode"; }
+};
+
 struct IVW_CORE_API Easing {
     EasingType type = EasingType::linear;
     EasingMode mode = EasingMode::inOut;
@@ -74,38 +85,38 @@ constexpr std::string_view format_as(EasingType type) {
     using enum EasingType;
     switch (type) {
         case linear:
-            return "linear";
+            return "Linear";
         case quadratic:
-            return "quadratic";
+            return "Quadratic";
         case cubic:
-            return "cubic";
+            return "Cubic";
         case quartic:
-            return "quartic";
+            return "Quartic";
         case quintic:
-            return "quintic";
+            return "Quintic";
         case sine:
-            return "sine";
+            return "Sine";
         case circular:
-            return "circular";
+            return "Circular";
         case exponential:
-            return "exponential";
+            return "Exponential";
         case elastic:
-            return "elastic";
+            return "Elastic";
         case back:
-            return "back";
+            return "Back";
         case bounce:
-            return "bounce";
+            return "Bounce";
     }
     throw Exception(SourceContext{}, "Got invalid EasingType {}", static_cast<int>(type));
 }
 constexpr std::string_view format_as(EasingMode mode) {
     switch (mode) {
         case EasingMode::in:
-            return "in";
+            return "In";
         case EasingMode::out:
-            return "out";
+            return "Out";
         case EasingMode::inOut:
-            return "inOut";
+            return "InOut";
     }
     throw Exception(SourceContext{}, "Got invalid EasingMode {}", static_cast<int>(mode));
 }
@@ -264,6 +275,28 @@ constexpr T ease(const T& x, Easing easing) {
     }
     throw Exception(SourceContext{}, "Got invalid Easing {}, {}", static_cast<int>(easing.mode),
                     static_cast<int>(easing.type));
+}
+
+template <typename T>
+constexpr T ease(const T& x, std::optional<EasingType> inEasing,
+                 std::optional<EasingType> outEasing) {
+    if (!outEasing && !inEasing) {
+        return ease(x, Easing{EasingType::linear, EasingMode::inOut});
+    } else if (!outEasing && inEasing) {
+        return ease(x, Easing{*inEasing, EasingMode::in});
+    } else if (outEasing && !inEasing) {
+        return ease(x, Easing{*outEasing, EasingMode::out});
+    } else {
+        if (*outEasing == *inEasing) {
+            return ease(x, Easing{*outEasing, EasingMode::inOut});
+        }
+
+        if (x < 0.5) {
+            return 0.5 * ease(x * 2.0, Easing{*inEasing, EasingMode::in});
+        } else {
+            return 0.5 + 0.5 * ease(2.0 * x - 1.0, Easing{*outEasing, EasingMode::out});
+        }
+    }
 }
 
 }  // namespace util

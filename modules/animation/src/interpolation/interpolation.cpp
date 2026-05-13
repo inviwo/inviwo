@@ -29,9 +29,23 @@
 
 #include <modules/animation/interpolation/interpolation.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+
 namespace inviwo {
 
 namespace animation {
+
+Interpolation::Interpolation(InviwoApplication* app) : app_(app) {}
+
+Interpolation::Interpolation(const Interpolation& rhs) : PropertyOwner(rhs), app_(rhs.app_) {}
+
+InviwoApplication* Interpolation::getInviwoApplication() { return app_; }
+
+void Interpolation::serialize(Serializer& s) const {
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    PropertyOwner::serialize(s);
+}
+void Interpolation::deserialize(Deserializer& d) { PropertyOwner::deserialize(d); }
 
 bool operator==(const Interpolation& a, const Interpolation& b) { return a.equal(b); }
 bool operator!=(const Interpolation& a, const Interpolation& b) { return !a.equal(b); }

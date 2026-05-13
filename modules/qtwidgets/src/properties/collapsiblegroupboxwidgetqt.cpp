@@ -466,6 +466,12 @@ void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_
         setUpdatesEnabled(true);
     });
 
+    if (index >= propertyWidgets_.size()) {
+        log::warn("Trying to remove property at index {} but only {} properties available", index,
+                  propertyWidgets_.size());
+        return;
+    }
+
     PropertyWidgetQt* propertyWidget = propertyWidgets_[index];
 
     if (propertyWidget) {

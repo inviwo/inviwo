@@ -86,15 +86,15 @@ public:
     static_assert(std::is_base_of<KeyframeSequence, Seq>::value,
                   "Seq has to derive from KeyframeSequence");
 
-    BaseTrack(const std::string& name, size_t priority = 0);
+    BaseTrack(std::string_view name, size_t priority = 0);
 
     virtual ~BaseTrack();
 
     virtual bool isEnabled() const override;
     virtual void setEnabled(bool enabled) override;
 
-    virtual const std::string& getName() const override;
-    virtual void setName(const std::string& name) override;
+    virtual std::string_view getName() const override;
+    virtual void setName(std::string_view name) override;
 
     virtual size_t getPriority() const override;
     virtual void setPriority(size_t priority) override;
@@ -177,7 +177,7 @@ private:
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <typename Seq>
-BaseTrack<Seq>::BaseTrack(const std::string& name, size_t priority)
+BaseTrack<Seq>::BaseTrack(std::string_view name, size_t priority)
     : name_{name}, priority_{priority} {}
 
 template <typename Seq>
@@ -227,11 +227,11 @@ void BaseTrack<Seq>::setEnabled(bool enabled) {
 }
 
 template <typename Seq>
-const std::string& BaseTrack<Seq>::getName() const {
+std::string_view BaseTrack<Seq>::getName() const {
     return name_;
 }
 template <typename Seq>
-void BaseTrack<Seq>::setName(const std::string& name) {
+void BaseTrack<Seq>::setName(std::string_view name) {
     if (name_ != name) {
         name_ = name;
         this->notifyNameChanged(this);

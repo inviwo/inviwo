@@ -363,7 +363,7 @@ TEST(AnimationTests, KeyframeSerializationTest) {
 }
 
 TEST(AnimationTests, InterpolationSerializationTest) {
-    InterpolationFactory factory;
+    InterpolationFactory factory{nullptr};
 
     InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<dvec3>>> linearIFO;
     factory.registerObject(&linearIFO);
@@ -391,7 +391,7 @@ TEST(AnimationTests, InterpolationSerializationTest) {
 }
 
 TEST(AnimationTests, KeyframeSequenceSerializationTest) {
-    InterpolationFactory factory;
+    InterpolationFactory factory{nullptr};
 
     InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<dvec3>>> linearIFO;
     factory.registerObject(&linearIFO);
@@ -447,7 +447,7 @@ TEST(AnimationTests, TrackSerializationTest) {
     const std::string_view refPath = "/tmp";
     std::stringstream ss;
 
-    InterpolationFactory interpolationFactory;
+    InterpolationFactory interpolationFactory{nullptr};
     InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<float>>> linearIFO;
     interpolationFactory.registerObject(&linearIFO);
 
@@ -524,7 +524,7 @@ TEST(AnimationTests, TrackSerializationTest) {
 }
 
 TEST(AnimationTests, AnimationSerializationTest) {
-    InterpolationFactory interpolationFactory;
+    InterpolationFactory interpolationFactory{nullptr};
     InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<float>>> linearFloatIFO;
     interpolationFactory.registerObject(&linearFloatIFO);
 

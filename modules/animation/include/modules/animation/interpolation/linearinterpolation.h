@@ -31,6 +31,7 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <modules/animation/interpolation/interpolation.h>
 #include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/algorithm/easing.h>
 
 #include <algorithm>
 
@@ -39,21 +40,29 @@
 
 namespace inviwo {
 
+class InviwoApplication;
+
 namespace animation {
 
 /**
  * Linear interpolation function for key frames.
  * Performs linear interpolation between two neighboring key frames.
+ * Easing is controlled per keyframe via BaseKeyframe::getEasing() / BaseKeyframe::setEasing().
+ * The easing of the outgoing keyframe (the one before the current time) is used for each interval.
  */
 template <typename Key, typename Result = typename Key::value_type>
 class LinearInterpolation : public InterpolationTyped<Key, Result> {
 public:
-    LinearInterpolation() = default;
+    explicit LinearInterpolation(InviwoApplication* app = nullptr);
     virtual ~LinearInterpolation() = default;
+
+    LinearInterpolation(const LinearInterpolation&) = default;
+    LinearInterpolation& operator=(const LinearInterpolation&) = delete;
 
     virtual LinearInterpolation<Key, Result>* clone() const override;
 
-    virtual std::string getName() const override;
+    virtual std::string_view getDisplayName() const override;
+    virtual std::string_view getIdentifier() const override { return "LinearInterpolation"; }
 
     static std::string_view classIdentifier();
     virtual std::string_view getClassIdentifier() const override;
@@ -65,10 +74,16 @@ public:
 
     /*
      * Returns linear interpolation of keyframe values at time t.
+     * Uses the easing stored on the outgoing keyframe (keys[i]) for each interval [keys[i],
+     * keys[i+1]].
      */
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            Easing easing, Result& out) const override;
+                            Result& out) const override;
 };
+
+template <typename Key, typename Result>
+LinearInterpolation<Key, Result>::LinearInterpolation(InviwoApplication* app)
+    : InterpolationTyped<Key, Result>(app) {}
 
 template <typename Key, typename Result>
 LinearInterpolation<Key, Result>* LinearInterpolation<Key, Result>::clone() const {
@@ -76,7 +91,7 @@ LinearInterpolation<Key, Result>* LinearInterpolation<Key, Result>::clone() cons
 }
 
 template <typename Key, typename Result>
-std::string LinearInterpolation<Key, Result>::getName() const {
+std::string_view LinearInterpolation<Key, Result>::getDisplayName() const {
     return "Linear";
 }
 
@@ -99,8 +114,7 @@ std::string_view LinearInterpolation<Key, Result>::classIdentifier() {
 
 template <typename Key, typename Result>
 void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                                  Seconds /*from*/, Seconds to, Easing easing,
-                                                  Result& out) const {
+                                                  Seconds /*from*/, Seconds to, Result& out) const {
 
     using VT = typename Key::value_type;
     using DT = typename util::same_extent<VT, double>::type;
@@ -109,18 +123,24 @@ void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_
         return time < key->getTime();
     });
 
-    const auto& v1 = (*std::prev(it))->getValue();
-    const auto& t1 = (*std::prev(it))->getTime();
+    const auto& prev = *(*std::prev(it));
+    const auto& next = *(*it);
 
-    const auto& v2 = (*it)->getValue();
-    const auto& t2 = (*it)->getTime();
+    const auto t1 = prev.getTime();
+    const auto t2 = next.getTime();
+
+    const auto& v1 = prev.getValue();
+    const auto& v2 = next.getValue();
+
+    const auto easeIn = prev.getEaseIn();
+    const auto easeOut = next.getEaseOut();
 
     // We have to take special care here since we might have unsigned types.
     // Lets just convert everything to doubles.
     const auto& dv1 = static_cast<DT>(v1);
     const auto& dv2 = static_cast<DT>(v2);
 
-    out = static_cast<VT>(glm::mix(dv1, dv2, util::ease((to - t1) / (t2 - t1), easing)));
+    out = static_cast<VT>(glm::mix(dv1, dv2, util::ease((to - t1) / (t2 - t1), easeIn, easeOut)));
 }
 
 template <typename Key, typename Result>
@@ -129,7 +149,7 @@ void LinearInterpolation<Key, Result>::serialize(Serializer& s) const {
 }
 
 template <typename Key, typename Result>
-void LinearInterpolation<Key, Result>::deserialize(Deserializer&) {}
+void LinearInterpolation<Key, Result>::deserialize(Deserializer& /*d*/) {}
 
 }  // namespace animation
 

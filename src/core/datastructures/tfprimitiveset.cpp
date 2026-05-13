@@ -84,15 +84,7 @@ TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs) : type_(rhs.type_) {
 TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     if (this != &rhs) {
         type_ = rhs.type_;
-        for (size_t i = 0; i < std::min(values_.size(), rhs.values_.size()); i++) {
-            *values_[i] = *rhs.values_[i];
-        }
-        for (size_t i = std::min(values_.size(), rhs.values_.size()); i < rhs.values_.size(); i++) {
-            add(*rhs.values_[i]);
-        }
-        while (values_.size() > rhs.values_.size()) {
-            remove(--values_.end());
-        }
+        set(rhs.values_ | std::views::transform([](const auto& v) { return v->getData(); }));
     }
     return *this;
 }
@@ -100,54 +92,9 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
 TFPrimitiveSet& TFPrimitiveSet::operator=(TFPrimitiveSet&& rhs) noexcept {
     if (this != &rhs) {
         type_ = rhs.type_;
-        for (size_t i = 0; i < std::min(values_.size(), rhs.values_.size()); i++) {
-            *values_[i] = *rhs.values_[i];
-        }
-        for (size_t i = std::min(values_.size(), rhs.values_.size()); i < rhs.values_.size(); i++) {
-            add(*rhs.values_[i]);
-        }
-        while (values_.size() > rhs.values_.size()) {
-            remove(--values_.end());
-        }
+        set(rhs.values_ | std::views::transform([](const auto& v) { return v->getData(); }));
     }
     return *this;
-}
-void TFPrimitiveSet::set(std::span<const TFPrimitiveData> points) {
-    auto sbegin = points.begin();
-    const auto send = points.end();
-
-    auto dbegin = values_.begin();
-    const auto dend = values_.end();
-
-    while (dbegin != dend && sbegin != send) {
-        verifyPoint(*sbegin);
-        **dbegin++ = *sbegin++;
-    }
-    while (sbegin != send) {
-        add(*sbegin++);
-    }
-    const size_t targetSize = points.size();
-    while (values_.size() > targetSize) {
-        remove(--values_.end());
-    }
-}
-
-void TFPrimitiveSet::set(const_iterator sbegin, const_iterator send) {
-    const size_t targetSize = std::distance(sbegin, send);
-
-    auto dbegin = values_.begin();
-    const auto dend = values_.end();
-
-    while (dbegin != dend && sbegin != send) {
-        verifyPoint(*sbegin);
-        **dbegin++ = *sbegin++;
-    }
-    while (sbegin != send) {
-        add(*sbegin++);
-    }
-    while (values_.size() > targetSize) {
-        remove(--values_.end());
-    }
 }
 
 void TFPrimitiveSet::setType(TFPrimitiveSetType type) {
