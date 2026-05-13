@@ -50,7 +50,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API CameraAnimation
     : public InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type> {
 public:
-    CameraAnimation(InviwoApplication* app = nullptr);
+    explicit CameraAnimation(InviwoApplication* app = nullptr);
     CameraAnimation(const CameraAnimation& rhs);
     virtual ~CameraAnimation() = default;
     virtual CameraAnimation* clone() const override;

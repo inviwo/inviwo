@@ -109,11 +109,17 @@ CameraAnimation::CameraAnimation(InviwoApplication* app)
     , periods{"periods", "Periods",
               util::ordinalLength(1.0, 20.0).setInc(0.01).set(
                   "Number of periods during the animation"_help)}
-    , axis{"axis", "Axis",
-           std::vector<RotationAxis>{
-               RotationAxis::CameraYaw, RotationAxis::CameraPitch, RotationAxis::CameraRoll,
-               RotationAxis::ObjectYaw, RotationAxis::ObjectPitch, RotationAxis::ObjectRoll,
-               RotationAxis::WorldX, RotationAxis::WorldY, RotationAxis::WorldZ}} {
+    , axis{"axis",
+           "Axis",
+           {{"cameraYaw", "Camera Yaw", RotationAxis::CameraYaw},
+            {"cameraPitch", "Camera Pitch", RotationAxis::CameraPitch},
+            {"cameraRoll", "Camera Roll", RotationAxis::CameraRoll},
+            {"objectYaw", "Object Yaw", RotationAxis::ObjectYaw},
+            {"objectPitch", "Object Pitch", RotationAxis::ObjectPitch},
+            {"objectRoll", "Object Roll", RotationAxis::ObjectRoll},
+            {"worldX", "World X", RotationAxis::WorldX},
+            {"worldY", "World Y", RotationAxis::WorldY},
+            {"worldZ", "World Z", RotationAxis::WorldZ}}} {
 
     addProperties(amplitude, periods, axis);
 }
