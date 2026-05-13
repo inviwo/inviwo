@@ -61,27 +61,6 @@ double totalMass(std::span<const TFPrimitiveData> tf) {
     return mass;
 }
 
-// Helper: evaluate a piecewise-linear TF at position x.
-vec4 evaluateTF(std::span<const TFPrimitiveData> tf, double x) {
-    if (tf.empty()) return vec4{0.0f};
-    if (x <= tf.front().pos) return tf.front().color;
-    if (x >= tf.back().pos) return tf.back().color;
-
-    auto it = std::upper_bound(tf.begin(), tf.end(), x,
-                               [](double v, const TFPrimitiveData& p) { return v < p.pos; });
-    const auto& p0 = *(it - 1);
-    const auto& p1 = *it;
-    double dx = p1.pos - p0.pos;
-    if (std::abs(dx) < 1e-12) return glm::mix(p0.color, p1.color, 0.5f);
-    auto u = static_cast<float>((x - p0.pos) / dx);
-    return glm::mix(p0.color, p1.color, u);
-}
-
-// Simple uniform TF: constant alpha = 1 from 0 to 1.
-TF uniformTF() {
-    return {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
-}
-
 // A TF that is a single spike (triangle) centered at `center` with half-width `hw`.
 TF spikeTF(double center, double hw, vec4 color) {
     vec4 zero = vec4{vec3{color}, 0.0f};
