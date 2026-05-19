@@ -125,6 +125,7 @@ private:
 
     QComboBox* chkShowHistogram_;
     QComboBox* pointMoveMode_;
+    QComboBox* tfTypeMode_;
 
     QLabel* domainMin_;
     QLabel* domainMax_;

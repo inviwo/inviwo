@@ -276,6 +276,24 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     connect(editor_.get(), &TFEditor::moveModeChange, this,
             [this](TFMoveMode m) { pointMoveMode_->setCurrentIndex(static_cast<int>(m)); });
 
+    tfTypeMode_ = new QComboBox();
+    tfTypeMode_->addItem(fmt::to_string(static_cast<TFPrimitiveSetType>(0)));
+    tfTypeMode_->addItem(fmt::to_string(static_cast<TFPrimitiveSetType>(1)));
+    {
+        const auto sets = concept_->sets();
+        const bool allRelative = std::ranges::all_of(
+            sets, [](const auto* s) { return s->getType() == TFPrimitiveSetType::Relative; });
+        tfTypeMode_->setCurrentIndex(allRelative ? 0 : 1);
+    }
+    connect(tfTypeMode_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, [this](int i) {
+                const auto type = static_cast<TFPrimitiveSetType>(i);
+                const NetworkLock lock(concept_->getProperty());
+                for (auto* set : concept_->sets()) {
+                    set->setType(type);
+                }
+            });
+
     domainMin_ = new QLabel("0.0");
     domainMax_ = new QLabel("1.0");
 
@@ -331,6 +349,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     rightLayout->setContentsMargins(0, 0, 0, 0);
     rightLayout->setSpacing(utilqt::refSpacePx(this));
     rightLayout->setAlignment(Qt::AlignTop);
+    rightLayout->addWidget(tfTypeMode_);
     rightLayout->addWidget(chkShowHistogram_);
     rightLayout->addWidget(pointMoveMode_);
     rightLayout->addWidget(colorWheel_.get());
@@ -499,7 +518,9 @@ void TFPropertyDialog::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimi
     updateFromProperty();
 }
 
-void TFPropertyDialog::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {
+void TFPropertyDialog::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType type) {
+    const QSignalBlocker block(tfTypeMode_);
+    tfTypeMode_->setCurrentIndex(static_cast<int>(type));
     onTFTypeChangedInternal();
 }
 
@@ -559,6 +580,7 @@ void TFPropertyDialog::setReadOnly(bool readonly) {
     primitiveAlpha_->setDisabled(readonly);
     primitiveColor_->setDisabled(readonly);
     pointMoveMode_->setDisabled(readonly);
+    tfTypeMode_->setDisabled(readonly);
 }
 
 void TFPropertyDialog::updateTFPreview() {
