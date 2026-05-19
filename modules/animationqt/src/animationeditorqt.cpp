@@ -53,6 +53,7 @@
 #include <modules/animationqt/widgets/keyframewidgetqt.h>
 #include <modules/animationqt/widgets/trackwidgetqt.h>
 #include <modules/qtwidgets/textlabeloverlay.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <chrono>
 #include <set>
@@ -178,14 +179,12 @@ void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
 
 namespace {
 
-Track* findOwningTrack(QGraphicsItem* item, Animation& animation) {
-    // Navigate up from keyframe or sequence widget to its track widget
-    QGraphicsItem* parent = item->parentItem();
-    while (parent) {
-        if (auto trackWidget = dynamic_cast<TrackWidgetQt*>(parent)) {
-            return &trackWidget->getTrack();
+template <typename T>
+T* findParentOfType(QGraphicsItem* item) {
+    for (QGraphicsItem* parent = item->parentItem(); parent; parent = parent->parentItem()) {
+        if (auto casted = dynamic_cast<T*>(parent)) {
+            return casted;
         }
-        parent = parent->parentItem();
     }
     return nullptr;
 }
@@ -193,46 +192,38 @@ Track* findOwningTrack(QGraphicsItem* item, Animation& animation) {
 }  // namespace
 
 void AnimationEditorQt::copy() {
-    const QList<QGraphicsItem*> itemList = selectedItems();
-    if (itemList.empty()) return;
+    const QList<QGraphicsItem*> selection = selectedItems();
+    if (selection.empty()) return;
 
     // Classify selected items: collect keyframes, sequences, and tracks.
     // Prefer the highest-level selection: if a sequence is selected, don't also copy its keyframes.
+    std::set<Track*> selectedTracks;
     std::vector<std::pair<Track*, Keyframe*>> keyframes;
     std::vector<std::pair<Track*, KeyframeSequence*>> sequences;
-    std::set<Track*> trackSet;
+    std::set<KeyframeSequenceWidgetQt*> selectedSequences;
 
-    auto& animation = controller_.getAnimation();
-
-    for (auto* elem : itemList) {
-        if (auto seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
-            auto* track = findOwningTrack(elem, animation);
-            if (track) {
-                sequences.emplace_back(track, &seqqt->getKeyframeSequence());
-                trackSet.insert(track);
+    for (auto* elem : selection) {
+        if (auto* seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
+            if (auto* track = findParentOfType<TrackWidgetQt>(elem)) {
+                selectedTracks.insert(&track->getTrack());
+                selectedSequences.insert(seqqt);
+                sequences.emplace_back(&track->getTrack(), &seqqt->getKeyframeSequence());
             }
         }
     }
 
-    for (auto* elem : itemList) {
+    for (auto* elem : selection) {
         if (auto keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
-            auto* track = findOwningTrack(elem, animation);
+            auto* track = findParentOfType<TrackWidgetQt>(elem);
             if (!track) continue;
+
+            auto* seqqt = findParentOfType<KeyframeSequenceWidgetQt>(keyqt);
+            if (!seqqt) continue;
+
             // Skip keyframes whose parent sequence is already selected
-            auto& kf = keyqt->getKeyframe();
-            bool parentSeqSelected = false;
-            for (auto& [t, seq] : sequences) {
-                for (size_t i = 0; i < seq->size(); ++i) {
-                    if (&(*seq)[i] == &kf) {
-                        parentSeqSelected = true;
-                        break;
-                    }
-                }
-                if (parentSeqSelected) break;
-            }
-            if (!parentSeqSelected) {
-                keyframes.emplace_back(track, &kf);
-            }
+            if (selectedSequences.contains(seqqt)) continue;
+
+            keyframes.emplace_back(&track->getTrack(), &keyqt->getKeyframe());
         }
     }
 
@@ -242,59 +233,54 @@ void AnimationEditorQt::copy() {
 
     auto mimeData = std::make_unique<QMimeData>();
 
-    if (!sequences.empty() || !keyframes.empty()) {
-        // Serialize tracks that contain all selected content.
-        // Group by track: each track serializes its own selected sequences/keyframes.
+    // Serialize tracks that contain all selected content.
+    // Group by track: each track serializes its own selected sequences/keyframes.
 
-        // Serialize keyframe sequences
-        if (!sequences.empty()) {
-            Serializer serializer("");
-            // Serialize track type info alongside each sequence so paste knows what track to
-            // create
-            std::vector<std::string> trackClassIds;
-            for (auto& [track, seq] : sequences) {
-                trackClassIds.emplace_back(track->getClassIdentifier());
-            }
-            serializer.serialize("trackClassIds", trackClassIds, "id");
-
-            // Serialize each sequence
-            std::vector<const KeyframeSequence*> seqs;
-            for (auto& [track, seq] : sequences) {
-                seqs.push_back(seq);
-            }
-            serializer.serialize("sequences", seqs, "sequence");
-
-            std::stringstream ss;
-            serializer.writeFile(ss);
-            auto str = ss.str();
-            QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
-            mimeData->setData(
-                QString::fromUtf8(mimeKeyframeSequences.data(), mimeKeyframeSequences.size()),
-                byteArray);
+    // Serialize keyframe sequences
+    if (!sequences.empty()) {
+        Serializer serializer("");
+        // Serialize track type info alongside each sequence so paste knows what track to
+        // create
+        std::vector<std::string> trackClassIds;
+        for (auto& [track, seq] : sequences) {
+            trackClassIds.emplace_back(track->getClassIdentifier());
         }
+        serializer.serialize("trackClassIds", trackClassIds, "id");
 
-        // Serialize individual keyframes
-        if (!keyframes.empty()) {
-            Serializer serializer("");
-            std::vector<std::string> trackClassIds;
-            for (auto& [track, kf] : keyframes) {
-                trackClassIds.push_back(std::string(track->getClassIdentifier()));
-            }
-            serializer.serialize("trackClassIds", trackClassIds, "id");
-
-            std::vector<const Keyframe*> kfs;
-            for (auto& [track, kf] : keyframes) {
-                kfs.push_back(kf);
-            }
-            serializer.serialize("keyframes", kfs, "keyframe");
-
-            std::stringstream ss;
-            serializer.writeFile(ss);
-            auto str = ss.str();
-            QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
-            mimeData->setData(QString::fromUtf8(mimeKeyframes.data(), mimeKeyframes.size()),
-                              byteArray);
+        // Serialize each sequence
+        std::vector<const KeyframeSequence*> seqs;
+        for (auto& [track, seq] : sequences) {
+            seqs.push_back(seq);
         }
+        serializer.serialize("sequences", seqs, "sequence");
+
+        std::stringstream ss;
+        serializer.writeFile(ss);
+        auto str = std::move(ss).str();
+        QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
+        mimeData->setData(utilqt::toQString(mimeKeyframeSequences), byteArray);
+    }
+
+    // Serialize individual keyframes
+    if (!keyframes.empty()) {
+        Serializer serializer("");
+        std::vector<std::string> trackClassIds;
+        for (auto& [track, kf] : keyframes) {
+            trackClassIds.push_back(std::string(track->getClassIdentifier()));
+        }
+        serializer.serialize("trackClassIds", trackClassIds, "id");
+
+        std::vector<const Keyframe*> kfs;
+        for (auto& [track, kf] : keyframes) {
+            kfs.push_back(kf);
+        }
+        serializer.serialize("keyframes", kfs, "keyframe");
+
+        std::stringstream ss;
+        serializer.writeFile(ss);
+        auto str = std::move(ss).str();
+        QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
+        mimeData->setData(utilqt::toQString(mimeKeyframes), byteArray);
     }
 
     // Only set clipboard if we have content
@@ -312,9 +298,8 @@ void AnimationEditorQt::paste() {
     auto* app = controller_.getInviwoApplication();
     auto& animation = controller_.getAnimation();
 
-    const auto seqMime =
-        QString::fromUtf8(mimeKeyframeSequences.data(), mimeKeyframeSequences.size());
-    const auto kfMime = QString::fromUtf8(mimeKeyframes.data(), mimeKeyframes.size());
+    const auto seqMime = utilqt::toQString(mimeKeyframeSequences);
+    const auto kfMime = utilqt::toQString(mimeKeyframes);
 
     // Paste keyframe sequences
     if (mimeData->hasFormat(seqMime)) {
