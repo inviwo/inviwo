@@ -709,6 +709,8 @@ void ParallelCoordinates::drawLines(size2_t size) {
 }
 
 void ParallelCoordinates::linePicked(PickingEvent* p) {
+    const KeyModifier appendModifier = KeyModifier::Shift;
+
     if (auto df = dataFrame_.getData()) {
         // Show tooltip about current line
         if (p->getHoverState() == PickingHoverState::Move ||
@@ -731,9 +733,13 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
 
         auto id = p->getPickedId();
 
-        auto selection = brushingAndLinking_.getSelectedIndices();
-        selection.flip(indexCol[id]);
-        brushingAndLinking_.select(selection);
+        if (p->modifiers().contains(appendModifier)) {
+            auto selection = brushingAndLinking_.getSelectedIndices();
+            selection.flip(indexCol[id]);
+            brushingAndLinking_.select(selection);
+        } else {
+            brushingAndLinking_.select(BitSet{id});
+        }
 
         p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);
@@ -992,8 +998,7 @@ BitSet ParallelCoordinates::lineIntersections(const std::array<dvec2, 2>& screen
     const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
     BitSet b;
-    for (auto&& [left, right] :
-         std::views::zip(enabledAxes_, enabledAxes_ | std::views::drop(1))) {
+    for (auto&& [left, right] : std::views::zip(enabledAxes_, enabledAxes_ | std::views::drop(1))) {
 
         const auto leftColumnId = axes_[left].pcp->columnId();
         const auto rightColumnId = axes_[right].pcp->columnId();
