@@ -30,40 +30,20 @@
 #include <modules/base/processors/volumeconverter.h>
 
 #include <inviwo/core/datastructures/datamapper.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorinfo.h>
-#include <inviwo/core/processors/processorstate.h>
-#include <inviwo/core/processors/processortags.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/algorithm/linearmap.h>
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/glmutils.h>
 #include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/staticstring.h>
 #include <modules/base/properties/datarangeproperty.h>
 
-#include <algorithm>
 #include <limits>
 #include <memory>
-#include <tuple>
-#include <type_traits>
-#include <unordered_set>
 #include <utility>
-
-#include <glm/gtx/component_wise.hpp>
-#include <glm/vec2.hpp>
+#include <span>
 
 namespace inviwo {
 
@@ -124,7 +104,7 @@ VolumeConverter::VolumeConverter()
                        1.0,
                        std::numeric_limits<double>::lowest(),
                        std::numeric_limits<double>::max(),
-                       0.01,
+                       0.001,
                        0.0,
                        InvalidationLevel::InvalidOutput,
                        PropertySemantics::Text} {
@@ -165,9 +145,9 @@ namespace {
 std::shared_ptr<Volume> convertVolume(DataFormatId dstScalarFormatId, const Volume& src,
                                       bool mapData, dvec2 dstRange) {
 
-    auto ramSrc = src.getRepresentation<VolumeRAM>();
+    const auto* ramSrc = src.getRepresentation<VolumeRAM>();
 
-    auto ramDst = dispatching::doubleDispatch<
+    auto result = dispatching::doubleDispatch<
         std::shared_ptr<VolumeRAM>, dispatching::filter::Scalars, dispatching::filter::All>(
         dstScalarFormatId, ramSrc->getDataFormatId(),
         [&]<typename DstScalarFormat, typename SrcFormat>() {
@@ -183,28 +163,26 @@ std::shared_ptr<Volume> convertVolume(DataFormatId dstScalarFormatId, const Volu
             std::span<DstFormat> dstData = ramDst->getView();
 
             if (mapData) {
-                const dvec2 srcRange{(src.getDataFormat()->getNumericType() != NumericType::Float)
+                const dvec2 srcRange{(src.getDataFormat()->getNumericType() != NumericType::Float ||
+                                      DataFormat<DstFormat>::numericType() != NumericType::Float)
                                          ? src.dataMap.dataRange
                                          : dvec2{0.0, 1.0}};
 
                 using DstDoubleFormat = util::same_extent_t<SrcFormat, double>;
-                std::transform(srcData.begin(), srcData.end(), dstData.begin(),
-                               [srcRange, dstRange](const auto& v) {
-                                   const auto result =
-                                       (static_cast<DstDoubleFormat>(v) - srcRange.x) /
-                                           (srcRange.y - srcRange.x) * (dstRange.y - dstRange.x) +
-                                       dstRange.x;
-                                   return static_cast<DstFormat>(result);
-                               });
+                std::ranges::transform(
+                    srcData, dstData.begin(), [srcRange, dstRange](const auto& v) {
+                        return static_cast<DstFormat>(
+                            util::linearMap(static_cast<DstDoubleFormat>(v), srcRange, dstRange));
+                    });
             } else {
-                std::transform(srcData.begin(), srcData.end(), dstData.begin(),
-                               [](const auto& v) { return static_cast<DstFormat>(v); });
+                std::ranges::transform(srcData, dstData.begin(),
+                                       [](const auto& v) { return static_cast<DstFormat>(v); });
             }
 
             return ramDst;
         });
 
-    auto vol = std::make_shared<Volume>(ramDst);
+    auto vol = std::make_shared<Volume>(result);
     vol->setBasis(src.getBasis());
     vol->setOffset(src.getOffset());
     vol->copyMetaDataFrom(src);
@@ -227,9 +205,9 @@ void VolumeConverter::process() {
             return {dataRange_.getCustomDataRange(), dataRange_.getCustomValueRange()};
         } else {
             if (enableDataMapping_) {
-                if (auto format = DataFormatBase::get(dstFormat_);
+                if (const auto* format = DataFormatBase::get(dstFormat_);
                     format->getNumericType() != NumericType::Float) {
-                    DataMapper mapper{format};
+                    const DataMapper mapper{format};
                     return {mapper.dataRange, mapper.valueRange};
                 } else {
                     return {dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
