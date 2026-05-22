@@ -45,7 +45,7 @@ ValueAxisProperty::ValueAxisProperty(std::string_view identifier, std::string_vi
     , useCustomAxis_{"useCustomAxis", "Use Custom Value Axis", false}
     , customValueName_{"customValueName", "Value name", ""}
     , customValueUnit_{"customValueUnit", "Value unit", ""}
-    , copyFromInput_{"copyFromInput", "Copy Range from Input", [&]() {
+    , copyFromInput_{"copyFromInput", "Copy from Input", [&]() {
                          customValueName_.set(&valueName_);
                          customValueUnit_.set(&valueUnit_);
                      }} {
