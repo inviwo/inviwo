@@ -189,6 +189,7 @@ void OrthographicAxis2D::process() {
 
     const utilgl::ClearColor clearColor{backgroundColor_.get()};
     utilgl::activateAndClearTarget(outport_);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     if (auto source = inport_.getData()) {
         // if we clipContent_ we only want to draw the inport image inside of the margins
         const auto scissors =
