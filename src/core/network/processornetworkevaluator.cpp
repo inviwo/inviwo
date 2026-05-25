@@ -124,6 +124,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                     }
                 } catch (...) {
                     exceptionHandler_(processor, EvaluationType::InitResource, SourceContext{});
+                    processor->setValid();
                     continue;
                 }
 
@@ -134,6 +135,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                     }
                 } catch (...) {
                     exceptionHandler_(processor, EvaluationType::PortOnChange, SourceContext{});
+                    processor->setValid();
                     continue;
                 }
 
@@ -151,6 +153,7 @@ void ProcessorNetworkEvaluator::evaluate() {
 
                 } catch (...) {
                     exceptionHandler_(processor, EvaluationType::Process, SourceContext{});
+                    processor->setValid();
                 }
 
                 processor->notifyObserversFinishedProcess(processor);
