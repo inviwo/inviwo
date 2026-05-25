@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -75,6 +76,7 @@
 #include <modules/animation/interpolation/camerasphericalinterpolation.h>
 #include <modules/animation/interpolation/constantinterpolation.h>
 #include <modules/animation/interpolation/interpolation.h>
+#include <modules/animation/interpolation/isovaluepropertyinterpolation.h>
 #include <modules/animation/interpolation/linearinterpolation.h>
 #include <modules/animation/workspaceanimations.h>
 #include <modules/animation/factories/imagerecorderfactory.h>
@@ -144,9 +146,9 @@ AnimationModule::AnimationModule(InviwoApplication* app)
         interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
     });
 
-    // Register properties that should not interpolate
+    // Register constant interpolation (no interpolation) properties
     util::for_each_type<
-        std::tuple<BoolProperty, FileProperty, StringProperty, TransferFunctionProperty>>{}(
+        std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
         [&]<typename PropertyType>() {
             propertyHelper<PropertyType>();
             using ValueType = typename PropertyType::value_type;
@@ -169,10 +171,19 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     interpolationHelper<CameraProperty, CameraLinearInterpolation>();
     interpolationHelper<CameraProperty, CameraAnimation>();
 
+    propertyHelper<TransferFunctionProperty>();
+
+    interpolationHelper<TransferFunctionProperty, TFInterpolationOptimalTransport>();
+    interpolationHelper<TransferFunctionProperty, TFInterpolationBlend>();
     interpolationHelper<TransferFunctionProperty,
                         ConstantInterpolation<ValueKeyframe<TransferFunction>>>();
-    interpolationHelper<TransferFunctionProperty, TFInterpolationBlend>();
-    interpolationHelper<TransferFunctionProperty, TFInterpolationOptimalTransport>();
+
+    propertyHelper<IsoValueProperty>();
+
+    interpolationHelper<IsoValueProperty, IsoValuePropertyInterpolationBlend>();
+    interpolationHelper<IsoValueProperty, IsoValuePropertyInterpolationFade>();
+    interpolationHelper<IsoValueProperty,
+                        ConstantInterpolation<ValueKeyframe<IsoValueProperty::value_type>>>();
 
     propertyHelper<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>();
 

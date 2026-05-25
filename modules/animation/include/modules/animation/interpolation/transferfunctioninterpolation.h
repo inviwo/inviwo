@@ -35,6 +35,7 @@
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/interpolation/interpolation.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
+#include <modules/animation/datastructures/valuekeyframesequence.h>
 
 #include <memory>
 #include <string>
@@ -93,6 +94,17 @@ public:
         const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
         Seconds to, TransferFunction& out) const override;
 };
+
+namespace detail {
+
+template <>
+struct DefaultInterpolationCreator<ValueKeyframe<TransferFunction>> {
+    static std::unique_ptr<TFInterpolationOptimalTransport> create() {
+        return std::make_unique<TFInterpolationOptimalTransport>();
+    }
+};
+
+}  // namespace detail
 
 }  // namespace animation
 }  // namespace inviwo

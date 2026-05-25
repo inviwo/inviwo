@@ -103,29 +103,30 @@ public:
     void add(std::unique_ptr<Track> track);
 
     /**
-     * Adds a PropertyTrack, or returns an existing it has one for the property.
+     * Adds PropertyTracks, or returns existing ones for the property.
+     * If the property is a CompositeProperty, tracks are added recursively for all sub-properties.
      * The added PropertyTrack will be removed if the property is removed.
-     * @return BasePropertyTrack if added, nullptr otherwise.
+     * @return BasePropertyTracks if added, empty otherwise.
      * @see BasePropertyTrack
      * @throws Exception if no AnimationManager has been supplied.
      */
-    BasePropertyTrack* add(Property* property);
+    std::vector<BasePropertyTrack*> add(Property* property);
     /**
-     * Add keyframe at specified time.
+     * Add keyframes at specified time.
      * Creates a new track if no track with the supplied property exists.
      * The PropertyTrack will be removed if the property is removed.
-     * @return Keyframe if successsfully added, nullptr otherwise.
+     * @return Keyframes if successsfully added, empty otherwise.
      * @throws Exception if no AnimationManager has been supplied.
      */
-    Keyframe* addKeyframe(Property* property, Seconds time);
+    std::vector<Keyframe*> addKeyframe(Property* property, Seconds time);
     /**
-     * Add sequence at specified time.
+     * Add sequences at specified time.
      * Creates a new track if no track with the supplied property exists.
      * The PropertyTrack will be removed if the property is removed.
-     * @return KeyframeSequence if successsfully added, nullptr otherwise.
+     * @return KeyframeSequences if successsfully added, empty otherwise.
      * @throws Exception if no AnimationManager has been supplied.
      */
-    KeyframeSequence* addKeyframeSequence(Property* property, Seconds time);
+    std::vector<KeyframeSequence*> addKeyframeSequence(Property* property, Seconds time);
 
     /**
      * Remove tracks at index i, indicating the order in which the track was added,

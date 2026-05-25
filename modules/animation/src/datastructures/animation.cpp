@@ -31,6 +31,7 @@
 
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
@@ -126,38 +127,52 @@ void Animation::add(std::unique_ptr<Track> track) {
     trackAddedInternal(tracks_.back().get());
 }
 
-Keyframe* Animation::addKeyframe(Property* property, Seconds time) {
+std::vector<Keyframe*> Animation::addKeyframe(Property* property, Seconds time) {
+    std::vector<Keyframe*> keyframes;
     auto it = findTrack(property);
     try {
         if (it != end()) {
-            return dynamic_cast<BasePropertyTrack*>(&(*it))->addKeyFrameUsingPropertyValue(time);
-        } else if (auto basePropertyTrack = add(property)) {
-            return basePropertyTrack->addKeyFrameUsingPropertyValue(time);
+            if (auto* keyframe =
+                    dynamic_cast<BasePropertyTrack*>(&(*it))->addKeyFrameUsingPropertyValue(time)) {
+                keyframes.push_back(keyframe);
+            }
+        } else if (auto propertyTracks = add(property); !propertyTracks.empty()) {
+            for (auto* propertyTrack : propertyTracks) {
+                if (auto* keyframe = propertyTrack->addKeyFrameUsingPropertyValue(time)) {
+                    keyframes.push_back(keyframe);
+                }
+            }
         } else {
             log::warn("No matching Track found for property \"{}\"", property->getIdentifier());
         }
     } catch (const Exception& e) {
         log::exception(e);
     }
-    return nullptr;
+    return keyframes;
 }
 
-KeyframeSequence* Animation::addKeyframeSequence(Property* property, Seconds time) {
+std::vector<KeyframeSequence*> Animation::addKeyframeSequence(Property* property, Seconds time) {
+    std::vector<KeyframeSequence*> sequences;
     auto it = findTrack(property);
     std::string interpolationErrMsg;
     try {
         if (it != end()) {
-            return dynamic_cast<BasePropertyTrack*>(&(*it))->addSequenceUsingPropertyValue(time);
-        } else if (auto basePropertyTrack = add(property)) {
-            basePropertyTrack->addKeyFrameUsingPropertyValue(time);
-            return &basePropertyTrack->toTrack()->getFirst();
+            if (auto* sequence =
+                    dynamic_cast<BasePropertyTrack*>(&(*it))->addSequenceUsingPropertyValue(time)) {
+                sequences.push_back(sequence);
+            }
+        } else if (auto propertyTracks = add(property); !propertyTracks.empty()) {
+            for (auto* propertyTrack : propertyTracks) {
+                propertyTrack->addKeyFrameUsingPropertyValue(time);
+                sequences.push_back(&propertyTrack->toTrack()->getFirst());
+            }
         } else {
             log::warn("No matching Track found for property \"{}\"", property->getIdentifier());
         }
     } catch (const Exception& ex) {
         log::exception(ex);
     }
-    return nullptr;
+    return sequences;
 }
 
 Animation::iterator Animation::findTrack(Property* property) {
@@ -170,25 +185,32 @@ Animation::iterator Animation::findTrack(Property* property) {
     });
 }
 
-BasePropertyTrack* Animation::add(Property* property) {
+std::vector<BasePropertyTrack*> Animation::add(Property* property) {
     auto it = findTrack(property);
     if (it != end()) {
-        return dynamic_cast<BasePropertyTrack*>(&(*it));
-    } else {
-        if (auto track = getManager()->getTrackFactory().create(property)) {
-            if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
-                try {
-                    basePropertyTrack->setProperty(property);
-                } catch (const Exception& e) {
-                    log::warn("{} Invalid property class identified?", e.getMessage());
-                    return nullptr;
-                }
-                add(std::move(track));
-                return basePropertyTrack;
-            }
+        if (auto* propertyTrack = dynamic_cast<BasePropertyTrack*>(&(*it))) {
+            return {propertyTrack};
         }
-        return nullptr;
     }
+
+    std::vector<BasePropertyTrack*> propertyTracks;
+    if (auto track = getManager()->getTrackFactory().create(property)) {
+        if (auto* basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
+            propertyTracks.push_back(basePropertyTrack);
+            add(std::move(track));
+        }
+        return propertyTracks;
+    }
+
+    if (auto* composite = dynamic_cast<CompositeProperty*>(property)) {
+        for (auto* child : composite->getProperties()) {
+            auto childPropertyTracks = add(child);
+            propertyTracks.insert(propertyTracks.end(), childPropertyTracks.begin(),
+                                  childPropertyTracks.end());
+        }
+    }
+
+    return propertyTracks;
 }
 
 std::unique_ptr<Track> Animation::remove(size_t i) {
