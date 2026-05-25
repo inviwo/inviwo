@@ -125,10 +125,6 @@ LineRasterizer::LineRasterizer()
     addPort(inport_).setOptional(true);
 
     addProperties(forceOpaque_, lineSettings_);
-
-    inport_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
-
-    invalidate(InvalidationLevel::InvalidResources);
 }
 
 void LineRasterizer::initializeResources() {
