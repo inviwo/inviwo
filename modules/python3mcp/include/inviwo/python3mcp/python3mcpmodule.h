@@ -30,6 +30,13 @@
 
 #include <inviwo/python3mcp/python3mcpmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <pybind11/cast.h>
+#include <pybind11/detail/common.h>
+#include <pybind11/embed.h>
+#include <pybind11/eval.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/pytypes.h>
+#include <modules/python3/pyutils.h>
 
 namespace inviwo {
 
@@ -41,6 +48,8 @@ public:
     Python3MCPModule& operator=(const Python3MCPModule&) = delete;
     Python3MCPModule& operator=(Python3MCPModule&&) = delete;
     virtual ~Python3MCPModule() = default;
+
+    pyutil::ModulePath scripts_;
 };
 
 }  // namespace inviwo

@@ -2,3 +2,8 @@ numpy
 Sphinx
 sphinx-rtd-theme
 recommonmark
+mcp[cli]
+fastmcp
+pywin32
+pypiwin32
+anyio
