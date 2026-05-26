@@ -33,6 +33,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/numpy.h>
+#include <future> // For MCP at line 240
 
 #include <inviwopy/vectoridentifierwrapper.h>
 
@@ -223,7 +224,30 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
                                py::return_value_policy::reference)
         .def_property_readonly("propertyFactory", &InviwoApplication::getPropertyFactory,
-                               py::return_value_policy::reference);
+                               py::return_value_policy::reference)
+        //.def("dispatch_front", [](InviwoApplication* app,  py::function fn) {
+        //        // Capture the Python callable; release GIL while we wait;
+        //        // re-acquire inside the lambda to call back into Python.
+        //        auto pyfn = std::make_shared<py::function>(std::move(fn));
+        //        return app->dispatchFront([pyfn]() -> py::object {
+        //            py::gil_scoped_acquire gil;
+        //            return (*pyfn)();
+        //        });
+        //        // pybind11 has built-in std::future<py::object> -> concurrent.futures.Future
+        //        // adaptation in recent versions; otherwise wrap manually.
+        //    });
+
+        .def("dispatch_front", [](InviwoApplication* app, py::function fn) {
+            auto pyfn = std::make_shared<py::object>(std::move(fn));
+            py::gil_scoped_release release;
+            auto fut = app->dispatchFront([pyfn]() -> py::object {
+                py::gil_scoped_acquire gil;
+                return (*pyfn)();
+            });
+            fut.wait();
+            py::gil_scoped_acquire gil;
+            return fut.get();
+        });
 }
 
 }  // namespace inviwo
