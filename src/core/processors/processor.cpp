@@ -69,6 +69,7 @@ Processor::Processor(std::string_view identifier, std::string_view displayName)
                 [this]() { return inports_.empty(); }}
     , identifier_(identifier)
     , displayName_{displayName}
+    , processAborted_{false}
     , network_(nullptr) {
 
     if (!identifier_.empty()) {
@@ -317,6 +318,7 @@ void Processor::invalidate(InvalidationLevel invalidationLevel, Property* modifi
         // invalid. Hence we need to make sure we invalidate them again
         for (auto& port : outports_) port->invalidate(InvalidationLevel::InvalidOutput);
     }
+    processAborted_ = false;
     notifyObserversInvalidationEnd(this);
 }
 
@@ -462,9 +464,14 @@ void Processor::deserialize(Deserializer& d) {
 
 void Processor::setValid() {
     PropertyOwner::setValid();
+    processAborted_ = false;
     setInportsChanged(false);
     for (auto* outport : outports_) outport->setValid();
 }
+
+void Processor::setProcessAborted() { processAborted_ = true; }
+
+bool Processor::isProcessAborted() const { return processAborted_; }
 
 void Processor::invokeEvent(Event* event) {
     if (event->hash() == PickingEvent::chash()) {

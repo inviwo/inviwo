@@ -326,6 +326,16 @@ public:
     virtual void setValid() override;
 
     /**
+     * Called by the network if Processor::process threw an exception. Reset by Processor::setValid.
+     */
+    virtual void setProcessAborted();
+
+    /**
+     * Returns true if the last call to Processor::process was aborted with an exception.
+     */
+    bool isProcessAborted() const;
+
+    /**
      * Triggers invalidation.
      * Perform only full reimplementation of this function, meaning never call
      * Processor::invalidate()
@@ -466,6 +476,7 @@ private:
 
     std::string identifier_;
     std::string displayName_;
+    bool processAborted_;
     std::vector<Inport*> inports_;
     std::vector<Outport*> outports_;
     std::vector<std::unique_ptr<Inport>> ownedInports_;

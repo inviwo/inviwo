@@ -116,7 +116,7 @@ void ProcessorNetworkEvaluator::evaluate() {
 
     for (auto* processor : processorsSorted_) {
         if (!processor->isValid()) {
-            if (processor->isReady()) {
+            if (processor->isReady() && !processor->isProcessAborted()) {
                 try {
                     // re-initialize resources (e.g., shaders) if necessary
                     if (processor->getInvalidationLevel() >= InvalidationLevel::InvalidResources) {
@@ -124,7 +124,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                     }
                 } catch (...) {
                     exceptionHandler_(processor, EvaluationType::InitResource, SourceContext{});
-                    processor->setValid();
+                    processor->setProcessAborted();
                     continue;
                 }
 
@@ -135,7 +135,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                     }
                 } catch (...) {
                     exceptionHandler_(processor, EvaluationType::PortOnChange, SourceContext{});
-                    processor->setValid();
+                    processor->setProcessAborted();
                     continue;
                 }
 
@@ -153,7 +153,7 @@ void ProcessorNetworkEvaluator::evaluate() {
 
                 } catch (...) {
                     exceptionHandler_(processor, EvaluationType::Process, SourceContext{});
-                    processor->setValid();
+                    processor->setProcessAborted();
                 }
 
                 processor->notifyObserversFinishedProcess(processor);
