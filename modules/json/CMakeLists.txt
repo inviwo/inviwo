@@ -69,3 +69,7 @@ find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(inviwo-module-json PUBLIC
     nlohmann_json::nlohmann_json
 )
+
+if(IVW_ENABLE_PYTHON AND IVW_MODULE_PYTHON3)
+    add_subdirectory(bindings)
+endif()
