@@ -75,9 +75,8 @@ IVW_MODULE_ANIMATION_API void interpolateIsoValuesBlend(
  * while iso-values that only exist in the destination keyframe are faded in (alpha comes from
  * zero). This preserves the structural identity of iso-values across the transition.
  */
-class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationFade
-    : public InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
-                                IsoValueProperty::value_type> {
+class IVW_MODULE_ANIMATION_API IsoValueInterpolationFade
+    : public InterpolationTyped<ValueKeyframe<IsoValueCollection>, IsoValueCollection> {
 public:
     explicit IsoValuePropertyInterpolationFade(InviwoApplication* app = nullptr);
     IsoValuePropertyInterpolationFade(const IsoValuePropertyInterpolationFade&);
@@ -86,7 +85,7 @@ public:
 
     virtual std::string_view getDisplayName() const override;
     virtual std::string_view getIdentifier() const override {
-        return "IsoValuePropertyInterpolationFade";
+        return "IsoValueInterpolationFade";
     }
 
     static std::string_view classIdentifier();
@@ -95,8 +94,8 @@ public:
     virtual bool equal(const Interpolation& other) const override;
 
     virtual void operator()(
-        const std::vector<std::unique_ptr<ValueKeyframe<IsoValueProperty::value_type>>>& keys,
-        Seconds from, Seconds to, IsoValueProperty::value_type& out) const override;
+        const std::vector<std::unique_ptr<ValueKeyframe<IsoValueCollection>>>& keys,
+        Seconds from, Seconds to, IsoValueCollection& out) const override;
 };
 
 /**
@@ -108,9 +107,8 @@ public:
  * faded in or out. This gives a smooth blending effect when the two keyframes have similarly
  * structured iso-value collections.
  */
-class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationBlend
-    : public InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
-                                IsoValueProperty::value_type> {
+class IVW_MODULE_ANIMATION_API IsoValueInterpolationBlend
+    : public InterpolationTyped<ValueKeyframe<IsoValueCollection>, IsoValueCollection> {
 public:
     explicit IsoValuePropertyInterpolationBlend(InviwoApplication* app = nullptr);
     IsoValuePropertyInterpolationBlend(
