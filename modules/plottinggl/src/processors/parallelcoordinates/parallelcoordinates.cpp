@@ -709,7 +709,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
 }
 
 void ParallelCoordinates::linePicked(PickingEvent* p) {
-    const KeyModifier appendModifier = KeyModifier::Shift;
+    const KeyModifier appendModifier = KeyModifier::Control;
 
     if (auto df = dataFrame_.getData()) {
         // Show tooltip about current line
