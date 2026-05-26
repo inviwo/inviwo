@@ -79,7 +79,7 @@ class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationFade
     : public InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
                                 IsoValueProperty::value_type> {
 public:
-    IsoValuePropertyInterpolationFade(InviwoApplication* app = nullptr);
+    explicit IsoValuePropertyInterpolationFade(InviwoApplication* app = nullptr);
     IsoValuePropertyInterpolationFade(const IsoValuePropertyInterpolationFade&);
     virtual ~IsoValuePropertyInterpolationFade() = default;
     virtual IsoValuePropertyInterpolationFade* clone() const override;
@@ -112,7 +112,7 @@ class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationBlend
     : public InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
                                 IsoValueProperty::value_type> {
 public:
-    IsoValuePropertyInterpolationBlend(InviwoApplication* app = nullptr);
+    explicit IsoValuePropertyInterpolationBlend(InviwoApplication* app = nullptr);
     IsoValuePropertyInterpolationBlend(
         const IsoValuePropertyInterpolationBlend& rhs);
     virtual ~IsoValuePropertyInterpolationBlend() = default;

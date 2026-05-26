@@ -42,7 +42,7 @@ namespace {
 TFPrimitiveData fade(const TFPrimitive& primitive, double t) {
     auto color = primitive.getColor();
     color.a *= static_cast<float>(t);
-    return {primitive.getPosition(), color};
+    return {.pos = primitive.getPosition(), .color = color};
 }
 
 TFPrimitiveData fadeIn(const TFPrimitive& primitive, double t) { return fade(primitive, t); }
@@ -50,8 +50,8 @@ TFPrimitiveData fadeIn(const TFPrimitive& primitive, double t) { return fade(pri
 TFPrimitiveData fadeOut(const TFPrimitive& primitive, double t) { return fade(primitive, 1.0 - t); }
 
 TFPrimitiveData interpolate(const TFPrimitive& source, const TFPrimitive& destination, double t) {
-    return {std::lerp(source.getPosition(), destination.getPosition(), t),
-            glm::mix(source.getColor(), destination.getColor(), t)};
+    return {.pos = std::lerp(source.getPosition(), destination.getPosition(), t),
+            .color = glm::mix(source.getColor(), destination.getColor(), t)};
 }
 
 std::vector<std::pair<size_t, size_t>> matchEqualPositions(const IsoValueCollection& source,
