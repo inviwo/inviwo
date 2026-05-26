@@ -38,44 +38,29 @@
 
 namespace inviwo {
 
-Python3MCPModule::Python3MCPModule(InviwoApplication* app) : InviwoModule(app, "Python3MCP") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+namespace {
 
-    // Register objects that can be shared with the rest of inviwo here:
+constexpr std::string_view pycode = R"(
+import inviwopy
+#import inviwomcp
 
-    // Processors
-    // registerProcessor<Python3MCPProcessor>();
+import inviwomcp.inviwomcp
 
-    // Properties
-    // registerProperty<Python3MCPProperty>();
+# Start mcp server...
+#inviwopy.log("test")
+#inviwopy.log(sys.executable)
 
-    // Readers and writes
-    // registerDataReader(std::make_unique<Python3MCPReader>());
-    // registerDataWriter(std::make_unique<Python3MCPWriter>());
-
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<Python3MCPDisk2RAMConverter>());
-
-    // Ports
-    // registerPort<Python3MCPOutport>();
-    // registerPort<Python3MCPInport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<Python3MCPPropertyWidget, Python3MCPProperty>("Default");
-
-    // Dialogs
-    // registerDialog<Python3MCPDialog>(Python3MCPOutport);
-
-    // Other things
-    // registerCapabilities(std::make_unique<Python3MCPCapabilities>());
-    // registerSettings(std::make_unique<Python3MCPSettings>());
-    // registerMetaData(std::make_unique<Python3MCPMetaData>());
-    // registerPortInspector("Python3MCPOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(std::make_unique_ptr<Python3MCPDrawer>());
-
-    pybind11::exec(R"(print("hello world"))", pybind11::globals());
+inviwomcp.inviwomcp.MCP_server()
+)";
 }
+
+Python3MCPModule::Python3MCPModule(InviwoApplication* app)
+    : InviwoModule(app, "Python3MCP"), scripts_{getPath() / "scripts"} {
+
+    const pybind11::gil_scoped_acquire gil;
+    pybind11::exec(R"(print("hello world"))", pybind11::globals());
+
+    pybind11::exec(pycode, pybind11::globals());
+};
 
 }  // namespace inviwo
