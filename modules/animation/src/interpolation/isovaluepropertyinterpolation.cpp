@@ -33,6 +33,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <tuple>
 #include <vector>
 
@@ -57,17 +58,24 @@ TFPrimitiveData interpolate(const TFPrimitive& source, const TFPrimitive& destin
 std::vector<std::pair<size_t, size_t>> matchEqualPositions(const IsoValueCollection& source,
                                                            const IsoValueCollection& destination) {
     std::vector<std::pair<size_t, size_t>> matches;
-    std::vector<bool> matchedDestination(destination.size(), false);
 
-    for (size_t i = 0; i < source.size(); ++i) {
-        for (size_t j = 0; j < destination.size(); ++j) {
-            if (!matchedDestination[j] && source[i].getPosition() == destination[j].getPosition()) {
-                matches.emplace_back(i, j);
-                matchedDestination[j] = true;
-                break;
-            }
+    size_t i = 0;
+    size_t j = 0;
+    while (i < source.size() && j < destination.size()) {
+        const auto sourcePos = source[i].getPosition();
+        const auto destinationPos = destination[j].getPosition();
+
+        if (std::abs(sourcePos - destinationPos) <= std::numeric_limits<double>::epsilon()) {
+            matches.emplace_back(i, j);
+            ++i;
+            ++j;
+        } else if (sourcePos < destinationPos) {
+            ++i;
+        } else {
+            ++j;
         }
     }
+
     return matches;
 }
 

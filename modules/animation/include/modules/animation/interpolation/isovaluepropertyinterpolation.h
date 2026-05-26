@@ -51,11 +51,6 @@ class InviwoApplication;
 namespace animation {
 namespace detail {
 
-IVW_MODULE_ANIMATION_API double interpolationTime(Seconds t1, Seconds t2,
-                                                  std::optional<EasingType> easeIn,
-                                                  std::optional<EasingType> easeOut,
-                                                  Seconds to);
-
 IVW_MODULE_ANIMATION_API void interpolateIsoValuesFade(const IsoValueCollection& source,
                                                         const IsoValueCollection& destination,
                                                         double t, IsoValueCollection& out);
@@ -80,6 +75,9 @@ class IVW_MODULE_ANIMATION_API IsoValueInterpolationFade
 public:
     explicit IsoValuePropertyInterpolationFade(InviwoApplication* app = nullptr);
     IsoValuePropertyInterpolationFade(const IsoValuePropertyInterpolationFade&);
+    IsoValuePropertyInterpolationFade& operator=(const IsoValuePropertyInterpolationFade&) = delete;
+    IsoValuePropertyInterpolationFade(IsoValuePropertyInterpolationFade&&) = delete;
+    IsoValuePropertyInterpolationFade& operator=(IsoValuePropertyInterpolationFade&&) = delete;
     virtual ~IsoValuePropertyInterpolationFade() = default;
     virtual IsoValuePropertyInterpolationFade* clone() const override;
 
@@ -113,6 +111,9 @@ public:
     explicit IsoValuePropertyInterpolationBlend(InviwoApplication* app = nullptr);
     IsoValuePropertyInterpolationBlend(
         const IsoValuePropertyInterpolationBlend& rhs);
+    IsoValuePropertyInterpolationBlend& operator=(const IsoValuePropertyInterpolationBlend&) = delete;
+    IsoValuePropertyInterpolationBlend(IsoValuePropertyInterpolationBlend&&) = delete;
+    IsoValuePropertyInterpolationBlend& operator=(IsoValuePropertyInterpolationBlend&&) = delete;
     virtual ~IsoValuePropertyInterpolationBlend() = default;
     virtual IsoValuePropertyInterpolationBlend* clone() const override;
 
@@ -137,7 +138,7 @@ public:
 namespace detail {
 
 template <>
-struct DefaultInterpolationCreator<ValueKeyframe<IsoValueProperty::value_type>> {
+struct DefaultInterpolationCreator<ValueKeyframe<IsoValueCollection>> {
     static std::unique_ptr<IsoValuePropertyInterpolationBlend> create() {
         return std::make_unique<IsoValuePropertyInterpolationBlend>();
     }

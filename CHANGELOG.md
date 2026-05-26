@@ -10,6 +10,40 @@ All Inviwo Python submodules are now automatically imported into `inviwopy` with
 - `ivwanimation` is now accessible as `inviwopy.animation`
 - `ivwjson` is now accessible as `inviwopy.json`
 
+## 2026-05-26 Added IsoValueProperty support and CompositeProperty track decomposition in Animation module
+
+The Animation module now supports `IsoValueProperty` with new interpolation modes and introduces changes to how tracks are added for `CompositeProperty`.
+
+- `Animation::add(Property*)` now returns a `std::vector<BasePropertyTrack*>` instead of a single pointer. For `CompositeProperty`, this method recursively adds tracks for all sub-properties when no direct track mapping exists.
+- `IsoValueProperty` is now registered in the Animation module with three interpolation modes: `Fade`, `Blend`, and `Constant`.
+- Default animation interpolation for `TransferFunctionProperty` and `IsoValueProperty` has been updated.
+- New interpolation strategies for `IsoValueProperty`:
+  - **Fade**: Interpolates iso-values by matching them at equal positions and fading unmatched ones in or out.
+  - **Blend**: Matches iso-values by index order, interpolating paired values and fading unmatched ones.
+- `addKeyframe()` and `addKeyframeSequence()` now iterate over all tracks returned by the updated `Animation::add(Property*)` method.
+
+### Migration guide
+
+- Update code that uses `Animation::add(Property*)`, `addKeyframe(Property*, Seconds)`, or `addKeyframeSequence(Property*, Seconds)` to handle the new return type `std::vector<BasePropertyTrack*>` and `std::vector<Keyframe*>`/`std::vector<KeyframeSequence*>` respectively.
+- If you are using `IsoValueProperty` in animations, you can now specify the interpolation mode (`Fade`, `Blend`, or `Constant`) when creating tracks. Ensure that your code accounts for these new options if applicable.
+
+#### Example
+```cpp
+// Old usage
+auto track = animation.add(property);
+if (track) {
+    track->addKeyframe(time);
+}
+
+// New usage
+auto tracks = animation.add(property);
+for (auto track : tracks) {
+    if (track) {
+        track->addKeyframe(time);
+    }
+}
+```
+
 ## 2026-05-08 `getIdentifier` now returns `std::string_view`
 The `getIdentifier` method in several core classes has been updated to return `std::string_view` instead of `const std::string&`. This change improves performance by avoiding unnecessary string copies and allocations.
 
