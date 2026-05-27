@@ -70,6 +70,7 @@
 #include <inviwopy/pyspatialdata.h>
 #include <inviwopy/pytfprimitiveset.h>
 #include <inviwopy/pyvolume.h>
+#include <inviwopy/pyinviwomodules.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/moduleutils.h>
@@ -196,4 +197,6 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
             }
         }
     });
+
+    lazyLoadInviwoPythonModules(m);
 }

@@ -49,6 +49,8 @@ set(HEADER_FILES
     include/inviwopy/util/pyglmhelper.h
     include/inviwopy/util/pypropertyhelper.h
     include/inviwopy/vectoridentifierwrapper.h
+
+    include/inviwopy/pyinviwomodules.h
 )
 ivw_group("Header Files" BASE ${CMAKE_CURRENT_SOURCE_DIR}/include/inviwopy ${HEADER_FILES})
 
@@ -103,6 +105,7 @@ set(SOURCE_FILES
     src/util/pyglmhelper.cpp
     src/util/pypropertyhelper.cpp
     src/vectoridentifierwrapper.cpp
+    src/pyinviwomodules.cpp.in
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -116,6 +119,7 @@ target_sources(inviwopy
         ${HEADER_FILES}
     PRIVATE
         ${SOURCE_FILES}
+        ${CMAKE_CURRENT_BINARY_DIR}/src/pyinviwomodules.cpp
 )
 target_link_libraries(inviwopy PUBLIC inviwo::core inviwo::module::python3)
 
@@ -141,3 +145,36 @@ if (CMAKE_GENERATOR MATCHES "^Ninja.*")
         set_property(TARGET inviwopy PROPERTY JOB_POOL_COMPILE memorybound)
     endif()
 endif()
+
+function(generatePythonModuleList inputfile outputfile)
+    get_property(pymodules GLOBAL PROPERTY IVW_PYMODULE_LIST)
+  
+    if(pymodules)
+        message(STATUS "Python modules found: ${pymodules}")
+    else()
+        message(STATUS "No Python modules found")
+    endif()
+
+    message(STATUS "Input file: ${inputfile}, Output file: ${outputfile}")
+
+    list(SORT pymodules)
+    set(INVIWO_PYTHON_MODULES "") # used in pyinviwomodules.cpp.in
+
+    foreach(name IN LISTS pymodules)
+        if(name STREQUAL "inviwopy") 
+            continue() # skip the main module, it should be loaded first and is not a dependency for other modules
+        endif()
+        string(SUBSTRING ${name} 3 -1 shortName) # remove "ivw" prefix
+        string(APPEND INVIWO_PYTHON_MODULES "        {\"${shortName}\", \"${name}\"},\n")
+    endforeach()
+
+    configure_file( ${inputfile} ${outputfile} @ONLY)
+endfunction()
+
+cmake_language(EVAL CODE "
+    cmake_language(DEFER DIRECTORY ${IVW_ROOT_DIR} 
+        CALL generatePythonModuleList
+            [[${CMAKE_CURRENT_SOURCE_DIR}/src/pyinviwomodules.cpp.in]]
+            [[${CMAKE_CURRENT_BINARY_DIR}/src/pyinviwomodules.cpp]]
+    )
+")
