@@ -70,10 +70,11 @@ IVW_MODULE_ANIMATION_API void interpolateIsoValuesBlend(
  * while iso-values that only exist in the destination keyframe are faded in (alpha comes from
  * zero). This preserves the structural identity of iso-values across the transition.
  */
-class IVW_MODULE_ANIMATION_API IsoValueInterpolationFade
-    : public InterpolationTyped<ValueKeyframe<IsoValueCollection>, IsoValueCollection> {
+class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationFade
+    : public InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
+                                IsoValueProperty::value_type> {
 public:
-    explicit IsoValuePropertyInterpolationFade(InviwoApplication* app = nullptr);
+    IsoValuePropertyInterpolationFade(InviwoApplication* app = nullptr);
     IsoValuePropertyInterpolationFade(const IsoValuePropertyInterpolationFade&);
     IsoValuePropertyInterpolationFade& operator=(const IsoValuePropertyInterpolationFade&) = delete;
     IsoValuePropertyInterpolationFade(IsoValuePropertyInterpolationFade&&) = delete;
@@ -105,10 +106,11 @@ public:
  * faded in or out. This gives a smooth blending effect when the two keyframes have similarly
  * structured iso-value collections.
  */
-class IVW_MODULE_ANIMATION_API IsoValueInterpolationBlend
-    : public InterpolationTyped<ValueKeyframe<IsoValueCollection>, IsoValueCollection> {
+class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationBlend
+    : public InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
+                                IsoValueProperty::value_type> {
 public:
-    explicit IsoValuePropertyInterpolationBlend(InviwoApplication* app = nullptr);
+    IsoValuePropertyInterpolationBlend(InviwoApplication* app = nullptr);
     IsoValuePropertyInterpolationBlend(
         const IsoValuePropertyInterpolationBlend& rhs);
     IsoValuePropertyInterpolationBlend& operator=(const IsoValuePropertyInterpolationBlend&) = delete;
