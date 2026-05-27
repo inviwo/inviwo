@@ -162,7 +162,9 @@ void exposePropertyOwner(pybind11::module& m) {
             py::return_value_policy::reference)
         .def("setAllPropertiesCurrentStateAsDefault",
              &PropertyOwner::setAllPropertiesCurrentStateAsDefault)
-        .def("resetAllPoperties", &PropertyOwner::resetAllProperties);
+        .def("resetAllPoperties", &PropertyOwner::resetAllProperties)
+        .def("serialize", &PropertyOwner::serialize)
+        .def("deserialize", &PropertyOwner::deserialize);
 }
 
 }  // namespace inviwo

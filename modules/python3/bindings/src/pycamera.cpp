@@ -81,7 +81,9 @@ void exposeCamera(pybind11::module& m) {
              &Camera::getWorldPosFromNormalizedDeviceCoords)
         .def("getClipPosFromNormalizedDeviceCoords", &Camera::getClipPosFromNormalizedDeviceCoords)
         .def("getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth",
-             &Camera::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth);
+             &Camera::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth)
+        .def("serialize", &Camera::serialize)
+        .def("deserialize", &Camera::deserialize);
 
     py::classh<PerspectiveCamera, Camera>(m, "PerspectiveCamera")
         .def(py::init<dvec3, dvec3, dvec3, double, double, double, double>(),

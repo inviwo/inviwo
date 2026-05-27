@@ -183,6 +183,8 @@ void exposeNetwork(py::module& m) {
 
         .def("append", [](ProcessorNetwork* network, const std::filesystem::path& path) {
             return util::appendProcessorNetwork(network, path, network->getApplication());
-        });
+        })
+        .def("serialize", &ProcessorNetwork::serialize)
+        .def("deserialize", &ProcessorNetwork::deserialize);
 }
 }  // namespace inviwo

@@ -75,7 +75,9 @@ void exposePort(pybind11::module& m) {
         .def_property_readonly("classIdentifier", &Port::getClassIdentifier)
         .def_property_readonly("contentInfo", &Port::getInfo)
         .def("isConnected", &Port::isConnected)
-        .def("isReady", &Port::isReady);
+        .def("isReady", &Port::isReady)
+        .def("serialize", &Port::serialize)
+        .def("deserialize", &Port::deserialize);
 
     py::classh<Outport, Port>(m, "Outport")
         .def("isConnectedTo", &Outport::isConnectedTo)

@@ -179,7 +179,9 @@ void exposeProperties(pybind11::module& m) {
                  p->readonlyDependsOn(*other, func);
              })
         .def("getHelp", static_cast<Document& (Property::*)()>(&Property::getHelp))
-        .def("getDescription", &Property::getDescription);
+        .def("getDescription", &Property::getDescription)
+        .def("serialize", &Property::serialize)
+        .def("deserialize", &Property::deserialize);
 
     py::classh<TransferFunctionProperty, Property>(m, "TransferFunctionProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
