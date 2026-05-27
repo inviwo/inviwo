@@ -57,11 +57,6 @@ void main() {
     normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
     viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
     gl_Position = camera.worldToClip * worldPosition_;
-
-    // move mesh into correct 2D position on screen and scale it accordingly    
-    gl_Position /= gl_Position.w;
-    gl_Position.xy *= scaling;
-    gl_Position.xy += offset;
     
     if (overrideColor.a > -0.1) {
         color_ = overrideColor;

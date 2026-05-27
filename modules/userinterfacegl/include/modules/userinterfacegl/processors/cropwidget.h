@@ -51,11 +51,9 @@
 #include <modules/basegl/rendering/linerenderer.h>
 
 #include <array>
-#include <cstddef>
+#include <functional>
+#include <optional>
 #include <memory>
-
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
 
 namespace inviwo {
 
@@ -78,48 +76,34 @@ public:
 
 private:
     struct AnnotationInfo {
-        vec3 pos;
-        vec3 axis;
-        mat4 rotMatrix;
-        mat4 flipMatrix;
-
-        vec3 startNDC;
-        vec3 endNDC;
-    };
-    struct CropAxis {
         CartesianCoordinateAxis axis;
-
-        CompositeProperty composite;
-        BoolProperty enabled;
-        IntMinMaxProperty range;
-        IntMinMaxProperty outputRange;
-
-        AnnotationInfo info;
+        dvec3 startNDC{0.0};
+        dvec3 endNDC{0.0};
     };
 
     void initMesh();
     void createLineStripMesh();
     void updateAxisRanges();
-    void updateBoundingCube();
     void objectPicked(PickingEvent* p);
-    void rangePositionHandlePicked(CropAxis& cropAxis, PickingEvent* p, InteractionElement element);
+    void rangePositionHandlePicked(size_t axisIndex, PickingEvent* p, InteractionElement element);
 
-    AnnotationInfo getAxis(CartesianCoordinateAxis majorAxis);
-    void renderAxis(const CropAxis& axis);
+    void renderAxis(size_t axisIndex, dvec3 start, dvec3 stop, const dmat4& rotMat,
+                    const dmat4& flipMat);
 
     ImageInport inport_;
     VolumeInport volume_;
     ImageOutport outport_;
 
-    CompositeProperty uiSettings_;
     BoolProperty showWidget_;
+    CompositeProperty uiSettings_;
     BoolProperty showCropPlane_;
     FloatVec4Property handleColor_;
     LineSettingsProperty cropLineSettings_;
 
-    FloatProperty offset_;
-    FloatProperty scale_;
-    std::array<CropAxis, 3> cropAxes_;
+    DoubleProperty offset_;
+    DoubleProperty scale_;
+    std::array<IntMinMaxProperty, 3> ranges_;
+    std::array<AnnotationInfo, 3> axisInfo_;
     BoolProperty relativeRangeAdjustment_;
     CompositeProperty outputProps_;
 
@@ -147,9 +131,9 @@ private:
 
     std::shared_ptr<Mesh> linestrip_;
 
-    mat3 volumeBasis_;
-    vec3 volumeOffset_;
     algorithm::LineRenderer lineRenderer_;
+
+    std::function<std::optional<dmat4>()> getBoundingBox_;
 };
 
 }  // namespace inviwo
