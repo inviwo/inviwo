@@ -218,9 +218,12 @@ bool&#160;</td><td class="memItemRight"><b>operator==</b> (const std::vector&lt;
 const <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;&#160;</td><td class="memItemRight"><b>operator[]</b> (size_t i) const</td></tr>
 <tr class="memitem:a521813e5a2d71f1ddd87cda9031cb29c" id="r_a521813e5a2d71f1ddd87cda9031cb29c"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a521813e5a2d71f1ddd87cda9031cb29c">remove</a> (const <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;primitive)</td></tr>
 <tr class="memitem:a062207eede8304c2395570393f2123ec" id="r_a062207eede8304c2395570393f2123ec"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a062207eede8304c2395570393f2123ec">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
-<tr class="memitem:af3cab856b285f90eea11c388ef6704d9" id="r_af3cab856b285f90eea11c388ef6704d9"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af3cab856b285f90eea11c388ef6704d9">set</a> (const_iterator begin, const_iterator end)</td></tr>
-<tr class="memitem:ad2272e0bfdf8851e9f358454f755a7ff" id="r_ad2272e0bfdf8851e9f358454f755a7ff"><td class="memItemLeft"><a id="ad2272e0bfdf8851e9f358454f755a7ff" name="ad2272e0bfdf8851e9f358454f755a7ff"></a>
-void&#160;</td><td class="memItemRight"><b>set</b> (std::span&lt; const <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a> &gt;)</td></tr>
+<tr class="memitem:a484ff7f894e8710a1dbfb4982c959afd" id="r_a484ff7f894e8710a1dbfb4982c959afd"><td class="memTemplParams" colspan="2">template&lt;std::input_iterator Iter, std::sentinel_for&lt; Iter &gt; Sentinel&gt; <br />
+requires std::convertible_to&lt;std::iter_reference_t&lt;Iter&gt;, <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a>&gt;</td></tr>
+<tr class="memitem:a484ff7f894e8710a1dbfb4982c959afd template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a484ff7f894e8710a1dbfb4982c959afd">set</a> (Iter sbegin, Sentinel send)</td></tr>
+<tr class="memitem:afefe07616b1f670963121c87f20f316f" id="r_afefe07616b1f670963121c87f20f316f"><td class="memTemplParams" colspan="2">template&lt;std::ranges::input_range R&gt; <br />
+requires std::convertible_to&lt;std::ranges::range_reference_t&lt;R&gt;, <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a>&gt;</td></tr>
+<tr class="memitem:afefe07616b1f670963121c87f20f316f template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#afefe07616b1f670963121c87f20f316f">set</a> (R range)</td></tr>
 <tr class="memitem:a13ffb89d04df95cdf50495788983c333" id="r_a13ffb89d04df95cdf50495788983c333"><td class="memItemLeft"><a id="a13ffb89d04df95cdf50495788983c333" name="a13ffb89d04df95cdf50495788983c333"></a>
 void&#160;</td><td class="memItemRight"><b>setPosition</b> (std::span&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> * &gt; primitives, double pos)</td></tr>
 <tr class="memitem:adb809858b08eecf3ee8f4c9f5c515ca9" id="r_adb809858b08eecf3ee8f4c9f5c515ca9"><td class="memItemLeft"><a id="adb809858b08eecf3ee8f4c9f5c515ca9" name="adb809858b08eecf3ee8f4c9f5c515ca9"></a>
@@ -828,21 +831,45 @@ IVW_CORE_API bool&#160;</td><td class="memItemRight"><b>operator==</b> (const TF
 
 </div>
 </div>
-<a id="af3cab856b285f90eea11c388ef6704d9" name="af3cab856b285f90eea11c388ef6704d9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af3cab856b285f90eea11c388ef6704d9">&#9670;&#160;</a></span>set()</h2>
+<a id="a484ff7f894e8710a1dbfb4982c959afd" name="a484ff7f894e8710a1dbfb4982c959afd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a484ff7f894e8710a1dbfb4982c959afd">&#9670;&#160;</a></span>set() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;std::input_iterator Iter, std::sentinel_for&lt; Iter &gt; Sentinel&gt; <br />
+requires std::convertible_to&lt;std::iter_reference_t&lt;Iter&gt;, <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a>&gt;</div>
       <table class="memname">
         <tr>
           <td class="memname">void inviwo::TFPrimitiveSet::set </td>
           <td>(</td>
-          <td class="paramtype">const_iterator</td>          <td class="paramname"><span class="paramname"><em>begin</em></span>, </td>
+          <td class="paramtype">Iter</td>          <td class="paramname"><span class="paramname"><em>sbegin</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const_iterator</td>          <td class="paramname"><span class="paramname"><em>end</em></span>&#160;)</td>
+          <td class="paramtype">Sentinel</td>          <td class="paramname"><span class="paramname"><em>send</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set/update the list of TFPrimitives from given range </p>
+
+</div>
+</div>
+<a id="afefe07616b1f670963121c87f20f316f" name="afefe07616b1f670963121c87f20f316f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afefe07616b1f670963121c87f20f316f">&#9670;&#160;</a></span>set() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::ranges::input_range R&gt; <br />
+requires std::convertible_to&lt;std::ranges::range_reference_t&lt;R&gt;, <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a>&gt;</div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::TFPrimitiveSet::set </td>
+          <td>(</td>
+          <td class="paramtype">R</td>          <td class="paramname"><span class="paramname"><em>range</em></span></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -167,8 +167,8 @@ virtual const <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.h
 virtual <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &amp;&#160;</td><td class="memItemRight"><b>getLast</b> ()=0</td></tr>
 <tr class="memitem:a36060e5e3740030d1dfe447c8f236bf4 inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a36060e5e3740030d1dfe447c8f236bf4"><td class="memItemLeft">
 virtual Seconds&#160;</td><td class="memItemRight"><b>getLastTime</b> () const =0</td></tr>
-<tr class="memitem:ad548e4ab9f4078654afc1eb92f67dc05 inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_ad548e4ab9f4078654afc1eb92f67dc05"><td class="memItemLeft">
-virtual const std::string &amp;&#160;</td><td class="memItemRight"><b>getName</b> () const =0</td></tr>
+<tr class="memitem:a9d6c6e22746ffbeab37188242d734301 inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a9d6c6e22746ffbeab37188242d734301"><td class="memItemLeft">
+virtual std::string_view&#160;</td><td class="memItemRight"><b>getName</b> () const =0</td></tr>
 <tr class="memitem:a4c0ed0aecaba4db2b3b74be04f2ea18d inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a4c0ed0aecaba4db2b3b74be04f2ea18d"><td class="memItemLeft">
 virtual std::optional&lt; Seconds &gt;&#160;</td><td class="memItemRight"><b>getNextTime</b> (Seconds at) const =0</td></tr>
 <tr class="memitem:a64a534bc89ef6725712b6ac659c76f6a inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a64a534bc89ef6725712b6ac659c76f6a"><td class="memItemLeft">
@@ -177,6 +177,12 @@ virtual std::optional&lt; Seconds &gt;&#160;</td><td class="memItemRight"><b>get
 <tr class="memitem:aa80fe737531e10ec9d83589905d34c6a inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_aa80fe737531e10ec9d83589905d34c6a"><td class="memItemLeft">
 virtual bool&#160;</td><td class="memItemRight"><b>isEnabled</b> () const =0</td></tr>
 <tr class="memitem:a65183c2f43121a19eb83c772ff6aee31 inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a65183c2f43121a19eb83c772ff6aee31"><td class="memItemLeft">virtual <a class="el" href="structinviwo_1_1animation_1_1AnimationTimeState.html">AnimationTimeState</a>&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1animation_1_1Track.html#a65183c2f43121a19eb83c772ff6aee31">operator()</a> (Seconds from, Seconds to, AnimationState state) const =0</td></tr>
+<tr class="memitem:ae04d9482970d93dff6e9d234fa6fb685 inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_ae04d9482970d93dff6e9d234fa6fb685"><td class="memItemLeft">
+auto&#160;</td><td class="memItemRight"><b>operator&lt;=&gt;</b> (const Seconds &amp;time) const</td></tr>
+<tr class="memitem:a1204c6ada3128fd45e21c9244939c2b1 inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a1204c6ada3128fd45e21c9244939c2b1"><td class="memItemLeft">
+auto&#160;</td><td class="memItemRight"><b>operator&lt;=&gt;</b> (const Track &amp;other) const</td></tr>
+<tr class="memitem:a5ceafe75b8b1dc36bd3303170d7f9b9d inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a5ceafe75b8b1dc36bd3303170d7f9b9d"><td class="memItemLeft">
+auto&#160;</td><td class="memItemRight"><b>operator==</b> (const Track &amp;other) const =delete</td></tr>
 <tr class="memitem:a1ccb31cb599982a8f0d9407397c4ff9d inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a1ccb31cb599982a8f0d9407397c4ff9d"><td class="memItemLeft">
 virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &gt;&#160;</td><td class="memItemRight"><b>remove</b> (<a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> *key)=0</td></tr>
 <tr class="memitem:a493bab7792d3f92e2b8e95563634801f inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a493bab7792d3f92e2b8e95563634801f"><td class="memItemLeft">
@@ -185,7 +191,7 @@ virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Keyf
 <tr class="memitem:afc1954baac06fc1661bd088dc744f371 inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_afc1954baac06fc1661bd088dc744f371"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1animation_1_1Track.html#afc1954baac06fc1661bd088dc744f371">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override=0</td></tr>
 <tr class="memitem:a6842367e5b28492a506058e0f0b23276 inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a6842367e5b28492a506058e0f0b23276"><td class="memItemLeft">
 virtual void&#160;</td><td class="memItemRight"><b>setEnabled</b> (bool enabled)=0</td></tr>
-<tr class="memitem:a04382e9a119f3efe3657b2facd75acef inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a04382e9a119f3efe3657b2facd75acef"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1animation_1_1Track.html#a04382e9a119f3efe3657b2facd75acef">setName</a> (const std::string &amp;name)=0</td></tr>
+<tr class="memitem:a79e06505029bcd98ae304d3789490aaa inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a79e06505029bcd98ae304d3789490aaa"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1animation_1_1Track.html#a79e06505029bcd98ae304d3789490aaa">setName</a> (std::string_view name)=0</td></tr>
 <tr class="memitem:a8a9b3af54a19561d2c1809158e5f5c0e inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_a8a9b3af54a19561d2c1809158e5f5c0e"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1animation_1_1Track.html#a8a9b3af54a19561d2c1809158e5f5c0e">setPriority</a> (size_t priority)=0</td></tr>
 <tr class="memitem:ab6c92d0080a4eb45c32cdd3a760dea28 inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_ab6c92d0080a4eb45c32cdd3a760dea28"><td class="memItemLeft">virtual size_t&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1animation_1_1Track.html#ab6c92d0080a4eb45c32cdd3a760dea28">size</a> () const =0</td></tr>
 <tr class="memitem:aeb00c3039d67ee3af6591142a0ce3437 inherit pub_methods_classinviwo_1_1animation_1_1Track" id="r_aeb00c3039d67ee3af6591142a0ce3437"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1animation_1_1Track.html#aeb00c3039d67ee3af6591142a0ce3437">~Track</a> ()=default</td></tr>

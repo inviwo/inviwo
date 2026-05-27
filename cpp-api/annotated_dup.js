@@ -51,6 +51,7 @@ var annotated_dup =
         [ "CallbackKeyframe", "classinviwo_1_1animation_1_1CallbackKeyframe.html", null ],
         [ "CallbackKeyframeSequence", "classinviwo_1_1animation_1_1CallbackKeyframeSequence.html", null ],
         [ "CallbackTrack", "classinviwo_1_1animation_1_1CallbackTrack.html", "classinviwo_1_1animation_1_1CallbackTrack" ],
+        [ "CameraAnimation", "classinviwo_1_1animation_1_1CameraAnimation.html", null ],
         [ "CameraKeyframe", "classinviwo_1_1animation_1_1CameraKeyframe.html", "classinviwo_1_1animation_1_1CameraKeyframe" ],
         [ "CameraLinearInterpolation", "classinviwo_1_1animation_1_1CameraLinearInterpolation.html", null ],
         [ "CameraSphericalInterpolation", "classinviwo_1_1animation_1_1CameraSphericalInterpolation.html", null ],
@@ -66,12 +67,12 @@ var annotated_dup =
         [ "DemoNavigatorDockWidgetQt", "classinviwo_1_1animation_1_1DemoNavigatorDockWidgetQt.html", null ],
         [ "FindDivisionsResult", "structinviwo_1_1animation_1_1FindDivisionsResult.html", null ],
         [ "ImageRecorderFactory", "classinviwo_1_1animation_1_1ImageRecorderFactory.html", null ],
-        [ "Interpolation", "classinviwo_1_1animation_1_1Interpolation.html", null ],
-        [ "InterpolationFactory", "classinviwo_1_1animation_1_1InterpolationFactory.html", null ],
-        [ "InterpolationFactoryObject", "classinviwo_1_1animation_1_1InterpolationFactoryObject.html", null ],
+        [ "Interpolation", "classinviwo_1_1animation_1_1Interpolation.html", "classinviwo_1_1animation_1_1Interpolation" ],
+        [ "InterpolationFactory", "classinviwo_1_1animation_1_1InterpolationFactory.html", "classinviwo_1_1animation_1_1InterpolationFactory" ],
+        [ "InterpolationFactoryObject", "classinviwo_1_1animation_1_1InterpolationFactoryObject.html", "classinviwo_1_1animation_1_1InterpolationFactoryObject" ],
         [ "InterpolationFactoryObjectKeyframe", "classinviwo_1_1animation_1_1InterpolationFactoryObjectKeyframe.html", null ],
-        [ "InterpolationFactoryObjectTemplate", "classinviwo_1_1animation_1_1InterpolationFactoryObjectTemplate.html", null ],
-        [ "InterpolationTyped", "classinviwo_1_1animation_1_1InterpolationTyped.html", null ],
+        [ "InterpolationFactoryObjectTemplate", "classinviwo_1_1animation_1_1InterpolationFactoryObjectTemplate.html", "classinviwo_1_1animation_1_1InterpolationFactoryObjectTemplate" ],
+        [ "InterpolationTyped", "classinviwo_1_1animation_1_1InterpolationTyped.html", "classinviwo_1_1animation_1_1InterpolationTyped" ],
         [ "InvalidationKeyframe", "classinviwo_1_1animation_1_1InvalidationKeyframe.html", null ],
         [ "InvalidationKeyframeSequence", "classinviwo_1_1animation_1_1InvalidationKeyframeSequence.html", null ],
         [ "InvalidationSequenceEditor", "classinviwo_1_1animation_1_1InvalidationSequenceEditor.html", null ],
@@ -101,6 +102,8 @@ var annotated_dup =
         [ "SequenceEditorFactoryObjectTemplate", "classinviwo_1_1animation_1_1SequenceEditorFactoryObjectTemplate.html", null ],
         [ "SequenceEditorPanel", "classinviwo_1_1animation_1_1SequenceEditorPanel.html", null ],
         [ "SequenceEditorWidget", "classinviwo_1_1animation_1_1SequenceEditorWidget.html", null ],
+        [ "TFInterpolationBlend", "classinviwo_1_1animation_1_1TFInterpolationBlend.html", null ],
+        [ "TFInterpolationOptimalTransport", "classinviwo_1_1animation_1_1TFInterpolationOptimalTransport.html", null ],
         [ "Track", "classinviwo_1_1animation_1_1Track.html", "classinviwo_1_1animation_1_1Track" ],
         [ "TrackControlsWidgetQt", "classinviwo_1_1animation_1_1TrackControlsWidgetQt.html", null ],
         [ "TrackFactory", "classinviwo_1_1animation_1_1TrackFactory.html", "classinviwo_1_1animation_1_1TrackFactory" ],
@@ -547,6 +550,12 @@ var annotated_dup =
         [ "Save", "structinviwo_1_1utilqt_1_1Save.html", null ],
         [ "WidgetCloseEventFilter", "structinviwo_1_1utilqt_1_1WidgetCloseEventFilter.html", null ]
       ] ],
+      [ "views", null, [
+        [ "detail", null, [
+          [ "set_union_adaptor", "classinviwo_1_1views_1_1detail_1_1set__union__adaptor.html", null ]
+        ] ],
+        [ "set_union", "classinviwo_1_1views_1_1set__union.html", "classinviwo_1_1views_1_1set__union" ]
+      ] ],
       [ "xml", "namespaceinviwo_1_1xml.html", [
         [ "ElementMatcher", "structinviwo_1_1xml_1_1ElementMatcher.html", "structinviwo_1_1xml_1_1ElementMatcher" ],
         [ "IdentifierReplacement", "structinviwo_1_1xml_1_1IdentifierReplacement.html", null ],
@@ -834,6 +843,8 @@ var annotated_dup =
       [ "EntryExitComponent", "classinviwo_1_1EntryExitComponent.html", "classinviwo_1_1EntryExitComponent" ],
       [ "EntryExitPoints", "classinviwo_1_1EntryExitPoints.html", "classinviwo_1_1EntryExitPoints" ],
       [ "EnumTraits", "structinviwo_1_1EnumTraits.html", null ],
+      [ "EnumTraits&lt; EasingMode &gt;", "structinviwo_1_1EnumTraits_3_01EasingMode_01_4.html", null ],
+      [ "EnumTraits&lt; EasingType &gt;", "structinviwo_1_1EnumTraits_3_01EasingType_01_4.html", null ],
       [ "EnumTraits&lt; filters::NumberComp &gt;", "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html", null ],
       [ "EnumTraits&lt; filters::StringComp &gt;", "structinviwo_1_1EnumTraits_3_01filters_1_1StringComp_01_4.html", null ],
       [ "equalPtr", "structinviwo_1_1equalPtr.html", null ],

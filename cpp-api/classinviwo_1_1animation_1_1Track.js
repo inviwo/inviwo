@@ -7,7 +7,7 @@ var classinviwo_1_1animation_1_1Track =
     [ "getPriority", "classinviwo_1_1animation_1_1Track.html#a0faa03bd673b36cc528f62a467764644", null ],
     [ "operator()", "classinviwo_1_1animation_1_1Track.html#a65183c2f43121a19eb83c772ff6aee31", null ],
     [ "remove", "classinviwo_1_1animation_1_1Track.html#a48962017aeb7e0f61a18c8c7a661a288", null ],
-    [ "setName", "classinviwo_1_1animation_1_1Track.html#a04382e9a119f3efe3657b2facd75acef", null ],
+    [ "setName", "classinviwo_1_1animation_1_1Track.html#a79e06505029bcd98ae304d3789490aaa", null ],
     [ "setPriority", "classinviwo_1_1animation_1_1Track.html#a8a9b3af54a19561d2c1809158e5f5c0e", null ],
     [ "size", "classinviwo_1_1animation_1_1Track.html#ab6c92d0080a4eb45c32cdd3a760dea28", null ]
 ];

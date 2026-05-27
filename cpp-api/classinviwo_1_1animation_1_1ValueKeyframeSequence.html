@@ -138,14 +138,12 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a47491460af03e60a045af3866c89d52d" id="r_a47491460af03e60a045af3866c89d52d"><td class="memItemLeft"><a id="a47491460af03e60a045af3866c89d52d" name="a47491460af03e60a045af3866c89d52d"></a>
-virtual <a class="el" href="structinviwo_1_1Easing.html">Easing</a>&#160;</td><td class="memItemRight"><b>getEasingType</b> () const =0</td></tr>
 <tr class="memitem:ab22a2566357d86a4933f8655761605dd" id="r_ab22a2566357d86a4933f8655761605dd"><td class="memItemLeft"><a id="ab22a2566357d86a4933f8655761605dd" name="ab22a2566357d86a4933f8655761605dd"></a>
 virtual const <a class="el" href="classinviwo_1_1animation_1_1Interpolation.html">Interpolation</a> &amp;&#160;</td><td class="memItemRight"><b>getInterpolation</b> () const =0</td></tr>
+<tr class="memitem:a56d960d88614cb1418ce974c53267ad6" id="r_a56d960d88614cb1418ce974c53267ad6"><td class="memItemLeft"><a id="a56d960d88614cb1418ce974c53267ad6" name="a56d960d88614cb1418ce974c53267ad6"></a>
+virtual <a class="el" href="classinviwo_1_1animation_1_1Interpolation.html">Interpolation</a> &amp;&#160;</td><td class="memItemRight"><b>getInterpolation</b> ()=0</td></tr>
 <tr class="memitem:abcb5a6ea80d570ce96cda34ca5eda891" id="r_abcb5a6ea80d570ce96cda34ca5eda891"><td class="memItemLeft"><a id="abcb5a6ea80d570ce96cda34ca5eda891" name="abcb5a6ea80d570ce96cda34ca5eda891"></a>
 virtual std::vector&lt; <a class="el" href="classinviwo_1_1animation_1_1InterpolationFactoryObject.html">InterpolationFactoryObject</a> * &gt;&#160;</td><td class="memItemRight"><b>getSupportedInterpolations</b> (<a class="el" href="classinviwo_1_1animation_1_1InterpolationFactory.html">InterpolationFactory</a> &amp;factory) const =0</td></tr>
-<tr class="memitem:ae8b3946de8bef61122c0c705abe3a315" id="r_ae8b3946de8bef61122c0c705abe3a315"><td class="memItemLeft"><a id="ae8b3946de8bef61122c0c705abe3a315" name="ae8b3946de8bef61122c0c705abe3a315"></a>
-virtual void&#160;</td><td class="memItemRight"><b>setEasingType</b> (<a class="el" href="structinviwo_1_1Easing.html">Easing</a> easing)=0</td></tr>
 <tr class="memitem:a4d02877b48e99e7bcb7d73da01b80021" id="r_a4d02877b48e99e7bcb7d73da01b80021"><td class="memItemLeft"><a id="a4d02877b48e99e7bcb7d73da01b80021" name="a4d02877b48e99e7bcb7d73da01b80021"></a>
 virtual void&#160;</td><td class="memItemRight"><b>setInterpolation</b> (std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Interpolation.html">Interpolation</a> &gt; interpolation)=0</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Observable')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; ValueKeyframeSequenceObserver &gt;</a></td></tr>
@@ -162,10 +160,10 @@ void&#160;</td><td class="memItemRight"><b>removeObserver</b> (ValueKeyframeSequ
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble.html">inviwo::animation::ValueKeyframeSequenceObserverble</a></td></tr>
-<tr class="memitem:a77eec712f4175c1607ae0ab9d9251bb4 inherit pro_methods_classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble" id="r_a77eec712f4175c1607ae0ab9d9251bb4"><td class="memItemLeft">
-void&#160;</td><td class="memItemRight"><b>notifyValueKeyframeSequenceEasingChanged</b> (<a class="el" href="classinviwo_1_1animation_1_1ValueKeyframeSequence.html">ValueKeyframeSequence</a> *seq)</td></tr>
-<tr class="memitem:a6644aa59addbea6e6d7147a7ddd291ed inherit pro_methods_classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble" id="r_a6644aa59addbea6e6d7147a7ddd291ed"><td class="memItemLeft">
-void&#160;</td><td class="memItemRight"><b>notifyValueKeyframeSequenceInterpolationChanged</b> (<a class="el" href="classinviwo_1_1animation_1_1ValueKeyframeSequence.html">ValueKeyframeSequence</a> *seq)</td></tr>
+<tr class="memitem:a25fa278c4a9593175f21ebcc29ba98a7 inherit pro_methods_classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble" id="r_a25fa278c4a9593175f21ebcc29ba98a7"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>notifyValueKeyframeSequenceInterpolationDidChange</b> (<a class="el" href="classinviwo_1_1animation_1_1ValueKeyframeSequence.html">ValueKeyframeSequence</a> *seq)</td></tr>
+<tr class="memitem:a5dfdbaa6799460e9bdf22a0851c083fa inherit pro_methods_classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble" id="r_a5dfdbaa6799460e9bdf22a0851c083fa"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>notifyValueKeyframeSequenceInterpolationWillChange</b> (<a class="el" href="classinviwo_1_1animation_1_1ValueKeyframeSequence.html">ValueKeyframeSequence</a> *seq)</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observable')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; ValueKeyframeSequenceObserver &gt;</a></td></tr>
 <tr class="memitem:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable" id="r_a980d804dbfb060d91d5b54161f14dc8f"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>forEachObserver</b> (C callback)</td></tr>

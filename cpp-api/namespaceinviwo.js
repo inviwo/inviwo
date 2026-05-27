@@ -415,6 +415,8 @@ var namespaceinviwo =
     [ "EntryExitComponent", "classinviwo_1_1EntryExitComponent.html", "classinviwo_1_1EntryExitComponent" ],
     [ "EntryExitPoints", "classinviwo_1_1EntryExitPoints.html", "classinviwo_1_1EntryExitPoints" ],
     [ "EnumTraits", "structinviwo_1_1EnumTraits.html", null ],
+    [ "EnumTraits&lt; EasingMode &gt;", "structinviwo_1_1EnumTraits_3_01EasingMode_01_4.html", null ],
+    [ "EnumTraits&lt; EasingType &gt;", "structinviwo_1_1EnumTraits_3_01EasingType_01_4.html", null ],
     [ "EnumTraits&lt; filters::NumberComp &gt;", "structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html", null ],
     [ "EnumTraits&lt; filters::StringComp &gt;", "structinviwo_1_1EnumTraits_3_01filters_1_1StringComp_01_4.html", null ],
     [ "equalPtr", "structinviwo_1_1equalPtr.html", null ],

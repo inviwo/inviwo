@@ -136,8 +136,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7d2aa69d2297cb7789c24175e570c493" id="r_a7d2aa69d2297cb7789c24175e570c493"><td class="memItemLeft"><a id="a7d2aa69d2297cb7789c24175e570c493" name="a7d2aa69d2297cb7789c24175e570c493"></a>
-virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Interpolation.html">Interpolation</a> &gt;&#160;</td><td class="memItemRight"><b>create</b> () const =0</td></tr>
+<tr class="memitem:aecfac5328c0a081608c55752a8d598cd" id="r_aecfac5328c0a081608c55752a8d598cd"><td class="memItemLeft">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Interpolation.html">Interpolation</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aecfac5328c0a081608c55752a8d598cd">create</a> () const</td></tr>
+<tr class="memitem:a0b8a39213ca29b4b865f06aa91d5c4ea" id="r_a0b8a39213ca29b4b865f06aa91d5c4ea"><td class="memItemLeft">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Interpolation.html">Interpolation</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a0b8a39213ca29b4b865f06aa91d5c4ea">create</a> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app) const =0</td></tr>
 <tr class="memitem:a477144403483f87ab7b824a015f2e428" id="r_a477144403483f87ab7b824a015f2e428"><td class="memItemLeft"><a id="a477144403483f87ab7b824a015f2e428" name="a477144403483f87ab7b824a015f2e428"></a>
 std::string_view&#160;</td><td class="memItemRight"><b>getClassIdentifier</b> () const</td></tr>
 <tr class="memitem:ab39203e9fbd3fe37c72104aa444ebf13" id="r_ab39203e9fbd3fe37c72104aa444ebf13"><td class="memItemLeft"><a id="ab39203e9fbd3fe37c72104aa444ebf13" name="ab39203e9fbd3fe37c72104aa444ebf13"></a>
@@ -148,6 +148,66 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a3f6cc9c84f560a49c18746a72b7e0f5f" id="r_a3f6cc9c84f560a49c18746a72b7e0f5f"><td class="memItemLeft"><a id="a3f6cc9c84f560a49c18746a72b7e0f5f" name="a3f6cc9c84f560a49c18746a72b7e0f5f"></a>
 const std::string&#160;</td><td class="memItemRight"><b>classIdentifier_</b></td></tr>
 </table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aecfac5328c0a081608c55752a8d598cd" name="aecfac5328c0a081608c55752a8d598cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecfac5328c0a081608c55752a8d598cd">&#9670;&#160;</a></span>create() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Interpolation.html">Interpolation</a> &gt; inviwo::animation::InterpolationFactoryObject::create </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create an interpolation without an application context. Delegates to create(nullptr). Provided for <a class="el" href="classinviwo_1_1StandardFactory.html">StandardFactory</a> template compatibility. </p>
+
+</div>
+</div>
+<a id="a0b8a39213ca29b4b865f06aa91d5c4ea" name="a0b8a39213ca29b4b865f06aa91d5c4ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b8a39213ca29b4b865f06aa91d5c4ea">&#9670;&#160;</a></span>create() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Interpolation.html">Interpolation</a> &gt; inviwo::animation::InterpolationFactoryObject::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *</td>          <td class="paramname"><span class="paramname"><em>app</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create an interpolation with the given application context. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>May be nullptr if no application context is available. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classinviwo_1_1animation_1_1InterpolationFactoryObjectTemplate.html#a072eb3616c0744d4663cf25147ae3289">inviwo::animation::InterpolationFactoryObjectTemplate&lt; InterpTyped &gt;</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>modules/animation/include/modules/animation/factories/<b>interpolationfactoryobject.h</b></li>
 </ul>

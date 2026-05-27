@@ -77,20 +77,20 @@ var NAVTREEINDEX =
 "classinviwo_1_1ShaderComponentProcessorBase.html#a6f792255246415e6dd7c2868a70d71b2",
 "classinviwo_1_1SplitImage.html",
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ad24ef0d5f9560379b37f07ece4038404",
-"classinviwo_1_1TemplateImageSampler.html#a961c3fb0bac7ef046f0408a5a5c27dc5",
+"classinviwo_1_1TemplateImageSampler.html#a315e893e058a5f8e636b82c098f4c804",
 "classinviwo_1_1TouchPoint.html#a9fc1331edf96039162953c6e70dc68e6",
-"classinviwo_1_1VersionConverter.html",
-"classinviwo_1_1VolumeRaycastVisualizer.html#aeb0a531d15de4f6b42d5b5b64511c230",
-"classinviwo_1_1animation_1_1Animation.html#ab56f7791bd6ef28027fa1b441dad539d",
-"classinviwo_1_1animation_1_1SequenceEditorFactory.html",
-"classinviwo_1_1plot_1_1ColorScaleLegend.html",
-"functions_type.html",
-"namespaceinviwo_1_1pool.html#a0800098fbdf7e02da630f3fce3e74d39a912f4c96d4cbc86810c93cbf112db52c",
-"namespaceinviwo_1_1util.html#aedde0f16b84fba22f20ff5f4decb2886",
-"structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html",
-"structinviwo_1_1PropertyObserverDelegate.html",
-"structinviwo_1_1detail_1_1CodePointsAdaptor.html",
-"structinviwo_1_1util_1_1glmtype_3_01T_00_01L_00_011_00_01P_01_4.html"
+"classinviwo_1_1Version.html#a8f80b76998d6c79d3e9b47db659077c6",
+"classinviwo_1_1VolumeRaycastVisualizer.html#ad76260c0f703fda9990ea7603084b12f",
+"classinviwo_1_1animation_1_1Animation.html#aa4e730c61fde314647c25a7e7dae886e",
+"classinviwo_1_1animation_1_1PropertyTrack.html",
+"classinviwo_1_1plot_1_1BoxSelection.html",
+"functions_func_n.html",
+"namespaceinviwo_1_1meshutil.html#aa1547c4667e1a4f6526e80d174ccb3b0ad2a3d8e4575d42ced45226d415b33406",
+"namespaceinviwo_1_1util.html#ade2d0033f3187cc5e974c86807a8ba4a",
+"structinviwo_1_1EnumTraits_3_01filters_1_1NumberComp_01_4.html",
+"structinviwo_1_1ProcessorTraits_3_01MetaDataProcessor_3_01T_00_01TInport_00_01TOutport_01_4_01_4.html",
+"structinviwo_1_1animation_1_1detail_1_1DefaultSequenceCreator_3_01KeyframeSequenceTyped_3_01Key_01_4_01_4.html",
+"structinviwo_1_1util_1_1detailzip_1_1iterator__tools_3_01std_1_1tuple_3_01Ts_8_8_8_01_4_01_4.html"
 ];
 
 const SYNCONMSG = 'click to disable panel synchronization';

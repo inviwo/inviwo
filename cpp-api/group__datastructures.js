@@ -233,7 +233,8 @@ var group__datastructures =
       [ "interpolateAndStoreColors", "classinviwo_1_1TFPrimitiveSet.html#a3d78aa8a6608afb18eaa65ef054db2d0", null ],
       [ "interpolateColor", "classinviwo_1_1TFPrimitiveSet.html#a6b1a58ebb0ef802d036dacb3916b4b12", null ],
       [ "remove", "classinviwo_1_1TFPrimitiveSet.html#a521813e5a2d71f1ddd87cda9031cb29c", null ],
-      [ "set", "classinviwo_1_1TFPrimitiveSet.html#af3cab856b285f90eea11c388ef6704d9", null ]
+      [ "set", "classinviwo_1_1TFPrimitiveSet.html#a484ff7f894e8710a1dbfb4982c959afd", null ],
+      [ "set", "classinviwo_1_1TFPrimitiveSet.html#afefe07616b1f670963121c87f20f316f", null ]
     ] ],
     [ "inviwo::TransferFunction", "classinviwo_1_1TransferFunction.html", [
       [ "interpolateAndStoreColors", "classinviwo_1_1TransferFunction.html#ab547a36f7dac37fe1ca702673aab042b", null ],

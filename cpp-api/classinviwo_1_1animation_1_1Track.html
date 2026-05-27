@@ -176,8 +176,8 @@ virtual const <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.h
 virtual <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &amp;&#160;</td><td class="memItemRight"><b>getLast</b> ()=0</td></tr>
 <tr class="memitem:a36060e5e3740030d1dfe447c8f236bf4" id="r_a36060e5e3740030d1dfe447c8f236bf4"><td class="memItemLeft"><a id="a36060e5e3740030d1dfe447c8f236bf4" name="a36060e5e3740030d1dfe447c8f236bf4"></a>
 virtual Seconds&#160;</td><td class="memItemRight"><b>getLastTime</b> () const =0</td></tr>
-<tr class="memitem:ad548e4ab9f4078654afc1eb92f67dc05" id="r_ad548e4ab9f4078654afc1eb92f67dc05"><td class="memItemLeft"><a id="ad548e4ab9f4078654afc1eb92f67dc05" name="ad548e4ab9f4078654afc1eb92f67dc05"></a>
-virtual const std::string &amp;&#160;</td><td class="memItemRight"><b>getName</b> () const =0</td></tr>
+<tr class="memitem:a9d6c6e22746ffbeab37188242d734301" id="r_a9d6c6e22746ffbeab37188242d734301"><td class="memItemLeft"><a id="a9d6c6e22746ffbeab37188242d734301" name="a9d6c6e22746ffbeab37188242d734301"></a>
+virtual std::string_view&#160;</td><td class="memItemRight"><b>getName</b> () const =0</td></tr>
 <tr class="memitem:a4c0ed0aecaba4db2b3b74be04f2ea18d" id="r_a4c0ed0aecaba4db2b3b74be04f2ea18d"><td class="memItemLeft"><a id="a4c0ed0aecaba4db2b3b74be04f2ea18d" name="a4c0ed0aecaba4db2b3b74be04f2ea18d"></a>
 virtual std::optional&lt; Seconds &gt;&#160;</td><td class="memItemRight"><b>getNextTime</b> (Seconds at) const =0</td></tr>
 <tr class="memitem:a64a534bc89ef6725712b6ac659c76f6a" id="r_a64a534bc89ef6725712b6ac659c76f6a"><td class="memItemLeft"><a id="a64a534bc89ef6725712b6ac659c76f6a" name="a64a534bc89ef6725712b6ac659c76f6a"></a>
@@ -186,6 +186,12 @@ virtual std::optional&lt; Seconds &gt;&#160;</td><td class="memItemRight"><b>get
 <tr class="memitem:aa80fe737531e10ec9d83589905d34c6a" id="r_aa80fe737531e10ec9d83589905d34c6a"><td class="memItemLeft"><a id="aa80fe737531e10ec9d83589905d34c6a" name="aa80fe737531e10ec9d83589905d34c6a"></a>
 virtual bool&#160;</td><td class="memItemRight"><b>isEnabled</b> () const =0</td></tr>
 <tr class="memitem:a65183c2f43121a19eb83c772ff6aee31" id="r_a65183c2f43121a19eb83c772ff6aee31"><td class="memItemLeft">virtual <a class="el" href="structinviwo_1_1animation_1_1AnimationTimeState.html">AnimationTimeState</a>&#160;</td><td class="memItemRight"><a class="el" href="#a65183c2f43121a19eb83c772ff6aee31">operator()</a> (Seconds from, Seconds to, AnimationState state) const =0</td></tr>
+<tr class="memitem:ae04d9482970d93dff6e9d234fa6fb685" id="r_ae04d9482970d93dff6e9d234fa6fb685"><td class="memItemLeft"><a id="ae04d9482970d93dff6e9d234fa6fb685" name="ae04d9482970d93dff6e9d234fa6fb685"></a>
+auto&#160;</td><td class="memItemRight"><b>operator&lt;=&gt;</b> (const Seconds &amp;time) const</td></tr>
+<tr class="memitem:a1204c6ada3128fd45e21c9244939c2b1" id="r_a1204c6ada3128fd45e21c9244939c2b1"><td class="memItemLeft"><a id="a1204c6ada3128fd45e21c9244939c2b1" name="a1204c6ada3128fd45e21c9244939c2b1"></a>
+auto&#160;</td><td class="memItemRight"><b>operator&lt;=&gt;</b> (const Track &amp;other) const</td></tr>
+<tr class="memitem:a5ceafe75b8b1dc36bd3303170d7f9b9d" id="r_a5ceafe75b8b1dc36bd3303170d7f9b9d"><td class="memItemLeft"><a id="a5ceafe75b8b1dc36bd3303170d7f9b9d" name="a5ceafe75b8b1dc36bd3303170d7f9b9d"></a>
+auto&#160;</td><td class="memItemRight"><b>operator==</b> (const Track &amp;other) const =delete</td></tr>
 <tr class="memitem:a28bf03768e8a552f2e1475c10d8ef7ca" id="r_a28bf03768e8a552f2e1475c10d8ef7ca"><td class="memItemLeft"><a id="a28bf03768e8a552f2e1475c10d8ef7ca" name="a28bf03768e8a552f2e1475c10d8ef7ca"></a>
 virtual const <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &amp;&#160;</td><td class="memItemRight"><b>operator[]</b> (size_t i) const =0</td></tr>
 <tr class="memitem:a871844f63d4def5d965d48965b6f6589" id="r_a871844f63d4def5d965d48965b6f6589"><td class="memItemLeft"><a id="a871844f63d4def5d965d48965b6f6589" name="a871844f63d4def5d965d48965b6f6589"></a>
@@ -198,7 +204,7 @@ virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Keyf
 <tr class="memitem:afc1954baac06fc1661bd088dc744f371" id="r_afc1954baac06fc1661bd088dc744f371"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#afc1954baac06fc1661bd088dc744f371">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override=0</td></tr>
 <tr class="memitem:a6842367e5b28492a506058e0f0b23276" id="r_a6842367e5b28492a506058e0f0b23276"><td class="memItemLeft"><a id="a6842367e5b28492a506058e0f0b23276" name="a6842367e5b28492a506058e0f0b23276"></a>
 virtual void&#160;</td><td class="memItemRight"><b>setEnabled</b> (bool enabled)=0</td></tr>
-<tr class="memitem:a04382e9a119f3efe3657b2facd75acef" id="r_a04382e9a119f3efe3657b2facd75acef"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a04382e9a119f3efe3657b2facd75acef">setName</a> (const std::string &amp;name)=0</td></tr>
+<tr class="memitem:a79e06505029bcd98ae304d3789490aaa" id="r_a79e06505029bcd98ae304d3789490aaa"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a79e06505029bcd98ae304d3789490aaa">setName</a> (std::string_view name)=0</td></tr>
 <tr class="memitem:a8a9b3af54a19561d2c1809158e5f5c0e" id="r_a8a9b3af54a19561d2c1809158e5f5c0e"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a8a9b3af54a19561d2c1809158e5f5c0e">setPriority</a> (size_t priority)=0</td></tr>
 <tr class="memitem:ab6c92d0080a4eb45c32cdd3a760dea28" id="r_ab6c92d0080a4eb45c32cdd3a760dea28"><td class="memItemLeft">virtual size_t&#160;</td><td class="memItemRight"><a class="el" href="#ab6c92d0080a4eb45c32cdd3a760dea28">size</a> () const =0</td></tr>
 <tr class="memitem:aeb00c3039d67ee3af6591142a0ce3437" id="r_aeb00c3039d67ee3af6591142a0ce3437"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#aeb00c3039d67ee3af6591142a0ce3437">~Track</a> ()=default</td></tr>
@@ -212,33 +218,6 @@ bool&#160;</td><td class="memItemRight"><b>isObservedBy</b> (TrackObserver *obse
 void&#160;</td><td class="memItemRight"><b>removeObserver</b> (TrackObserver *observer)</td></tr>
 <tr class="memitem:aceded27239088ecdeca8e590770614d9 inherit pub_methods_classinviwo_1_1Observable" id="r_aceded27239088ecdeca8e590770614d9"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Observable.html#aceded27239088ecdeca8e590770614d9">startBlockingNotifications</a> () override final</td></tr>
 <tr class="memitem:a4abfbec3338d1ca97e9c1177337f824f inherit pub_methods_classinviwo_1_1Observable" id="r_a4abfbec3338d1ca97e9c1177337f824f"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Observable.html#a4abfbec3338d1ca97e9c1177337f824f">stopBlockingNotifications</a> () override final</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:a98000218542cb1dcad170802e3e7527a" id="r_a98000218542cb1dcad170802e3e7527a"><td class="memItemLeft"><a id="a98000218542cb1dcad170802e3e7527a" name="a98000218542cb1dcad170802e3e7527a"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;</b> (const Seconds &amp;a, const Track &amp;b)</td></tr>
-<tr class="memitem:a95e7fcee470822251d3be37e667307db" id="r_a95e7fcee470822251d3be37e667307db"><td class="memItemLeft"><a id="a95e7fcee470822251d3be37e667307db" name="a95e7fcee470822251d3be37e667307db"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;</b> (const Track &amp;a, const Seconds &amp;b)</td></tr>
-<tr class="memitem:a9ebdd1266943912711b14e778cd2a511" id="r_a9ebdd1266943912711b14e778cd2a511"><td class="memItemLeft"><a id="a9ebdd1266943912711b14e778cd2a511" name="a9ebdd1266943912711b14e778cd2a511"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;</b> (const Track &amp;a, const Track &amp;b)</td></tr>
-<tr class="memitem:a2e81c49b8d97517a35fcfeb75a411fe0" id="r_a2e81c49b8d97517a35fcfeb75a411fe0"><td class="memItemLeft"><a id="a2e81c49b8d97517a35fcfeb75a411fe0" name="a2e81c49b8d97517a35fcfeb75a411fe0"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;=</b> (const Seconds &amp;a, const Track &amp;b)</td></tr>
-<tr class="memitem:a211785cb484d1214b3fc64ca03b22902" id="r_a211785cb484d1214b3fc64ca03b22902"><td class="memItemLeft"><a id="a211785cb484d1214b3fc64ca03b22902" name="a211785cb484d1214b3fc64ca03b22902"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;=</b> (const Track &amp;a, const Seconds &amp;b)</td></tr>
-<tr class="memitem:a2ebad3bdaf481a3016e23c03dcbb1259" id="r_a2ebad3bdaf481a3016e23c03dcbb1259"><td class="memItemLeft"><a id="a2ebad3bdaf481a3016e23c03dcbb1259" name="a2ebad3bdaf481a3016e23c03dcbb1259"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;=</b> (const Track &amp;a, const Track &amp;b)</td></tr>
-<tr class="memitem:a2e7fe58dee7b59a93e1a96dfc7cbafc7" id="r_a2e7fe58dee7b59a93e1a96dfc7cbafc7"><td class="memItemLeft"><a id="a2e7fe58dee7b59a93e1a96dfc7cbafc7" name="a2e7fe58dee7b59a93e1a96dfc7cbafc7"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;</b> (const Seconds &amp;a, const Track &amp;b)</td></tr>
-<tr class="memitem:afc9e56203969dbb2e0cb7bce772c4eda" id="r_afc9e56203969dbb2e0cb7bce772c4eda"><td class="memItemLeft"><a id="afc9e56203969dbb2e0cb7bce772c4eda" name="afc9e56203969dbb2e0cb7bce772c4eda"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;</b> (const Track &amp;a, const Seconds &amp;b)</td></tr>
-<tr class="memitem:af20f843c616809d72c66a6bce3bec59b" id="r_af20f843c616809d72c66a6bce3bec59b"><td class="memItemLeft"><a id="af20f843c616809d72c66a6bce3bec59b" name="af20f843c616809d72c66a6bce3bec59b"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;</b> (const Track &amp;a, const Track &amp;b)</td></tr>
-<tr class="memitem:ad6e05842c292cb4a10bfd8b7e9ed12cb" id="r_ad6e05842c292cb4a10bfd8b7e9ed12cb"><td class="memItemLeft"><a id="ad6e05842c292cb4a10bfd8b7e9ed12cb" name="ad6e05842c292cb4a10bfd8b7e9ed12cb"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;=</b> (const Seconds &amp;a, const Track &amp;b)</td></tr>
-<tr class="memitem:a015773c2c9ee9715f2bdd8e550ed2f10" id="r_a015773c2c9ee9715f2bdd8e550ed2f10"><td class="memItemLeft"><a id="a015773c2c9ee9715f2bdd8e550ed2f10" name="a015773c2c9ee9715f2bdd8e550ed2f10"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;=</b> (const Track &amp;a, const Seconds &amp;b)</td></tr>
-<tr class="memitem:aea80234a55838529f1a8c00c001e1ce8" id="r_aea80234a55838529f1a8c00c001e1ce8"><td class="memItemLeft"><a id="aea80234a55838529f1a8c00c001e1ce8" name="aea80234a55838529f1a8c00c001e1ce8"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;=</b> (const Track &amp;a, const Track &amp;b)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -536,8 +515,8 @@ virtual void&#160;</td><td class="memItemRight"><b>removeObserver</b> (Observer 
 
 </div>
 </div>
-<a id="a04382e9a119f3efe3657b2facd75acef" name="a04382e9a119f3efe3657b2facd75acef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a04382e9a119f3efe3657b2facd75acef">&#9670;&#160;</a></span>setName()</h2>
+<a id="a79e06505029bcd98ae304d3789490aaa" name="a79e06505029bcd98ae304d3789490aaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79e06505029bcd98ae304d3789490aaa">&#9670;&#160;</a></span>setName()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -548,7 +527,7 @@ virtual void&#160;</td><td class="memItemRight"><b>removeObserver</b> (Observer 
         <tr>
           <td class="memname">virtual void inviwo::animation::Track::setName </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span></td><td>)</td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>name</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -560,7 +539,7 @@ virtual void&#160;</td><td class="memItemRight"><b>removeObserver</b> (Observer 
 </div><div class="memdoc">
 <p>Set <a class="el" href="classinviwo_1_1animation_1_1Track.html" title="Interface for tracks in an animation. A track usually represent a value to be animated over time and ...">Track</a> name. Used when displaying the track. </p>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html#a5724a3b5389a98ae2717e0b24eb70b80">inviwo::animation::BaseTrack&lt; Seq &gt;</a>, <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html#a5724a3b5389a98ae2717e0b24eb70b80">inviwo::animation::BaseTrack&lt; CallbackKeyframeSequence &gt;</a>, <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html#a5724a3b5389a98ae2717e0b24eb70b80">inviwo::animation::BaseTrack&lt; ControlKeyframeSequence &gt;</a>, <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html#a5724a3b5389a98ae2717e0b24eb70b80">inviwo::animation::BaseTrack&lt; InvalidationKeyframeSequence &gt;</a>, and <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html#a5724a3b5389a98ae2717e0b24eb70b80">inviwo::animation::BaseTrack&lt; KeyframeSequenceTyped&lt; Key &gt; &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html#a4ec1707e11b03fff549810c3dfe076ba">inviwo::animation::BaseTrack&lt; Seq &gt;</a>, <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html#a4ec1707e11b03fff549810c3dfe076ba">inviwo::animation::BaseTrack&lt; CallbackKeyframeSequence &gt;</a>, <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html#a4ec1707e11b03fff549810c3dfe076ba">inviwo::animation::BaseTrack&lt; ControlKeyframeSequence &gt;</a>, <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html#a4ec1707e11b03fff549810c3dfe076ba">inviwo::animation::BaseTrack&lt; InvalidationKeyframeSequence &gt;</a>, and <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html#a4ec1707e11b03fff549810c3dfe076ba">inviwo::animation::BaseTrack&lt; KeyframeSequenceTyped&lt; Key &gt; &gt;</a>.</p>
 
 </div>
 </div>

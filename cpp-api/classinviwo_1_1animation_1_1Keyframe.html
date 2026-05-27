@@ -153,6 +153,12 @@ virtual <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe<
 virtual Seconds&#160;</td><td class="memItemRight"><b>getTime</b> () const =0</td></tr>
 <tr class="memitem:ae936a409156c651364874f65734e197c" id="r_ae936a409156c651364874f65734e197c"><td class="memItemLeft"><a id="ae936a409156c651364874f65734e197c" name="ae936a409156c651364874f65734e197c"></a>
 virtual bool&#160;</td><td class="memItemRight"><b>isSelected</b> () const =0</td></tr>
+<tr class="memitem:a6bc1147077fcd852b269af04fd5a2f12" id="r_a6bc1147077fcd852b269af04fd5a2f12"><td class="memItemLeft"><a id="a6bc1147077fcd852b269af04fd5a2f12" name="a6bc1147077fcd852b269af04fd5a2f12"></a>
+auto&#160;</td><td class="memItemRight"><b>operator&lt;=&gt;</b> (const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;other) const</td></tr>
+<tr class="memitem:ac24718fa64e073a703e8c1df9f2d4717" id="r_ac24718fa64e073a703e8c1df9f2d4717"><td class="memItemLeft"><a id="ac24718fa64e073a703e8c1df9f2d4717" name="ac24718fa64e073a703e8c1df9f2d4717"></a>
+auto&#160;</td><td class="memItemRight"><b>operator&lt;=&gt;</b> (const Seconds &amp;time) const</td></tr>
+<tr class="memitem:a7d1bd962373c12b29d3e16b3d7ceeceb" id="r_a7d1bd962373c12b29d3e16b3d7ceeceb"><td class="memItemLeft"><a id="a7d1bd962373c12b29d3e16b3d7ceeceb" name="a7d1bd962373c12b29d3e16b3d7ceeceb"></a>
+auto&#160;</td><td class="memItemRight"><b>operator==</b> (const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;other) const =delete</td></tr>
 <tr class="memitem:a6552e403a58460c3cde3ed7c926ae285" id="r_a6552e403a58460c3cde3ed7c926ae285"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a6552e403a58460c3cde3ed7c926ae285">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override=0</td></tr>
 <tr class="memitem:a4c22651ed97312b4153b30451a9baf57" id="r_a4c22651ed97312b4153b30451a9baf57"><td class="memItemLeft"><a id="a4c22651ed97312b4153b30451a9baf57" name="a4c22651ed97312b4153b30451a9baf57"></a>
 virtual void&#160;</td><td class="memItemRight"><b>setSelected</b> (bool selected)=0</td></tr>
@@ -169,36 +175,11 @@ void&#160;</td><td class="memItemRight"><b>removeObserver</b> (KeyframeObserver 
 <tr class="memitem:aceded27239088ecdeca8e590770614d9 inherit pub_methods_classinviwo_1_1Observable" id="r_aceded27239088ecdeca8e590770614d9"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Observable.html#aceded27239088ecdeca8e590770614d9">startBlockingNotifications</a> () override final</td></tr>
 <tr class="memitem:a4abfbec3338d1ca97e9c1177337f824f inherit pub_methods_classinviwo_1_1Observable" id="r_a4abfbec3338d1ca97e9c1177337f824f"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Observable.html#a4abfbec3338d1ca97e9c1177337f824f">stopBlockingNotifications</a> () override final</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:ab44428e6b621d610a4a070322797744b" id="r_ab44428e6b621d610a4a070322797744b"><td class="memItemLeft"><a id="ab44428e6b621d610a4a070322797744b" name="ab44428e6b621d610a4a070322797744b"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;</b> (const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;a, const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;b)</td></tr>
-<tr class="memitem:a971227cc32c26ceb70f8ae63c818e862" id="r_a971227cc32c26ceb70f8ae63c818e862"><td class="memItemLeft"><a id="a971227cc32c26ceb70f8ae63c818e862" name="a971227cc32c26ceb70f8ae63c818e862"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;</b> (const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;a, const Seconds &amp;b)</td></tr>
-<tr class="memitem:a0e31535fac6613c3edb98efc1229f5a7" id="r_a0e31535fac6613c3edb98efc1229f5a7"><td class="memItemLeft"><a id="a0e31535fac6613c3edb98efc1229f5a7" name="a0e31535fac6613c3edb98efc1229f5a7"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;</b> (const Seconds &amp;a, const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;b)</td></tr>
-<tr class="memitem:ab2df750738339567285aaadef1ffb7ba" id="r_ab2df750738339567285aaadef1ffb7ba"><td class="memItemLeft"><a id="ab2df750738339567285aaadef1ffb7ba" name="ab2df750738339567285aaadef1ffb7ba"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;=</b> (const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;a, const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;b)</td></tr>
-<tr class="memitem:addd02297363a0e4eebb202a13525f18b" id="r_addd02297363a0e4eebb202a13525f18b"><td class="memItemLeft"><a id="addd02297363a0e4eebb202a13525f18b" name="addd02297363a0e4eebb202a13525f18b"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;=</b> (const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;a, const Seconds &amp;b)</td></tr>
-<tr class="memitem:a2dab7c057b5acbd0ad54a20c121143f7" id="r_a2dab7c057b5acbd0ad54a20c121143f7"><td class="memItemLeft"><a id="a2dab7c057b5acbd0ad54a20c121143f7" name="a2dab7c057b5acbd0ad54a20c121143f7"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;=</b> (const Seconds &amp;a, const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;b)</td></tr>
-<tr class="memitem:a41f45b16a32b50d5333d03e2c3ed3001" id="r_a41f45b16a32b50d5333d03e2c3ed3001"><td class="memItemLeft"><a id="a41f45b16a32b50d5333d03e2c3ed3001" name="a41f45b16a32b50d5333d03e2c3ed3001"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;</b> (const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;a, const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;b)</td></tr>
-<tr class="memitem:a76c5a98a7552eb0653fc02b992b812b4" id="r_a76c5a98a7552eb0653fc02b992b812b4"><td class="memItemLeft"><a id="a76c5a98a7552eb0653fc02b992b812b4" name="a76c5a98a7552eb0653fc02b992b812b4"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;</b> (const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;a, const Seconds &amp;b)</td></tr>
-<tr class="memitem:a5080600cfb6e53779a049289e175833d" id="r_a5080600cfb6e53779a049289e175833d"><td class="memItemLeft"><a id="a5080600cfb6e53779a049289e175833d" name="a5080600cfb6e53779a049289e175833d"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;</b> (const Seconds &amp;a, const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;b)</td></tr>
-<tr class="memitem:a7faaa347073ff991b7dba9ba36a7ce8b" id="r_a7faaa347073ff991b7dba9ba36a7ce8b"><td class="memItemLeft"><a id="a7faaa347073ff991b7dba9ba36a7ce8b" name="a7faaa347073ff991b7dba9ba36a7ce8b"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;=</b> (const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;a, const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;b)</td></tr>
-<tr class="memitem:af234a060235516d52d1a102720679761" id="r_af234a060235516d52d1a102720679761"><td class="memItemLeft"><a id="af234a060235516d52d1a102720679761" name="af234a060235516d52d1a102720679761"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;=</b> (const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;a, const Seconds &amp;b)</td></tr>
-<tr class="memitem:a819523e3a84eb35b177f196155052b89" id="r_a819523e3a84eb35b177f196155052b89"><td class="memItemLeft"><a id="a819523e3a84eb35b177f196155052b89" name="a819523e3a84eb35b177f196155052b89"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;=</b> (const Seconds &amp;a, const <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &amp;b)</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1animation_1_1KeyframeObservable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1animation_1_1KeyframeObservable')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1animation_1_1KeyframeObservable.html">inviwo::animation::KeyframeObservable</a></td></tr>
+<tr class="memitem:a882ad593af2a898f7320983ba06f32d8 inherit pro_methods_classinviwo_1_1animation_1_1KeyframeObservable" id="r_a882ad593af2a898f7320983ba06f32d8"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>notifyKeyframeEasingChanged</b> (<a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> *key)</td></tr>
 <tr class="memitem:a0999cd4a1118b79b8cd16512747e8129 inherit pro_methods_classinviwo_1_1animation_1_1KeyframeObservable" id="r_a0999cd4a1118b79b8cd16512747e8129"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>notifyKeyframeSelectionChanged</b> (<a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> *key)</td></tr>
 <tr class="memitem:acc4bf877d0f44b8117c4a2792475ecac inherit pro_methods_classinviwo_1_1animation_1_1KeyframeObservable" id="r_acc4bf877d0f44b8117c4a2792475ecac"><td class="memItemLeft">
