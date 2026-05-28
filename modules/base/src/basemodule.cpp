@@ -159,6 +159,7 @@
 #include <modules/base/processors/volumedownsample.h>
 #include <modules/base/processors/volumesubset.h>
 #include <modules/base/processors/volumetospatialsampler.h>
+#include <modules/base/processors/meshgaussiansplatprocessor.h>
 #include <modules/base/processors/worldtransformdeprecated.h>
 // Properties
 #include <modules/base/properties/basisproperty.h>
@@ -298,6 +299,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSource>();
     registerProcessor<VolumeSubset>();
     registerProcessor<VolumeToSpatialSampler>();
+    registerProcessor<MeshGaussianSplatProcessor>();
     registerProcessor<WorldTransformMeshDeprecated>();
     registerProcessor<WorldTransformVolumeDeprecated>();
 
