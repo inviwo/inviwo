@@ -61,6 +61,16 @@
 #include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/datastructures/tfprimitive.h>
 
+// XML Serialization includes
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/properties/propertypresetmanager.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
+#include <sstream>
+
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
@@ -179,7 +189,73 @@ void exposeProperties(pybind11::module& m) {
                  p->readonlyDependsOn(*other, func);
              })
         .def("getHelp", static_cast<Document& (Property::*)()>(&Property::getHelp))
-        .def("getDescription", &Property::getDescription);
+        .def("getDescription", &Property::getDescription)
+        .def("to_xml", [](Property& prop) -> std::string {
+            try {
+                Serializer serializer("");
+                auto toReset = PropertyPresetManager::scopedSerializationModeAll(&prop);
+                std::vector<Property*> properties = {&prop};
+                serializer.serialize("Properties", properties, "Property");
+                std::stringstream ss;
+                serializer.writeFile(ss);
+                return ss.str();
+            } catch (const Exception& e) {
+                throw std::runtime_error(std::string("XML serialization failed: ") + e.getMessage());
+            } catch (const std::exception& e) {
+                throw std::runtime_error(std::string("XML serialization failed: ") + e.what());
+            }
+        }, R"doc(
+            Serialize the property to XML format.
+            
+            Returns:
+                str: XML representation of the property
+                
+            Example:
+                >>> prop = ivw.properties.IntProperty("myint", "My Integer", 42)
+                >>> xml = prop.to_xml()
+                >>> print(xml)
+                <?xml version="1.0" encoding="UTF-8" ?>
+                <Properties version="2">
+                    <Property type="org.inviwo.IntProperty" identifier="myint">
+                        ...
+                    </Property>
+                </Properties>
+        )doc")
+        .def("from_xml", [](Property& prop, const std::string& xmlContent) {
+            if (auto app = util::getInviwoApplication(&prop)) {
+                try {
+                    std::stringstream ss(xmlContent);
+                    auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");
+                    std::vector<std::unique_ptr<Property>> properties;
+                    d.deserialize("Properties", properties, "Property");
+                    if (!properties.empty() && properties.front()) {
+                        NetworkLock lock(&prop);
+                        prop.set(properties.front().get());
+                        PropertyPresetManager::appendPropertyPresets(&prop, properties.front().get());
+                    }
+                } catch (const Exception& e) {
+                    throw std::runtime_error(std::string("XML deserialization failed: ") + e.getMessage());
+                } catch (const std::exception& e) {
+                    throw std::runtime_error(std::string("XML deserialization failed: ") + e.what());
+                }
+            } else {
+                throw std::runtime_error("InviwoApplication not available");
+            }
+        }, py::arg("xml_content"), R"doc(
+            Deserialize the property from XML format.
+            
+            Args:
+                xml_content: XML string containing property data
+                
+            Raises:
+                RuntimeError: If XML parsing fails or property types are incompatible
+                
+            Example:
+                >>> prop = ivw.properties.IntProperty("myint", "My Integer", 0)
+                >>> xml = '<?xml version="1.0"?>...'  # Valid property XML
+                >>> prop.from_xml(xml)
+                >>> print(prop.value)  # Now contains deserialized value
+        )doc");
 
     py::classh<TransferFunctionProperty, Property>(m, "TransferFunctionProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,

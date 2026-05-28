@@ -80,6 +80,13 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/assertion.h>
 
+// XML Serialization includes for global functions
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/properties/propertypresetmanager.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
+#include <sstream>
+
 namespace py = pybind11;
 
 INVIWO_PYBIND_MODULE(inviwopy, m) {
@@ -196,4 +203,97 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
             }
         }
     });
+
+    // Property XML serialization global functions
+    m.def("property_to_xml", [](Property* prop) -> std::string {
+        if (!prop) throw std::invalid_argument("Property cannot be null");
+        try {
+            Serializer serializer("");
+            auto toReset = PropertyPresetManager::scopedSerializationModeAll(prop);
+            std::vector<Property*> properties = {prop};
+            serializer.serialize("Properties", properties, "Property");
+            std::stringstream ss;
+            serializer.writeFile(ss);
+            return ss.str();
+        } catch (const Exception& e) {
+            throw std::runtime_error(std::string("XML serialization failed: ") + e.getMessage());
+        } catch (const std::exception& e) {
+            throw std::runtime_error(std::string("XML serialization failed: ") + e.what());
+        }
+    }, py::arg("property"), R"doc(
+        Serialize a property to XML format.
+        
+        Args:
+            property: The property to serialize
+            
+        Returns:
+            str: XML representation of the property
+            
+        Raises:
+            ValueError: If property is None
+            RuntimeError: If serialization fails
+    )doc");
+
+    m.def("property_from_xml", [](Property* prop, const std::string& xmlContent) {
+        if (!prop) throw std::invalid_argument("Property cannot be null");
+        if (auto app = util::getInviwoApplication(prop)) {
+            try {
+                std::stringstream ss(xmlContent);
+                auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");
+                std::vector<std::unique_ptr<Property>> properties;
+                d.deserialize("Properties", properties, "Property");
+                if (!properties.empty() && properties.front()) {
+                    NetworkLock lock(prop);
+                    prop->set(properties.front().get());
+                    PropertyPresetManager::appendPropertyPresets(prop, properties.front().get());
+                }
+            } catch (const Exception& e) {
+                throw std::runtime_error(std::string("XML deserialization failed: ") + e.getMessage());
+            } catch (const std::exception& e) {
+                throw std::runtime_error(std::string("XML deserialization failed: ") + e.what());
+            }
+        } else {
+            throw std::runtime_error("InviwoApplication not available");
+        }
+    }, py::arg("property"), py::arg("xml_content"), R"doc(
+        Deserialize a property from XML format.
+        
+        Args:
+            property: The property to update with deserialized data
+            xml_content: XML string containing property data
+            
+        Raises:
+            ValueError: If property is None
+            RuntimeError: If deserialization fails or application is not available
+    )doc");
+
+    m.def("properties_to_xml", [](const std::vector<Property*>& props) -> std::string {
+        try {
+            Serializer serializer("");
+            for (auto prop : props) {
+                if (!prop) continue;
+                auto toReset = PropertyPresetManager::scopedSerializationModeAll(prop);
+                std::vector<Property*> properties = {prop};
+                serializer.serialize("Properties", properties, "Property");
+            }
+            std::stringstream ss;
+            serializer.writeFile(ss);
+            return ss.str();
+        } catch (const Exception& e) {
+            throw std::runtime_error(std::string("XML serialization failed: ") + e.getMessage());
+        } catch (const std::exception& e) {
+            throw std::runtime_error(std::string("XML serialization failed: ") + e.what());
+        }
+    }, py::arg("properties"), R"doc(
+        Serialize multiple properties to XML format.
+        
+        Args:
+            properties: List of properties to serialize (None values are skipped)
+            
+        Returns:
+            str: XML representation containing all properties
+            
+        Raises:
+            RuntimeError: If serialization fails
+    )doc");
 }

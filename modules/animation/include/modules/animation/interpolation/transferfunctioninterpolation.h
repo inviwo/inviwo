@@ -31,6 +31,7 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/algorithm/easing.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/interpolation/interpolation.h>
@@ -71,6 +72,33 @@ public:
 
     OrdinalProperty<size_t> segments;
     OrdinalProperty<double> simplify;
+};
+
+class IVW_MODULE_ANIMATION_API TFInterpolationOptimalTransportClosedForm
+    : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
+public:
+    TFInterpolationOptimalTransportClosedForm(InviwoApplication* app = nullptr);
+    TFInterpolationOptimalTransportClosedForm(const TFInterpolationOptimalTransportClosedForm&);
+    virtual ~TFInterpolationOptimalTransportClosedForm() = default;
+    virtual TFInterpolationOptimalTransportClosedForm* clone() const override;
+
+    virtual std::string_view getDisplayName() const override;
+    virtual std::string_view getIdentifier() const override {
+        return "TFInterpolationOptimalTransportClosedForm";
+    }
+
+    static std::string_view classIdentifier();
+    virtual std::string_view getClassIdentifier() const override;
+
+    virtual bool equal(const Interpolation& other) const override;
+
+    virtual void operator()(
+        const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
+        Seconds to, TransferFunction& out) const override;
+
+    OrdinalProperty<double> relativeTolerance;
+    OrdinalProperty<size_t> maxQuantileLevels;
+    OrdinalProperty<size_t> maxRefinementIterations;
 };
 
 class IVW_MODULE_ANIMATION_API TFInterpolationBlend

@@ -29,15 +29,14 @@
 
 #pragma once
 
+#include <cstddef>
+#include <span>
+#include <vector>
+
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/tfprimitive.h>
 
-#include <vector>
-#include <span>
-
-namespace inviwo {
-
-namespace algorithm {
+namespace inviwo::algorithm {
 
 /**
  * @brief Interpolate two transfer functions using 1D Optimal Transport (Earth Mover's Distance).
@@ -66,6 +65,86 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolation(
     std::size_t samplesPerSegment = 16);
 
 /**
+ * @brief Controls adaptive refinement of the quantile level set used by
+ * optimalTransportInterpolationClosedForm.
+ *
+ * Starting from knot-induced quantile breakpoints, refinement repeatedly
+ * bisects the sub-interval whose piecewise-linear opacity (connecting exact
+ * endpoint densities) deviates most from the exact transported density at the
+ * sub-interval midpoint. Bisection stops when the worst relative error falls
+ * below @p relativeTolerance or when @p maxQuantileLevels or
+ * @p maxRefinementIterations is reached.
+ */
+IVW_CORE_API struct ClosedFormRefinementOptions {
+    double relativeTolerance = 1e-3;
+    std::size_t maxQuantileLevels = 2048;
+    std::size_t maxRefinementIterations = 256;
+};
+
+/**
+ * @brief Interpolate two transfer functions using 1D optimal transport with
+ * closed-form vertex opacities.
+ *
+ * Like optimalTransportInterpolation, this treats each TF alpha channel as a
+ * piecewise-linear density, builds the cumulative distributions, and forms the
+ * Wasserstein displacement interpolation
+ *   X_t(q) = (1-t) Q_A(q) + t Q_B(q)
+ * at a finite set of quantile levels. Colors are transported with the same
+ * quantile pairing.
+ *
+ * On each quantile sub-interval between consecutive levels, Q_A(q) and Q_B(q)
+ * each lie on a single input knot segment. Within such a sub-interval, X_t(q)
+ * is a sum of square-root terms in q (or a degenerate linear combination when
+ * a segment has constant alpha). The opacity at a sampled quantile q_k is
+ * therefore available in closed form as the exact transported density
+ *   alpha_k = m_t / X_t'(q_k)
+ *             = m_t / ((1-t) m_A / alpha_A(Q_A(q_k)) + t m_B / alpha_B(Q_B(q_k))),
+ * where m_t = (1-t) m_A + t m_B. This differs from the secant-based path in
+ * optimalTransportInterpolation, which approximates interval density by
+ * m_t (Delta q / Delta x) and assigns vertex opacity via a width-weighted
+ * average of adjacent interval densities.
+ *
+ * Quantile levels begin at the union of knot-induced quantiles from both
+ * inputs and may be refined adaptively (see ClosedFormRefinementOptions). The
+ * output is a piecewise-linear TF connecting the sampled (x_k, alpha_k) pairs;
+ * each connected component is rescaled so that its trapezoidal mass matches
+ * the share m_t sum(Delta q) assigned by X_t to that component.
+ *
+ * @param tfA  First transfer function as sorted TFPrimitiveData points.
+ * @param tfB  Second transfer function as sorted TFPrimitiveData points.
+ * @param t    Interpolation parameter in [0, 1]. t=0 returns tfA, t=1 returns tfB.
+ * @param opts Refinement tolerance and limits for the quantile level set.
+ * @return     Interpolated transfer function as a vector of TFPrimitiveData.
+ */
+IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationClosedForm(
+    std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
+    const ClosedFormRefinementOptions& opts = {});
+
+/**
+ * @brief Evaluate the closed-form interpolated opacity alpha_t(x) at one scalar.
+ *
+ * Assumes piecewise-linear input alphas and the same Wasserstein quantile
+ * interpolation as optimalTransportInterpolationClosedForm, but evaluates
+ * alpha_t(x) = m_t / X_t'(q) directly at x rather than returning knot samples.
+ *
+ * The implementation locates the quantile sub-interval whose transported image
+ * [xLo, xHi] contains x, inverts X_t(q) = x on that sub-interval (reducing to a
+ * quadratic when both paired input segments have non-zero slope), and returns
+ * the harmonic-mean density m_t / X_t'(q) at the recovered q. Returns 0 outside
+ * the union of the transported widget supports (including gap regions between
+ * disjoint peaks).
+ *
+ * @param tfA  First transfer function.
+ * @param tfB  Second transfer function.
+ * @param t    Interpolation parameter in [0, 1].
+ * @param x    Scalar position at which to evaluate opacity.
+ * @return     Interpolated opacity alpha_t(x), or 0 if x lies outside support.
+ */
+IVW_CORE_API double evaluateInterpolatedAlpha(std::span<const TFPrimitiveData> tfA,
+                                              std::span<const TFPrimitiveData> tfB, double t,
+                                              double x);
+
+/**
  * @brief Compute the Earth Mover's Distance (1-Wasserstein) between two transfer functions.
  *
  * Measures the cost of transforming the alpha distribution of tfA into tfB.
@@ -79,6 +158,4 @@ IVW_CORE_API double earthMoversDistance(std::span<const TFPrimitiveData> tfA,
                                         std::span<const TFPrimitiveData> tfB,
                                         std::size_t samplesPerSegment = 16);
 
-}  // namespace algorithm
-
-}  // namespace inviwo
+}  // namespace inviwo::algorithm

@@ -169,6 +169,11 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     interpolationHelper<CameraProperty, CameraLinearInterpolation>();
     interpolationHelper<CameraProperty, CameraAnimation>();
 
+    propertyHelper<TransferFunctionProperty>();
+
+    interpolationHelper<TransferFunctionProperty, TFInterpolationOptimalTransport>();
+    interpolationHelper<TransferFunctionProperty, TFInterpolationOptimalTransportClosedForm>();
+    interpolationHelper<TransferFunctionProperty, TFInterpolationBlend>();
     interpolationHelper<TransferFunctionProperty,
                         ConstantInterpolation<ValueKeyframe<TransferFunction>>>();
     interpolationHelper<TransferFunctionProperty, TFInterpolationBlend>();

@@ -122,6 +122,78 @@ void TFInterpolationOptimalTransport::operator()(
     }
 }
 
+
+TFInterpolationOptimalTransportClosedForm::TFInterpolationOptimalTransportClosedForm(
+    InviwoApplication* app)
+    : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app)
+    , relativeTolerance{"relativeTolerance", "relativeTolerance",
+                        util::ordinalLength(1e-3, 0.1).setMin(1e-6).setInc(1e-4)}
+    , maxQuantileLevels{"maxQuantileLevels", "maxQuantileLevels", util::ordinalCount(2048uz)}
+    , maxRefinementIterations{"maxRefinementIterations", "maxRefinementIterations",
+                              util::ordinalCount(256uz)} {
+    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+}
+
+TFInterpolationOptimalTransportClosedForm::TFInterpolationOptimalTransportClosedForm(
+    const TFInterpolationOptimalTransportClosedForm& rhs)
+    : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(rhs)
+    , relativeTolerance{rhs.relativeTolerance}
+    , maxQuantileLevels{rhs.maxQuantileLevels}
+    , maxRefinementIterations{rhs.maxRefinementIterations} {
+    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+}
+
+TFInterpolationOptimalTransportClosedForm* TFInterpolationOptimalTransportClosedForm::clone() const {
+    return new TFInterpolationOptimalTransportClosedForm(*this);
+}
+
+std::string_view TFInterpolationOptimalTransportClosedForm::getDisplayName() const {
+    return "Optimal Transport Closed Form";
+}
+
+std::string_view TFInterpolationOptimalTransportClosedForm::getClassIdentifier() const {
+    return classIdentifier();
+}
+
+bool TFInterpolationOptimalTransportClosedForm::equal(const Interpolation& other) const {
+    return classIdentifier() == other.getClassIdentifier();
+}
+
+std::string_view TFInterpolationOptimalTransportClosedForm::classIdentifier() {
+    return "org.inviwo.animation.TFInterpolationOptimalTransportClosedForm";
+}
+
+void TFInterpolationOptimalTransportClosedForm::operator()(
+    const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds /*from*/,
+    Seconds to, TransferFunction& out) const {
+
+    auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
+        return time < key->getTime();
+    });
+    const auto& prev = *(*std::prev(it));
+    const auto& next = *(*it);
+
+    const auto t1 = prev.getTime();
+    const auto t2 = next.getTime();
+
+    const auto& v1 = prev.getValue();
+    const auto& v2 = next.getValue();
+
+    const auto easeIn = prev.getEaseIn();
+    const auto easeOut = next.getEaseOut();
+
+    const auto t = util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
+
+    out.set(algorithm::optimalTransportInterpolationClosedForm(
+        v1.get(), v2.get(), t,
+        algorithm::ClosedFormRefinementOptions{
+            .relativeTolerance = relativeTolerance.get(),
+            .maxQuantileLevels = maxQuantileLevels.get(),
+            .maxRefinementIterations = maxRefinementIterations.get(),
+        }));
+}
+
+
 TFInterpolationBlend::TFInterpolationBlend(InviwoApplication* app)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app) {}
 
