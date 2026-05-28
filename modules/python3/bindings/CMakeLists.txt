@@ -35,6 +35,7 @@ set(HEADER_FILES
     include/inviwopy/pylayer.h
     include/inviwopy/pylogging.h
     include/inviwopy/pymesh.h
+    include/inviwopy/pymodulemanager.h
     include/inviwopy/pynetwork.h
     include/inviwopy/pypickingmapper.h
     include/inviwopy/pyport.h
@@ -45,6 +46,7 @@ set(HEADER_FILES
     include/inviwopy/pyspatialdata.h
     include/inviwopy/pytfprimitiveset.h
     include/inviwopy/pyvolume.h
+    include/inviwopy/pyworkspacemanager.h
     include/inviwopy/util/pydatasequence.h
     include/inviwopy/util/pyglmhelper.h
     include/inviwopy/util/pypropertyhelper.h
@@ -91,6 +93,7 @@ set(SOURCE_FILES
     src/pylayer.cpp
     src/pylogging.cpp
     src/pymesh.cpp
+    src/pymodulemanager.cpp
     src/pynetwork.cpp
     src/pypickingmapper.cpp
     src/pyport.cpp
@@ -101,6 +104,7 @@ set(SOURCE_FILES
     src/pyspatialdata.cpp
     src/pytfprimitiveset.cpp
     src/pyvolume.cpp
+    src/pyworkspacemanager.cpp
     src/util/pydatasequence.cpp
     src/util/pyglmhelper.cpp
     src/util/pypropertyhelper.cpp
