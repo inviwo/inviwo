@@ -41,6 +41,7 @@
 #include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/propertyfactory.h>
@@ -171,6 +172,12 @@ void exposeInviwoApplication(pybind11::module& m) {
 
         .def_property_readonly("modules",
                                [](InviwoApplication* app) { return ModuleIdentifierWrapper(app); })
+        .def_property_readonly(
+            "moduleManager",
+            [](InviwoApplication* app) -> ModuleManager& { return app->getModuleManager(); },
+            py::return_value_policy::reference, "Get the ModuleManager")
+        .def_property_readonly("workspaceManager", &InviwoApplication::getWorkspaceManager,
+                               py::return_value_policy::reference, "Get the WorkspaceManager")
         .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
              py::return_value_policy::reference)
         .def("getModuleSettings", &InviwoApplication::getModuleSettings,
