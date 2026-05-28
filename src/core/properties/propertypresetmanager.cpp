@@ -30,7 +30,6 @@
 #include <inviwo/core/properties/propertypresetmanager.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/metadata/containermetadata.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/networklock.h>
@@ -262,8 +261,8 @@ void PropertyPresetManager::Preset::deserialize(Deserializer& d) {
 
 std::map<std::string, std::string, std::less<>>& PropertyPresetManager::getPropertyPresets(
     Property* property) {
-    using MT = StdUnorderedMapMetaData<std::string, std::string>;
-    return property->createMetaData<MT>("SavedState")->getMap();
+    using MT = MetaDataType<std::map<std::string, std::string, std::less<>>>;
+    return property->createMetaData<MT>("SavedState")->get();
 }
 
 std::string_view enumToStr(PropertyPresetType p) {
