@@ -39,6 +39,18 @@
 
 namespace inviwo {
 
+template <typename T>
+struct MetaDataTraits {
+    /**
+     * The Class Identifier has to be globally unique. Use a reverse DNS naming scheme.
+     * Example: "org.someorg.mymetadatatype"
+     */
+    static constexpr std::string_view classIdentifier() {
+        static constexpr auto identifier = "org.inviwo." + Defaultvalues<T>::getName() + "MetaData";
+        return identifier;
+    }
+};
+
 class IVW_CORE_API MetaData : public Serializable {
 public:
     virtual ~MetaData() = default;
@@ -62,7 +74,7 @@ template <typename T>
 class MetaDataType : public MetaData {
 public:
     MetaDataType();
-    MetaDataType(T value);
+    explicit MetaDataType(T value);
     MetaDataType(const MetaDataType& rhs) = default;
     MetaDataType(MetaDataType&& rhs) = default;
     MetaDataType& operator=(const MetaDataType& that) = default;
@@ -72,9 +84,11 @@ public:
     virtual MetaDataType<T>* clone() const override;
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
-    virtual void set(T value);
-    virtual T get() const;
     virtual bool equal(const MetaData& rhs) const override;
+
+    void set(T value);
+    const T& get() const;
+    T& get();
 
     template <typename V>
     friend bool operator==(const MetaDataType<V>& lhs, const MetaDataType<V>& rhs);
@@ -105,8 +119,7 @@ bool operator==(const MetaDataType<T>& lhs, const MetaDataType<T>& rhs) {
 
 template <typename T>
 std::string_view MetaDataType<T>::getClassIdentifier() const {
-    static constexpr auto identifier = "org.inviwo." + Defaultvalues<T>::getName() + "MetaData";
-    return identifier;
+    return MetaDataTraits<T>::classIdentifier();
 }
 
 template <typename T>
@@ -120,7 +133,12 @@ void MetaDataType<T>::set(T value) {
 }
 
 template <typename T>
-T MetaDataType<T>::get() const {
+const T& MetaDataType<T>::get() const {
+    return value_;
+}
+
+template <typename T>
+T& MetaDataType<T>::get() {
     return value_;
 }
 
@@ -135,6 +153,24 @@ template <typename T>
 void MetaDataType<T>::deserialize(Deserializer& d) {
     d.deserialize("MetaData", value_);
 }
+
+template <typename T>
+struct MetaDataTraits<std::vector<T>> {
+    static constexpr std::string_view classIdentifier() {
+        static const auto identifier =
+            "org.inviwo." + Defaultvalues<T>::getName() + "StdVectorMetaData";
+        return identifier;
+    }
+};
+
+template <typename K, typename V>
+struct MetaDataTraits<std::map<K, V, std::less<>>> {
+    static constexpr std::string_view classIdentifier() {
+        static const auto identifier = "org.inviwo." + Defaultvalues<K>::getName() +
+                                       Defaultvalues<V>::getName() + "StdUnorderedMapMetaData";
+        return identifier;
+    }
+};
 
 using IntMetaData = MetaDataType<int>;
 using IntVec2MetaData = MetaDataType<ivec2>;
