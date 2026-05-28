@@ -71,11 +71,11 @@ IVW_MODULE_ANIMATION_API void interpolateIsoValuesBlend(
  * zero). This preserves the structural identity of iso-values across the transition.
  */
 class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationFade
-    : public InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
-                                IsoValueProperty::value_type> {
+    : public InterpolationTyped<ValueKeyframe<IsoValueCollection>,
+                                IsoValueCollection> {
 public:
     IsoValuePropertyInterpolationFade(InviwoApplication* app = nullptr);
-    IsoValuePropertyInterpolationFade(const IsoValuePropertyInterpolationFade&);
+    explicit IsoValuePropertyInterpolationFade(const IsoValuePropertyInterpolationFade&);
     IsoValuePropertyInterpolationFade& operator=(const IsoValuePropertyInterpolationFade&) = delete;
     IsoValuePropertyInterpolationFade(IsoValuePropertyInterpolationFade&&) = delete;
     IsoValuePropertyInterpolationFade& operator=(IsoValuePropertyInterpolationFade&&) = delete;
@@ -107,12 +107,11 @@ public:
  * structured iso-value collections.
  */
 class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationBlend
-    : public InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
-                                IsoValueProperty::value_type> {
+    : public InterpolationTyped<ValueKeyframe<IsoValueCollection>,
+                                IsoValueCollection> {
 public:
     IsoValuePropertyInterpolationBlend(InviwoApplication* app = nullptr);
-    IsoValuePropertyInterpolationBlend(
-        const IsoValuePropertyInterpolationBlend& rhs);
+    explicit IsoValuePropertyInterpolationBlend(const IsoValuePropertyInterpolationBlend& rhs);
     IsoValuePropertyInterpolationBlend& operator=(const IsoValuePropertyInterpolationBlend&) = delete;
     IsoValuePropertyInterpolationBlend(IsoValuePropertyInterpolationBlend&&) = delete;
     IsoValuePropertyInterpolationBlend& operator=(IsoValuePropertyInterpolationBlend&&) = delete;
@@ -130,8 +129,8 @@ public:
     virtual bool equal(const Interpolation& other) const override;
 
     virtual void operator()(
-        const std::vector<std::unique_ptr<ValueKeyframe<IsoValueProperty::value_type>>>& keys,
-        Seconds from, Seconds to, IsoValueProperty::value_type& out) const override;
+        const std::vector<std::unique_ptr<ValueKeyframe<IsoValueCollection>>>& keys,
+        Seconds from, Seconds to, IsoValueCollection& out) const override;
 
     OrdinalProperty<size_t> segments;
     OrdinalProperty<double> simplify;

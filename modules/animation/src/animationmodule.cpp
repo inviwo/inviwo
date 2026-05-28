@@ -183,7 +183,7 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     interpolationHelper<IsoValueProperty, IsoValuePropertyInterpolationBlend>();
     interpolationHelper<IsoValueProperty, IsoValuePropertyInterpolationFade>();
     interpolationHelper<IsoValueProperty,
-                        ConstantInterpolation<ValueKeyframe<IsoValueProperty::value_type>>>();
+                        ConstantInterpolation<ValueKeyframe<IsoValueCollection>>>();
 
     propertyHelper<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>();
 
