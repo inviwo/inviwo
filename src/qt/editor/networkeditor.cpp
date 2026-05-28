@@ -684,7 +684,7 @@ void NetworkEditor::editLabel(std::string_view type, const std::function<std::st
                                             QLineEdit::Normal, utilqt::toQString(get()), &ok,
                                             Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
     if (ok && !text.isEmpty()) {
-        util::exceptionGuarded([&] { set(utilqt::fromQString(text)); })();
+        util::exceptionGuard([&] { set(utilqt::fromQString(text)); });
     }
 }
 
