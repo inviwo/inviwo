@@ -39,14 +39,8 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/formats.h>
-#include <inviwo/core/util/staticstring.h>
 #include <modules/base/properties/datarangeproperty.h>
 #include <modules/base/properties/valueaxisproperty.h>
-
-#include <functional>
-#include <string>
-#include <string_view>
-#include <vector>
 
 namespace inviwo {
 
