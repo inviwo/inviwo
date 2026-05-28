@@ -60,6 +60,7 @@
 #include <inviwopy/pylayer.h>
 #include <inviwopy/pylogging.h>
 #include <inviwopy/pymesh.h>
+#include <inviwopy/pymodulemanager.h>
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pypickingmapper.h>
 #include <inviwopy/pyport.h>
@@ -70,6 +71,7 @@
 #include <inviwopy/pyspatialdata.h>
 #include <inviwopy/pytfprimitiveset.h>
 #include <inviwopy/pyvolume.h>
+#include <inviwopy/pyworkspacemanager.h>
 #include <inviwopy/pyinviwomodules.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -157,6 +159,7 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     exposePort(m);
     exposeProcessors(m);
     exposeNetwork(m);
+    exposeWorkspaceManager(m);
     exposeEvents(m);
     exposePickingMapper(m);
 
@@ -171,6 +174,7 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     exposeMesh(dataModule);
     exposeCamera(dataModule);
     exposeInviwoModule(m);
+    exposeModuleManager(m);
     exposeCameraProperty(m, propertiesModule);
     exposeDataReaders(m);
     exposeDataWriters(m);
