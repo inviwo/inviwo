@@ -47,11 +47,12 @@ class EventProperty;
 class IvwPushButton;
 class KeyboardEventMatcher;
 class MouseEventMatcher;
+class ShortcutBlockEventFilter;
 
 class IVW_MODULE_QTWIDGETS_API EventPropertyWidgetQt : public PropertyWidgetQt {
 
 public:
-    EventPropertyWidgetQt(EventProperty* eventproperty);
+    explicit EventPropertyWidgetQt(EventProperty* eventproperty);
     virtual ~EventPropertyWidgetQt();
     virtual void updateFromProperty() override;
 
@@ -73,6 +74,7 @@ private:
     EventProperty* eventProperty_;
     IvwPushButton* button_;
     EditableLabelQt* label_;
+    ShortcutBlockEventFilter* shortcutBlocker_;
 
     std::unique_ptr<EventMatcher> matcher_;
     KeyboardEventMatcher* keyMatcher_ = nullptr;

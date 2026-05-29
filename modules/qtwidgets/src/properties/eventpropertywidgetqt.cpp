@@ -57,27 +57,41 @@ class QHBoxLayout;
 
 namespace inviwo {
 
+class ShortcutBlockEventFilter : public QObject {
+public:
+    explicit ShortcutBlockEventFilter(QObject* parent = nullptr) : QObject{parent} {}
+
+    bool eventFilter(QObject*, QEvent* ev) override {
+        if (ev->type() == QEvent::ShortcutOverride) {
+            ev->accept();
+            return true;
+        }
+        return QObject::eventFilter(nullptr, ev);
+    }
+};
+
 EventPropertyWidgetQt::EventPropertyWidgetQt(EventProperty* eventproperty)
     : PropertyWidgetQt(eventproperty)
     , eventProperty_(eventproperty)
     , button_{new IvwPushButton(this)}
-    , label_{new EditableLabelQt(this, eventProperty_)} {
+    , label_{new EditableLabelQt(this, eventProperty_)}
+    , shortcutBlocker_{new ShortcutBlockEventFilter{this}} {
 
     setFocusPolicy(button_->focusPolicy());
     setFocusProxy(button_);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
 
     connect(button_, &IvwPushButton::clicked, this, &EventPropertyWidgetQt::clickedSlot);
     hLayout->addWidget(label_);
 
     {
-        QWidget* widget = new QWidget(this);
+        auto* widget = new QWidget(this);
         QSizePolicy sliderPol = widget->sizePolicy();
         sliderPol.setHorizontalStretch(3);
         widget->setSizePolicy(sliderPol);
-        QGridLayout* vLayout = new QGridLayout();
+        auto* vLayout = new QGridLayout();
         widget->setLayout(vLayout);
         vLayout->setContentsMargins(0, 0, 0, 0);
         vLayout->setSpacing(0);
@@ -108,6 +122,7 @@ void EventPropertyWidgetQt::clickedSlot() {
         keyMatcher_->setKey(IvwKey::Unknown);
         grabKeyboard();
         grabMouse();
+        installEventFilter(shortcutBlocker_);
     } else if (mouseMatcher_) {
         mouseMatcher_->setModifiers(KeyModifiers(flags::none));
         mouseMatcher_->setButtons(MouseButton::None);
@@ -137,6 +152,7 @@ void EventPropertyWidgetQt::keyPressEvent(QKeyEvent* event) {
 
 void EventPropertyWidgetQt::keyReleaseEvent(QKeyEvent* event) {
     if (keyMatcher_ && (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)) {
+        removeEventFilter(shortcutBlocker_);
         releaseKeyboard();
         releaseMouse();
         eventProperty_->getEventMatcher()->assign(keyMatcher_);
@@ -145,6 +161,7 @@ void EventPropertyWidgetQt::keyReleaseEvent(QKeyEvent* event) {
         keyMatcher_ = nullptr;
         event->accept();
     } else if (keyMatcher_ && event->key() == Qt::Key_Escape) {
+        removeEventFilter(shortcutBlocker_);
         releaseKeyboard();
         releaseMouse();
         setButtonText();
@@ -161,6 +178,7 @@ void EventPropertyWidgetQt::keyReleaseEvent(QKeyEvent* event) {
 
 void EventPropertyWidgetQt::mousePressEvent(QMouseEvent* event) {
     if (keyMatcher_) {
+        removeEventFilter(shortcutBlocker_);
         releaseKeyboard();
         releaseMouse();
         setButtonText();
@@ -200,6 +218,7 @@ void EventPropertyWidgetQt::mouseReleaseEvent(QMouseEvent* event) {
 
 void EventPropertyWidgetQt::focusOutEvent(QFocusEvent* event) {
     if (keyMatcher_) {
+        removeEventFilter(shortcutBlocker_);
         releaseKeyboard();
         setButtonText();
         button_->setEnabled(true);
