@@ -31,15 +31,13 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/camera/camera.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
-#include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/interaction/pickingstate.h>
@@ -47,65 +45,96 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorinfo.h>
-#include <inviwo/core/processors/processorstate.h>
-#include <inviwo/core/processors/processortags.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/properties/valuewrapper.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/sourcecontext.h>
-#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/volumeutils.h>
-#include <modules/opengl/geometry/meshgl.h>
+#include <inviwo/core/util/zip.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderobject.h>
-#include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
 
 #include <algorithm>
 #include <cmath>
-#include <cstddef>
-#include <functional>
-#include <map>
-#include <string>
 #include <string_view>
-#include <type_traits>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
 #include <array>
 
 #include <flags/flags.h>
 #include <fmt/core.h>
-#include <glm/detail/qualifier.hpp>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/ext/scalar_constants.hpp>
-#include <glm/geometric.hpp>
-#include <glm/gtc/constants.hpp>
-#include <glm/gtc/epsilon.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtx/transform.hpp>
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
+#include <glm/ext/scalar_constants.hpp>
 
 namespace inviwo {
+
+namespace {
+
+struct AxisParams {
+    dvec3 start;
+    dvec3 stop;
+    dvec3 tickDir;
+};
+
+std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
+    constexpr dvec3 center = {0.5, 0.5, 0.5};
+    constexpr std::array<dvec3, 8> corners = {
+        {{0, 0, 0}, {0, 0, 1}, {0, 1, 0}, {0, 1, 1}, {1, 0, 0}, {1, 0, 1}, {1, 1, 0}, {1, 1, 1}}};
+    struct AI {
+        std::array<size_t, 2> idx;
+        std::array<dvec3, 2> faceNormals;
+    };
+
+    constexpr std::array<std::array<AI, 4>, 3> meta = {
+        {{AI{.idx = {0, 4}, .faceNormals = {dvec3{0, -1, 0}, dvec3{0, 0, -1}}},
+          AI{.idx = {1, 5}, .faceNormals = {dvec3{0, -1, 0}, dvec3{0, 0, 1}}},
+          AI{.idx = {2, 6}, .faceNormals = {dvec3{0, 0, -1}, dvec3{0, 1, 0}}},
+          AI{.idx = {3, 7}, .faceNormals = {dvec3{0, 1, 0}, dvec3{0, 0, 1}}}},
+         {AI{.idx = {0, 2}, .faceNormals = {dvec3{-1, 0, 0}, dvec3{0, 0, -1}}},
+          AI{.idx = {1, 3}, .faceNormals = {dvec3{-1, 0, 0}, dvec3{0, 0, 1}}},
+          AI{.idx = {4, 6}, .faceNormals = {dvec3{0, 0, -1}, dvec3{1, 0, 0}}},
+          AI{.idx = {5, 7}, .faceNormals = {dvec3{1, 0, 0}, dvec3{0, 0, 1}}}},
+         {AI{.idx = {0, 1}, .faceNormals = {dvec3{-1, 0, 0}, dvec3{0, -1, 0}}},
+          AI{.idx = {2, 3}, .faceNormals = {dvec3{-1, 0, 0}, dvec3{0, 1, 0}}},
+          AI{.idx = {4, 5}, .faceNormals = {dvec3{0, -1, 0}, dvec3{1, 0, 0}}},
+          AI{.idx = {6, 7}, .faceNormals = {dvec3{1, 0, 0}, dvec3{0, 1, 0}}}}}};
+
+    const auto onEdge = [&](const AI& edge) {
+        return glm::sign(glm::dot(edge.faceNormals[0], viewDirection)) !=
+               glm::sign(glm::dot(edge.faceNormals[1], viewDirection));
+    };
+
+    const auto dist = [&](const AI& edge) {
+        return 0.5 * (glm::dot(corners[edge.idx[0]] - center, viewDirection) +
+                      glm::dot(corners[edge.idx[1]] - center, viewDirection));
+    };
+
+    const auto tickDir = [&](const AI& edge) -> dvec3 {
+        const auto normal = glm::dot(edge.faceNormals[0], viewDirection) > 0 ? edge.faceNormals[0]
+                                                                             : edge.faceNormals[1];
+        const auto axis = corners[edge.idx[1]] - corners[edge.idx[0]];
+        auto dir = glm::cross(axis, normal);
+        return dir * glm::sign(glm::dot(center - corners[edge.idx[1]], dir));
+    };
+
+    const auto find = [&](const std::array<AI, 4>& axis) -> AxisParams {
+        const auto& min = *std::ranges::max_element(axis, [&](const AI& a, const AI& b) {
+            return (dist(a) + (onEdge(a) ? 0 : -100.0)) < (dist(b) + (onEdge(b) ? 0 : -100.0));
+        });
+
+        return {.start = corners[min.idx[0]], .stop = corners[min.idx[1]], .tickDir = tickDir(min)};
+    };
+
+    return {find(meta[0]), find(meta[1]), find(meta[2])};
+}
+
+dmat4 getTransform(const SpatialEntity& entity, std::optional<dmat4> worldBoundingBox) {
+    return worldBoundingBox.value_or(entity.getCoordinateTransformer().getDataToWorldMatrix());
+}
+
+}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo CropWidget::processorInfo_{
@@ -125,39 +154,21 @@ CropWidget::CropWidget()
     , outport_("outport",
                "output image with the interaction handles rendered on top of the input image"_help)
 
+    , showWidget_("showWidget", "Show Widget", true)
     , uiSettings_("uiSettings", "UI Settings",
                   "various properties for adjusting the visual appearance"_help)
-    , showWidget_("showWidget", "Show Widget", true)
     , showCropPlane_("showClipPlane", "Crop Plane Visible", true)
     , handleColor_("handleColor", "Handle Color", util::ordinalColor(vec4(0.8f, 0.4f, 0.1f, 1.0f)))
     , cropLineSettings_("cropLineSettings", "Crop Line Settings")
-    , offset_("offset", "Offset", 0.0f, -1.0f, 1.0f)
-    , scale_("scale", "Scale", 0.15f, 0.001f, 2.0f, 0.05f)
+    , offset_("offset", "Offset", util::ordinalSymmetricVector(0.0, 1.0))
+    , scale_("scale", "Scale", util::ordinalScale(0.15, 2.0).setInc(0.001))
 
-    , cropAxes_({{{.axis = CartesianCoordinateAxis::X,
-                   .composite = {"cropAxisX", "Crop X",
-                                 "enable and adjust crop range along the x axis"_help},
-                   .enabled = {"cropAxisXEnabled", "Enabled", true},
-                   .range = {"cropX", "Range", 0, 256, 0, 256, 1, 1},
-                   .outputRange{"cropXOut", "Crop X", 0, 256, 0, 256, 1, 1,
-                                InvalidationLevel::Valid, PropertySemantics::Text},
-                   .info = AnnotationInfo()},
-                  {.axis = CartesianCoordinateAxis::Y,
-                   .composite = {"cropAxisY", "Crop Y",
-                                 "enable and adjust crop range along the y axis"_help},
-                   .enabled = {"cropAxisYEnabled", "Enabled", true},
-                   .range = {"cropY", "Range", 0, 256, 0, 256, 1, 1},
-                   .outputRange{"cropYOut", "Crop Y", 0, 256, 0, 256, 1, 1,
-                                InvalidationLevel::Valid, PropertySemantics::Text},
-                   .info = AnnotationInfo()},
-                  {.axis = CartesianCoordinateAxis::Z,
-                   .composite = {"cropAxisZ", "Crop Z",
-                                 "enable and adjust crop range along the z axis"_help},
-                   .enabled = {"cropAxisZEnabled", "Enabled", true},
-                   .range = {"cropZ", "Range", 0, 256, 0, 256, 1, 1},
-                   .outputRange{"cropZOut", "Crop Z", 0, 256, 0, 256, 1, 1,
-                                InvalidationLevel::Valid, PropertySemantics::Text},
-                   .info = AnnotationInfo()}}})
+    , ranges_({{{"cropX", "Crop X", 0, 256, 0, 256, 1, 1},
+                {"cropY", "Crop Y", 0, 256, 0, 256, 1, 1},
+                {"cropZ", "Crop Z", 0, 256, 0, 256, 1, 1}}})
+    , axisInfo_({{{.axis = CartesianCoordinateAxis::X},
+                  {.axis = CartesianCoordinateAxis::Y},
+                  {.axis = CartesianCoordinateAxis::Z}}})
     , relativeRangeAdjustment_("relativeRangeAdjustment", "Rel. Adjustment on Range Change", true)
     , outputProps_("outputProperties", "Output")
     , camera_("camera", "Camera")
@@ -178,59 +189,20 @@ CropWidget::CropWidget()
     , lastState_(-1)
     , interactionHandleMesh_{}
     , linestrip_{}
-    , volumeBasis_(1.0f)
-    , volumeOffset_(-0.5f)
-    , lineRenderer_() {
+    , lineRenderer_()
+    , getBoundingBox_{util::boundingBox(volume_)} {
 
-    addPort(volume_);
-    addPort(inport_);
-    addPort(outport_);
+    addPorts(volume_, inport_, outport_);
 
     inport_.setOptional(true);
 
-    for (auto& elem : cropAxes_) {
+    addProperties(showWidget_);
+    for (auto& elem : ranges_) {
         // Since the clips depend on the input volume dimensions, we make sure to always
         // serialize them so we can do a proper renormalization when we load new data.
-        elem.range.setSerializationMode(PropertySerializationMode::All);
-
-        elem.composite.addProperties(elem.enabled, elem.range);
-        elem.composite.setCollapsed(true);
-        addProperty(elem.composite);
-
-        auto updateRange = [&]() {
-            // sync ranges including extrema
-            const auto rangeExtrema = elem.range.getRange();
-            if (elem.enabled.get()) {
-                // sync the cropped range
-                elem.outputRange.set(ivec2(elem.range.getStart(), elem.range.getEnd()),
-                                     rangeExtrema, 1, 1);
-            } else {
-                // don't sync the crop range, use the full range instead
-                elem.outputRange.set(rangeExtrema, rangeExtrema, 1, 1);
-            }
-        };
-        // update status of output ranges
-        elem.range.onChange(updateRange);
-        elem.range.setReadOnly(!elem.enabled.get());
-
-        elem.enabled.onChange([&]() {
-            // range should not be editable if axis is not enabled
-            elem.range.setReadOnly(!elem.enabled.get());
-            // sync ranges
-            if (elem.enabled.get()) {
-                // sync the cropped range
-                elem.outputRange.set(ivec2(elem.range.getStart(), elem.range.getEnd()));
-            } else {
-                // don't copy the crop range, use the full range instead
-                elem.outputRange.set(elem.range.getRange());
-            }
-        });
-
-        // set up output crop range properties
-        outputProps_.addProperty(elem.outputRange);
-        elem.outputRange.setReadOnly(true);
+        elem.setSerializationMode(PropertySerializationMode::All);
+        addProperty(elem);
     }
-    outputProps_.setCollapsed(true);
 
     cropLineSettings_.lineWidth.set(2.5f);
     cropLineSettings_.defaultColor.set(vec4{0.8f, 0.8f, 0.8f, 1.0f});
@@ -240,10 +212,10 @@ CropWidget::CropWidget()
     lightingProperty_.setCollapsed(true);
     camera_.setCollapsed(true);
     uiSettings_.setCollapsed(true);
-    uiSettings_.addProperties(showWidget_, handleColor_, offset_, scale_, showCropPlane_,
-                              cropLineSettings_, lightingProperty_);
+    uiSettings_.addProperties(handleColor_, offset_, scale_, showCropPlane_, cropLineSettings_,
+                              lightingProperty_);
 
-    addProperties(outputProps_, relativeRangeAdjustment_, uiSettings_, camera_, trackball_);
+    addProperties(relativeRangeAdjustment_, uiSettings_, camera_, trackball_);
 
     setAllPropertiesCurrentStateAsDefault();
 
@@ -264,48 +236,65 @@ void CropWidget::process() {
     if (!interactionHandleMesh_[0]) {
         initMesh();
     }
-    if (volume_.isChanged()) {
-        updateBoundingCube();
-    }
 
-    if (inport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, inport_);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
-    }
+    utilgl::activateTargetAndClearOrCopySource(outport_, inport_);
 
     if (showWidget_ || showCropPlane_) {
-        const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-        const utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        const utilgl::GlBoolState depthTest{GL_DEPTH_TEST, true};
+        const utilgl::BlendModeState blending{GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
+        const utilgl::CullFaceState culling{GL_BACK};
         shader_.activate();
 
         utilgl::setShaderUniforms(shader_, camera_, "camera");
         utilgl::setShaderUniforms(shader_, lightingProperty_, "lighting");
         shader_.setUniform("overrideColor", handleColor_.get());
 
-        for (auto& elem : cropAxes_) {
-            if (elem.enabled.get()) {
-                // update axis information
-                elem.info = getAxis(elem.axis);
+        const auto maybeBB =
+            std::optional<dmat4>{getBoundingBox_ ? getBoundingBox_() : std::nullopt}.transform(
+                util::minExtentBoundingBox);
+        const auto d2w = getTransform(*volume_.getData(), maybeBB);
+        const auto nD2W = glm::transpose(glm::inverse(dmat3{d2w}));
 
-                renderAxis(elem);
-            }
+        const auto w2ndc = camera_.get().getProjectionMatrix() * camera_.get().getViewMatrix();
+
+        // transform camera to data space since findAxisPositions uses a uniform cube centered at
+        // the origin to determine the visible faces
+        const dmat4 trafo{glm::inverse(d2w)};
+        const auto axes =
+            findAxisPositions(glm::normalize(vec3(trafo * dvec4(camera_.getLookFrom(), 1.0)) -
+                                             vec3(trafo * dvec4(camera_.getLookTo(), 1.0))));
+        for (auto&& [i, axis] : util::enumerate(axes)) {
+            const dvec3 center{0.5, 0.5, 0.5};
+            const auto offsetDir = glm::normalize(
+                dmat3{d2w} * glm::normalize(axis.start - center + axis.stop - center));
+            const dvec3 start{dvec3{d2w * dvec4(axis.start, 1)} + offsetDir * offset_.get()};
+            const dvec3 stop{dvec3{d2w * dvec4(axis.stop, 1)} + offsetDir * offset_.get()};
+            const dvec3 dir{normalize(stop - start)};
+            const dvec3 tickDir{glm::normalize(nD2W * axis.tickDir)};
+
+            const dmat4 rot{dmat3{dir, glm::cross(tickDir, dir), tickDir}};
+            const dmat4 flip{rot * glm::rotate(glm::pi<double>(), dvec3{0.0, 1.0, 0.0})};
+
+            const auto startNdc = w2ndc * dvec4{start, 1.0};
+            axisInfo_[i].startNDC = dvec3{startNdc} / startNdc.w;
+            const auto endNdc = w2ndc * dvec4{stop, 1.0};
+            axisInfo_[i].endNDC = dvec3{endNdc} / endNdc.w;
+
+            renderAxis(i, start, stop, rot, flip);
         }
     }
     utilgl::deactivateCurrentTarget();
 }
 
 void CropWidget::initializeResources() {
-    // shading defines
     utilgl::addShaderDefines(shader_, lightingProperty_);
     shader_.build();
 }
 
 void CropWidget::initMesh() {
-
     auto load = [this](std::string_view file) -> std::shared_ptr<const Mesh> {
-        auto app = getNetwork()->getApplication();
-        auto module = app->getModuleByIdentifier("UserInterfaceGL");
+        auto* app = getNetwork()->getApplication();
+        const auto* module = app->getModuleByIdentifier("UserInterfaceGL");
         if (!module) {
             throw Exception("Could not locate module 'UserInterfaceGL'");
         }
@@ -347,18 +336,19 @@ void CropWidget::createLineStripMesh() {
 
     auto* vBuffer = vertices->getEditableRAMRepresentation();
 
-    const std::array<vec3, 5> mask{{{0.0f, 0.0f, 0.0f},
-                                    {1.0f, 0.0f, 0.0f},
-                                    {1.0f, 1.0f, 0.0f},
-                                    {0.0f, 1.0f, 0.0f},
-                                    {0.0f, 0.0f, 0.0f}}};
+    const std::array<vec3, 4> mask{{
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+        {0.0f, 1.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+    }};
     for (const auto& elem : mask) {
         vBuffer->add(elem);
     }
 
     auto indices = std::make_shared<IndexBuffer>();
     auto* indexBuffer = indices->getEditableRAMRepresentation();
-    indexBuffer->add({3, 0, 1, 2, 3, 4, 1});
+    indexBuffer->add({3, 0, 1, 2, 3, 0, 1});
 
     linestrip->addBuffer(BufferType::PositionAttrib, vertices);
     linestrip->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::StripAdjacency),
@@ -367,29 +357,30 @@ void CropWidget::createLineStripMesh() {
     linestrip_ = linestrip;
 }
 
-void CropWidget::renderAxis(const CropAxis& axis) {
+void CropWidget::renderAxis(size_t axisIndex, dvec3 start, dvec3 stop, const dmat4& rotMat,
+                            const dmat4& flipMat) {
     // if min separation of the range is smaller, the middle handle is not drawn
     const float minSeparationPercentage = 0.05f;
 
-    const auto& property = axis.range;
+    const auto& property = ranges_[axisIndex];
 
-    const auto range = static_cast<float>(property.getRangeMax() - property.getRangeMin());
-    const auto lowerBound = static_cast<float>(property.get().x - property.getRangeMin()) / range;
-    const auto upperBound = static_cast<float>(property.get().y - property.getRangeMin()) / range;
+    const auto range = static_cast<double>(property.getRangeMax() - property.getRangeMin());
+    const auto lowerBound = static_cast<double>(property.get().x - property.getRangeMin()) / range;
+    const auto upperBound = static_cast<double>(property.get().y - property.getRangeMin()) / range;
 
     // draw the interaction handles
     if (showWidget_) {
-        const int axisIDOffset = static_cast<int>(axis.axis) * numInteractionWidgets;
+        const int axisIDOffset =
+            static_cast<int>(axisInfo_[axisIndex].axis) * static_cast<int>(numInteractionWidgets);
 
         shader_.activate();
 
         // apply custom transformation
-        const mat4 m = glm::scale(vec3(scale_.get()));
+        const auto m = glm::scale(dvec3{scale_.get()});
 
-        auto draw = [&](auto& drawObject, unsigned int pickID, float value, const mat4& rot) {
-            const mat4 worldMatrix(glm::translate(axis.info.pos + axis.info.axis * value) * m *
-                                   rot);
-            const mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
+        auto draw = [&](auto& drawObject, unsigned int pickID, double value, const dmat4& rot) {
+            const auto worldMatrix{glm::translate(glm::mix(start, stop, value)) * m * rot};
+            const auto normalMatrix{glm::inverseTranspose(dmat3{worldMatrix})};
             shader_.setUniform("geometry.dataToWorld", worldMatrix);
             shader_.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
             shader_.setUniform("pickId", pickID);
@@ -402,10 +393,10 @@ void CropWidget::renderAxis(const CropAxis& axis) {
         {
             // lower bound
             auto drawObject = MeshDrawerGL::getDrawObject(interactionHandleMesh_[0].get());
-            draw(drawObject, globalPickID, lowerBound, axis.info.rotMatrix);
+            draw(drawObject, globalPickID, lowerBound, rotMat);
 
             // upper bound
-            draw(drawObject, globalPickID + 1, upperBound, axis.info.flipMatrix);
+            draw(drawObject, globalPickID + 1, upperBound, flipMat);
         }
 
         {
@@ -414,8 +405,7 @@ void CropWidget::renderAxis(const CropAxis& axis) {
                 (property.get().y < property.getRangeMax())) {
                 auto drawObject = MeshDrawerGL::getDrawObject(interactionHandleMesh_[1].get());
                 if (std::fabs(upperBound - lowerBound) > minSeparationPercentage) {
-                    draw(drawObject, globalPickID + 2, (upperBound + lowerBound) * 0.5f,
-                         axis.info.rotMatrix);
+                    draw(drawObject, globalPickID + 2, (upperBound + lowerBound) * 0.5, rotMat);
                 }
             }
         }
@@ -433,21 +423,20 @@ void CropWidget::renderAxis(const CropAxis& axis) {
 
             const utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
-            // rotate clip plane from [0, 0, -1] to match the currently selected clip axis
-            const mat4 scale(volumeBasis_);
-            mat4 rotMatrix(1.0f);
-            if (axis.axis != CartesianCoordinateAxis::Z) {
-                const vec3 v1(0.0f, 0.0f, -1.0f);
-                const vec3 v2(glm::normalize(axis.info.axis));
-                rotMatrix = glm::rotate(glm::half_pi<float>(), glm::cross(v1, v2));
-            }
-            rotMatrix = scale * rotMatrix;
+            const auto basis{volume_.getData()->getBasis()};
+            const auto offset{volume_.getData()->getOffset()};
 
-            auto draw = [&](float value) {
-                const mat4 worldMatrix(glm::translate(volumeOffset_ + axis.info.axis * value) *
-                                       rotMatrix);
+            // rotate clip plane from [-1, 0, 0] to match the currently selected clip axis
+            dmat4 rotMatrix{basis};
+            if (axisInfo_[axisIndex].axis != CartesianCoordinateAxis::X) {
+                rotMatrix *=
+                    glm::toMat4(glm::rotation(dvec3{-1.0, 0.0, 0.0}, dmat3{1.0}[axisIndex]));
+            }
+
+            auto draw = [&](double value) {
+                dmat4 worldMatrix{rotMatrix};
+                worldMatrix[3] = dvec4{offset + basis[axisIndex] * value, 1.0};
                 linestrip_->setWorldMatrix(worldMatrix);
-                const mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
 
                 LineData lineData;
                 cropLineSettings_.update(lineData);
@@ -474,39 +463,29 @@ void CropWidget::updateAxisRanges() {
 
     size3_t cropDims{};
     for (int i = 0; i < 3; ++i) {
-        cropDims[i] = cropAxes_[i].range.getRangeMax() + 1;
+        cropDims[i] = ranges_[i].getRangeMax();
     }
 
     if (dims != cropDims) {
         const NetworkLock lock(this);
 
-        // crop range should be [0, dims - 1]
+        // crop range should be [0, dims)
         for (int i = 0; i < 3; ++i) {
             if (relativeRangeAdjustment_.get()) {
-                cropAxes_[i].range.setRangeNormalized(ivec2(0, dims[i] - 1));
+                ranges_[i].setRangeNormalized(ivec2(0, dims[i]));
             } else {
-                cropAxes_[i].range.setRange(ivec2(0, dims[i] - 1));
+                ranges_[i].setRange(ivec2(0, dims[i]));
             }
 
             // set the new dimensions to default if we were to press reset
-            cropAxes_[i].range.setCurrentStateAsDefault();
+            ranges_[i].setCurrentStateAsDefault();
         }
-    }
-}
-
-void CropWidget::updateBoundingCube() {
-    if (auto volume = volume_.getData()) {
-        volumeBasis_ = volume->getBasis();
-        volumeOffset_ = volume->getOffset();
-    } else {
-        volumeBasis_ = mat3(1.0f);
-        volumeOffset_ = vec3(-0.5f);
     }
 }
 
 void CropWidget::objectPicked(PickingEvent* e) {
     const auto axisID = e->getPickedId() / static_cast<size_t>(numInteractionWidgets);
-    if (axisID >= cropAxes_.size()) {
+    if (axisID >= ranges_.size()) {
         log::warn("invalid picking ID");
         return;
     }
@@ -515,12 +494,12 @@ void CropWidget::objectPicked(PickingEvent* e) {
             e->getPressItem() & PickingPressItem::Primary) {
             // initial activation with button press
             isMouseBeingPressedAndHold_ = true;
-            lastState_ = cropAxes_[axisID].range.get();
+            lastState_ = ranges_[axisID].get();
         } else if (e->getPressState() == PickingPressState::Move &&
                    e->getPressItems() & PickingPressItem::Primary) {
             const auto element =
                 static_cast<InteractionElement>(e->getPickedId() % numInteractionWidgets);
-            rangePositionHandlePicked(cropAxes_[axisID], e, element);
+            rangePositionHandlePicked(axisID, e, element);
         } else if (e->getPressState() == PickingPressState::Release &&
                    e->getPressItem() & PickingPressItem::Primary) {
             isMouseBeingPressedAndHold_ = false;
@@ -530,167 +509,17 @@ void CropWidget::objectPicked(PickingEvent* e) {
     }
 }
 
-CropWidget::AnnotationInfo CropWidget::getAxis(CartesianCoordinateAxis majorAxis) {
-    auto& cam = camera_.get();
-    std::array<vec2, 4> axisSelector = {{{0, 0}, {1, 0}, {1, 1}, {0, 1}}};
-
-    auto viewMatrix(cam.getViewMatrix());
-    auto viewprojMatrix = cam.getProjectionMatrix() * cam.getViewMatrix();
-
-    std::array<int, 3> indices{};  // encodes the index of the primary axis and the other two axes
-
-    mat4 rotMatrix(1.0f);
-    mat4 flipOrientationMat;  // matrix used for the second arrow facing the opposite direction
-                              // tilt the arrow mesh so that it is rotated by 45 degree
-    switch (majorAxis) {
-        case CartesianCoordinateAxis::X:
-            indices = {{0, 1, 2}};
-            rotMatrix = glm::rotate(-glm::half_pi<float>(), vec3(0.0f, 1.0f, 0.0f)) *
-                        glm::rotate(-glm::quarter_pi<float>(), vec3(0.0f, 0.0f, 1.0f));
-            flipOrientationMat = glm::rotate(glm::pi<float>(), vec3(0.0f, 1.0f, -1.0f)) * rotMatrix;
-            break;
-        case CartesianCoordinateAxis::Y:
-            indices = {{1, 0, 2}};
-            rotMatrix = glm::rotate(glm::half_pi<float>(), vec3(1.0f, 0.0f, 0.0f)) *
-                        glm::rotate(-glm::quarter_pi<float>(), vec3(0.0f, 0.0f, 1.0f));
-            flipOrientationMat = glm::rotate(glm::pi<float>(), vec3(1.0f, 0.0f, -1.0f)) * rotMatrix;
-            break;
-        case CartesianCoordinateAxis::Z:
-        default:
-            indices = {{2, 0, 1}};
-            rotMatrix = glm::rotate(glm::pi<float>(), vec3(0.0f, 1.0f, 0.0f)) *
-                        glm::rotate(glm::quarter_pi<float>(), vec3(0.0f, 0.0f, 1.0f));
-            flipOrientationMat = glm::rotate(glm::pi<float>(), vec3(1.0f, 1.0f, 0.0f)) * rotMatrix;
-            break;
-    }
-
-    const vec3 axis(volumeBasis_[indices[0]]);
-
-    const vec3 volumeCenter =
-        volumeOffset_ + (volumeBasis_[0] + volumeBasis_[1] + volumeBasis_[2]) * 0.5f;
-    vec4 projCenter(viewprojMatrix * vec4(volumeCenter, 1.0f));
-    projCenter /= projCenter.w;
-
-    std::array<vec3, 4> points{};      // base points of the four edge candidates
-    std::array<vec4, 4> viewPoints{};  // edge mid points in device coords
-    std::array<vec4, 4> projPoints{};  // edge mid points in device coords
-
-    std::array<vec4, 8> projPoints2{};  // edge mid points in device coords
-
-    for (int i = 0; i < 4; ++i) {
-        points[i] = volumeOffset_ + volumeBasis_[indices[1]] * axisSelector[i].x +
-                    volumeBasis_[indices[2]] * axisSelector[i].y;
-        // compute the projection of the mid point of the edge
-        auto p = vec4(points[i] + axis * 0.5f, 1.0);
-
-        viewPoints[i] = viewMatrix * p;
-        viewPoints[i] /= viewPoints[i].w;
-
-        projPoints[i] = viewprojMatrix * p;
-        projPoints[i] /= projPoints[i].w;
-
-        p = vec4(points[i], 1.0);
-        projPoints2[i] = viewprojMatrix * p;
-        projPoints2[i] /= projPoints2[i].w;
-        p = vec4(points[i] + axis, 1.0);
-        projPoints2[i + 4] = viewprojMatrix * p;
-        projPoints2[i + 4] /= projPoints2[i + 4].w;
-    }
-
-    // sort edges based on depth
-    std::vector<int> index{0, 1, 2, 3};
-    std::ranges::sort(index, [&](int a, int b) { return viewPoints[a].z > viewPoints[b].z; });
-
-    auto isLeftOf = [&](int a, int b) {
-        const vec2 v = vec2(projPoints[b]) - vec2(projCenter);
-        if (glm::dot(vec2(projPoints[a]) - vec2(projPoints[b]), v) < 0.0f) {
-            // edge not occluded
-            const float d = glm::dot(vec2(projPoints[a]) - vec2(projPoints[b]), vec2(-1.0f, -1.0f));
-            return d > 0.0f;
-        } else {
-            return false;  // edge is occluded, not relevant
-        }
-    };
-
-    const float epsilon = 0.05f;
-
-    const bool sameDepth =
-        glm::epsilonEqual(viewPoints[index[0]].z, viewPoints[index[1]].z, epsilon) &&
-        glm::epsilonEqual(viewPoints[index[0]].z, viewPoints[index[2]].z, epsilon);
-
-    int selectedIndex = -1;
-    if (sameDepth) {
-        // camera is aligned orthogonally to clip axis, pick the left most edge
-        auto leftMost = [&](int a, int b) {
-            return glm::dot(vec2(projPoints[a]) - vec2(projPoints[b]), vec2(-1.0f, -1.0f)) > 0.0f;
-        };
-
-        std::vector<int> indexLeft{0, 1, 2, 3};
-        std::ranges::sort(indexLeft, leftMost);
-
-        selectedIndex = indexLeft[0];
-    } else {
-        vec3 v1{};
-        vec3 v2{};
-        if (index[2] == ((index[0] + 1) % 4)) {
-            v1 = vec3(projPoints2[index[2]]) - vec3(projPoints2[index[0]]);
-            v2 = vec3(projPoints2[index[0] + 4]) - vec3(projPoints2[index[0]]);
-        } else {
-            v1 = vec3(projPoints2[index[0]]) - vec3(projPoints2[index[2]]);
-            v2 = vec3(projPoints2[index[2] + 4]) - vec3(projPoints2[index[2]]);
-        }
-        const vec3 normal = glm::cross(v1, v2);
-        const bool occluded = normal.z < 0.0f;
-        if (!occluded) {
-            // third edge not occluded
-            selectedIndex = isLeftOf(index[1], index[2]) ? index[1] : index[2];
-        } else {
-            // choose between first and second edge
-            selectedIndex = isLeftOf(index[0], index[1]) ? index[0] : index[1];
-        }
-    }
-
-    vec3 annotationBase(points[selectedIndex]);
-
-    // adjust rotation matrix for odd axes (rotation along the axis by 90 degree), so that the mesh
-    // is always touching the axis on the side
-    if ((selectedIndex % 2) == 1) {
-        rotMatrix = glm::rotate(glm::half_pi<float>(), axis) * rotMatrix;
-        flipOrientationMat = glm::rotate(glm::half_pi<float>(), axis) * flipOrientationMat;
-    }
-
-    // offset direction depends on which of the four orthogonal axes was chosen
-    vec3 offsetDir((annotationBase + axis * 0.5f) - volumeCenter);
-    offsetDir = glm::normalize(offsetDir) * offset_.get();
-    annotationBase += offsetDir;
-
-    return {annotationBase,
-            axis,
-            rotMatrix,
-            flipOrientationMat,
-            vec3(projPoints2[selectedIndex]),
-            vec3(projPoints2[selectedIndex + 4])};
-}
-
-void CropWidget::rangePositionHandlePicked(CropAxis& cropAxis, PickingEvent* p,
+void CropWidget::rangePositionHandlePicked(size_t axisIndex, PickingEvent* p,
                                            InteractionElement element) {
-    auto currNDC = p->getNDC();
-    auto prevNDC = p->getPressedNDC();
-
-    // Use depth of initial press as reference to move in the image plane.
-    auto refDepth = p->getPressedDepth();
-    currNDC.z = refDepth;
-    prevNDC.z = refDepth;
-
     // project mouse delta onto axis
-    const vec2 delta(currNDC - prevNDC);
-    const vec2 axis2D(cropAxis.info.endNDC - cropAxis.info.startNDC);
-    const float dist = glm::dot(delta, glm::normalize(axis2D));
+    const dvec2 delta{p->getNDC() - p->getPressedNDC()};
+    const dvec2 axis2D{axisInfo_[axisIndex].endNDC - axisInfo_[axisIndex].startNDC};
+    const auto dist = glm::dot(delta, glm::normalize(axis2D)) / glm::length(axis2D);
 
-    auto& property = cropAxis.range;
+    auto& property = ranges_[axisIndex];
 
     auto value = property.get();
-    auto range = property.getRange();
+    const auto range = property.getRange();
     bool modified = false;
     switch (element) {
         case InteractionElement::UpperBound: {

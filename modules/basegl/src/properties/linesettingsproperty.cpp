@@ -89,6 +89,11 @@ LineSettingsProperty::LineSettingsProperty(std::string_view identifier,
     overrideAlpha.addProperty(alpha);
     useMetaColor.addProperty(metaColor);
 
+    overrideColor.setCollapsed(true);
+    overrideAlpha.setCollapsed(true);
+    useMetaColor.setCollapsed(true);
+    stippling.setCollapsed(true);
+
     addProperties(overrideLineWidth, lineWidth, antialiasing, miterLimit, roundCaps, pseudoLighting,
                   roundDepthProfile, defaultColor, overrideColor, overrideAlpha, useMetaColor,
                   stippling);
