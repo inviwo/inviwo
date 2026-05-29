@@ -253,7 +253,12 @@ void CanvasWithPropertiesProcessor::setProcessorWidget(
 }
 
 void CanvasWithPropertiesProcessor::propagateEvent(Event* event, Outport*) {
+    if (event->hasVisitedProcessor(this)) return;
     event->markAsVisited(this);
+    
+    invokeEvent(event);
+    if (event->hasBeenUsed()) return;
+
     inport_.propagateEvent(event);
 }
 
