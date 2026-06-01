@@ -127,10 +127,20 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
                 PropertySemantics::Text}
     , visible_{"visible", "Visible", "Toggle widget visibility"_help, true,
                InvalidationLevel::Valid}
-    , fullScreen_{"fullScreen", "Full Screen", "Toggle if the widget should be fullscreen"_help,
+    , fullScreen_{"fullScreen", "Full Screen", "Toggle if the widget should be full screen"_help,
                   false, InvalidationLevel::Valid}
     , onTop_{"onTop", "On Top", "Keep the widget on top of the inviwo main window."_help, true,
              InvalidationLevel::Valid}
+    , fullScreenEvent_{"fullScreenEvent",
+                       "Full Screen",
+                       "Shortcut to toggle full-screen mode"_help,
+                       [this](Event* event) {
+                           event->markAsUsed();
+                           fullScreen_.set(!fullScreen_);
+                       },
+                       IvwKey::F,
+                       KeyState::Press,
+                       KeyModifier::Shift}
     , layerType_{"layerType",
                  "Visible Layer",
                  "The layer type to render, color, depth of picking"_help,
@@ -198,13 +208,13 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
 
     addPort(inport_);
 
-    addProperties(dimensions_, position_, visible_, fullScreen_, onTop_, layerType_, layerIndex_,
-                  paths_);
+    addProperties(dimensions_, position_, visible_, fullScreen_, fullScreenEvent_, onTop_,
+                  layerType_, layerIndex_, paths_);
 
     layerIndex_.setSerializationMode(PropertySerializationMode::All);
     layerIndex_.readonlyDependsOn(layerType_, [](const auto& p) { return p != LayerType::Color; });
     inport_.onChange([&]() {
-        int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
+        const int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
         layerIndex_.setMaxValue(layers - 1);
     });
 
@@ -222,11 +232,12 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
 CanvasWithPropertiesProcessor::~CanvasWithPropertiesProcessor() = default;
 
 void CanvasWithPropertiesProcessor::process() {
-    if (auto widget = static_cast<CanvasWithPropertiesProcessorWidgetQt*>(processorWidget_.get())) {
+    if (auto* widget =
+            static_cast<CanvasWithPropertiesProcessorWidgetQt*>(processorWidget_.get())) {
         widget->setProperties(paths_.get());
 
         if (widget->QMainWindow::isVisible()) {
-            if (auto canvas = widget->getCanvas()) {
+            if (auto* canvas = widget->getCanvas()) {
                 canvas->render(inport_.getData(), layerType_, layerIndex_);
             }
         }
@@ -234,11 +245,12 @@ void CanvasWithPropertiesProcessor::process() {
 }
 
 void CanvasWithPropertiesProcessor::doIfNotReady() {
-    if (auto widget = static_cast<CanvasWithPropertiesProcessorWidgetQt*>(processorWidget_.get())) {
+    if (auto* widget =
+            static_cast<CanvasWithPropertiesProcessorWidgetQt*>(processorWidget_.get())) {
         widget->setProperties(paths_.get());
 
         if (widget->QMainWindow::isVisible()) {
-            if (auto canvas = widget->getCanvas()) {
+            if (auto* canvas = widget->getCanvas()) {
                 canvas->render(nullptr, layerType_, layerIndex_);
             }
         }
@@ -253,7 +265,12 @@ void CanvasWithPropertiesProcessor::setProcessorWidget(
 }
 
 void CanvasWithPropertiesProcessor::propagateEvent(Event* event, Outport*) {
+    if (event->hasVisitedProcessor(this)) return;
     event->markAsVisited(this);
+
+    invokeEvent(event);
+    if (event->hasBeenUsed()) return;
+
     inport_.propagateEvent(event);
 }
 
@@ -262,7 +279,7 @@ std::optional<std::filesystem::path> CanvasWithPropertiesProcessor::exportFile(
     const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
 
     if (auto data = inport_.getData()) {
-        if (auto layer = data->getLayer(layerType_, layerIndex_)) {
+        if (const auto* layer = data->getLayer(layerType_, layerIndex_)) {
             return util::saveData(*layer, path, name, candidateExtensions, overwrite);
         }
     }

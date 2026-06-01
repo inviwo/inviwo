@@ -134,7 +134,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                              "Save the current layer to a file. This will open a save dialog to "
                              "specify the output file"_help,
                              [this]() {
-                                 if (auto layer = getVisibleLayer()) {
+                                 if (const auto* layer = getVisibleLayer()) {
                                      util::saveLayer(*layer);
                                  } else {
                                      log::error("Could not find visible layer");
@@ -142,11 +142,14 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                              },
                              InvalidationLevel::Valid}
     , fullScreen_{"fullscreen", "Toggle Full Screen",
-                  "Show the canvas processor widget in fullscreen"_help, false}
+                  "Show the canvas processor widget in full screen"_help, false}
     , fullScreenEvent_{"fullscreenEvent",
-                       "FullScreen",
-                       "Shortcut to toggle fullscreen"_help,
-                       [this](Event*) { fullScreen_.set(!fullScreen_); },
+                       "Full Screen",
+                       "Shortcut to toggle full-screen mode"_help,
+                       [this](Event* event) {
+                           event->markAsUsed();
+                           fullScreen_.set(!fullScreen_);
+                       },
                        IvwKey::F,
                        KeyState::Press,
                        KeyModifier::Shift}
@@ -380,7 +383,7 @@ void CanvasProcessor::propagateEvent(Event* event, Outport* source) {
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
-    if (auto resizeEvent = event->getAs<ResizeEvent>()) {
+    if (auto* resizeEvent = event->getAs<ResizeEvent>()) {
         // Avoid continues evaluation when port dimensions changes
         const NetworkLock lock(this);
         dimensions_.set(resizeEvent->size());
@@ -393,7 +396,7 @@ void CanvasProcessor::propagateEvent(Event* event, Outport* source) {
         }
     } else {
         bool used = event->hasBeenUsed();
-        for (auto inport : getInports()) {
+        for (auto* inport : getInports()) {
             if (event->shouldPropagateTo(inport, this, source)) {
                 inport->propagateEvent(event);
                 used |= event->hasBeenUsed();

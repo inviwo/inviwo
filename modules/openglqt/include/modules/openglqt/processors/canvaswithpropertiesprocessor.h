@@ -41,12 +41,10 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/properties/eventproperty.h>
 
-#include <functional>
 #include <memory>
 #include <optional>
-#include <string>
 #include <string_view>
 #include <vector>
 
@@ -92,6 +90,7 @@ private:
     BoolProperty visible_;
     BoolProperty fullScreen_;
     BoolProperty onTop_;
+    EventProperty fullScreenEvent_;
 
     OptionProperty<LayerType> layerType_;
     IntSizeTProperty layerIndex_;

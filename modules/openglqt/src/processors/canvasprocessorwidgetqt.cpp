@@ -181,7 +181,15 @@ void CanvasProcessorWidgetQt::propagateEvent(Event* event, Outport* source) {
     getProcessor()->propagateEvent(event, source);
 }
 
-void CanvasProcessorWidgetQt::propagateResizeEvent() { canvas_->triggerResizeEventPropagation(); }
+void CanvasProcessorWidgetQt::propagateResizeEvent() {
+    if (!canvas_->isVisible()) {
+        RenderContext::getPtr()->activateDefaultRenderContext();
+        ResizeEvent resizeEvent{getDimensions(), getDimensions()};
+        getProcessor()->propagateEvent(&resizeEvent, nullptr);
+    } else {
+        canvas_->triggerResizeEventPropagation();
+    }
+}
 
 bool CanvasProcessorWidgetQt::contextMenu(QMenu& menu, ContextMenuCategories actions) {
     if (auto* canvasProcessor = dynamic_cast<CanvasProcessor*>(getProcessor())) {
