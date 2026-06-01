@@ -102,8 +102,6 @@ void exposeRegistry(py::module& m, const char* name) {
             py::arg("data"), py::arg("obj"));
 }
 
-}  // namespace
-
 void exposeJSON(py::module& m) {
     py::module_::import("inviwopy");
 
@@ -180,6 +178,8 @@ void exposeJSON(py::module& m) {
         py::arg("outport"), py::arg("data"),
         "Update an Outport from a JSON-compatible Python object.");
 }
+
+}  // namespace
 
 }  // namespace inviwo
 

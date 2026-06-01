@@ -164,7 +164,12 @@ function(generatePythonModuleList inputfile outputfile)
         if(name STREQUAL "inviwopy") 
             continue() # skip the main module, it should be loaded first and is not a dependency for other modules
         endif()
-        string(SUBSTRING ${name} 3 -1 shortName) # remove "ivw" prefix
+        string(SUBSTRING ${name} 0 3 prefix)
+        if(prefix STREQUAL "ivw")
+            string(SUBSTRING ${name} 3 -1 shortName) # remove "ivw" prefix
+        else()
+            set(shortName ${name})
+        endif()
         string(APPEND INVIWO_PYTHON_MODULES "        {\"${shortName}\", \"${name}\"},\n")
     endforeach()
 

@@ -1,5 +1,15 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+
+## 2026-05-27 Python JSON module
+The JSON module now provides Python bindings, enabling seamless conversion between Inviwo properties, ports, and JSON-compatible Python objects (e.g., dictionaries, lists). These bindings are available under the `inviwopy.json` submodule. Added `toJson` and `fromJson` functions in `inviwopy.json` for converting properties, inports, and outports to and from JSON-compatible Python objects.
+
+## 2026-05-27 Automatic python submodule imports
+All Inviwo Python submodules are now automatically imported into `inviwopy` with their `ivw` prefix removed. For example:
+- `ivwbase` is now accessible as `inviwopy.base`
+- `ivwanimation` is now accessible as `inviwopy.animation`
+- `ivwjson` is now accessible as `inviwopy.json`
+
 ## 2026-05-08 `getIdentifier` now returns `std::string_view`
 The `getIdentifier` method in several core classes has been updated to return `std::string_view` instead of `const std::string&`. This change improves performance by avoiding unnecessary string copies and allocations.
 
