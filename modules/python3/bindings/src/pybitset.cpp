@@ -134,7 +134,9 @@ void exposeBitset(pybind11::module& m) {
             py::keep_alive<0, 1>())
         .def("__len__", &BitSet::size)
         .def("__contains__", &BitSet::contains)
-        .def("__str__", &BitSet::toString);
+        .def("__str__", &BitSet::toString)
+        .def("serialize", &BitSet::serialize)
+        .def("deserialize", &BitSet::deserialize);
 }
 
 #include <warn/pop>

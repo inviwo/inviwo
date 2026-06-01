@@ -240,6 +240,8 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
              })
 
         .def("remove", [](TFPrimitiveSet& ps, TFPrimitive& primitive) { ps.remove(primitive); })
+        .def("serialize", &TFPrimitiveSet::serialize)
+        .def("deserialize", &TFPrimitiveSet::deserialize)
         .def("__repr__", [](const TFPrimitiveSet& ps) {
             std::string str;
             fmt::format_to(std::back_inserter(str), "<TFPrimitiveSet: {} primitives", ps.size());

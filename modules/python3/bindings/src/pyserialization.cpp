@@ -57,6 +57,14 @@ void exposeSerialization(pybind11::module& m) {
         .def("getFileDir", &Serializer::getFileDir)
         .def("writeFile", [](Serializer& s) { s.writeFile(); })
         .def(
+            "write",
+            [](Serializer& s, bool format) {
+                std::pmr::string res;
+                s.write(res, format);
+                return std::string{res};
+            },
+            py::arg("format") = false)
+        .def(
             "serialize",
             [](Serializer& s, std::string_view key, std::string_view data,
                SerializationTarget target) { s.serialize(key, data, target); },
@@ -120,6 +128,14 @@ void exposeSerialization(pybind11::module& m) {
     py::classh<Deserializer>(m, "Deserializer")
         .def(py::init<const std::filesystem::path&, std::string_view>(), py::arg("filename"),
              py::arg("rootElement") = SerializeConstants::InviwoWorkspace)
+
+        .def(py::init([](const std::string& content, const std::filesystem::path& refPath,
+                         std::string_view rootElement) {
+                 return Deserializer{std::pmr::string{content}, refPath, rootElement};
+             }),
+             py::arg("content"), py::arg("refPath") = std::filesystem::path{},
+             py::arg("rootElement") = SerializeConstants::InviwoWorkspace)
+
         .def("getFileName", &Deserializer::getFileName)
         .def("getFileDir", &Deserializer::getFileDir)
 
