@@ -56,57 +56,7 @@ TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values)
 
 TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values,
                                    TFPrimitiveSetType type)
-    : TFPrimitiveSet(values, type)
-    , maskMin_{type == TFPrimitiveSetType::Relative ? 0.0 : std::numeric_limits<double>::lowest()}
-    , maskMax_{type == TFPrimitiveSetType::Relative ? 1.0 : std::numeric_limits<double>::max()} {}
-
-void TransferFunction::setMask(dvec2 mask) {
-    if (maskMin_ != mask.x || maskMax_ != mask.y) {
-        maskMin_ = mask.x;
-        maskMax_ = mask.y;
-        notifyTFMaskChanged(*this, mask);
-    }
-}
-
-dvec2 TransferFunction::getMask() const { return dvec2{maskMin_, maskMax_}; }
-
-void TransferFunction::setMaskMin(double maskMin) {
-    if (maskMin_ != maskMin) {
-        maskMin_ = maskMin;
-        notifyTFMaskChanged(*this, dvec2{maskMin_, maskMax_});
-    }
-}
-
-double TransferFunction::getMaskMin() const { return maskMin_; }
-
-void TransferFunction::setMaskMax(double maskMax) {
-    if (maskMax_ != maskMax) {
-        maskMax_ = maskMax;
-        notifyTFMaskChanged(*this, dvec2{maskMin_, maskMax_});
-    }
-}
-
-double TransferFunction::getMaskMax() const { return maskMax_; }
-
-void TransferFunction::clearMask() {
-    if (getType() == TFPrimitiveSetType::Relative) {
-        setMask(dvec2{0.0, 1.0});
-    } else {
-        setMask(dvec2{std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()});
-    }
-}
-
-void TransferFunction::serialize(Serializer& s) const {
-    s.serialize("maskMin", maskMin_);
-    s.serialize("maskMax", maskMax_);
-    TFPrimitiveSet::serialize(s);
-}
-
-void TransferFunction::deserialize(Deserializer& d) {
-    d.deserialize("maskMin", maskMin_);
-    d.deserialize("maskMax", maskMax_);
-    TFPrimitiveSet::deserialize(d);
-}
+    : TFPrimitiveSet(values, type) {}
 
 vec4 TransferFunction::sample(double v) const { return interpolateColor(v); }
 
@@ -147,30 +97,11 @@ std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrim
     return simple;
 }
 
-void TransferFunction::interpolateAndStoreColors(std::span<vec4> data) const {
-    TFPrimitiveSet::interpolateAndStoreColors(data);
-    const auto size = static_cast<double>(data.size());
-    const auto range = getRange();
-    const auto rangeInv = (range.y > range.x) ? 1.0 / (range.y - range.x) : 1.0;
-    // Convert mask positions to normalized texture fractions [0,1]
-    const auto normMaskMin = (maskMin_ - range.x) * rangeInv;
-    const auto normMaskMax = (maskMax_ - range.x) * rangeInv;
-    for (auto i = size_t{0}; i < static_cast<size_t>(normMaskMin * size); i++) {
-        data[i].a = 0.0;
-    }
-    for (auto i = static_cast<size_t>(normMaskMax * size); i < data.size(); i++) {
-        data[i].a = 0.0;
-    }
-}
-
 std::string_view TransferFunction::serializationKey() const { return "Points"; }
 
 std::string_view TransferFunction::serializationItemKey() const { return "Point"; }
 
 bool operator==(const TransferFunction& lhs, const TransferFunction& rhs) {
-    if (lhs.maskMin_ != rhs.maskMin_) return false;
-    if (lhs.maskMax_ != rhs.maskMax_) return false;
-
     return static_cast<const TFPrimitiveSet&>(lhs) == static_cast<const TFPrimitiveSet&>(rhs);
 }
 

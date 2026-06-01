@@ -35,6 +35,56 @@
 
 namespace inviwo {
 
+namespace detail {
+
+namespace {
+
+constexpr std::string_view applyAbsolute = R"(
+vec4 applyTF_{tf}(float normalizedValue, RangeConversionMap normToValue) {{
+    return applyTF({tf}, {tf}Params, normToValue, normalizedValue);
+}}
+)";
+
+constexpr std::string_view applyRelative = R"(
+vec4 applyTF_{tf}(float normalizedValue, RangeConversionMap normToValue) {{
+    return applyTF({tf}, normalizedValue);
+}}
+)";
+
+}  // namespace
+
+void addSegmentsFor(std::vector<ShaderComponent::Segment>& dest,
+                    const TransferFunctionProperty& tf) {
+    using fmt::literals::operator""_a;
+
+    dest.emplace_back(R"(#include "utils/classification.glsl")", placeholder::include, 1000 + 1);
+
+    dest.emplace_back(fmt::format("uniform sampler2D {};", tf.getIdentifier()),
+                      placeholder::uniform, 1050 + 1);
+
+    if (tf.get().getType() == TFPrimitiveSetType::Absolute) {
+        dest.emplace_back(fmt::format("uniform TFParameters {}Params;", tf.getIdentifier()),
+                          placeholder::uniform, 1050 + 2);
+        dest.emplace_back(fmt::format(applyAbsolute, "tf"_a = tf.getIdentifier()),
+                          placeholder::uniform, 1050 + 9);
+    } else {
+        dest.emplace_back(fmt::format(applyRelative, "tf"_a = tf.getIdentifier()),
+                          placeholder::uniform, 1050 + 9);
+    }
+}
+
+void setUniforms(Shader& shader, const TransferFunctionProperty& tf) {
+    if (tf.get().getType() == TFPrimitiveSetType::Absolute) {
+        const auto range = tf.get().getRange();
+        const auto name = tf.getIdentifier();
+        StrBuffer buff;
+        shader.setUniform(buff.replace("{}Params.rangeMin", name), static_cast<float>(range.x));
+        shader.setUniform(buff.replace("{}Params.rangeMax", name), static_cast<float>(range.y));
+    }
+}
+
+}  // namespace detail
+
 TFComponent::TFComponent(std::string_view identifier, std::string_view name, Document help,
                          VolumeInport& volume)
     : ShaderComponent()
@@ -44,41 +94,20 @@ TFComponent::TFComponent(std::string_view identifier, std::string_view name, Doc
          TransferFunction(
              {{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
          &volume,
-         InvalidationLevel::InvalidResources}
-    , volume_{volume} {}
+         InvalidationLevel::InvalidResources} {}
 
 std::string_view TFComponent::getName() const { return tf.getIdentifier(); }
 
-void TFComponent::initializeResources(Shader& shader) {
-    const bool absolute = tf.get().getType() == TFPrimitiveSetType::Absolute;
-    const auto define = fmt::format("TF_ABSOLUTE_{}", toUpper(tf.getIdentifier()));
-    shader.getFragmentShaderObject()->setShaderDefine(define, absolute);
-}
-
 void TFComponent::process(Shader& shader, TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader, cont, tf);
-
-    if (tf.get().getType() == TFPrimitiveSetType::Absolute) {
-        const auto range = tf.get().getRange();
-        const auto name = tf.getIdentifier();
-        StrBuffer buff;
-        shader.setUniform(buff.replace("{}Params.rangeMin", name),
-                          static_cast<float>(range.x));
-        shader.setUniform(buff.replace("{}Params.rangeMax", name),
-                          static_cast<float>(range.y));
-    }
+    detail::setUniforms(shader, tf);
 }
 
 std::vector<Property*> TFComponent::getProperties() { return {&tf}; }
 
 auto TFComponent::getSegments() -> std::vector<Segment> {
     std::vector<Segment> segments;
-    segments.push_back(
-        Segment{fmt::format("uniform sampler2D {};", tf.getIdentifier()), placeholder::uniform,
-                1050 + 1});
-    segments.push_back(
-        Segment{fmt::format("uniform TFParameters {}Params;", tf.getIdentifier()),
-                placeholder::uniform, 1050 + 2});
+    detail::addSegmentsFor(segments, tf);
     return segments;
 }
 

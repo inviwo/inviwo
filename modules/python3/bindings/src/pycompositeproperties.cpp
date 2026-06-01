@@ -134,7 +134,6 @@ void exposeCompositeProperties(py::module& m) {
             "tf",
             py::cpp_function([](IsoTFProperty& tp) -> TransferFunctionProperty& { return tp.tf_; },
                              py::return_value_policy::reference_internal))
-        .def_property("mask", &IsoTFProperty::getMask, &IsoTFProperty::setMask)
         .def_property("zoomH", &IsoTFProperty::getZoomH, &IsoTFProperty::setZoomH)
         .def_property("zoomV", &IsoTFProperty::getZoomV, &IsoTFProperty::setZoomV);
 

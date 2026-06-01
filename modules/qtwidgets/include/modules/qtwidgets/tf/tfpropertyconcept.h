@@ -64,11 +64,6 @@ public:
     virtual TransferFunction* getTransferFunction() const = 0;
     virtual IsoValueCollection* getIsovalues() const = 0;
 
-    virtual bool supportsMask() const = 0;
-    virtual void setMask(double maskMin, double maskMax) = 0;
-    virtual const dvec2 getMask() const = 0;
-    virtual void clearMask() = 0;
-
     virtual void setZoomH(double zoomHMin, double zoomHMax) = 0;
     virtual const dvec2& getZoomH() const = 0;
 
@@ -88,6 +83,9 @@ public:
 
     virtual void showExportDialog() const = 0;
     virtual void showImportDialog() = 0;
+
+    virtual dvec2 getRange() const = 0;
+    virtual bool isAbsolute() const = 0;
 
     virtual std::span<TFPrimitiveSet*> sets() = 0;
 
@@ -131,6 +129,24 @@ public:
         }
     }
 
+    virtual bool isAbsolute() const override {
+        return (sets_[0]->getType() == TFPrimitiveSetType::Absolute) ||
+               (sets_[1] && (sets_[1]->getType() == TFPrimitiveSetType::Absolute));
+    };
+
+    virtual dvec2 getRange() const override {
+        if (isAbsolute()) {
+            auto range = sets_[0]->getRange();
+            if (sets_[1]) {
+                const auto range1 = sets_[1]->getRange();
+                range = dvec2{std::min(range.x, range1.x), std::max(range.y, range1.y)};
+            }
+            return range;
+        } else {
+            return dvec2{0.0, 1.0};
+        }
+    };
+
     virtual bool hasTF() const override { return getTFProperty() != nullptr; }
     virtual bool hasIsovalues() const override { return getIsoValueProperty() != nullptr; }
 
@@ -164,25 +180,6 @@ public:
             return &iso->get();
         } else {
             return nullptr;
-        }
-    }
-
-    virtual bool supportsMask() const override { return hasTF(); }
-    virtual void setMask(double maskMin, double maskMax) override {
-        if (auto tf = getTFProperty()) {
-            tf->setMask(maskMin, maskMax);
-        }
-    }
-    virtual const dvec2 getMask() const override {
-        if (auto tf = getTFProperty()) {
-            return tf->getMask();
-        } else {
-            return {};
-        }
-    }
-    virtual void clearMask() override {
-        if (auto tf = getTFProperty()) {
-            tf->clearMask();
         }
     }
 

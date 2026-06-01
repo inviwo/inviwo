@@ -50,8 +50,6 @@
 #include <Qt>
 #include <QGuiApplication>
 
-
-
 namespace inviwo {
 
 PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, const std::string& widgetName,
@@ -73,6 +71,10 @@ PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, const std::st
     });
     property->addObserver(this);
     setFloating(true);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 9, 0))
+    setDockLocation(Qt::RightDockWidgetArea);
+#endif
 }
 
 PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, const std::string& widgetName)
@@ -161,13 +163,18 @@ void PropertyEditorWidgetQt::loadState() {
     }
 
     if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
-        if (getProperty()->hasMetaData<IntMetaData>(dockareaKey)) {
-            auto dockarea = static_cast<Qt::DockWidgetArea>(getProperty()->getMetaData<IntMetaData>(
-                dockareaKey, static_cast<int>(Qt::NoDockWidgetArea)));
-            mainWindow->addDockWidget(dockarea, this);
-        } else if (settings.contains("dockarea")) {
-            auto dockarea = static_cast<Qt::DockWidgetArea>(settings.value("dockarea").toInt());
-            mainWindow->addDockWidget(dockarea, this);
+        const auto dockArea = [&]() {
+            if (getProperty()->hasMetaData<IntMetaData>(dockareaKey)) {
+                return static_cast<Qt::DockWidgetArea>(getProperty()->getMetaData<IntMetaData>(
+                    dockareaKey, static_cast<int>(Qt::NoDockWidgetArea)));
+            } else if (settings.contains("dockarea")) {
+                return static_cast<Qt::DockWidgetArea>(settings.value("dockarea").toInt());
+            } else {
+                return Qt::NoDockWidgetArea;
+            }
+        }();
+        if (dockArea != Qt::NoDockWidgetArea) {
+            mainWindow->addDockWidget(dockArea, this);
         }
     }
 

@@ -51,18 +51,6 @@ public:
     TransferFunction& operator=(TransferFunction&& rhs) noexcept = default;
     virtual ~TransferFunction() = default;
 
-    void setMask(dvec2 mask);
-    dvec2 getMask() const;
-    void setMaskMin(double maskMin);
-    double getMaskMin() const;
-    void setMaskMax(double maskMax);
-    double getMaskMax() const;
-
-    void clearMask();
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
     /**
      * Sample the transfer function at position v and return the respective color and
      * opacity (rgba). The range of the transfer function is [0,1].
@@ -94,15 +82,9 @@ public:
     friend IVW_CORE_API bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
     friend IVW_CORE_API bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);
 
-    virtual void interpolateAndStoreColors(std::span<vec4> data) const override;
-
 protected:
     virtual std::string_view serializationKey() const override;
     virtual std::string_view serializationItemKey() const override;
-
-private:
-    double maskMin_;
-    double maskMax_;
 };
 
 template <>

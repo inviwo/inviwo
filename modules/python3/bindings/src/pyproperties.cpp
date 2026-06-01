@@ -223,8 +223,6 @@ void exposeProperties(pybind11::module& m) {
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
-        .def_property("mask", &TransferFunctionProperty::getMask,
-                      &TransferFunctionProperty::setMask)
         .def_property("zoomH", &TransferFunctionProperty::getZoomH,
                       &TransferFunctionProperty::setZoomH)
         .def_property("zoomV", &TransferFunctionProperty::getZoomV,

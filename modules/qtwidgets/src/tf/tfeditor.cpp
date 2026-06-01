@@ -49,7 +49,6 @@
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>
 #include <modules/qtwidgets/tf/tfutils.h>
-#include <modules/qtwidgets/tf/tfeditormask.h>
 
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/io/serialization/deserializer.h>
@@ -124,9 +123,8 @@ TFEditor::TFEditor(TFPropertyConcept* tfProperty, QWidget* parent)
     , mouse_{}
     , groups_(10)
     , moveMode_{TFMoveMode::Free}
-    , maskMin_{std::make_unique<TFEditorMaskMin>(concept_)}
-    , maskMax_{std::make_unique<TFEditorMaskMax>(concept_)}
-    , selectNewPrimitives_{false} {
+    , selectNewPrimitives_{false}
+    , range_{} {
 
     setItemIndexMethod(QGraphicsScene::NoIndex);
 
@@ -151,11 +149,6 @@ TFEditor::TFEditor(TFPropertyConcept* tfProperty, QWidget* parent)
     }
     activeSet_ = primitives_.begin()->first;
     updateConnections();
-
-    addItem(maskMin_.get());
-    addItem(maskMax_.get());
-    maskMin_->setPos(QPointF{concept_->getMask().x, 0.5});
-    maskMax_->setPos(QPointF{concept_->getMask().y, 0.5});
 }
 
 TFEditor::~TFEditor() = default;
@@ -173,7 +166,7 @@ void TFEditor::onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) {
         items.connected = false;
         createAndInsertPrimitive<TFEditorIsovalue>(items.points, p, this, selectNewPrimitives_);
     }
-    if (isAbsolute()) updateSceneRect();
+    updateSceneRect();
 }
 void TFEditor::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
     // remove point from all groups
@@ -195,7 +188,7 @@ void TFEditor::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
     if (items.connected) {
         updateConnections();
     }
-    if (isAbsolute()) updateSceneRect();
+    updateSceneRect();
 }
 void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& primitive) {
     if (const auto* dm = concept_->getDataMap()) {
@@ -207,10 +200,10 @@ void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive
             it->second->setPositionAlpha(mirrorPos, primitive.getAlpha());
         }
     }
-}
-void TFEditor::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {
+
     updateSceneRect();
 }
+void TFEditor::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) { updateSceneRect(); }
 
 void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
@@ -225,9 +218,12 @@ void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 
             mouse_.dragItem = start;
             mouse_.rigid = calcTransformRef(selected, start);
-        } else {
+        } else if (e->modifiers() & Qt::ControlModifier) {
+            views().front()->setDragMode(QGraphicsView::ScrollHandDrag);
             mouse_.dragItem = nullptr;
+        } else {
             views().front()->setDragMode(QGraphicsView::RubberBandDrag);
+            mouse_.dragItem = nullptr;
         }
     }
     QGraphicsScene::mousePressEvent(e);
@@ -291,6 +287,11 @@ void TFEditor::keyPressEvent(QKeyEvent* keyEvent) {
     const auto k = keyEvent->key();
     const auto m = keyEvent->modifiers();
 
+    if (m & Qt::ControlModifier) {
+        views().front()->setDragMode(QGraphicsView::ScrollHandDrag);
+        QGuiApplication::setOverrideCursor(Qt::ClosedHandCursor);
+    }
+
     if (k == Qt::Key_A && m == Qt::ControlModifier) {  // Select all
         selectAll();
         keyEvent->accept();
@@ -341,12 +342,19 @@ void TFEditor::keyPressEvent(QKeyEvent* keyEvent) {
     }
 }
 
+void TFEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
+    views().front()->setDragMode(QGraphicsView::NoDrag);
+    QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
+    QGraphicsScene::keyReleaseEvent(keyEvent);
+}
+
 void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     const auto pos(e->scenePos());
     auto* const primitiveUnderMouse = getTFPrimitiveItemAt(pos);
 
     // If right-clicking on an unselected primitive, add it to the selection.
-    // If right-clicking on empty space or an already selected primitive, keep the selection as-is.
+    // If right-clicking on empty space or an already selected primitive, keep the selection
+    // as-is.
     if (primitiveUnderMouse && !primitiveUnderMouse->isSelected()) {
         primitiveUnderMouse->setSelected(true);
     }
@@ -523,26 +531,6 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         }
     }
 
-    if (concept_->supportsMask()) {
-        auto* maskMenu = menu.addMenu("&Mask");
-        // TF masking
-        auto* maskBegin = maskMenu->addAction("Set &Begin");
-        auto* maskEnd = maskMenu->addAction("Set &End");
-        maskMenu->addSeparator();
-        auto* clearAction = maskMenu->addAction("&Clear");
-
-        connect(maskBegin, &QAction::triggered, this,
-                [this, pos]() {
-                    concept_->setMask(sceneToPos(pos), concept_->getMask().y);
-                });
-        connect(maskEnd, &QAction::triggered, this,
-                [this, pos]() {
-                    concept_->setMask(concept_->getMask().x, sceneToPos(pos));
-                });
-
-        connect(clearAction, &QAction::triggered, this, [this]() { concept_->clearMask(); });
-    }
-
     menu.addSeparator();
 
     {
@@ -610,7 +598,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 }
 
 double TFEditor::sceneToPos(const QPointF& pos) const {
-    if (isAbsolute()) {
+    if (concept_->isAbsolute()) {
         return pos.x();  // scene x IS the data-space position in absolute mode
     }
     return glm::clamp(pos.x() / width(), 0.0, 1.0);
@@ -619,36 +607,27 @@ double TFEditor::sceneToAlpha(const QPointF& pos) const {
     return glm::clamp(pos.y() / height(), 0.0, 1.0);
 }
 
-bool TFEditor::isAbsolute() const {
-    for (auto* set : concept_->sets()) {
-        if (set->getType() == TFPrimitiveSetType::Absolute) {
-            return true;
-        }
-    }
-    return false;
-}
-
 void TFEditor::updateSceneRect() {
-    if (isAbsolute()) {
+    if (concept_->isAbsolute()) {
         // For absolute mode, scene x range covers the TF data range with some padding
-        dvec2 range{0.0, 1.0};
-        bool first = true;
-        for (auto* set : concept_->sets()) {
-            const auto r = set->getRange();
-            if (first) {
-                range = r;
-                first = false;
-            } else {
-                range.x = std::min(range.x, r.x);
-                range.y = std::max(range.y, r.y);
+        const auto range = concept_->getRange();
+        if (range == range_) return;  // no change in range, no need to update
+
+        range_ = range;
+
+        const double extent = range.y - range.x;
+        const double padding = extent * 0.5;
+        setSceneRect(range.x - padding, 0.0, extent + 2 * padding, 1.0);
+
+        for (auto&& [set, items] : primitives_) {
+            if (!items.connected) continue;
+            for (auto& elem : items.connections) {
+                elem->updateShape();
             }
         }
-        // Add 5% padding on each side
-        const double extent = range.y - range.x;
-        const double padding = std::max(extent * 0.05, 0.01);
-        setSceneRect(range.x - padding, 0.0, extent + 2 * padding, 1.0);
     } else {
         setSceneRect(0.0, 0.0, 1.0, 1.0);
+        range_.reset();
     }
 }
 
@@ -682,7 +661,7 @@ void TFEditor::addPeak(const QPointF& scenePos, TFPrimitiveSet* set) {
 
     const double normalizedOffset = viewDependentOffset().x * 5.0 / width();
 
-    if (isAbsolute()) {
+    if (concept_->isAbsolute()) {
         // In absolute mode, offset is in data-space units
         const double leftAlpha = std::max(0.0, alpha * 0.5);
         set->add(pos - normalizedOffset, leftAlpha);
@@ -699,8 +678,7 @@ void TFEditor::addPeak(const QPointF& scenePos, TFPrimitiveSet* set) {
         // add point to the right
         if (pos < 1.0) {
             // compute intercept on alpha by using alpha + alpha / offset * (pos - 1.0)
-            const double rightAlpha =
-                std::max(0.0, alpha * (1.0 + (pos - 1.0) / normalizedOffset));
+            const double rightAlpha = std::max(0.0, alpha * (1.0 + (pos - 1.0) / normalizedOffset));
             set->add(std::min(pos + normalizedOffset, 1.0), rightAlpha);
         }
     }
@@ -792,6 +770,8 @@ const DataMapper& TFEditor::getDataMapper() const {
         return dataMap;
     }
 }
+
+bool TFEditor::isAbsolute() const { return concept_->isAbsolute(); }
 
 std::vector<TFPrimitive*> TFEditor::getSelectedPrimitives() const {
     std::vector<TFPrimitive*> selection;
@@ -885,9 +865,14 @@ void TFEditor::move(std::span<TFEditorPrimitive*> primitives, const QTransform& 
     } else {
         std::ranges::stable_sort(primitives, less);
     }
-    std::ranges::for_each(primitives, [&](TFEditorPrimitive* p) {
-        p->setPos(utilqt::clamp(transform.map(p->pos()), rect));
-    });
+    if (concept_->isAbsolute()) {
+        std::ranges::for_each(primitives,
+                              [&](TFEditorPrimitive* p) { p->setPos(transform.map(p->pos())); });
+    } else {
+        std::ranges::for_each(primitives, [&](TFEditorPrimitive* p) {
+            p->setPos(utilqt::clamp(transform.map(p->pos()), rect));
+        });
+    }
 }
 
 void TFEditor::copy() {

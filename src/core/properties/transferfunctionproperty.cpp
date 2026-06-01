@@ -167,7 +167,6 @@ TransferFunctionProperty& TransferFunctionProperty::setCurrentStateAsDefault() {
 
 TransferFunctionProperty& TransferFunctionProperty::setDefault(const TransferFunction& tf) {
     tf_.defaultPoints = tf.get();
-    tf_.defaultMask = tf.getMask();
     return *this;
 }
 
@@ -192,21 +191,6 @@ void TransferFunctionProperty::deserialize(Deserializer& d) {
     modified |= histogramSelection_.deserialize(d, serializationMode_);
     if (modified) propertyModified();
 }
-
-TransferFunctionProperty& TransferFunctionProperty::setMask(double maskMin, double maskMax) {
-    if (maskMax < maskMin) {
-        maskMax = maskMin;
-    }
-    tf_.value.setMask(dvec2{maskMin, maskMax});
-    return *this;
-}
-
-TransferFunctionProperty& TransferFunctionProperty::clearMask() {
-    tf_.value.clearMask();
-    return *this;
-}
-
-dvec2 TransferFunctionProperty::getMask() const { return tf_.value.getMask(); }
 
 const dvec2& TransferFunctionProperty::getZoomH() const { return zoomH_; }
 
@@ -279,11 +263,10 @@ void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitiveSet&, const
 }
 void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {
     invalidLookup_ = true;
+    const auto level = getInvalidationLevel();
+    setInvalidationLevel(InvalidationLevel::InvalidResources);
     propertyModified();
-}
-void TransferFunctionProperty::onTFMaskChanged(const TFPrimitiveSet&, dvec2) {
-    invalidLookup_ = true;
-    propertyModified();
+    setInvalidationLevel(level);
 }
 
 }  // namespace inviwo

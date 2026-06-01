@@ -237,17 +237,20 @@ void IsoValueProperty::set(const IsoTFProperty* p) { set(p->isovalues_.get()); }
 void IsoValueProperty::set(const IsoValueProperty* p) { set(p->iso_.value); }
 
 void IsoValueProperty::onTFPrimitiveAdded(const TFPrimitiveSet&, TFPrimitive&) {
+    const auto level = getInvalidationLevel();
     setInvalidationLevel(InvalidationLevel::InvalidResources);
     propertyModified();
+    setInvalidationLevel(level);
 }
 
 void IsoValueProperty::onTFPrimitiveRemoved(const TFPrimitiveSet&, TFPrimitive&) {
+    const auto level = getInvalidationLevel();
     setInvalidationLevel(InvalidationLevel::InvalidResources);
     propertyModified();
+    setInvalidationLevel(level);
 }
 
 void IsoValueProperty::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {
-    setInvalidationLevel(InvalidationLevel::InvalidOutput);
     propertyModified();
 }
 

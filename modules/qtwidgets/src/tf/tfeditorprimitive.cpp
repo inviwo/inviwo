@@ -147,7 +147,9 @@ QVariant TFEditorPrimitive::itemChange(GraphicsItemChange change, const QVariant
     // check for scene() here in order to avoid callbacks as long as item is not added to scene
     if ((change == QGraphicsItem::ItemPositionChange) && scene()) {
         // constrain positions to valid view positions
-        return utilqt::clamp(constrainPosToXorY(value.toPointF()), scene()->sceneRect());
+
+        const QRectF r{scene()->sceneRect().x(), 0.0, scene()->sceneRect().width(), 1.0};
+        return utilqt::clamp(constrainPosToXorY(value.toPointF()), r);
     } else if (change == QGraphicsItem::ItemPositionHasChanged) {
         if (!isEditing_) {
             isEditing_ = true;

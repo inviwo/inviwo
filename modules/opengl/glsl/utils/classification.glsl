@@ -44,25 +44,25 @@ vec4 applyTF(sampler2D transferFunction, float intensity) {
 
 // Absolute TF mode: remap normalized voxel value through the volume's data range into TF texture
 // space. The TF texture covers [tfParams.rangeMin, tfParams.rangeMax] in data-space coordinates.
-vec4 applyTF(sampler2D transferFunction, TFParameters tfParams, NormalizationMap texToNormalized,
+vec4 applyTF(sampler2D transferFunction, TFParameters tfParams, RangeConversionMap normToValue,
              vec4 voxel) {
     // Convert from normalized [0,1] back to data-space value
-    float absValue = voxel.r / texToNormalized.scale + texToNormalized.offset;
+    float absValue = (voxel.r - normToValue.inputOffset) * normToValue.scale;
     // Map from data-space to TF texture coordinate [0,1]
     float tfCoord = (absValue - tfParams.rangeMin) / (tfParams.rangeMax - tfParams.rangeMin);
     return texture(transferFunction, vec2(clamp(tfCoord, 0.0, 1.0), 0.5));
 }
 
-vec4 applyTF(sampler2D transferFunction, TFParameters tfParams, NormalizationMap texToNormalized,
+vec4 applyTF(sampler2D transferFunction, TFParameters tfParams, RangeConversionMap normToValue,
              vec4 voxel, int channel) {
-    float absValue = voxel[channel] / texToNormalized.scale + texToNormalized.offset;
+    float absValue = (voxel[channel] - normToValue.inputOffset) * normToValue.scale;
     float tfCoord = (absValue - tfParams.rangeMin) / (tfParams.rangeMax - tfParams.rangeMin);
     return texture(transferFunction, vec2(clamp(tfCoord, 0.0, 1.0), 0.5));
 }
 
-vec4 applyTF(sampler2D transferFunction, TFParameters tfParams, NormalizationMap texToNormalized,
+vec4 applyTF(sampler2D transferFunction, TFParameters tfParams, RangeConversionMap normToValue,
              float intensity) {
-    float absValue = intensity / texToNormalized.scale + texToNormalized.offset;
+    float absValue = (intensity - normToValue.inputOffset) * normToValue.scale;
     float tfCoord = (absValue - tfParams.rangeMin) / (tfParams.rangeMax - tfParams.rangeMin);
     return texture(transferFunction, vec2(clamp(tfCoord, 0.0, 1.0), 0.5));
 }

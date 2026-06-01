@@ -37,7 +37,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/image/layergl.h>                     // IWYU pragma: keep
+#include <modules/opengl/image/layergl.h>  // IWYU pragma: keep
 #include <modules/opengl/texture/textureutils.h>
 
 #include <algorithm>
@@ -50,6 +50,14 @@
 #include <fmt/core.h>
 
 namespace inviwo {
+
+namespace detail {
+
+IVW_MODULE_BASEGL_API void setUniforms(Shader& shader, const TransferFunctionProperty& tf);
+IVW_MODULE_BASEGL_API void addSegmentsFor(std::vector<ShaderComponent::Segment>& dest,
+                                          const TransferFunctionProperty& tf);
+
+}  // namespace detail
 
 /**
  * Adds a TransferFunctionProperty, and binds it to uniforms in the shader.
@@ -64,7 +72,6 @@ public:
 
     virtual std::string_view getName() const override;
 
-    virtual void initializeResources(Shader& shader) override;
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;
 
     virtual std::vector<Property*> getProperties() override;
@@ -72,9 +79,6 @@ public:
     virtual std::vector<Segment> getSegments() override;
 
     TransferFunctionProperty tf;
-
-private:
-    VolumeInport& volume_;
 };
 
 }  // namespace inviwo

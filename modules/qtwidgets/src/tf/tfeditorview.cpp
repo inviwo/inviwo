@@ -27,12 +27,14 @@
  *
  *********************************************************************************/
 
+#include <modules/qtwidgets/tf/tfeditorview.h>
+
+#include <inviwo/core/algorithm/axislabeling.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/histogram.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/zip.h>
-#include <modules/qtwidgets/tf/tfeditorview.h>
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -64,6 +66,7 @@
 #include <QWheelEvent>
 #include <Qt>
 #include <QBrush>
+#include <QScrollBar>
 #include <QtGlobal>
 #include <glm/vec2.hpp>
 
@@ -74,53 +77,75 @@ class QWidget;
 
 namespace inviwo {
 
+namespace {
+constexpr int viewMargin = 10;
+}
+
 TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene, QWidget* parent)
     : QGraphicsView(scene, parent)
     , property_{tfProperty}
     , histogramState_{
           .mode = tfProperty->getHistogramMode(),
           .selection = tfProperty->getHistogramSelection(),
-          .dataMap = DataMapper{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}},
-      } {
+      }
+    , leftPressed_{false}
+    , zooming_{false} {
 
     setMouseTracking(true);
     setRenderHint(QPainter::Antialiasing, true);
     setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
 
-    this->setCacheMode(QGraphicsView::CacheBackground);
+    setFocusPolicy(Qt::StrongFocus);
+    scale(1.0, -1.0);  // put origin to bottom left corner
+    setAlignment(Qt::AlignLeft | Qt::AlignBottom);
+    setMinimumSize(255, 100);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    setDragMode(QGraphicsView::NoDrag);
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+    setCornerWidget(new QWidget());
 
     property_->addObserver(this);
 
+    connect(scene, &QGraphicsScene::sceneRectChanged, this, [this](const QRectF&) {
+        if (leftPressed_) return;
+        onSceneRectChanged();
+    });
     histogramChangeHandle_ =
         property_->onHistogramChange([this](TFPropertyConcept::HistogramChange change,
                                             const std::vector<Histogram1D>& histograms) {
             histogramState_.change = change;
             histogramState_.histograms = histograms;
-            if (const auto* dataMap = property_->getDataMap()) {
-                histogramState_.dataMap = *dataMap;
-            } else {
-                histogramState_.dataMap.dataRange = dvec2{0.0, 1.0};
-                histogramState_.dataMap.valueRange = dvec2{0.0, 1.0};
-            }
             histogramState_.polygons = HistogramState::createHistogramPolygons(
-                histogramState_.histograms, histogramState_.mode, histogramState_.dataMap);
+                histogramState_.histograms, histogramState_.mode);
             resetCachedContent();
             update();
         });
+
+    setSceneRectWithMargin(scene->sceneRect());
+    updateZoomFromProperty();
 }
 
 TFEditorView::~TFEditorView() = default;
 
-void TFEditorView::onZoomHChange(const dvec2&) { updateZoom(); }
+void TFEditorView::onZoomHChange(const dvec2&) { updateZoomFromProperty(); }
 
-void TFEditorView::onZoomVChange(const dvec2&) { updateZoom(); }
+void TFEditorView::onZoomVChange(const dvec2&) { updateZoomFromProperty(); }
+
+void TFEditorView::setSceneRectWithMargin(const QRectF& sceneRect) {
+    const auto margin = mapToScene(QRect{0, 0, viewMargin, viewMargin}).boundingRect();
+    const auto padded = sceneRect.marginsAdded(
+        QMarginsF{margin.width(), margin.height(), margin.width(), margin.width()});
+    setSceneRect(padded);
+}
 
 void TFEditorView::onHistogramModeChange(HistogramMode mode) {
     if (histogramState_.mode != mode) {
         histogramState_.mode = mode;
 
         histogramState_.polygons = HistogramState::createHistogramPolygons(
-            histogramState_.histograms, histogramState_.mode, histogramState_.dataMap);
+            histogramState_.histograms, histogramState_.mode);
         resetCachedContent();
         update();
     }
@@ -134,104 +159,90 @@ void TFEditorView::onHistogramSelectionChange(HistogramSelection selection) {
     }
 }
 
+void TFEditorView::keyPressEvent(QKeyEvent* event) { QGraphicsView::keyPressEvent(event); }
+void TFEditorView::keyReleaseEvent(QKeyEvent* event) { QGraphicsView::keyReleaseEvent(event); }
+
 void TFEditorView::wheelEvent(QWheelEvent* event) {
-    const QPointF numPixels = event->pixelDelta() / 5.0;
-    const QPointF numDegrees = event->angleDelta() / 8.0 / 15;
-
-    const dvec2 scrollStep(0.2, 0.2);
-
-    dvec2 delta;
-    if (!numPixels.isNull()) {
-        delta = dvec2(numPixels.x(), numPixels.y());
-    } else if (!numDegrees.isNull()) {
-        delta = dvec2(numDegrees.x(), numDegrees.y());
-    } else {
-        return;
-    }
-
-    const NetworkLock lock(property_->getProperty());
-
-    const bool absolute = std::ranges::any_of(property_->sets(), [](const auto* set) {
-        return set->getType() == TFPrimitiveSetType::Absolute;
-    });
-
-    if (event->modifiers() == Qt::ControlModifier) {
-        // zoom only horizontally relative to wheel event position
-        const double zoomFactor = std::pow(1.05, std::max(-15.0, std::min(15.0, -delta.y)));
-
-        const dvec2 horizontal = property_->getZoomH();
-        const double zoomExtent = horizontal.y - horizontal.x;
-
-        // off-center zooming
-        // relative position within current zoom range
-        auto zoomCenter = event->position().x() / width() * zoomExtent + horizontal.x;
-
-        const double lower = zoomCenter + (horizontal.x - zoomCenter) * zoomFactor;
-        const double upper = zoomCenter + (horizontal.y - zoomCenter) * zoomFactor;
-
-        if (absolute) {
-            property_->setZoomH(lower, upper);
-        } else {
-            property_->setZoomH(std::max(0.0, lower), std::min(1.0, upper));
+    util::KeepTrueWhileInScope keepTrue(&zooming_);
+    if (event->modifiers() & Qt::ControlModifier) {
+        const QPointF numPixels = event->pixelDelta() / 5.0;
+        const QPointF numDegrees = event->angleDelta() / 8.0 / 15;
+        double dx = 1.0;
+        double dy = 1.0;
+        if (!numPixels.isNull()) {
+            dx = qPow(1.025, std::max(-15.0, std::min(15.0, numPixels.x())));
+            dy = qPow(1.025, std::max(-15.0, std::min(15.0, -numPixels.y())));
+        } else if (!numDegrees.isNull()) {
+            dx = qPow(1.025, std::max(-15.0, std::min(15.0, numDegrees.x())));
+            dy = qPow(1.025, std::max(-15.0, std::min(15.0, -numDegrees.y())));
         }
-    } else {
-        // vertical scrolling (+ optional horizontal if two-axis wheel)
 
         if (event->modifiers() & Qt::ShiftModifier) {
-            // horizontal scrolling: map vertical wheel movement to horizontal direction
-            delta.x = -delta.y;
-            delta.y = 0.0;
+            dx = dy;
+            dy = 1.0;
+        } else if (event->modifiers() & Qt::AltModifier) {
+            dx = 1.0;
         }
 
-        dvec2 horizontal = property_->getZoomH();
-        dvec2 vertical = property_->getZoomV();
-        const dvec2 extent(horizontal.y - horizontal.x, vertical.y - vertical.x);
-        // scale scroll step with current zoom range
-        delta *= scrollStep * extent;
+        const auto hight = static_cast<double>(viewport()->height() - 2 * viewMargin);
+        const auto width = static_cast<double>(viewport()->width() - 2 * viewMargin);
 
-        // separate horizontal and vertical scrolling
-        if (absolute) {
-            horizontal.x += delta.x;
-            horizontal.y += delta.x;
-        } else {
-            if (delta.x < 0.0) {
-                horizontal.x = std::max(0.0, horizontal.x + delta.x);
-                horizontal.y = horizontal.x + extent.x;
-            } else if (delta.x > 0.0) {
-                horizontal.y = std::min(1.0, horizontal.y + delta.x);
-                horizontal.x = horizontal.y - extent.x;
-            }
-        }
-        // vertical (always clamped to [0,1])
-        if (delta.y < 0.0) {
-            vertical.x = std::max(0.0, vertical.x + delta.y);
-            vertical.y = vertical.x + extent.y;
-        } else if (delta.y > 0.0) {
-            vertical.y = std::min(1.0, vertical.y + delta.y);
-            vertical.x = vertical.y - extent.y;
-        }
+        const auto sceneHeight = scene()->sceneRect().height();
+        const auto sceneWidth = scene()->sceneRect().width();
 
-        property_->setZoomH(horizontal.x, horizontal.y);
-        property_->setZoomV(vertical.x, vertical.y);
+        static constexpr double maxZoom = 100.0;
+
+        const auto t = transform();
+        const auto nt = QTransform{
+            std::clamp(t.m11() * dx, width / sceneWidth, maxZoom * width / sceneWidth),
+            0.0,
+            0.0,
+            std::clamp(t.m22() * dy, -(maxZoom * hight / sceneHeight), -(hight / sceneHeight)),
+            t.dx(),
+            t.dy()};
+
+        setTransform(nt, false);
+        setSceneRectWithMargin(scene()->sceneRect());
+        event->accept();
+
+    } else if (event->modifiers() & Qt::ShiftModifier) {
+        // horizontal scrolling
+        const auto modifiers = event->modifiers();
+        // remove the shift key temporarily from the event
+        event->setModifiers(modifiers ^ Qt::ShiftModifier);
+        horizontalScrollBar()->event(event);
+        // restore previous modifiers
+        event->setModifiers(modifiers);
+        event->accept();
+
+    } else {
+        QGraphicsView::wheelEvent(event);
     }
 
-    event->accept();
+    const auto [currentHRange, currentVRange] = getZoom();
+    property_->setZoomH(currentHRange.x, currentHRange.y);
+    property_->setZoomV(currentVRange.x, currentVRange.y);
+}
+
+void TFEditorView::mousePressEvent(QMouseEvent* event) {
+    leftPressed_ = event->buttons() & Qt::LeftButton;
+    QGraphicsView::mousePressEvent(event);
+}
+void TFEditorView::mouseReleaseEvent(QMouseEvent* event) {
+    leftPressed_ = event->buttons() & Qt::LeftButton;
+    QGraphicsView::mouseReleaseEvent(event);
+    if (!leftPressed_) onSceneRectChanged();
 }
 
 void TFEditorView::resizeEvent(QResizeEvent* event) {
     QGraphicsView::resizeEvent(event);
     resetCachedContent();
-    updateZoom();
+    updateZoomFromProperty();
 }
 
 QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D& histogram,
-                                                               HistogramMode mode,
-                                                               const DataMapper& dataMap) {
-    // adjust step size, that is bin size, on x axis to account for the range of the histogram
-    // bins
-    const auto ratio = (histogram.dataMap.dataRange.y - histogram.dataMap.dataRange.x) /
-                       (dataMap.dataRange.y - dataMap.dataRange.x);
-    const auto stepSize = ratio / histogram.counts.size();
+                                                               HistogramMode mode) {
+    const auto stepSize = 1.0 / histogram.counts.size();
 
     QPolygonF polygon{};
     polygon << QPointF(0.0, 0.0);
@@ -273,62 +284,105 @@ QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D
 }
 
 std::vector<QPolygonF> TFEditorView::HistogramState::createHistogramPolygons(
-    const std::vector<Histogram1D>& histograms, HistogramMode mode, const DataMapper& dataMap) {
+    const std::vector<Histogram1D>& histograms, HistogramMode mode) {
     std::vector<QPolygonF> polygons;
 
     if (mode != HistogramMode::Off) {
         for (const auto& histogram : histograms) {
-            polygons.push_back(createHistogramPolygon(histogram, mode, dataMap));
+            polygons.push_back(createHistogramPolygon(histogram, mode));
         }
     }
 
     return polygons;
 }
 
-void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
-    painter->fillRect(rect, QColor(89, 89, 89));
+void TFEditorView::drawGrid(QPainter* painter, const QRectF& updateRect,
+                            const DataMapper& sceneDM) {
+    static constexpr QColor colorBg(89, 89, 89);
+    static constexpr QColor colorGrid(122, 122, 122);
+    static constexpr QColor colorOrigin(132, 136, 145);
 
-    // overlay grid
-    const QColor colorGrid(102, 102, 102);
-    const QColor colorOrigin(102, 106, 115);
+    const utilqt::Save saved{painter};
+    painter->fillRect(updateRect, colorBg);
 
-    const auto sRect = sceneRect();
-    const double gridSpacing = sRect.width() / 10.0;
+    const QPen gridPen = utilqt::cosmeticPen(colorGrid, 1.0);
+    const QPen originPen = utilqt::cosmeticPen(colorOrigin, 2.0);
+    std::optional<double> zeroPos;
 
-    double gridOrigin = sRect.left();  // horizontal origin of the grid
+    // s* stands for scene coordinates,
+    // v* for value coordinates
+    // w* for widget coordinates
 
-    // adjust grid origin if there is a data mapper available
-    if (const auto* dataMap = property_->getDataMap()) {
-        if ((dataMap->valueRange.x < 0.0) && (dataMap->valueRange.y > 0.0)) {
-            gridOrigin = dataMap->mapFromValueToNormalized(0.0) * sRect.width() + sRect.left();
+    const auto sRight = mapToScene(rect().topRight()).x();
+    const auto sLeft = mapToScene(rect().topLeft()).x();
 
-            // draw line at zero
-            painter->setPen(utilqt::cosmeticPen(colorOrigin, 3.0f));
-            painter->drawLine(
-                QLineF(QPointF(gridOrigin, sRect.bottom()), QPointF(gridOrigin, sRect.top())));
+    const auto vRight = sceneDM.mapFromNormalizedToValue(sRight);
+    const auto vLeft = sceneDM.mapFromNormalizedToValue(sLeft);
+
+    const auto vRange = plot::labelingExtendedWilkinson(vLeft, vRight, 10);
+    for (const auto x : plot::rangeView(vRange)) {
+        if (plot::almostEqual(x, 0.0)) {
+            painter->setPen(originPen);
+            zeroPos = x;
+        } else {
+            painter->setPen(gridPen);
+        }
+        const auto sx = sceneDM.mapFromValueToNormalized(x);
+        if (sx >= updateRect.left() && sx <= updateRect.right()) {
+            painter->drawLine(QLineF(sx, updateRect.top(), sx, updateRect.bottom()));
         }
     }
 
-    QVector<QLineF> lines;
+    painter->setFont(QFont{"Segoe", 12, QFont::Normal, false});
+    painter->resetTransform();
+    painter->setBackgroundMode(Qt::OpaqueMode);  // Default is Qt::TransparentMode
+    painter->setBackground(QBrush(colorBg));     // Set background color
 
-    // add grid lines left of origin
-    double x = gridOrigin - gridSpacing;
-    while (x > sRect.left()) {
-        lines.push_back(QLineF(x, sRect.bottom(), x, sRect.top()));
-        x -= gridSpacing;
+    const auto sStart = sceneDM.mapFromValueToNormalized(vRange.start);
+    const auto sStop = sceneDM.mapFromValueToNormalized(vRange.stop);
+
+    const auto wStart = QPoint{mapFromScene(QPointF(sStart, 0.0)).x(), rect().top()};
+    const auto wStop = QPoint{mapFromScene(QPointF(sStop, 0.0)).x(), rect().top()};
+
+    static constexpr double tw = 100.0;
+    static constexpr double th = 25.0;
+    static constexpr double hpad = -2.0;
+    static constexpr double vpad = 2.0;
+
+    if (zeroPos && zeroPos != vRange.start && zeroPos != vRange.stop) {
+        const auto sZero = sceneDM.mapFromValueToNormalized(*zeroPos);
+        const auto zero = QPoint{mapFromScene(QPointF(sZero, 0.0)).x(), rect().top()};
+        painter->drawText(QRectF{zero + QPointF{-tw / 2.0, vpad}, QSizeF{tw, th}},
+                          Qt::AlignHCenter | Qt::AlignTop,
+                          utilqt::toQString(fmt::format("{:.4g}", *zeroPos)));
     }
-    // add grid lines right of origin
-    x = gridOrigin + gridSpacing;
-    while (x < sRect.right()) {
-        lines.push_back(QLineF(x, sRect.bottom(), x, sRect.top()));
-        x += gridSpacing;
+
+    painter->drawText(QRectF{wStart + QPointF{hpad, vpad}, QSizeF{tw, th}},
+                      Qt::AlignLeft | Qt::AlignTop,
+                      utilqt::toQString(fmt::format("{:.4g}", vRange.start)));
+    painter->drawText(QRectF{wStop + QPointF{-tw - hpad, vpad}, QSizeF{tw, th}},
+                      Qt::AlignRight | Qt::AlignTop,
+                      utilqt::toQString(fmt::format("{:.4g}", vRange.stop)));
+}
+
+void TFEditorView::drawBackground(QPainter* painter, const QRectF& updateRect) {
+    if (updateRect.height() <= 0 || updateRect.width() <= 0) {
+        return;
     }
 
-    // draw grid
-    painter->setPen(utilqt::cosmeticPen(colorGrid, 1.0));
-    painter->drawLines(lines);
+    // DataMapper for mapping between value and scene coordinates. Initialized to identity
+    // mapping use the property DataMapper if relative and available, otherwise use default
+    // identity mapping this means that "scene coordinates" are equivalent to "normalized
+    // coordinates"
+    DataMapper sceneDM{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
+    if (!property_->isAbsolute()) {
+        if (const auto* dm = property_->getDataMap()) {
+            sceneDM = *dm;
+        }
+    }
 
-    histogramState_.paintHistograms(painter, sceneRect(), this->rect());
+    drawGrid(painter, updateRect, sceneDM);
+    histogramState_.paintHistograms(painter, sceneRect(), rect(), sceneDM);
 }
 
 namespace {
@@ -354,7 +408,7 @@ QColor getColor(size_t channel, size_t nChannels, ColorType type) {
 }
 
 QRect textRect(QRect rect, size_t count = 0) {
-    auto newRect = QRect(0, 0, rect.width(), rect.height()).adjusted(20, 10, -20, -10);
+    auto newRect = QRect(0, 0, rect.width(), rect.height()).adjusted(20, 30, -20, -10);
     newRect.adjust(0, 20 * static_cast<int>(count), 0, 0);
     return newRect;
 }
@@ -368,17 +422,24 @@ void setPenAndFont(QPainter* painter, ColorType type, size_t channel = 0, size_t
 
 }  // namespace
 
-void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPolygonF& histogram,
+void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPolygonF& polygon,
                                                   size_t channel, size_t nChannels,
-                                                  const QRectF& sceneRect) {
+                                                  const QRectF& sceneRect, const DataMapper& dataDM,
+                                                  const DataMapper& sceneDM) {
+    // histogram polygon are defined in normalized [0,1] coordinates. And represents is mapped
+    // to value range using dataDM We use the sceneDM to map from value range to the scene
+    // coordinates which are represented as the normalized rage of the sceneDM.
+    const auto sStart = sceneDM.mapFromValueToNormalized(dataDM.mapFromNormalizedToValue(0.0));
+    const auto sStop = sceneDM.mapFromValueToNormalized(dataDM.mapFromNormalizedToValue(1.0));
+
     const utilqt::Save saved{painter};
     painter->setPen(utilqt::cosmeticPen(getColor(channel, nChannels, ColorType::Line), 2.0));
     painter->setBrush(QBrush{getColor(channel, nChannels, ColorType::Fill), Qt::SolidPattern});
-    painter->setTransform(
-        QTransform::fromTranslate(sceneRect.x(), sceneRect.y()) *
-            QTransform::fromScale(sceneRect.width(), sceneRect.height()),
-        true);
-    painter->drawPolygon(histogram);
+
+    painter->setTransform(QTransform::fromTranslate(sStart, sceneRect.y()) *
+                              QTransform::fromScale(sStop - sStart, sceneRect.height()),
+                          true);
+    painter->drawPolygon(polygon);
 }
 
 void TFEditorView::HistogramState::paintLabel(QPainter* painter, size_t channel, size_t count,
@@ -405,7 +466,8 @@ void TFEditorView::HistogramState::paintState(QPainter* painter, const QRect& re
 }
 
 void TFEditorView::HistogramState::paintHistograms(QPainter* painter, const QRectF& sceneRect,
-                                                   const QRect& rect) const {
+                                                   const QRect& rect,
+                                                   const DataMapper& dataMap) const {
     if (mode == HistogramMode::Off) return;
 
     paintState(painter, rect);
@@ -416,9 +478,9 @@ void TFEditorView::HistogramState::paintHistograms(QPainter* painter, const QRec
         ++total;
     }
 
-    for (auto&& [channel, histogram] : util::enumerate(polygons)) {
+    for (auto&& [channel, polygon, histogram] : util::enumerate(polygons, histograms)) {
         if (!selection[channel]) continue;
-        paintHistogram(painter, histogram, channel, total, sceneRect);
+        paintHistogram(painter, polygon, channel, total, sceneRect, histogram.dataMap, dataMap);
     }
 
     size_t count = 0;
@@ -450,27 +512,74 @@ void TFEditorView::HistogramState::paintHistograms(QPainter* painter, const QRec
     }
 }
 
-void TFEditorView::updateZoom() {
-    const auto rect = scene()->sceneRect();
+std::pair<dvec2, dvec2> TFEditorView::getZoom() const {
+    const auto min = mapToScene(viewport()->rect().bottomLeft());
+    const auto max = mapToScene(viewport()->rect().topRight());
+    return {{min.x(), max.x()}, {min.y(), max.y()}};
+}
+
+void TFEditorView::fitViewToScene() {
+    util::KeepTrueWhileInScope keepTrue(&zooming_);
+    const auto newSceneRect = scene()->sceneRect();
+    fitViewToRect(newSceneRect);
+    setSceneRectWithMargin(newSceneRect);
+
+    const auto [currentHRange, currentVRange] = getZoom();
+    property_->setZoomH(currentHRange.x, currentHRange.y);
+    property_->setZoomV(currentVRange.x, currentVRange.y);
+}
+
+void TFEditorView::onSceneRectChanged() {
+    util::KeepTrueWhileInScope keepTrue(&zooming_);
+    const auto newSceneRect = scene()->sceneRect();
+
+    const auto [maxHRange, maxVRange] = std::pair<dvec2, dvec2>{
+        {newSceneRect.left(), newSceneRect.right()}, {newSceneRect.bottom(), newSceneRect.top()}};
+    const auto [currentHRange, currentVRange] = getZoom();
+
+    auto newHRange = currentHRange;
+    auto newVRange = currentVRange;
+
+    if (currentHRange.x < maxHRange.x) newHRange.x = maxHRange.x;
+    if (currentHRange.y > maxHRange.y) newHRange.y = maxHRange.y;
+    if (currentVRange.x < maxVRange.x) newVRange.x = maxVRange.x;
+    if (currentVRange.y > maxVRange.y) newVRange.y = maxVRange.y;
+
+    if (newHRange != currentHRange || newVRange != currentVRange) {
+        const auto newRect = QRectF{QPointF{newHRange.x, newVRange.y},
+                                    QSizeF{newHRange.y - newHRange.x, newVRange.x - newVRange.y}};
+        fitViewToRect(newRect);
+        property_->setZoomH(newHRange.x, newHRange.y);
+        property_->setZoomV(newVRange.x, newVRange.y);
+    } else {
+        property_->setZoomH(currentHRange.x, currentHRange.y);
+        property_->setZoomV(currentVRange.x, currentVRange.y);
+    }
+    setSceneRectWithMargin(newSceneRect);
+}
+
+void TFEditorView::updateZoomFromProperty() {
+    if (zooming_) return;
     const auto zh = property_->getZoomH();
     const auto zv = property_->getZoomV();
-
-    const bool absolute = std::ranges::any_of(property_->sets(), [](const auto* set) {
-        return set->getType() == TFPrimitiveSetType::Absolute;
-    });
-
-    QRectF newRect;
-    if (absolute) {
-        // zoomH stores absolute data-space coordinates
-        newRect = QRectF{QPointF{zh.x, zv.x * rect.height()},
-                         QSizeF{zh.y - zh.x, (zv.y - zv.x) * rect.height()}};
-    } else {
-        // zoomH stores normalized [0,1] fractions of the scene rect
-        newRect = QRectF{QPointF{zh.x * rect.width(), zv.x * rect.height()},
-                         QSizeF{(zh.y - zh.x) * rect.width(), (zv.y - zv.x) * rect.height()}};
+    const auto [currentHz, currentVz] = getZoom();
+    if (util::almostEqual(zh, currentHz) && util::almostEqual(zv, currentVz)) {
+        return;
     }
 
-    fitInView(newRect, Qt::IgnoreAspectRatio);
+    const auto newRect = QRectF{QPointF{zh.x, zv.x}, QSizeF{zh.y - zh.x, zv.y - zv.x}};
+    fitViewToRect(newRect);
+    setSceneRectWithMargin(scene()->sceneRect());
+}
+
+void TFEditorView::fitViewToRect(const QRectF& sceneRect) {
+    const auto hight = static_cast<double>(viewport()->height() - 2 * viewMargin);
+    const auto width = static_cast<double>(viewport()->width() - 2 * viewMargin);
+    const auto sceneHeight = sceneRect.height();
+    const auto sceneWidth = sceneRect.width();
+    const auto nt = QTransform{width / sceneWidth, 0.0, 0.0, -hight / sceneHeight, 0.0, 0.0};
+    setTransform(nt);
+    centerOn(sceneRect.center());
 }
 
 }  // namespace inviwo

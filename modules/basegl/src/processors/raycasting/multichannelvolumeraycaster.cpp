@@ -59,13 +59,13 @@ MultiChannelVolumeRaycaster::MultiChannelVolumeRaycaster(std::string_view identi
     , background_{*this}
     , isoTFs_{volume_.volumePort}
     , raycasting_{volume_.getName(),
-                  util::make_array<4>([&](auto i) { return std::ref(isoTFs_.isotfs[i]); })}
+                  util::make_array<4>([&](auto i) { return std::ref(isoTFs_.isoTFs[i]); })}
     , camera_{"camera", util::boundingBox(volume_.volumePort)}
     , light_{&camera_.camera}
     , positionIndicator_{}
     , sampleTransform_{} {
 
-    for (auto&& [i, isotf] : util::enumerate(isoTFs_.isotfs)) {
+    for (auto&& [i, isotf] : util::enumerate(isoTFs_.isoTFs)) {
         HistogramSelection selection{};
         selection[i] = true;
         isotf.setHistogramSelection(selection).setCurrentStateAsDefault();
@@ -79,7 +79,7 @@ MultiChannelVolumeRaycaster::MultiChannelVolumeRaycaster(std::string_view identi
             // Also calls to invalidate will be ignored
             initializeResources();
         }
-        for (auto&& [i, isotf] : util::enumerate(isoTFs_.isotfs)) {
+        for (auto&& [i, isotf] : util::enumerate(isoTFs_.isoTFs)) {
             isotf.setVisible(i < channels);
         }
     });

@@ -102,8 +102,8 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
 
     const auto scale = utilqt::emToPx(this, 1.0) / static_cast<double>(utilqt::refEm());
     setTransform(QTransform::fromScale(scale, scale), false);
-
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    setCornerWidget(new QWidget());
 
     auto editmenu = mainwindow_->getInviwoEditMenu();
 

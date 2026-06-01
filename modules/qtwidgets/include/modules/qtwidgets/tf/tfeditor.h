@@ -61,8 +61,6 @@ class TFEditorIsovalue;
 class TFPrimitive;
 class TFPrimitiveSet;
 class TFPropertyConcept;
-class TFEditorMaskMin;
-class TFEditorMaskMax;
 
 template <typename T>
 struct PtrHash {
@@ -105,9 +103,12 @@ public:
     void deleteSelection();
     void selectAll();
 
-    static constexpr std::string_view mimeTFPrimitives = "application/x.vnd.inviwo.tf.primitives+xml";
+    static constexpr std::string_view mimeTFPrimitives =
+        "application/x.vnd.inviwo.tf.primitives+xml";
     static constexpr std::string_view tfCopyPasteRootElement = "InviwoTFPrimitives";
     void updateConnections();
+
+    void updateSceneRect();
 
 signals:
     void showColorDialog();
@@ -126,6 +127,7 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
 
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
 
@@ -143,8 +145,6 @@ private:
     double sceneToPos(const QPointF& pos) const;
     double sceneToAlpha(const QPointF& pos) const;
 
-    void updateSceneRect();
-
     TFPrimitiveSet* findSet(TFPrimitive*) const;
 
     std::vector<TFPrimitive*> getAllPrimitives() const;
@@ -156,8 +156,8 @@ private:
     QTransform calcTransform(QPointF scenePos, QPointF lastScenePos) const;
     static QPointF calcTransformRef(std::span<TFEditorPrimitive*> primitives,
                                     TFEditorPrimitive* start);
-    static void move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform,
-                     const QRectF& rect);
+    void move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform,
+              const QRectF& rect);
 
     void duplicate(std::span<TFEditorPrimitive*> primitives);
 
@@ -200,10 +200,8 @@ private:
     std::vector<std::vector<TFEditorPrimitive*>> groups_;
     TFMoveMode moveMode_;
 
-    std::unique_ptr<TFEditorMaskMin> maskMin_;
-    std::unique_ptr<TFEditorMaskMax> maskMax_;
-
     bool selectNewPrimitives_;
+    std::optional<dvec2> range_;
 };
 
 }  // namespace inviwo

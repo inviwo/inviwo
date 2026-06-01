@@ -49,7 +49,15 @@ enum class TFPrimitiveSetType {
     Relative,  //<! uses the normalized range [0,1] for all TF primitives
     Absolute,  //<! absolute positioning of TF primitives
 };
+constexpr std::string_view format_as(TFPrimitiveSetType type) {
+    if (type == TFPrimitiveSetType::Absolute) {
+        return "Absolute";
+    } else {
+        return "Relative";
+    }
+}
 
+class DataMapper;
 class TFPrimitiveSet;
 
 class IVW_CORE_API TFPrimitiveSetObserver : public Observer {
@@ -58,7 +66,6 @@ public:
     virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p);
     virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p);
     virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type);
-    virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask);
 };
 class IVW_CORE_API TFPrimitiveSetObservable : public Observable<TFPrimitiveSetObserver> {
 protected:
@@ -66,7 +73,6 @@ protected:
     void notifyTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p);
     void notifyTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p);
     void notifyTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type);
-    void notifyTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask);
 };
 
 /**
@@ -96,6 +102,7 @@ public:
     virtual ~TFPrimitiveSet() = default;
 
     void setType(TFPrimitiveSetType type);
+    void setType(TFPrimitiveSetType type, const DataMapper& dm);
     TFPrimitiveSetType getType() const;
 
     /**
@@ -266,7 +273,7 @@ public:
      *
      * @param data   write interpolated colors into data
      */
-    virtual void interpolateAndStoreColors(std::span<vec4> data) const;
+    void interpolateAndStoreColors(std::span<vec4> data) const;
 
     friend IVW_CORE_API bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
     friend IVW_CORE_API bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);

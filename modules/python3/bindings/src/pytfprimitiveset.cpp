@@ -269,13 +269,6 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
                  return tf;
              }),
              py::arg("values"), py::arg("type") = TFPrimitiveSetType::Relative)
-        .def_property(
-            "mask", [](TransferFunction& tf) { return dvec2(tf.getMaskMin(), tf.getMaskMax()); },
-            [](TransferFunction& tf, const dvec2& mask) {
-                tf.setMaskMin(mask.x);
-                tf.setMaskMax(mask.y);
-            })
-        .def("clearMask", &TransferFunction::clearMask)
         .def("sample", [](TransferFunction& tf, double v) -> vec4 { return tf.sample(v); })
         .def_static("save", &TransferFunction::save)
         .def_static("load", &TransferFunction::load)

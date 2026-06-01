@@ -88,7 +88,6 @@ set(HEADER_FILES
     include/modules/qtwidgets/tf/tfcontrolpointconnection.h
     include/modules/qtwidgets/tf/tfeditorcontrolpoint.h
     include/modules/qtwidgets/tf/tfeditorisovalue.h
-    include/modules/qtwidgets/tf/tfeditormask.h
     include/modules/qtwidgets/tf/tfeditorprimitive.h
     include/modules/qtwidgets/tf/tfeditorview.h
     include/modules/qtwidgets/tf/tfmovemode.h
@@ -173,7 +172,6 @@ set(SOURCE_FILES
     src/tf/tfeditor.cpp
     src/tf/tfeditorcontrolpoint.cpp
     src/tf/tfeditorisovalue.cpp
-    src/tf/tfeditormask.cpp
     src/tf/tfeditorprimitive.cpp
     src/tf/tfeditorview.cpp
     src/tf/tflineedit.cpp

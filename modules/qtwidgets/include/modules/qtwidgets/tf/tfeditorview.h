@@ -40,6 +40,7 @@
 #include <QGraphicsView>
 
 class QWheelEvent;
+class QKeyEvent;
 
 namespace inviwo {
 
@@ -51,11 +52,15 @@ public:
                           QWidget* parent = nullptr);
     ~TFEditorView();
 
+    void updateZoomFromProperty();
+    void onSceneRectChanged();
+    void fitViewToScene();
+    void fitViewToRect(const QRectF& sceneRect);
+    std::pair<dvec2, dvec2> getZoom() const;
+
 protected:
     virtual void resizeEvent(QResizeEvent* event) override;
-    virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
-
-    void updateZoom();
+    virtual void drawBackground(QPainter* painter, const QRectF& updateRect) override;
 
     // TransferFunctionPropertyObserver overloads
     virtual void onZoomHChange(const dvec2& zoomH) override;
@@ -64,28 +69,36 @@ protected:
     virtual void onHistogramSelectionChange(HistogramSelection selection) override;
 
     virtual void wheelEvent(QWheelEvent* event) override;
+    virtual void mousePressEvent(QMouseEvent* event) override;
+    virtual void mouseReleaseEvent(QMouseEvent* event) override;
+
+    virtual void keyPressEvent(QKeyEvent* event) override;
+    virtual void keyReleaseEvent(QKeyEvent* event) override;
+
+    void setSceneRectWithMargin(const QRectF& sceneRect);
 
 private:
+    void drawGrid(QPainter* painter, const QRectF& updateRect, const DataMapper& sceneDM);
+
     TFPropertyConcept* property_;
 
     struct HistogramState {
         TFPropertyConcept::HistogramChange change = TFPropertyConcept::HistogramChange::NoData;
         HistogramMode mode = HistogramMode::Off;
         HistogramSelection selection = histogramSelectionAll;
-        DataMapper dataMap;
         std::vector<Histogram1D> histograms = {};
         std::vector<QPolygonF> polygons = {};
-        static void paintHistogram(QPainter* painter, const QPolygonF& histogram, size_t channel,
-                                   size_t nChannels, const QRectF& sceneRect);
+        static void paintHistogram(QPainter* painter, const QPolygonF& polygon, size_t channel,
+                                   size_t nChannels, const QRectF& sceneRect,
+                                   const DataMapper& dataDM, const DataMapper& sceneDM);
         static void paintLabel(QPainter* painter, size_t channel, size_t count, size_t nChannels,
                                const QRect& rect, std::string_view overflow);
         void paintState(QPainter* painter, const QRect& rect) const;
-        void paintHistograms(QPainter* painter, const QRectF& sceneRect, const QRect& rect) const;
-        static QPolygonF createHistogramPolygon(const Histogram1D& histogram, HistogramMode mode,
-                                                const DataMapper& dataMap);
+        void paintHistograms(QPainter* painter, const QRectF& sceneRect, const QRect& rect,
+                             const DataMapper& dataMap) const;
+        static QPolygonF createHistogramPolygon(const Histogram1D& histogram, HistogramMode mode);
         static std::vector<QPolygonF> createHistogramPolygons(
-            const std::vector<Histogram1D>& histograms, HistogramMode mode,
-            const DataMapper& dataMap);
+            const std::vector<Histogram1D>& histograms, HistogramMode mode);
     };
     HistogramState histogramState_;
     DispatcherHandle<TFPropertyConcept::HistogramCallback> histogramChangeHandle_;
@@ -93,6 +106,9 @@ private:
     std::shared_ptr<std::function<void()>> callbackOnChange = nullptr;
     std::shared_ptr<std::function<void()>> callbackOnConnect = nullptr;
     std::shared_ptr<std::function<void()>> callbackOnDisconnect = nullptr;
+
+    bool leftPressed_;
+    bool zooming_;
 };
 
 }  // namespace inviwo

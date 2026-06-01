@@ -57,7 +57,6 @@ class ColorWheel;
 class IsoTFProperty;
 class IsoValueProperty;
 class Property;
-class RangeSliderQt;
 class TFColorEdit;
 class TFEditor;
 class TFEditorView;
@@ -88,11 +87,8 @@ protected:
     virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
     virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
-    virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
     void onTFTypeChangedInternal();
 
-    virtual void onZoomHChange(const dvec2& zoomH) override;
-    virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;
 
     virtual void setReadOnly(bool readonly) override;
@@ -111,9 +107,6 @@ private:
 
     void updateTFPreview();
 
-    static constexpr int sliderRange_ = 1024;
-    static constexpr int verticalSliderRange_ = 1000;
-
     QLabel* preview_;  ///< View that contains the scene for the painted transfer function
 
     std::unique_ptr<TFPropertyConcept> concept_;
@@ -127,6 +120,7 @@ private:
     QComboBox* pointMoveMode_;
     QComboBox* tfTypeMode_;
 
+    QLabel* scalar_;
     QLabel* domainMin_;
     QLabel* domainMax_;
 
@@ -134,9 +128,6 @@ private:
     TFLineEdit* primitivePos_;
     TFLineEdit* primitiveAlpha_;
     TFColorEdit* primitiveColor_;
-
-    RangeSliderQt* zoomVSlider_;
-    RangeSliderQt* zoomHSlider_;
 
     bool ongoingUpdate_ = false;
     Processor::NameDispatcherHandle onNameChange_;
