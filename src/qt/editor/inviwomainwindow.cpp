@@ -893,6 +893,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
         auto* searchNetwork =
             editMenu_->addAction(QIcon(":/svgicons/find-network.svg"), tr("&Search Network"));
         searchNetwork->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_F);
+        searchNetwork->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        addAction(searchNetwork);
         connect(searchNetwork, &QAction::triggered, [this]() {
             networkEditorView_->getNetworkSearch().setVisible(true);
             networkEditorView_->getNetworkSearch().setFocus();
@@ -901,6 +903,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
         auto* findAction =
             editMenu_->addAction(QIcon(":/svgicons/find-processor.svg"), tr("&Find Processor"));
         findAction->setShortcut(QKeySequence::Find);
+        findAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        addAction(findAction);
         connect(findAction, &QAction::triggered, this, [this]() {
             processorTreeWidget_->show();
             processorTreeWidget_->focusSearch();
@@ -909,6 +913,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
         auto* addProcessorAction =
             editMenu_->addAction(QIcon(":/svgicons/processor-add.svg"), tr("&Add Processor"));
         addProcessorAction->setShortcut(Qt::CTRL | Qt::Key_D);
+        addProcessorAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        addAction(addProcessorAction);
         connect(addProcessorAction, &QAction::triggered, this,
                 [this]() { processorTreeWidget_->addSelectedProcessor(); });
 
