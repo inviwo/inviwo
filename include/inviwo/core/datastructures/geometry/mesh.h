@@ -223,15 +223,11 @@ public:
     const BufferVector& getBuffers() const;
     const IndexVector& getIndexBuffers() const;
 
-    const BufferBase* getBuffer(size_t idx) const;
-
     BufferInfo getBufferInfo(size_t idx) const;
     BufferInfo getBufferInfo(BufferBase* buffer) const;
 
     void setBufferInfo(size_t idx, BufferInfo info);
     void setBufferInfo(BufferBase* buffer, BufferInfo info);
-
-    const IndexBuffer* getIndices(size_t idx) const;
 
     /**
      * Try and find a buffer of the given BufferType.
@@ -252,13 +248,16 @@ public:
     bool hasBuffer(BufferType type) const;
 
     BufferBase* getBuffer(size_t idx);
+    const BufferBase* getBuffer(size_t idx) const;
 
     /**
      * @return The first buffer matching BufferType type or nullptr;
      */
     BufferBase* getBuffer(BufferType type);
+    const BufferBase* getBuffer(BufferType type) const;
 
     IndexBuffer* getIndices(size_t idx);
+    const IndexBuffer* getIndices(size_t idx) const;
 
     MeshInfo getDefaultMeshInfo() const;
     void setDefaultMeshInfo(MeshInfo);
