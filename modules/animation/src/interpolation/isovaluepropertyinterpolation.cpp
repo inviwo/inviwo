@@ -134,8 +134,8 @@ void interpolatePropertyValue(const std::vector<std::unique_ptr<ValueKeyframe<Va
 
 namespace detail {
 
-double interpolationTime(Seconds t1, Seconds t2, std::optional<EasingType> easeIn,
-                         std::optional<EasingType> easeOut, Seconds to) {
+static double interpolationTime(Seconds t1, Seconds t2, std::optional<EasingType> easeIn,
+                                std::optional<EasingType> easeOut, Seconds to) {
     return util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
 }
 

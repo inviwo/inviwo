@@ -74,8 +74,8 @@ class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationFade
     : public InterpolationTyped<ValueKeyframe<IsoValueCollection>,
                                 IsoValueCollection> {
 public:
-    IsoValuePropertyInterpolationFade(InviwoApplication* app = nullptr);
-    explicit IsoValuePropertyInterpolationFade(const IsoValuePropertyInterpolationFade&);
+    explicit IsoValuePropertyInterpolationFade(InviwoApplication* app = nullptr);
+    IsoValuePropertyInterpolationFade(const IsoValuePropertyInterpolationFade&);
     IsoValuePropertyInterpolationFade& operator=(const IsoValuePropertyInterpolationFade&) = delete;
     IsoValuePropertyInterpolationFade(IsoValuePropertyInterpolationFade&&) = delete;
     IsoValuePropertyInterpolationFade& operator=(IsoValuePropertyInterpolationFade&&) = delete;
@@ -110,8 +110,8 @@ class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationBlend
     : public InterpolationTyped<ValueKeyframe<IsoValueCollection>,
                                 IsoValueCollection> {
 public:
-    IsoValuePropertyInterpolationBlend(InviwoApplication* app = nullptr);
-    explicit IsoValuePropertyInterpolationBlend(const IsoValuePropertyInterpolationBlend& rhs);
+    explicit IsoValuePropertyInterpolationBlend(InviwoApplication* app = nullptr);
+    IsoValuePropertyInterpolationBlend(const IsoValuePropertyInterpolationBlend& rhs);
     IsoValuePropertyInterpolationBlend& operator=(const IsoValuePropertyInterpolationBlend&) = delete;
     IsoValuePropertyInterpolationBlend(IsoValuePropertyInterpolationBlend&&) = delete;
     IsoValuePropertyInterpolationBlend& operator=(IsoValuePropertyInterpolationBlend&&) = delete;
