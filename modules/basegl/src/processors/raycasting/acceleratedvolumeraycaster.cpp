@@ -66,8 +66,8 @@ AcceleratedVolumeRaycaster::AcceleratedVolumeRaycaster(std::string_view identifi
     , entryExit_{}
     , background_{*this}
     , isoTF_{volume_.volumePort}
-    , accelerate_{volume_.volumePort, isoTF_.isotfs[0]}
-    , raycasting_{volume_.getName(), isoTF_.isotfs[0]}
+    , accelerate_{volume_.volumePort, isoTF_.isoTFs[0]}
+    , raycasting_{volume_.getName(), isoTF_.isoTFs[0]}
     , camera_{"camera", util::boundingBox(volume_.volumePort)}
     , light_{&camera_.camera}
     , positionIndicator_{}
