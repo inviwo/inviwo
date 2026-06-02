@@ -47,7 +47,7 @@ class QMenu;
 
 namespace inviwo {
 
-enum class MenuItemType { cut, copy, paste, del, select };
+enum class MenuItemType : std::uint8_t { cut, copy, paste, del, select };
 
 class IVW_MODULE_QTWIDGETS_API MenuItem {
 public:
@@ -65,7 +65,11 @@ public:
 class IVW_MODULE_QTWIDGETS_API InviwoEditMenu : public QMenu {
     Q_OBJECT
 public:
-    InviwoEditMenu(QWidget* parent = nullptr);
+    explicit InviwoEditMenu(QWidget* parent = nullptr);
+    InviwoEditMenu(const InviwoEditMenu&) = delete;
+    InviwoEditMenu& operator=(const InviwoEditMenu&) = delete;
+    InviwoEditMenu(InviwoEditMenu&&) = delete;
+    InviwoEditMenu& operator=(InviwoEditMenu&&) = delete;
     virtual ~InviwoEditMenu() = default;
 
     std::shared_ptr<MenuItem> registerItem(std::shared_ptr<MenuItem> item);

@@ -30,8 +30,8 @@
 
 #include <pybind11/pybind11.h>
 
-namespace inviwo {
+namespace inviwo::animation {
 
 void exposeAnimation(pybind11::module& m);
 
-}  // namespace inviwo
+}  // namespace inviwo::animation

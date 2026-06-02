@@ -83,9 +83,7 @@
 
 namespace py = pybind11;
 
-namespace inviwo {
-
-using namespace animation;
+namespace inviwo::animation {
 
 namespace {
 
@@ -712,4 +710,4 @@ void exposeAnimation(pybind11::module& m) {
         "Get the WorkspaceAnimations from the AnimationModule.");
 }
 
-}  // namespace inviwo
+}  // namespace inviwo::animation

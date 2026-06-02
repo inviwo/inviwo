@@ -213,7 +213,7 @@ void AnimationEditorQt::copy() {
     }
 
     for (auto* elem : selection) {
-        if (auto keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
+        if (auto* keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
             auto* track = findParentOfType<TrackWidgetQt>(elem);
             if (!track) continue;
 
@@ -242,6 +242,7 @@ void AnimationEditorQt::copy() {
         // Serialize track type info alongside each sequence so paste knows what track to
         // create
         std::vector<std::string> trackClassIds;
+        trackClassIds.reserve(sequences.size());
         for (auto& [track, seq] : sequences) {
             trackClassIds.emplace_back(track->getClassIdentifier());
         }
@@ -249,6 +250,7 @@ void AnimationEditorQt::copy() {
 
         // Serialize each sequence
         std::vector<const KeyframeSequence*> seqs;
+        seqs.reserve(sequences.size());
         for (auto& [track, seq] : sequences) {
             seqs.push_back(seq);
         }
@@ -257,7 +259,7 @@ void AnimationEditorQt::copy() {
         std::stringstream ss;
         serializer.writeFile(ss);
         auto str = std::move(ss).str();
-        QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
+        const QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
         mimeData->setData(utilqt::toQString(mimeKeyframeSequences), byteArray);
     }
 
@@ -265,12 +267,14 @@ void AnimationEditorQt::copy() {
     if (!keyframes.empty()) {
         Serializer serializer("");
         std::vector<std::string> trackClassIds;
+        trackClassIds.reserve(keyframes.size());
         for (auto& [track, kf] : keyframes) {
-            trackClassIds.push_back(std::string(track->getClassIdentifier()));
+            trackClassIds.emplace_back(track->getClassIdentifier());
         }
         serializer.serialize("trackClassIds", trackClassIds, "id");
 
         std::vector<const Keyframe*> kfs;
+        kfs.reserve(keyframes.size());
         for (auto& [track, kf] : keyframes) {
             kfs.push_back(kf);
         }
@@ -279,12 +283,12 @@ void AnimationEditorQt::copy() {
         std::stringstream ss;
         serializer.writeFile(ss);
         auto str = std::move(ss).str();
-        QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
+        const QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
         mimeData->setData(utilqt::toQString(mimeKeyframes), byteArray);
     }
 
     // Only set clipboard if we have content
-    if (mimeData->formats().size() > 0) {
+    if (!mimeData->formats().empty()) {
         QApplication::clipboard()->setMimeData(mimeData.release());
         showText_("Copied to clipboard", std::chrono::milliseconds{1000});
     }
@@ -303,7 +307,7 @@ void AnimationEditorQt::paste() {
 
     // Paste keyframe sequences
     if (mimeData->hasFormat(seqMime)) {
-        QByteArray data = mimeData->data(seqMime);
+        const QByteArray data = mimeData->data(seqMime);
         std::stringstream ss;
         for (auto d : data) ss << d;
 
@@ -334,7 +338,7 @@ void AnimationEditorQt::paste() {
                     }
                 }
 
-                if (targetTrack && targetTrack->size() > 0) {
+                if (targetTrack && !targetTrack->empty()) {
                     // Clone an existing sequence to get the right concrete type,
                     // then deserialize the copied data into it.
                     auto seq = std::unique_ptr<KeyframeSequence>((*targetTrack)[0].clone());
@@ -353,7 +357,7 @@ void AnimationEditorQt::paste() {
 
     // Paste keyframes
     if (mimeData->hasFormat(kfMime)) {
-        QByteArray data = mimeData->data(kfMime);
+        const QByteArray data = mimeData->data(kfMime);
         std::stringstream ss;
         for (auto d : data) ss << d;
 
@@ -377,7 +381,7 @@ void AnimationEditorQt::paste() {
                     }
                 }
 
-                if (targetTrack && targetTrack->size() > 0) {
+                if (targetTrack && !targetTrack->empty()) {
                     // Clone a keyframe from the track to get the right concrete type,
                     // then deserialize the copied data into it
                     auto& firstSeq = (*targetTrack)[0];
@@ -399,22 +403,22 @@ void AnimationEditorQt::paste() {
 void AnimationEditorQt::cut() {
     copy();
     // Delete the selected items (same logic as Key_Delete)
-    QList<QGraphicsItem*> itemList = selectedItems();
+    const QList<QGraphicsItem*> itemList = selectedItems();
     for (auto& elem : itemList) {
-        if (auto keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
+        if (auto* keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
             controller_.getAnimation().remove(&(keyqt->getKeyframe()));
-        } else if (auto seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
+        } else if (auto* seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
             controller_.getAnimation().remove(&(seqqt->getKeyframeSequence()));
         }
     }
 }
 
 void AnimationEditorQt::deleteSelection() {
-    QList<QGraphicsItem*> itemList = selectedItems();
+    const QList<QGraphicsItem*> itemList = selectedItems();
     for (auto& elem : itemList) {
-        if (auto keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
+        if (auto* keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
             controller_.getAnimation().remove(&(keyqt->getKeyframe()));
-        } else if (auto seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
+        } else if (auto* seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
             controller_.getAnimation().remove(&(seqqt->getKeyframeSequence()));
         }
     }

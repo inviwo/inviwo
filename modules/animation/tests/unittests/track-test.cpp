@@ -628,7 +628,7 @@ TEST(AnimationTests, AnimationSerializationTest) {
 
 TEST(AnimationTests, KeyframeCloneDeserializeRoundTrip) {
     // Create a keyframe with specific values
-    ValueKeyframe<float> original{Seconds{2.5}, 42.0f};
+    const ValueKeyframe<float> original{Seconds{2.5}, 42.0f};
 
     // Serialize the original
     const std::filesystem::path refPath = "/tmp";
@@ -638,7 +638,7 @@ TEST(AnimationTests, KeyframeCloneDeserializeRoundTrip) {
     s.writeFile(ss);
 
     // Clone a different keyframe (simulating paste: clone a template to get the right type)
-    ValueKeyframe<float> templateKf{Seconds{0.0}, 0.0f};
+    const ValueKeyframe<float> templateKf{Seconds{0.0}, 0.0f};
     auto cloned = std::unique_ptr<Keyframe>(templateKf.clone());
 
     // Deserialize the original's data into the clone
@@ -662,7 +662,8 @@ TEST(AnimationTests, KeyframeSequenceCloneDeserializeRoundTrip) {
     keys.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{1.0}, 10.0f));
     keys.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{2.0}, 20.0f));
     keys.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{3.0}, 30.0f));
-    Seq original{std::move(keys), std::make_unique<LinearInterpolation<ValueKeyframe<float>>>()};
+    const Seq original{std::move(keys),
+                       std::make_unique<LinearInterpolation<ValueKeyframe<float>>>()};
 
     // Serialize the original sequence
     const std::filesystem::path refPath = "/tmp";
@@ -674,8 +675,8 @@ TEST(AnimationTests, KeyframeSequenceCloneDeserializeRoundTrip) {
     // Clone a different sequence (simulating paste: clone from target track)
     std::vector<std::unique_ptr<ValueKeyframe<float>>> otherKeys;
     otherKeys.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{0.0}, 0.0f));
-    Seq templateSeq{std::move(otherKeys),
-                    std::make_unique<LinearInterpolation<ValueKeyframe<float>>>()};
+    const Seq templateSeq{std::move(otherKeys),
+                          std::make_unique<LinearInterpolation<ValueKeyframe<float>>>()};
     auto cloned = std::unique_ptr<KeyframeSequence>(templateSeq.clone());
 
     // Deserialize the original's data into the clone
@@ -707,7 +708,7 @@ TEST(AnimationTests, KeyframeSerializeVectorDeserializeRange) {
 
     // Serialize as a vector of pointers (same as copy() does)
     Serializer s(refPath);
-    std::vector<const Keyframe*> kfs = {&kf1, &kf2};
+    const std::vector<const Keyframe*> kfs = {&kf1, &kf2};
     s.serialize("keyframes", kfs, "keyframe");
     std::stringstream ss;
     s.writeFile(ss);

@@ -186,7 +186,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
                         return !editor_->selectedItems().isEmpty();
                     case MenuItemType::paste: {
                         auto* clipboard = QApplication::clipboard();
-                        auto* mimeData = clipboard->mimeData();
+                        const auto* mimeData = clipboard->mimeData();
                         return mimeData &&
                                mimeData->hasFormat(QString::fromUtf8(TFEditor::mimeTFPrimitives));
                     }

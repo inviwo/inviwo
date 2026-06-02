@@ -444,7 +444,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
                         return !animationEditor_->selectedItems().empty();
                     case MenuItemType::paste: {
                         auto* clipboard = QApplication::clipboard();
-                        auto* mimeData = clipboard->mimeData();
+                        const auto* mimeData = clipboard->mimeData();
                         return mimeData->hasFormat(
                                    QString::fromUtf8(AnimationEditorQt::mimeKeyframes)) ||
                                mimeData->hasFormat(

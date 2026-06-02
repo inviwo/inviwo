@@ -63,5 +63,5 @@ INVIWO_PYBIND_MODULE(ivwanimation, m) {
     py::implicitly_convertible<py::list, std::vector<std::string>>();
 #endif
 
-    inviwo::exposeAnimation(m);
+    inviwo::animation::exposeAnimation(m);
 }

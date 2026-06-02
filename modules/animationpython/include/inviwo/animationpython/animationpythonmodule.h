@@ -35,7 +35,11 @@ namespace inviwo {
 
 class IVW_MODULE_ANIMATIONPYTHON_API AnimationPythonModule : public InviwoModule {
 public:
-    AnimationPythonModule(InviwoApplication* app);
+    explicit AnimationPythonModule(InviwoApplication* app);
+    AnimationPythonModule(const AnimationPythonModule&) = delete;
+    AnimationPythonModule& operator=(const AnimationPythonModule&) = delete;
+    AnimationPythonModule(AnimationPythonModule&&) = delete;
+    AnimationPythonModule& operator=(AnimationPythonModule&&) = delete;
     virtual ~AnimationPythonModule() = default;
 };
 

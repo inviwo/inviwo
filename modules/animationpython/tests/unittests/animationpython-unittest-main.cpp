@@ -51,22 +51,22 @@
 #include <warn/pop>
 
 int main(int argc, char** argv) {
-    using namespace inviwo;
-    LogCentral::init();
-    auto logger = std::make_shared<ConsoleLogger>();
-    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
-    LogCentral::getPtr()->registerLogger(logger);
-    InviwoApplication app(argc, argv, "Inviwo-Unittests-AnimationPython");
+
+    inviwo::LogCentral::init();
+    auto logger = std::make_shared<inviwo::ConsoleLogger>();
+    inviwo::LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
+    inviwo::LogCentral::getPtr()->registerLogger(logger);
+    inviwo::InviwoApplication app(argc, argv, "Inviwo-Unittests-AnimationPython");
 
     inviwo::initializePythonModules();
 
     {
-        std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
-        modules.emplace_back(createInviwoCore());
-        modules.emplace_back(createBaseModule());
-        modules.emplace_back(createAnimationModule());
-        modules.emplace_back(createPython3Module());
-        modules.emplace_back(createAnimationPythonModule());
+        std::vector<std::unique_ptr<inviwo::InviwoModuleFactoryObject>> modules;
+        modules.emplace_back(inviwo::createInviwoCore());
+        modules.emplace_back(inviwo::createBaseModule());
+        modules.emplace_back(inviwo::createAnimationModule());
+        modules.emplace_back(inviwo::createPython3Module());
+        modules.emplace_back(inviwo::createAnimationPythonModule());
         app.registerModules(std::move(modules));
     }
 

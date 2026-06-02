@@ -384,7 +384,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                                                              QString::fromUtf8(mimeTFPrimitives)));
         connect(pasteAction, &QAction::triggered, this, [this, pos]() { paste(pos); });
 
-        auto selectAllAction =
+        auto* selectAllAction =
             menu.addAction(QIcon(":/svgicons/edit-selectall.svg"), tr("&Select All"));
         connect(selectAllAction, &QAction::triggered, this, [this]() { selectAll(); });
     }
@@ -866,7 +866,7 @@ void TFEditor::paste(const QPointF& scenePos) { paste(std::optional{scenePos}); 
 
 void TFEditor::paste(std::optional<QPointF> scenePos) {
     auto* clipboard = QApplication::clipboard();
-    auto* mimeData = clipboard->mimeData();
+    const auto* mimeData = clipboard->mimeData();
     if (!mimeData || !mimeData->hasFormat(utilqt::toQString(mimeTFPrimitives))) return;
 
     QByteArray data;
@@ -890,9 +890,9 @@ void TFEditor::paste(std::optional<QPointF> scenePos) {
         // Offset all pasted primitives so their center aligns with the mouse position
         auto [minIt, maxIt] = std::ranges::minmax_element(
             primitives, {}, [](const auto& p) { return p->getPosition(); });
-        double center = ((*minIt)->getPosition() + (*maxIt)->getPosition()) / 2.0;
-        double targetPos = sceneToPos(*scenePos);
-        double offset = targetPos - center;
+        const double center = ((*minIt)->getPosition() + (*maxIt)->getPosition()) / 2.0;
+        const double targetPos = sceneToPos(*scenePos);
+        const double offset = targetPos - center;
         for (auto& p : primitives) {
             p->setPosition(std::clamp(p->getPosition() + offset, 0.0, 1.0));
         }
