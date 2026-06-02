@@ -35,8 +35,6 @@
 
 namespace inviwo::plot {
 
-namespace {
-
 std::string formatExponent(int exp) {
     constexpr std::array<std::string_view, 10> powers = {"\u2070", "\u00B9", "\u00B2", "\u00B3",
                                                          "\u2074", "\u2075", "\u2076", "\u2077",
@@ -58,7 +56,6 @@ std::string formatExponent(int exp) {
     res += ' ';
     return res;
 }
-}  // namespace
 
 OptionPropertyState<CaptionType> captionTypeState() {
     return {.options = {{"string", "Caption String", CaptionType::String},
