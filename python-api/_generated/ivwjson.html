@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ivwjson &mdash; Inviwo Python API 0.9.12-pre documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=28b1853b"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inviwopy" href="inviwopy.html" />
+    <link rel="prev" title="ivwbnl" href="ivwbnl.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Inviwo Python API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="ivwbase.html">ivwbase</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ivwbnl.html">ivwbnl</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ivwjson</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ivwjson.JSONInportConverter"><code class="docutils literal notranslate"><span class="pre">JSONInportConverter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONInportConverter.__init__"><code class="docutils literal notranslate"><span class="pre">JSONInportConverter.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONInportConverter.fromJson"><code class="docutils literal notranslate"><span class="pre">JSONInportConverter.fromJson()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONInportConverter.hasConverter"><code class="docutils literal notranslate"><span class="pre">JSONInportConverter.hasConverter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONInportConverter.toJson"><code class="docutils literal notranslate"><span class="pre">JSONInportConverter.toJson()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwjson.JSONOutportConverter"><code class="docutils literal notranslate"><span class="pre">JSONOutportConverter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONOutportConverter.__init__"><code class="docutils literal notranslate"><span class="pre">JSONOutportConverter.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONOutportConverter.fromJson"><code class="docutils literal notranslate"><span class="pre">JSONOutportConverter.fromJson()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONOutportConverter.hasConverter"><code class="docutils literal notranslate"><span class="pre">JSONOutportConverter.hasConverter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONOutportConverter.toJson"><code class="docutils literal notranslate"><span class="pre">JSONOutportConverter.toJson()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwjson.JSONPropertyConverter"><code class="docutils literal notranslate"><span class="pre">JSONPropertyConverter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONPropertyConverter.__init__"><code class="docutils literal notranslate"><span class="pre">JSONPropertyConverter.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONPropertyConverter.fromJson"><code class="docutils literal notranslate"><span class="pre">JSONPropertyConverter.fromJson()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONPropertyConverter.hasConverter"><code class="docutils literal notranslate"><span class="pre">JSONPropertyConverter.hasConverter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwjson.JSONPropertyConverter.toJson"><code class="docutils literal notranslate"><span class="pre">JSONPropertyConverter.toJson()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwjson.fromJson"><code class="docutils literal notranslate"><span class="pre">fromJson()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwjson.getJSONInportConverter"><code class="docutils literal notranslate"><span class="pre">getJSONInportConverter()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwjson.getJSONOutportConverter"><code class="docutils literal notranslate"><span class="pre">getJSONOutportConverter()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwjson.getJSONPropertyConverter"><code class="docutils literal notranslate"><span class="pre">getJSONPropertyConverter()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ivwjson.toJson"><code class="docutils literal notranslate"><span class="pre">toJson()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inviwopy.html">inviwopy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ivwdataframe.html">ivwdataframe</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Inviwo Python API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ivwjson</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ivwjson">
+<span id="ivwjson"></span><h1>ivwjson<a class="headerlink" href="#module-ivwjson" title="Link to this heading"></a></h1>
+<p>JSON Module API</p>
+<p>Bindings for converting Inviwo Properties, Inports, and Outports to and from
+JSON-compatible Python objects (dicts, lists, etc). The conversions go through
+the converter registries owned by the <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONModule</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">inviwopy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ivwjson</span>
+
+<span class="n">prop</span> <span class="o">=</span> <span class="n">inviwopy</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">FloatProperty</span><span class="p">(</span><span class="s2">&quot;threshold&quot;</span><span class="p">,</span> <span class="s2">&quot;Threshold&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">ivwjson</span><span class="o">.</span><span class="n">toJson</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>        <span class="c1"># -&gt; Python dict</span>
+<span class="n">ivwjson</span><span class="o">.</span><span class="n">fromJson</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>       <span class="c1"># update prop from a dict</span>
+</pre></div>
+</div>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwjson.fromJson" title="ivwjson.fromJson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fromJson</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Overloaded function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ivwjson.getJSONInportConverter" title="ivwjson.getJSONInportConverter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getJSONInportConverter</span></code></a>()</p></td>
+<td><p>Get the global JSONInportConverter from the JSON module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwjson.getJSONOutportConverter" title="ivwjson.getJSONOutportConverter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getJSONOutportConverter</span></code></a>()</p></td>
+<td><p>Get the global JSONOutportConverter from the JSON module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ivwjson.getJSONPropertyConverter" title="ivwjson.getJSONPropertyConverter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getJSONPropertyConverter</span></code></a>()</p></td>
+<td><p>Get the global JSONPropertyConverter from the JSON module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwjson.toJson" title="ivwjson.toJson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">toJson</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Overloaded function.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwjson.JSONInportConverter" title="ivwjson.JSONInportConverter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JSONInportConverter</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ivwjson.JSONOutportConverter" title="ivwjson.JSONOutportConverter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JSONOutportConverter</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwjson.JSONPropertyConverter" title="ivwjson.JSONPropertyConverter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JSONPropertyConverter</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwjson.JSONInportConverter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">ivwjson.</span></span><span class="sig-name descname"><span class="pre">JSONInportConverter</span></span><a class="headerlink" href="#ivwjson.JSONInportConverter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONInportConverter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwjson.JSONInportConverter.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONInportConverter.fromJson">
+<span class="sig-name descname"><span class="pre">fromJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwjson.JSONInportConverter" title="ivwjson.JSONInportConverter"><span class="pre">ivwjson.JSONInportConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">inviwopy.Inport</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwjson.JSONInportConverter.fromJson" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONInportConverter.hasConverter">
+<span class="sig-name descname"><span class="pre">hasConverter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwjson.JSONInportConverter" title="ivwjson.JSONInportConverter"><span class="pre">ivwjson.JSONInportConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">classIdentifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwjson.JSONInportConverter.hasConverter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONInportConverter.toJson">
+<span class="sig-name descname"><span class="pre">toJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwjson.JSONInportConverter" title="ivwjson.JSONInportConverter"><span class="pre">ivwjson.JSONInportConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">inviwopy.Inport</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></span><a class="headerlink" href="#ivwjson.JSONInportConverter.toJson" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwjson.JSONOutportConverter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">ivwjson.</span></span><span class="sig-name descname"><span class="pre">JSONOutportConverter</span></span><a class="headerlink" href="#ivwjson.JSONOutportConverter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONOutportConverter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwjson.JSONOutportConverter.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONOutportConverter.fromJson">
+<span class="sig-name descname"><span class="pre">fromJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwjson.JSONOutportConverter" title="ivwjson.JSONOutportConverter"><span class="pre">ivwjson.JSONOutportConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">inviwopy.Outport</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwjson.JSONOutportConverter.fromJson" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONOutportConverter.hasConverter">
+<span class="sig-name descname"><span class="pre">hasConverter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwjson.JSONOutportConverter" title="ivwjson.JSONOutportConverter"><span class="pre">ivwjson.JSONOutportConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">classIdentifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwjson.JSONOutportConverter.hasConverter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONOutportConverter.toJson">
+<span class="sig-name descname"><span class="pre">toJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwjson.JSONOutportConverter" title="ivwjson.JSONOutportConverter"><span class="pre">ivwjson.JSONOutportConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">inviwopy.Outport</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></span><a class="headerlink" href="#ivwjson.JSONOutportConverter.toJson" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ivwjson.JSONPropertyConverter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">ivwjson.</span></span><span class="sig-name descname"><span class="pre">JSONPropertyConverter</span></span><a class="headerlink" href="#ivwjson.JSONPropertyConverter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONPropertyConverter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwjson.JSONPropertyConverter.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONPropertyConverter.fromJson">
+<span class="sig-name descname"><span class="pre">fromJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwjson.JSONPropertyConverter" title="ivwjson.JSONPropertyConverter"><span class="pre">ivwjson.JSONPropertyConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="inviwopy.properties.html#inviwopy.properties.Property" title="inviwopy.properties.Property"><span class="pre">inviwopy.properties.Property</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwjson.JSONPropertyConverter.fromJson" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONPropertyConverter.hasConverter">
+<span class="sig-name descname"><span class="pre">hasConverter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwjson.JSONPropertyConverter" title="ivwjson.JSONPropertyConverter"><span class="pre">ivwjson.JSONPropertyConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">classIdentifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#ivwjson.JSONPropertyConverter.hasConverter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ivwjson.JSONPropertyConverter.toJson">
+<span class="sig-name descname"><span class="pre">toJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ivwjson.JSONPropertyConverter" title="ivwjson.JSONPropertyConverter"><span class="pre">ivwjson.JSONPropertyConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="inviwopy.properties.html#inviwopy.properties.Property" title="inviwopy.properties.Property"><span class="pre">inviwopy.properties.Property</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><span class="pre">object</span></a></span></span><a class="headerlink" href="#ivwjson.JSONPropertyConverter.toJson" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ivwjson.fromJson">
+<span class="sig-prename descclassname"><span class="pre">ivwjson.</span></span><span class="sig-name descname"><span class="pre">fromJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwjson.fromJson" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>fromJson(property: inviwopy.properties.Property, data: object) -&gt; None</p></li>
+</ol>
+<p>Update a Property from a JSON-compatible Python object.</p>
+<ol class="arabic simple" start="2">
+<li><p>fromJson(inport: inviwopy.Inport, data: object) -&gt; None</p></li>
+</ol>
+<p>Update an Inport from a JSON-compatible Python object.</p>
+<ol class="arabic simple" start="3">
+<li><p>fromJson(outport: inviwopy.Outport, data: object) -&gt; None</p></li>
+</ol>
+<p>Update an Outport from a JSON-compatible Python object.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ivwjson.getJSONInportConverter">
+<span class="sig-prename descclassname"><span class="pre">ivwjson.</span></span><span class="sig-name descname"><span class="pre">getJSONInportConverter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwjson.JSONInportConverter" title="ivwjson.JSONInportConverter"><span class="pre">ivwjson.JSONInportConverter</span></a></span></span><a class="headerlink" href="#ivwjson.getJSONInportConverter" title="Link to this definition"></a></dt>
+<dd><p>Get the global JSONInportConverter from the JSON module.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ivwjson.getJSONOutportConverter">
+<span class="sig-prename descclassname"><span class="pre">ivwjson.</span></span><span class="sig-name descname"><span class="pre">getJSONOutportConverter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwjson.JSONOutportConverter" title="ivwjson.JSONOutportConverter"><span class="pre">ivwjson.JSONOutportConverter</span></a></span></span><a class="headerlink" href="#ivwjson.getJSONOutportConverter" title="Link to this definition"></a></dt>
+<dd><p>Get the global JSONOutportConverter from the JSON module.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ivwjson.getJSONPropertyConverter">
+<span class="sig-prename descclassname"><span class="pre">ivwjson.</span></span><span class="sig-name descname"><span class="pre">getJSONPropertyConverter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ivwjson.JSONPropertyConverter" title="ivwjson.JSONPropertyConverter"><span class="pre">ivwjson.JSONPropertyConverter</span></a></span></span><a class="headerlink" href="#ivwjson.getJSONPropertyConverter" title="Link to this definition"></a></dt>
+<dd><p>Get the global JSONPropertyConverter from the JSON module.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ivwjson.toJson">
+<span class="sig-prename descclassname"><span class="pre">ivwjson.</span></span><span class="sig-name descname"><span class="pre">toJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwjson.toJson" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>toJson(property: inviwopy.properties.Property) -&gt; object</p></li>
+</ol>
+<p>Convert a Property to a JSON-compatible Python object.</p>
+<ol class="arabic simple" start="2">
+<li><p>toJson(inport: inviwopy.Inport) -&gt; object</p></li>
+</ol>
+<p>Convert an Inport to a JSON-compatible Python object.</p>
+<ol class="arabic simple" start="3">
+<li><p>toJson(outport: inviwopy.Outport) -&gt; object</p></li>
+</ol>
+<p>Convert an Outport to a JSON-compatible Python object.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ivwbnl.html" class="btn btn-neutral float-left" title="ivwbnl" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="inviwopy.html" class="btn btn-neutral float-right" title="inviwopy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Inviwo Foundation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
