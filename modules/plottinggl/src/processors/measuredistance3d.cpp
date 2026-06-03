@@ -67,7 +67,7 @@ struct Reset {};
 
 struct Fsm {
     auto operator()() const noexcept {
-        using namespace sml;
+        using namespace sml;  // NOLINT(google-build-using-namespace)
 
         const auto invalid = sml::state<Invalid>;
         const auto placingFirst = sml::state<PlacingFirstLocator>;
