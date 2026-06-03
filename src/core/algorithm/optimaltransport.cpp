@@ -40,6 +40,10 @@ namespace {
 // Numerical tolerance for floating-point comparisons.
 constexpr double eps = 1e-12;
 
+// Density below maxDensity * gapThresholdFactor marks a transport gap (near-zero
+// alpha) that separates connected components in the reconstructed TF.
+constexpr double gapThresholdFactor = 1e-6;
+
 // ---------------------------------------------------------------------------
 // Internal data structures
 // ---------------------------------------------------------------------------
@@ -56,6 +60,8 @@ struct CdfPoint {
 struct Cdf {
     std::vector<CdfPoint> points;
     double totalMass = 0.0;
+    double supportMinVal = 0.0;
+    double supportMaxVal = 0.0;
 };
 
 // A point on the interpolated quantile function.
@@ -75,6 +81,21 @@ double alphaOf(const TFPrimitiveData& p) { return std::max(0.0, static_cast<doub
 // Sort and deduplicate TF primitives by position. A piecewise-linear function cannot
 // represent vertical discontinuities, so duplicate positions are collapsed (last wins).
 std::vector<TFPrimitiveData> sanitize(std::span<const TFPrimitiveData> tf) {
+    if (tf.empty()) return {};
+
+    // Check if it is already sorted strictly (with no eps duplicates).
+    bool processSorted = true;
+    for (std::size_t i = 1; i < tf.size(); ++i) {
+        if (tf[i].pos <= tf[i - 1].pos || std::abs(tf[i].pos - tf[i - 1].pos) <= eps) {
+            processSorted = false;
+            break;
+        }
+    }
+
+    if (processSorted) {
+        return std::vector<TFPrimitiveData>(tf.begin(), tf.end());
+    }
+
     std::vector<TFPrimitiveData> points(tf.begin(), tf.end());
     std::sort(points.begin(), points.end(),
               [](const TFPrimitiveData& a, const TFPrimitiveData& b) { return a.pos < b.pos; });
@@ -92,6 +113,7 @@ std::vector<TFPrimitiveData> sanitize(std::span<const TFPrimitiveData> tf) {
 }
 
 // Evaluate a piecewise-linear TF at position x via linear interpolation.
+// Fast path: reuse search hints or state when available.
 vec4 evaluate(std::span<const TFPrimitiveData> tf, double x) {
     if (tf.empty()) return vec4{0.0f};
     if (x <= tf.front().pos) return tf.front().color;
@@ -109,9 +131,42 @@ vec4 evaluate(std::span<const TFPrimitiveData> tf, double x) {
     return glm::mix(p0.color, p1.color, u);
 }
 
+// Optimized local sequential search/evaluation where search advances or is near.
+struct EvaluationCursor {
+    std::size_t idx = 0;
+};
+
+vec4 evaluateCursor(std::span<const TFPrimitiveData> tf, double x, EvaluationCursor& cursor) {
+    if (tf.empty()) return vec4{0.0f};
+    if (x <= tf.front().pos) return tf.front().color;
+    if (x >= tf.back().pos) return tf.back().color;
+
+    // Shift cursor forward or backward appropriately to find the interval enclosing x.
+    if (cursor.idx >= tf.size() - 1) {
+        cursor.idx = tf.size() - 2;
+    }
+    // Advance forward
+    while (cursor.idx + 1 < tf.size() && tf[cursor.idx + 1].pos <= x) {
+        ++cursor.idx;
+    }
+    // Rewind backward
+    while (cursor.idx > 0 && tf[cursor.idx].pos > x) {
+        --cursor.idx;
+    }
+
+    const auto& p0 = tf[cursor.idx];
+    const auto& p1 = tf[cursor.idx + 1];
+
+    const double dx = p1.pos - p0.pos;
+    if (std::abs(dx) < eps) return glm::mix(p0.color, p1.color, 0.5f);
+
+    const auto u = static_cast<float>((x - p0.pos) / dx);
+    return glm::mix(p0.color, p1.color, u);
+}
+
 // ---------------------------------------------------------------------------
 // Fallback: simple pointwise linear blend
-// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------;
 
 // Collect all unique positions from both TFs.
 std::vector<double> mergedPositions(std::span<const TFPrimitiveData> a,
@@ -172,29 +227,50 @@ Cdf computeCdf(std::span<const TFPrimitiveData> tf) {
     }
 
     cdf.totalMass = cumulative;
+
+    // Cache supportMin and supportMax
+    if (cdf.points.empty()) {
+        cdf.supportMinVal = 0.0;
+        cdf.supportMaxVal = 0.0;
+    } else {
+        bool foundMin = false;
+        cdf.supportMinVal = cdf.points.front().pos;
+        for (std::size_t i = 1; i < cdf.points.size(); ++i) {
+            if (cdf.points[i].mass - cdf.points[i - 1].mass > eps) {
+                cdf.supportMinVal = cdf.points[i - 1].pos;
+                foundMin = true;
+                break;
+            }
+        }
+        if (!foundMin) {
+            cdf.supportMinVal = cdf.points.front().pos;
+        }
+
+        bool foundMax = false;
+        cdf.supportMaxVal = cdf.points.back().pos;
+        for (std::size_t i = cdf.points.size(); i-- > 1;) {
+            if (cdf.points[i].mass - cdf.points[i - 1].mass > eps) {
+                cdf.supportMaxVal = cdf.points[i].pos;
+                foundMax = true;
+                break;
+            }
+        }
+        if (!foundMax) {
+            cdf.supportMaxVal = cdf.points.back().pos;
+        }
+    }
+
     return cdf;
 }
 
 // Find the leftmost position where the CDF begins to increase (start of support).
 double supportMin(const Cdf& cdf) {
-    if (cdf.points.empty()) return 0.0;
-    for (std::size_t i = 1; i < cdf.points.size(); ++i) {
-        if (cdf.points[i].mass - cdf.points[i - 1].mass > eps) {
-            return cdf.points[i - 1].pos;
-        }
-    }
-    return cdf.points.front().pos;
+    return cdf.supportMinVal;
 }
 
 // Find the rightmost position where the CDF stops increasing (end of support).
 double supportMax(const Cdf& cdf) {
-    if (cdf.points.empty()) return 0.0;
-    for (std::size_t i = cdf.points.size(); i-- > 1;) {
-        if (cdf.points[i].mass - cdf.points[i - 1].mass > eps) {
-            return cdf.points[i].pos;
-        }
-    }
-    return cdf.points.back().pos;
+    return cdf.supportMaxVal;
 }
 
 // Compute normalized quantile [0,1] at a CDF point.
@@ -235,6 +311,50 @@ double solveSegmentInverse(double a0, double a1, double dx, double localMass) {
 }
 
 // Invert the CDF: find position x such that CDF(x) / totalMass = q.
+// Fast path: use a search cursor if iterating/sweeping sequentially.
+struct InvertCdfCursor {
+    std::size_t idx = 0;
+};
+
+double invertCdfCursor(const Cdf& cdf, double q, InvertCdfCursor& cursor) {
+    if (cdf.points.empty()) return 0.0;
+    if (cdf.totalMass <= eps) return cdf.points.front().pos;
+
+    q = std::clamp(q, 0.0, 1.0);
+    if (q <= 0.0) return supportMin(cdf);
+    if (q >= 1.0) return supportMax(cdf);
+
+    const double targetMass = q * cdf.totalMass;
+
+    if (cursor.idx >= cdf.points.size()) {
+        cursor.idx = cdf.points.size() - 1;
+    }
+
+    // Advance forward
+    while (cursor.idx < cdf.points.size() && cdf.points[cursor.idx].mass < targetMass) {
+        ++cursor.idx;
+    }
+    // Rewind backward
+    while (cursor.idx > 0 && cdf.points[cursor.idx - 1].mass >= targetMass) {
+        --cursor.idx;
+    }
+
+    if (cursor.idx == 0) return cdf.points.front().pos;
+    if (cursor.idx == cdf.points.size()) return supportMax(cdf);
+
+    const auto& p1 = cdf.points[cursor.idx];
+    const auto& p0 = cdf.points[cursor.idx - 1];
+
+    const double segmentMass = p1.mass - p0.mass;
+    if (segmentMass <= eps) return p0.pos;
+
+    const double dx = p1.pos - p0.pos;
+    if (dx <= eps) return p0.pos;
+
+    const double localMass = targetMass - p0.mass;
+    return p0.pos + solveSegmentInverse(p0.alpha, p1.alpha, dx, localMass);
+}
+
 double invertCdf(const Cdf& cdf, double q) {
     if (cdf.points.empty()) return 0.0;
     if (cdf.totalMass <= eps) return cdf.points.front().pos;
@@ -278,11 +398,13 @@ void addQuantileLevels(const Cdf& cdf, std::size_t samplesPerSegment, std::vecto
 
     samplesPerSegment = std::max<std::size_t>(1, samplesPerSegment);
 
+    // Initial point
+    levels.push_back(quantileAtPoint(cdf, cdf.points.front()));
+
     for (std::size_t i = 1; i < cdf.points.size(); ++i) {
         const double q0 = quantileAtPoint(cdf, cdf.points[i - 1]);
         const double q1 = quantileAtPoint(cdf, cdf.points[i]);
 
-        levels.push_back(q0);
         if (q1 - q0 > eps) {
             for (std::size_t s = 1; s < samplesPerSegment; ++s) {
                 const double u = static_cast<double>(s) / static_cast<double>(samplesPerSegment);
@@ -300,13 +422,26 @@ void addQuantileLevels(const Cdf& cdf, std::size_t samplesPerSegment, std::vecto
 // are adequately sampled. Contains sub-samples within each CDF segment of both TFs.
 std::vector<double> mergedQuantileLevels(const Cdf& a, const Cdf& b,
                                          std::size_t samplesPerSegment) {
+    std::vector<double> levelsA;
+    levelsA.reserve(a.points.size() * (samplesPerSegment + 1) + 2);
+    addQuantileLevels(a, samplesPerSegment, levelsA);
+    std::sort(levelsA.begin(), levelsA.end());
+    levelsA.erase(std::unique(levelsA.begin(), levelsA.end(),
+                               [](double x, double y) { return std::abs(x - y) < eps; }),
+                  levelsA.end());
+
+    std::vector<double> levelsB;
+    levelsB.reserve(b.points.size() * (samplesPerSegment + 1) + 2);
+    addQuantileLevels(b, samplesPerSegment, levelsB);
+    std::sort(levelsB.begin(), levelsB.end());
+    levelsB.erase(std::unique(levelsB.begin(), levelsB.end(),
+                               [](double x, double y) { return std::abs(x - y) < eps; }),
+                  levelsB.end());
+
     std::vector<double> levels;
-    levels.reserve((a.points.size() + b.points.size()) * (samplesPerSegment + 1) + 2);
+    levels.resize(levelsA.size() + levelsB.size());
+    std::merge(levelsA.begin(), levelsA.end(), levelsB.begin(), levelsB.end(), levels.begin());
 
-    addQuantileLevels(a, samplesPerSegment, levels);
-    addQuantileLevels(b, samplesPerSegment, levels);
-
-    std::sort(levels.begin(), levels.end());
     levels.erase(std::unique(levels.begin(), levels.end(),
                              [](double x, double y) { return std::abs(x - y) < eps; }),
                  levels.end());
@@ -352,6 +487,22 @@ struct TransportContext {
 QuantilePoint transportedQuantilePoint(const TransportContext& ctx, double q) {
     const auto qa = quantilePoint(ctx.aspan, ctx.cdfA, q);
     const auto qb = quantilePoint(ctx.bspan, ctx.cdfB, q);
+    const double x = (1.0 - ctx.t) * qa.pos + ctx.t * qb.pos;
+    const vec3 color = glm::mix(qa.color, qb.color, static_cast<float>(ctx.t));
+    return QuantilePoint{x, q, color};
+}
+
+QuantilePoint transportedQuantilePointCursor(const TransportContext& ctx, double q,
+                                              InvertCdfCursor& cursorA, InvertCdfCursor& cursorB,
+                                              EvaluationCursor& evalCursorA, EvaluationCursor& evalCursorB) {
+    const double xA = invertCdfCursor(ctx.cdfA, q, cursorA);
+    const vec4 colorA = evaluateCursor(ctx.aspan, xA, evalCursorA);
+    const QuantilePoint qa{xA, q, vec3{colorA}};
+
+    const double xB = invertCdfCursor(ctx.cdfB, q, cursorB);
+    const vec4 colorB = evaluateCursor(ctx.bspan, xB, evalCursorB);
+    const QuantilePoint qb{xB, q, vec3{colorB}};
+
     const double x = (1.0 - ctx.t) * qa.pos + ctx.t * qb.pos;
     const vec3 color = glm::mix(qa.color, qb.color, static_cast<float>(ctx.t));
     return QuantilePoint{x, q, color};
@@ -408,6 +559,9 @@ void addStructuralVertices(std::span<const TFPrimitiveData> aspan,
         // in q get successive indices 0, 1, 2, ...
         double prevQ = std::numeric_limits<double>::quiet_NaN();
         std::size_t plateauIndex = 0;
+        EvaluationCursor selfCursor;
+        EvaluationCursor otherCursor;
+        InvertCdfCursor invertCursor;
         for (std::size_t k = 0; k < n; ++k) {
             const double q = selfCdf.points[k].mass / selfCdf.totalMass;
             if (!std::isnan(prevQ) && std::abs(q - prevQ) <= eps) {
@@ -420,11 +574,11 @@ void addStructuralVertices(std::span<const TFPrimitiveData> aspan,
 
             const double xSelf = selfSpan[k].pos;
             double xOther = matchPlateauKnot(otherCdf, q, plateauIndex);
-            if (std::isnan(xOther)) xOther = invertCdf(otherCdf, q);
+            if (std::isnan(xOther)) xOther = invertCdfCursor(otherCdf, q, invertCursor);
 
             const double x = weightSelf * xSelf + weightOther * xOther;
             const vec3 color =
-                glm::mix(vec3{evaluate(selfSpan, xSelf)}, vec3{evaluate(otherSpan, xOther)},
+                glm::mix(vec3{evaluateCursor(selfSpan, xSelf, selfCursor)}, vec3{evaluateCursor(otherSpan, xOther, otherCursor)},
                          static_cast<float>(weightOther));
             interpolatedCdf.push_back(QuantilePoint{x, q, color});
         }
@@ -452,14 +606,30 @@ std::vector<QuantilePoint> buildInterpolatedVertices(const TransportContext& ctx
     std::vector<QuantilePoint> interpolatedCdf;
     interpolatedCdf.reserve(levels.size() + ctx.aspan.size() + ctx.bspan.size());
 
+    InvertCdfCursor cursorA;
+    InvertCdfCursor cursorB;
+    EvaluationCursor evalCursorA;
+    EvaluationCursor evalCursorB;
+
     for (double q : levels) {
-        interpolatedCdf.push_back(transportedQuantilePoint(ctx, q));
+        interpolatedCdf.push_back(transportedQuantilePointCursor(ctx, q, cursorA, cursorB, evalCursorA, evalCursorB));
     }
+
+    // The transported levels are already sorted by q (levels is sorted ascending and
+    // transportedQuantilePointCursor preserves q). addStructuralVertices appends a much
+    // smaller, unsorted batch of knot vertices. Rather than re-sorting the whole array in
+    // O(M log M), sort only the appended suffix and merge it into the sorted prefix in
+    // O(M), which dominates for large samplesPerSegment.
+    const std::size_t sortedPrefix = interpolatedCdf.size();
 
     addStructuralVertices(ctx.aspan, ctx.bspan, ctx.cdfA, ctx.cdfB, ctx.t, interpolatedCdf);
 
-    std::sort(interpolatedCdf.begin(), interpolatedCdf.end(),
-              [](const QuantilePoint& lhs, const QuantilePoint& rhs) { return lhs.q < rhs.q; });
+    const auto byQ = [](const QuantilePoint& lhs, const QuantilePoint& rhs) {
+        return lhs.q < rhs.q;
+    };
+    const auto mid = interpolatedCdf.begin() + sortedPrefix;
+    std::stable_sort(mid, interpolatedCdf.end(), byQ);
+    std::inplace_merge(interpolatedCdf.begin(), mid, interpolatedCdf.end(), byQ);
 
     std::vector<QuantilePoint> vertices;
     vertices.reserve(interpolatedCdf.size());
@@ -479,14 +649,14 @@ struct AlphaReconstruction {
     double gapThreshold = 0.0;
 };
 
-// Reconstruct piecewise-linear alpha from quantile vertices via secant interval
-// densities d_k = m_t * Delta q / Delta x and width-weighted vertex averaging.
-AlphaReconstruction reconstructAlpha(const TransportContext& ctx,
-                                     const std::vector<QuantilePoint>& vertices) {
-    AlphaReconstruction result;
+// Secant interval densities d_k = m_t * Delta q / Delta x between consecutive
+// vertices, plus the derived gap threshold maxDensity * gapThresholdFactor. Shared
+// by both the secant-based and closed-form reconstructions, which start from the
+// same per-interval densities and gap classification.
+void computeSecantDensities(const TransportContext& ctx,
+                            const std::vector<QuantilePoint>& vertices,
+                            AlphaReconstruction& result) {
     const std::size_t n = vertices.size();
-    if (n < 2) return result;
-
     result.density.assign(n - 1, 0.0);
     for (std::size_t i = 0; i + 1 < n; ++i) {
         const double dx = vertices[i + 1].pos - vertices[i].pos;
@@ -495,22 +665,66 @@ AlphaReconstruction reconstructAlpha(const TransportContext& ctx,
             result.density[i] = ctx.targetMass * dq / dx;
         }
     }
-
     double maxDensity = 0.0;
-    for (const auto& d : result.density) {
-        maxDensity = std::max(maxDensity, d);
+    for (const auto& d : result.density) maxDensity = std::max(maxDensity, d);
+    result.gapThreshold = maxDensity * gapThresholdFactor;
+}
+
+// Whether the interpolated TF must pin alpha to zero at its support start / end.
+// This happens when either input TF has zero alpha at the corresponding support
+// boundary, so a peak does not bleed across a transport gap.
+struct BoundaryZeroFlags {
+    bool atStart = false;
+    bool atEnd = false;
+};
+
+BoundaryZeroFlags computeBoundaryZeroFlags(const TransportContext& ctx) {
+    const double alphaAtStartA = static_cast<double>(evaluate(ctx.aspan, supportMin(ctx.cdfA)).a);
+    const double alphaAtStartB = static_cast<double>(evaluate(ctx.bspan, supportMin(ctx.cdfB)).a);
+    const double alphaAtEndA = static_cast<double>(evaluate(ctx.aspan, supportMax(ctx.cdfA)).a);
+    const double alphaAtEndB = static_cast<double>(evaluate(ctx.bspan, supportMax(ctx.cdfB)).a);
+    return BoundaryZeroFlags{(alphaAtStartA <= eps) || (alphaAtStartB <= eps),
+                             (alphaAtEndA <= eps) || (alphaAtEndB <= eps)};
+}
+
+// Uniformly rescale alpha on [compStart, compEnd] so the output piecewise-linear
+// trapezoidal mass matches the target mass share m_t * sum(Delta q) that X_t
+// assigns to the component. Used by both reconstructions.
+void rescaleComponentMass(const TransportContext& ctx,
+                          const std::vector<QuantilePoint>& vertices, AlphaReconstruction& result,
+                          std::size_t compStart, std::size_t compEnd) {
+    double compTargetMass = 0.0;
+    double compActualMass = 0.0;
+    for (std::size_t j = compStart; j < compEnd; ++j) {
+        const double dx = vertices[j + 1].pos - vertices[j].pos;
+        if (dx <= eps) continue;
+        const double dq = vertices[j + 1].q - vertices[j].q;
+        compTargetMass += ctx.targetMass * dq;
+        compActualMass += 0.5 * (result.alpha[j] + result.alpha[j + 1]) * dx;
     }
-    result.gapThreshold = maxDensity * 1e-6;
+    if (compActualMass > eps) {
+        const double scale = compTargetMass / compActualMass;
+        for (std::size_t j = compStart; j <= compEnd; ++j) {
+            result.alpha[j] *= scale;
+        }
+    }
+}
+
+// Reconstruct piecewise-linear alpha from quantile vertices via secant interval
+// densities d_k = m_t * Delta q / Delta x and width-weighted vertex averaging.
+AlphaReconstruction reconstructAlpha(const TransportContext& ctx,
+                                     const std::vector<QuantilePoint>& vertices) {
+    AlphaReconstruction result;
+    const std::size_t n = vertices.size();
+    if (n < 2) return result;
+
+    computeSecantDensities(ctx, vertices, result);
 
     result.alpha.assign(n, 0.0);
 
-    const double alphaAtStartA = static_cast<double>(evaluate(ctx.aspan, supportMin(ctx.cdfA)).a);
-    const double alphaAtStartB = static_cast<double>(evaluate(ctx.bspan, supportMin(ctx.cdfB)).a);
-    const bool zeroAtStart = (alphaAtStartA <= eps) || (alphaAtStartB <= eps);
-
-    const double alphaAtEndA = static_cast<double>(evaluate(ctx.aspan, supportMax(ctx.cdfA)).a);
-    const double alphaAtEndB = static_cast<double>(evaluate(ctx.bspan, supportMax(ctx.cdfB)).a);
-    const bool zeroAtEnd = (alphaAtEndA <= eps) || (alphaAtEndB <= eps);
+    const BoundaryZeroFlags boundary = computeBoundaryZeroFlags(ctx);
+    const bool zeroAtStart = boundary.atStart;
+    const bool zeroAtEnd = boundary.atEnd;
 
     std::size_t i = 0;
     while (i < n - 1) {
@@ -564,21 +778,7 @@ AlphaReconstruction reconstructAlpha(const TransportContext& ctx,
             result.alpha[j] = std::max(0.0, result.alpha[j]);
         }
 
-        double compTargetMass = 0.0;
-        double compActualMass = 0.0;
-        for (std::size_t j = compStart; j < compEnd; ++j) {
-            const double dx = vertices[j + 1].pos - vertices[j].pos;
-            if (dx <= eps) continue;
-            const double dq = vertices[j + 1].q - vertices[j].q;
-            compTargetMass += ctx.targetMass * dq;
-            compActualMass += 0.5 * (result.alpha[j] + result.alpha[j + 1]) * dx;
-        }
-        if (compActualMass > eps) {
-            const double scale = compTargetMass / compActualMass;
-            for (std::size_t j = compStart; j <= compEnd; ++j) {
-                result.alpha[j] *= scale;
-            }
-        }
+        rescaleComponentMass(ctx, vertices, result, compStart, compEnd);
     }
 
     for (auto& aVal : result.alpha) {
@@ -661,6 +861,50 @@ struct CdfSegment {
     double cdfAtStart = 0.0;  // F(xStart), un-normalized
 };
 
+// Precomputed coefficients for inverting X_t(q) on a single sub-interval.
+struct PrecomputedInversion {
+    bool valid = false;
+    bool sAZero = false;
+    bool sBZero = false;
+
+    // Flat terms
+    double flatC = 0.0;
+    double flatSlopeQ = 0.0;
+
+    // Quadratic terms (both slopes non-zero)
+    double A = 0.0;
+    double B = 0.0;
+    double a0 = 0.0;
+    double a1 = 0.0;
+    double b0 = 0.0;
+    double b1 = 0.0;
+    double cConst = 0.0;
+
+    // Linear + Square-root terms (exactly one slope zero)
+    double wLin = 0.0;
+    double wRoot = 0.0;
+    double c0Lin = 0.0;
+    double c1Lin = 0.0;
+    double c0Root = 0.0;
+    double C = 0.0;
+    double p0 = 0.0;
+    double p1 = 0.0;
+    double d1 = 0.0;
+    double d0_base = 0.0; // x gets added to this
+};
+
+// Sub-interval between consecutive quantile levels: q in [qLo, qHi], x in
+// [xLo, xHi] under X_t, with the paired (A, B) knot segments held fixed.
+struct SubInterval {
+    double qLo = 0.0;
+    double qHi = 0.0;
+    double xLo = 0.0;
+    double xHi = 0.0;
+    CdfSegment segA;
+    CdfSegment segB;
+    PrecomputedInversion inv;
+};
+
 CdfSegment makeSegment(const Cdf& cdf, std::size_t i) {
     const auto& p0 = cdf.points[i];
     const auto& p1 = cdf.points[i + 1];
@@ -732,15 +976,65 @@ QuadraticRoots solveQuadratic(double a, double b, double c) {
     return out;
 }
 
-// Solve X_t(q) = x on a sub-interval where Q_A lies on segA and Q_B on segB.
-// When both segment slopes are non-zero, substituting the segment-local quantile
-// inverses yields a quadratic in q; a zero slope reduces the problem to a
-// linear or linear-plus-square-root equation. Returns NaN if no root lies in
-// [qLo, qHi].
-double invertXtOnSegment(const CdfSegment& segA, const CdfSegment& segB, double t, double x) {
+PrecomputedInversion precomputeInversion(const CdfSegment& segA, const CdfSegment& segB, double t) {
+    PrecomputedInversion inv;
     const double oneMt = 1.0 - t;
-    const double qLo = std::max(segA.qStart, segB.qStart);
-    const double qHi = std::min(segA.qEnd, segB.qEnd);
+    inv.sAZero = std::abs(segA.slope) <= eps;
+    inv.sBZero = std::abs(segB.slope) <= eps;
+
+    if (inv.sAZero && inv.sBZero) {
+        const double aA = segA.alphaStart;
+        const double aB = segB.alphaStart;
+        if (aA <= eps || aB <= eps) {
+            inv.valid = false;
+            return inv;
+        }
+        inv.flatC = oneMt * (segA.xStart - segA.cdfAtStart / aA) + t * (segB.xStart - segB.cdfAtStart / aB);
+        inv.flatSlopeQ = oneMt * segA.mass / aA + t * segB.mass / aB;
+        inv.valid = true;
+        return inv;
+    }
+
+    if (!inv.sAZero && !inv.sBZero) {
+        inv.A = oneMt / segA.slope;
+        inv.B = t / segB.slope;
+        inv.a0 = segA.alphaStart * segA.alphaStart - 2.0 * segA.slope * segA.cdfAtStart;
+        inv.a1 = 2.0 * segA.slope * segA.mass;
+        inv.b0 = segB.alphaStart * segB.alphaStart - 2.0 * segB.slope * segB.cdfAtStart;
+        inv.b1 = 2.0 * segB.slope * segB.mass;
+        inv.cConst = oneMt * (segA.xStart - segA.alphaStart / segA.slope) +
+                     t * (segB.xStart - segB.alphaStart / segB.slope);
+        inv.valid = true;
+        return inv;
+    }
+
+    const CdfSegment& segLin = inv.sAZero ? segA : segB;
+    const CdfSegment& segRoot = inv.sAZero ? segB : segA;
+    inv.wLin = inv.sAZero ? oneMt : t;
+    inv.wRoot = inv.sAZero ? t : oneMt;
+
+    if (segLin.alphaStart <= eps) {
+        inv.valid = false;
+        return inv;
+    }
+
+    inv.c0Lin = segLin.xStart - segLin.cdfAtStart / segLin.alphaStart;
+    inv.c1Lin = segLin.mass / segLin.alphaStart;
+    inv.c0Root = segRoot.xStart - segRoot.alphaStart / segRoot.slope;
+    inv.C = inv.wRoot / segRoot.slope;
+    inv.p0 = segRoot.alphaStart * segRoot.alphaStart - 2.0 * segRoot.slope * segRoot.cdfAtStart;
+    inv.p1 = 2.0 * segRoot.slope * segRoot.mass;
+    inv.d1 = inv.wLin * inv.c1Lin;
+    inv.d0_base = - (inv.wLin * inv.c0Lin + inv.wRoot * inv.c0Root);
+    inv.valid = true;
+    return inv;
+}
+
+// Solve X_t(q) = x on a sub-interval where Q_A lies on segA and Q_B(q) on segB.
+// Using precomputed inversion parameters for absolute speed.
+double invertXtOnSegmentPrecomputed(const SubInterval& sub, double t, double x) {
+    const double qLo = sub.qLo;
+    const double qHi = sub.qHi;
     const double qTol = 1e-9 + 1e-9 * std::max(1.0, std::abs(qHi - qLo));
 
     const auto clampToRange = [qLo, qHi](double q) { return std::clamp(q, qLo, qHi); };
@@ -760,47 +1054,27 @@ double invertXtOnSegment(const CdfSegment& segA, const CdfSegment& segB, double 
         return std::isnan(best) ? best : clampToRange(best);
     };
 
-    const bool sAZero = std::abs(segA.slope) <= eps;
-    const bool sBZero = std::abs(segB.slope) <= eps;
+    const auto& inv = sub.inv;
+    if (!inv.valid) return std::numeric_limits<double>::quiet_NaN();
 
-    // Both segments flat: X_t is linear in q on this sub-interval.
-    if (sAZero && sBZero) {
-        const double aA = segA.alphaStart;
-        const double aB = segB.alphaStart;
-        if (aA <= eps || aB <= eps) return std::numeric_limits<double>::quiet_NaN();
-        const double c =
-            oneMt * (segA.xStart - segA.cdfAtStart / aA) + t * (segB.xStart - segB.cdfAtStart / aB);
-        const double slopeQ = oneMt * segA.mass / aA + t * segB.mass / aB;
-        if (std::abs(slopeQ) <= eps) return std::numeric_limits<double>::quiet_NaN();
-        return clampToRange((x - c) / slopeQ);
+    if (inv.sAZero && inv.sBZero) {
+        if (std::abs(inv.flatSlopeQ) <= eps) return std::numeric_limits<double>::quiet_NaN();
+        return clampToRange((x - inv.flatC) / inv.flatSlopeQ);
     }
 
-    // General case: at least one slope is non-zero. Substitute the segment-local
-    // square-root quantile laws, isolate the cross term, and reduce to a quadratic.
-    if (!sAZero && !sBZero) {
-        const double A = oneMt / segA.slope;
-        const double B = t / segB.slope;
-        const double a0 = segA.alphaStart * segA.alphaStart - 2.0 * segA.slope * segA.cdfAtStart;
-        const double a1 = 2.0 * segA.slope * segA.mass;
-        const double b0 = segB.alphaStart * segB.alphaStart - 2.0 * segB.slope * segB.cdfAtStart;
-        const double b1 = 2.0 * segB.slope * segB.mass;
-        const double cConst = oneMt * (segA.xStart - segA.alphaStart / segA.slope) +
-                              t * (segB.xStart - segB.alphaStart / segB.slope);
-        const double d = x - cConst;
-
-        // Isolate sqrt(P_A * P_B) and square: 2 A B sqrt(P_A P_B) = d^2 - A^2 P_A - B^2 P_B.
-        // E(q) = E_0 + E_1 q with E_0, E_1 as below; second squaring yields the quadratic.
-        const double E0 = d * d - A * A * a0 - B * B * b0;
-        const double E1 = -(A * A * a1 + B * B * b1);
-        const double Ac = (A * A * a1 - B * B * b1) * (A * A * a1 - B * B * b1);
-        const double Bc = 2.0 * E0 * E1 - 4.0 * A * A * B * B * (a0 * b1 + a1 * b0);
-        const double Cc = E0 * E0 - 4.0 * A * A * B * B * a0 * b0;
+    if (!inv.sAZero && !inv.sBZero) {
+        const double d = x - inv.cConst;
+        const double E0 = d * d - inv.A * inv.A * inv.a0 - inv.B * inv.B * inv.b0;
+        const double E1 = -(inv.A * inv.A * inv.a1 + inv.B * inv.B * inv.b1);
+        const double Ac = (inv.A * inv.A * inv.a1 - inv.B * inv.B * inv.b1) * (inv.A * inv.A * inv.a1 - inv.B * inv.B * inv.b1);
+        const double Bc = 2.0 * E0 * E1 - 4.0 * inv.A * inv.A * inv.B * inv.B * (inv.a0 * inv.b1 + inv.a1 * inv.b0);
+        const double Cc = E0 * E0 - 4.0 * inv.A * inv.A * inv.B * inv.B * inv.a0 * inv.b0;
 
         const auto roots = solveQuadratic(Ac, Bc, Cc);
         const auto residual = [&](double q) {
-            const double pa = std::max(0.0, a0 + a1 * q);
-            const double pb = std::max(0.0, b0 + b1 * q);
-            return A * std::sqrt(pa) + B * std::sqrt(pb) - d;
+            const double pa = std::max(0.0, inv.a0 + inv.a1 * q);
+            const double pb = std::max(0.0, inv.b0 + inv.b1 * q);
+            return inv.A * std::sqrt(pa) + inv.B * std::sqrt(pb) - d;
         };
         if (roots.linear) {
             return std::isnan(roots.r0) ? std::numeric_limits<double>::quiet_NaN()
@@ -809,34 +1083,15 @@ double invertXtOnSegment(const CdfSegment& segA, const CdfSegment& segB, double 
         return pickBranch(roots.r0, roots.r1, residual);
     }
 
-    // Exactly one slope is zero: X_t(q) is a linear term plus one square-root term.
-    // Rearrange to isolate the radical, then square once to obtain a quadratic in q.
-    const CdfSegment& segLin = sAZero ? segA : segB;
-    const CdfSegment& segRoot = sAZero ? segB : segA;
-    const double wLin = sAZero ? oneMt : t;
-    const double wRoot = sAZero ? t : oneMt;
-
-    if (segLin.alphaStart <= eps) return std::numeric_limits<double>::quiet_NaN();
-
-    const double c0Lin = segLin.xStart - segLin.cdfAtStart / segLin.alphaStart;
-    const double c1Lin = segLin.mass / segLin.alphaStart;
-    const double c0Root = segRoot.xStart - segRoot.alphaStart / segRoot.slope;
-    const double C = wRoot / segRoot.slope;
-    const double p0 =
-        segRoot.alphaStart * segRoot.alphaStart - 2.0 * segRoot.slope * segRoot.cdfAtStart;
-    const double p1 = 2.0 * segRoot.slope * segRoot.mass;
-
-    const double d0 = x - wLin * c0Lin - wRoot * c0Root;
-    const double d1 = wLin * c1Lin;
-
-    const double Ac = d1 * d1;
-    const double Bc = -2.0 * d0 * d1 - C * C * p1;
-    const double Cc = d0 * d0 - C * C * p0;
+    const double d0 = x + inv.d0_base;
+    const double Ac = inv.d1 * inv.d1;
+    const double Bc = -2.0 * d0 * inv.d1 - inv.C * inv.C * inv.p1;
+    const double Cc = d0 * d0 - inv.C * inv.C * inv.p0;
 
     const auto roots = solveQuadratic(Ac, Bc, Cc);
     const auto residual = [&](double q) {
-        const double p = std::max(0.0, p0 + p1 * q);
-        return C * std::sqrt(p) - (d0 - d1 * q);
+        const double p = std::max(0.0, inv.p0 + inv.p1 * q);
+        return inv.C * std::sqrt(p) - (d0 - inv.d1 * q);
     };
     if (roots.linear) {
         return std::isnan(roots.r0) ? std::numeric_limits<double>::quiet_NaN()
@@ -845,45 +1100,69 @@ double invertXtOnSegment(const CdfSegment& segA, const CdfSegment& segB, double 
     return pickBranch(roots.r0, roots.r1, residual);
 }
 
-// Sub-interval between consecutive quantile levels: q in [qLo, qHi], x in
-// [xLo, xHi] under X_t, with the paired (A, B) knot segments held fixed.
-struct SubInterval {
-    double qLo = 0.0;
-    double qHi = 0.0;
-    double xLo = 0.0;
-    double xHi = 0.0;
-    CdfSegment segA;
-    CdfSegment segB;
-};
+// Solve X_t(q) = x on a sub-interval where Q_A lies on segA and Q_B(q) on segB.
+double invertXtOnSegment(const CdfSegment& segA, const CdfSegment& segB, double t, double x) {
+    SubInterval temp;
+    temp.qLo = std::max(segA.qStart, segB.qStart);
+    temp.qHi = std::min(segA.qEnd, segB.qEnd);
+    temp.segA = segA;
+    temp.segB = segB;
+    temp.inv = precomputeInversion(segA, segB, t);
+    return invertXtOnSegmentPrecomputed(temp, t, x);
+}
 
 std::vector<SubInterval> buildSubIntervalsFromLevels(const TransportContext& ctx,
-                                                     const std::vector<double>& levels);
+                                                     const std::vector<double>& levels,
+                                                     bool computeInversion = false);
 
 // Build sub-intervals from a sorted quantile level set. Each consecutive pair
 // (q_k, q_{k+1}) lies entirely inside one (A_i, B_j) knot-segment pairing; on
 // that pairing X_t(q) is a sum of at most two square-root terms in q.
+// The per-interval inversion coefficients (SubInterval::inv) are only needed by
+// invertXtOnSegmentPrecomputed (the evaluateInterpolatedAlpha* paths), so they
+// are computed here; callers that only need segment/position data skip them.
 std::vector<SubInterval> buildSubIntervals(const TransportContext& ctx) {
-    return buildSubIntervalsFromLevels(ctx, knotInducedQuantileLevels(ctx.cdfA, ctx.cdfB));
+    return buildSubIntervalsFromLevels(ctx, knotInducedQuantileLevels(ctx.cdfA, ctx.cdfB),
+                                       /*computeInversion=*/true);
 }
 
 // Closed-form vertex opacity: m_t / X_t'(q_k), averaged from the left and right
 // sub-intervals that meet at q_k (they agree when alpha is continuous at knots).
 double vertexDensityClosedForm(const std::vector<SubInterval>& intervals, double q,
                                double targetMass, double t) {
+    // intervals are sorted ascending by qLo and are non-overlapping, so qHi is also
+    // ascending. A vertex q matches at most one interval on each side: the left
+    // neighbour has qHi == q, the right neighbour has qLo == q. Binary-search both
+    // instead of scanning every interval per vertex (was O(n*M) overall; now
+    // O(n log M)). The short local window after each lower_bound absorbs the eps
+    // tolerance at the search boundary.
     double left = 0.0;
     double right = 0.0;
     double wL = 0.0;
     double wR = 0.0;
-    for (const auto& s : intervals) {
-        if (std::abs(q - s.qHi) <= eps) {
-            left = densityAtQuantile(s.segA, s.segB, t, q, targetMass);
-            wL = s.qHi - s.qLo;
-        }
-        if (std::abs(q - s.qLo) <= eps) {
-            right = densityAtQuantile(s.segA, s.segB, t, q, targetMass);
-            wR = s.qHi - s.qLo;
+
+    // Right neighbour: first interval with qLo >= q - eps, then eps-match on qLo.
+    for (auto it = std::lower_bound(intervals.begin(), intervals.end(), q - eps,
+                                    [](const SubInterval& s, double v) { return s.qLo < v; });
+         it != intervals.end() && it->qLo <= q + eps; ++it) {
+        if (std::abs(q - it->qLo) <= eps) {
+            right = densityAtQuantile(it->segA, it->segB, t, q, targetMass);
+            wR = it->qHi - it->qLo;
+            break;
         }
     }
+
+    // Left neighbour: first interval with qHi >= q - eps, then eps-match on qHi.
+    for (auto it = std::lower_bound(intervals.begin(), intervals.end(), q - eps,
+                                    [](const SubInterval& s, double v) { return s.qHi < v; });
+         it != intervals.end() && it->qHi <= q + eps; ++it) {
+        if (std::abs(q - it->qHi) <= eps) {
+            left = densityAtQuantile(it->segA, it->segB, t, q, targetMass);
+            wL = it->qHi - it->qLo;
+            break;
+        }
+    }
+
     const double w = wL + wR;
     if (w <= eps) return 0.0;
     return (left * wL + right * wR) / w;
@@ -899,17 +1178,7 @@ AlphaReconstruction reconstructAlphaClosedForm(const TransportContext& ctx,
     const std::size_t n = vertices.size();
     if (n < 2) return result;
 
-    result.density.assign(n - 1, 0.0);
-    for (std::size_t i = 0; i + 1 < n; ++i) {
-        const double dx = vertices[i + 1].pos - vertices[i].pos;
-        const double dq = vertices[i + 1].q - vertices[i].q;
-        if (dx > eps && dq > eps) {
-            result.density[i] = ctx.targetMass * dq / dx;
-        }
-    }
-    double maxDensity = 0.0;
-    for (const auto& d : result.density) maxDensity = std::max(maxDensity, d);
-    result.gapThreshold = maxDensity * 1e-6;
+    computeSecantDensities(ctx, vertices, result);
 
     result.alpha.assign(n, 0.0);
     for (std::size_t i = 0; i < n; ++i) {
@@ -917,12 +1186,9 @@ AlphaReconstruction reconstructAlphaClosedForm(const TransportContext& ctx,
     }
 
     // Boundary conditions: zero out if either endpoint of either TF has zero alpha.
-    const double alphaAtStartA = static_cast<double>(evaluate(ctx.aspan, supportMin(ctx.cdfA)).a);
-    const double alphaAtStartB = static_cast<double>(evaluate(ctx.bspan, supportMin(ctx.cdfB)).a);
-    const bool zeroAtStart = (alphaAtStartA <= eps) || (alphaAtStartB <= eps);
-    const double alphaAtEndA = static_cast<double>(evaluate(ctx.aspan, supportMax(ctx.cdfA)).a);
-    const double alphaAtEndB = static_cast<double>(evaluate(ctx.bspan, supportMax(ctx.cdfB)).a);
-    const bool zeroAtEnd = (alphaAtEndA <= eps) || (alphaAtEndB <= eps);
+    const BoundaryZeroFlags boundary = computeBoundaryZeroFlags(ctx);
+    const bool zeroAtStart = boundary.atStart;
+    const bool zeroAtEnd = boundary.atEnd;
 
     // Identify connected components separated by near-zero density intervals; force
     // zero alpha at component boundaries that are gap edges (matching the secant-path
@@ -975,19 +1241,7 @@ AlphaReconstruction reconstructAlphaClosedForm(const TransportContext& ctx,
         // output piecewise-linear TF differs from the exact integral of alpha_t because
         // alpha_t is nonlinear within each sub-interval. Scaling all alphas uniformly
         // forces the trapezoidal mass to match the target m_t * sum(dq).
-        double compTargetMass = 0.0;
-        double compActualMass = 0.0;
-        for (std::size_t j = compStart; j < compEnd; ++j) {
-            const double dx = vertices[j + 1].pos - vertices[j].pos;
-            if (dx <= eps) continue;
-            const double dq = vertices[j + 1].q - vertices[j].q;
-            compTargetMass += ctx.targetMass * dq;
-            compActualMass += 0.5 * (result.alpha[j] + result.alpha[j + 1]) * dx;
-        }
-        if (compActualMass > eps) {
-            const double scale = compTargetMass / compActualMass;
-            for (std::size_t j = compStart; j <= compEnd; ++j) result.alpha[j] *= scale;
-        }
+        rescaleComponentMass(ctx, vertices, result, compStart, compEnd);
     }
 
     for (auto& aVal : result.alpha) aVal = std::max(0.0, aVal);
@@ -998,7 +1252,8 @@ AlphaReconstruction reconstructAlphaClosedForm(const TransportContext& ctx,
 // strictly ascending and to contain every breakpoint of L plus any refinements;
 // each consecutive pair lies entirely inside one (A_i, B_j) pairing.
 std::vector<SubInterval> buildSubIntervalsFromLevels(const TransportContext& ctx,
-                                                     const std::vector<double>& levels) {
+                                                     const std::vector<double>& levels,
+                                                     bool computeInversion) {
     std::vector<SubInterval> intervals;
     intervals.reserve(levels.size());
 
@@ -1026,14 +1281,17 @@ std::vector<SubInterval> buildSubIntervalsFromLevels(const TransportContext& ctx
         sub.segB = makeSegment(ctx.cdfB, iB);
         sub.xLo = xtOnSegment(sub.segA, sub.segB, ctx.t, qLo);
         sub.xHi = xtOnSegment(sub.segA, sub.segB, ctx.t, qHi);
+        if (computeInversion) {
+            sub.inv = precomputeInversion(sub.segA, sub.segB, ctx.t);
+        }
         intervals.push_back(sub);
     }
     return intervals;
 }
 
 // Refine the quantile level set by bisecting sub-intervals where the straight line
-// between closed-form endpoint opacities deviates from the closed-form opacity at
-// the sub-interval midpoint by more than relTol (relative error, measured in x).
+// between closed-form endpoint opacities deviates from the closed-form opacity at the
+// sub-interval midpoint by more than relTol (relative error, measured in x).
 // As relTol -> 0 the piecewise-linear knot output converges to the continuous alpha_t.
 //
 // Sub-intervals where the A and B segment slopes have opposite signs are refined
@@ -1044,38 +1302,106 @@ void refineQuantileLevelsByClosedForm(const TransportContext& ctx, std::vector<d
                                       std::size_t maxIterations) {
     if (relTol <= 0.0) return;
 
+    // Incremental refinement. Each sub-interval lies entirely within a single
+    // (A_i, B_j) knot-segment pairing, so splitting it at its midpoint produces two
+    // children that inherit the parent's segA/segB unchanged. We therefore build the
+    // sub-interval table once and, on every iteration, recompute the closed-form
+    // midpoint error for only the two children of the interval we split, instead of
+    // rebuilding and re-evaluating the sqrt-heavy densities for every interval. The
+    // selection (strict greater-than, lowest-qLo wins ties) and the inserted levels
+    // are identical to the rebuild-every-iteration formulation.
+    struct RefineInterval {
+        double qLo = 0.0;
+        double qHi = 0.0;
+        double xLo = 0.0;
+        double xHi = 0.0;
+        CdfSegment segA;
+        CdfSegment segB;
+        double relErr = -1.0;  // < 0 means "skip" (matches buildSubIntervals filtering)
+    };
+
+    const auto computeErr = [&](RefineInterval& s) {
+        if (s.qHi - s.qLo <= eps) {
+            s.relErr = -1.0;
+            return;
+        }
+        const double qMid = 0.5 * (s.qLo + s.qHi);
+        const double aLo = densityAtQuantile(s.segA, s.segB, ctx.t, s.qLo, ctx.targetMass);
+        const double aHi = densityAtQuantile(s.segA, s.segB, ctx.t, s.qHi, ctx.targetMass);
+        const double aMid = densityAtQuantile(s.segA, s.segB, ctx.t, qMid, ctx.targetMass);
+        if (aMid <= 0.0 && aLo <= 0.0 && aHi <= 0.0) {
+            s.relErr = -1.0;
+            return;
+        }
+        const double xMid = xtOnSegment(s.segA, s.segB, ctx.t, qMid);
+        const double dx = s.xHi - s.xLo;
+        if (dx <= eps) {
+            s.relErr = -1.0;
+            return;
+        }
+        const double aMidLinear = aLo + (aHi - aLo) * (xMid - s.xLo) / dx;
+        const double absErr = std::abs(aMid - aMidLinear);
+        const double scale = std::max({std::abs(aMid), std::abs(aMidLinear), eps});
+        s.relErr = absErr / scale;
+    };
+
+    const auto subs = buildSubIntervalsFromLevels(ctx, levels);
+    std::vector<RefineInterval> ris;
+    ris.reserve(subs.size() + maxIterations);
+    for (const auto& s : subs) {
+        RefineInterval ri;
+        ri.qLo = s.qLo;
+        ri.qHi = s.qHi;
+        ri.xLo = s.xLo;
+        ri.xHi = s.xHi;
+        ri.segA = s.segA;
+        ri.segB = s.segB;
+        computeErr(ri);
+        ris.push_back(ri);
+    }
+
     for (std::size_t iter = 0; iter < maxIterations; ++iter) {
         if (levels.size() >= maxLevels) break;
-        const auto intervals = buildSubIntervalsFromLevels(ctx, levels);
 
         double maxRelError = 0.0;
-        double bestSplit = 0.0;
-        bool found = false;
-
-        for (const auto& s : intervals) {
-            const double qMid = 0.5 * (s.qLo + s.qHi);
-            const double aLo = densityAtQuantile(s.segA, s.segB, ctx.t, s.qLo, ctx.targetMass);
-            const double aHi = densityAtQuantile(s.segA, s.segB, ctx.t, s.qHi, ctx.targetMass);
-            const double aMid = densityAtQuantile(s.segA, s.segB, ctx.t, qMid, ctx.targetMass);
-            if (aMid <= 0.0 && aLo <= 0.0 && aHi <= 0.0) continue;
-
-            const double xMid = xtOnSegment(s.segA, s.segB, ctx.t, qMid);
-            const double dx = s.xHi - s.xLo;
-            if (dx <= eps) continue;
-            const double aMidLinear = aLo + (aHi - aLo) * (xMid - s.xLo) / dx;
-
-            const double absErr = std::abs(aMid - aMidLinear);
-            const double scale = std::max({std::abs(aMid), std::abs(aMidLinear), eps});
-            const double relErr = absErr / scale;
-            if (relErr > maxRelError) {
-                maxRelError = relErr;
-                bestSplit = qMid;
-                found = true;
+        std::size_t worst = std::numeric_limits<std::size_t>::max();
+        for (std::size_t i = 0; i < ris.size(); ++i) {
+            if (ris[i].relErr > maxRelError) {
+                maxRelError = ris[i].relErr;
+                worst = i;
             }
         }
+        if (worst == std::numeric_limits<std::size_t>::max() || maxRelError <= relTol) break;
 
-        if (!found || maxRelError <= relTol) break;
-        insertQuantileLevel(levels, bestSplit);
+        // Capture parent data before any mutation/insertion invalidates references.
+        const double parentQHi = ris[worst].qHi;
+        const double parentXHi = ris[worst].xHi;
+        const CdfSegment segA = ris[worst].segA;
+        const CdfSegment segB = ris[worst].segB;
+        const double qMid = 0.5 * (ris[worst].qLo + parentQHi);
+
+        const std::size_t before = levels.size();
+        insertQuantileLevel(levels, qMid);
+        if (levels.size() == before) break;  // duplicate level: refinement frozen
+
+        const double xMid = xtOnSegment(segA, segB, ctx.t, qMid);
+
+        // Left child reuses the parent slot.
+        ris[worst].qHi = qMid;
+        ris[worst].xHi = xMid;
+        computeErr(ris[worst]);
+
+        // Right child inherits the same pairing.
+        RefineInterval right;
+        right.qLo = qMid;
+        right.qHi = parentQHi;
+        right.xLo = xMid;
+        right.xHi = parentXHi;
+        right.segA = segA;
+        right.segB = segB;
+        computeErr(right);
+
+        ris.insert(ris.begin() + static_cast<std::ptrdiff_t>(worst) + 1, right);
     }
 }
 
@@ -1189,6 +1515,49 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationClosedForm(
     return optimalTransportInterpolationClosedFormFromLevels(ctx, levels, domainMin, domainMax);
 }
 
+std::vector<TFPrimitiveData> optimalTransportInterpolationRefined(
+    std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
+    const ClosedFormRefinementOptions& opts) {
+    t = std::clamp(t, 0.0, 1.0);
+
+    auto a = sanitize(tfA);
+    auto b = sanitize(tfB);
+
+    const std::span<const TFPrimitiveData> aspan{a.data(), a.size()};
+    const std::span<const TFPrimitiveData> bspan{b.data(), b.size()};
+
+    if (a.empty()) return b;
+    if (b.empty()) return a;
+    if (t <= 0.0) return a;
+    if (t >= 1.0) return b;
+
+    const Cdf cdfA = computeCdf(aspan);
+    const Cdf cdfB = computeCdf(bspan);
+
+    if (cdfA.totalMass <= eps || cdfB.totalMass <= eps ||
+        (1.0 - t) * cdfA.totalMass + t * cdfB.totalMass <= eps) {
+        return linearBlend(aspan, bspan, t);
+    }
+
+    const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
+
+    // Adaptive vertex placement identical to the closed-form path: start from the
+    // knot-induced quantile breakpoints and bisect where the chord between exact
+    // endpoint opacities deviates most from the exact transported density. Unlike the
+    // closed-form path, the per-vertex opacities are then reconstructed with the cheap
+    // secant-density scheme (optimalTransportInterpolationFromLevels) rather than the
+    // exact alpha_k = m_t / X_t'(q_k). This isolates the benefit of adaptive placement
+    // from the cost of exact opacities.
+    auto levels = knotInducedQuantileLevels(cdfA, cdfB);
+    refineQuantileLevelsByClosedForm(ctx, levels, opts.relativeTolerance, opts.maxQuantileLevels,
+                                     opts.maxRefinementIterations);
+
+    const double domainMin = (1.0 - t) * a.front().pos + t * b.front().pos;
+    const double domainMax = (1.0 - t) * a.back().pos + t * b.back().pos;
+
+    return optimalTransportInterpolationFromLevels(ctx, levels, domainMin, domainMax);
+}
+
 double evaluateInterpolatedAlpha(std::span<const TFPrimitiveData> tfA,
                                  std::span<const TFPrimitiveData> tfB, double t, double x) {
     t = std::clamp(t, 0.0, 1.0);
@@ -1205,6 +1574,7 @@ double evaluateInterpolatedAlpha(std::span<const TFPrimitiveData> tfA,
 
     const Cdf cdfA = computeCdf(aspan);
     const Cdf cdfB = computeCdf(bspan);
+
     if (cdfA.totalMass <= eps || cdfB.totalMass <= eps) return 0.0;
 
     const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
@@ -1222,10 +1592,67 @@ double evaluateInterpolatedAlpha(std::span<const TFPrimitiveData> tfA,
     if (it == intervals.end()) it = intervals.end() - 1;
     const SubInterval& sub = *it;
 
-    const double q = invertXtOnSegment(sub.segA, sub.segB, t, x);
+    const double q = invertXtOnSegmentPrecomputed(sub, t, x);
     if (std::isnan(q)) return 0.0;
 
     return densityAtQuantile(sub.segA, sub.segB, t, q, ctx.targetMass);
+}
+
+std::vector<double> evaluateInterpolatedAlphaGrid(std::span<const TFPrimitiveData> tfA,
+                                                   std::span<const TFPrimitiveData> tfB, double t,
+                                                   std::span<const double> xs) {
+    std::vector<double> out(xs.size(), 0.0);
+    if (xs.empty()) return out;
+
+    t = std::clamp(t, 0.0, 1.0);
+
+    auto a = sanitize(tfA);
+    auto b = sanitize(tfB);
+
+    const std::span<const TFPrimitiveData> aspan{a.data(), a.size()};
+    const std::span<const TFPrimitiveData> bspan{b.data(), b.size()};
+
+    if (a.empty() || b.empty()) return out;
+    if (t <= 0.0) {
+        for (std::size_t i = 0; i < xs.size(); ++i)
+            out[i] = static_cast<double>(evaluate(aspan, xs[i]).a);
+        return out;
+    }
+    if (t >= 1.0) {
+        for (std::size_t i = 0; i < xs.size(); ++i)
+            out[i] = static_cast<double>(evaluate(bspan, xs[i]).a);
+        return out;
+    }
+
+    const Cdf cdfA = computeCdf(aspan);
+    const Cdf cdfB = computeCdf(bspan);
+    if (cdfA.totalMass <= eps || cdfB.totalMass <= eps) return out;
+
+    const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
+    const auto intervals = buildSubIntervals(ctx);
+    if (intervals.empty()) return out;
+
+    // Sub-intervals are sorted by xLo (they come from sorted quantile levels).
+    // Co-advance through them as x increases: O(G + M) sweep, M = interval count.
+    const double xMin = intervals.front().xLo + eps;
+    const double xMax = intervals.back().xHi - eps;
+
+    std::size_t si = 0;  // current sub-interval index
+    for (std::size_t i = 0; i < xs.size(); ++i) {
+        const double x = xs[i];
+        if (x <= xMin || x >= xMax) continue;  // outside support → 0
+
+        // Advance si to the first sub-interval whose xHi > x.
+        while (si + 1 < intervals.size() && intervals[si].xHi <= x) ++si;
+
+        const SubInterval& sub = intervals[si];
+        if (x < sub.xLo) continue;  // sits in a gap → 0
+
+        const double q = invertXtOnSegmentPrecomputed(sub, t, x);
+        if (std::isnan(q)) continue;
+        out[i] = densityAtQuantile(sub.segA, sub.segB, t, q, ctx.targetMass);
+    }
+    return out;
 }
 
 double earthMoversDistance(std::span<const TFPrimitiveData> tfA,

@@ -75,7 +75,7 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolation(
  * below @p relativeTolerance or when @p maxQuantileLevels or
  * @p maxRefinementIterations is reached.
  */
-IVW_CORE_API struct ClosedFormRefinementOptions {
+struct IVW_CORE_API ClosedFormRefinementOptions {
     double relativeTolerance = 1e-3;
     std::size_t maxQuantileLevels = 2048;
     std::size_t maxRefinementIterations = 256;
@@ -121,11 +121,41 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationClosedFor
     const ClosedFormRefinementOptions& opts = {});
 
 /**
+ * @brief Interpolate two transfer functions using 1D optimal transport with
+ * adaptive quantile-level refinement and secant-based opacity reconstruction.
+ *
+ * This is a hybrid of the two methods above. Like
+ * optimalTransportInterpolationClosedForm it starts from the knot-induced
+ * quantile breakpoints and adaptively bisects the sub-interval whose chord
+ * between exact endpoint opacities deviates most from the exact transported
+ * density at the midpoint (see ClosedFormRefinementOptions), so vertices are
+ * placed where X_t'(q) curves most strongly instead of on a uniform grid.
+ * However, the per-vertex opacity is then reconstructed with the cheap
+ * secant-density scheme of optimalTransportInterpolation (interval density
+ * m_t (Delta q / Delta x) with width-weighted vertex averaging) rather than the
+ * closed-form alpha_k = m_t / X_t'(q_k).
+ *
+ * The intent is to isolate the benefit of adaptive vertex placement from the
+ * cost of exact closed-form opacities: it reaches comparable accuracy to the
+ * uniform PWL path at a far lower vertex count without the per-vertex
+ * quadratic-root solves of the closed-form path.
+ *
+ * @param tfA  First transfer function as sorted TFPrimitiveData points.
+ * @param tfB  Second transfer function as sorted TFPrimitiveData points.
+ * @param t    Interpolation parameter in [0, 1]. t=0 returns tfA, t=1 returns tfB.
+ * @param opts Refinement tolerance and limits for the quantile level set.
+ * @return     Interpolated transfer function as a vector of TFPrimitiveData.
+ */
+IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationRefined(
+    std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
+    const ClosedFormRefinementOptions& opts = {});
+
+/**
  * @brief Evaluate the closed-form interpolated opacity alpha_t(x) at one scalar.
  *
  * Assumes piecewise-linear input alphas and the same Wasserstein quantile
  * interpolation as optimalTransportInterpolationClosedForm, but evaluates
- * alpha_t(x) = m_t / X_t'(q) directly at x rather than returning knot samples.
+ * alpha_t(x) = m_t / X_t'(q) directly at x rather than returning control-point samples.
  *
  * The implementation locates the quantile sub-interval whose transported image
  * [xLo, xHi] contains x, inverts X_t(q) = x on that sub-interval (reducing to a
@@ -143,6 +173,25 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationClosedFor
 IVW_CORE_API double evaluateInterpolatedAlpha(std::span<const TFPrimitiveData> tfA,
                                               std::span<const TFPrimitiveData> tfB, double t,
                                               double x);
+
+/**
+ * @brief Evaluate alpha_t(x) on a dense sorted grid, reusing setup across all points.
+ *
+ * Equivalent to calling evaluateInterpolatedAlpha for every element of @p xs, but
+ * significantly faster for large grids: sanitisation, CDF construction, and the
+ * sub-interval table are computed once (O(N log N)) and the grid is swept with a
+ * single co-advancing scan over sub-intervals (O(G + N) after setup), where G is
+ * the number of grid points.
+ *
+ * @param tfA  First transfer function.
+ * @param tfB  Second transfer function.
+ * @param t    Interpolation parameter in [0, 1].
+ * @param xs   Query positions in ascending order.
+ * @return     Vector of length xs.size() with alpha_t(xs[i]) at each position.
+ */
+IVW_CORE_API std::vector<double> evaluateInterpolatedAlphaGrid(
+    std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
+    std::span<const double> xs);
 
 /**
  * @brief Compute the Earth Mover's Distance (1-Wasserstein) between two transfer functions.
