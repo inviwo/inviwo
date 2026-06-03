@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
 
     inviwo::LogCentral::init();
     auto logger = std::make_shared<inviwo::ConsoleLogger>();
-    inviwo::LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
+    inviwo::LogCentral::getPtr()->setVerbosity(inviwo::LogVerbosity::Error);
     inviwo::LogCentral::getPtr()->registerLogger(logger);
     inviwo::InviwoApplication app(argc, argv, "Inviwo-Unittests-AnimationPython");
 

@@ -39,6 +39,8 @@ class ProcessorNetwork;
 
 namespace animation {
 class Track;
+class KeyframeSequence;
+class Keyframe;
 
 class IVW_MODULE_ANIMATION_API TrackFactoryObject {
 public:
@@ -46,6 +48,8 @@ public:
     virtual ~TrackFactoryObject() = default;
 
     virtual std::unique_ptr<Track> create(ProcessorNetwork* network) const = 0;
+    virtual std::unique_ptr<KeyframeSequence> createSequence() const = 0;
+    virtual std::unique_ptr<Keyframe> createKeyframe() const = 0;
     const std::string& getClassIdentifier() const;
 
 protected:
@@ -70,6 +74,13 @@ public:
         } else {
             return std::make_unique<T>();
         }
+    }
+
+    virtual std::unique_ptr<KeyframeSequence> createSequence() const override {
+        return std::make_unique<typename T::seq_type>();
+    }
+    virtual std::unique_ptr<Keyframe> createKeyframe() const override {
+        return std::make_unique<typename T::key_type>();
     }
 };
 

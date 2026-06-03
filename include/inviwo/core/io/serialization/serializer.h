@@ -190,10 +190,11 @@ public:
     // SerializeFunction should look like this by default
     // [](Serializer& s, auto&& item) { s.serialize("item", std::forward<decltype(item)>(item)); };
     template <typename Range, typename SerializeFunction>
-    void serializeRange(std::string_view key, Range&& range,
+    void serializeRange(std::string_view key, std::string_view itemKey, Range&& range,
                         SerializeFunction serializeFunction = {}) {
         auto nodeSwitch = switchToNewNode(key);
         for (const auto& item : std::forward<Range>(range)) {
+            auto itemNodeSwitch = switchToNewNode(itemKey);
             serializeFunction(*this, item);
         }
     }

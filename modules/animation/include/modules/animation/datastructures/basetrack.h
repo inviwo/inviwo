@@ -140,6 +140,10 @@ public:
      */
     virtual Seq* add(std::unique_ptr<Seq> sequence);
 
+    key_type* addToClosestSequence(std::unique_ptr<key_type> key);
+
+    virtual key_type* addToClosestSequence(std::unique_ptr<Keyframe> key) override;
+
     virtual std::unique_ptr<KeyframeSequence> remove(size_t i) override;
     virtual std::unique_ptr<Keyframe> remove(Keyframe* key) override;
     virtual std::unique_ptr<KeyframeSequence> remove(KeyframeSequence* seq) override;
@@ -160,7 +164,6 @@ protected:
     BaseTrack& operator=(const BaseTrack&);
     BaseTrack& operator=(BaseTrack&& other) = default;
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
-    key_type* addToClosestSequence(std::unique_ptr<key_type> key);
 
 private:
     bool enabled_{true};
@@ -429,6 +432,16 @@ auto BaseTrack<Seq>::addToClosestSequence(std::unique_ptr<key_type> key) -> key_
             return seq2.add(std::move(key));  // case 2b
         }
     }
+}
+
+template <std::derived_from<KeyframeSequence> Seq>
+auto BaseTrack<Seq>::addToClosestSequence(std::unique_ptr<Keyframe> key) -> key_type* {
+    if (auto k = util::dynamic_unique_ptr_cast<key_type>(std::move(key))) {
+        return addToClosestSequence(std::move(k));
+    } else {
+        throw Exception("Invalid Keyframe type");
+    }
+    return nullptr;
 }
 
 template <std::derived_from<KeyframeSequence> Seq>

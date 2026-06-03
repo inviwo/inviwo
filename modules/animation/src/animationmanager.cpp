@@ -47,6 +47,8 @@ AnimationManager::AnimationManager(InviwoApplication* app)
     : app_(app), trackFactory_{app_->getProcessorNetwork()}, interpolationFactory_{app_} {
 
     app_->getWorkspaceManager()->registerFactory(&trackFactory_);
+    app_->getWorkspaceManager()->registerFactory(&trackFactory_.keyframeSequenceFactory);
+    app_->getWorkspaceManager()->registerFactory(&trackFactory_.keyframeFactory);
     app_->getWorkspaceManager()->registerFactory(&interpolationFactory_);
 }
 

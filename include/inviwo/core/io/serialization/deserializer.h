@@ -464,7 +464,7 @@ private:
     TiXmlElement* retrieveChild(std::string_view key) const;
 
     template <typename F>
-    size_t forEachChild(std::string_view key, const F& fun);
+    size_t forEachChild(std::string_view key, const F& fun, bool retrieveChild = false);
 
     ExceptionHandler exceptionHandler_;
     std::pmr::vector<FactoryBase*> registeredFactories_;
@@ -570,14 +570,14 @@ T& DeserializationErrorHandle<T>::getHandler() {
 }
 
 template <typename F>
-size_t Deserializer::forEachChild(std::string_view key, const F& fun) {
+size_t Deserializer::forEachChild(std::string_view key, const F& fun, bool retrieveChild) {
     size_t index = 0;
     for (TiXmlElement* child = detail::firstChild(rootElement_, key); child;
          child = detail::nextChild(child, key)) {
 
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
-        const NodeSwitch elementNodeSwitch{*this, child, false};
+        const NodeSwitch elementNodeSwitch{*this, child, retrieveChild};
         try {
             fun(*child, index);
         } catch (...) {
@@ -733,7 +733,8 @@ void Deserializer::deserializeRange(std::string_view key, std::string_view itemK
     const NodeSwitch vectorNodeSwitch{*this, key};
     if (!vectorNodeSwitch) return;
 
-    forEachChild(itemKey, [&](TiXmlElement&, size_t index) { deserializeFunction(*this, index); });
+    forEachChild(
+        itemKey, [&](TiXmlElement&, size_t index) { deserializeFunction(*this, index); }, true);
 }
 
 namespace detail {

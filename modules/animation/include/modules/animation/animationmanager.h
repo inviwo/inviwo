@@ -93,6 +93,7 @@ private:
     InviwoApplication* app_;
 
     TrackFactory trackFactory_;
+
     InterpolationFactory interpolationFactory_;
     RecorderFactories recorders_;
 };

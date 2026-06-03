@@ -143,6 +143,8 @@ public:
      */
     virtual KeyframeSequence* add(std::unique_ptr<KeyframeSequence> sequence) = 0;
 
+    virtual Keyframe* addToClosestSequence(std::unique_ptr<Keyframe> key) = 0;
+
     /**
      * Remove KeyframeSequence at index i and call TrackObserver::notifyKeyframeSequenceRemoved
      */

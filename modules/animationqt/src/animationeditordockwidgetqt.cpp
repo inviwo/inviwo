@@ -170,7 +170,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
     , animationsList_{createAnimationsList(animations_, this)}
     , playPause_{createPlayPause(controller_)}
     , animationEditor_{std::make_unique<AnimationEditorQt>(
-          controller_, widgetFactory,
+          controller_, widgetFactory, manager.getTrackFactory(),
           [this](std::string_view text, std::chrono::milliseconds fade) {
               overlay_->setText(text, fade);
           })}

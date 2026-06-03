@@ -47,6 +47,7 @@
 #include <modules/animation/datastructures/keyframe.h>  // IWYU pragma: keep
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/track.h>
+#include <modules/animation/factories/trackfactory.h>
 #include <modules/animationqt/factories/trackwidgetqtfactory.h>
 #include <modules/animationqt/widgets/editorconstants.h>
 #include <modules/animationqt/widgets/keyframesequencewidgetqt.h>
@@ -77,6 +78,7 @@
 #include <QPointF>
 #include <QTransform>
 #include <QWidget>
+#include <QMenu>
 #include <Qt>
 #include <QtGlobal>
 #include <fmt/core.h>
@@ -89,10 +91,12 @@ namespace animation {
 
 AnimationEditorQt::AnimationEditorQt(
     AnimationController& controller, TrackWidgetQtFactory& widgetFactory,
+    TrackFactory& trackFactory,
     std::function<void(std::string_view, std::chrono::milliseconds)> showText)
     : QGraphicsScene()
     , controller_(controller)
     , widgetFactory_{widgetFactory}
+    , trackFactory_{trackFactory}
     , showText_{showText} {
     auto& animation = controller_.getAnimation();
     animation.addObserver(this);
@@ -192,7 +196,7 @@ T* findParentOfType(QGraphicsItem* item) {
 }  // namespace
 
 void AnimationEditorQt::copy() {
-    const QList<QGraphicsItem*> selection = selectedItems();
+    const auto selection = selectedItems();
     if (selection.empty()) return;
 
     // Classify selected items: collect keyframes, sequences, and tracks.
@@ -227,38 +231,27 @@ void AnimationEditorQt::copy() {
         }
     }
 
-    // Determine what to serialize: prefer tracks > sequences > keyframes
-    // If we have whole tracks selected (all sequences of a track are selected), serialize tracks.
-    // Otherwise, serialize the individual items.
-
+    auto& animation = controller_.getAnimation();
     auto mimeData = std::make_unique<QMimeData>();
-
-    // Serialize tracks that contain all selected content.
-    // Group by track: each track serializes its own selected sequences/keyframes.
 
     // Serialize keyframe sequences
     if (!sequences.empty()) {
         Serializer serializer("");
-        // Serialize track type info alongside each sequence so paste knows what track to
-        // create
-        std::vector<std::string> trackClassIds;
-        trackClassIds.reserve(sequences.size());
-        for (auto& [track, seq] : sequences) {
-            trackClassIds.emplace_back(track->getClassIdentifier());
-        }
-        serializer.serialize("trackClassIds", trackClassIds, "id");
 
-        // Serialize each sequence
-        std::vector<const KeyframeSequence*> seqs;
-        seqs.reserve(sequences.size());
-        for (auto& [track, seq] : sequences) {
-            seqs.push_back(seq);
-        }
-        serializer.serialize("sequences", seqs, "sequence");
+        serializer.serializeRange(
+            "sequences", "item", sequences, [&](Serializer& nested, const auto& item) {
+                const auto [track, sequence] = item;
+                auto it =
+                    std::ranges::find_if(animation, [&](const auto& t) { return &t == track; });
+                const auto idx = std::distance(animation.begin(), it);
+                nested.serialize("trackCId", item.first->getClassIdentifier(),
+                                 SerializationTarget::Attribute);
+                nested.serialize("trackIdx", idx, SerializationTarget::Attribute);
+                nested.serialize("sequence", *item.second);
+            });
 
-        std::stringstream ss;
-        serializer.writeFile(ss);
-        auto str = std::move(ss).str();
+        std::pmr::string str;
+        serializer.write(str);
         const QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
         mimeData->setData(utilqt::toQString(mimeKeyframeSequences), byteArray);
     }
@@ -266,23 +259,21 @@ void AnimationEditorQt::copy() {
     // Serialize individual keyframes
     if (!keyframes.empty()) {
         Serializer serializer("");
-        std::vector<std::string> trackClassIds;
-        trackClassIds.reserve(keyframes.size());
-        for (auto& [track, kf] : keyframes) {
-            trackClassIds.emplace_back(track->getClassIdentifier());
-        }
-        serializer.serialize("trackClassIds", trackClassIds, "id");
 
-        std::vector<const Keyframe*> kfs;
-        kfs.reserve(keyframes.size());
-        for (auto& [track, kf] : keyframes) {
-            kfs.push_back(kf);
-        }
-        serializer.serialize("keyframes", kfs, "keyframe");
+        serializer.serializeRange(
+            "keyframes", "item", keyframes, [&](Serializer& nested, const auto& item) {
+                const auto [track, keyframe] = item;
+                auto it =
+                    std::ranges::find_if(animation, [&](const auto& t) { return &t == track; });
+                const auto idx = std::distance(animation.begin(), it);
+                nested.serialize("trackCId", item.first->getClassIdentifier(),
+                                 SerializationTarget::Attribute);
+                nested.serialize("trackIdx", idx, SerializationTarget::Attribute);
+                nested.serialize("keyframe", *item.second);
+            });
 
-        std::stringstream ss;
-        serializer.writeFile(ss);
-        auto str = std::move(ss).str();
+        std::pmr::string str;
+        serializer.write(str);
         const QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
         mimeData->setData(utilqt::toQString(mimeKeyframes), byteArray);
     }
@@ -294,7 +285,16 @@ void AnimationEditorQt::copy() {
     }
 }
 
-void AnimationEditorQt::paste() {
+void AnimationEditorQt::paste(std::optional<QPointF> scenePos, QGraphicsView* view) {
+    const auto targetTime = [&]() {
+        if (!scenePos) {
+            return controller_.getCurrentTime();
+        } else {
+            const auto snapX = getSnapTime(scenePos->x(), view ? view->transform().m11() : 1);
+            return scenePosToTime(snapX);
+        }
+    }();
+
     auto* clipboard = QApplication::clipboard();
     const auto* mimeData = clipboard->mimeData();
     if (!mimeData) return;
@@ -305,48 +305,62 @@ void AnimationEditorQt::paste() {
     const auto seqMime = utilqt::toQString(mimeKeyframeSequences);
     const auto kfMime = utilqt::toQString(mimeKeyframes);
 
+    const auto findTrack = [&](size_t idx, std::string_view classId) -> Track* {
+        if (scenePos) {
+            const auto index = static_cast<size_t>(scenePos->y() / trackHeight);
+            if (index < animation.size()) {
+                auto& track = animation[index];
+                if (track.getClassIdentifier() == classId) {
+                    return &track;
+                }
+            }
+        }
+
+        if (idx < animation.size()) {
+            auto& track = animation[idx];
+            if (track.getClassIdentifier() == classId) {
+                return &track;
+            }
+        }
+
+        // Fallback: find the first track with a matching classId
+        for (auto& track : animation) {
+            if (track.getClassIdentifier() == classId) {
+                return &track;
+            }
+        }
+        return nullptr;
+    };
+
     // Paste keyframe sequences
     if (mimeData->hasFormat(seqMime)) {
         const QByteArray data = mimeData->data(seqMime);
-        std::stringstream ss;
-        for (auto d : data) ss << d;
-
-        log::info("xml {}", ss.str());
+        const std::pmr::string xml{data.constData(), static_cast<size_t>(data.length())};
 
         try {
-            auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");
+            auto [deserializer, info] =
+                app->getWorkspaceManager()->createWorkspaceDeserializerAndInfo(xml, {});
 
-            std::vector<std::string> trackClassIds;
-            deserializer.deserialize("trackClassIds", trackClassIds, "id");
+            deserializer.deserializeRange(
+                "sequences", "item", [&](Deserializer& nested, size_t index) {
+                    std::string trackCId{};
+                    size_t trackIdx{};
+                    nested.deserialize("trackCId", trackCId, SerializationTarget::Attribute);
+                    nested.deserialize("trackIdx", trackIdx, SerializationTarget::Attribute);
 
-            // We need to deserialize each sequence and add it to a matching track.
-            // The sequences need to be deserialized within the context of a compatible track.
-            // We use clone() via serialize/deserialize roundtrip by finding a matching track.
+                    if (auto seq = trackFactory_.keyframeSequenceFactory.create(trackCId)) {
+                        nested.deserialize("sequence", *seq);
 
-            // For each sequence, find a compatible track (same classIdentifier) and add to it
-            size_t seqIndex = 0;
-            deserializer.deserializeRange("sequences", "sequence", [&](Deserializer& d, size_t) {
-                if (seqIndex >= trackClassIds.size()) return;
-
-                const auto& trackClassId = trackClassIds[seqIndex];
-                // Find a matching track in the animation
-                Track* targetTrack = nullptr;
-                for (auto& track : animation) {
-                    if (track.getClassIdentifier() == trackClassId) {
-                        targetTrack = &track;
-                        break;
+                        if (auto* track = findTrack(trackIdx, trackCId)) {
+                            const auto timeOffset = targetTime - seq->getFirstTime();
+                            for (size_t i = seq->size(); i > 0; i--) {
+                                (*seq)[i - 1].setTime((*seq)[i - 1].getTime() + timeOffset);
+                            }
+                            track->add(std::move(seq));
+                        }
                     }
-                }
+                });
 
-                if (targetTrack && !targetTrack->empty()) {
-                    // Clone an existing sequence to get the right concrete type,
-                    // then deserialize the copied data into it.
-                    auto seq = std::unique_ptr<KeyframeSequence>((*targetTrack)[0].clone());
-                    seq->deserialize(d);
-                    targetTrack->add(std::move(seq));
-                }
-                ++seqIndex;
-            });
             showText_("Pasted keyframe sequences", std::chrono::milliseconds{1000});
         } catch (const Exception& e) {
             showText_(fmt::format("Paste failed: {}", e.getMessage()),
@@ -358,45 +372,80 @@ void AnimationEditorQt::paste() {
     // Paste keyframes
     if (mimeData->hasFormat(kfMime)) {
         const QByteArray data = mimeData->data(kfMime);
-        std::stringstream ss;
-        for (auto d : data) ss << d;
+        const std::pmr::string xml{data.constData(), static_cast<size_t>(data.length())};
 
         try {
-            auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");
+            auto [deserializer, info] =
+                app->getWorkspaceManager()->createWorkspaceDeserializerAndInfo(xml, {});
+            deserializer.deserializeRange(
+                "keyframes", "item", [&](Deserializer& nested, size_t index) {
+                    std::string trackCId{};
+                    size_t trackIdx{};
+                    nested.deserialize("trackCId", trackCId, SerializationTarget::Attribute);
+                    nested.deserialize("trackIdx", trackIdx, SerializationTarget::Attribute);
 
-            std::vector<std::string> trackClassIds;
-            deserializer.deserialize("trackClassIds", trackClassIds, "id");
+                    if (auto kf = trackFactory_.keyframeFactory.create(trackCId)) {
+                        nested.deserialize("keyframe", *kf);
 
-            size_t kfIndex = 0;
-            deserializer.deserializeRange("keyframes", "keyframe", [&](Deserializer& d, size_t) {
-                if (kfIndex >= trackClassIds.size()) return;
-
-                const auto& trackClassId = trackClassIds[kfIndex];
-                // Find a matching track
-                Track* targetTrack = nullptr;
-                for (auto& track : animation) {
-                    if (track.getClassIdentifier() == trackClassId) {
-                        targetTrack = &track;
-                        break;
+                        if (auto* track = findTrack(trackIdx, trackCId)) {
+                            kf->setTime(targetTime);
+                            track->addToClosestSequence(std::move(kf));
+                        }
                     }
-                }
+                });
 
-                if (targetTrack && !targetTrack->empty()) {
-                    // Clone a keyframe from the track to get the right concrete type,
-                    // then deserialize the copied data into it
-                    auto& firstSeq = (*targetTrack)[0];
-                    auto kf = std::unique_ptr<Keyframe>(firstSeq[0].clone());
-                    kf->deserialize(d);
-                    firstSeq.add(std::move(kf));
-                }
-                ++kfIndex;
-            });
             showText_("Pasted keyframes", std::chrono::milliseconds{1000});
         } catch (const Exception& e) {
             showText_(fmt::format("Paste failed: {}", e.getMessage()),
                       std::chrono::milliseconds{3000});
         }
         return;
+    }
+}
+
+void AnimationEditorQt::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
+    const auto pos = e->scenePos();
+    const auto selection = selectedItems();
+    auto* view = dynamic_cast<QGraphicsView*>(e->widget());
+
+    QMenu menu{};
+
+    {
+        auto* cutAction = menu.addAction(QIcon(":/svgicons/edit-cut.svg"), "Cu&t");
+        cutAction->setEnabled(!selection.empty());
+        connect(cutAction, &QAction::triggered, this, [this]() { cut(); });
+
+        auto* copyAction = menu.addAction(QIcon(":/svgicons/edit-copy.svg"), "&Copy");
+        copyAction->setEnabled(!selection.empty());
+        connect(copyAction, &QAction::triggered, this, [this]() { copy(); });
+
+        auto* pasteAction = menu.addAction(QIcon(":/svgicons/edit-paste.svg"), "&Paste");
+        auto* clipboard = QApplication::clipboard();
+        pasteAction->setEnabled(
+            clipboard->mimeData() &&
+            (clipboard->mimeData()->hasFormat(QString::fromUtf8(mimeKeyframes)) ||
+             clipboard->mimeData()->hasFormat(QString::fromUtf8(mimeKeyframeSequences))));
+        connect(pasteAction, &QAction::triggered, this, [this, pos, view]() { paste(pos, view); });
+
+        auto* selectAllAction =
+            menu.addAction(QIcon(":/svgicons/edit-selectall.svg"), tr("&Select All"));
+        connect(selectAllAction, &QAction::triggered, this, [this]() { selectAll(); });
+    }
+    menu.addSeparator();
+    {
+
+        auto* deleteAction = menu.addAction("&Delete");
+        auto* clearAction = menu.addAction("&Clear");
+
+        deleteAction->setEnabled(!selection.empty());
+        connect(deleteAction, &QAction::triggered, this,
+                [this, selection]() { deleteItems(selection); });
+
+        connect(clearAction, &QAction::triggered, this, [this]() { deleteItems(items()); });
+    }
+
+    if (menu.exec(e->screenPos())) {
+        e->accept();
     }
 }
 
@@ -413,15 +462,20 @@ void AnimationEditorQt::cut() {
     }
 }
 
-void AnimationEditorQt::deleteSelection() {
-    const QList<QGraphicsItem*> itemList = selectedItems();
-    for (auto& elem : itemList) {
+void AnimationEditorQt::deleteItems(const QList<QGraphicsItem*>& itemsList) {
+    for (auto& elem : itemsList) {
         if (auto* keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
             controller_.getAnimation().remove(&(keyqt->getKeyframe()));
         } else if (auto* seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
             controller_.getAnimation().remove(&(seqqt->getKeyframeSequence()));
         }
     }
+}
+
+void AnimationEditorQt::deleteSelection() { deleteItems(selectedItems()); }
+
+void AnimationEditorQt::selectAll() {
+    std::ranges::for_each(items(), [](auto* item) { item->setSelected(true); });
 }
 
 void AnimationEditorQt::dragEnterEvent(QGraphicsSceneDragDropEvent* event) {
@@ -471,8 +525,7 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
         QGraphicsView* pView = views().empty() ? nullptr : views().first();
         const qreal snapX =
             getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
-        const qreal time = snapX / static_cast<double>(widthPerSecond);
-
+        const auto time = scenePosToTime(snapX);
         if (event->modifiers() & Qt::ControlModifier) {
             controller_.getAnimation().addKeyframeSequence(property, Seconds(time));
         } else {
