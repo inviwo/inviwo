@@ -135,7 +135,8 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     });
 
     // Register MinMaxProperties
-    using ScalarTypes = std::tuple<float, double, int, unsigned int, size_t>;
+    using ScalarTypes = std::tuple<float, double, int, unsigned int, size_t, std::ptrdiff_t,
+                                   unsigned char, char, std::uint16_t, std::int16_t>;
     util::for_each_type<ScalarTypes>{}([&]<typename T>() {
         using PropertyType = MinMaxProperty<T>;
         using ValueType = typename PropertyType::value_type;
