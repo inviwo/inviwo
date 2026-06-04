@@ -44,6 +44,10 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 
+#include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
+#include <modules/base/datastructures/volumereusecache.h>
+
 namespace inviwo {
 
 namespace hdf5 {
@@ -58,7 +62,7 @@ public:
 
 protected:
     virtual void process() override;
-
+    virtual void deserialize(Deserializer& d) override;
 private:
     class DimSelection : public CompositeProperty {
     public:
@@ -99,7 +103,8 @@ private:
     void onDataChange();
 
     void onSelectionChange();
-    void onBasisSelecionChange();
+    void onBasisSelectionChange();
+
     dmat4 getBasisFromMeta(MetaData);
     std::string getDescription(const MetaData& meta);
 
@@ -120,21 +125,16 @@ private:
     DoubleMat4Property basis_;
     DoubleVec3Property spacing_;
 
-    CompositeProperty information_;
-    DoubleMinMaxProperty dataRange_;
-    StringProperty dataDimensions_;
+    VolumeInformationProperty information_;
 
     CompositeProperty outputGroup_;
-    OptionPropertyInt overrideRange_;
-    DoubleMinMaxProperty outDataRange_;
-    DoubleMinMaxProperty valueRange_;
-    StringProperty valueUnit_;
-
     OptionPropertyInt datatype_;
-
     DimSelections selection_;
 
+    VolumeReuseCache cache_;
+
     bool dirty_;
+    bool deserialized_ = false;
 };
 
 }  // namespace hdf5

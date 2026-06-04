@@ -46,6 +46,7 @@
 #include <utility>
 
 #include <glm/common.hpp>
+#include <glm/vector_relational.hpp>
 
 namespace inviwo {
 
@@ -58,72 +59,100 @@ class VolumeRAM;
 
 namespace util {
 
-IVW_MODULE_BASE_API std::pair<dvec4, dvec4> volumeMinMax(
-    const VolumeRAM* volume, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> volumeMinMax(const VolumeRAM* volume,
+                                                         IgnoreValues ignore = {});
 
-IVW_MODULE_BASE_API std::pair<dvec4, dvec4> layerMinMax(
-    const LayerRAM* layer, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> layerMinMax(const LayerRAM* layer,
+                                                        IgnoreValues ignore = {});
 
-IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(
-    const BufferRAM* layer, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(const BufferRAM* layer,
+                                                         IgnoreValues ignore = {});
 
-IVW_MODULE_BASE_API std::pair<dvec4, dvec4> volumeMinMax(
-    const Volume* volume, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> volumeMinMax(const Volume* volume,
+                                                         IgnoreValues ignore = {});
 
-IVW_MODULE_BASE_API std::pair<dvec4, dvec4> layerMinMax(
-    const Layer* layer, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> layerMinMax(const Layer* layer,
+                                                        IgnoreValues ignore = {});
 
-IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(
-    const BufferBase* buffer, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(const BufferBase* buffer,
+                                                         IgnoreValues ignore = {});
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> volumeMinMax(const VolumeRAM* volume,
+                                                         IgnoreSpecialValues ignore);
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> layerMinMax(const LayerRAM* layer,
+                                                        IgnoreSpecialValues ignore);
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(const BufferRAM* layer,
+                                                         IgnoreSpecialValues ignore);
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> volumeMinMax(const Volume* volume,
+                                                         IgnoreSpecialValues ignore);
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> layerMinMax(const Layer* layer,
+                                                        IgnoreSpecialValues ignore);
+
+IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(const BufferBase* buffer,
+                                                         IgnoreSpecialValues ignore);
 
 namespace detail {
 
-// Specialization for double, float, half
-template <typename ValueType,
-          typename std::enable_if<util::is_floating_point<ValueType>::value, int>::type = 0>
-std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
-                                   IgnoreSpecialValues ignore = IgnoreSpecialValues::No) {
+template <typename ValueType>
+std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size, IgnoreValues ignore = {}) {
     using Res = std::pair<ValueType, ValueType>;
-    Res minmax{DataFormat<ValueType>::max(), DataFormat<ValueType>::lowest()};
+    const auto init = Res{DataFormat<ValueType>::max(), DataFormat<ValueType>::lowest()};
 
-    if (ignore == IgnoreSpecialValues::Yes) {
-        minmax = std::accumulate(
-            data, data + size, minmax, [](const Res& mm, const ValueType& v) -> Res {
-                Res res(mm);
-                for (size_t i = 0; i < util::flat_extent<ValueType>::value; ++i) {
-                    if (util::isfinite(util::glmcomp(v, i))) {
-                        util::glmcomp(res.first, i) =
-                            std::min(util::glmcomp(mm.first, i), util::glmcomp(v, i));
-                        util::glmcomp(res.second, i) =
-                            std::max(util::glmcomp(mm.second, i), util::glmcomp(v, i));
-                    }
-                }
-                return res;
+    const auto calc = [&](auto maskFun) {
+        return std::accumulate(
+            data, data + size, init, [&](const Res& mm, const ValueType& v) -> Res {
+                const auto mask = maskFun(v);
+                const auto vMaskedMin = glm::mix(v, mm.first, mask);
+                const auto vMaskedMax = glm::mix(v, mm.second, mask);
+                return {glm::min(mm.first, vMaskedMin), glm::max(mm.second, vMaskedMax)};
             });
-    } else {
-        minmax = std::accumulate(data, data + size, minmax,
-                                 [](const Res& mm, const ValueType& v) -> Res {
-                                     return {glm::min(mm.first, v), glm::max(mm.second, v)};
-                                 });
-    }
+    };
+
+    const auto minmax = [&]() {
+        if constexpr (std::is_floating_point_v<util::value_type_t<ValueType>>) {
+            if (ignore.special == IgnoreSpecialValues::Yes && ignore.floatingPoint) {
+                const auto skip =
+                    ValueType{static_cast<util::value_type_t<ValueType>>(*ignore.floatingPoint)};
+                return calc([skip](const auto& v) {
+                    return glm::not_(util::isfinite(v)) || glm::equal(v, skip);
+                });
+
+            } else if (ignore.special == IgnoreSpecialValues::Yes && !ignore.floatingPoint) {
+                return calc([](const auto& v) { return glm::not_(util::isfinite(v)); });
+
+            } else if (ignore.special == IgnoreSpecialValues::No && ignore.floatingPoint) {
+                const auto skip =
+                    ValueType{static_cast<util::value_type_t<ValueType>>(*ignore.floatingPoint)};
+                return calc([skip](const auto& v) { return glm::equal(v, skip); });
+            }
+
+        } else if constexpr (std::is_signed_v<util::value_type_t<ValueType>>) {
+            if (ignore.signedInteger) {
+                const auto skip =
+                    ValueType{static_cast<util::value_type_t<ValueType>>(*ignore.signedInteger)};
+                return calc([skip](const auto& v) { return glm::equal(v, skip); });
+            }
+
+        } else {
+            if (ignore.unsignedInteger) {
+                const auto skip =
+                    ValueType{static_cast<util::value_type_t<ValueType>>(*ignore.unsignedInteger)};
+                return calc([skip](const auto& v) { return glm::equal(v, skip); });
+            }
+        }
+
+        return std::accumulate(data, data + size, init,
+                               [](const Res& mm, const ValueType& v) -> Res {
+                                   return {glm::min(mm.first, v), glm::max(mm.second, v)};
+                               });
+    }();
 
     return {util::glm_convert<dvec4>(minmax.first), util::glm_convert<dvec4>(minmax.second)};
 }
-// Specialization for integer types. They do not have special values
-template <typename ValueType,
-          typename std::enable_if<!util::is_floating_point<ValueType>::value, int>::type = 0>
-std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
-                                   IgnoreSpecialValues = IgnoreSpecialValues::No) {
-    using Res = std::pair<ValueType, ValueType>;
-    Res minmax{DataFormat<ValueType>::max(), DataFormat<ValueType>::lowest()};
-    minmax =
-        std::accumulate(data, data + size, minmax, [](const Res& mm, const ValueType& v) -> Res {
-            return {glm::min(mm.first, v), glm::max(mm.second, v)};
-        });
-
-    return {util::glm_convert<dvec4>(minmax.first), util::glm_convert<dvec4>(minmax.second)};
-}
-
 }  // namespace detail
 
 /**
@@ -135,9 +164,13 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
  * @return minimum and maximum values of each component and zero for non-existing components
  */
 template <typename ValueType>
-std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
-                                   IgnoreSpecialValues ignore = IgnoreSpecialValues::No) {
+std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size, IgnoreValues ignore = {}) {
     return detail::dataMinMax<ValueType>(data, size, ignore);
+}
+
+template <typename ValueType>
+std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size, IgnoreSpecialValues ignore) {
+    return detail::dataMinMax<ValueType>(data, size, {.special = ignore});
 }
 
 }  // namespace util

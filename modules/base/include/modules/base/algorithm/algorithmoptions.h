@@ -29,8 +29,20 @@
 
 #pragma once
 
+#include <modules/base/basemoduledefine.h>
+
+#include <optional>
+#include <cstddef>
+
 namespace inviwo {
 
 enum class IgnoreSpecialValues { No, Yes };
+
+struct IVW_MODULE_BASE_API IgnoreValues {
+    IgnoreSpecialValues special = IgnoreSpecialValues::No;
+    std::optional<double> floatingPoint = std::nullopt;
+    std::optional<std::size_t> unsignedInteger = std::nullopt;
+    std::optional<std::ptrdiff_t> signedInteger = std::nullopt;
+};
 
 }  // namespace inviwo

@@ -1,5 +1,4 @@
 
-
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -123,9 +122,9 @@ double Handle::getMax(const DataFormatBase* type) const {
     }
 }
 
-std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
-                                                      std::vector<Selection> selection,
-                                                      const DataFormatBase* type) const {
+std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(
+    const Path& path, std::vector<Selection> selection, const DataFormatBase* type,
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume) const {
 
     auto dataset = data_.openDataSet(path);
     ::inviwo::util::OnScopeExit closedataset{[&]() { dataset.close(); }};
@@ -189,9 +188,47 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
 
     // Reverse back the Column major
     std::reverse(&volumeDimensions[0], &volumeDimensions[0] + volumeDimensions.length());
-    auto volumeram = createVolumeRAM(volumeDimensions, format);
 
-    auto minmax = volumeram->dispatch<std::pair<dvec4, dvec4>, dispatching::filter::Scalars>(
+    auto volume = getVolume({.dimensions = volumeDimensions, .format = format});
+    auto* volumeRam = volume->getEditableRepresentation<VolumeRAM>();
+
+    IgnoreValues ignore{};
+
+    if (dataset.attrExists("units")) {
+        const auto attr = dataset.openAttribute("units");
+        if (attr.getDataType().getClass() == H5T_STRING) {
+            std::string units;
+            attr.read(attr.getStrType(), units);
+            volume->dataMap.valueAxis.unit = units::unit_from_string(units);
+        }
+    }
+
+    if (dataset.attrExists("long_name")) {
+        const auto attr = dataset.openAttribute("long_name");
+        if (attr.getDataType().getClass() == H5T_STRING) {
+            std::string name;
+            attr.read(attr.getStrType(), name);
+            volume->dataMap.valueAxis.name = name;
+        }
+    }
+
+    if (dataset.attrExists("missing_value")) {
+        const auto attr = dataset.openAttribute("missing_value");
+        if (attr.getDataType().getClass() == H5T_FLOAT) {
+            double missingValue;
+            attr.read(H5::PredType::NATIVE_DOUBLE, &missingValue);
+            volume->setMetaData<MetaDataType<double>>("missing_value", missingValue);
+            ignore.floatingPoint = missingValue;
+
+        } else if (attr.getDataType().getClass() == H5T_INTEGER) {
+            std::int64_t missingValue;
+            attr.read(H5::PredType::NATIVE_INT64, &missingValue);
+            volume->setMetaData<MetaDataType<std::int64_t>>("missing_value", missingValue);
+            ignore.signedInteger = missingValue;
+        }
+    }
+
+    auto minmax = volumeRam->dispatch<std::pair<dvec4, dvec4>, dispatching::filter::Scalars>(
         [&](auto vrprecision) {
             using ValueType = ::inviwo::util::PrecisionValueType<decltype(vrprecision)>;
 
@@ -203,7 +240,7 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
                 throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
             }
 
-            auto res = ::inviwo::util::dataMinMax(data, selectionSize);
+            auto res = ::inviwo::util::dataMinMax(data, selectionSize, ignore);
 
             log::info("Read HDF volume type: {} data range: {}, {} file: {}",
                       DataFormat<ValueType>::str(), res.first, res.second, dataset.getFileName());
@@ -211,12 +248,10 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
             return res;
         });
 
-    auto volume = std::make_shared<Volume>(volumeDimensions, format);
     volume->dataMap.dataRange.x = glm::compMin(minmax.first);
     volume->dataMap.dataRange.y = glm::compMax(minmax.second);
     volume->dataMap.valueRange = volume->dataMap.dataRange;
-
-    volume->addRepresentation(volumeram);
+    volume->discardHistograms();
 
     return volume;
 }

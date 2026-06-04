@@ -33,6 +33,7 @@
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/zip.h>
 #include <functional>
 #include <numeric>
 #include <limits>
@@ -70,22 +71,8 @@ HDF5ToVolume::HDF5ToVolume()
     , basis_("basis", "Matrix", mat4(1.0f), inviwo::util::filled<mat4>(-1000.f),
              inviwo::util::filled<mat4>(1000.f))
     , spacing_("spacing", "Spacing", vec3(0.01f), vec3(0.0f), vec3(1.0f))
-
     , information_("Information", "Data information")
-    , dataRange_("dataRange", "Range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(), 0.0, 0.0,
-                 InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
-    , dataDimensions_("dataDimensions", "Dimensions")
-
     , outputGroup_("outputGroup", "Operations", InvalidationLevel::Valid)
-    , overrideRange_("overrideRange", "Use Range", {{"data", "Data", 0}, {"custom", "Custom", 1}},
-                     0)
-    , outDataRange_("dataRange", "Custom Data Range", 0., 1.0, -DataFloat64::max(),
-                    DataFloat64::max(), 0.0, 0.0, InvalidationLevel::InvalidOutput,
-                    PropertySemantics("Text"))
-    , valueRange_("valueRange", "Value range", 0., 1.0, -DataFloat64::max(), DataFloat64::max(),
-                  0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
-    , valueUnit_("valueUnit", "Value unit", "arb. unit.")
-
     , datatype_("convertType", "Convert to type",
                 {{"none", "No conversion", 0},
                  {"float", "Float", 0},
@@ -94,6 +81,7 @@ HDF5ToVolume::HDF5ToVolume()
                  {"ushort", "Unsigned Short", 3}},
                 0)
     , selection_("selection", "Selection", 6)
+    , cache_{}
     , dirty_(false) {
 
     addPort(inport_);
@@ -109,15 +97,10 @@ HDF5ToVolume::HDF5ToVolume()
 
     basisGroup_.addProperties(basisSelection_, spacing_, basis_);
 
-    basisSelection_.onChange([this]() { onBasisSelecionChange(); });
+    basisSelection_.onChange([this]() { onBasisSelectionChange(); });
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
 
-    dataDimensions_.setReadOnly(true);
-    dataRange_.setReadOnly(true);
-    information_.addProperties(dataDimensions_, dataRange_);
-
-    outputGroup_.addProperties(datatype_, overrideRange_, outDataRange_, valueRange_, valueUnit_,
-                               selection_);
+    outputGroup_.addProperties(datatype_, selection_);
     outputGroup_.onChange([this]() {
         if (automaticEvaluation_) {
             dirty_ = true;
@@ -131,67 +114,64 @@ HDF5ToVolume::HDF5ToVolume()
 
 HDF5ToVolume::~HDF5ToVolume() = default;
 
-void HDF5ToVolume::process() {
+void HDF5ToVolume::process() try {
     if (dirty_) {
         dirty_ = false;
         makeVolume();
+        deserialized_ = false;
     }
 
-    switch (basisSelection_.getSelectedIndex()) {
-        case 0: {  // User defined basis
-            break;
+    if (volume_) {
+        information_.updateVolume(*volume_);
+
+        switch (basisSelection_.getSelectedIndex()) {
+            case 0: {  // User defined basis
+                break;
+            }
+            case 1: {  // User defined spacing
+                const auto dim = volume_->getDimensions();
+                const auto diag = dvec4{dvec3(dim) * spacing_.get(), 1.0};
+                auto basis = glm::diagonal4x4(diag);
+                const auto offset = -0.5 * dvec3(basis[0] + basis[1] + basis[2]);
+                basis[3] = dvec4(offset, 1.0);
+                basis_.set(basis);
+                break;
+            }
+            default: {
+                const auto basis =
+                    getBasisFromMeta(basisMatches_[basisSelection_.getSelectedIndex() - 2]);
+                basis_.set(basis);
+                break;
+            }
         }
-        case 1: {  // User defined spacing
-            const auto dim = volume_->getDimensions();
-            const auto diag = dvec4{dvec3(dim) * spacing_.get(), 1.0};
-            auto basis = glm::diagonal4x4(diag);
-            const auto offset = -0.5 * dvec3(basis[0] + basis[1] + basis[2]);
-            basis[3] = dvec4(offset, 1.0);
-            basis_.set(basis);
-            break;
+
+        if (selection_.adjustBasis_) {
+            dmat4 basis = basis_;
+
+            auto sel = selection_.getSelection();
+            auto maxSel = selection_.getMaxSelection();
+
+            int j = 0;
+            for (size_t i = 0; i < sel.size(); ++i) {
+                if (sel[i].end - sel[i].start <= 1) continue;
+                if (j > 2) throw Exception("Invalid selection, resulting rank > 3");
+
+                basis[j] *= static_cast<double>(sel[i].end - sel[i].start) /
+                            static_cast<double>(maxSel[i].end - maxSel[i].start);
+                ++j;
+            }
+
+            vec3 offset = -0.5f * vec3(basis[0] + basis[1] + basis[2]);
+            basis[3] = vec4(offset, 1.0f);
+            volume_->setModelMatrix(basis);
+        } else {
+            volume_->setModelMatrix(basis_);
         }
-        default: {
-            const auto basis =
-                getBasisFromMeta(basisMatches_[basisSelection_.getSelectedIndex() - 2]);
-            basis_.set(basis);
-            break;
-        }
+
+        outport_.setData(volume_);
     }
-
-    if (selection_.adjustBasis_) {
-        dmat4 basis = basis_;
-
-        auto sel = selection_.getSelection();
-        auto maxSel = selection_.getMaxSelection();
-
-        int j = 0;
-        for (size_t i = 0; i < sel.size(); ++i) {
-            if (sel[i].end - sel[i].start <= 1) continue;
-            if (j > 2) throw Exception("Invalid selection, resulting rank > 3");
-
-            basis[j] *= static_cast<double>(sel[i].end - sel[i].start) /
-                        static_cast<double>(maxSel[i].end - maxSel[i].start);
-            ++j;
-        }
-
-        vec3 offset = -0.5f * vec3(basis[0] + basis[1] + basis[2]);
-        basis[3] = vec4(offset, 1.0f);
-        volume_->setModelMatrix(basis);
-    } else {
-        volume_->setModelMatrix(basis_);
-    }
-    switch (overrideRange_.getSelectedIndex()) {
-        case 0:  // Data
-            volume_->dataMap.dataRange = dataRange_.get();
-            break;
-        case 1:  // Custom
-            volume_->dataMap.dataRange = outDataRange_.get();
-            break;
-        default:
-            break;
-    }
-    volume_->dataMap.valueRange = valueRange_.get();
-    volume_->dataMap.valueAxis.unit = units::unit_from_string(valueUnit_.get());
+} catch (H5::Exception& e) {
+    throw Exception(SourceContext{}, "Error reading HDF5 data: {}", e.getDetailMsg());
 }
 
 dmat4 HDF5ToVolume::getBasisFromMeta(MetaData meta) {
@@ -279,7 +259,7 @@ void HDF5ToVolume::onDataChange() {
     }
 
     onSelectionChange();
-    onBasisSelecionChange();
+    onBasisSelectionChange();
 }
 
 std::string HDF5ToVolume::getDescription(const MetaData& meta) {
@@ -288,7 +268,7 @@ std::string HDF5ToVolume::getDescription(const MetaData& meta) {
            joinString(meta.getColumnMajorDimensions(), ", ") + "]";
 }
 
-void HDF5ToVolume::onBasisSelecionChange() {
+void HDF5ToVolume::onBasisSelectionChange() {
     switch (basisSelection_.getSelectedIndex()) {
         case 0: {  // User defined basis
             basis_.setReadOnly(false);
@@ -312,7 +292,6 @@ void HDF5ToVolume::onSelectionChange() {
     dirty_ = true;
     if (!volumeMatches_.empty()) {
         MetaData volumeMeta = volumeMatches_[volumeSelection_.getSelectedIndex()];
-        dataDimensions_.set("[" + joinString(volumeMeta.getColumnMajorDimensions(), ", ") + "]");
         selection_.update(volumeMeta);
     }
 }
@@ -322,33 +301,33 @@ void HDF5ToVolume::makeVolume() {
         const auto data = inport_.getData();
         MetaData volumeMeta = volumeMatches_[volumeSelection_.getSelectedIndex()];
 
-        try {
-            auto format = [&]() -> const DataFormatBase* {
-                switch (datatype_.getSelectedIndex()) {
-                    case 1:
-                        return DataFloat32::get();
-                    case 2:
-                        return DataFloat64::get();
-                    case 3:
-                        return DataUInt8::get();
-                    case 4:
-                        return DataUInt16::get();
-                    default:
-                        return nullptr;
-                }
-            }();
+        auto format = [&]() -> const DataFormatBase* {
+            switch (datatype_.getSelectedIndex()) {
+                case 1:
+                    return DataFloat32::get();
+                case 2:
+                    return DataFloat64::get();
+                case 3:
+                    return DataUInt8::get();
+                case 4:
+                    return DataUInt16::get();
+                default:
+                    return nullptr;
+            }
+        }();
 
-            volume_ = std::shared_ptr<Volume>(
-                data->getVolumeAtPathAsType(Path(data->getGroup().getObjName()) + volumeMeta.path_,
-                                            selection_.getSelection(), format));
+        volume_ = std::shared_ptr<Volume>(
+            data->getVolumeAtPathAsType(Path(data->getGroup().getObjName()) + volumeMeta.path_,
+                                        selection_.getSelection(), format, std::ref(cache_)));
 
-            dataRange_.set(volume_->dataMap.dataRange);
-            outport_.setData(volume_);
-
-        } catch (const H5::GroupIException& e) {
-            log::report(LogLevel::Error, e.getDetailMsg());
-        }
+        information_.updateForNewVolume(*volume_, deserialized_ ? inviwo::util::OverwriteState::Yes
+                                                                : inviwo::util::OverwriteState::No);
     }
+}
+
+void HDF5ToVolume::deserialize(Deserializer& d) {
+    Processor::deserialize(d);
+    deserialized_ = true;
 }
 
 HDF5ToVolume::DimSelection::DimSelection(const std::string& identifier,
@@ -390,9 +369,11 @@ void HDF5ToVolume::DimSelections::update(const MetaData& meta) {
     const NetworkLock lock{this};
     auto cmdims = meta.getColumnMajorDimensions();
     rank_ = cmdims.size();
-    for (size_t i = 0; i < maxRank_ - rank_; ++i) {
-        selection_[i]->setVisible(false);
+
+    for (auto&& [index, selection] : inviwo::util::enumerate(selection_)) {
+        selection->setVisible(index >= maxRank_ - rank_);
     }
+
     for (size_t i = 0; i < rank_; ++i) {
         selection_[i + maxRank_ - rank_]->update(static_cast<int>(cmdims[i]));
     }
