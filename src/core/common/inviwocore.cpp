@@ -133,6 +133,9 @@ namespace {
 enum class OptionRegEnumInt : int {};
 enum class OptionRegEnumUInt : unsigned int {};
 
+enum class OptionRegEnumChar : char {};
+enum class OptionRegEnumUChar : unsigned char {};
+
 }  // namespace
 
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
@@ -299,7 +302,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<SimpleRaycastingProperty>();
     registerProperty<VolumeIndicatorProperty>();
 
-    using Scalars = std::tuple<float, double, int, unsigned int, glm::i64, size_t>;
+    using Scalars = std::tuple<float, double, int, unsigned int, size_t, std::ptrdiff_t,
+                               unsigned char, char, std::uint16_t, std::int16_t>;
     using Vec2s = std::tuple<vec2, dvec2, ivec2, size2_t>;
     using Vec3s = std::tuple<vec3, dvec3, ivec3, size3_t>;
     using Vec4s = std::tuple<vec4, dvec4, ivec4, size4_t>;
@@ -380,7 +384,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type<OptionTypes>{}(optionIntConverter);
     util::for_each_type<OptionTypes>{}(intOptionConverter);
 
-    using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
+    using OptionEnumTypes =
+        std::tuple<OptionRegEnumInt, OptionRegEnumUInt, OptionRegEnumChar, OptionRegEnumUChar>;
     util::for_each_type<OptionEnumTypes>{}(optionStringConverter);
     util::for_each_type<OptionEnumTypes>{}(optionIntConverter);
     util::for_each_type<OptionEnumTypes>{}(intOptionConverter);
