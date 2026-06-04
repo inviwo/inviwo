@@ -342,7 +342,7 @@ void AnimationEditorQt::paste(std::optional<QPointF> scenePos, QGraphicsView* vi
                 app->getWorkspaceManager()->createWorkspaceDeserializerAndInfo(xml, {});
 
             deserializer.deserializeRange(
-                "sequences", "item", [&](Deserializer& nested, size_t index) {
+                "sequences", "item", [&](Deserializer& nested, [[maybe_unused]] size_t index) {
                     std::string trackCId{};
                     size_t trackIdx{};
                     nested.deserialize("trackCId", trackCId, SerializationTarget::Attribute);
@@ -378,7 +378,7 @@ void AnimationEditorQt::paste(std::optional<QPointF> scenePos, QGraphicsView* vi
             auto [deserializer, info] =
                 app->getWorkspaceManager()->createWorkspaceDeserializerAndInfo(xml, {});
             deserializer.deserializeRange(
-                "keyframes", "item", [&](Deserializer& nested, size_t index) {
+                "keyframes", "item", [&](Deserializer& nested, [[maybe_unused]] size_t index) {
                     std::string trackCId{};
                     size_t trackIdx{};
                     nested.deserialize("trackCId", trackCId, SerializationTarget::Attribute);
@@ -453,7 +453,7 @@ void AnimationEditorQt::cut() {
     copy();
     // Delete the selected items (same logic as Key_Delete)
     const QList<QGraphicsItem*> itemList = selectedItems();
-    for (auto& elem : itemList) {
+    for (auto* elem : itemList) {
         if (auto* keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
             controller_.getAnimation().remove(&(keyqt->getKeyframe()));
         } else if (auto* seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
@@ -463,7 +463,7 @@ void AnimationEditorQt::cut() {
 }
 
 void AnimationEditorQt::deleteItems(const QList<QGraphicsItem*>& itemsList) {
-    for (auto& elem : itemsList) {
+    for (auto* elem : itemsList) {
         if (auto* keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
             controller_.getAnimation().remove(&(keyqt->getKeyframe()));
         } else if (auto* seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {

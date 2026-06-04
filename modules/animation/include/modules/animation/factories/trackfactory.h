@@ -54,7 +54,7 @@ class TrackFactory;
 
 class IVW_MODULE_ANIMATION_API KeyframeFactory : public Factory<Keyframe> {
 public:
-    KeyframeFactory(TrackFactory& tf);
+    explicit KeyframeFactory(TrackFactory& tf);
     virtual std::unique_ptr<Keyframe> create(std::string_view key) const override;
     virtual bool hasKey(std::string_view key) const override;
 
@@ -64,7 +64,7 @@ private:
 
 class IVW_MODULE_ANIMATION_API KeyframeSequenceFactory : public Factory<KeyframeSequence> {
 public:
-    KeyframeSequenceFactory(TrackFactory& tf);
+    explicit KeyframeSequenceFactory(TrackFactory& tf);
     virtual std::unique_ptr<KeyframeSequence> create(std::string_view key) const override;
     virtual bool hasKey(std::string_view key) const override;
 
