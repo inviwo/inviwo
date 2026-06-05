@@ -110,13 +110,9 @@ OrthographicAxis2D::OrthographicAxis2D()
 
     isReady_.setUpdate([this]() -> ProcessorStatus {
         if (auto connectedPorts = std::ranges::fold_left(
-                std::initializer_list<const Inport*>{&mesh_, &layer_, &volume_}, 0,
-                [](int count, const Inport* port) {
-                    if (port->isConnected()) {
-                        return count + 1;
-                    }
-                    return count;
-                });
+                std::to_array<const Inport*>({&mesh_, &layer_, &volume_}) |
+                    std::views::transform([](auto* p) { return p->isConnected() ? 1 : 0; }),
+                0, std::plus<>{});
             connectedPorts > 1) {
             return {ProcessorStatus::Error,
                     "Excactly one of the Mesh, Layer, or Volume inports must be connected"};

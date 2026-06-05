@@ -34,7 +34,6 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
-#include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/marginproperty.h>
@@ -43,7 +42,6 @@
 #include <modules/plotting/datastructures/axisdata.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
-#include <modules/plotting/properties/plottextproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 #include <string>

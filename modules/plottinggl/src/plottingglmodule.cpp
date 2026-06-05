@@ -41,6 +41,7 @@
 #include <modules/plottinggl/processors/colorscalelegend.h>
 #include <modules/plottinggl/processors/imageplotprocessor.h>
 #include <modules/plottinggl/processors/layeraxis.h>
+#include <modules/plottinggl/processors/measuredistance3d.h>
 #include <modules/plottinggl/processors/meshaxis.h>
 #include <modules/plottinggl/processors/orthographicaxis2d.h>
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
@@ -68,6 +69,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerProcessor<plot::ColorScaleLegend>();
     registerProcessor<plot::ImagePlotProcessor>();
     registerProcessor<plot::LayerAxis>();
+    registerProcessor<plot::MeasureDistance3D>();
     registerProcessor<plot::MeshAxis>();
     registerProcessor<plot::ParallelCoordinates>();
     registerProcessor<plot::PersistenceDiagramPlotProcessor>();

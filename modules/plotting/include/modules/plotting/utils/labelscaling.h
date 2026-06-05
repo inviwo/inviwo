@@ -82,6 +82,8 @@ constexpr std::pair<dvec2, int> scaleRange(const dvec2& r, const std::optional<i
     }
 }
 
+IVW_MODULE_PLOTTING_API std::string formatExponent(int exp);
+
 IVW_MODULE_PLOTTING_API OptionPropertyState<CaptionType> captionTypeState();
 
 IVW_MODULE_PLOTTING_API OptionPropertyState<LabelScale> labelScaleState();
