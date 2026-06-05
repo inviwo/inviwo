@@ -31,12 +31,17 @@
 // Optimal-transport TF interpolation benchmarks
 // =====================================================================================
 //
-// Benchmarks `inviwo::algorithm::optimalTransportInterpolation` (piecewise-linear /
-// secant-based) and `inviwo::algorithm::optimalTransportInterpolationClosedForm`
-// (closed-form vertex opacities) across sweeps of:
+// Benchmarks the optimal-transport TF interpolators across parameter sweeps:
+//   * `optimalTransportInterpolation`                 (piecewise-linear / secant-based)
+//   * `optimalTransportInterpolationClosedForm`       (closed-form vertex opacities)
+//   * `optimalTransportInterpolationRefined`          (adaptive placement, secant opacities)
+//   * `optimalTransportInterpolationOptimalSampling`  (adaptive placement at the closed-form
+//                                                      opacity-error maximizer q*)
+// over:
 //   * number of control points N           (controlPointCounts below)
 //   * samplesPerSegment                     (samplesPerSegmentValues, PWL only)
-//   * ClosedFormRefinementOptions           (relTolValues x maxQLValues x maxIterValues, CF only)
+//   * ClosedFormRefinementOptions           (relTolValues x maxQLValues x maxIterValues;
+//                                            CF / PwlRef / OptSamp)
 //
 // Each benchmark instance reports the standard Google Benchmark auto-tuned wall-clock
 // time and (separately, computed once outside the timed loop) the L-infinity, L1 and L2
@@ -44,11 +49,14 @@
 // The oracle is `algorithm::evaluateInterpolatedAlpha`, which the header documents as
 // the exact pointwise Wasserstein density expression.
 //
-// On shutdown the custom main writes six files into the current working directory,
-// timestamped at run start:
+// On shutdown the custom main writes a timestamped set of files into the current working
+// directory (timestamp fixed at run start):
 //
+//   optimaltransport_benchmark_<ts>_gallery.csv
 //   optimaltransport_benchmark_<ts>_pwl_sweep.csv         /  .tex
 //   optimaltransport_benchmark_<ts>_closedform_sweep.csv  /  .tex
+//   optimaltransport_benchmark_<ts>_pwlref_sweep.csv      /  .tex
+//   optimaltransport_benchmark_<ts>_optsamp_sweep.csv     /  .tex
 //   optimaltransport_benchmark_<ts>_compare.csv           /  .tex
 //
 // Bolding policy in LaTeX:
@@ -122,7 +130,7 @@ constexpr std::uint32_t seedA = 0xC0FFEEu;
 constexpr std::uint32_t seedB = 0xBADF00Du;
 
 // PWL method samplesPerSegment sweep.
-constexpr std::array<std::size_t, 9> samplesPerSegmentValues{2, 4, 8, 16, 32, 64, 128, 256};
+constexpr std::array<std::size_t, 8> samplesPerSegmentValues{2, 4, 8, 16, 32, 64, 128, 256};
 
 // Closed-form refinement sweeps.
 constexpr std::array<double, 5> relTolValues{1e-1, 1e-2, 1e-3, 1e-4, 1e-5};
@@ -343,6 +351,25 @@ void BM_PwlRef(benchmark::State& state, std::size_t N,
     }
 }
 
+void BM_OptSamp(benchmark::State& state, std::size_t N,
+                algorithm::ClosedFormRefinementOptions opts) {
+    auto pair = makePair(N);
+    const std::string name = state.name();
+    if (!accuracyKnown(name)) {
+        auto result =
+            algorithm::optimalTransportInterpolationOptimalSampling(pair.a, pair.b, interpT, opts);
+        auto metrics = computeErrorMetrics(result, pair.a, pair.b, interpT);
+        metrics.outVertices = result.size();
+        recordAccuracy(name, metrics);
+    }
+    for (auto _ : state) {
+        auto result =
+            algorithm::optimalTransportInterpolationOptimalSampling(pair.a, pair.b, interpT, opts);
+        benchmark::DoNotOptimize(result);
+        benchmark::ClobberMemory();
+    }
+}
+
 // =====================================================================================
 // Benchmark registration
 // =====================================================================================
@@ -373,6 +400,13 @@ std::string pwlRefName(std::size_t N, double relTol, std::size_t maxQL, std::siz
     return os.str();
 }
 
+std::string optSampName(std::size_t N, double relTol, std::size_t maxQL, std::size_t maxIter) {
+    std::ostringstream os;
+    os << "OT_OptSamp/N=" << N << "/relTol=" << formatRelTol(relTol)
+       << "/maxQL=" << maxQL << "/maxIter=" << maxIter;
+    return os.str();
+}
+
 // Config registry, filled by registerAll() so we can recover parameters by name later.
 struct PwlCfg {
     std::size_t N = 0;
@@ -395,6 +429,12 @@ std::unordered_map<std::string, CfCfg>& cfRegistry() {
 
 // PWL-with-refinement reuses the closed-form refinement options (relTol/maxQL/maxIter).
 std::unordered_map<std::string, CfCfg>& pwlRefRegistry() {
+    static std::unordered_map<std::string, CfCfg> r;
+    return r;
+}
+
+// Optimal-sampling reuses the closed-form refinement options (relTol/maxQL/maxIter).
+std::unordered_map<std::string, CfCfg>& optSampRegistry() {
     static std::unordered_map<std::string, CfCfg> r;
     return r;
 }
@@ -450,6 +490,29 @@ void registerAll() {
                     pwlRefRegistry().emplace(n, CfCfg{N, r, q, it});
                     RegisterBenchmark(n.c_str(), [N, opts](benchmark::State& s) {
                         BM_PwlRef(s, N, opts);
+                    })
+                        ->Unit(benchmark::kMicrosecond)
+                        ->MinTime(benchMinTime);
+                }
+            }
+        }
+    }
+
+    // Optimal-sampling sweep: (N, relTol, maxQL, maxIter) — same refinement knobs as the
+    // closed-form sweep, but inserts each new quantile level at the closed-form opacity-error
+    // maximizer q* rather than the sub-interval midpoint.
+    for (auto N : controlPointCounts) {
+        for (auto r : relTolValues) {
+            for (auto q : maxQLValues) {
+                for (auto it : maxIterValues) {
+                    algorithm::ClosedFormRefinementOptions opts{};
+                    opts.relativeTolerance = r;
+                    opts.maxQuantileLevels = q;
+                    opts.maxRefinementIterations = it;
+                    const std::string n = optSampName(N, r, q, it);
+                    optSampRegistry().emplace(n, CfCfg{N, r, q, it});
+                    RegisterBenchmark(n.c_str(), [N, opts](benchmark::State& s) {
+                        BM_OptSamp(s, N, opts);
                     })
                         ->Unit(benchmark::kMicrosecond)
                         ->MinTime(benchMinTime);
@@ -1052,9 +1115,40 @@ int main(int argc, char** argv) {
             pwlRefRows.push_back(std::move(jr));
         }
     }
+
+    std::vector<JoinedRow> optSampRows;
+    optSampRows.reserve(optSampRegistry().size());
+    std::size_t optSampJoined = 0;
+    {
+        std::scoped_lock lock{accuracyMutex()};
+        const auto& acc = accuracyTable();
+        for (const auto& [name, cfg] : optSampRegistry()) {
+            JoinedRow jr;
+            jr.name = name;
+            jr.N = cfg.N;
+            jr.relTol = cfg.relTol;
+            jr.maxQL = cfg.maxQL;
+            jr.maxIter = cfg.maxIter;
+            if (auto it = acc.find(name); it != acc.end()) {
+                jr.err = it->second;
+            } else {
+                jr.err = ErrorMetrics{nan, nan, nan};
+            }
+            if (auto* tr = findTiming(name)) {
+                jr.timeNs = tr->meanRealTimeNs;
+                jr.iterations = tr->iterations;
+                ++optSampJoined;
+            } else {
+                jr.timeNs = nan;
+                jr.iterations = 0;
+            }
+            optSampRows.push_back(std::move(jr));
+        }
+    }
     std::cerr << "[bm-optimaltransport] joined timing: pwl=" << pwlJoined << "/"
               << pwlRows.size() << ", cf=" << cfJoined << "/" << cfRows.size()
-              << ", pwlref=" << pwlRefJoined << "/" << pwlRefRows.size() << "\n";
+              << ", pwlref=" << pwlRefJoined << "/" << pwlRefRows.size()
+              << ", optsamp=" << optSampJoined << "/" << optSampRows.size() << "\n";
 
     // Sort for stable, readable output.
     auto pwlLess = [](const JoinedRow& a, const JoinedRow& b) {
@@ -1067,6 +1161,7 @@ int main(int argc, char** argv) {
     std::sort(pwlRows.begin(), pwlRows.end(), pwlLess);
     std::sort(cfRows.begin(), cfRows.end(), cfLess);
     std::sort(pwlRefRows.begin(), pwlRefRows.end(), cfLess);
+    std::sort(optSampRows.begin(), optSampRows.end(), cfLess);
 
     const std::string ts = formatNow();
     const std::filesystem::path cwd = std::filesystem::current_path();
@@ -1088,6 +1183,11 @@ int main(int argc, char** argv) {
     const std::filesystem::path pwlRefTex =
         cwd / ("optimaltransport_benchmark_" + ts + "_pwlref_sweep.tex");
 
+    const std::filesystem::path optSampCsv =
+        cwd / ("optimaltransport_benchmark_" + ts + "_optsamp_sweep.csv");
+    const std::filesystem::path optSampTex =
+        cwd / ("optimaltransport_benchmark_" + ts + "_optsamp_sweep.tex");
+
     const std::filesystem::path galleryCsv =
         cwd / ("optimaltransport_benchmark_" + ts + "_gallery.csv");
 
@@ -1101,6 +1201,10 @@ int main(int argc, char** argv) {
     writeCfSweepCsv(pwlRefCsv, pwlRefRows);
     writeCfSweepTex(pwlRefTex, pwlRefRows);
 
+    // Optimal-sampling shares the closed-form CSV/TeX schema (relTol/maxQL/maxIter).
+    writeCfSweepCsv(optSampCsv, optSampRows);
+    writeCfSweepTex(optSampTex, optSampRows);
+
     auto cmpRows = buildCompareRows(pwlRows, cfRows);
     writeCompareCsv(cmpCsv, cmpRows);
     writeCompareTex(cmpTex, cmpRows);
@@ -1113,6 +1217,8 @@ int main(int argc, char** argv) {
               << "  " << cfTex.string() << "\n"
               << "  " << pwlRefCsv.string() << "  (" << pwlRefRows.size() << " rows)\n"
               << "  " << pwlRefTex.string() << "\n"
+              << "  " << optSampCsv.string() << "  (" << optSampRows.size() << " rows)\n"
+              << "  " << optSampTex.string() << "\n"
               << "  " << cmpCsv.string() << "  (" << cmpRows.size() << " rows)\n"
               << "  " << cmpTex.string() << "\n";
 
