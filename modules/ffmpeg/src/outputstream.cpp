@@ -67,7 +67,7 @@ OutputStream::OutputStream(Format& format, Options opts)
     // minimizing conversion loss from the source format (e.g., AV_PIX_FMT_RGBA).
     const enum AVPixelFormat* formats = nullptr;
     avcodec_get_supported_config(codec.ctx, nullptr, AVCodecConfig::AV_CODEC_CONFIG_PIX_FORMAT, 0,
-                                 (const void**)&formats, nullptr);
+                                 reinterpret_cast<const void**>(&formats), nullptr);
     if (formats) {
         codec.ctx->pix_fmt = avcodec_find_best_pix_fmt_of_list(formats, sourceFormat, 0, nullptr);
     } else {
