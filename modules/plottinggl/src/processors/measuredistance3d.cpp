@@ -201,7 +201,18 @@ MeasureDistance3D::MeasureDistance3D()
                               KeyState::Press,
                               KeyModifiers{flags::none}}
     , axisRenderer_{AxisData{}}
-    , sm{std::make_unique<MeasurementSM>(this)} {
+    , sm{std::make_unique<MeasurementSM>(this)}
+    , locatorMesh_{DrawType::Lines,
+                   ConnectivityType::None,
+                   {
+                       {{-1.0f, 0.0f, 0.0f}},
+                       {{1.0f, 0.0f, 0.0f}},
+                       {{0.0f, -1.0f, 0.0f}},
+                       {{0.0f, 1.0f, 0.0f}},
+                       {{0.0f, 0.0f, -1.0f}},
+                       {{0.0f, 0.0f, 1.0f}},
+                   },
+                   {0, 1, 2, 3, 4, 5}} {
 
     inport_.setOptional(true);
     mesh_.setOptional(true);
@@ -210,13 +221,9 @@ MeasureDistance3D::MeasureDistance3D()
 
     isReady_.setUpdate([this]() -> ProcessorStatus {
         if (auto connectedPorts = std::ranges::fold_left(
-                std::initializer_list<const Inport*>{&mesh_, &layer_, &volume_}, 0,
-                [](int count, const Inport* port) {
-                    if (port->isConnected()) {
-                        return count + 1;
-                    }
-                    return count;
-                });
+                std::to_array<const Inport*>({&mesh_, &layer_, &volume_}) |
+                    std::views::transform([](auto* p) { return p->isConnected() ? 1 : 0; }),
+                0, std::plus<>{});
             connectedPorts > 1) {
             return {ProcessorStatus::Error,
                     "Excactly one of the Mesh, Layer, or Volume inports can be connected"};
@@ -241,6 +248,7 @@ MeasureDistance3D::MeasureDistance3D()
                   renderOnTop_, style_, measurementAxis_, camera_, placeLocatorEvent_,
                   cancelMeasurementEvent_);
 
+    distance_.setSerializationMode(PropertySerializationMode::None);
     style_.setCollapsed(true);
     style_.registerProperties(measurementAxis_);
 

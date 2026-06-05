@@ -92,23 +92,10 @@ private:
 
     AxisRenderer3D axisRenderer_;
     algorithm::LineRenderer lineRenderer_;
-
-    // MeasurementState measurementState_;
-
     std::unique_ptr<MeasurementSM> sm;
 
     using PositionMesh = TypedMesh<buffertraits::PositionsBuffer3D>;
-    PositionMesh locatorMesh_{DrawType::Lines,
-                              ConnectivityType::None,
-                              {
-                                  {{-1.0f, 0.0f, 0.0f}},
-                                  {{1.0f, 0.0f, 0.0f}},
-                                  {{0.0f, -1.0f, 0.0f}},
-                                  {{0.0f, 1.0f, 0.0f}},
-                                  {{0.0f, 0.0f, -1.0f}},
-                                  {{0.0f, 0.0f, 1.0f}},
-                              },
-                              {0, 1, 2, 3, 4, 5}};
+    PositionMesh locatorMesh_;
 };
 
 }  // namespace inviwo::plot
