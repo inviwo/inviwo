@@ -1405,6 +1405,412 @@ void refineQuantileLevelsByClosedForm(const TransportContext& ctx, std::vector<d
     }
 }
 
+// ---------------------------------------------------------------------------
+// Closed-form maximiser of the opacity-chord error on a single sub-interval.
+//
+// On a sub-interval of L (one source segment, one destination segment) the
+// transported opacity is alpha_t(X_t(q)) = m_t / g(q) with g(q) = X_t'(q), and
+// the piecewise-linear output draws the chord that is linear in x = X_t(q):
+//
+//   chord(x) = alpha(qLo) + w (x - xLo),  w = (alpha(qHi) - alpha(qLo))/(xHi - xLo).
+//
+// The error e(q) = alpha_t(X_t(q)) - chord(X_t(q)) vanishes at both endpoints, so
+// its extremum is interior. Because x'(q) = g(q), stationarity e'(q) = 0 is
+//
+//   (*)  m_t g'(q) + w g(q)^3 = 0          <=>   d(alpha)/dx = w,
+//
+// i.e. the mean-value/tangent condition: the worst chord error sits where the
+// curve's slope in x equals the chord slope. We solve (*) in closed form.
+//
+// Single-radical case (exactly one segment curved): writing the active radical as
+// rho = sqrt(p0 + p1 q), the stretch is g = d1 + k/rho with k = weight*mCurved, and
+// (*) collapses to a CUBIC in rho:
+//
+//   w (d1 rho + k)^3 = m_t k p1 / 2,
+//
+// solved exactly (Cardano/trigonometric). Then q* = (rho*^2 - p0)/p1.
+//
+// Two-non-zero-slope case: the two radicals couple, so (*) is a higher-degree
+// polynomial in one radical variable. We seed q from the single-radical cubic of
+// each term (freezing the other at the interval midpoint) and polish with
+// safeguarded Newton on (*) using the analytic e', e''. All evaluations are
+// closed form; no inversion of X_t is required.
+
+// Real roots of a*rho^3 + b*rho^2 + c*rho + d = 0 (up to three).
+struct CubicRoots {
+    double r[3] = {std::numeric_limits<double>::quiet_NaN(),
+                   std::numeric_limits<double>::quiet_NaN(),
+                   std::numeric_limits<double>::quiet_NaN()};
+    int count = 0;
+};
+
+CubicRoots solveCubic(double a, double b, double c, double d) {
+    CubicRoots out;
+    const double scale = std::max({std::abs(a), std::abs(b), std::abs(c), std::abs(d), 1.0});
+    if (std::abs(a) <= 1e-14 * scale) {
+        const auto qr = solveQuadratic(b, c, d);
+        if (!std::isnan(qr.r0)) out.r[out.count++] = qr.r0;
+        if (!std::isnan(qr.r1)) out.r[out.count++] = qr.r1;
+        return out;
+    }
+    const double p2 = b / a;
+    const double p1 = c / a;
+    const double p0 = d / a;
+    const double shift = p2 / 3.0;
+    const double P = p1 - p2 * p2 / 3.0;
+    const double Q = 2.0 * p2 * p2 * p2 / 27.0 - p2 * p1 / 3.0 + p0;
+    const double disc = (Q * Q) / 4.0 + (P * P * P) / 27.0;
+    if (disc > 0.0) {
+        const double sq = std::sqrt(disc);
+        const double u = std::cbrt(-Q / 2.0 + sq);
+        const double v = std::cbrt(-Q / 2.0 - sq);
+        out.r[out.count++] = u + v - shift;
+    } else if (disc < 0.0) {
+        const double m = 2.0 * std::sqrt(-P / 3.0);
+        const double arg = std::clamp(3.0 * Q / (P * m), -1.0, 1.0);
+        const double theta = std::acos(arg) / 3.0;
+        constexpr double twoPiOver3 = 2.0943951023931953;
+        out.r[out.count++] = m * std::cos(theta) - shift;
+        out.r[out.count++] = m * std::cos(theta - twoPiOver3) - shift;
+        out.r[out.count++] = m * std::cos(theta - 2.0 * twoPiOver3) - shift;
+    } else {
+        const double u = std::cbrt(-Q / 2.0);
+        out.r[out.count++] = 2.0 * u - shift;
+        out.r[out.count++] = -u - shift;
+    }
+    return out;
+}
+
+// Per-interval closed forms of g(q)=X_t'(q) and its derivatives, reconstructed from
+// the same segment constants used by densityAtQuantile / xtOnSegment.
+struct StretchClosedForm {
+    bool valid = false;
+    bool bothFlat = false;
+    bool aFlat = false;
+    bool bFlat = false;
+    double oneMt = 0.0, tt = 0.0, mA = 0.0, mB = 0.0;
+    double pa0 = 0.0, pa1 = 0.0, pb0 = 0.0, pb1 = 0.0;
+    double aFlatVal = 0.0, bFlatVal = 0.0;
+};
+
+StretchClosedForm makeStretch(const CdfSegment& segA, const CdfSegment& segB, double t) {
+    StretchClosedForm s;
+    s.oneMt = 1.0 - t;
+    s.tt = t;
+    s.mA = segA.mass;
+    s.mB = segB.mass;
+    s.aFlat = std::abs(segA.slope) <= eps;
+    s.bFlat = std::abs(segB.slope) <= eps;
+    s.aFlatVal = segA.alphaStart;
+    s.bFlatVal = segB.alphaStart;
+    if (!s.aFlat) {
+        s.pa0 = segA.alphaStart * segA.alphaStart - 2.0 * segA.slope * segA.cdfAtStart;
+        s.pa1 = 2.0 * segA.slope * segA.mass;
+    }
+    if (!s.bFlat) {
+        s.pb0 = segB.alphaStart * segB.alphaStart - 2.0 * segB.slope * segB.cdfAtStart;
+        s.pb1 = 2.0 * segB.slope * segB.mass;
+    }
+    s.bothFlat = s.aFlat && s.bFlat;
+    s.valid = true;
+    return s;
+}
+
+double stretchG(const StretchClosedForm& s, double q) {
+    const double aA = s.aFlat ? s.aFlatVal : std::sqrt(std::max(0.0, s.pa0 + s.pa1 * q));
+    const double aB = s.bFlat ? s.bFlatVal : std::sqrt(std::max(0.0, s.pb0 + s.pb1 * q));
+    double g = 0.0;
+    if (aA > eps) g += s.oneMt * s.mA / aA;
+    if (aB > eps) g += s.tt * s.mB / aB;
+    return g;
+}
+
+double stretchGPrime(const StretchClosedForm& s, double q) {
+    double gp = 0.0;
+    if (!s.aFlat) {
+        const double pa = std::max(eps, s.pa0 + s.pa1 * q);
+        gp += -s.oneMt * s.mA * s.pa1 / (2.0 * pa * std::sqrt(pa));
+    }
+    if (!s.bFlat) {
+        const double pb = std::max(eps, s.pb0 + s.pb1 * q);
+        gp += -s.tt * s.mB * s.pb1 / (2.0 * pb * std::sqrt(pb));
+    }
+    return gp;
+}
+
+double stretchGpp(const StretchClosedForm& s, double q) {
+    double gpp = 0.0;
+    if (!s.aFlat) {
+        const double pa = std::max(eps, s.pa0 + s.pa1 * q);
+        gpp += 0.75 * s.oneMt * s.mA * s.pa1 * s.pa1 / (pa * pa * std::sqrt(pa));
+    }
+    if (!s.bFlat) {
+        const double pb = std::max(eps, s.pb0 + s.pb1 * q);
+        gpp += 0.75 * s.tt * s.mB * s.pb1 * s.pb1 / (pb * pb * std::sqrt(pb));
+    }
+    return gpp;
+}
+
+// Solve the exact cubic (*) for the single-active-radical configuration `sf`
+// (exactly one of the two sides is flat). Appends interior roots in (qLo,qHi).
+void singleRadicalCandidates(const StretchClosedForm& sf, double w, double mt, double qLo,
+                             double qHi, std::vector<double>& cand) {
+    double d1 = 0.0, p0 = 0.0, p1 = 0.0, k = 0.0;
+    if (sf.aFlat && !sf.bFlat) {
+        if (sf.aFlatVal > eps) d1 = sf.oneMt * sf.mA / sf.aFlatVal;
+        p0 = sf.pb0;
+        p1 = sf.pb1;
+        k = sf.tt * sf.mB;  // g = d1 + k/rho, rho = sqrt(p0+p1 q)
+    } else if (sf.bFlat && !sf.aFlat) {
+        if (sf.bFlatVal > eps) d1 = sf.tt * sf.mB / sf.bFlatVal;
+        p0 = sf.pa0;
+        p1 = sf.pa1;
+        k = sf.oneMt * sf.mA;
+    } else {
+        return;
+    }
+    if (std::abs(p1) <= eps || std::abs(k) <= eps) return;
+    // w (d1 rho + k)^3 = m_t k p1 / 2  ->  cubic in rho.
+    const double A3 = w * d1 * d1 * d1;
+    const double A2 = 3.0 * w * d1 * d1 * k;
+    const double A1 = 3.0 * w * d1 * k * k;
+    const double A0 = w * k * k * k - mt * k * p1 / 2.0;
+    const auto roots = solveCubic(A3, A2, A1, A0);
+    for (int i = 0; i < roots.count; ++i) {
+        const double rho = roots.r[i];
+        if (std::isnan(rho) || rho <= 0.0) continue;
+        const double q = (rho * rho - p0) / p1;
+        if (q > qLo + eps && q < qHi - eps) cand.push_back(q);
+    }
+}
+
+// Interior q in (qLo,qHi) maximising |e(q)|, in closed form where possible.
+// Returns NaN if no interior stationary point exists (e.g. both segments flat).
+double optimalErrorQuantile(const CdfSegment& segA, const CdfSegment& segB, double t, double mt,
+                            double qLo, double qHi, double xLo, double xHi) {
+    const double dx = xHi - xLo;
+    if (dx <= eps || qHi - qLo <= eps) return std::numeric_limits<double>::quiet_NaN();
+
+    const StretchClosedForm s = makeStretch(segA, segB, t);
+    if (!s.valid || s.bothFlat) return std::numeric_limits<double>::quiet_NaN();
+
+    const double gLo = stretchG(s, qLo);
+    const double gHi = stretchG(s, qHi);
+    if (gLo <= eps || gHi <= eps) return std::numeric_limits<double>::quiet_NaN();
+    const double aLo = mt / gLo;
+    const double aHi = mt / gHi;
+    const double w = (aHi - aLo) / dx;
+
+    const auto eDeriv = [&](double q) {
+        const double g = stretchG(s, q);
+        if (g <= eps) return 0.0;
+        const double gp = stretchGPrime(s, q);
+        return -mt * gp / (g * g) - w * g;  // d(alpha)/dq - w x'(q)
+    };
+    const auto eDeriv2 = [&](double q) {
+        const double g = stretchG(s, q);
+        if (g <= eps) return 0.0;
+        const double gp = stretchGPrime(s, q);
+        const double gpp = stretchGpp(s, q);
+        return -mt * (gpp / (g * g) - 2.0 * gp * gp / (g * g * g)) - w * gp;
+    };
+    const auto absErr = [&](double q) {
+        const double g = stretchG(s, q);
+        if (g <= eps) return 0.0;
+        const double a = mt / g;
+        const double x = (1.0 - t) * quantileOnSegment(segA, q) + t * quantileOnSegment(segB, q);
+        const double chord = aLo + w * (x - xLo);
+        return std::abs(a - chord);
+    };
+
+    std::vector<double> cand;
+    cand.reserve(6);
+
+    if (s.aFlat != s.bFlat) {
+        singleRadicalCandidates(s, w, mt, qLo, qHi, cand);  // exact
+    } else {
+        const double qMid = 0.5 * (qLo + qHi);
+        for (int side = 0; side < 2; ++side) {
+            StretchClosedForm sf = s;
+            if (side == 0) {
+                sf.aFlat = true;
+                sf.aFlatVal = std::sqrt(std::max(eps, s.pa0 + s.pa1 * qMid));
+            } else {
+                sf.bFlat = true;
+                sf.bFlatVal = std::sqrt(std::max(eps, s.pb0 + s.pb1 * qMid));
+            }
+            singleRadicalCandidates(sf, w, mt, qLo, qHi, cand);
+        }
+        if (cand.empty()) cand.push_back(qMid);
+
+        // Safeguarded Newton on e'(q)=0 using analytic e''.
+        for (double& q : cand) {
+            const double lo = qLo + eps;
+            const double hi = qHi - eps;
+            q = std::clamp(q, lo, hi);
+            for (int it = 0; it < 24; ++it) {
+                const double f = eDeriv(q);
+                const double df = eDeriv2(q);
+                if (std::abs(df) <= 1e-12) break;
+                double qNext = q - f / df;
+                if (!(qNext > lo && qNext < hi)) qNext = std::clamp(qNext, lo, hi);
+                const bool converged = std::abs(qNext - q) < 1e-10;
+                q = qNext;
+                if (converged) break;
+            }
+        }
+    }
+
+    double bestQ = std::numeric_limits<double>::quiet_NaN();
+    double bestE = 0.0;
+    for (double q : cand) {
+        if (!(q > qLo + eps && q < qHi - eps)) continue;
+        const double e = absErr(q);
+        if (e > bestE) {
+            bestE = e;
+            bestQ = q;
+        }
+    }
+    return bestQ;
+}
+
+// Error-optimal sample placement. Like refineQuantileLevelsByClosedForm, but instead
+// of probing the geometric midpoint, each sub-interval is scored by the *maximum*
+// opacity deviation of the piecewise-linear chord from the exact transported opacity,
+//
+//   e(q) = | alpha_t(X_t(q)) - chord(X_t(q)) |,  alpha_t(X_t(q)) = m_t / X_t'(q),
+//
+// where chord is the straight line in x connecting the endpoint opacities (the line
+// the output actually draws on the interval). Both X_t(q) and X_t'(q) are closed
+// form on the interval (one source and one destination knot segment), so e(q) is
+// evaluated directly with no inversion of X_t. e vanishes at both endpoints (the
+// chord matches the exact opacity there by construction), so its maximiser q* is
+// interior and satisfies the tangent condition d(alpha)/dx = w. optimalErrorQuantile
+// solves that condition in closed form (an exact cubic in the radical variable for
+// single-curved-segment intervals, a closed-form seed plus safeguarded Newton when
+// both segments are curved), and q* is inserted as the new level. Splitting at the
+// error maximiser removes the largest remaining deviation per inserted control point.
+void refineQuantileLevelsByMaxError(const TransportContext& ctx, std::vector<double>& levels,
+                                    double relTol, std::size_t maxLevels,
+                                    std::size_t maxIterations) {
+    if (relTol <= 0.0) return;
+
+    struct RefineInterval {
+        double qLo = 0.0;
+        double qHi = 0.0;
+        double xLo = 0.0;
+        double xHi = 0.0;
+        CdfSegment segA;
+        CdfSegment segB;
+        double relErr = -1.0;  // < 0 means "skip" (matches buildSubIntervals filtering)
+        double qStar = 0.0;    // quantile of the maximum deviation within [qLo, qHi]
+    };
+
+    // Locate q* in (qLo, qHi) maximising |deviation| in closed form (optimalErrorQuantile)
+    // and record the relative error there. If no interior maximiser exists (flat regions),
+    // the interval contributes zero error and is skipped.
+    const auto computeErr = [&](RefineInterval& s) {
+        s.qStar = 0.5 * (s.qLo + s.qHi);
+        if (s.qHi - s.qLo <= eps) {
+            s.relErr = -1.0;
+            return;
+        }
+        const double dx = s.xHi - s.xLo;
+        if (dx <= eps) {
+            s.relErr = -1.0;
+            return;
+        }
+        const double aLo = densityAtQuantile(s.segA, s.segB, ctx.t, s.qLo, ctx.targetMass);
+        const double aHi = densityAtQuantile(s.segA, s.segB, ctx.t, s.qHi, ctx.targetMass);
+
+        // Closed-form maximiser of |e(q)| via the tangent condition d(alpha)/dx = w.
+        const double qStar =
+            optimalErrorQuantile(s.segA, s.segB, ctx.t, ctx.targetMass, s.qLo, s.qHi, s.xLo, s.xHi);
+        if (std::isnan(qStar)) {
+            // No interior stationary point: alpha is affine in x on this interval, so the
+            // endpoint chord is exact and the interval needs no refinement.
+            s.relErr = -1.0;
+            return;
+        }
+        s.qStar = std::clamp(qStar, s.qLo, s.qHi);
+
+        const double aStar = densityAtQuantile(s.segA, s.segB, ctx.t, s.qStar, ctx.targetMass);
+        const double xStar = xtOnSegment(s.segA, s.segB, ctx.t, s.qStar);
+        const double chordStar = aLo + (aHi - aLo) * (xStar - s.xLo) / dx;
+        if (aStar <= 0.0 && aLo <= 0.0 && aHi <= 0.0) {
+            s.relErr = -1.0;
+            return;
+        }
+        const double absErr = std::abs(aStar - chordStar);
+        const double scale = std::max({std::abs(aStar), std::abs(chordStar), eps});
+        s.relErr = absErr / scale;
+    };
+
+    const auto subs = buildSubIntervalsFromLevels(ctx, levels);
+    std::vector<RefineInterval> ris;
+    ris.reserve(subs.size() + maxIterations);
+    for (const auto& s : subs) {
+        RefineInterval ri;
+        ri.qLo = s.qLo;
+        ri.qHi = s.qHi;
+        ri.xLo = s.xLo;
+        ri.xHi = s.xHi;
+        ri.segA = s.segA;
+        ri.segB = s.segB;
+        computeErr(ri);
+        ris.push_back(ri);
+    }
+
+    for (std::size_t iter = 0; iter < maxIterations; ++iter) {
+        if (levels.size() >= maxLevels) break;
+
+        double maxRelError = 0.0;
+        std::size_t worst = std::numeric_limits<std::size_t>::max();
+        for (std::size_t i = 0; i < ris.size(); ++i) {
+            if (ris[i].relErr > maxRelError) {
+                maxRelError = ris[i].relErr;
+                worst = i;
+            }
+        }
+        if (worst == std::numeric_limits<std::size_t>::max() || maxRelError <= relTol) break;
+
+        // Capture parent data before any mutation/insertion invalidates references.
+        const double parentQHi = ris[worst].qHi;
+        const double parentXHi = ris[worst].xHi;
+        const CdfSegment segA = ris[worst].segA;
+        const CdfSegment segB = ris[worst].segB;
+        double qSplit = ris[worst].qStar;
+        // Guard against a degenerate maximiser landing on an endpoint: fall back to the
+        // midpoint so the split always makes progress.
+        if (!(qSplit > ris[worst].qLo + eps) || !(qSplit < parentQHi - eps)) {
+            qSplit = 0.5 * (ris[worst].qLo + parentQHi);
+        }
+
+        const std::size_t before = levels.size();
+        insertQuantileLevel(levels, qSplit);
+        if (levels.size() == before) break;  // duplicate level: refinement frozen
+
+        const double xSplit = xtOnSegment(segA, segB, ctx.t, qSplit);
+
+        // Left child reuses the parent slot.
+        ris[worst].qHi = qSplit;
+        ris[worst].xHi = xSplit;
+        computeErr(ris[worst]);
+
+        // Right child inherits the same pairing.
+        RefineInterval right;
+        right.qLo = qSplit;
+        right.qHi = parentQHi;
+        right.xLo = xSplit;
+        right.xHi = parentXHi;
+        right.segA = segA;
+        right.segB = segB;
+        computeErr(right);
+
+        ris.insert(ris.begin() + static_cast<std::ptrdiff_t>(worst) + 1, right);
+    }
+}
+
 // Closed-form pipeline: sample quantile levels, evaluate alpha_k = m_t / X_t'(q_k),
 // and emit a piecewise-linear output TF (same assembly as the secant-based path).
 std::vector<TFPrimitiveData> optimalTransportInterpolationClosedFormFromLevels(
@@ -1508,6 +1914,49 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationClosedForm(
     auto levels = knotInducedQuantileLevels(cdfA, cdfB);
     refineQuantileLevelsByClosedForm(ctx, levels, opts.relativeTolerance, opts.maxQuantileLevels,
                                      opts.maxRefinementIterations);
+
+    const double domainMin = (1.0 - t) * a.front().pos + t * b.front().pos;
+    const double domainMax = (1.0 - t) * a.back().pos + t * b.back().pos;
+
+    return optimalTransportInterpolationClosedFormFromLevels(ctx, levels, domainMin, domainMax);
+}
+
+std::vector<TFPrimitiveData> optimalTransportInterpolationOptimalSampling(
+    std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
+    const ClosedFormRefinementOptions& opts) {
+    t = std::clamp(t, 0.0, 1.0);
+
+    auto a = sanitize(tfA);
+    auto b = sanitize(tfB);
+
+    const std::span<const TFPrimitiveData> aspan{a.data(), a.size()};
+    const std::span<const TFPrimitiveData> bspan{b.data(), b.size()};
+
+    if (a.empty()) return b;
+    if (b.empty()) return a;
+    if (t <= 0.0) return a;
+    if (t >= 1.0) return b;
+
+    const Cdf cdfA = computeCdf(aspan);
+    const Cdf cdfB = computeCdf(bspan);
+
+    if (cdfA.totalMass <= eps || cdfB.totalMass <= eps ||
+        (1.0 - t) * cdfA.totalMass + t * cdfB.totalMass <= eps) {
+        return linearBlend(aspan, bspan, t);
+    }
+
+    const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
+
+    // Knot-induced quantile levels, then insert each new level at the quantile q* that
+    // maximises the opacity deviation between the exact transported opacity and the
+    // piecewise-linear chord on the worst sub-interval (relative tolerance, measured in
+    // x). Unlike optimalTransportInterpolationClosedForm, which probes the geometric
+    // midpoint, this places samples exactly where the chord error peaks, so the same
+    // opacity tolerance is met with fewer control points. Vertex opacities remain the
+    // exact closed-form alpha_k = m_t / X_t'(q_k).
+    auto levels = knotInducedQuantileLevels(cdfA, cdfB);
+    refineQuantileLevelsByMaxError(ctx, levels, opts.relativeTolerance, opts.maxQuantileLevels,
+                                   opts.maxRefinementIterations);
 
     const double domainMin = (1.0 - t) * a.front().pos + t * b.front().pos;
     const double domainMax = (1.0 - t) * a.back().pos + t * b.back().pos;

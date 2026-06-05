@@ -619,4 +619,152 @@ TEST(OptimalTransport, TFInterpolate2PeekEnd) {
     OTConf::check(interpolated, OTConf::tfDoublePeakRight);
 }
 
+// -------------------------------------------------------------------
+// Error-optimal closed-form sampling
+// (optimalTransportInterpolationOptimalSampling).
+// -------------------------------------------------------------------
+
+namespace {
+// Maximum absolute deviation of the piecewise-linear interpolation result from the
+// exact transported opacity alpha_t(x) = m_t / X_t'(q), sampled on a dense grid.
+// Endpoints of the support are skipped because alpha is generally discontinuous there
+// (the PWL output and the exact oracle can momentarily disagree at a vertex/edge).
+double maxAlphaDeviation(std::span<const TFPrimitiveData> a, std::span<const TFPrimitiveData> b,
+                         std::span<const TFPrimitiveData> result, double t, int samples = 400) {
+    const double lo = (1.0 - t) * a.front().pos + t * b.front().pos;
+    const double hi = (1.0 - t) * a.back().pos + t * b.back().pos;
+    std::vector<double> xs;
+    xs.reserve(static_cast<std::size_t>(samples));
+    for (int i = 1; i < samples - 1; ++i) {
+        xs.push_back(lo + (hi - lo) * (static_cast<double>(i) / (samples - 1)));
+    }
+    const auto exact = algorithm::evaluateInterpolatedAlphaGrid(a, b, t, xs);
+    const TransferFunction tf{std::vector<TFPrimitiveData>(result.begin(), result.end())};
+    double maxDev = 0.0;
+    for (std::size_t i = 0; i < xs.size(); ++i) {
+        const double approx = tf.sample(xs[i]).a;
+        maxDev = std::max(maxDev, std::abs(approx - exact[i]));
+    }
+    return maxDev;
+}
+}  // namespace
+
+TEST(OptimalTransport, OptimalSamplingIdentity) {
+    TF a = spikeTF(0.5, 0.2, vec4{1.0f, 0.0f, 0.0f, 1.0f});
+    auto res = algorithm::optimalTransportInterpolationOptimalSampling(a, a, 0.5);
+    const TransferFunction interpolated{res};
+    const TransferFunction reference{a};
+    for (int i = 0; i < 100; ++i) {
+        const double x = i / 99.0;
+        EXPECT_NEAR(interpolated.sample(x).a, reference.sample(x).a, 1e-3);
+    }
+}
+
+TEST(OptimalTransport, OptimalSamplingBoundaries) {
+    TF a = spikeTF(0.3, 0.15, vec4{1.0f, 0.0f, 0.0f, 1.0f});
+    TF b = spikeTF(0.7, 0.15, vec4{0.0f, 0.0f, 1.0f, 1.0f});
+
+    auto res0 = algorithm::optimalTransportInterpolationOptimalSampling(a, b, 0.0);
+    auto res1 = algorithm::optimalTransportInterpolationOptimalSampling(a, b, 1.0);
+
+    EXPECT_EQ(res0.size(), a.size());
+    EXPECT_EQ(res1.size(), b.size());
+    for (std::size_t i = 0; i < a.size(); ++i) {
+        EXPECT_NEAR(res0[i].pos, a[i].pos, 1e-9);
+        EXPECT_NEAR(res0[i].color.a, a[i].color.a, 1e-6f);
+    }
+    for (std::size_t i = 0; i < b.size(); ++i) {
+        EXPECT_NEAR(res1[i].pos, b[i].pos, 1e-9);
+        EXPECT_NEAR(res1[i].color.a, b[i].color.a, 1e-6f);
+    }
+}
+
+TEST(OptimalTransport, OptimalSamplingMassConservation) {
+    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {0.3, vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {0.6, vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {1.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}}};
+    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {0.4, vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {0.7, vec4{0.0f, 0.0f, 1.0f, 1.0f}},
+            {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
+
+    const double t = 0.5;
+    auto res = algorithm::optimalTransportInterpolationOptimalSampling(a, b, t);
+
+    const double expected = (1.0 - t) * totalMass(a) + t * totalMass(b);
+    EXPECT_NEAR(totalMass(res), expected, 0.02);
+}
+
+TEST(OptimalTransport, OptimalSamplingMeetsTolerance) {
+    // Opposite segment slopes on the merged interval produce an interior extremum of
+    // X_t'(q), which is exactly where midpoint bisection is weakest. Verify the
+    // error-optimal placement drives the worst opacity deviation below the requested
+    // tolerance.
+    TF a = spikeTF(0.25, 0.2, vec4{1.0f, 0.0f, 0.0f, 1.0f});
+    TF b = spikeTF(0.75, 0.1, vec4{0.0f, 0.0f, 1.0f, 1.0f});
+
+    const double t = 0.5;
+    const algorithm::ClosedFormRefinementOptions opts{
+        .relativeTolerance = 1e-3,
+        .maxQuantileLevels = 2048,
+        .maxRefinementIterations = 256,
+    };
+
+    auto res = algorithm::optimalTransportInterpolationOptimalSampling(a, b, t, opts);
+    const double dev = maxAlphaDeviation(a, b, res, t);
+
+    // The reconstructed opacities are exact at vertices; the residual is the chord error
+    // between them. With error-driven placement it must be small in absolute opacity.
+    EXPECT_LT(dev, 0.05) << "max |alpha_approx - alpha_exact| = " << dev;
+}
+
+TEST(OptimalTransport, OptimalSamplingAtLeastAsAccurateAsMidpoint) {
+    // For the same control-point budget, inserting at the error maximiser should not be
+    // worse than midpoint bisection on a curved (asymmetric-width) transport.
+    TF a = spikeTF(0.2, 0.18, vec4{1.0f, 0.0f, 0.0f, 1.0f});
+    TF b = spikeTF(0.8, 0.06, vec4{0.0f, 0.0f, 1.0f, 1.0f});
+
+    const double t = 0.5;
+    const std::size_t budget = 24;
+    const algorithm::ClosedFormRefinementOptions opts{
+        .relativeTolerance = 1e-9,  // force refinement up to the level cap
+        .maxQuantileLevels = budget,
+        .maxRefinementIterations = budget,
+    };
+
+    auto resOptimal = algorithm::optimalTransportInterpolationOptimalSampling(a, b, t, opts);
+    auto resMidpoint = algorithm::optimalTransportInterpolationClosedForm(a, b, t, opts);
+
+    const double devOptimal = maxAlphaDeviation(a, b, resOptimal, t);
+    const double devMidpoint = maxAlphaDeviation(a, b, resMidpoint, t);
+
+    // Allow a small slack for grid-sampling noise; the error-optimal placement should be
+    // at least competitive with midpoint bisection at the same budget.
+    EXPECT_LE(devOptimal, devMidpoint * 1.10 + 1e-6)
+        << "optimal=" << devOptimal << " midpoint=" << devMidpoint;
+}
+
+TEST(OptimalTransport, OptimalSamplingNonNegativeAlpha) {
+    TF a = spikeTF(0.3, 0.15, vec4{1.0f, 0.0f, 0.0f, 1.0f});
+    TF b = spikeTF(0.7, 0.15, vec4{0.0f, 0.0f, 1.0f, 1.0f});
+
+    auto res = algorithm::optimalTransportInterpolationOptimalSampling(a, b, 0.5);
+    ASSERT_FALSE(res.empty());
+    for (const auto& p : res) {
+        EXPECT_GE(p.color.a, 0.0f);
+    }
+}
+
+TEST(OptimalTransport, OptimalSamplingMonotonePositions) {
+    TF a = spikeTF(0.3, 0.15, vec4{1.0f, 0.0f, 0.0f, 1.0f});
+    TF b = spikeTF(0.7, 0.15, vec4{0.0f, 0.0f, 1.0f, 1.0f});
+
+    auto res = algorithm::optimalTransportInterpolationOptimalSampling(a, b, 0.5);
+    ASSERT_GE(res.size(), 2u);
+    for (std::size_t i = 1; i < res.size(); ++i) {
+        EXPECT_GE(res[i].pos, res[i - 1].pos);
+    }
+}
+
 }  // namespace inviwo

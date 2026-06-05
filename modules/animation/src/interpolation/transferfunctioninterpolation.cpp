@@ -193,6 +193,77 @@ void TFInterpolationOptimalTransportClosedForm::operator()(
         }));
 }
 
+TFInterpolationOptimalTransportOptimalSampling::TFInterpolationOptimalTransportOptimalSampling(
+    InviwoApplication* app)
+    : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app)
+    , relativeTolerance{"relativeTolerance", "relativeTolerance",
+                        util::ordinalLength(1e-3, 0.1).setMin(1e-6).setInc(1e-4)}
+    , maxQuantileLevels{"maxQuantileLevels", "maxQuantileLevels", util::ordinalCount(2048uz)}
+    , maxRefinementIterations{"maxRefinementIterations", "maxRefinementIterations",
+                              util::ordinalCount(256uz)} {
+    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+}
+
+TFInterpolationOptimalTransportOptimalSampling::TFInterpolationOptimalTransportOptimalSampling(
+    const TFInterpolationOptimalTransportOptimalSampling& rhs)
+    : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(rhs)
+    , relativeTolerance{rhs.relativeTolerance}
+    , maxQuantileLevels{rhs.maxQuantileLevels}
+    , maxRefinementIterations{rhs.maxRefinementIterations} {
+    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+}
+
+TFInterpolationOptimalTransportOptimalSampling*
+TFInterpolationOptimalTransportOptimalSampling::clone() const {
+    return new TFInterpolationOptimalTransportOptimalSampling(*this);
+}
+
+std::string_view TFInterpolationOptimalTransportOptimalSampling::getDisplayName() const {
+    return "Optimal Transport Optimal Sampling";
+}
+
+std::string_view TFInterpolationOptimalTransportOptimalSampling::getClassIdentifier() const {
+    return classIdentifier();
+}
+
+bool TFInterpolationOptimalTransportOptimalSampling::equal(const Interpolation& other) const {
+    return classIdentifier() == other.getClassIdentifier();
+}
+
+std::string_view TFInterpolationOptimalTransportOptimalSampling::classIdentifier() {
+    return "org.inviwo.animation.TFInterpolationOptimalTransportOptimalSampling";
+}
+
+void TFInterpolationOptimalTransportOptimalSampling::operator()(
+    const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds /*from*/,
+    Seconds to, TransferFunction& out) const {
+
+    auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
+        return time < key->getTime();
+    });
+    const auto& prev = *(*std::prev(it));
+    const auto& next = *(*it);
+
+    const auto t1 = prev.getTime();
+    const auto t2 = next.getTime();
+
+    const auto& v1 = prev.getValue();
+    const auto& v2 = next.getValue();
+
+    const auto easeIn = prev.getEaseIn();
+    const auto easeOut = next.getEaseOut();
+
+    const auto t = util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
+
+    out.set(algorithm::optimalTransportInterpolationOptimalSampling(
+        v1.get(), v2.get(), t,
+        algorithm::ClosedFormRefinementOptions{
+            .relativeTolerance = relativeTolerance.get(),
+            .maxQuantileLevels = maxQuantileLevels.get(),
+            .maxRefinementIterations = maxRefinementIterations.get(),
+        }));
+}
+
 
 TFInterpolationBlend::TFInterpolationBlend(InviwoApplication* app)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app) {}
