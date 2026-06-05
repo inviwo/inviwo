@@ -33,7 +33,6 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/logcentral.h>
 #include <modules/animation/datastructures/propertytrack.h>
-#include <modules/animation/datastructures/track.h>
 #include <modules/animation/factories/trackfactoryobject.h>
 
 #include <ostream>
@@ -42,7 +41,8 @@
 namespace inviwo {
 namespace animation {
 
-TrackFactory::TrackFactory(ProcessorNetwork* network) : network_{network} {}
+TrackFactory::TrackFactory(ProcessorNetwork* network)
+    : network_{network}, keyframeFactory{*this}, keyframeSequenceFactory{*this} {}
 
 bool TrackFactory::hasKey(std::string_view key) const { return Parent::hasKey(key); }
 
@@ -69,10 +69,41 @@ std::unique_ptr<Track> TrackFactory::create(Property* property) const {
     return nullptr;
 }
 
+std::unique_ptr<KeyframeSequence> TrackFactory::createSequence(std::string_view key) const {
+    auto it = this->map_.find(key);
+    if (it != end(this->map_)) {
+        return it->second->createSequence();
+    } else {
+        return nullptr;
+    }
+}
+std::unique_ptr<Keyframe> TrackFactory::createKeyframe(std::string_view key) const {
+    auto it = this->map_.find(key);
+    if (it != end(this->map_)) {
+        return it->second->createKeyframe();
+    } else {
+        return nullptr;
+    }
+}
+
 void TrackFactory::registerPropertyTrackConnection(std::string_view propertyClassID,
                                                    std::string_view trackClassID) {
     propertyToTrackMap_.emplace(propertyClassID, trackClassID);
 }
+
+KeyframeSequenceFactory::KeyframeSequenceFactory(TrackFactory& tf) : trackFactory_{&tf} {}
+std::unique_ptr<KeyframeSequence> KeyframeSequenceFactory::create(std::string_view key) const {
+    return trackFactory_->createSequence(key);
+}
+bool KeyframeSequenceFactory::hasKey(std::string_view key) const {
+    return trackFactory_->hasKey(key);
+}
+
+KeyframeFactory::KeyframeFactory(TrackFactory& tf) : trackFactory_{&tf} {}
+std::unique_ptr<Keyframe> KeyframeFactory::create(std::string_view key) const {
+    return trackFactory_->createKeyframe(key);
+}
+bool KeyframeFactory::hasKey(std::string_view key) const { return trackFactory_->hasKey(key); }
 
 }  // namespace animation
 }  // namespace inviwo

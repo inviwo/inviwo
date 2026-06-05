@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,41 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <ivwanimation/ivwanimation.h>
 
-// This header has moved to modules/qtwidgets/inviwoeditmenu.h
-#include <modules/qtwidgets/inviwoeditmenu.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
+#include <pybind11/chrono.h>
+#include <pybind11/functional.h>
+
+#include <modules/python3/python3module.h>
+#include <modules/python3/pybindutils.h>
+#include <modules/python3/pythoninterpreter.h>
+#include <modules/python3/pybindmodule.h>
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
+#include <ivwanimation/pyanimation.h>
+
+namespace py = pybind11;
+
+INVIWO_PYBIND_MODULE(ivwanimation, m) {
+
+    py::module::import("inviwopy");
+
+    m.doc() = R"doc(
+        Animation Module API
+
+        Provides Python bindings for the Inviwo animation framework,
+        including keyframes, keyframe sequences, tracks, animations,
+        and animation controllers.
+    )doc";
+
+#ifdef INVIWO_ALL_DYN_LINK
+    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    py::implicitly_convertible<py::list, std::vector<std::string>>();
+#endif
+
+    inviwo::animation::exposeAnimation(m);
+}

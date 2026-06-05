@@ -50,6 +50,7 @@ namespace animation {
 
 class AnimationController;
 class AnimationEditorQt;
+class TimeLine;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationViewQt : public QGraphicsView,
                                                    public AnimationControllerObserver {
@@ -80,7 +81,7 @@ protected:
     AnimationEditorQt* scene_;
     AnimationController& controller_;
     bool pressingOnTimeline_ = false;
-    QWidget* timeline_;
+    TimeLine* timeline_;
 };
 
 }  // namespace animation

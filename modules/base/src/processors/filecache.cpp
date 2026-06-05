@@ -63,28 +63,26 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net,
     const auto ns = s.switchToNewNode("ProcessorNetwork");
     s.serialize("ProcessorNetworkVersion", ProcessorNetwork::processorNetworkVersion());
 
-    s.serializeRange("Processors", processors, [](Serializer& nested, const Processor* item) {
-        nested.serialize("Processor", *item);
-    });
+    s.serializeRange("Processors", "Processor", processors,
+                     [](Serializer& nested, const Processor* item) { item->serialize(nested); });
 
     // We want to serialize the connection to the cacheProcessor;
     processors.push_back(processor);
 
     s.serializeRange(
-        "Connections",
+        "Connections", "Connection",
         net.connectionVecRange() | std::views::filter([&](const PortConnection& connection) {
             auto* in = connection.getInport()->getProcessor();
             auto* out = connection.getOutport()->getProcessor();
             return util::contains(processors, in) && util::contains(processors, out);
         }),
         [](Serializer& nested, const PortConnection& connection) {
-            const auto nodeSwitch = nested.switchToNewNode("Connection");
             connection.getOutport()->getPath(nested.addAttribute("src"));
             connection.getInport()->getPath(nested.addAttribute("dst"));
         });
 
     s.serializeRange(
-        "PropertyLinks",
+        "PropertyLinks", "PropertyLink",
         net.linkRange() | std::views::filter([&](const PropertyLink& link) {
             return util::contains(
                        processors,
@@ -92,7 +90,6 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net,
                    util::contains(processors, link.getSource()->getOwner()->getProcessor());
         }),
         [](Serializer& nested, const PropertyLink& link) {
-            const auto nodeSwitch = nested.switchToNewNode("PropertyLink");
             link.getSource()->getPath(nested.addAttribute("src"));
             link.getDestination()->getPath(nested.addAttribute("dst"));
         });

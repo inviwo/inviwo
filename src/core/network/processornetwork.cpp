@@ -394,22 +394,20 @@ void ProcessorNetwork::onProcessorMetaDataSelectionChange() {
 void ProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("ProcessorNetworkVersion", processorNetworkVersion_);
 
-    s.serializeRange("Processors", processors_, [](Serializer& nested, const auto& item) {
-        nested.serialize("Processor", item.second.get());
-    });
+    s.serializeRange("Processors", "Processor", processors_,
+                     [](Serializer& nested, const auto& item) { item.second->serialize(nested); });
 
-    s.serializeRange("Connections", connectionsVec_,
+    s.serializeRange("Connections", "Connection", connectionsVec_,
                      [](Serializer& nested, const PortConnection& connection) {
-                         const auto nodeSwitch = nested.switchToNewNode("Connection");
                          connection.getOutport()->getPath(nested.addAttribute("src"));
                          connection.getInport()->getPath(nested.addAttribute("dst"));
                      });
 
-    s.serializeRange("PropertyLinks", links_, [](Serializer& nested, const PropertyLink& link) {
-        const auto nodeSwitch = nested.switchToNewNode("PropertyLink");
-        link.getSource()->getPath(nested.addAttribute("src"));
-        link.getDestination()->getPath(nested.addAttribute("dst"));
-    });
+    s.serializeRange("PropertyLinks", "PropertyLink", links_,
+                     [](Serializer& nested, const PropertyLink& link) {
+                         link.getSource()->getPath(nested.addAttribute("src"));
+                         link.getDestination()->getPath(nested.addAttribute("dst"));
+                     });
 }
 
 void ProcessorNetwork::addPropertyOwnerObservation(PropertyOwner* po) {

@@ -32,6 +32,8 @@
 
 #include <inviwo/core/util/factory.h>
 #include <modules/animation/datastructures/track.h>
+#include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/factories/trackfactoryobject.h>
 
 #include <functional>
@@ -48,6 +50,28 @@ class Property;
 
 namespace animation {
 
+class TrackFactory;
+
+class IVW_MODULE_ANIMATION_API KeyframeFactory : public Factory<Keyframe> {
+public:
+    explicit KeyframeFactory(TrackFactory& tf);
+    virtual std::unique_ptr<Keyframe> create(std::string_view key) const override;
+    virtual bool hasKey(std::string_view key) const override;
+
+private:
+    TrackFactory* trackFactory_;
+};
+
+class IVW_MODULE_ANIMATION_API KeyframeSequenceFactory : public Factory<KeyframeSequence> {
+public:
+    explicit KeyframeSequenceFactory(TrackFactory& tf);
+    virtual std::unique_ptr<KeyframeSequence> create(std::string_view key) const override;
+    virtual bool hasKey(std::string_view key) const override;
+
+private:
+    TrackFactory* trackFactory_;
+};
+
 class IVW_MODULE_ANIMATION_API TrackFactory
     : public Factory<Track>,
       public StandardFactory<Track, TrackFactoryObject, std::string_view, ProcessorNetwork*> {
@@ -61,7 +85,9 @@ public:
 
     virtual bool hasKey(std::string_view key) const override;
     virtual std::unique_ptr<Track> create(std::string_view key) const override;
-    virtual std::unique_ptr<Track> create(Property* property) const;
+    std::unique_ptr<Track> create(Property* property) const;
+    std::unique_ptr<KeyframeSequence> createSequence(std::string_view key) const;
+    std::unique_ptr<Keyframe> createKeyframe(std::string_view key) const;
 
     /**
      * Register connection between a property and a track.
@@ -73,6 +99,9 @@ public:
                                          std::string_view trackClassID);
 
     ProcessorNetwork* network_;
+
+    KeyframeFactory keyframeFactory;
+    KeyframeSequenceFactory keyframeSequenceFactory;
 
 protected:
     std::map<std::string, std::string, std::less<>> propertyToTrackMap_;

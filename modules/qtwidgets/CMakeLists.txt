@@ -12,6 +12,7 @@ set(MOC_FILES
     include/modules/qtwidgets/filepathlineeditqt.h
     include/modules/qtwidgets/inviwodockwidget.h
     include/modules/qtwidgets/inviwodockwidgettitlebar.h
+    include/modules/qtwidgets/inviwoeditmenu.h
     include/modules/qtwidgets/inviwofiledialog.h
     include/modules/qtwidgets/inviwowidgetsqt.h
     include/modules/qtwidgets/lightpositionwidgetqt.h
@@ -109,6 +110,7 @@ set(SOURCE_FILES
     src/filepathlineeditqt.cpp
     src/inviwodockwidget.cpp
     src/inviwodockwidgettitlebar.cpp
+    src/inviwoeditmenu.cpp
     src/inviwofiledialog.cpp
     src/inviwoqtutils.cpp
     src/inviwowidgetsqt.cpp

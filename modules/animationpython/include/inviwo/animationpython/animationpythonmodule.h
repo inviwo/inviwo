@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-// This header has moved to modules/qtwidgets/inviwoeditmenu.h
-#include <modules/qtwidgets/inviwoeditmenu.h>
+#include <inviwo/animationpython/animationpythonmoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
+
+namespace inviwo {
+
+class IVW_MODULE_ANIMATIONPYTHON_API AnimationPythonModule : public InviwoModule {
+public:
+    explicit AnimationPythonModule(InviwoApplication* app);
+    AnimationPythonModule(const AnimationPythonModule&) = delete;
+    AnimationPythonModule& operator=(const AnimationPythonModule&) = delete;
+    AnimationPythonModule(AnimationPythonModule&&) = delete;
+    AnimationPythonModule& operator=(AnimationPythonModule&&) = delete;
+    virtual ~AnimationPythonModule() = default;
+};
+
+}  // namespace inviwo

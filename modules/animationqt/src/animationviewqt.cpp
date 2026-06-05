@@ -71,8 +71,6 @@ namespace inviwo {
 
 namespace animation {
 
-namespace {
-
 class TimeLine : public QWidget {
 public:
     TimeLine(AnimationViewQt* parent) : QWidget(parent), view_(parent) {
@@ -148,6 +146,8 @@ public:
         timePen.setStyle(Qt::DashLine);
         painter.setPen(timePen);
         painter.drawLine(QLineF(x, rect().top(), x, rect().bottom()));
+
+        stepSize = Seconds(div.step);
     }
 
     virtual void mousePressEvent(QMouseEvent* e) override {
@@ -168,12 +168,12 @@ public:
         QWidget::mouseReleaseEvent(e);
     }
 
+    Seconds stepSize{1.0};
+
 private:
     bool pressingOnTimeline_ = false;
     AnimationViewQt* view_;
 };
-
-}  // namespace
 
 AnimationViewQt::AnimationViewQt(AnimationController& controller, AnimationEditorQt* aScene)
     : QGraphicsView(), scene_{aScene}, controller_(controller) {
@@ -223,6 +223,19 @@ void AnimationViewQt::keyPressEvent(QKeyEvent* keyEvent) {
     } else if (keyEvent->modifiers() & Qt::ShiftModifier) {
         setDragMode(QGraphicsView::RubberBandDrag);
     }
+
+    if ((keyEvent->key() == Qt::Key_Left || keyEvent->key() == Qt::Key_Right) &&
+        keyEvent->modifiers() & Qt::ControlModifier) {
+
+        const auto dir = (keyEvent->key() == Qt::Key_Left ? -1.0 : 1.0) *
+                         (keyEvent->modifiers() & Qt::ShiftModifier ? 1.0 : 0.2);
+
+        const auto newTime = controller_.getCurrentTime() + dir * timeline_->stepSize;
+        controller_.eval(controller_.getCurrentTime(), newTime);
+        keyEvent->accept();
+        return;
+    }
+
     QGraphicsView::keyPressEvent(keyEvent);
 }
 

@@ -52,6 +52,7 @@
 #include <modules/animationqt/sequenceeditor/sequenceeditorpanel.h>
 #include <modules/animationqt/workspaceanimationsmodel.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/inviwoeditmenu.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -67,6 +68,8 @@
 #include <vector>
 
 #include <QAction>
+#include <QApplication>
+#include <QClipboard>
 #include <QComboBox>
 #include <QFrame>
 #include <QGridLayout>
@@ -85,6 +88,7 @@
 #include <QToolBar>
 #include <Qt>
 #include <QtGlobal>
+#include <QMimeData>
 #include <fmt/core.h>
 #include <fmt/std.h>
 
@@ -153,9 +157,12 @@ QAction* createPlayPause(AnimationController& controller) {
 
 }  // namespace
 
-AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
-    WorkspaceAnimations& animations, AnimationManager& manager, const std::string& widgetName,
-    TrackWidgetQtFactory& widgetFactory, SequenceEditorFactory& editorFactory, QWidget* parent)
+AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& animations,
+                                                         AnimationManager& manager,
+                                                         const std::string& widgetName,
+                                                         TrackWidgetQtFactory& widgetFactory,
+                                                         SequenceEditorFactory& editorFactory,
+                                                         InviwoEditMenu* editMenu, QWidget* parent)
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
     , animations_(animations)
     , controller_{animations_.getMainAnimation().getController()}
@@ -163,7 +170,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     , animationsList_{createAnimationsList(animations_, this)}
     , playPause_{createPlayPause(controller_)}
     , animationEditor_{std::make_unique<AnimationEditorQt>(
-          controller_, widgetFactory,
+          controller_, widgetFactory, manager.getTrackFactory(),
           [this](std::string_view text, std::chrono::milliseconds fade) {
               overlay_->setText(text, fade);
           })}
@@ -211,7 +218,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     connect(animationView_->verticalScrollBar(), &QScrollBar::valueChanged, this,
             [this, animationLabelView](auto val) {
                 if (vScrolling_) return;
-                util::KeepTrueWhileInScope const scrolling(&vScrolling_);
+                const util::KeepTrueWhileInScope scrolling(&vScrolling_);
                 auto* vs = animationView_->verticalScrollBar();
                 auto* ls = animationLabelView->verticalScrollBar();
 
@@ -224,7 +231,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     connect(animationLabelView->verticalScrollBar(), &QScrollBar::valueChanged, this,
             [this, animationLabelView](auto val) {
                 if (vScrolling_) return;
-                util::KeepTrueWhileInScope const scrolling(&vScrolling_);
+                const util::KeepTrueWhileInScope scrolling(&vScrolling_);
                 auto* vs = animationView_->verticalScrollBar();
                 auto* ls = animationLabelView->verticalScrollBar();
 
@@ -425,6 +432,49 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     toolBar->addSeparator();
 
     controller_.AnimationControllerObservable::addObserver(this);
+
+    if (editMenu) {
+        editActionsHandle_ = editMenu->registerItem(std::make_shared<MenuItem>(
+            animationView_,
+            [this](MenuItemType t) -> bool {
+                switch (t) {
+                    case MenuItemType::cut:
+                    case MenuItemType::copy:
+                    case MenuItemType::del:
+                        return !animationEditor_->selectedItems().empty();
+                    case MenuItemType::paste: {
+                        auto* clipboard = QApplication::clipboard();
+                        const auto* mimeData = clipboard->mimeData();
+                        return mimeData->hasFormat(
+                                   QString::fromUtf8(AnimationEditorQt::mimeKeyframes)) ||
+                               mimeData->hasFormat(
+                                   QString::fromUtf8(AnimationEditorQt::mimeKeyframeSequences));
+                    }
+                    case MenuItemType::select:
+                    default:
+                        return false;
+                }
+            },
+            [this](MenuItemType t) -> void {
+                switch (t) {
+                    case MenuItemType::cut:
+                        animationEditor_->cut();
+                        break;
+                    case MenuItemType::copy:
+                        animationEditor_->copy();
+                        break;
+                    case MenuItemType::paste:
+                        animationEditor_->paste();
+                        break;
+                    case MenuItemType::del:
+                        animationEditor_->deleteSelection();
+                        break;
+                    case MenuItemType::select:
+                    default:
+                        break;
+                }
+            }));
+    }
 
     loadState();
 }

@@ -36,6 +36,7 @@
 #include <QGraphicsScene>
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 class QGraphicsLineItem;
@@ -50,6 +51,7 @@ namespace animation {
 
 class Animation;
 class Track;
+class TrackFactory;
 class AnimationController;
 class TrackWidgetQt;
 class TrackWidgetQtFactory;
@@ -59,11 +61,24 @@ class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene,
                                                      public AnimationControllerObserver {
 public:
     AnimationEditorQt(AnimationController& controller, TrackWidgetQtFactory& widgetFactory,
+                      TrackFactory& trackFactory,
                       std::function<void(std::string_view, std::chrono::milliseconds)> showText);
     virtual ~AnimationEditorQt();
 
     // AnimationControllerObserver overload
     void onAnimationChanged(AnimationController*, Animation* oldAnim, Animation* newAnim) override;
+
+    void copy();
+    void paste(std::optional<QPointF> pos = std::nullopt, QGraphicsView* view = nullptr);
+    void cut();
+    void deleteSelection();
+    void deleteItems(const QList<QGraphicsItem*>& items);
+    void selectAll();
+
+    static constexpr std::string_view mimeKeyframes =
+        "application/x.vnd.inviwo.animation.keyframes+xml";
+    static constexpr std::string_view mimeKeyframeSequences =
+        "application/x.vnd.inviwo.animation.sequences+xml";
 
 protected:
     void updateSceneRect();
@@ -81,8 +96,11 @@ protected:
     void dragMoveEvent(QGraphicsSceneDragDropEvent* event) override;
     void dropEvent(QGraphicsSceneDragDropEvent* event) override;
 
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
+
     AnimationController& controller_;
     TrackWidgetQtFactory& widgetFactory_;
+    TrackFactory& trackFactory_;
     std::unordered_map<Track*, std::unique_ptr<TrackWidgetQt>> tracks_;
 
     /// Indicator line for the drag&drop of properties.

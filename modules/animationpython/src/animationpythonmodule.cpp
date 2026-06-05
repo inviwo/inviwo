@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,24 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/animationpython/animationpythonmodule.h>
 
-// This header has moved to modules/qtwidgets/inviwoeditmenu.h
-#include <modules/qtwidgets/inviwoeditmenu.h>
+#include <pybind11/pybind11.h>
+
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
+namespace inviwo {
+
+AnimationPythonModule::AnimationPythonModule(InviwoApplication* app)
+    : InviwoModule(app, "AnimationPython") {
+
+    try {
+        const pybind11::gil_scoped_acquire gil;
+        pybind11::module::import("ivwanimation");
+    } catch (const std::exception& e) {
+        throw ModuleInitException(e.what());
+    }
+}
+
+}  // namespace inviwo

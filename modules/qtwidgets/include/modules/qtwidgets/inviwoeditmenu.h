@@ -29,5 +29,57 @@
 
 #pragma once
 
-// This header has moved to modules/qtwidgets/inviwoeditmenu.h
-#include <modules/qtwidgets/inviwoeditmenu.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+
+#include <functional>
+#include <unordered_map>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QMenu>
+#include <warn/pop>
+
+#include <memory>
+
+class QAction;
+class QWidget;
+class QMenu;
+
+namespace inviwo {
+
+enum class MenuItemType : std::uint8_t { cut, copy, paste, del, select };
+
+class IVW_MODULE_QTWIDGETS_API MenuItem {
+public:
+    MenuItem(QObject* owner, std::function<bool(MenuItemType)> enabled,
+             std::function<void(MenuItemType)> invoke);
+    QObject* owner;
+    std::function<bool(MenuItemType)> enabled;
+    std::function<void(MenuItemType)> invoke;
+};
+
+/**
+ * Manage menu entries for the main window.
+ * Map the action to the focused widget
+ */
+class IVW_MODULE_QTWIDGETS_API InviwoEditMenu : public QMenu {
+    Q_OBJECT
+public:
+    explicit InviwoEditMenu(QWidget* parent = nullptr);
+    InviwoEditMenu(const InviwoEditMenu&) = delete;
+    InviwoEditMenu& operator=(const InviwoEditMenu&) = delete;
+    InviwoEditMenu(InviwoEditMenu&&) = delete;
+    InviwoEditMenu& operator=(InviwoEditMenu&&) = delete;
+    virtual ~InviwoEditMenu() = default;
+
+    std::shared_ptr<MenuItem> registerItem(std::shared_ptr<MenuItem> item);
+
+private:
+    std::shared_ptr<MenuItem> getFocusItem();
+
+    std::unordered_map<QObject*, std::weak_ptr<MenuItem>> items_;
+    std::map<MenuItemType, QAction*> actions_;
+    std::weak_ptr<MenuItem> lastItem_;
+};
+
+}  // namespace inviwo
