@@ -182,7 +182,11 @@ std::shared_ptr<Volume> convertVolume(DataFormatId dstScalarFormatId, const Volu
             return ramDst;
         });
 
-    auto vol = std::make_shared<Volume>(result);
+    auto config{src.config()};
+    config.format = result->getDataFormat();
+
+    auto vol = std::make_shared<Volume>(config);
+    vol->addRepresentation(result);
     vol->setBasis(src.getBasis());
     vol->setOffset(src.getOffset());
     vol->copyMetaDataFrom(src);
