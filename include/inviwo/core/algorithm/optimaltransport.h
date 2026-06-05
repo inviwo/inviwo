@@ -122,6 +122,44 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationClosedFor
 
 /**
  * @brief Interpolate two transfer functions using 1D optimal transport with
+ * closed-form vertex opacities and error-optimal sample placement.
+ *
+ * Like optimalTransportInterpolationClosedForm this treats each TF alpha channel
+ * as a piecewise-linear density, forms the Wasserstein displacement
+ * interpolation X_t(q) = (1-t) Q_A(q) + t Q_B(q), and assigns each output vertex
+ * the exact transported opacity alpha_k = m_t / X_t'(q_k). The two methods
+ * differ only in *where* refinement inserts new quantile levels.
+ *
+ * optimalTransportInterpolationClosedForm probes the geometric midpoint of the
+ * worst sub-interval. This method instead inserts at the quantile q* that
+ * *maximises* the opacity deviation
+ *   e(q) = | m_t / X_t'(q) - chord(X_t(q)) |
+ * between the exact transported opacity and the straight line connecting the
+ * sub-interval's endpoint opacities in x (the same chord the piecewise-linear
+ * output draws). Because X_t(q) and X_t'(q) are closed form on each sub-interval
+ * (one source and one destination knot segment), e(q) is evaluated directly with
+ * no inversion of X_t; e vanishes at both endpoints, so its maximiser is interior
+ * and is located by a bracketed 1D search (a short uniform scan that brackets the
+ * dominant extremum followed by a golden-section refinement).
+ *
+ * Inserting at the error maximiser removes the largest remaining opacity
+ * deviation per control point, so for a fixed opacity tolerance the worst-case
+ * opacity error of the output is driven below @p opts.relativeTolerance with
+ * fewer control points than midpoint bisection.
+ *
+ * @param tfA  First transfer function as sorted TFPrimitiveData points.
+ * @param tfB  Second transfer function as sorted TFPrimitiveData points.
+ * @param t    Interpolation parameter in [0, 1]. t=0 returns tfA, t=1 returns tfB.
+ * @param opts Refinement limits and the opacity error threshold (relativeTolerance)
+ *             that drives sample placement.
+ * @return     Interpolated transfer function as a vector of TFPrimitiveData.
+ */
+IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationOptimalSampling(
+    std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
+    const ClosedFormRefinementOptions& opts = {});
+
+/**
+ * @brief Interpolate two transfer functions using 1D optimal transport with
  * adaptive quantile-level refinement and secant-based opacity reconstruction.
  *
  * This is a hybrid of the two methods above. Like

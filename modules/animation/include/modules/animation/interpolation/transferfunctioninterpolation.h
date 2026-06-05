@@ -101,6 +101,34 @@ public:
     OrdinalProperty<size_t> maxRefinementIterations;
 };
 
+class IVW_MODULE_ANIMATION_API TFInterpolationOptimalTransportOptimalSampling
+    : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
+public:
+    TFInterpolationOptimalTransportOptimalSampling(InviwoApplication* app = nullptr);
+    TFInterpolationOptimalTransportOptimalSampling(
+        const TFInterpolationOptimalTransportOptimalSampling&);
+    virtual ~TFInterpolationOptimalTransportOptimalSampling() = default;
+    virtual TFInterpolationOptimalTransportOptimalSampling* clone() const override;
+
+    virtual std::string_view getDisplayName() const override;
+    virtual std::string_view getIdentifier() const override {
+        return "TFInterpolationOptimalTransportOptimalSampling";
+    }
+
+    static std::string_view classIdentifier();
+    virtual std::string_view getClassIdentifier() const override;
+
+    virtual bool equal(const Interpolation& other) const override;
+
+    virtual void operator()(
+        const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
+        Seconds to, TransferFunction& out) const override;
+
+    OrdinalProperty<double> relativeTolerance;
+    OrdinalProperty<size_t> maxQuantileLevels;
+    OrdinalProperty<size_t> maxRefinementIterations;
+};
+
 class IVW_MODULE_ANIMATION_API TFInterpolationBlend
     : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
 public:
