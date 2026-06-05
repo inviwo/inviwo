@@ -63,7 +63,16 @@ OutputStream::OutputStream(Format& format, Options opts)
 
     codec.ctx->gop_size = 12; /* emit one intra frame every twelve frames at most */
 
-    codec.ctx->pix_fmt = AV_PIX_FMT_YUV420P;  // seems many codecs handle this one?
+    // Dynamically select the best pixel format the codec supports,
+    // minimizing conversion loss from the source format (e.g., AV_PIX_FMT_RGBA).
+    const enum AVPixelFormat* formats = nullptr;
+    avcodec_get_supported_config(codec.ctx, nullptr, AVCodecConfig::AV_CODEC_CONFIG_PIX_FORMAT, 0,
+                                 (const void**)&formats, nullptr);
+    if (formats) {
+        codec.ctx->pix_fmt = avcodec_find_best_pix_fmt_of_list(formats, sourceFormat, 0, nullptr);
+    } else {
+        codec.ctx->pix_fmt = AV_PIX_FMT_YUV420P;  // safe fallback
+    }
 
     if (codec.ctx->codec_id == AV_CODEC_ID_MPEG2VIDEO) {
         /* just for testing, we also add B-frames */
