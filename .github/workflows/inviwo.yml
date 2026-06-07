@@ -13,7 +13,7 @@ permissions:
 env:
   VCPKG_CACHE_TOKEN: ${{ secrets.VCPKG_CACHE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  VCPKG_FEATURE_FLAGS: dependencygraph
+  # VCPKG_FEATURE_FLAGS: dependencygraph // Does not work at the moment
   CCACHE_BASEDIR: ${{ github.workspace }}
   CCACHE_NODIRECT: true
   CCACHE_NODEPEND: true

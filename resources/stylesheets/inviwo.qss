@@ -551,6 +551,9 @@ QComboBox::down-arrow {
 QComboBox::down-arrow:disabled {
      image: url(:/svgicons/arrow-down-disabled.svg);
 }
+QDockWidget#AnimationEditorWidget QComboBox QAbstractItemView {
+    background: #323235;
+}
 
 
 /************************ 

@@ -410,7 +410,7 @@ void AnimationController::render() {
                         if (recorderFactory->options()->isChecked()) {
                             std::shared_ptr<Recorder> recorder = recorderFactory->create(
                                 {.dimensions = imageExporter->getImage()->getDimensions(),
-                                 .frameRate = static_cast<int>(framesPerSecond.get()),
+                                 .frameRate = static_cast<int>(renderFPS.get()),
                                  .expectedNumberOfFrames = numFrames,
                                  .sourceName = std::string{p->getIdentifier()}});
 

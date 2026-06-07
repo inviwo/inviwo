@@ -20,7 +20,8 @@
       "name": "gha-static",
       "inherits" : ["gha"],
       "cacheVariables": {
-        "BUILD_SHARED_LIBS":  { "type": "BOOL", "value": "OFF"}
+        "BUILD_SHARED_LIBS":  { "type": "BOOL", "value": "OFF"},
+        "IVW_TEST_UNIT_TESTS": { "type": "BOOL", "value": "OFF"}
       }
     },
     {
