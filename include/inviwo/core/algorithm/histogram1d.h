@@ -129,9 +129,6 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
                                              size_t bins) {
     // a double type with the same extent as T
     using D = typename util::same_extent<T, double>::type;
-    // a ptrdiff_t type with same extent as T
-    using I = typename util::same_extent<T, ptrdiff_t>::type;
-
     constexpr size_t extent = util::rank<T>::value > 0 ? util::extent<T>::value : 1;
 
     D min(std::numeric_limits<double>::max());
@@ -151,7 +148,8 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
     for (size_t i = 0; i < extent; ++i) {
         hists[i].resize(numbins, 0);
     }
-    const ptrdiff_t maxBin = static_cast<ptrdiff_t>(numbins) - 1;
+    const auto maxBin = static_cast<ptrdiff_t>(numbins) - 1;
+    const auto maxMinD = static_cast<double>(numbins - 1);
 
     for (const auto& item : data) {
         const auto val = static_cast<D>(item);
@@ -162,15 +160,25 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
         sum2 += val * val;
         count++;
 
-        const auto ind = static_cast<I>((val - rangeMin) * rangeScaleFactor);
+        const auto normalized = (val - rangeMin) * rangeScaleFactor;
+
         for (size_t channel = 0; channel < extent; ++channel) {
-            const auto v = util::glmcomp(ind, channel);
-            if (v < 0) {
+            const auto nc = util::glmcomp(normalized, channel);
+
+            // check the range using doubles first to avoid overflows when casting
+            if (nc < 0.0) {
                 ++underflow[channel];
-            } else if (v > maxBin) {
+            } else if (nc > maxMinD) {
                 ++overflow[channel];
             } else {
-                ++hists[channel][v];
+                const auto v = static_cast<ptrdiff_t>(nc);
+                if (v < 0) {
+                    ++underflow[channel];
+                } else if (v > maxBin) {
+                    ++overflow[channel];
+                } else {
+                    ++hists[channel][v];
+                }
             }
         }
     }
