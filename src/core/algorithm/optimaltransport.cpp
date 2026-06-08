@@ -31,6 +31,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
+#include <utility>
 #include <vector>
 
 namespace inviwo::algorithm {
@@ -78,8 +80,29 @@ struct QuantilePoint {
 // Extract non-negative alpha from a TF primitive.
 double alphaOf(const TFPrimitiveData& p) { return std::max(0.0, static_cast<double>(p.color.a)); }
 
-// Sort and deduplicate TF primitives by position. A piecewise-linear function cannot
-// represent vertical discontinuities, so duplicate positions are collapsed (last wins).
+// Make clamp-to-edge extrapolation explicit in the control-point data. Sampling a TF (see
+// evaluate) holds the boundary opacity/color constant outside [front.pos, back.pos], but
+// computeCdf only integrates mass *between* control points. That inconsistency makes the OT
+// machinery transport a compactly supported distribution while the result renders with
+// clamp-to-edge flats, so the two disagree on [0, front.pos] and [back.pos, 1]. Materializing
+// the implied flat regions as boundary vertices at the domain edges (0 and 1) reconciles the
+// views: computeCdf, the domain bounds (domainMin/domainMax), structural-vertex insertion and
+// evaluate then all agree on a common [0, 1] support. Inputs already reaching an edge (or with
+// control points outside [0, 1]) are left untouched, so full-range TFs are unaffected.
+std::vector<TFPrimitiveData> extendToClampSupport(std::vector<TFPrimitiveData> tf) {
+    if (tf.empty()) return tf;
+    if (tf.front().pos > 0) {
+        tf.insert(tf.begin(), TFPrimitiveData{0.0, tf.front().color});
+    }
+    if (tf.back().pos < 1.0) {
+        tf.push_back(TFPrimitiveData{1.0, tf.back().color});
+    }
+    return tf;
+}
+
+// Sort and deduplicate TF primitives by position, then make clamp-to-edge support explicit
+// (see extendToClampSupport). A piecewise-linear function cannot represent vertical
+// discontinuities, so duplicate positions are collapsed (last wins).
 std::vector<TFPrimitiveData> sanitize(std::span<const TFPrimitiveData> tf) {
     if (tf.empty()) return {};
 
@@ -93,7 +116,7 @@ std::vector<TFPrimitiveData> sanitize(std::span<const TFPrimitiveData> tf) {
     }
 
     if (processSorted) {
-        return std::vector<TFPrimitiveData>(tf.begin(), tf.end());
+        return extendToClampSupport(std::vector<TFPrimitiveData>(tf.begin(), tf.end()));
     }
 
     std::vector<TFPrimitiveData> points(tf.begin(), tf.end());
@@ -101,7 +124,7 @@ std::vector<TFPrimitiveData> sanitize(std::span<const TFPrimitiveData> tf) {
               [](const TFPrimitiveData& a, const TFPrimitiveData& b) { return a.pos < b.pos; });
 
     std::vector<TFPrimitiveData> result;
-    result.reserve(points.size());
+    result.reserve(points.size() + 2);
     for (const auto& p : points) {
         if (result.empty() || std::abs(p.pos - result.back().pos) > eps) {
             result.push_back(p);
@@ -109,7 +132,54 @@ std::vector<TFPrimitiveData> sanitize(std::span<const TFPrimitiveData> tf) {
             result.back() = p;
         }
     }
-    return result;
+    return extendToClampSupport(std::move(result));
+}
+
+// The position span of the TF. Returns a NaN pair if input is empty.
+std::pair<double, double> minMaxPos(std::span<const TFPrimitiveData> tf) {
+    if (tf.empty()) {
+        const double nan = std::numeric_limits<double>::quiet_NaN();
+        return {nan, nan};
+    }
+    double lo = tf.front().pos;
+    double hi = tf.front().pos;
+    for (const auto& p : tf) {
+        lo = std::min(lo, p.pos);
+        hi = std::max(hi, p.pos);
+    }
+    return {lo, hi};
+}
+
+// Remove the synthetic boundary vertex that extendToClampSupport inserts at x=0 (and/or x=1)
+// so the returned TF spans only the original input support again. The removal is gated and
+// safe-by-construction:
+//   * supportMin > eps confirms the original input did not already reach the edge (so the
+//     vertex at 0 is synthetic, not a genuine control point the caller supplied);
+//   * the vertex is dropped only when it is collinear with its neighbour in both alpha and
+//     color, which is always true for the constant flat edge extendToClampSupport creates but
+//     not for a real ramp, so a one-sided extension over genuine structure is never cut.
+// Because the dropped span is constant, clamp-to-edge sampling of the trimmed TF reproduces it
+// exactly, and the (also-extended) oracle returns the same constant there: render- and
+// accuracy-neutral. At most one vertex is removed per end, and at least two are kept.
+std::vector<TFPrimitiveData> trimSyntheticEdges(std::vector<TFPrimitiveData> tf, double supportMin,
+                                                double supportMax) {
+    const auto collinear = [](const TFPrimitiveData& a, const TFPrimitiveData& b) {
+        constexpr float colorEps = 1e-6f;
+        return std::abs(a.color.r - b.color.r) <= colorEps &&
+               std::abs(a.color.g - b.color.g) <= colorEps &&
+               std::abs(a.color.b - b.color.b) <= colorEps &&
+               std::abs(a.color.a - b.color.a) <= colorEps;
+    };
+
+    if (tf.size() >= 3 && std::isfinite(supportMin) && supportMin > eps &&
+        tf.front().pos <= eps && collinear(tf[0], tf[1])) {
+        tf.erase(tf.begin());
+    }
+    if (tf.size() >= 3 && std::isfinite(supportMax) && supportMax < 1.0 - eps &&
+        tf.back().pos >= 1.0 - eps && collinear(tf[tf.size() - 1], tf[tf.size() - 2])) {
+        tf.pop_back();
+    }
+    return tf;
 }
 
 // Evaluate a piecewise-linear TF at position x via linear interpolation.
@@ -828,6 +898,7 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationFromLevels(
     if (result.empty()) {
         return linearBlend(ctx.aspan, ctx.bspan, ctx.t);
     }
+
     return result;
 }
 
@@ -1827,6 +1898,54 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationClosedFormFromLevels(
     return result;
 }
 
+// Shared driver for every optimal-transport interpolation entry point. The public variants
+// differ only in how they pick quantile levels and reconstruct vertex opacities; everything
+// around that is identical: clamp t, capture the interior support, sanitise the inputs (which
+// makes clamp-to-edge support explicit), handle the degenerate early-outs, guard against
+// vanishing mass, build the transport context and interpolated domain bounds, and finally trim
+// the synthetic boundary vertices back off the result so the returned TF spans only the
+// transported interior support again. The reconstruct callable receives the transport context
+// and the interpolated domain bounds and returns the output vertices for its sampling strategy.
+template <typename Reconstruct>
+std::vector<TFPrimitiveData> optimalTransportInterpolationImpl(std::span<const TFPrimitiveData> tfA,
+                                                               std::span<const TFPrimitiveData> tfB,
+                                                               double t, Reconstruct&& reconstruct) {
+    t = std::clamp(t, 0.0, 1.0);
+
+    const auto [interiorMinA, interiorMaxA] = minMaxPos(tfA);
+    const auto [interiorMinB, interiorMaxB] = minMaxPos(tfB);
+
+    auto a = sanitize(tfA);
+    auto b = sanitize(tfB);
+
+    const std::span<const TFPrimitiveData> aspan{a.data(), a.size()};
+    const std::span<const TFPrimitiveData> bspan{b.data(), b.size()};
+
+    if (a.empty()) return trimSyntheticEdges(std::move(b), interiorMinB, interiorMaxB);
+    if (b.empty()) return trimSyntheticEdges(std::move(a), interiorMinA, interiorMaxA);
+    if (t <= 0.0) return trimSyntheticEdges(std::move(a), interiorMinA, interiorMaxA);
+    if (t >= 1.0) return trimSyntheticEdges(std::move(b), interiorMinB, interiorMaxB);
+
+    const Cdf cdfA = computeCdf(aspan);
+    const Cdf cdfB = computeCdf(bspan);
+
+    if (cdfA.totalMass <= eps || cdfB.totalMass <= eps ||
+        (1.0 - t) * cdfA.totalMass + t * cdfB.totalMass <= eps) {
+        return linearBlend(aspan, bspan, t);
+    }
+
+    const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
+
+    const double domainMin = (1.0 - t) * a.front().pos + t * b.front().pos;
+    const double domainMax = (1.0 - t) * a.back().pos + t * b.back().pos;
+
+    auto result = reconstruct(ctx, domainMin, domainMax);
+
+    const double trimMin = (1.0 - t) * interiorMinA + t * interiorMinB;
+    const double trimMax = (1.0 - t) * interiorMaxA + t * interiorMaxB;
+    return trimSyntheticEdges(std::move(result), trimMin, trimMax);
+}
+
 }  // namespace
 
 // ===========================================================================
@@ -1848,163 +1967,78 @@ std::vector<TFPrimitiveData> optimalTransportInterpolation(std::span<const TFPri
                                                            std::span<const TFPrimitiveData> tfB,
                                                            double t,
                                                            std::size_t samplesPerSegment) {
-    t = std::clamp(t, 0.0, 1.0);
-
-    auto a = sanitize(tfA);
-    auto b = sanitize(tfB);
-
-    const std::span<const TFPrimitiveData> aspan{a.data(), a.size()};
-    const std::span<const TFPrimitiveData> bspan{b.data(), b.size()};
-
-    if (a.empty()) return b;
-    if (b.empty()) return a;
-    if (t <= 0.0) return a;
-    if (t >= 1.0) return b;
-
-    const Cdf cdfA = computeCdf(aspan);
-    const Cdf cdfB = computeCdf(bspan);
-
-    if (cdfA.totalMass <= eps || cdfB.totalMass <= eps ||
-        (1.0 - t) * cdfA.totalMass + t * cdfB.totalMass <= eps) {
-        return linearBlend(aspan, bspan, t);
-    }
-
-    const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
-
-    // Legacy uniform quantile sampling: sub-divide each CDF segment into samplesPerSegment
-    // equal steps in q. Kept unchanged for comparison with the adaptive path below.
-    const auto levels = mergedQuantileLevels(cdfA, cdfB, samplesPerSegment);
-
-    const double domainMin = (1.0 - t) * a.front().pos + t * b.front().pos;
-    const double domainMax = (1.0 - t) * a.back().pos + t * b.back().pos;
-
-    return optimalTransportInterpolationFromLevels(ctx, levels, domainMin, domainMax);
+    return optimalTransportInterpolationImpl(
+        tfA, tfB, t,
+        [&](const TransportContext& ctx, double domainMin, double domainMax) {
+            // Legacy uniform quantile sampling: sub-divide each CDF segment into
+            // samplesPerSegment equal steps in q. Kept unchanged for comparison with the
+            // adaptive paths below.
+            const auto levels = mergedQuantileLevels(ctx.cdfA, ctx.cdfB, samplesPerSegment);
+            return optimalTransportInterpolationFromLevels(ctx, levels, domainMin, domainMax);
+        });
 }
 
 std::vector<TFPrimitiveData> optimalTransportInterpolationClosedForm(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
     const ClosedFormRefinementOptions& opts) {
-    t = std::clamp(t, 0.0, 1.0);
-
-    auto a = sanitize(tfA);
-    auto b = sanitize(tfB);
-
-    const std::span<const TFPrimitiveData> aspan{a.data(), a.size()};
-    const std::span<const TFPrimitiveData> bspan{b.data(), b.size()};
-
-    if (a.empty()) return b;
-    if (b.empty()) return a;
-    if (t <= 0.0) return a;
-    if (t >= 1.0) return b;
-
-    const Cdf cdfA = computeCdf(aspan);
-    const Cdf cdfB = computeCdf(bspan);
-
-    if (cdfA.totalMass <= eps || cdfB.totalMass <= eps ||
-        (1.0 - t) * cdfA.totalMass + t * cdfB.totalMass <= eps) {
-        return linearBlend(aspan, bspan, t);
-    }
-
-    const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
-
-    // Knot-induced quantile levels, then bisect sub-intervals where the piecewise-linear
-    // chord between endpoint opacities deviates from the closed-form opacity at the
-    // midpoint (relative tolerance, measured in x). This targets sub-intervals where
-    // X_t'(q) curves most strongly, e.g. when the paired segment slopes have opposite sign.
-    auto levels = knotInducedQuantileLevels(cdfA, cdfB);
-    refineQuantileLevelsByClosedForm(ctx, levels, opts.relativeTolerance, opts.maxQuantileLevels,
-                                     opts.maxRefinementIterations);
-
-    const double domainMin = (1.0 - t) * a.front().pos + t * b.front().pos;
-    const double domainMax = (1.0 - t) * a.back().pos + t * b.back().pos;
-
-    return optimalTransportInterpolationClosedFormFromLevels(ctx, levels, domainMin, domainMax);
+    return optimalTransportInterpolationImpl(
+        tfA, tfB, t,
+        [&](const TransportContext& ctx, double domainMin, double domainMax) {
+            // Knot-induced quantile levels, then bisect sub-intervals where the
+            // piecewise-linear chord between endpoint opacities deviates from the closed-form
+            // opacity at the midpoint (relative tolerance, measured in x). This targets
+            // sub-intervals where X_t'(q) curves most strongly, e.g. when the paired segment
+            // slopes have opposite sign.
+            auto levels = knotInducedQuantileLevels(ctx.cdfA, ctx.cdfB);
+            refineQuantileLevelsByClosedForm(ctx, levels, opts.relativeTolerance,
+                                             opts.maxQuantileLevels,
+                                             opts.maxRefinementIterations);
+            return optimalTransportInterpolationClosedFormFromLevels(ctx, levels, domainMin,
+                                                                     domainMax);
+        });
 }
 
 std::vector<TFPrimitiveData> optimalTransportInterpolationOptimalSampling(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
     const ClosedFormRefinementOptions& opts) {
-    t = std::clamp(t, 0.0, 1.0);
-
-    auto a = sanitize(tfA);
-    auto b = sanitize(tfB);
-
-    const std::span<const TFPrimitiveData> aspan{a.data(), a.size()};
-    const std::span<const TFPrimitiveData> bspan{b.data(), b.size()};
-
-    if (a.empty()) return b;
-    if (b.empty()) return a;
-    if (t <= 0.0) return a;
-    if (t >= 1.0) return b;
-
-    const Cdf cdfA = computeCdf(aspan);
-    const Cdf cdfB = computeCdf(bspan);
-
-    if (cdfA.totalMass <= eps || cdfB.totalMass <= eps ||
-        (1.0 - t) * cdfA.totalMass + t * cdfB.totalMass <= eps) {
-        return linearBlend(aspan, bspan, t);
-    }
-
-    const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
-
-    // Knot-induced quantile levels, then insert each new level at the quantile q* that
-    // maximises the opacity deviation between the exact transported opacity and the
-    // piecewise-linear chord on the worst sub-interval (relative tolerance, measured in
-    // x). Unlike optimalTransportInterpolationClosedForm, which probes the geometric
-    // midpoint, this places samples exactly where the chord error peaks, so the same
-    // opacity tolerance is met with fewer control points. Vertex opacities remain the
-    // exact closed-form alpha_k = m_t / X_t'(q_k).
-    auto levels = knotInducedQuantileLevels(cdfA, cdfB);
-    refineQuantileLevelsByMaxError(ctx, levels, opts.relativeTolerance, opts.maxQuantileLevels,
-                                   opts.maxRefinementIterations);
-
-    const double domainMin = (1.0 - t) * a.front().pos + t * b.front().pos;
-    const double domainMax = (1.0 - t) * a.back().pos + t * b.back().pos;
-
-    return optimalTransportInterpolationClosedFormFromLevels(ctx, levels, domainMin, domainMax);
+    return optimalTransportInterpolationImpl(
+        tfA, tfB, t,
+        [&](const TransportContext& ctx, double domainMin, double domainMax) {
+            // Knot-induced quantile levels, then insert each new level at the quantile q* that
+            // maximises the opacity deviation between the exact transported opacity and the
+            // piecewise-linear chord on the worst sub-interval (relative tolerance, measured in
+            // x). Unlike optimalTransportInterpolationClosedForm, which probes the geometric
+            // midpoint, this places samples exactly where the chord error peaks, so the same
+            // opacity tolerance is met with fewer control points. Vertex opacities remain the
+            // exact closed-form alpha_k = m_t / X_t'(q_k).
+            auto levels = knotInducedQuantileLevels(ctx.cdfA, ctx.cdfB);
+            refineQuantileLevelsByMaxError(ctx, levels, opts.relativeTolerance,
+                                           opts.maxQuantileLevels,
+                                           opts.maxRefinementIterations);
+            return optimalTransportInterpolationClosedFormFromLevels(ctx, levels, domainMin,
+                                                                     domainMax);
+        });
 }
 
 std::vector<TFPrimitiveData> optimalTransportInterpolationRefined(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
     const ClosedFormRefinementOptions& opts) {
-    t = std::clamp(t, 0.0, 1.0);
-
-    auto a = sanitize(tfA);
-    auto b = sanitize(tfB);
-
-    const std::span<const TFPrimitiveData> aspan{a.data(), a.size()};
-    const std::span<const TFPrimitiveData> bspan{b.data(), b.size()};
-
-    if (a.empty()) return b;
-    if (b.empty()) return a;
-    if (t <= 0.0) return a;
-    if (t >= 1.0) return b;
-
-    const Cdf cdfA = computeCdf(aspan);
-    const Cdf cdfB = computeCdf(bspan);
-
-    if (cdfA.totalMass <= eps || cdfB.totalMass <= eps ||
-        (1.0 - t) * cdfA.totalMass + t * cdfB.totalMass <= eps) {
-        return linearBlend(aspan, bspan, t);
-    }
-
-    const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
-
-    // Adaptive vertex placement identical to the closed-form path: start from the
-    // knot-induced quantile breakpoints and bisect where the chord between exact
-    // endpoint opacities deviates most from the exact transported density. Unlike the
-    // closed-form path, the per-vertex opacities are then reconstructed with the cheap
-    // secant-density scheme (optimalTransportInterpolationFromLevels) rather than the
-    // exact alpha_k = m_t / X_t'(q_k). This isolates the benefit of adaptive placement
-    // from the cost of exact opacities.
-    auto levels = knotInducedQuantileLevels(cdfA, cdfB);
-    refineQuantileLevelsByClosedForm(ctx, levels, opts.relativeTolerance, opts.maxQuantileLevels,
-                                     opts.maxRefinementIterations);
-
-    const double domainMin = (1.0 - t) * a.front().pos + t * b.front().pos;
-    const double domainMax = (1.0 - t) * a.back().pos + t * b.back().pos;
-
-    return optimalTransportInterpolationFromLevels(ctx, levels, domainMin, domainMax);
+    return optimalTransportInterpolationImpl(
+        tfA, tfB, t,
+        [&](const TransportContext& ctx, double domainMin, double domainMax) {
+            // Adaptive vertex placement identical to the closed-form path: start from the
+            // knot-induced quantile breakpoints and bisect where the chord between exact
+            // endpoint opacities deviates most from the exact transported density. Unlike the
+            // closed-form path, the per-vertex opacities are then reconstructed with the cheap
+            // secant-density scheme (optimalTransportInterpolationFromLevels) rather than the
+            // exact alpha_k = m_t / X_t'(q_k). This isolates the benefit of adaptive placement
+            // from the cost of exact opacities.
+            auto levels = knotInducedQuantileLevels(ctx.cdfA, ctx.cdfB);
+            refineQuantileLevelsByClosedForm(ctx, levels, opts.relativeTolerance,
+                                             opts.maxQuantileLevels,
+                                             opts.maxRefinementIterations);
+            return optimalTransportInterpolationFromLevels(ctx, levels, domainMin, domainMax);
+        });
 }
 
 double evaluateInterpolatedAlpha(std::span<const TFPrimitiveData> tfA,
