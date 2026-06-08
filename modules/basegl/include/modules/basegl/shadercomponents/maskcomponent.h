@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,42 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 
-#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>
-#include <modules/basegl/shadercomponents/backgroundcomponent.h>
-#include <modules/basegl/shadercomponents/cameracomponent.h>
-#include <modules/basegl/shadercomponents/entryexitcomponent.h>
-#include <modules/basegl/shadercomponents/isotfcomponent.h>
-#include <modules/basegl/shadercomponents/lightcomponent.h>
-#include <modules/basegl/shadercomponents/positionindicatorcomponent.h>
-#include <modules/basegl/shadercomponents/raycastingcomponent.h>
-#include <modules/basegl/shadercomponents/sampletransformcomponent.h>
-#include <modules/basegl/shadercomponents/volumecomponent.h>
-#include <modules/basegl/shadercomponents/maskcomponent.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API StandardVolumeRaycaster : public VolumeRaycasterBase {
+class IVW_MODULE_BASEGL_API MaskComponent : public ShaderComponent {
 public:
-    StandardVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
-    virtual ~StandardVolumeRaycaster() = default;
+    MaskComponent(VolumeInport& port);
+    virtual ~MaskComponent() = default;
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    virtual std::string_view getName() const override;
+    virtual void initializeResources(Shader& shader) override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+    virtual std::vector<Segment> getSegments() override;
+    virtual std::vector<Property*> getProperties() override;
 
-    virtual void process() override;
+    void preprocess();
 
 private:
-    VolumeComponent volume_;
-    EntryExitComponent entryExit_;
-    BackgroundComponent background_;
-    IsoTFComponent<1> isoTF_;
-    RaycastingComponent raycasting_;
-    CameraComponent camera_;
-    LightComponent light_;
-    PositionIndicatorComponent positionIndicator_;
-    SampleTransformComponent sampleTransform_;
-    MaskComponent mask_;
+    std::string name_;
+    VolumeInport* port_;
+
+    BoolProperty enable_;
+
+    Shader shader_;
+    FrameBufferObject fbo_;
+
+    std::shared_ptr<Volume> mask_;
 };
 
 }  // namespace inviwo
