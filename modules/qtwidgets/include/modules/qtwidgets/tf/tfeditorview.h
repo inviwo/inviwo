@@ -41,6 +41,7 @@
 
 class QWheelEvent;
 class QKeyEvent;
+class QPaintEvent;
 
 namespace inviwo {
 
@@ -74,8 +75,6 @@ protected:
 
     virtual void keyPressEvent(QKeyEvent* event) override;
     virtual void keyReleaseEvent(QKeyEvent* event) override;
-
-    void setSceneRectWithMargin(const QRectF& sceneRect);
 
 private:
     void drawGrid(QPainter* painter, const QRectF& updateRect, const DataMapper& sceneDM);

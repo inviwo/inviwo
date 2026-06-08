@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -77,10 +78,6 @@ class QWidget;
 
 namespace inviwo {
 
-namespace {
-constexpr int viewMargin = 10;
-}
-
 TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene, QWidget* parent)
     : QGraphicsView(scene, parent)
     , property_{tfProperty}
@@ -123,7 +120,7 @@ TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene,
             update();
         });
 
-    setSceneRectWithMargin(scene->sceneRect());
+    setSceneRect(scene->sceneRect());
     updateZoomFromProperty();
 }
 
@@ -132,13 +129,6 @@ TFEditorView::~TFEditorView() = default;
 void TFEditorView::onZoomHChange(const dvec2&) { updateZoomFromProperty(); }
 
 void TFEditorView::onZoomVChange(const dvec2&) { updateZoomFromProperty(); }
-
-void TFEditorView::setSceneRectWithMargin(const QRectF& sceneRect) {
-    const auto margin = mapToScene(QRect{0, 0, viewMargin, viewMargin}).boundingRect();
-    const auto padded = sceneRect.marginsAdded(
-        QMarginsF{margin.width(), margin.height(), margin.width(), margin.width()});
-    setSceneRect(padded);
-}
 
 void TFEditorView::onHistogramModeChange(HistogramMode mode) {
     if (histogramState_.mode != mode) {
@@ -184,8 +174,8 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
             dx = 1.0;
         }
 
-        const auto hight = static_cast<double>(viewport()->height() - 2 * viewMargin);
-        const auto width = static_cast<double>(viewport()->width() - 2 * viewMargin);
+        const auto hight = static_cast<double>(viewport()->height() - 1);
+        const auto width = static_cast<double>(viewport()->width() - 1);
 
         const auto sceneHeight = scene()->sceneRect().height();
         const auto sceneWidth = scene()->sceneRect().width();
@@ -202,7 +192,7 @@ void TFEditorView::wheelEvent(QWheelEvent* event) {
             t.dy()};
 
         setTransform(nt, false);
-        setSceneRectWithMargin(scene()->sceneRect());
+        setSceneRect(scene()->sceneRect());
         event->accept();
 
     } else if (event->modifiers() & Qt::ShiftModifier) {
@@ -240,60 +230,78 @@ void TFEditorView::resizeEvent(QResizeEvent* event) {
     updateZoomFromProperty();
 }
 
-QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D& histogram,
-                                                               HistogramMode mode) {
-    const auto stepSize = 1.0 / histogram.counts.size();
+std::pair<dvec2, dvec2> TFEditorView::getZoom() const {
+    const auto bl = viewport()->rect().bottomLeft();
+    const auto tr = viewport()->rect().topRight();
+    const auto min = mapToScene(bl);
+    const auto max = mapToScene(tr);
 
-    QPolygonF polygon{};
-    polygon << QPointF(0.0, 0.0);
-
-    if (mode == HistogramMode::Log) {
-        const auto maxCount = static_cast<double>(std::max(histogram.maxCount, size_t{1}));
-        const auto scale = std::log10(maxCount);
-        for (size_t i = 0; i < histogram.counts.size(); i++) {
-            const double height =
-                std::log10(1.0 + static_cast<double>(histogram.counts[i])) / scale;
-            polygon << QPointF(static_cast<double>(i) * stepSize, height)
-                    << QPointF(static_cast<double>(i + 1) * stepSize, height);
-        }
-    } else {
-        const double scale = [&]() {
-            switch (mode) {
-                case HistogramMode::All:  // show all
-                    return histogram.histStats.percentiles[100];
-                case HistogramMode::P99:  // show 99%
-                    return histogram.histStats.percentiles[99];
-                case HistogramMode::P95:  // show 95%
-                    return histogram.histStats.percentiles[95];
-                case HistogramMode::P90:  // show 90%
-                    return histogram.histStats.percentiles[90];
-                default:
-                    return histogram.histStats.percentiles[100];
-            }
-        }();
-        const auto scaleSafe = std::max(scale, 1.0);
-        for (size_t i = 0; i < histogram.counts.size(); i++) {
-            const auto height = std::min(static_cast<double>(histogram.counts[i]) / scaleSafe, 1.0);
-            polygon << QPointF(static_cast<double>(i) * stepSize, height)
-                    << QPointF(static_cast<double>(i + 1) * stepSize, height);
-        }
-    }
-    polygon << QPointF(1.0f, 0.0f) << QPointF(0.0f, 0.0f);
-
-    return polygon;
+    return {{min.x(), max.x()}, {min.y(), max.y()}};
 }
 
-std::vector<QPolygonF> TFEditorView::HistogramState::createHistogramPolygons(
-    const std::vector<Histogram1D>& histograms, HistogramMode mode) {
-    std::vector<QPolygonF> polygons;
+void TFEditorView::fitViewToScene() {
+    util::KeepTrueWhileInScope keepTrue(&zooming_);
+    const auto newSceneRect = scene()->sceneRect();
+    fitViewToRect(newSceneRect);
+    setSceneRect(newSceneRect);
 
-    if (mode != HistogramMode::Off) {
-        for (const auto& histogram : histograms) {
-            polygons.push_back(createHistogramPolygon(histogram, mode));
-        }
+    const auto [currentHRange, currentVRange] = getZoom();
+    property_->setZoomH(currentHRange.x, currentHRange.y);
+    property_->setZoomV(currentVRange.x, currentVRange.y);
+}
+
+void TFEditorView::onSceneRectChanged() {
+    util::KeepTrueWhileInScope keepTrue(&zooming_);
+    const auto newSceneRect = scene()->sceneRect();
+
+    const auto [maxHRange, maxVRange] = std::pair<dvec2, dvec2>{
+        {newSceneRect.left(), newSceneRect.right()}, {newSceneRect.top(), newSceneRect.bottom()}};
+    const auto [currentHRange, currentVRange] = getZoom();
+
+    auto newHRange = currentHRange;
+    auto newVRange = currentVRange;
+
+    if (currentHRange.x < maxHRange.x) newHRange.x = maxHRange.x;
+    if (currentHRange.y > maxHRange.y) newHRange.y = maxHRange.y;
+    if (currentVRange.x < maxVRange.x) newVRange.x = maxVRange.x;
+    if (currentVRange.y > maxVRange.y) newVRange.y = maxVRange.y;
+
+    if (newHRange != currentHRange || newVRange != currentVRange) {
+        const auto newRect = QRectF{QPointF{newHRange.x, newVRange.y},
+                                    QSizeF{newHRange.y - newHRange.x, newVRange.y - newVRange.x}};
+        fitViewToRect(newRect);
+        property_->setZoomH(newHRange.x, newHRange.y);
+        property_->setZoomV(newVRange.x, newVRange.y);
+    } else {
+        property_->setZoomH(currentHRange.x, currentHRange.y);
+        property_->setZoomV(currentVRange.x, currentVRange.y);
+    }
+    setSceneRect(newSceneRect);
+}
+
+void TFEditorView::updateZoomFromProperty() {
+    if (zooming_) return;
+    const auto zh = property_->getZoomH();
+    const auto zv = property_->getZoomV();
+    const auto [currentHz, currentVz] = getZoom();
+    if (util::almostEqual(zh, currentHz) && util::almostEqual(zv, currentVz)) {
+        return;
     }
 
-    return polygons;
+    const auto newRect = QRectF{QPointF{zh.x, zv.x}, QSizeF{zh.y - zh.x, zv.y - zv.x}};
+    fitViewToRect(newRect);
+    setSceneRect(scene()->sceneRect());
+}
+
+void TFEditorView::fitViewToRect(const QRectF& sceneRect) {
+    const auto hight = static_cast<double>(viewport()->height() - 1);
+    const auto width = static_cast<double>(viewport()->width() - 1);
+    const auto sceneHeight = sceneRect.height();
+    const auto sceneWidth = sceneRect.width();
+    const auto nt = QTransform{width / sceneWidth, 0.0, 0.0, -hight / sceneHeight, 0.0, 0.0};
+
+    setTransform(nt);
+    centerOn(sceneRect.center());
 }
 
 void TFEditorView::drawGrid(QPainter* painter, const QRectF& updateRect,
@@ -422,13 +430,69 @@ void setPenAndFont(QPainter* painter, ColorType type, size_t channel = 0, size_t
 
 }  // namespace
 
+QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D& histogram,
+                                                               HistogramMode mode) {
+    const auto stepSize = 1.0 / histogram.counts.size();
+
+    QPolygonF polygon{};
+    polygon << QPointF(0.0, 0.0);
+
+    if (mode == HistogramMode::Log) {
+        const auto maxCount = static_cast<double>(std::max(histogram.maxCount, size_t{1}));
+        const auto scale = std::log10(maxCount);
+        for (size_t i = 0; i < histogram.counts.size(); i++) {
+            const double height =
+                std::log10(1.0 + static_cast<double>(histogram.counts[i])) / scale;
+            polygon << QPointF(static_cast<double>(i) * stepSize, height)
+                    << QPointF(static_cast<double>(i + 1) * stepSize, height);
+        }
+    } else {
+        const double scale = [&]() {
+            switch (mode) {
+                case HistogramMode::All:  // show all
+                    return histogram.histStats.percentiles[100];
+                case HistogramMode::P99:  // show 99%
+                    return histogram.histStats.percentiles[99];
+                case HistogramMode::P95:  // show 95%
+                    return histogram.histStats.percentiles[95];
+                case HistogramMode::P90:  // show 90%
+                    return histogram.histStats.percentiles[90];
+                default:
+                    return histogram.histStats.percentiles[100];
+            }
+        }();
+        const auto scaleSafe = std::max(scale, 1.0);
+        for (size_t i = 0; i < histogram.counts.size(); i++) {
+            const auto height = std::min(static_cast<double>(histogram.counts[i]) / scaleSafe, 1.0);
+            polygon << QPointF(static_cast<double>(i) * stepSize, height)
+                    << QPointF(static_cast<double>(i + 1) * stepSize, height);
+        }
+    }
+    polygon << QPointF(1.0f, 0.0f) << QPointF(0.0f, 0.0f);
+
+    return polygon;
+}
+
+std::vector<QPolygonF> TFEditorView::HistogramState::createHistogramPolygons(
+    const std::vector<Histogram1D>& histograms, HistogramMode mode) {
+    std::vector<QPolygonF> polygons;
+
+    if (mode != HistogramMode::Off) {
+        for (const auto& histogram : histograms) {
+            polygons.push_back(createHistogramPolygon(histogram, mode));
+        }
+    }
+
+    return polygons;
+}
+
 void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPolygonF& polygon,
                                                   size_t channel, size_t nChannels,
                                                   const QRectF& sceneRect, const DataMapper& dataDM,
                                                   const DataMapper& sceneDM) {
-    // histogram polygon are defined in normalized [0,1] coordinates. And represents is mapped
-    // to value range using dataDM We use the sceneDM to map from value range to the scene
-    // coordinates which are represented as the normalized rage of the sceneDM.
+    // Histogram polygon are defined in normalized [0,1] coordinates. And is mapped
+    // to value range using the dataDM. We use the sceneDM to map from value range to the scene
+    // coordinates which are represented as the normalized range of the sceneDM.
     const auto sStart = sceneDM.mapFromValueToNormalized(dataDM.mapFromNormalizedToValue(0.0));
     const auto sStop = sceneDM.mapFromValueToNormalized(dataDM.mapFromNormalizedToValue(1.0));
 
@@ -436,8 +500,8 @@ void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPoly
     painter->setPen(utilqt::cosmeticPen(getColor(channel, nChannels, ColorType::Line), 2.0));
     painter->setBrush(QBrush{getColor(channel, nChannels, ColorType::Fill), Qt::SolidPattern});
 
-    painter->setTransform(QTransform::fromTranslate(sStart, sceneRect.y()) *
-                              QTransform::fromScale(sStop - sStart, sceneRect.height()),
+    painter->setTransform(QTransform::fromScale(sStop - sStart, sceneRect.height()) *
+                              QTransform::fromTranslate(sStart, sceneRect.y()),
                           true);
     painter->drawPolygon(polygon);
 }
@@ -510,76 +574,6 @@ void TFEditorView::HistogramState::paintHistograms(QPainter* painter, const QRec
 
         ++count;
     }
-}
-
-std::pair<dvec2, dvec2> TFEditorView::getZoom() const {
-    const auto min = mapToScene(viewport()->rect().bottomLeft());
-    const auto max = mapToScene(viewport()->rect().topRight());
-    return {{min.x(), max.x()}, {min.y(), max.y()}};
-}
-
-void TFEditorView::fitViewToScene() {
-    util::KeepTrueWhileInScope keepTrue(&zooming_);
-    const auto newSceneRect = scene()->sceneRect();
-    fitViewToRect(newSceneRect);
-    setSceneRectWithMargin(newSceneRect);
-
-    const auto [currentHRange, currentVRange] = getZoom();
-    property_->setZoomH(currentHRange.x, currentHRange.y);
-    property_->setZoomV(currentVRange.x, currentVRange.y);
-}
-
-void TFEditorView::onSceneRectChanged() {
-    util::KeepTrueWhileInScope keepTrue(&zooming_);
-    const auto newSceneRect = scene()->sceneRect();
-
-    const auto [maxHRange, maxVRange] = std::pair<dvec2, dvec2>{
-        {newSceneRect.left(), newSceneRect.right()}, {newSceneRect.bottom(), newSceneRect.top()}};
-    const auto [currentHRange, currentVRange] = getZoom();
-
-    auto newHRange = currentHRange;
-    auto newVRange = currentVRange;
-
-    if (currentHRange.x < maxHRange.x) newHRange.x = maxHRange.x;
-    if (currentHRange.y > maxHRange.y) newHRange.y = maxHRange.y;
-    if (currentVRange.x < maxVRange.x) newVRange.x = maxVRange.x;
-    if (currentVRange.y > maxVRange.y) newVRange.y = maxVRange.y;
-
-    if (newHRange != currentHRange || newVRange != currentVRange) {
-        const auto newRect = QRectF{QPointF{newHRange.x, newVRange.y},
-                                    QSizeF{newHRange.y - newHRange.x, newVRange.x - newVRange.y}};
-        fitViewToRect(newRect);
-        property_->setZoomH(newHRange.x, newHRange.y);
-        property_->setZoomV(newVRange.x, newVRange.y);
-    } else {
-        property_->setZoomH(currentHRange.x, currentHRange.y);
-        property_->setZoomV(currentVRange.x, currentVRange.y);
-    }
-    setSceneRectWithMargin(newSceneRect);
-}
-
-void TFEditorView::updateZoomFromProperty() {
-    if (zooming_) return;
-    const auto zh = property_->getZoomH();
-    const auto zv = property_->getZoomV();
-    const auto [currentHz, currentVz] = getZoom();
-    if (util::almostEqual(zh, currentHz) && util::almostEqual(zv, currentVz)) {
-        return;
-    }
-
-    const auto newRect = QRectF{QPointF{zh.x, zv.x}, QSizeF{zh.y - zh.x, zv.y - zv.x}};
-    fitViewToRect(newRect);
-    setSceneRectWithMargin(scene()->sceneRect());
-}
-
-void TFEditorView::fitViewToRect(const QRectF& sceneRect) {
-    const auto hight = static_cast<double>(viewport()->height() - 2 * viewMargin);
-    const auto width = static_cast<double>(viewport()->width() - 2 * viewMargin);
-    const auto sceneHeight = sceneRect.height();
-    const auto sceneWidth = sceneRect.width();
-    const auto nt = QTransform{width / sceneWidth, 0.0, 0.0, -hight / sceneHeight, 0.0, 0.0};
-    setTransform(nt);
-    centerOn(sceneRect.center());
 }
 
 }  // namespace inviwo

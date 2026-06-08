@@ -37,13 +37,12 @@ std::string_view IsoValueProperty::getClassIdentifier() const { return classIden
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
                                    Document help, const IsoValueCollection& value, TFData port,
-                                   PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), InvalidationLevel::InvalidResources,
-               std::move(semantics))
+                                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics))
     , iso_("IsoValues", value)
-    , zoomH_("zoomH_", dvec2(0.0, 1.0))
-    , zoomV_("zoomV_", dvec2(0.0, 1.0))
-    , histogramMode_("showHistogram_", HistogramMode::All)
+    , zoomH_("zoomH", dvec2(0.0, 1.0))
+    , zoomV_("zoomV", dvec2(0.0, 1.0))
+    , histogramMode_("showHistogram", HistogramMode::All)
     , histogramSelection_("histogramSelection", histogramSelectionAll)
     , data_{std::move(port)} {
 
@@ -52,13 +51,15 @@ IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
                                    const IsoValueCollection& value, TFData port,
-                                   PropertySemantics semantics)
+                                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : IsoValueProperty(identifier, displayName, Document{}, value, std::move(port),
-                       std::move(semantics)) {}
+                       invalidationLevel, std::move(semantics)) {}
 
 IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view displayName,
-                                   TFData port, PropertySemantics semantics)
-    : IsoValueProperty(identifier, displayName, {}, std::move(port), std::move(semantics)) {}
+                                   TFData port, InvalidationLevel invalidationLevel,
+                                   PropertySemantics semantics)
+    : IsoValueProperty(identifier, displayName, {}, std::move(port), invalidationLevel,
+                       std::move(semantics)) {}
 
 IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
     : Property(rhs)

@@ -59,13 +59,16 @@ public:
 
     IsoValueProperty(std::string_view identifier, std::string_view displayName, Document help,
                      const IsoValueCollection& value = {}, TFData port = {},
+                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default);
 
     IsoValueProperty(std::string_view identifier, std::string_view displayName,
                      const IsoValueCollection& value = {}, TFData port = {},
+                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default);
 
     IsoValueProperty(std::string_view identifier, std::string_view displayName, TFData port,
+                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default);
     IsoValueProperty(const IsoValueProperty& rhs);
     IsoValueProperty(IsoValueProperty&& rhs);

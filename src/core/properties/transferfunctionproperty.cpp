@@ -67,9 +67,9 @@ TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
                                                    PropertySemantics semantics)
     : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics))
     , tf_{"TransferFunction", value}
-    , zoomH_("zoomH_", dvec2(0.0, 1.0))
-    , zoomV_("zoomV_", dvec2(0.0, 1.0))
-    , histogramMode_("showHistogram_", port ? HistogramMode::All : HistogramMode::Off)
+    , zoomH_("zoomH", dvec2(0.0, 1.0))
+    , zoomV_("zoomV", dvec2(0.0, 1.0))
+    , histogramMode_("showHistogram", port ? HistogramMode::All : HistogramMode::Off)
     , histogramSelection_("histogramSelection", histogramSelectionAll)
     , lookup_{}
     , data_{std::move(port)}
