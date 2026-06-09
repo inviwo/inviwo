@@ -161,7 +161,7 @@ void HDF5ToVolume::process() try {
                 ++j;
             }
 
-            vec3 offset = -0.5f * vec3(basis[0] + basis[1] + basis[2]);
+            const vec3 offset = -0.5f * vec3(basis[0] + basis[1] + basis[2]);
             basis[3] = vec4(offset, 1.0f);
             volume_->setModelMatrix(basis);
         } else {
@@ -301,7 +301,7 @@ void HDF5ToVolume::makeVolume() {
         const auto data = inport_.getData();
         MetaData volumeMeta = volumeMatches_[volumeSelection_.getSelectedIndex()];
 
-        auto format = [&]() -> const DataFormatBase* {
+        const auto* format = [&]() -> const DataFormatBase* {
             switch (datatype_.getSelectedIndex()) {
                 case 1:
                     return DataFloat32::get();

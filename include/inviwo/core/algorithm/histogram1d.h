@@ -149,7 +149,7 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
         hists[i].resize(numbins, 0);
     }
     const auto maxBin = static_cast<ptrdiff_t>(numbins) - 1;
-    const auto maxMinD = static_cast<double>(numbins - 1);
+    const auto maxBinD = static_cast<double>(numbins);
 
     for (const auto& item : data) {
         const auto val = static_cast<D>(item);
@@ -168,7 +168,7 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
             // check the range using doubles first to avoid overflows when casting
             if (nc < 0.0) {
                 ++underflow[channel];
-            } else if (nc > maxMinD) {
+            } else if (nc >= maxBinD) {
                 ++overflow[channel];
             } else {
                 const auto v = static_cast<ptrdiff_t>(nc);

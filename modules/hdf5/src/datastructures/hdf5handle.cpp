@@ -215,13 +215,13 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(
     if (dataset.attrExists("missing_value")) {
         const auto attr = dataset.openAttribute("missing_value");
         if (attr.getDataType().getClass() == H5T_FLOAT) {
-            double missingValue;
+            double missingValue{};
             attr.read(H5::PredType::NATIVE_DOUBLE, &missingValue);
             volume->setMetaData<MetaDataType<double>>("missing_value", missingValue);
             ignore.floatingPoint = missingValue;
 
         } else if (attr.getDataType().getClass() == H5T_INTEGER) {
-            std::int64_t missingValue;
+            std::int64_t missingValue{};
             attr.read(H5::PredType::NATIVE_INT64, &missingValue);
             volume->setMetaData<MetaDataType<std::int64_t>>("missing_value", missingValue);
             ignore.signedInteger = missingValue;
