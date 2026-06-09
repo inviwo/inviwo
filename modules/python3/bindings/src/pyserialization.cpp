@@ -37,6 +37,9 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/workspacemanager.h>
+
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 
@@ -135,6 +138,16 @@ void exposeSerialization(pybind11::module& m) {
              }),
              py::arg("content"), py::arg("refPath") = std::filesystem::path{},
              py::arg("rootElement") = SerializeConstants::InviwoWorkspace)
+
+        .def_static(
+            "createWorkspaceDeserializer",
+            [](const std::string& content, const std::filesystem::path& refPath) {
+                return InviwoApplication::getPtr()
+                    ->getWorkspaceManager()
+                    ->createWorkspaceDeserializerAndInfo(std::pmr::string{content}, refPath)
+                    .first;
+            },
+            py::arg("content"), py::arg("refPath") = std::filesystem::path{})
 
         .def("getFileName", &Deserializer::getFileName)
         .def("getFileDir", &Deserializer::getFileDir)
