@@ -172,9 +172,10 @@ AnimationModule::AnimationModule(InviwoApplication* app)
 
     propertyHelper<TransferFunctionProperty>();
 
-    interpolationHelper<TransferFunctionProperty, TFInterpolationOptimalTransport>();
-    interpolationHelper<TransferFunctionProperty, TFInterpolationOptimalTransportClosedForm>();
-    interpolationHelper<TransferFunctionProperty, TFInterpolationOptimalTransportOptimalSampling>();
+    interpolationHelper<TransferFunctionProperty, TFInterpolationOTUniformQ>();
+    interpolationHelper<TransferFunctionProperty, TFInterpolationOTUniformQExact>();
+    interpolationHelper<TransferFunctionProperty, TFInterpolationOTAdaptiveQExact>();
+    interpolationHelper<TransferFunctionProperty, TFInterpolationOTOpacityOptimalQExact>();
     interpolationHelper<TransferFunctionProperty, TFInterpolationBlend>();
     interpolationHelper<TransferFunctionProperty,
                         ConstantInterpolation<ValueKeyframe<TransferFunction>>>();
