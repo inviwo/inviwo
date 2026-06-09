@@ -63,6 +63,7 @@ public:
 protected:
     virtual void process() override;
     virtual void deserialize(Deserializer& d) override;
+
 private:
     class DimSelection : public CompositeProperty {
     public:

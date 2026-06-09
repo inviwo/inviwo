@@ -45,7 +45,6 @@
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/logcentral.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>  // IWYU pragma: keep
 #include <inviwo/dataframe/io/csvwriter.h>
 #include <inviwo/dataframe/io/xmlwriter.h>
 
