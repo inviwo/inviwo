@@ -534,6 +534,26 @@ TEST(OptimalTransport, UniformQExactMatchesUniformQQuantileGrid) {
     }
 }
 
+TEST(OptimalTransport, EvaluateInterpolatedAlphaClampsOutsideSupport) {
+    TF a = {{0.25, vec4{1.0f, 0.0f, 0.0f, 0.9f}}, {0.75, vec4{1.0f, 0.0f, 0.0f, 0.1f}}};
+    TF b = {{0.35, vec4{1.0f, 0.0f, 0.0f, 0.2f}}, {0.65, vec4{1.0f, 0.0f, 0.0f, 0.8f}}};
+
+    EXPECT_NEAR(algorithm::evaluateInterpolatedAlpha(a, b, 0.0, 0.0), 0.9, 1e-6);
+    EXPECT_NEAR(algorithm::evaluateInterpolatedAlpha(a, b, 1.0, 0.0), 0.2, 1e-6);
+    EXPECT_NEAR(algorithm::evaluateInterpolatedAlpha(a, b, 0.0, 1.0), 0.1, 1e-6);
+    EXPECT_NEAR(algorithm::evaluateInterpolatedAlpha(a, b, 1.0, 1.0), 0.8, 1e-6);
+
+    constexpr double t = 0.5;
+    const double leftBoundary = algorithm::evaluateInterpolatedAlpha(a, b, t, 0.0);
+    const double rightBoundary = algorithm::evaluateInterpolatedAlpha(a, b, t, 1.0);
+
+    // Exterior on [0, 1] is flat at the reconstructed opacity on each support boundary.
+    EXPECT_NEAR(algorithm::evaluateInterpolatedAlpha(a, b, t, 0.05), leftBoundary, 1e-9);
+    EXPECT_NEAR(algorithm::evaluateInterpolatedAlpha(a, b, t, 0.95), rightBoundary, 1e-9);
+    EXPECT_GT(leftBoundary, 0.01);
+    EXPECT_GT(rightBoundary, 0.01);
+}
+
 namespace {
 struct OTConf {
     static constexpr double epsilon = 2e-2;

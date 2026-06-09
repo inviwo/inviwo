@@ -2074,8 +2074,8 @@ double evaluateInterpolatedAlpha(std::span<const TFPrimitiveData> tfA,
     const auto intervals = buildSubIntervals(ctx);
     if (intervals.empty()) return 0.0;
 
-    // Outside the union of widget supports of the interpolated TF: alpha = 0.
-    if (x <= intervals.front().xLo + eps || x >= intervals.back().xHi - eps) return 0.0;
+    // Transfer function uses clamp-to-edge
+    x = std::clamp(x, intervals.front().xLo, intervals.back().xHi);
 
     // Binary search the sub-interval that brackets x in output coordinates. The xLo
     // values are strictly increasing because X_t is monotone (it is a sum of two
@@ -2125,15 +2125,24 @@ std::vector<double> evaluateInterpolatedAlphaGrid(std::span<const TFPrimitiveDat
     const auto intervals = buildSubIntervals(ctx);
     if (intervals.empty()) return out;
 
-    // Sub-intervals are sorted by xLo (they come from sorted quantile levels).
-    // Co-advance through them as x increases: O(G + M) sweep, M = interval count.
-    const double xMin = intervals.front().xLo + eps;
-    const double xMax = intervals.back().xHi - eps;
+    const double xMin = intervals.front().xLo;
+    const double xMax = intervals.back().xHi;
+    const double alphaAtMin = densityAtQuantile(intervals.front().segA, intervals.front().segB, t,
+                                                intervals.front().qLo, ctx.targetMass);
+    const double alphaAtMax = densityAtQuantile(intervals.back().segA, intervals.back().segB, t,
+                                                intervals.back().qHi, ctx.targetMass);   
 
     std::size_t si = 0;  // current sub-interval index
     for (std::size_t i = 0; i < xs.size(); ++i) {
         const double x = xs[i];
-        if (x <= xMin || x >= xMax) continue;  // outside support → 0
+        if (x <= xMin) {
+            out[i] = alphaAtMin;
+            continue;
+        }
+        if (x >= xMax) {
+            out[i] = alphaAtMax;
+            continue;
+        }
 
         // Advance si to the first sub-interval whose xHi > x.
         while (si + 1 < intervals.size() && intervals[si].xHi <= x) ++si;
