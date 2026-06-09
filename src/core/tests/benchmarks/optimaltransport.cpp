@@ -32,16 +32,16 @@
 // =====================================================================================
 //
 // Benchmarks the optimal-transport TF interpolators across parameter sweeps:
-//   * `optimalTransportInterpolation`                 (piecewise-linear / secant-based)
-//   * `optimalTransportInterpolationClosedForm`       (closed-form vertex opacities)
-//   * `optimalTransportInterpolationRefined`          (adaptive placement, secant opacities)
-//   * `optimalTransportInterpolationOptimalSampling`  (adaptive placement at the closed-form
-//                                                      opacity-error maximizer q*)
+//   * `optimalTransportInterpolationUniformQ`                (uniform q, secant opacity)
+//   * `optimalTransportInterpolationUniformQExact`           (uniform q, exact opacity)
+//   * `optimalTransportInterpolationAdaptiveQExact`          (adaptive q midpoint, exact opacity)
+//   * `optimalTransportInterpolationAdaptiveQSecant`         (adaptive q midpoint, secant opacity)
+//   * `optimalTransportInterpolationOpacityOptimalQExact`    (opacity-optimal q, exact opacity)
 // over:
 //   * number of control points N           (controlPointCounts below)
-//   * samplesPerSegment                     (samplesPerSegmentValues, PWL only)
-//   * ClosedFormRefinementOptions           (relTolValues x maxQLValues x maxIterValues;
-//                                            CF / PwlRef / OptSamp)
+//   * samplesPerSegment                     (samplesPerSegmentValues, uniform-q only)
+//   * QuantileRefinementOptions             (relTolValues x maxQLValues x maxIterValues;
+//                                            adaptive-q / opacity-optimal-q methods)
 //
 // Each benchmark instance reports the standard Google Benchmark auto-tuned wall-clock
 // time and (separately, computed once outside the timed loop) the L-infinity, L1 and L2
@@ -53,10 +53,11 @@
 // directory (timestamp fixed at run start):
 //
 //   optimaltransport_benchmark_<ts>_gallery.csv
-//   optimaltransport_benchmark_<ts>_pwl_sweep.csv         /  .tex
-//   optimaltransport_benchmark_<ts>_closedform_sweep.csv  /  .tex
-//   optimaltransport_benchmark_<ts>_pwlref_sweep.csv      /  .tex
-//   optimaltransport_benchmark_<ts>_optsamp_sweep.csv     /  .tex
+//   optimaltransport_benchmark_<ts>_uniform_q_sweep.csv              /  .tex
+//   optimaltransport_benchmark_<ts>_uniform_q_exact_sweep.csv       /  .tex
+//   optimaltransport_benchmark_<ts>_adaptive_q_exact_sweep.csv       /  .tex
+//   optimaltransport_benchmark_<ts>_adaptive_q_secant_sweep.csv      /  .tex
+//   optimaltransport_benchmark_<ts>_opacity_optimal_q_exact_sweep.csv /  .tex
 //   optimaltransport_benchmark_<ts>_compare.csv           /  .tex
 //
 // Bolding policy in LaTeX:
@@ -301,70 +302,88 @@ void BM_Pwl(benchmark::State& state, std::size_t N, std::size_t sps) {
     auto pair = makePair(N);
     const std::string name = state.name();
     if (!accuracyKnown(name)) {
-        auto result = algorithm::optimalTransportInterpolation(pair.a, pair.b, interpT, sps);
+        auto result = algorithm::optimalTransportInterpolationUniformQ(pair.a, pair.b, interpT, sps);
         auto metrics = computeErrorMetrics(result, pair.a, pair.b, interpT);
         metrics.outVertices = result.size();
         recordAccuracy(name, metrics);
     }
     for (auto _ : state) {
-        auto result = algorithm::optimalTransportInterpolation(pair.a, pair.b, interpT, sps);
+        auto result = algorithm::optimalTransportInterpolationUniformQ(pair.a, pair.b, interpT, sps);
+        benchmark::DoNotOptimize(result);
+        benchmark::ClobberMemory();
+    }
+}
+
+void BM_UniformQExact(benchmark::State& state, std::size_t N, std::size_t sps) {
+    auto pair = makePair(N);
+    const std::string name = state.name();
+    if (!accuracyKnown(name)) {
+        auto result =
+            algorithm::optimalTransportInterpolationUniformQExact(pair.a, pair.b, interpT, sps);
+        auto metrics = computeErrorMetrics(result, pair.a, pair.b, interpT);
+        metrics.outVertices = result.size();
+        recordAccuracy(name, metrics);
+    }
+    for (auto _ : state) {
+        auto result =
+            algorithm::optimalTransportInterpolationUniformQExact(pair.a, pair.b, interpT, sps);
         benchmark::DoNotOptimize(result);
         benchmark::ClobberMemory();
     }
 }
 
 void BM_CF(benchmark::State& state, std::size_t N,
-           algorithm::ClosedFormRefinementOptions opts) {
+           algorithm::QuantileRefinementOptions opts) {
     auto pair = makePair(N);
     const std::string name = state.name();
     if (!accuracyKnown(name)) {
         auto result =
-            algorithm::optimalTransportInterpolationClosedForm(pair.a, pair.b, interpT, opts);
+            algorithm::optimalTransportInterpolationAdaptiveQExact(pair.a, pair.b, interpT, opts);
         auto metrics = computeErrorMetrics(result, pair.a, pair.b, interpT);
         metrics.outVertices = result.size();
         recordAccuracy(name, metrics);
     }
     for (auto _ : state) {
         auto result =
-            algorithm::optimalTransportInterpolationClosedForm(pair.a, pair.b, interpT, opts);
+            algorithm::optimalTransportInterpolationAdaptiveQExact(pair.a, pair.b, interpT, opts);
         benchmark::DoNotOptimize(result);
         benchmark::ClobberMemory();
     }
 }
 
 void BM_PwlRef(benchmark::State& state, std::size_t N,
-               algorithm::ClosedFormRefinementOptions opts) {
+               algorithm::QuantileRefinementOptions opts) {
     auto pair = makePair(N);
     const std::string name = state.name();
     if (!accuracyKnown(name)) {
         auto result =
-            algorithm::optimalTransportInterpolationRefined(pair.a, pair.b, interpT, opts);
+            algorithm::optimalTransportInterpolationAdaptiveQSecant(pair.a, pair.b, interpT, opts);
         auto metrics = computeErrorMetrics(result, pair.a, pair.b, interpT);
         metrics.outVertices = result.size();
         recordAccuracy(name, metrics);
     }
     for (auto _ : state) {
         auto result =
-            algorithm::optimalTransportInterpolationRefined(pair.a, pair.b, interpT, opts);
+            algorithm::optimalTransportInterpolationAdaptiveQSecant(pair.a, pair.b, interpT, opts);
         benchmark::DoNotOptimize(result);
         benchmark::ClobberMemory();
     }
 }
 
 void BM_OptSamp(benchmark::State& state, std::size_t N,
-                algorithm::ClosedFormRefinementOptions opts) {
+                algorithm::QuantileRefinementOptions opts) {
     auto pair = makePair(N);
     const std::string name = state.name();
     if (!accuracyKnown(name)) {
         auto result =
-            algorithm::optimalTransportInterpolationOptimalSampling(pair.a, pair.b, interpT, opts);
+            algorithm::optimalTransportInterpolationOpacityOptimalQExact(pair.a, pair.b, interpT, opts);
         auto metrics = computeErrorMetrics(result, pair.a, pair.b, interpT);
         metrics.outVertices = result.size();
         recordAccuracy(name, metrics);
     }
     for (auto _ : state) {
         auto result =
-            algorithm::optimalTransportInterpolationOptimalSampling(pair.a, pair.b, interpT, opts);
+            algorithm::optimalTransportInterpolationOpacityOptimalQExact(pair.a, pair.b, interpT, opts);
         benchmark::DoNotOptimize(result);
         benchmark::ClobberMemory();
     }
@@ -382,27 +401,33 @@ std::string formatRelTol(double r) {
 
 std::string pwlName(std::size_t N, std::size_t sps) {
     std::ostringstream os;
-    os << "OT_Pwl/N=" << N << "/sps=" << sps;
+    os << "OT_UniformQ/N=" << N << "/sps=" << sps;
+    return os.str();
+}
+
+std::string uniformQExactName(std::size_t N, std::size_t sps) {
+    std::ostringstream os;
+    os << "OT_UniformQExact/N=" << N << "/sps=" << sps;
     return os.str();
 }
 
 std::string cfName(std::size_t N, double relTol, std::size_t maxQL, std::size_t maxIter) {
     std::ostringstream os;
-    os << "OT_CF/N=" << N << "/relTol=" << formatRelTol(relTol)
+    os << "OT_AdaptiveQExact/N=" << N << "/relTol=" << formatRelTol(relTol)
        << "/maxQL=" << maxQL << "/maxIter=" << maxIter;
     return os.str();
 }
 
 std::string pwlRefName(std::size_t N, double relTol, std::size_t maxQL, std::size_t maxIter) {
     std::ostringstream os;
-    os << "OT_PwlRef/N=" << N << "/relTol=" << formatRelTol(relTol)
+    os << "OT_AdaptiveQSecant/N=" << N << "/relTol=" << formatRelTol(relTol)
        << "/maxQL=" << maxQL << "/maxIter=" << maxIter;
     return os.str();
 }
 
 std::string optSampName(std::size_t N, double relTol, std::size_t maxQL, std::size_t maxIter) {
     std::ostringstream os;
-    os << "OT_OptSamp/N=" << N << "/relTol=" << formatRelTol(relTol)
+    os << "OT_OpacityOptimalQExact/N=" << N << "/relTol=" << formatRelTol(relTol)
        << "/maxQL=" << maxQL << "/maxIter=" << maxIter;
     return os.str();
 }
@@ -419,6 +444,10 @@ struct CfCfg {
     std::size_t maxIter = 0;
 };
 std::unordered_map<std::string, PwlCfg>& pwlRegistry() {
+    static std::unordered_map<std::string, PwlCfg> r;
+    return r;
+}
+std::unordered_map<std::string, PwlCfg>& uniformQExactRegistry() {
     static std::unordered_map<std::string, PwlCfg> r;
     return r;
 }
@@ -455,12 +484,25 @@ void registerAll() {
         }
     }
 
+    // Uniform-q exact sweep: (N, samplesPerSegment)
+    for (auto N : controlPointCounts) {
+        for (auto sps : samplesPerSegmentValues) {
+            const std::string n = uniformQExactName(N, sps);
+            uniformQExactRegistry().emplace(n, PwlCfg{N, sps});
+            RegisterBenchmark(n.c_str(), [N, sps](benchmark::State& s) {
+                BM_UniformQExact(s, N, sps);
+            })
+                ->Unit(benchmark::kMicrosecond)
+                ->MinTime(benchMinTime);
+        }
+    }
+
     // Closed-form sweep: (N, relTol, maxQL, maxIter)
     for (auto N : controlPointCounts) {
         for (auto r : relTolValues) {
             for (auto q : maxQLValues) {
                 for (auto it : maxIterValues) {
-                    algorithm::ClosedFormRefinementOptions opts{};
+                    algorithm::QuantileRefinementOptions opts{};
                     opts.relativeTolerance = r;
                     opts.maxQuantileLevels = q;
                     opts.maxRefinementIterations = it;
@@ -482,7 +524,7 @@ void registerAll() {
         for (auto r : relTolValues) {
             for (auto q : maxQLValues) {
                 for (auto it : maxIterValues) {
-                    algorithm::ClosedFormRefinementOptions opts{};
+                    algorithm::QuantileRefinementOptions opts{};
                     opts.relativeTolerance = r;
                     opts.maxQuantileLevels = q;
                     opts.maxRefinementIterations = it;
@@ -505,7 +547,7 @@ void registerAll() {
         for (auto r : relTolValues) {
             for (auto q : maxQLValues) {
                 for (auto it : maxIterValues) {
-                    algorithm::ClosedFormRefinementOptions opts{};
+                    algorithm::QuantileRefinementOptions opts{};
                     opts.relativeTolerance = r;
                     opts.maxQuantileLevels = q;
                     opts.maxRefinementIterations = it;
@@ -659,8 +701,8 @@ void writePwlSweepCsv(const std::filesystem::path& path,
     }
 }
 
-void writePwlSweepTex(const std::filesystem::path& path,
-                      const std::vector<JoinedRow>& rows) {
+void writePwlSweepTex(const std::filesystem::path& path, const std::vector<JoinedRow>& rows,
+                      std::string_view caption, std::string_view label) {
     // Group by N to determine bolding.
     std::map<std::size_t, std::vector<std::size_t>> groups;
     for (std::size_t i = 0; i < rows.size(); ++i) {
@@ -676,18 +718,8 @@ void writePwlSweepTex(const std::filesystem::path& path,
     os << "% Requires LaTeX packages: booktabs.\n";
     os << "\\begin{table}[ht]\n";
     os << "\\centering\n";
-    os << "\\caption{Parameter sweep for the piecewise-linear (secant-based) optimal-transport "
-          "interpolation \\texttt{optimalTransportInterpolation}. The complexity axis is the "
-          "number of control points $N$ in each input TF. Both tfA and tfB are built from $N$ control "
-          "points at random positions $x\\sim U[0,1]$ with random opacities "
-          "$\\alpha\\sim U[0,1]$ (distinct fixed seeds). "
-          "Each row reports one configuration of $N$ and \\texttt{samplesPerSegment} (sps). "
-          "\\emph{Time} is the auto-tuned mean wall-clock per call (Google Benchmark). "
-          "$L_\\infty$, $L_1$ and $L_2$ are the errors of the interpolated $\\alpha_t(x)$ on a "
-          "dense uniform grid against \\texttt{evaluateInterpolatedAlpha} as reference. "
-          "Within each $N$ block, the row with the lowest $L_\\infty$ and "
-          "the row with the lowest time are typeset in bold; both columns are bolded independently.}\n";
-    os << "\\label{tab:ot-pwl-sweep}\n";
+    os << "\\caption{" << caption << "}\n";
+    os << "\\label{" << label << "}\n";
     os << "\\begin{tabular}{rrrrrrr}\n";
     os << "\\toprule\n";
     os << "$N$ & sps & time [ns] & $L_\\infty$ & $L_1$ & $L_2$ \\\\\n";
@@ -815,10 +847,10 @@ void writeCompareCsv(const std::filesystem::path& path, const std::vector<Compar
         return;
     }
     os << "N,"
-          "pwl_best_acc_cfg,pwl_best_acc_Linf,pwl_best_acc_time_ns,"
-          "cf_best_acc_cfg,cf_best_acc_Linf,cf_best_acc_time_ns,"
-          "pwl_best_time_cfg,pwl_best_time_Linf,pwl_best_time_ns,"
-          "cf_best_time_cfg,cf_best_time_Linf,cf_best_time_ns\n";
+          "uniform_q_best_acc_cfg,uniform_q_best_acc_Linf,uniform_q_best_acc_time_ns,"
+          "adaptive_q_exact_best_acc_cfg,adaptive_q_exact_best_acc_Linf,adaptive_q_exact_best_acc_time_ns,"
+          "uniform_q_best_time_cfg,uniform_q_best_time_Linf,uniform_q_best_time_ns,"
+          "adaptive_q_exact_best_time_cfg,adaptive_q_exact_best_time_Linf,adaptive_q_exact_best_time_ns\n";
     for (const auto& r : rows) {
         os << r.N << ',';
         os << csvEscape(r.pwlAccCfg) << ',' << fmtSci(r.pwlAccLinf) << ','
@@ -842,13 +874,14 @@ void writeCompareTex(const std::filesystem::path& path, const std::vector<Compar
     os << "% Requires LaTeX packages: booktabs.\n";
     os << "\\begin{table}[ht]\n";
     os << "\\centering\n";
-    os << "\\caption{Head-to-head comparison of the piecewise-linear (PWL) and closed-form (CF) "
-          "optimal-transport interpolators on matched inputs. The complexity axis is the "
+    os << "\\caption{Head-to-head comparison of uniform-q sampling (secant opacity) and "
+          "adaptive-q sampling (exact opacity) on matched inputs. The complexity axis is the "
           "number of control points $N$ in each input TF, with both tfA and tfB built from $N$ random "
           "control points. For every $N$ "
           "we select the configuration of each method that minimises $L_\\infty$ "
           "(\\emph{best-accuracy config}) and the configuration that minimises the auto-tuned "
-          "mean wall-clock time (\\emph{best-time config}). Each pair of rows (PWL above, CF below) "
+          "mean wall-clock time (\\emph{best-time config}). Each pair of rows (uniform-q above, "
+          "adaptive-q exact below) "
           "shares the same input. Within each row pair, the smaller of the two $L_\\infty$ values "
           "and the smaller of the two mean times are typeset in bold; the two columns are compared "
           "independently.}\n";
@@ -887,7 +920,7 @@ void writeCompareTex(const std::filesystem::path& path, const std::vector<Compar
             r.hasPwl && r.hasCf ? (r.cfTimeNs < r.pwlTimeNs) : r.hasCf;
 
         if (r.hasPwl) {
-            os << r.N << " & PWL & " << texEscape(r.pwlAccCfg) << " & "
+            os << r.N << " & Uniform-q & " << texEscape(r.pwlAccCfg) << " & "
                << wrap(fmtSci(r.pwlAccLinf), pwlBestAccErr) << " & "
                << wrap(fmtSci(r.pwlAccTime), pwlBestAccTime) << " & "
                << texEscape(r.pwlTimeCfg) << " & "
@@ -895,7 +928,7 @@ void writeCompareTex(const std::filesystem::path& path, const std::vector<Compar
                << wrap(fmtSci(r.pwlTimeNs), pwlBestTimeTime) << " \\\\\n";
         }
         if (r.hasCf) {
-            os << r.N << " & CF & " << texEscape(r.cfAccCfg) << " & "
+            os << r.N << " & Adaptive-q exact & " << texEscape(r.cfAccCfg) << " & "
                << wrap(fmtSci(r.cfAccLinf), cfBestAccErr) << " & "
                << wrap(fmtSci(r.cfAccTime), cfBestAccTime) << " & "
                << texEscape(r.cfTimeCfg) << " & "
@@ -937,8 +970,8 @@ void writeCfSweepTex(const std::filesystem::path& path, const std::vector<Joined
     os << "% Requires LaTeX packages: booktabs.\n";
     os << "\\begin{table}[ht]\n";
     os << "\\centering\n";
-    os << "\\caption{Parameter sweep for the closed-form optimal-transport interpolation "
-          "\\texttt{optimalTransportInterpolationClosedForm}. The complexity axis is the number of "
+    os << "\\caption{Parameter sweep for adaptive-q sampling with exact opacity "
+          "(\\texttt{optimalTransportInterpolationAdaptiveQExact}). The complexity axis is the number of "
           "control points $N$ in each input TF. Each row reports one configuration of $N$ and the adaptive "
           "refinement options \\texttt{relativeTolerance} (relTol), "
           "\\texttt{maxQuantileLevels} (maxQL) and "
@@ -948,7 +981,7 @@ void writeCfSweepTex(const std::filesystem::path& path, const std::vector<Joined
           "\\texttt{evaluateInterpolatedAlpha} as reference. Within each $N$ block, the row with "
           "the lowest $L_\\infty$ and the row with the lowest time are typeset in bold; both "
           "columns are bolded independently.}\n";
-    os << "\\label{tab:ot-cf-sweep}\n";
+    os << "\\label{tab:ot-adaptive-q-exact-sweep}\n";
     os << "\\begin{tabular}{rrrrrrrr}\n";
     os << "\\toprule\n";
     os << "$N$ & relTol & maxQL & maxIter & time [ns] & $L_\\infty$ & $L_1$ & "
@@ -1056,6 +1089,34 @@ int main(int argc, char** argv) {
         }
     }
 
+    std::vector<JoinedRow> uniformQExactRows;
+    uniformQExactRows.reserve(uniformQExactRegistry().size());
+    std::size_t uniformQExactJoined = 0;
+    {
+        std::scoped_lock lock{accuracyMutex()};
+        const auto& acc = accuracyTable();
+        for (const auto& [name, cfg] : uniformQExactRegistry()) {
+            JoinedRow jr;
+            jr.name = name;
+            jr.N = cfg.N;
+            jr.sps = cfg.sps;
+            if (auto it = acc.find(name); it != acc.end()) {
+                jr.err = it->second;
+            } else {
+                jr.err = ErrorMetrics{nan, nan, nan};
+            }
+            if (auto* tr = findTiming(name)) {
+                jr.timeNs = tr->meanRealTimeNs;
+                jr.iterations = tr->iterations;
+                ++uniformQExactJoined;
+            } else {
+                jr.timeNs = nan;
+                jr.iterations = 0;
+            }
+            uniformQExactRows.push_back(std::move(jr));
+        }
+    }
+
     std::vector<JoinedRow> cfRows;
     cfRows.reserve(cfRegistry().size());
     std::size_t cfJoined = 0;
@@ -1145,10 +1206,12 @@ int main(int argc, char** argv) {
             optSampRows.push_back(std::move(jr));
         }
     }
-    std::cerr << "[bm-optimaltransport] joined timing: pwl=" << pwlJoined << "/"
-              << pwlRows.size() << ", cf=" << cfJoined << "/" << cfRows.size()
-              << ", pwlref=" << pwlRefJoined << "/" << pwlRefRows.size()
-              << ", optsamp=" << optSampJoined << "/" << optSampRows.size() << "\n";
+    std::cerr << "[bm-optimaltransport] joined timing: uniform_q=" << pwlJoined << "/"
+              << pwlRows.size() << ", uniform_q_exact=" << uniformQExactJoined << "/"
+              << uniformQExactRows.size() << ", adaptive_q_exact=" << cfJoined << "/"
+              << cfRows.size() << ", adaptive_q_secant=" << pwlRefJoined << "/"
+              << pwlRefRows.size() << ", opacity_optimal_q_exact=" << optSampJoined << "/"
+              << optSampRows.size() << "\n";
 
     // Sort for stable, readable output.
     auto pwlLess = [](const JoinedRow& a, const JoinedRow& b) {
@@ -1159,51 +1222,82 @@ int main(int argc, char** argv) {
                std::tie(b.N, b.relTol, b.maxQL, b.maxIter);
     };
     std::sort(pwlRows.begin(), pwlRows.end(), pwlLess);
+    std::sort(uniformQExactRows.begin(), uniformQExactRows.end(), pwlLess);
     std::sort(cfRows.begin(), cfRows.end(), cfLess);
     std::sort(pwlRefRows.begin(), pwlRefRows.end(), cfLess);
     std::sort(optSampRows.begin(), optSampRows.end(), cfLess);
 
     const std::string ts = formatNow();
     const std::filesystem::path cwd = std::filesystem::current_path();
-    const std::filesystem::path pwlCsv =
-        cwd / ("optimaltransport_benchmark_" + ts + "_pwl_sweep.csv");
-    const std::filesystem::path pwlTex =
-        cwd / ("optimaltransport_benchmark_" + ts + "_pwl_sweep.tex");
-    const std::filesystem::path cfCsv =
-        cwd / ("optimaltransport_benchmark_" + ts + "_closedform_sweep.csv");
-    const std::filesystem::path cfTex =
-        cwd / ("optimaltransport_benchmark_" + ts + "_closedform_sweep.tex");
+    const std::filesystem::path uniformQCsv =
+        cwd / ("optimaltransport_benchmark_" + ts + "_uniform_q_sweep.csv");
+    const std::filesystem::path uniformQTex =
+        cwd / ("optimaltransport_benchmark_" + ts + "_uniform_q_sweep.tex");
+    const std::filesystem::path uniformQExactCsv =
+        cwd / ("optimaltransport_benchmark_" + ts + "_uniform_q_exact_sweep.csv");
+    const std::filesystem::path uniformQExactTex =
+        cwd / ("optimaltransport_benchmark_" + ts + "_uniform_q_exact_sweep.tex");
+    const std::filesystem::path adaptiveQExactCsv =
+        cwd / ("optimaltransport_benchmark_" + ts + "_adaptive_q_exact_sweep.csv");
+    const std::filesystem::path adaptiveQExactTex =
+        cwd / ("optimaltransport_benchmark_" + ts + "_adaptive_q_exact_sweep.tex");
     const std::filesystem::path cmpCsv =
         cwd / ("optimaltransport_benchmark_" + ts + "_compare.csv");
     const std::filesystem::path cmpTex =
         cwd / ("optimaltransport_benchmark_" + ts + "_compare.tex");
 
-    const std::filesystem::path pwlRefCsv =
-        cwd / ("optimaltransport_benchmark_" + ts + "_pwlref_sweep.csv");
-    const std::filesystem::path pwlRefTex =
-        cwd / ("optimaltransport_benchmark_" + ts + "_pwlref_sweep.tex");
+    const std::filesystem::path adaptiveQSecantCsv =
+        cwd / ("optimaltransport_benchmark_" + ts + "_adaptive_q_secant_sweep.csv");
+    const std::filesystem::path adaptiveQSecantTex =
+        cwd / ("optimaltransport_benchmark_" + ts + "_adaptive_q_secant_sweep.tex");
 
-    const std::filesystem::path optSampCsv =
-        cwd / ("optimaltransport_benchmark_" + ts + "_optsamp_sweep.csv");
-    const std::filesystem::path optSampTex =
-        cwd / ("optimaltransport_benchmark_" + ts + "_optsamp_sweep.tex");
+    const std::filesystem::path opacityOptimalQExactCsv =
+        cwd / ("optimaltransport_benchmark_" + ts + "_opacity_optimal_q_exact_sweep.csv");
+    const std::filesystem::path opacityOptimalQExactTex =
+        cwd / ("optimaltransport_benchmark_" + ts + "_opacity_optimal_q_exact_sweep.tex");
 
     const std::filesystem::path galleryCsv =
         cwd / ("optimaltransport_benchmark_" + ts + "_gallery.csv");
 
     writeGalleryCsv(galleryCsv);
-    writePwlSweepCsv(pwlCsv, pwlRows);
-    writePwlSweepTex(pwlTex, pwlRows);
-    writeCfSweepCsv(cfCsv, cfRows);
-    writeCfSweepTex(cfTex, cfRows);
+    writePwlSweepCsv(uniformQCsv, pwlRows);
+    writePwlSweepTex(
+        uniformQTex, pwlRows,
+        "Parameter sweep for uniform-q sampling with secant opacity "
+        "(\\texttt{optimalTransportInterpolationUniformQ}). The complexity axis is the "
+        "number of control points $N$ in each input TF. Both tfA and tfB are built from $N$ control "
+        "points at random positions $x\\sim U[0,1]$ with random opacities "
+        "$\\alpha\\sim U[0,1]$ (distinct fixed seeds). "
+        "Each row reports one configuration of $N$ and \\texttt{samplesPerSegment} (sps). "
+        "\\emph{Time} is the auto-tuned mean wall-clock per call (Google Benchmark). "
+        "$L_\\infty$, $L_1$ and $L_2$ are the errors of the interpolated $\\alpha_t(x)$ on a "
+        "dense uniform grid against \\texttt{evaluateInterpolatedAlpha} as reference. "
+        "Within each $N$ block, the row with the lowest $L_\\infty$ and "
+        "the row with the lowest time are typeset in bold; both columns are bolded independently.",
+        "tab:ot-uniform-q-sweep");
+    writePwlSweepCsv(uniformQExactCsv, uniformQExactRows);
+    writePwlSweepTex(
+        uniformQExactTex, uniformQExactRows,
+        "Parameter sweep for uniform-q sampling with exact opacity "
+        "(\\texttt{optimalTransportInterpolationUniformQExact}). The complexity axis is the "
+        "number of control points $N$ in each input TF. Both tfA and tfB are built from $N$ control "
+        "points at random positions $x\\sim U[0,1]$ with random opacities "
+        "$\\alpha\\sim U[0,1]$ (distinct fixed seeds). "
+        "Each row reports one configuration of $N$ and \\texttt{samplesPerSegment} (sps). "
+        "\\emph{Time} is the auto-tuned mean wall-clock per call (Google Benchmark). "
+        "$L_\\infty$, $L_1$ and $L_2$ are the errors of the interpolated $\\alpha_t(x)$ on a "
+        "dense uniform grid against \\texttt{evaluateInterpolatedAlpha} as reference. "
+        "Within each $N$ block, the row with the lowest $L_\\infty$ and "
+        "the row with the lowest time are typeset in bold; both columns are bolded independently.",
+        "tab:ot-uniform-q-exact-sweep");
+    writeCfSweepCsv(adaptiveQExactCsv, cfRows);
+    writeCfSweepTex(adaptiveQExactTex, cfRows);
 
-    // PWL-with-refinement shares the closed-form CSV/TeX schema (relTol/maxQL/maxIter).
-    writeCfSweepCsv(pwlRefCsv, pwlRefRows);
-    writeCfSweepTex(pwlRefTex, pwlRefRows);
+    writeCfSweepCsv(adaptiveQSecantCsv, pwlRefRows);
+    writeCfSweepTex(adaptiveQSecantTex, pwlRefRows);
 
-    // Optimal-sampling shares the closed-form CSV/TeX schema (relTol/maxQL/maxIter).
-    writeCfSweepCsv(optSampCsv, optSampRows);
-    writeCfSweepTex(optSampTex, optSampRows);
+    writeCfSweepCsv(opacityOptimalQExactCsv, optSampRows);
+    writeCfSweepTex(opacityOptimalQExactTex, optSampRows);
 
     auto cmpRows = buildCompareRows(pwlRows, cfRows);
     writeCompareCsv(cmpCsv, cmpRows);
@@ -1211,14 +1305,17 @@ int main(int argc, char** argv) {
 
     std::cout << "\nBenchmark output files written to:\n"
               << "  " << galleryCsv.string() << "\n"
-              << "  " << pwlCsv.string() << "  (" << pwlRows.size() << " rows)\n"
-              << "  " << pwlTex.string() << "\n"
-              << "  " << cfCsv.string() << "  (" << cfRows.size() << " rows)\n"
-              << "  " << cfTex.string() << "\n"
-              << "  " << pwlRefCsv.string() << "  (" << pwlRefRows.size() << " rows)\n"
-              << "  " << pwlRefTex.string() << "\n"
-              << "  " << optSampCsv.string() << "  (" << optSampRows.size() << " rows)\n"
-              << "  " << optSampTex.string() << "\n"
+              << "  " << uniformQCsv.string() << "  (" << pwlRows.size() << " rows)\n"
+              << "  " << uniformQTex.string() << "\n"
+              << "  " << uniformQExactCsv.string() << "  (" << uniformQExactRows.size()
+              << " rows)\n"
+              << "  " << uniformQExactTex.string() << "\n"
+              << "  " << adaptiveQExactCsv.string() << "  (" << cfRows.size() << " rows)\n"
+              << "  " << adaptiveQExactTex.string() << "\n"
+              << "  " << adaptiveQSecantCsv.string() << "  (" << pwlRefRows.size() << " rows)\n"
+              << "  " << adaptiveQSecantTex.string() << "\n"
+              << "  " << opacityOptimalQExactCsv.string() << "  (" << optSampRows.size() << " rows)\n"
+              << "  " << opacityOptimalQExactTex.string() << "\n"
               << "  " << cmpCsv.string() << "  (" << cmpRows.size() << " rows)\n"
               << "  " << cmpTex.string() << "\n";
 

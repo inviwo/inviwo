@@ -78,7 +78,7 @@ TEST(OptimalTransport, IdentityInterpolation) {
              {0.5, vec4{0.0f, 1.0f, 0.0f, 1.0f}},
              {1.0, vec4{0.0f, 0.0f, 1.0f, 0.5f}}};
 
-    auto result = algorithm::optimalTransportInterpolation(tf, tf, 0.5);
+    auto result = algorithm::optimalTransportInterpolationUniformQ(tf, tf, 0.5);
 
     // The result should have the same total mass as the input.
     double massTF = totalMass(tf);
@@ -94,7 +94,7 @@ TEST(OptimalTransport, BoundaryT0ReturnsA) {
     TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.0);
+    auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.0);
 
     // Should be identical to a.
     ASSERT_EQ(result.size(), a.size());
@@ -108,7 +108,7 @@ TEST(OptimalTransport, BoundaryT1ReturnsB) {
     TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 1.0);
+    auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, 1.0);
 
     ASSERT_EQ(result.size(), b.size());
     for (std::size_t i = 0; i < b.size(); ++i) {
@@ -130,7 +130,7 @@ TEST(OptimalTransport, MassConservationUniform) {
     double massB = totalMass(b);
 
     for (double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
-        auto result = algorithm::optimalTransportInterpolation(a, b, t);
+        auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, t);
         double expected = (1.0 - t) * massA + t * massB;
         double actual = totalMass(result);
         EXPECT_NEAR(actual, expected, 1e-3)
@@ -146,7 +146,7 @@ TEST(OptimalTransport, MassConservationSpikes) {
     double massB = totalMass(b);
 
     for (double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
-        auto result = algorithm::optimalTransportInterpolation(a, b, t);
+        auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, t);
         double expected = (1.0 - t) * massA + t * massB;
         double actual = totalMass(result);
         EXPECT_NEAR(actual, expected, 1e-2) << "Mass not conserved for spikes at t=" << t;
@@ -163,7 +163,7 @@ TEST(OptimalTransport, SpikeTranslation) {
     TF a = spikeTF(0.2, 0.05, vec4{1.0f, 0.0f, 0.0f, 1.0f});
     TF b = spikeTF(0.8, 0.05, vec4{1.0f, 0.0f, 0.0f, 1.0f});
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5);
 
     // At t=0.5, the spike should be centered around 0.5.
     // Find position of maximum alpha.
@@ -187,7 +187,7 @@ TEST(OptimalTransport, SpikeTranslationMonotone) {
     double prevCenter = 0.0;
     for (int step = 0; step <= 10; ++step) {
         double t = step / 10.0;
-        auto result = algorithm::optimalTransportInterpolation(a, b, t);
+        auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, t);
 
         // Compute center of mass.
         double massWeighted = 0.0;
@@ -227,8 +227,8 @@ TEST(OptimalTransport, Symmetry) {
             {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
     double t = 0.3;
-    auto resultAB = algorithm::optimalTransportInterpolation(a, b, t);
-    auto resultBA = algorithm::optimalTransportInterpolation(b, a, 1.0 - t);
+    auto resultAB = algorithm::optimalTransportInterpolationUniformQ(a, b, t);
+    auto resultBA = algorithm::optimalTransportInterpolationUniformQ(b, a, 1.0 - t);
 
     // Total mass should be the same.
     double massAB = totalMass(resultAB);
@@ -244,7 +244,7 @@ TEST(OptimalTransport, EmptyAReturnsB) {
     TF a;
     TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5);
     ASSERT_EQ(result.size(), b.size());
 }
 
@@ -252,7 +252,7 @@ TEST(OptimalTransport, EmptyBReturnsA) {
     TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b;
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5);
     ASSERT_EQ(result.size(), a.size());
 }
 
@@ -260,7 +260,7 @@ TEST(OptimalTransport, BothEmpty) {
     TF a;
     TF b;
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5);
     EXPECT_TRUE(result.empty());
 }
 
@@ -270,7 +270,7 @@ TEST(OptimalTransport, SinglePointTF) {
 
     // Single-point TFs have zero mass (need at least two points for area).
     // Should fall back to linear blend or handle gracefully.
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5);
     EXPECT_FALSE(result.empty());
 }
 
@@ -282,7 +282,7 @@ TEST(OptimalTransport, ZeroAlphaFallback) {
     TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}}};
     TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5);
 
     double mass = totalMass(result);
     EXPECT_NEAR(mass, 0.0, 1e-12) << "Zero-alpha TFs should produce zero-alpha result";
@@ -303,7 +303,7 @@ TEST(OptimalTransport, NonNegativeAlpha) {
             {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
     for (double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
-        auto result = algorithm::optimalTransportInterpolation(a, b, t);
+        auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, t);
         for (const auto& p : result) {
             EXPECT_GE(p.color.a, 0.0f) << "Negative alpha at pos=" << p.pos << " t=" << t;
         }
@@ -320,7 +320,7 @@ TEST(OptimalTransport, PositionsWithinDomain) {
     TF b = {{0.6, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {0.9, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
     for (double t : {0.0, 0.25, 0.5, 0.75, 1.0}) {
-        auto result = algorithm::optimalTransportInterpolation(a, b, t);
+        auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, t);
         for (const auto& p : result) {
             EXPECT_GE(p.pos, 0.1 - 1e-6) << "Position below domain min at t=" << t;
             EXPECT_LE(p.pos, 0.9 + 1e-6) << "Position above domain max at t=" << t;
@@ -343,7 +343,7 @@ TEST(OptimalTransport, MonotonePositions) {
             {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
     for (double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
-        auto result = algorithm::optimalTransportInterpolation(a, b, t);
+        auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, t);
         for (std::size_t i = 1; i < result.size(); ++i) {
             EXPECT_GE(result[i].pos, result[i - 1].pos - 1e-12)
                 << "Non-monotone positions at index " << i << " t=" << t;
@@ -424,7 +424,7 @@ TEST(OptimalTransport, ColorInterpolation) {
     TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5);
 
     // Check that result colors are approximately purple (0.5, 0, 0.5).
     for (const auto& p : result) {
@@ -455,7 +455,7 @@ TEST(OptimalTransport, ContinuityInT) {
 
     for (int i = 1; i <= steps; ++i) {
         double t = static_cast<double>(i) / steps;
-        auto result = algorithm::optimalTransportInterpolation(a, b, t);
+        auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, t);
         double mass = totalMass(result);
 
         // Mass should change smoothly (bounded by total mass difference / steps + tolerance).
@@ -479,8 +479,8 @@ TEST(OptimalTransport, UnsortedInput) {
                   {1.0, vec4{1.0f, 0.0f, 0.0f, 0.2f}}};
     TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.8f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 0.8f}}};
 
-    auto result1 = algorithm::optimalTransportInterpolation(a, b, 0.5);
-    auto result2 = algorithm::optimalTransportInterpolation(aSorted, b, 0.5);
+    auto result1 = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5);
+    auto result2 = algorithm::optimalTransportInterpolationUniformQ(aSorted, b, 0.5);
 
     // Both should produce the same total mass.
     EXPECT_NEAR(totalMass(result1), totalMass(result2), 1e-6)
@@ -500,9 +500,9 @@ TEST(OptimalTransport, SamplesPerSegmentMass) {
             {0.7, vec4{0.0f, 0.0f, 1.0f, 1.0f}},
             {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
-    auto result4 = algorithm::optimalTransportInterpolation(a, b, 0.5, 4);
-    auto result32 = algorithm::optimalTransportInterpolation(a, b, 0.5, 32);
-    auto result64 = algorithm::optimalTransportInterpolation(a, b, 0.5, 64);
+    auto result4 = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5, 4);
+    auto result32 = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5, 32);
+    auto result64 = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5, 64);
 
     double mass4 = totalMass(result4);
     double mass32 = totalMass(result32);
@@ -513,6 +513,25 @@ TEST(OptimalTransport, SamplesPerSegmentMass) {
     EXPECT_NEAR(mass4, expected, 0.06) << "Mass with 4 samples/segment";
     EXPECT_NEAR(mass32, expected, 0.03) << "Mass with 32 samples/segment";
     EXPECT_NEAR(mass64, expected, 0.02) << "Mass with 64 samples/segment";
+}
+
+TEST(OptimalTransport, UniformQExactMatchesUniformQQuantileGrid) {
+    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {0.3, vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {0.6, vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {1.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}}};
+    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {0.4, vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {0.7, vec4{0.0f, 0.0f, 1.0f, 1.0f}},
+            {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
+
+    const auto secant = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5, 16);
+    const auto exact = algorithm::optimalTransportInterpolationUniformQExact(a, b, 0.5, 16);
+
+    EXPECT_EQ(secant.size(), exact.size());
+    for (std::size_t i = 0; i < secant.size(); ++i) {
+        EXPECT_NEAR(secant[i].pos, exact[i].pos, 1e-9);
+    }
 }
 
 namespace {
@@ -578,50 +597,49 @@ const TransferFunction OTConf::tfDoublePeakRight{{{0.2, vec4{0.0f, 0.0f, 0.0f, 0
 
 TEST(OptimalTransport, TFInterpolate1PeekMidpoint) {
 
-    const auto res = algorithm::optimalTransportInterpolation(
+    const auto res = algorithm::optimalTransportInterpolationUniformQ(
         OTConf::tfSinglePeakLeft.get(), OTConf::tfSinglePeakRight.get(), 0.5, OTConf::segments);
     const TransferFunction interpolated{res};
     OTConf::check(interpolated, OTConf::tfSinglePeakMid);
 }
 
 TEST(OptimalTransport, TFInterpolate1PeekStart) {
-    const auto res = algorithm::optimalTransportInterpolation(
+    const auto res = algorithm::optimalTransportInterpolationUniformQ(
         OTConf::tfSinglePeakLeft.get(), OTConf::tfSinglePeakRight.get(), 0.00001, OTConf::segments);
     const TransferFunction interpolated{res};
     OTConf::check(interpolated, OTConf::tfSinglePeakLeft);
 }
 
 TEST(OptimalTransport, TFInterpolate1PeekEnd) {
-    const auto res = algorithm::optimalTransportInterpolation(
+    const auto res = algorithm::optimalTransportInterpolationUniformQ(
         OTConf::tfSinglePeakLeft.get(), OTConf::tfSinglePeakRight.get(), 0.99999, OTConf::segments);
     const TransferFunction interpolated{res};
     OTConf::check(interpolated, OTConf::tfSinglePeakRight);
 }
 
 TEST(OptimalTransport, TFInterpolate2PeekMid) {
-    const auto res = algorithm::optimalTransportInterpolation(
+    const auto res = algorithm::optimalTransportInterpolationUniformQ(
         OTConf::tfDoublePeakLeft.get(), OTConf::tfDoublePeakRight.get(), 0.5, OTConf::segments);
     const TransferFunction interpolated{res};
     OTConf::check(interpolated, OTConf::tfDoublePeakMid);
 }
 
 TEST(OptimalTransport, TFInterpolate2PeekStart) {
-    const auto res = algorithm::optimalTransportInterpolation(
+    const auto res = algorithm::optimalTransportInterpolationUniformQ(
         OTConf::tfDoublePeakLeft.get(), OTConf::tfDoublePeakRight.get(), 0.00001, OTConf::segments);
     const TransferFunction interpolated{res};
     OTConf::check(interpolated, OTConf::tfDoublePeakLeft);
 }
 
 TEST(OptimalTransport, TFInterpolate2PeekEnd) {
-    const auto res = algorithm::optimalTransportInterpolation(
+    const auto res = algorithm::optimalTransportInterpolationUniformQ(
         OTConf::tfDoublePeakLeft.get(), OTConf::tfDoublePeakRight.get(), 0.99999, OTConf::segments);
     const TransferFunction interpolated{res};
     OTConf::check(interpolated, OTConf::tfDoublePeakRight);
 }
 
 // -------------------------------------------------------------------
-// Error-optimal closed-form sampling
-// (optimalTransportInterpolationOptimalSampling).
+// Opacity-optimal q sampling (optimalTransportInterpolationOpacityOptimalQExact).
 // -------------------------------------------------------------------
 
 namespace {
@@ -651,7 +669,7 @@ double maxAlphaDeviation(std::span<const TFPrimitiveData> a, std::span<const TFP
 
 TEST(OptimalTransport, OptimalSamplingIdentity) {
     TF a = spikeTF(0.5, 0.2, vec4{1.0f, 0.0f, 0.0f, 1.0f});
-    auto res = algorithm::optimalTransportInterpolationOptimalSampling(a, a, 0.5);
+    auto res = algorithm::optimalTransportInterpolationOpacityOptimalQExact(a, a, 0.5);
     const TransferFunction interpolated{res};
     const TransferFunction reference{a};
     for (int i = 0; i < 100; ++i) {
@@ -664,8 +682,8 @@ TEST(OptimalTransport, OptimalSamplingBoundaries) {
     TF a = spikeTF(0.3, 0.15, vec4{1.0f, 0.0f, 0.0f, 1.0f});
     TF b = spikeTF(0.7, 0.15, vec4{0.0f, 0.0f, 1.0f, 1.0f});
 
-    auto res0 = algorithm::optimalTransportInterpolationOptimalSampling(a, b, 0.0);
-    auto res1 = algorithm::optimalTransportInterpolationOptimalSampling(a, b, 1.0);
+    auto res0 = algorithm::optimalTransportInterpolationOpacityOptimalQExact(a, b, 0.0);
+    auto res1 = algorithm::optimalTransportInterpolationOpacityOptimalQExact(a, b, 1.0);
 
     EXPECT_EQ(res0.size(), a.size());
     EXPECT_EQ(res1.size(), b.size());
@@ -690,7 +708,7 @@ TEST(OptimalTransport, OptimalSamplingMassConservation) {
             {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
     const double t = 0.5;
-    auto res = algorithm::optimalTransportInterpolationOptimalSampling(a, b, t);
+    auto res = algorithm::optimalTransportInterpolationOpacityOptimalQExact(a, b, t);
 
     const double expected = (1.0 - t) * totalMass(a) + t * totalMass(b);
     EXPECT_NEAR(totalMass(res), expected, 0.02);
@@ -705,13 +723,13 @@ TEST(OptimalTransport, OptimalSamplingMeetsTolerance) {
     TF b = spikeTF(0.75, 0.1, vec4{0.0f, 0.0f, 1.0f, 1.0f});
 
     const double t = 0.5;
-    const algorithm::ClosedFormRefinementOptions opts{
+    const algorithm::QuantileRefinementOptions opts{
         .relativeTolerance = 1e-3,
         .maxQuantileLevels = 2048,
         .maxRefinementIterations = 256,
     };
 
-    auto res = algorithm::optimalTransportInterpolationOptimalSampling(a, b, t, opts);
+    auto res = algorithm::optimalTransportInterpolationOpacityOptimalQExact(a, b, t, opts);
     const double dev = maxAlphaDeviation(a, b, res, t);
 
     // The reconstructed opacities are exact at vertices; the residual is the chord error
@@ -727,14 +745,14 @@ TEST(OptimalTransport, OptimalSamplingAtLeastAsAccurateAsMidpoint) {
 
     const double t = 0.5;
     const std::size_t budget = 24;
-    const algorithm::ClosedFormRefinementOptions opts{
+    const algorithm::QuantileRefinementOptions opts{
         .relativeTolerance = 1e-9,  // force refinement up to the level cap
         .maxQuantileLevels = budget,
         .maxRefinementIterations = budget,
     };
 
-    auto resOptimal = algorithm::optimalTransportInterpolationOptimalSampling(a, b, t, opts);
-    auto resMidpoint = algorithm::optimalTransportInterpolationClosedForm(a, b, t, opts);
+    auto resOptimal = algorithm::optimalTransportInterpolationOpacityOptimalQExact(a, b, t, opts);
+    auto resMidpoint = algorithm::optimalTransportInterpolationAdaptiveQExact(a, b, t, opts);
 
     const double devOptimal = maxAlphaDeviation(a, b, resOptimal, t);
     const double devMidpoint = maxAlphaDeviation(a, b, resMidpoint, t);
@@ -749,7 +767,7 @@ TEST(OptimalTransport, OptimalSamplingNonNegativeAlpha) {
     TF a = spikeTF(0.3, 0.15, vec4{1.0f, 0.0f, 0.0f, 1.0f});
     TF b = spikeTF(0.7, 0.15, vec4{0.0f, 0.0f, 1.0f, 1.0f});
 
-    auto res = algorithm::optimalTransportInterpolationOptimalSampling(a, b, 0.5);
+    auto res = algorithm::optimalTransportInterpolationOpacityOptimalQExact(a, b, 0.5);
     ASSERT_FALSE(res.empty());
     for (const auto& p : res) {
         EXPECT_GE(p.color.a, 0.0f);
@@ -760,7 +778,7 @@ TEST(OptimalTransport, OptimalSamplingMonotonePositions) {
     TF a = spikeTF(0.3, 0.15, vec4{1.0f, 0.0f, 0.0f, 1.0f});
     TF b = spikeTF(0.7, 0.15, vec4{0.0f, 0.0f, 1.0f, 1.0f});
 
-    auto res = algorithm::optimalTransportInterpolationOptimalSampling(a, b, 0.5);
+    auto res = algorithm::optimalTransportInterpolationOpacityOptimalQExact(a, b, 0.5);
     ASSERT_GE(res.size(), 2u);
     for (std::size_t i = 1; i < res.size(); ++i) {
         EXPECT_GE(res[i].pos, res[i - 1].pos);

@@ -54,7 +54,7 @@ namespace animation {
 
 namespace {}  // namespace
 
-TFInterpolationOptimalTransport::TFInterpolationOptimalTransport(InviwoApplication* app)
+TFInterpolationOTUniformQ::TFInterpolationOTUniformQ(InviwoApplication* app)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app)
     , segments{"segments", "Segments", util::ordinalCount(16uz)}
     , simplify{"simplify", "Simplify", util::ordinalLength(0.0, 0.1).setInc(0.0001)} {
@@ -62,8 +62,8 @@ TFInterpolationOptimalTransport::TFInterpolationOptimalTransport(InviwoApplicati
     addProperties(segments, simplify);
 }
 
-TFInterpolationOptimalTransport::TFInterpolationOptimalTransport(
-    const TFInterpolationOptimalTransport& rhs)
+TFInterpolationOTUniformQ::TFInterpolationOTUniformQ(
+    const TFInterpolationOTUniformQ& rhs)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(rhs)
     , segments{rhs.segments}
     , simplify{rhs.simplify} {
@@ -71,27 +71,27 @@ TFInterpolationOptimalTransport::TFInterpolationOptimalTransport(
     addProperties(segments, simplify);
 }
 
-TFInterpolationOptimalTransport* TFInterpolationOptimalTransport::clone() const {
-    return new TFInterpolationOptimalTransport(*this);
+TFInterpolationOTUniformQ* TFInterpolationOTUniformQ::clone() const {
+    return new TFInterpolationOTUniformQ(*this);
 }
 
-std::string_view TFInterpolationOptimalTransport::getDisplayName() const {
-    return "Optimal Transport";
+std::string_view TFInterpolationOTUniformQ::getDisplayName() const {
+    return "OT Uniform-q (secant)";
 }
 
-std::string_view TFInterpolationOptimalTransport::getClassIdentifier() const {
+std::string_view TFInterpolationOTUniformQ::getClassIdentifier() const {
     return classIdentifier();
 }
 
-bool TFInterpolationOptimalTransport::equal(const Interpolation& other) const {
+bool TFInterpolationOTUniformQ::equal(const Interpolation& other) const {
     return classIdentifier() == other.getClassIdentifier();
 }
 
-std::string_view TFInterpolationOptimalTransport::classIdentifier() {
-    return "org.inviwo.animation.TFInterpolationOptimalTransport";
+std::string_view TFInterpolationOTUniformQ::classIdentifier() {
+    return "org.inviwo.animation.TFInterpolationOTUniformQ";
 }
 
-void TFInterpolationOptimalTransport::operator()(
+void TFInterpolationOTUniformQ::operator()(
     const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds /*from*/,
     Seconds to, TransferFunction& out) const {
 
@@ -113,7 +113,7 @@ void TFInterpolationOptimalTransport::operator()(
     const auto t = util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
 
     const auto interpolated =
-        algorithm::optimalTransportInterpolation(v1.get(), v2.get(), t, segments.get());
+        algorithm::optimalTransportInterpolationUniformQ(v1.get(), v2.get(), t, segments.get());
 
     if (simplify.get() > 0.0) {
         out.set(TransferFunction::simplify(interpolated, simplify.get()));
@@ -123,47 +123,44 @@ void TFInterpolationOptimalTransport::operator()(
 }
 
 
-TFInterpolationOptimalTransportClosedForm::TFInterpolationOptimalTransportClosedForm(
-    InviwoApplication* app)
+TFInterpolationOTUniformQExact::TFInterpolationOTUniformQExact(InviwoApplication* app)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app)
-    , relativeTolerance{"relativeTolerance", "relativeTolerance",
-                        util::ordinalLength(1e-3, 0.1).setMin(1e-6).setInc(1e-4)}
-    , maxQuantileLevels{"maxQuantileLevels", "maxQuantileLevels", util::ordinalCount(2048uz)}
-    , maxRefinementIterations{"maxRefinementIterations", "maxRefinementIterations",
-                              util::ordinalCount(256uz)} {
-    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+    , segments{"segments", "Segments", util::ordinalCount(16uz)}
+    , simplify{"simplify", "Simplify", util::ordinalLength(0.0, 0.1).setInc(0.0001)} {
+
+    addProperties(segments, simplify);
 }
 
-TFInterpolationOptimalTransportClosedForm::TFInterpolationOptimalTransportClosedForm(
-    const TFInterpolationOptimalTransportClosedForm& rhs)
+TFInterpolationOTUniformQExact::TFInterpolationOTUniformQExact(
+    const TFInterpolationOTUniformQExact& rhs)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(rhs)
-    , relativeTolerance{rhs.relativeTolerance}
-    , maxQuantileLevels{rhs.maxQuantileLevels}
-    , maxRefinementIterations{rhs.maxRefinementIterations} {
-    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+    , segments{rhs.segments}
+    , simplify{rhs.simplify} {
+
+    addProperties(segments, simplify);
 }
 
-TFInterpolationOptimalTransportClosedForm* TFInterpolationOptimalTransportClosedForm::clone() const {
-    return new TFInterpolationOptimalTransportClosedForm(*this);
+TFInterpolationOTUniformQExact* TFInterpolationOTUniformQExact::clone() const {
+    return new TFInterpolationOTUniformQExact(*this);
 }
 
-std::string_view TFInterpolationOptimalTransportClosedForm::getDisplayName() const {
-    return "Optimal Transport Closed Form";
+std::string_view TFInterpolationOTUniformQExact::getDisplayName() const {
+    return "OT Uniform-q (exact)";
 }
 
-std::string_view TFInterpolationOptimalTransportClosedForm::getClassIdentifier() const {
+std::string_view TFInterpolationOTUniformQExact::getClassIdentifier() const {
     return classIdentifier();
 }
 
-bool TFInterpolationOptimalTransportClosedForm::equal(const Interpolation& other) const {
+bool TFInterpolationOTUniformQExact::equal(const Interpolation& other) const {
     return classIdentifier() == other.getClassIdentifier();
 }
 
-std::string_view TFInterpolationOptimalTransportClosedForm::classIdentifier() {
-    return "org.inviwo.animation.TFInterpolationOptimalTransportClosedForm";
+std::string_view TFInterpolationOTUniformQExact::classIdentifier() {
+    return "org.inviwo.animation.TFInterpolationOTUniformQExact";
 }
 
-void TFInterpolationOptimalTransportClosedForm::operator()(
+void TFInterpolationOTUniformQExact::operator()(
     const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds /*from*/,
     Seconds to, TransferFunction& out) const {
 
@@ -184,16 +181,88 @@ void TFInterpolationOptimalTransportClosedForm::operator()(
 
     const auto t = util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
 
-    out.set(algorithm::optimalTransportInterpolationClosedForm(
+    const auto interpolated =
+        algorithm::optimalTransportInterpolationUniformQExact(v1.get(), v2.get(), t, segments.get());
+
+    if (simplify.get() > 0.0) {
+        out.set(TransferFunction::simplify(interpolated, simplify.get()));
+    } else {
+        out.set(interpolated);
+    }
+}
+
+
+TFInterpolationOTAdaptiveQExact::TFInterpolationOTAdaptiveQExact(
+    InviwoApplication* app)
+    : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app)
+    , relativeTolerance{"relativeTolerance", "relativeTolerance",
+                        util::ordinalLength(1e-3, 0.1).setMin(1e-6).setInc(1e-4)}
+    , maxQuantileLevels{"maxQuantileLevels", "maxQuantileLevels", util::ordinalCount(2048uz)}
+    , maxRefinementIterations{"maxRefinementIterations", "maxRefinementIterations",
+                              util::ordinalCount(256uz)} {
+    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+}
+
+TFInterpolationOTAdaptiveQExact::TFInterpolationOTAdaptiveQExact(
+    const TFInterpolationOTAdaptiveQExact& rhs)
+    : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(rhs)
+    , relativeTolerance{rhs.relativeTolerance}
+    , maxQuantileLevels{rhs.maxQuantileLevels}
+    , maxRefinementIterations{rhs.maxRefinementIterations} {
+    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+}
+
+TFInterpolationOTAdaptiveQExact* TFInterpolationOTAdaptiveQExact::clone() const {
+    return new TFInterpolationOTAdaptiveQExact(*this);
+}
+
+std::string_view TFInterpolationOTAdaptiveQExact::getDisplayName() const {
+    return "OT Adaptive-q (exact)";
+}
+
+std::string_view TFInterpolationOTAdaptiveQExact::getClassIdentifier() const {
+    return classIdentifier();
+}
+
+bool TFInterpolationOTAdaptiveQExact::equal(const Interpolation& other) const {
+    return classIdentifier() == other.getClassIdentifier();
+}
+
+std::string_view TFInterpolationOTAdaptiveQExact::classIdentifier() {
+    return "org.inviwo.animation.TFInterpolationOTAdaptiveQExact";
+}
+
+void TFInterpolationOTAdaptiveQExact::operator()(
+    const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds /*from*/,
+    Seconds to, TransferFunction& out) const {
+
+    auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
+        return time < key->getTime();
+    });
+    const auto& prev = *(*std::prev(it));
+    const auto& next = *(*it);
+
+    const auto t1 = prev.getTime();
+    const auto t2 = next.getTime();
+
+    const auto& v1 = prev.getValue();
+    const auto& v2 = next.getValue();
+
+    const auto easeIn = prev.getEaseIn();
+    const auto easeOut = next.getEaseOut();
+
+    const auto t = util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
+
+    out.set(algorithm::optimalTransportInterpolationAdaptiveQExact(
         v1.get(), v2.get(), t,
-        algorithm::ClosedFormRefinementOptions{
+        algorithm::QuantileRefinementOptions{
             .relativeTolerance = relativeTolerance.get(),
             .maxQuantileLevels = maxQuantileLevels.get(),
             .maxRefinementIterations = maxRefinementIterations.get(),
         }));
 }
 
-TFInterpolationOptimalTransportOptimalSampling::TFInterpolationOptimalTransportOptimalSampling(
+TFInterpolationOTOpacityOptimalQExact::TFInterpolationOTOpacityOptimalQExact(
     InviwoApplication* app)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app)
     , relativeTolerance{"relativeTolerance", "relativeTolerance",
@@ -204,8 +273,8 @@ TFInterpolationOptimalTransportOptimalSampling::TFInterpolationOptimalTransportO
     addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
 }
 
-TFInterpolationOptimalTransportOptimalSampling::TFInterpolationOptimalTransportOptimalSampling(
-    const TFInterpolationOptimalTransportOptimalSampling& rhs)
+TFInterpolationOTOpacityOptimalQExact::TFInterpolationOTOpacityOptimalQExact(
+    const TFInterpolationOTOpacityOptimalQExact& rhs)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(rhs)
     , relativeTolerance{rhs.relativeTolerance}
     , maxQuantileLevels{rhs.maxQuantileLevels}
@@ -213,28 +282,28 @@ TFInterpolationOptimalTransportOptimalSampling::TFInterpolationOptimalTransportO
     addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
 }
 
-TFInterpolationOptimalTransportOptimalSampling*
-TFInterpolationOptimalTransportOptimalSampling::clone() const {
-    return new TFInterpolationOptimalTransportOptimalSampling(*this);
+TFInterpolationOTOpacityOptimalQExact*
+TFInterpolationOTOpacityOptimalQExact::clone() const {
+    return new TFInterpolationOTOpacityOptimalQExact(*this);
 }
 
-std::string_view TFInterpolationOptimalTransportOptimalSampling::getDisplayName() const {
-    return "Optimal Transport Optimal Sampling";
+std::string_view TFInterpolationOTOpacityOptimalQExact::getDisplayName() const {
+    return "OT Opacity-optimal q (exact)";
 }
 
-std::string_view TFInterpolationOptimalTransportOptimalSampling::getClassIdentifier() const {
+std::string_view TFInterpolationOTOpacityOptimalQExact::getClassIdentifier() const {
     return classIdentifier();
 }
 
-bool TFInterpolationOptimalTransportOptimalSampling::equal(const Interpolation& other) const {
+bool TFInterpolationOTOpacityOptimalQExact::equal(const Interpolation& other) const {
     return classIdentifier() == other.getClassIdentifier();
 }
 
-std::string_view TFInterpolationOptimalTransportOptimalSampling::classIdentifier() {
-    return "org.inviwo.animation.TFInterpolationOptimalTransportOptimalSampling";
+std::string_view TFInterpolationOTOpacityOptimalQExact::classIdentifier() {
+    return "org.inviwo.animation.TFInterpolationOTOpacityOptimalQExact";
 }
 
-void TFInterpolationOptimalTransportOptimalSampling::operator()(
+void TFInterpolationOTOpacityOptimalQExact::operator()(
     const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds /*from*/,
     Seconds to, TransferFunction& out) const {
 
@@ -255,9 +324,9 @@ void TFInterpolationOptimalTransportOptimalSampling::operator()(
 
     const auto t = util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
 
-    out.set(algorithm::optimalTransportInterpolationOptimalSampling(
+    out.set(algorithm::optimalTransportInterpolationOpacityOptimalQExact(
         v1.get(), v2.get(), t,
-        algorithm::ClosedFormRefinementOptions{
+        algorithm::QuantileRefinementOptions{
             .relativeTolerance = relativeTolerance.get(),
             .maxQuantileLevels = maxQuantileLevels.get(),
             .maxRefinementIterations = maxRefinementIterations.get(),

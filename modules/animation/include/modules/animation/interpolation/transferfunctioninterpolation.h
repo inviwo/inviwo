@@ -48,17 +48,17 @@ class Serializer;
 
 namespace animation {
 
-class IVW_MODULE_ANIMATION_API TFInterpolationOptimalTransport
+class IVW_MODULE_ANIMATION_API TFInterpolationOTUniformQ
     : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
 public:
-    TFInterpolationOptimalTransport(InviwoApplication* app = nullptr);
-    TFInterpolationOptimalTransport(const TFInterpolationOptimalTransport&);
-    virtual ~TFInterpolationOptimalTransport() = default;
-    virtual TFInterpolationOptimalTransport* clone() const override;
+    TFInterpolationOTUniformQ(InviwoApplication* app = nullptr);
+    TFInterpolationOTUniformQ(const TFInterpolationOTUniformQ&);
+    virtual ~TFInterpolationOTUniformQ() = default;
+    virtual TFInterpolationOTUniformQ* clone() const override;
 
     virtual std::string_view getDisplayName() const override;
     virtual std::string_view getIdentifier() const override {
-        return "TFInterpolationOptimalTransport";
+        return "TFInterpolationOTUniformQ";
     }
 
     static std::string_view classIdentifier();
@@ -74,17 +74,43 @@ public:
     OrdinalProperty<double> simplify;
 };
 
-class IVW_MODULE_ANIMATION_API TFInterpolationOptimalTransportClosedForm
+class IVW_MODULE_ANIMATION_API TFInterpolationOTUniformQExact
     : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
 public:
-    TFInterpolationOptimalTransportClosedForm(InviwoApplication* app = nullptr);
-    TFInterpolationOptimalTransportClosedForm(const TFInterpolationOptimalTransportClosedForm&);
-    virtual ~TFInterpolationOptimalTransportClosedForm() = default;
-    virtual TFInterpolationOptimalTransportClosedForm* clone() const override;
+    TFInterpolationOTUniformQExact(InviwoApplication* app = nullptr);
+    TFInterpolationOTUniformQExact(const TFInterpolationOTUniformQExact&);
+    virtual ~TFInterpolationOTUniformQExact() = default;
+    virtual TFInterpolationOTUniformQExact* clone() const override;
 
     virtual std::string_view getDisplayName() const override;
     virtual std::string_view getIdentifier() const override {
-        return "TFInterpolationOptimalTransportClosedForm";
+        return "TFInterpolationOTUniformQExact";
+    }
+
+    static std::string_view classIdentifier();
+    virtual std::string_view getClassIdentifier() const override;
+
+    virtual bool equal(const Interpolation& other) const override;
+
+    virtual void operator()(
+        const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
+        Seconds to, TransferFunction& out) const override;
+
+    OrdinalProperty<size_t> segments;
+    OrdinalProperty<double> simplify;
+};
+
+class IVW_MODULE_ANIMATION_API TFInterpolationOTAdaptiveQExact
+    : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
+public:
+    TFInterpolationOTAdaptiveQExact(InviwoApplication* app = nullptr);
+    TFInterpolationOTAdaptiveQExact(const TFInterpolationOTAdaptiveQExact&);
+    virtual ~TFInterpolationOTAdaptiveQExact() = default;
+    virtual TFInterpolationOTAdaptiveQExact* clone() const override;
+
+    virtual std::string_view getDisplayName() const override;
+    virtual std::string_view getIdentifier() const override {
+        return "TFInterpolationOTAdaptiveQExact";
     }
 
     static std::string_view classIdentifier();
@@ -101,18 +127,18 @@ public:
     OrdinalProperty<size_t> maxRefinementIterations;
 };
 
-class IVW_MODULE_ANIMATION_API TFInterpolationOptimalTransportOptimalSampling
+class IVW_MODULE_ANIMATION_API TFInterpolationOTOpacityOptimalQExact
     : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
 public:
-    TFInterpolationOptimalTransportOptimalSampling(InviwoApplication* app = nullptr);
-    TFInterpolationOptimalTransportOptimalSampling(
-        const TFInterpolationOptimalTransportOptimalSampling&);
-    virtual ~TFInterpolationOptimalTransportOptimalSampling() = default;
-    virtual TFInterpolationOptimalTransportOptimalSampling* clone() const override;
+    TFInterpolationOTOpacityOptimalQExact(InviwoApplication* app = nullptr);
+    TFInterpolationOTOpacityOptimalQExact(
+        const TFInterpolationOTOpacityOptimalQExact&);
+    virtual ~TFInterpolationOTOpacityOptimalQExact() = default;
+    virtual TFInterpolationOTOpacityOptimalQExact* clone() const override;
 
     virtual std::string_view getDisplayName() const override;
     virtual std::string_view getIdentifier() const override {
-        return "TFInterpolationOptimalTransportOptimalSampling";
+        return "TFInterpolationOTOpacityOptimalQExact";
     }
 
     static std::string_view classIdentifier();

@@ -1952,21 +1952,17 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationImpl(std::span<const T
 // Public API
 // ===========================================================================
 //
-// Two quantile-sampling strategies are provided for comparison:
+// Four quantile-sampling strategies are provided for comparison:
 //
-//   optimalTransportInterpolation        — legacy uniform sampling with
-//                                          samplesPerSegment sub-divisions per
-//                                          CDF segment (unchanged behaviour).
-//
-//   optimalTransportInterpolationClosedForm — knot-induced quantile levels,
-//                                             closed-form vertex opacities
-//                                             alpha_k = m_t / X_t'(q_k), and
-//                                             optional midpoint-error refinement.
+//   optimalTransportInterpolationUniformQ              — uniform q grid, secant opacities
+//   optimalTransportInterpolationUniformQExact         — uniform q grid, exact opacities
+//   optimalTransportInterpolationAdaptiveQSecant       — adaptive q (midpoint), secant opacities
+//   optimalTransportInterpolationAdaptiveQExact        — adaptive q (midpoint), exact opacities
+//   optimalTransportInterpolationOpacityOptimalQExact  — opacity-optimal q, exact opacities
 
-std::vector<TFPrimitiveData> optimalTransportInterpolation(std::span<const TFPrimitiveData> tfA,
-                                                           std::span<const TFPrimitiveData> tfB,
-                                                           double t,
-                                                           std::size_t samplesPerSegment) {
+std::vector<TFPrimitiveData> optimalTransportInterpolationUniformQ(
+    std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
+    std::size_t samplesPerSegment) {
     return optimalTransportInterpolationImpl(
         tfA, tfB, t,
         [&](const TransportContext& ctx, double domainMin, double domainMax) {
@@ -1978,9 +1974,23 @@ std::vector<TFPrimitiveData> optimalTransportInterpolation(std::span<const TFPri
         });
 }
 
-std::vector<TFPrimitiveData> optimalTransportInterpolationClosedForm(
+std::vector<TFPrimitiveData> optimalTransportInterpolationUniformQExact(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    const ClosedFormRefinementOptions& opts) {
+    std::size_t samplesPerSegment) {
+    return optimalTransportInterpolationImpl(
+        tfA, tfB, t,
+        [&](const TransportContext& ctx, double domainMin, double domainMax) {
+            // Same uniform quantile grid as optimalTransportInterpolationUniformQ, but
+            // reconstruct vertex opacities with the exact closed-form alpha_k = m_t / X_t'(q_k).
+            const auto levels = mergedQuantileLevels(ctx.cdfA, ctx.cdfB, samplesPerSegment);
+            return optimalTransportInterpolationClosedFormFromLevels(ctx, levels, domainMin,
+                                                                     domainMax);
+        });
+}
+
+std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQExact(
+    std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
+    const QuantileRefinementOptions& opts) {
     return optimalTransportInterpolationImpl(
         tfA, tfB, t,
         [&](const TransportContext& ctx, double domainMin, double domainMax) {
@@ -1998,16 +2008,16 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationClosedForm(
         });
 }
 
-std::vector<TFPrimitiveData> optimalTransportInterpolationOptimalSampling(
+std::vector<TFPrimitiveData> optimalTransportInterpolationOpacityOptimalQExact(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    const ClosedFormRefinementOptions& opts) {
+    const QuantileRefinementOptions& opts) {
     return optimalTransportInterpolationImpl(
         tfA, tfB, t,
         [&](const TransportContext& ctx, double domainMin, double domainMax) {
             // Knot-induced quantile levels, then insert each new level at the quantile q* that
             // maximises the opacity deviation between the exact transported opacity and the
             // piecewise-linear chord on the worst sub-interval (relative tolerance, measured in
-            // x). Unlike optimalTransportInterpolationClosedForm, which probes the geometric
+            // x). Unlike optimalTransportInterpolationAdaptiveQExact, which probes the geometric
             // midpoint, this places samples exactly where the chord error peaks, so the same
             // opacity tolerance is met with fewer control points. Vertex opacities remain the
             // exact closed-form alpha_k = m_t / X_t'(q_k).
@@ -2020,9 +2030,9 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationOptimalSampling(
         });
 }
 
-std::vector<TFPrimitiveData> optimalTransportInterpolationRefined(
+std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQSecant(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    const ClosedFormRefinementOptions& opts) {
+    const QuantileRefinementOptions& opts) {
     return optimalTransportInterpolationImpl(
         tfA, tfB, t,
         [&](const TransportContext& ctx, double domainMin, double domainMax) {
