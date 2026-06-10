@@ -186,10 +186,24 @@ if(IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD)
 endif()
 
 string(TIMESTAMP YEAR "%Y") # used in conf.py.in
-set(PYMODULES "") # used in index.rst.in
+set(PYMODULES "    inviwopy\n") # used in index.rst.in
 get_property(pymodules GLOBAL PROPERTY IVW_PYMODULE_LIST)
+list(REMOVE_ITEM pymodules inviwopy)
+list(SORT pymodules)
+
+foreach(module IN LISTS pymodules)
+    get_target_property(name ${module} NAME)
+    string(SUBSTRING ${name} 0 3 prefix)
+    if(prefix STREQUAL "ivw")
+        string(SUBSTRING ${name} 3 -1 shortName) # remove "ivw" prefix
+        string(APPEND PYMODULES "    inviwopy.${shortName}\n")
+    else()
+        string(APPEND PYMODULES "    ${name}\n")
+    endif()
+endforeach()
+
 get_property(pyapps GLOBAL PROPERTY IVW_PYAPP_LIST)
-foreach(module IN LISTS pymodules pyapps)
+foreach(module IN LISTS pyapps)
     get_target_property(name ${module} NAME)
     string(APPEND PYMODULES "    ${name}\n")
 endforeach()
@@ -199,7 +213,7 @@ configure_file("${ivw_doxy_dir}/python-api/index.rst.in" ${output_dir}/python-ap
 add_custom_target("DOXY-Python"
     COMMAND ${CMAKE_COMMAND} -E rm -rf ${output_dir}/python-api-in/_generated ${output_dir}/python-api
     COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=$<TARGET_FILE_DIR:inviwopy> 
-            ${Python3_EXECUTABLE} -m sphinx -a -b html ${output_dir}/python-api-in ${output_dir}/python-api
+            ${Python3_EXECUTABLE} -m sphinx -a -v -b html ${output_dir}/python-api-in ${output_dir}/python-api
     WORKING_DIRECTORY ${output_dir}
     COMMENT "Generate Inviwo python API documentation with sphinx"
     VERBATIM
