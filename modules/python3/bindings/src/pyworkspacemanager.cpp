@@ -69,14 +69,12 @@ void exposeWorkspaceManager(pybind11::module& m) {
             "Save the current workspace to a file.")
         .def(
             "saveToString",
-            [](WorkspaceManager* wm, const std::filesystem::path& refPath,
-               WorkspaceSaveMode mode) {
+            [](WorkspaceManager* wm, const std::filesystem::path& refPath, WorkspaceSaveMode mode) {
                 std::pmr::string xml;
                 wm->save(xml, refPath, rethrowHandler, mode);
                 return std::string{xml.data(), xml.size()};
             },
-            py::arg("refPath") = std::filesystem::path{},
-            py::arg("mode") = WorkspaceSaveMode::Disk,
+            py::arg("refPath") = std::filesystem::path{}, py::arg("mode") = WorkspaceSaveMode::Disk,
             "Save the current workspace to a string (xml).")
         .def(
             "load",
@@ -87,14 +85,13 @@ void exposeWorkspaceManager(pybind11::module& m) {
             "Load a workspace from a file.")
         .def(
             "loadFromString",
-            [](WorkspaceManager* wm, const std::string& xml,
-               const std::filesystem::path& refPath, WorkspaceSaveMode mode) {
+            [](WorkspaceManager* wm, const std::string& xml, const std::filesystem::path& refPath,
+               WorkspaceSaveMode mode) {
                 std::pmr::string pxml{xml.begin(), xml.end()};
                 wm->load(pxml, refPath, rethrowHandler, mode);
             },
             py::arg("xml"), py::arg("refPath") = std::filesystem::path{},
-            py::arg("mode") = WorkspaceSaveMode::Disk,
-            "Load a workspace from a string (xml).")
+            py::arg("mode") = WorkspaceSaveMode::Disk, "Load a workspace from a string (xml).")
         .def("setModified", py::overload_cast<>(&WorkspaceManager::setModified),
              "Mark the workspace as modified.")
         .def("isModified", &WorkspaceManager::isModified,
@@ -125,16 +122,16 @@ void exposeWorkspaceManager(pybind11::module& m) {
                 return std::make_shared<WorkspaceManager::ClearHandle>(
                     wm->onClear(std::move(callback)));
             },
-            py::arg("callback"), "Register a callback invoked when the workspace is cleared.");
-
-    // Expose the opaque handle types so python can hold and release them.
-    py::classh<WorkspaceManager::ClearHandle, std::shared_ptr<WorkspaceManager::ClearHandle>>(
-        m, "WorkspaceClearHandle");
-    py::classh<WorkspaceManager::ModifiedHandle, std::shared_ptr<WorkspaceManager::ModifiedHandle>>(
-        m, "WorkspaceModifiedHandle");
-    py::classh<WorkspaceManager::ModifiedChangedHandle,
-               std::shared_ptr<WorkspaceManager::ModifiedChangedHandle>>(
-        m, "WorkspaceModifiedChangedHandle");
+            py::arg("callback"), "Register a callback invoked when the workspace is cleared.")
+        .def(
+            "createWorkspaceDeserializer",
+            [](WorkspaceManager* wm, const std::string& xml, const std::filesystem::path& refPath) {
+                std::pmr::string pxml{xml.begin(), xml.end()};
+                return wm->createWorkspaceDeserializerAndInfo(pxml, refPath).first;
+            },
+            py::arg("xml"), py::arg("refPath") = const std::filesystem::path{},
+            "Create a deserializer for loading a workspace from a xml string with the given "
+            "refPath.");
 }
 
 }  // namespace inviwo
