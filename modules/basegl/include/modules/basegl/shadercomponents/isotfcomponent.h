@@ -80,7 +80,7 @@ public:
                                      InvalidationLevel::InvalidResources};
             }
         })}
-        , volume_{volumeInport} {}
+        , volume_{&volumeInport} {}
 
     virtual std::string_view getName() const override { return isoTFs[0].getIdentifier(); }
 
@@ -96,7 +96,6 @@ public:
     }
 
     virtual void process(Shader& shader, TextureUnitContainer& cont) override {
-        StrBuffer buff;
         for (auto&& isoTF : isoTFs) {
             if (auto* tfLayer = isoTF.tf_.template getRepresentation<LayerGL>()) {
                 TextureUnit& unit = cont.emplace_back();
@@ -106,7 +105,7 @@ public:
 
             detail::setUniforms(shader, isoTF.tf_);
             detail::setUniforms(shader, isoTF.isovalues_,
-                                volume_.hasData() ? &volume_.getData()->dataMap : nullptr);
+                                volume_->hasData() ? &volume_->getData()->dataMap : nullptr);
         }
     }
 
@@ -130,7 +129,7 @@ public:
     std::array<IsoTFProperty, N> isoTFs;
 
 private:
-    VolumeInport& volume_;
+    VolumeInport* volume_;
 };
 
 }  // namespace inviwo

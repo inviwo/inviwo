@@ -254,7 +254,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
 
     connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor, colorWheel_.get(),
             [cw = colorWheel_.get()](const QColor& c, bool /*ambiguous*/) {
-                QSignalBlocker block(cw);
+                const QSignalBlocker block(cw);
                 cw->setColor(c);
             });
     connect(colorWheel_.get(), &ColorWheel::colorChange, tfSelectionWatcher_.get(),

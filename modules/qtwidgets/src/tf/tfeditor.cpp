@@ -218,7 +218,7 @@ void TFEditor::onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode mode)
     if (!bulkUpdate_) updateSceneRect();
 }
 
-void TFEditor::onTFBeginBulkUpdate(const TFPrimitiveSet& set) { bulkUpdate_ = true; }
+void TFEditor::onTFBeginBulkUpdate(const TFPrimitiveSet&) { bulkUpdate_ = true; }
 void TFEditor::onTFEndBulkUpdate(const TFPrimitiveSet& set) {
     bulkUpdate_ = false;
 
@@ -625,7 +625,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
 double TFEditor::sceneToPos(const QPointF& scenePos, const TFPrimitiveSet& set) const {
     return set.getMode() == PrimitiveSetMode::Absolute ? scenePos.x()
-                                                         : glm::clamp(scenePos.x(), 0.0, 1.0);
+                                                       : glm::clamp(scenePos.x(), 0.0, 1.0);
 }
 double TFEditor::sceneToAlpha(const QPointF& scenePos) const {
     return glm::clamp(scenePos.y(), 0.0, 1.0);
@@ -1079,7 +1079,7 @@ bool TFEditor::handleMoveSelection(QKeyEvent* event) {
     if (!items.empty()) {
         const auto reset1 = concept_->scopedBulkUpdate();
         emit updateBegin();
-        util::OnScopeExit reset2{[this]() { emit updateEnd(); }};
+        const util::OnScopeExit reset2{[this]() { emit updateEnd(); }};
         for (auto& item : items) {
             item->setPos(item->pos() + delta);
         }

@@ -210,7 +210,7 @@ QAction* tfAction(std::string_view name, TransferFunction tf, QMenu* menu,
                      util::exceptionGuarded([property, tf2 = std::move(tf)]() mutable {
                          const NetworkLock lock(property);
 
-                         if (auto* dm = property->data().getDataMap()) {
+                         if (const auto* dm = property->data().getDataMap()) {
                              tf2.setMode(property->get().getMode(), *dm);
                          } else {
                              const DataMapper dm2{property->get().getRange()};
@@ -440,13 +440,13 @@ TransferFunction colorListToTF(std::span<const glm::vec3> points, bool discrete)
             std::views::join | std::ranges::to<std::vector>()};
     } else {
         const auto n = static_cast<double>(points.size() - 1);
-        return TransferFunction{
-            std::views::zip(std::views::iota(0uz), points) |
-            std::views::transform([&](auto&& elem) {
-                auto&& [i, c] = elem;
-                return TFPrimitiveData{.pos = static_cast<double>(i) / n, .color = {c, 1.0f}};
-            }) |
-            std::ranges::to<std::vector>()};
+        return TransferFunction{std::views::zip(std::views::iota(0uz), points) |
+                                std::views::transform([&](auto&& elem) {
+                                    auto&& [i, c] = elem;
+                                    return TFPrimitiveData{.pos = static_cast<double>(i) / n,
+                                                           .color = {c, 1.0f}};
+                                }) |
+                                std::ranges::to<std::vector>()};
     }
 }
 

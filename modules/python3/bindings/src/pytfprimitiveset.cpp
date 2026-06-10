@@ -263,7 +263,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
                  return new TransferFunction(values, mode);
              }),
              py::arg("values"), py::arg("mode"))
-        .def(py::init([](py::list values, PrimitiveSetMode mode) {
+        .def(py::init([](const py::list& values, PrimitiveSetMode mode) {
                  auto* tf = new TransferFunction{{}, mode};
                  addPoints(tf, values);
                  return tf;
@@ -289,7 +289,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
              }),
              py::arg("values") = std::vector<TFPrimitiveData>{},
              py::arg("mode") = PrimitiveSetMode::Relative)
-        .def(py::init([](py::list values, PrimitiveSetMode mode) {
+        .def(py::init([](const py::list& values, PrimitiveSetMode mode) {
                  auto* tf = new IsoValueCollection{{}, mode};
                  addPoints(tf, values);
                  return tf;

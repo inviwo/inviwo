@@ -272,7 +272,7 @@ void exposeProperties(pybind11::module& m) {
                          const IsoValueCollection& value, VolumeInport* volumeInport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new IsoValueProperty(identifier, displayName, std::move(help), value,
-                                             volumeInport, invalidationLevel, semantics);
+                                             volumeInport, invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("value"),
              py::arg("inport") = nullptr,
@@ -282,7 +282,7 @@ void exposeProperties(pybind11::module& m) {
                          const IsoValueCollection& value, VolumeInport* volumeInport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new IsoValueProperty(identifier, displayName, value, volumeInport,
-                                             invalidationLevel, semantics);
+                                             invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("value"),
              py::arg("inport") = nullptr,

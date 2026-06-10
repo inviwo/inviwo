@@ -79,6 +79,12 @@ public:
     explicit TFPushButton(TransferFunctionProperty* property, QWidget* parent = nullptr);
     explicit TFPushButton(IsoValueProperty* property, QWidget* parent = nullptr);
     explicit TFPushButton(IsoTFProperty* property, QWidget* parent = nullptr);
+
+    TFPushButton(const TFPushButton& rhs) = delete;
+    TFPushButton& operator=(const TFPushButton& rhs) = delete;
+    TFPushButton(TFPushButton&& rhs) = delete;
+    TFPushButton& operator=(TFPushButton&& rhs) = delete;
+
     virtual ~TFPushButton() = default;
 
 private:

@@ -45,7 +45,7 @@
 
 namespace inviwo {
 
-enum class PrimitiveSetMode {
+enum class PrimitiveSetMode : std::uint8_t {
     Relative,  //<! uses the normalized range [0,1] for all TF primitives
     Absolute,  //<! absolute positioning of TF primitives
 };

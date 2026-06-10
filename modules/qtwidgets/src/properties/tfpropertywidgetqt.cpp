@@ -190,28 +190,28 @@ void TFPushButton::updateIcon() {
     setIconSize(size);
 }
 
-void TFPushButton::onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) {
+void TFPushButton::onTFPrimitiveAdded(const TFPrimitiveSet&, TFPrimitive&) {
     if (!bulkUpdate_) {
         updateIcon();
     }
 }
-void TFPushButton::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
+void TFPushButton::onTFPrimitiveRemoved(const TFPrimitiveSet&, TFPrimitive&) {
     if (!bulkUpdate_) {
         updateIcon();
     }
 }
-void TFPushButton::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) {
+void TFPushButton::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {
     if (!bulkUpdate_) {
         updateIcon();
     }
 }
-void TFPushButton::onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode mode) {
+void TFPushButton::onTFModeChanged(const TFPrimitiveSet&, PrimitiveSetMode) {
     if (!bulkUpdate_) {
         updateIcon();
     }
 }
-void TFPushButton::onTFBeginBulkUpdate(const TFPrimitiveSet& set) { bulkUpdate_ = true; }
-void TFPushButton::onTFEndBulkUpdate(const TFPrimitiveSet& set) {
+void TFPushButton::onTFBeginBulkUpdate(const TFPrimitiveSet&) { bulkUpdate_ = true; }
+void TFPushButton::onTFEndBulkUpdate(const TFPrimitiveSet&) {
     bulkUpdate_ = false;
     updateIcon();
 }

@@ -51,7 +51,7 @@ struct IsovalueParameters {
 };
 #endif
 )");
-}
+}  // namespace
 
 void setUniforms(Shader& shader, const IsoValueProperty& iso, const DataMapper* volumeDM) {
     auto positions = iso.get().getPositionsf();
@@ -84,13 +84,15 @@ IsoComponent::IsoComponent(std::string_view identifier, std::string_view name, D
                            VolumeInport& volume)
     : ShaderComponent()
     , iso{identifier, name, std::move(help),
-          IsoValueCollection{std::vector<TFPrimitiveData>{TFPrimitiveData{0.5, vec4{1}}}}, &volume}
-    , volume_{volume} {}
+          IsoValueCollection{
+              std::vector<TFPrimitiveData>{TFPrimitiveData{.pos = 0.5, .color = vec4{1}}}},
+          &volume}
+    , volume_{&volume} {}
 
 std::string_view IsoComponent::getName() const { return iso.getIdentifier(); }
 
 void IsoComponent::process(Shader& shader, TextureUnitContainer&) {
-    detail::setUniforms(shader, iso, volume_.hasData() ? &volume_.getData()->dataMap : nullptr);
+    detail::setUniforms(shader, iso, volume_->hasData() ? &volume_->getData()->dataMap : nullptr);
 }
 
 void IsoComponent::initializeResources(Shader& shader) {

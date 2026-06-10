@@ -81,7 +81,8 @@ TFPrimitiveSet::TFPrimitiveSet(const std::vector<TFPrimitiveData>& values, Primi
     add(values);
 }
 
-TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs) : mode_(rhs.mode_) {
+TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs)
+    : Serializable(rhs), TFPrimitiveSetObservable(rhs), TFPrimitiveObserver(rhs), mode_(rhs.mode_) {
     for (const auto& v : rhs.values_) {
         add(*v);
     }
@@ -89,6 +90,9 @@ TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs) : mode_(rhs.mode_) {
 
 TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     if (this != &rhs) {
+        Serializable::operator=(rhs);
+        TFPrimitiveSetObservable::operator=(rhs);
+        TFPrimitiveObserver::operator=(rhs);
         setMode(rhs.mode_);
         set(rhs.values_ | std::views::transform([](const auto& v) { return v->getData(); }));
     }
@@ -97,6 +101,9 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
 
 TFPrimitiveSet& TFPrimitiveSet::operator=(TFPrimitiveSet&& rhs) noexcept {
     if (this != &rhs) {
+        Serializable::operator=(std::move(rhs));
+        TFPrimitiveSetObservable::operator=(std::move(rhs));
+        TFPrimitiveObserver::operator=(std::move(rhs));
         setMode(rhs.mode_);
         set(rhs.values_ | std::views::transform([](const auto& v) { return v->getData(); }));
     }
@@ -491,8 +498,8 @@ std::string_view TFPrimitiveSet::serializationItemKey() const { return "TFPrimit
 
 bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs) {
     return lhs.mode_ == rhs.mode_ &&
-           std::equal(rhs.sorted_.begin(), rhs.sorted_.end(), lhs.sorted_.begin(),
-                      lhs.sorted_.end(), [](TFPrimitive* a, TFPrimitive* b) { return *a == *b; });
+           std::ranges::equal(rhs.sorted_, lhs.sorted_,
+                              [](TFPrimitive* a, TFPrimitive* b) { return *a == *b; });
 }
 
 bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs) {

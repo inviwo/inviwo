@@ -133,13 +133,8 @@ public:
     }
 
     virtual bool allRelative() const override {
-        if (sets_[0]->getMode() == PrimitiveSetMode::Absolute) {
-            return false;
-        } else if (sets_[1] && sets_[1]->getMode() == PrimitiveSetMode::Absolute) {
-            return false;
-        } else {
-            return true;
-        }
+        return sets_[0]->getMode() == PrimitiveSetMode::Relative &&
+               (sets_[1] == nullptr || sets_[1]->getMode() == PrimitiveSetMode::Relative);
     }
 
     virtual dvec2 getRange() const override {

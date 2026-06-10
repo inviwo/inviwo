@@ -153,7 +153,7 @@ void TFEditorView::keyPressEvent(QKeyEvent* event) { QGraphicsView::keyPressEven
 void TFEditorView::keyReleaseEvent(QKeyEvent* event) { QGraphicsView::keyReleaseEvent(event); }
 
 void TFEditorView::wheelEvent(QWheelEvent* event) {
-    util::KeepTrueWhileInScope keepTrue(&zooming_);
+    const util::KeepTrueWhileInScope keepTrue(&zooming_);
     if (event->modifiers() & Qt::ControlModifier) {
         const QPointF numPixels = event->pixelDelta() / 5.0;
         const QPointF numDegrees = event->angleDelta() / 8.0 / 15;
@@ -240,7 +240,7 @@ std::pair<dvec2, dvec2> TFEditorView::getZoom() const {
 }
 
 void TFEditorView::fitViewToScene() {
-    util::KeepTrueWhileInScope keepTrue(&zooming_);
+    const util::KeepTrueWhileInScope keepTrue(&zooming_);
     const auto newSceneRect = scene()->sceneRect();
     fitViewToRect(newSceneRect);
     setSceneRect(newSceneRect);
@@ -251,7 +251,7 @@ void TFEditorView::fitViewToScene() {
 }
 
 void TFEditorView::onSceneRectChanged() {
-    util::KeepTrueWhileInScope keepTrue(&zooming_);
+    const util::KeepTrueWhileInScope keepTrue(&zooming_);
     const auto newSceneRect = scene()->sceneRect();
 
     const auto [maxHRange, maxVRange] = std::pair<dvec2, dvec2>{
@@ -432,7 +432,7 @@ void setPenAndFont(QPainter* painter, ColorType type, size_t channel = 0, size_t
 
 QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D& histogram,
                                                                HistogramMode mode) {
-    const auto stepSize = 1.0 / histogram.counts.size();
+    const auto stepSize = 1.0 / static_cast<double>(histogram.counts.size());
 
     QPolygonF polygon{};
     polygon << QPointF(0.0, 0.0);

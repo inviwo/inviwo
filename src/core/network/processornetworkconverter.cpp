@@ -878,7 +878,9 @@ void ProcessorNetworkConverter::updateTF(TxElement* node) {
     // Rename TFPrimitiveSet 'type' to 'mode' and make it an attribute
     xml::visitMatchingNodesRecursive(
         node,
-        {{"Property", {{"type", "org.inviwo.TransferFunctionProperty"}}}, {"TransferFunction", {}}},
+        {{.name = "Property",
+          .attributes = {{.name = "type", .value = "org.inviwo.TransferFunctionProperty"}}},
+         {.name = "TransferFunction", .attributes = {}}},
         [&](TxElement* tf) {
             if (auto* t = tf->FirstChild("type")) {
                 if (auto type = t->ToElement()->Attribute("content")) {
@@ -889,7 +891,10 @@ void ProcessorNetworkConverter::updateTF(TxElement* node) {
         });
 
     xml::visitMatchingNodesRecursive(
-        node, {{"Property", {{"type", "org.inviwo.IsoValueProperty"}}}, {"IsoValues", {}}},
+        node,
+        {{.name = "Property",
+          .attributes = {{.name = "type", .value = "org.inviwo.IsoValueProperty"}}},
+         {.name = "IsoValues", .attributes = {}}},
         [&](TxElement* tf) {
             if (auto* t = tf->FirstChild("type")) {
                 if (auto type = t->ToElement()->Attribute("content")) {
@@ -913,9 +918,15 @@ void ProcessorNetworkConverter::updateTF(TxElement* node) {
         }
     };
     xml::visitMatchingNodesRecursive(
-        node, {"Property", {{"type", "org.inviwo.TransferFunctionProperty"}}}, rename);
-    xml::visitMatchingNodesRecursive(node, {"Property", {{"type", "org.inviwo.IsoValueProperty"}}},
-                                     rename);
+        node,
+        {.name = "Property",
+         .attributes = {{.name = "type", .value = "org.inviwo.TransferFunctionProperty"}}},
+        rename);
+    xml::visitMatchingNodesRecursive(
+        node,
+        {.name = "Property",
+         .attributes = {{.name = "type", .value = "org.inviwo.IsoValueProperty"}}},
+        rename);
 }
 
 }  // namespace inviwo

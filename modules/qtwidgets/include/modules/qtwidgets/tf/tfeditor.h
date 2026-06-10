@@ -142,8 +142,8 @@ private:
     void addPoint(const QPointF& scenePos, TFPrimitiveSet& set);
     void addPoint(const QPointF& scenePos);
     void addPeak(const QPointF& scenePos, TFPrimitiveSet& set);
-    double sceneToPos(const QPointF& scenePos, const TFPrimitiveSet& set) const;
-    double sceneToAlpha(const QPointF& scenePos) const;
+    static double sceneToPos(const QPointF& scenePos, const TFPrimitiveSet& set);
+    static double sceneToAlpha(const QPointF& scenePos);
 
     TFPrimitiveSet* findSet(TFPrimitive*) const;
 

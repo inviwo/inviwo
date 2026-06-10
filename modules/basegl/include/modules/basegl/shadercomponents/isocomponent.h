@@ -71,7 +71,7 @@ public:
     IsoValueProperty iso;
 
 private:
-    VolumeInport& volume_;
+    VolumeInport* volume_;
 };
 
 }  // namespace inviwo
