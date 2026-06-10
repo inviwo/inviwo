@@ -6,10 +6,11 @@ Python API Reference
 .. autosummary::
     :toctree: _generated
 
+    inviwopy
+    ivwanimation
     ivwbase
     ivwbnl
     ivwjson
-    inviwopy
     ivwdataframe
 
 
