@@ -145,6 +145,7 @@ var hierarchy =
       [ "inviwo::TypedMesh< buffertraits::PositionsBuffer, buffertraits::NormalBuffer, buffertraits::TexCoordBuffer< 3 >, buffertraits::ColorsBuffer >", "classinviwo_1_1TypedMesh.html", null ],
       [ "inviwo::TypedMesh< buffertraits::PositionsBuffer, buffertraits::TexCoordBuffer< 3 >, buffertraits::ColorsBuffer >", "classinviwo_1_1TypedMesh.html", null ],
       [ "inviwo::TypedMesh< buffertraits::PositionsBuffer2D, buffertraits::ColorsBuffer >", "classinviwo_1_1TypedMesh.html", null ],
+      [ "inviwo::TypedMesh< buffertraits::PositionsBuffer3D >", "classinviwo_1_1TypedMesh.html", null ],
       [ "inviwo::TypedMesh< buffertraits::PositionsBuffer2D >", "classinviwo_1_1TypedMesh.html", null ],
       [ "inviwo::TypedMesh< inviwo::buffertraits::PositionsBufferBase< 3 > >", "classinviwo_1_1TypedMesh.html", null ],
       [ "inviwo::TypedMesh< inviwo::buffertraits::PositionsBufferBase< 2 >, inviwo::buffertraits::TexCoordBuffer< 2 > >", "classinviwo_1_1TypedMesh.html", null ],
@@ -297,6 +298,7 @@ var hierarchy =
         [ "inviwo::TypedMesh< buffertraits::PositionsBuffer, buffertraits::NormalBuffer, buffertraits::TexCoordBuffer< 3 >, buffertraits::ColorsBuffer >", "classinviwo_1_1TypedMesh.html", null ],
         [ "inviwo::TypedMesh< buffertraits::PositionsBuffer, buffertraits::TexCoordBuffer< 3 >, buffertraits::ColorsBuffer >", "classinviwo_1_1TypedMesh.html", null ],
         [ "inviwo::TypedMesh< buffertraits::PositionsBuffer2D, buffertraits::ColorsBuffer >", "classinviwo_1_1TypedMesh.html", null ],
+        [ "inviwo::TypedMesh< buffertraits::PositionsBuffer3D >", "classinviwo_1_1TypedMesh.html", null ],
         [ "inviwo::TypedMesh< buffertraits::PositionsBuffer2D >", "classinviwo_1_1TypedMesh.html", null ],
         [ "inviwo::TypedMesh< inviwo::buffertraits::PositionsBufferBase< 3 > >", "classinviwo_1_1TypedMesh.html", null ],
         [ "inviwo::TypedMesh< inviwo::buffertraits::PositionsBufferBase< 2 >, inviwo::buffertraits::TexCoordBuffer< 2 > >", "classinviwo_1_1TypedMesh.html", null ],
@@ -903,6 +905,7 @@ var hierarchy =
         [ "inviwo::plot::DataFrameColumnToColorVector", "classinviwo_1_1plot_1_1DataFrameColumnToColorVector.html", null ],
         [ "inviwo::plot::ImagePlotProcessor", "classinviwo_1_1plot_1_1ImagePlotProcessor.html", null ],
         [ "inviwo::plot::LayerAxis", "classinviwo_1_1plot_1_1LayerAxis.html", null ],
+        [ "inviwo::plot::MeasureDistance3D", "classinviwo_1_1plot_1_1MeasureDistance3D.html", null ],
         [ "inviwo::plot::MeshAxis", "classinviwo_1_1plot_1_1MeshAxis.html", null ],
         [ "inviwo::plot::ParallelCoordinates", "classinviwo_1_1plot_1_1ParallelCoordinates.html", null ],
         [ "inviwo::plot::PersistenceDiagramPlotProcessor", "classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html", null ],
@@ -1171,6 +1174,12 @@ var hierarchy =
         [ "inviwo::animation::InterpolationFactory", "classinviwo_1_1animation_1_1InterpolationFactory.html", null ]
       ] ]
     ] ],
+    [ "inviwo::Factory&lt; Keyframe &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::animation::KeyframeFactory", "classinviwo_1_1animation_1_1KeyframeFactory.html", null ]
+    ] ],
+    [ "inviwo::Factory&lt; KeyframeSequence &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::animation::KeyframeSequenceFactory", "classinviwo_1_1animation_1_1KeyframeSequenceFactory.html", null ]
+    ] ],
     [ "inviwo::Factory&lt; MeshDrawer, const Mesh * &gt;", "classinviwo_1_1Factory.html", [
       [ "inviwo::MeshDrawerFactory", "classinviwo_1_1MeshDrawerFactory.html", null ]
     ] ],
@@ -1383,6 +1392,7 @@ var hierarchy =
     [ "inviwo::deserializer::IdentifierFunctions&lt; GetID, MakeNew, ShouldMakeNew, CanRecreate, OnNew, OnRemove, OnMove &gt;", "structinviwo_1_1deserializer_1_1IdentifierFunctions.html", null ],
     [ "inviwo::xml::IdentifierReplacement", "structinviwo_1_1xml_1_1IdentifierReplacement.html", null ],
     [ "inviwo::util::identity", "structinviwo_1_1util_1_1identity.html", null ],
+    [ "inviwo::IgnoreValues", "structinviwo_1_1IgnoreValues.html", null ],
     [ "inviwo::FragmentListRenderer::IllustrationSettings", "structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html", null ],
     [ "inviwo::RasterizationRenderer::IllustrationSettings", "structinviwo_1_1RasterizationRenderer_1_1IllustrationSettings.html", null ],
     [ "inviwo::ImageCache", "classinviwo_1_1ImageCache.html", null ],
@@ -1543,6 +1553,7 @@ var hierarchy =
     [ "inviwo::InviwoDefaults&lt; unsigned short &gt;", "structinviwo_1_1InviwoDefaults_3_01unsigned_01short_01_4.html", null ],
     [ "inviwo::InviwoModule", "classinviwo_1_1InviwoModule.html", [
       [ "inviwo::AnimationModule", "classinviwo_1_1AnimationModule.html", null ],
+      [ "inviwo::AnimationPythonModule", "classinviwo_1_1AnimationPythonModule.html", null ],
       [ "inviwo::AnimationQtModule", "classinviwo_1_1AnimationQtModule.html", null ],
       [ "inviwo::AssimpModule", "classinviwo_1_1AssimpModule.html", null ],
       [ "inviwo::BaseGLModule", "classinviwo_1_1BaseGLModule.html", null ],
@@ -2209,8 +2220,7 @@ var hierarchy =
               [ "inviwo::animation::PropertyTrack< ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence >", "classinviwo_1_1animation_1_1PropertyTrack.html", null ],
               [ "inviwo::animation::PropertyTrack< CameraProperty, CameraKeyframe >", "classinviwo_1_1animation_1_1PropertyTrack.html", null ],
               [ "inviwo::animation::PropertyTrack< Prop, Key, Seq >", "classinviwo_1_1animation_1_1PropertyTrack.html", null ]
-            ] ],
-            [ "inviwo::animation::TrackTyped< Key >", "classinviwo_1_1animation_1_1TrackTyped.html", null ]
+            ] ]
           ] ]
         ] ]
       ] ],

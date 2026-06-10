@@ -20,6 +20,7 @@ var namespaceinviwo_1_1plot =
     [ "LayerAxis", "classinviwo_1_1plot_1_1LayerAxis.html", "classinviwo_1_1plot_1_1LayerAxis" ],
     [ "LinearRange", "structinviwo_1_1plot_1_1LinearRange.html", null ],
     [ "MajorTickProperty", "classinviwo_1_1plot_1_1MajorTickProperty.html", "classinviwo_1_1plot_1_1MajorTickProperty" ],
+    [ "MeasureDistance3D", "classinviwo_1_1plot_1_1MeasureDistance3D.html", "classinviwo_1_1plot_1_1MeasureDistance3D" ],
     [ "MeshAxis", "classinviwo_1_1plot_1_1MeshAxis.html", "classinviwo_1_1plot_1_1MeshAxis" ],
     [ "MinorTickProperty", "classinviwo_1_1plot_1_1MinorTickProperty.html", "classinviwo_1_1plot_1_1MinorTickProperty" ],
     [ "ParallelCoordinates", "classinviwo_1_1plot_1_1ParallelCoordinates.html", "classinviwo_1_1plot_1_1ParallelCoordinates" ],

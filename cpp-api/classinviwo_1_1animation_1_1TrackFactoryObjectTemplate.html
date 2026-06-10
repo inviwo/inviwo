@@ -135,6 +135,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a0fd63df8b84e57e08e86cdac125005a0" id="r_a0fd63df8b84e57e08e86cdac125005a0"><td class="memItemLeft">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Track.html">Track</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a0fd63df8b84e57e08e86cdac125005a0">create</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network) const override</td></tr>
+<tr class="memitem:a00bfcf50f46bc19b71c531e747719a1a" id="r_a00bfcf50f46bc19b71c531e747719a1a"><td class="memItemLeft">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a00bfcf50f46bc19b71c531e747719a1a">createKeyframe</a> () const override</td></tr>
+<tr class="memitem:a5a649a7f40eb42ea434063aa7303a6c7" id="r_a5a649a7f40eb42ea434063aa7303a6c7"><td class="memItemLeft">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a5a649a7f40eb42ea434063aa7303a6c7">createSequence</a> () const override</td></tr>
 <tr class="memitem:a2e9ff4cda8f40a1d1f05bbc63060ebe8" id="r_a2e9ff4cda8f40a1d1f05bbc63060ebe8"><td class="memItemLeft"><a id="a2e9ff4cda8f40a1d1f05bbc63060ebe8" name="a2e9ff4cda8f40a1d1f05bbc63060ebe8"></a>
 &#160;</td><td class="memItemRight"><b>TrackFactoryObjectTemplate</b> (std::string_view classIdentifier)</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1animation_1_1TrackFactoryObject"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1animation_1_1TrackFactoryObject')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1animation_1_1TrackFactoryObject.html">inviwo::animation::TrackFactoryObject</a></td></tr>
@@ -165,6 +167,64 @@ template&lt;typename T&gt; </div>
           <td class="memname">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Track.html">Track</a> &gt; <a class="el" href="classinviwo_1_1animation_1_1TrackFactoryObjectTemplate.html">inviwo::animation::TrackFactoryObjectTemplate</a>&lt; T &gt;::create </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *</td>          <td class="paramname"><span class="paramname"><em>network</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1animation_1_1TrackFactoryObject.html">inviwo::animation::TrackFactoryObject</a>.</p>
+
+</div>
+</div>
+<a id="a00bfcf50f46bc19b71c531e747719a1a" name="a00bfcf50f46bc19b71c531e747719a1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00bfcf50f46bc19b71c531e747719a1a">&#9670;&#160;</a></span>createKeyframe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &gt; <a class="el" href="classinviwo_1_1animation_1_1TrackFactoryObjectTemplate.html">inviwo::animation::TrackFactoryObjectTemplate</a>&lt; T &gt;::createKeyframe </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1animation_1_1TrackFactoryObject.html">inviwo::animation::TrackFactoryObject</a>.</p>
+
+</div>
+</div>
+<a id="a5a649a7f40eb42ea434063aa7303a6c7" name="a5a649a7f40eb42ea434063aa7303a6c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a649a7f40eb42ea434063aa7303a6c7">&#9670;&#160;</a></span>createSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; <a class="el" href="classinviwo_1_1animation_1_1TrackFactoryObjectTemplate.html">inviwo::animation::TrackFactoryObjectTemplate</a>&lt; T &gt;::createSequence </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>

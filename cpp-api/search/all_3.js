@@ -137,7 +137,7 @@ var searchData=
   ['datainport_3c_20volume_20_3e_134',['DataInport&lt; Volume &gt;',['../classinviwo_1_1DataInport.html',1,'inviwo']]],
   ['datainport_3c_20volumesequence_20_3e_135',['DataInport&lt; VolumeSequence &gt;',['../classinviwo_1_1DataInport.html',1,'inviwo']]],
   ['datamapper_136',['DataMapper',['../classinviwo_1_1DataMapper.html',1,'inviwo']]],
-  ['dataminmax_137',['dataMinMax',['../namespaceinviwo_1_1util.html#ae49e61ebf3b11c94b3497f88bb454634',1,'inviwo::util']]],
+  ['dataminmax_137',['dataMinMax',['../namespaceinviwo_1_1util.html#afb9ec945bc00797a5b628ba2d75ca166',1,'inviwo::util']]],
   ['dataminmaxgl_138',['DataMinMaxGL',['../classinviwo_1_1utilgl_1_1DataMinMaxGL.html',1,'inviwo::utilgl']]],
   ['dataname_139',['dataName',['../structinviwo_1_1DataTraits.html#a70bc89235f2ada970ab0dd76c42eec51',1,'inviwo::DataTraits']]],
   ['dataoutport_140',['DataOutport',['../classinviwo_1_1DataOutport.html',1,'inviwo']]],

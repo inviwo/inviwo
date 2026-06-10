@@ -158,6 +158,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a50ab6fa9dbaa6beca60760727f700194" id="r_a50ab6fa9dbaa6beca60760727f700194"><td class="memItemLeft">virtual key_type *&#160;</td><td class="memItemRight"><a class="el" href="#a50ab6fa9dbaa6beca60760727f700194">add</a> (Seconds time, bool asNewSequence) override</td></tr>
 <tr class="memitem:ac8f3a9dbe977a8c1d886a755698179c1" id="r_ac8f3a9dbe977a8c1d886a755698179c1"><td class="memItemLeft">virtual Seq *&#160;</td><td class="memItemRight"><a class="el" href="#ac8f3a9dbe977a8c1d886a755698179c1">add</a> (std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; sequence) override</td></tr>
 <tr class="memitem:ae467a594b5e0e9018162b75470f59d7c" id="r_ae467a594b5e0e9018162b75470f59d7c"><td class="memItemLeft">virtual Seq *&#160;</td><td class="memItemRight"><a class="el" href="#ae467a594b5e0e9018162b75470f59d7c">add</a> (std::unique_ptr&lt; Seq &gt; sequence)</td></tr>
+<tr class="memitem:af3191a7eb7766242fe5adad34c899f2c" id="r_af3191a7eb7766242fe5adad34c899f2c"><td class="memItemLeft"><a id="af3191a7eb7766242fe5adad34c899f2c" name="af3191a7eb7766242fe5adad34c899f2c"></a>
+key_type *&#160;</td><td class="memItemRight"><b>addToClosestSequence</b> (std::unique_ptr&lt; key_type &gt; key)</td></tr>
+<tr class="memitem:a411f8997b1a5b1285a3fe34d80011693" id="r_a411f8997b1a5b1285a3fe34d80011693"><td class="memItemLeft">virtual key_type *&#160;</td><td class="memItemRight"><a class="el" href="#a411f8997b1a5b1285a3fe34d80011693">addToClosestSequence</a> (std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &gt; key) override</td></tr>
 <tr class="memitem:a7ab71a2f65a1df7ec98609c42dccf4de" id="r_a7ab71a2f65a1df7ec98609c42dccf4de"><td class="memItemLeft"><a id="a7ab71a2f65a1df7ec98609c42dccf4de" name="a7ab71a2f65a1df7ec98609c42dccf4de"></a>
 &#160;</td><td class="memItemRight"><b>BaseTrack</b> (std::string_view name, size_t priority=0)</td></tr>
 <tr class="memitem:a95c2c37a38e196d309be310b2924acec" id="r_a95c2c37a38e196d309be310b2924acec"><td class="memItemLeft"><a id="a95c2c37a38e196d309be310b2924acec" name="a95c2c37a38e196d309be310b2924acec"></a>
@@ -239,8 +242,6 @@ void&#160;</td><td class="memItemRight"><b>removeObservations</b> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:af3191a7eb7766242fe5adad34c899f2c" id="r_af3191a7eb7766242fe5adad34c899f2c"><td class="memItemLeft"><a id="af3191a7eb7766242fe5adad34c899f2c" name="af3191a7eb7766242fe5adad34c899f2c"></a>
-key_type *&#160;</td><td class="memItemRight"><b>addToClosestSequence</b> (std::unique_ptr&lt; key_type &gt; key)</td></tr>
 <tr class="memitem:ab4134ee2c20c6b8134472f733ff6a802" id="r_ab4134ee2c20c6b8134472f733ff6a802"><td class="memItemLeft"><a id="ab4134ee2c20c6b8134472f733ff6a802" name="ab4134ee2c20c6b8134472f733ff6a802"></a>
 &#160;</td><td class="memItemRight"><b>BaseTrack</b> (BaseTrack &amp;&amp;other)=default</td></tr>
 <tr class="memitem:a3ce580d46505bb0f30bb5a0d2f3e8818" id="r_a3ce580d46505bb0f30bb5a0d2f3e8818"><td class="memItemLeft"><a id="a3ce580d46505bb0f30bb5a0d2f3e8818" name="a3ce580d46505bb0f30bb5a0d2f3e8818"></a>
@@ -293,7 +294,7 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html">inviwo::animation::BaseTrack</a>&lt; Seq &gt;::const_iterator</td>
@@ -313,7 +314,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -348,7 +349,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -385,7 +386,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -412,13 +413,42 @@ template&lt;typename Seq&gt; </div>
 
 </div>
 </div>
+<a id="a411f8997b1a5b1285a3fe34d80011693" name="a411f8997b1a5b1285a3fe34d80011693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a411f8997b1a5b1285a3fe34d80011693">&#9670;&#160;</a></span>addToClosestSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual key_type * <a class="el" href="classinviwo_1_1animation_1_1BaseTrack.html">inviwo::animation::BaseTrack</a>&lt; Seq &gt;::addToClosestSequence </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1animation_1_1Track.html">inviwo::animation::Track</a>.</p>
+
+</div>
+</div>
 <a id="a0f4e7a0f45d22064877c28527042e3d7" name="a0f4e7a0f45d22064877c28527042e3d7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0f4e7a0f45d22064877c28527042e3d7">&#9670;&#160;</a></span>deserialize()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -447,7 +477,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -476,7 +506,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -505,7 +535,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -534,7 +564,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -563,7 +593,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -592,7 +622,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -621,7 +651,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -650,7 +680,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -679,7 +709,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -708,7 +738,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -737,7 +767,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -766,7 +796,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -796,7 +826,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -825,7 +855,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -854,7 +884,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -883,7 +913,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -912,7 +942,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -941,7 +971,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -970,7 +1000,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1000,7 +1030,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1029,7 +1059,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1058,7 +1088,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1088,7 +1118,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1118,7 +1148,7 @@ template&lt;typename Seq&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Seq&gt; </div>
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; Seq&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">

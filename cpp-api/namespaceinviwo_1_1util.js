@@ -113,7 +113,7 @@ var namespaceinviwo_1_1util =
     [ "createTextTexture", "namespaceinviwo_1_1util.html#a4b7100edcb0e8721bc861233332b7d2c", null ],
     [ "createTextTextureObject", "namespaceinviwo_1_1util.html#a6e1e0f2ae3a7b52b3a951b6fff0411b2", null ],
     [ "cubePlaneIntersectionAppend", "namespaceinviwo_1_1util.html#a125fdc1aa254554458167122ca14c08b", null ],
-    [ "dataMinMax", "namespaceinviwo_1_1util.html#ae49e61ebf3b11c94b3497f88bb454634", null ],
+    [ "dataMinMax", "namespaceinviwo_1_1util.html#afb9ec945bc00797a5b628ba2d75ca166", null ],
     [ "demangle", "namespaceinviwo_1_1util.html#a2d48f7460aa46b805b25b7c8802e1433", null ],
     [ "durationToString", "namespaceinviwo_1_1util.html#a818947e6c0c72cbdeb18b6631686091b", null ],
     [ "elideLines", "namespaceinviwo_1_1util.html#aa0b234248fa0f75afa5d053118ec319a", null ],

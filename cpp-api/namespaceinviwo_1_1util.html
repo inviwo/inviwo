@@ -397,10 +397,14 @@ IVW_CORE_API std::optional&lt; dmat4 &gt;&#160;</td><td class="memItemRight"><b>
 IVW_MODULE_DATAFRAME_API <a class="el" href="classinviwo_1_1BitSet.html">BitSet</a>&#160;</td><td class="memItemRight"><b>boxFilter</b> (const dvec2 &amp;start, const dvec2 &amp;end, const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> *xAxis_, const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> *yAxis_)</td></tr>
 <tr class="memitem:aaf1508b7bba8f64f30714476d19f6d62" id="r_aaf1508b7bba8f64f30714476d19f6d62"><td class="memItemLeft"><a id="aaf1508b7bba8f64f30714476d19f6d62" name="aaf1508b7bba8f64f30714476d19f6d62"></a>
 IVW_MODULE_DATAFRAME_API <a class="el" href="classinviwo_1_1BitSet.html">BitSet</a>&#160;</td><td class="memItemRight"><b>boxSelect</b> (const dvec2 &amp;start, const dvec2 &amp;end, const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> *xAxis_, const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> *yAxis_)</td></tr>
-<tr class="memitem:a3f84d47c526824246291b92b4c281959" id="r_a3f84d47c526824246291b92b4c281959"><td class="memItemLeft"><a id="a3f84d47c526824246291b92b4c281959" name="a3f84d47c526824246291b92b4c281959"></a>
-IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>bufferMinMax</b> (const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> *buffer, IgnoreSpecialValues ignore=IgnoreSpecialValues::No)</td></tr>
-<tr class="memitem:a40d2d204238b274711ad05bb7d99e24b" id="r_a40d2d204238b274711ad05bb7d99e24b"><td class="memItemLeft"><a id="a40d2d204238b274711ad05bb7d99e24b" name="a40d2d204238b274711ad05bb7d99e24b"></a>
-IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>bufferMinMax</b> (const <a class="el" href="classinviwo_1_1BufferRAM.html">BufferRAM</a> *layer, IgnoreSpecialValues ignore=IgnoreSpecialValues::No)</td></tr>
+<tr class="memitem:aeb95236a1c7ecec663d2a278c56540b8" id="r_aeb95236a1c7ecec663d2a278c56540b8"><td class="memItemLeft"><a id="aeb95236a1c7ecec663d2a278c56540b8" name="aeb95236a1c7ecec663d2a278c56540b8"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>bufferMinMax</b> (const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> *buffer, IgnoreSpecialValues ignore)</td></tr>
+<tr class="memitem:a289ba708245b81eb22b9a2f0b7b65440" id="r_a289ba708245b81eb22b9a2f0b7b65440"><td class="memItemLeft"><a id="a289ba708245b81eb22b9a2f0b7b65440" name="a289ba708245b81eb22b9a2f0b7b65440"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>bufferMinMax</b> (const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> *buffer, <a class="el" href="structinviwo_1_1IgnoreValues.html">IgnoreValues</a> ignore={})</td></tr>
+<tr class="memitem:a02b3044d08d871eb339c4676a688fecb" id="r_a02b3044d08d871eb339c4676a688fecb"><td class="memItemLeft"><a id="a02b3044d08d871eb339c4676a688fecb" name="a02b3044d08d871eb339c4676a688fecb"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>bufferMinMax</b> (const <a class="el" href="classinviwo_1_1BufferRAM.html">BufferRAM</a> *layer, IgnoreSpecialValues ignore)</td></tr>
+<tr class="memitem:aad5615c772e1b14fb1cbb0055811406b" id="r_aad5615c772e1b14fb1cbb0055811406b"><td class="memItemLeft"><a id="aad5615c772e1b14fb1cbb0055811406b" name="aad5615c772e1b14fb1cbb0055811406b"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>bufferMinMax</b> (const <a class="el" href="classinviwo_1_1BufferRAM.html">BufferRAM</a> *layer, <a class="el" href="structinviwo_1_1IgnoreValues.html">IgnoreValues</a> ignore={})</td></tr>
 <tr class="memitem:acda1d99dc61d16151c33542544033e9f" id="r_acda1d99dc61d16151c33542544033e9f"><td class="memTemplParams" colspan="2"><a id="acda1d99dc61d16151c33542544033e9f" name="acda1d99dc61d16151c33542544033e9f"></a>
 template&lt;std::size_t N, typename Index = size_t, typename Functor&gt; </td></tr>
 <tr class="memitem:acda1d99dc61d16151c33542544033e9f template"><td class="memItemLeft">constexpr auto&#160;</td><td class="memItemRight"><b>build_array</b> (const Functor &amp;func) noexcept</td></tr>
@@ -535,8 +539,11 @@ IVW_MODULE_VECTORFIELDVISUALIZATION_API void&#160;</td><td class="memItemRight">
 <tr class="memitem:a5b726fee99ce9c8a7d097450c48c0f5c" id="r_a5b726fee99ce9c8a7d097450c48c0f5c"><td class="memTemplParams" colspan="2"><a id="a5b726fee99ce9c8a7d097450c48c0f5c" name="a5b726fee99ce9c8a7d097450c48c0f5c"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a5b726fee99ce9c8a7d097450c48c0f5c template"><td class="memItemLeft"><a class="el" href="structinviwo_1_1DataInfo.html">DataInfo</a>&#160;</td><td class="memItemRight"><b>dataInfoFor</b> ()</td></tr>
-<tr class="memitem:ae49e61ebf3b11c94b3497f88bb454634" id="r_ae49e61ebf3b11c94b3497f88bb454634"><td class="memTemplParams" colspan="2">template&lt;typename ValueType&gt; </td></tr>
-<tr class="memitem:ae49e61ebf3b11c94b3497f88bb454634 template"><td class="memItemLeft">std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ae49e61ebf3b11c94b3497f88bb454634">dataMinMax</a> (const ValueType *data, size_t size, IgnoreSpecialValues ignore=IgnoreSpecialValues::No)</td></tr>
+<tr class="memitem:a8f308bd82ca81513952e299ff77620e8" id="r_a8f308bd82ca81513952e299ff77620e8"><td class="memTemplParams" colspan="2"><a id="a8f308bd82ca81513952e299ff77620e8" name="a8f308bd82ca81513952e299ff77620e8"></a>
+template&lt;typename ValueType&gt; </td></tr>
+<tr class="memitem:a8f308bd82ca81513952e299ff77620e8 template"><td class="memItemLeft">std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>dataMinMax</b> (const ValueType *data, size_t size, IgnoreSpecialValues ignore)</td></tr>
+<tr class="memitem:afb9ec945bc00797a5b628ba2d75ca166" id="r_afb9ec945bc00797a5b628ba2d75ca166"><td class="memTemplParams" colspan="2">template&lt;typename ValueType&gt; </td></tr>
+<tr class="memitem:afb9ec945bc00797a5b628ba2d75ca166 template"><td class="memItemLeft">std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#afb9ec945bc00797a5b628ba2d75ca166">dataMinMax</a> (const ValueType *data, size_t size, <a class="el" href="structinviwo_1_1IgnoreValues.html">IgnoreValues</a> ignore={})</td></tr>
 <tr class="memitem:a25afb29c2423b01fa641a9c80ef5b911" id="r_a25afb29c2423b01fa641a9c80ef5b911"><td class="memTemplParams" colspan="2"><a id="a25afb29c2423b01fa641a9c80ef5b911" name="a25afb29c2423b01fa641a9c80ef5b911"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a25afb29c2423b01fa641a9c80ef5b911 template"><td class="memItemLeft">constexpr std::string_view&#160;</td><td class="memItemRight"><b>dataName</b> ()</td></tr>
@@ -1021,10 +1028,14 @@ template&lt;typename U, typename Predicate, typename ValueTransform, typename Pr
 <tr class="memitem:a228b56eb82142a3b5e07907063a9bb47 template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><b>layerDistanceTransform</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *inLayer, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, size2_t upsample, Predicate predicate, ValueTransform valueTransform, ProgressCallback callback)</td></tr>
 <tr class="memitem:aa71be87387c05e55dd29842139147583" id="r_aa71be87387c05e55dd29842139147583"><td class="memItemLeft"><a id="aa71be87387c05e55dd29842139147583" name="aa71be87387c05e55dd29842139147583"></a>
 IVW_CORE_API <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight"><b>layerInfo</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer)</td></tr>
-<tr class="memitem:aafe170b7ad56521599a2f3e401de8392" id="r_aafe170b7ad56521599a2f3e401de8392"><td class="memItemLeft"><a id="aafe170b7ad56521599a2f3e401de8392" name="aafe170b7ad56521599a2f3e401de8392"></a>
-IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>layerMinMax</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *layer, IgnoreSpecialValues ignore=IgnoreSpecialValues::No)</td></tr>
-<tr class="memitem:ad1ecdc3de3734eea621ffa06153b4ad4" id="r_ad1ecdc3de3734eea621ffa06153b4ad4"><td class="memItemLeft"><a id="ad1ecdc3de3734eea621ffa06153b4ad4" name="ad1ecdc3de3734eea621ffa06153b4ad4"></a>
-IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>layerMinMax</b> (const <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *layer, IgnoreSpecialValues ignore=IgnoreSpecialValues::No)</td></tr>
+<tr class="memitem:a8b94273ac03c6ab3519a93ded81f9197" id="r_a8b94273ac03c6ab3519a93ded81f9197"><td class="memItemLeft"><a id="a8b94273ac03c6ab3519a93ded81f9197" name="a8b94273ac03c6ab3519a93ded81f9197"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>layerMinMax</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *layer, IgnoreSpecialValues ignore)</td></tr>
+<tr class="memitem:ad80d9bb5752d8d0f07a3f0860c6f2006" id="r_ad80d9bb5752d8d0f07a3f0860c6f2006"><td class="memItemLeft"><a id="ad80d9bb5752d8d0f07a3f0860c6f2006" name="ad80d9bb5752d8d0f07a3f0860c6f2006"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>layerMinMax</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *layer, <a class="el" href="structinviwo_1_1IgnoreValues.html">IgnoreValues</a> ignore={})</td></tr>
+<tr class="memitem:aad8df641b506dd1c1f2c8d1e15c80f16" id="r_aad8df641b506dd1c1f2c8d1e15c80f16"><td class="memItemLeft"><a id="aad8df641b506dd1c1f2c8d1e15c80f16" name="aad8df641b506dd1c1f2c8d1e15c80f16"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>layerMinMax</b> (const <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *layer, IgnoreSpecialValues ignore)</td></tr>
+<tr class="memitem:a6ec1f582a7d8e40f7fcdddf561cac743" id="r_a6ec1f582a7d8e40f7fcdddf561cac743"><td class="memItemLeft"><a id="a6ec1f582a7d8e40f7fcdddf561cac743" name="a6ec1f582a7d8e40f7fcdddf561cac743"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>layerMinMax</b> (const <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *layer, <a class="el" href="structinviwo_1_1IgnoreValues.html">IgnoreValues</a> ignore={})</td></tr>
 <tr class="memitem:a2203e348dbca9cbd21f371144bfb4664" id="r_a2203e348dbca9cbd21f371144bfb4664"><td class="memTemplParams" colspan="2">template&lt;typename T, typename U, typename Predicate, typename ValueTransform, typename ProgressCallback&gt; </td></tr>
 <tr class="memitem:a2203e348dbca9cbd21f371144bfb4664 template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2203e348dbca9cbd21f371144bfb4664">layerRAMDistanceTransform</a> (const <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; T &gt; *inLayer, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, Matrix&lt; 3, U &gt; basis, size2_t upsample, Predicate predicate, ValueTransform valueTransform, ProgressCallback callback)</td></tr>
 <tr class="memitem:a16221a287d0e3e9c9653e3a65f5d15e6" id="r_a16221a287d0e3e9c9653e3a65f5d15e6"><td class="memTemplParams" colspan="2"><a id="a16221a287d0e3e9c9653e3a65f5d15e6" name="a16221a287d0e3e9c9653e3a65f5d15e6"></a>
@@ -1459,10 +1470,14 @@ template&lt;typename U, typename Predicate, typename ValueTransform, typename Pr
 IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> &gt;&#160;</td><td class="memItemRight"><b>volumeDownsample</b> (const <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> *in, size3_t strides, DownsamplingMode mode)</td></tr>
 <tr class="memitem:af6a8c467e8ff8b7198cb16f4bacb6755" id="r_af6a8c467e8ff8b7198cb16f4bacb6755"><td class="memItemLeft"><a id="af6a8c467e8ff8b7198cb16f4bacb6755" name="af6a8c467e8ff8b7198cb16f4bacb6755"></a>
 IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight"><b>volumeLaplacian</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; volume, VolumeLaplacianPostProcessing postProcessing, double scale)</td></tr>
-<tr class="memitem:a66d02461aeec59fc568a1edca407e77d" id="r_a66d02461aeec59fc568a1edca407e77d"><td class="memItemLeft"><a id="a66d02461aeec59fc568a1edca407e77d" name="a66d02461aeec59fc568a1edca407e77d"></a>
-IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>volumeMinMax</b> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> *volume, IgnoreSpecialValues ignore=IgnoreSpecialValues::No)</td></tr>
-<tr class="memitem:a180d75d9fae76897cebcd13a17c666d7" id="r_a180d75d9fae76897cebcd13a17c666d7"><td class="memItemLeft"><a id="a180d75d9fae76897cebcd13a17c666d7" name="a180d75d9fae76897cebcd13a17c666d7"></a>
-IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>volumeMinMax</b> (const <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> *volume, IgnoreSpecialValues ignore=IgnoreSpecialValues::No)</td></tr>
+<tr class="memitem:a2d95d09019e50ba42cd92bf24de17a16" id="r_a2d95d09019e50ba42cd92bf24de17a16"><td class="memItemLeft"><a id="a2d95d09019e50ba42cd92bf24de17a16" name="a2d95d09019e50ba42cd92bf24de17a16"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>volumeMinMax</b> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> *volume, IgnoreSpecialValues ignore)</td></tr>
+<tr class="memitem:afe3a4e44ff251dd059626b15ac8dae95" id="r_afe3a4e44ff251dd059626b15ac8dae95"><td class="memItemLeft"><a id="afe3a4e44ff251dd059626b15ac8dae95" name="afe3a4e44ff251dd059626b15ac8dae95"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>volumeMinMax</b> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> *volume, <a class="el" href="structinviwo_1_1IgnoreValues.html">IgnoreValues</a> ignore={})</td></tr>
+<tr class="memitem:a7ba29cf75907195ffa44cf480a8f7ea8" id="r_a7ba29cf75907195ffa44cf480a8f7ea8"><td class="memItemLeft"><a id="a7ba29cf75907195ffa44cf480a8f7ea8" name="a7ba29cf75907195ffa44cf480a8f7ea8"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>volumeMinMax</b> (const <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> *volume, IgnoreSpecialValues ignore)</td></tr>
+<tr class="memitem:a79553594637e6e828c02dd673b5b4411" id="r_a79553594637e6e828c02dd673b5b4411"><td class="memItemLeft"><a id="a79553594637e6e828c02dd673b5b4411" name="a79553594637e6e828c02dd673b5b4411"></a>
+IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight"><b>volumeMinMax</b> (const <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> *volume, <a class="el" href="structinviwo_1_1IgnoreValues.html">IgnoreValues</a> ignore={})</td></tr>
 <tr class="memitem:a000dfa6514e8260281ffb35ee10253c5" id="r_a000dfa6514e8260281ffb35ee10253c5"><td class="memTemplParams" colspan="2"><a id="a000dfa6514e8260281ffb35ee10253c5" name="a000dfa6514e8260281ffb35ee10253c5"></a>
 template&lt;typename T, typename U&gt; </td></tr>
 <tr class="memitem:a000dfa6514e8260281ffb35ee10253c5 template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><b>volumeRAMDistanceTransform</b> (const <a class="el" href="classinviwo_1_1VolumeRAMPrecision.html">VolumeRAMPrecision</a>&lt; T &gt; *inVolume, <a class="el" href="classinviwo_1_1VolumeRAMPrecision.html">VolumeRAMPrecision</a>&lt; U &gt; *outDistanceField, const Matrix&lt; 3, U &gt; &amp;basis, const size3_t &amp;upsample)</td></tr>
@@ -2776,8 +2791,8 @@ template&lt;size_t N, typename T&gt; </div>
 
 </div>
 </div>
-<a id="ae49e61ebf3b11c94b3497f88bb454634" name="ae49e61ebf3b11c94b3497f88bb454634"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae49e61ebf3b11c94b3497f88bb454634">&#9670;&#160;</a></span>dataMinMax()</h2>
+<a id="afb9ec945bc00797a5b628ba2d75ca166" name="afb9ec945bc00797a5b628ba2d75ca166"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb9ec945bc00797a5b628ba2d75ca166">&#9670;&#160;</a></span>dataMinMax()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2797,7 +2812,7 @@ template&lt;typename ValueType&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">IgnoreSpecialValues</td>          <td class="paramname"><span class="paramname"><em>ignore</em></span><span class="paramdefsep"> = </span><span class="paramdefval">IgnoreSpecialValues::No</span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="structinviwo_1_1IgnoreValues.html">IgnoreValues</a></td>          <td class="paramname"><span class="paramname"><em>ignore</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

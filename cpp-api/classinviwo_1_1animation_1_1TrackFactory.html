@@ -140,11 +140,15 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae84eae0cb3867fa68707ae08b1bb1826" id="r_ae84eae0cb3867fa68707ae08b1bb1826"><td class="memItemLeft"><a id="ae84eae0cb3867fa68707ae08b1bb1826" name="ae84eae0cb3867fa68707ae08b1bb1826"></a>
-virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Track.html">Track</a> &gt;&#160;</td><td class="memItemRight"><b>create</b> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property) const</td></tr>
+<tr class="memitem:a70a6c08a63f783f6d3144eb539a6f5f8" id="r_a70a6c08a63f783f6d3144eb539a6f5f8"><td class="memItemLeft"><a id="a70a6c08a63f783f6d3144eb539a6f5f8" name="a70a6c08a63f783f6d3144eb539a6f5f8"></a>
+std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Track.html">Track</a> &gt;&#160;</td><td class="memItemRight"><b>create</b> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property) const</td></tr>
 <tr class="memitem:ab247f2574d56c921b70d08ec96d77a42" id="r_ab247f2574d56c921b70d08ec96d77a42"><td class="memItemLeft"><a id="ab247f2574d56c921b70d08ec96d77a42" name="ab247f2574d56c921b70d08ec96d77a42"></a>
 virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Track.html">Track</a> &gt;&#160;</td><td class="memItemRight"><b>create</b> (std::string_view key) const override</td></tr>
 <tr class="memitem:ad48d091dd78538e7d7a6d779793bc10b" id="r_ad48d091dd78538e7d7a6d779793bc10b"><td class="memItemLeft">virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Track.html">Track</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ad48d091dd78538e7d7a6d779793bc10b">create</a> (std::string_view key, Args... args) const override</td></tr>
+<tr class="memitem:a36cfe6dbb5f724a26d433e453af3109d" id="r_a36cfe6dbb5f724a26d433e453af3109d"><td class="memItemLeft"><a id="a36cfe6dbb5f724a26d433e453af3109d" name="a36cfe6dbb5f724a26d433e453af3109d"></a>
+std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &gt;&#160;</td><td class="memItemRight"><b>createKeyframe</b> (std::string_view key) const</td></tr>
+<tr class="memitem:a01834ed304c79bccbb361ac57047b694" id="r_a01834ed304c79bccbb361ac57047b694"><td class="memItemLeft"><a id="a01834ed304c79bccbb361ac57047b694" name="a01834ed304c79bccbb361ac57047b694"></a>
+std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt;&#160;</td><td class="memItemRight"><b>createSequence</b> (std::string_view key) const</td></tr>
 <tr class="memitem:a464414b03fdd1a4ce3129bf2f2adc037" id="r_a464414b03fdd1a4ce3129bf2f2adc037"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a464414b03fdd1a4ce3129bf2f2adc037">hasKey</a> (std::string_view key) const override</td></tr>
 <tr class="memitem:a150611ade84a02ab0628d46fb45ba67e" id="r_a150611ade84a02ab0628d46fb45ba67e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a150611ade84a02ab0628d46fb45ba67e">registerPropertyTrackConnection</a> (std::string_view propertyClassID, std::string_view trackClassID)</td></tr>
 <tr class="memitem:a86fbda11cc0676813ee1265417803000" id="r_a86fbda11cc0676813ee1265417803000"><td class="memItemLeft"><a id="a86fbda11cc0676813ee1265417803000" name="a86fbda11cc0676813ee1265417803000"></a>
@@ -192,6 +196,10 @@ void&#160;</td><td class="memItemRight"><b>removeObserver</b> (<a class="el" hre
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
+<tr class="memitem:a20fcef53329d09134b2506cfdee89f0a" id="r_a20fcef53329d09134b2506cfdee89f0a"><td class="memItemLeft"><a id="a20fcef53329d09134b2506cfdee89f0a" name="a20fcef53329d09134b2506cfdee89f0a"></a>
+<a class="el" href="classinviwo_1_1animation_1_1KeyframeFactory.html">KeyframeFactory</a>&#160;</td><td class="memItemRight"><b>keyframeFactory</b></td></tr>
+<tr class="memitem:a39184699cf22bd6cd0388ef63eaed7b6" id="r_a39184699cf22bd6cd0388ef63eaed7b6"><td class="memItemLeft"><a id="a39184699cf22bd6cd0388ef63eaed7b6" name="a39184699cf22bd6cd0388ef63eaed7b6"></a>
+<a class="el" href="classinviwo_1_1animation_1_1KeyframeSequenceFactory.html">KeyframeSequenceFactory</a>&#160;</td><td class="memItemRight"><b>keyframeSequenceFactory</b></td></tr>
 <tr class="memitem:a5a1942a24aacc62aa2ad83e001ee3f39" id="r_a5a1942a24aacc62aa2ad83e001ee3f39"><td class="memItemLeft"><a id="a5a1942a24aacc62aa2ad83e001ee3f39" name="a5a1942a24aacc62aa2ad83e001ee3f39"></a>
 <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *&#160;</td><td class="memItemRight"><b>network_</b></td></tr>
 </table><table class="memberdecls">

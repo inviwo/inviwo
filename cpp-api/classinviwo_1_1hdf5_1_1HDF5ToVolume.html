@@ -165,7 +165,6 @@ requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1Inport.html"
 <tr class="memitem:a3cd5db4bf020c1b346e38d4f559a9d33 inherit pub_methods_classinviwo_1_1Processor" id="r_a3cd5db4bf020c1b346e38d4f559a9d33"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a3cd5db4bf020c1b346e38d4f559a9d33">allInportsAreReady</a> () const</td></tr>
 <tr class="memitem:a39b72dcb55d6130319bb86e555695c1f inherit pub_methods_classinviwo_1_1Processor" id="r_a39b72dcb55d6130319bb86e555695c1f"><td class="memItemLeft">
 bool&#160;</td><td class="memItemRight"><b>allInportsConnected</b> () const</td></tr>
-<tr class="memitem:a8dbcb93471d8bf19fa1d95908c5c4e31 inherit pub_methods_classinviwo_1_1Processor" id="r_a8dbcb93471d8bf19fa1d95908c5c4e31"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a8dbcb93471d8bf19fa1d95908c5c4e31">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
 <tr class="memitem:a6d86ad3f64ff3cdadaad473036809a1d inherit pub_methods_classinviwo_1_1Processor" id="r_a6d86ad3f64ff3cdadaad473036809a1d"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a6d86ad3f64ff3cdadaad473036809a1d">doIfNotReady</a> ()</td></tr>
 <tr class="memitem:a6b357b68c30cb9a3db916989ba529f3a inherit pub_methods_classinviwo_1_1Processor" id="r_a6b357b68c30cb9a3db916989ba529f3a"><td class="memItemLeft">
 const std::string &amp;&#160;</td><td class="memItemRight"><b>getCategory</b> () const</td></tr>
@@ -408,6 +407,7 @@ static const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorIn
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
+<tr class="memitem:af0c5183086d014dd3e641e33d2616a5a" id="r_af0c5183086d014dd3e641e33d2616a5a"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#af0c5183086d014dd3e641e33d2616a5a">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
 <tr class="memitem:a06ce8b70c0c5a18543682ec7ca0df2cc" id="r_a06ce8b70c0c5a18543682ec7ca0df2cc"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a06ce8b70c0c5a18543682ec7ca0df2cc">process</a> () override</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a8b02d56fdf37b42ec6cfd600990bebc8 inherit pro_methods_classinviwo_1_1Processor" id="r_a8b02d56fdf37b42ec6cfd600990bebc8"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a8b02d56fdf37b42ec6cfd600990bebc8">addPortToGroup</a> (<a class="el" href="classinviwo_1_1Port.html">Port</a> *port, std::string_view portGroup)</td></tr>
@@ -511,6 +511,33 @@ friend&#160;</td><td class="memItemRight"><b>ProcessorNetworkEvaluator</b></td><
 friend&#160;</td><td class="memItemRight"><b>Property</b></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="af0c5183086d014dd3e641e33d2616a5a" name="af0c5183086d014dd3e641e33d2616a5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0c5183086d014dd3e641e33d2616a5a">&#9670;&#160;</a></span>deserialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::hdf5::HDF5ToVolume::deserialize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>d</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a>.</p>
+
+</div>
+</div>
 <a id="a7f1870df826fd7af32dbbd36d5a5f42b" name="a7f1870df826fd7af32dbbd36d5a5f42b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7f1870df826fd7af32dbbd36d5a5f42b">&#9670;&#160;</a></span>getProcessorInfo()</h2>
 

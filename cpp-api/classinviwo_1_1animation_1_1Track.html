@@ -133,16 +133,15 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
  <div class="center">
   <img src="classinviwo_1_1animation_1_1Track.png" usemap="#inviwo_3A_3Aanimation_3A_3ATrack_map" alt=""/>
   <map id="inviwo_3A_3Aanimation_3A_3ATrack_map" name="inviwo_3A_3Aanimation_3A_3ATrack_map">
-<area href="classinviwo_1_1Serializable.html" alt="inviwo::Serializable" shape="rect" coords="1128,112,1682,136"/>
-<area href="classinviwo_1_1animation_1_1TrackObservable.html" alt="inviwo::animation::TrackObservable" shape="rect" coords="1692,112,2246,136"/>
-<area href="classinviwo_1_1Observable.html" alt="inviwo::Observable&lt; TrackObserver &gt;" shape="rect" coords="1692,56,2246,80"/>
-<area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="1692,0,2246,24"/>
+<area href="classinviwo_1_1Serializable.html" alt="inviwo::Serializable" shape="rect" coords="846,112,1400,136"/>
+<area href="classinviwo_1_1animation_1_1TrackObservable.html" alt="inviwo::animation::TrackObservable" shape="rect" coords="1410,112,1964,136"/>
+<area href="classinviwo_1_1Observable.html" alt="inviwo::Observable&lt; TrackObserver &gt;" shape="rect" coords="1410,56,1964,80"/>
+<area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="1410,0,1964,24"/>
 <area href="classinviwo_1_1animation_1_1BaseTrack.html" alt="inviwo::animation::BaseTrack&lt; CallbackKeyframeSequence &gt;" shape="rect" coords="0,224,554,248"/>
 <area href="classinviwo_1_1animation_1_1BaseTrack.html" alt="inviwo::animation::BaseTrack&lt; ControlKeyframeSequence &gt;" shape="rect" coords="564,224,1118,248"/>
 <area href="classinviwo_1_1animation_1_1BaseTrack.html" alt="inviwo::animation::BaseTrack&lt; InvalidationKeyframeSequence &gt;" shape="rect" coords="1128,224,1682,248"/>
 <area href="classinviwo_1_1animation_1_1BaseTrack.html" alt="inviwo::animation::BaseTrack&lt; KeyframeSequenceTyped&lt; Key &gt; &gt;" shape="rect" coords="1692,224,2246,248"/>
 <area href="classinviwo_1_1animation_1_1BaseTrack.html" alt="inviwo::animation::BaseTrack&lt; Seq &gt;" shape="rect" coords="2256,224,2810,248"/>
-<area href="classinviwo_1_1animation_1_1TrackTyped.html" alt="inviwo::animation::TrackTyped&lt; Key &gt;" shape="rect" coords="2820,224,3374,248"/>
 <area href="classinviwo_1_1animation_1_1CallbackTrack.html" alt="inviwo::animation::CallbackTrack" shape="rect" coords="0,280,554,304"/>
 <area href="classinviwo_1_1animation_1_1ControlTrack.html" alt="inviwo::animation::ControlTrack" shape="rect" coords="564,280,1118,304"/>
 <area href="classinviwo_1_1animation_1_1InvalidationTrack.html" alt="inviwo::animation::InvalidationTrack" shape="rect" coords="1128,280,1682,304"/>
@@ -156,6 +155,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a196d2c47326a86dd12b62577b78b60ee" id="r_a196d2c47326a86dd12b62577b78b60ee"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a196d2c47326a86dd12b62577b78b60ee">add</a> (Seconds time, bool asNewSequence)=0</td></tr>
 <tr class="memitem:a301831caa62bc238c046528a98371354" id="r_a301831caa62bc238c046528a98371354"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a301831caa62bc238c046528a98371354">add</a> (std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> &gt; sequence)=0</td></tr>
+<tr class="memitem:a23254b2dcbb81e6e9b90cebe082889f6" id="r_a23254b2dcbb81e6e9b90cebe082889f6"><td class="memItemLeft"><a id="a23254b2dcbb81e6e9b90cebe082889f6" name="a23254b2dcbb81e6e9b90cebe082889f6"></a>
+virtual <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> *&#160;</td><td class="memItemRight"><b>addToClosestSequence</b> (std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> &gt; key)=0</td></tr>
 <tr class="memitem:a1c1c062e854b5355d954da308a427a13" id="r_a1c1c062e854b5355d954da308a427a13"><td class="memItemLeft">virtual Track *&#160;</td><td class="memItemRight"><a class="el" href="#a1c1c062e854b5355d954da308a427a13">clone</a> () const =0</td></tr>
 <tr class="memitem:a744127c84bfbd9e25249e2e84d2ef373" id="r_a744127c84bfbd9e25249e2e84d2ef373"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a744127c84bfbd9e25249e2e84d2ef373">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override=0</td></tr>
 <tr class="memitem:a9a9fa876d257a7889098cfcd28465c65" id="r_a9a9fa876d257a7889098cfcd28465c65"><td class="memItemLeft"><a id="a9a9fa876d257a7889098cfcd28465c65" name="a9a9fa876d257a7889098cfcd28465c65"></a>
