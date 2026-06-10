@@ -109,6 +109,10 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
+list(APPEND SOURCE_FILES "${CMAKE_CURRENT_BINARY_DIR}/src/pyinviwomodules.cpp")
+ivw_group("Source Files" BASE "${CMAKE_CURRENT_BINARY_DIR}/src/"
+          "${CMAKE_CURRENT_BINARY_DIR}/src/pyinviwomodules.cpp")
+
 ivw_add_py_wrapper(inviwopy)
 target_sources(inviwopy
     PUBLIC
@@ -119,7 +123,6 @@ target_sources(inviwopy
         ${HEADER_FILES}
     PRIVATE
         ${SOURCE_FILES}
-        ${CMAKE_CURRENT_BINARY_DIR}/src/pyinviwomodules.cpp
 )
 target_link_libraries(inviwopy PUBLIC inviwo::core inviwo::module::python3)
 

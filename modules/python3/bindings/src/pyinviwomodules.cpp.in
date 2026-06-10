@@ -67,12 +67,21 @@ void lazyLoadInviwoPythonModules(pybind11::module& m) {
         }
     });
 
-    m.def("__dir__", []() {
-        auto keys = pybind11::list(pybind11::globals().attr("keys")());
+    m.def("__dir__", [m]() {
+        auto dict = m.attr("__dict__");
+        auto keys = pybind11::list(dict.attr("keys")());
         for (const auto& [shortName, name] : names) {
-            keys.attr("append")(shortName);
+            if (!dict.attr("__contains__")(shortName).cast<bool>()) {
+                keys.attr("append")(shortName);
+            }
         }
         return keys;
     });
+
+    auto all = pybind11::list(m.attr("__dict__").attr("keys")());
+    for (const auto& [shortName, name] : names) {
+        all.attr("append")(shortName);
+    }
+    m.attr("__all__") = all;
 }
 }  // namespace inviwo
