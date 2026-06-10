@@ -62,9 +62,10 @@ void Source::process() {
         auto data = std::make_shared<Handle>(file_.get());
         port_.setData(data);
     } catch (H5::Exception& e) {
-        log::warn("Could not load file: {}: {}", file_.get(), e.getCDetailMsg());
+        throw Exception(SourceContext{}, "Could not load file: {}: {}", file_.get(),
+                        e.getCDetailMsg());
     } catch (...) {
-        log::warn("Could not load file: {}", file_.get());
+        throw Exception(SourceContext{}, "Could not load file: {}", file_.get());
     }
 }
 

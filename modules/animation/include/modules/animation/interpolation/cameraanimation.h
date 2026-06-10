@@ -105,6 +105,7 @@ constexpr std::string_view format_as(CameraAnimation::RotationAxis axis) {
         case CameraAnimation::RotationAxis::WorldZ:
             return "World Z";
     }
+    throw Exception(SourceContext{}, "Invalid RotationAxis value");
 }
 
 }  // namespace animation

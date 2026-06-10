@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
 #include <string>
 #include <unordered_map>

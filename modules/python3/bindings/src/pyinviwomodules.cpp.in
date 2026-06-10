@@ -50,16 +50,16 @@ void lazyLoadInviwoPythonModules(pybind11::module& m) {
 
     m.def("__getattr__", [](std::string name) {
         if(auto it = std::ranges::find_if(names, [name](const auto& pair) { return pair.first == name; }); it != names.end()) {
-            const auto& [shortName, name] = *it;
+            const auto& [shortName, fullName] = *it;
             try {
                 const pybind11::gil_scoped_acquire gil;
-                auto m = pybind11::module::import(name);
+                auto m = pybind11::module::import(fullName);
                 auto inviwopy = pybind11::module::import("inviwopy");
                 inviwopy.attr(shortName) = m;
                 return m;
             } catch (const std::exception& e) {
                 throw pybind11::attribute_error(
-                    fmt::format("unable to load '{}' {}", name, e.what()));
+                    fmt::format("unable to load '{}' {}", fullName, e.what()));
             }
         } else {
             throw pybind11::attribute_error(

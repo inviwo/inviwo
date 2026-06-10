@@ -45,36 +45,60 @@
 
 namespace inviwo {
 
-std::pair<dvec4, dvec4> util::volumeMinMax(const VolumeRAM* volume, IgnoreSpecialValues ignore) {
+std::pair<dvec4, dvec4> util::volumeMinMax(const VolumeRAM* volume, IgnoreValues ignore) {
     return volume->dispatch<std::pair<dvec4, dvec4>>([&ignore](auto vr) -> std::pair<dvec4, dvec4> {
         const auto dim = vr->getDimensions();
         return dataMinMax(vr->getDataTyped(), dim.x * dim.y * dim.z, ignore);
     });
 }
 
-std::pair<dvec4, dvec4> util::layerMinMax(const LayerRAM* layer, IgnoreSpecialValues ignore) {
+std::pair<dvec4, dvec4> util::layerMinMax(const LayerRAM* layer, IgnoreValues ignore) {
     return layer->dispatch<std::pair<dvec4, dvec4>>([&ignore](auto lr) -> std::pair<dvec4, dvec4> {
         const auto dim = lr->getDimensions();
         return dataMinMax(lr->getDataTyped(), dim.x * dim.y, ignore);
     });
 }
 
-std::pair<dvec4, dvec4> util::bufferMinMax(const BufferRAM* buffer, IgnoreSpecialValues ignore) {
+std::pair<dvec4, dvec4> util::bufferMinMax(const BufferRAM* buffer, IgnoreValues ignore) {
     return buffer->dispatch<std::pair<dvec4, dvec4>>([&ignore](auto br) -> std::pair<dvec4, dvec4> {
         return dataMinMax(br->getDataContainer().data(), br->getSize(), ignore);
     });
 }
 
-std::pair<dvec4, dvec4> util::volumeMinMax(const Volume* volume, IgnoreSpecialValues ignore) {
+std::pair<dvec4, dvec4> util::volumeMinMax(const Volume* volume, IgnoreValues ignore) {
     return util::volumeMinMax(volume->getRepresentation<VolumeRAM>(), ignore);
 }
 
-std::pair<dvec4, dvec4> util::layerMinMax(const Layer* layer, IgnoreSpecialValues ignore) {
+std::pair<dvec4, dvec4> util::layerMinMax(const Layer* layer, IgnoreValues ignore) {
     return util::layerMinMax(layer->getRepresentation<LayerRAM>(), ignore);
 }
 
-std::pair<dvec4, dvec4> util::bufferMinMax(const BufferBase* buffer, IgnoreSpecialValues ignore) {
+std::pair<dvec4, dvec4> util::bufferMinMax(const BufferBase* buffer, IgnoreValues ignore) {
     return util::bufferMinMax(buffer->getRepresentation<BufferRAM>(), ignore);
+}
+
+std::pair<dvec4, dvec4> util::volumeMinMax(const VolumeRAM* volume, IgnoreSpecialValues ignore) {
+    return util::volumeMinMax(volume, {.special = ignore});
+}
+
+std::pair<dvec4, dvec4> util::layerMinMax(const LayerRAM* layer, IgnoreSpecialValues ignore) {
+    return util::layerMinMax(layer, {.special = ignore});
+}
+
+std::pair<dvec4, dvec4> util::bufferMinMax(const BufferRAM* layer, IgnoreSpecialValues ignore) {
+    return util::bufferMinMax(layer, {.special = ignore});
+}
+
+std::pair<dvec4, dvec4> util::volumeMinMax(const Volume* volume, IgnoreSpecialValues ignore) {
+    return util::volumeMinMax(volume, {.special = ignore});
+}
+
+std::pair<dvec4, dvec4> util::layerMinMax(const Layer* layer, IgnoreSpecialValues ignore) {
+    return util::layerMinMax(layer, {.special = ignore});
+}
+
+std::pair<dvec4, dvec4> util::bufferMinMax(const BufferBase* buffer, IgnoreSpecialValues ignore) {
+    return util::bufferMinMax(buffer, {.special = ignore});
 }
 
 }  // namespace inviwo
