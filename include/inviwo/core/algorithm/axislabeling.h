@@ -56,7 +56,7 @@ struct IVW_CORE_API LinearRange {
     double step{1.0};
 };
 
-constexpr bool almostEqual(double a, double b, int factor = 50) {
+inline bool almostEqual(double a, double b, int factor = 50) {
     const auto min_a = a - (a - std::nextafter(a, std::numeric_limits<double>::lowest())) * factor;
     const auto max_a = a + (std::nextafter(a, std::numeric_limits<double>::max()) - a) * factor;
     return min_a <= b && max_a >= b;

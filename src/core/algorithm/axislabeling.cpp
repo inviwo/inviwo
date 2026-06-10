@@ -38,7 +38,6 @@
 #include <cmath>
 #include <algorithm>
 
-
 namespace inviwo::plot {
 
 namespace {
