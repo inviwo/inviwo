@@ -46,8 +46,26 @@
 
 namespace inviwo {
 
+namespace {
+
+struct WorkspaceManagerOnModifiedCallbackHolder {
+    std::shared_ptr<std::function<void(bool)>> value;
+};
+struct WorkspaceManagerOnClearChangedCallbackHolder {
+    std::shared_ptr<std::function<void()>> value;
+};
+
+}  // namespace
+
 void exposeWorkspaceManager(pybind11::module& m) {
     namespace py = pybind11;
+
+    py::classh<WorkspaceManagerOnModifiedCallbackHolder>(m,
+                                                         "WorkspaceManagerOnModifiedCallbackHolder")
+        .def("reset", [](WorkspaceManagerOnModifiedCallbackHolder* h) { h->value.reset(); });
+    py::classh<WorkspaceManagerOnClearChangedCallbackHolder>(
+        m, "WorkspaceManagerOnClearChangedCallbackHolder")
+        .def("reset", [](WorkspaceManagerOnClearChangedCallbackHolder* h) { h->value.reset(); });
 
     py::enum_<WorkspaceSaveMode>(m, "WorkspaceSaveMode")
         .value("Disk", WorkspaceSaveMode::Disk)
@@ -100,10 +118,8 @@ void exposeWorkspaceManager(pybind11::module& m) {
         .def(
             "onModified",
             [](WorkspaceManager* wm, std::function<void(bool)> callback) {
-                // Return an opaque handle that keeps the callback alive. When the handle is
-                // garbage collected from python the callback is automatically unregistered.
-                return std::make_shared<WorkspaceManager::ModifiedHandle>(
-                    wm->onModified(std::move(callback)));
+                return WorkspaceManagerOnModifiedCallbackHolder{
+                    wm->onModified(std::move(callback))};
             },
             py::arg("callback"),
             "Register a callback invoked whenever the modified state changes (called every "
@@ -111,16 +127,16 @@ void exposeWorkspaceManager(pybind11::module& m) {
         .def(
             "onModifiedChanged",
             [](WorkspaceManager* wm, std::function<void(bool)> callback) {
-                return std::make_shared<WorkspaceManager::ModifiedChangedHandle>(
-                    wm->onModifiedChanged(std::move(callback)));
+                return WorkspaceManagerOnModifiedCallbackHolder{
+                    wm->onModifiedChanged(std::move(callback))};
             },
             py::arg("callback"),
             "Register a callback invoked only when the modified state transitions.")
         .def(
             "onClear",
             [](WorkspaceManager* wm, std::function<void()> callback) {
-                return std::make_shared<WorkspaceManager::ClearHandle>(
-                    wm->onClear(std::move(callback)));
+                return WorkspaceManagerOnClearChangedCallbackHolder{
+                    wm->onClear(std::move(callback))};
             },
             py::arg("callback"), "Register a callback invoked when the workspace is cleared.")
         .def(
@@ -129,7 +145,7 @@ void exposeWorkspaceManager(pybind11::module& m) {
                 std::pmr::string pxml{xml.begin(), xml.end()};
                 return wm->createWorkspaceDeserializerAndInfo(pxml, refPath).first;
             },
-            py::arg("xml"), py::arg("refPath") = const std::filesystem::path{},
+            py::arg("xml"), py::arg("refPath") = std::filesystem::path{},
             "Create a deserializer for loading a workspace from a xml string with the given "
             "refPath.");
 }

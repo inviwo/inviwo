@@ -45,8 +45,19 @@
 
 namespace inviwo {
 
+namespace {
+
+struct ModuleManagerCallbackHolder {
+    std::shared_ptr<std::function<void()>> value;
+};
+
+}  // namespace
+
 void exposeModuleManager(pybind11::module& m) {
     namespace py = pybind11;
+
+    py::classh<ModuleManagerCallbackHolder>(m, "ModuleManagerCallbackHolder")
+        .def("reset", [](ModuleManagerCallbackHolder* h) { h->value.reset(); });
 
     py::classh<ModuleManager>(m, "ModuleManager")
         .def("__len__", &ModuleManager::size)
@@ -57,11 +68,10 @@ void exposeModuleManager(pybind11::module& m) {
                 return py::make_iterator(range.begin(), range.end());
             },
             py::keep_alive<0, 1>())
-        .def(
-            "__contains__",
-            [](const ModuleManager& mm, std::string_view identifier) {
-                return mm.getModuleByIdentifier(identifier) != nullptr;
-            })
+        .def("__contains__",
+             [](const ModuleManager& mm, std::string_view identifier) {
+                 return mm.getModuleByIdentifier(identifier) != nullptr;
+             })
         .def(
             "__getitem__",
             [](const ModuleManager& mm, std::string_view identifier) {
@@ -94,8 +104,8 @@ void exposeModuleManager(pybind11::module& m) {
             },
             py::return_value_policy::reference,
             "Return a list of all registered InviwoModule instances.")
-        .def("getModuleByIdentifier", &ModuleManager::getModuleByIdentifier,
-             py::arg("identifier"), py::return_value_policy::reference,
+        .def("getModuleByIdentifier", &ModuleManager::getModuleByIdentifier, py::arg("identifier"),
+             py::return_value_policy::reference,
              "Retrieve a module by its identifier or None if not found.")
         .def("getModuleByIndex", &ModuleManager::getModuleByIndex, py::arg("index"),
              py::return_value_policy::reference, "Retrieve a module by index.")
@@ -116,28 +126,24 @@ void exposeModuleManager(pybind11::module& m) {
             py::return_value_policy::reference,
             "Return a list of all registered module factory objects.")
         .def("findDependentModules",
-             py::overload_cast<std::string_view>(&ModuleManager::findDependentModules,
-                                                 py::const_),
+             py::overload_cast<std::string_view>(&ModuleManager::findDependentModules, py::const_),
              py::arg("module"),
              "Return identifiers of modules that depend (transitively) on the given module.")
-        .def("isRuntimeModuleReloadingEnabled",
-             &ModuleManager::isRuntimeModuleReloadingEnabled,
+        .def("isRuntimeModuleReloadingEnabled", &ModuleManager::isRuntimeModuleReloadingEnabled,
              "True if runtime reloading of modules is enabled.")
-        .def("reloadModules", &ModuleManager::reloadModules,
-             "Reload all runtime-loadable modules.")
+        .def("reloadModules", &ModuleManager::reloadModules, "Reload all runtime-loadable modules.")
         .def("locateModule", &ModuleManager::locateModule, py::arg("module"),
              "Locate the source/path of the given module.")
         .def(
             "onModulesDidRegister",
             [](ModuleManager& mm, std::function<void()> callback) {
-                return mm.onModulesDidRegister(std::move(callback));
+                return ModuleManagerCallbackHolder{mm.onModulesDidRegister(std::move(callback))};
             },
-            py::arg("callback"),
-            "Register a callback invoked after modules have been registered.")
+            py::arg("callback"), "Register a callback invoked after modules have been registered.")
         .def(
             "onModulesWillUnregister",
             [](ModuleManager& mm, std::function<void()> callback) {
-                return mm.onModulesWillUnregister(std::move(callback));
+                return ModuleManagerCallbackHolder{mm.onModulesWillUnregister(std::move(callback))};
             },
             py::arg("callback"),
             "Register a callback invoked before modules will be unregistered.");
