@@ -60,14 +60,6 @@ void exposeModuleManager(pybind11::module& m) {
         .def("reset", [](ModuleManagerCallbackHolder* h) { h->value.reset(); });
 
     py::classh<ModuleManager>(m, "ModuleManager")
-        .def("__len__", &ModuleManager::size)
-        .def(
-            "__iter__",
-            [](ModuleManager& mm) {
-                auto range = mm.getInviwoModules();
-                return py::make_iterator(range.begin(), range.end());
-            },
-            py::keep_alive<0, 1>())
         .def("__contains__",
              [](const ModuleManager& mm, std::string_view identifier) {
                  return mm.getModuleByIdentifier(identifier) != nullptr;
@@ -81,18 +73,6 @@ void exposeModuleManager(pybind11::module& m) {
                 throw py::key_error(std::string{identifier});
             },
             py::return_value_policy::reference)
-        .def(
-            "__getitem__",
-            [](const ModuleManager& mm, ptrdiff_t pos) {
-                const auto size = static_cast<ptrdiff_t>(mm.size());
-                if (pos < 0) pos += size;
-                if (pos < 0 || pos >= size) {
-                    throw py::index_error();
-                }
-                return mm.getModuleByIndex(static_cast<size_t>(pos));
-            },
-            py::return_value_policy::reference)
-        .def("size", &ModuleManager::size, "Number of registered modules.")
         .def(
             "modules",
             [](ModuleManager& mm) {
