@@ -133,9 +133,9 @@ public:
     }
 
     virtual bool allRelative() const override {
-        if (sets_[0]->getType() == TFPrimitiveSetType::Absolute) {
+        if (sets_[0]->getMode() == PrimitiveSetMode::Absolute) {
             return false;
-        } else if (sets_[1] && sets_[1]->getType() == TFPrimitiveSetType::Absolute) {
+        } else if (sets_[1] && sets_[1]->getMode() == PrimitiveSetMode::Absolute) {
             return false;
         } else {
             return true;

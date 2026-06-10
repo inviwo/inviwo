@@ -103,9 +103,9 @@ constexpr auto derefOperator(Operator&& op, Proj&& proj = {}) {
 
 template <typename T>
 void createAndInsertPrimitive(std::vector<std::unique_ptr<TFEditorPrimitive>>& list, TFPrimitive& p,
-                              TFPrimitiveSetType type, TFEditor* editor, bool selected) {
+                              PrimitiveSetMode mode, TFEditor* editor, bool selected) {
 
-    auto newPoint = std::make_unique<T>(p, type);
+    auto newPoint = std::make_unique<T>(p, mode);
     newPoint->setSelected(selected);
     editor->addItem(newPoint.get());
     auto it = std::upper_bound(list.begin(), list.end(), newPoint,
@@ -136,13 +136,13 @@ TFEditor::TFEditor(TFPropertyConcept* tfProperty, QWidget* parent)
         if (auto* tf = dynamic_cast<TransferFunction*>(set)) {
             items.connected = true;
             for (auto& p : *tf) {
-                createAndInsertPrimitive<TFEditorControlPoint>(items.points, p, set->getType(),
+                createAndInsertPrimitive<TFEditorControlPoint>(items.points, p, set->getMode(),
                                                                this, selectNewPrimitives_);
             }
         } else if (auto* iso = dynamic_cast<IsoValueCollection*>(set)) {
             items.connected = false;
             for (auto& p : *iso) {
-                createAndInsertPrimitive<TFEditorIsovalue>(items.points, p, set->getType(), this,
+                createAndInsertPrimitive<TFEditorIsovalue>(items.points, p, set->getMode(), this,
                                                            selectNewPrimitives_);
             }
         }
@@ -160,11 +160,11 @@ void TFEditor::onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) {
 
     auto& items = it->second;
     if (dynamic_cast<const TransferFunction*>(&set)) {
-        createAndInsertPrimitive<TFEditorControlPoint>(items.points, p, set.getType(), this,
+        createAndInsertPrimitive<TFEditorControlPoint>(items.points, p, set.getMode(), this,
                                                        selectNewPrimitives_);
         if (!bulkUpdate_) updateConnections();
     } else if (dynamic_cast<const IsoValueCollection*>(&set)) {
-        createAndInsertPrimitive<TFEditorIsovalue>(items.points, p, set.getType(), this,
+        createAndInsertPrimitive<TFEditorIsovalue>(items.points, p, set.getMode(), this,
                                                    selectNewPrimitives_);
     }
     if (!bulkUpdate_) updateSceneRect();
@@ -198,7 +198,7 @@ void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive
     if (const auto* dm = concept_->getDataMap()) {
         if (auto it = mirrors_.find(primitive); it != mirrors_.end()) {
             auto mirrorPos = mirror(primitive.getPosition(), *dm);
-            if (set.getType() == TFPrimitiveSetType::Relative) {
+            if (set.getMode() == PrimitiveSetMode::Relative) {
                 mirrorPos = std::clamp(mirrorPos, 0.0, 1.0);
             }
             it->second->setPositionAlpha(mirrorPos, primitive.getAlpha());
@@ -207,11 +207,11 @@ void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive
 
     if (!bulkUpdate_) updateSceneRect();
 }
-void TFEditor::onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) {
+void TFEditor::onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode mode) {
     auto it = primitives_.find(&set);
     if (it != primitives_.end()) {
         for (auto& primitive : it->second.points) {
-            primitive->setType(type);
+            primitive->setMode(mode);
         }
     }
 
@@ -624,7 +624,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 }
 
 double TFEditor::sceneToPos(const QPointF& scenePos, const TFPrimitiveSet& set) const {
-    return set.getType() == TFPrimitiveSetType::Absolute ? scenePos.x()
+    return set.getMode() == PrimitiveSetMode::Absolute ? scenePos.x()
                                                          : glm::clamp(scenePos.x(), 0.0, 1.0);
 }
 double TFEditor::sceneToAlpha(const QPointF& scenePos) const {
@@ -691,7 +691,7 @@ void TFEditor::addPeak(const QPointF& scenePos, TFPrimitiveSet& set) {
 
     const double normalizedOffset = viewDependentOffset().x * 5.0 / width();
 
-    if (set.getType() == TFPrimitiveSetType::Absolute) {
+    if (set.getMode() == PrimitiveSetMode::Absolute) {
         // In absolute mode, offset is in data-space units
         const double leftAlpha = std::max(0.0, alpha * 0.5);
         set.add(pos - normalizedOffset, leftAlpha);
@@ -957,7 +957,7 @@ void TFEditor::paste(std::optional<QPointF> scenePos) {
         const double targetPos = scenePos->x();
         const double offset = targetPos - center;
         for (auto& p : primitives) {
-            if (set->getType() == TFPrimitiveSetType::Relative) {
+            if (set->getMode() == PrimitiveSetMode::Relative) {
                 p->setPosition(std::clamp(p->getPosition() + offset, 0.0, 1.0));
             } else {
                 p->setPosition(p->getPosition() + offset);
@@ -1170,7 +1170,7 @@ void TFEditor::handleMirroring() {
                     mirrors_[primitive] = *pIt;
                     mirrors_[*pIt] = primitive;
                 } else if (auto* set = findSet(primitive)) {
-                    if (set->getType() == TFPrimitiveSetType::Relative) {
+                    if (set->getMode() == PrimitiveSetMode::Relative) {
                         mirrorPos = std::clamp(mirrorPos, 0.0, 1.0);
                     }
                     auto& dst = set->add(mirrorPos, primitive->getColor());

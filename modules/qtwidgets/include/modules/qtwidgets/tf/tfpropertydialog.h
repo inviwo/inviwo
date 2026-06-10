@@ -86,8 +86,8 @@ protected:
     virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
     virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
-    virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
-    void onTFTypeChangedInternal();
+    virtual void onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode mode) override;
+    void onTFModeChangedInternal();
 
     virtual void onHistogramModeChange(HistogramMode mode) override;
 
@@ -118,7 +118,7 @@ private:
 
     QComboBox* chkShowHistogram_;
     QComboBox* pointMoveMode_;
-    QComboBox* tfTypeMode_;
+    QComboBox* tfMode_;
 
     QLabel* scalar_;
     QLabel* domainMin_;

@@ -49,8 +49,8 @@
 
 namespace inviwo {
 
-TFEditorIsovalue::TFEditorIsovalue(TFPrimitive& primitive, TFPrimitiveSetType type)
-    : TFEditorPrimitive(primitive, type) {
+TFEditorIsovalue::TFEditorIsovalue(TFPrimitive& primitive, PrimitiveSetMode mode)
+    : TFEditorPrimitive(primitive, mode) {
     // ensure that Isovalue primitives are rendered behind TF control points
     setZValue(isoZLevel);
 }

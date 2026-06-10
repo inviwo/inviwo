@@ -44,7 +44,7 @@ class IVW_CORE_API TransferFunction : public TFPrimitiveSet {
 public:
     TransferFunction();
     explicit TransferFunction(const std::vector<TFPrimitiveData>& values);
-    TransferFunction(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type);
+    TransferFunction(const std::vector<TFPrimitiveData>& values, PrimitiveSetMode type);
     TransferFunction(const TransferFunction& rhs) = default;
     TransferFunction(TransferFunction&& rhs) noexcept = default;
     TransferFunction& operator=(const TransferFunction& rhs) = default;

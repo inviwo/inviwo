@@ -49,13 +49,13 @@
 
 namespace inviwo {
 
-TransferFunction::TransferFunction() : TransferFunction({}, TFPrimitiveSetType::Relative) {}
+TransferFunction::TransferFunction() : TransferFunction({}, PrimitiveSetMode::Relative) {}
 
 TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values)
-    : TransferFunction(values, TFPrimitiveSetType::Relative) {}
+    : TransferFunction(values, PrimitiveSetMode::Relative) {}
 
 TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values,
-                                   TFPrimitiveSetType type)
+                                   PrimitiveSetMode type)
     : TFPrimitiveSet(values, type) {}
 
 vec4 TransferFunction::sample(double v) const { return interpolateColor(v); }

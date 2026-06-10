@@ -45,8 +45,8 @@ class QPointF;
 
 namespace inviwo {
 
-TFEditorControlPoint::TFEditorControlPoint(TFPrimitive& primitive, TFPrimitiveSetType type)
-    : TFEditorPrimitive(primitive, type) {
+TFEditorControlPoint::TFEditorControlPoint(TFPrimitive& primitive, PrimitiveSetMode mode)
+    : TFEditorPrimitive(primitive, mode) {
     setZValue(tfZLevel);
 }
 
@@ -93,7 +93,7 @@ QVariant TFEditorControlPoint::itemChange(GraphicsItemChange change, const QVari
     if ((change == QGraphicsItem::ItemPositionChange) && scene()) {
         // constrain positions to valid view positions
         const auto r =
-            (type_ == TFPrimitiveSetType::Absolute)
+            (mode_ == PrimitiveSetMode::Absolute)
                 ? QRectF{scene()->sceneRect().x(), 0.0, scene()->sceneRect().width(), 1.0}
                 : QRectF{0.0, 0.0, 1.0, 1.0};
         auto newPos = utilqt::clamp(constrainPosToXorY(value.toPointF()), r);

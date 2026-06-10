@@ -62,7 +62,7 @@ void addSegmentsFor(std::vector<ShaderComponent::Segment>& dest,
     dest.emplace_back(fmt::format("uniform sampler2D {};", tf.getIdentifier()),
                       placeholder::uniform, 1050 + 1);
 
-    if (tf.get().getType() == TFPrimitiveSetType::Absolute) {
+    if (tf.get().getMode() == PrimitiveSetMode::Absolute) {
         dest.emplace_back(fmt::format("uniform TFParameters {}Params;", tf.getIdentifier()),
                           placeholder::uniform, 1050 + 2);
         dest.emplace_back(fmt::format(applyAbsolute, "tf"_a = tf.getIdentifier()),
@@ -74,7 +74,7 @@ void addSegmentsFor(std::vector<ShaderComponent::Segment>& dest,
 }
 
 void setUniforms(Shader& shader, const TransferFunctionProperty& tf) {
-    if (tf.get().getType() == TFPrimitiveSetType::Absolute) {
+    if (tf.get().getMode() == PrimitiveSetMode::Absolute) {
         const auto range = tf.get().getRange();
         const auto name = tf.getIdentifier();
         StrBuffer buff;

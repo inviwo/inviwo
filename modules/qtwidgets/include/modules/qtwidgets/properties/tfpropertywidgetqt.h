@@ -87,7 +87,7 @@ private:
     void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
     void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
     void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
-    void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
+    void onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode mode) override;
     void onTFBeginBulkUpdate(const TFPrimitiveSet& set) override;
     void onTFEndBulkUpdate(const TFPrimitiveSet& set) override;
 

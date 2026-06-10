@@ -63,9 +63,9 @@ class QWidget;
 
 namespace inviwo {
 
-TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive, TFPrimitiveSetType type)
+TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive, PrimitiveSetMode mode)
     : data_(primitive)
-    , type_{type}
+    , mode_{mode}
     , isEditing_(false)
     , hovered_(false)
     , label_{nullptr}
@@ -94,8 +94,8 @@ void TFEditorPrimitive::setAlpha(float alpha) { data_.setAlpha(alpha); }
 
 const vec4& TFEditorPrimitive::getColor() const { return data_.getColor(); }
 
-void TFEditorPrimitive::setType(TFPrimitiveSetType type) { type_ = type; }
-TFPrimitiveSetType TFEditorPrimitive::getType() const { return type_; }
+void TFEditorPrimitive::setMode(PrimitiveSetMode mode) { mode_ = mode; }
+PrimitiveSetMode TFEditorPrimitive::getMode() const { return mode_; }
 
 void TFEditorPrimitive::onTFPrimitiveChange(const TFPrimitive& p) {
     if (!isEditing_) {
@@ -156,7 +156,7 @@ QVariant TFEditorPrimitive::itemChange(GraphicsItemChange change, const QVariant
     if ((change == QGraphicsItem::ItemPositionChange) && scene()) {
         // constrain positions to valid view positions
         const auto r =
-            (type_ == TFPrimitiveSetType::Absolute)
+            (mode_ == PrimitiveSetMode::Absolute)
                 ? QRectF{scene()->sceneRect().x(), 0.0, scene()->sceneRect().width(), 1.0}
                 : QRectF{0.0, 0.0, 1.0, 1.0};
         return utilqt::clamp(constrainPosToXorY(value.toPointF()), r);
@@ -195,7 +195,7 @@ void TFEditorPrimitive::updateLabel() {
 
     QString label;
     if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
-        if (type_ == TFPrimitiveSetType::Absolute) {
+        if (mode_ == PrimitiveSetMode::Absolute) {
             // In absolute mode, position is already in data space
             label =
                 utilqt::toQString(fmt::format("{:0.6g}{: [} / {:0.3g}", getPosition(),

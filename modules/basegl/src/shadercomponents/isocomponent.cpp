@@ -59,7 +59,7 @@ void setUniforms(Shader& shader, const IsoValueProperty& iso, const DataMapper* 
     const auto name = iso.getIdentifier();
 
     // For Absolute mode, normalize isovalue positions to [0,1] using volume's data range
-    if (iso.get().getType() == TFPrimitiveSetType::Absolute && volumeDM) {
+    if (iso.get().getMode() == PrimitiveSetMode::Absolute && volumeDM) {
         for (auto& p : positions) {
             p = static_cast<float>(volumeDM->mapFromValueToNormalized(p));
         }

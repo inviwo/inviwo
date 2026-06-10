@@ -67,14 +67,14 @@ public:
      *
      * @param primitive the primitive
      */
-    explicit TFEditorPrimitive(TFPrimitive& primitive, TFPrimitiveSetType type);
+    explicit TFEditorPrimitive(TFPrimitive& primitive, PrimitiveSetMode mode);
     virtual ~TFEditorPrimitive() = default;
 
     TFPrimitive& getPrimitive();
     const TFPrimitive& getPrimitive() const;
 
-    void setType(TFPrimitiveSetType type);
-    TFPrimitiveSetType getType() const;
+    void setMode(PrimitiveSetMode mode);
+    PrimitiveSetMode getMode() const;
 
     void setPosition(double pos);
     double getPosition() const;
@@ -113,7 +113,7 @@ protected:
     void updateLabel();
 
     TFPrimitive& data_;
-    TFPrimitiveSetType type_;
+    PrimitiveSetMode mode_;
     bool isEditing_;
     bool hovered_;
     std::unique_ptr<QGraphicsSimpleTextItem> label_;

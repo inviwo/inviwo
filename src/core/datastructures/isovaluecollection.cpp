@@ -35,7 +35,7 @@
 namespace inviwo {
 
 IsoValueCollection::IsoValueCollection(const std::vector<TFPrimitiveData>& values,
-                                       TFPrimitiveSetType type)
+                                       PrimitiveSetMode type)
     : TFPrimitiveSet(values, type) {}
 
 std::string_view IsoValueCollection::serializationKey() const { return "IsoValues"; }

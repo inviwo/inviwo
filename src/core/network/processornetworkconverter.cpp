@@ -105,7 +105,11 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             [[fallthrough]];
         case 20:
             updatePositionProperties(root);
+            [[fallthrough]];
+        case 21:
+            updateTF(root);
             return true;  // Changes have been made.
+
         default:
             return false;  // No changes
     }
@@ -868,6 +872,50 @@ void ProcessorNetworkConverter::updatePositionProperties(TxElement* node) {
                 }
             }
         });
+}
+
+void ProcessorNetworkConverter::updateTF(TxElement* node) {
+    // Rename TFPrimitiveSet 'type' to 'mode' and make it an attribute
+    xml::visitMatchingNodesRecursive(
+        node,
+        {{"Property", {{"type", "org.inviwo.TransferFunctionProperty"}}}, {"TransferFunction", {}}},
+        [&](TxElement* tf) {
+            if (auto* t = tf->FirstChild("type")) {
+                if (auto type = t->ToElement()->Attribute("content")) {
+                    tf->SetAttribute("mode", *type);
+                }
+                tf->RemoveChild(t);
+            }
+        });
+
+    xml::visitMatchingNodesRecursive(
+        node, {{"Property", {{"type", "org.inviwo.IsoValueProperty"}}}, {"IsoValues", {}}},
+        [&](TxElement* tf) {
+            if (auto* t = tf->FirstChild("type")) {
+                if (auto type = t->ToElement()->Attribute("content")) {
+                    tf->SetAttribute("mode", *type);
+                }
+                tf->RemoveChild(t);
+            }
+        });
+
+    // Rename TransferFunctionProperty/IsoValueProperty zoomH_ -> zoomH, zoomV_ -> zoomV, and
+    // showHistogram_ -> showHistogram
+    const auto rename = [&](TxElement* prop) {
+        if (auto* zoomH = prop->FirstChild("zoomH_")) {
+            zoomH->SetValue("zoomH");
+        }
+        if (auto* zoomV = prop->FirstChild("zoomV_")) {
+            zoomV->SetValue("zoomV");
+        }
+        if (auto* showHistogram = prop->FirstChild("showHistogram_")) {
+            showHistogram->SetValue("showHistogram");
+        }
+    };
+    xml::visitMatchingNodesRecursive(
+        node, {"Property", {{"type", "org.inviwo.TransferFunctionProperty"}}}, rename);
+    xml::visitMatchingNodesRecursive(node, {"Property", {{"type", "org.inviwo.IsoValueProperty"}}},
+                                     rename);
 }
 
 }  // namespace inviwo

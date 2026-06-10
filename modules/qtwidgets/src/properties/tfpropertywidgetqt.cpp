@@ -205,7 +205,7 @@ void TFPushButton::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimi
         updateIcon();
     }
 }
-void TFPushButton::onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) {
+void TFPushButton::onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode mode) {
     if (!bulkUpdate_) {
         updateIcon();
     }

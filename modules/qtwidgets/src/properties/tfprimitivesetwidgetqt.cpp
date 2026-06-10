@@ -84,7 +84,7 @@ void TFPrimitiveSetWidgetQt::setPropertyValue() {
 
     // need to undo value mapping in case of relative TF and PropertySemantics
     // being "Text (normalized)"
-    const bool performMapping = (propertyPtr_->get().getType() == TFPrimitiveSetType::Relative) &&
+    const bool performMapping = (propertyPtr_->get().getMode() == PrimitiveSetMode::Relative) &&
                                 (property_->getSemantics().getString() == "Text");
 
     if (const auto* map = propertyPtr_->data().getDataMap()) {
@@ -105,7 +105,7 @@ void TFPrimitiveSetWidgetQt::setPropertyValue() {
 }
 
 void TFPrimitiveSetWidgetQt::updateFromProperty() {
-    bool performMapping = (propertyPtr_->get().getType() == TFPrimitiveSetType::Relative) &&
+    bool performMapping = (propertyPtr_->get().getMode() == PrimitiveSetMode::Relative) &&
                           (property_->getSemantics().getString() == "Text");
 
     dvec2 range(0.0, 1.0);

@@ -211,10 +211,10 @@ QAction* tfAction(std::string_view name, TransferFunction tf, QMenu* menu,
                          const NetworkLock lock(property);
 
                          if (auto* dm = property->data().getDataMap()) {
-                             tf2.setType(property->get().getType(), *dm);
+                             tf2.setMode(property->get().getMode(), *dm);
                          } else {
                              const DataMapper dm2{property->get().getRange()};
-                             tf2.setType(property->get().getType(), dm2);
+                             tf2.setMode(property->get().getMode(), dm2);
                          }
 
                          property->set(tf2);

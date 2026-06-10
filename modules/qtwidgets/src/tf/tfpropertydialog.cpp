@@ -130,10 +130,10 @@ QComboBox* createPointMoveModeComboBox() {
     cb->setCurrentIndex(0);
     return cb;
 }
-QComboBox* createTypeComboBox(bool absolute) {
+QComboBox* createModeComboBox(bool absolute) {
     auto* cb = new QComboBox();
-    cb->addItem(utilqt::toQString(fmt::to_string(static_cast<TFPrimitiveSetType>(0))));
-    cb->addItem(utilqt::toQString(fmt::to_string(static_cast<TFPrimitiveSetType>(1))));
+    cb->addItem(utilqt::toQString(fmt::to_string(static_cast<PrimitiveSetMode>(0))));
+    cb->addItem(utilqt::toQString(fmt::to_string(static_cast<PrimitiveSetMode>(1))));
     cb->setCurrentIndex(absolute ? 1 : 0);
     return cb;
 }
@@ -160,7 +160,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
 
     , chkShowHistogram_{createHistogramComboBox(static_cast<int>(concept_->getHistogramMode()))}
     , pointMoveMode_{createPointMoveModeComboBox()}
-    , tfTypeMode_{createTypeComboBox(!concept_->allRelative())}
+    , tfMode_{createModeComboBox(!concept_->allRelative())}
 
     , scalar_{new QLabel("Scalar")}
     , domainMin_{new QLabel("0.0")}
@@ -269,16 +269,16 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     connect(editor_.get(), &TFEditor::moveModeChange, this,
             [this](TFMoveMode m) { pointMoveMode_->setCurrentIndex(static_cast<int>(m)); });
 
-    connect(tfTypeMode_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, [this](int i) {
-                const auto type = static_cast<TFPrimitiveSetType>(i);
+    connect(tfMode_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+            [this](int i) {
+                const auto mode = static_cast<PrimitiveSetMode>(i);
                 const NetworkLock lock(concept_->getProperty());
                 for (auto* set : concept_->sets()) {
-                    if (set->getType() != type) {
+                    if (set->getMode() != mode) {
                         if (const auto* dataMap = concept_->getDataMap()) {
-                            set->setType(type, *dataMap);
+                            set->setMode(mode, *dataMap);
                         } else {
-                            set->setType(type);
+                            set->setMode(mode);
                         }
                     }
                 }
@@ -298,7 +298,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
             domainMax_->setText("1.0");
         }
         // ensure that the range of primitive scalar is matching value range of volume data
-        onTFTypeChangedInternal();
+        onTFModeChangedInternal();
     };
     dataChangeHandle_ = concept_->onDataChange(dataChange);
 
@@ -340,7 +340,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     rightLayout->setContentsMargins(0, 0, 0, 0);
     rightLayout->setSpacing(utilqt::refSpacePx(this));
     rightLayout->setAlignment(Qt::AlignTop);
-    rightLayout->addWidget(tfTypeMode_);
+    rightLayout->addWidget(tfMode_);
     rightLayout->addWidget(chkShowHistogram_);
     rightLayout->addWidget(pointMoveMode_);
     rightLayout->addWidget(colorWheel_.get());
@@ -491,22 +491,18 @@ void TFPropertyDialog::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimi
     updateFromProperty();
 }
 
-void TFPropertyDialog::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType type) {
-    const QSignalBlocker block(tfTypeMode_);
-    tfTypeMode_->setCurrentIndex(static_cast<int>(type));
-    onTFTypeChangedInternal();
+void TFPropertyDialog::onTFModeChanged(const TFPrimitiveSet&, PrimitiveSetMode mode) {
+    const QSignalBlocker block(tfMode_);
+    tfMode_->setCurrentIndex(static_cast<int>(mode));
+    onTFModeChangedInternal();
 }
 
-void TFPropertyDialog::onTFTypeChangedInternal() {
+void TFPropertyDialog::onTFModeChangedInternal() {
     // adjust value mapping in primitive widget for position
     dvec2 valueRange{0.0, 1.0};
     if (const auto* dataMap = concept_->getDataMap()) {
         valueRange = dataMap->valueRange;
     }
-
-    const bool allRelative = std::ranges::all_of(concept_->sets(), [](const auto* set) {
-        return set->getType() == TFPrimitiveSetType::Relative;
-    });
 
     // make increment depending on the size of the underlying TF texture
     const double incr =
@@ -514,7 +510,8 @@ void TFPropertyDialog::onTFTypeChangedInternal() {
             ? 1.0 / static_cast<double>(concept_->getTFProperty()->getLookUpTableSize())
             : 0.01;
 
-    primitivePos_->setValueMapping(allRelative, valueRange, incr * (valueRange.y - valueRange.x));
+    primitivePos_->setValueMapping(concept_->allRelative(), valueRange,
+                                   incr * (valueRange.y - valueRange.x));
 }
 
 void TFPropertyDialog::onHistogramModeChange(HistogramMode mode) {
@@ -528,7 +525,7 @@ void TFPropertyDialog::setReadOnly(bool readonly) {
     primitiveAlpha_->setDisabled(readonly);
     primitiveColor_->setDisabled(readonly);
     pointMoveMode_->setDisabled(readonly);
-    tfTypeMode_->setDisabled(readonly);
+    tfMode_->setDisabled(readonly);
 }
 
 void TFPropertyDialog::updateTFPreview() {

@@ -45,13 +45,13 @@
 
 namespace inviwo {
 
-enum class TFPrimitiveSetType {
+enum class PrimitiveSetMode {
     Relative,  //<! uses the normalized range [0,1] for all TF primitives
     Absolute,  //<! absolute positioning of TF primitives
 };
 
-constexpr std::string_view format_as(TFPrimitiveSetType type) {
-    if (type == TFPrimitiveSetType::Absolute) {
+constexpr std::string_view format_as(PrimitiveSetMode mode) {
+    if (mode == PrimitiveSetMode::Absolute) {
         return "Absolute";
     } else {
         return "Relative";
@@ -66,7 +66,7 @@ public:
     virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p);
     virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p);
     virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p);
-    virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type);
+    virtual void onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode mode);
     virtual void onTFBeginBulkUpdate(const TFPrimitiveSet& set);
     virtual void onTFEndBulkUpdate(const TFPrimitiveSet& set);
 };
@@ -75,7 +75,7 @@ protected:
     void notifyTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p);
     void notifyTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p);
     void notifyTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p);
-    void notifyTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type);
+    void notifyTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode mode);
     void notifyTFBeginBulkUpdate(const TFPrimitiveSet& set);
     void notifyTFEndBulkUpdate(const TFPrimitiveSet& set);
 };
@@ -99,16 +99,16 @@ public:
                                 typename std::vector<TFPrimitive*>::const_iterator>;
 
     explicit TFPrimitiveSet(const std::vector<TFPrimitiveData>& values = {},
-                            TFPrimitiveSetType type = TFPrimitiveSetType::Relative);
+                            PrimitiveSetMode mode = PrimitiveSetMode::Relative);
     TFPrimitiveSet(const TFPrimitiveSet& rhs);
     TFPrimitiveSet(TFPrimitiveSet&& rhs) noexcept = default;
     TFPrimitiveSet& operator=(const TFPrimitiveSet& rhs);
     TFPrimitiveSet& operator=(TFPrimitiveSet&& rhs) noexcept;
     virtual ~TFPrimitiveSet() = default;
 
-    void setType(TFPrimitiveSetType type);
-    void setType(TFPrimitiveSetType type, const DataMapper& dm);
-    TFPrimitiveSetType getType() const;
+    void setMode(PrimitiveSetMode mode);
+    void setMode(PrimitiveSetMode mode, const DataMapper& dm);
+    PrimitiveSetMode getMode() const;
 
     /**
      * returns the range of the TF.  For a relative TF this will return [0,1]. In case of an
@@ -207,7 +207,7 @@ public:
      * Add a TFPrimitive
      *
      * @param primitive   TFPrimitive to be added
-     * @throws RangeException if TF type is relative and the primitive position is outside [0,1]
+     * @throws RangeException if TF mode is relative and the primitive position is outside [0,1]
      */
     TFPrimitive& add(const TFPrimitive& primitive);
 
@@ -216,7 +216,7 @@ public:
      *
      * @param pos     refers to the position of the TFPrimitive
      * @param color   color of the TFPrimitive including alpha
-     * @throws RangeException if TF type is relative and pos is outside [0,1]
+     * @throws RangeException if TF mode is relative and pos is outside [0,1]
      */
     TFPrimitive& add(double pos, const vec4& color);
 
@@ -227,7 +227,7 @@ public:
      * @param pos     position of the TFPrimitive,
      * @param alpha   alpha value of the TFPrimitive
      *
-     * @throws RangeException if TF type is relative and pos is outside [0,1]
+     * @throws RangeException if TF mode is relative and pos is outside [0,1]
      */
     TFPrimitive& add(double pos, double alpha);
 
@@ -237,7 +237,7 @@ public:
      *
      * @param pos     pos.x refers to the position of the TFPrimitive, pos.y will be mapped
      *                to alpha
-     * @throws RangeException if TF type is relative and pos.x is outside [0,1]
+     * @throws RangeException if TF mode is relative and pos.x is outside [0,1]
      */
     TFPrimitive& add(const dvec2& pos);
 
@@ -245,7 +245,7 @@ public:
      * Add a TFPrimitive
      *
      * @param data   Primitive to be added
-     * @throws RangeException if TF type is relative and position of point is outside [0,1]
+     * @throws RangeException if TF mode is relative and position of point is outside [0,1]
      */
     TFPrimitive& add(const TFPrimitiveData& data);
 
@@ -253,7 +253,7 @@ public:
      * Add multiple TFPrimitives
      *
      * @param primitives  vector of primitives to be added
-     * @throws RangeException if TF type is relative and any of the given points is outside [0,1]
+     * @throws RangeException if TF mode is relative and any of the given points is outside [0,1]
      */
     void add(const std::vector<TFPrimitiveData>& primitives);
 
@@ -272,7 +272,7 @@ public:
 
     /**
      * Interpolate the color between all neighboring pairs of TFPrimitives and write the result to
-     * dataArray. The range of all TFPrimitives is [0,1] when TF type is relative
+     * dataArray. The range of all TFPrimitives is [0,1] when TF mode is relative
      *
      * @param data   write interpolated colors into data
      */
@@ -304,9 +304,9 @@ protected:
 
     /**
      * Interpolate the color between TFPrimitives at position t and return the respective color and
-     * opacity (rgba). The range of all TFPrimitives is [0,1] when TF type is relative
+     * opacity (rgba). The range of all TFPrimitives is [0,1] when TF mode is relative
      *
-     * @param t   sampling position, if TF type is relative and t is outside the range [0,1] it is
+     * @param t   sampling position, if TF mode is relative and t is outside the range [0,1] it is
      *            clamped to [0,1]
      * @return color and opacity at position t
      */
@@ -319,10 +319,10 @@ protected:
     std::vector<TFPrimitive*> sorted_;
 
 private:
-    TFPrimitiveSetType type_;
+    PrimitiveSetMode mode_;
 };
 
-inline TFPrimitiveSetType TFPrimitiveSet::getType() const { return type_; }
+inline PrimitiveSetMode TFPrimitiveSet::getMode() const { return mode_; }
 
 template <std::input_iterator Iter, std::sentinel_for<Iter> Sentinel>
     requires std::convertible_to<std::iter_reference_t<Iter>, TFPrimitiveData>

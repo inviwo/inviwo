@@ -47,7 +47,7 @@ namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API TFEditorIsovalue : public TFEditorPrimitive {
 public:
-    explicit TFEditorIsovalue(TFPrimitive& primitive, TFPrimitiveSetType type);
+    explicit TFEditorIsovalue(TFPrimitive& primitive, PrimitiveSetMode mode);
     ~TFEditorIsovalue() = default;
 
 protected:

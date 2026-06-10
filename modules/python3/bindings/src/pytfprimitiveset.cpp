@@ -90,9 +90,9 @@ void addPoints(TFPrimitiveSet* ps, const pybind11::list& values) {
 void exposeTFPrimitiveSet(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::enum_<TFPrimitiveSetType>(m, "TFPrimitiveSetType")
-        .value("Relative", TFPrimitiveSetType::Relative)
-        .value("Absolute", TFPrimitiveSetType::Absolute);
+    py::enum_<PrimitiveSetMode>(m, "TFPrimitiveSetType")
+        .value("Relative", PrimitiveSetMode::Relative)
+        .value("Absolute", PrimitiveSetMode::Absolute);
 
     py::classh<TFPrimitiveData>(m, "TFPrimitiveData")
         .def(py::init())
@@ -194,12 +194,12 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def(py::self != py::self);
 
     py::classh<TFPrimitiveSet>(m, "TFPrimitiveSet")
-        .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {
-                 return new TFPrimitiveSet(values, type);
+        .def(py::init([](const std::vector<TFPrimitiveData>& values, PrimitiveSetMode mode) {
+                 return new TFPrimitiveSet(values, mode);
              }),
              py::arg("values") = std::vector<TFPrimitiveData>{},
-             py::arg("type") = TFPrimitiveSetType::Relative)
-        .def_property_readonly("type", &TFPrimitiveSet::getType)
+             py::arg("mode") = PrimitiveSetMode::Relative)
+        .def_property_readonly("mode", &TFPrimitiveSet::getMode)
         .def_property_readonly("range", &TFPrimitiveSet::getRange)
         .def_property_readonly("size", &TFPrimitiveSet::size)
         .def_property_readonly("empty", &TFPrimitiveSet::empty)
@@ -259,16 +259,16 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
                  return new TransferFunction(values);
              }),
              py::arg("values"))
-        .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {
-                 return new TransferFunction(values, type);
+        .def(py::init([](const std::vector<TFPrimitiveData>& values, PrimitiveSetMode mode) {
+                 return new TransferFunction(values, mode);
              }),
-             py::arg("values"), py::arg("type"))
-        .def(py::init([](py::list values, TFPrimitiveSetType type) {
-                 auto* tf = new TransferFunction{{}, type};
+             py::arg("values"), py::arg("mode"))
+        .def(py::init([](py::list values, PrimitiveSetMode mode) {
+                 auto* tf = new TransferFunction{{}, mode};
                  addPoints(tf, values);
                  return tf;
              }),
-             py::arg("values"), py::arg("type") = TFPrimitiveSetType::Relative)
+             py::arg("values"), py::arg("mode") = PrimitiveSetMode::Relative)
         .def("sample", [](TransferFunction& tf, double v) -> vec4 { return tf.sample(v); })
         .def_static("save", &TransferFunction::save)
         .def_static("load", &TransferFunction::load)
@@ -284,17 +284,17 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         });
 
     py::classh<IsoValueCollection, TFPrimitiveSet>(m, "IsoValueCollection")
-        .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {
-                 return new IsoValueCollection(values, type);
+        .def(py::init([](const std::vector<TFPrimitiveData>& values, PrimitiveSetMode mode) {
+                 return new IsoValueCollection(values, mode);
              }),
              py::arg("values") = std::vector<TFPrimitiveData>{},
-             py::arg("type") = TFPrimitiveSetType::Relative)
-        .def(py::init([](py::list values, TFPrimitiveSetType type) {
-                 auto* tf = new IsoValueCollection{{}, type};
+             py::arg("mode") = PrimitiveSetMode::Relative)
+        .def(py::init([](py::list values, PrimitiveSetMode mode) {
+                 auto* tf = new IsoValueCollection{{}, mode};
                  addPoints(tf, values);
                  return tf;
              }),
-             py::arg("values"), py::arg("type") = TFPrimitiveSetType::Relative)
+             py::arg("values"), py::arg("mode") = PrimitiveSetMode::Relative)
         .def_static("save", &IsoValueCollection::save)
         .def_static("load", &IsoValueCollection::load)
         .def("__repr__", [](const IsoValueCollection& ivc) {

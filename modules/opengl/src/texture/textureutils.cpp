@@ -522,7 +522,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, TransferFunc
     cont.push_back(std::move(unit));
 
     // Set TF range parameters for absolute mode
-    if (tf.get().getType() == TFPrimitiveSetType::Absolute) {
+    if (tf.get().getMode() == PrimitiveSetMode::Absolute) {
         const auto range = tf.get().getRange();
         StrBuffer buff;
         const auto name = tf.getIdentifier();

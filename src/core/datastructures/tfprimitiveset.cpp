@@ -46,7 +46,7 @@ void TFPrimitiveSetObserver::onTFPrimitiveRemoved(const TFPrimitiveSet&, TFPrimi
 
 void TFPrimitiveSetObserver::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {}
 
-void TFPrimitiveSetObserver::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {}
+void TFPrimitiveSetObserver::onTFModeChanged(const TFPrimitiveSet&, PrimitiveSetMode) {}
 
 void TFPrimitiveSetObserver::onTFBeginBulkUpdate(const TFPrimitiveSet& set) {}
 void TFPrimitiveSetObserver::onTFEndBulkUpdate(const TFPrimitiveSet& set) {}
@@ -64,9 +64,9 @@ void TFPrimitiveSetObservable::notifyTFPrimitiveChanged(const TFPrimitiveSet& se
     forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveChanged(set, p); });
 }
 
-void TFPrimitiveSetObservable::notifyTFTypeChanged(const TFPrimitiveSet& set,
-                                                   TFPrimitiveSetType type) {
-    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFTypeChanged(set, type); });
+void TFPrimitiveSetObservable::notifyTFModeChanged(const TFPrimitiveSet& set,
+                                                   PrimitiveSetMode mode) {
+    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFModeChanged(set, mode); });
 }
 
 void TFPrimitiveSetObservable::notifyTFBeginBulkUpdate(const TFPrimitiveSet& set) {
@@ -76,12 +76,12 @@ void TFPrimitiveSetObservable::notifyTFEndBulkUpdate(const TFPrimitiveSet& set) 
     forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFEndBulkUpdate(set); });
 }
 
-TFPrimitiveSet::TFPrimitiveSet(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type)
-    : type_(type) {
+TFPrimitiveSet::TFPrimitiveSet(const std::vector<TFPrimitiveData>& values, PrimitiveSetMode mode)
+    : mode_(mode) {
     add(values);
 }
 
-TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs) : type_(rhs.type_) {
+TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs) : mode_(rhs.mode_) {
     for (const auto& v : rhs.values_) {
         add(*v);
     }
@@ -89,7 +89,7 @@ TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs) : type_(rhs.type_) {
 
 TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     if (this != &rhs) {
-        setType(rhs.type_);
+        setMode(rhs.mode_);
         set(rhs.values_ | std::views::transform([](const auto& v) { return v->getData(); }));
     }
     return *this;
@@ -97,16 +97,16 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
 
 TFPrimitiveSet& TFPrimitiveSet::operator=(TFPrimitiveSet&& rhs) noexcept {
     if (this != &rhs) {
-        setType(rhs.type_);
+        setMode(rhs.mode_);
         set(rhs.values_ | std::views::transform([](const auto& v) { return v->getData(); }));
     }
     return *this;
 }
 
-void TFPrimitiveSet::setType(TFPrimitiveSetType type) {
-    if (type_ != type) {
-        // We have to ensure that all points are in 0-1 range before changing type
-        if (type == TFPrimitiveSetType::Relative) {  // We have to ensure
+void TFPrimitiveSet::setMode(PrimitiveSetMode mode) {
+    if (mode_ != mode) {
+        // We have to ensure that all points are in 0-1 range before changing mode
+        if (mode == PrimitiveSetMode::Relative) {  // We have to ensure
             DataMapper dm{getRange()};
             if (dm.mapFromValueToNormalized(0.5) < 0.5) {
                 std::ranges::for_each(*this, [&](auto& prim) {
@@ -121,19 +121,19 @@ void TFPrimitiveSet::setType(TFPrimitiveSetType type) {
             }
         }
 
-        type_ = type;
-        notifyTFTypeChanged(*this, type_);
+        mode_ = mode;
+        notifyTFModeChanged(*this, mode_);
     }
 }
 
-void TFPrimitiveSet::setType(TFPrimitiveSetType type, const DataMapper& dm) {
-    if (type_ != type) {
+void TFPrimitiveSet::setMode(PrimitiveSetMode mode, const DataMapper& dm) {
+    if (mode_ != mode) {
 
         beginBulkUpdate();
-        if (type == TFPrimitiveSetType::Absolute) {
-            // Change the type before updating values.
-            type_ = type;
-            notifyTFTypeChanged(*this, type_);
+        if (mode == PrimitiveSetMode::Absolute) {
+            // Change the mode before updating values.
+            mode_ = mode;
+            notifyTFModeChanged(*this, mode_);
 
             if (dm.mapFromNormalizedToValue(0.5) < 0.5) {
                 std::ranges::for_each(*this, [&](auto& prim) {
@@ -145,7 +145,7 @@ void TFPrimitiveSet::setType(TFPrimitiveSetType type, const DataMapper& dm) {
                 });
             }
         } else {
-            // Change Values before updating the type
+            // Change Values before updating the mode
             if (dm.mapFromValueToNormalized(0.5) < 0.5) {
                 std::ranges::for_each(*this, [&](auto& prim) {
                     prim.setPosition(
@@ -157,23 +157,23 @@ void TFPrimitiveSet::setType(TFPrimitiveSetType type, const DataMapper& dm) {
                         std::clamp(dm.mapFromValueToNormalized(prim.getPosition()), 0.0, 1.0));
                 });
             }
-            type_ = type;
-            notifyTFTypeChanged(*this, type_);
+            mode_ = mode;
+            notifyTFModeChanged(*this, mode_);
         }
         endBulkUpdate();
     }
 }
 
 dvec2 TFPrimitiveSet::getRange() const {
-    switch (type_) {
-        case TFPrimitiveSetType::Absolute: {
+    switch (mode_) {
+        case PrimitiveSetMode::Absolute: {
             if (sorted_.empty()) {
                 return {0.0, 0.0};
             } else {
                 return {sorted_.front()->getPosition(), sorted_.back()->getPosition()};
             }
         }
-        case TFPrimitiveSetType::Relative:
+        case PrimitiveSetMode::Relative:
         default:
             return {0.0, 1.0};
     }
@@ -311,7 +311,7 @@ bool TFPrimitiveSet::remove(const TFPrimitive& primitive) {
 }
 
 void TFPrimitiveSet::verifyPoint(double pos) const {
-    if ((type_ == TFPrimitiveSetType::Relative) && (pos < 0.0f || pos > 1.0f)) {
+    if ((mode_ == PrimitiveSetMode::Relative) && (pos < 0.0f || pos > 1.0f)) {
         throw RangeException(
             SourceContext{},
             "TFPrimitive at {} outside of valid range [0,1] for a relative TFPrimitiveSet", pos);
@@ -396,17 +396,14 @@ void TFPrimitiveSet::onTFPrimitiveChange(const TFPrimitive& p) {
 }
 
 void TFPrimitiveSet::serialize(Serializer& s) const {
-    s.serialize("type", type_);
+    s.serialize("mode", mode_, SerializationTarget::Attribute);
     s.serialize(serializationKey(), values_, serializationItemKey());
 }
 
 void TFPrimitiveSet::deserialize(Deserializer& d) {
     beginBulkUpdate();
-    TFPrimitiveSetType type = type_;
-    d.deserialize("type", type);
-    if (type_ != type) {
-        type_ = type;
-        notifyTFTypeChanged(*this, type_);
+    if (d.deserialize("mode", mode_, SerializationTarget::Attribute)) {
+        notifyTFModeChanged(*this, mode_);
     }
 
     d.deserialize(serializationKey(), values_, serializationItemKey(),
@@ -493,7 +490,7 @@ std::string_view TFPrimitiveSet::serializationKey() const { return "TFPrimitives
 std::string_view TFPrimitiveSet::serializationItemKey() const { return "TFPrimitive"; }
 
 bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs) {
-    return lhs.type_ == rhs.type_ &&
+    return lhs.mode_ == rhs.mode_ &&
            std::equal(rhs.sorted_.begin(), rhs.sorted_.end(), lhs.sorted_.begin(),
                       lhs.sorted_.end(), [](TFPrimitive* a, TFPrimitive* b) { return *a == *b; });
 }

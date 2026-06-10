@@ -367,7 +367,7 @@ public:
 
     // Enum types
     template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-    void deserialize(std::string_view key, T& data,
+    bool deserialize(std::string_view key, T& data,
                      const SerializationTarget& target = SerializationTarget::Node);
 
     // Flag types
@@ -609,11 +609,16 @@ void Deserializer::deserialize(std::string_view key, T& data, const Serializatio
 
 // enum types
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
-void Deserializer::deserialize(std::string_view key, T& data, const SerializationTarget& target) {
+bool Deserializer::deserialize(std::string_view key, T& data, const SerializationTarget& target) {
     using ET = typename std::underlying_type<T>::type;
     ET tmpdata{static_cast<ET>(data)};
     deserialize(key, tmpdata, target);
-    data = static_cast<T>(tmpdata);
+    if (data != static_cast<T>(tmpdata)) {
+        data = static_cast<T>(tmpdata);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 // Flag types

@@ -261,7 +261,7 @@ void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitiveSet&, const
     invalidLookup_ = true;
     propertyModified();
 }
-void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {
+void TransferFunctionProperty::onTFModeChanged(const TFPrimitiveSet&, PrimitiveSetMode) {
     invalidLookup_ = true;
     const auto level = getInvalidationLevel();
     setInvalidationLevel(InvalidationLevel::InvalidResources);
