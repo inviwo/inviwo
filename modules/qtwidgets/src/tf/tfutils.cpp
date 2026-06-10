@@ -207,8 +207,16 @@ QAction* tfAction(std::string_view name, TransferFunction tf, QMenu* menu,
     action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
     action->setIconVisibleInMenu(true);
     QObject::connect(action, &QAction::triggered, parent,
-                     util::exceptionGuarded([property, tf2 = std::move(tf)]() {
+                     util::exceptionGuarded([property, tf2 = std::move(tf)]() mutable {
                          const NetworkLock lock(property);
+
+                         if (auto* dm = property->data().getDataMap()) {
+                             tf2.setType(property->get().getType(), *dm);
+                         } else {
+                             const DataMapper dm2{property->get().getRange()};
+                             tf2.setType(property->get().getType(), dm2);
+                         }
+
                          property->set(tf2);
                      }));
     return action;
@@ -432,13 +440,13 @@ TransferFunction colorListToTF(std::span<const glm::vec3> points, bool discrete)
             std::views::join | std::ranges::to<std::vector>()};
     } else {
         const auto n = static_cast<double>(points.size() - 1);
-        return TransferFunction{std::views::zip(std::views::iota(0uz), points) |
-                                std::views::transform([&](auto&& elem) {
-                                    auto&& [i, c] = elem;
-                                    return TFPrimitiveData{.pos = static_cast<double>(i) / n,
-                                                           .color = {c, 1.0f}};
-                                }) |
-                                std::ranges::to<std::vector>()};
+        return TransferFunction{
+            std::views::zip(std::views::iota(0uz), points) |
+            std::views::transform([&](auto&& elem) {
+                auto&& [i, c] = elem;
+                return TFPrimitiveData{.pos = static_cast<double>(i) / n, .color = {c, 1.0f}};
+            }) |
+            std::ranges::to<std::vector>()};
     }
 }
 

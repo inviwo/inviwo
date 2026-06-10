@@ -92,7 +92,7 @@ IsoTFProperty* IsoTFPropertyWidgetQt::isoTfProperty() const {
     return static_cast<IsoTFProperty*>(property_);
 }
 
-void IsoTFPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
+void IsoTFPropertyWidgetQt::updateFromProperty() {}
 
 bool IsoTFPropertyWidgetQt::hasEditorWidget() const { return true; }
 

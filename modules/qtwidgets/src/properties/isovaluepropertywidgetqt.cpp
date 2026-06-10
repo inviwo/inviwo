@@ -98,7 +98,7 @@ void IsoValuePropertyWidgetQt::initEditor() {
     tfDialog_ = std::make_unique<TFPropertyDialog>(isoProperty());
 }
 
-void IsoValuePropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
+void IsoValuePropertyWidgetQt::updateFromProperty() {}
 
 void IsoValuePropertyWidgetQt::setReadOnly(bool readonly) {
     // We only want to modify the label. The TF preview button needs to be enabled at all times.

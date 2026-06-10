@@ -63,8 +63,13 @@ class QWidget;
 
 namespace inviwo {
 
-TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive)
-    : data_(primitive), isEditing_(false), hovered_(false), label_{nullptr}, cachedPosition_{} {
+TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive, TFPrimitiveSetType type)
+    : data_(primitive)
+    , type_{type}
+    , isEditing_(false)
+    , hovered_(false)
+    , label_{nullptr}
+    , cachedPosition_{} {
 
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
              ItemSendsGeometryChanges);
@@ -88,6 +93,9 @@ void TFEditorPrimitive::setColor(const vec3& color) { data_.setColor(color); }
 void TFEditorPrimitive::setAlpha(float alpha) { data_.setAlpha(alpha); }
 
 const vec4& TFEditorPrimitive::getColor() const { return data_.getColor(); }
+
+void TFEditorPrimitive::setType(TFPrimitiveSetType type) { type_ = type; }
+TFPrimitiveSetType TFEditorPrimitive::getType() const { return type_; }
 
 void TFEditorPrimitive::onTFPrimitiveChange(const TFPrimitive& p) {
     if (!isEditing_) {
@@ -147,8 +155,10 @@ QVariant TFEditorPrimitive::itemChange(GraphicsItemChange change, const QVariant
     // check for scene() here in order to avoid callbacks as long as item is not added to scene
     if ((change == QGraphicsItem::ItemPositionChange) && scene()) {
         // constrain positions to valid view positions
-
-        const QRectF r{scene()->sceneRect().x(), 0.0, scene()->sceneRect().width(), 1.0};
+        const auto r =
+            (type_ == TFPrimitiveSetType::Absolute)
+                ? QRectF{scene()->sceneRect().x(), 0.0, scene()->sceneRect().width(), 1.0}
+                : QRectF{0.0, 0.0, 1.0, 1.0};
         return utilqt::clamp(constrainPosToXorY(value.toPointF()), r);
     } else if (change == QGraphicsItem::ItemPositionHasChanged) {
         if (!isEditing_) {
@@ -185,7 +195,7 @@ void TFEditorPrimitive::updateLabel() {
 
     QString label;
     if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
-        if (tfe->isAbsolute()) {
+        if (type_ == TFPrimitiveSetType::Absolute) {
             // In absolute mode, position is already in data space
             label =
                 utilqt::toQString(fmt::format("{:0.6g}{: [} / {:0.3g}", getPosition(),

@@ -49,6 +49,7 @@ enum class TFPrimitiveSetType {
     Relative,  //<! uses the normalized range [0,1] for all TF primitives
     Absolute,  //<! absolute positioning of TF primitives
 };
+
 constexpr std::string_view format_as(TFPrimitiveSetType type) {
     if (type == TFPrimitiveSetType::Absolute) {
         return "Absolute";
@@ -66,6 +67,8 @@ public:
     virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p);
     virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p);
     virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type);
+    virtual void onTFBeginBulkUpdate(const TFPrimitiveSet& set);
+    virtual void onTFEndBulkUpdate(const TFPrimitiveSet& set);
 };
 class IVW_CORE_API TFPrimitiveSetObservable : public Observable<TFPrimitiveSetObserver> {
 protected:
@@ -73,6 +76,8 @@ protected:
     void notifyTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p);
     void notifyTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p);
     void notifyTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type);
+    void notifyTFBeginBulkUpdate(const TFPrimitiveSet& set);
+    void notifyTFEndBulkUpdate(const TFPrimitiveSet& set);
 };
 
 /**
@@ -262,8 +267,6 @@ public:
 
     void setPosition(std::span<TFPrimitive*> primitives, double pos);
 
-    virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
-
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -286,7 +289,12 @@ public:
 
     bool contains(const TFPrimitive* primitive) const;
 
+    void beginBulkUpdate();
+    void endBulkUpdate();
+
 protected:
+    virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
+
     void verifyPoint(double pos) const;
     void verifyPoint(const TFPrimitiveData& primitive) const;
     void verifyPoint(const TFPrimitive& primitive) const;
@@ -319,6 +327,7 @@ inline TFPrimitiveSetType TFPrimitiveSet::getType() const { return type_; }
 template <std::input_iterator Iter, std::sentinel_for<Iter> Sentinel>
     requires std::convertible_to<std::iter_reference_t<Iter>, TFPrimitiveData>
 void TFPrimitiveSet::set(Iter sbegin, Sentinel send) {
+    beginBulkUpdate();
     size_t targetSize = 0;
 
     auto dbegin = values_.begin();
@@ -336,6 +345,7 @@ void TFPrimitiveSet::set(Iter sbegin, Sentinel send) {
     while (values_.size() > targetSize) {
         remove(--values_.end());
     }
+    endBulkUpdate();
 }
 template <std::ranges::input_range R>
     requires std::convertible_to<std::ranges::range_reference_t<R>, TFPrimitiveData>

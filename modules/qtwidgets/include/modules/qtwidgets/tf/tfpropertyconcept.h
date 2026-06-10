@@ -39,6 +39,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/util/detected.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/qtwidgets/tf/tfutils.h>
 
@@ -85,7 +86,7 @@ public:
     virtual void showImportDialog() = 0;
 
     virtual dvec2 getRange() const = 0;
-    virtual bool isAbsolute() const = 0;
+    virtual bool allRelative() const = 0;
 
     virtual std::span<TFPrimitiveSet*> sets() = 0;
 
@@ -95,6 +96,8 @@ public:
     using HistogramCallback = void(HistogramChange, const std::vector<Histogram1D>&);
     [[nodiscard]] virtual DispatcherHandle<HistogramCallback> onHistogramChange(
         std::function<HistogramCallback>) = 0;
+
+    util::OnScopeExit scopedBulkUpdate();
 };
 
 template <typename U>
@@ -129,23 +132,24 @@ public:
         }
     }
 
-    virtual bool isAbsolute() const override {
-        return (sets_[0]->getType() == TFPrimitiveSetType::Absolute) ||
-               (sets_[1] && (sets_[1]->getType() == TFPrimitiveSetType::Absolute));
-    };
+    virtual bool allRelative() const override {
+        if (sets_[0]->getType() == TFPrimitiveSetType::Absolute) {
+            return false;
+        } else if (sets_[1] && sets_[1]->getType() == TFPrimitiveSetType::Absolute) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     virtual dvec2 getRange() const override {
-        if (isAbsolute()) {
-            auto range = sets_[0]->getRange();
-            if (sets_[1]) {
-                const auto range1 = sets_[1]->getRange();
-                range = dvec2{std::min(range.x, range1.x), std::max(range.y, range1.y)};
-            }
-            return range;
-        } else {
-            return dvec2{0.0, 1.0};
+        auto range = sets_[0]->getRange();
+        if (sets_[1]) {
+            const auto range1 = sets_[1]->getRange();
+            range = dvec2{std::min(range.x, range1.x), std::max(range.y, range1.y)};
         }
-    };
+        return range;
+    }
 
     virtual bool hasTF() const override { return getTFProperty() != nullptr; }
     virtual bool hasIsovalues() const override { return getIsoValueProperty() != nullptr; }

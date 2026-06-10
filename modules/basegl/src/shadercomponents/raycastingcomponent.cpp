@@ -134,7 +134,7 @@ float {volume}worldStep = dvrReference * calcWorldStepScaled(rayStep, rayDirecti
 )");
 
 constexpr std::string_view classify = util::trim(R"(
-color{color} = applyTF_{tf}({volume}Voxel[{channel}], {volume}Parameters.texToValue );
+color{color} = applyTF_{tf}({volume}Voxel[{channel}], {volume}Parameters);
 )");
 
 constexpr std::string_view shadeAndComposite = util::trim(R"(

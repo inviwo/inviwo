@@ -108,7 +108,7 @@ TransferFunctionProperty* TFPropertyWidgetQt::tfProperty() const {
     return static_cast<TransferFunctionProperty*>(property_);
 }
 
-void TFPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
+void TFPropertyWidgetQt::updateFromProperty() {}
 
 bool TFPropertyWidgetQt::hasEditorWidget() const { return true; }
 
@@ -168,28 +168,61 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
 }
 
 TFPushButton::TFPushButton(TransferFunctionProperty* property, QWidget* parent)
-    : IvwPushButton(parent), property_{property} {}
+    : IvwPushButton(parent), property_{property}, bulkUpdate_{false} {
+    property->get().addObserver(this);
+}
 
 TFPushButton::TFPushButton(IsoValueProperty* property, QWidget* parent)
-    : IvwPushButton(parent), property_{property} {}
+    : IvwPushButton(parent), property_{property}, bulkUpdate_{false} {
+    property->get().addObserver(this);
+}
 
 TFPushButton::TFPushButton(IsoTFProperty* property, QWidget* parent)
-    : IvwPushButton(parent), property_{property} {}
+    : IvwPushButton(parent), property_{property}, bulkUpdate_{false} {
+    property->tf_.get().addObserver(this);
+    property->isovalues_.get().addObserver(this);
+}
 
-void TFPushButton::updateFromProperty() {
+void TFPushButton::updateIcon() {
     if (!isVisible()) return;
     const QSize size = this->size() - QSize(2, 2);
     std::visit([&](auto* prop) { setIcon(utilqt::toQPixmap(*prop, size)); }, property_);
     setIconSize(size);
 }
 
+void TFPushButton::onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) {
+    if (!bulkUpdate_) {
+        updateIcon();
+    }
+}
+void TFPushButton::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
+    if (!bulkUpdate_) {
+        updateIcon();
+    }
+}
+void TFPushButton::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) {
+    if (!bulkUpdate_) {
+        updateIcon();
+    }
+}
+void TFPushButton::onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) {
+    if (!bulkUpdate_) {
+        updateIcon();
+    }
+}
+void TFPushButton::onTFBeginBulkUpdate(const TFPrimitiveSet& set) { bulkUpdate_ = true; }
+void TFPushButton::onTFEndBulkUpdate(const TFPrimitiveSet& set) {
+    bulkUpdate_ = false;
+    updateIcon();
+}
+
 void TFPushButton::showEvent(QShowEvent* event) {
-    updateFromProperty();
+    updateIcon();
     IvwPushButton::showEvent(event);
 }
 
 void TFPushButton::resizeEvent(QResizeEvent* event) {
-    updateFromProperty();
+    updateIcon();
     IvwPushButton::resizeEvent(event);
 }
 

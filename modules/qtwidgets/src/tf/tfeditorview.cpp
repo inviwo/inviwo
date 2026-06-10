@@ -383,7 +383,7 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& updateRect) {
     // identity mapping this means that "scene coordinates" are equivalent to "normalized
     // coordinates"
     DataMapper sceneDM{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
-    if (!property_->isAbsolute()) {
+    if (property_->allRelative()) {
         if (const auto* dm = property_->getDataMap()) {
             sceneDM = *dm;
         }

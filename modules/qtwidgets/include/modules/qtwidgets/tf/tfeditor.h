@@ -90,9 +90,7 @@ public:
 
     void setMoveMode(TFMoveMode i);
     TFMoveMode getMoveMode() const;
-
     const DataMapper& getDataMapper() const;
-    bool isAbsolute() const;
 
     std::vector<TFPrimitive*> getSelectedPrimitives() const;
 
@@ -121,6 +119,8 @@ protected:
     virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
     virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
+    virtual void onTFBeginBulkUpdate(const TFPrimitiveSet& set) override;
+    virtual void onTFEndBulkUpdate(const TFPrimitiveSet& set) override;
 
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
@@ -137,13 +137,13 @@ protected:
 
 private:
     void paste(std::optional<QPointF> scenePos);
-    void addPoint(double pos, const vec4& color, TFPrimitiveSet* set);
-    void addPoint(double pos, double alpha, TFPrimitiveSet* set);
-    void addPoint(const QPointF& scenePos, TFPrimitiveSet* set);
+    void addPoint(double pos, const vec4& color, TFPrimitiveSet& set);
+    void addPoint(double pos, double alpha, TFPrimitiveSet& set);
+    void addPoint(const QPointF& scenePos, TFPrimitiveSet& set);
     void addPoint(const QPointF& scenePos);
-    void addPeak(const QPointF& scenePos, TFPrimitiveSet* set);
-    double sceneToPos(const QPointF& pos) const;
-    double sceneToAlpha(const QPointF& pos) const;
+    void addPeak(const QPointF& scenePos, TFPrimitiveSet& set);
+    double sceneToPos(const QPointF& scenePos, const TFPrimitiveSet& set) const;
+    double sceneToAlpha(const QPointF& scenePos) const;
 
     TFPrimitiveSet* findSet(TFPrimitive*) const;
 
@@ -202,6 +202,7 @@ private:
 
     bool selectNewPrimitives_;
     std::optional<dvec2> range_;
+    bool bulkUpdate_;
 };
 
 }  // namespace inviwo

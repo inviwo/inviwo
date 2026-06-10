@@ -74,19 +74,27 @@ private:
     std::unique_ptr<TFPropertyDialog> tfDialog_ = nullptr;
 };
 
-class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {
+class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton, public TFPrimitiveSetObserver {
 public:
     explicit TFPushButton(TransferFunctionProperty* property, QWidget* parent = nullptr);
     explicit TFPushButton(IsoValueProperty* property, QWidget* parent = nullptr);
     explicit TFPushButton(IsoTFProperty* property, QWidget* parent = nullptr);
     virtual ~TFPushButton() = default;
-    void updateFromProperty();
 
 private:
+    void updateIcon();
+
+    void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
+    void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
+    void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
+    void onTFBeginBulkUpdate(const TFPrimitiveSet& set) override;
+    void onTFEndBulkUpdate(const TFPrimitiveSet& set) override;
+
     void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
-
     std::variant<TransferFunctionProperty*, IsoValueProperty*, IsoTFProperty*> property_;
+    bool bulkUpdate_;
 };
 
 }  // namespace inviwo

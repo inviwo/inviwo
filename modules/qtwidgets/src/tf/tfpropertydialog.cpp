@@ -160,7 +160,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
 
     , chkShowHistogram_{createHistogramComboBox(static_cast<int>(concept_->getHistogramMode()))}
     , pointMoveMode_{createPointMoveModeComboBox()}
-    , tfTypeMode_{createTypeComboBox(concept_->isAbsolute())}
+    , tfTypeMode_{createTypeComboBox(!concept_->allRelative())}
 
     , scalar_{new QLabel("Scalar")}
     , domainMin_{new QLabel("0.0")}

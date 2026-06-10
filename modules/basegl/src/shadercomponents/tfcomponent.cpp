@@ -40,13 +40,13 @@ namespace detail {
 namespace {
 
 constexpr std::string_view applyAbsolute = R"(
-vec4 applyTF_{tf}(float normalizedValue, RangeConversionMap normToValue) {{
-    return applyTF({tf}, {tf}Params, normToValue, normalizedValue);
+vec4 applyTF_{tf}(in float normalizedValue, in VolumeParameters volumeParameters) {{
+    return applyTF({tf}, {tf}Params, volumeParameters, normalizedValue);
 }}
 )";
 
 constexpr std::string_view applyRelative = R"(
-vec4 applyTF_{tf}(float normalizedValue, RangeConversionMap normToValue) {{
+vec4 applyTF_{tf}(in float normalizedValue, in VolumeParameters) {{
     return applyTF({tf}, normalizedValue);
 }}
 )";
