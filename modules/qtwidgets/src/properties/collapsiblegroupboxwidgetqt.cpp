@@ -308,7 +308,7 @@ std::unique_ptr<QMimeData> CollapsibleGroupBoxWidgetQt::getPropertyOwnerMimeData
 
     Serializer serializer("");
     {
-        auto* processor = static_cast<Processor*>(propertyOwner_);
+        auto* processor = propertyOwner_->getProcessor();
         // Need to set the serialization mode to all temporarily to be able to copy the
         // property.
         const auto reset =

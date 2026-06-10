@@ -1230,7 +1230,7 @@ void NetworkEditor::paste(const QMimeData& mimeData, util::OffsetCallback offset
         // Activate the default context, might be needed in processor constructors.
         rendercontext::activateDefault();
         auto added = util::appendPartialProcessorNetwork(
-            network_, xml, "", mainWindow_->getInviwoApplication(), offsetCallback);
+            network_, xml, "", mainWindow_->getInviwoApplication(), std::move(offsetCallback));
 
         clearSelection();
         for (auto* p : added) {

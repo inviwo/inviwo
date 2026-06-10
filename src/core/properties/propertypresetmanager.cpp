@@ -69,7 +69,7 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
             auto it = std::find_if(pmap.begin(), pmap.end(),
                                    [&](const auto& pair) { return pair.first == name; });
             if (it != pmap.end()) {
-                std::pmr::string xml{it->second};
+                const std::pmr::string xml{it->second};
                 apply(property, xml);
                 return true;
             }

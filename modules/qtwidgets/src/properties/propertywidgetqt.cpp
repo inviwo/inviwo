@@ -270,7 +270,7 @@ std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
     }
     std::pmr::string xml;
     serializer.write(xml);
-    QByteArray dataArray(xml.c_str(), static_cast<int>(xml.length()));
+    const QByteArray dataArray(xml.c_str(), static_cast<int>(xml.length()));
 
     mimeData->setData(QString("application/x.vnd.inviwo.property+xml"), dataArray);
     mimeData->setData(QString("text/plain"), dataArray);
@@ -411,7 +411,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                                                    PropertyPresetType::Application};
         auto saveMenu = presetMenu->addMenu("Save");
         for (auto& type : types) {
-            auto saveAction =
+            auto* saveAction =
                 saveMenu->addAction(utilqt::toQString(fmt::format("{} Preset...", type)));
             connect(saveAction, &QAction::triggered, [=]() {
                 while (!savePreset(saveMenu, type)) {
@@ -422,7 +422,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
 
         auto clearMenu = presetMenu->addMenu("Clear");
         for (auto& type : {PropertyPresetType::Property, PropertyPresetType::Workspace}) {
-            auto clearAction =
+            auto* clearAction =
                 clearMenu->addAction(utilqt::toQString(fmt::format("{} Preset...", type)));
             connect(clearAction, &QAction::triggered, [=]() { clearPresets(type); });
         }
