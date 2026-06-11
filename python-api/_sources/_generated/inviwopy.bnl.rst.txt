@@ -1,0 +1,22 @@
+﻿inviwopy.bnl
+============
+
+.. automodule:: inviwopy.bnl
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BrushingAction
+      BrushingAndLinkingInport
+      BrushingAndLinkingManager
+      BrushingAndLinkingOutport
+      BrushingModification
+      BrushingModifications
+      BrushingModificationsIterator
+      BrushingTarget
+      BrushingTargetsInvalidationLevel
+      IndexList
+      StringVector
+   

@@ -1,0 +1,12 @@
+﻿inviwopy.base
+=============
+
+.. automodule:: inviwopy.base
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      StringVector
+   

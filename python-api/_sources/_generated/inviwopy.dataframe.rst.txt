@@ -1,0 +1,36 @@
+﻿inviwopy.dataframe
+==================
+
+.. automodule:: inviwopy.dataframe
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      appendColumns
+      appendRows
+      innerJoin
+      leftJoin
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CategoricalColumn
+      Column
+      ColumnType
+      DataFrame
+      DataFrameFlatMultiInport
+      DataFrameInport
+      DataFrameMultiInport
+      DataFrameOutport
+      DoubleColumn
+      FloatColumn
+      IndexColumn
+      Int64Column
+      IntColumn
+      Size_tColumn
+      StringVector
+      UIntColumn
+   

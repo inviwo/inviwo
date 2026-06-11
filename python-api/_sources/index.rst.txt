@@ -5,13 +5,14 @@ Python API Reference
 
 .. autosummary::
     :toctree: _generated
+    :recursive:
 
     inviwopy
-    ivwanimation
-    ivwbase
-    ivwbnl
-    ivwjson
-    ivwdataframe
+    inviwopy.animation
+    inviwopy.base
+    inviwopy.bnl
+    inviwopy.dataframe
+    inviwopy.json
 
 
 Indices and tables

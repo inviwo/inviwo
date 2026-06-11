@@ -1,0 +1,24 @@
+﻿inviwopy.json
+=============
+
+.. automodule:: inviwopy.json
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      fromJson
+      getJSONInportConverter
+      getJSONOutportConverter
+      getJSONPropertyConverter
+      toJson
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      JSONInportConverter
+      JSONOutportConverter
+      JSONPropertyConverter
+   

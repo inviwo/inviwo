@@ -1,0 +1,78 @@
+﻿inviwopy.animation
+==================
+
+.. automodule:: inviwopy.animation
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      getWorkspaceAnimations
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Animation
+      AnimationController
+      AnimationState
+      AnimationTimeState
+      BaseKeyframe
+      BasePropertyTrack
+      ButtonKeyframe
+      ButtonKeyframeSequence
+      CallbackKeyframe
+      CallbackKeyframeSequence
+      CallbackTrack
+      CameraKeyframe
+      CameraKeyframeSequence
+      ControlAction
+      ControlKeyframe
+      ControlKeyframeSequence
+      ControlTrack
+      DVec2Keyframe
+      DVec2KeyframeSequence
+      DVec3Keyframe
+      DVec3KeyframeSequence
+      DVec4Keyframe
+      DVec4KeyframeSequence
+      DoubleKeyframe
+      DoubleKeyframeSequence
+      EasingMode
+      EasingType
+      FloatKeyframe
+      FloatKeyframeSequence
+      IVec2Keyframe
+      IVec2KeyframeSequence
+      IVec3Keyframe
+      IVec3KeyframeSequence
+      IVec4Keyframe
+      IVec4KeyframeSequence
+      IntKeyframe
+      IntKeyframeSequence
+      Interpolation
+      InvalidationKeyframe
+      InvalidationKeyframeSequence
+      Keyframe
+      KeyframeSequence
+      MainAnimation
+      Mat2Keyframe
+      Mat2KeyframeSequence
+      Mat3Keyframe
+      Mat3KeyframeSequence
+      Mat4Keyframe
+      Mat4KeyframeSequence
+      PlaybackDirection
+      PlaybackMode
+      StringVector
+      Track
+      ValueKeyframeSequence
+      Vec2Keyframe
+      Vec2KeyframeSequence
+      Vec3Keyframe
+      Vec3KeyframeSequence
+      Vec4Keyframe
+      Vec4KeyframeSequence
+      WorkspaceAnimations
+   
