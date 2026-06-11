@@ -135,8 +135,18 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a445589362e0b2cd39b153b3d22ea4ccb" id="r_a445589362e0b2cd39b153b3d22ea4ccb"><td class="memItemLeft"><a id="a445589362e0b2cd39b153b3d22ea4ccb" name="a445589362e0b2cd39b153b3d22ea4ccb"></a>
+void&#160;</td><td class="memItemRight"><b>fitViewToRect</b> (const QRectF &amp;sceneRect)</td></tr>
+<tr class="memitem:af2f0354af3867b7cd06de092efba676a" id="r_af2f0354af3867b7cd06de092efba676a"><td class="memItemLeft"><a id="af2f0354af3867b7cd06de092efba676a" name="af2f0354af3867b7cd06de092efba676a"></a>
+void&#160;</td><td class="memItemRight"><b>fitViewToScene</b> ()</td></tr>
+<tr class="memitem:ac46d618b5c501893434f582a42bac02b" id="r_ac46d618b5c501893434f582a42bac02b"><td class="memItemLeft"><a id="ac46d618b5c501893434f582a42bac02b" name="ac46d618b5c501893434f582a42bac02b"></a>
+std::pair&lt; dvec2, dvec2 &gt;&#160;</td><td class="memItemRight"><b>getZoom</b> () const</td></tr>
+<tr class="memitem:adfd1361c4d28636d5def908e2f201f95" id="r_adfd1361c4d28636d5def908e2f201f95"><td class="memItemLeft"><a id="adfd1361c4d28636d5def908e2f201f95" name="adfd1361c4d28636d5def908e2f201f95"></a>
+void&#160;</td><td class="memItemRight"><b>onSceneRectChanged</b> ()</td></tr>
 <tr class="memitem:a65aaa0f7742b187e0cdd421d92f61b2e" id="r_a65aaa0f7742b187e0cdd421d92f61b2e"><td class="memItemLeft"><a id="a65aaa0f7742b187e0cdd421d92f61b2e" name="a65aaa0f7742b187e0cdd421d92f61b2e"></a>
 &#160;</td><td class="memItemRight"><b>TFEditorView</b> (<a class="el" href="classinviwo_1_1TFPropertyConcept.html">TFPropertyConcept</a> *tfProperty, QGraphicsScene *scene=nullptr, QWidget *parent=nullptr)</td></tr>
+<tr class="memitem:aea3d299d732ad3adf8b49b01750d5410" id="r_aea3d299d732ad3adf8b49b01750d5410"><td class="memItemLeft"><a id="aea3d299d732ad3adf8b49b01750d5410" name="aea3d299d732ad3adf8b49b01750d5410"></a>
+void&#160;</td><td class="memItemRight"><b>updateZoomFromProperty</b> ()</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Observer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observer.html">inviwo::Observer</a></td></tr>
 <tr class="memitem:a05c1a5729cb5a4a65d7f3d3b597c24ff inherit pub_methods_classinviwo_1_1Observer" id="r_a05c1a5729cb5a4a65d7f3d3b597c24ff"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>Observer</b> (const Observer &amp;other)</td></tr>
@@ -153,16 +163,22 @@ void&#160;</td><td class="memItemRight"><b>removeObservations</b> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a98f48a0bab2429a98135daa1b9fbc7bc" id="r_a98f48a0bab2429a98135daa1b9fbc7bc"><td class="memItemLeft"><a id="a98f48a0bab2429a98135daa1b9fbc7bc" name="a98f48a0bab2429a98135daa1b9fbc7bc"></a>
-virtual void&#160;</td><td class="memItemRight"><b>drawBackground</b> (QPainter *painter, const QRectF &amp;rect) override</td></tr>
+<tr class="memitem:a76e57ed699732f3ceb4ec8fce01e118a" id="r_a76e57ed699732f3ceb4ec8fce01e118a"><td class="memItemLeft"><a id="a76e57ed699732f3ceb4ec8fce01e118a" name="a76e57ed699732f3ceb4ec8fce01e118a"></a>
+virtual void&#160;</td><td class="memItemRight"><b>drawBackground</b> (QPainter *painter, const QRectF &amp;updateRect) override</td></tr>
+<tr class="memitem:a6422f69195278f1c21c426c02e4ad6ad" id="r_a6422f69195278f1c21c426c02e4ad6ad"><td class="memItemLeft"><a id="a6422f69195278f1c21c426c02e4ad6ad" name="a6422f69195278f1c21c426c02e4ad6ad"></a>
+virtual void&#160;</td><td class="memItemRight"><b>keyPressEvent</b> (QKeyEvent *event) override</td></tr>
+<tr class="memitem:aa3f9ea3314a2dde73aabd02116c0571a" id="r_aa3f9ea3314a2dde73aabd02116c0571a"><td class="memItemLeft"><a id="aa3f9ea3314a2dde73aabd02116c0571a" name="aa3f9ea3314a2dde73aabd02116c0571a"></a>
+virtual void&#160;</td><td class="memItemRight"><b>keyReleaseEvent</b> (QKeyEvent *event) override</td></tr>
+<tr class="memitem:ab3fa5d8f7afd4180e0f01697f1a20871" id="r_ab3fa5d8f7afd4180e0f01697f1a20871"><td class="memItemLeft"><a id="ab3fa5d8f7afd4180e0f01697f1a20871" name="ab3fa5d8f7afd4180e0f01697f1a20871"></a>
+virtual void&#160;</td><td class="memItemRight"><b>mousePressEvent</b> (QMouseEvent *event) override</td></tr>
+<tr class="memitem:a4422fc6d4d7935b1b47855ad959d2bdc" id="r_a4422fc6d4d7935b1b47855ad959d2bdc"><td class="memItemLeft"><a id="a4422fc6d4d7935b1b47855ad959d2bdc" name="a4422fc6d4d7935b1b47855ad959d2bdc"></a>
+virtual void&#160;</td><td class="memItemRight"><b>mouseReleaseEvent</b> (QMouseEvent *event) override</td></tr>
 <tr class="memitem:a5cf98c517f71d40a86b2e5d5a0d9fb48" id="r_a5cf98c517f71d40a86b2e5d5a0d9fb48"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a5cf98c517f71d40a86b2e5d5a0d9fb48">onHistogramModeChange</a> (HistogramMode mode) override</td></tr>
 <tr class="memitem:aa2736f508fe7dd67d8c82e74c7032354" id="r_aa2736f508fe7dd67d8c82e74c7032354"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa2736f508fe7dd67d8c82e74c7032354">onHistogramSelectionChange</a> (HistogramSelection selection) override</td></tr>
 <tr class="memitem:a5e70dd02d5a69b9c9b6939f3ac7fb3a0" id="r_a5e70dd02d5a69b9c9b6939f3ac7fb3a0"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a5e70dd02d5a69b9c9b6939f3ac7fb3a0">onZoomHChange</a> (const dvec2 &amp;zoomH) override</td></tr>
 <tr class="memitem:a99fb5c1bf4763dfec60e8f249a51c2f3" id="r_a99fb5c1bf4763dfec60e8f249a51c2f3"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a99fb5c1bf4763dfec60e8f249a51c2f3">onZoomVChange</a> (const dvec2 &amp;zoomV) override</td></tr>
 <tr class="memitem:ac5da74eedbd79604aa7520490f825a97" id="r_ac5da74eedbd79604aa7520490f825a97"><td class="memItemLeft"><a id="ac5da74eedbd79604aa7520490f825a97" name="ac5da74eedbd79604aa7520490f825a97"></a>
 virtual void&#160;</td><td class="memItemRight"><b>resizeEvent</b> (QResizeEvent *event) override</td></tr>
-<tr class="memitem:acfda02c11234bec75a74e9eb077cc7a6" id="r_acfda02c11234bec75a74e9eb077cc7a6"><td class="memItemLeft"><a id="acfda02c11234bec75a74e9eb077cc7a6" name="acfda02c11234bec75a74e9eb077cc7a6"></a>
-void&#160;</td><td class="memItemRight"><b>updateZoom</b> ()</td></tr>
 <tr class="memitem:ae74cd1eeba076c1d014f46621754ee7f" id="r_ae74cd1eeba076c1d014f46621754ee7f"><td class="memItemLeft"><a id="ae74cd1eeba076c1d014f46621754ee7f" name="ae74cd1eeba076c1d014f46621754ee7f"></a>
 virtual void&#160;</td><td class="memItemRight"><b>wheelEvent</b> (QWheelEvent *event) override</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observer.html">inviwo::Observer</a></td></tr>

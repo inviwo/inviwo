@@ -1,12 +1,5 @@
 var NAVTREEINDEX26 =
 {
-"classinviwo_1_1animation_1_1KeyframeWidgetQt.html#afb874d0e40deaf50942b270d7a272be2":[4,0,1,2,62,0],
-"classinviwo_1_1animation_1_1LinearInterpolation.html":[2,0,0,0,63],
-"classinviwo_1_1animation_1_1LinearInterpolation.html":[4,0,1,2,64],
-"classinviwo_1_1animation_1_1MainAnimation.html":[2,0,0,0,64],
-"classinviwo_1_1animation_1_1MainAnimation.html":[4,0,1,2,65],
-"classinviwo_1_1animation_1_1PropertySequenceEditor.html":[2,0,0,0,65],
-"classinviwo_1_1animation_1_1PropertySequenceEditor.html":[4,0,1,2,66],
 "classinviwo_1_1animation_1_1PropertyTrack.html":[2,0,0,0,66],
 "classinviwo_1_1animation_1_1PropertyTrack.html":[4,0,1,2,67],
 "classinviwo_1_1animation_1_1PropertyTrack.html#a3318e978cb7a3ea0691a9dadd8042f98":[2,0,0,0,66,2],
@@ -249,5 +242,12 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1AxisRenderer3D.html":[2,0,0,15,5],
 "classinviwo_1_1plot_1_1AxisRenderer3D.html":[4,0,1,22,6],
 "classinviwo_1_1plot_1_1AxisRenderer3D.html#a93ab15cc7b41f5c278ce6db8b965f380":[2,0,0,15,5,0],
-"classinviwo_1_1plot_1_1AxisRenderer3D.html#a93ab15cc7b41f5c278ce6db8b965f380":[4,0,1,22,6,0]
+"classinviwo_1_1plot_1_1AxisRenderer3D.html#a93ab15cc7b41f5c278ce6db8b965f380":[4,0,1,22,6,0],
+"classinviwo_1_1plot_1_1AxisRendererBase.html":[2,0,0,15,6],
+"classinviwo_1_1plot_1_1AxisRendererBase.html":[4,0,1,22,7],
+"classinviwo_1_1plot_1_1AxisStyleProperty.html":[2,0,0,15,8],
+"classinviwo_1_1plot_1_1AxisStyleProperty.html":[4,0,1,22,9],
+"classinviwo_1_1plot_1_1AxisStyleProperty.html#a42932f355386f4a448560f6f7c2d2b60":[2,0,0,15,8,0],
+"classinviwo_1_1plot_1_1AxisStyleProperty.html#a42932f355386f4a448560f6f7c2d2b60":[4,0,1,22,9,0],
+"classinviwo_1_1plot_1_1BoxSelection.html":[2,0,0,15,9]
 };

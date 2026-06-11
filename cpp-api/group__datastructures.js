@@ -230,14 +230,13 @@ var group__datastructures =
       [ "getRange", "classinviwo_1_1TFPrimitiveSet.html#a7f8f02f10bed7f4f684076a4e9c6a410", null ],
       [ "getVectors", "classinviwo_1_1TFPrimitiveSet.html#a7ed0cda7d6ce78bfd0f2b16f51cce302", null ],
       [ "getVectorsf", "classinviwo_1_1TFPrimitiveSet.html#aa574064c052f636d15790edd9e4de8a1", null ],
-      [ "interpolateAndStoreColors", "classinviwo_1_1TFPrimitiveSet.html#a3d78aa8a6608afb18eaa65ef054db2d0", null ],
+      [ "interpolateAndStoreColors", "classinviwo_1_1TFPrimitiveSet.html#ac3fa329cb9acf6dfee2c7981e781cd39", null ],
       [ "interpolateColor", "classinviwo_1_1TFPrimitiveSet.html#a6b1a58ebb0ef802d036dacb3916b4b12", null ],
       [ "remove", "classinviwo_1_1TFPrimitiveSet.html#a521813e5a2d71f1ddd87cda9031cb29c", null ],
       [ "set", "classinviwo_1_1TFPrimitiveSet.html#a484ff7f894e8710a1dbfb4982c959afd", null ],
       [ "set", "classinviwo_1_1TFPrimitiveSet.html#afefe07616b1f670963121c87f20f316f", null ]
     ] ],
     [ "inviwo::TransferFunction", "classinviwo_1_1TransferFunction.html", [
-      [ "interpolateAndStoreColors", "classinviwo_1_1TransferFunction.html#ab547a36f7dac37fe1ca702673aab042b", null ],
       [ "sample", "classinviwo_1_1TransferFunction.html#a6aaddd89f896f50c183ca555e5e32ec9", null ],
       [ "sample", "classinviwo_1_1TransferFunction.html#aa52a0aa0e806e39476707bb9aafab91d", null ]
     ] ],

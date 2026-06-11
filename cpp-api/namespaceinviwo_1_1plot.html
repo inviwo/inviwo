@@ -217,6 +217,8 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ab91b810f4da75192cc9a5d60f4164470" id="r_ab91b810f4da75192cc9a5d60f4164470"><td class="memItemLeft"><a id="ab91b810f4da75192cc9a5d60f4164470" name="ab91b810f4da75192cc9a5d60f4164470"></a>
+bool&#160;</td><td class="memItemRight"><b>almostEqual</b> (double a, double b, int factor=50)</td></tr>
 <tr class="memitem:a4da99815d84c27b9ecfcefd9bdde5c7f" id="r_a4da99815d84c27b9ecfcefd9bdde5c7f"><td class="memItemLeft"><a id="a4da99815d84c27b9ecfcefd9bdde5c7f" name="a4da99815d84c27b9ecfcefd9bdde5c7f"></a>
 IVW_MODULE_PLOTTINGGL_API std::array&lt; dvec2, 3 &gt;&#160;</td><td class="memItemRight"><b>calcAxisRanges</b> (const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;entity, std::optional&lt; dmat4 &gt; worldBoundingBox, AxisRangeMode mode)</td></tr>
 <tr class="memitem:a3f54bcc5c9294ae097170b46916ca863" id="r_a3f54bcc5c9294ae097170b46916ca863"><td class="memItemLeft"><a id="a3f54bcc5c9294ae097170b46916ca863" name="a3f54bcc5c9294ae097170b46916ca863"></a>
@@ -241,31 +243,33 @@ IVW_MODULE_PLOTTING_API void&#160;</td><td class="memItemRight"><b>getLabelPosit
 IVW_MODULE_PLOTTING_API void&#160;</td><td class="memItemRight"><b>getLabelPositions3D</b> (const std::vector&lt; double &gt; &amp;positions, bool mirrored, vec2 offset, dvec2 range, const vec3 &amp;startPos, const vec3 &amp;endPos, const vec3 &amp;tickDirection, std::vector&lt; vec3 &gt; &amp;dest)</td></tr>
 <tr class="memitem:a951bd29d67c3df5668035ecb5f049d00" id="r_a951bd29d67c3df5668035ecb5f049d00"><td class="memItemLeft"><a id="a951bd29d67c3df5668035ecb5f049d00" name="a951bd29d67c3df5668035ecb5f049d00"></a>
 IVW_MODULE_PLOTTINGGL_API dmat4&#160;</td><td class="memItemRight"><b>getTransform</b> (const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;entity, std::optional&lt; dmat4 &gt; worldBoundingBox, AxisRangeMode mode)</td></tr>
-<tr class="memitem:a3d42e926f7958d88daf19efafb048bbc" id="r_a3d42e926f7958d88daf19efafb048bbc"><td class="memItemLeft">IVW_MODULE_PLOTTING_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3d42e926f7958d88daf19efafb048bbc">labelingExtendedWilkinson</a> (double valueMin, double valueMax, int numTicks, std::span&lt; const double &gt; steps=stepsTalbot)</td></tr>
-<tr class="memitem:a7347f322b08a7938c842a786656bced8" id="r_a7347f322b08a7938c842a786656bced8"><td class="memItemLeft">IVW_MODULE_PLOTTING_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7347f322b08a7938c842a786656bced8">labelingHeckbert</a> (double valueMin, double valueMax, int numTicks)</td></tr>
-<tr class="memitem:ae92f08b874b8822b385f88c3421384c7" id="r_ae92f08b874b8822b385f88c3421384c7"><td class="memItemLeft">IVW_MODULE_PLOTTING_API void&#160;</td><td class="memItemRight"><a class="el" href="#ae92f08b874b8822b385f88c3421384c7">labelingLimits</a> (double valueMin, double valueMax, std::vector&lt; double &gt; &amp;positions, bool includeZero=true)</td></tr>
-<tr class="memitem:a2d83f9ba71505415ab342b8acaf04faa" id="r_a2d83f9ba71505415ab342b8acaf04faa"><td class="memItemLeft">IVW_MODULE_PLOTTING_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a>&#160;</td><td class="memItemRight"><a class="el" href="#a2d83f9ba71505415ab342b8acaf04faa">labelingMatplotlib</a> (double valueMin, double valueMax, int maxTicks, std::span&lt; const double &gt; steps=stepsMatplotlib, bool integerTicks=false, int minNTicks=2)</td></tr>
+<tr class="memitem:a22fd48bb459ac5353379d2b4f4626e5a" id="r_a22fd48bb459ac5353379d2b4f4626e5a"><td class="memItemLeft">IVW_CORE_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a>&#160;</td><td class="memItemRight"><a class="el" href="#a22fd48bb459ac5353379d2b4f4626e5a">labelingExtendedWilkinson</a> (double valueMin, double valueMax, int numTicks, std::span&lt; const double &gt; steps=stepsTalbot)</td></tr>
+<tr class="memitem:a5bef0344e06e0d473ee1db106ec22768" id="r_a5bef0344e06e0d473ee1db106ec22768"><td class="memItemLeft">IVW_CORE_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5bef0344e06e0d473ee1db106ec22768">labelingHeckbert</a> (double valueMin, double valueMax, int numTicks)</td></tr>
+<tr class="memitem:af7f13f68c7a7cd83fc2f1109336da21b" id="r_af7f13f68c7a7cd83fc2f1109336da21b"><td class="memItemLeft">IVW_CORE_API void&#160;</td><td class="memItemRight"><a class="el" href="#af7f13f68c7a7cd83fc2f1109336da21b">labelingLimits</a> (double valueMin, double valueMax, std::vector&lt; double &gt; &amp;positions, bool includeZero=true)</td></tr>
+<tr class="memitem:aaf2d7db1f01341293d2257fdfe3aed18" id="r_aaf2d7db1f01341293d2257fdfe3aed18"><td class="memItemLeft">IVW_CORE_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a>&#160;</td><td class="memItemRight"><a class="el" href="#aaf2d7db1f01341293d2257fdfe3aed18">labelingMatplotlib</a> (double valueMin, double valueMax, int maxTicks, std::span&lt; const double &gt; steps=stepsMatplotlib, bool integerTicks=false, int minNTicks=2)</td></tr>
 <tr class="memitem:a2cd9e1a5b9d2ad4cd5b7e981213462ce" id="r_a2cd9e1a5b9d2ad4cd5b7e981213462ce"><td class="memItemLeft"><a id="a2cd9e1a5b9d2ad4cd5b7e981213462ce" name="a2cd9e1a5b9d2ad4cd5b7e981213462ce"></a>
 IVW_MODULE_PLOTTING_API <a class="el" href="structinviwo_1_1OptionPropertyState.html">OptionPropertyState</a>&lt; LabelScale &gt;&#160;</td><td class="memItemRight"><b>labelScaleState</b> ()</td></tr>
 <tr class="memitem:ace686cd5b6fb31cef562055208a10830" id="r_ace686cd5b6fb31cef562055208a10830"><td class="memItemLeft"><a id="ace686cd5b6fb31cef562055208a10830" name="ace686cd5b6fb31cef562055208a10830"></a>
 constexpr std::optional&lt; int &gt;&#160;</td><td class="memItemRight"><b>labelScaleStep</b> (LabelScale scale)</td></tr>
-<tr class="memitem:a608fd717d268abb06ca8239ef07f17ae" id="r_a608fd717d268abb06ca8239ef07f17ae"><td class="memItemLeft"><a id="a608fd717d268abb06ca8239ef07f17ae" name="a608fd717d268abb06ca8239ef07f17ae"></a>
-IVW_MODULE_PLOTTING_API void&#160;</td><td class="memItemRight"><b>linearRange</b> (const dvec2 &amp;range, const <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> &amp;optRange, int minorTickFrequency, std::vector&lt; double &gt; &amp;major, std::vector&lt; double &gt; &amp;minor)</td></tr>
-<tr class="memitem:a8cfbf6ed296d420a0c69760afe373988" id="r_a8cfbf6ed296d420a0c69760afe373988"><td class="memItemLeft">IVW_MODULE_PLOTTING_API void&#160;</td><td class="memItemRight"><a class="el" href="#a8cfbf6ed296d420a0c69760afe373988">linearRange</a> (const <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> &amp;range, std::vector&lt; double &gt; &amp;positions)</td></tr>
+<tr class="memitem:ab76ce6577aa82bc12980783db73a5331" id="r_ab76ce6577aa82bc12980783db73a5331"><td class="memItemLeft"><a id="ab76ce6577aa82bc12980783db73a5331" name="ab76ce6577aa82bc12980783db73a5331"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight"><b>linearRange</b> (const dvec2 &amp;range, const <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> &amp;optRange, int minorTickFrequency, std::vector&lt; double &gt; &amp;major, std::vector&lt; double &gt; &amp;minor)</td></tr>
+<tr class="memitem:a5b7fe367f07043ad6726c8d8c1da30a5" id="r_a5b7fe367f07043ad6726c8d8c1da30a5"><td class="memItemLeft">IVW_CORE_API void&#160;</td><td class="memItemRight"><a class="el" href="#a5b7fe367f07043ad6726c8d8c1da30a5">linearRange</a> (const <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> &amp;range, std::vector&lt; double &gt; &amp;positions)</td></tr>
 <tr class="memitem:a37bbbfd76ce46e83015d180243b9856c" id="r_a37bbbfd76ce46e83015d180243b9856c"><td class="memItemLeft"><a id="a37bbbfd76ce46e83015d180243b9856c" name="a37bbbfd76ce46e83015d180243b9856c"></a>
 IVW_MODULE_PLOTTINGGL_API <a class="el" href="structinviwo_1_1OptionPropertyState.html">OptionPropertyState</a>&lt; AxisRangeMode &gt;&#160;</td><td class="memItemRight"><b>rangeModeState</b> (bool hasDims, bool hasBoundingBox)</td></tr>
+<tr class="memitem:af252a262af31c7f736221b0a23550f35" id="r_af252a262af31c7f736221b0a23550f35"><td class="memItemLeft"><a id="af252a262af31c7f736221b0a23550f35" name="af252a262af31c7f736221b0a23550f35"></a>
+constexpr auto&#160;</td><td class="memItemRight"><b>rangeView</b> (const <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> &amp;range)</td></tr>
 <tr class="memitem:ac447ea7352467d85fc1f4f0b8e644007" id="r_ac447ea7352467d85fc1f4f0b8e644007"><td class="memItemLeft"><a id="ac447ea7352467d85fc1f4f0b8e644007" name="ac447ea7352467d85fc1f4f0b8e644007"></a>
 constexpr std::pair&lt; dvec2, int &gt;&#160;</td><td class="memItemRight"><b>scaleRange</b> (const dvec2 &amp;r, const std::optional&lt; int &gt; &amp;autoScale)</td></tr>
 <tr class="memitem:a3345f48af9299e647224dd6a585b330f" id="r_a3345f48af9299e647224dd6a585b330f"><td class="memItemLeft"><a id="a3345f48af9299e647224dd6a585b330f" name="a3345f48af9299e647224dd6a585b330f"></a>
 constexpr auto&#160;</td><td class="memItemRight"><b>scaleUnit</b> (LabelScale labelScale, Unit unit, int exp)</td></tr>
 <tr class="memitem:af6787efcbec964f89b7bd4d247d77c22" id="r_af6787efcbec964f89b7bd4d247d77c22"><td class="memItemLeft"><a id="af6787efcbec964f89b7bd4d247d77c22" name="af6787efcbec964f89b7bd4d247d77c22"></a>
 IVW_MODULE_PLOTTING_API std::pair&lt; vec2, vec2 &gt;&#160;</td><td class="memItemRight"><b>tickBoundingRect</b> (const <a class="el" href="structinviwo_1_1plot_1_1AxisData.html">AxisData</a> &amp;data, const std::vector&lt; double &gt; &amp;majorPositions, const std::vector&lt; double &gt; &amp;minorPositions, const vec2 &amp;startPos, const vec2 &amp;endPos)</td></tr>
-<tr class="memitem:a0fed2c013a73e86e8ba28da434c8cdca" id="r_a0fed2c013a73e86e8ba28da434c8cdca"><td class="memItemLeft"><a id="a0fed2c013a73e86e8ba28da434c8cdca" name="a0fed2c013a73e86e8ba28da434c8cdca"></a>
-IVW_MODULE_PLOTTING_API void&#160;</td><td class="memItemRight"><b>updateLabelPositions</b> (std::vector&lt; double &gt; &amp;majorPositions, std::vector&lt; double &gt; &amp;minorPositions, LabelingAlgorithm algorithm, const dvec2 &amp;range, int maxTicks, int minorTickFrequency, bool fillAxis)</td></tr>
-<tr class="memitem:aa7028b3b96c1b0422001400cb36abc40" id="r_aa7028b3b96c1b0422001400cb36abc40"><td class="memItemLeft"><a id="aa7028b3b96c1b0422001400cb36abc40" name="aa7028b3b96c1b0422001400cb36abc40"></a>
-IVW_MODULE_PLOTTING_API void&#160;</td><td class="memItemRight"><b>updateLabels</b> (std::vector&lt; std::string &gt; &amp;labels, const std::vector&lt; double &gt; &amp;positions, std::string_view format)</td></tr>
-<tr class="memitem:addf6ed98a9c65ee1eaecd65f6cffd154" id="r_addf6ed98a9c65ee1eaecd65f6cffd154"><td class="memItemLeft"><a id="addf6ed98a9c65ee1eaecd65f6cffd154" name="addf6ed98a9c65ee1eaecd65f6cffd154"></a>
-IVW_MODULE_PLOTTING_API void&#160;</td><td class="memItemRight"><b>updateLabels</b> (std::vector&lt; std::string &gt; &amp;labels, std::span&lt; const std::string &gt; srcLabels)</td></tr>
+<tr class="memitem:a8c96cc57adef534cb370e996ae0ef3f2" id="r_a8c96cc57adef534cb370e996ae0ef3f2"><td class="memItemLeft"><a id="a8c96cc57adef534cb370e996ae0ef3f2" name="a8c96cc57adef534cb370e996ae0ef3f2"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight"><b>updateLabelPositions</b> (std::vector&lt; double &gt; &amp;majorPositions, std::vector&lt; double &gt; &amp;minorPositions, LabelingAlgorithm algorithm, const dvec2 &amp;range, int maxTicks, int minorTickFrequency, bool fillAxis)</td></tr>
+<tr class="memitem:aeea2ca9f70e5912ff8b33e750903ceac" id="r_aeea2ca9f70e5912ff8b33e750903ceac"><td class="memItemLeft"><a id="aeea2ca9f70e5912ff8b33e750903ceac" name="aeea2ca9f70e5912ff8b33e750903ceac"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight"><b>updateLabels</b> (std::vector&lt; std::string &gt; &amp;labels, const std::vector&lt; double &gt; &amp;positions, std::string_view format)</td></tr>
+<tr class="memitem:abeae3e2153d656ceb7a4ce21bb7357a3" id="r_abeae3e2153d656ceb7a4ce21bb7357a3"><td class="memItemLeft"><a id="abeae3e2153d656ceb7a4ce21bb7357a3" name="abeae3e2153d656ceb7a4ce21bb7357a3"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight"><b>updateLabels</b> (std::vector&lt; std::string &gt; &amp;labels, std::span&lt; const std::string &gt; srcLabels)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -401,14 +405,14 @@ constexpr std::array&#160;</td><td class="memItemRight"><b>stepsTalbot</b> = {1.
 
 </div>
 </div>
-<a id="a3d42e926f7958d88daf19efafb048bbc" name="a3d42e926f7958d88daf19efafb048bbc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d42e926f7958d88daf19efafb048bbc">&#9670;&#160;</a></span>labelingExtendedWilkinson()</h2>
+<a id="a22fd48bb459ac5353379d2b4f4626e5a" name="a22fd48bb459ac5353379d2b4f4626e5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22fd48bb459ac5353379d2b4f4626e5a">&#9670;&#160;</a></span>labelingExtendedWilkinson()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">IVW_MODULE_PLOTTING_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> inviwo::plot::labelingExtendedWilkinson </td>
+          <td class="memname">IVW_CORE_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> inviwo::plot::labelingExtendedWilkinson </td>
           <td>(</td>
           <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>valueMin</em></span>, </td>
         </tr>
@@ -446,14 +450,14 @@ constexpr std::array&#160;</td><td class="memItemRight"><b>stepsTalbot</b> = {1.
 
 </div>
 </div>
-<a id="a7347f322b08a7938c842a786656bced8" name="a7347f322b08a7938c842a786656bced8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7347f322b08a7938c842a786656bced8">&#9670;&#160;</a></span>labelingHeckbert()</h2>
+<a id="a5bef0344e06e0d473ee1db106ec22768" name="a5bef0344e06e0d473ee1db106ec22768"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bef0344e06e0d473ee1db106ec22768">&#9670;&#160;</a></span>labelingHeckbert()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">IVW_MODULE_PLOTTING_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> inviwo::plot::labelingHeckbert </td>
+          <td class="memname">IVW_CORE_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> inviwo::plot::labelingHeckbert </td>
           <td>(</td>
           <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>valueMin</em></span>, </td>
         </tr>
@@ -484,14 +488,14 @@ constexpr std::array&#160;</td><td class="memItemRight"><b>stepsTalbot</b> = {1.
 
 </div>
 </div>
-<a id="ae92f08b874b8822b385f88c3421384c7" name="ae92f08b874b8822b385f88c3421384c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae92f08b874b8822b385f88c3421384c7">&#9670;&#160;</a></span>labelingLimits()</h2>
+<a id="af7f13f68c7a7cd83fc2f1109336da21b" name="af7f13f68c7a7cd83fc2f1109336da21b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7f13f68c7a7cd83fc2f1109336da21b">&#9670;&#160;</a></span>labelingLimits()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">IVW_MODULE_PLOTTING_API void inviwo::plot::labelingLimits </td>
+          <td class="memname">IVW_CORE_API void inviwo::plot::labelingLimits </td>
           <td>(</td>
           <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>valueMin</em></span>, </td>
         </tr>
@@ -525,14 +529,14 @@ constexpr std::array&#160;</td><td class="memItemRight"><b>stepsTalbot</b> = {1.
 
 </div>
 </div>
-<a id="a2d83f9ba71505415ab342b8acaf04faa" name="a2d83f9ba71505415ab342b8acaf04faa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d83f9ba71505415ab342b8acaf04faa">&#9670;&#160;</a></span>labelingMatplotlib()</h2>
+<a id="aaf2d7db1f01341293d2257fdfe3aed18" name="aaf2d7db1f01341293d2257fdfe3aed18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf2d7db1f01341293d2257fdfe3aed18">&#9670;&#160;</a></span>labelingMatplotlib()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">IVW_MODULE_PLOTTING_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> inviwo::plot::labelingMatplotlib </td>
+          <td class="memname">IVW_CORE_API <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> inviwo::plot::labelingMatplotlib </td>
           <td>(</td>
           <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>valueMin</em></span>, </td>
         </tr>
@@ -582,14 +586,14 @@ constexpr std::array&#160;</td><td class="memItemRight"><b>stepsTalbot</b> = {1.
 
 </div>
 </div>
-<a id="a8cfbf6ed296d420a0c69760afe373988" name="a8cfbf6ed296d420a0c69760afe373988"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8cfbf6ed296d420a0c69760afe373988">&#9670;&#160;</a></span>linearRange()</h2>
+<a id="a5b7fe367f07043ad6726c8d8c1da30a5" name="a5b7fe367f07043ad6726c8d8c1da30a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b7fe367f07043ad6726c8d8c1da30a5">&#9670;&#160;</a></span>linearRange()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">IVW_MODULE_PLOTTING_API void inviwo::plot::linearRange </td>
+          <td class="memname">IVW_CORE_API void inviwo::plot::linearRange </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structinviwo_1_1plot_1_1LinearRange.html">LinearRange</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>range</em></span>, </td>
         </tr>

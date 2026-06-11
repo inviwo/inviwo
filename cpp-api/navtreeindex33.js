@@ -1,12 +1,5 @@
 var NAVTREEINDEX33 =
 {
-"structinviwo_1_1animation_1_1FindDivisionsResult.html":[4,0,1,2,39],
-"structinviwo_1_1animation_1_1KeyframeWidgetQtLock.html":[2,0,0,0,62],
-"structinviwo_1_1animation_1_1KeyframeWidgetQtLock.html":[4,0,1,2,63],
-"structinviwo_1_1animation_1_1RecorderOptions.html":[2,0,0,0,71],
-"structinviwo_1_1animation_1_1RecorderOptions.html":[4,0,1,2,72],
-"structinviwo_1_1animation_1_1detail_1_1AnimateSequence.html":[4,0,1,2,0,0],
-"structinviwo_1_1animation_1_1detail_1_1AnimateSequence_3_01ButtonProperty_00_01ButtonKeyframeSequence_01_4.html":[4,0,1,2,0,1],
 "structinviwo_1_1animation_1_1detail_1_1AnimateSequence_3_01CameraProperty_00_01CameraKeyframeSequence_01_4.html":[4,0,1,2,0,2],
 "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator.html":[4,0,1,2,0,3],
 "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator_3_01CameraKeyframe_01_4.html":[4,0,1,2,0,4],
@@ -249,5 +242,12 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1util_1_1detail_1_1is__string_3_01LCString_00_01void_01_4.html":[4,0,1,30,0,14],
 "structinviwo_1_1util_1_1detail_1_1is__string_3_01T_00_01std_1_1void__t_3_01typename_01T_1_1value7755dbb39d4055ac2098ae9658d61cc2.html":[4,0,1,30,0,15],
 "structinviwo_1_1util_1_1detail_1_1min.html":[4,0,1,30,0,16],
-"structinviwo_1_1util_1_1detail_1_1require.html":[4,0,1,30,0,19]
+"structinviwo_1_1util_1_1detail_1_1require.html":[4,0,1,30,0,19],
+"structinviwo_1_1util_1_1detail_1_1wrap.html":[4,0,1,30,0,21],
+"structinviwo_1_1util_1_1detail_1_1wrap_3_01Wrapper_00_01List_3_01Ts_8_8_8_01_4_01_4.html":[4,0,1,30,0,22],
+"structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference.html":[4,0,1,30,1,0],
+"structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_01_4.html":[4,0,1,30,1,1],
+"structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_6_01_4.html":[4,0,1,30,1,2],
+"structinviwo_1_1util_1_1detail__indirect_1_1asPointer.html":[4,0,1,30,1,3],
+"structinviwo_1_1util_1_1detail__indirect_1_1asPointer_3_01false_01_4.html":[4,0,1,30,1,4]
 };

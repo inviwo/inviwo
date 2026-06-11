@@ -1555,9 +1555,6 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memitem:TFEditor" id="r_TFEditor"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFEditor.html">TFEditor</a></td></tr>
 <tr class="memitem:TFEditorControlPoint" id="r_TFEditorControlPoint"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFEditorControlPoint.html">TFEditorControlPoint</a></td></tr>
 <tr class="memitem:TFEditorIsovalue" id="r_TFEditorIsovalue"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFEditorIsovalue.html">TFEditorIsovalue</a></td></tr>
-<tr class="memitem:TFEditorMask" id="r_TFEditorMask"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFEditorMask.html">TFEditorMask</a></td></tr>
-<tr class="memitem:TFEditorMaskMax" id="r_TFEditorMaskMax"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFEditorMaskMax.html">TFEditorMaskMax</a></td></tr>
-<tr class="memitem:TFEditorMaskMin" id="r_TFEditorMaskMin"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFEditorMaskMin.html">TFEditorMaskMin</a></td></tr>
 <tr class="memitem:TFEditorPrimitive" id="r_TFEditorPrimitive"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFEditorPrimitive.html">TFEditorPrimitive</a></td></tr>
 <tr class="memitem:TFEditorView" id="r_TFEditorView"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFEditorView.html">TFEditorView</a></td></tr>
 <tr class="memitem:TFFromDataFrameColumn" id="r_TFFromDataFrameColumn"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFFromDataFrameColumn.html">TFFromDataFrameColumn</a></td></tr>
@@ -3156,6 +3153,9 @@ Enumerations</h2></td></tr>
 , <b>Updated</b> = 1 &lt;&lt; 1
 , <b>Finished</b> = 1 &lt;&lt; 2
  }</td></tr>
+<tr class="memitem:a7ddc2771a60fc342dc33a9493b752f5b" id="r_a7ddc2771a60fc342dc33a9493b752f5b"><td class="memItemLeft"><a id="a7ddc2771a60fc342dc33a9493b752f5b" name="a7ddc2771a60fc342dc33a9493b752f5b"></a>enum class &#160;</td><td class="memItemRight"><b>PrimitiveSetMode</b> : std::uint8_t { <b>Relative</b>
+, <b>Absolute</b>
+ }</td></tr>
 <tr class="memitem:a75950f222fd7724758068044ca2877a7" id="r_a75950f222fd7724758068044ca2877a7"><td class="memItemLeft"><a id="a75950f222fd7724758068044ca2877a7" name="a75950f222fd7724758068044ca2877a7"></a>enum class &#160;</td><td class="memItemRight"><b>PropertyPresetType</b> { <b>Property</b> = 1
 , <b>Workspace</b> = 2
 , <b>Application</b> = 4
@@ -3213,9 +3213,6 @@ Enumerations</h2></td></tr>
 <tr class="memitem:a5a71ab774739d80dca8881e88fbc0782" id="r_a5a71ab774739d80dca8881e88fbc0782"><td class="memItemLeft"><a id="a5a71ab774739d80dca8881e88fbc0782" name="a5a71ab774739d80dca8881e88fbc0782"></a>enum class &#160;</td><td class="memItemRight"><b>TFMoveMode</b> : int { <b>Free</b> = 0
 , <b>Restrict</b>
 , <b>Push</b>
- }</td></tr>
-<tr class="memitem:a5f6fc553b8a676de824fdeca98e0730e" id="r_a5f6fc553b8a676de824fdeca98e0730e"><td class="memItemLeft"><a id="a5f6fc553b8a676de824fdeca98e0730e" name="a5f6fc553b8a676de824fdeca98e0730e"></a>enum class &#160;</td><td class="memItemRight"><b>TFPrimitiveSetType</b> { <b>Relative</b>
-, <b>Absolute</b>
  }</td></tr>
 <tr class="memitem:ae6abe995744b617c659602ec88a388ba" id="r_ae6abe995744b617c659602ec88a388ba"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="#ae6abe995744b617c659602ec88a388ba">TouchState</a> { <br />
 &#160;&#160;<b>None</b> = 0
@@ -3447,6 +3444,8 @@ std::string_view&#160;</td><td class="memItemRight"><b>format_as</b> (LogAudienc
 std::string_view&#160;</td><td class="memItemRight"><b>format_as</b> (LogLevel ll)</td></tr>
 <tr class="memitem:adbca0c88275db2493484163002c57676" id="r_adbca0c88275db2493484163002c57676"><td class="memItemLeft"><a id="adbca0c88275db2493484163002c57676" name="adbca0c88275db2493484163002c57676"></a>
 std::string_view&#160;</td><td class="memItemRight"><b>format_as</b> (MessageBreakLevel ll)</td></tr>
+<tr class="memitem:a5805682e968106682244a1e31f378bff" id="r_a5805682e968106682244a1e31f378bff"><td class="memItemLeft"><a id="a5805682e968106682244a1e31f378bff" name="a5805682e968106682244a1e31f378bff"></a>
+constexpr std::string_view&#160;</td><td class="memItemRight"><b>format_as</b> (PrimitiveSetMode mode)</td></tr>
 <tr class="memitem:ac94d40a40417db54dc3cc4dd5a05815e" id="r_ac94d40a40417db54dc3cc4dd5a05815e"><td class="memItemLeft"><a id="ac94d40a40417db54dc3cc4dd5a05815e" name="ac94d40a40417db54dc3cc4dd5a05815e"></a>
 constexpr std::string_view&#160;</td><td class="memItemRight"><b>format_as</b> (<a class="el" href="classinviwo_1_1ShaderType.html">ShaderType</a> type)</td></tr>
 <tr class="memitem:af7bdddb0c321c9d32ba786cde0b6b8f4" id="r_af7bdddb0c321c9d32ba786cde0b6b8f4"><td class="memItemLeft">IVW_MODULE_JSON_API void&#160;</td><td class="memItemRight"><a class="el" href="#af7bdddb0c321c9d32ba786cde0b6b8f4">from_json</a> (const json &amp;j, <a class="el" href="classinviwo_1_1BoolProperty.html">BoolProperty</a> &amp;p)</td></tr>

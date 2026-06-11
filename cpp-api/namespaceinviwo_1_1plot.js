@@ -37,9 +37,9 @@ var namespaceinviwo_1_1plot =
     [ "formatAxisCaption", "namespaceinviwo_1_1plot.html#aafef6b153a6464b00b7ed378adfb91e1", null ],
     [ "generateAxisMesh3D", "namespaceinviwo_1_1plot.html#ac559334e3d34c51d6bc3f0918b8e6f28", null ],
     [ "generateTicksMesh", "namespaceinviwo_1_1plot.html#a302bcec5a18245575f77acd14b4032e9", null ],
-    [ "labelingExtendedWilkinson", "namespaceinviwo_1_1plot.html#a3d42e926f7958d88daf19efafb048bbc", null ],
-    [ "labelingHeckbert", "namespaceinviwo_1_1plot.html#a7347f322b08a7938c842a786656bced8", null ],
-    [ "labelingLimits", "namespaceinviwo_1_1plot.html#ae92f08b874b8822b385f88c3421384c7", null ],
-    [ "labelingMatplotlib", "namespaceinviwo_1_1plot.html#a2d83f9ba71505415ab342b8acaf04faa", null ],
-    [ "linearRange", "namespaceinviwo_1_1plot.html#a8cfbf6ed296d420a0c69760afe373988", null ]
+    [ "labelingExtendedWilkinson", "namespaceinviwo_1_1plot.html#a22fd48bb459ac5353379d2b4f4626e5a", null ],
+    [ "labelingHeckbert", "namespaceinviwo_1_1plot.html#a5bef0344e06e0d473ee1db106ec22768", null ],
+    [ "labelingLimits", "namespaceinviwo_1_1plot.html#af7f13f68c7a7cd83fc2f1109336da21b", null ],
+    [ "labelingMatplotlib", "namespaceinviwo_1_1plot.html#aaf2d7db1f01341293d2257fdfe3aed18", null ],
+    [ "linearRange", "namespaceinviwo_1_1plot.html#a5b7fe367f07043ad6726c8d8c1da30a5", null ]
 ];

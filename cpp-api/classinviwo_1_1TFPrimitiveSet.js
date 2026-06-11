@@ -12,7 +12,7 @@ var classinviwo_1_1TFPrimitiveSet =
     [ "getRange", "classinviwo_1_1TFPrimitiveSet.html#a7f8f02f10bed7f4f684076a4e9c6a410", null ],
     [ "getVectors", "classinviwo_1_1TFPrimitiveSet.html#a7ed0cda7d6ce78bfd0f2b16f51cce302", null ],
     [ "getVectorsf", "classinviwo_1_1TFPrimitiveSet.html#aa574064c052f636d15790edd9e4de8a1", null ],
-    [ "interpolateAndStoreColors", "classinviwo_1_1TFPrimitiveSet.html#a3d78aa8a6608afb18eaa65ef054db2d0", null ],
+    [ "interpolateAndStoreColors", "classinviwo_1_1TFPrimitiveSet.html#ac3fa329cb9acf6dfee2c7981e781cd39", null ],
     [ "interpolateColor", "classinviwo_1_1TFPrimitiveSet.html#a6b1a58ebb0ef802d036dacb3916b4b12", null ],
     [ "remove", "classinviwo_1_1TFPrimitiveSet.html#a521813e5a2d71f1ddd87cda9031cb29c", null ],
     [ "set", "classinviwo_1_1TFPrimitiveSet.html#a484ff7f894e8710a1dbfb4982c959afd", null ],

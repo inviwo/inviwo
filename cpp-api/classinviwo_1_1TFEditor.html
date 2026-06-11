@@ -170,9 +170,8 @@ void&#160;</td><td class="memItemRight"><b>setMoveMode</b> (TFMoveMode i)</td></
 &#160;</td><td class="memItemRight"><b>TFEditor</b> (<a class="el" href="classinviwo_1_1TFPropertyConcept.html">TFPropertyConcept</a> *tfProperty, QWidget *parent=nullptr)</td></tr>
 <tr class="memitem:aedfef0fbbe7866c1fbefcc8e04589efa" id="r_aedfef0fbbe7866c1fbefcc8e04589efa"><td class="memItemLeft"><a id="aedfef0fbbe7866c1fbefcc8e04589efa" name="aedfef0fbbe7866c1fbefcc8e04589efa"></a>
 void&#160;</td><td class="memItemRight"><b>updateConnections</b> ()</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1TFPrimitiveSetObserver"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1TFPrimitiveSetObserver')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1TFPrimitiveSetObserver.html">inviwo::TFPrimitiveSetObserver</a></td></tr>
-<tr class="memitem:ae578f1063a6e56c4ab8f229a5543e036 inherit pub_methods_classinviwo_1_1TFPrimitiveSetObserver" id="r_ae578f1063a6e56c4ab8f229a5543e036"><td class="memItemLeft">
-virtual void&#160;</td><td class="memItemRight"><b>onTFMaskChanged</b> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, dvec2 mask)</td></tr>
+<tr class="memitem:a6f933c306b5b6b19186c53a34a396faf" id="r_a6f933c306b5b6b19186c53a34a396faf"><td class="memItemLeft"><a id="a6f933c306b5b6b19186c53a34a396faf" name="a6f933c306b5b6b19186c53a34a396faf"></a>
+void&#160;</td><td class="memItemRight"><b>updateSceneRect</b> ()</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Observer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observer.html">inviwo::Observer</a></td></tr>
 <tr class="memitem:a05c1a5729cb5a4a65d7f3d3b597c24ff inherit pub_methods_classinviwo_1_1Observer" id="r_a05c1a5729cb5a4a65d7f3d3b597c24ff"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>Observer</b> (const Observer &amp;other)</td></tr>
@@ -189,8 +188,7 @@ void&#160;</td><td class="memItemRight"><b>removeObservations</b> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a43c911de9126502e8c09bfb2b44c4e94" id="r_a43c911de9126502e8c09bfb2b44c4e94"><td class="memItemLeft"><a id="a43c911de9126502e8c09bfb2b44c4e94" name="a43c911de9126502e8c09bfb2b44c4e94"></a>
-static constexpr std::string_view&#160;</td><td class="memItemRight"><b>mimeTFPrimitives</b> = &quot;application/x.vnd.inviwo.tf.primitives+xml&quot;</td></tr>
+<tr class="memitem:a43c911de9126502e8c09bfb2b44c4e94" id="r_a43c911de9126502e8c09bfb2b44c4e94"><td class="memItemLeft">static constexpr std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a43c911de9126502e8c09bfb2b44c4e94">mimeTFPrimitives</a></td></tr>
 <tr class="memitem:ab684396c4b245c28ff60e57ab20c7a03" id="r_ab684396c4b245c28ff60e57ab20c7a03"><td class="memItemLeft"><a id="ab684396c4b245c28ff60e57ab20c7a03" name="ab684396c4b245c28ff60e57ab20c7a03"></a>
 static constexpr std::string_view&#160;</td><td class="memItemRight"><b>tfCopyPasteRootElement</b> = &quot;InviwoTFPrimitives&quot;</td></tr>
 </table><table class="memberdecls">
@@ -202,6 +200,8 @@ virtual void&#160;</td><td class="memItemRight"><b>contextMenuEvent</b> (QGraphi
 <a class="el" href="classinviwo_1_1TFEditorPrimitive.html">TFEditorPrimitive</a> *&#160;</td><td class="memItemRight"><b>getTFPrimitiveItemAt</b> (const QPointF &amp;pos) const</td></tr>
 <tr class="memitem:a54f7f52eeedb45d0f1c35816d776768d" id="r_a54f7f52eeedb45d0f1c35816d776768d"><td class="memItemLeft"><a id="a54f7f52eeedb45d0f1c35816d776768d" name="a54f7f52eeedb45d0f1c35816d776768d"></a>
 virtual void&#160;</td><td class="memItemRight"><b>keyPressEvent</b> (QKeyEvent *keyEvent) override</td></tr>
+<tr class="memitem:a7fdd29b224266b1e91e6a3e4b021d95f" id="r_a7fdd29b224266b1e91e6a3e4b021d95f"><td class="memItemLeft"><a id="a7fdd29b224266b1e91e6a3e4b021d95f" name="a7fdd29b224266b1e91e6a3e4b021d95f"></a>
+virtual void&#160;</td><td class="memItemRight"><b>keyReleaseEvent</b> (QKeyEvent *keyEvent) override</td></tr>
 <tr class="memitem:af22dd25645ce66d86fff545a0e578f76" id="r_af22dd25645ce66d86fff545a0e578f76"><td class="memItemLeft"><a id="af22dd25645ce66d86fff545a0e578f76" name="af22dd25645ce66d86fff545a0e578f76"></a>
 virtual void&#160;</td><td class="memItemRight"><b>mouseDoubleClickEvent</b> (QGraphicsSceneMouseEvent *e) override</td></tr>
 <tr class="memitem:a50c187079143ba2f63054df09e764c76" id="r_a50c187079143ba2f63054df09e764c76"><td class="memItemLeft"><a id="a50c187079143ba2f63054df09e764c76" name="a50c187079143ba2f63054df09e764c76"></a>
@@ -210,10 +210,12 @@ virtual void&#160;</td><td class="memItemRight"><b>mouseMoveEvent</b> (QGraphics
 virtual void&#160;</td><td class="memItemRight"><b>mousePressEvent</b> (QGraphicsSceneMouseEvent *e) override</td></tr>
 <tr class="memitem:a83357cc503f477572a4c208059d0589f" id="r_a83357cc503f477572a4c208059d0589f"><td class="memItemLeft"><a id="a83357cc503f477572a4c208059d0589f" name="a83357cc503f477572a4c208059d0589f"></a>
 virtual void&#160;</td><td class="memItemRight"><b>mouseReleaseEvent</b> (QGraphicsSceneMouseEvent *e) override</td></tr>
+<tr class="memitem:a164775bcb1a4ea66315f09eb341bef73" id="r_a164775bcb1a4ea66315f09eb341bef73"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a164775bcb1a4ea66315f09eb341bef73">onTFBeginBulkUpdate</a> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set) override</td></tr>
+<tr class="memitem:ad6a43cf8246456b8938255970f38f01d" id="r_ad6a43cf8246456b8938255970f38f01d"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ad6a43cf8246456b8938255970f38f01d">onTFEndBulkUpdate</a> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set) override</td></tr>
+<tr class="memitem:ae338fa8645f978fbfb5c114d9e010b77" id="r_ae338fa8645f978fbfb5c114d9e010b77"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ae338fa8645f978fbfb5c114d9e010b77">onTFModeChanged</a> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, PrimitiveSetMode type) override</td></tr>
 <tr class="memitem:ab06770b332fc883923042360321ddf84" id="r_ab06770b332fc883923042360321ddf84"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ab06770b332fc883923042360321ddf84">onTFPrimitiveAdded</a> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;p) override</td></tr>
 <tr class="memitem:a877553fc86576580aff3c83ab18f5bf3" id="r_a877553fc86576580aff3c83ab18f5bf3"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a877553fc86576580aff3c83ab18f5bf3">onTFPrimitiveChanged</a> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, const <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;p) override</td></tr>
 <tr class="memitem:a6cc1a750300f02271fac15fdfd5c2269" id="r_a6cc1a750300f02271fac15fdfd5c2269"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a6cc1a750300f02271fac15fdfd5c2269">onTFPrimitiveRemoved</a> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;p) override</td></tr>
-<tr class="memitem:ac58a2bf9cdd3902ad7eb0eb6c4aa48f0" id="r_ac58a2bf9cdd3902ad7eb0eb6c4aa48f0"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ac58a2bf9cdd3902ad7eb0eb6c4aa48f0">onTFTypeChanged</a> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, TFPrimitiveSetType type) override</td></tr>
 <tr class="memitem:a741f3c59e3ce497bc74b64aeacf4b017" id="r_a741f3c59e3ce497bc74b64aeacf4b017"><td class="memItemLeft"><a id="a741f3c59e3ce497bc74b64aeacf4b017" name="a741f3c59e3ce497bc74b64aeacf4b017"></a>
 void&#160;</td><td class="memItemRight"><b>removeControlPoint</b> (<a class="el" href="classinviwo_1_1TFEditorPrimitive.html">TFEditorPrimitive</a> *p)</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observer.html">inviwo::Observer</a></td></tr>
@@ -226,6 +228,91 @@ Additional Inherited Members</h2></td></tr>
 std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRight"><b>observables_</b></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a164775bcb1a4ea66315f09eb341bef73" name="a164775bcb1a4ea66315f09eb341bef73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a164775bcb1a4ea66315f09eb341bef73">&#9670;&#160;</a></span>onTFBeginBulkUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::TFEditor::onTFBeginBulkUpdate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>set</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1TFPrimitiveSetObserver.html">inviwo::TFPrimitiveSetObserver</a>.</p>
+
+</div>
+</div>
+<a id="ad6a43cf8246456b8938255970f38f01d" name="ad6a43cf8246456b8938255970f38f01d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6a43cf8246456b8938255970f38f01d">&#9670;&#160;</a></span>onTFEndBulkUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::TFEditor::onTFEndBulkUpdate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>set</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1TFPrimitiveSetObserver.html">inviwo::TFPrimitiveSetObserver</a>.</p>
+
+</div>
+</div>
+<a id="ae338fa8645f978fbfb5c114d9e010b77" name="ae338fa8645f978fbfb5c114d9e010b77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae338fa8645f978fbfb5c114d9e010b77">&#9670;&#160;</a></span>onTFModeChanged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::TFEditor::onTFModeChanged </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>set</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PrimitiveSetMode</td>          <td class="paramname"><span class="paramname"><em>type</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1TFPrimitiveSetObserver.html">inviwo::TFPrimitiveSetObserver</a>.</p>
+
+</div>
+</div>
 <a id="ab06770b332fc883923042360321ddf84" name="ab06770b332fc883923042360321ddf84"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab06770b332fc883923042360321ddf84">&#9670;&#160;</a></span>onTFPrimitiveAdded()</h2>
 
@@ -319,8 +406,9 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
 
 </div>
 </div>
-<a id="ac58a2bf9cdd3902ad7eb0eb6c4aa48f0" name="ac58a2bf9cdd3902ad7eb0eb6c4aa48f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac58a2bf9cdd3902ad7eb0eb6c4aa48f0">&#9670;&#160;</a></span>onTFTypeChanged()</h2>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a43c911de9126502e8c09bfb2b44c4e94" name="a43c911de9126502e8c09bfb2b44c4e94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43c911de9126502e8c09bfb2b44c4e94">&#9670;&#160;</a></span>mimeTFPrimitives</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -329,25 +417,18 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void inviwo::TFEditor::onTFTypeChanged </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>set</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">TFPrimitiveSetType</td>          <td class="paramname"><span class="paramname"><em>type</em></span>&#160;)</td>
+          <td class="memname">std::string_view inviwo::TFEditor::mimeTFPrimitives</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1TFPrimitiveSetObserver.html">inviwo::TFPrimitiveSetObserver</a>.</p>
-
+<b>Initial value:</b><div class="fragment"><div class="line">                                               =</div>
+<div class="line"><span class="stringliteral">&quot;application/x.vnd.inviwo.tf.primitives+xml&quot;</span></div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>

@@ -147,8 +147,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a984653aea93e3dcfb765d75af3be5fd8" id="r_a984653aea93e3dcfb765d75af3be5fd8"><td class="memItemLeft"><a id="a984653aea93e3dcfb765d75af3be5fd8" name="a984653aea93e3dcfb765d75af3be5fd8"></a>
 &#160;</td><td class="memItemRight"><b>IsoValueCollection</b> (const IsoValueCollection &amp;rhs)=default</td></tr>
-<tr class="memitem:a3bd0ee4c282e3de3c4af488d30488fe9" id="r_a3bd0ee4c282e3de3c4af488d30488fe9"><td class="memItemLeft"><a id="a3bd0ee4c282e3de3c4af488d30488fe9" name="a3bd0ee4c282e3de3c4af488d30488fe9"></a>
-&#160;</td><td class="memItemRight"><b>IsoValueCollection</b> (const std::vector&lt; <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a> &gt; &amp;values={}, TFPrimitiveSetType type=TFPrimitiveSetType::Relative)</td></tr>
+<tr class="memitem:a427d0d92f5e270357bdc6897988aa7ef" id="r_a427d0d92f5e270357bdc6897988aa7ef"><td class="memItemLeft"><a id="a427d0d92f5e270357bdc6897988aa7ef" name="a427d0d92f5e270357bdc6897988aa7ef"></a>
+&#160;</td><td class="memItemRight"><b>IsoValueCollection</b> (const std::vector&lt; <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a> &gt; &amp;values={}, PrimitiveSetMode type=PrimitiveSetMode::Relative)</td></tr>
 <tr class="memitem:a6c945e76dcdc140e39264e19a1ee5946" id="r_a6c945e76dcdc140e39264e19a1ee5946"><td class="memItemLeft"><a id="a6c945e76dcdc140e39264e19a1ee5946" name="a6c945e76dcdc140e39264e19a1ee5946"></a>
 &#160;</td><td class="memItemRight"><b>IsoValueCollection</b> (IsoValueCollection &amp;&amp;rhs)=default</td></tr>
 <tr class="memitem:a74fbe5f4036c4fcd4b34cff5ee1e4bae" id="r_a74fbe5f4036c4fcd4b34cff5ee1e4bae"><td class="memItemLeft"><a id="a74fbe5f4036c4fcd4b34cff5ee1e4bae" name="a74fbe5f4036c4fcd4b34cff5ee1e4bae"></a>
@@ -168,6 +168,8 @@ const <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;
 iterator&#160;</td><td class="memItemRight"><b>begin</b> ()</td></tr>
 <tr class="memitem:a50b419537f78877f4604390b2df31eca inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a50b419537f78877f4604390b2df31eca"><td class="memItemLeft">
 const_iterator&#160;</td><td class="memItemRight"><b>begin</b> () const</td></tr>
+<tr class="memitem:ae168bb8808038b0a4a68a5dd301439c9 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_ae168bb8808038b0a4a68a5dd301439c9"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>beginBulkUpdate</b> ()</td></tr>
 <tr class="memitem:a1ebfc08e1d7420349f11c83c1dfb938a inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a1ebfc08e1d7420349f11c83c1dfb938a"><td class="memItemLeft">
 const_iterator&#160;</td><td class="memItemRight"><b>cbegin</b> () const</td></tr>
 <tr class="memitem:ad2dc9f5df28264adff4020157bb14354 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_ad2dc9f5df28264adff4020157bb14354"><td class="memItemLeft">
@@ -183,6 +185,8 @@ bool&#160;</td><td class="memItemRight"><b>empty</b> () const</td></tr>
 iterator&#160;</td><td class="memItemRight"><b>end</b> ()</td></tr>
 <tr class="memitem:af0251de36ba9f154f9257e994909c86b inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_af0251de36ba9f154f9257e994909c86b"><td class="memItemLeft">
 const_iterator&#160;</td><td class="memItemRight"><b>end</b> () const</td></tr>
+<tr class="memitem:a6739f0ed94b222eea4b2a5c3db6baa3f inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a6739f0ed94b222eea4b2a5c3db6baa3f"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>endBulkUpdate</b> ()</td></tr>
 <tr class="memitem:a08366819c424a3f1b1202877efa218f0 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a08366819c424a3f1b1202877efa218f0"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;&#160;</td><td class="memItemRight"><b>front</b> ()</td></tr>
 <tr class="memitem:a90dcc94ff7627384a686a855e0334eff inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a90dcc94ff7627384a686a855e0334eff"><td class="memItemLeft">
@@ -194,17 +198,16 @@ std::vector&lt; <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrim
 <tr class="memitem:a4bfe72bd474c9f5a26c9589ba825e7d4 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a4bfe72bd474c9f5a26c9589ba825e7d4"><td class="memItemLeft">
 const <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;&#160;</td><td class="memItemRight"><b>get</b> (size_t i) const</td></tr>
 <tr class="memitem:ae923fb0245b9c6edddb67c2c8ddc5ae2 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_ae923fb0245b9c6edddb67c2c8ddc5ae2"><td class="memItemLeft">std::vector&lt; vec4 &gt;&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#ae923fb0245b9c6edddb67c2c8ddc5ae2">getColors</a> () const</td></tr>
+<tr class="memitem:a9a6a348f74b6632c2d08df1ab2b476c6 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a9a6a348f74b6632c2d08df1ab2b476c6"><td class="memItemLeft">
+PrimitiveSetMode&#160;</td><td class="memItemRight"><b>getMode</b> () const</td></tr>
 <tr class="memitem:a79ea519b4a0998583909c55d070b500d inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a79ea519b4a0998583909c55d070b500d"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#a79ea519b4a0998583909c55d070b500d">getPositions</a> () const</td></tr>
 <tr class="memitem:a223b4b3337a598541d98c8b024709630 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a223b4b3337a598541d98c8b024709630"><td class="memItemLeft">std::vector&lt; float &gt;&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#a223b4b3337a598541d98c8b024709630">getPositionsf</a> () const</td></tr>
 <tr class="memitem:a7f8f02f10bed7f4f684076a4e9c6a410 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a7f8f02f10bed7f4f684076a4e9c6a410"><td class="memItemLeft">dvec2&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#a7f8f02f10bed7f4f684076a4e9c6a410">getRange</a> () const</td></tr>
-<tr class="memitem:a5cf519eb62998d85b3583a96bf0b13b8 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a5cf519eb62998d85b3583a96bf0b13b8"><td class="memItemLeft">
-TFPrimitiveSetType&#160;</td><td class="memItemRight"><b>getType</b> () const</td></tr>
 <tr class="memitem:a365b34303071a1eb33f202ccce4ed50b inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a365b34303071a1eb33f202ccce4ed50b"><td class="memItemLeft">
 std::vector&lt; <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a> &gt;&#160;</td><td class="memItemRight"><b>getUnsorted</b> () const</td></tr>
 <tr class="memitem:a7ed0cda7d6ce78bfd0f2b16f51cce302 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a7ed0cda7d6ce78bfd0f2b16f51cce302"><td class="memItemLeft">std::pair&lt; std::vector&lt; double &gt;, std::vector&lt; vec4 &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#a7ed0cda7d6ce78bfd0f2b16f51cce302">getVectors</a> () const</td></tr>
 <tr class="memitem:aa574064c052f636d15790edd9e4de8a1 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_aa574064c052f636d15790edd9e4de8a1"><td class="memItemLeft">std::pair&lt; std::vector&lt; float &gt;, std::vector&lt; vec4 &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#aa574064c052f636d15790edd9e4de8a1">getVectorsf</a> () const</td></tr>
-<tr class="memitem:a3d78aa8a6608afb18eaa65ef054db2d0 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a3d78aa8a6608afb18eaa65ef054db2d0"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#a3d78aa8a6608afb18eaa65ef054db2d0">interpolateAndStoreColors</a> (std::span&lt; vec4 &gt; data) const</td></tr>
-<tr class="memitem:a8d840c0a11beea454eb56ef2025dd441 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a8d840c0a11beea454eb56ef2025dd441"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#a8d840c0a11beea454eb56ef2025dd441">onTFPrimitiveChange</a> (const <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;p) override</td></tr>
+<tr class="memitem:ac3fa329cb9acf6dfee2c7981e781cd39 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_ac3fa329cb9acf6dfee2c7981e781cd39"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#ac3fa329cb9acf6dfee2c7981e781cd39">interpolateAndStoreColors</a> (std::span&lt; vec4 &gt; data) const</td></tr>
 <tr class="memitem:a38f1c91d04ed2dfce60ddcc239e98f34 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a38f1c91d04ed2dfce60ddcc239e98f34"><td class="memItemLeft">
 TFPrimitiveSet &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const TFPrimitiveSet &amp;rhs)</td></tr>
 <tr class="memitem:a522b6b5324b1f3c80797be4f5d8f2a42 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a522b6b5324b1f3c80797be4f5d8f2a42"><td class="memItemLeft">
@@ -223,14 +226,16 @@ requires std::convertible_to&lt;std::iter_reference_t&lt;Iter&gt;, <a class="el"
 <tr class="memitem:afefe07616b1f670963121c87f20f316f inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_afefe07616b1f670963121c87f20f316f"><td class="memTemplParams" colspan="2">template&lt;std::ranges::input_range R&gt; <br />
 requires std::convertible_to&lt;std::ranges::range_reference_t&lt;R&gt;, <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a>&gt;</td></tr>
 <tr class="memitem:afefe07616b1f670963121c87f20f316f inherit pub_methods_classinviwo_1_1TFPrimitiveSet template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#afefe07616b1f670963121c87f20f316f">set</a> (R range)</td></tr>
+<tr class="memitem:aa928e980beb2dfa122300a0b46429fba inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_aa928e980beb2dfa122300a0b46429fba"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>setMode</b> (PrimitiveSetMode mode)</td></tr>
+<tr class="memitem:a919bf2848c28e38ac81c449236fc2ecc inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a919bf2848c28e38ac81c449236fc2ecc"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>setMode</b> (PrimitiveSetMode mode, const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dm)</td></tr>
 <tr class="memitem:a13ffb89d04df95cdf50495788983c333 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a13ffb89d04df95cdf50495788983c333"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>setPosition</b> (std::span&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> * &gt; primitives, double pos)</td></tr>
-<tr class="memitem:adb809858b08eecf3ee8f4c9f5c515ca9 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_adb809858b08eecf3ee8f4c9f5c515ca9"><td class="memItemLeft">
-void&#160;</td><td class="memItemRight"><b>setType</b> (TFPrimitiveSetType type)</td></tr>
 <tr class="memitem:a4925e9bab3110a9bd8da9f0e7cb2699c inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a4925e9bab3110a9bd8da9f0e7cb2699c"><td class="memItemLeft">
 size_t&#160;</td><td class="memItemRight"><b>size</b> () const</td></tr>
-<tr class="memitem:acae56f85e085646b1e67d3ef916ba0b7 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_acae56f85e085646b1e67d3ef916ba0b7"><td class="memItemLeft">
-&#160;</td><td class="memItemRight"><b>TFPrimitiveSet</b> (const std::vector&lt; <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a> &gt; &amp;values={}, TFPrimitiveSetType type=TFPrimitiveSetType::Relative)</td></tr>
+<tr class="memitem:a120a7677c56a9a65579b6ea27e5dd3bc inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a120a7677c56a9a65579b6ea27e5dd3bc"><td class="memItemLeft">
+&#160;</td><td class="memItemRight"><b>TFPrimitiveSet</b> (const std::vector&lt; <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a> &gt; &amp;values={}, PrimitiveSetMode mode=PrimitiveSetMode::Relative)</td></tr>
 <tr class="memitem:a48021e830548640d4afadec7b11d22f1 inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_a48021e830548640d4afadec7b11d22f1"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>TFPrimitiveSet</b> (const TFPrimitiveSet &amp;rhs)</td></tr>
 <tr class="memitem:aad2c5d396b27ed7ebc45e0fc3783868c inherit pub_methods_classinviwo_1_1TFPrimitiveSet" id="r_aad2c5d396b27ed7ebc45e0fc3783868c"><td class="memItemLeft">
@@ -274,6 +279,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a17bee3b05c5d96aab7e44fa16fd3e16d inherit pro_methods_classinviwo_1_1TFPrimitiveSet" id="r_a17bee3b05c5d96aab7e44fa16fd3e16d"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;&#160;</td><td class="memItemRight"><b>add</b> (std::unique_ptr&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &gt; primitive)</td></tr>
 <tr class="memitem:a6b1a58ebb0ef802d036dacb3916b4b12 inherit pro_methods_classinviwo_1_1TFPrimitiveSet" id="r_a6b1a58ebb0ef802d036dacb3916b4b12"><td class="memItemLeft">vec4&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#a6b1a58ebb0ef802d036dacb3916b4b12">interpolateColor</a> (double t) const</td></tr>
+<tr class="memitem:a8d840c0a11beea454eb56ef2025dd441 inherit pro_methods_classinviwo_1_1TFPrimitiveSet" id="r_a8d840c0a11beea454eb56ef2025dd441"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1TFPrimitiveSet.html#a8d840c0a11beea454eb56ef2025dd441">onTFPrimitiveChange</a> (const <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;p) override</td></tr>
 <tr class="memitem:af544c14e69bc8cb1f33546c4dae6d54c inherit pro_methods_classinviwo_1_1TFPrimitiveSet" id="r_af544c14e69bc8cb1f33546c4dae6d54c"><td class="memItemLeft">
 bool&#160;</td><td class="memItemRight"><b>remove</b> (std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &gt; &gt;::iterator it)</td></tr>
 <tr class="memitem:ae405c82343f0e5d165253270c3f081ec inherit pro_methods_classinviwo_1_1TFPrimitiveSet" id="r_ae405c82343f0e5d165253270c3f081ec"><td class="memItemLeft">
@@ -285,16 +291,18 @@ void&#160;</td><td class="memItemRight"><b>verifyPoint</b> (const <a class="el" 
 <tr class="memitem:a5cdbd048fed897d0e622498958edf5a8 inherit pro_methods_classinviwo_1_1TFPrimitiveSet" id="r_a5cdbd048fed897d0e622498958edf5a8"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>verifyPoint</b> (double pos) const</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1TFPrimitiveSetObservable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1TFPrimitiveSetObservable')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1TFPrimitiveSetObservable.html">inviwo::TFPrimitiveSetObservable</a></td></tr>
-<tr class="memitem:a5fc9e96df8bf2b0512cca9a1d50dfaa1 inherit pro_methods_classinviwo_1_1TFPrimitiveSetObservable" id="r_a5fc9e96df8bf2b0512cca9a1d50dfaa1"><td class="memItemLeft">
-void&#160;</td><td class="memItemRight"><b>notifyTFMaskChanged</b> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, dvec2 mask)</td></tr>
+<tr class="memitem:a30b0721a519f87010587073393537a30 inherit pro_methods_classinviwo_1_1TFPrimitiveSetObservable" id="r_a30b0721a519f87010587073393537a30"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>notifyTFBeginBulkUpdate</b> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set)</td></tr>
+<tr class="memitem:abf0936f0de6a56fb9f87e11197592d52 inherit pro_methods_classinviwo_1_1TFPrimitiveSetObservable" id="r_abf0936f0de6a56fb9f87e11197592d52"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>notifyTFEndBulkUpdate</b> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set)</td></tr>
+<tr class="memitem:ab48a395c4863e1df6d5c03d41adbaa62 inherit pro_methods_classinviwo_1_1TFPrimitiveSetObservable" id="r_ab48a395c4863e1df6d5c03d41adbaa62"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>notifyTFModeChanged</b> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, PrimitiveSetMode mode)</td></tr>
 <tr class="memitem:a96cddf650177121c792ef73ecd20278d inherit pro_methods_classinviwo_1_1TFPrimitiveSetObservable" id="r_a96cddf650177121c792ef73ecd20278d"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>notifyTFPrimitiveAdded</b> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;p)</td></tr>
 <tr class="memitem:a4d38860ef9e576f651d64f1284ab180f inherit pro_methods_classinviwo_1_1TFPrimitiveSetObservable" id="r_a4d38860ef9e576f651d64f1284ab180f"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>notifyTFPrimitiveChanged</b> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, const <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;p)</td></tr>
 <tr class="memitem:a53152db014305f32c18578e799c80b99 inherit pro_methods_classinviwo_1_1TFPrimitiveSetObservable" id="r_a53152db014305f32c18578e799c80b99"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>notifyTFPrimitiveRemoved</b> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> &amp;p)</td></tr>
-<tr class="memitem:a2350b773ea19519475ca2c895b167b35 inherit pro_methods_classinviwo_1_1TFPrimitiveSetObservable" id="r_a2350b773ea19519475ca2c895b167b35"><td class="memItemLeft">
-void&#160;</td><td class="memItemRight"><b>notifyTFTypeChanged</b> (const <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> &amp;set, TFPrimitiveSetType type)</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observable')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; TFPrimitiveSetObserver &gt;</a></td></tr>
 <tr class="memitem:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable" id="r_a980d804dbfb060d91d5b54161f14dc8f"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>forEachObserver</b> (C callback)</td></tr>

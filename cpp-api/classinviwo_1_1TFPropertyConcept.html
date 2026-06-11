@@ -150,8 +150,8 @@ using&#160;</td><td class="memItemRight"><b>HistogramCallback</b> = void(Histogr
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6eac474224c98ef4eacafc622088a252" id="r_a6eac474224c98ef4eacafc622088a252"><td class="memItemLeft"><a id="a6eac474224c98ef4eacafc622088a252" name="a6eac474224c98ef4eacafc622088a252"></a>
 virtual void&#160;</td><td class="memItemRight"><b>addObserver</b> (<a class="el" href="classinviwo_1_1TFPropertyObserver.html">TFPropertyObserver</a> *observer)=0</td></tr>
-<tr class="memitem:a7e44ee4c0a8d2aabe3725f69888df0a4" id="r_a7e44ee4c0a8d2aabe3725f69888df0a4"><td class="memItemLeft"><a id="a7e44ee4c0a8d2aabe3725f69888df0a4" name="a7e44ee4c0a8d2aabe3725f69888df0a4"></a>
-virtual void&#160;</td><td class="memItemRight"><b>clearMask</b> ()=0</td></tr>
+<tr class="memitem:a19264d5a2ecb8afc6d2070e036b6a687" id="r_a19264d5a2ecb8afc6d2070e036b6a687"><td class="memItemLeft"><a id="a19264d5a2ecb8afc6d2070e036b6a687" name="a19264d5a2ecb8afc6d2070e036b6a687"></a>
+virtual bool&#160;</td><td class="memItemRight"><b>allRelative</b> () const =0</td></tr>
 <tr class="memitem:af07316e6056db42996b3fa7753484b87" id="r_af07316e6056db42996b3fa7753484b87"><td class="memItemLeft"><a id="af07316e6056db42996b3fa7753484b87" name="af07316e6056db42996b3fa7753484b87"></a>
 virtual const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> *&#160;</td><td class="memItemRight"><b>getDataMap</b> () const =0</td></tr>
 <tr class="memitem:ae7651abf1937eb61ab087904caff1d24" id="r_ae7651abf1937eb61ab087904caff1d24"><td class="memItemLeft"><a id="ae7651abf1937eb61ab087904caff1d24" name="ae7651abf1937eb61ab087904caff1d24"></a>
@@ -162,10 +162,10 @@ virtual HistogramSelection&#160;</td><td class="memItemRight"><b>getHistogramSel
 virtual <a class="el" href="classinviwo_1_1IsoValueProperty.html">IsoValueProperty</a> *&#160;</td><td class="memItemRight"><b>getIsoValueProperty</b> () const =0</td></tr>
 <tr class="memitem:a34dfc7e785a7691e994b5bc461228d5f" id="r_a34dfc7e785a7691e994b5bc461228d5f"><td class="memItemLeft"><a id="a34dfc7e785a7691e994b5bc461228d5f" name="a34dfc7e785a7691e994b5bc461228d5f"></a>
 virtual <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> *&#160;</td><td class="memItemRight"><b>getIsovalues</b> () const =0</td></tr>
-<tr class="memitem:a36a51ff95ea180f1a7178f60ff9675ea" id="r_a36a51ff95ea180f1a7178f60ff9675ea"><td class="memItemLeft"><a id="a36a51ff95ea180f1a7178f60ff9675ea" name="a36a51ff95ea180f1a7178f60ff9675ea"></a>
-virtual const dvec2&#160;</td><td class="memItemRight"><b>getMask</b> () const =0</td></tr>
 <tr class="memitem:add526b6fb2c32a3a665eac51b21c01c2" id="r_add526b6fb2c32a3a665eac51b21c01c2"><td class="memItemLeft"><a id="add526b6fb2c32a3a665eac51b21c01c2" name="add526b6fb2c32a3a665eac51b21c01c2"></a>
 virtual <a class="el" href="classinviwo_1_1Property.html">Property</a> *&#160;</td><td class="memItemRight"><b>getProperty</b> () const =0</td></tr>
+<tr class="memitem:a9a2f5c5f258eb50f7be01a77869488f2" id="r_a9a2f5c5f258eb50f7be01a77869488f2"><td class="memItemLeft"><a id="a9a2f5c5f258eb50f7be01a77869488f2" name="a9a2f5c5f258eb50f7be01a77869488f2"></a>
+virtual dvec2&#160;</td><td class="memItemRight"><b>getRange</b> () const =0</td></tr>
 <tr class="memitem:a64768f906056c97e0372f0f59f76c553" id="r_a64768f906056c97e0372f0f59f76c553"><td class="memItemLeft"><a id="a64768f906056c97e0372f0f59f76c553" name="a64768f906056c97e0372f0f59f76c553"></a>
 virtual <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *&#160;</td><td class="memItemRight"><b>getTFProperty</b> () const =0</td></tr>
 <tr class="memitem:a56f4c073488ca00eedd9746b3e7ba97f" id="r_a56f4c073488ca00eedd9746b3e7ba97f"><td class="memItemLeft"><a id="a56f4c073488ca00eedd9746b3e7ba97f" name="a56f4c073488ca00eedd9746b3e7ba97f"></a>
@@ -184,12 +184,12 @@ virtual DispatcherHandle&lt; void()&gt;&#160;</td><td class="memItemRight"><b>on
 virtual DispatcherHandle&lt; HistogramCallback &gt;&#160;</td><td class="memItemRight"><b>onHistogramChange</b> (std::function&lt; HistogramCallback &gt;)=0</td></tr>
 <tr class="memitem:a51dbeeabe82c6e6d685c802e9b478e3a" id="r_a51dbeeabe82c6e6d685c802e9b478e3a"><td class="memItemLeft"><a id="a51dbeeabe82c6e6d685c802e9b478e3a" name="a51dbeeabe82c6e6d685c802e9b478e3a"></a>
 virtual void&#160;</td><td class="memItemRight"><b>removeObserver</b> (<a class="el" href="classinviwo_1_1TFPropertyObserver.html">TFPropertyObserver</a> *observer)=0</td></tr>
+<tr class="memitem:ab027898f14b633f9a795b06c0d090348" id="r_ab027898f14b633f9a795b06c0d090348"><td class="memItemLeft"><a id="ab027898f14b633f9a795b06c0d090348" name="ab027898f14b633f9a795b06c0d090348"></a>
+<a class="el" href="structinviwo_1_1util_1_1OnScopeExit.html">util::OnScopeExit</a>&#160;</td><td class="memItemRight"><b>scopedBulkUpdate</b> ()</td></tr>
 <tr class="memitem:abec359ca9a1ad1959df68b189056fae6" id="r_abec359ca9a1ad1959df68b189056fae6"><td class="memItemLeft"><a id="abec359ca9a1ad1959df68b189056fae6" name="abec359ca9a1ad1959df68b189056fae6"></a>
 virtual void&#160;</td><td class="memItemRight"><b>setHistogramMode</b> (HistogramMode type)=0</td></tr>
 <tr class="memitem:a65478a2591b111069d9e0e756189b3ee" id="r_a65478a2591b111069d9e0e756189b3ee"><td class="memItemLeft"><a id="a65478a2591b111069d9e0e756189b3ee" name="a65478a2591b111069d9e0e756189b3ee"></a>
 virtual void&#160;</td><td class="memItemRight"><b>setHistogramSelection</b> (HistogramSelection selection)=0</td></tr>
-<tr class="memitem:a47019c597eeedca913cb6ec295fe6138" id="r_a47019c597eeedca913cb6ec295fe6138"><td class="memItemLeft"><a id="a47019c597eeedca913cb6ec295fe6138" name="a47019c597eeedca913cb6ec295fe6138"></a>
-virtual void&#160;</td><td class="memItemRight"><b>setMask</b> (double maskMin, double maskMax)=0</td></tr>
 <tr class="memitem:a909898589d08f5f7a3b3ce1c6608879f" id="r_a909898589d08f5f7a3b3ce1c6608879f"><td class="memItemLeft"><a id="a909898589d08f5f7a3b3ce1c6608879f" name="a909898589d08f5f7a3b3ce1c6608879f"></a>
 virtual std::span&lt; <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> * &gt;&#160;</td><td class="memItemRight"><b>sets</b> ()=0</td></tr>
 <tr class="memitem:a0d5ec9d8b29cae347199c5de9d528c63" id="r_a0d5ec9d8b29cae347199c5de9d528c63"><td class="memItemLeft"><a id="a0d5ec9d8b29cae347199c5de9d528c63" name="a0d5ec9d8b29cae347199c5de9d528c63"></a>
@@ -200,8 +200,6 @@ virtual void&#160;</td><td class="memItemRight"><b>setZoomV</b> (double zoomVMin
 virtual void&#160;</td><td class="memItemRight"><b>showExportDialog</b> () const =0</td></tr>
 <tr class="memitem:aa6481f2c975bce07234f9e6a7937a154" id="r_aa6481f2c975bce07234f9e6a7937a154"><td class="memItemLeft"><a id="aa6481f2c975bce07234f9e6a7937a154" name="aa6481f2c975bce07234f9e6a7937a154"></a>
 virtual void&#160;</td><td class="memItemRight"><b>showImportDialog</b> ()=0</td></tr>
-<tr class="memitem:a77fc16eabdcb7ba6b0e5c97a808bb847" id="r_a77fc16eabdcb7ba6b0e5c97a808bb847"><td class="memItemLeft"><a id="a77fc16eabdcb7ba6b0e5c97a808bb847" name="a77fc16eabdcb7ba6b0e5c97a808bb847"></a>
-virtual bool&#160;</td><td class="memItemRight"><b>supportsMask</b> () const =0</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>property interface used by the TF dialog to support different TF properties </p>

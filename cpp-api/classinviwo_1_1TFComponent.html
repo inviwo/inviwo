@@ -158,7 +158,7 @@ Public Attributes</h2></td></tr>
 <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a>&#160;</td><td class="memItemRight"><b>tf</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Adds a <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a>, and binds it to uniforms in the shader. </p>
+<div class="textblock"><p>Adds a <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a>, and binds it to uniforms in the shader. Supports both Relative (normalized [0,1]) and Absolute (data-space) TF modes. In Absolute mode, a TFParameters uniform is added and the shader define TF_ABSOLUTE_{ID} is set to enable the absolute-mode applyTF overloads. </p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a3d2f86e8725d16e1b1811bd85a81777d" name="a3d2f86e8725d16e1b1811bd85a81777d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3d2f86e8725d16e1b1811bd85a81777d">&#9670;&#160;</a></span>getName()</h2>

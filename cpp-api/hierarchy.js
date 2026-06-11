@@ -2450,16 +2450,12 @@ var hierarchy =
       [ "inviwo::TFPrimitiveSetObserver", "classinviwo_1_1TFPrimitiveSetObserver.html", [
         [ "inviwo::IsoValueProperty", "classinviwo_1_1IsoValueProperty.html", null ],
         [ "inviwo::TFEditor", "classinviwo_1_1TFEditor.html", null ],
-        [ "inviwo::TFEditorMask", "classinviwo_1_1TFEditorMask.html", [
-          [ "inviwo::TFEditorMaskMax", "classinviwo_1_1TFEditorMaskMax.html", null ],
-          [ "inviwo::TFEditorMaskMin", "classinviwo_1_1TFEditorMaskMin.html", null ]
-        ] ],
         [ "inviwo::TFPropertyDialog", "classinviwo_1_1TFPropertyDialog.html", null ],
+        [ "inviwo::TFPushButton", "classinviwo_1_1TFPushButton.html", null ],
         [ "inviwo::TransferFunctionProperty", "classinviwo_1_1TransferFunctionProperty.html", null ]
       ] ],
       [ "inviwo::TFPropertyObserver", "classinviwo_1_1TFPropertyObserver.html", [
         [ "inviwo::IsoTFProperty", "classinviwo_1_1IsoTFProperty.html", null ],
-        [ "inviwo::TFEditorMask", "classinviwo_1_1TFEditorMask.html", null ],
         [ "inviwo::TFEditorView", "classinviwo_1_1TFEditorView.html", null ],
         [ "inviwo::TFPropertyDialog", "classinviwo_1_1TFPropertyDialog.html", null ]
       ] ],
@@ -2924,7 +2920,6 @@ var hierarchy =
     [ "QGraphicsItem", null, [
       [ "inviwo::ProcessorLinkGraphicsItem", "classinviwo_1_1ProcessorLinkGraphicsItem.html", null ],
       [ "inviwo::TFControlPointConnection", "classinviwo_1_1TFControlPointConnection.html", null ],
-      [ "inviwo::TFEditorMask", "classinviwo_1_1TFEditorMask.html", null ],
       [ "inviwo::TFEditorPrimitive", "classinviwo_1_1TFEditorPrimitive.html", null ],
       [ "inviwo::animation::KeyframeSequenceWidgetQt", "classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html", null ],
       [ "inviwo::animation::KeyframeWidgetQt", "classinviwo_1_1animation_1_1KeyframeWidgetQt.html", null ],
