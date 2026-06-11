@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/properties/scopedpropertyserializationmode.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/rendercontext.h>
@@ -55,7 +56,6 @@
 #include <array>
 #include <initializer_list>
 #include <map>
-#include <ostream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -184,11 +184,11 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                 } else if (mimeData->formats().contains(QString("text/plain"))) {
                     data = mimeData->data(QString("text/plain"));
                 }
-                std::stringstream ss;
-                for (auto d : data) ss << d;
 
+                const std::pmr::string xml{data.constData(), static_cast<size_t>(data.length())};
                 try {
-                    auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");
+                    auto [d, info] =
+                        app->getWorkspaceManager()->createWorkspaceDeserializerAndInfo(xml, "");
                     std::vector<std::unique_ptr<Property>> properties;
                     d.deserialize("Properties", properties, "Property");
                     if (!properties.empty() && properties.front()) {
@@ -262,14 +262,15 @@ std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
     {
         // Need to set the serialization mode to all temporarily to be able to copy the
         // property.
-        auto toReset = PropertyPresetManager::scopedSerializationModeAll(property_);
+        const auto reset =
+            ScopedPropertySerializationMode{PropertySerializationMode::All, *property_};
+
         std::vector<Property*> properties = {property_};
         serializer.serialize("Properties", properties, "Property");
     }
-    std::stringstream ss;
-    serializer.writeFile(ss);
-    auto str = ss.str();
-    QByteArray dataArray(str.c_str(), static_cast<int>(str.length()));
+    std::pmr::string xml;
+    serializer.write(xml);
+    const QByteArray dataArray(xml.c_str(), static_cast<int>(xml.length()));
 
     mimeData->setData(QString("application/x.vnd.inviwo.property+xml"), dataArray);
     mimeData->setData(QString("text/plain"), dataArray);
@@ -410,11 +411,8 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                                                    PropertyPresetType::Application};
         auto saveMenu = presetMenu->addMenu("Save");
         for (auto& type : types) {
-            auto saveAction = saveMenu->addAction(utilqt::toQString(toString(type) + " Preset..."));
-            std::stringstream ss;
-            ss << "Save preset in " << type << ". " << type << " presets are local to this "
-               << type;
-            saveAction->setToolTip(utilqt::toQString(ss.str()));
+            auto* saveAction =
+                saveMenu->addAction(utilqt::toQString(fmt::format("{} Preset...", type)));
             connect(saveAction, &QAction::triggered, [=]() {
                 while (!savePreset(saveMenu, type)) {
                     ;
@@ -424,7 +422,8 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
 
         auto clearMenu = presetMenu->addMenu("Clear");
         for (auto& type : {PropertyPresetType::Property, PropertyPresetType::Workspace}) {
-            auto clearAction = clearMenu->addAction(utilqt::toQString(toString(type) + " Presets"));
+            auto* clearAction =
+                clearMenu->addAction(utilqt::toQString(fmt::format("{} Preset...", type)));
             connect(clearAction, &QAction::triggered, [=]() { clearPresets(type); });
         }
 

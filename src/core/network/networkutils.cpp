@@ -253,12 +253,14 @@ void serializePartial(ProcessorNetwork* network, std::vector<Processor*> process
     serializer.writeFile(os);
 }
 
-std::vector<Processor*> appendPartialProcessorNetwork(ProcessorNetwork* network, std::istream& is,
+std::vector<Processor*> appendPartialProcessorNetwork(ProcessorNetwork* network,
+                                                      const std::pmr::string& xml,
                                                       const std::filesystem::path& refPath,
                                                       InviwoApplication* app,
                                                       OffsetCallback callback) {
     const NetworkLock lock(network);
-    auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(is, refPath);
+    auto [deserializer, info] =
+        app->getWorkspaceManager()->createWorkspaceDeserializerAndInfo(xml, refPath);
 
     detail::PartialProcessorNetwork ppc(network, {}, std::move(callback));
     deserializer.deserialize("ProcessorNetwork", ppc);

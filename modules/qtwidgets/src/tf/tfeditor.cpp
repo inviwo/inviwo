@@ -875,13 +875,11 @@ void TFEditor::paste(std::optional<QPointF> scenePos) {
     } else if (mimeData->formats().contains(QString("text/plain"))) {
         data = mimeData->data(QString("text/plain"));
     }
-    std::stringstream ss;
-    for (auto d : data) ss << d;
+    const std::pmr::string xml{data.constData(), static_cast<size_t>(data.length())};
 
     std::vector<std::unique_ptr<TFPrimitive>> primitives;
-
     util::exceptionGuard([&]() {
-        Deserializer deserializer{ss, tfCopyPasteRootElement};
+        Deserializer deserializer{xml, tfCopyPasteRootElement};
         deserializer.deserialize("primitives", primitives, "primitive");
     });
     if (primitives.empty()) return;

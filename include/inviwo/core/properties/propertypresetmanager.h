@@ -39,7 +39,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <iosfwd>
 
 namespace inviwo {
 class InviwoApplication;
@@ -80,13 +79,6 @@ public:
      */
     static void appendPropertyPresets(Property* target, Property* source);
 
-    /**
-     * Set PropertySerializationMode to All on property and all its sub properties.
-     * The returned guard will reset the PropertySerializationModes to their original values when
-     * it goes out of scope. This is useful when copying properties.
-     */
-    static util::OnScopeExit scopedSerializationModeAll(Property* property);
-
 private:
     void loadApplicationPresets();
     void saveApplicationPresets();
@@ -98,7 +90,7 @@ private:
         Preset(std::string_view id, std::string_view n, std::string_view d);
         std::string classIdentifier;
         std::string name;
-        std::string data;
+        std::pmr::string data;
 
         void serialize(Serializer& s) const;
         void deserialize(Deserializer& d);
@@ -110,8 +102,6 @@ private:
 };
 
 IVW_CORE_API std::string_view enumToStr(PropertyPresetType p);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PropertyPresetType p);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PropertyPresetTypes ps);
 
 }  // namespace inviwo
 

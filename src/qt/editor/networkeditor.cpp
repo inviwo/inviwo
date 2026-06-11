@@ -1226,12 +1226,11 @@ void NetworkEditor::paste(const QMimeData& mimeData, util::OffsetCallback offset
 
     const NetworkLock lock{network_};
     try {
-        std::stringstream ss;
-        for (auto d : data) ss << d;
+        const std::pmr::string xml{data.constData(), static_cast<size_t>(data.length())};
         // Activate the default context, might be needed in processor constructors.
         rendercontext::activateDefault();
         auto added = util::appendPartialProcessorNetwork(
-            network_, ss, "", mainWindow_->getInviwoApplication(), offsetCallback);
+            network_, xml, "", mainWindow_->getInviwoApplication(), std::move(offsetCallback));
 
         clearSelection();
         for (auto* p : added) {

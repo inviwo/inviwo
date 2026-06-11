@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/properties/propertypresetmanager.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/properties/scopedpropertyserializationmode.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/raiiutils.h>
@@ -270,13 +271,13 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
             } else {
                 return;
             }
-            std::stringstream ss;
-            for (auto d : data) ss << d;
+            const std::pmr::string xml{data.constData(), static_cast<size_t>(data.length())};
 
             auto* app = propertyOwner_->getInviwoApplication();
             RenderContext::getPtr()->activateDefaultRenderContext();
             try {
-                auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");
+                auto [d, info] =
+                    app->getWorkspaceManager()->createWorkspaceDeserializerAndInfo(xml, "");
                 std::shared_ptr<Processor> propertyOwner;
                 d.deserialize("Processor", propertyOwner);
                 if (propertyOwner) {
@@ -307,17 +308,15 @@ std::unique_ptr<QMimeData> CollapsibleGroupBoxWidgetQt::getPropertyOwnerMimeData
 
     Serializer serializer("");
     {
+        auto* processor = propertyOwner_->getProcessor();
         // Need to set the serialization mode to all temporarily to be able to copy the
         // property.
-        std::vector<util::OnScopeExit> toReset;
-        for (auto p : propertyOwner_->getPropertiesRecursive()) {
-            toReset.emplace_back(PropertyPresetManager::scopedSerializationModeAll(p));
-        }
-        serializer.serialize("Processor", static_cast<Processor*>(propertyOwner_));
+        const auto reset =
+            ScopedPropertySerializationMode{PropertySerializationMode::All, *processor};
+        serializer.serialize("Processor", processor);
     }
-    std::stringstream ss;
-    serializer.writeFile(ss);
-    auto str = ss.str();
+    std::pmr::string str;
+    serializer.write(str);
     QByteArray dataArray(str.c_str(), static_cast<int>(str.length()));
 
     mimeData->setData(QString("application/x.vnd.inviwo.propertyowner+xml"), dataArray);

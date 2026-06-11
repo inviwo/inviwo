@@ -44,6 +44,8 @@
 #include <inviwopy/properties/pyoptionproperties.h>
 #include <inviwopy/properties/pyminmaxproperties.h>
 
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/constraintbehavior.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -56,6 +58,7 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/propertyeditorwidget.h>
+#include <inviwo/core/properties/scopedpropertyserializationmode.h>
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/colorconversion.h>
@@ -72,26 +75,28 @@ namespace inviwo {
 void exposeProperties(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::enum_<ConstraintBehavior>(m, "ConstraintBehavior")
+    py::native_enum<ConstraintBehavior>(m, "ConstraintBehavior", "enum.Enum")
         .value("Editable", ConstraintBehavior::Editable)
         .value("Mutable", ConstraintBehavior::Mutable)
         .value("Immutable", ConstraintBehavior::Immutable)
-        .value("Ignore", ConstraintBehavior::Ignore);
+        .value("Ignore", ConstraintBehavior::Ignore)
+        .finalize();
 
-    py::enum_<InvalidationLevel>(m, "InvalidationLevel")
+    py::native_enum<InvalidationLevel>(m, "InvalidationLevel", "enum.Enum")
         .value("Valid", InvalidationLevel::Valid)
         .value("InvalidOutput", InvalidationLevel::InvalidOutput)
-        .value("InvalidResources", InvalidationLevel::InvalidResources);
+        .value("InvalidResources", InvalidationLevel::InvalidResources)
+        .finalize();
 
-    py::enum_<PropertySerializationMode>(m, "PropertySerializationMode")
+    py::native_enum<PropertySerializationMode>(m, "PropertySerializationMode", "enum.Enum")
         .value("Default", PropertySerializationMode::Default)
         .value("All", PropertySerializationMode::All)
-        .value("Nothing", PropertySerializationMode::None);
+        .value("Nothing", PropertySerializationMode::None)
+        .finalize();
 
     py::native_enum<util::OverwriteState>(m, "OverwriteState", "enum.Enum")
         .value("Yes", util::OverwriteState::Yes)
         .value("No", util::OverwriteState::No)
-        .export_values()
         .finalize();
 
     auto listPropertyUIFlag = py::enum_<ListPropertyUIFlag>(m, "ListPropertyUIFlag")
@@ -99,6 +104,15 @@ void exposeProperties(pybind11::module& m) {
                                   .value("Add", ListPropertyUIFlag::Add)
                                   .value("Remove", ListPropertyUIFlag::Remove);
     exposeFlags<ListPropertyUIFlag>(m, listPropertyUIFlag, "ListPropertyUIFlags");
+
+    py::classh<ScopedPropertySerializationMode>(m, "ScopedPropertySerializationMode")
+        .def(py::init<>())
+        .def(py::init<PropertySerializationMode, Property&>(), py::arg("mode"), py::arg("property"))
+        .def(py::init<PropertySerializationMode, Processor&>(), py::arg("mode"),
+             py::arg("processor"))
+        .def(py::init<PropertySerializationMode, ProcessorNetwork&>(), py::arg("mode"),
+             py::arg("network"))
+        .def("reset", &ScopedPropertySerializationMode::reset);
 
     py::classh<PropertySemantics>(m, "PropertySemantics")
         .def(py::init())
