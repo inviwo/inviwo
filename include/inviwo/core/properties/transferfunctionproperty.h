@@ -63,10 +63,7 @@ protected:
 template <>
 struct ValueWrapper<TransferFunction> {
     ValueWrapper(std::string_view name, const TransferFunction& transferFunction)
-        : value{transferFunction}
-        , defaultPoints{value.get()}
-        , defaultMask{value.getMask()}
-        , name{name} {}
+        : value{transferFunction}, defaultPoints{value.get()}, name{name} {}
 
     ValueWrapper(const ValueWrapper& rhs) = default;
     ValueWrapper(ValueWrapper&& rhs) = default;
@@ -84,16 +81,10 @@ struct ValueWrapper<TransferFunction> {
     const TransferFunction& operator*() const { return value; }
     const TransferFunction* operator->() const { return &value; }
 
-    bool isDefault() const { return value == defaultPoints && value.getMask() == defaultMask; }
+    bool isDefault() const { return value == defaultPoints; }
 
-    void reset() {
-        value.set(defaultPoints);
-        value.setMask(defaultMask);
-    }
-    void setAsDefault() {
-        defaultPoints = value.get();
-        defaultMask = value.getMask();
-    }
+    void reset() { value.set(defaultPoints); }
+    void setAsDefault() { defaultPoints = value.get(); }
 
     void serialize(Serializer& s,
                    PropertySerializationMode mode = PropertySerializationMode::Default) const {
@@ -156,9 +147,7 @@ struct ValueWrapper<TransferFunction> {
     bool operator==(const TransferFunction& rhs) const { return value == rhs; }
 
     TransferFunction value;
-
     std::vector<TFPrimitiveData> defaultPoints;
-    dvec2 defaultMask;
     std::string name;
 };
 
@@ -208,10 +197,6 @@ public:
     TransferFunction& operator*();
     const TransferFunction* operator->() const;
     TransferFunction* operator->();
-
-    TransferFunctionProperty& setMask(double maskMin, double maskMax);
-    dvec2 getMask() const;
-    TransferFunctionProperty& clearMask();
 
     TransferFunctionProperty& setZoomH(double zoomHMin, double zoomHMax);
     const dvec2& getZoomH() const;
@@ -270,8 +255,7 @@ public:
     virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
     virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
-    virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
-    virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
+    virtual void onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode type) override;
 
 private:
     ValueWrapper<TransferFunction> tf_;

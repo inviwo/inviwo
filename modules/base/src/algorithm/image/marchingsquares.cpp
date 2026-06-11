@@ -352,8 +352,8 @@ std::pair<std::optional<Intersection>, std::optional<Intersection>> createIsoLin
 }
 
 template <typename T>
-auto getSampleTransform(TFPrimitiveSetType type) -> double (*)(const DataMapper&, T, size_t) {
-    if (type == TFPrimitiveSetType::Relative) {
+auto getSampleTransform(PrimitiveSetMode type) -> double (*)(const DataMapper&, T, size_t) {
+    if (type == PrimitiveSetMode::Relative) {
         return [](const DataMapper& dm, T v, size_t ch) {
             return dm.mapFromDataToNormalized(util::glm_convert<double>(util::glmcomp(v, ch)));
         };
@@ -371,7 +371,7 @@ constexpr auto dispatcher = []<typename T>(const LayerRAM* in, const IsoValueCol
     const auto dim = ram->getDimensions();
 
     auto sample = [data, dataMap = in->getOwner()->dataMap, channel, im = util::IndexMapper2D(dim),
-                   sampleTrafo = getSampleTransform<T>(isoValues.getType())](size_t x, size_t y) {
+                   sampleTrafo = getSampleTransform<T>(isoValues.getMode())](size_t x, size_t y) {
         return sampleTrafo(dataMap, data[im(x, y)], channel);
     };
 

@@ -57,7 +57,7 @@ StandardVolumeRaycaster::StandardVolumeRaycaster(std::string_view identifier,
     , entryExit_{}
     , background_{*this}
     , isoTF_{volume_.volumePort}
-    , raycasting_{volume_.getName(), isoTF_.isotfs[0]}
+    , raycasting_{volume_.getName(), isoTF_.isoTFs[0]}
     , camera_{"camera", util::boundingBox(volume_.volumePort)}
     , light_{&camera_.camera}
     , positionIndicator_{}

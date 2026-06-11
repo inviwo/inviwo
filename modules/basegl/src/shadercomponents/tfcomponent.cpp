@@ -29,7 +29,61 @@
 
 #include <modules/basegl/shadercomponents/tfcomponent.h>
 
+#include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/stringconversion.h>
+
 namespace inviwo {
+
+namespace detail {
+
+namespace {
+
+constexpr std::string_view applyAbsolute = R"(
+vec4 applyTF_{tf}(in float normalizedValue, in VolumeParameters volumeParameters) {{
+    return applyTF({tf}, {tf}Params, volumeParameters, normalizedValue);
+}}
+)";
+
+constexpr std::string_view applyRelative = R"(
+vec4 applyTF_{tf}(in float normalizedValue, in VolumeParameters) {{
+    return applyTF({tf}, normalizedValue);
+}}
+)";
+
+}  // namespace
+
+void addSegmentsFor(std::vector<ShaderComponent::Segment>& dest,
+                    const TransferFunctionProperty& tf) {
+    using fmt::literals::operator""_a;
+
+    dest.emplace_back(R"(#include "utils/classification.glsl")", placeholder::include, 1000 + 1);
+
+    dest.emplace_back(fmt::format("uniform sampler2D {};", tf.getIdentifier()),
+                      placeholder::uniform, 1050 + 1);
+
+    if (tf.get().getMode() == PrimitiveSetMode::Absolute) {
+        dest.emplace_back(fmt::format("uniform TFParameters {}Params;", tf.getIdentifier()),
+                          placeholder::uniform, 1050 + 2);
+        dest.emplace_back(fmt::format(applyAbsolute, "tf"_a = tf.getIdentifier()),
+                          placeholder::uniform, 1050 + 9);
+    } else {
+        dest.emplace_back(fmt::format(applyRelative, "tf"_a = tf.getIdentifier()),
+                          placeholder::uniform, 1050 + 9);
+    }
+}
+
+void setUniforms(Shader& shader, const TransferFunctionProperty& tf) {
+    if (tf.get().getMode() == PrimitiveSetMode::Absolute) {
+        const auto range = tf.get().getRange();
+        const auto name = tf.getIdentifier();
+        StrBuffer buff;
+        shader.setUniform(buff.replace("{}Params.rangeMin", name), static_cast<float>(range.x));
+        shader.setUniform(buff.replace("{}Params.rangeMax", name), static_cast<float>(range.y));
+    }
+}
+
+}  // namespace detail
 
 TFComponent::TFComponent(std::string_view identifier, std::string_view name, Document help,
                          VolumeInport& volume)
@@ -46,13 +100,15 @@ std::string_view TFComponent::getName() const { return tf.getIdentifier(); }
 
 void TFComponent::process(Shader& shader, TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader, cont, tf);
+    detail::setUniforms(shader, tf);
 }
 
 std::vector<Property*> TFComponent::getProperties() { return {&tf}; }
 
 auto TFComponent::getSegments() -> std::vector<Segment> {
-    return {Segment{fmt::format("uniform sampler2D {};", tf.getIdentifier()), placeholder::uniform,
-                    1050 + 1}};
+    std::vector<Segment> segments;
+    detail::addSegmentsFor(segments, tf);
+    return segments;
 }
 
 }  // namespace inviwo

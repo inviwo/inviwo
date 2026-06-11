@@ -346,7 +346,7 @@ auto exceptionGuard(F&& fun) noexcept {
 
 template <typename F>
 auto exceptionGuarded(F&& fun) noexcept {
-    return [f = std::forward<F>(fun)]() {
+    return [f = std::forward<F>(fun)]() mutable {
         try {
             f();
         } catch (const Exception& e) {

@@ -76,17 +76,23 @@ void TFLineEdit::setValidRange(const dvec2& range, double inc) {
 dvec2 TFLineEdit::getValidRange() const { return dvec2{spinbox_.minimum(), spinbox_.maximum()}; }
 
 void TFLineEdit::setValueMapping(bool enable, const dvec2& range, double inc) {
-    QSignalBlocker block{spinbox_};
+    const QSignalBlocker block{spinbox_};
 
     valueMappingEnabled_ = enable;
     valueRange_ = range;
-    setValidRange(range, inc);
+    if (valueMappingEnabled_) {
+        setValidRange(range, inc);
+    } else {
+        setValidRange(
+            dvec2{std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()}, inc);
+    }
 
     // update text
     setValue(value_, ambiguous_);
 }
 
 void TFLineEdit::setValue(double value, bool ambiguous) {
+    const QSignalBlocker block{spinbox_};
     ambiguous_ = ambiguous;
     spinbox_.setInvalid(ambiguous);
 

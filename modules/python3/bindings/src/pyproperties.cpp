@@ -223,8 +223,6 @@ void exposeProperties(pybind11::module& m) {
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
-        .def_property("mask", &TransferFunctionProperty::getMask,
-                      &TransferFunctionProperty::setMask)
         .def_property("zoomH", &TransferFunctionProperty::getZoomH,
                       &TransferFunctionProperty::setZoomH)
         .def_property("zoomV", &TransferFunctionProperty::getZoomV,
@@ -272,20 +270,24 @@ void exposeProperties(pybind11::module& m) {
     py::classh<IsoValueProperty, Property>(m, "IsoValueProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
                          const IsoValueCollection& value, VolumeInport* volumeInport,
-                         PropertySemantics semantics) {
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new IsoValueProperty(identifier, displayName, std::move(help), value,
-                                             volumeInport, semantics);
+                                             volumeInport, invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("value"),
-             py::arg("inport") = nullptr, py::arg("semantics") = PropertySemantics::Default)
+             py::arg("inport") = nullptr,
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default)
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          const IsoValueCollection& value, VolumeInport* volumeInport,
-                         PropertySemantics semantics) {
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new IsoValueProperty(identifier, displayName, value, volumeInport,
-                                             semantics);
+                                             invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("value"),
-             py::arg("inport") = nullptr, py::arg("semantics") = PropertySemantics::Default)
+             py::arg("inport") = nullptr,
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default)
         .def_property("zoomH", &IsoValueProperty::getZoomH, &IsoValueProperty::setZoomH)
         .def_property("zoomV", &IsoValueProperty::getZoomV, &IsoValueProperty::setZoomV)
         .def("clear", [](IsoValueProperty& ivp) { ivp.get().clear(); })

@@ -34,6 +34,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/datastructures/tfprimitiveset.h>
 
 #include <memory>
 #include <vector>
@@ -66,11 +67,14 @@ public:
      *
      * @param primitive the primitive
      */
-    explicit TFEditorPrimitive(TFPrimitive& primitive);
+    explicit TFEditorPrimitive(TFPrimitive& primitive, PrimitiveSetMode mode);
     virtual ~TFEditorPrimitive() = default;
 
     TFPrimitive& getPrimitive();
     const TFPrimitive& getPrimitive() const;
+
+    void setMode(PrimitiveSetMode mode);
+    PrimitiveSetMode getMode() const;
 
     void setPosition(double pos);
     double getPosition() const;
@@ -109,6 +113,7 @@ protected:
     void updateLabel();
 
     TFPrimitive& data_;
+    PrimitiveSetMode mode_;
     bool isEditing_;
     bool hovered_;
     std::unique_ptr<QGraphicsSimpleTextItem> label_;

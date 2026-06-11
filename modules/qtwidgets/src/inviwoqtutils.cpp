@@ -30,6 +30,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <inviwo/core/algorithm/camerautils.h>
+#include <inviwo/core/algorithm/linearmap.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -146,12 +147,16 @@ QPen cosmeticPen(const QBrush& brush, qreal width, Qt::PenStyle s, Qt::PenCapSty
 }
 
 void paint(const TransferFunction& tf, QPainter& painter, const QRectF& rect) {
+    const auto range = tf.getRange();
+
     QLinearGradient gradient;
+
     for (const auto& point : tf) {
         vec4 curColor = point.getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-        gradient.setColorAt(point.getPosition(), utilqt::toQColor(curColor));
+        const auto nPos = util::linearMap(point.getPosition(), range, dvec2{0.0, 1.0});
+        gradient.setColorAt(nPos, utilqt::toQColor(curColor));
     }
 
     // gradient should stretch entire pixmap from left to right
@@ -163,7 +168,6 @@ void paint(const TransferFunction& tf, QPainter& painter, const QRectF& rect) {
 
 void paint(const IsoValueCollection& isoValues, QPainter& painter, const QRectF& rect) {
     const auto range = isoValues.getRange();
-    auto normalize = [&](double pos) { return (pos - range.x) / (range.y - range.x); };
 
     // draw a small hour glass for each iso value
     const double halfWidth = 6.0;
@@ -176,7 +180,11 @@ void paint(const IsoValueCollection& isoValues, QPainter& painter, const QRectF&
         vec4 curColor = isoValue.getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-        const auto pos = normalize(isoValue.getPosition()) * rect.width();
+
+        const auto nPos = range.x == range.y
+                              ? 0.5
+                              : util::linearMap(isoValue.getPosition(), range, dvec2{0.0, 1.0});
+        const auto pos = nPos * rect.width();
 
         painter.setBrush(utilqt::toQColor(curColor));
         painter.drawPolygon(QPolygonF(
@@ -221,7 +229,6 @@ QPixmap toQPixmap(const TransferFunctionProperty& property, const QSize& size) {
     const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
     paint(property.get(), painter, rect);
-    paintMask(property.getMask(), property.get().getRange(), painter, rect);
     return pixmap;
 }
 
@@ -241,7 +248,6 @@ QPixmap toQPixmap(const IsoTFProperty& property, const QSize& size) {
     paintCheckerBoard(painter, rect);
     paint(property.tf_.get(), painter, rect);
     paint(property.isovalues_.get(), painter, rect);
-    paintMask(property.tf_.getMask(), property.tf_.get().getRange(), painter, rect);
     return pixmap;
 }
 
@@ -256,11 +262,6 @@ QPixmap toQPixmap(const TFPropertyConcept& propertyConcept, const QSize& size) {
     }
     if (auto* isoValues = propertyConcept.getIsovalues()) {
         paint(*isoValues, painter, rect);
-    }
-    if (auto* tf = propertyConcept.getTransferFunction()) {
-        if (propertyConcept.supportsMask()) {
-            paintMask(propertyConcept.getMask(), tf->getRange(), painter, rect);
-        }
     }
     return pixmap;
 }

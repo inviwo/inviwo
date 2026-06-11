@@ -426,7 +426,7 @@ void ProcessorNetwork::removePropertyOwnerObservation(PropertyOwner* po) {
 
 int ProcessorNetwork::getVersion() { return processorNetworkVersion_; }
 
-const int ProcessorNetwork::processorNetworkVersion_ = 21;
+const int ProcessorNetwork::processorNetworkVersion_ = 22;
 
 namespace {
 

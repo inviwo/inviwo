@@ -2,6 +2,7 @@
 project(inviwo-core)
 
 set(HEADER_FILES
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/axislabeling.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/base64.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/boundingbox.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/buildarray.h
@@ -452,6 +453,7 @@ set(HEADER_FILES
 ivw_group("Header Files" BASE "${IVW_INCLUDE_DIR}/inviwo/core" ${HEADER_FILES})
 
 set(SOURCE_FILES
+    algorithm/axislabeling.cpp
     algorithm/base64.cpp
     algorithm/boundingbox.cpp
     algorithm/buildarray.cpp

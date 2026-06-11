@@ -30,16 +30,66 @@
 #ifndef IVW_CLASSIFICATION_GLSL
 #define IVW_CLASSIFICATION_GLSL
 
-vec4 applyTF(sampler2D transferFunction, vec4 voxel) {
-    return texture(transferFunction, vec2(voxel.r, 0.5));
+#include "utils/structs.glsl"
+#include "utils/conversion.glsl"
+
+vec4 applyTF(sampler2D transferFunction, in float normalizedValue) {
+    return texture(transferFunction, vec2(normalizedValue, 0.5));
+}
+vec4 applyTF(sampler2D transferFunction, in vec4 normalizedVoxel) {
+    return applyTF(transferFunction, normalizedVoxel.r);
+}
+vec4 applyTF(sampler2D transferFunction, in vec4 normalizedVoxel, int channel) {
+    return applyTF(transferFunction, normalizedVoxel[channel]);
 }
 
-vec4 applyTF(sampler2D transferFunction, vec4 voxel, int channel) {
-    return texture(transferFunction, vec2(voxel[channel], 0.5));
+vec4 applyTF(sampler2D transferFunction, in TFParameters tfParams, in float value) {
+    // Map from value-space to TF texture coordinate [0,1]
+    float tfCoord = (value - tfParams.rangeMin) / (tfParams.rangeMax - tfParams.rangeMin);
+    return texture(transferFunction, vec2(clamp(tfCoord, 0.0, 1.0), 0.5));
 }
 
-vec4 applyTF(sampler2D transferFunction, float intensity) {
-    return texture(transferFunction, vec2(intensity, 0.5));
+vec4 applyTF(sampler2D transferFunction, in TFParameters tfParams,
+             in NormalizationMap texToNormalized, in RangeConversionMap texToValue,
+             in float normalizedValue) {
+    // Convert from normalized [0,1] to value-space
+    float value = mapFromNormalizedToValue(normalizedValue, texToNormalized, texToValue);
+    return applyTF(transferFunction, tfParams, value);
+}
+
+// Volume version of applyTF
+vec4 applyTF(sampler2D transferFunction, in TFParameters tfParams,
+             in VolumeParameters volumeParameters, in float normalizedValue) {
+    return applyTF(transferFunction, tfParams, volumeParameters.texToNormalized,
+                   volumeParameters.texToValue, normalizedValue);
+}
+
+vec4 applyTF(sampler2D transferFunction, in TFParameters tfParams,
+             in VolumeParameters volumeParameters, in vec4 normalizedVoxel) {
+    return applyTF(transferFunction, tfParams, volumeParameters, normalizedVoxel.r);
+}
+
+vec4 applyTF(sampler2D transferFunction, in TFParameters tfParams,
+             in VolumeParameters volumeParameters, in vec4 normalizedVoxel, in int channel) {
+    return applyTF(transferFunction, tfParams, volumeParameters, normalizedVoxel[channel]);
+}
+
+// Image version of applyTF
+vec4 applyTF(sampler2D transferFunction, in TFParameters tfParams,
+             in ImageParameters imageParameters, in float normalizedValue) {
+    // Convert from normalized [0,1] to value-space
+    float value = mapFromNormalizedToValue(normalizedValue, imageParameters);
+    return applyTF(transferFunction, tfParams, value);
+}
+
+vec4 applyTF(sampler2D transferFunction, in TFParameters tfParams,
+             in ImageParameters imageParameters, in vec4 normalizedVoxel) {
+    return applyTF(transferFunction, tfParams, imageParameters, normalizedVoxel.r);
+}
+
+vec4 applyTF(sampler2D transferFunction, in TFParameters tfParams,
+             in ImageParameters imageParameters, in vec4 normalizedVoxel, in int channel) {
+    return applyTF(transferFunction, tfParams, imageParameters, normalizedVoxel[channel]);
 }
 
 #endif  // IVW_CLASSIFICATION_GLSL

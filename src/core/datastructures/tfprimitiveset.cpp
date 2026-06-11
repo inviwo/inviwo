@@ -32,8 +32,10 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/vectoroperations.h>
+#include <inviwo/core/datastructures/datamapper.h>
 
 #include <algorithm>
+#include <ranges>
 #include <set>
 
 namespace inviwo {
@@ -44,9 +46,10 @@ void TFPrimitiveSetObserver::onTFPrimitiveRemoved(const TFPrimitiveSet&, TFPrimi
 
 void TFPrimitiveSetObserver::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {}
 
-void TFPrimitiveSetObserver::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {}
+void TFPrimitiveSetObserver::onTFModeChanged(const TFPrimitiveSet&, PrimitiveSetMode) {}
 
-void TFPrimitiveSetObserver::onTFMaskChanged(const TFPrimitiveSet&, dvec2) {}
+void TFPrimitiveSetObserver::onTFBeginBulkUpdate(const TFPrimitiveSet& set) {}
+void TFPrimitiveSetObserver::onTFEndBulkUpdate(const TFPrimitiveSet& set) {}
 
 void TFPrimitiveSetObservable::notifyTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) {
     forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveAdded(set, p); });
@@ -61,21 +64,25 @@ void TFPrimitiveSetObservable::notifyTFPrimitiveChanged(const TFPrimitiveSet& se
     forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveChanged(set, p); });
 }
 
-void TFPrimitiveSetObservable::notifyTFTypeChanged(const TFPrimitiveSet& set,
-                                                   TFPrimitiveSetType type) {
-    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFTypeChanged(set, type); });
+void TFPrimitiveSetObservable::notifyTFModeChanged(const TFPrimitiveSet& set,
+                                                   PrimitiveSetMode mode) {
+    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFModeChanged(set, mode); });
 }
 
-void TFPrimitiveSetObservable::notifyTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) {
-    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFMaskChanged(set, mask); });
+void TFPrimitiveSetObservable::notifyTFBeginBulkUpdate(const TFPrimitiveSet& set) {
+    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFBeginBulkUpdate(set); });
+}
+void TFPrimitiveSetObservable::notifyTFEndBulkUpdate(const TFPrimitiveSet& set) {
+    forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFEndBulkUpdate(set); });
 }
 
-TFPrimitiveSet::TFPrimitiveSet(const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type)
-    : type_(type) {
+TFPrimitiveSet::TFPrimitiveSet(const std::vector<TFPrimitiveData>& values, PrimitiveSetMode mode)
+    : mode_(mode) {
     add(values);
 }
 
-TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs) : type_(rhs.type_) {
+TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs)
+    : Serializable(rhs), TFPrimitiveSetObservable(rhs), TFPrimitiveObserver(rhs), mode_(rhs.mode_) {
     for (const auto& v : rhs.values_) {
         add(*v);
     }
@@ -83,7 +90,10 @@ TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs) : type_(rhs.type_) {
 
 TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     if (this != &rhs) {
-        type_ = rhs.type_;
+        Serializable::operator=(rhs);
+        TFPrimitiveSetObservable::operator=(rhs);
+        TFPrimitiveObserver::operator=(rhs);
+        setMode(rhs.mode_);
         set(rhs.values_ | std::views::transform([](const auto& v) { return v->getData(); }));
     }
     return *this;
@@ -91,28 +101,85 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
 
 TFPrimitiveSet& TFPrimitiveSet::operator=(TFPrimitiveSet&& rhs) noexcept {
     if (this != &rhs) {
-        type_ = rhs.type_;
+        TFPrimitiveSetObservable::operator=(std::move(rhs));
+        TFPrimitiveObserver::operator=(std::move(rhs));
+        setMode(rhs.mode_);
         set(rhs.values_ | std::views::transform([](const auto& v) { return v->getData(); }));
     }
     return *this;
 }
 
-void TFPrimitiveSet::setType(TFPrimitiveSetType type) {
-    if (type_ != type) {
-        type_ = type;
-        notifyTFTypeChanged(*this, type_);
+void TFPrimitiveSet::setMode(PrimitiveSetMode mode) {
+    if (mode_ != mode) {
+        // We have to ensure that all points are in 0-1 range before changing mode
+        if (mode == PrimitiveSetMode::Relative) {
+            DataMapper dm{getRange()};
+            if (dm.mapFromValueToNormalized(0.5) < 0.5) {
+                std::ranges::for_each(*this, [&](auto& prim) {
+                    prim.setPosition(
+                        std::clamp(dm.mapFromValueToNormalized(prim.getPosition()), 0.0, 1.0));
+                });
+            } else {
+                std::ranges::for_each(*this | std::views::reverse, [&](auto& prim) {
+                    prim.setPosition(
+                        std::clamp(dm.mapFromValueToNormalized(prim.getPosition()), 0.0, 1.0));
+                });
+            }
+        }
+
+        mode_ = mode;
+        notifyTFModeChanged(*this, mode_);
+    }
+}
+
+void TFPrimitiveSet::setMode(PrimitiveSetMode mode, const DataMapper& dm) {
+    if (mode_ != mode) {
+
+        beginBulkUpdate();
+        if (mode == PrimitiveSetMode::Absolute) {
+            // Change the mode before updating values.
+            mode_ = mode;
+            notifyTFModeChanged(*this, mode_);
+
+            if (dm.mapFromNormalizedToValue(0.5) < 0.5) {
+                std::ranges::for_each(*this, [&](auto& prim) {
+                    prim.setPosition(dm.mapFromNormalizedToValue(prim.getPosition()));
+                });
+            } else {
+                std::ranges::for_each(*this | std::views::reverse, [&](auto& prim) {
+                    prim.setPosition(dm.mapFromNormalizedToValue(prim.getPosition()));
+                });
+            }
+        } else {
+            // Change Values before updating the mode
+            if (dm.mapFromValueToNormalized(0.5) < 0.5) {
+                std::ranges::for_each(*this, [&](auto& prim) {
+                    prim.setPosition(
+                        std::clamp(dm.mapFromValueToNormalized(prim.getPosition()), 0.0, 1.0));
+                });
+            } else {
+                std::ranges::for_each(*this | std::views::reverse, [&](auto& prim) {
+                    prim.setPosition(
+                        std::clamp(dm.mapFromValueToNormalized(prim.getPosition()), 0.0, 1.0));
+                });
+            }
+            mode_ = mode;
+            notifyTFModeChanged(*this, mode_);
+        }
+        endBulkUpdate();
     }
 }
 
 dvec2 TFPrimitiveSet::getRange() const {
-    switch (type_) {
-        case TFPrimitiveSetType::Absolute: {
+    switch (mode_) {
+        case PrimitiveSetMode::Absolute: {
             if (sorted_.empty()) {
-                return {0.0, 1.0};
+                return {0.0, 0.0};
+            } else {
+                return {sorted_.front()->getPosition(), sorted_.back()->getPosition()};
             }
-            return {sorted_.front()->getPosition(), sorted_.back()->getPosition()};
         }
-        case TFPrimitiveSetType::Relative:
+        case PrimitiveSetMode::Relative:
         default:
             return {0.0, 1.0};
     }
@@ -250,7 +317,7 @@ bool TFPrimitiveSet::remove(const TFPrimitive& primitive) {
 }
 
 void TFPrimitiveSet::verifyPoint(double pos) const {
-    if ((type_ == TFPrimitiveSetType::Relative) && (pos < 0.0f || pos > 1.0f)) {
+    if ((mode_ == PrimitiveSetMode::Relative) && (pos < 0.0f || pos > 1.0f)) {
         throw RangeException(
             SourceContext{},
             "TFPrimitive at {} outside of valid range [0,1] for a relative TFPrimitiveSet", pos);
@@ -292,9 +359,11 @@ bool TFPrimitiveSet::remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator 
 }
 
 void TFPrimitiveSet::clear() {
+    beginBulkUpdate();
     while (!values_.empty()) {
         remove(--values_.end());
     }
+    endBulkUpdate();
 }
 
 void TFPrimitiveSet::setPosition(std::span<TFPrimitive*> primitives, double pos) {
@@ -309,21 +378,22 @@ void TFPrimitiveSet::setPosition(std::span<TFPrimitive*> primitives, double pos)
                  [&primitiveSet](auto item) { return primitiveSet.count(item) > 0; });
 
     // partition set of primitives at position pos
-    auto partition =
-        std::lower_bound(sortedSelection.begin(), sortedSelection.end(), pos,
-                         [](const auto& p, double val) { return p->getPosition() < val; });
+    auto partition = std::ranges::lower_bound(sortedSelection, pos, std::ranges::less{},
+                                              [](const auto& p) { return p->getPosition(); });
 
+    beginBulkUpdate();
     // update upper half, i.e. all elements to the right of pos in ascending order
-    for (auto it = partition; it != sortedSelection.end(); ++it) {
-        (*it)->setPosition(pos);
+    for (auto& elem : std::ranges::subrange(partition, sortedSelection.end())) {
+        elem->setPosition(pos);
     }
 
     // update lower half, i.e. all elements to the left of pos in descending order
     // to do this reverse sorted primitives from begin to the partition point
-    std::reverse(sortedSelection.begin(), partition);
-    for (auto it = sortedSelection.begin(); it != partition; ++it) {
-        (*it)->setPosition(pos);
+    for (auto& elem :
+         std::ranges::subrange(sortedSelection.begin(), partition) | std::views::reverse) {
+        elem->setPosition(pos);
     }
+    endBulkUpdate();
 }
 
 void TFPrimitiveSet::onTFPrimitiveChange(const TFPrimitive& p) {
@@ -332,16 +402,14 @@ void TFPrimitiveSet::onTFPrimitiveChange(const TFPrimitive& p) {
 }
 
 void TFPrimitiveSet::serialize(Serializer& s) const {
-    s.serialize("type", type_);
+    s.serialize("mode", mode_, SerializationTarget::Attribute);
     s.serialize(serializationKey(), values_, serializationItemKey());
 }
 
 void TFPrimitiveSet::deserialize(Deserializer& d) {
-    TFPrimitiveSetType type = type_;
-    d.deserialize("type", type);
-    if (type_ != type) {
-        type_ = type;
-        notifyTFTypeChanged(*this, type_);
+    beginBulkUpdate();
+    if (d.deserialize("mode", mode_, SerializationTarget::Attribute)) {
+        notifyTFModeChanged(*this, mode_);
     }
 
     d.deserialize(serializationKey(), values_, serializationItemKey(),
@@ -360,6 +428,7 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
                               std::erase(sorted_, p.get());
                               notifyTFPrimitiveRemoved(*this, *p);
                           }});
+    endBulkUpdate();
 }
 
 void TFPrimitiveSet::sort() { std::stable_sort(sorted_.begin(), sorted_.end(), comparePtr{}); }
@@ -387,8 +456,14 @@ void TFPrimitiveSet::interpolateAndStoreColors(std::span<vec4> data) const {
         std::fill(data.begin(), data.end(), front().getColor());
     } else {  // in case of more than 1 points
         const auto sizeM1 = static_cast<double>(data.size() - 1);
+        const auto range = getRange();
+        const auto rangeInv = (range.y > range.x) ? 1.0 / (range.y - range.x) : 1.0;
+        // Map position to normalized [0,1] within the TF range, then to pixel index
+        const auto toNorm = [&](const TFPrimitive& p) {
+            return (p.getPosition() - range.x) * rangeInv;
+        };
         const auto toInd = [&](const TFPrimitive& p) {
-            return static_cast<std::ptrdiff_t>(ceil(p.getPosition() * sizeM1));
+            return static_cast<std::ptrdiff_t>(ceil(toNorm(p) * sizeM1));
         };
 
         const auto leftX = toInd(front());
@@ -403,8 +478,8 @@ void TFPrimitiveSet::interpolateAndStoreColors(std::span<vec4> data) const {
         while (pRight != end()) {
             const auto lrgba = pLeft->getColor();
             const auto rrgba = pRight->getColor();
-            const auto lx = pLeft->getPosition() * sizeM1;
-            const auto rx = pRight->getPosition() * sizeM1;
+            const auto lx = toNorm(*pLeft) * sizeM1;
+            const auto rx = toNorm(*pRight) * sizeM1;
 
             for (std::ptrdiff_t n = toInd(*pLeft); n < toInd(*pRight); ++n) {
                 const auto x = static_cast<float>((static_cast<double>(n) - lx) / (rx - lx));
@@ -421,8 +496,9 @@ std::string_view TFPrimitiveSet::serializationKey() const { return "TFPrimitives
 std::string_view TFPrimitiveSet::serializationItemKey() const { return "TFPrimitive"; }
 
 bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs) {
-    return std::equal(rhs.sorted_.begin(), rhs.sorted_.end(), lhs.sorted_.begin(),
-                      lhs.sorted_.end(), [](TFPrimitive* a, TFPrimitive* b) { return *a == *b; });
+    return lhs.mode_ == rhs.mode_ &&
+           std::ranges::equal(rhs.sorted_, lhs.sorted_,
+                              [](TFPrimitive* a, TFPrimitive* b) { return *a == *b; });
 }
 
 bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs) {
@@ -433,6 +509,9 @@ bool TFPrimitiveSet::contains(const TFPrimitive* primitive) const {
     if (!primitive) return false;
     return util::contains(sorted_, primitive);
 }
+
+void TFPrimitiveSet::beginBulkUpdate() { notifyTFBeginBulkUpdate(*this); }
+void TFPrimitiveSet::endBulkUpdate() { notifyTFEndBulkUpdate(*this); }
 
 void util::distributeAlphaEvenly(std::vector<TFPrimitive*> selection) {
     if (selection.size() < 2) {

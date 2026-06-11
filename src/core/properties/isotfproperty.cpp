@@ -145,12 +145,6 @@ void IsoTFProperty::set(const IsoValueProperty* p) { isovalues_.set(p); }
 
 void IsoTFProperty::set(const TransferFunctionProperty* p) { tf_.set(p); }
 
-void IsoTFProperty::setMask(double maskMin, double maskMax) { tf_.setMask(maskMin, maskMax); }
-
-dvec2 IsoTFProperty::getMask() const { return tf_.getMask(); }
-
-void IsoTFProperty::clearMask() { tf_.clearMask(); }
-
 void IsoTFProperty::setZoomH(double zoomHMin, double zoomHMax) {
     tf_.setZoomH(zoomHMin, zoomHMax);
     isovalues_.setZoomH(zoomHMin, zoomHMax);

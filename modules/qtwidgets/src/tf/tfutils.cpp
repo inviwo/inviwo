@@ -207,8 +207,16 @@ QAction* tfAction(std::string_view name, TransferFunction tf, QMenu* menu,
     action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
     action->setIconVisibleInMenu(true);
     QObject::connect(action, &QAction::triggered, parent,
-                     util::exceptionGuarded([property, tf2 = std::move(tf)]() {
+                     util::exceptionGuarded([property, tf2 = std::move(tf)]() mutable {
                          const NetworkLock lock(property);
+
+                         if (const auto* dm = property->data().getDataMap()) {
+                             tf2.setMode(property->get().getMode(), *dm);
+                         } else {
+                             const DataMapper dm2{property->get().getRange()};
+                             tf2.setMode(property->get().getMode(), dm2);
+                         }
+
                          property->set(tf2);
                      }));
     return action;

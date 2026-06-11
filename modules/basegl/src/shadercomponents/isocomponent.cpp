@@ -29,29 +29,70 @@
 
 #include <modules/basegl/shadercomponents/isocomponent.h>
 
+#include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+
 #include <algorithm>
 
 #include <fmt/core.h>
 
 namespace inviwo {
 
-IsoComponent::IsoComponent(std::string_view identifier, std::string_view name, Document help,
-                           VolumeInport& volume)
-    : ShaderComponent()
-    , iso{identifier, name, std::move(help),
-          IsoValueCollection{std::vector<TFPrimitiveData>{TFPrimitiveData{0.5, vec4{1}}}},
-          &volume} {}
+namespace detail {
 
-std::string_view IsoComponent::getName() const { return iso.getIdentifier(); }
+namespace {
+constexpr std::string_view isoStruct = util::trim(R"(
+#if !defined INC_ISOVALUEPARAMETERS
+#define INC_ISOVALUEPARAMETERS
+struct IsovalueParameters {
+    float values[MAX_ISOVALUE_COUNT];
+    vec4 colors[MAX_ISOVALUE_COUNT];
+    int size;
+};
+#endif
+)");
+}  // namespace
 
-void IsoComponent::process(Shader& shader, TextureUnitContainer&) {
-    const auto positions = iso.get().getPositionsf();
+void setUniforms(Shader& shader, const IsoValueProperty& iso, const DataMapper* volumeDM) {
+    auto positions = iso.get().getPositionsf();
     const auto colors = iso.get().getColors();
     const auto name = iso.getIdentifier();
+
+    // For Absolute mode, normalize isovalue positions to [0,1] using volume's data range
+    if (iso.get().getMode() == PrimitiveSetMode::Absolute && volumeDM) {
+        for (auto& p : positions) {
+            p = static_cast<float>(volumeDM->mapFromValueToNormalized(p));
+        }
+    }
+
     StrBuffer buff;
     shader.setUniform(buff.replace("{}.values", name), positions);
     shader.setUniform(buff.replace("{}.colors", name), colors);
     shader.setUniform(buff.replace("{}.size", name), static_cast<int>(colors.size()));
+}
+
+void addSegmentsFor(std::vector<ShaderComponent::Segment>& dest, const IsoValueProperty& iso) {
+
+    dest.emplace_back(std::string{isoStruct}, placeholder::include, 1000 + 1);
+    dest.emplace_back(fmt::format("uniform IsovalueParameters {};", iso.getIdentifier()),
+                      placeholder::uniform, 1000 + 1);
+}
+
+}  // namespace detail
+
+IsoComponent::IsoComponent(std::string_view identifier, std::string_view name, Document help,
+                           VolumeInport& volume)
+    : ShaderComponent()
+    , iso{identifier, name, std::move(help),
+          IsoValueCollection{
+              std::vector<TFPrimitiveData>{TFPrimitiveData{.pos = 0.5, .color = vec4{1}}}},
+          &volume}
+    , volume_{&volume} {}
+
+std::string_view IsoComponent::getName() const { return iso.getIdentifier(); }
+
+void IsoComponent::process(Shader& shader, TextureUnitContainer&) {
+    detail::setUniforms(shader, iso, volume_->hasData() ? &volume_->getData()->dataMap : nullptr);
 }
 
 void IsoComponent::initializeResources(Shader& shader) {
@@ -64,21 +105,10 @@ void IsoComponent::initializeResources(Shader& shader) {
 
 std::vector<Property*> IsoComponent::getProperties() { return {&iso}; }
 
-constexpr std::string_view isoStruct = util::trim(R"(
-#if !defined INC_ISOVALUEPARAMETERS
-#define INC_ISOVALUEPARAMETERS
-struct IsovalueParameters {
-    float values[MAX_ISOVALUE_COUNT];
-    vec4 colors[MAX_ISOVALUE_COUNT];
-    int size;
-};
-#endif
-)");
-
 auto IsoComponent::getSegments() -> std::vector<Segment> {
-    return {Segment{std::string{isoStruct}, placeholder::include, 1000 + 1},
-            Segment{fmt::format("uniform IsovalueParameters {};", iso.getIdentifier()),
-                    placeholder::uniform, 1000 + 1}};
+    std::vector<Segment> segments;
+    detail::addSegmentsFor(segments, iso);
+    return segments;
 }
 
 }  // namespace inviwo

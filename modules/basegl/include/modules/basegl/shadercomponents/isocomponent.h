@@ -44,8 +44,18 @@
 
 namespace inviwo {
 
+namespace detail {
+IVW_MODULE_BASEGL_API void setUniforms(Shader& shader, const IsoValueProperty& iso,
+                                       const DataMapper* volumeDM);
+IVW_MODULE_BASEGL_API void addSegmentsFor(std::vector<ShaderComponent::Segment>& dest,
+                                          const IsoValueProperty& tf);
+}  // namespace detail
+
 /**
  * Adds a IsoValueProperty, and binds it to uniforms in the shader.
+ * Supports both Relative and Absolute isovalue modes. In Absolute mode,
+ * isovalue positions are normalized by the volume's value range before
+ * passing to the shader.
  */
 class IsoComponent : public ShaderComponent {
 public:
@@ -59,6 +69,9 @@ public:
     virtual std::vector<Segment> getSegments() override;
 
     IsoValueProperty iso;
+
+private:
+    VolumeInport* volume_;
 };
 
 }  // namespace inviwo

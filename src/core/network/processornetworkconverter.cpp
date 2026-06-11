@@ -48,7 +48,7 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             traverseNodes(root, &ProcessorNetworkConverter::updateMetaDataTree);
             [[fallthrough]];
         case 2:
-            traverseNodes(root, &ProcessorNetworkConverter::updatePropertType);
+            traverseNodes(root, &ProcessorNetworkConverter::updatePropertyType);
             [[fallthrough]];
         case 3:
             traverseNodes(root, &ProcessorNetworkConverter::updateShadingMode);
@@ -73,7 +73,7 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             [[fallthrough]];
         case 10:
             traverseNodes(root,
-                          &ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers);
+                          &ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifiers);
             [[fallthrough]];
         case 11:
             traverseNodes(root, &ProcessorNetworkConverter::updateDisplayName);
@@ -82,7 +82,7 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             traverseNodes(root, &ProcessorNetworkConverter::updateProcessorIdentifiers);
             [[fallthrough]];
         case 13:
-            traverseNodes(root, &ProcessorNetworkConverter::updateTransferfunctions);
+            traverseNodes(root, &ProcessorNetworkConverter::updateTransferFunctions);
             [[fallthrough]];
         case 14:
             usedIdentifier_.clear();
@@ -105,7 +105,11 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             [[fallthrough]];
         case 20:
             updatePositionProperties(root);
+            [[fallthrough]];
+        case 21:
+            updateTF(root);
             return true;  // Changes have been made.
+
         default:
             return false;  // No changes
     }
@@ -144,7 +148,7 @@ void ProcessorNetworkConverter::updateMetaDataTree(TxElement* node) {
     }
 }
 
-void ProcessorNetworkConverter::updatePropertType(TxElement* node) {
+void ProcessorNetworkConverter::updatePropertyType(TxElement* node) {
     std::string renamed[] = {"undefined",
                              "BoolProperty",
                              "AdvancedMaterialProperty",
@@ -461,7 +465,7 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
     }
 }
 
-void ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers(TxElement* node) {
+void ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifiers(TxElement* node) {
     std::string renamed[] = {"org.inviwo.Diffuse light source",
                              "org.inviwo.Directional light source",
                              "org.inviwo.Ordinal Property Animator",
@@ -536,7 +540,7 @@ void ProcessorNetworkConverter::updateProcessorIdentifiers(TxElement* node) {
     }
 }
 
-void ProcessorNetworkConverter::updateTransferfunctions(TxElement* node) {
+void ProcessorNetworkConverter::updateTransferFunctions(TxElement* node) {
     const auto& key = node->Value();
 
     if (key == "transferFunction") {
@@ -868,6 +872,61 @@ void ProcessorNetworkConverter::updatePositionProperties(TxElement* node) {
                 }
             }
         });
+}
+
+void ProcessorNetworkConverter::updateTF(TxElement* node) {
+    // Rename TFPrimitiveSet 'type' to 'mode' and make it an attribute
+    xml::visitMatchingNodesRecursive(
+        node,
+        {{.name = "Property",
+          .attributes = {{.name = "type", .value = "org.inviwo.TransferFunctionProperty"}}},
+         {.name = "TransferFunction", .attributes = {}}},
+        [&](TxElement* tf) {
+            if (auto* t = tf->FirstChild("type")) {
+                if (auto type = t->ToElement()->Attribute("content")) {
+                    tf->SetAttribute("mode", *type);
+                }
+                tf->RemoveChild(t);
+            }
+        });
+
+    xml::visitMatchingNodesRecursive(
+        node,
+        {{.name = "Property",
+          .attributes = {{.name = "type", .value = "org.inviwo.IsoValueProperty"}}},
+         {.name = "IsoValues", .attributes = {}}},
+        [&](TxElement* tf) {
+            if (auto* t = tf->FirstChild("type")) {
+                if (auto type = t->ToElement()->Attribute("content")) {
+                    tf->SetAttribute("mode", *type);
+                }
+                tf->RemoveChild(t);
+            }
+        });
+
+    // Rename TransferFunctionProperty/IsoValueProperty zoomH_ -> zoomH, zoomV_ -> zoomV, and
+    // showHistogram_ -> showHistogram
+    const auto rename = [&](TxElement* prop) {
+        if (auto* zoomH = prop->FirstChild("zoomH_")) {
+            zoomH->SetValue("zoomH");
+        }
+        if (auto* zoomV = prop->FirstChild("zoomV_")) {
+            zoomV->SetValue("zoomV");
+        }
+        if (auto* showHistogram = prop->FirstChild("showHistogram_")) {
+            showHistogram->SetValue("showHistogram");
+        }
+    };
+    xml::visitMatchingNodesRecursive(
+        node,
+        {.name = "Property",
+         .attributes = {{.name = "type", .value = "org.inviwo.TransferFunctionProperty"}}},
+        rename);
+    xml::visitMatchingNodesRecursive(
+        node,
+        {.name = "Property",
+         .attributes = {{.name = "type", .value = "org.inviwo.IsoValueProperty"}}},
+        rename);
 }
 
 }  // namespace inviwo

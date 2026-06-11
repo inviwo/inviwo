@@ -46,7 +46,7 @@ namespace inviwo {
 class IVW_CORE_API IsoValueCollection : public TFPrimitiveSet {
 public:
     IsoValueCollection(const std::vector<TFPrimitiveData>& values = {},
-                       TFPrimitiveSetType type = TFPrimitiveSetType::Relative);
+                       PrimitiveSetMode type = PrimitiveSetMode::Relative);
     IsoValueCollection(const IsoValueCollection& rhs) = default;
     IsoValueCollection(IsoValueCollection&& rhs) = default;
     IsoValueCollection& operator=(const IsoValueCollection& rhs) = default;

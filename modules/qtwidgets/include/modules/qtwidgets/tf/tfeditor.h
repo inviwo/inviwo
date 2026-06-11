@@ -61,8 +61,6 @@ class TFEditorIsovalue;
 class TFPrimitive;
 class TFPrimitiveSet;
 class TFPropertyConcept;
-class TFEditorMaskMin;
-class TFEditorMaskMax;
 
 template <typename T>
 struct PtrHash {
@@ -92,7 +90,6 @@ public:
 
     void setMoveMode(TFMoveMode i);
     TFMoveMode getMoveMode() const;
-
     const DataMapper& getDataMapper() const;
 
     std::vector<TFPrimitive*> getSelectedPrimitives() const;
@@ -104,9 +101,12 @@ public:
     void deleteSelection();
     void selectAll();
 
-    static constexpr std::string_view mimeTFPrimitives = "application/x.vnd.inviwo.tf.primitives+xml";
+    static constexpr std::string_view mimeTFPrimitives =
+        "application/x.vnd.inviwo.tf.primitives+xml";
     static constexpr std::string_view tfCopyPasteRootElement = "InviwoTFPrimitives";
     void updateConnections();
+
+    void updateSceneRect();
 
 signals:
     void showColorDialog();
@@ -118,13 +118,16 @@ protected:
     virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
     virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
-    virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
+    virtual void onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode type) override;
+    virtual void onTFBeginBulkUpdate(const TFPrimitiveSet& set) override;
+    virtual void onTFEndBulkUpdate(const TFPrimitiveSet& set) override;
 
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
 
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
 
@@ -134,13 +137,13 @@ protected:
 
 private:
     void paste(std::optional<QPointF> scenePos);
-    void addPoint(double pos, const vec4& color, TFPrimitiveSet* set);
-    void addPoint(double pos, double alpha, TFPrimitiveSet* set);
-    void addPoint(const QPointF& scenePos, TFPrimitiveSet* set);
+    void addPoint(double pos, const vec4& color, TFPrimitiveSet& set);
+    void addPoint(double pos, double alpha, TFPrimitiveSet& set);
+    void addPoint(const QPointF& scenePos, TFPrimitiveSet& set);
     void addPoint(const QPointF& scenePos);
-    void addPeak(const QPointF& scenePos, TFPrimitiveSet* set);
-    double sceneToPos(const QPointF& pos) const;
-    double sceneToAlpha(const QPointF& pos) const;
+    void addPeak(const QPointF& scenePos, TFPrimitiveSet& set);
+    static double sceneToPos(const QPointF& scenePos, const TFPrimitiveSet& set);
+    static double sceneToAlpha(const QPointF& scenePos);
 
     TFPrimitiveSet* findSet(TFPrimitive*) const;
 
@@ -153,8 +156,8 @@ private:
     QTransform calcTransform(QPointF scenePos, QPointF lastScenePos) const;
     static QPointF calcTransformRef(std::span<TFEditorPrimitive*> primitives,
                                     TFEditorPrimitive* start);
-    static void move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform,
-                     const QRectF& rect);
+    void move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform,
+              const QRectF& rect);
 
     void duplicate(std::span<TFEditorPrimitive*> primitives);
 
@@ -197,10 +200,9 @@ private:
     std::vector<std::vector<TFEditorPrimitive*>> groups_;
     TFMoveMode moveMode_;
 
-    std::unique_ptr<TFEditorMaskMin> maskMin_;
-    std::unique_ptr<TFEditorMaskMax> maskMax_;
-
     bool selectNewPrimitives_;
+    std::optional<dvec2> range_;
+    bool bulkUpdate_;
 };
 
 }  // namespace inviwo

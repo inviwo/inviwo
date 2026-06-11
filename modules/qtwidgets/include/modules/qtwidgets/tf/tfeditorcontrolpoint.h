@@ -53,7 +53,7 @@ class TFControlPointConnection;
 
 class IVW_MODULE_QTWIDGETS_API TFEditorControlPoint : public TFEditorPrimitive {
 public:
-    explicit TFEditorControlPoint(TFPrimitive& primitive);
+    explicit TFEditorControlPoint(TFPrimitive& primitive, PrimitiveSetMode mode);
     ~TFEditorControlPoint() = default;
 
     virtual TFControlPointConnection* left() const override { return left_; }

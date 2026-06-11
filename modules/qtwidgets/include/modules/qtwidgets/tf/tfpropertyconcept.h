@@ -39,6 +39,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/util/detected.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/qtwidgets/tf/tfutils.h>
 
@@ -64,11 +65,6 @@ public:
     virtual TransferFunction* getTransferFunction() const = 0;
     virtual IsoValueCollection* getIsovalues() const = 0;
 
-    virtual bool supportsMask() const = 0;
-    virtual void setMask(double maskMin, double maskMax) = 0;
-    virtual const dvec2 getMask() const = 0;
-    virtual void clearMask() = 0;
-
     virtual void setZoomH(double zoomHMin, double zoomHMax) = 0;
     virtual const dvec2& getZoomH() const = 0;
 
@@ -89,6 +85,9 @@ public:
     virtual void showExportDialog() const = 0;
     virtual void showImportDialog() = 0;
 
+    virtual dvec2 getRange() const = 0;
+    virtual bool allRelative() const = 0;
+
     virtual std::span<TFPrimitiveSet*> sets() = 0;
 
     [[nodiscard]] virtual DispatcherHandle<void()> onDataChange(std::function<void()>) = 0;
@@ -97,6 +96,8 @@ public:
     using HistogramCallback = void(HistogramChange, const std::vector<Histogram1D>&);
     [[nodiscard]] virtual DispatcherHandle<HistogramCallback> onHistogramChange(
         std::function<HistogramCallback>) = 0;
+
+    util::OnScopeExit scopedBulkUpdate();
 };
 
 template <typename U>
@@ -129,6 +130,20 @@ public:
         } else {
             return std::span<TFPrimitiveSet*>{sets_.data(), 1};
         }
+    }
+
+    virtual bool allRelative() const override {
+        return sets_[0]->getMode() == PrimitiveSetMode::Relative &&
+               (sets_[1] == nullptr || sets_[1]->getMode() == PrimitiveSetMode::Relative);
+    }
+
+    virtual dvec2 getRange() const override {
+        auto range = sets_[0]->getRange();
+        if (sets_[1]) {
+            const auto range1 = sets_[1]->getRange();
+            range = dvec2{std::min(range.x, range1.x), std::max(range.y, range1.y)};
+        }
+        return range;
     }
 
     virtual bool hasTF() const override { return getTFProperty() != nullptr; }
@@ -164,25 +179,6 @@ public:
             return &iso->get();
         } else {
             return nullptr;
-        }
-    }
-
-    virtual bool supportsMask() const override { return hasTF(); }
-    virtual void setMask(double maskMin, double maskMax) override {
-        if (auto tf = getTFProperty()) {
-            tf->setMask(maskMin, maskMax);
-        }
-    }
-    virtual const dvec2 getMask() const override {
-        if (auto tf = getTFProperty()) {
-            return tf->getMask();
-        } else {
-            return {};
-        }
-    }
-    virtual void clearMask() override {
-        if (auto tf = getTFProperty()) {
-            tf->clearMask();
         }
     }
 

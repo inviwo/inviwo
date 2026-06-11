@@ -37,7 +37,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/image/layergl.h>                     // IWYU pragma: keep
+#include <modules/opengl/image/layergl.h>  // IWYU pragma: keep
 #include <modules/opengl/texture/textureutils.h>
 
 #include <algorithm>
@@ -51,8 +51,19 @@
 
 namespace inviwo {
 
+namespace detail {
+
+IVW_MODULE_BASEGL_API void setUniforms(Shader& shader, const TransferFunctionProperty& tf);
+IVW_MODULE_BASEGL_API void addSegmentsFor(std::vector<ShaderComponent::Segment>& dest,
+                                          const TransferFunctionProperty& tf);
+
+}  // namespace detail
+
 /**
  * Adds a TransferFunctionProperty, and binds it to uniforms in the shader.
+ * Supports both Relative (normalized [0,1]) and Absolute (data-space) TF modes.
+ * In Absolute mode, a TFParameters uniform is added and the shader define TF_ABSOLUTE_{ID}
+ * is set to enable the absolute-mode applyTF overloads.
  */
 class TFComponent : public ShaderComponent {
 public:

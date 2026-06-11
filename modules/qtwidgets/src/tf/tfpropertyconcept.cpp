@@ -29,4 +29,23 @@
 
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+
+util::OnScopeExit TFPropertyConcept::scopedBulkUpdate() {
+    if (auto* tf = getTransferFunction()) {
+        tf->beginBulkUpdate();
+    }
+    if (auto* iso = getIsovalues()) {
+        iso->beginBulkUpdate();
+    }
+    return util::OnScopeExit{[this]() {
+        if (auto* iso = getIsovalues()) {
+            iso->endBulkUpdate();
+        }
+        if (auto* tf = getTransferFunction()) {
+            tf->endBulkUpdate();
+        }
+    }};
+}
+
+}  // namespace inviwo

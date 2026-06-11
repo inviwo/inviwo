@@ -29,4 +29,4 @@
 
 #include <modules/basegl/shadercomponents/isotfcomponent.h>
 
-namespace inviwo {}  // namespace inviwo
+

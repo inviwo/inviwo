@@ -168,4 +168,9 @@ struct StipplingParameters {
     float worldScale;
 };
 
+struct TFParameters {
+    float rangeMin;  // Minimum position of the TF in absolute data-space coordinates
+    float rangeMax;  // Maximum position of the TF in absolute data-space coordinates
+};
+
 #endif // IVW_STRUCTS_GLSL

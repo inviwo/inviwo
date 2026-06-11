@@ -45,7 +45,8 @@ class QPointF;
 
 namespace inviwo {
 
-TFEditorControlPoint::TFEditorControlPoint(TFPrimitive& primitive) : TFEditorPrimitive(primitive) {
+TFEditorControlPoint::TFEditorControlPoint(TFPrimitive& primitive, PrimitiveSetMode mode)
+    : TFEditorPrimitive(primitive, mode) {
     setZValue(tfZLevel);
 }
 
@@ -91,10 +92,13 @@ TFMoveMode TFEditorControlPoint::moveMode() const {
 QVariant TFEditorControlPoint::itemChange(GraphicsItemChange change, const QVariant& value) {
     if ((change == QGraphicsItem::ItemPositionChange) && scene()) {
         // constrain positions to valid view positions
-        const auto sceneRect = scene()->sceneRect();
-        auto newPos = utilqt::clamp(constrainPosToXorY(value.toPointF()), sceneRect);
+        const auto r =
+            (mode_ == PrimitiveSetMode::Absolute)
+                ? QRectF{scene()->sceneRect().x(), 0.0, scene()->sceneRect().width(), 1.0}
+                : QRectF{0.0, 0.0, 1.0, 1.0};
+        auto newPos = utilqt::clamp(constrainPosToXorY(value.toPointF()), r);
 
-        const double d = 2.0 * sceneRect.width() * glm::epsilon<float>();
+        const double d = 2.0 * scene()->sceneRect().width() * glm::epsilon<float>();
         if (moveMode() == TFMoveMode::Restrict) {
             if (left_ && left_->left && left_->left->scenePos().x() > newPos.x()) {
                 newPos.setX(left_->left->scenePos().x() + d);

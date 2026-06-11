@@ -70,7 +70,7 @@ IsoTFPropertyWidgetQt::IsoTFPropertyWidgetQt(IsoTFProperty* property)
     setLayout(hLayout);
     IsoTFPropertyWidgetQt::updateFromProperty();
 
-    connect(btnOpenTF_, &IvwPushButton::clicked, [this]() {
+    connect(btnOpenTF_, &TFPushButton::clicked, [this]() {
         if (!tfDialog_) {
             initEditor();
             tfDialog_->setVisible(true);
@@ -92,7 +92,7 @@ IsoTFProperty* IsoTFPropertyWidgetQt::isoTfProperty() const {
     return static_cast<IsoTFProperty*>(property_);
 }
 
-void IsoTFPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
+void IsoTFPropertyWidgetQt::updateFromProperty() {}
 
 bool IsoTFPropertyWidgetQt::hasEditorWidget() const { return true; }
 
