@@ -1,0 +1,98 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2014-2026 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#pragma once
+
+#include <modules/hdf5/hdf5moduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <modules/hdf5/ports/hdf5port.h>
+#include <modules/hdf5/datastructures/hdf5metadata.h>
+#include <modules/hdf5/hdf5utils.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+
+#include <memory>
+#include <vector>
+
+namespace inviwo {
+
+namespace hdf5 {
+
+/**
+ * @brief Loads one or more 1-D datasets from an HDF5 file as columns of a DataFrame.
+ *
+ * All datasets with rank == 1 that are found in the connected HDF5 handle are listed
+ * as toggle-able columns.  Enabled columns are assembled into a single DataFrame; all
+ * enabled columns must have the same number of elements.
+ */
+class IVW_MODULE_HDF5_API HDF5ToDataFrame : public Processor {
+public:
+    HDF5ToDataFrame();
+    virtual ~HDF5ToDataFrame();
+
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+protected:
+    virtual void process() override;
+    virtual void deserialize(Deserializer& d) override;
+
+private:
+    void makeDataFrame();
+    void onDataChange();
+    std::string getDescription(const MetaData& meta) const;
+
+    // Rebuilds the dynamic column-selection properties from dataMatches_.
+    void rebuildColumnProperties();
+
+    std::vector<MetaData> dataMatches_;
+
+    Inport inport_;
+    DataFrameOutport outport_;
+    std::shared_ptr<DataFrame> dataFrame_;
+
+    BoolProperty automaticEvaluation_;
+    ButtonProperty evaluate_;
+
+    /// One BoolProperty per available 1-D dataset – rebuilt on data change.
+    CompositeProperty columns_;
+    /// Parallel ownership array (same order as dataMatches_ after rebuild).
+    std::vector<std::unique_ptr<BoolProperty>> columnProps_;
+
+    bool dirty_;
+    bool deserialized_ = false;
+};
+
+}  // namespace hdf5
+
+}  // namespace inviwo

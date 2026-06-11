@@ -1,4 +1,3 @@
-
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -33,6 +32,9 @@
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
 
 #include <modules/base/algorithm/dataminmax.h>
 
@@ -215,13 +217,13 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(
     if (dataset.attrExists("missing_value")) {
         const auto attr = dataset.openAttribute("missing_value");
         if (attr.getDataType().getClass() == H5T_FLOAT) {
-            double missingValue{};
+            double missingValue;
             attr.read(H5::PredType::NATIVE_DOUBLE, &missingValue);
             volume->setMetaData<MetaDataType<double>>("missing_value", missingValue);
             ignore.floatingPoint = missingValue;
 
         } else if (attr.getDataType().getClass() == H5T_INTEGER) {
-            std::int64_t missingValue{};
+            std::int64_t missingValue;
             attr.read(H5::PredType::NATIVE_INT64, &missingValue);
             volume->setMetaData<MetaDataType<std::int64_t>>("missing_value", missingValue);
             ignore.signedInteger = missingValue;
@@ -257,6 +259,189 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(
 }
 
 const H5::Group& Handle::getGroup() const { return data_; }
+
+std::shared_ptr<Layer> Handle::getLayerAtPathAsType(const Path& path,
+                                                    std::vector<Selection> selection,
+                                                    const DataFormatBase* type) const {
+    auto dataset = data_.openDataSet(path);
+    ::inviwo::util::OnScopeExit closedataset{[&]() { dataset.close(); }};
+
+    const H5::DataSpace dataSpace = dataset.getSpace();
+    const size_t rank = dataSpace.getSimpleExtentNdims();
+    if (selection.size() != rank) {
+        throw Exception("Selection not of the same rank as the data");
+    }
+
+    std::vector<hsize_t> dataDimensions(rank);
+    dataSpace.getSimpleExtentDims(dataDimensions.data());
+
+    std::vector<hsize_t> start(rank);
+    std::vector<hsize_t> count(rank);
+    std::vector<hsize_t> stride(rank);
+
+    // Row major (HDF/C) -> Column major (Inviwo): reverse selection
+    std::reverse(selection.begin(), selection.end());
+
+    size2_t layerDimensions(1);
+    int resRank = 0;
+    std::vector<hsize_t> memoryDimensions{1, 1};
+
+    for (size_t i = 0; i < rank; ++i) {
+        start[i] = selection[i].start;
+        count[i] =
+            static_cast<hsize_t>((selection[i].end - selection[i].start) / selection[i].stride);
+        stride[i] = selection[i].stride;
+
+        if (count[i] > 1) {
+            if (resRank > 1) throw Exception("Invalid selection, resulting rank > 2");
+            memoryDimensions[resRank] = count[i];
+            layerDimensions[resRank] = count[i];
+            resRank++;
+        }
+    }
+
+    dataSpace.selectHyperslab(H5S_SELECT_SET, count.data(), start.data(), stride.data(), nullptr);
+
+    H5::DataSpace memorySpace(2, memoryDimensions.data());
+    memorySpace.selectAll();
+
+    hsize_t selectionSize = memorySpace.getSelectNpoints();
+
+    log::info("Data rank: {} dims {} size {} selection {} memory dim {}", rank,
+              joinString(dataDimensions, " x "), dataSpace.getSelectNpoints(),
+              memorySpace.getSelectNpoints(), layerDimensions);
+
+    const DataFormatBase* format = type ? type : util::getDataFormatFromDataSet(dataset);
+
+    // Reverse back to column major
+    std::reverse(&layerDimensions[0], &layerDimensions[0] + layerDimensions.length());
+
+    auto layer = std::make_shared<Layer>(LayerConfig{.dimensions = layerDimensions,
+                                                     .format = format,
+                                                     .type = LayerType::Color});
+    auto* layerRam = layer->getEditableRepresentation<LayerRAM>();
+
+    IgnoreValues ignore{};
+
+    if (dataset.attrExists("units")) {
+        const auto attr = dataset.openAttribute("units");
+        if (attr.getDataType().getClass() == H5T_STRING) {
+            std::string units;
+            attr.read(attr.getStrType(), units);
+            layer->dataMap.valueAxis.unit = units::unit_from_string(units);
+        }
+    }
+
+    if (dataset.attrExists("long_name")) {
+        const auto attr = dataset.openAttribute("long_name");
+        if (attr.getDataType().getClass() == H5T_STRING) {
+            std::string name;
+            attr.read(attr.getStrType(), name);
+            layer->dataMap.valueAxis.name = name;
+        }
+    }
+
+    if (dataset.attrExists("missing_value")) {
+        const auto attr = dataset.openAttribute("missing_value");
+        if (attr.getDataType().getClass() == H5T_FLOAT) {
+            double missingValue{};
+            attr.read(H5::PredType::NATIVE_DOUBLE, &missingValue);
+            layer->setMetaData<MetaDataType<double>>("missing_value", missingValue);
+            ignore.floatingPoint = missingValue;
+        } else if (attr.getDataType().getClass() == H5T_INTEGER) {
+            std::int64_t missingValue{};
+            attr.read(H5::PredType::NATIVE_INT64, &missingValue);
+            layer->setMetaData<MetaDataType<std::int64_t>>("missing_value", missingValue);
+            ignore.signedInteger = missingValue;
+        }
+    }
+
+    auto minmax = layerRam->dispatch<std::pair<dvec4, dvec4>, dispatching::filter::Scalars>(
+        [&](auto lrprecision) {
+            using ValueType = ::inviwo::util::PrecisionValueType<decltype(lrprecision)>;
+
+            ValueType* data = lrprecision->getDataTyped();
+
+            try {
+                dataset.read(data, TypeMap<ValueType>::getType(), memorySpace, dataSpace);
+            } catch (H5::DataSetIException& e) {
+                throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
+            }
+
+            auto res = ::inviwo::util::dataMinMax(data, selectionSize, ignore);
+
+            log::info("Read HDF layer type: {} data range: {}, {} file: {}",
+                      DataFormat<ValueType>::str(), res.first, res.second, dataset.getFileName());
+
+            return res;
+        });
+
+    layer->dataMap.dataRange.x = glm::compMin(minmax.first);
+    layer->dataMap.dataRange.y = glm::compMax(minmax.second);
+    layer->dataMap.valueRange = layer->dataMap.dataRange;
+    layer->discardHistograms();
+
+    return layer;
+}
+
+std::shared_ptr<BufferBase> Handle::getBufferAtPathAsType(const Path& path,
+                                                          std::vector<Selection> selection,
+                                                          const DataFormatBase* type) const {
+    auto dataset = data_.openDataSet(path);
+    ::inviwo::util::OnScopeExit closedataset{[&]() { dataset.close(); }};
+
+    const H5::DataSpace dataSpace = dataset.getSpace();
+    const size_t rank = dataSpace.getSimpleExtentNdims();
+    if (selection.size() != rank) {
+        throw Exception("Selection not of the same rank as the data");
+    }
+
+    std::vector<hsize_t> dataDimensions(rank);
+    dataSpace.getSimpleExtentDims(dataDimensions.data());
+
+    std::vector<hsize_t> start(rank);
+    std::vector<hsize_t> count(rank);
+    std::vector<hsize_t> stride(rank);
+
+    // Row major (HDF/C) -> Column major (Inviwo): reverse selection
+    std::reverse(selection.begin(), selection.end());
+
+    hsize_t totalElements = 1;
+    for (size_t i = 0; i < rank; ++i) {
+        start[i] = selection[i].start;
+        count[i] =
+            static_cast<hsize_t>((selection[i].end - selection[i].start) / selection[i].stride);
+        stride[i] = selection[i].stride;
+        totalElements *= count[i];
+    }
+
+    dataSpace.selectHyperslab(H5S_SELECT_SET, count.data(), start.data(), stride.data(), nullptr);
+
+    H5::DataSpace memorySpace(1, &totalElements);
+    memorySpace.selectAll();
+
+    log::info("Data rank: {} dims {} elements {} buffer size {}", rank,
+              joinString(dataDimensions, " x "), dataSpace.getSelectNpoints(), totalElements);
+
+    const DataFormatBase* format = type ? type : util::getDataFormatFromDataSet(dataset);
+
+    auto buffer = dispatching::singleDispatch<std::shared_ptr<BufferBase>,
+                                              dispatching::filter::Scalars>(
+        format->getId(), [&]<typename T>() -> std::shared_ptr<BufferBase> {
+            auto repr = std::make_shared<BufferRAMPrecision<T>>(static_cast<size_t>(totalElements));
+            try {
+                dataset.read(repr->getDataContainer().data(), TypeMap<T>::getType(), memorySpace,
+                             dataSpace);
+            } catch (H5::DataSetIException& e) {
+                throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
+            }
+            log::info("Read HDF buffer type: {} size: {} file: {}", DataFormat<T>::str(),
+                      totalElements, dataset.getFileName());
+            return std::make_shared<Buffer<T>>(repr);
+        });
+
+    return buffer;
+}
 
 }  // namespace hdf5
 
