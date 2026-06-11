@@ -623,11 +623,11 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     }
 }
 
-double TFEditor::sceneToPos(const QPointF& scenePos, const TFPrimitiveSet& set) const {
+double TFEditor::sceneToPos(const QPointF& scenePos, const TFPrimitiveSet& set) {
     return set.getMode() == PrimitiveSetMode::Absolute ? scenePos.x()
                                                        : glm::clamp(scenePos.x(), 0.0, 1.0);
 }
-double TFEditor::sceneToAlpha(const QPointF& scenePos) const {
+double TFEditor::sceneToAlpha(const QPointF& scenePos) {
     return glm::clamp(scenePos.y(), 0.0, 1.0);
 }
 

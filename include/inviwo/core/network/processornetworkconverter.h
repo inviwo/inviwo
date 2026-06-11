@@ -49,7 +49,7 @@ public:
 private:
     void updateProcessorType(TxElement* node);
     void updateMetaDataTree(TxElement* node);
-    void updatePropertType(TxElement* node);
+    void updatePropertyType(TxElement* node);
     void updateMetaDataType(TxElement* node);
     void updateMetaDataKeys(TxElement* node);
     void updateShadingMode(TxElement* node);
@@ -58,10 +58,10 @@ private:
     void updateDimensionTag(TxElement* node);
     void updatePropertyLinks(TxElement* node);
     void updatePortsInProcessors(TxElement* node);
-    void updateNoSpaceInProcessorClassIdentifers(TxElement* node);
+    void updateNoSpaceInProcessorClassIdentifiers(TxElement* node);
     void updateDisplayName(TxElement* node);
     void updateProcessorIdentifiers(TxElement* node);
-    void updateTransferfunctions(TxElement* node);
+    void updateTransferFunctions(TxElement* node);
     void updateProcessorIdentifiersStriped(TxElement* node);
     void updatePropertyEditorMetadata(TxElement* node);
     void updateCameraPropertyToRefs(TxElement* node);

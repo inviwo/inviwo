@@ -101,7 +101,6 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
 
 TFPrimitiveSet& TFPrimitiveSet::operator=(TFPrimitiveSet&& rhs) noexcept {
     if (this != &rhs) {
-        Serializable::operator=(std::move(rhs));
         TFPrimitiveSetObservable::operator=(std::move(rhs));
         TFPrimitiveObserver::operator=(std::move(rhs));
         setMode(rhs.mode_);
@@ -113,7 +112,7 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(TFPrimitiveSet&& rhs) noexcept {
 void TFPrimitiveSet::setMode(PrimitiveSetMode mode) {
     if (mode_ != mode) {
         // We have to ensure that all points are in 0-1 range before changing mode
-        if (mode == PrimitiveSetMode::Relative) {  // We have to ensure
+        if (mode == PrimitiveSetMode::Relative) {
             DataMapper dm{getRange()};
             if (dm.mapFromValueToNormalized(0.5) < 0.5) {
                 std::ranges::for_each(*this, [&](auto& prim) {

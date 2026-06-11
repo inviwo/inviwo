@@ -54,7 +54,7 @@ IVW_MODULE_BASEGL_API void addSegmentsFor(std::vector<ShaderComponent::Segment>&
 /**
  * Adds a IsoValueProperty, and binds it to uniforms in the shader.
  * Supports both Relative and Absolute isovalue modes. In Absolute mode,
- * isovalue positions are normalized by the volume's data range before
+ * isovalue positions are normalized by the volume's value range before
  * passing to the shader.
  */
 class IsoComponent : public ShaderComponent {

@@ -48,7 +48,7 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             traverseNodes(root, &ProcessorNetworkConverter::updateMetaDataTree);
             [[fallthrough]];
         case 2:
-            traverseNodes(root, &ProcessorNetworkConverter::updatePropertType);
+            traverseNodes(root, &ProcessorNetworkConverter::updatePropertyType);
             [[fallthrough]];
         case 3:
             traverseNodes(root, &ProcessorNetworkConverter::updateShadingMode);
@@ -73,7 +73,7 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             [[fallthrough]];
         case 10:
             traverseNodes(root,
-                          &ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers);
+                          &ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifiers);
             [[fallthrough]];
         case 11:
             traverseNodes(root, &ProcessorNetworkConverter::updateDisplayName);
@@ -82,7 +82,7 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             traverseNodes(root, &ProcessorNetworkConverter::updateProcessorIdentifiers);
             [[fallthrough]];
         case 13:
-            traverseNodes(root, &ProcessorNetworkConverter::updateTransferfunctions);
+            traverseNodes(root, &ProcessorNetworkConverter::updateTransferFunctions);
             [[fallthrough]];
         case 14:
             usedIdentifier_.clear();
@@ -148,7 +148,7 @@ void ProcessorNetworkConverter::updateMetaDataTree(TxElement* node) {
     }
 }
 
-void ProcessorNetworkConverter::updatePropertType(TxElement* node) {
+void ProcessorNetworkConverter::updatePropertyType(TxElement* node) {
     std::string renamed[] = {"undefined",
                              "BoolProperty",
                              "AdvancedMaterialProperty",
@@ -465,7 +465,7 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
     }
 }
 
-void ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers(TxElement* node) {
+void ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifiers(TxElement* node) {
     std::string renamed[] = {"org.inviwo.Diffuse light source",
                              "org.inviwo.Directional light source",
                              "org.inviwo.Ordinal Property Animator",
@@ -540,7 +540,7 @@ void ProcessorNetworkConverter::updateProcessorIdentifiers(TxElement* node) {
     }
 }
 
-void ProcessorNetworkConverter::updateTransferfunctions(TxElement* node) {
+void ProcessorNetworkConverter::updateTransferFunctions(TxElement* node) {
     const auto& key = node->Value();
 
     if (key == "transferFunction") {
