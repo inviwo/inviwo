@@ -141,8 +141,6 @@ MaskComponent::MaskComponent(VolumeInport& port)
     options_.addProperties(maskMissingValue_, maskZero_, maskNaN_, maskInf_);
 }
 
-MaskComponent::~MaskComponent() = default;
-
 std::string_view MaskComponent::getName() const { return name_; }
 
 void MaskComponent::initializeResources(Shader&) {}
@@ -155,10 +153,18 @@ void MaskComponent::process(Shader& shader, TextureUnitContainer& cont) {
 
 auto MaskComponent::getSegments() -> std::vector<Segment> {
     if (options_.isChecked()) {
-        return {{fmt::format(uniforms, name_), placeholder::uniform, 350},
-                {fmt::format(first, name_), placeholder::first, 950},
-                {fmt::format(loop, name_), placeholder::loop, 350},
-                {fmt::format(loop2, name_, port_->getIdentifier()), placeholder::loop, 550}};
+        return {{.snippet = fmt::format(uniforms, name_),
+                 .placeholder = placeholder::uniform,
+                 .priority = 350},
+                {.snippet = fmt::format(first, name_),
+                 .placeholder = placeholder::first,
+                 .priority = 950},
+                {.snippet = fmt::format(loop, name_),
+                 .placeholder = placeholder::loop,
+                 .priority = 350},
+                {.snippet = fmt::format(loop2, name_, port_->getIdentifier()),
+                 .placeholder = placeholder::loop,
+                 .priority = 550}};
     } else {
         return {};
     }
@@ -193,7 +199,7 @@ void MaskComponent::preprocess() {
 
     if (!dirty) return;
 
-    utilgl::Activate aShader{&shader_};
+    const utilgl::Activate aShader{&shader_};
 
     TextureUnit unit;
     utilgl::bindTexture(*data, unit);
@@ -214,8 +220,8 @@ void MaskComponent::preprocess() {
 
     const auto dim = static_cast<ivec3>(mask_->getDimensions());
 
-    utilgl::Activate aFbo{&fbo_};
-    utilgl::ViewportState vp{0, 0, dim.x, dim.y};
+    const utilgl::Activate aFbo{&fbo_};
+    const utilgl::ViewportState vp{0, 0, dim.x, dim.y};
     auto* maskGL = mask_->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(maskGL->getTexture().get(), 0);
     utilgl::multiDrawImagePlaneRect(dim.z);

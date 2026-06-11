@@ -43,8 +43,7 @@ class StringShaderResource;
 
 class IVW_MODULE_BASEGL_API MaskComponent : public ShaderComponent {
 public:
-    MaskComponent(VolumeInport& port);
-    virtual ~MaskComponent();
+    explicit MaskComponent(VolumeInport& port);
 
     virtual std::string_view getName() const override;
     virtual void initializeResources(Shader& shader) override;
@@ -65,13 +64,11 @@ private:
     BoolProperty maskNaN_;
     BoolProperty maskInf_;
 
-
     std::shared_ptr<StringShaderResource> frag_;
     Shader shader_;
     FrameBufferObject fbo_;
 
     std::shared_ptr<Volume> mask_;
-
 };
 
 }  // namespace inviwo
