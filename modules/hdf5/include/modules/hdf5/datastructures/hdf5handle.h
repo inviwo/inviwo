@@ -32,6 +32,8 @@
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/glmvec.h>
@@ -85,6 +87,14 @@ public:
     std::shared_ptr<Volume> getVolumeAtPathAsType(
         const Path& path, std::vector<Selection> selection, const DataFormatBase* type,
         const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume) const;
+
+    std::shared_ptr<Layer> getLayerAtPathAsType(const Path& path,
+                                                std::vector<Selection> selection,
+                                                const DataFormatBase* type) const;
+
+    std::shared_ptr<BufferBase> getBufferAtPathAsType(const Path& path,
+                                                      std::vector<Selection> selection,
+                                                      const DataFormatBase* type) const;
 
     template <typename T>
     std::vector<T> getVectorAtPath(const Path& path) const;

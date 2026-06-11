@@ -14,6 +14,9 @@ set(HEADER_FILES
     include/modules/hdf5/processors/hdf5pathselection.h
     include/modules/hdf5/processors/hdf5source.h
     include/modules/hdf5/processors/hdf5volumesource.h
+    include/modules/hdf5/processors/hdf5layersource.h
+    include/modules/hdf5/processors/hdf5buffersource.h
+    include/modules/hdf5/processors/hdf5dataframesource.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -28,6 +31,9 @@ set(SOURCE_FILES
     src/processors/hdf5pathselection.cpp
     src/processors/hdf5source.cpp
     src/processors/hdf5volumesource.cpp
+    src/processors/hdf5layersource.cpp
+    src/processors/hdf5buffersource.cpp
+    src/processors/hdf5dataframesource.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
