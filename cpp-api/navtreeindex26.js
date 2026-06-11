@@ -1,5 +1,7 @@
 var NAVTREEINDEX26 =
 {
+"classinviwo_1_1animation_1_1KeyframeWidgetQt.html#afb874d0e40deaf50942b270d7a272be2":[4,0,1,2,62,0],
+"classinviwo_1_1animation_1_1LinearInterpolation.html":[2,0,0,0,63],
 "classinviwo_1_1animation_1_1LinearInterpolation.html":[4,0,1,2,64],
 "classinviwo_1_1animation_1_1MainAnimation.html":[2,0,0,0,64],
 "classinviwo_1_1animation_1_1MainAnimation.html":[4,0,1,2,65],
@@ -247,7 +249,5 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1AxisRenderer3D.html":[2,0,0,15,5],
 "classinviwo_1_1plot_1_1AxisRenderer3D.html":[4,0,1,22,6],
 "classinviwo_1_1plot_1_1AxisRenderer3D.html#a93ab15cc7b41f5c278ce6db8b965f380":[2,0,0,15,5,0],
-"classinviwo_1_1plot_1_1AxisRenderer3D.html#a93ab15cc7b41f5c278ce6db8b965f380":[4,0,1,22,6,0],
-"classinviwo_1_1plot_1_1AxisRendererBase.html":[2,0,0,15,6],
-"classinviwo_1_1plot_1_1AxisRendererBase.html":[4,0,1,22,7]
+"classinviwo_1_1plot_1_1AxisRenderer3D.html#a93ab15cc7b41f5c278ce6db8b965f380":[4,0,1,22,6,0]
 };

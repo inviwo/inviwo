@@ -80,7 +80,7 @@ var namespaceinviwo_1_1util =
     [ "alignPositionToMean", "namespaceinviwo_1_1util.html#a6fd54c996575d2b47bea52c51ee3ec14", null ],
     [ "alignPositionToRight", "namespaceinviwo_1_1util.html#a886b02bc8bf08edc11981f255bdc9780", null ],
     [ "appendIfNotEmpty", "namespaceinviwo_1_1util.html#ad9f205a4666ea62977429eb4a760e87b", null ],
-    [ "appendPartialProcessorNetwork", "namespaceinviwo_1_1util.html#a3c1d35bf328c84cfedc3dfd7976ae43a", null ],
+    [ "appendPartialProcessorNetwork", "namespaceinviwo_1_1util.html#a6da90de97c339dd5f15c34ef68105ccf", null ],
     [ "boundingBox", "namespaceinviwo_1_1util.html#a32ee784be289de026f2ddfac573ad4bc", null ],
     [ "boundingBox", "namespaceinviwo_1_1util.html#a3ef5044c351ff30d57622cbc3c4ecea2", null ],
     [ "boundingBox", "namespaceinviwo_1_1util.html#aa7f5168a7f6cd2b565423e2c2303fb41", null ],

@@ -365,7 +365,7 @@ template&lt;typename InputIter, typename UnaryPredicate&gt; </td></tr>
 template&lt;typename Dst, typename... Srcs&gt; </td></tr>
 <tr class="memitem:aea31612c6c30e23896ee3f18ee729c66 template"><td class="memItemLeft">Dst &amp;&#160;</td><td class="memItemRight"><b>append</b> (Dst &amp;dest, Srcs &amp;&amp;... sources)</td></tr>
 <tr class="memitem:ad9f205a4666ea62977429eb4a760e87b" id="r_ad9f205a4666ea62977429eb4a760e87b"><td class="memItemLeft">IVW_CORE_API std::string&#160;</td><td class="memItemRight"><a class="el" href="#ad9f205a4666ea62977429eb4a760e87b">appendIfNotEmpty</a> (std::string_view a, std::string_view b)</td></tr>
-<tr class="memitem:a3c1d35bf328c84cfedc3dfd7976ae43a" id="r_a3c1d35bf328c84cfedc3dfd7976ae43a"><td class="memItemLeft">IVW_CORE_API std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a3c1d35bf328c84cfedc3dfd7976ae43a">appendPartialProcessorNetwork</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, std::istream &amp;is, const std::filesystem::path &amp;refPath, <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app, OffsetCallback offsetCallback=nullptr)</td></tr>
+<tr class="memitem:a6da90de97c339dd5f15c34ef68105ccf" id="r_a6da90de97c339dd5f15c34ef68105ccf"><td class="memItemLeft">IVW_CORE_API std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a6da90de97c339dd5f15c34ef68105ccf">appendPartialProcessorNetwork</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, const std::pmr::string &amp;xml, const std::filesystem::path &amp;refPath, <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app, OffsetCallback offsetCallback=nullptr)</td></tr>
 <tr class="memitem:ae0947636398083de9bd93535fcb73690" id="r_ae0947636398083de9bd93535fcb73690"><td class="memItemLeft"><a id="ae0947636398083de9bd93535fcb73690" name="ae0947636398083de9bd93535fcb73690"></a>
 IVW_CORE_API std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight"><b>appendProcessorNetwork</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *destinationNetwork, const std::filesystem::path &amp;workspaceFile, <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app)</td></tr>
 <tr class="memitem:aa6fd9efe91dbf2a0948f48cb2006efbe" id="r_aa6fd9efe91dbf2a0948f48cb2006efbe"><td class="memTemplParams" colspan="2"><a id="aa6fd9efe91dbf2a0948f48cb2006efbe" name="aa6fd9efe91dbf2a0948f48cb2006efbe"></a>
@@ -1925,8 +1925,8 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a id="a3c1d35bf328c84cfedc3dfd7976ae43a" name="a3c1d35bf328c84cfedc3dfd7976ae43a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3c1d35bf328c84cfedc3dfd7976ae43a">&#9670;&#160;</a></span>appendPartialProcessorNetwork()</h2>
+<a id="a6da90de97c339dd5f15c34ef68105ccf" name="a6da90de97c339dd5f15c34ef68105ccf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6da90de97c339dd5f15c34ef68105ccf">&#9670;&#160;</a></span>appendPartialProcessorNetwork()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1939,7 +1939,7 @@ template&lt;typename T&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::istream &amp;</td>          <td class="paramname"><span class="paramname"><em>is</em></span>, </td>
+          <td class="paramtype">const std::pmr::string &amp;</td>          <td class="paramname"><span class="paramname"><em>xml</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

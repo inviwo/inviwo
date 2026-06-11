@@ -1146,6 +1146,7 @@ var namespaceinviwo =
     [ "ScalarToStringConverter", "classinviwo_1_1ScalarToStringConverter.html", null ],
     [ "ScatterPlotDataFrameVisualizer", "classinviwo_1_1ScatterPlotDataFrameVisualizer.html", "classinviwo_1_1ScatterPlotDataFrameVisualizer" ],
     [ "ScopedClock", "classinviwo_1_1ScopedClock.html", "classinviwo_1_1ScopedClock" ],
+    [ "ScopedPropertySerializationMode", "classinviwo_1_1ScopedPropertySerializationMode.html", null ],
     [ "SearchDSL", "classinviwo_1_1SearchDSL.html", "classinviwo_1_1SearchDSL" ],
     [ "Seed3Dto4D", "classinviwo_1_1Seed3Dto4D.html", "classinviwo_1_1Seed3Dto4D" ],
     [ "SeedPointGenerator", "classinviwo_1_1SeedPointGenerator.html", "classinviwo_1_1SeedPointGenerator" ],

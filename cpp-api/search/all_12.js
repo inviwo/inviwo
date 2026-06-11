@@ -29,7 +29,7 @@ var searchData=
   ['scopedclock_3c_20clockgl_2c_20callback_20_3e_26',['ScopedClock&lt; ClockGL, Callback &gt;',['../classinviwo_1_1ScopedClock.html',1,'inviwo']]],
   ['scopedclockcpu_27',['ScopedClockCPU',['../namespaceinviwo.html#a805f6499529f32e5da1c8c4d09bd12f5',1,'inviwo']]],
   ['scopedclockgl_28',['ScopedClockGL',['../namespaceinviwo.html#aa9bc4adec8778181ef760044d0d2688a',1,'inviwo']]],
-  ['scopedserializationmodeall_29',['scopedSerializationModeAll',['../classinviwo_1_1PropertyPresetManager.html#a73dcff1caed7216fbda31270ff4508c4',1,'inviwo::PropertyPresetManager']]],
+  ['scopedpropertyserializationmode_29',['ScopedPropertySerializationMode',['../classinviwo_1_1ScopedPropertySerializationMode.html',1,'inviwo']]],
   ['screentodata_5f_30',['screenToData_',['../classinviwo_1_1plot_1_1BoxSelection.html#a5f2162752427b706421dd49850632254',1,'inviwo::plot::BoxSelection']]],
   ['scrollarea_5f_31',['scrollArea_',['../classinviwo_1_1AnnotationsWidget.html#a529245cdc9244373490b2cc4dea2b2fe',1,'inviwo::AnnotationsWidget::scrollArea_'],['../classinviwo_1_1SettingsWidget.html#a822a1423700f54362fc97fc123c5b6f0',1,'inviwo::SettingsWidget::scrollArea_']]],
   ['searchdsl_32',['SearchDSL',['../classinviwo_1_1SearchDSL.html',1,'inviwo']]],

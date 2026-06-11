@@ -151,7 +151,6 @@ void&#160;</td><td class="memItemRight"><b>saveWorkspacePresets</b> (<a class="e
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a809c581fe5d40b69318ed8a23c460ee8" id="r_a809c581fe5d40b69318ed8a23c460ee8"><td class="memItemLeft">static void&#160;</td><td class="memItemRight"><a class="el" href="#a809c581fe5d40b69318ed8a23c460ee8">appendPropertyPresets</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *target, <a class="el" href="classinviwo_1_1Property.html">Property</a> *source)</td></tr>
-<tr class="memitem:a73dcff1caed7216fbda31270ff4508c4" id="r_a73dcff1caed7216fbda31270ff4508c4"><td class="memItemLeft">static <a class="el" href="structinviwo_1_1util_1_1OnScopeExit.html">util::OnScopeExit</a>&#160;</td><td class="memItemRight"><a class="el" href="#a73dcff1caed7216fbda31270ff4508c4">scopedSerializationModeAll</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manage property presets. Has a set of global application presets, a set of workspace presets, and handles property specific presets. </p>
@@ -183,32 +182,6 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Append all Presets in property source to property target. If the Preset already exists in target it will be overwritten. The properties should be of the same type. </p>
-
-</div>
-</div>
-<a id="a73dcff1caed7216fbda31270ff4508c4" name="a73dcff1caed7216fbda31270ff4508c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73dcff1caed7216fbda31270ff4508c4">&#9670;&#160;</a></span>scopedSerializationModeAll()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structinviwo_1_1util_1_1OnScopeExit.html">util::OnScopeExit</a> inviwo::PropertyPresetManager::scopedSerializationModeAll </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1Property.html">Property</a> *</td>          <td class="paramname"><span class="paramname"><em>property</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Set PropertySerializationMode to All on property and all its sub properties. The returned guard will reset the PropertySerializationModes to their original values when it goes out of scope. This is useful when copying properties. </p>
 
 </div>
 </div>
