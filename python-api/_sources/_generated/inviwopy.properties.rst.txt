@@ -94,6 +94,7 @@ inviwopy.properties
       PropertySerializationMode
       PropertyVecWrapper
       PropertyWidget
+      ScopedPropertySerializationMode
       Size_tMinMaxProperty
       Size_tProperty
       Size_tRefProperty
