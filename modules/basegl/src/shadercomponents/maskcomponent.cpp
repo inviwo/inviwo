@@ -125,7 +125,7 @@ MaskComponent::MaskComponent(VolumeInport& port)
     , options_{fmt::format("enable{}", name_),
                fmt::format("Enable Masking for {}", port.getIdentifier()), false,
                InvalidationLevel::InvalidResources}
-    , maskMissingValue_{"maskMissingValue", "Mask missing values", true}
+    , maskMissingValue_{"maskMissingValue", "Mask missing values", false}
     , maskZero_{"maskZero", "Mask zero values", false}
     , maskNaN_{"maskNaN", "Mask NaN values", false}
     , maskInf_{"maskInf", "Mask Inf values", false}
@@ -167,6 +167,8 @@ auto MaskComponent::getSegments() -> std::vector<Segment> {
 std::vector<Property*> MaskComponent::getProperties() { return {&options_}; }
 
 void MaskComponent::preprocess() {
+    if (!options_.isChecked()) return;
+
     if (!port_) return;
 
     bool dirty = port_->isChanged();
