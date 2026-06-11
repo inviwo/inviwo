@@ -35,14 +35,16 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/buffer/framebufferobject.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
+class StringShaderResource;
 
 class IVW_MODULE_BASEGL_API MaskComponent : public ShaderComponent {
 public:
     MaskComponent(VolumeInport& port);
-    virtual ~MaskComponent() = default;
+    virtual ~MaskComponent();
 
     virtual std::string_view getName() const override;
     virtual void initializeResources(Shader& shader) override;
@@ -56,12 +58,20 @@ private:
     std::string name_;
     VolumeInport* port_;
 
-    BoolProperty enable_;
+    BoolCompositeProperty options_;
 
+    BoolProperty maskMissingValue_;
+    BoolProperty maskZero_;
+    BoolProperty maskNaN_;
+    BoolProperty maskInf_;
+
+
+    std::shared_ptr<StringShaderResource> frag_;
     Shader shader_;
     FrameBufferObject fbo_;
 
     std::shared_ptr<Volume> mask_;
+
 };
 
 }  // namespace inviwo

@@ -38,6 +38,8 @@
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/shader/stringshaderresource.h>
 
+#include <ranges>
+
 namespace inviwo {
 
 namespace {
@@ -52,11 +54,11 @@ uniform VolumeParameters volumeParameters;
 
 uniform float maskValue;
 
-void main() {
+void main() {{
     float value = getVoxel(volume,volumeParameters, texCoord_.xyz).r;
-    float mask = (value == maskValue || value == 0.0) ? 1.0 : 0.0;
+    float mask = ({}) ? 1.0 : 0.0;
     FragData0 = vec4(vec3(mask), 1.0);
-}
+}}
 
 )";
 
@@ -93,32 +95,66 @@ if ({0}ValuePrev > 0.0) {{
 
 }  // namespace
 
+namespace {
+
+std::string makeFragmentShader(bool maskMissingValue, bool maskZero, bool maskNaN, bool maskInf) {
+
+    const auto mask_frag_conditions = std::to_array<std::pair<bool, std::string_view>>({
+        {maskMissingValue, "value == maskValue"},
+        {maskZero, "value == 0.0"},
+        {maskNaN, "isnan(value)"},
+        {maskInf, "isinf(value)"},
+    });
+
+    auto active = mask_frag_conditions | std::views::filter([](const auto& c) { return c.first; }) |
+                  std::views::transform([](const auto& c) { return c.second; });
+
+    if (std::ranges::empty(active)) {
+        return fmt::format(mask_frag, "false");
+    } else {
+        return fmt::format(mask_frag, fmt::join(active, " || "));
+    }
+}
+
+}  // namespace
+
 MaskComponent::MaskComponent(VolumeInport& port)
     : ShaderComponent{}
     , name_{fmt::format("{}Mask", port.getIdentifier())}
     , port_{&port}
-    , enable_{fmt::format("enable{}", name_),
-              fmt::format("Enable Masking for {}", port.getIdentifier()), false,
-              InvalidationLevel::InvalidResources}
+    , options_{fmt::format("enable{}", name_),
+               fmt::format("Enable Masking for {}", port.getIdentifier()), false,
+               InvalidationLevel::InvalidResources}
+    , maskMissingValue_{"maskMissingValue", "Mask missing values", true}
+    , maskZero_{"maskZero", "Mask zero values", false}
+    , maskNaN_{"maskNaN", "Mask NaN values", false}
+    , maskInf_{"maskInf", "Mask Inf values", false}
+    , frag_{std::make_shared<StringShaderResource>(
+          "mask.frag", makeFragmentShader(maskMissingValue_.get(), maskZero_.get(), maskNaN_.get(),
+                                          maskInf_.get()))}
     , shader_{{{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
                {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
-               {ShaderType::Fragment,
-                std::make_shared<StringShaderResource>("mask.frag", mask_frag)}},
+               {ShaderType::Fragment, std::static_pointer_cast<const ShaderResource>(frag_)}},
               Shader::Build::Yes}
-    , fbo_{} {}
+    , fbo_{} {
+
+    options_.addProperties(maskMissingValue_, maskZero_, maskNaN_, maskInf_);
+}
+
+MaskComponent::~MaskComponent() = default;
 
 std::string_view MaskComponent::getName() const { return name_; }
 
 void MaskComponent::initializeResources(Shader&) {}
 
 void MaskComponent::process(Shader& shader, TextureUnitContainer& cont) {
-    if (enable_ && mask_) {
+    if (options_.isChecked() && mask_) {
         utilgl::bindAndSetUniforms(shader, cont, *mask_, name_);
     }
 }
 
 auto MaskComponent::getSegments() -> std::vector<Segment> {
-    if (enable_) {
+    if (options_.isChecked()) {
         return {{fmt::format(uniforms, name_), placeholder::uniform, 350},
                 {fmt::format(first, name_), placeholder::first, 950},
                 {fmt::format(loop, name_), placeholder::loop, 350},
@@ -128,7 +164,7 @@ auto MaskComponent::getSegments() -> std::vector<Segment> {
     }
 }
 
-std::vector<Property*> MaskComponent::getProperties() { return {&enable_}; }
+std::vector<Property*> MaskComponent::getProperties() { return {&options_}; }
 
 void MaskComponent::preprocess() {
     if (!port_) return;
@@ -144,6 +180,15 @@ void MaskComponent::preprocess() {
                                                       .world = data->getWorldMatrix()});
         dirty = true;
     }
+
+    if (maskZero_.isModified() || maskMissingValue_.isModified() || maskNaN_.isModified() ||
+        maskInf_.isModified()) {
+        frag_->setSource(makeFragmentShader(maskMissingValue_.get(), maskZero_.get(),
+                                            maskNaN_.get(), maskInf_.get()));
+        // The shader will rebuild itself.
+        dirty = true;
+    }
+
     if (!dirty) return;
 
     utilgl::Activate aShader{&shader_};
@@ -153,7 +198,17 @@ void MaskComponent::preprocess() {
     shader_.setUniform("volume", unit.getUnitNumber());
     utilgl::setShaderUniforms(shader_, *mask_, "volumeParameters");
 
-    shader_.setUniform("maskValue", 1.0e20f);
+    if (maskMissingValue_.get()) {
+        const auto* missingDouble = data->getMetaData<MetaDataType<double>>("missing_value");
+        const auto* missingInt = data->getMetaData<MetaDataType<std::int64_t>>("missing_value");
+        if (missingDouble) {
+            shader_.setUniform("maskValue", static_cast<float>(missingDouble->get()));
+        } else if (missingInt) {
+            shader_.setUniform("maskValue", static_cast<float>(missingInt->get()));
+        } else {
+            throw Exception("Missing value masking enabled but no 'missing_value' metadata found");
+        }
+    }
 
     const auto dim = static_cast<ivec3>(mask_->getDimensions());
 
