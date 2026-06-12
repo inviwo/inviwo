@@ -61,14 +61,18 @@ StandardVolumeRaycaster::StandardVolumeRaycaster(std::string_view identifier,
     , camera_{"camera", util::boundingBox(volume_.volumePort)}
     , light_{&camera_.camera}
     , positionIndicator_{}
-    , sampleTransform_{} {
+    , sampleTransform_{}
+    , mask_{volume_.volumePort} {
 
     registerComponents(volume_, entryExit_, background_, raycasting_, isoTF_, camera_, light_,
-                       positionIndicator_, sampleTransform_);
+                       positionIndicator_, sampleTransform_, mask_);
 }
 
 void StandardVolumeRaycaster::process() {
     util::checkValidChannel(raycasting_.selectedChannel(), volume_.channelsForVolume().value_or(0));
+
+    mask_.preprocess();
+
     VolumeRaycasterBase::process();
 }
 
