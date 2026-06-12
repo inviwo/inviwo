@@ -3475,6 +3475,7 @@ var hierarchy =
       [ "inviwo::IsoTFComponent< N >", "classinviwo_1_1IsoTFComponent.html", null ],
       [ "inviwo::LightComponent", "classinviwo_1_1LightComponent.html", null ],
       [ "inviwo::LightVolumeComponent", "classinviwo_1_1LightVolumeComponent.html", null ],
+      [ "inviwo::MaskComponent", "classinviwo_1_1MaskComponent.html", null ],
       [ "inviwo::MultiRaycastingComponent", "classinviwo_1_1MultiRaycastingComponent.html", null ],
       [ "inviwo::PositionIndicatorComponent", "classinviwo_1_1PositionIndicatorComponent.html", null ],
       [ "inviwo::RaycastingComponent", "classinviwo_1_1RaycastingComponent.html", null ],

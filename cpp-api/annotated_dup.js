@@ -1179,6 +1179,7 @@ var annotated_dup =
       [ "LorenzSystem", "classinviwo_1_1LorenzSystem.html", "classinviwo_1_1LorenzSystem" ],
       [ "MarchingTetrahedron", "classinviwo_1_1MarchingTetrahedron.html", null ],
       [ "MarginProperty", "classinviwo_1_1MarginProperty.html", "classinviwo_1_1MarginProperty" ],
+      [ "MaskComponent", "classinviwo_1_1MaskComponent.html", "classinviwo_1_1MaskComponent" ],
       [ "MenuItem", "classinviwo_1_1MenuItem.html", null ],
       [ "Mesh", "classinviwo_1_1Mesh.html", "classinviwo_1_1Mesh" ],
       [ "Mesh2DRenderProcessorGL", "classinviwo_1_1Mesh2DRenderProcessorGL.html", "classinviwo_1_1Mesh2DRenderProcessorGL" ],
