@@ -79,6 +79,8 @@
       MeshWriterFactory
       MessageBreakLevel
       ModuleIdentifierWrapper
+      ModuleManager
+      ModuleManagerCallbackHolder
       ModulePath
       MouseButton
       MouseButtons
@@ -150,6 +152,10 @@
       VolumeReaderFactory
       VolumeWriterFactory
       WheelEvent
+      WorkspaceManager
+      WorkspaceManagerOnClearChangedCallbackHolder
+      WorkspaceManagerOnModifiedCallbackHolder
+      WorkspaceSaveMode
       dmat2VectorFlatMultiInport
       dmat2VectorInport
       dmat2VectorMultiInport
