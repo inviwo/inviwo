@@ -177,8 +177,8 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
             float cosPhi = std::cos(phi);
             vec3 normal(cosPhi * sinTheta, sinPhi * sinTheta, cosTheta);
             vec3 vert(normal * radius);
-            vec3 texCoord(static_cast<float>(j) / segmentsPerLoop, static_cast<float>(i) / numLoops,
-                          0.0f);
+            vec3 texCoord(1.0f - static_cast<float>(j) / segmentsPerLoop,
+                          static_cast<float>(i) / numLoops, 0.0f);
             spheremesh->addVertex(vert, texCoord, vec4(vert, 1.f));
             normals->set(i * pointsPerLine + j, normal);
         }
