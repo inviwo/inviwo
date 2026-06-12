@@ -125,11 +125,26 @@ is applied</p>
 selecting the respective group. Pressing &lt;SHIFT&gt; while selecting a group
 will add the elements of the group to the current selection.</p>
 
-<h3>Masking the TF</h3>
-<p>Parts of the TF can be masked out, i.e. alpha is implicitly set to zero outside
-the mask. The context menu provides functionality for setting the begin and end points
-of the mask as well as clearing it. The mask can also be adjusted by dragging the back
-rhombus at either side of the editor</p>
+<h3>TF Mode: Relative and Absolute</h3>
+<p>The TF can operate in two modes, selectable via the dropdown at the top of the right panel:</p>
+<ul>
+    <li>
+        <b>Relative</b>
+        TF points use a normalized scalar range [0, 1] independent of the
+        actual data range. This is the default behavior.
+    </li>
+    <li>
+        <b>Absolute</b>
+        TF points use the actual data values as their positions. When a
+        data range is available, the editor axis is scaled to the data
+        range accordingly.
+    </li>
+</ul>
+<p>Switching between modes automatically converts the TF point positions. When
+hovering over a point, the label shows the position and alpha. In
+<b>Relative</b> mode both the data-space value and the normalized position
+are shown, while in <b>Absolute</b> mode only the data-space value is
+displayed.</p>
 
 <h3>Histogram</h3>
 <p>The background can show a histogram if the data if available, pressing &lt;h&gt; will
