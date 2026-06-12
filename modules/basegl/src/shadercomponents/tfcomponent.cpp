@@ -46,7 +46,7 @@ vec4 applyTF_{tf}(in float normalizedValue, in VolumeParameters volumeParameters
 )";
 
 constexpr std::string_view applyRelative = R"(
-vec4 applyTF_{tf}(in float normalizedValue, in VolumeParameters) {{
+vec4 applyTF_{tf}(in float normalizedValue, in VolumeParameters volumeParameters) {{
     return applyTF({tf}, normalizedValue);
 }}
 )";
