@@ -33,24 +33,28 @@
 
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
+class StringShaderResource;
+
 namespace HeightFieldShading {
-enum Type {
+enum Type : std::int8_t {
     ConstantColor,
     ColorTexture,
     HeightField,
 };
-}
+}  // namespace HeightFieldShading
 
 /**
  * @brief Maps a heightfield onto a geometry and renders it to an image.
@@ -60,29 +64,30 @@ public:
     HeightFieldProcessor();
     ~HeightFieldProcessor();
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
     virtual void initializeResources() override;
     virtual void process() override;
 
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
 private:
     MeshFlatMultiInport inport_;
-    ImageInport inportHeightfield_;  //!< inport for the 2D heightfield texture
-    ImageInport inportTexture_;      //!< inport for the 2D color texture (optional)
-    ImageInport inportNormalMap_;    //!< inport for the 2D normal map texture (optional)
+    LayerInport inportHeightfield_;
+    ImageInport inportTexture_;
+    ImageInport inportNormalMap_;
     ImageInport imageInport_;
     ImageOutport outport_;
 
-    FloatProperty heightScale_;             //!< scaling factor for the input heightfield
-    OptionPropertyInt terrainShadingMode_;  //!< shading mode for coloring the heightfield
+    FloatProperty heightScale_;
+    OptionPropertyInt terrainShadingMode_;
+    StringProperty vertexShaderSource_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
 
     SimpleLightingProperty lightingProperty_;
 
+    std::shared_ptr<StringShaderResource> vertexShader_;
     Shader shader_;
 };
 
