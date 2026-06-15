@@ -36,8 +36,8 @@ uniform CameraParameters camera;
 
 uniform sampler2D heightfield;
 uniform ImageParameters heightfieldParameters;
-uniform sampler2D colorTextureColor;
-uniform sampler2D normalmapColor;
+uniform sampler2D colorTexture;
+uniform sampler2D normalmap;
 
 uniform int terrainShadingMode = 0;
 uniform int normalMapping = 0;
@@ -54,7 +54,7 @@ void main() {
     vec4 fragColor = fragment.color;
 
     if (terrainShadingMode == 1) {  // color texture
-        fragColor = texture(colorTextureColor, fragment.texCoord.xy);
+        fragColor = texture(colorTexture, fragment.texCoord.xy);
     } else if (terrainShadingMode == 2) {  // heightfield texture
         fragColor = vec4(texture(heightfield, fragment.texCoord.xy).rrr, 1.0);
     }
@@ -62,7 +62,7 @@ void main() {
     // normal mapping
     vec3 normal;
     if (normalMapping == 1) {
-        normal = texture(normalmapColor, fragment.texCoord.xy).rgb * 2.0 - 1.0;
+        normal = texture(normalmap, fragment.texCoord.xy).rgb * 2.0 - 1.0;
         normal = normalize(geometry.modelToWorldNormalMatrix * normal);
     } else {
         normal = normalize(fragment.normal);

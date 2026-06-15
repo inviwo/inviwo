@@ -117,9 +117,8 @@ HeightFieldProcessor::HeightFieldProcessor()
     , inportHeightfield_{"heightfield", R"(
         The height field input (single-channel layer).
         If the layer has multiple channels only the red channel is used.)"_unindentHelp}
-    , inportTexture_{"colorTexture", "Color texture for color mapping (optional)."_help,
-                     OutportDeterminesSize::Yes}
-    , inportNormalMap_{"normalmap", "Normal map input (optional)"_help, OutportDeterminesSize::Yes}
+    , inportTexture_{"colorTexture", "Color texture for color mapping (optional)."_help}
+    , inportNormalMap_{"normalmap", "Normal map input (optional)"_help}
     , imageInport_{"imageInport", "Background image (optional)"_help}
     , outport_{"image", "The rendered height field."_help}
     , heightScale_{"heightScale", "Height Scale",
@@ -182,7 +181,7 @@ void HeightFieldProcessor::process() {
     }
 
     if (inportTexture_.isReady()) {
-        utilgl::bindAndSetUniforms(shader_, cont, inportTexture_, ImageType::ColorOnly);
+        utilgl::bindAndSetUniforms(shader_, cont, inportTexture_);
     } else if (terrainShadingMode == HeightFieldShading::ColorTexture) {
         // switch to flat shading since heightfield texture is not available
         terrainShadingMode = HeightFieldShading::ConstantColor;
@@ -190,7 +189,7 @@ void HeightFieldProcessor::process() {
 
     const bool normalMapping = inportNormalMap_.isReady();
     if (normalMapping && inportNormalMap_.isReady()) {
-        utilgl::bindAndSetUniforms(shader_, cont, inportNormalMap_, ImageType::ColorOnly);
+        utilgl::bindAndSetUniforms(shader_, cont, inportNormalMap_);
     }
 
     shader_.setUniform("terrainShadingMode", terrainShadingMode);

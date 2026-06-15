@@ -73,8 +73,8 @@ public:
 private:
     MeshFlatMultiInport inport_;
     LayerInport inportHeightfield_;
-    ImageInport inportTexture_;
-    ImageInport inportNormalMap_;
+    LayerInport inportTexture_;
+    LayerInport inportNormalMap_;
     ImageInport imageInport_;
     ImageOutport outport_;
 
