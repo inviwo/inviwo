@@ -163,44 +163,47 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
     auto normals = std::make_shared<Vec3BufferRAM>((numLoops + 1) * (segmentsPerLoop + 1));
     auto normalBuffer = std::make_shared<Buffer<vec3>>(normals);
 
-    unsigned int pointsPerLine = segmentsPerLoop + 1;
+    const unsigned int pointsPerLine = segmentsPerLoop + 1;
     for (unsigned int i = 0; i <= numLoops; ++i) {
         for (unsigned int j = 0; j <= segmentsPerLoop; ++j) {
-            float theta = (i * std::numbers::pi_v<float> / numLoops);
+            float theta =
+                (static_cast<float>(i) * std::numbers::pi_v<float> / static_cast<float>(numLoops));
 
             if (i == numLoops) theta = std::numbers::pi_v<float>;
 
-            float phi = j * 2 * std::numbers::pi_v<float> / segmentsPerLoop;
-            float sinTheta = std::sin(theta);
-            float sinPhi = std::sin(phi);
-            float cosTheta = std::cos(theta);
-            float cosPhi = std::cos(phi);
-            vec3 normal(cosPhi * sinTheta, sinPhi * sinTheta, cosTheta);
-            vec3 vert(normal * radius);
-            vec3 texCoord(1.0f - static_cast<float>(j) / segmentsPerLoop,
-                          static_cast<float>(i) / numLoops, 0.0f);
+            const float phi = static_cast<float>(j * 2) * std::numbers::pi_v<float> /
+                              static_cast<float>(segmentsPerLoop);
+            const float sinTheta = std::sin(theta);
+            const float sinPhi = std::sin(phi);
+            const float cosTheta = std::cos(theta);
+            const float cosPhi = std::cos(phi);
+            const vec3 normal(cosPhi * sinTheta, sinPhi * sinTheta, cosTheta);
+            const vec3 vert(normal * radius);
+            const vec3 texCoord(1.0f - static_cast<float>(j) / static_cast<float>(segmentsPerLoop),
+                                static_cast<float>(i) / static_cast<float>(numLoops), 0.0f);
             spheremesh->addVertex(vert, texCoord, vec4(vert, 1.f));
             normals->set(i * pointsPerLine + j, normal);
         }
     }
     spheremesh->addBuffer(BufferType::NormalAttrib, normalBuffer);
 
-    // Create Indices
     // compute indices
     spheremesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
     for (unsigned int y = 0; y < numLoops; ++y) {
         auto indices = std::make_shared<IndexBufferRAM>(pointsPerLine * 2);
         auto indexBuf = std::make_shared<IndexBuffer>(indices);
 
-        unsigned int offset = y * pointsPerLine;
+        const unsigned int offset = y * pointsPerLine;
         std::size_t count = 0;
         for (unsigned int x = 0; x < pointsPerLine; ++x) {
-            indices->set(count++, offset + x);
-            indices->set(count++, offset + x + pointsPerLine);
+            indices->set(count, offset + x);
+            ++count;
+            indices->set(count, offset + x + pointsPerLine);
+            ++count;
         }
 
-        spheremesh->Mesh::addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
-                                     indexBuf);
+        spheremesh->Mesh::addIndices(
+            Mesh::MeshInfo{.dt = DrawType::Triangles, .ct = ConnectivityType::Strip}, indexBuf);
     }
 
     return spheremesh;
