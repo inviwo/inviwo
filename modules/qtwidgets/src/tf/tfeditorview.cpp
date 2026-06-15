@@ -384,7 +384,9 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& updateRect) {
     DataMapper sceneDM{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
     if (property_->allRelative()) {
         if (const auto* dm = property_->getDataMap()) {
-            sceneDM = *dm;
+            if (dm->dataRange.x != dm->dataRange.y && dm->valueRange.x != dm->valueRange.y) {
+                sceneDM = *dm;
+            }
         }
     }
 
