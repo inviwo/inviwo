@@ -1,4 +1,4 @@
-#include <modules/base/algorithm/volume/volumegaussiansplat.h>
+#include <modules/base/algorithm/volume/volumesplat.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
@@ -8,7 +8,7 @@
 
 using namespace inviwo;
 
-TEST(GaussianSplatTest, SinglePointCenter) {
+TEST(SplatTest, SinglePointCenter) {
     Mesh mesh;
     mesh.addBuffer(BufferType::PositionAttrib,
                    std::make_shared<Buffer<vec3>>(std::make_shared<BufferRAMPrecision<vec3>>(
@@ -16,12 +16,12 @@ TEST(GaussianSplatTest, SinglePointCenter) {
     mesh.addBuffer(BufferType::RadiiAttrib,
                    std::make_shared<Buffer<float>>(
                        std::make_shared<BufferRAMPrecision<float>>(std::vector<float>{0.5f})));
-    util::GaussianSplatSettings settings{
+    util::SplatSettings settings{
         .dimensions = size3_t(5),
         .modelMatrix = mat4(1.0f),
         .kernel = util::SplatKernel::Gaussian,
-        .defaultSigma = 0.2f,
-        .cutoff = 0.01f,
+        .size = 0.2f,
+        .error = 0.01f,
     };
 
     const auto* positionBuffer = mesh.getBuffer(BufferType::PositionAttrib);
@@ -29,6 +29,7 @@ TEST(GaussianSplatTest, SinglePointCenter) {
 
     std::span<const vec3> positions;
     std::span<const float> radii;
+    std::span<const float> intensities;
 
     positionBuffer->getRepresentation<BufferRAM>()->dispatch<void>([&](auto posRep) {
         using ValueType = util::PrecisionValueType<decltype(posRep)>;
@@ -44,7 +45,7 @@ TEST(GaussianSplatTest, SinglePointCenter) {
         }
     });
 
-    auto volume = gaussianSplat(positions, radii, settings);
+    auto volume = util::splat(positions, radii, intensities, settings);
     ASSERT_EQ(volume->getDimensions(), size3_t(5));
     // Check that the center voxel is nonzero
     auto* ram = volume->getRepresentation<VolumeRAM>();
