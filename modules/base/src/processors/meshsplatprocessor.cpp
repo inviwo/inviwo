@@ -10,9 +10,18 @@
 
 namespace inviwo {
 
-const ProcessorInfo MeshSplatProcessor::processorInfo_{"org.inviwo.MeshGaussianSplatProcessor",
-                                                       "Mesh Gaussian Splat", "Volume Creation",
-                                                       CodeState::Experimental, Tags::CPU};
+const ProcessorInfo MeshSplatProcessor::processorInfo_{
+    "org.inviwo.MeshGaussianSplatProcessor",  // Class identifier
+    "Mesh Gaussian Splat",                    // Display name
+    "Volume Creation",                        // Category
+    CodeState::Experimental,                  // Code state
+    Tags::CPU,                                // Tags
+    R"(Processes a mesh and creates a volume using Gaussian splatting.
+    
+    Supports multiple kernel types (Gaussian, Epanechnikov, Triangular, Uniform) for
+    splatting mesh points into a 3D volume. Allows per-point sizes and weights, with
+    configurable volume dimensions and basis transformation.
+    )"_unindentHelp};
 
 const ProcessorInfo& MeshSplatProcessor::getProcessorInfo() const { return processorInfo_; }
 
@@ -112,9 +121,9 @@ void MeshSplatProcessor::process() {
     auto [collect, jobs] = util::splatJobs(positions, radii, weights, settings);
     dispatchMany(jobs, [this, collect, mesh](std::vector<vec2> results) {
         auto volume = collect(std::move(results));
-        range_.updateFromVolume(*volume);
-        volume->dataMap.dataRange = dataRange_.getDataRange();
-        volume->dataMap.valueRange = dataRange_.getValueRange();
+        range_.updateFromVolume(volume);
+        volume->dataMap.dataRange = range_.getDataRange();
+        volume->dataMap.valueRange = range_.getValueRange();
 
         volumeOutport_.setData(volume);
         newResults();
