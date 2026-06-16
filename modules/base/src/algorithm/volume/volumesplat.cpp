@@ -151,9 +151,8 @@ splatImpl(std::span<const vec3> worldPositions, std::span<const float> sizes,
 
     auto processSlab = [&](std::size_t zStart, std::size_t zStop) {
         return [zStart, zStop, worldPositions, sizes, weights, indexToWorld, worldToIndex, data,
-                dims, size, weight, [[maybe_unused]] error, perPointSize, perPointWeight,
-                voxelSizeWorld](const std::function<void(double)>& progress,
-                                const std::function<bool()>& stop) {
+                dims, size, weight, error, perPointSize, perPointWeight, voxelSizeWorld](
+                   const std::function<void(double)>& progress, const std::function<bool()>& stop) {
             const util::IndexMapper3D idx(dims);
             const auto dimsI = ivec3{dims};
 
@@ -162,7 +161,9 @@ splatImpl(std::span<const vec3> worldPositions, std::span<const float> sizes,
 
             for (std::size_t p = 0; p < worldPositions.size(); ++p) {
                 if (stop && stop()) return minMax;
-                if (progress) progress(static_cast<double>(p) / static_cast<double>(worldPositions.size())));
+                if (progress) {
+                    progress(static_cast<double>(p) / static_cast<double>(worldPositions.size()));
+                }
                 const vec3 pw = worldPositions[p];
                 const float s = (perPointSize ? sizes[p] : 1.0f) * size;
                 const float w = (perPointWeight ? weights[p] : 1.0f) * weight;
@@ -322,13 +323,20 @@ std::shared_ptr<Volume> splat(std::span<const vec3> worldPositions, std::span<co
 
     auto [collect, jobs] = splatJobs(worldPositions, sizes, weights, settings);
 
-    std::vector<std::future<vec2>> futures;
-    for (auto& job : jobs) {
-        futures.emplace_back(util::dispatchPool([job]() { return job(nullptr, nullptr); }));
+    if (util::getPoolSize() > 0) {
+        std::vector<std::future<vec2>> futures;
+        for (auto& job : jobs) {
+            futures.emplace_back(util::dispatchPool([job]() { return job(nullptr, nullptr); }));
+        }
+        return collect(futures | std::views::transform([](auto& f) { return f.get(); }) |
+                       std::ranges::to<std::vector>());
+    } else {
+        std::vector<vec2> minMaxes;
+        for (auto& job : jobs) {
+            minMaxes.push_back(job(nullptr, nullptr));
+        }
+        return collect(minMaxes);
     }
-
-    return collect(futures | std::views::transform([](auto& f) { return f.get(); }) |
-                   std::ranges::to<std::vector>());
 }
 
 }  // namespace inviwo::util

@@ -6,7 +6,7 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <gtest/gtest.h>
 
-using namespace inviwo;
+namespace inviwo {
 
 TEST(SplatTest, SinglePointCenter) {
     Mesh mesh;
@@ -51,4 +51,6 @@ TEST(SplatTest, SinglePointCenter) {
     const auto* ram = volume->getRepresentation<VolumeRAM>();
     const auto center = ram->getAsDouble(size3_t(2, 2, 2));
     EXPECT_GT(center, 0.0);
+}
+
 }
