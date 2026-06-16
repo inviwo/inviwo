@@ -202,6 +202,7 @@ Classes</h2></td></tr>
 <tr class="memitem:SawToothOptions" id="r_SawToothOptions"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1util_1_1SawToothOptions.html">SawToothOptions</a></td></tr>
 <tr class="memitem:sequence" id="r_sequence"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1util_1_1sequence.html">sequence</a></td></tr>
 <tr class="memitem:SharedSequenceData" id="r_SharedSequenceData"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1util_1_1SharedSequenceData.html">SharedSequenceData</a></td></tr>
+<tr class="memitem:SplatSettings" id="r_SplatSettings"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a></td></tr>
 <tr class="memitem:starts_5Fwith_5Ffn" id="r_starts_5Fwith_5Ffn"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1util_1_1starts__with__fn.html">starts_with_fn</a></td></tr>
 <tr class="memitem:TempFileHandle" id="r_TempFileHandle"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1util_1_1TempFileHandle.html">TempFileHandle</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII interface for providing a file handle and file name to a temporary file.  <a href="classinviwo_1_1util_1_1TempFileHandle.html#details">More...</a><br /></td></tr>
@@ -288,6 +289,11 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memitem:a3b7df44ff09cb0549d16a59863813359" id="r_a3b7df44ff09cb0549d16a59863813359"><td class="memItemLeft"><a id="a3b7df44ff09cb0549d16a59863813359" name="a3b7df44ff09cb0549d16a59863813359"></a>enum class &#160;</td><td class="memItemRight"><b>OverwriteState</b> { <b>Yes</b>
 , <b>No</b>
+ }</td></tr>
+<tr class="memitem:a85aba8e7ade4592d06796c05467161f1" id="r_a85aba8e7ade4592d06796c05467161f1"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="#a85aba8e7ade4592d06796c05467161f1">SplatKernel</a> : std::uint8_t { <a class="el" href="#a85aba8e7ade4592d06796c05467161f1afedf7ba6075fb5526a7ace0b9385528d">Gaussian</a>
+, <a class="el" href="#a85aba8e7ade4592d06796c05467161f1aa391dbab69197b56d5d3fdcc70ece331">Epanechnikov</a>
+, <a class="el" href="#a85aba8e7ade4592d06796c05467161f1a241f88afa7becb8633ca074c48e0d77c">Triangular</a>
+, <a class="el" href="#a85aba8e7ade4592d06796c05467161f1af19516d11f2946f894070e92fcb56b6d">Uniform</a>
  }</td></tr>
 <tr class="memitem:af7a21db522a804cf93c00863b5dfd76f" id="r_af7a21db522a804cf93c00863b5dfd76f"><td class="memItemLeft"><a id="af7a21db522a804cf93c00863b5dfd76f" name="af7a21db522a804cf93c00863b5dfd76f"></a>enum class &#160;</td><td class="memItemRight"><b>TraversalDirection</b> { <b>Up</b>
 , <b>Down</b>
@@ -614,6 +620,8 @@ auto&#160;</td><td class="memItemRight"><b>encode</b> (const std::vector&lt; Sgc
 <tr class="memitem:a8e899795167608c2807a39787eee6c5f" id="r_a8e899795167608c2807a39787eee6c5f"><td class="memTemplParams" colspan="2"><a id="a8e899795167608c2807a39787eee6c5f" name="a8e899795167608c2807a39787eee6c5f"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a8e899795167608c2807a39787eee6c5f template"><td class="memItemLeft">constexpr std::string_view&#160;</td><td class="memItemRight"><b>enumName</b> ()</td></tr>
+<tr class="memitem:ab043e50c69ba13b5de7fb4471fee21e7" id="r_ab043e50c69ba13b5de7fb4471fee21e7"><td class="memItemLeft"><a id="ab043e50c69ba13b5de7fb4471fee21e7" name="ab043e50c69ba13b5de7fb4471fee21e7"></a>
+IVW_MODULE_BASE_API std::string_view&#160;</td><td class="memItemRight"><b>enumToStr</b> (<a class="el" href="#a85aba8e7ade4592d06796c05467161f1">SplatKernel</a> k)</td></tr>
 <tr class="memitem:a39455e5bf0802a86ac661f5cd43a2c96" id="r_a39455e5bf0802a86ac661f5cd43a2c96"><td class="memTemplParams" colspan="2"><a id="a39455e5bf0802a86ac661f5cd43a2c96" name="a39455e5bf0802a86ac661f5cd43a2c96"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a39455e5bf0802a86ac661f5cd43a2c96 template"><td class="memItemLeft">T&#160;</td><td class="memItemRight"><b>epsilon</b> ()</td></tr>
@@ -1349,6 +1357,9 @@ VolumeSequence IVW_CORE_API&#160;</td><td class="memItemRight"><b>sortSequence</
 <tr class="memitem:aed0d09b6d1537336c6e8271dcd557c93" id="r_aed0d09b6d1537336c6e8271dcd557c93"><td class="memTemplParams" colspan="2"><a id="aed0d09b6d1537336c6e8271dcd557c93" name="aed0d09b6d1537336c6e8271dcd557c93"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:aed0d09b6d1537336c6e8271dcd557c93 template"><td class="memItemLeft">T&#160;</td><td class="memItemRight"><b>spherical</b> (T val)</td></tr>
+<tr class="memitem:a6034989251aeb76809954d636d0c7811" id="r_a6034989251aeb76809954d636d0c7811"><td class="memItemLeft">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a6034989251aeb76809954d636d0c7811">splat</a> (std::span&lt; const vec3 &gt; worldPositions, std::span&lt; const float &gt; radii, std::span&lt; const float &gt; weights, const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;settings)</td></tr>
+<tr class="memitem:a51a37b42a051d02b5242845c50b09cb0" id="r_a51a37b42a051d02b5242845c50b09cb0"><td class="memItemLeft"><a id="a51a37b42a051d02b5242845c50b09cb0" name="a51a37b42a051d02b5242845c50b09cb0"></a>
+IVW_MODULE_BASE_API std::pair&lt; std::function&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;(std::vector&lt; vec2 &gt;)&gt;, std::vector&lt; std::function&lt; vec2(const std::function&lt; void(double)&gt; &amp;, const std::function&lt; bool()&gt; &amp;)&gt; &gt; &gt;&#160;</td><td class="memItemRight"><b>splatJobs</b> (std::span&lt; const vec3 &gt; worldPositions, std::span&lt; const float &gt; sizes, std::span&lt; const float &gt; weights, const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;settings)</td></tr>
 <tr class="memitem:a68531c2a1a0d7b50fbcd32b4ab6d03a2" id="r_a68531c2a1a0d7b50fbcd32b4ab6d03a2"><td class="memItemLeft">constexpr std::pair&lt; std::string_view, std::string_view &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a68531c2a1a0d7b50fbcd32b4ab6d03a2">splitByFirst</a> (std::string_view str, char delimiter=' ')</td></tr>
 <tr class="memdesc:a68531c2a1a0d7b50fbcd32b4ab6d03a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Divide a string into two parts by the first instance of a delimiter.  <br /></td></tr>
 <tr class="memitem:a72e4709f37d1f58ead6f6bb699964102" id="r_a72e4709f37d1f58ead6f6bb699964102"><td class="memItemLeft">constexpr std::pair&lt; std::string_view, std::string_view &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a72e4709f37d1f58ead6f6bb699964102">splitByFirst</a> (std::string_view str, std::string_view delimiter)</td></tr>
@@ -1755,6 +1766,40 @@ template&lt;typename T&gt; </div>
 <b>Initial value:</b><div class="fragment"><div class="line"> </div>
 <div class="line"><span class="keyword">typename</span> <a class="code hl_typedef" href="#ab1e4eff95e999c0f37072af916d5d93b">PrecisionType&lt;T&gt;::type</a></div>
 </div><!-- fragment -->
+</div>
+</div>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="a85aba8e7ade4592d06796c05467161f1" name="a85aba8e7ade4592d06796c05467161f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85aba8e7ade4592d06796c05467161f1">&#9670;&#160;</a></span>SplatKernel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#a85aba8e7ade4592d06796c05467161f1">inviwo::util::SplatKernel</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel strong">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Splatting kernels supported by splat. All kernels are evaluated in world space using a per-point size <code>s</code> (either from the radii span or <code>size</code>). </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a85aba8e7ade4592d06796c05467161f1afedf7ba6075fb5526a7ace0b9385528d" name="a85aba8e7ade4592d06796c05467161f1afedf7ba6075fb5526a7ace0b9385528d"></a>Gaussian&#160;</td><td class="fielddoc"><p>exp(-d^2 / (2 h^2)), truncated at d = cutoff*h </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a85aba8e7ade4592d06796c05467161f1aa391dbab69197b56d5d3fdcc70ece331" name="a85aba8e7ade4592d06796c05467161f1aa391dbab69197b56d5d3fdcc70ece331"></a>Epanechnikov&#160;</td><td class="fielddoc"><p>max(0, 1 - (d / (cutoff*h))^2) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a85aba8e7ade4592d06796c05467161f1a241f88afa7becb8633ca074c48e0d77c" name="a85aba8e7ade4592d06796c05467161f1a241f88afa7becb8633ca074c48e0d77c"></a>Triangular&#160;</td><td class="fielddoc"><p>max(0, 1 - d / (cutoff*h)) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a85aba8e7ade4592d06796c05467161f1af19516d11f2946f894070e92fcb56b6d" name="a85aba8e7ade4592d06796c05467161f1af19516d11f2946f894070e92fcb56b6d"></a>Uniform&#160;</td><td class="fielddoc"><p>1 if d &lt; cutoff*h, else 0 </p>
+</td></tr>
+</table>
+
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
@@ -7484,6 +7529,56 @@ template&lt;typename T&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Set the selection state of processor </p>
+
+</div>
+</div>
+<a id="a6034989251aeb76809954d636d0c7811" name="a6034989251aeb76809954d636d0c7811"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6034989251aeb76809954d636d0c7811">&#9670;&#160;</a></span>splat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; inviwo::util::splat </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const vec3 &gt;</td>          <td class="paramname"><span class="paramname"><em>worldPositions</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const float &gt;</td>          <td class="paramname"><span class="paramname"><em>radii</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const float &gt;</td>          <td class="paramname"><span class="paramname"><em>weights</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>settings</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Splat a set of world-space points into a scalar volume using a chosen kernel.</p>
+<p>For each point <code>p_i</code> with size <code>s_i</code> the volume accumulates the kernel evaluated at the world-space distance between the point and each voxel center inside the per-point footprint. Points whose footprint lies entirely outside the volume are skipped.</p>
+<p>The work is parallelized by splitting the output volume into a number of disjoint Z-slabs. Each worker iterates over all points but only writes voxels inside its slab, so no atomics or locks are needed.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">worldPositions</td><td>point positions in world space </td></tr>
+    <tr><td class="paramname">radii</td><td>per-point bandwidth in world units; if empty, <code>defaultSigma</code> is used for every point. Must otherwise have the same size as <code class="param">worldPositions</code>. </td></tr>
+    <tr><td class="paramname">weights</td><td>per-point weights to accumulate; if empty, all points are weighted equally. Must otherwise have the same size as <code class="param">worldPositions</code>. </td></tr>
+    <tr><td class="paramname">settings</td><td>output configuration, kernel selection and truncation </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a single-channel float32 <code><a class="el" href="classinviwo_1_1Volume.html">Volume</a></code> with model matrix matching <code>settings.modelMatrix</code> </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">Exception</td><td>if <code class="param">radii</code> is non-empty and its size differs from <code class="param">worldPositions</code>, or if <code class="param">weights</code> is non-empty and its size differs from <code class="param">worldPositions</code>, or if <code>settings.dimensions</code> has a zero component, or if <code>settings.defaultSigma</code> / <code>settings.cutoff</code> are non-positive. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

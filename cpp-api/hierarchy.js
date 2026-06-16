@@ -776,6 +776,7 @@ var hierarchy =
           [ "inviwo::DistanceTransformRAM", "classinviwo_1_1DistanceTransformRAM.html", null ],
           [ "inviwo::ImageDistanceTransform", "classinviwo_1_1ImageDistanceTransform.html", null ],
           [ "inviwo::LayerDistanceTransform", "classinviwo_1_1LayerDistanceTransform.html", null ],
+          [ "inviwo::MeshSplatProcessor", "classinviwo_1_1MeshSplatProcessor.html", null ],
           [ "inviwo::SurfaceExtraction", "classinviwo_1_1SurfaceExtraction.html", null ],
           [ "inviwo::TestVolumeCreator", "classinviwo_1_1TestVolumeCreator.html", null ],
           [ "inviwo::VolumeCurlCPUProcessor", "classinviwo_1_1VolumeCurlCPUProcessor.html", null ],
@@ -1835,6 +1836,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< ColorSource >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< HatchingMode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< HatchingBlendingMode >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< util::SplatKernel >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ffmpeg::Recorder::Mode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< NoiseType >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Shader::UniformWarning >", "classinviwo_1_1OptionProperty.html", null ],
@@ -3236,6 +3238,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< ColorSource >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< HatchingMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< HatchingBlendingMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< util::SplatKernel >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ffmpeg::Recorder::Mode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< NoiseType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Shader::UniformWarning >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3571,6 +3574,7 @@ var hierarchy =
       [ "inviwo::VolumeSampler< ReturnType >", "classinviwo_1_1VolumeSampler.html", null ]
     ] ],
     [ "inviwo::SphereConfig", "classinviwo_1_1SphereConfig.html", null ],
+    [ "inviwo::util::SplatSettings", "structinviwo_1_1util_1_1SplatSettings.html", null ],
     [ "inviwo::layout::SplitterPositions", "structinviwo_1_1layout_1_1SplitterPositions.html", null ],
     [ "inviwo::SplitterRenderer", "classinviwo_1_1SplitterRenderer.html", null ],
     [ "inviwo::SplitterSettings", "classinviwo_1_1SplitterSettings.html", [

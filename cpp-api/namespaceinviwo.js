@@ -777,6 +777,7 @@ var namespaceinviwo =
     [ "MeshRepresentation", "classinviwo_1_1MeshRepresentation.html", null ],
     [ "MeshShaderCache", "classinviwo_1_1MeshShaderCache.html", "classinviwo_1_1MeshShaderCache" ],
     [ "MeshSource", "classinviwo_1_1MeshSource.html", null ],
+    [ "MeshSplatProcessor", "classinviwo_1_1MeshSplatProcessor.html", "classinviwo_1_1MeshSplatProcessor" ],
     [ "MeshTexturing", "classinviwo_1_1MeshTexturing.html", null ],
     [ "MeshVisualizer", "classinviwo_1_1MeshVisualizer.html", "classinviwo_1_1MeshVisualizer" ],
     [ "MeshVolumeRenderer", "classinviwo_1_1MeshVolumeRenderer.html", "classinviwo_1_1MeshVolumeRenderer" ],

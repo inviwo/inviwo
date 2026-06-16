@@ -62,6 +62,7 @@ var namespaceinviwo_1_1util =
     [ "SawToothOptions", "structinviwo_1_1util_1_1SawToothOptions.html", null ],
     [ "sequence", "structinviwo_1_1util_1_1sequence.html", "structinviwo_1_1util_1_1sequence" ],
     [ "SharedSequenceData", "structinviwo_1_1util_1_1SharedSequenceData.html", null ],
+    [ "SplatSettings", "structinviwo_1_1util_1_1SplatSettings.html", "structinviwo_1_1util_1_1SplatSettings" ],
     [ "starts_with_fn", "structinviwo_1_1util_1_1starts__with__fn.html", null ],
     [ "TempFileHandle", "classinviwo_1_1util_1_1TempFileHandle.html", null ],
     [ "TextureAtlas", "classinviwo_1_1util_1_1TextureAtlas.html", null ],
@@ -72,6 +73,12 @@ var namespaceinviwo_1_1util =
     [ "Vec2D", "conceptinviwo_1_1util_1_1Vec2D.html", null ],
     [ "PrecisionType", "namespaceinviwo_1_1util.html#ab1e4eff95e999c0f37072af916d5d93b", null ],
     [ "PrecisionValueType", "namespaceinviwo_1_1util.html#a4c5cc1457325e4cf1c8756319d5e83c5", null ],
+    [ "SplatKernel", "namespaceinviwo_1_1util.html#a85aba8e7ade4592d06796c05467161f1", [
+      [ "Gaussian", "namespaceinviwo_1_1util.html#a85aba8e7ade4592d06796c05467161f1afedf7ba6075fb5526a7ace0b9385528d", null ],
+      [ "Epanechnikov", "namespaceinviwo_1_1util.html#a85aba8e7ade4592d06796c05467161f1aa391dbab69197b56d5d3fdcc70ece331", null ],
+      [ "Triangular", "namespaceinviwo_1_1util.html#a85aba8e7ade4592d06796c05467161f1a241f88afa7becb8633ca074c48e0d77c", null ],
+      [ "Uniform", "namespaceinviwo_1_1util.html#a85aba8e7ade4592d06796c05467161f1af19516d11f2946f894070e92fcb56b6d", null ]
+    ] ],
     [ "addTFPresetsMenu", "namespaceinviwo_1_1util.html#a416c8d9416964edc5a92908f30761f6f", null ],
     [ "alignAlphaToBottom", "namespaceinviwo_1_1util.html#a2f406a130b054515fd4dceb5b35b84ba", null ],
     [ "alignAlphaToMean", "namespaceinviwo_1_1util.html#ad833fb2a28acd35e6be134baa81331fa", null ],
@@ -300,6 +307,7 @@ var namespaceinviwo_1_1util =
     [ "setPosition", "namespaceinviwo_1_1util.html#a164993d46bdb58f8b16a943c65ae4b9c", null ],
     [ "setSelected", "namespaceinviwo_1_1util.html#af6fa91973f804cd02c1e28fb635202d1", null ],
     [ "setSelected", "namespaceinviwo_1_1util.html#a78172b271a10c03a2bb4a1a41bbde23e", null ],
+    [ "splat", "namespaceinviwo_1_1util.html#a6034989251aeb76809954d636d0c7811", null ],
     [ "splitByFirst", "namespaceinviwo_1_1util.html#a68531c2a1a0d7b50fbcd32b4ab6d03a2", null ],
     [ "splitByFirst", "namespaceinviwo_1_1util.html#a72e4709f37d1f58ead6f6bb699964102", null ],
     [ "splitByLast", "namespaceinviwo_1_1util.html#a7062e820ba75f7fb44e8b149e52dd979", null ],

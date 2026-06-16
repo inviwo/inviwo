@@ -1,8 +1,12 @@
 var searchData=
 [
-  ['name_0',['name',['../structinviwo_1_1amira_1_1DataSpec.html#a6b1917c6e0bccda31b7b8e1b6070f9c2',1,'inviwo::amira::DataSpec::name'],['../structinviwo_1_1ShaderSegment.html#ace9708c2df32e8e1d8e77581e425c654',1,'inviwo::ShaderSegment::name']]],
-  ['nearplanedist_5f_1',['nearPlaneDist_',['../classinviwo_1_1Camera.html#ac58b0a3c6a00ba15c044c364158397ac',1,'inviwo::Camera']]],
-  ['nodeidsbuffer_2',['nodeIdsBuffer',['../structinviwo_1_1TetraMeshBuffers.html#a253aa678ba558bb3365bf90a1312daaf',1,'inviwo::TetraMeshBuffers']]],
-  ['nodesbuffer_3',['nodesBuffer',['../structinviwo_1_1TetraMeshBuffers.html#ad523c12ec0b0ad4b057e2913b23ee1e5',1,'inviwo::TetraMeshBuffers']]],
-  ['noiseshader_5f_4',['noiseShader_',['../classinviwo_1_1CanvasGL.html#a43b258bd6442a6d35fa83b4475bcd1e2',1,'inviwo::CanvasGL']]]
+  ['m_0',['m',['../structinviwo_1_1statsutil_1_1RegresionResult.html#af75e71a460e914d99aba73d6941c1896',1,'inviwo::statsutil::RegresionResult']]],
+  ['major_1',['major',['../classinviwo_1_1Version.html#a2b4be0b616c11498bc2ca11e8bba39e1',1,'inviwo::Version']]],
+  ['margins_5f_2',['margins_',['../classinviwo_1_1plot_1_1ScatterPlotGL_1_1Properties.html#a8781e20af96105d4ece14fa45ced3d50',1,'inviwo::plot::ScatterPlotGL::Properties::margins_'],['../classinviwo_1_1glui_1_1Layout.html#a797d85869ac8bbb03f8c9a266c1129d3',1,'inviwo::glui::Layout::margins_']]],
+  ['materials_3',['materials',['../structinviwo_1_1amira_1_1AmiraMeshHeader.html#abb890762b7be63e444515f3ac380cfba',1,'inviwo::amira::AmiraMeshHeader']]],
+  ['meshhasadjacency_5f_4',['meshHasAdjacency_',['../classinviwo_1_1MeshRasterizer.html#a04014155961dab5461baf5160f445db7',1,'inviwo::MeshRasterizer']]],
+  ['minor_5',['minor',['../classinviwo_1_1Version.html#a4bf98c07aa8b010aab4eb2c3f68d078b',1,'inviwo::Version']]],
+  ['modelmatrix_6',['modelMatrix',['../structinviwo_1_1util_1_1SplatSettings.html#ae0cfff33bc197a372469561da3f3bc58',1,'inviwo::util::SplatSettings']]],
+  ['moveaction_5f_7',['moveAction_',['../classinviwo_1_1glui_1_1Element.html#adb87d0ac3771a0873e34297d5bebf29a',1,'inviwo::glui::Element']]],
+  ['movementspeed_5f_8',['movementSpeed_',['../classinviwo_1_1Trackball.html#a9eb670a6b6c34bf7facc20d92a816cf1',1,'inviwo::Trackball']]]
 ];
