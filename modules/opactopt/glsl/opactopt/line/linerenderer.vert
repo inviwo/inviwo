@@ -37,9 +37,12 @@ uniform CameraParameters camera;
 uniform bool pickingEnabled = false;
 uniform vec4 defaultColor = vec4(1, 1, 1, 1);
 
+uniform float lineWidth = 2.0; // line width [pixel], used as fallback when USE_RADII is disabled
+
 out LineVert {
     vec4 worldPosition;
     vec4 color;
+    flat float radius;  // half-width in screen pixels
     flat uint pickID;
     flat uint index;
 } vertex;
@@ -57,5 +60,11 @@ void main() {
     vertex.pickID = in_Picking;
 #else
     vertex.pickID = 0;
+#endif
+
+#if defined(HAS_RADII) && defined(USE_RADII)
+    vertex.radius = in_Radii;
+#else
+    vertex.radius = lineWidth * 0.5;
 #endif
 }

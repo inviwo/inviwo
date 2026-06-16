@@ -48,7 +48,6 @@ layout(depth_less) out float gl_FragDepth;
 
 uniform ivec2 screenSize = ivec2(512, 512);
 uniform float antialiasing = 0.5;  // width of antialised edged [pixel]
-uniform float lineWidth = 2.0;     // line width [pixel]
 
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
@@ -66,6 +65,7 @@ in LineGeom {
     flat vec4 pickColor;
     float segmentLength;  // total length of the current line segment in screen space
     float distanceWorld;  // distance in world coords to segment start
+    float lineWidthHalf;  // interpolated half line width for antialiasing
 } fragment;
 
 
@@ -73,7 +73,7 @@ void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
     if (fragment.color.a < 0.0) discard;
 
-    float linewidthHalf = lineWidth * 0.5;
+    float linewidthHalf = fragment.lineWidthHalf;
 
     // make joins round by using the texture coords
     float distance = abs(fragment.texCoord.y);
