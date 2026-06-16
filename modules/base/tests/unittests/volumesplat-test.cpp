@@ -16,7 +16,7 @@ TEST(SplatTest, SinglePointCenter) {
     mesh.addBuffer(BufferType::RadiiAttrib,
                    std::make_shared<Buffer<float>>(
                        std::make_shared<BufferRAMPrecision<float>>(std::vector<float>{0.5f})));
-    util::SplatSettings settings{
+    const util::SplatSettings settings{
         .dimensions = size3_t(5),
         .modelMatrix = mat4(1.0f),
         .kernel = util::SplatKernel::Gaussian,
@@ -29,7 +29,7 @@ TEST(SplatTest, SinglePointCenter) {
 
     std::span<const vec3> positions;
     std::span<const float> radii;
-    std::span<const float> intensities;
+    std::span<const float> weights;
 
     positionBuffer->getRepresentation<BufferRAM>()->dispatch<void>([&](auto posRep) {
         using ValueType = util::PrecisionValueType<decltype(posRep)>;
@@ -45,10 +45,10 @@ TEST(SplatTest, SinglePointCenter) {
         }
     });
 
-    auto volume = util::splat(positions, radii, intensities, settings);
+    auto volume = util::splat(positions, radii, weights, settings);
     ASSERT_EQ(volume->getDimensions(), size3_t(5));
     // Check that the center voxel is nonzero
-    auto* ram = volume->getRepresentation<VolumeRAM>();
+    const auto* ram = volume->getRepresentation<VolumeRAM>();
     const auto center = ram->getAsDouble(size3_t(2, 2, 2));
     EXPECT_GT(center, 0.0);
 }

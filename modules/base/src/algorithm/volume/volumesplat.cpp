@@ -49,24 +49,7 @@
 #include <vector>
 #include <numbers>
 
-namespace inviwo {
-namespace util {
-
-// Rational approximation of erfinv (Winitzki, 2008)
-double erfinv(double x) {
-    // Clamp to valid domain (-1, 1)
-    x = std::clamp(x, -1.0, 1.0);
-    double a = 0.147;  // Tuning constant
-    double ln1mx2 = std::log(1.0 - x * x);
-    double part1 = (2.0 / (M_PI * a)) + (ln1mx2 / 2.0);
-    double part2 = ln1mx2 / a;
-
-    double sign = (x >= 0) ? 1.0 : -1.0;
-    return sign * std::sqrt(std::sqrt(part1 * part1 - part2) - part1);
-}
-double gaussian_support(double sigma, double epsilon) {
-    return sigma * std::sqrt(2.0) * erfinv(1.0 - epsilon);
-}
+namespace inviwo::util {
 
 std::string_view enumToStr(SplatKernel k) {
     switch (k) {
@@ -83,6 +66,22 @@ std::string_view enumToStr(SplatKernel k) {
 }
 
 namespace {
+
+// Rational approximation of erfinv (Winitzki, 2008)
+double erfinv(double x) {
+    // Clamp to valid domain (-1, 1)
+    x = std::clamp(x, -1.0, 1.0);
+    const double a = 0.147;  // Tuning constant
+    const double ln1mx2 = std::log(1.0 - x * x);
+    const double part1 = (2.0 / (M_PI * a)) + (ln1mx2 / 2.0);
+    const double part2 = ln1mx2 / a;
+
+    const double sign = (x >= 0) ? 1.0 : -1.0;
+    return sign * std::sqrt(std::sqrt(part1 * part1 - part2) - part1);
+}
+double gaussian_support(double sigma, double epsilon) {
+    return sigma * std::sqrt(2.0) * erfinv(1.0 - epsilon);
+}
 
 // Evaluate the kernel given the squared world-space distance d2, the per-point size s
 // Assumes d2 <= s*s; caller is responsible for the cutoff check.
@@ -119,7 +118,6 @@ inline float kernelNormFactor(float s) {
 }
 
 template <SplatKernel K>
-
 std::vector<std::function<vec2(const std::function<void(double)>&, const std::function<bool()>&)>>
 splatImpl(std::span<const vec3> worldPositions, std::span<const float> sizes,
           std::span<const float> weights, const SplatSettings& settings, mat4 indexToWorld,
@@ -153,8 +151,9 @@ splatImpl(std::span<const vec3> worldPositions, std::span<const float> sizes,
 
     auto processSlab = [&](std::size_t zStart, std::size_t zStop) {
         return [zStart, zStop, worldPositions, sizes, weights, indexToWorld, worldToIndex, data,
-                dims, size, weight, error, perPointSize, perPointWeight, voxelSizeWorld](
-                   const std::function<void(double)>& progress, const std::function<bool()>& stop) {
+                dims, size, weight, [[maybe_unused]] error, perPointSize, perPointWeight,
+                voxelSizeWorld](const std::function<void(double)>& progress,
+                                const std::function<bool()>& stop) {
             const util::IndexMapper3D idx(dims);
             const auto dimsI = ivec3{dims};
 
@@ -163,7 +162,7 @@ splatImpl(std::span<const vec3> worldPositions, std::span<const float> sizes,
 
             for (std::size_t p = 0; p < worldPositions.size(); ++p) {
                 if (stop && stop()) return minMax;
-                if (progress) progress(static_cast<double>(p) / worldPositions.size());
+                if (progress) progress(static_cast<double>(p) / static_cast<double>(worldPositions.size())));
                 const vec3 pw = worldPositions[p];
                 const float s = (perPointSize ? sizes[p] : 1.0f) * size;
                 const float w = (perPointWeight ? weights[p] : 1.0f) * weight;
@@ -281,8 +280,8 @@ splatJobs(std::span<const vec3> worldPositions, std::span<const float> sizes,
     const auto indexToWorld = volume->getCoordinateTransformer().getIndexToWorldMatrix();
     const auto worldToIndex = volume->getCoordinateTransformer().getWorldToIndexMatrix();
 
-    std::function<std::shared_ptr<Volume>(std::vector<vec2>)> collect =
-        [volume](std::vector<vec2> minMaxes) {
+    const std::function<std::shared_ptr<Volume>(std::vector<vec2>)> collect =
+        [volume](const std::vector<vec2>& minMaxes) {
             vec2 minMax{std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest()};
             for (auto& val : minMaxes) {
                 minMax.x = std::min(minMax.x, val.x);
@@ -332,5 +331,4 @@ std::shared_ptr<Volume> splat(std::span<const vec3> worldPositions, std::span<co
                    std::ranges::to<std::vector>());
 }
 
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -335,7 +335,7 @@ namespace pool::detail {
 
 struct IVW_CORE_API State {
     State(std::weak_ptr<PoolProcessor> processor, size_t count)
-        : processor(processor)
+        : processor(std::move(processor))
         , count{count}
         , stop{false}
         , progress(count)

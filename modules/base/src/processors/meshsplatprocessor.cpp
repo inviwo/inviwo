@@ -76,11 +76,12 @@ void MeshSplatProcessor::process() {
     if (!meshInport_.hasData()) return;
     auto mesh = meshInport_.getData();
 
-    util::SplatSettings settings{
+    const util::SplatSettings settings{
         .dimensions = volumeDims_.get(),
         .modelMatrix = basis_.get(),
         .axes = mesh->axes,
-        .valueAxis = Axis{valueName.get(), units::unit_from_string(valueUnit.get())},
+        .valueAxis =
+            Axis{.name = valueName.get(), .unit = units::unit_from_string(valueUnit.get())},
         .kernel = kernelType_.get(),
         .size = size_.get(),
         .weight = weight_.get(),
@@ -132,7 +133,7 @@ void MeshSplatProcessor::process() {
 
     auto [collect, jobs] = util::splatJobs(positions, radii, weights, settings);
     dispatchMany(jobs, [this, collect, mesh](std::vector<vec2> results) {
-        auto volume = collect(results);
+        auto volume = collect(std::move(results));
         volumeOutport_.setData(volume);
         newResults();
     });
