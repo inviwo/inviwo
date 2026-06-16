@@ -40,36 +40,14 @@ MeshSplatProcessor::MeshSplatProcessor()
     , volumeDims_{"volumeDims", "Volume Dimensions",
                   util::ordinalCount(size3_t{64}, size3_t(512)).setMin(size3_t(1))}
     , basis_{"basis", "Basis", util::ordinalMatrix(mat4{1.0f})}
-
-    , customRange_{"customRange_", "Use custom range", false}
-    , dataRange{"dataRange",
-                "Data range",
-                0.,
-                1.0,
-                -DataFloat64::max(),
-                DataFloat64::max(),
-                0.001,
-                0.0,
-                InvalidationLevel::InvalidOutput,
-                PropertySemantics::Text}
-    , valueRange{"valueRange",
-                 "Value range",
-                 0.,
-                 1.0,
-                 -DataFloat64::max(),
-                 DataFloat64::max(),
-                 0.001,
-                 0.0,
-                 InvalidationLevel::InvalidOutput,
-                 PropertySemantics::Text}
+    , range_{"range", "Data range"}
     , valueName{"valueName", "Value name", ""}
     , valueUnit{"valueUnit", "Value unit", ""} {
 
     addPorts(meshInport_, volumeOutport_);
     addProperties(kernelType_, perPointSize_, size_, error_, perPointWeight_, weight_, volume_);
 
-    volume_.addProperties(volumeDims_, basis_, customRange_, dataRange, valueRange, valueName,
-                          valueUnit);
+    volume_.addProperties(volumeDims_, basis_, range_, valueName, valueUnit);
 }
 
 void MeshSplatProcessor::process() {
@@ -134,6 +112,10 @@ void MeshSplatProcessor::process() {
     auto [collect, jobs] = util::splatJobs(positions, radii, weights, settings);
     dispatchMany(jobs, [this, collect, mesh](std::vector<vec2> results) {
         auto volume = collect(std::move(results));
+        range_.updateFromVolume(*volume);
+        volume->dataMap.dataRange = dataRange_.getDataRange();
+        volume->dataMap.valueRange = dataRange_.getValueRange();
+
         volumeOutport_.setData(volume);
         newResults();
     });

@@ -73,14 +73,14 @@ double erfinv(double x) {
     x = std::clamp(x, -1.0, 1.0);
     const double a = 0.147;  // Tuning constant
     const double ln1mx2 = std::log(1.0 - x * x);
-    const double part1 = (2.0 / (M_PI * a)) + (ln1mx2 / 2.0);
+    const double part1 = (2.0 / (std::numbers::pi * a)) + (ln1mx2 / 2.0);
     const double part2 = ln1mx2 / a;
 
     const double sign = (x >= 0) ? 1.0 : -1.0;
     return sign * std::sqrt(std::sqrt(part1 * part1 - part2) - part1);
 }
 double gaussian_support(double sigma, double epsilon) {
-    return sigma * std::sqrt(2.0) * erfinv(1.0 - epsilon);
+    return sigma * std::numbers::sqrt2 * erfinv(1.0 - epsilon);
 }
 
 // Evaluate the kernel given the squared world-space distance d2, the per-point size s
@@ -257,10 +257,10 @@ splatJobs(std::span<const vec3> worldPositions, std::span<const float> sizes,
         throw Exception("Size must be positive");
     }
     if (settings.weight < 0.0f) {
-        throw Exception("Intensity must be positive");
+        throw Exception("Weight must be positive");
     }
     if (settings.error < 0.0f) {
-        throw Exception("error must be positive");
+        throw Exception("Error must be positive");
     }
     if (!sizes.empty() && sizes.size() != worldPositions.size()) {
         throw Exception("Sizes size does not match worldPositions size");

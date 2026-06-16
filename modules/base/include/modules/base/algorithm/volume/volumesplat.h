@@ -66,7 +66,7 @@ struct IVW_MODULE_BASE_API SplatSettings {
     SplatKernel kernel{SplatKernel::Gaussian};
     float size{1.0f};
     float weight{1.0f};
-    float error{0.01f};   //!< use to calculate the support in the case of the Gaussian kernal
+    float error{0.01f};   //!< Used to calculate the support size in case of a Gaussian kernel
     std::size_t jobs{0};  //!< Number of Z-slabs to split the volume into; 0 = auto
 };
 
@@ -106,9 +106,6 @@ std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
                                          const std::function<bool()>&)>>>
 splatJobs(std::span<const vec3> worldPositions, std::span<const float> sizes,
           std::span<const float> weights, const SplatSettings& settings);
-
-
-
 
 }  // namespace util
 }  // namespace inviwo

@@ -10,6 +10,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <modules/base/properties/datarangeproperty.h>
 
 #include <modules/base/basemoduledefine.h>
 
@@ -40,9 +41,7 @@ private:
     IntSize3Property volumeDims_;
     FloatMat4Property basis_;
 
-    BoolProperty customRange_;
-    DoubleMinMaxProperty dataRange;
-    DoubleMinMaxProperty valueRange;
+    DataRangeProperty range_;
 
     StringProperty valueName;
     StringProperty valueUnit;
