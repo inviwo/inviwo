@@ -161,7 +161,7 @@ class ImageCompare:
         """
         return the number of different pixels in the image (combined over all channels including alpha)
         """
-        return self.diffPixelCount
+        return int(self.diffPixelCount)
 
     def getMaxDifferences(self):
         """
