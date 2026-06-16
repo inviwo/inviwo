@@ -335,13 +335,19 @@ namespace pool::detail {
 
 struct IVW_CORE_API State {
     State(std::weak_ptr<PoolProcessor> processor, size_t count)
-        : processor(processor), count{count}, stop{false}, progress(count), nJobs{count} {}
+        : processor(std::move(processor))
+        , count{count}
+        , stop{false}
+        , progress(count)
+        , progressMutex{}
+        , nJobs{count} {}
 
     std::weak_ptr<PoolProcessor> processor;
     std::atomic<size_t> count;
     std::atomic<bool> stop;
     std::vector<std::atomic<double>> progress;
     std::future<void> progressUpdate;
+    std::mutex progressMutex;
     size_t nJobs;
 
     Stop getStop() { return Stop(stop); }

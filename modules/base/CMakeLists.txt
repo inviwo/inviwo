@@ -148,6 +148,8 @@ set(HEADER_FILES
     include/modules/base/processors/volumesource.h
     include/modules/base/processors/volumesubset.h
     include/modules/base/processors/volumetospatialsampler.h
+    include/modules/base/processors/meshsplatprocessor.h
+    include/modules/base/algorithm/volume/volumesplat.h
     include/modules/base/processors/worldtransformdeprecated.h
     include/modules/base/properties/basisproperty.h
     include/modules/base/properties/bufferinformationproperty.h
@@ -195,6 +197,7 @@ set(SOURCE_FILES
     src/algorithm/volume/volumelaplacian.cpp
     src/algorithm/volume/volumeramdistancetransform.cpp
     src/algorithm/volume/volumeramdownsample.cpp
+    src/algorithm/volume/volumesplat.cpp
     src/algorithm/volume/volumeramsubset.cpp
     src/algorithm/volume/volumesignificantvoxels.cpp
     src/algorithm/volume/volumevoronoi.cpp
@@ -306,6 +309,7 @@ set(SOURCE_FILES
     src/processors/volumesource.cpp
     src/processors/volumesubset.cpp
     src/processors/volumetospatialsampler.cpp
+    src/processors/meshsplatprocessor.cpp
     src/properties/basisproperty.cpp
     src/properties/bufferinformationproperty.cpp
     src/properties/datarangeproperty.cpp
@@ -329,6 +333,7 @@ set(TEST_FILES
     tests/unittests/marchingsquares-test.cpp
     tests/unittests/meshcutting-test.cpp
     tests/unittests/volumevoronoi-test.cpp
+    tests/unittests/volumesplat-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

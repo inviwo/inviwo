@@ -54,14 +54,17 @@ void pool::detail::State::setProgress(size_t id, double newProgress) {
 
     progress[id] = newProgress;
 
-    if (!progressUpdate.valid() || util::is_future_ready(progressUpdate)) {
-        const auto total = std::accumulate(progress.begin(), progress.end(), 0.0) /
-                           static_cast<double>(progress.size());
-        progressUpdate = dispatchFront([this, poolProcessor = processor, total]() {
-            if (auto p = poolProcessor.lock()) {
-                p->progress(this, total);
-            }
-        });
+    if (progressMutex.try_lock()) {
+        if (!progressUpdate.valid() || util::is_future_ready(progressUpdate)) {
+            const auto total = std::accumulate(progress.begin(), progress.end(), 0.0) /
+                               static_cast<double>(progress.size());
+            progressUpdate = dispatchFront([this, poolProcessor = processor, total]() {
+                if (auto p = poolProcessor.lock()) {
+                    p->progress(this, total);
+                }
+            });
+        }
+        progressMutex.unlock();
     }
 }
 
