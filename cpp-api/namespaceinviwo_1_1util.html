@@ -325,12 +325,12 @@ template&lt;class U, class T, class BinaryOperation&gt; </td></tr>
 IVW_CORE_API bool&#160;</td><td class="memItemRight"><b>addProcessorOnConnection</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> &amp;network, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;processor, <a class="el" href="classinviwo_1_1PortConnection.html">PortConnection</a> connection)</td></tr>
 <tr class="memitem:a852cf5397506063c368ab0149d04e35c" id="r_a852cf5397506063c368ab0149d04e35c"><td class="memItemLeft"><a id="a852cf5397506063c368ab0149d04e35c" name="a852cf5397506063c368ab0149d04e35c"></a>
 IVW_CORE_API bool&#160;</td><td class="memItemRight"><b>addProcessorOnConnection</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt; processor, <a class="el" href="classinviwo_1_1PortConnection.html">PortConnection</a> connection)</td></tr>
-<tr class="memitem:abb9de349cef1777d8aee09a0f8c16d6b" id="r_abb9de349cef1777d8aee09a0f8c16d6b"><td class="memItemLeft"><a id="abb9de349cef1777d8aee09a0f8c16d6b" name="abb9de349cef1777d8aee09a0f8c16d6b"></a>
-IVW_MODULE_QTWIDGETS_API QMenu *&#160;</td><td class="memItemRight"><b>addScientificColorMapsPresetsMenu</b> (QWidget *parent, QMenu *menu, <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *property)</td></tr>
-<tr class="memitem:a8a47074b1152f84ef78728a58c5dfadc" id="r_a8a47074b1152f84ef78728a58c5dfadc"><td class="memItemLeft"><a id="a8a47074b1152f84ef78728a58c5dfadc" name="a8a47074b1152f84ef78728a58c5dfadc"></a>
-IVW_MODULE_QTWIDGETS_API QMenu *&#160;</td><td class="memItemRight"><b>addTFColorbrewerPresetsMenu</b> (QWidget *parent, QMenu *menu, <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *property)</td></tr>
-<tr class="memitem:a416c8d9416964edc5a92908f30761f6f" id="r_a416c8d9416964edc5a92908f30761f6f"><td class="memItemLeft">IVW_MODULE_QTWIDGETS_API QMenu *&#160;</td><td class="memItemRight"><a class="el" href="#a416c8d9416964edc5a92908f30761f6f">addTFPresetsMenu</a> (QWidget *parent, QMenu *menu, <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *property)</td></tr>
-<tr class="memdesc:a416c8d9416964edc5a92908f30761f6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">create a submenu containing entries for TF presets of all transfer functions found in the path <span class="tt">PathType::TransferFunctions</span>. Upon selecting a menu entry, the respective preset will be loaded by <code class="param">property</code>. The submenu will be disabled if <code class="param">property</code> is read-only.  <br /></td></tr>
+<tr class="memitem:a6377219809033c9389ec38f95dc2c280" id="r_a6377219809033c9389ec38f95dc2c280"><td class="memItemLeft"><a id="a6377219809033c9389ec38f95dc2c280" name="a6377219809033c9389ec38f95dc2c280"></a>
+IVW_MODULE_QTWIDGETS_API QMenu *&#160;</td><td class="memItemRight"><b>addScientificColorMapsPresetsMenu</b> (QWidget *parent, QMenu *menu, <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *property, std::vector&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> * &gt; selection={})</td></tr>
+<tr class="memitem:a24dfa3b1edb351f92301e46a0f9c831a" id="r_a24dfa3b1edb351f92301e46a0f9c831a"><td class="memItemLeft"><a id="a24dfa3b1edb351f92301e46a0f9c831a" name="a24dfa3b1edb351f92301e46a0f9c831a"></a>
+IVW_MODULE_QTWIDGETS_API QMenu *&#160;</td><td class="memItemRight"><b>addTFColorbrewerPresetsMenu</b> (QWidget *parent, QMenu *menu, <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *property, std::vector&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> * &gt; selection={})</td></tr>
+<tr class="memitem:a7ff0b009fe07c68ab4dd145737ef9568" id="r_a7ff0b009fe07c68ab4dd145737ef9568"><td class="memItemLeft">IVW_MODULE_QTWIDGETS_API QMenu *&#160;</td><td class="memItemRight"><a class="el" href="#a7ff0b009fe07c68ab4dd145737ef9568">addTFPresetsMenu</a> (QWidget *parent, QMenu *menu, <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *property, std::vector&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> * &gt; selection={})</td></tr>
+<tr class="memdesc:a7ff0b009fe07c68ab4dd145737ef9568"><td class="mdescLeft">&#160;</td><td class="mdescRight">create a submenu containing entries for TF presets of all transfer functions found in the path <span class="tt">PathType::TransferFunctions</span>. Upon selecting a menu entry, the respective preset will be loaded by <code class="param">property</code>. The submenu will be disabled if <code class="param">property</code> is read-only.  <br /></td></tr>
 <tr class="memitem:a2f406a130b054515fd4dceb5b35b84ba" id="r_a2f406a130b054515fd4dceb5b35b84ba"><td class="memItemLeft">IVW_CORE_API void&#160;</td><td class="memItemRight"><a class="el" href="#a2f406a130b054515fd4dceb5b35b84ba">alignAlphaToBottom</a> (const std::vector&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> * &gt; &amp;selection)</td></tr>
 <tr class="memitem:ad833fb2a28acd35e6be134baa81331fa" id="r_ad833fb2a28acd35e6be134baa81331fa"><td class="memItemLeft">IVW_CORE_API void&#160;</td><td class="memItemRight"><a class="el" href="#ad833fb2a28acd35e6be134baa81331fa">alignAlphaToMean</a> (const std::vector&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> * &gt; &amp;selection)</td></tr>
 <tr class="memitem:a92665c9b8c2cd085faf8e4b701edbdc7" id="r_a92665c9b8c2cd085faf8e4b701edbdc7"><td class="memItemLeft">IVW_CORE_API void&#160;</td><td class="memItemRight"><a class="el" href="#a92665c9b8c2cd085faf8e4b701edbdc7">alignAlphaToTop</a> (const std::vector&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> * &gt; &amp;selection)</td></tr>
@@ -1803,8 +1803,8 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
-<a id="a416c8d9416964edc5a92908f30761f6f" name="a416c8d9416964edc5a92908f30761f6f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a416c8d9416964edc5a92908f30761f6f">&#9670;&#160;</a></span>addTFPresetsMenu()</h2>
+<a id="a7ff0b009fe07c68ab4dd145737ef9568" name="a7ff0b009fe07c68ab4dd145737ef9568"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ff0b009fe07c68ab4dd145737ef9568">&#9670;&#160;</a></span>addTFPresetsMenu()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1822,7 +1822,12 @@ template&lt;typename T&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *</td>          <td class="paramname"><span class="paramname"><em>property</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *</td>          <td class="paramname"><span class="paramname"><em>property</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> * &gt;</td>          <td class="paramname"><span class="paramname"><em>selection</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

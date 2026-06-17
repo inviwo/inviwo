@@ -79,7 +79,7 @@ var namespaceinviwo_1_1util =
       [ "Triangular", "namespaceinviwo_1_1util.html#a85aba8e7ade4592d06796c05467161f1a241f88afa7becb8633ca074c48e0d77c", null ],
       [ "Uniform", "namespaceinviwo_1_1util.html#a85aba8e7ade4592d06796c05467161f1af19516d11f2946f894070e92fcb56b6d", null ]
     ] ],
-    [ "addTFPresetsMenu", "namespaceinviwo_1_1util.html#a416c8d9416964edc5a92908f30761f6f", null ],
+    [ "addTFPresetsMenu", "namespaceinviwo_1_1util.html#a7ff0b009fe07c68ab4dd145737ef9568", null ],
     [ "alignAlphaToBottom", "namespaceinviwo_1_1util.html#a2f406a130b054515fd4dceb5b35b84ba", null ],
     [ "alignAlphaToMean", "namespaceinviwo_1_1util.html#ad833fb2a28acd35e6be134baa81331fa", null ],
     [ "alignAlphaToTop", "namespaceinviwo_1_1util.html#a92665c9b8c2cd085faf8e4b701edbdc7", null ],
