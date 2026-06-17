@@ -268,7 +268,7 @@ void TFEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
         if (!selection.empty()) {
             activeSet_ = findSet(&selection.front()->getPrimitive());
         }
-        move(selection, calcTransform(e->scenePos(), e->lastScenePos()), sceneRect());
+        move(selection, calcTransform(e->scenePos(), e->lastScenePos()));
         emit updateEnd();
     } else {
         QGraphicsScene::mouseMoveEvent(e);
@@ -401,6 +401,37 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     [this, pos, set]() { addPoint(pos, *set); });
             connect(addTFPeak, &QAction::triggered, this,
                     [this, pos, set]() { addPeak(pos, *set); });
+
+            auto* addTFCombMenu = menu.addMenu("Add TF C&omb...");
+            for (int nPeaks : {3, 5, 10, 15, 30}) {
+                for (int width : {1, 3}) {
+                    auto* addTFComb = addTFCombMenu->addAction(utilqt::toQString(
+                        fmt::format("{} {} Peaks", nPeaks, width == 1 ? "Wide" : "Narrow")));
+
+                    auto* widget = e->widget();
+                    auto* view = qobject_cast<QGraphicsView*>(widget->parent());
+                    if (!view) view = views().front();
+                    const auto visibleRect =
+                        view->mapToScene(view->viewport()->rect()).boundingRect();
+
+                    connect(addTFComb, &QAction::triggered, this,
+                            [this, width, pos, start = visibleRect.left(),
+                             stop = visibleRect.right(), set, nPeaks]() {
+                                //   x       x       x
+                                //  / \     / \     / \
+                                // x   x _ x   x _ x   x
+                                const auto steps = nPeaks * 2 + width * (nPeaks - 1);
+                                const auto step = (stop - start) / steps;
+                                for (int count = 0; count < nPeaks; ++count) {
+                                    const auto xpos = start + step + count * (2 + width) * step;
+                                    auto [left, mid, right] =
+                                        addPeak(QPointF{xpos, pos.y()}, *set, step);
+                                    if (!left || !mid || !right) break;
+                                }
+                            });
+                }
+            }
+
         } else {
             auto* addIsovalue = menu.addAction("Add &Isovalue");
             connect(addIsovalue, &QAction::triggered, this,
@@ -602,9 +633,14 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     menu.addSeparator();
     {
         if (concept_->hasTF()) {
-            util::addTFPresetsMenu(e->widget(), &menu, concept_->getTFProperty());
-            util::addTFColorbrewerPresetsMenu(e->widget(), &menu, concept_->getTFProperty());
-            util::addScientificColorMapsPresetsMenu(e->widget(), &menu, concept_->getTFProperty());
+            const auto sel =
+                selection |
+                std::views::transform([](auto* point) { return &point->getPrimitive(); }) |
+                std::ranges::to<std::vector>();
+            util::addTFPresetsMenu(e->widget(), &menu, concept_->getTFProperty(), sel);
+            util::addTFColorbrewerPresetsMenu(e->widget(), &menu, concept_->getTFProperty(), sel);
+            util::addScientificColorMapsPresetsMenu(e->widget(), &menu, concept_->getTFProperty(),
+                                                    sel);
             menu.addSeparator();
         }
 
@@ -688,7 +724,12 @@ void TFEditor::addPoint(const QPointF& scenePos) {
     }
 }
 
-void TFEditor::addPeak(const QPointF& scenePos, TFPrimitiveSet& set) {
+std::array<TFPrimitive*, 3> TFEditor::addPeak(const QPointF& scenePos, TFPrimitiveSet& set) {
+    return addPeak(scenePos, set, viewDependentOffset().x * 5 / width());
+}
+
+std::array<TFPrimitive*, 3> TFEditor::addPeak(const QPointF& scenePos, TFPrimitiveSet& set,
+                                              double offset) {
 
     const util::KeepTrueWhileInScope k(&selectNewPrimitives_);
     const NetworkLock lock(concept_->getProperty());
@@ -696,31 +737,34 @@ void TFEditor::addPeak(const QPointF& scenePos, TFPrimitiveSet& set) {
     const double pos = sceneToPos(scenePos, set);
     const double alpha = sceneToAlpha(scenePos);
 
-    set.add(pos, alpha);
-
-    const double normalizedOffset = viewDependentOffset().x * 5.0 / width();
+    std::array<TFPrimitive*, 3> added{};
 
     if (set.getMode() == PrimitiveSetMode::Absolute) {
         // In absolute mode, offset is in data-space units
         const double leftAlpha = std::max(0.0, alpha * 0.5);
-        set.add(pos - normalizedOffset, leftAlpha);
         const double rightAlpha = std::max(0.0, alpha * 0.5);
-        set.add(pos + normalizedOffset, rightAlpha);
+
+        added[0] = &set.add(pos - offset, leftAlpha);
+        added[1] = &set.add(pos, alpha);
+        added[2] = &set.add(pos + offset, rightAlpha);
     } else {
         // add point to the left
         if (pos > 0.0) {
             // compute intercept on alpha by using alpha - alpha / offset * pos
-            const double leftAlpha = std::max(0.0, alpha * (1.0 - pos / normalizedOffset));
-            set.add(std::max(pos - normalizedOffset, 0.0), leftAlpha);
+            const double leftAlpha = std::max(0.0, alpha * (1.0 - pos / offset));
+            added[0] = &set.add(std::max(pos - offset, 0.0), leftAlpha);
         }
+
+        added[1] = &set.add(pos, alpha);
 
         // add point to the right
         if (pos < 1.0) {
             // compute intercept on alpha by using alpha + alpha / offset * (pos - 1.0)
-            const double rightAlpha = std::max(0.0, alpha * (1.0 + (pos - 1.0) / normalizedOffset));
-            set.add(std::min(pos + normalizedOffset, 1.0), rightAlpha);
+            const double rightAlpha = std::max(0.0, alpha * (1.0 + (pos - 1.0) / offset));
+            added[2] = &set.add(std::min(pos + offset, 1.0), rightAlpha);
         }
     }
+    return added;
 }
 
 TFPrimitiveSet* TFEditor::activeSet() {
@@ -892,8 +936,7 @@ QPointF TFEditor::calcTransformRef(std::span<TFEditorPrimitive*> primitives,
                              });
 }
 
-void TFEditor::move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform,
-                    const QRectF& rect) {
+void TFEditor::move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform) {
     constexpr auto less = derefOperator(std::less<>{}, &TFEditorPrimitive::getPosition);
     constexpr auto greater = derefOperator(std::greater<>{}, &TFEditorPrimitive::getPosition);
 
@@ -974,13 +1017,15 @@ void TFEditor::paste(std::optional<QPointF> scenePos) {
         }
     }
 
-    const NetworkLock lock(concept_->getProperty());
-    const util::KeepTrueWhileInScope k(&selectNewPrimitives_);
-    clearSelection();
+    util::exceptionGuard([&]() {
+        const NetworkLock lock(concept_->getProperty());
+        const util::KeepTrueWhileInScope k(&selectNewPrimitives_);
+        clearSelection();
 
-    for (auto& p : primitives) {
-        set->add(*p);
-    }
+        for (auto& p : primitives) {
+            set->add(*p);
+        }
+    });
 }
 
 void TFEditor::cut() {

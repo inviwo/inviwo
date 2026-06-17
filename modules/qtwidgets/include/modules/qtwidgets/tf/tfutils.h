@@ -40,6 +40,7 @@ class QWidget;
 
 namespace inviwo {
 
+class TFPrimitive;
 class TFPrimitiveSet;
 class TransferFunction;
 class IsoValueCollection;
@@ -84,13 +85,16 @@ IVW_MODULE_QTWIDGETS_API void exportIsoValueCollectionDialog(const IsoValueColle
  * @return newly created submenu, which is owned by \p parent
  */
 IVW_MODULE_QTWIDGETS_API QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu,
-                                                 TransferFunctionProperty* property);
+                                                 TransferFunctionProperty* property,
+                                                 std::vector<TFPrimitive*> selection = {});
 
-IVW_MODULE_QTWIDGETS_API QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
-                                                            TransferFunctionProperty* property);
+IVW_MODULE_QTWIDGETS_API QMenu* addTFColorbrewerPresetsMenu(
+    QWidget* parent, QMenu* menu, TransferFunctionProperty* property,
+    std::vector<TFPrimitive*> selection = {});
 
 IVW_MODULE_QTWIDGETS_API QMenu* addScientificColorMapsPresetsMenu(
-    QWidget* parent, QMenu* menu, TransferFunctionProperty* property);
+    QWidget* parent, QMenu* menu, TransferFunctionProperty* property,
+    std::vector<TFPrimitive*> selection = {});
 
 IVW_MODULE_QTWIDGETS_API TransferFunction colorListToTF(std::span<const glm::vec3> points,
                                                         bool discrete);

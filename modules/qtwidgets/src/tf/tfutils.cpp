@@ -201,13 +201,15 @@ void exportIsoValueCollectionDialog(const IsoValueCollection& iso) {
 namespace {
 
 QAction* tfAction(std::string_view name, TransferFunction tf, QMenu* menu,
-                  TransferFunctionProperty* property, QObject* parent) {
+                  TransferFunctionProperty* property, std::vector<TFPrimitive*> selection,
+                  QObject* parent) {
     auto* action = menu->addAction(utilqt::toQString(name));
     const int iconWidth = utilqt::emToPx(menu, 11);
     action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
     action->setIconVisibleInMenu(true);
     QObject::connect(action, &QAction::triggered, parent,
-                     util::exceptionGuarded([property, tf2 = std::move(tf)]() mutable {
+                     util::exceptionGuarded([property, tf2 = std::move(tf),
+                                             selection = std::move(selection)]() mutable {
                          const NetworkLock lock(property);
 
                          if (const auto* dm = property->data().getDataMap()) {
@@ -217,7 +219,15 @@ QAction* tfAction(std::string_view name, TransferFunction tf, QMenu* menu,
                              tf2.setMode(property->get().getMode(), dm2);
                          }
 
-                         property->set(tf2);
+                         if (selection.empty()) {
+                             property->set(tf2);
+                         } else {
+                             property->get().beginBulkUpdate();
+                             for (auto* point : selection) {
+                                 point->setColor(vec3{tf2.sample(point->getPosition())});
+                             }
+                             property->get().endBulkUpdate();
+                         }
                      }));
     return action;
 }
@@ -233,7 +243,8 @@ QMenu* addCategory(std::string_view name, QMenu* menu, const TransferFunction& t
 
 }  // namespace
 
-QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* property) {
+QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* property,
+                        std::vector<TFPrimitive*> selection) {
     if (!parent || !menu || !property) {
         return nullptr;
     }
@@ -244,15 +255,15 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
     // need to set the stylesheet explicitly since Qt _only_ supports 'px' for icon sizes
     presets->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(utilqt::emToPx(presets, 11)));
 
-    const auto addPresetActions = [presets, parent,
-                                   property](const std::filesystem::path& basePath) {
+    const auto addPresetActions = [presets, parent, property, selection = std::move(selection)](
+                                      const std::filesystem::path& basePath) {
         auto* factory = util::getDataReaderFactory();
         auto files = filesystem::getDirectoryContentsRecursively(basePath);
         for (const auto& file : files) {
             if (auto reader = factory->getReaderForTypeAndExtension<TransferFunction>(file)) {
                 util::exceptionGuard([&]() {
                     auto tf = reader->readData(basePath / file);
-                    tfAction(file.string(), std::move(*tf), presets, property, parent);
+                    tfAction(file.string(), std::move(*tf), presets, property, selection, parent);
                 });
             }
         }
@@ -340,8 +351,8 @@ struct GenerateNDialog : QDialog {
 };
 }  // namespace
 
-QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
-                                   TransferFunctionProperty* property) {
+QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* property,
+                                   std::vector<TFPrimitive*> selection) {
     if (!parent || !menu || !property) {
         return nullptr;
     }
@@ -386,7 +397,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
 
     QObject::connect(
         presets, &QMenu::aboutToShow, presets,
-        [presets, property, parent, generateN]() {
+        [presets, property, parent, generateN, selection = std::move(selection)]() {
             using enum colorbrewer::Category;
             for (auto category : {Diverging, Qualitative, Sequential}) {
                 for (auto discrete : {true, false}) {
@@ -410,7 +421,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
                             tfAction(fmt::format("{} colors", n),
                                      colorbrewer::getTransferFunction(category, family, n, discrete,
                                                                       0.5),
-                                     familyMenu, property, parent);
+                                     familyMenu, property, selection, parent);
                         }
 
                         auto* action = familyMenu->addAction("Generate...");
@@ -451,7 +462,8 @@ TransferFunction colorListToTF(std::span<const glm::vec3> points, bool discrete)
 }
 
 QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
-                                         TransferFunctionProperty* property) {
+                                         TransferFunctionProperty* property,
+                                         std::vector<TFPrimitive*> selection) {
 
     if (!parent || !menu || !property) {
         return nullptr;
@@ -462,10 +474,11 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
     presets->setEnabled(!property->getReadOnly());
     presets->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(utilqt::emToPx(presets, 11)));
 
-    const auto addAction = [parent, property](QMenu* menu, std::span<const glm::vec3> points,
-                                              std::string_view name, bool discrete) {
+    const auto addAction = [parent, property, selection = std::move(selection)](
+                               QMenu* menu, std::span<const glm::vec3> points,
+                               std::string_view name, bool discrete) {
         auto tf = colorListToTF(points, discrete);
-        tfAction(name, tf, menu, property, parent);
+        tfAction(name, tf, menu, property, selection, parent);
     };
 
     QObject::connect(
