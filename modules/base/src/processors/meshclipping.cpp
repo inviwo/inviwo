@@ -106,7 +106,8 @@ MeshClipping::MeshClipping()
           InvalidationLevel::Valid)
     , moveCameraAlongNormal_("moveCameraAlongNormal", "Move Camera Along Normal", true,
                              InvalidationLevel::Valid)
-    , pointPlaneMove_("pointPlaneMove", "Plane Point Along Normal Move", 0.f, 0.f, 2.f, 0.01f)
+    , pointPlaneMove_("pointPlaneMove", "Plane Point Along Normal Move",
+                      util::ordinalSymmetricVector(0.0f, 10.0f).setInc(0.001f))
     , capClippedHoles_("capClippedHoles", "Cap clipped holes", true)
     , planePoint_(
           "planePoint", "Plane Point",
@@ -238,8 +239,9 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
 
             auto closestVertex = minDist * nearPlane.getNormal() + nearPlane.getPoint();
             auto farVertex = maxDist * nearPlane.getNormal() + nearPlane.getPoint();
-            auto closestWorldSpacePos = vec3(
-                geom->getCoordinateTransformer().getDataToWorldMatrix() * dvec4(dvec3(closestVertex), 1.0));
+            auto closestWorldSpacePos =
+                vec3(geom->getCoordinateTransformer().getDataToWorldMatrix() *
+                     dvec4(dvec3(closestVertex), 1.0));
             auto farWorldSpacePos = vec3(geom->getCoordinateTransformer().getDataToWorldMatrix() *
                                          dvec4(dvec3(farVertex), 1.0));
             auto range = glm::abs((farWorldSpacePos - closestWorldSpacePos));

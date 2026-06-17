@@ -283,7 +283,6 @@ set(SHADER_FILES
     glsl/cubeglyph.geom
     glsl/cubeglyph.vert
     glsl/heightfield.frag
-    glsl/heightfield.vert
     glsl/img_binary.frag
     glsl/img_channel_combine.frag
     glsl/img_channel_select.frag

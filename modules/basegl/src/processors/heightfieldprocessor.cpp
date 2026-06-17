@@ -33,13 +33,10 @@
 #include <inviwo/core/algorithm/markdown.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/inportiterable.h>
-#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
-#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -49,14 +46,53 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/stringshaderresource.h>
 
-#include <functional>
 #include <memory>
-#include <string>
 #include <string_view>
-#include <type_traits>
 
 namespace inviwo {
+
+namespace {
+
+constexpr std::string_view vertexShader = R"(#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+
+uniform GeometryParameters geometry;
+uniform CameraParameters camera;
+
+uniform sampler2D heightfield;
+uniform ImageParameters heightfieldParameters;
+
+uniform float heightScale = 1.0f;
+
+out Vertex {
+    vec4 worldPos;
+    vec3 normal;
+    vec4 color;
+    vec3 texCoord;
+} vertex;
+
+void main() {    
+    vec4 position = in_Vertex;
+    vec3 normal = normalize(in_Normal);
+    vec4 color = in_Color;
+    vec3 texCoord = in_TexCoord;    
+    
+    float offset = getValueTexel(heightfield, heightfieldParameters, texCoord.xy).r;
+    // displace vertex along the normal
+    position.xyz += normal * offset * heightScale;
+
+    vertex.worldPos = geometry.dataToWorld * position;
+    vertex.normal = geometry.dataToWorldNormalMatrix * normal;
+    vertex.color = color;
+    vertex.texCoord = texCoord;
+
+    gl_Position = camera.worldToClip * vertex.worldPos;
+}
+)";
+
+}  // namespace
 
 const ProcessorInfo HeightFieldProcessor::processorInfo_{
     "org.inviwo.HeightFieldRenderGL",  // Class identifier
@@ -79,16 +115,16 @@ HeightFieldProcessor::HeightFieldProcessor()
     : Processor()
     , inport_{"geometry", "Input geometry which is modified by the height field"_help}
     , inportHeightfield_{"heightfield", R"(
-        The height field input (single-channel image).
-        If the image has multiple channels only the red channel is used.)"_unindentHelp,
-                         OutportDeterminesSize::Yes}
-    , inportTexture_{"texture", "Color texture for color mapping (optional)."_help,
-                     OutportDeterminesSize::Yes}
-    , inportNormalMap_{"normalmap", "Normal map input (optional)"_help, OutportDeterminesSize::Yes}
+        The height field input (single-channel layer).
+        If the layer has multiple channels only the red channel is used.)"_unindentHelp}
+    , inportTexture_{"colorTexture", "Color texture for color mapping (optional)."_help}
+    , inportNormalMap_{"normalmap", "Normal map input (optional)"_help}
     , imageInport_{"imageInport", "Background image (optional)"_help}
     , outport_{"image", "The rendered height field."_help}
     , heightScale_{"heightScale", "Height Scale",
-                   util::ordinalLength(1.0f, 10.0f).set("Scaling factor for the height field"_help)}
+                   util::ordinalLength(1.0f, 10.0f)
+                       .setInc(0.001)
+                       .set("Scaling factor for the height field"_help)}
     , terrainShadingMode_(
           "terrainShadingMode", "Terrain Shading",
           "Defines the color mapped onto the height field using either constant color, color input texture, or the height field texture"_help,
@@ -96,10 +132,16 @@ HeightFieldProcessor::HeightFieldProcessor()
            {"shadingColorTex", "Color Texture", HeightFieldShading::ColorTexture},
            {"shadingHeightField", "Heightfield Texture", HeightFieldShading::HeightField}},
           0)
+    , vertexShaderSource_{"vertexShaderSource", "Vertex Shader", vertexShader,
+                          InvalidationLevel::InvalidResources, PropertySemantics::ShaderEditor}
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
-    , shader_("heightfield.vert", "heightfield.frag", Shader::Build::No) {
+    , vertexShader_{std::make_shared<StringShaderResource>("heightfield.vert", vertexShader)}
+    , shader_({{ShaderType::Vertex, vertexShader_},
+               {ShaderType::Fragment, utilgl::findShaderResource("heightfield.frag")}},
+              Shader::Build::No) {
+
     addPort(inport_);
     addPort(inportHeightfield_).setOptional(true);
     addPort(inportTexture_).setOptional(true);
@@ -107,7 +149,10 @@ HeightFieldProcessor::HeightFieldProcessor()
     addPort(imageInport_).setOptional(true);
     addPort(outport_);
 
-    addProperties(heightScale_, terrainShadingMode_, camera_, lightingProperty_, trackball_);
+    addProperties(heightScale_, terrainShadingMode_, vertexShaderSource_, camera_,
+                  lightingProperty_, trackball_);
+
+    vertexShaderSource_.onChange([this]() { vertexShader_->setSource(vertexShaderSource_.get()); });
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -125,31 +170,28 @@ void HeightFieldProcessor::process() {
     shader_.activate();
 
     // bind input textures
-    TextureUnit heightFieldUnit, colorTexUnit, normalTexUnit;
+    TextureUnitContainer cont;
 
     int terrainShadingMode = terrainShadingMode_.get();
     if (inportHeightfield_.isReady()) {
-        utilgl::bindColorTexture(inportHeightfield_, heightFieldUnit.getEnum());
+        utilgl::bindAndSetUniforms(shader_, cont, inportHeightfield_);
     } else if (terrainShadingMode == HeightFieldShading::HeightField) {
         // switch to flat shading since color texture is not available
         terrainShadingMode = HeightFieldShading::ConstantColor;
     }
 
     if (inportTexture_.isReady()) {
-        utilgl::bindColorTexture(inportTexture_, colorTexUnit.getEnum());
+        utilgl::bindAndSetUniforms(shader_, cont, inportTexture_);
     } else if (terrainShadingMode == HeightFieldShading::ColorTexture) {
         // switch to flat shading since heightfield texture is not available
         terrainShadingMode = HeightFieldShading::ConstantColor;
     }
 
     const bool normalMapping = inportNormalMap_.isReady();
-    if (normalMapping) {
-        utilgl::bindColorTexture(inportNormalMap_, normalTexUnit.getEnum());
+    if (normalMapping && inportNormalMap_.isReady()) {
+        utilgl::bindAndSetUniforms(shader_, cont, inportNormalMap_);
     }
 
-    shader_.setUniform("inportHeightfield", heightFieldUnit.getUnitNumber());
-    shader_.setUniform("inportTexture", colorTexUnit.getUnitNumber());
-    shader_.setUniform("inportNormalMap", normalTexUnit.getUnitNumber());
     shader_.setUniform("terrainShadingMode", terrainShadingMode);
     shader_.setUniform("normalMapping", (normalMapping ? 1 : 0));
 
@@ -164,7 +206,6 @@ void HeightFieldProcessor::process() {
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-    TextureUnit::setZeroUnit();
 }
 
 }  // namespace inviwo

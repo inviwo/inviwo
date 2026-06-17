@@ -27,46 +27,53 @@
  * 
  *********************************************************************************/
 
+#include "utils/structs.glsl"
 #include "utils/shading.glsl"
 
 uniform LightParameters lighting;
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-uniform sampler2D inportHeightfield;
-uniform sampler2D inportTexture;
-uniform sampler2D inportNormalMap;
+uniform sampler2D heightfield;
+uniform ImageParameters heightfieldParameters;
+uniform sampler2D colorTexture;
+uniform sampler2D normalmap;
 
 uniform int terrainShadingMode = 0;
 uniform int normalMapping = 0;
 
-in vec4 worldPosition_;
-in vec3 normal_;
-in vec4 color_;
-in vec3 texCoord_;
+in Vertex {
+    vec4 worldPos;
+    vec3 normal;
+    vec4 color;
+    vec3 texCoord;
+} fragment;
 
 
 void main() {
-    vec4 fragColor = color_;
+    vec4 fragColor = fragment.color;
 
     if (terrainShadingMode == 1) {  // color texture
-        fragColor = texture(inportTexture, texCoord_.xy).rgba;
+        fragColor = texture(colorTexture, fragment.texCoord.xy);
     } else if (terrainShadingMode == 2) {  // heightfield texture
-        fragColor = vec4(texture(inportHeightfield, texCoord_.xy).rrr, 1.0);
+        fragColor = vec4(texture(heightfield, fragment.texCoord.xy).rrr, 1.0);
     }
 
     // normal mapping
     vec3 normal;
     if (normalMapping == 1) {
-        normal = texture(inportNormalMap, texCoord_.xy).rgb * 2.0 - 1.0;
+        normal = texture(normalmap, fragment.texCoord.xy).rgb * 2.0 - 1.0;
         normal = normalize(geometry.modelToWorldNormalMatrix * normal);
     } else {
-        normal = normalize(normal_);
+        normal = normalize(fragment.normal);
     }
 
-    vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
-    fragColor.rgb = APPLY_LIGHTING(lighting, fragColor.rgb, fragColor.rgb, vec3(1),
-                                   worldPosition_.xyz, normal, normalize(toCameraDir_));
+    normal = orientedShadingNormal(normal, fragment.worldPos.xyz);
+
+    vec3 toCameraDir = normalize(camera.position - fragment.worldPos.xyz);
+
+    ShadingParameters shadingParams = shading(fragColor.rgb, normal, fragment.worldPos.xyz);
+    fragColor.rgb = applyLighting(lighting, shadingParams, toCameraDir);
 
     FragData0 = fragColor;
 }
