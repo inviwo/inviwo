@@ -55,7 +55,7 @@ uniform VolumeParameters volumeParameters;
 uniform float maskValue;
 
 void main() {{
-    float value = getVoxel(volume,volumeParameters, texCoord_.xyz).r;
+    float value = getVoxel(volume, volumeParameters, texCoord_.xyz).r;
     float mask = ({}) ? 1.0 : 0.0;
     FragData0 = vec4(vec3(mask), 1.0);
 }}
@@ -68,7 +68,7 @@ uniform sampler3D {0};
 )");
 
 constexpr std::string_view first = util::trim(R"(
-float {0}Value = getNormalizedVoxel({0}, {0}Parameters, samplePosition).x;
+float {0}Value = getNormalizedVoxel({0}, {0}Parameters, {1}SamplePosition).x;
 float {0}ValuePrev = {0}Value;
 if ({0}Value > 0.0) {{
    color = vec4(0);
@@ -76,7 +76,7 @@ if ({0}Value > 0.0) {{
 )");
 
 constexpr std::string_view loop = util::trim(R"(
-{0}Value = getNormalizedVoxel({0}, {0}Parameters, samplePosition).x;
+{0}Value = getNormalizedVoxel({0}, {0}Parameters, {1}SamplePosition).x;
 if ({0}Value > 0.0) {{
    {0}ValuePrev = {0}Value;
    continue;
@@ -155,13 +155,13 @@ auto MaskComponent::getSegments() -> std::vector<Segment> {
     if (options_.isChecked()) {
         return {{.snippet = fmt::format(uniforms, name_),
                  .placeholder = placeholder::uniform,
-                 .priority = 350},
-                {.snippet = fmt::format(first, name_),
+                 .priority = 410},
+                {.snippet = fmt::format(first, name_, port_->getIdentifier()),
                  .placeholder = placeholder::first,
                  .priority = 950},
-                {.snippet = fmt::format(loop, name_),
+                {.snippet = fmt::format(loop, name_, port_->getIdentifier()),
                  .placeholder = placeholder::loop,
-                 .priority = 350},
+                 .priority = 410},
                 {.snippet = fmt::format(loop2, name_, port_->getIdentifier()),
                  .placeholder = placeholder::loop,
                  .priority = 550}};
