@@ -418,7 +418,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                             [this, width, pos, start = visibleRect.left(),
                              stop = visibleRect.right(), set, nPeaks]() {
                                 //   x       x       x
-                                //  / \     / \     / \  
+                                //  / \     / \     / \
                                 // x   x _ x   x _ x   x
                                 const auto steps = nPeaks * 2 + width * (nPeaks - 1);
                                 const auto step = (stop - start) / steps;
@@ -1017,13 +1017,15 @@ void TFEditor::paste(std::optional<QPointF> scenePos) {
         }
     }
 
-    const NetworkLock lock(concept_->getProperty());
-    const util::KeepTrueWhileInScope k(&selectNewPrimitives_);
-    clearSelection();
+    util::exceptionGuard([&]() {
+        const NetworkLock lock(concept_->getProperty());
+        const util::KeepTrueWhileInScope k(&selectNewPrimitives_);
+        clearSelection();
 
-    for (auto& p : primitives) {
-        set->add(*p);
-    }
+        for (auto& p : primitives) {
+            set->add(*p);
+        }
+    });
 }
 
 void TFEditor::cut() {
