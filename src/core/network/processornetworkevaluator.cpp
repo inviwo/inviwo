@@ -43,6 +43,7 @@ ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processor
     , processorsSorted_(util::topologicalSortFiltered(processorNetwork_))
     , needsSorting_(true)
     , evaluationQueued_(false)
+    , reentranceCount_{0}
     , exceptionHandler_(StandardEvaluationErrorHandler()) {
 
     processorNetwork_->addObserver(this);
@@ -102,6 +103,14 @@ void ProcessorNetworkEvaluator::requestEvaluate() {
 }
 
 void ProcessorNetworkEvaluator::evaluate() {
+    if (reentranceCount_ > 10) {
+        log::error(
+            "Processor network evaluation is re-entering too often, "
+            "aborting to avoid stack overflow.");
+        return;
+    }
+    const ScopedIncrement incrementReentranceCount{reentranceCount_};
+
     // lock processor network to avoid concurrent evaluation
     const NetworkLock lock(processorNetwork_);
 

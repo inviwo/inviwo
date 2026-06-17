@@ -39,6 +39,8 @@
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/network/networklock.h>
 
+#include <inviwo/core/properties/ordinalproperty.h>
+
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
@@ -54,11 +56,22 @@ struct OnCallbacks {
     std::function<void(TestProcessor&)> onInit;
     std::function<void(TestProcessor&)> onProcess;
     std::function<void(TestProcessor&)> onNotReady;
+    std::function<void(TestProcessor&)> onPropModified;
 };
 
 struct TestProcessor : Processor {
     TestProcessor(std::string_view id, OnCallbacks callbacks = {})
-        : Processor(id, id), inport{"in"}, outport{"out"}, callbacks{std::move(callbacks)} {}
+        : Processor(id, id)
+        , inport{"in"}
+        , outport{"out"}
+        , prop{"prop", "Int Property", util::ordinalSymmetricVector(-1)}
+        , callbacks{std::move(callbacks)} {
+        addProperty(prop);
+
+        prop.onChange([this]() {
+            if (this->callbacks.onPropModified) this->callbacks.onPropModified(*this);
+        });
+    }
 
     virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }
 
@@ -76,6 +89,7 @@ struct TestProcessor : Processor {
 
     DataInport<int> inport;
     DataOutport<int> outport;
+    IntProperty prop;
 
     OnCallbacks callbacks;
 };
@@ -94,10 +108,10 @@ struct Instrument {
         int init = 0;
         int process = 0;
         int notReady = 0;
+        int propModified = 0;
     };
 
     Instrument(TestProcessor& p) : name{p.getIdentifier()}, calls{} {
-
         p.callbacks.onInit = [this, f = p.callbacks.onInit](TestProcessor& p) {
             ++calls.init;
             if (f) f(p);
@@ -110,18 +124,24 @@ struct Instrument {
             ++calls.notReady;
             if (f) f(p);
         };
+        p.callbacks.onPropModified = [this, f = p.callbacks.onPropModified](TestProcessor& p) {
+            ++calls.propModified;
+            if (f) f(p);
+        };
     }
 
     void check(Calls expected) {
-        SCOPED_TRACE(name);
+        SCOPED_TRACE(name + " TestProcessor");
         EXPECT_EQ(calls.init, expected.init);
         EXPECT_EQ(calls.process, expected.process);
         EXPECT_EQ(calls.notReady, expected.notReady);
+        EXPECT_EQ(calls.propModified, expected.propModified);
     }
     void reset() {
         calls.init = 0;
         calls.process = 0;
         calls.notReady = 0;
+        calls.propModified = 0;
     }
     void checkAndReset(Calls expected) {
         check(expected);
@@ -143,6 +163,13 @@ auto createSource(std::string_view id, OnCallbacks callbacks = {}) {
 auto createSink(std::string_view id, OnCallbacks callbacks = {}) {
     auto sink = std::make_unique<TestProcessor>(id, std::move(callbacks));
     sink->addPort(sink->inport);
+    return sink;
+};
+
+auto createProcessor(std::string_view id, OnCallbacks callbacks = {}) {
+    auto sink = std::make_unique<TestProcessor>(id, std::move(callbacks));
+    sink->addPort(sink->inport);
+    sink->addPort(sink->outport);
     return sink;
 };
 
@@ -175,7 +202,7 @@ TEST(NetworkEvaluator, Eval) {
 
     {
         SCOPED_TRACE("Add connection");
-        network.addConnection(src->getOutports()[0], snk->getInports()[0]);
+        network.addConnection(&src->outport, &snk->inport);
         srcInst.checkAndReset({.init = 1, .process = 1});
         snkInst.checkAndReset({.init = 1, .process = 1});
     }
@@ -249,7 +276,7 @@ TEST(NetworkEvaluator, Error) {
 
     {
         SCOPED_TRACE("Add connection");
-        network.addConnection(src->getOutports()[0], snk->getInports()[0]);
+        network.addConnection(&src->outport, &snk->inport);
         srcInst.checkAndReset({.init = 1, .process = 1});
         snkInst.checkAndReset({.init = 1, .process = 1});
     }
@@ -272,6 +299,311 @@ TEST(NetworkEvaluator, Error) {
         EXPECT_EQ(throwCount, 1);
         srcInst.checkAndReset({.process = 1});
         snkInst.checkAndReset({.notReady = 1});
+    }
+}
+
+TEST(NetworkEvaluator, PropertyChange) {
+    ProcessorNetwork network{InviwoApplication::getPtr()};
+    ProcessorNetworkEvaluator evaluator{&network};
+
+    auto source = createSource("source", {.onProcess = [](TestProcessor& p) {
+                                   p.outport.setData(std::make_shared<int>(p.prop.get()));
+                               }});
+    auto sink = createSink("sink");
+
+    auto& src = *source;
+    auto& snk = *sink;
+
+    Instrument snkInst(snk);
+    Instrument srcInst(src);
+
+    network.addProcessor(std::move(source));
+    network.addProcessor(std::move(sink));
+    network.addConnection(&src.outport, &snk.inport);
+
+    srcInst.reset();
+    snkInst.reset();
+
+    {
+        SCOPED_TRACE("Change Property");
+        src.prop.set(42);
+
+        srcInst.checkAndReset({.process = 1, .propModified = 1});
+        snkInst.checkAndReset({.process = 1});
+
+        EXPECT_EQ(*snk.inport.getData(), 42);
+    }
+}
+
+TEST(NetworkEvaluator, OutProperty) {
+    ProcessorNetwork network{InviwoApplication::getPtr()};
+    ProcessorNetworkEvaluator evaluator{&network};
+
+    auto source = createSource("source", {.onProcess = [](TestProcessor& p) {
+                                   p.outport.setData(std::make_shared<int>(p.prop.get()));
+                               }});
+    auto sink = createSink(
+        "sink", {.onProcess = [](TestProcessor& p) { p.prop.set(*p.inport.getData()); }});
+
+    auto& src = *source;
+    auto& snk = *sink;
+
+    Instrument snkInst(snk);
+    Instrument srcInst(src);
+
+    network.addProcessor(std::move(source));
+    network.addProcessor(std::move(sink));
+    network.addConnection(&src.outport, &snk.inport);
+
+    srcInst.reset();
+    snkInst.reset();
+
+    {
+        SCOPED_TRACE("Change Property");
+        src.prop.set(42);
+
+        srcInst.checkAndReset({.process = 1, .propModified = 1});
+        snkInst.checkAndReset({.process = 1, .propModified = 1});
+
+        EXPECT_EQ(*snk.inport.getData(), 42);
+        EXPECT_EQ(snk.prop.get(), 42);
+    }
+}
+
+TEST(NetworkEvaluator, PropertyLink) {
+    ProcessorNetwork network{InviwoApplication::getPtr()};
+    ProcessorNetworkEvaluator evaluator{&network};
+
+    auto source1 = createSource("source1", {.onProcess = [](TestProcessor& p) {
+                                    p.outport.setData(std::make_shared<int>(p.prop.get()));
+                                }});
+    auto sink1 = createSink("sink1");
+
+    auto source2 = createSource("source2", {.onProcess = [](TestProcessor& p) {
+                                    p.outport.setData(std::make_shared<int>(p.prop.get()));
+                                }});
+    auto sink2 = createSink("sink2");
+
+    auto& src1 = *source1;
+    auto& snk1 = *sink1;
+    auto& src2 = *source2;
+    auto& snk2 = *sink2;
+
+    Instrument snkInst1(snk1);
+    Instrument srcInst1(src1);
+    Instrument snkInst2(snk2);
+    Instrument srcInst2(src2);
+
+    network.addProcessor(std::move(source1));
+    network.addProcessor(std::move(sink1));
+    network.addConnection(&src1.outport, &snk1.inport);
+
+    network.addProcessor(std::move(source2));
+    network.addProcessor(std::move(sink2));
+    network.addConnection(&src2.outport, &snk2.inport);
+
+    network.addLink(&src1.prop, &src2.prop);
+    network.addLink(&src2.prop, &src1.prop);
+
+    srcInst1.reset();
+    snkInst1.reset();
+    srcInst2.reset();
+    snkInst2.reset();
+
+    {
+        SCOPED_TRACE("Change Property");
+        src1.prop.set(42);
+
+        srcInst1.checkAndReset({.process = 1, .propModified = 1});
+        snkInst1.checkAndReset({.process = 1});
+
+        srcInst2.checkAndReset({.process = 1, .propModified = 1});
+        snkInst2.checkAndReset({.process = 1});
+
+        EXPECT_EQ(*snk1.inport.getData(), 42);
+    }
+}
+
+TEST(NetworkEvaluator, UpwardsPropertyLink) {
+    ProcessorNetwork network{InviwoApplication::getPtr()};
+    ProcessorNetworkEvaluator evaluator{&network};
+
+    auto source = createSource("source", {.onProcess = [](TestProcessor& p) {
+                                   p.outport.setData(std::make_shared<int>(p.prop.get()));
+                               }});
+
+    std::function<int(int)> processFunc = [](int x) { return x; };
+
+    auto processor = createProcessor("processor", {.onProcess = [&processFunc](TestProcessor& p) {
+                                         int value = *p.inport.getData();
+                                         value = processFunc(value);
+                                         p.outport.setData(std::make_shared<int>(value));
+                                     }});
+
+    auto sink = createSink(
+        "sink", {.onProcess = [](TestProcessor& p) { p.prop.set(*p.inport.getData()); }});
+
+    auto& src = *source;
+    auto& prc = *processor;
+    auto& snk = *sink;
+
+    Instrument snkInst(snk);
+    Instrument prcInst(prc);
+    Instrument srcInst(src);
+
+    network.addProcessor(std::move(source));
+    network.addProcessor(std::move(processor));
+    network.addProcessor(std::move(sink));
+    network.addConnection(&src.outport, &prc.inport);
+    network.addConnection(&prc.outport, &snk.inport);
+
+    srcInst.reset();
+    prcInst.reset();
+    snkInst.reset();
+
+    {
+        SCOPED_TRACE("Change Property");
+        src.prop.set(42);
+
+        srcInst.checkAndReset({.process = 1, .propModified = 1});
+        prcInst.checkAndReset({.process = 1});
+        snkInst.checkAndReset({.process = 1, .propModified = 1});
+
+        EXPECT_EQ(*snk.inport.getData(), 42);
+        EXPECT_EQ(snk.prop.get(), 42);
+    }
+
+    {
+        SCOPED_TRACE("Add Property Link");
+        network.addLink(&src.prop, &snk.prop);
+        network.addLink(&snk.prop, &src.prop);
+
+        srcInst.checkAndReset({});
+        prcInst.checkAndReset({});
+        snkInst.checkAndReset({});
+    }
+
+    {
+        SCOPED_TRACE("Change Property with link, identity function");
+        src.prop.set(43);
+
+        srcInst.checkAndReset({.process = 1, .propModified = 1});
+        prcInst.checkAndReset({.process = 1});
+        snkInst.checkAndReset({.process = 1, .propModified = 1});
+
+        EXPECT_EQ(src.prop.get(), 43);
+        EXPECT_EQ(snk.prop.get(), 43);
+        EXPECT_EQ(*snk.inport.getData(), 43);
+    }
+
+    {
+        SCOPED_TRACE("Change Property with link, plus1 function");
+        // this will create an infinite loop, the network should about after a finite number of
+        // steps.
+        processFunc = [](int x) { return x + 1; };
+        src.prop.set(0);
+
+        static constexpr int aFiniteNumber = 100;
+
+        EXPECT_LT(srcInst.calls.process, aFiniteNumber);
+        EXPECT_LT(prcInst.calls.process, aFiniteNumber);
+        EXPECT_LT(snkInst.calls.process, aFiniteNumber);
+
+        EXPECT_LT(srcInst.calls.propModified, aFiniteNumber);
+        EXPECT_LT(snkInst.calls.propModified, aFiniteNumber);
+
+        EXPECT_LT(src.prop.get(), aFiniteNumber);
+        EXPECT_LT(snk.prop.get(), aFiniteNumber);
+        EXPECT_LT(*snk.inport.getData(), aFiniteNumber);
+
+        srcInst.reset();
+        prcInst.reset();
+        snkInst.reset();
+    }
+
+    {
+        SCOPED_TRACE("Change Property with link, bounded plus1 function");
+        // this will create an loop, that should converge and stop evaluating
+        processFunc = [](int x) { return std::min(5, x + 1); };
+        src.prop.set(0);
+
+        srcInst.checkAndReset({.process = 6, .propModified = 6});
+        prcInst.checkAndReset({.process = 6});
+        snkInst.checkAndReset({.process = 6, .propModified = 6});
+
+        EXPECT_EQ(src.prop.get(), 5);
+        EXPECT_EQ(snk.prop.get(), 5);
+        EXPECT_EQ(*snk.inport.getData(), 5);
+    }
+}
+
+TEST(NetworkEvaluator, UpwardsPropertyLinkWithError) {
+    ProcessorNetwork network{InviwoApplication::getPtr()};
+    ProcessorNetworkEvaluator evaluator{&network};
+
+    std::map<Processor*, unsigned int> throwCount;
+    evaluator.setExceptionHandler(
+        [&throwCount](Processor* p, EvaluationType, SourceContext) { ++throwCount[p]; });
+
+    auto source = createSource("source", {.onProcess = [](TestProcessor& p) {
+                                   p.outport.setData(std::make_shared<int>(p.prop.get()));
+                               }});
+
+    std::function<int(int)> processFunc = [](int x) { return x; };
+
+    auto processor = createProcessor("processor", {.onProcess = [&processFunc](TestProcessor& p) {
+                                         int value = *p.inport.getData();
+                                         value = processFunc(value);
+                                         p.outport.setData(std::make_shared<int>(value));
+                                     }});
+
+    auto sink = createSink("sink", {.onProcess = [](TestProcessor& p) {
+                               p.prop.set(*p.inport.getData());
+
+                               throw Exception(SourceContext{}, "Error");
+                           }});
+
+    auto& src = *source;
+    auto& prc = *processor;
+    auto& snk = *sink;
+
+    Instrument snkInst(snk);
+    Instrument prcInst(prc);
+    Instrument srcInst(src);
+
+    network.addProcessor(std::move(source));
+    network.addProcessor(std::move(processor));
+    network.addProcessor(std::move(sink));
+    network.addConnection(&src.outport, &prc.inport);
+    network.addConnection(&prc.outport, &snk.inport);
+
+    network.addLink(&src.prop, &snk.prop);
+    network.addLink(&snk.prop, &src.prop);
+
+    srcInst.reset();
+    prcInst.reset();
+    snkInst.reset();
+    for (auto& [k, v] : throwCount) {
+        v = 0;
+    }
+
+    {
+        SCOPED_TRACE("Change Property with link, bounded plus1 function");
+        // this will create an loop, the network should converge after a few steps.
+        processFunc = [](int x) { return std::min(5, x + 1); };
+        src.prop.set(0);
+
+        srcInst.checkAndReset({.process = 6, .propModified = 6});
+        prcInst.checkAndReset({.process = 6});
+        snkInst.checkAndReset({.init = 6, .process = 6, .propModified = 6});
+
+        EXPECT_EQ(src.prop.get(), 5);
+        EXPECT_EQ(snk.prop.get(), 5);
+        EXPECT_EQ(*snk.inport.getData(), 5);
+
+        EXPECT_EQ(throwCount[&src], 0);
+        EXPECT_EQ(throwCount[&prc], 0);
+        EXPECT_EQ(throwCount[&snk], 6);
     }
 }
 

@@ -117,4 +117,24 @@ OnScopeExit::ExitAction RevertValue(T& t) {
 
 }  // namespace util
 
+template <std::integral I>
+struct ScopedIncrement {
+    ScopedIncrement() : variable{nullptr} {}
+    explicit ScopedIncrement(I& aVariable) : variable(&aVariable) { ++(*variable); }
+    ScopedIncrement(const ScopedIncrement&) = delete;
+    ScopedIncrement(ScopedIncrement&& rhs) : variable{std::exchange(rhs.variable, nullptr)} {}
+    ScopedIncrement& operator=(const ScopedIncrement&) = delete;
+    ScopedIncrement& operator=(ScopedIncrement&& rhs) {
+        if (this != &rhs) {
+            variable = std::exchange(rhs.variable, nullptr);
+        }
+        return *this;
+    }
+    ~ScopedIncrement() {
+        if (variable) --(*variable);
+    }
+
+    I* variable;
+};
+
 }  // namespace inviwo
