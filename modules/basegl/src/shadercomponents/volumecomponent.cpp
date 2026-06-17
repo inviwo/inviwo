@@ -60,17 +60,25 @@ uniform VolumeParameters {0}Parameters;
 uniform sampler3D {0};
 )");
 
+constexpr std::string_view sampleFirst = util::trim(R"(
+vec3 {0}SamplePosition = samplePosition;
+)");
+
 // Initialize the VoxelPrev value to the same as the first voxel value. This value is important
 // mainly for the isosurface rendering. Setting it to the same voxel value prevents isosurfaces
 // being rendered at the volume boundaries.
 constexpr std::string_view voxelFirst = util::trim(R"(
-vec4 {0}Voxel = getNormalizedVoxel({0}, {0}Parameters, samplePosition);
+vec4 {0}Voxel = getNormalizedVoxel({0}, {0}Parameters, {0}SamplePosition);
 vec4 {0}VoxelPrev = {0}Voxel;
+)");
+
+constexpr std::string_view sample = util::trim(R"(
+{0}SamplePosition = samplePosition;
 )");
 
 constexpr std::string_view voxel = util::trim(R"(
 {0}VoxelPrev = {0}Voxel;
-{0}Voxel = getNormalizedVoxel({0}, {0}Parameters, samplePosition);
+{0}Voxel = getNormalizedVoxel({0}, {0}Parameters, {0}SamplePosition);
 )");
 
 constexpr std::string_view gradientFirst = util::trim(R"(
@@ -79,7 +87,7 @@ vec3 {0}Gradient = vec3(0);
 #if defined(GRADIENTS_ENABLED)
 {0}Gradient = useSurfaceNormals ? -texture(surfaceNormal, texCoords).xyz :
     normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters,
-                                           samplePosition, channel));
+                                           {0}SamplePosition, channel));
 if (!useSurfaceNormals) {{
     {0}Gradient *= sign({0}Voxel[channel] / {0}Parameters.texToNormalized.scale + {0}Parameters.texToNormalized.offset);
 }}
@@ -90,7 +98,7 @@ constexpr std::string_view gradient = util::trim(R"(
 #if defined(GRADIENTS_ENABLED)
 {0}GradientPrev = {0}Gradient;
 {0}Gradient = normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters,
-                                                     samplePosition, channel));
+                                                     {0}SamplePosition, channel));
 {0}Gradient *= sign({0}Voxel[channel] / {0}Parameters.texToNormalized.scale + {0}Parameters.texToNormalized.offset);
 #endif
 )");
@@ -102,7 +110,7 @@ mat4x3 {0}AllGradients = mat4x3(0);
 vec3 surfaceNormal = useSurfaceNormals ? -texture(surfaceNormal, texCoords).xyz : vec3(0);
 {0}AllGradients = useSurfaceNormals ?
     mat4x3(surfaceNormal, surfaceNormal, surfaceNormal, surfaceNormal) :
-    COMPUTE_ALL_GRADIENTS({0}Voxel, {0}, {0}Parameters, samplePosition);
+    COMPUTE_ALL_GRADIENTS({0}Voxel, {0}, {0}Parameters, {0}SamplePosition);
 {0}AllGradients[0] = normalize({0}AllGradients[0]);
 {0}AllGradients[1] = normalize({0}AllGradients[1]);
 {0}AllGradients[2] = normalize({0}AllGradients[2]);
@@ -113,7 +121,7 @@ vec3 surfaceNormal = useSurfaceNormals ? -texture(surfaceNormal, texCoords).xyz 
 constexpr std::string_view allGradients = util::trim(R"(
 #if defined(GRADIENTS_ENABLED)
 {0}AllGradientsPrev = {0}AllGradients;
-{0}AllGradients = COMPUTE_ALL_GRADIENTS({0}Voxel, {0}, {0}Parameters, samplePosition);
+{0}AllGradients = COMPUTE_ALL_GRADIENTS({0}Voxel, {0}, {0}Parameters, {0}SamplePosition);
 {0}AllGradients[0] = normalize({0}AllGradients[0]);
 {0}AllGradients[1] = normalize({0}AllGradients[1]);
 {0}AllGradients[2] = normalize({0}AllGradients[2]);
@@ -128,25 +136,31 @@ auto VolumeComponent::getSegments() -> std::vector<Segment> {
     std::vector<Segment> segments{{.snippet = fmt::format(uniforms, getName()),
                                    .placeholder = placeholder::uniform,
                                    .priority = 400},
+                                  {.snippet = fmt::format(sampleFirst, getName()),
+                                   .placeholder = placeholder::first,
+                                   .priority = 400},
                                   {.snippet = fmt::format(voxelFirst, getName()),
                                    .placeholder = placeholder::first,
+                                   .priority = 420},
+                                  {.snippet = fmt::format(sample, getName()),
+                                   .placeholder = placeholder::loop,
                                    .priority = 400},
                                   {.snippet = fmt::format(voxel, getName()),
                                    .placeholder = placeholder::loop,
-                                   .priority = 400}};
+                                   .priority = 420}};
 
     if (gradients != Gradients::None) {
         segments.emplace_back(std::string{R"(#include "utils/gradients.glsl")"},
                               placeholder::include, 400);
     }
     if (gradients == Gradients::Single) {
-        segments.emplace_back(fmt::format(gradientFirst, getName()), placeholder::first, 410);
-        segments.emplace_back(fmt::format(gradient, getName()), placeholder::loop, 410);
+        segments.emplace_back(fmt::format(gradientFirst, getName()), placeholder::first, 440);
+        segments.emplace_back(fmt::format(gradient, getName()), placeholder::loop, 440);
     }
 
     if (gradients == Gradients::All) {
-        segments.emplace_back(fmt::format(allGradientsFirst, getName()), placeholder::first, 410);
-        segments.emplace_back(fmt::format(allGradients, getName()), placeholder::loop, 410);
+        segments.emplace_back(fmt::format(allGradientsFirst, getName()), placeholder::first, 440);
+        segments.emplace_back(fmt::format(allGradients, getName()), placeholder::loop, 440);
     }
 
     return segments;
