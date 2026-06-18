@@ -552,7 +552,7 @@ jobs:
     name: "Test Installer Linux"
     needs: build
        
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
     - name: "Download artifact"
       uses: actions/download-artifact@v8
