@@ -94,7 +94,6 @@ public:
     const std::vector<Outport*>& getConnectedOutports() const noexcept;
     virtual size_t getMaxNumberOfConnections() const = 0;
     virtual size_t getNumberOfConnections() const;
-    virtual const std::vector<const Outport*>& getChangedOutports() const;
 
     /**
      * Propagate event upwards towards connected outports, if targets is nullptr, propagate the
@@ -142,14 +141,13 @@ protected:
      * network.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
-    /**
-     * Called by Outport::setValid, which is call by Processor::setValid, which is called after
-     * Processor:process. From above in the network.
-     */
-    virtual void setValid(const Outport* source);
 
-    // Usually called with false (reset) by Processor::setValid after the Processor::process
-    virtual void setChanged(bool changed = true, const Outport* source = nullptr);
+    /**
+     * Called with true by Outport::setValid, which is call by Processor::setValid,
+     * which is called after Processor:process. From above in the network.
+     * called with false (reset) by Processor::setValid after the Processor::process from below
+     */
+    virtual void setChanged(bool changed);
 
     // Called by the processor network.
     void callOnChangeIfChanged() const;
@@ -164,10 +162,6 @@ private:
     bool changed_;
 
     CallBackList onChangeCallback_;
-    std::vector<const Outport*> changedSources_;
-
-    InvalidationLevel lastInvalidationLevel_;  // Used for the onInvalid callback.
-
     CallBackList onConnectCallback_;
     CallBackList onDisconnectCallback_;
     Dispatcher<void(Outport*)> onConnectDispatcher_;

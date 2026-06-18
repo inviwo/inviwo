@@ -219,16 +219,15 @@ Document BrushingAndLinkingInport::getInfo() const {
 }
 
 DataInfo BrushingAndLinkingInport::getDataInfo() const {
-    return DataInfo{.cid = "org.inviwo.BrushingAndLinkingData",
-                    .name = "B&L",
-                    .color = uvec3{160, 182, 240}};
+    return DataInfo{
+        .cid = "org.inviwo.BrushingAndLinkingData", .name = "B&L", .color = uvec3{160, 182, 240}};
 }
 
-void BrushingAndLinkingInport::setChanged(bool changed, const Outport* source) {
+void BrushingAndLinkingInport::setChanged(bool changed) {
     if (!changed) {
         manager_.clearModifications();
     }
-    Inport::setChanged(changed, source);
+    Inport::setChanged(changed);
 }
 
 void BrushingAndLinkingInport::invalidate(InvalidationLevel) {
@@ -301,9 +300,8 @@ Document BrushingAndLinkingOutport::getInfo() const {
 }
 
 DataInfo BrushingAndLinkingOutport::getDataInfo() const {
-    return DataInfo{.cid = "org.inviwo.BrushingAndLinkingData",
-                    .name = "B&L",
-                    .color = uvec3{160, 182, 240}};
+    return DataInfo{
+        .cid = "org.inviwo.BrushingAndLinkingData", .name = "B&L", .color = uvec3{160, 182, 240}};
 }
 
 std::string_view BrushingAndLinkingOutport::getClassIdentifier() const {

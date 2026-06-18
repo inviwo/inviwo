@@ -99,7 +99,6 @@ void exposePort(pybind11::module& m) {
              py::return_value_policy::reference)
         .def("getMaxNumberOfConnections", &Inport::getMaxNumberOfConnections)
         .def("getNumberOfConnections", &Inport::getNumberOfConnections)
-        .def("getChangedOutports", &Inport::getChangedOutports, py::return_value_policy::reference)
 
         .def("onChangeScoped",
              [](Inport* p, std::function<void()> func) {

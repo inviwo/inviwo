@@ -103,7 +103,6 @@ pybind11::classh<Port, Inport> exposeInport(pybind11::module& m, const std::stri
 
     exposeIterRangeGenerator<typename Port::const_iterator>(pyInport, "Data");
     exposeIterRangeGenerator<typename Port::const_iterator_port>(pyInport, "OutportAndData");
-    exposeIterRangeGenerator<typename Port::const_iterator_changed>(pyInport, "ChangedAndData");
 
     pyInport
         .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
@@ -116,14 +115,9 @@ pybind11::classh<Port, Inport> exposeInport(pybind11::module& m, const std::stri
                  return util::IterRangeGenerator<typename Port::const_iterator>(p->begin(),
                                                                                 p->end());
              })
-        .def("outportAndData",
-             [](Port* p) {
-                 return util::IterRangeGenerator<typename Port::const_iterator_port>(
-                     p->outportAndData());
-             })
-        .def("changedAndData", [](Port* p) {
-            return util::IterRangeGenerator<typename Port::const_iterator_changed>(
-                p->changedAndData());
+        .def("outportAndData", [](Port* p) {
+            return util::IterRangeGenerator<typename Port::const_iterator_port>(
+                p->outportAndData());
         });
 
     return pyInport;

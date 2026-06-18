@@ -130,44 +130,12 @@ public:
         reference operator*() const { return reference{*Base::pIter_, *Base::dIter_}; }
     };
 
-    class const_iterator_changed : public const_iterator_base<const_iterator_changed> {
-        using Base = const_iterator_base<const_iterator_changed>;
-        using PortIter = typename Base::PortIter;
-
-    public:
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::forward_iterator_tag;
-        using value_type = std::pair<bool, std::shared_ptr<const T>>;
-        using reference = std::pair<bool, std::shared_ptr<const T>>;
-        using pointer = void;
-
-        const_iterator_changed() = default;
-        const_iterator_changed(PortIter pIterBegin, PortIter pIterEnd, const InportType& inport)
-            : Base(pIterBegin, pIterEnd), inport{inport} {}
-
-        reference operator*() const {
-            return reference{util::contains(inport.getChangedOutports(), *Base::pIter_),
-                             *Base::dIter_};
-        }
-
-    private:
-        const InportType& inport;
-    };
-
     util::iter_range<const_iterator_port> outportAndData() const noexcept {
         return util::iter_range<const_iterator_port>{
             const_iterator_port{self().getConnectedOutports().begin(),
                                 self().getConnectedOutports().end()},
             const_iterator_port{self().getConnectedOutports().end(),
                                 self().getConnectedOutports().end()}};
-    }
-
-    util::iter_range<const_iterator_changed> changedAndData() const noexcept {
-        return util::iter_range<const_iterator_changed>{
-            const_iterator_changed{self().getConnectedOutports().begin(),
-                                   self().getConnectedOutports().end(), self()},
-            const_iterator_changed{self().getConnectedOutports().end(),
-                                   self().getConnectedOutports().end(), self()}};
     }
 
     const_iterator begin() const noexcept {
@@ -269,39 +237,10 @@ public:
         }
     };
 
-    class const_iterator_changed : public const_iterator_base<const_iterator_changed> {
-        using Base = const_iterator_base<const_iterator_changed>;
-        using PortIter = typename Base::PortIter;
-
-    public:
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::forward_iterator_tag;
-        using value_type = std::pair<bool, std::shared_ptr<const T>>;
-        using reference = std::pair<bool, std::shared_ptr<const T>>;
-        using pointer = void;
-
-        const_iterator_changed() = default;
-        const_iterator_changed(PortIter pIterBegin, const InportType& inport)
-            : Base(pIterBegin), inport{inport} {}
-
-        reference operator*() const {
-            return reference{util::contains(inport.getChangedOutports(), *Base::pIter_),
-                             static_cast<DataOutport<T>*>(*Base::pIter_)->getData()};
-        }
-
-        const InportType& inport;
-    };
-
     util::iter_range<const_iterator_port> outportAndData() const noexcept {
         return util::iter_range<const_iterator_port>{
             const_iterator_port{self().getConnectedOutports().begin()},
             const_iterator_port{self().getConnectedOutports().end()}};
-    }
-
-    util::iter_range<const_iterator_changed> changedAndData() const noexcept {
-        return util::iter_range<const_iterator_changed>{
-            const_iterator_changed{self().getConnectedOutports().begin(), self()},
-            const_iterator_changed{self().getConnectedOutports().end(), self()}};
     }
 
     const_iterator begin() const noexcept {

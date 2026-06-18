@@ -69,7 +69,6 @@ public:
      * @see setValid
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
-    virtual InvalidationLevel getInvalidationLevel() const;
 
     /**
      * Propagate events upwards, i.e. to the owning processor.

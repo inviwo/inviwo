@@ -251,7 +251,7 @@ protected:
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
 
 private:
-    virtual void setChanged(bool changed = true, const Outport* source = nullptr) override;
+    virtual void setChanged(bool changed) override;
 
     BrushingAndLinkingManager manager_;
 };
