@@ -54,7 +54,7 @@ public:
     Dispatcher() noexcept = default;
 
     // Copying will reset the callbacks
-    Dispatcher(const Dispatcher&) : callbacks_{} {}
+    Dispatcher(const Dispatcher&) : mutex_{}, callbacks_{} {}
     Dispatcher& operator=(const Dispatcher& that) {
         if (this != &that) {
             const std::scoped_lock lock{mutex_};
@@ -64,8 +64,17 @@ public:
     }
 
     // Allow move semantics
-    Dispatcher(Dispatcher&&) noexcept = default;
-    Dispatcher& operator=(Dispatcher&&) noexcept = default;
+    Dispatcher(Dispatcher&& rhs) noexcept : mutex_{}, callbacks_{} {
+        const std::scoped_lock lock{mutex_, rhs.mutex_};
+        callbacks_ = std::move(rhs.callbacks_);
+    }
+    Dispatcher& operator=(Dispatcher&& that) noexcept {
+        if (this != &that) {
+            const std::scoped_lock lock{mutex_, that.mutex_};
+            callbacks_ = std::move(that.callbacks_);
+        }
+        return *this;
+    }
     ~Dispatcher() = default;
 
     using Function = C;
