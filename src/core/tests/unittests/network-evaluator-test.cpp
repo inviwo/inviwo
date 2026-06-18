@@ -50,7 +50,7 @@ namespace inviwo {
 
 namespace {
 
-class TestProcessor;
+struct TestProcessor;
 
 struct OnCallbacks {
     std::function<void(TestProcessor&)> onInit{};
@@ -180,9 +180,8 @@ TEST(NetworkEvaluator, Eval) {
     auto source = createSource("source", {.onProcess = [](TestProcessor& p) {
                                    p.outport.setData(std::make_shared<int>(0));
                                }});
-    auto* src = source.get();
-
-    Instrument srcInst(*src);
+    auto& src = *source;
+    Instrument srcInst(src);
 
     {
         SCOPED_TRACE("Add source");
@@ -191,8 +190,8 @@ TEST(NetworkEvaluator, Eval) {
     }
 
     auto sink = createSink("sink");
-    auto* snk = sink.get();
-    Instrument snkInst(*snk);
+    auto& snk = *sink;
+    Instrument snkInst(snk);
 
     {
         SCOPED_TRACE("Add sink");
@@ -202,44 +201,44 @@ TEST(NetworkEvaluator, Eval) {
 
     {
         SCOPED_TRACE("Add connection");
-        network.addConnection(&src->outport, &snk->inport);
+        network.addConnection(&src.outport, &snk.inport);
         srcInst.checkAndReset({.init = 1, .process = 1});
         snkInst.checkAndReset({.init = 1, .process = 1});
     }
 
     {
         SCOPED_TRACE("Invalid valid");
-        src->invalidate(InvalidationLevel::Valid);
+        src.invalidate(InvalidationLevel::Valid);
         srcInst.checkAndReset({});
         snkInst.checkAndReset({});
     }
     {
         SCOPED_TRACE("Invalid output");
-        src->invalidate(InvalidationLevel::InvalidOutput);
+        src.invalidate(InvalidationLevel::InvalidOutput);
         srcInst.checkAndReset({.process = 1});
         snkInst.checkAndReset({.process = 1});
     }
     {
         SCOPED_TRACE("Invalid resources");
-        src->invalidate(InvalidationLevel::InvalidResources);
+        src.invalidate(InvalidationLevel::InvalidResources);
         srcInst.checkAndReset({.init = 1, .process = 1});
         snkInst.checkAndReset({.process = 1});
     }
     {
         SCOPED_TRACE("Locked network");
         NetworkLock lock(&network);
-        src->invalidate(InvalidationLevel::InvalidOutput);
+        src.invalidate(InvalidationLevel::InvalidOutput);
         srcInst.checkAndReset({});
         snkInst.checkAndReset({});
-        EXPECT_FALSE(src->isValid());
-        EXPECT_FALSE(snk->isValid());
+        EXPECT_FALSE(src.isValid());
+        EXPECT_FALSE(snk.isValid());
     }
     {
         SCOPED_TRACE("Unlocked network");
         srcInst.checkAndReset({.process = 1});
         snkInst.checkAndReset({.process = 1});
-        EXPECT_TRUE(src->isValid());
-        EXPECT_TRUE(snk->isValid());
+        EXPECT_TRUE(src.isValid());
+        EXPECT_TRUE(snk.isValid());
     }
 }
 
@@ -254,9 +253,9 @@ TEST(NetworkEvaluator, Error) {
                                        throw Exception(SourceContext{}, "Error");
                                    }
                                }});
-    auto* src = source.get();
+    auto& src = *source;
 
-    Instrument srcInst(*src);
+    Instrument srcInst(src);
 
     {
         SCOPED_TRACE("Add source");
@@ -265,8 +264,8 @@ TEST(NetworkEvaluator, Error) {
     }
 
     auto sink = createSink("sink");
-    auto* snk = sink.get();
-    Instrument snkInst(*snk);
+    auto& snk = *sink;
+    Instrument snkInst(snk);
 
     {
         SCOPED_TRACE("Add sink");
@@ -276,14 +275,14 @@ TEST(NetworkEvaluator, Error) {
 
     {
         SCOPED_TRACE("Add connection");
-        network.addConnection(&src->outport, &snk->inport);
+        network.addConnection(&src.outport, &snk.inport);
         srcInst.checkAndReset({.init = 1, .process = 1});
         snkInst.checkAndReset({.init = 1, .process = 1});
     }
 
     {
         SCOPED_TRACE("Invalid output");
-        src->invalidate(InvalidationLevel::InvalidOutput);
+        src.invalidate(InvalidationLevel::InvalidOutput);
         srcInst.checkAndReset({.process = 1});
         snkInst.checkAndReset({.process = 1});
     }
@@ -295,7 +294,7 @@ TEST(NetworkEvaluator, Error) {
             [&throwCount](Processor*, EvaluationType, SourceContext) { ++throwCount; });
 
         shouldThrow = true;
-        src->invalidate(InvalidationLevel::InvalidOutput);
+        src.invalidate(InvalidationLevel::InvalidOutput);
         EXPECT_EQ(throwCount, 1);
         srcInst.checkAndReset({.process = 1});
         snkInst.checkAndReset({.notReady = 1});
@@ -345,8 +344,8 @@ TEST(NetworkEvaluator, OutProperty) {
     auto sink = createSink(
         "sink", {.onProcess = [](TestProcessor& p) { p.prop.set(*p.inport.getData()); }});
 
-    auto* src = source.get();
-    auto* snk = sink.get();
+    auto& src = *source;
+    auto& snk = *sink;
 
     Instrument snkInst(snk);
     Instrument srcInst(src);
