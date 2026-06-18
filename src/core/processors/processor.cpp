@@ -312,7 +312,7 @@ void Processor::invalidate(InvalidationLevel invalidationLevel, Property* modifi
     notifyObserversInvalidationBegin(this);
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
     if (!isValid()) {
-        // We need to always propagate the invalidation here even if we have aleady done so before
+        // We need to always propagate the invalidation here even if we have already done so before
         // since processors with optional inports can have become valid while this is still
         // invalid. Hence we need to make sure we invalidate them again
         for (auto& port : outports_) port->invalidate(InvalidationLevel::InvalidOutput);

@@ -110,13 +110,6 @@ public:
     const BaseCallBack* onChange(std::function<void()> lambda);
     std::shared_ptr<std::function<void()>> onChangeScoped(std::function<void()> lambda);
 
-    /**
-     * the onInvalid callback is called directly after the port has been invalidated. It's only
-     * called once for each transition from valid to invalid.
-     */
-    const BaseCallBack* onInvalid(std::function<void()> lambda);
-    std::shared_ptr<std::function<void()>> onInvalidScoped(std::function<void()> lambda);
-
     const BaseCallBack* onConnect(std::function<void()> lambda);
     const BaseCallBack* onDisconnect(std::function<void()> lambda);
 
@@ -128,7 +121,6 @@ public:
         std::function<void(Outport*)> lambda);
 
     void removeOnChange(const BaseCallBack* callback);
-    void removeOnInvalid(const BaseCallBack* callback);
     void removeOnConnect(const BaseCallBack* callback);
     void removeOnDisconnect(const BaseCallBack* callback);
 
@@ -174,7 +166,6 @@ private:
     CallBackList onChangeCallback_;
     std::vector<const Outport*> changedSources_;
 
-    CallBackList onInvalidCallback_;
     InvalidationLevel lastInvalidationLevel_;  // Used for the onInvalid callback.
 
     CallBackList onConnectCallback_;
