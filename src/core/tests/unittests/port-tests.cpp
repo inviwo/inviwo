@@ -185,7 +185,6 @@ TEST(PortTests, SingleInportOutport) {
         EXPECT_TRUE(sink.inport.hasData());
         EXPECT_TRUE(sink.inport.isReady());
         EXPECT_TRUE(sink.inport.isChanged());
-        EXPECT_THAT(sink.inport.getChangedOutports(), ElementsAre(&source1.outport));
 
         EXPECT_THAT(sink.inport.getData(), Pointee(1));
         EXPECT_THAT(sink.inport, ElementsAre(Pointee(1)));
@@ -193,7 +192,6 @@ TEST(PortTests, SingleInportOutport) {
         EXPECT_THAT(sink.inport.getSourceVectorData(),
                     ElementsAre(Pair(&source1.outport, Pointee(1))));
         EXPECT_THAT(sink.inport.outportAndData(), ElementsAre(Pair(&source1.outport, Pointee(1))));
-        EXPECT_THAT(sink.inport.changedAndData(), ElementsAre(Pair(Eq(true), Pointee(1))));
     });
 
     network.addConnection(&source1.outport, &sink.inport);
@@ -224,7 +222,6 @@ TEST(PortTests, MultiInportOutport) {
             EXPECT_TRUE(sink.inport.hasData());
             EXPECT_TRUE(sink.inport.isReady());
             EXPECT_TRUE(sink.inport.isChanged());
-            EXPECT_THAT(sink.inport.getChangedOutports(), ElementsAre(&source1.outport));
 
             EXPECT_THAT(sink.inport.getData(), Pointee(1));
             EXPECT_THAT(sink.inport, ElementsAre(Pointee(1)));
@@ -233,7 +230,6 @@ TEST(PortTests, MultiInportOutport) {
                         ElementsAre(Pair(&source1.outport, Pointee(1))));
             EXPECT_THAT(sink.inport.outportAndData(),
                         ElementsAre(Pair(&source1.outport, Pointee(1))));
-            EXPECT_THAT(sink.inport.changedAndData(), ElementsAre(Pair(Eq(true), Pointee(1))));
         })
         .WillOnce([&]() {
             EXPECT_TRUE(sink.inport.isConnected());
@@ -249,7 +245,6 @@ TEST(PortTests, MultiInportOutport) {
             EXPECT_TRUE(sink.inport.hasData());
             EXPECT_TRUE(sink.inport.isReady());
             EXPECT_TRUE(sink.inport.isChanged());
-            EXPECT_THAT(sink.inport.getChangedOutports(), ElementsAre(&source2.outport));
 
             EXPECT_THAT(sink.inport.getData(), Pointee(1));
             EXPECT_THAT(sink.inport, ElementsAre(Pointee(1), Pointee(2)));
@@ -260,15 +255,10 @@ TEST(PortTests, MultiInportOutport) {
             EXPECT_THAT(sink.inport.outportAndData(),
                         ElementsAre(Pair(&source1.outport, Pointee(1)),
                                     Pair(&source2.outport, Pointee(2))));
-            EXPECT_THAT(sink.inport.changedAndData(),
-                        ElementsAre(Pair(Eq(false), Pointee(1)), Pair(Eq(true), Pointee(2))));
 
             EXPECT_THAT(util::enumerate(sink.inport),
                         ElementsAre(ZipPair(Eq(0), Pointee(1)), ZipPair(Eq(1), Pointee(2))));
 
-            EXPECT_THAT(util::enumerate(sink.inport.changedAndData()),
-                        ElementsAre(ZipPair(Eq(0), Pair(Eq(false), Pointee(1))),
-                                    ZipPair(Eq(1), Pair(Eq(true), Pointee(2)))));
         });
 
     network.addConnection(&source1.outport, &sink.inport);
@@ -301,7 +291,6 @@ TEST(PortTests, FlatMultiInportOutport) {
             EXPECT_TRUE(sink.inport.hasData());
             EXPECT_TRUE(sink.inport.isReady());
             EXPECT_TRUE(sink.inport.isChanged());
-            EXPECT_THAT(sink.inport.getChangedOutports(), ElementsAre(&source1.outport));
 
             EXPECT_THAT(sink.inport.getData(), Pointee(1));
             EXPECT_THAT(sink.inport, ElementsAre(Pointee(1)));
@@ -310,7 +299,6 @@ TEST(PortTests, FlatMultiInportOutport) {
                         ElementsAre(Pair(&source1.outport, Pointee(1))));
             EXPECT_THAT(sink.inport.outportAndData(),
                         ElementsAre(Pair(&source1.outport, Pointee(1))));
-            EXPECT_THAT(sink.inport.changedAndData(), ElementsAre(Pair(Eq(true), Pointee(1))));
         })
         .WillOnce([&]() {
             EXPECT_TRUE(sink.inport.isConnected());
@@ -326,7 +314,6 @@ TEST(PortTests, FlatMultiInportOutport) {
             EXPECT_TRUE(sink.inport.hasData());
             EXPECT_TRUE(sink.inport.isReady());
             EXPECT_TRUE(sink.inport.isChanged());
-            EXPECT_THAT(sink.inport.getChangedOutports(), ElementsAre(&source2.outport));
 
             EXPECT_THAT(sink.inport.getData(), Pointee(1));
             EXPECT_THAT(sink.inport, ElementsAre(Pointee(1), Pointee(2), Pointee(3), Pointee(4)));
@@ -342,19 +329,10 @@ TEST(PortTests, FlatMultiInportOutport) {
                 ElementsAre(Pair(&source1.outport, Pointee(1)), Pair(&source2.outport, Pointee(2)),
                             Pair(&source2.outport, Pointee(3)),
                             Pair(&source2.outport, Pointee(4))));
-            EXPECT_THAT(sink.inport.changedAndData(),
-                        ElementsAre(Pair(Eq(false), Pointee(1)), Pair(Eq(true), Pointee(2)),
-                                    Pair(Eq(true), Pointee(3)), Pair(Eq(true), Pointee(4))));
 
             EXPECT_THAT(util::enumerate(sink.inport),
                         ElementsAre(ZipPair(Eq(0), Pointee(1)), ZipPair(Eq(1), Pointee(2)),
                                     ZipPair(Eq(2), Pointee(3)), ZipPair(Eq(3), Pointee(4))));
-
-            EXPECT_THAT(util::enumerate(sink.inport.changedAndData()),
-                        ElementsAre(ZipPair(Eq(0), Pair(Eq(false), Pointee(1))),
-                                    ZipPair(Eq(1), Pair(Eq(true), Pointee(2))),
-                                    ZipPair(Eq(2), Pair(Eq(true), Pointee(3))),
-                                    ZipPair(Eq(3), Pair(Eq(true), Pointee(4)))));
         });
 
     network.addConnection(&source1.outport, &sink.inport);

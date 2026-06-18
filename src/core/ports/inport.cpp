@@ -46,12 +46,13 @@ Inport::Inport(std::string_view identifier, Document help)
                }}
     , isOptional_(
           false, [](const bool& /*isOptional*/) {}, []() { return false; })
-    , changed_(false)
-    , lastInvalidationLevel_(InvalidationLevel::Valid) {}
+    , changed_(false) {}
 
 Inport::~Inport() = default;
 
 bool Inport::isConnected() const { return !connectedOutports_.empty(); }
+
+size_t Inport::getNumberOfConnections() const { return connectedOutports_.size(); }
 
 bool Inport::isReady() const { return isReady_; }
 
@@ -64,19 +65,12 @@ void Inport::setOptional(bool optional) {
 }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
-    lastInvalidationLevel_ = std::max(lastInvalidationLevel_, invalidationLevel);
-
     if (processor_) processor_->invalidate(invalidationLevel);
 }
 
-void Inport::setValid(const Outport* source) {
-    lastInvalidationLevel_ = InvalidationLevel::Valid;
-    setChanged(true, source);
-}
+void Inport::setChanged(bool changed) { changed_ = changed; }
 
-size_t Inport::getNumberOfConnections() const { return connectedOutports_.size(); }
-
-const std::vector<const Outport*>& Inport::getChangedOutports() const { return changedSources_; }
+bool Inport::isChanged() const { return changed_; }
 
 void Inport::propagateEvent(Event* event, Outport* target) {
     if (target) {
@@ -91,27 +85,11 @@ void Inport::propagateEvent(Event* event, Outport* target) {
     }
 }
 
-void Inport::setChanged(bool changed, const Outport* source) {
-    changed_ = changed;
-
-    if (changed_ == false) {
-        if (source == nullptr) {
-            changedSources_.clear();
-        } else {
-            std::erase(changedSources_, source);
-        }
-    } else if (source) {
-        util::push_back_unique(changedSources_, source);
-    }
-}
-
-bool Inport::isChanged() const { return changed_; }
-
 void Inport::connectTo(Outport* outport) {
     if (!isConnectedTo(outport)) {
         connectedOutports_.push_back(outport);
-        outport->connectTo(this);   // add this to the outport.
-        setChanged(true, outport);  // mark that we should call onChange.
+        outport->connectTo(this);  // add this to the outport.
+        setChanged(true);          // mark that we should call onChange.
         isReady_.update();
         onConnectCallback_.invokeAll();
         onConnectDispatcher_.invoke(outport);
@@ -124,7 +102,7 @@ void Inport::disconnectFrom(Outport* outport) {
     if (it != connectedOutports_.end()) {
         connectedOutports_.erase(it);
         outport->disconnectFrom(this);  // remove this from outport.
-        setChanged(true, outport);      // mark that we should call onChange.
+        setChanged(true);               // mark that we should call onChange.
         isReady_.update();
         onDisconnectCallback_.invokeAll();
         onDisconnectDispatcher_.invoke(outport);

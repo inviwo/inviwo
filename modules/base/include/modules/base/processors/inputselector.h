@@ -116,7 +116,7 @@ InputSelector<Inport, Outport>::InputSelector()
     inport_.onDisconnect([updateOptions]() { updateOptions(); });
     includeEmptyInport_.onChange([updateOptions]() { updateOptions(); });
 
-    inport_.setIsReadyUpdater([this, emptyInportIndex]() {
+    inport_.setIsReadyUpdater([this]() {
         if (!selectedPort_.empty() && *selectedPort_ == emptyInportIndex) {
             return true;
         }

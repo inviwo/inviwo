@@ -71,21 +71,21 @@ MultiChannelVolumeRaycaster::MultiChannelVolumeRaycaster(std::string_view identi
         isotf.setHistogramSelection(selection).setCurrentStateAsDefault();
     }
 
-    volume_.volumePort.onChange([this]() {
+    registerComponents(volume_, entryExit_, background_, isoTFs_, raycasting_, camera_, light_,
+                       positionIndicator_, sampleTransform_);
+}
+
+void MultiChannelVolumeRaycaster::process() {
+    if (volume_.volumePort.isChanged()) {
         const auto channels = volume_.channelsForVolume().value_or(4);
         if (raycasting_.setUsedChannels(channels)) {
-            // The port onchange callback is invoked while evaluating the network
-            // hence it is safe to call initializeResources here.
-            // Also calls to invalidate will be ignored
             initializeResources();
         }
         for (auto&& [i, isotf] : util::enumerate(isoTFs_.isoTFs)) {
             isotf.setVisible(i < channels);
         }
-    });
-
-    registerComponents(volume_, entryExit_, background_, isoTFs_, raycasting_, camera_, light_,
-                       positionIndicator_, sampleTransform_);
+    }
+    VolumeRaycasterBase::process();
 }
 
 }  // namespace inviwo
