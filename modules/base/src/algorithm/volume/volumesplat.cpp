@@ -83,22 +83,41 @@ double gaussian_support(double sigma, double epsilon) {
     return sigma * std::numbers::sqrt2 * erfinv(1.0 - epsilon);
 }
 
-// Evaluate the kernel given the squared world-space distance d2, the per-point size s
-// Assumes d2 <= s*s; caller is responsible for the cutoff check.
+// Evaluate the kernel given the squared world-space distance r2, the per-point size s
+// Assumes r2 <= s*s; caller is responsible for the cutoff check.
 template <SplatKernel K>
-inline float evalKernel(float d2, float s) {
+inline float evalKernel(float r2, float s) {
     if constexpr (K == SplatKernel::Gaussian) {
-        return std::exp(-0.5f * d2 / (s * s));
+        return std::exp(-0.5f * r2 / (s * s));
     } else if constexpr (K == SplatKernel::Epanechnikov) {
-        const float t = d2 / (s * s);
-        return 1.0f - t;
+        return 1.0f - r2 / (s * s);
     } else if constexpr (K == SplatKernel::Triangular) {
-        const float t = std::sqrt(d2) / s;
-        return 1.0f - t;
+        return 1.0f - std::sqrt(r2) / s;
     } else if constexpr (K == SplatKernel::Uniform) {
         return 1.0f;
     } else {
         return 0.0f;
+    }
+}
+
+template <SplatKernel K>
+inline vec4 evalKernelGrad(vec3 r, float s) {
+    const float r2 = glm::dot(r, r);
+    float k = evalKernel<K>(r2, s);
+
+    if constexpr (K == SplatKernel::Gaussian) {
+        float f = -k / (s * s);
+        return {k, r.x * f, r.y * f, r.z * f};
+    } else if constexpr (K == SplatKernel::Epanechnikov) {
+        float f = 2.0f / (s * s);
+        return {k, r.x * f, r.y * f, r.z * f};
+    } else if constexpr (K == SplatKernel::Triangular) {
+        float f = 2.0f / (s * std::sqrt(r2));
+        return {k, r.x * f, r.y * f, r.z * f};
+    } else if constexpr (K == SplatKernel::Uniform) {
+        return {k, 0.0f, 0.0f, 0.0f};
+    } else {
+        return {0.0f, 0.0f, 0.0f, 0.0f};
     }
 }
 
