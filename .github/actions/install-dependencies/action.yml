@@ -3,16 +3,16 @@ description: 'runs, Chocolatey, Brew and Apt to install dependencies'
 
 inputs:
   linux-compilter:
-    description: 'Which linux compilter to use (gcc or clang)'
+    description: 'Which linux compiler to use (gcc or clang)'
     default: gcc
 
   gcc-version:
     description: 'Which gcc version to use'
-    default: 14
+    default: 16
 
   clang-version:
     description: 'Which clang version to use'
-    default: 19
+    default: 22
 
 
 runs:
