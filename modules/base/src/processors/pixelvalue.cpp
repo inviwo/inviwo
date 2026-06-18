@@ -181,8 +181,7 @@ PixelValue::PixelValue()
           MouseButtons(flags::any), MouseState::Move)
 
 {
-    addPort(inport_);
-    addPort(outport_);
+    addPorts(inport_, outport_);
 
     for (int i = 0; i < 8; i++) {
         pixelValues_[i].setVisible(i == 0);
@@ -193,36 +192,31 @@ PixelValue::PixelValue()
         addProperty(pixelValuesNormalized_[i]);
     }
 
-    addProperty(pickingValue_);
-    addProperty(pickingStrValue_);
-    addProperty(depthValue_);
-    addProperty(depthStrValue_);
-    addProperty(coordinates_);
-    addProperty(mouseMove_);
-
-    inport_.onChange([&]() {
-        size_t numCh = 1;
-        if (inport_.hasData()) {
-            numCh = inport_.getData()->getNumberOfColorLayers();
-        }
-        for (size_t i = 0; i < 8; i++) {
-            pixelValues_[i].setVisible(i < numCh);
-            pixelStrValues_[i].setVisible(i < numCh);
-            pixelValuesNormalized_[i].setVisible(i < numCh);
-        }
-    });
+    addProperties(pickingValue_, pickingStrValue_, depthValue_, depthStrValue_, coordinates_,
+                  mouseMove_);
 
     for (auto& p : getProperties()) {
         p->setSerializationMode(PropertySerializationMode::None);
     }
 }
 
-void PixelValue::process() { outport_.setData(inport_.getData()); }
+void PixelValue::process() {
+    if (inport_.isChanged()) {
+        size_t numCh = inport_.getData()->getNumberOfColorLayers();
+        for (size_t i = 0; i < 8; i++) {
+            pixelValues_[i].setVisible(i < numCh);
+            pixelStrValues_[i].setVisible(i < numCh);
+            pixelValuesNormalized_[i].setVisible(i < numCh);
+        }
+    }
 
-void PixelValue::mouseMoveEvent(Event* theevent) {
+    outport_.setData(inport_.getData());
+}
+
+void PixelValue::mouseMoveEvent(Event* theEvent) {
     if (!inport_.hasData()) return;
 
-    if (auto mouseEvent = theevent->getAs<MouseEvent>()) {
+    if (auto mouseEvent = theEvent->getAs<MouseEvent>()) {
         auto img = inport_.getData();
         auto dims = img->getDimensions();
         auto numCh = img->getNumberOfColorLayers();

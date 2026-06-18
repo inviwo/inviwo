@@ -109,11 +109,6 @@ ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmen
     addPort(outport_);
     outport_.setHelp("The output image"_help);
 
-    inport_.onChange([this]() {
-        markInvalid();
-        afterInportChanged();
-    });
-
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
@@ -126,6 +121,11 @@ void ImageGLProcessor::initializeResources() {
 }
 
 void ImageGLProcessor::process() {
+    if (inport_.isChanged()) {
+        markInvalid();
+        afterInportChanged();
+    }
+
     if (internalInvalid_) {
         internalInvalid_ = false;
 

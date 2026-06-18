@@ -249,7 +249,6 @@ ColorScaleLegend::ColorScaleLegend()
 
     auto updateFunc = [this]() { updateTitle(volumeInport_.getData()); };
 
-    volumeInport_.onChange(updateFunc);
     labelType_.onChange(updateFunc);
     title_.onChange(updateFunc);
 
@@ -311,6 +310,9 @@ void ColorScaleLegend::initializeResources() {
 }
 
 void ColorScaleLegend::process() {
+    if (volumeInport_.isChanged()) {
+        updateTitle(volumeInport_.getData());
+    }
     if (!enabled_) {
         if (inport_.isReady()) {
             outport_.setData(inport_.getData());

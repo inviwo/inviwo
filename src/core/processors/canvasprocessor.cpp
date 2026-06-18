@@ -220,11 +220,6 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                   imageTypeExt_, saveLayerButton_, saveLayerToFileButton_, fullScreen_,
                   fullScreenEvent_, saveLayerEvent_, allowContextMenu_, evaluateWhenHidden_);
 
-    inport_.onChange([&]() {
-        int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
-        colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
-        colorLayer_.setMaxValue(layers - 1);
-    });
     inport_.onConnect([&]() { sizeChanged(); });
 
     setAllPropertiesCurrentStateAsDefault();
@@ -361,6 +356,12 @@ Canvas* CanvasProcessor::getCanvas() const {
 }
 
 void CanvasProcessor::process() {
+    if (inport_.isChanged()) {
+        int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
+        colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
+        colorLayer_.setMaxValue(layers - 1);
+    }
+
     if (processorWidget_ && processorWidget_->isVisible()) {
         if (auto c = getCanvas()) {
             c->render(inport_.getData(), visibleLayer_, colorLayer_);

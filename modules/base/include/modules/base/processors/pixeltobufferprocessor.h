@@ -64,7 +64,6 @@ public:
 
 protected:
     virtual void process() override;
-    void inportChanged();
     void handleInteractionEventsChanged();
 
 private:

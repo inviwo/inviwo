@@ -92,8 +92,12 @@ CubeProxyGeometry::CubeProxyGeometry()
     clipX_.setSerializationMode(PropertySerializationMode::All);
     clipY_.setSerializationMode(PropertySerializationMode::All);
     clipZ_.setSerializationMode(PropertySerializationMode::All);
+}
 
-    inport_.onChange([this]() {
+CubeProxyGeometry::~CubeProxyGeometry() = default;
+
+void CubeProxyGeometry::process() {
+    if (inport_.isChanged()) {
         const auto volume = inport_.getData();
         // Update to the new dimensions.
         const auto dims = util::getVolumeDimensions(volume);
@@ -111,12 +115,8 @@ CubeProxyGeometry::CubeProxyGeometry()
             clipY_.setCurrentStateAsDefault();
             clipZ_.setCurrentStateAsDefault();
         }
-    });
-}
+    }
 
-CubeProxyGeometry::~CubeProxyGeometry() = default;
-
-void CubeProxyGeometry::process() {
     auto normals = addFaceNormals_ ? meshutil::IncludeNormals::Yes : meshutil::IncludeNormals::No;
     std::shared_ptr<Mesh> mesh;
     if (clippingEnabled_.get()) {

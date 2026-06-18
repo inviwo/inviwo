@@ -34,7 +34,7 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>         // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/layerramprecision.h>  // IWYU pragma: keep
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/ports/dataoutport.h>
@@ -132,16 +132,22 @@ ImageToDataFrame::ImageToDataFrame()
     };
 
     mode_.onChange(updateRange);
-
-    inport_.onChange([this, updateRange]() {
-        if (inport_.hasData()) {
-            layerIndex_.setMaxValue(inport_.getData()->getNumberOfColorLayers());
-            updateRange();
-        }
-    });
 }
 
 void ImageToDataFrame::process() {
+    if (inport_.isChanged()) {
+        layerIndex_.setMaxValue(inport_.getData()->getNumberOfColorLayers());
+        if (mode_ == Mode::Rows) {
+            range_.setRangeMax(inport_.getData()->getDimensions().y);
+            range_.setReadOnly(false);
+        } else if (mode_ == Mode::Columns) {
+            range_.setRangeMax(inport_.getData()->getDimensions().x);
+            range_.setReadOnly(false);
+        } else {
+            range_.setReadOnly(true);
+        }
+    }
+
     auto layer = inport_.getData()->getLayer(layer_, layerIndex_)->getRepresentation<LayerRAM>();
     auto dims = layer->getDimensions();
 

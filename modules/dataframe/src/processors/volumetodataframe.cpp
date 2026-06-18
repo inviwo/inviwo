@@ -36,7 +36,7 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>       // IWYU pragma: keep
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>  // IWYU pragma: keep
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/outportiterable.h>
@@ -111,18 +111,16 @@ VolumeToDataFrame::VolumeToDataFrame()
     addProperty(rangeX_);
     addProperty(rangeY_);
     addProperty(rangeZ_);
-
-    inport_.onChange([this]() {
-        if (inport_.hasData()) {
-            const auto dim = inport_.getData()->getDimensions();
-            rangeX_.setRangeMax(dim.x);
-            rangeY_.setRangeMax(dim.y);
-            rangeZ_.setRangeMax(dim.z);
-        }
-    });
 }
 
 void VolumeToDataFrame::process() {
+    if (inport_.isChanged()) {
+        const auto dim = inport_.getData()->getDimensions();
+        rangeX_.setRangeMax(dim.x);
+        rangeY_.setRangeMax(dim.y);
+        rangeZ_.setRangeMax(dim.z);
+    }
+
     const auto volume = inport_.getData();
     switch (mode_.get()) {
         case Mode::Analytics: {

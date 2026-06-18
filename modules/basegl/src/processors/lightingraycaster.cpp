@@ -90,7 +90,7 @@ LightingRaycaster::LightingRaycaster()
     , lightVolumeScaling_("lightVolumeScaling", "Light Volume Scaling",
                           util::ordinalScale(1.0f, 2.0f))
     , transferFunction_("transferFunction", "Transfer function", &volumePort_)
-    , channel_("channel", "Render Channel")
+    , channel_("channel", "Render Channel", util::enumeratedOptions("Channel", 4))
     , raycasting_("raycaster", "Raycasting")
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , lighting_("lighting", "Lighting", &camera_) {
@@ -105,26 +105,6 @@ LightingRaycaster::LightingRaycaster()
     addPort(outport_, "ImagePortGroup1");
 
     backgroundPort_.setOptional(true);
-
-    channel_.addOption("Channel 1", "Channel 1", 0);
-    channel_.setCurrentStateAsDefault();
-
-    volumePort_.onChange([this]() {
-        if (volumePort_.hasData()) {
-            size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-
-            if (channels == channel_.size()) return;
-
-            std::vector<OptionPropertyIntOption> channelOptions;
-            channelOptions.reserve(channels);
-            for (size_t i = 0; i < channels; i++) {
-                channelOptions.emplace_back(fmt::format("Channel {}", i + 1),
-                                            fmt::format("Channel {}", i + 1), static_cast<int>(i));
-            }
-            channel_.replaceOptions(channelOptions);
-            channel_.setCurrentStateAsDefault();
-        }
-    });
 
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
@@ -142,6 +122,13 @@ void LightingRaycaster::initializeResources() {
 }
 
 void LightingRaycaster::process() {
+    const size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
+    if (channel_.get() >= static_cast<int>(channels)) {
+        throw Exception(SourceContext{},
+                        "Selected channel '{}' does not exist volume has '{}' channels",
+                        channel_.get(), channels);
+    }
+
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
 

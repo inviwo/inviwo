@@ -95,17 +95,15 @@ VolumeNormalizationProcessor::VolumeNormalizationProcessor()
 
     inputChannels_.setReadOnly(true);
     addProperties(inputChannels_, channels_);
-
-    volumeInport_.onChange([this]() {
-        if (volumeInport_.hasData()) {
-            const auto channels =
-                static_cast<int>(volumeInport_.getData()->getDataFormat()->getComponents());
-            inputChannels_.set(channels);
-        }
-    });
 }
 
 void VolumeNormalizationProcessor::process() {
+    if (volumeInport_.isChanged()) {
+        const auto channels =
+            static_cast<int>(volumeInport_.getData()->getDataFormat()->getComponents());
+        inputChannels_.set(channels);
+    }
+
     auto inputVolume = volumeInport_.getData();
 
     const bvec4 normalize{normalizeChannels_[0], normalizeChannels_[1], normalizeChannels_[2],

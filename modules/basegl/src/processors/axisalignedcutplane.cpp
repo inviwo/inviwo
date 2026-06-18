@@ -102,25 +102,6 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
 
     sliceShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
-    volume_.onChange([&]() {
-        if (!volume_.hasData()) return;
-        const auto volume = volume_.getData();
-
-        NetworkLock const lock(this);
-
-        const ivec3 dims{volume->getDimensions()};
-        for (size_t i = 0; i < 3; ++i) {
-            normalizedPropertyUpdate(slices_[i], dims[i]);
-            slices_[i].setCurrentStateAsDefault();
-        }
-        const auto channels = volume->getDataFormat()->getComponents();
-        if (channels != channel_.size()) {
-            channel_.replaceOptions(std::vector<OptionPropertyIntOption>{
-                channelsList.begin(), channelsList.begin() + channels});
-            channel_.setCurrentStateAsDefault();
-        }
-    });
-
     auto verticesBuffer =
         util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
     auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
@@ -131,14 +112,28 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
 }
 
 void AxisAlignedCutPlane::process() {
+    auto volume = volume_.getData();
+    const size3_t volDims = volume_.getData()->getDimensions();
+
+    if (volume_.isChanged()) {
+        for (size_t i = 0; i < 3; ++i) {
+            normalizedPropertyUpdate(slices_[i], volDims[i]);
+            slices_[i].setCurrentStateAsDefault();
+        }
+        const auto channels = volume->getDataFormat()->getComponents();
+        if (channels != channel_.size()) {
+            channel_.replaceOptions(std::vector<OptionPropertyIntOption>{
+                channelsList.begin(), channelsList.begin() + channels});
+            channel_.setCurrentStateAsDefault();
+        }
+    }
+
     if (imageInport_.isReady()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
 
-    auto volume = volume_.getData();
-    const size3_t volDims = volume_.getData()->getDimensions();
     const vec3 volDimsInv{1.0f / vec3{volDims}};
     const vec3 halfVoxel = vec3{0.5f} * volDimsInv;
 

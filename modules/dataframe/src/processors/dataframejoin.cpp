@@ -111,7 +111,12 @@ DataFrameJoin::DataFrameJoin()
     addProperties(join_, ignoreDuplicateCols_, fillMissingRows_, columnMatching_, leftKey_,
                   rightKey_, secondaryLeftKeys_, secondaryRightKeys_);
 
-    inportLeft_.onChange([&]() {
+    secondaryLeftKeys_.PropertyOwnerObservable::addObserver(this);
+    secondaryRightKeys_.PropertyOwnerObservable::addObserver(this);
+}
+
+void DataFrameJoin::process() {
+    if (inportLeft_.isChanged()) {
         for (auto p : secondaryLeftKeys_) {
             if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p)) {
                 if (inportLeft_.hasData()) {
@@ -119,9 +124,8 @@ DataFrameJoin::DataFrameJoin()
                 }
             }
         }
-    });
-
-    inportRight_.onChange([&]() {
+    }
+    if (inportRight_.isChanged()) {
         for (auto p : secondaryRightKeys_) {
             if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p)) {
                 if (inportRight_.hasData()) {
@@ -129,13 +133,8 @@ DataFrameJoin::DataFrameJoin()
                 }
             }
         }
-    });
+    }
 
-    secondaryLeftKeys_.PropertyOwnerObservable::addObserver(this);
-    secondaryRightKeys_.PropertyOwnerObservable::addObserver(this);
-}
-
-void DataFrameJoin::process() {
     std::vector<std::pair<std::string, std::string>> keys;
     keys.push_back({leftKey_.getSelectedColumnHeader(), rightKey_.getSelectedColumnHeader()});
 

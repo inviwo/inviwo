@@ -49,36 +49,28 @@ PathSelection::PathSelection()
     , inport_("inport", "A HDF5 file handle"_help)
     , outport_("outport", "A HDF5 file handle"_help)
     , selection_("selection", "Select Group", "The subgroup to output"_help) {
-    addPort(inport_);
-    addPort(outport_);
 
+    addPorts(inport_, outport_);
     addProperty(selection_);
     selection_.setSerializationMode(PropertySerializationMode::All);
-
-    inport_.onChange([this]() { onDataChange(); });
 }
 
 void PathSelection::process() {
-    if (inport_.hasData()) {
-        auto data = inport_.getData();
-        outport_.setData(data->getHandleForPath(selection_.getSelectedValue()));
-    }
-}
-
-void PathSelection::onDataChange() {
-    const auto data = inport_.getData();
-
-    std::vector<OptionPropertyStringOption> options;
-    for (const auto& meta : util::getMetaData(data->getGroup())) {
-        if (meta.type_ == MetaData::HDFType::Group) {
-            const auto path = meta.path_.toString();
-            options.emplace_back(path, path, path);
+    auto data = inport_.getData();
+    if (inport_.isChanged()) {
+        std::vector<OptionPropertyStringOption> options;
+        for (const auto& meta : util::getMetaData(data->getGroup())) {
+            if (meta.type_ == MetaData::HDFType::Group) {
+                const auto path = meta.path_.toString();
+                options.emplace_back(path, path, path);
+            }
         }
+        selection_.replaceOptions(options);
+        selection_.setCurrentStateAsDefault();
     }
-    selection_.replaceOptions(options);
-    selection_.setCurrentStateAsDefault();
-}
 
+    outport_.setData(data->getHandleForPath(selection_.getSelectedValue()));
+}
 }  // namespace hdf5
 
 }  // namespace inviwo

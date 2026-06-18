@@ -71,29 +71,22 @@ ImageLayer::ImageLayer()
     : Processor()
     , inport_("inport", "input image"_help)
     , outport_("outport", "output image containing the selected input layer as color layer"_help)
-    , outputLayer_("outputLayer", "Output Layer",
-                   "Determines which layer of the input image is used as new color layer"_help)
+    , outputLayer_{"outputLayer",
+                   "Output Layer",
+                   "Determines which layer of the input image is used as new color layer"_help,
+                   {{"color0", "Color Layer 1", 0},
+                    {"color1", "Color Layer 2", 1},
+                    {"color2", "Color Layer 3", 2},
+                    {"color3", "Color Layer 4", 3},
+                    {"color4", "Color Layer 5", 4},
+                    {"color5", "Color Layer 6", 5},
+                    {"color6", "Color Layer 7", 6},
+                    {"depth", "Depth Layer", LayerEnum::Depth},
+                    {"picking", "Picking Layer", LayerEnum::Picking}}}
     , shader_("img_identity.vert", "img_copy.frag") {
 
-    addPort(inport_);
-    addPort(outport_);
-
+    addPorts(inport_, outport_);
     addProperty(outputLayer_);
-
-    auto populateOptionProperty = [this]() {
-        std::vector<OptionPropertyIntOption> options;
-        if (inport_.hasData()) {
-            for (size_t i = 0; i < inport_.getData()->getNumberOfColorLayers(); ++i) {
-                options.emplace_back("color" + std::to_string(i),
-                                     "Color Layer " + std::to_string(i + 1), static_cast<int>(i));
-            }
-            options.emplace_back("depth", "Depth Layer", LayerEnum::Depth);
-            options.emplace_back("picking", "Picking Layer", LayerEnum::Picking);
-        }
-        outputLayer_.replaceOptions(options);
-    };
-
-    inport_.onChange(populateOptionProperty);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -117,6 +110,11 @@ void ImageLayer::process() {
             colorUnit = pickingTexUnit.getUnitNumber();
             break;
         default: {
+            const auto nColorLayers = inport_.getData()->getNumberOfColorLayers();
+            if (outputLayer_.get() >= static_cast<int>(nColorLayers)) {
+                throw Exception(SourceContext{}, "Selected color layer '{}' is out of bounds '{}'",
+                                outputLayer_.get(), nColorLayers);
+            }
             auto imageGL = inport_.getData()->getRepresentation<ImageGL>();
             if (auto layer = imageGL->getColorLayerGL(outputLayer_.get())) {
                 layer->bindTexture(colorTexUnit);

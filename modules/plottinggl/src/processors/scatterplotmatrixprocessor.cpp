@@ -193,12 +193,6 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
         }
     });
 
-    dataFrame_.onChange([&]() {
-        plots_.clear();
-        labelsTextures_.clear();
-        statsTextures_.clear();
-    });
-
     parameters_.onChange([&]() {
         RenderContext::getPtr()->activateDefaultRenderContext();
         plots_.clear();
@@ -208,6 +202,12 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
 }
 
 void ScatterPlotMatrixProcessor::process() {
+    if (dataFrame_.isChanged()) {
+        plots_.clear();
+        labelsTextures_.clear();
+        statsTextures_.clear();
+    }
+
     bool initialSetup = false;
     if (plots_.empty()) {
         createScatterPlots();
