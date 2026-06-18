@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <functional>
+#include <utility>
 
 namespace inviwo {
 
@@ -70,8 +71,8 @@ struct IVW_CORE_API OnScopeExit {
     using ExitAction = std::function<void(void)>;
 
     OnScopeExit() = delete;
-    OnScopeExit(OnScopeExit const&) = delete;
-    OnScopeExit& operator=(OnScopeExit const& that) = delete;
+    OnScopeExit(const OnScopeExit&) = delete;
+    OnScopeExit& operator=(const OnScopeExit& that) = delete;
 
     OnScopeExit(OnScopeExit&& rhs) : action_(std::move(rhs.action_)) { rhs.action_ = nullptr; };
     OnScopeExit& operator=(OnScopeExit&& that) {
@@ -122,9 +123,10 @@ struct ScopedIncrement {
     ScopedIncrement() : variable{nullptr} {}
     explicit ScopedIncrement(I& aVariable) : variable(&aVariable) { ++(*variable); }
     ScopedIncrement(const ScopedIncrement&) = delete;
-    ScopedIncrement(ScopedIncrement&& rhs) : variable{std::exchange(rhs.variable, nullptr)} {}
+    ScopedIncrement(ScopedIncrement&& rhs) noexcept
+        : variable{std::exchange(rhs.variable, nullptr)} {}
     ScopedIncrement& operator=(const ScopedIncrement&) = delete;
-    ScopedIncrement& operator=(ScopedIncrement&& rhs) {
+    ScopedIncrement& operator=(ScopedIncrement&& rhs) noexcept {
         if (this != &rhs) {
             variable = std::exchange(rhs.variable, nullptr);
         }

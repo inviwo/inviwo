@@ -53,14 +53,14 @@ namespace {
 class TestProcessor;
 
 struct OnCallbacks {
-    std::function<void(TestProcessor&)> onInit;
-    std::function<void(TestProcessor&)> onProcess;
-    std::function<void(TestProcessor&)> onNotReady;
-    std::function<void(TestProcessor&)> onPropModified;
+    std::function<void(TestProcessor&)> onInit{};
+    std::function<void(TestProcessor&)> onProcess{};
+    std::function<void(TestProcessor&)> onNotReady{};
+    std::function<void(TestProcessor&)> onPropModified{};
 };
 
 struct TestProcessor : Processor {
-    TestProcessor(std::string_view id, OnCallbacks callbacks = {})
+    explicit TestProcessor(std::string_view id, OnCallbacks callbacks = {})
         : Processor(id, id)
         , inport{"in"}
         , outport{"out"}
@@ -111,7 +111,7 @@ struct Instrument {
         int propModified = 0;
     };
 
-    Instrument(TestProcessor& p) : name{p.getIdentifier()}, calls{} {
+    explicit Instrument(TestProcessor& p) : name{p.getIdentifier()}, calls{} {
         p.callbacks.onInit = [this, f = p.callbacks.onInit](TestProcessor& p) {
             ++calls.init;
             if (f) f(p);
@@ -130,7 +130,7 @@ struct Instrument {
         };
     }
 
-    void check(Calls expected) {
+    void check(Calls expected) const {
         SCOPED_TRACE(name + " TestProcessor");
         EXPECT_EQ(calls.init, expected.init);
         EXPECT_EQ(calls.process, expected.process);
@@ -152,8 +152,6 @@ struct Instrument {
     Calls calls;
 };
 
-}  // namespace
-
 auto createSource(std::string_view id, OnCallbacks callbacks = {}) {
     auto source = std::make_unique<TestProcessor>(id, std::move(callbacks));
     source->addPort(source->outport);
@@ -173,6 +171,8 @@ auto createProcessor(std::string_view id, OnCallbacks callbacks = {}) {
     return sink;
 };
 
+}  // namespace
+
 TEST(NetworkEvaluator, Eval) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     ProcessorNetworkEvaluator evaluator{&network};
@@ -180,7 +180,7 @@ TEST(NetworkEvaluator, Eval) {
     auto source = createSource("source", {.onProcess = [](TestProcessor& p) {
                                    p.outport.setData(std::make_shared<int>(0));
                                }});
-    auto src = source.get();
+    auto* src = source.get();
 
     Instrument srcInst(*src);
 
@@ -191,7 +191,7 @@ TEST(NetworkEvaluator, Eval) {
     }
 
     auto sink = createSink("sink");
-    auto snk = sink.get();
+    auto* snk = sink.get();
     Instrument snkInst(*snk);
 
     {
@@ -254,7 +254,7 @@ TEST(NetworkEvaluator, Error) {
                                        throw Exception(SourceContext{}, "Error");
                                    }
                                }});
-    auto src = source.get();
+    auto* src = source.get();
 
     Instrument srcInst(*src);
 
@@ -265,7 +265,7 @@ TEST(NetworkEvaluator, Error) {
     }
 
     auto sink = createSink("sink");
-    auto snk = sink.get();
+    auto* snk = sink.get();
     Instrument snkInst(*snk);
 
     {
@@ -345,8 +345,8 @@ TEST(NetworkEvaluator, OutProperty) {
     auto sink = createSink(
         "sink", {.onProcess = [](TestProcessor& p) { p.prop.set(*p.inport.getData()); }});
 
-    auto& src = *source;
-    auto& snk = *sink;
+    auto* src = source.get();
+    auto* snk = sink.get();
 
     Instrument snkInst(snk);
     Instrument srcInst(src);
@@ -498,8 +498,8 @@ TEST(NetworkEvaluator, UpwardsPropertyLink) {
 
     {
         SCOPED_TRACE("Change Property with link, plus1 function");
-        // this will create an infinite loop, the network should about after a finite number of
-        // steps.
+        // this will create an infinite loop, the network should terminate the evaluation after
+        // a finite number of steps.
         processFunc = [](int x) { return x + 1; };
         src.prop.set(0);
 
