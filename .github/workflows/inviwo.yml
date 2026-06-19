@@ -55,7 +55,7 @@ jobs:
             artifact: 'build/inviwo-v*.dmg'
           
           - system: linux
-            os: 'ubuntu-24.04'
+            os: 'ubuntu-26.04'
             targets: 'all'
             installer: 'inviwo-installer-linux'
             artifact: 'build/inviwo-v*.AppImage'
@@ -397,7 +397,7 @@ jobs:
       pull-requests: write
     env:
       LLVM_VERSION: 19
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 320
     steps:
 
@@ -552,7 +552,7 @@ jobs:
     name: "Test Installer Linux"
     needs: build
        
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
     - name: "Download artifact"
       uses: actions/download-artifact@v8
