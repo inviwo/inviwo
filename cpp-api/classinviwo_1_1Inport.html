@@ -227,9 +227,6 @@ const BaseCallBack *&#160;</td><td class="memItemRight"><b>onDisconnect</b> (std
 std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight"><b>onDisconnectScoped</b> (std::function&lt; void()&gt; lambda)</td></tr>
 <tr class="memitem:a0ff221c041d4c3d2788025cad3362528" id="r_a0ff221c041d4c3d2788025cad3362528"><td class="memItemLeft"><a id="a0ff221c041d4c3d2788025cad3362528" name="a0ff221c041d4c3d2788025cad3362528"></a>
 std::shared_ptr&lt; std::function&lt; void(Outport *)&gt; &gt;&#160;</td><td class="memItemRight"><b>onDisconnectScoped</b> (std::function&lt; void(Outport *)&gt; lambda)</td></tr>
-<tr class="memitem:a3c51b39d00fbed563de5a30c97a846c5" id="r_a3c51b39d00fbed563de5a30c97a846c5"><td class="memItemLeft">const BaseCallBack *&#160;</td><td class="memItemRight"><a class="el" href="#a3c51b39d00fbed563de5a30c97a846c5">onInvalid</a> (std::function&lt; void()&gt; lambda)</td></tr>
-<tr class="memitem:ae61ea432e18ecd784d4d06eaf6987b1b" id="r_ae61ea432e18ecd784d4d06eaf6987b1b"><td class="memItemLeft"><a id="ae61ea432e18ecd784d4d06eaf6987b1b" name="ae61ea432e18ecd784d4d06eaf6987b1b"></a>
-std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight"><b>onInvalidScoped</b> (std::function&lt; void()&gt; lambda)</td></tr>
 <tr class="memitem:a0ad122bd694fbba4e5f304c972371d97" id="r_a0ad122bd694fbba4e5f304c972371d97"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a0ad122bd694fbba4e5f304c972371d97">propagateEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event, Outport *target=nullptr)</td></tr>
 <tr class="memitem:a1530f461996eb5f8aa085fdacf482b63" id="r_a1530f461996eb5f8aa085fdacf482b63"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1530f461996eb5f8aa085fdacf482b63">readyUpdate</a> ()</td></tr>
 <tr class="memitem:a05265e6818022ca821be345c993136b8" id="r_a05265e6818022ca821be345c993136b8"><td class="memItemLeft"><a id="a05265e6818022ca821be345c993136b8" name="a05265e6818022ca821be345c993136b8"></a>
@@ -238,8 +235,6 @@ void&#160;</td><td class="memItemRight"><b>removeOnChange</b> (const BaseCallBac
 void&#160;</td><td class="memItemRight"><b>removeOnConnect</b> (const BaseCallBack *callback)</td></tr>
 <tr class="memitem:a20fdd0c9ec3546387b522291f9d8fb42" id="r_a20fdd0c9ec3546387b522291f9d8fb42"><td class="memItemLeft"><a id="a20fdd0c9ec3546387b522291f9d8fb42" name="a20fdd0c9ec3546387b522291f9d8fb42"></a>
 void&#160;</td><td class="memItemRight"><b>removeOnDisconnect</b> (const BaseCallBack *callback)</td></tr>
-<tr class="memitem:a00aacdf755c700a7dccfc371d3153188" id="r_a00aacdf755c700a7dccfc371d3153188"><td class="memItemLeft"><a id="a00aacdf755c700a7dccfc371d3153188" name="a00aacdf755c700a7dccfc371d3153188"></a>
-void&#160;</td><td class="memItemRight"><b>removeOnInvalid</b> (const BaseCallBack *callback)</td></tr>
 <tr class="memitem:a27420257dfd80fa2804abfc1bd3af813" id="r_a27420257dfd80fa2804abfc1bd3af813"><td class="memItemLeft"><a id="a27420257dfd80fa2804abfc1bd3af813" name="a27420257dfd80fa2804abfc1bd3af813"></a>
 void&#160;</td><td class="memItemRight"><b>setIsReadyUpdater</b> (std::function&lt; bool()&gt; updater)</td></tr>
 <tr class="memitem:afe1660c34699d0c8dfcd79d4ef8d8495" id="r_afe1660c34699d0c8dfcd79d4ef8d8495"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#afe1660c34699d0c8dfcd79d4ef8d8495">setOptional</a> (bool optional)</td></tr>
@@ -453,24 +448,6 @@ class&#160;</td><td class="memItemRight"><b>ProcessorNetworkEvaluator</b></td></
       </table>
 </div><div class="memdoc">
 <p>The on change call back is invoked before <a class="el" href="classinviwo_1_1Processor.html#a8aec4f59f1cccfa4f37993958f095359">Processor::process</a> after a port has been connected, disconnected, or has changed its validation level. Note it is only called if process is also going to be called. </p>
-
-</div>
-</div>
-<a id="a3c51b39d00fbed563de5a30c97a846c5" name="a3c51b39d00fbed563de5a30c97a846c5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3c51b39d00fbed563de5a30c97a846c5">&#9670;&#160;</a></span>onInvalid()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const BaseCallBack * inviwo::Inport::onInvalid </td>
-          <td>(</td>
-          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>lambda</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>the onInvalid callback is called directly after the port has been invalidated. It's only called once for each transition from valid to invalid. </p>
 
 </div>
 </div>

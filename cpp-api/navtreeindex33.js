@@ -1,6 +1,6 @@
 var NAVTREEINDEX33 =
 {
-"structinviwo_1_1ZoomOptions.html":[4,0,1,1406],
+"structinviwo_1_1ZoomOptions.html":[4,0,1,1407],
 "structinviwo_1_1amira_1_1AmiraMeshHeader.html":[4,0,1,1,0],
 "structinviwo_1_1amira_1_1AmiraMeshHeader.html#a4b9dd1fe054cbe986fd82b4d7354bfaf":[4,0,1,1,0,0],
 "structinviwo_1_1amira_1_1AmiraMeshHeader.html#abb890762b7be63e444515f3ac380cfba":[4,0,1,1,0,2],

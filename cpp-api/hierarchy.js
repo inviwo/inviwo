@@ -3166,6 +3166,7 @@ var hierarchy =
     [ "inviwo::util::ColumnMapper::ScaleAndOffset", "structinviwo_1_1util_1_1ColumnMapper_1_1ScaleAndOffset.html", null ],
     [ "inviwo::utilgl::ScissorBox", "structinviwo_1_1utilgl_1_1ScissorBox.html", null ],
     [ "inviwo::utilgl::ScissorState", "structinviwo_1_1utilgl_1_1ScissorState.html", null ],
+    [ "inviwo::ScopedIncrement&lt; I &gt;", "structinviwo_1_1ScopedIncrement.html", null ],
     [ "inviwo::ScopedPropertySerializationMode", "classinviwo_1_1ScopedPropertySerializationMode.html", null ],
     [ "inviwo::SearchDSL&lt; Ts &gt;", "classinviwo_1_1SearchDSL.html", null ],
     [ "inviwo::ShaderComponent::Segment", "structinviwo_1_1ShaderComponent_1_1Segment.html", null ],

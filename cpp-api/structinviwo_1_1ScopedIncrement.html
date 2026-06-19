@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.17.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Inviwo: inviwo::util::OnScopeExit Struct Reference</title>
+<title>Inviwo: inviwo::ScopedIncrement&lt; I &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="codefolding.js"></script>
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </div>
 <script type="text/javascript">
-document.addEventListener('DOMContentLoaded',() => { initNavTree('structinviwo_1_1util_1_1OnScopeExit.html','','structinviwo_1_1util_1_1OnScopeExit-members'); });
+document.addEventListener('DOMContentLoaded',() => { initNavTree('structinviwo_1_1ScopedIncrement.html','','structinviwo_1_1ScopedIncrement-members'); });
 </script>
 <div id="container">
 <div id="doc-content">
@@ -118,46 +118,29 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structinviwo_1
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">inviwo::util::OnScopeExit Struct Reference</div></div>
+  <div class="headertitle"><div class="title">inviwo::ScopedIncrement&lt; I &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
-
-<p>calls the given function when leaving the current scope  
- <a href="#details">More...</a></p>
-
-<p><code>#include &lt;inviwo/core/util/raiiutils.h&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a77ba2c22e5f77df182a9a5f1401684fa" id="r_a77ba2c22e5f77df182a9a5f1401684fa"><td class="memItemLeft"><a id="a77ba2c22e5f77df182a9a5f1401684fa" name="a77ba2c22e5f77df182a9a5f1401684fa"></a>
-using&#160;</td><td class="memItemRight"><b>ExitAction</b> = std::function&lt;void(void)&gt;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ace3eafe96b135d03ba614d1413756fe5" id="r_ace3eafe96b135d03ba614d1413756fe5"><td class="memItemLeft"><a id="ace3eafe96b135d03ba614d1413756fe5" name="ace3eafe96b135d03ba614d1413756fe5"></a>
-void&#160;</td><td class="memItemRight"><b>call</b> ()</td></tr>
-<tr class="memitem:a5dfe0e87a28feba142ecc661cf2e9eca" id="r_a5dfe0e87a28feba142ecc661cf2e9eca"><td class="memItemLeft"><a id="a5dfe0e87a28feba142ecc661cf2e9eca" name="a5dfe0e87a28feba142ecc661cf2e9eca"></a>
-&#160;</td><td class="memItemRight"><b>OnScopeExit</b> (const OnScopeExit &amp;)=delete</td></tr>
-<tr class="memitem:a04192b94a2c473db2288ea1f19479244" id="r_a04192b94a2c473db2288ea1f19479244"><td class="memItemLeft"><a id="a04192b94a2c473db2288ea1f19479244" name="a04192b94a2c473db2288ea1f19479244"></a>
-&#160;</td><td class="memItemRight"><b>OnScopeExit</b> (ExitAction action)</td></tr>
-<tr class="memitem:a1d94d1c0f3d8a8d9fb4e8ec6c52cf28f" id="r_a1d94d1c0f3d8a8d9fb4e8ec6c52cf28f"><td class="memItemLeft"><a id="a1d94d1c0f3d8a8d9fb4e8ec6c52cf28f" name="a1d94d1c0f3d8a8d9fb4e8ec6c52cf28f"></a>
-&#160;</td><td class="memItemRight"><b>OnScopeExit</b> (OnScopeExit &amp;&amp;rhs)</td></tr>
-<tr class="memitem:ab1b9478073af738b81da864d3939d0e1" id="r_ab1b9478073af738b81da864d3939d0e1"><td class="memItemLeft"><a id="ab1b9478073af738b81da864d3939d0e1" name="ab1b9478073af738b81da864d3939d0e1"></a>
-&#160;</td><td class="memItemRight"><b>operator bool</b> () const</td></tr>
-<tr class="memitem:a1c06ec8cfdef55732b77e5029b17a885" id="r_a1c06ec8cfdef55732b77e5029b17a885"><td class="memItemLeft"><a id="a1c06ec8cfdef55732b77e5029b17a885" name="a1c06ec8cfdef55732b77e5029b17a885"></a>
-OnScopeExit &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const OnScopeExit &amp;that)=delete</td></tr>
-<tr class="memitem:ab8ccdae991979a79da8346a1cd4f1ccd" id="r_ab8ccdae991979a79da8346a1cd4f1ccd"><td class="memItemLeft"><a id="ab8ccdae991979a79da8346a1cd4f1ccd" name="ab8ccdae991979a79da8346a1cd4f1ccd"></a>
-OnScopeExit &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (OnScopeExit &amp;&amp;that)</td></tr>
-<tr class="memitem:a377c323844acf5c9e45c1fa495ca5182" id="r_a377c323844acf5c9e45c1fa495ca5182"><td class="memItemLeft"><a id="a377c323844acf5c9e45c1fa495ca5182" name="a377c323844acf5c9e45c1fa495ca5182"></a>
-void&#160;</td><td class="memItemRight"><b>release</b> ()</td></tr>
-<tr class="memitem:a77e801e1340093687eb1e17699f6b0ab" id="r_a77e801e1340093687eb1e17699f6b0ab"><td class="memItemLeft"><a id="a77e801e1340093687eb1e17699f6b0ab" name="a77e801e1340093687eb1e17699f6b0ab"></a>
-void&#160;</td><td class="memItemRight"><b>setAction</b> (ExitAction action=nullptr)</td></tr>
+<tr class="memitem:a0c737d2717bf2073437afb0c0f48ec57" id="r_a0c737d2717bf2073437afb0c0f48ec57"><td class="memItemLeft"><a id="a0c737d2717bf2073437afb0c0f48ec57" name="a0c737d2717bf2073437afb0c0f48ec57"></a>
+ScopedIncrement &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const ScopedIncrement &amp;)=delete</td></tr>
+<tr class="memitem:a0755014e8ad83b61a5b7ae901af7a6f4" id="r_a0755014e8ad83b61a5b7ae901af7a6f4"><td class="memItemLeft"><a id="a0755014e8ad83b61a5b7ae901af7a6f4" name="a0755014e8ad83b61a5b7ae901af7a6f4"></a>
+ScopedIncrement &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (ScopedIncrement &amp;&amp;rhs) noexcept</td></tr>
+<tr class="memitem:ae0f442f2ca979492cf498fb27c15c8b1" id="r_ae0f442f2ca979492cf498fb27c15c8b1"><td class="memItemLeft"><a id="ae0f442f2ca979492cf498fb27c15c8b1" name="ae0f442f2ca979492cf498fb27c15c8b1"></a>
+&#160;</td><td class="memItemRight"><b>ScopedIncrement</b> (const ScopedIncrement &amp;)=delete</td></tr>
+<tr class="memitem:a9c331a17b188ab5087a6aa2741b5d643" id="r_a9c331a17b188ab5087a6aa2741b5d643"><td class="memItemLeft"><a id="a9c331a17b188ab5087a6aa2741b5d643" name="a9c331a17b188ab5087a6aa2741b5d643"></a>
+&#160;</td><td class="memItemRight"><b>ScopedIncrement</b> (I &amp;aVariable)</td></tr>
+<tr class="memitem:a864ac23dec80d6a2f52ffc3b97b85ce1" id="r_a864ac23dec80d6a2f52ffc3b97b85ce1"><td class="memItemLeft"><a id="a864ac23dec80d6a2f52ffc3b97b85ce1" name="a864ac23dec80d6a2f52ffc3b97b85ce1"></a>
+&#160;</td><td class="memItemRight"><b>ScopedIncrement</b> (ScopedIncrement &amp;&amp;rhs) noexcept</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:abaf4a6e82dec04ab2c9c66b43b21cfc7" id="r_abaf4a6e82dec04ab2c9c66b43b21cfc7"><td class="memItemLeft"><a id="abaf4a6e82dec04ab2c9c66b43b21cfc7" name="abaf4a6e82dec04ab2c9c66b43b21cfc7"></a>
+I *&#160;</td><td class="memItemRight"><b>variable</b></td></tr>
 </table>
-<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>calls the given function when leaving the current scope </p>
-<p>An instance of this class will call the provided action, i.e. a void function, when leaving the current scope. The action will also be called in case the constructor fails.</p>
-<p>The action can be changed at any time by calling setAction() or release(). </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>include/inviwo/core/util/<b>raiiutils.h</b></li>
 </ul>
 </div><!-- contents -->
@@ -173,7 +156,7 @@ void&#160;</td><td class="memItemRight"><b>setAction</b> (ExitAction action=null
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a href="namespaceinviwo.html">inviwo</a></li><li class="navelem"><a href="namespaceinviwo_1_1util.html">util</a></li><li class="navelem"><a href="structinviwo_1_1util_1_1OnScopeExit.html">OnScopeExit</a></li>
+    <li class="navelem"><a href="namespaceinviwo.html">inviwo</a></li><li class="navelem"><a href="structinviwo_1_1ScopedIncrement.html">ScopedIncrement</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
   </ul>
 </div>
