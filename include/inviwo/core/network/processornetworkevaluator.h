@@ -71,6 +71,7 @@ private:
     std::vector<Processor*> processorsSorted_;
     bool needsSorting_;
     bool evaluationQueued_;
+    size_t reentranceCount_;
     EvaluationErrorHandler exceptionHandler_;
 };
 

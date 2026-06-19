@@ -64,9 +64,6 @@ void Inport::setOptional(bool optional) {
 }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
-    if (lastInvalidationLevel_ == InvalidationLevel::Valid &&
-        invalidationLevel >= InvalidationLevel::InvalidOutput)
-        onInvalidCallback_.invokeAll();
     lastInvalidationLevel_ = std::max(lastInvalidationLevel_, invalidationLevel);
 
     if (processor_) processor_->invalidate(invalidationLevel);
@@ -148,7 +145,9 @@ Outport* Inport::getConnectedOutport() const {
     }
 }
 
-const std::vector<Outport*>& Inport::getConnectedOutports() const noexcept { return connectedOutports_; }
+const std::vector<Outport*>& Inport::getConnectedOutports() const noexcept {
+    return connectedOutports_;
+}
 
 void Inport::callOnChangeIfChanged() const {
     if (isChanged()) {
@@ -165,14 +164,6 @@ std::shared_ptr<std::function<void()>> Inport::onChangeScoped(std::function<void
 }
 
 void Inport::removeOnChange(const BaseCallBack* callback) { onChangeCallback_.remove(callback); }
-
-const BaseCallBack* Inport::onInvalid(std::function<void()> lambda) {
-    return onInvalidCallback_.addLambdaCallback(lambda);
-}
-std::shared_ptr<std::function<void()>> Inport::onInvalidScoped(std::function<void()> lambda) {
-    return onInvalidCallback_.addLambdaCallbackRaii(lambda);
-}
-void Inport::removeOnInvalid(const BaseCallBack* callback) { onInvalidCallback_.remove(callback); }
 
 const BaseCallBack* Inport::onConnect(std::function<void()> lambda) {
     return onConnectCallback_.addLambdaCallback(lambda);
