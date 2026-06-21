@@ -32,10 +32,12 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/hashcombine.h>
 
+#include <fmt/format.h>
+
 #include <string_view>
 #include <source_location>
 #include <iterator>
-#include <fmt/format.h>
+#include <cstdint>
 
 namespace inviwo {
 
