@@ -361,11 +361,22 @@ void ParallelCoordinates::process() {
     }();
 
     if (brushingDirty_) updateBrushing();
+
+    bool meshUpdated = false;
+    bool partitionDirty = false;
     if (rangesDirty_ || colormap_.isModified() || dataFrame_.isChanged()) {
         buildLineMesh();
-    } else if (enabledAxesModified_) {
+        lineShader_.getVertexShaderObject()->addShaderDefine("NUMBER_OF_AXIS",
+                                                             fmt::to_string(axes_.size()));
+        lineShader_.build();
+        meshUpdated = true;
+    }
+    if (meshUpdated || enabledAxesModified_) {
         buildLineIndices();
-    } else if (brushingAndLinking_.isChanged() || axisProperties_.isModified()) {
+        buildAxisPositions();
+        partitionDirty = true;
+    }
+    if (partitionDirty || brushingAndLinking_.isChanged() || axisProperties_.isModified()) {
         partitionLines();
     }
     if ((!isDragging_ || enabledAxesModified_) &&
@@ -412,9 +423,9 @@ void ParallelCoordinates::createOrUpdateProperties() {
         const auto identifier = util::stripIdentifier(displayName);
 
         // Create axis for filtering
-        auto prop = [&, id = columnIndex]() -> PCPAxisSettings* {
-            if (auto p = axisProperties_.getPropertyByIdentifier(identifier)) {
-                if (auto pcasp = dynamic_cast<PCPAxisSettings*>(p)) {
+        auto* prop = [&, id = columnIndex]() -> PCPAxisSettings* {
+            if (auto* p = axisProperties_.getPropertyByIdentifier(identifier)) {
+                if (auto* pcasp = dynamic_cast<PCPAxisSettings*>(p)) {
                     return pcasp;
                 }
                 axisProperties_.removeProperty(identifier);
@@ -462,7 +473,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
     }
 
     // Remove properties for axes that doesn't exist in the current dataframe
-    for (auto prop : previousProperties) {
+    for (auto* prop : previousProperties) {
         axisProperties_.removeProperty(prop);
     }
 
@@ -485,7 +496,7 @@ void ParallelCoordinates::buildLineMesh() {
     linePicking_.resize(numberOfLines);
 
     const auto metaAxisId = colormap_.selectedColorAxis.get();
-    auto* const metaAxes = axes_[glm::clamp(metaAxisId, 0, static_cast<int>(axes_.size()) - 1)].pcp;
+    const auto* metaAxes = axes_[glm::clamp(metaAxisId, 0, static_cast<int>(axes_.size()) - 1)].pcp;
 
     for (size_t i = 0; i < numberOfLines; i++) {
         const auto meta = static_cast<float>(metaAxes->getNormalizedAt(i));
@@ -494,12 +505,6 @@ void ParallelCoordinates::buildLineMesh() {
             mesh.addVertex(static_cast<float>(axis.pcp->getNormalizedAt(i)), picking, meta);
         }
     }
-
-    lineShader_.getVertexShaderObject()->addShaderDefine("NUMBER_OF_AXIS",
-                                                         fmt::to_string(numberOfAxis));
-    lineShader_.build();
-
-    buildLineIndices();
 }
 
 void ParallelCoordinates::buildLineIndices() {
@@ -529,9 +534,6 @@ void ParallelCoordinates::buildLineIndices() {
             lines_.starts.push_back(Lines::indexToOffset(i, numberOfEnabledAxis));
         }
     }
-
-    buildAxisPositions();
-    partitionLines();
 }
 
 void ParallelCoordinates::buildAxisPositions() {
@@ -805,7 +807,6 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, uint32_t columnId, PickTyp
         if (a < enabledAxes_.size() || b < enabledAxes_.size()) {
             std::swap(enabledAxes_[a], enabledAxes_[b]);
             p->markAsUsed();
-            buildAxisPositions();
             enabledAxesModified_ = true;
             invalidate(InvalidationLevel::InvalidOutput);
         }
@@ -839,13 +840,13 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, uint32_t columnId, PickTyp
                 }
             }
         } else {
-            buildAxisPositions();
+            enabledAxesModified_ = true;
             invalidate(InvalidationLevel::InvalidOutput);
         }
     }
     if (p->getPressState() == PickingPressState::Release &&
         p->getPressItem() == PickingPressItem::Primary) {
-        buildAxisPositions();
+        enabledAxesModified_ = true;
         isDragging_ = false;
         invalidate(InvalidationLevel::InvalidOutput);
     }
