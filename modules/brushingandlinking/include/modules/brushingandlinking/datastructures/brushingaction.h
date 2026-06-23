@@ -100,33 +100,16 @@ IVW_MODULE_BRUSHINGANDLINKING_API std::ostream& operator<<(std::ostream& ss,
 struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTarget {
     BrushingTarget() : target_{Row.target_} {}
     explicit BrushingTarget(std::string_view target) : target_{findOrAdd(target)} {}
-    BrushingTarget(const BrushingTarget& rhs) : target_{rhs.target_} {}
-    BrushingTarget& operator=(const BrushingTarget& rhs) {
-        target_ = rhs.target_;
-        return *this;
-    }
+    BrushingTarget(const BrushingTarget& rhs) = default;
+    BrushingTarget& operator=(const BrushingTarget& rhs) = default;
 
-    inline friend bool operator==(BrushingTarget lhs, BrushingTarget rhs) {
-        // Can optimize equal since we know each targets points to a unique str.
+    auto operator<=>(const BrushingTarget& other) const { return target_ <=> other.target_; }
+    bool operator==(const BrushingTarget& other) const {
+        // Can optimize equal since we know each target points to a unique str.
         // And there will be no sub strings
-        return lhs.target_.data() == rhs.target_.data();
+        return target_.data() == other.target_.data();
     }
-    inline friend bool operator<(BrushingTarget lhs, BrushingTarget rhs) {
-        return lhs.target_ < rhs.target_;
-    }
-    inline friend bool operator!=(BrushingTarget lhs, BrushingTarget rhs) {
-        return !operator==(lhs, rhs);
-    }
-    inline friend bool operator>(BrushingTarget lhs, BrushingTarget rhs) {
-        return operator<(rhs, lhs);
-    }
-    inline friend bool operator<=(BrushingTarget lhs, BrushingTarget rhs) {
-        return !operator>(lhs, rhs);
-    }
-    inline friend bool operator>=(BrushingTarget lhs, BrushingTarget rhs) {
-        return !operator<(lhs, rhs);
-    }
-    inline friend std::ostream& operator<<(std::ostream& os, BrushingTarget bt) {
+    friend std::ostream& operator<<(std::ostream& os, BrushingTarget bt) {
         os << bt.getString();
         return os;
     }
@@ -149,7 +132,7 @@ private:
 
 template <>
 struct std::hash<typename inviwo::BrushingTarget> {
-    size_t operator()(typename inviwo::BrushingTarget const& val) const {
+    size_t operator()(const typename inviwo::BrushingTarget& val) const {
         return std::hash<std::string_view>{}(val.getString());
     }
 };

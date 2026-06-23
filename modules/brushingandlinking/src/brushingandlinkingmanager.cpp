@@ -58,7 +58,7 @@ namespace inviwo {
 BrushingAndLinkingManager::BrushingAndLinkingManager(
     BrushingAndLinkingInport* inport,
     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
-    : owner_(inport), invalidationLevels_(invalidationLevels) {
+    : owner_(inport), invalidationLevels_(std::move(invalidationLevels)) {
 
     inport->onConnect([&]() {
         setParent(&static_cast<BrushingAndLinkingOutport*>(
@@ -71,7 +71,7 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(
 BrushingAndLinkingManager::BrushingAndLinkingManager(
     BrushingAndLinkingOutport* outport,
     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
-    : owner_(outport), invalidationLevels_(invalidationLevels) {}
+    : owner_(outport), invalidationLevels_(std::move(invalidationLevels)) {}
 
 BrushingAndLinkingManager::~BrushingAndLinkingManager() = default;
 
@@ -86,8 +86,8 @@ void BrushingAndLinkingManager::brush(BrushingAction action, BrushingTarget targ
     const bool changed =
         std::visit(util::overloaded{[&](BitSetTargets& map) { return map[target].set(indices); },
                                     [&](IndexListTargets& map) {
-                                        auto it = map.try_emplace(target, IndexList());
-                                        return it.first->second.set(source, indices);
+                                        auto [item, _] = map.try_emplace(target, IndexList());
+                                        return item->second.set(source, indices);
                                     }},
                    selections_[actionIdx]);
 
@@ -103,8 +103,8 @@ bool BrushingAndLinkingManager::isModified() const { return !modifications_.empt
 BrushingModifications BrushingAndLinkingManager::getModifiedActions() const {
     BrushingModifications modifiedActions(flags::empty);
 
-    for (const auto& elem : modifications_) {
-        modifiedActions |= elem.second;
+    for (const auto& [_, modifications] : modifications_) {
+        modifiedActions |= modifications;
     }
     return modifiedActions;
 }
@@ -137,8 +137,7 @@ bool BrushingAndLinkingManager::isTargetModified(BrushingTarget target,
 
 bool BrushingAndLinkingManager::isTargetModified(BrushingTarget target,
                                                  BrushingModifications modifications) const {
-    auto it = modifications_.find(target);
-    if (it != modifications_.end()) {
+    if (auto it = modifications_.find(target); it != modifications_.end()) {
         return !(it->second & modifications).empty();
     }
 
@@ -165,7 +164,7 @@ const BitSet& BrushingAndLinkingManager::getIndices(BrushingAction action,
 
     static const BitSet empty;
 
-    if (auto indices = getBitSet(action, target)) {
+    if (const auto* indices = getBitSet(action, target)) {
         return *indices;
     } else {
         return empty;
@@ -198,13 +197,13 @@ void BrushingAndLinkingManager::clearIndices(BrushingAction action, BrushingTarg
     std::stack<BrushingAndLinkingManager*> stack;
     stack.push(this);
     while (!stack.empty()) {
-        auto node = stack.top();
+        auto* node = stack.top();
         stack.pop();
         if (clearMap(node->selections_)) {
             node->modifications_[target] |= fromAction(action);
             changed = true;
         }
-        for (auto c : node->children_) {
+        for (auto* c : node->children_) {
             stack.push(c);
         }
     }
@@ -361,13 +360,13 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
 
         // set manager as modified since filter actions might have changed when removing the parent
         for (const auto& [action, targets] : parent_->getTargets()) {
-            for (auto& t : targets) {
+            for (const auto& t : targets) {
                 modifications_[t] |= fromAction(action);
             }
         }
 
         if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
-            auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
+            const auto* outport = std::get<BrushingAndLinkingOutport*>(owner_);
             outport->getProcessor()->invalidate(getInvalidationLevel());
         }
     }
@@ -395,7 +394,7 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
 
 void BrushingAndLinkingManager::onBrush(
     std::function<void(BrushingAction, BrushingTarget, const BitSet&, std::string_view)> callback) {
-    onBrushCallback_ = callback;
+    onBrushCallback_ = std::move(callback);
 }
 
 const std::vector<BrushingTargetsInvalidationLevel>&
@@ -409,11 +408,11 @@ InvalidationLevel BrushingAndLinkingManager::getInvalidationLevel() const {
 
 void BrushingAndLinkingManager::setInvalidationLevels(
     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels) {
-    invalidationLevels_ = invalidationLevels;
+    invalidationLevels_ = std::move(invalidationLevels);
 }
 
 void BrushingAndLinkingManager::propagateModifications() {
-    for (auto c : children_) {
+    for (auto* c : children_) {
         for (const auto& [target, modification] : modifications_) {
             c->modifications_[target] |= modification;
         }
@@ -424,12 +423,12 @@ void BrushingAndLinkingManager::clearModifications() { modifications_.clear(); }
 
 void BrushingAndLinkingManager::serialize(Serializer& s) const {
     for (auto&& [action, targetmap] : util::zip(BrushingActions, selections_)) {
-        if (auto bitset = std::get_if<BitSetTargets>(&targetmap)) {
+        if (const auto* bitset = std::get_if<BitSetTargets>(&targetmap)) {
             if (bitset->empty()) continue;
 
             s.serialize(fmt::to_string(action), *bitset, "selection", {},
                         [](BrushingTarget t) { return t.getString(); }, {});
-        } else if (auto indexlist = std::get_if<IndexListTargets>(&targetmap)) {
+        } else if (const auto* indexlist = std::get_if<IndexListTargets>(&targetmap)) {
             if (indexlist->empty()) continue;
 
             s.serialize(fmt::to_string(action), *indexlist, "selection", {},
@@ -474,13 +473,13 @@ void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget 
     // Only invalidate the top level in the connected brushing manager network
     if (!parent_) {
         if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
-            auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
+            const auto* outport = std::get<BrushingAndLinkingOutport*>(owner_);
             // Processor need to be invalidated for the network evaluation to be notified.
             outport->getProcessor()->invalidate(
                 getInvalidationLevel(target, modifications_[target]));
         } else if (std::holds_alternative<BrushingAndLinkingInport*>(owner_)) {
             // Nothing is connected, invalidate the processor itself
-            auto inport = std::get<BrushingAndLinkingInport*>(owner_);
+            auto* inport = std::get<BrushingAndLinkingInport*>(owner_);
 
             inport->invalidate(getInvalidationLevel(target, modifications_[target]));
         }
@@ -496,15 +495,15 @@ void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget 
 
 void BrushingAndLinkingManager::propagate(BrushingAction action,
                                           const std::vector<BrushingTarget>& targets) {
-    for (auto t : targets) {
+    for (const auto& t : targets) {
         modifications_[t] |= fromAction(action);
     }
 
     // Only invalidate the top level in the connected brushing manager network
     if (!parent_ && std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
-        auto outport = std::get<BrushingAndLinkingOutport*>(owner_);
+        const auto* outport = std::get<BrushingAndLinkingOutport*>(owner_);
         InvalidationLevel invalidationLevel(InvalidationLevel::Valid);
-        for (auto& t : targets) {
+        for (const auto& t : targets) {
             invalidationLevel =
                 std::max(getInvalidationLevel(t, modifications_[t]), invalidationLevel);
         }
@@ -514,8 +513,8 @@ void BrushingAndLinkingManager::propagate(BrushingAction action,
     if (parent_) {
         const std::string source = std::visit([](auto* p) { return p->getPath(); }, owner_);
 
-        for (auto target : targets) {
-            auto localIndices = getBitSet(action, target);
+        for (const auto& target : targets) {
+            const auto* localIndices = getBitSet(action, target);
 
             if (localIndices) {
                 parent_->brush(action, target, *localIndices, source);
@@ -525,22 +524,22 @@ void BrushingAndLinkingManager::propagate(BrushingAction action,
 }
 
 void BrushingAndLinkingManager::addChild(BrushingAndLinkingManager* child) {
-    [[maybe_unused]] auto it = children_.insert(child);
-    IVW_ASSERT(it.second, "child manager already added");
+    [[maybe_unused]] auto [_, inserted] = children_.insert(child);
+    IVW_ASSERT(inserted, "child manager already added");
 }
 
 void BrushingAndLinkingManager::removeChild(BrushingAndLinkingManager* child) {
     if (child) {
         children_.erase(child);
         if (std::holds_alternative<BrushingAndLinkingInport*>(child->owner_)) {
-            auto inport = std::get<BrushingAndLinkingInport*>(child->owner_);
+            const auto* inport = std::get<BrushingAndLinkingInport*>(child->owner_);
 
             for (auto&& [action, targetmap] : util::zip(BrushingActions, selections_)) {
                 if (std::holds_alternative<IndexListTargets>(targetmap)) {
-                    for (auto& elem : std::get<IndexListTargets>(targetmap)) {
-                        if (elem.second.removeSources({inport->getPath()})) {
+                    for (auto&& [target, indexList] : std::get<IndexListTargets>(targetmap)) {
+                        if (indexList.removeSources({inport->getPath()})) {
                             // inform parent manager
-                            propagate(action, elem.first);
+                            propagate(action, target);
                         }
                     }
                 }
@@ -551,14 +550,14 @@ void BrushingAndLinkingManager::removeChild(BrushingAndLinkingManager* child) {
 
 const BitSet* BrushingAndLinkingManager::getBitSet(BrushingAction action,
                                                    BrushingTarget target) const {
-    return std::visit(util::overloaded{[&](const BitSetTargets& map) -> const BitSet* {
+    return std::visit(util::overloaded{[target](const BitSetTargets& map) -> const BitSet* {
                                            auto it = map.find(target);
                                            if (it == map.end()) {
                                                return nullptr;
                                            }
                                            return &it->second;
                                        },
-                                       [&](const IndexListTargets& map) -> const BitSet* {
+                                       [target](const IndexListTargets& map) -> const BitSet* {
                                            auto it = map.find(target);
                                            if (it == map.end()) {
                                                return nullptr;
@@ -582,8 +581,9 @@ InvalidationLevel BrushingAndLinkingManager::getInvalidationLevel(
 InvalidationLevel BrushingAndLinkingManager::getInvalidationLevel(
     const std::unordered_map<BrushingTarget, BrushingModifications>& mods) const {
     InvalidationLevel invalidationLevel(InvalidationLevel::Valid);
-    for (auto& m : mods) {
-        invalidationLevel = std::max(getInvalidationLevel(m.first, m.second), invalidationLevel);
+    for (auto&& [target, modifications] : mods) {
+        invalidationLevel =
+            std::max(getInvalidationLevel(target, modifications), invalidationLevel);
     }
     return invalidationLevel;
 }

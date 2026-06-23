@@ -39,7 +39,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <string_view>
@@ -49,6 +48,7 @@
 #include <variant>
 #include <vector>
 #include <span>
+#include <ranges>
 
 #include <flags/flags.h>
 
@@ -72,15 +72,15 @@ class Serializer;
 struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTargetsInvalidationLevel {
     BrushingTargetsInvalidationLevel(BrushingModifications mods,
                                      InvalidationLevel invalidationLevel)
-        : modifications(mods), invalidationLevel(invalidationLevel) {}
+        : modifications{mods}, invalidationLevel{invalidationLevel} {}
     BrushingTargetsInvalidationLevel(std::vector<BrushingTarget> targets,
                                      BrushingModifications mods,
                                      InvalidationLevel invalidationLevel)
-        : targets(targets), modifications(mods), invalidationLevel(invalidationLevel) {}
+        : targets{std::move(targets)}, modifications{mods}, invalidationLevel{invalidationLevel} {}
 
     bool contains(const BrushingTarget& target) const {
         if (targets.empty()) return true;
-        return std::find(targets.begin(), targets.end(), target) != targets.end();
+        return std::ranges::find(targets, target) != targets.end();
     }
     bool contains(const BrushingTarget& target, BrushingModifications mods) const {
         return contains(target) && (mods & modifications);
@@ -125,10 +125,11 @@ public:
      * (Processor::process will be called for those). Defaults to InvalidOutput for all targets
      * (row, column) and all actions (filtering/selection/highlight).
      */
-    BrushingAndLinkingManager(BrushingAndLinkingInport* inport,
-                              std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {
-                                  {AnyBrushingTarget, BrushingModifications(flags::any),
-                                   InvalidationLevel::InvalidOutput}});
+    explicit BrushingAndLinkingManager(
+        BrushingAndLinkingInport* inport,
+        std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {
+            {AnyBrushingTarget, BrushingModifications(flags::any),
+             InvalidationLevel::InvalidOutput}});
     /**
      * @code
      *  // Only invalidate processor on row filtering and column selection.
@@ -152,7 +153,7 @@ public:
      * (Processor::process will be called for those). Defaults to InvalidOutput for all targets
      * (row, column) and all actions (filtering/selection/highlight).
      */
-    BrushingAndLinkingManager(BrushingAndLinkingOutport* outport,
+    explicit BrushingAndLinkingManager(BrushingAndLinkingOutport* outport,
                               std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {
                                   {AnyBrushingTarget, BrushingModifications(flags::any),
                                    InvalidationLevel::InvalidOutput}});
