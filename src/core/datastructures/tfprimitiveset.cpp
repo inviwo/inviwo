@@ -48,8 +48,8 @@ void TFPrimitiveSetObserver::onTFPrimitiveChanged(const TFPrimitiveSet&, const T
 
 void TFPrimitiveSetObserver::onTFModeChanged(const TFPrimitiveSet&, PrimitiveSetMode) {}
 
-void TFPrimitiveSetObserver::onTFBeginBulkUpdate(const TFPrimitiveSet& set) {}
-void TFPrimitiveSetObserver::onTFEndBulkUpdate(const TFPrimitiveSet& set) {}
+void TFPrimitiveSetObserver::onTFBeginBulkUpdate(const TFPrimitiveSet&) {}
+void TFPrimitiveSetObserver::onTFEndBulkUpdate(const TFPrimitiveSet&) {}
 
 void TFPrimitiveSetObservable::notifyTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) {
     forEachObserver([&](TFPrimitiveSetObserver* o) { o->onTFPrimitiveAdded(set, p); });
