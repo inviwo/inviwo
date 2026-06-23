@@ -91,13 +91,11 @@ void BrushingAndLinkingManager::brush(BrushingAction action, BrushingTarget targ
                                     }},
                    selections_[actionIdx]);
 
-    if (onBrushCallback_) {
+    if (changed && onBrushCallback_) {
         std::invoke(onBrushCallback_, action, target, indices, source);
     }
 
-    if (changed) {
-        propagate(action, target);
-    }
+    propagate(action, target);
 }
 
 bool BrushingAndLinkingManager::isModified() const { return !modifications_.empty(); }
@@ -216,9 +214,7 @@ void BrushingAndLinkingManager::clearIndices(BrushingAction action, BrushingTarg
         std::invoke(onBrushCallback_, action, target, BitSet(), source);
     }
 
-    if (changed) {
-        propagate(action, target);
-    }
+    propagate(action, target);
 }
 
 bool BrushingAndLinkingManager::contains(uint32_t idx, BrushingAction action,
@@ -488,15 +484,12 @@ void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget 
 
             inport->invalidate(getInvalidationLevel(target, modifications_[target]));
         }
-    }
-
-    if (parent_) {
+    } else {
         const std::string source = std::visit([](auto* p) { return p->getPath(); }, owner_);
-
-        auto localIndices = getBitSet(action, target);
-
-        if (localIndices) {
+        if (const auto* localIndices = getBitSet(action, target); localIndices) {
             parent_->brush(action, target, *localIndices, source);
+        } else {
+            parent_->brush(action, target, {}, source);
         }
     }
 }
