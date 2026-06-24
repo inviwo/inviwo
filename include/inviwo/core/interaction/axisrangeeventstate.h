@@ -32,6 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fmtutils.h>
 
+#include <cstdint>
+
 namespace inviwo {
 
 enum class AxisRangeEventState : std::uint8_t {
