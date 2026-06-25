@@ -81,9 +81,9 @@ InputSelector<Inport, Outport>::InputSelector()
     , outport_{"outport", "Selected input"_help}
     , selectedPort_{"selectedPort", "Select Inport", "Name of selected port"_help}
     , includeEmptyInport_{
-          "includeEmptyInport_", "Include 'Empty Inport' Option ",
-          R"(If enabled, another option is added to the inport selection which results in the 
-          outport to have no data.
+          "includeEmptyInport_", "Include 'None' Option ",
+          R"(If enabled, the option 'None' is added to the inport selection which results in the 
+          outport having no data.
 
           Use this to toggle between rendering or hiding a bounding box, for
           example.)"_unindentHelp,
@@ -104,7 +104,7 @@ InputSelector<Inport, Outport>::InputSelector()
             options.emplace_back(id, dispName, options.size());
         }
         if (includeEmptyInport_) {
-            options.emplace_back("emptyInport", "Empty Inport", emptyInportIndex);
+            options.emplace_back("emptyInport", "None", emptyInportIndex);
         }
         selectedPort_.replaceOptions(options);
         selectedPort_.setCurrentStateAsDefault();
