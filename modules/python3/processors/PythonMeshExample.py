@@ -44,11 +44,11 @@ def ngonLineMesh(n: int, tf: ivw.data.TransferFunction):
     mesh = ivw.data.Mesh(dt=ivw.data.DrawType.Lines, ct=ivw.data.ConnectivityType.Loop)
 
     # set the model transformation of the mesh
-    mesh.modelMatrix = ivw.glm.mat4(1)
+    mesh.modelMatrix = ivw.glm.dmat4(1)
     # alternatively, the model transformation can also be modified
     # with `mesh.basis`and `mesh.offset`
-    # mesh.basis = ivw.glm.mat3(1)
-    # mesh.offset = ivw.glm.vec3(0, 0, 0)
+    # mesh.basis = ivw.glm.dmat3(1)
+    # mesh.offset = ivw.glm.dvec3(0, 0, 0)
 
     angles = np.arange(n, dtype=np.float32) * np.pi * 2.0 / n
 
