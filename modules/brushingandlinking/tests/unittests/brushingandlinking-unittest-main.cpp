@@ -60,7 +60,6 @@ int main(int argc, char** argv) {
 
     app.processFront();
 
-
     int ret = -1;
     {
         ::testing::InitGoogleTest(&argc, argv);

@@ -33,12 +33,8 @@
 #include <inviwo/core/util/fmtutils.h>
 
 #include <array>
-#include <cstddef>
-#include <iosfwd>
-#include <memory>
-#include <ostream>
 #include <string_view>
-#include <utility>
+#include <istream>
 
 #include <flags/allow_flags.h>
 #include <flags/flags.h>
@@ -51,7 +47,7 @@ namespace inviwo {
  *
  * @see BrushingAndLinkingManager
  */
-enum class BrushingAction {
+enum class BrushingAction : int {
     Filter,     //!< filter the given indices and mark them as removed
     Select,     //!< replace the current selection of indices
     Highlight,  //!< replace the currently highlighted indices
@@ -60,7 +56,7 @@ enum class BrushingAction {
 constexpr std::array<BrushingAction, 3> BrushingActions{
     BrushingAction::Filter, BrushingAction::Select, BrushingAction::Highlight};
 
-enum class BrushingModification {
+enum class BrushingModification : int {
     Filtered = 0x01,
     Selected = 0x02,
     Highlighted = 0x04,
@@ -84,11 +80,6 @@ using BrushingModifications = flags::flags<BrushingModification>;
 
 IVW_MODULE_BRUSHINGANDLINKING_API std::string_view enumToStr(BrushingAction dt);
 IVW_MODULE_BRUSHINGANDLINKING_API std::string_view enumToStr(BrushingModification dt);
-IVW_MODULE_BRUSHINGANDLINKING_API std::ostream& operator<<(std::ostream& ss, BrushingAction action);
-IVW_MODULE_BRUSHINGANDLINKING_API std::ostream& operator<<(std::ostream& ss,
-                                                           BrushingModification action);
-IVW_MODULE_BRUSHINGANDLINKING_API std::ostream& operator<<(std::ostream& ss,
-                                                           BrushingModifications action);
 
 /**
  * Represents a target for brushing and linking actions.
@@ -103,16 +94,7 @@ struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTarget {
     BrushingTarget(const BrushingTarget& rhs) = default;
     BrushingTarget& operator=(const BrushingTarget& rhs) = default;
 
-    auto operator<=>(const BrushingTarget& other) const { return target_ <=> other.target_; }
-    bool operator==(const BrushingTarget& other) const {
-        // Can optimize equal since we know each target points to a unique str.
-        // And there will be no sub strings
-        return target_.data() == other.target_.data();
-    }
-    friend std::ostream& operator<<(std::ostream& os, BrushingTarget bt) {
-        os << bt.getString();
-        return os;
-    }
+    constexpr auto operator<=>(const BrushingTarget& other) const = default;
 
     IVW_MODULE_BRUSHINGANDLINKING_API friend std::istream& operator>>(std::istream& ss,
                                                                       BrushingTarget& bt);
@@ -131,8 +113,8 @@ private:
 }  // namespace inviwo
 
 template <>
-struct std::hash<typename inviwo::BrushingTarget> {
-    size_t operator()(const typename inviwo::BrushingTarget& val) const {
+struct std::hash<inviwo::BrushingTarget> {
+    size_t operator()(const inviwo::BrushingTarget& val) const {
         return std::hash<std::string_view>{}(val.getString());
     }
 };
