@@ -33,7 +33,7 @@
 #include <inviwo/core/util/sourcecontext.h>
 
 #include <algorithm>
-#include <ranges>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
