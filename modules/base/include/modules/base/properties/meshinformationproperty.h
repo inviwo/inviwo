@@ -83,6 +83,9 @@ public:
     DoubleVec3Property min_;
     DoubleVec3Property max_;
     DoubleVec3Property extent_;
+    DoubleMat4Property dataBoundingBox_;
+    DoubleMat4Property modelBoundingBox_;
+    DoubleMat4Property worldBoundingBox_;
 
     CompositeProperty buffers_;
     CompositeProperty indexBuffers_;
@@ -92,11 +95,13 @@ private:
 
     auto props() {
         return std::tie(defaultDrawType_, defaultConnectivity_, numBuffers_, numIndexBuffers_,
-                        modelTransform_, worldTransform_, basis_, offset_, min_, max_, extent_);
+                        modelTransform_, worldTransform_, basis_, offset_, min_, max_, extent_,
+                        dataBoundingBox_, modelBoundingBox_, worldBoundingBox_);
     }
     auto props() const {
         return std::tie(defaultDrawType_, defaultConnectivity_, numBuffers_, numIndexBuffers_,
-                        modelTransform_, worldTransform_, basis_, offset_, min_, max_, extent_);
+                        modelTransform_, worldTransform_, basis_, offset_, min_, max_, extent_,
+                        dataBoundingBox_, modelBoundingBox_, worldBoundingBox_);
     }
 
     auto compositeProps() {

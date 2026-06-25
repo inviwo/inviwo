@@ -70,10 +70,6 @@ MeshInformation::MeshInformation()
     addPort(mesh_);
     addProperty(meshInfo_);
     addProperty(metaDataProperty_);
-
-    meshInfo_.setSerializationMode(PropertySerializationMode::None);
-
-    setAllPropertiesCurrentStateAsDefault();
 }
 
 void MeshInformation::process() {

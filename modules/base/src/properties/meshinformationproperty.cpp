@@ -61,6 +61,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <glm/gtx/transform.hpp>
 
 namespace inviwo {
 namespace {
@@ -126,6 +127,12 @@ MeshInformationProperty::MeshInformationProperty(std::string_view identifier,
                   .setInc(dvec3{0.001})
                   .set(InvalidationLevel::Valid)
                   .set(PropertySemantics::Text)}
+    , dataBoundingBox_{"dataBoundingBox", "Data Bounding Box",
+                       util::ordinalMatrix(dmat4{1.0}).setInc(0.001).set(InvalidationLevel::Valid)}
+    , modelBoundingBox_{"modelBoundingBox", "Model Bounding Box",
+                        util::ordinalMatrix(dmat4{1.0}).setInc(0.001).set(InvalidationLevel::Valid)}
+    , worldBoundingBox_{"worldBoundingBox", "World Bounding Box",
+                        util::ordinalMatrix(dmat4{1.0}).setInc(0.001).set(InvalidationLevel::Valid)}
 
     , buffers_{"buffers", "Buffers"}
     , indexBuffers_{"indexBuffers", "Index Buffers"} {
@@ -134,13 +141,13 @@ MeshInformationProperty::MeshInformationProperty(std::string_view identifier,
         [](auto& e) {
             e.setReadOnly(true);
             e.setSerializationMode(PropertySerializationMode::None);
-            e.setCurrentStateAsDefault();
         },
         props());
 
     defaultMeshInfo_.addProperties(defaultDrawType_, defaultConnectivity_);
     transformations_.addProperties(modelTransform_, worldTransform_, basis_, offset_);
-    meshProperties_.addProperties(min_, max_, extent_);
+    meshProperties_.addProperties(min_, max_, extent_, dataBoundingBox_, modelBoundingBox_,
+                                  worldBoundingBox_);
     addProperties(defaultMeshInfo_, numBuffers_, numIndexBuffers_, transformations_,
                   meshProperties_, buffers_, indexBuffers_);
 
@@ -149,12 +156,9 @@ MeshInformationProperty::MeshInformationProperty(std::string_view identifier,
         transformations_.addProperty(transform);
     }
 
-    util::for_each_in_tuple(
-        [](auto& e) {
-            e.setCollapsed(true);
-            e.setCurrentStateAsDefault();
-        },
-        compositeProps());
+    util::for_each_in_tuple([](auto& e) { e.setCollapsed(true); }, compositeProps());
+
+    CompositeProperty::setAllPropertiesCurrentStateAsDefault();
 }
 
 MeshInformationProperty::MeshInformationProperty(const MeshInformationProperty& rhs)
@@ -174,12 +178,16 @@ MeshInformationProperty::MeshInformationProperty(const MeshInformationProperty& 
     , min_(rhs.min_)
     , max_(rhs.max_)
     , extent_(rhs.extent_)
+    , dataBoundingBox_(rhs.dataBoundingBox_)
+    , modelBoundingBox_(rhs.modelBoundingBox_)
+    , worldBoundingBox_(rhs.worldBoundingBox_)
     , buffers_(rhs.buffers_)
     , indexBuffers_(rhs.indexBuffers_) {
 
     defaultMeshInfo_.addProperties(defaultDrawType_, defaultConnectivity_);
     transformations_.addProperties(modelTransform_, worldTransform_, basis_, offset_);
-    meshProperties_.addProperties(min_, max_, extent_);
+    meshProperties_.addProperties(min_, max_, extent_, dataBoundingBox_, modelBoundingBox_,
+                                  worldBoundingBox_);
     addProperties(defaultMeshInfo_, numBuffers_, numIndexBuffers_, transformations_,
                   meshProperties_, buffers_, indexBuffers_);
     for (auto& transform : spaceTransforms_) {
@@ -191,7 +199,7 @@ MeshInformationProperty* MeshInformationProperty::clone() const {
     return new MeshInformationProperty(*this);
 }
 
-namespace detail {
+namespace {
 
 template <typename T>
 void allocateBufferProps(CompositeProperty* composite, const std::string& nameprefix,
@@ -207,7 +215,7 @@ void allocateBufferProps(CompositeProperty* composite, const std::string& namepr
     }
 }
 
-}  // namespace detail
+}  // namespace
 
 void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
     const auto meshInfo = mesh.getDefaultMeshInfo();
@@ -235,22 +243,32 @@ void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
     if (meshProperties_.isChecked()) {
         auto [buffer, location] = mesh.findBuffer(BufferType::PositionAttrib);
         if (buffer) {
-            auto minmax = util::bufferMinMax(buffer);
-            min_.set(minmax.first);
-            max_.set(minmax.second);
-            extent_.set(minmax.second - minmax.first);
+            auto [min, max] = util::bufferMinMax(buffer);
+            min_.set(min);
+            max_.set(max);
+            extent_.set(max - min);
+
+            auto bbox{glm::scale(dvec3{max} - dvec3{min})};
+            bbox[3] = dvec4{dvec3{min}, 1.0};
+
+            dataBoundingBox_.set(bbox);
+            modelBoundingBox_.set(trans.getDataToModelMatrix() * bbox);
+            worldBoundingBox_.set(trans.getDataToWorldMatrix() * bbox);
         } else {
             min_.resetToDefaultState();
             max_.resetToDefaultState();
             extent_.resetToDefaultState();
+            dataBoundingBox_.resetToDefaultState();
+            modelBoundingBox_.resetToDefaultState();
+            worldBoundingBox_.resetToDefaultState();
         }
     }
 
     // update buffer information
-    detail::allocateBufferProps<MeshBufferInformationProperty>(&buffers_, "meshbuffer", numBuffers);
+    allocateBufferProps<MeshBufferInformationProperty>(&buffers_, "meshbuffer", numBuffers);
     const auto numIndexBuffers = std::min(mesh.getNumberOfIndices(), maxShownIndexBuffers_);
-    detail::allocateBufferProps<IndexBufferInformationProperty>(&indexBuffers_, "indexbuffer",
-                                                                numIndexBuffers);
+    allocateBufferProps<IndexBufferInformationProperty>(&indexBuffers_, "indexbuffer",
+                                                        numIndexBuffers);
 
     auto updateBufferProperty = [](auto* prop, const auto& elem, const std::string& name) {
         prop->setDisplayName(name);
