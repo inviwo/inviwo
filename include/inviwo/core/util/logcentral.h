@@ -190,12 +190,13 @@ inline void report(Logger& logger, LogLevel level, SourceContext context, fmt::s
 template <typename... Args>
 inline void report(Logger& logger, LogLevel level, SourceContext context,
                    fmt::format_string<Args...> format, Args&&... args) {
-    ::inviwo::log::detail::report(logger, level, context, format, fmt::make_format_args(args...));
+    ::inviwo::log::detail::report(logger, level, context, format.get(),
+                                  fmt::make_format_args(args...));
 }
 template <typename... Args>
 inline void report(LogLevel level, SourceContext context, fmt::format_string<Args...> format,
                    Args&&... args) {
-    ::inviwo::log::detail::report(level, context, format, fmt::make_format_args(args...));
+    ::inviwo::log::detail::report(level, context, format.get(), fmt::make_format_args(args...));
 }
 
 inline void exception(const Exception& e) {
@@ -203,7 +204,7 @@ inline void exception(const Exception& e) {
 }
 template <typename... Args>
 inline void exception(const Exception& e, fmt::format_string<Args...> format, Args&&... args) {
-    ::inviwo::log::detail::report(LogLevel::Error, e.getContext(), format,
+    ::inviwo::log::detail::report(LogLevel::Error, e.getContext(), format.get(),
                                   fmt::make_format_args(args...));
 }
 inline void exception(const std::exception& e,
@@ -222,11 +223,11 @@ template <typename... Args>
 struct message {
     message(LogLevel level, fmt::format_string<Args...> format, Args&&... args,
             SourceContext context = std::source_location::current()) {
-        ::inviwo::log::detail::report(level, context, format, fmt::make_format_args(args...));
+        ::inviwo::log::detail::report(level, context, format.get(), fmt::make_format_args(args...));
     }
     message(Logger& logger, LogLevel level, fmt::format_string<Args...> format, Args&&... args,
             SourceContext context = std::source_location::current()) {
-        ::inviwo::log::detail::report(logger, level, context, format,
+        ::inviwo::log::detail::report(logger, level, context, format.get(),
                                       fmt::make_format_args(args...));
     }
 };
@@ -239,7 +240,7 @@ template <typename... Args>
 struct info {
     explicit info(fmt::format_string<Args...> format, Args&&... args,
                   SourceContext context = std::source_location::current()) {
-        ::inviwo::log::detail::report(LogLevel::Info, context, format,
+        ::inviwo::log::detail::report(LogLevel::Info, context, format.get(),
                                       fmt::make_format_args(args...));
     }
 };
@@ -250,7 +251,7 @@ template <typename... Args>
 struct warn {
     explicit warn(fmt::format_string<Args...> format, Args&&... args,
                   SourceContext context = std::source_location::current()) {
-        ::inviwo::log::detail::report(LogLevel::Warn, context, format,
+        ::inviwo::log::detail::report(LogLevel::Warn, context, format.get(),
                                       fmt::make_format_args(args...));
     }
 };
@@ -261,7 +262,7 @@ template <typename... Args>
 struct error {
     explicit error(fmt::format_string<Args...> format, Args&&... args,
                    SourceContext context = std::source_location::current()) {
-        ::inviwo::log::detail::report(LogLevel::Error, context, format,
+        ::inviwo::log::detail::report(LogLevel::Error, context, format.get(),
                                       fmt::make_format_args(args...));
     }
 };

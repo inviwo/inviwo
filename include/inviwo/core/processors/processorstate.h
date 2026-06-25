@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fmtutils.h>
 #include <iosfwd>
+#include <cstdint>
 
 namespace inviwo {
 
