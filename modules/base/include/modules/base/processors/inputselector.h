@@ -38,9 +38,10 @@
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/valuewrapper.h>
 #include <inviwo/core/util/assertion.h>
-#include <inviwo/core/network/processornetwork.h>    // IWYU pragma: keep
+#include <inviwo/core/network/processornetwork.h>  // IWYU pragma: keep
 
 #include <string_view>
 #include <vector>
@@ -70,20 +71,30 @@ private:
     OutportType outport_;
 
     OptionPropertySize_t selectedPort_;
+    BoolProperty includeEmptyInport_;
 };
 
 template <typename Inport, typename Outport>
 InputSelector<Inport, Outport>::InputSelector()
-    : Processor()
-    , inport_("inport", "All available inputs"_help)
-    , outport_("outport", "Selected input"_help)
-    , selectedPort_("selectedPort", "Select Inport", "Name of selected port"_help) {
+    : Processor{}
+    , inport_{"inport", "All available inputs"_help}
+    , outport_{"outport", "Selected input"_help}
+    , selectedPort_{"selectedPort", "Select Inport", "Name of selected port"_help}
+    , includeEmptyInport_{
+          "includeEmptyInport_", "Include 'Empty Inport' Option ",
+          R"(If enabled, another option is added to the inport selection which results in the 
+          outport to have no data.
+
+          Use this to toggle between rendering or hiding a bounding box, for
+          example.)"_unindentHelp,
+          false, InvalidationLevel::Valid} {
     portSettings();
 
-    addPort(inport_);
-    addPort(outport_);
+    addPorts(inport_, outport_);
 
-    auto updateOptions = [this]() {
+    constexpr size_t emptyInportIndex = std::numeric_limits<size_t>::max();
+
+    auto updateOptions = [this, emptyInportIndex]() {
         if (getNetwork()->isDeserializing()) return;
         std::vector<OptionPropertySize_tOption> options;
 
@@ -92,19 +103,26 @@ InputSelector<Inport, Outport>::InputSelector()
             const auto dispName = port->getProcessor()->getDisplayName();
             options.emplace_back(id, dispName, options.size());
         }
+        if (includeEmptyInport_) {
+            options.emplace_back("emptyInport", "Empty Inport", emptyInportIndex);
+        }
         selectedPort_.replaceOptions(options);
         selectedPort_.setCurrentStateAsDefault();
     };
 
     inport_.onConnect([updateOptions]() { updateOptions(); });
     inport_.onDisconnect([updateOptions]() { updateOptions(); });
+    includeEmptyInport_.onChange([updateOptions]() { updateOptions(); });
 
-    inport_.setIsReadyUpdater([this]() {
-        return selectedPort_.size() > 0 && inport_.getConnectedOutports().size() > *selectedPort_ &&
+    inport_.setIsReadyUpdater([this, emptyInportIndex]() {
+        if (!selectedPort_.empty() && *selectedPort_ == emptyInportIndex) {
+            return true;
+        }
+        return !selectedPort_.empty() && inport_.getConnectedOutports().size() > *selectedPort_ &&
                inport_.getConnectedOutports()[*selectedPort_]->isReady();
     });
 
-    addProperty(selectedPort_);
+    addProperties(selectedPort_, includeEmptyInport_);
 
     selectedPort_.setSerializationMode(PropertySerializationMode::All);
     setAllPropertiesCurrentStateAsDefault();
@@ -121,7 +139,15 @@ void InputSelector<Inport, Outport>::process() {
     if (selectedPort_.get() < data.size()) {
         outport_.setData(data[selectedPort_.get()]);
     } else {
-        outport_.setData(data.back());
+        if (includeEmptyInport_) {
+            if constexpr (std::is_same_v<Outport, ImageOutport>) {
+                outport_.setData(std::shared_ptr<const Image>{});
+            } else {
+                outport_.setData(nullptr);
+            }
+        } else {
+            outport_.setData(data.back());
+        }
     }
 }
 
