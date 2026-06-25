@@ -1,10 +1,35 @@
-
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2026 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
 #include <modules/base/processors/meshsplatprocessor.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/logcentral.h>
 #include <fmt/base.h>
 
@@ -48,7 +73,7 @@ MeshSplatProcessor::MeshSplatProcessor()
     , volume_{"volume", "Volume Settings"}
     , volumeDims_{"volumeDims", "Volume Dimensions",
                   util::ordinalCount(size3_t{64}, size3_t(512)).setMin(size3_t(1))}
-    , basis_{"basis", "Basis", util::ordinalMatrix(mat4{1.0f})}
+    , basis_{"basis", "Basis", util::ordinalMatrix(mat4{1.0f}).setInc(0.00001)}
     , range_{"range", "Data range"}
     , valueName{"valueName", "Value name", ""}
     , valueUnit{"valueUnit", "Value unit", ""} {
@@ -66,6 +91,7 @@ void MeshSplatProcessor::process() {
     const util::SplatSettings settings{
         .dimensions = volumeDims_.get(),
         .modelMatrix = basis_.get(),
+        .pointTransform = mesh->getCoordinateTransformer().getDataToWorldMatrix(),
         .axes = mesh->axes,
         .valueAxis =
             Axis{.name = valueName.get(), .unit = units::unit_from_string(valueUnit.get())},

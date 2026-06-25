@@ -59,8 +59,9 @@ enum class SplatKernel : std::uint8_t {
 IVW_MODULE_BASE_API std::string_view enumToStr(SplatKernel k);
 
 struct IVW_MODULE_BASE_API SplatSettings {
-    size3_t dimensions{64};  //!< Output volume dimensions (voxels)
-    mat4 modelMatrix{1.0f};  //!< basis (columns 0..2) and offset (column 3) in world space
+    size3_t dimensions{64};     //!< Output volume dimensions (voxels)
+    mat4 modelMatrix{1.0f};     //!< basis (columns 0..2) and offset (column 3) in world space
+    mat4 pointTransform{1.0f};  //!< applied to each position before splatting, e.g. data to world
     std::array<Axis, 3> axes = util::defaultAxes<3>();
     Axis valueAxis = {};
     SplatKernel kernel{SplatKernel::Gaussian};
@@ -71,31 +72,31 @@ struct IVW_MODULE_BASE_API SplatSettings {
 };
 
 /**
- * Splat a set of world-space points into a scalar volume using a chosen kernel.
+ * Splat a set of points into a scalar volume using a chosen kernel.
  *
  * For each point @c p_i with size @c s_i the volume accumulates the kernel evaluated at the
  * world-space distance between the point and each voxel center inside the per-point footprint.
- * Points whose footprint lies entirely outside the volume
- * are skipped.
+ * Points whose footprint lies entirely outside the volume are skipped.
  *
  * The work is parallelized by splitting the output volume into a number of disjoint Z-slabs. Each
  * worker iterates over all points but only writes voxels inside its slab, so no atomics or locks
  * are needed.
  *
- * @param worldPositions point positions in world space
+ * @param positions      point positions, will be transformed with @c settings.pointTransform before
+ *                       calculating distances
  * @param radii          per-point bandwidth in world units; if empty, @c defaultSigma is used for
- *                       every point. Must otherwise have the same size as @p worldPositions.
+ *                       every point. Must otherwise have the same size as @p positions.
  * @param weights        per-point weights to accumulate; if empty, all points are weighted equally.
- *                       Must otherwise have the same size as @p worldPositions.
+ *                       Must otherwise have the same size as @p positions.
  * @param settings       output configuration, kernel selection and truncation
  * @return a single-channel float32 @c Volume with model matrix matching @c settings.modelMatrix
  *
- * @throws Exception if @p radii is non-empty and its size differs from @p worldPositions, or if
- *         @p weights is non-empty and its size differs from @p worldPositions, or if
+ * @throws Exception if @p radii is non-empty and its size differs from @p positions, or if
+ *         @p weights is non-empty and its size differs from @p positions, or if
  *         @c settings.dimensions has a zero component, or if @c settings.defaultSigma /
  *         @c settings.cutoff are non-positive.
  */
-IVW_MODULE_BASE_API std::shared_ptr<Volume> splat(std::span<const vec3> worldPositions,
+IVW_MODULE_BASE_API std::shared_ptr<Volume> splat(std::span<const vec3> positions,
                                                   std::span<const float> radii,
                                                   std::span<const float> weights,
                                                   const SplatSettings& settings);
@@ -104,7 +105,7 @@ IVW_MODULE_BASE_API
 std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
           std::vector<std::function<vec2(const std::function<void(double)>&,
                                          const std::function<bool()>&)>>>
-splatJobs(std::span<const vec3> worldPositions, std::span<const float> sizes,
+splatJobs(std::span<const vec3> positions, std::span<const float> sizes,
           std::span<const float> weights, const SplatSettings& settings);
 
 }  // namespace util
