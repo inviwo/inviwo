@@ -122,7 +122,7 @@ LineRasterizer::LineRasterizer()
                    }}
     , tfLookup_{} {
 
-    addPort(inport_);
+    addPort(inport_).setOptional(true);
 
     addProperties(forceOpaque_, lineSettings_);
 

@@ -140,8 +140,9 @@ MeshRasterizer::MeshRasterizer()
     , faceSettings_{true, false}
     , shader_{"fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag",
               Shader::Build::No} {
+
     // input and output ports
-    addPort(inport_);
+    addPort(inport_).setOptional(true);
 
     addProperties(forceOpaque_, drawSilhouette_, silhouetteColor_, normalSource_,
                   normalComputationMode_, alphaSettings_, edgeSettings_, faceSettings_[0].show_,
@@ -440,6 +441,10 @@ void MeshRasterizer::setUniforms(Shader& shader) {
 void MeshRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
     if (inport_.isChanged() || drawSilhouette_.isModified()) {
         updateMeshes();
+    }
+
+    if (enhancedMeshes_.empty()) {
+        return;
     }
 
     if (!faceSettings_[0].show_ && !faceSettings_[1].show_) {

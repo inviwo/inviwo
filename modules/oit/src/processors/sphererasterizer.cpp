@@ -131,7 +131,7 @@ SphereRasterizer::SphereRasterizer()
                    configureShader(shader);
                }} {
 
-    addPort(inport_);
+    addPort(inport_).setOptional(true);
     addPort(texture_.inport, "Textures").setOptional(true);
     addPort(bnl_.inport);
     addPort(labels_.strings);
@@ -164,19 +164,18 @@ UseFragmentList SphereRasterizer::usesFragmentLists() const {
 }
 
 void SphereRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
-
     bnl_.update();
     labels_.update();
 
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, usesFragmentLists() == UseFragmentList::No);
+    const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, usesFragmentLists() == UseFragmentList::No);
 
     TextureUnitContainer cont;
     utilgl::bind(cont, bnl_, labels_, config_, texture_);
 
     for (auto mesh : inport_) {
         auto& shader = shaders_.getShader(*mesh);
-        utilgl::Activate activate{&shader};
+        const utilgl::Activate activate{&shader};
 
         setUniforms(shader);
         shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / imageSize.x, 2.0f / imageSize.y));

@@ -103,8 +103,9 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , shader_{"meshrendering.vert", "meshrendering.frag", Shader::Build::No}
     , hadTextureData_{false} {
 
-    addPorts(inport_, imageInport_, outport_);
-    imageInport_.setOptional(true);
+    addPort(inport_).setOptional(true);
+    addPort(imageInport_).setOptional(true);
+    addPort(outport_);
     addPort(texture_.inport, "Textures").setOptional(true);
 
     addProperties(camera_, meshProperties_, lightingProperty_, trackball_, layers_);

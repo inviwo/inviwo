@@ -63,8 +63,9 @@ LayerRenderer::LayerRenderer()
     , shader_{"layerrendering.vert", "layerrendering.frag", Shader::Build::No}
     , mesh_{DrawType::Triangles, ConnectivityType::Strip} {
 
-    background_.setOptional(true);
-    addPorts(inport_, background_, outport_);
+    addPort(inport_).setOptional(true);
+    addPort(background_).setOptional(true);
+    addPort(outport_);
     addProperties(camera_, trackball_);
 
     auto verticesBuffer =
@@ -73,7 +74,8 @@ LayerRenderer::LayerRenderer()
 
     mesh_.addBuffer(BufferType::PositionAttrib, verticesBuffer);
     mesh_.addBuffer(BufferType::TexCoordAttrib, verticesBuffer);
-    mesh_.addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
+    mesh_.addIndices(Mesh::MeshInfo{.dt = DrawType::Triangles, .ct = ConnectivityType::Strip},
+                     indices_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -87,14 +89,14 @@ void LayerRenderer::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, background_);
     shader_.activate();
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-    utilgl::CullFaceState culling(GL_NONE);
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    const utilgl::CullFaceState culling(GL_NONE);
+    const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     utilgl::setUniforms(shader_, camera_);
     MeshDrawerGL::DrawObject drawer{mesh_.getRepresentation<MeshGL>(), mesh_.getDefaultMeshInfo()};
 
-    TextureUnit unit;
+    const TextureUnit unit;
     shader_.setUniform("colorTex", unit);
 
     for (const auto& layer : inport_) {

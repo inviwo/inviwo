@@ -77,7 +77,7 @@ LineRendererProcessor::LineRendererProcessor()
     , bnl_{}
     , lineRenderer_{{bnl_.getRequirement()}} {
 
-    addPort(inport_);
+    addPort(inport_).setOptional(true);
     addPort(imageInport_).setOptional(true);
     addPort(bnl_.inport);
     addPort(outport_);
