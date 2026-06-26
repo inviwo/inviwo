@@ -30,17 +30,13 @@
 #include <modules/brushingandlinking/datastructures/brushingaction.h>
 
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/sourcecontext.h>
 
 #include <algorithm>
-#include <iostream>
+#include <memory>
 #include <mutex>
 #include <string>
-#include <type_traits>
 #include <vector>
-
-#include <flags/iterator.h>
 
 namespace inviwo {
 
@@ -50,10 +46,10 @@ const BrushingTarget BrushingTarget::Column("column");
 std::string_view BrushingTarget::findOrAdd(std::string_view target) {
     static std::mutex mutex;
     static std::vector<std::unique_ptr<const std::string>> targets{};
-    std::scoped_lock lock{mutex};
-    const auto it =
-        std::find_if(targets.begin(), targets.end(),
-                     [&](const std::unique_ptr<const std::string>& ptr) { return *ptr == target; });
+
+    const std::scoped_lock lock{mutex};
+    const auto it = std::ranges::find_if(
+        targets, [&](const std::unique_ptr<const std::string>& ptr) { return *ptr == target; });
     if (it == targets.end()) {
         return std::string_view{*targets.emplace_back(std::make_unique<const std::string>(target))};
     } else {
@@ -63,11 +59,12 @@ std::string_view BrushingTarget::findOrAdd(std::string_view target) {
 
 std::string_view enumToStr(BrushingAction action) {
     switch (action) {
-        case BrushingAction::Filter:
+        using enum BrushingAction;
+        case Filter:
             return "Filter";
-        case BrushingAction::Select:
+        case Select:
             return "Select";
-        case BrushingAction::Highlight:
+        case Highlight:
             return "Highlight";
     }
     throw Exception(SourceContext{}, "Found invalid BrushingAction enum value '{}'",
@@ -76,26 +73,16 @@ std::string_view enumToStr(BrushingAction action) {
 
 std::string_view enumToStr(BrushingModification bm) {
     switch (bm) {
-        case BrushingModification::Filtered:
+        using enum BrushingModification;
+        case Filtered:
             return "Filtered";
-        case BrushingModification::Selected:
+        case Selected:
             return "Selected";
-        case BrushingModification::Highlighted:
+        case Highlighted:
             return "Highlighted";
     }
     throw Exception(SourceContext{}, "Found invalid BrushingModification enum value '{}'",
                     static_cast<int>(bm));
-}
-
-std::ostream& operator<<(std::ostream& ss, BrushingAction action) {
-    return ss << enumToStr(action);
-}
-std::ostream& operator<<(std::ostream& ss, BrushingModification action) {
-    return ss << enumToStr(action);
-}
-std::ostream& operator<<(std::ostream& ss, BrushingModifications action) {
-    std::copy(action.begin(), action.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
 }
 
 std::istream& operator>>(std::istream& ss, BrushingTarget& bt) {

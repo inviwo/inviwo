@@ -26,7 +26,8 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add Unittests
 set(TEST_FILES
-	#${CMAKE_CURRENT_SOURCE_DIR}/tests/brushingandlinking-test.cpp
+    tests/unittests/brushingandlinking-unittest-main.cpp
+    tests/unittests/bnl-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
