@@ -55,7 +55,7 @@
 #include <functional>
 #include <tuple>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>

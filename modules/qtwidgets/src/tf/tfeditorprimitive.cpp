@@ -54,7 +54,7 @@
 #include <QRectF>
 #include <QString>
 #include <Qt>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/vec4.hpp>
 
 class QGraphicsSceneMouseEvent;

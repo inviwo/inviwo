@@ -59,7 +59,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/vec2.hpp>
 
 namespace inviwo {

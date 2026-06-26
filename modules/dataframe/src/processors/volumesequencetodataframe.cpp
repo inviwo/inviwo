@@ -71,7 +71,7 @@
 #include <unordered_set>
 #include <utility>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/gtc/type_precision.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec2.hpp>

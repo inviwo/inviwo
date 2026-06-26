@@ -75,7 +75,7 @@
 #include <unordered_set>
 #include <numbers>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/common.hpp>
 #include <glm/geometric.hpp>
 #include <glm/mat4x4.hpp>

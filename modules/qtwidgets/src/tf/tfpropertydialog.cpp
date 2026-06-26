@@ -97,7 +97,7 @@
 #include <Qt>
 #include <QMainWindow>
 #include <QMimeData>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/common.hpp>
 #include <glm/vec2.hpp>
 

@@ -81,7 +81,7 @@
 #include <QMenu>
 #include <Qt>
 #include <QtGlobal>
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 class QGraphicsSceneDragDropEvent;
 

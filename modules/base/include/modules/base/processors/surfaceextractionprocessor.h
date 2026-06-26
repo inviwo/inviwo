@@ -52,7 +52,7 @@
 #include <string>
 #include <string_view>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/fwd.hpp>
 #include <glm/vec3.hpp>
 

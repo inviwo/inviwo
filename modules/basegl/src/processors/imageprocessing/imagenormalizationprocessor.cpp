@@ -56,7 +56,7 @@
 #include <unordered_set>
 #include <utility>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <glm/common.hpp>
 #include <glm/gtx/io.hpp>

@@ -38,7 +38,7 @@
 #include <inviwo/core/util/safecstr.h>
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo {
 

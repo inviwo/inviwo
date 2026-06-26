@@ -55,7 +55,7 @@
 #include <unordered_set>
 
 #include <glm/fwd.hpp>
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo {
 

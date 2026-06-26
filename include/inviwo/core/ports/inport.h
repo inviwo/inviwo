@@ -107,7 +107,9 @@ public:
      * disconnected, or has changed its validation level. Note it is only called if process is also
      * going to be called.
      */
+    [[deprecated("use `if (inport.isChanged()) {...}` inside Processor::process instead")]]
     const BaseCallBack* onChange(std::function<void()> lambda);
+    [[deprecated("use `if (inport.isChanged()) {...}` inside Processor::process instead")]]
     std::shared_ptr<std::function<void()>> onChangeScoped(std::function<void()> lambda);
 
     const BaseCallBack* onConnect(std::function<void()> lambda);

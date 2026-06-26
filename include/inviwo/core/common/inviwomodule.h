@@ -61,7 +61,7 @@
 #include <inviwo/core/util/demangle.h>
 
 #include <type_traits>
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 #include <vector>
 #include <memory>

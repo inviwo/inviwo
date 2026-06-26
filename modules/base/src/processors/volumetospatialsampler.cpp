@@ -44,7 +44,7 @@
 #include <memory>
 #include <string_view>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/common.hpp>
 
 namespace inviwo {

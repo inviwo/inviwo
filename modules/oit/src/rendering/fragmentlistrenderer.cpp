@@ -48,7 +48,7 @@
 #include <string_view>
 #include <vector>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/ostream.h>
 #include <glm/detail/qualifier.hpp>
 #include <glm/vec2.hpp>

@@ -86,7 +86,7 @@
 #include <utility>
 #include <vector>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/common.hpp>
 
 namespace inviwo {

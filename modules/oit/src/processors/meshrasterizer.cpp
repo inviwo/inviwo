@@ -72,7 +72,7 @@
 #include <utility>
 #include <variant>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>

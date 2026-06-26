@@ -38,7 +38,7 @@
 #include <string>
 #include <string_view>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo {
 class Property;

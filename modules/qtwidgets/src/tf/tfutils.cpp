@@ -84,7 +84,7 @@
 #include <QString>
 #include <QStringList>
 #include <QWidget>
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo::util {
 

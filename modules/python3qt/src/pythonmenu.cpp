@@ -61,7 +61,7 @@
 #include <QUrl>
 #include <Qt>
 #include <QMenuBar>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/ostream.h>
 #include <fmt/std.h>
 

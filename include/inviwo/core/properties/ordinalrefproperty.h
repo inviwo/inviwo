@@ -43,7 +43,7 @@
 #include <string>
 #include <functional>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <ostream>
 #include <utility>
 

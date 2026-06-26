@@ -46,7 +46,7 @@
 #include <type_traits>
 #include <unordered_set>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/printf.h>
 #include <glm/common.hpp>
 #include <glm/ext/scalar_constants.hpp>

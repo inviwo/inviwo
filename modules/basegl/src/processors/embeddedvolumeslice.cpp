@@ -73,7 +73,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/common.hpp>
 #include <glm/geometric.hpp>
 #include <glm/gtx/io.hpp>

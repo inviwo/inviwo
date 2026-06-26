@@ -94,7 +94,7 @@
 #include <vector>
 
 #include <QApplication>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/common.hpp>
 #include <glm/detail/type_quat.hpp>
 #include <glm/ext/quaternion_double.hpp>

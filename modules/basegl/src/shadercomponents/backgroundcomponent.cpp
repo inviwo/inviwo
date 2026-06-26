@@ -40,7 +40,7 @@
 #include <functional>
 #include <string_view>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 
 namespace inviwo {

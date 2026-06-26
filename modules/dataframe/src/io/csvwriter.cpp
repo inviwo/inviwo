@@ -49,7 +49,7 @@
 #include <unordered_set>
 #include <utility>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/gtx/io.hpp>
 
 namespace inviwo {

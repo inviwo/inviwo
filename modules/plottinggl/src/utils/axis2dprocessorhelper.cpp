@@ -35,7 +35,7 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/glm.h>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <algorithm>
 #include <ranges>
 

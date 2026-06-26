@@ -46,7 +46,7 @@
 #include <memory>
 #include <type_traits>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <glm/common.hpp>
 #include <glm/vec2.hpp>

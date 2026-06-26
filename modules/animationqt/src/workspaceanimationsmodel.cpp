@@ -41,7 +41,7 @@
 
 #include <QFlags>
 #include <QObject>
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 class QModelIndex;
 

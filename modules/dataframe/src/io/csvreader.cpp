@@ -68,7 +68,7 @@
 #include <variant>
 #include <cerrno>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/std.h>
 #include <glm/gtc/type_ptr.hpp>
 

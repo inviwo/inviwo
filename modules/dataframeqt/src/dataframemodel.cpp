@@ -56,7 +56,7 @@
 #include <QMetaType>
 #include <QString>
 #include <QtGlobal>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/gtx/io.hpp>
 #include <glm/vec2.hpp>
 

@@ -68,7 +68,7 @@
 #include <QTextDocument>
 #include <QWidget>
 #include <Qt>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
