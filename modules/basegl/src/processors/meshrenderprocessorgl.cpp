@@ -182,7 +182,7 @@ void MeshRenderProcessorGL::process() {
     TextureUnitContainer cont;
     utilgl::bind(cont, texture_);
     utilgl::setUniforms(shader_, camera_, lightingProperty_, overrideColor_, texture_);
-    for (auto mesh : inport_) {
+    for (const auto& mesh : inport_) {
         utilgl::setShaderUniforms(shader_, *mesh, "geometry");
         shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
         MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),

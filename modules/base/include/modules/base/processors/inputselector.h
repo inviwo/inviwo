@@ -95,7 +95,9 @@ InputSelector<Inport, Outport>::InputSelector()
     constexpr size_t emptyInportIndex = std::numeric_limits<size_t>::max();
 
     auto updateOptions = [this, emptyInportIndex]() {
-        if (getNetwork()->isDeserializing()) return;
+        if (const auto* network = getNetwork(); network && network->isDeserializing()) {
+            return;
+        }
         std::vector<OptionPropertySize_tOption> options;
 
         for (auto port : inport_.getConnectedOutports()) {
