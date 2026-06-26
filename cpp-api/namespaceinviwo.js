@@ -1523,10 +1523,10 @@ var namespaceinviwo =
     [ "ScopedClockGL", "namespaceinviwo.html#aa9bc4adec8778181ef760044d0d2688a", null ],
     [ "SphereMesh", "group__typedmesh.html#ga2d8fc4330041da81252febcd0a8c0dac", null ],
     [ "VolumeSequenceSource", "namespaceinviwo.html#a9ad6a9b496de9ef5e64d4eb6e07dbe9c", null ],
-    [ "BrushingAction", "namespaceinviwo.html#a0780518930e4f82763044068321c57f4", [
-      [ "Filter", "namespaceinviwo.html#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a", null ],
-      [ "Select", "namespaceinviwo.html#a0780518930e4f82763044068321c57f4ae0626222614bdee31951d84c64e5e9ff", null ],
-      [ "Highlight", "namespaceinviwo.html#a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1", null ]
+    [ "BrushingAction", "namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6d", [
+      [ "Filter", "namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a", null ],
+      [ "Select", "namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6dae0626222614bdee31951d84c64e5e9ff", null ],
+      [ "Highlight", "namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6da0b90582f4589d84be89f5b847d4d1ed1", null ]
     ] ],
     [ "ColormapType", "namespaceinviwo.html#ab7ac236629662fa49eccea8ec0d83b60", null ],
     [ "ConstraintBehavior", "namespaceinviwo.html#ae77b6d9d2b2e55861c15fff3dc8854fb", [

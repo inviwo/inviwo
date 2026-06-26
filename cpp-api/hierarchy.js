@@ -1363,6 +1363,7 @@ var hierarchy =
     [ "CefMessageRouterBrowserSide::Handler", null, [
       [ "inviwo::NetWorkCefSynchronizer", "classinviwo_1_1NetWorkCefSynchronizer.html", null ]
     ] ],
+    [ "std::hash&lt; inviwo::BrushingTarget &gt;", "structstd_1_1hash_3_01inviwo_1_1BrushingTarget_01_4.html", null ],
     [ "std::hash&lt; inviwo::FileExtension &gt;", "structstd_1_1hash_3_01inviwo_1_1FileExtension_01_4.html", null ],
     [ "std::hash&lt; inviwo::PortConnection &gt;", "structstd_1_1hash_3_01inviwo_1_1PortConnection_01_4.html", null ],
     [ "std::hash&lt; inviwo::ProcessorPair &gt;", "structstd_1_1hash_3_01inviwo_1_1ProcessorPair_01_4.html", null ],
@@ -1373,7 +1374,6 @@ var hierarchy =
     [ "std::hash&lt; inviwo::ShaderType &gt;", "structstd_1_1hash_3_01inviwo_1_1ShaderType_01_4.html", null ],
     [ "std::hash&lt; std::pair&lt; T, U &gt; &gt;", "structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html", null ],
     [ "std::hash&lt; std::tuple&lt; TT... &gt; &gt;", "structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4.html", null ],
-    [ "std::hash&lt; typename inviwo::BrushingTarget &gt;", "structstd_1_1hash_3_01typename_01inviwo_1_1BrushingTarget_01_4.html", null ],
     [ "std::hash&lt; typename inviwo::ShaderSegment::Placeholder &gt;", "structstd_1_1hash_3_01typename_01inviwo_1_1ShaderSegment_1_1Placeholder_01_4.html", null ],
     [ "inviwo::util::hashtuple::HashValueImpl&lt; Tuple, Index &gt;", "structinviwo_1_1util_1_1hashtuple_1_1HashValueImpl.html", null ],
     [ "inviwo::util::hashtuple::HashValueImpl&lt; Tuple, 0 &gt;", "structinviwo_1_1util_1_1hashtuple_1_1HashValueImpl_3_01Tuple_00_010_01_4.html", null ],

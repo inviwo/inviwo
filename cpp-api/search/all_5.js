@@ -119,7 +119,7 @@ var searchData=
   ['filetostringconverter_116',['FileToStringConverter',['../classinviwo_1_1FileToStringConverter.html',1,'inviwo']]],
   ['filewatcher_117',['FileWatcher',['../classinviwo_1_1FileWatcher.html',1,'inviwo']]],
   ['filled_118',['filled',['../namespaceinviwo_1_1util.html#ad2b594a5638571d9e20783d8843f3c38',1,'inviwo::util']]],
-  ['filter_119',['Filter',['../structinviwo_1_1dispatching_1_1detail_1_1Filter.html',1,'inviwo::dispatching::detail::Filter&lt; Predicate,... &gt;'],['../namespaceinviwo.html#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a',1,'inviwo::Filter']]],
+  ['filter_119',['Filter',['../structinviwo_1_1dispatching_1_1detail_1_1Filter.html',1,'inviwo::dispatching::detail::Filter&lt; Predicate,... &gt;'],['../namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a',1,'inviwo::Filter']]],
   ['filter_120',['filter',['../structinviwo_1_1filters_1_1ItemFilter.html#a4204578d94a092c3daa1f01740ad1223',1,'inviwo::filters::ItemFilter::filter'],['../structinviwo_1_1csvfilters_1_1RowFilter.html#a14e04eb99c43e94fad542647c506b3c4',1,'inviwo::csvfilters::RowFilter::filter'],['../classinviwo_1_1BrushingAndLinkingManager.html#abea313062f50500529e9507943629377',1,'inviwo::BrushingAndLinkingManager::filter()']]],
   ['filter_3c_20predicate_20_3e_121',['Filter&lt; Predicate &gt;',['../structinviwo_1_1dispatching_1_1detail_1_1Filter_3_01Predicate_01_4.html',1,'inviwo::dispatching::detail']]],
   ['filter_3c_20predicate_2c_20head_2c_20tail_2e_2e_2e_20_3e_122',['Filter&lt; Predicate, Head, Tail... &gt;',['../structinviwo_1_1dispatching_1_1detail_1_1Filter_3_01Predicate_00_01Head_00_01Tail_8_8_8_01_4.html',1,'inviwo::dispatching::detail']]],

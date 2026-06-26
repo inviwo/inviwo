@@ -2513,11 +2513,11 @@ Enumerations</h2></td></tr>
 , <b>Periodic</b>
 , <b>Mirror</b>
  }</td></tr>
-<tr class="memitem:a0780518930e4f82763044068321c57f4" id="r_a0780518930e4f82763044068321c57f4"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="#a0780518930e4f82763044068321c57f4">BrushingAction</a> { <a class="el" href="#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a">Filter</a>
-, <a class="el" href="#a0780518930e4f82763044068321c57f4ae0626222614bdee31951d84c64e5e9ff">Select</a>
-, <a class="el" href="#a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1">Highlight</a>
+<tr class="memitem:a5057c694371488c9c8dbf86d7e909d6d" id="r_a5057c694371488c9c8dbf86d7e909d6d"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="#a5057c694371488c9c8dbf86d7e909d6d">BrushingAction</a> : int { <a class="el" href="#a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a">Filter</a>
+, <a class="el" href="#a5057c694371488c9c8dbf86d7e909d6dae0626222614bdee31951d84c64e5e9ff">Select</a>
+, <a class="el" href="#a5057c694371488c9c8dbf86d7e909d6da0b90582f4589d84be89f5b847d4d1ed1">Highlight</a>
  }</td></tr>
-<tr class="memitem:ae62cda25203b6e87e87de86ecf424fd7" id="r_ae62cda25203b6e87e87de86ecf424fd7"><td class="memItemLeft"><a id="ae62cda25203b6e87e87de86ecf424fd7" name="ae62cda25203b6e87e87de86ecf424fd7"></a>enum class &#160;</td><td class="memItemRight"><b>BrushingModification</b> { <b>Filtered</b> = 0x01
+<tr class="memitem:a853aa41b915a0a4cdc02ff6a0a388409" id="r_a853aa41b915a0a4cdc02ff6a0a388409"><td class="memItemLeft"><a id="a853aa41b915a0a4cdc02ff6a0a388409" name="a853aa41b915a0a4cdc02ff6a0a388409"></a>enum class &#160;</td><td class="memItemRight"><b>BrushingModification</b> : int { <b>Filtered</b> = 0x01
 , <b>Selected</b> = 0x02
 , <b>Highlighted</b> = 0x04
  }</td></tr>
@@ -3305,7 +3305,7 @@ IVW_CORE_API std::string_view&#160;</td><td class="memItemRight"><b>enumToStr</b
 <tr class="memitem:a40ff8c9610379a48674ce4c73d97c33b" id="r_a40ff8c9610379a48674ce4c73d97c33b"><td class="memItemLeft"><a id="a40ff8c9610379a48674ce4c73d97c33b" name="a40ff8c9610379a48674ce4c73d97c33b"></a>
 IVW_CORE_API std::string_view&#160;</td><td class="memItemRight"><b>enumToStr</b> (AxisRangeInteractionMode mode)</td></tr>
 <tr class="memitem:abe7f656a44cc3fa9380edea3bad69017" id="r_abe7f656a44cc3fa9380edea3bad69017"><td class="memItemLeft"><a id="abe7f656a44cc3fa9380edea3bad69017" name="abe7f656a44cc3fa9380edea3bad69017"></a>
-IVW_MODULE_BRUSHINGANDLINKING_API std::string_view&#160;</td><td class="memItemRight"><b>enumToStr</b> (<a class="el" href="#a0780518930e4f82763044068321c57f4">BrushingAction</a> dt)</td></tr>
+IVW_MODULE_BRUSHINGANDLINKING_API std::string_view&#160;</td><td class="memItemRight"><b>enumToStr</b> (<a class="el" href="#a5057c694371488c9c8dbf86d7e909d6d">BrushingAction</a> dt)</td></tr>
 <tr class="memitem:abe25253e7214c4c3df45b418be1349fc" id="r_abe25253e7214c4c3df45b418be1349fc"><td class="memItemLeft"><a id="abe25253e7214c4c3df45b418be1349fc" name="abe25253e7214c4c3df45b418be1349fc"></a>
 IVW_MODULE_BRUSHINGANDLINKING_API std::string_view&#160;</td><td class="memItemRight"><b>enumToStr</b> (BrushingModification dt)</td></tr>
 <tr class="memitem:aa2bc5ae40625a37a94c1f9477071ef5e" id="r_aa2bc5ae40625a37a94c1f9477071ef5e"><td class="memItemLeft"><a id="aa2bc5ae40625a37a94c1f9477071ef5e" name="aa2bc5ae40625a37a94c1f9477071ef5e"></a>
@@ -3478,7 +3478,7 @@ IVW_MODULE_JSON_API void&#160;</td><td class="memItemRight"><b>from_json</b> (co
 <tr class="memitem:a939037d5890e313a5a5834e226bc6c26" id="r_a939037d5890e313a5a5834e226bc6c26"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a939037d5890e313a5a5834e226bc6c26 template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a939037d5890e313a5a5834e226bc6c26">from_json</a> (const json &amp;j, <a class="el" href="classinviwo_1_1TemplateProperty.html">TemplateProperty</a>&lt; T &gt; &amp;p)</td></tr>
 <tr class="memitem:a51d6c5efd8f2dc4ff9df9d66b0a4d6a9" id="r_a51d6c5efd8f2dc4ff9df9d66b0a4d6a9"><td class="memItemLeft"><a id="a51d6c5efd8f2dc4ff9df9d66b0a4d6a9" name="a51d6c5efd8f2dc4ff9df9d66b0a4d6a9"></a>
-constexpr BrushingModification&#160;</td><td class="memItemRight"><b>fromAction</b> (<a class="el" href="#a0780518930e4f82763044068321c57f4">BrushingAction</a> action)</td></tr>
+constexpr BrushingModification&#160;</td><td class="memItemRight"><b>fromAction</b> (<a class="el" href="#a5057c694371488c9c8dbf86d7e909d6d">BrushingAction</a> action)</td></tr>
 <tr class="memitem:ad0aa9774af974ddd59b57caf3a704bd6" id="r_ad0aa9774af974ddd59b57caf3a704bd6"><td class="memTemplParams" colspan="2"><a id="ad0aa9774af974ddd59b57caf3a704bd6" name="ad0aa9774af974ddd59b57caf3a704bd6"></a>
 template&lt;std::size_t N, typename... Ts&gt; </td></tr>
 <tr class="memitem:ad0aa9774af974ddd59b57caf3a704bd6 template"><td class="memItemLeft">decltype(auto)&#160;</td><td class="memItemRight"><b>get</b> (const <a class="el" href="structinviwo_1_1util_1_1detailzip_1_1proxy.html">util::detailzip::proxy</a>&lt; Ts... &gt; &amp;p)</td></tr>
@@ -3602,12 +3602,6 @@ IVW_MODULE_VECTORFIELDVISUALIZATION_API std::ostream &amp;&#160;</td><td class="
 IVW_CORE_API std::ostream &amp;&#160;</td><td class="memItemRight"><b>operator&lt;&lt;</b> (std::ostream &amp;ss, AcceptMode mode)</td></tr>
 <tr class="memitem:a63d50bd2a42b11125408a7baae926cc0" id="r_a63d50bd2a42b11125408a7baae926cc0"><td class="memItemLeft"><a id="a63d50bd2a42b11125408a7baae926cc0" name="a63d50bd2a42b11125408a7baae926cc0"></a>
 IVW_MODULE_BASE_API std::ostream &amp;&#160;</td><td class="memItemRight"><b>operator&lt;&lt;</b> (std::ostream &amp;ss, BoundaryType bt)</td></tr>
-<tr class="memitem:a6a3813bfd3cba79016a0bae1649da333" id="r_a6a3813bfd3cba79016a0bae1649da333"><td class="memItemLeft"><a id="a6a3813bfd3cba79016a0bae1649da333" name="a6a3813bfd3cba79016a0bae1649da333"></a>
-IVW_MODULE_BRUSHINGANDLINKING_API std::ostream &amp;&#160;</td><td class="memItemRight"><b>operator&lt;&lt;</b> (std::ostream &amp;ss, <a class="el" href="#a0780518930e4f82763044068321c57f4">BrushingAction</a> action)</td></tr>
-<tr class="memitem:ad1d272d4f7eb38383f4102cf1dfdebee" id="r_ad1d272d4f7eb38383f4102cf1dfdebee"><td class="memItemLeft"><a id="ad1d272d4f7eb38383f4102cf1dfdebee" name="ad1d272d4f7eb38383f4102cf1dfdebee"></a>
-IVW_MODULE_BRUSHINGANDLINKING_API std::ostream &amp;&#160;</td><td class="memItemRight"><b>operator&lt;&lt;</b> (std::ostream &amp;ss, BrushingModification action)</td></tr>
-<tr class="memitem:acfda43d111250a9e14d43f2ce0380a2d" id="r_acfda43d111250a9e14d43f2ce0380a2d"><td class="memItemLeft"><a id="acfda43d111250a9e14d43f2ce0380a2d" name="acfda43d111250a9e14d43f2ce0380a2d"></a>
-IVW_MODULE_BRUSHINGANDLINKING_API std::ostream &amp;&#160;</td><td class="memItemRight"><b>operator&lt;&lt;</b> (std::ostream &amp;ss, BrushingModifications action)</td></tr>
 <tr class="memitem:a239e6aea551a0f0aefe2dd992a2cae9d" id="r_a239e6aea551a0f0aefe2dd992a2cae9d"><td class="memItemLeft"><a id="a239e6aea551a0f0aefe2dd992a2cae9d" name="a239e6aea551a0f0aefe2dd992a2cae9d"></a>
 IVW_CORE_API std::ostream &amp;&#160;</td><td class="memItemRight"><b>operator&lt;&lt;</b> (std::ostream &amp;ss, BufferTarget bt)</td></tr>
 <tr class="memitem:aa72c21cdc2e3f284c33d153dee0f8650" id="r_aa72c21cdc2e3f284c33d153dee0f8650"><td class="memItemLeft"><a id="aa72c21cdc2e3f284c33d153dee0f8650" name="aa72c21cdc2e3f284c33d153dee0f8650"></a>
@@ -3781,7 +3775,7 @@ Variables</h2></td></tr>
 template class IVW_CORE_TMPL_EXP&#160;</td><td class="memItemRight"><b>BaseImageInport&lt; 0 &gt;</b></td></tr>
 <tr class="memitem:ad52fa8737eaf725dabc972d91ad05986" id="r_ad52fa8737eaf725dabc972d91ad05986"><td class="memItemLeft"><a id="ad52fa8737eaf725dabc972d91ad05986" name="ad52fa8737eaf725dabc972d91ad05986"></a>
 template class IVW_CORE_TMPL_EXP&#160;</td><td class="memItemRight"><b>BaseImageInport&lt; 1 &gt;</b></td></tr>
-<tr class="memitem:a189016abd24715a82e1857cfd53bab73" id="r_a189016abd24715a82e1857cfd53bab73"><td class="memItemLeft">constexpr std::array&lt; <a class="el" href="#a0780518930e4f82763044068321c57f4">BrushingAction</a>, 3 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a189016abd24715a82e1857cfd53bab73">BrushingActions</a></td></tr>
+<tr class="memitem:a189016abd24715a82e1857cfd53bab73" id="r_a189016abd24715a82e1857cfd53bab73"><td class="memItemLeft">constexpr std::array&lt; <a class="el" href="#a5057c694371488c9c8dbf86d7e909d6d">BrushingAction</a>, 3 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a189016abd24715a82e1857cfd53bab73">BrushingActions</a></td></tr>
 <tr class="memitem:a8c3a294bceb315d3aeab34be96707242" id="r_a8c3a294bceb315d3aeab34be96707242"><td class="memItemLeft"><a id="a8c3a294bceb315d3aeab34be96707242" name="a8c3a294bceb315d3aeab34be96707242"></a>
 template class IVW_CORE_TMPL_EXP&#160;</td><td class="memItemRight"><b>DataInport&lt; BufferBase &gt;</b></td></tr>
 <tr class="memitem:a7d41e0e8d7fbe321bcfae64e6cbf441c" id="r_a7d41e0e8d7fbe321bcfae64e6cbf441c"><td class="memItemLeft"><a id="a7d41e0e8d7fbe321bcfae64e6cbf441c" name="a7d41e0e8d7fbe321bcfae64e6cbf441c"></a>
@@ -4066,8 +4060,8 @@ template&lt;typename V&gt; </div>
 </div>
 </div>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
-<a id="a0780518930e4f82763044068321c57f4" name="a0780518930e4f82763044068321c57f4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0780518930e4f82763044068321c57f4">&#9670;&#160;</a></span>BrushingAction</h2>
+<a id="a5057c694371488c9c8dbf86d7e909d6d" name="a5057c694371488c9c8dbf86d7e909d6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5057c694371488c9c8dbf86d7e909d6d">&#9670;&#160;</a></span>BrushingAction</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -4076,7 +4070,7 @@ template&lt;typename V&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">enum class <a class="el" href="#a0780518930e4f82763044068321c57f4">inviwo::BrushingAction</a></td>
+          <td class="memname">enum class <a class="el" href="#a5057c694371488c9c8dbf86d7e909d6d">inviwo::BrushingAction</a> : int</td>
         </tr>
       </table>
   </td>
@@ -4088,11 +4082,11 @@ template&lt;typename V&gt; </div>
 <p>type of action for Brushing and Linking</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1BrushingAndLinkingManager.html">BrushingAndLinkingManager</a> </dd></dl>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a" name="a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a"></a>Filter&#160;</td><td class="fielddoc"><p>filter the given indices and mark them as removed </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a" name="a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a"></a>Filter&#160;</td><td class="fielddoc"><p>filter the given indices and mark them as removed </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a0780518930e4f82763044068321c57f4ae0626222614bdee31951d84c64e5e9ff" name="a0780518930e4f82763044068321c57f4ae0626222614bdee31951d84c64e5e9ff"></a>Select&#160;</td><td class="fielddoc"><p>replace the current selection of indices </p>
+<tr><td class="fieldname"><a id="a5057c694371488c9c8dbf86d7e909d6dae0626222614bdee31951d84c64e5e9ff" name="a5057c694371488c9c8dbf86d7e909d6dae0626222614bdee31951d84c64e5e9ff"></a>Select&#160;</td><td class="fielddoc"><p>replace the current selection of indices </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1" name="a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1"></a>Highlight&#160;</td><td class="fielddoc"><p>replace the currently highlighted indices </p>
+<tr><td class="fieldname"><a id="a5057c694371488c9c8dbf86d7e909d6da0b90582f4589d84be89f5b847d4d1ed1" name="a5057c694371488c9c8dbf86d7e909d6da0b90582f4589d84be89f5b847d4d1ed1"></a>Highlight&#160;</td><td class="fielddoc"><p>replace the currently highlighted indices </p>
 </td></tr>
 </table>
 
@@ -5718,7 +5712,7 @@ template&lt;typename T&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::array&lt;<a class="el" href="#a0780518930e4f82763044068321c57f4">BrushingAction</a>, 3&gt; inviwo::BrushingActions</td>
+          <td class="memname">std::array&lt;<a class="el" href="#a5057c694371488c9c8dbf86d7e909d6d">BrushingAction</a>, 3&gt; inviwo::BrushingActions</td>
         </tr>
       </table>
   </td>
@@ -5728,10 +5722,10 @@ template&lt;typename T&gt; </div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">{</div>
-<div class="line">    <a class="code hl_enumvalue" href="#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a">BrushingAction::Filter</a>, <a class="code hl_enumvalue" href="#a0780518930e4f82763044068321c57f4ae0626222614bdee31951d84c64e5e9ff">BrushingAction::Select</a>, <a class="code hl_enumvalue" href="#a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1">BrushingAction::Highlight</a>}</div>
-<div class="ttc" id="anamespaceinviwo_html_a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1"><div class="ttname"><a href="#a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1">inviwo::BrushingAction::Highlight</a></div><div class="ttdeci">@ Highlight</div><div class="ttdoc">replace the currently highlighted indices</div><div class="ttdef"><b>Definition</b> brushingaction.h:57</div></div>
-<div class="ttc" id="anamespaceinviwo_html_a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a"><div class="ttname"><a href="#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a">inviwo::BrushingAction::Filter</a></div><div class="ttdeci">@ Filter</div><div class="ttdoc">filter the given indices and mark them as removed</div><div class="ttdef"><b>Definition</b> brushingaction.h:55</div></div>
-<div class="ttc" id="anamespaceinviwo_html_a0780518930e4f82763044068321c57f4ae0626222614bdee31951d84c64e5e9ff"><div class="ttname"><a href="#a0780518930e4f82763044068321c57f4ae0626222614bdee31951d84c64e5e9ff">inviwo::BrushingAction::Select</a></div><div class="ttdeci">@ Select</div><div class="ttdoc">replace the current selection of indices</div><div class="ttdef"><b>Definition</b> brushingaction.h:56</div></div>
+<div class="line">    <a class="code hl_enumvalue" href="#a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a">BrushingAction::Filter</a>, <a class="code hl_enumvalue" href="#a5057c694371488c9c8dbf86d7e909d6dae0626222614bdee31951d84c64e5e9ff">BrushingAction::Select</a>, <a class="code hl_enumvalue" href="#a5057c694371488c9c8dbf86d7e909d6da0b90582f4589d84be89f5b847d4d1ed1">BrushingAction::Highlight</a>}</div>
+<div class="ttc" id="anamespaceinviwo_html_a5057c694371488c9c8dbf86d7e909d6da0b90582f4589d84be89f5b847d4d1ed1"><div class="ttname"><a href="#a5057c694371488c9c8dbf86d7e909d6da0b90582f4589d84be89f5b847d4d1ed1">inviwo::BrushingAction::Highlight</a></div><div class="ttdeci">@ Highlight</div><div class="ttdoc">replace the currently highlighted indices</div><div class="ttdef"><b>Definition</b> brushingaction.h:53</div></div>
+<div class="ttc" id="anamespaceinviwo_html_a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a"><div class="ttname"><a href="#a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a">inviwo::BrushingAction::Filter</a></div><div class="ttdeci">@ Filter</div><div class="ttdoc">filter the given indices and mark them as removed</div><div class="ttdef"><b>Definition</b> brushingaction.h:51</div></div>
+<div class="ttc" id="anamespaceinviwo_html_a5057c694371488c9c8dbf86d7e909d6dae0626222614bdee31951d84c64e5e9ff"><div class="ttname"><a href="#a5057c694371488c9c8dbf86d7e909d6dae0626222614bdee31951d84c64e5e9ff">inviwo::BrushingAction::Select</a></div><div class="ttdeci">@ Select</div><div class="ttdoc">replace the current selection of indices</div><div class="ttdef"><b>Definition</b> brushingaction.h:52</div></div>
 </div><!-- fragment -->
 </div>
 </div>
