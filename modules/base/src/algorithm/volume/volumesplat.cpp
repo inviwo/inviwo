@@ -35,13 +35,13 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/threadutil.h>
+#include <inviwo/core/util/glm.h>
 
 #include <glm/common.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -119,7 +119,7 @@ inline float kernelNormFactor(float s) {
 
 template <SplatKernel K>
 std::vector<std::function<vec2(const std::function<void(double)>&, const std::function<bool()>&)>>
-splatImpl(std::span<const vec3> worldPositions, std::span<const float> sizes,
+splatImpl(std::span<const vec3> positions, std::span<const float> sizes,
           std::span<const float> weights, const SplatSettings& settings, mat4 indexToWorld,
           mat4 worldToIndex, float* data) {
 
@@ -134,6 +134,8 @@ splatImpl(std::span<const vec3> worldPositions, std::span<const float> sizes,
     const vec3 voxelSizeWorld =
         vec3{glm::length(basisWorld[0]), glm::length(basisWorld[1]), glm::length(basisWorld[2])} /
         vec3{dims};
+
+    const mat4 pointTransform{settings.pointTransform};
 
     const float size = settings.size;
     const float weight = settings.weight;
@@ -150,8 +152,8 @@ splatImpl(std::span<const vec3> worldPositions, std::span<const float> sizes,
     if (nJobs == 0) nJobs = 1;
 
     auto processSlab = [&](std::size_t zStart, std::size_t zStop) {
-        return [zStart, zStop, worldPositions, sizes, weights, indexToWorld, worldToIndex, data,
-                dims, size, weight, error, perPointSize, perPointWeight, voxelSizeWorld](
+        return [zStart, zStop, positions, sizes, weights, indexToWorld, worldToIndex, data, dims,
+                size, weight, error, perPointSize, perPointWeight, voxelSizeWorld, pointTransform](
                    const std::function<void(double)>& progress, const std::function<bool()>& stop) {
             const util::IndexMapper3D idx(dims);
             const auto dimsI = ivec3{dims};
@@ -159,12 +161,12 @@ splatImpl(std::span<const vec3> worldPositions, std::span<const float> sizes,
             auto minMax =
                 vec2{std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest()};
 
-            for (std::size_t p = 0; p < worldPositions.size(); ++p) {
+            for (std::size_t p = 0; p < positions.size(); ++p) {
                 if (stop && stop()) return minMax;
                 if (progress) {
-                    progress(static_cast<double>(p) / static_cast<double>(worldPositions.size()));
+                    progress(static_cast<double>(p) / static_cast<double>(positions.size()));
                 }
-                const vec3 pw = worldPositions[p];
+                const vec3 pw = util::transformPos(pointTransform, positions[p]);
                 const float s = (perPointSize ? sizes[p] : 1.0f) * size;
                 const float w = (perPointWeight ? weights[p] : 1.0f) * weight;
                 if (s <= 0.0f || w <= 0.0f) continue;
@@ -249,7 +251,7 @@ splatImpl(std::span<const vec3> worldPositions, std::span<const float> sizes,
 std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
           std::vector<std::function<vec2(const std::function<void(double)>&,
                                          const std::function<bool()>&)>>>
-splatJobs(std::span<const vec3> worldPositions, std::span<const float> sizes,
+splatJobs(std::span<const vec3> positions, std::span<const float> sizes,
           std::span<const float> weights, const SplatSettings& settings) {
     if (settings.dimensions.x == 0 || settings.dimensions.y == 0 || settings.dimensions.z == 0) {
         throw Exception("Volume dimensions must be non-zero");
@@ -263,11 +265,11 @@ splatJobs(std::span<const vec3> worldPositions, std::span<const float> sizes,
     if (settings.error < 0.0f) {
         throw Exception("Error must be positive");
     }
-    if (!sizes.empty() && sizes.size() != worldPositions.size()) {
-        throw Exception("Sizes size does not match worldPositions size");
+    if (!sizes.empty() && sizes.size() != positions.size()) {
+        throw Exception("Sizes size does not match positions size");
     }
-    if (!weights.empty() && weights.size() != worldPositions.size()) {
-        throw Exception("Weights size does not match worldPositions size");
+    if (!weights.empty() && weights.size() != positions.size()) {
+        throw Exception("Weights size does not match positions size");
     }
 
     auto rep = std::make_shared<VolumeRAMPrecision<float>>(settings.dimensions);
@@ -294,24 +296,24 @@ splatJobs(std::span<const vec3> worldPositions, std::span<const float> sizes,
             return volume;
         };
 
-    if (!worldPositions.empty()) {
+    if (!positions.empty()) {
         float* data = rep->getDataTyped();
         switch (settings.kernel) {
             case SplatKernel::Gaussian:
                 return {collect,
-                        splatImpl<SplatKernel::Gaussian>(worldPositions, sizes, weights, settings,
+                        splatImpl<SplatKernel::Gaussian>(positions, sizes, weights, settings,
                                                          indexToWorld, worldToIndex, data)};
             case SplatKernel::Epanechnikov:
-                return {collect, splatImpl<SplatKernel::Epanechnikov>(
-                                     worldPositions, sizes, weights, settings, indexToWorld,
-                                     worldToIndex, data)};
+                return {collect,
+                        splatImpl<SplatKernel::Epanechnikov>(positions, sizes, weights, settings,
+                                                             indexToWorld, worldToIndex, data)};
             case SplatKernel::Triangular:
                 return {collect,
-                        splatImpl<SplatKernel::Triangular>(worldPositions, sizes, weights, settings,
+                        splatImpl<SplatKernel::Triangular>(positions, sizes, weights, settings,
                                                            indexToWorld, worldToIndex, data)};
             case SplatKernel::Uniform:
                 return {collect,
-                        splatImpl<SplatKernel::Uniform>(worldPositions, sizes, weights, settings,
+                        splatImpl<SplatKernel::Uniform>(positions, sizes, weights, settings,
                                                         indexToWorld, worldToIndex, data)};
         }
     }
@@ -319,10 +321,10 @@ splatJobs(std::span<const vec3> worldPositions, std::span<const float> sizes,
     return {collect, {}};
 }
 
-std::shared_ptr<Volume> splat(std::span<const vec3> worldPositions, std::span<const float> sizes,
+std::shared_ptr<Volume> splat(std::span<const vec3> positions, std::span<const float> sizes,
                               std::span<const float> weights, const SplatSettings& settings) {
 
-    auto [collect, jobs] = splatJobs(worldPositions, sizes, weights, settings);
+    auto [collect, jobs] = splatJobs(positions, sizes, weights, settings);
 
     if (util::getPoolSize() > 0) {
         std::vector<std::future<vec2>> futures;
