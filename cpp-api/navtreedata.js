@@ -90,7 +90,7 @@ var NAVTREEINDEX =
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01T_01_5_00_01A_01_4_01_4.html",
 "structinviwo_1_1ProcessorInfo.html#aa3c739ee0ed28ed7c3660b733b05c055",
 "structinviwo_1_1ZoomOptions.html",
-"structinviwo_1_1util_1_1TransformIterator.html"
+"structinviwo_1_1util_1_1SplatSettings.html#ae0cfff33bc197a372469561da3f3bc58"
 ];
 
 const SYNCONMSG = 'click to disable panel synchronization';

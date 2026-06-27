@@ -246,8 +246,8 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1util_1_1SplatSettings.html#a595e2d22a9911e4669718f719694bff9":[4,0,1,30,66,0],
 "structinviwo_1_1util_1_1SplatSettings.html#a7872e0fc7bb61a62cc056e7b91ad8deb":[2,0,0,20,62,1],
 "structinviwo_1_1util_1_1SplatSettings.html#a7872e0fc7bb61a62cc056e7b91ad8deb":[4,0,1,30,66,1],
+"structinviwo_1_1util_1_1SplatSettings.html#ab72939613e735570d472ef4ecb2a1788":[2,0,0,20,62,4],
+"structinviwo_1_1util_1_1SplatSettings.html#ab72939613e735570d472ef4ecb2a1788":[4,0,1,30,66,4],
 "structinviwo_1_1util_1_1SplatSettings.html#ad9b58cd33a345a0466250ad8c6599f30":[2,0,0,20,62,2],
-"structinviwo_1_1util_1_1SplatSettings.html#ad9b58cd33a345a0466250ad8c6599f30":[4,0,1,30,66,2],
-"structinviwo_1_1util_1_1SplatSettings.html#ae0cfff33bc197a372469561da3f3bc58":[2,0,0,20,62,3],
-"structinviwo_1_1util_1_1SplatSettings.html#ae0cfff33bc197a372469561da3f3bc58":[4,0,1,30,66,3]
+"structinviwo_1_1util_1_1SplatSettings.html#ad9b58cd33a345a0466250ad8c6599f30":[4,0,1,30,66,2]
 };

@@ -1357,9 +1357,9 @@ VolumeSequence IVW_CORE_API&#160;</td><td class="memItemRight"><b>sortSequence</
 <tr class="memitem:aed0d09b6d1537336c6e8271dcd557c93" id="r_aed0d09b6d1537336c6e8271dcd557c93"><td class="memTemplParams" colspan="2"><a id="aed0d09b6d1537336c6e8271dcd557c93" name="aed0d09b6d1537336c6e8271dcd557c93"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:aed0d09b6d1537336c6e8271dcd557c93 template"><td class="memItemLeft">T&#160;</td><td class="memItemRight"><b>spherical</b> (T val)</td></tr>
-<tr class="memitem:a6034989251aeb76809954d636d0c7811" id="r_a6034989251aeb76809954d636d0c7811"><td class="memItemLeft">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a6034989251aeb76809954d636d0c7811">splat</a> (std::span&lt; const vec3 &gt; worldPositions, std::span&lt; const float &gt; radii, std::span&lt; const float &gt; weights, const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;settings)</td></tr>
-<tr class="memitem:a51a37b42a051d02b5242845c50b09cb0" id="r_a51a37b42a051d02b5242845c50b09cb0"><td class="memItemLeft"><a id="a51a37b42a051d02b5242845c50b09cb0" name="a51a37b42a051d02b5242845c50b09cb0"></a>
-IVW_MODULE_BASE_API std::pair&lt; std::function&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;(std::vector&lt; vec2 &gt;)&gt;, std::vector&lt; std::function&lt; vec2(const std::function&lt; void(double)&gt; &amp;, const std::function&lt; bool()&gt; &amp;)&gt; &gt; &gt;&#160;</td><td class="memItemRight"><b>splatJobs</b> (std::span&lt; const vec3 &gt; worldPositions, std::span&lt; const float &gt; sizes, std::span&lt; const float &gt; weights, const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;settings)</td></tr>
+<tr class="memitem:a5c7627ec6d23a7c618b51858910147ab" id="r_a5c7627ec6d23a7c618b51858910147ab"><td class="memItemLeft">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a5c7627ec6d23a7c618b51858910147ab">splat</a> (std::span&lt; const vec3 &gt; positions, std::span&lt; const float &gt; radii, std::span&lt; const float &gt; weights, const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;settings)</td></tr>
+<tr class="memitem:af3a4e543c6467153670cacf64d91355d" id="r_af3a4e543c6467153670cacf64d91355d"><td class="memItemLeft"><a id="af3a4e543c6467153670cacf64d91355d" name="af3a4e543c6467153670cacf64d91355d"></a>
+IVW_MODULE_BASE_API std::pair&lt; std::function&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;(std::vector&lt; vec2 &gt;)&gt;, std::vector&lt; std::function&lt; vec2(const std::function&lt; void(double)&gt; &amp;, const std::function&lt; bool()&gt; &amp;)&gt; &gt; &gt;&#160;</td><td class="memItemRight"><b>splatJobs</b> (std::span&lt; const vec3 &gt; positions, std::span&lt; const float &gt; sizes, std::span&lt; const float &gt; weights, const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;settings)</td></tr>
 <tr class="memitem:a68531c2a1a0d7b50fbcd32b4ab6d03a2" id="r_a68531c2a1a0d7b50fbcd32b4ab6d03a2"><td class="memItemLeft">constexpr std::pair&lt; std::string_view, std::string_view &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a68531c2a1a0d7b50fbcd32b4ab6d03a2">splitByFirst</a> (std::string_view str, char delimiter=' ')</td></tr>
 <tr class="memdesc:a68531c2a1a0d7b50fbcd32b4ab6d03a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Divide a string into two parts by the first instance of a delimiter.  <br /></td></tr>
 <tr class="memitem:a72e4709f37d1f58ead6f6bb699964102" id="r_a72e4709f37d1f58ead6f6bb699964102"><td class="memItemLeft">constexpr std::pair&lt; std::string_view, std::string_view &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a72e4709f37d1f58ead6f6bb699964102">splitByFirst</a> (std::string_view str, std::string_view delimiter)</td></tr>
@@ -7537,8 +7537,8 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a id="a6034989251aeb76809954d636d0c7811" name="a6034989251aeb76809954d636d0c7811"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6034989251aeb76809954d636d0c7811">&#9670;&#160;</a></span>splat()</h2>
+<a id="a5c7627ec6d23a7c618b51858910147ab" name="a5c7627ec6d23a7c618b51858910147ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c7627ec6d23a7c618b51858910147ab">&#9670;&#160;</a></span>splat()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7546,7 +7546,7 @@ template&lt;typename T&gt; </div>
         <tr>
           <td class="memname">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; inviwo::util::splat </td>
           <td>(</td>
-          <td class="paramtype">std::span&lt; const vec3 &gt;</td>          <td class="paramname"><span class="paramname"><em>worldPositions</em></span>, </td>
+          <td class="paramtype">std::span&lt; const vec3 &gt;</td>          <td class="paramname"><span class="paramname"><em>positions</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -7565,14 +7565,14 @@ template&lt;typename T&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Splat a set of world-space points into a scalar volume using a chosen kernel.</p>
+<p>Splat a set of points into a scalar volume using a chosen kernel.</p>
 <p>For each point <code>p_i</code> with size <code>s_i</code> the volume accumulates the kernel evaluated at the world-space distance between the point and each voxel center inside the per-point footprint. Points whose footprint lies entirely outside the volume are skipped.</p>
 <p>The work is parallelized by splitting the output volume into a number of disjoint Z-slabs. Each worker iterates over all points but only writes voxels inside its slab, so no atomics or locks are needed.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">worldPositions</td><td>point positions in world space </td></tr>
-    <tr><td class="paramname">radii</td><td>per-point bandwidth in world units; if empty, <code>defaultSigma</code> is used for every point. Must otherwise have the same size as <code class="param">worldPositions</code>. </td></tr>
-    <tr><td class="paramname">weights</td><td>per-point weights to accumulate; if empty, all points are weighted equally. Must otherwise have the same size as <code class="param">worldPositions</code>. </td></tr>
+    <tr><td class="paramname">positions</td><td>point positions, will be transformed with <code>settings.pointTransform</code> before calculating distances </td></tr>
+    <tr><td class="paramname">radii</td><td>per-point bandwidth in world units; if empty, <code>defaultSigma</code> is used for every point. Must otherwise have the same size as <code class="param">positions</code>. </td></tr>
+    <tr><td class="paramname">weights</td><td>per-point weights to accumulate; if empty, all points are weighted equally. Must otherwise have the same size as <code class="param">positions</code>. </td></tr>
     <tr><td class="paramname">settings</td><td>output configuration, kernel selection and truncation </td></tr>
   </table>
   </dd>
@@ -7580,7 +7580,7 @@ template&lt;typename T&gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>a single-channel float32 <code><a class="el" href="classinviwo_1_1Volume.html">Volume</a></code> with model matrix matching <code>settings.modelMatrix</code> </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">Exception</td><td>if <code class="param">radii</code> is non-empty and its size differs from <code class="param">worldPositions</code>, or if <code class="param">weights</code> is non-empty and its size differs from <code class="param">worldPositions</code>, or if <code>settings.dimensions</code> has a zero component, or if <code>settings.defaultSigma</code> / <code>settings.cutoff</code> are non-positive. </td></tr>
+    <tr><td class="paramname">Exception</td><td>if <code class="param">radii</code> is non-empty and its size differs from <code class="param">positions</code>, or if <code class="param">weights</code> is non-empty and its size differs from <code class="param">positions</code>, or if <code>settings.dimensions</code> has a zero component, or if <code>settings.defaultSigma</code> / <code>settings.cutoff</code> are non-positive. </td></tr>
   </table>
   </dd>
 </dl>

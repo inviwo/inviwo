@@ -292,7 +292,7 @@ var searchData=
   ['sphererenderer_289',['SphereRenderer',['../classinviwo_1_1SphereRenderer.html',1,'inviwo']]],
   ['sphericalcomponent_290',['SphericalComponent',['../classinviwo_1_1SphericalComponent.html',1,'inviwo']]],
   ['sphericalvolumeraycaster_291',['SphericalVolumeRaycaster',['../classinviwo_1_1SphericalVolumeRaycaster.html',1,'inviwo']]],
-  ['splat_292',['splat',['../namespaceinviwo_1_1util.html#a6034989251aeb76809954d636d0c7811',1,'inviwo::util']]],
+  ['splat_292',['splat',['../namespaceinviwo_1_1util.html#a5c7627ec6d23a7c618b51858910147ab',1,'inviwo::util']]],
   ['splatkernel_293',['SplatKernel',['../namespaceinviwo_1_1util.html#a85aba8e7ade4592d06796c05467161f1',1,'inviwo::util']]],
   ['splatsettings_294',['SplatSettings',['../structinviwo_1_1util_1_1SplatSettings.html',1,'inviwo::util']]],
   ['splitbyfirst_295',['splitByFirst',['../namespaceinviwo_1_1util.html#a68531c2a1a0d7b50fbcd32b4ab6d03a2',1,'inviwo::util::splitByFirst(std::string_view str, char delimiter=&apos; &apos;)'],['../namespaceinviwo_1_1util.html#a72e4709f37d1f58ead6f6bb699964102',1,'inviwo::util::splitByFirst(std::string_view str, std::string_view delimiter)']]],

@@ -307,7 +307,7 @@ var namespaceinviwo_1_1util =
     [ "setPosition", "namespaceinviwo_1_1util.html#a164993d46bdb58f8b16a943c65ae4b9c", null ],
     [ "setSelected", "namespaceinviwo_1_1util.html#af6fa91973f804cd02c1e28fb635202d1", null ],
     [ "setSelected", "namespaceinviwo_1_1util.html#a78172b271a10c03a2bb4a1a41bbde23e", null ],
-    [ "splat", "namespaceinviwo_1_1util.html#a6034989251aeb76809954d636d0c7811", null ],
+    [ "splat", "namespaceinviwo_1_1util.html#a5c7627ec6d23a7c618b51858910147ab", null ],
     [ "splitByFirst", "namespaceinviwo_1_1util.html#a68531c2a1a0d7b50fbcd32b4ab6d03a2", null ],
     [ "splitByFirst", "namespaceinviwo_1_1util.html#a72e4709f37d1f58ead6f6bb699964102", null ],
     [ "splitByLast", "namespaceinviwo_1_1util.html#a7062e820ba75f7fb44e8b149e52dd979", null ],

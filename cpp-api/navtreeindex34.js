@@ -1,5 +1,7 @@
 var NAVTREEINDEX34 =
 {
+"structinviwo_1_1util_1_1SplatSettings.html#ae0cfff33bc197a372469561da3f3bc58":[2,0,0,20,62,3],
+"structinviwo_1_1util_1_1SplatSettings.html#ae0cfff33bc197a372469561da3f3bc58":[4,0,1,30,66,3],
 "structinviwo_1_1util_1_1TransformIterator.html":[2,0,0,20,66],
 "structinviwo_1_1util_1_1TransformIterator.html":[4,0,1,30,70],
 "structinviwo_1_1util_1_1alwaysTrue.html":[2,0,0,20,0],
