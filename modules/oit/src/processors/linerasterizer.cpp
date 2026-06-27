@@ -122,7 +122,7 @@ LineRasterizer::LineRasterizer()
                    }}
     , tfLookup_{} {
 
-    addPort(inport_);
+    addPort(inport_).setOptional(true);
 
     addProperties(forceOpaque_, lineSettings_);
 
@@ -210,7 +210,7 @@ void LineRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixT
         shader.setUniform("metaColor", texUnit.getUnitNumber());
     };
 
-    for (auto mesh : inport_) {
+    for (const auto& mesh : inport_) {
         if (mesh->getNumberOfBuffers() == 0) return;
 
         MeshDrawerGL::DrawObject drawer(*mesh);

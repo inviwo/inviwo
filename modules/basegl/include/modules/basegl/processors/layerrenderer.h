@@ -52,7 +52,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    LayerMultiInport inport_;
+    LayerFlatMultiInport inport_;
     ImageInport background_;
     ImageOutport outport_;
 

@@ -92,8 +92,8 @@ workspace for example usage.
         # create a Volume from the representation
         volume = ivw.data.Volume(volumerep)
 
-        volume.basis = ivw.glm.mat3(1)
-        volume.offset = ivw.glm.vec3(-0.5, -0.5, -0.5)
+        volume.basis = ivw.glm.dmat3(1)
+        volume.offset = ivw.glm.dvec3(-0.5, -0.5, -0.5)
 
         volume.dataMap.dataRange = ivw.glm.dvec2(0.0, 1.0)
         volume.dataMap.valueRange = ivw.glm.dvec2(0.0, 1.0)

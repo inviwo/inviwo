@@ -103,8 +103,9 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , shader_{"meshrendering.vert", "meshrendering.frag", Shader::Build::No}
     , hadTextureData_{false} {
 
-    addPorts(inport_, imageInport_, outport_);
-    imageInport_.setOptional(true);
+    addPort(inport_).setOptional(true);
+    addPort(imageInport_).setOptional(true);
+    addPort(outport_);
     addPort(texture_.inport, "Textures").setOptional(true);
 
     addProperties(camera_, meshProperties_, lightingProperty_, trackball_, layers_);
@@ -181,7 +182,7 @@ void MeshRenderProcessorGL::process() {
     TextureUnitContainer cont;
     utilgl::bind(cont, texture_);
     utilgl::setUniforms(shader_, camera_, lightingProperty_, overrideColor_, texture_);
-    for (auto mesh : inport_) {
+    for (const auto& mesh : inport_) {
         utilgl::setShaderUniforms(shader_, *mesh, "geometry");
         shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
         MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),

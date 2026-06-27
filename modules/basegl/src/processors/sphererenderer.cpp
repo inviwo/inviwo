@@ -104,7 +104,7 @@ SphereRenderer::SphereRenderer()
                    configureShader(shader);
                }} {
 
-    addPort(inport_);
+    addPort(inport_).setOptional(true);
     addPort(imageInport_).setOptional(true);
     addPort(texture_.inport, "Textures").setOptional(true);
     addPort(bnl_.inport);
