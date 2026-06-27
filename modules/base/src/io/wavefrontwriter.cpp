@@ -54,7 +54,7 @@
 #include <unordered_set>
 #include <utility>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/ostream.h>
 #include <glm/detail/qualifier.hpp>
 #include <glm/mat3x3.hpp>

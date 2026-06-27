@@ -83,7 +83,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/detail/qualifier.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>

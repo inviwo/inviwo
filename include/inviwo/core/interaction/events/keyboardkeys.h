@@ -34,7 +34,7 @@
 
 #include <string_view>
 #include <flags/flags.h>
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo {
 

@@ -70,7 +70,7 @@
 #include <utility>
 #include <vector>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 

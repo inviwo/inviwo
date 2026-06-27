@@ -40,7 +40,7 @@
 
 #include <modules/plotting/utils/labelscaling.h>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <algorithm>
 #include <ranges>
 

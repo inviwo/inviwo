@@ -55,7 +55,7 @@
 #include <vector>
 #include <span>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <glm/fwd.hpp>
 #include <glm/gtx/io.hpp>

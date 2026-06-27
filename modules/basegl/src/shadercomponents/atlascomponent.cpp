@@ -81,7 +81,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <glm/common.hpp>
 #include <glm/fwd.hpp>

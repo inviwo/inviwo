@@ -41,7 +41,7 @@
 #include <cctype>
 #include <compare>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo {
 

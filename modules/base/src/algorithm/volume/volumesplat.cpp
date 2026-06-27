@@ -173,6 +173,7 @@ splatImpl(std::span<const vec3> worldPositions, std::span<const float> sizes,
                     if constexpr (K == SplatKernel::Gaussian) {
                         return static_cast<float>(gaussian_support(s, error));
                     } else {
+                        (void)error;
                         return s;
                     }
                 }();

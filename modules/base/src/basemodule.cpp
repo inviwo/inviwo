@@ -182,7 +182,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <glm/common.hpp>
 #include <glm/ext/scalar_constants.hpp>

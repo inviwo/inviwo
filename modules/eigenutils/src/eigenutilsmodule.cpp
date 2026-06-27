@@ -47,7 +47,7 @@
 #include <vector>
 
 #include <Eigen/Core>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/ext/vector_uint3.hpp>
 
 namespace inviwo {

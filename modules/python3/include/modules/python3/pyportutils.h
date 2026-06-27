@@ -43,7 +43,7 @@
 #include <modules/python3/polymorphictypehooks.h>
 #include <modules/python3/opaquetypes.h>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 #include <memory>
 #include <string>

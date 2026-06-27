@@ -45,7 +45,7 @@
 #include <string_view>
 #include <vector>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/vec3.hpp>
 
 namespace inviwo {

@@ -84,7 +84,7 @@
 #pragma warning(disable : 4611)
 #endif
 #include <CImg.h>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/common.hpp>
 #include <glm/detail/qualifier.hpp>
 #include <glm/detail/setup.hpp>

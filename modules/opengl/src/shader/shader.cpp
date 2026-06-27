@@ -56,7 +56,7 @@
 #include <span>
 #include <tuple>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <glm/gtc/type_ptr.hpp>

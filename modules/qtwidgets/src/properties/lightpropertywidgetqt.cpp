@@ -54,7 +54,7 @@
 #include <QSizePolicy>
 #include <QWidget>
 #include <Qt>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/geometric.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vector_relational.hpp>

@@ -48,7 +48,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo {
 

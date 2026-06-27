@@ -64,7 +64,7 @@
 #include <array>
 
 #include <flags/flags.h>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/gtx/transform.hpp>
 #include <glm/ext/scalar_constants.hpp>
 

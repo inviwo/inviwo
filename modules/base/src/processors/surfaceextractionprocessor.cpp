@@ -74,7 +74,7 @@
 #include <utility>
 
 #include <flags/flags.h>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/fwd.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>

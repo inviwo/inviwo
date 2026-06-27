@@ -64,7 +64,7 @@
 #include <algorithm>
 #include <istream>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/fwd.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/matrix.hpp>

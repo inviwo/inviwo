@@ -93,7 +93,7 @@
 #include <ranges>
 
 #include <flags/flags.h>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/common.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/scalar_constants.hpp>

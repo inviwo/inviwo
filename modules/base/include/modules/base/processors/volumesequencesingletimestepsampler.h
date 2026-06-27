@@ -46,7 +46,7 @@
 #include <memory>
 #include <string>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/common.hpp>
 #include <glm/fwd.hpp>
 #include <glm/mat4x4.hpp>

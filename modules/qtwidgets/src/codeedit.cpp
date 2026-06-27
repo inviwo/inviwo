@@ -54,7 +54,7 @@
 #include <QtGlobal>
 #include <QBrush>
 #include <Qt>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/vec3.hpp>
 
 namespace inviwo {

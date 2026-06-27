@@ -57,7 +57,7 @@
 #include <glm/gtx/component_wise.hpp>
 
 #include <fmt/std.h>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <memory_resource>
 
 namespace inviwo {

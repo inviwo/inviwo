@@ -77,7 +77,7 @@
 #include <vector>
 #include <array>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/common.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>

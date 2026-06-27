@@ -53,7 +53,7 @@
 #include <ostream>
 #include <string_view>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/std.h>
 
 namespace inviwo {

@@ -39,7 +39,7 @@
 #include <cctype>
 #include <iterator>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/std.h>
 
 namespace inviwo {

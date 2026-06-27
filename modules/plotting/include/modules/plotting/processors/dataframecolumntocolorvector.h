@@ -46,7 +46,7 @@
 #include <vector>
 
 #include "glm/ext/vector_uint3.hpp"
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/gtx/io.hpp>
 
 namespace inviwo {

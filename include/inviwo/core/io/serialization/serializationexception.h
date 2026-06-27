@@ -44,7 +44,7 @@ public:
     template <typename... Args>
     SerializationException(SourceContext context, std::vector<deserializer::Node> stack,
                            fmt::format_string<Args...> format, Args&&... args)
-        : Exception{format, fmt::make_format_args(args...), std::move(context)}
+        : Exception{format.get(), fmt::make_format_args(args...), std::move(context)}
         , stack{std::move(stack)} {}
 
     std::vector<deserializer::Node> stack;

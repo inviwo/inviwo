@@ -54,7 +54,7 @@
 #include <type_traits>
 #include <unordered_set>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo {
 

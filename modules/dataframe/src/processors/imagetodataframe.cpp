@@ -66,7 +66,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>

@@ -97,7 +97,7 @@
 #include <QStyle>
 #include <QWidget>
 #include <Qt>
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo::utilqt {
 

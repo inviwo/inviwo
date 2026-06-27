@@ -47,7 +47,7 @@
 #include <string_view>
 #include <type_traits>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/matrix.hpp>

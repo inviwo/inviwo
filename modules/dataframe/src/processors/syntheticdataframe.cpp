@@ -57,7 +57,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/fwd.hpp>
 #include <glm/gtc/type_ptr.hpp>
 

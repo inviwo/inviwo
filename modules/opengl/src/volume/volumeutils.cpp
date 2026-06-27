@@ -47,7 +47,7 @@
 #include <string>
 #include <utility>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/mat4x4.hpp>

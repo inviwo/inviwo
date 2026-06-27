@@ -42,7 +42,7 @@
 #include <string>
 #include <type_traits>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <utility>
 
 namespace inviwo {

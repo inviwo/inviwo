@@ -52,7 +52,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/std.h>

@@ -47,7 +47,7 @@
 #include <optional>
 #include <string_view>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <glm/gtx/scalar_multiplication.hpp>
 #include <glm/vec3.hpp>

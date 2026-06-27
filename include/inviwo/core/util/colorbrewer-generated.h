@@ -39,7 +39,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 
 #include <vector>
 #include <ostream>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/ostream.h>
 
 namespace inviwo {

@@ -57,7 +57,7 @@
 #include <tuple>
 #include <type_traits>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <boost/sml.hpp>
 
 namespace sml = boost::sml;

@@ -60,7 +60,7 @@
 #include <memory>
 
 #include <flags/flags.h>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <glm/vec2.hpp>
 

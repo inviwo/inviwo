@@ -52,7 +52,7 @@
 #include <functional>
 #include <string_view>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/geometric.hpp>
 #include <glm/gtx/transform.hpp>

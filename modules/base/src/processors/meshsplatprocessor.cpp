@@ -6,7 +6,7 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/logcentral.h>
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo {
 

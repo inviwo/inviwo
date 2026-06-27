@@ -83,7 +83,7 @@
 #include <QTransform>
 #include <QWidget>
 #include <Qt>
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <glm/common.hpp>
 #include <glm/vec2.hpp>
 

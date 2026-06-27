@@ -36,7 +36,7 @@
 #include <span>
 
 #include <QRegularExpressionMatchIterator>
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 class QTextCharFormat;
 

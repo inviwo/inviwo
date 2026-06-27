@@ -38,7 +38,7 @@
 #include <modules/oit/rasterizeevent.h>
 #include <modules/oit/raycastingstate.h>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo {
 

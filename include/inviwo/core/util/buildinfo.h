@@ -38,7 +38,7 @@
 #include <optional>
 #include <filesystem>
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 
