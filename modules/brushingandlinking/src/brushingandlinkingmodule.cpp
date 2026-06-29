@@ -30,7 +30,9 @@
 #include <modules/brushingandlinking/brushingandlinkingmodule.h>
 
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/exception.h>
+#include <inviwo/core/processors/processortraits.h>
+#include <inviwo/core/processors/compositesource.h>
+#include <inviwo/core/processors/compositesink.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
@@ -39,10 +41,144 @@
 namespace inviwo {
 class InviwoApplication;
 
+template <>
+struct ProcessorTraits<CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>> {
+    static ProcessorInfo getProcessorInfo() {
+        using intype = typename BrushingAndLinkingInport::type;
+        using outtype = typename BrushingAndLinkingInport::type;
+        static_assert(std::is_same<intype, outtype>::value, "type mismatch");
+        auto name = fmt::format("{} Meta Source", "BrushingAndLinking");
+        auto id = util::appendIfNotEmpty(PortTraits<BrushingAndLinkingOutport>::classIdentifier(),
+                                         CompositeSourceBase::identifierSuffix());
+        return {
+            id,                 // Class identifier
+            name,               // Display name
+            "Meta",             // Category
+            CodeState::Stable,  // Code state
+            "Meta",             // Tags
+            "Internal processor for composites processors"_help,
+            false  // Visible
+        };
+    }
+};
+
+template <>
+struct ProcessorTraits<CompositeSink<BrushingAndLinkingInport, BrushingAndLinkingOutport>> {
+    static ProcessorInfo getProcessorInfo() {
+        using intype = typename BrushingAndLinkingInport::type;
+        using outtype = typename BrushingAndLinkingInport::type;
+        static_assert(std::is_same<intype, outtype>::value, "type mismatch");
+        auto name = fmt::format("{} Meta Sink", "BrushingAndLinking");
+        auto cid = util::appendIfNotEmpty(PortTraits<BrushingAndLinkingOutport>::classIdentifier(),
+                                          CompositeSinkBase::identifierSuffix());
+        return {
+            cid,                // Class identifier
+            name,               // Display name
+            "Composite",        // Category
+            CodeState::Stable,  // Code state
+            "Composite",        // Tags
+            "Internal processor for composites processors"_help,
+            false  // Visible
+        };
+    }
+};
+
+template <>
+const ProcessorInfo&
+CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::getProcessorInfo() const {
+    static const ProcessorInfo info{ProcessorTraits<
+        CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>>::getProcessorInfo()};
+    return info;
+}
+
+template <>
+CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::CompositeSource()
+    : CompositeSourceBase(), superInport_{"inport"}, outport_{"outport"} {
+    addPort(outport_);
+    addPortToGroup(&superInport_, "default");
+
+    outport_.getManager().setParent(&superInport_.getManager());
+}
+
+template <>
+void CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::process() {}
+
+template <>
+Inport& CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::getSuperInport() {
+    return superInport_;
+}
+
+template <>
+void CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::serialize(
+    Serializer& s) const {
+    CompositeSourceBase::serialize(s);
+    s.serialize("SuperInport", superInport_);
+}
+
+template <>
+void CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::deserialize(
+    Deserializer& d) {
+    CompositeSourceBase::deserialize(d);
+    d.deserialize("SuperInport", superInport_);
+}
+
+template <>
+void CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::propagateEvent(
+    Event* event, Outport* source) {
+    if (event->hasVisitedProcessor(this)) return;
+    event->markAsVisited(this);
+    invokeEvent(event);
+    if (event->hasBeenUsed()) return;
+    if (event->shouldPropagateTo(&superInport_, this, source)) {
+        superInport_.propagateEvent(event);
+    }
+}
+
+template <>
+const ProcessorInfo&
+CompositeSink<BrushingAndLinkingInport, BrushingAndLinkingOutport>::getProcessorInfo() const {
+    static const ProcessorInfo info{ProcessorTraits<
+        CompositeSink<BrushingAndLinkingInport, BrushingAndLinkingOutport>>::getProcessorInfo()};
+
+    return info;
+}
+
+template <>
+CompositeSink<BrushingAndLinkingInport, BrushingAndLinkingOutport>::CompositeSink()
+    : CompositeSinkBase(), inport_{"inport"}, superOutport_{"outport"} {
+    addPort(inport_);
+    addPortToGroup(&superOutport_, "default");
+
+    superOutport_.getManager().setParent(&inport_.getManager());
+}
+
+template <>
+void CompositeSink<BrushingAndLinkingInport, BrushingAndLinkingOutport>::process() {}
+
+template <>
+Outport& CompositeSink<BrushingAndLinkingInport, BrushingAndLinkingOutport>::getSuperOutport() {
+    return superOutport_;
+}
+
+template <>
+void CompositeSink<BrushingAndLinkingInport, BrushingAndLinkingOutport>::serialize(
+    Serializer& s) const {
+    CompositeSinkBase::serialize(s);
+    s.serialize("SuperOutport", superOutport_);
+}
+
+template <>
+void CompositeSink<BrushingAndLinkingInport, BrushingAndLinkingOutport>::deserialize(
+    Deserializer& d) {
+    CompositeSinkBase::deserialize(d);
+    d.deserialize("SuperOutport", superOutport_);
+}
+
 BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app)
     : InviwoModule(app, "BrushingAndLinking") {
     // Processors
     registerProcessor<BrushingAndLinkingProcessor>();
+    registerProcessor<CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>>();
 
     // Ports
     registerPort<BrushingAndLinkingOutport>();
