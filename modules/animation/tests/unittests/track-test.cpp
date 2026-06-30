@@ -45,12 +45,17 @@
 #include <modules/animation/datastructures/controltrack.h>
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/datastructures/optionkeyframe.h>
+#include <modules/animation/datastructures/optionkeyframesequence.h>
+#include <modules/animation/datastructures/optiontrack.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/interpolation/constantinterpolation.h>
 #include <modules/animation/interpolation/linearinterpolation.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/animation.h>
+
+#include <inviwo/core/properties/optionproperty.h>
 
 #include <modules/animation/factories/interpolationfactory.h>
 #include <modules/animation/factories/interpolationfactoryobject.h>
@@ -620,6 +625,175 @@ TEST(AnimationTests, AnimationSerializationTest) {
 
     interpolationFactory.unRegisterObject(&linearFloatIFO);
     propertyFactory.unRegisterObject(&floatPFO);
+    processorFactory.unRegisterObject(&testPFO);
+}
+
+namespace {
+
+OptionPropertyInt makeOptionProperty() {
+    // Use option values that differ from their indices to make sure the track operates on the
+    // selected index and not on the selected value.
+    return OptionPropertyInt{"option",
+                             "Option",
+                             {{"a", "A", 10}, {"b", "B", 20}, {"c", "C", 30}, {"d", "D", 40}},
+                             0};
+}
+
+}  // namespace
+
+struct OptionTestProcessor : Processor {
+    inline static const ProcessorInfo processorInfo_{
+        "org.inviwo.animation.OptionTestProcessor",
+        "OptionTestProcessor",
+        "Test",
+        CodeState::Stable,
+        Tags::CPU,
+    };
+    virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }
+    OptionTestProcessor(std::string_view id, std::string_view name) : Processor{id, name} {
+        addProperty(option);
+    }
+    OptionPropertyInt option{
+        "option", "Option", {{"a", "A", 10}, {"b", "B", 20}, {"c", "C", 30}}, 0};
+};
+
+TEST(OptionTrackTests, IndexAnimation) {
+    auto option = makeOptionProperty();
+
+    OptionTrack track(&option, nullptr);
+
+    std::vector<std::unique_ptr<OptionKeyframe>> keys;
+    keys.push_back(std::make_unique<OptionKeyframe>(Seconds{1.0}, size_t{0}));
+    keys.push_back(std::make_unique<OptionKeyframe>(Seconds{2.0}, size_t{2}));
+    keys.push_back(std::make_unique<OptionKeyframe>(Seconds{3.0}, size_t{3}));
+    track.add(std::make_unique<OptionKeyframeSequence>(std::move(keys)));
+
+    // Constant interpolation: the index of the closest preceding keyframe is used.
+    track(Seconds{0.0}, Seconds{1.5}, AnimationState::Playing);
+    EXPECT_EQ(0u, option.getSelectedIndex());
+    EXPECT_EQ(10, option.getSelectedValue());
+
+    track(Seconds{1.5}, Seconds{2.5}, AnimationState::Playing);
+    EXPECT_EQ(2u, option.getSelectedIndex());
+    EXPECT_EQ(30, option.getSelectedValue());
+
+    track(Seconds{2.5}, Seconds{3.5}, AnimationState::Playing);
+    EXPECT_EQ(3u, option.getSelectedIndex());
+    EXPECT_EQ(40, option.getSelectedValue());
+
+    // Playing backwards
+    track(Seconds{3.5}, Seconds{1.0}, AnimationState::Playing);
+    EXPECT_EQ(0u, option.getSelectedIndex());
+    EXPECT_EQ(10, option.getSelectedValue());
+}
+
+TEST(OptionTrackTests, AddKeyFrameUsingPropertyValue) {
+    auto option = makeOptionProperty();
+
+    OptionTrack track(&option, nullptr);
+
+    option.setSelectedIndex(2);
+    track.addKeyFrameUsingPropertyValue(Seconds{1.0});
+
+    option.setSelectedIndex(1);
+    track.addKeyFrameUsingPropertyValue(Seconds{2.0});
+
+    ASSERT_EQ(1u, track.size());
+    ASSERT_EQ(2u, track[0].size());
+
+    EXPECT_EQ(2u, static_cast<const OptionKeyframe&>(track[0][0]).getIndex());
+    EXPECT_EQ(1u, static_cast<const OptionKeyframe&>(track[0][1]).getIndex());
+}
+
+TEST(OptionTrackTests, FactoryFallbackForUnregisteredOption) {
+    // Verify that any OptionProperty resolves to OptionTrack through the TrackFactory, even though
+    // no per-type connection was registered.
+    ProcessorNetwork net{nullptr};
+
+    TrackFactory trackFactory{&net};
+    TrackFactoryObjectTemplate<OptionTrack> optionTFO;
+    trackFactory.registerObject(&optionTFO);
+
+    auto option = makeOptionProperty();
+    auto track = trackFactory.create(&option);
+
+    ASSERT_TRUE(track);
+    EXPECT_EQ(OptionTrack::classIdentifier(), track->getClassIdentifier());
+    auto* propTrack = dynamic_cast<BasePropertyTrack*>(track.get());
+    ASSERT_TRUE(propTrack);
+    EXPECT_EQ(&option, propTrack->getProperty());
+
+    trackFactory.unRegisterObject(&optionTFO);
+}
+
+TEST(OptionTrackTests, SerializationTest) {
+    PropertyFactory propertyFactory;
+    PropertyFactoryObjectTemplate<OptionPropertyInt> optionPFO;
+    propertyFactory.registerObject(&optionPFO);
+
+    ProcessorFactory processorFactory{nullptr};
+    ProcessorFactoryObjectTemplate<OptionTestProcessor> testPFO;
+    processorFactory.registerObject(&testPFO);
+
+    const std::filesystem::path refPath = "/tmp";
+    std::stringstream ss;
+    ProcessorNetwork net{nullptr};
+    Animation animation;
+
+    {
+        TrackFactory trackFactory{&net};
+        TrackFactoryObjectTemplate<OptionTrack> optionTFO;
+        trackFactory.registerObject(&optionTFO);
+
+        auto proc = static_cast<OptionTestProcessor*>(
+            net.addProcessor(std::make_unique<OptionTestProcessor>("option", "Option")));
+
+        std::vector<std::unique_ptr<OptionKeyframe>> keys;
+        keys.push_back(std::make_unique<OptionKeyframe>(Seconds{1.0}, size_t{0}));
+        keys.push_back(std::make_unique<OptionKeyframe>(Seconds{2.0}, size_t{2}));
+        auto track = std::make_unique<OptionTrack>(&(proc->option));
+        track->add(std::make_unique<OptionKeyframeSequence>(std::move(keys)));
+        animation.add(std::move(track));
+
+        Serializer s(refPath);
+        s.serialize("Network", net);
+        s.serialize("animation", animation);
+        s.writeFile(ss);
+
+        trackFactory.unRegisterObject(&optionTFO);
+    }
+
+    ProcessorNetwork net2{nullptr};
+    Animation animation2;
+    {
+        TrackFactory trackFactory{&net2};
+        TrackFactoryObjectTemplate<OptionTrack> optionTFO;
+        trackFactory.registerObject(&optionTFO);
+
+        Deserializer d(ss, refPath);
+        d.setExceptionHandler([](SourceContext) { throw; });
+        d.registerFactory(&propertyFactory);
+        d.registerFactory(&trackFactory);
+        d.registerFactory(&processorFactory);
+
+        d.deserialize("Network", net2);
+        d.deserialize("animation", animation2);
+
+        trackFactory.unRegisterObject(&optionTFO);
+    }
+
+    ASSERT_EQ(1u, animation2.size());
+    auto& track2 = static_cast<OptionTrack&>(animation2[0]);
+    ASSERT_EQ(1u, track2.size());
+    ASSERT_EQ(2u, track2[0].size());
+    EXPECT_EQ(0u, static_cast<const OptionKeyframe&>(track2[0][0]).getIndex());
+    EXPECT_EQ(2u, static_cast<const OptionKeyframe&>(track2[0][1]).getIndex());
+
+    auto& option2 = net2.getProcessorsByType<OptionTestProcessor>().front()->option;
+    animation2(Seconds{0.0}, Seconds{2.5}, AnimationState::Playing);
+    EXPECT_EQ(2u, option2.getSelectedIndex());
+
+    propertyFactory.unRegisterObject(&optionPFO);
     processorFactory.unRegisterObject(&testPFO);
 }
 

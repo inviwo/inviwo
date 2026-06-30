@@ -33,6 +33,9 @@ set(HEADER_FILES
     include/modules/animation/datastructures/keyframeobserver.h
     include/modules/animation/datastructures/keyframesequence.h
     include/modules/animation/datastructures/keyframesequenceobserver.h
+    include/modules/animation/datastructures/optionkeyframe.h
+    include/modules/animation/datastructures/optionkeyframesequence.h
+    include/modules/animation/datastructures/optiontrack.h
     include/modules/animation/datastructures/propertytrack.h
     include/modules/animation/datastructures/track.h
     include/modules/animation/datastructures/trackobserver.h
@@ -91,6 +94,9 @@ set(SOURCE_FILES
     src/datastructures/keyframeobserver.cpp
     src/datastructures/keyframesequence.cpp
     src/datastructures/keyframesequenceobserver.cpp
+    src/datastructures/optionkeyframe.cpp
+    src/datastructures/optionkeyframesequence.cpp
+    src/datastructures/optiontrack.cpp
     src/datastructures/propertytrack.cpp
     src/datastructures/track.cpp
     src/datastructures/trackobserver.cpp
