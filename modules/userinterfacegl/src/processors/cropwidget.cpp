@@ -240,6 +240,10 @@ void CropWidget::process() {
         initMesh();
     }
 
+    if (volume_.isChanged()) {
+        updateAxisRanges();
+    }
+
     utilgl::activateTargetAndClearOrCopySource(outport_, inport_);
 
     if (showWidget_ || showCropPlane_) {
