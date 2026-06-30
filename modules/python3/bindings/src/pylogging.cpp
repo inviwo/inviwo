@@ -33,6 +33,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/numpy.h>
+#include <pybind11/trampoline_self_life_support.h>
 
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
@@ -43,6 +44,26 @@
 #include <modules/python3/polymorphictypehooks.h>
 
 namespace inviwo {
+
+#include <warn/push>
+#include <warn/ignore/attributes>
+// Allow implementing a Logger in Python by overriding the virtual log function
+class LoggerTrampoline : public Logger, public pybind11::trampoline_self_life_support {
+public:
+    using Logger::Logger;  // Inherit constructors
+
+    virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,
+                     std::string_view file, std::string_view function, int line,
+                     std::string_view msg) override {
+        PYBIND11_OVERRIDE_PURE(void,   /* Return type */
+                               Logger, /* Parent class */
+                               log,    /* Name of function in C++ (must match Python name) */
+                               logSource, logLevel, audience, file, function, line,
+                               msg /* Argument(s) */
+        );
+    }
+};
+#include <warn/pop>
 
 void exposeLogging(pybind11::module& m) {
     namespace py = pybind11;
@@ -68,7 +89,11 @@ void exposeLogging(pybind11::module& m) {
         .value("Warn", MessageBreakLevel::Warn)
         .value("Info", MessageBreakLevel::Info);
 
-    py::classh<Logger>(m, "Logger").def("log", &Logger::log);
+    py::classh<Logger, LoggerTrampoline>(m, "Logger")
+        .def(py::init<>())
+        .def("log", &Logger::log, py::arg("source") = "", py::arg("level") = LogLevel::Info,
+             py::arg("audience") = LogAudience::Developer, py::arg("file") = "",
+             py::arg("function") = "", py::arg("line") = 0, py::arg("msg") = "");
 
     py::classh<LogCentral, Logger>(m, "LogCentral")
         .def(py::init([]() {
