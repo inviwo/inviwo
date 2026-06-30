@@ -54,6 +54,7 @@ set(HEADER_FILES
     include/modules/base/io/binarystlwriter.h
     include/modules/base/io/datvolumesequencereader.h
     include/modules/base/io/datvolumewriter.h
+    include/modules/base/io/filesequenceloader.h
     include/modules/base/io/ivfvolumereader.h
     include/modules/base/io/ivfvolumewriter.h
     include/modules/base/io/nrrdreader.h
@@ -146,6 +147,8 @@ set(HEADER_FILES
     include/modules/base/processors/volumesliceextractor.h
     include/modules/base/processors/volumeslicetolayer.h
     include/modules/base/processors/volumesource.h
+    include/modules/base/processors/temporalvolumesource.h
+    include/modules/base/processors/temporalvolumeplayer.h
     include/modules/base/processors/volumesubset.h
     include/modules/base/processors/volumetospatialsampler.h
     include/modules/base/processors/meshsplatprocessor.h
@@ -217,6 +220,7 @@ set(SOURCE_FILES
     src/io/binarystlwriter.cpp
     src/io/datvolumesequencereader.cpp
     src/io/datvolumewriter.cpp
+    src/io/filesequenceloader.cpp
     src/io/ivfvolumereader.cpp
     src/io/ivfvolumewriter.cpp
     src/io/nrrdreader.cpp
@@ -307,6 +311,8 @@ set(SOURCE_FILES
     src/processors/volumesliceextractor.cpp
     src/processors/volumeslicetolayer.cpp
     src/processors/volumesource.cpp
+    src/processors/temporalvolumesource.cpp
+    src/processors/temporalvolumeplayer.cpp
     src/processors/volumesubset.cpp
     src/processors/volumetospatialsampler.cpp
     src/processors/meshsplatprocessor.cpp
@@ -328,6 +334,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 set(TEST_FILES
     tests/unittests/base-unittest-main.cpp
     tests/unittests/convexhull-test.cpp
+    tests/unittests/filesequenceloader-test.cpp
     tests/unittests/kdtree-test.cpp
     tests/unittests/marchingcubes-test.cpp
     tests/unittests/marchingsquares-test.cpp

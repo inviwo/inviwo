@@ -112,6 +112,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitiveset.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/transferfunction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/unitsystem.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/temporalvolume.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volume.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeborder.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeconfig.h
@@ -546,6 +547,7 @@ set(SOURCE_FILES
     datastructures/tfprimitiveset.cpp
     datastructures/transferfunction.cpp
     datastructures/unitsystem.cpp
+    datastructures/volume/temporalvolume.cpp
     datastructures/volume/volume.cpp
     datastructures/volume/volumeborder.cpp
     datastructures/volume/volumeconfig.cpp
@@ -907,6 +909,7 @@ set(TEST_FILES
     tests/unittests/serializer-test.cpp
     tests/unittests/staticstring-test.cpp
     tests/unittests/stringconversion-test.cpp
+    tests/unittests/temporalvolume-test.cpp
     tests/unittests/tfprimitiveset-test.cpp
     tests/unittests/typedmesh-test.cpp
     tests/unittests/unitsystem-test.cpp
