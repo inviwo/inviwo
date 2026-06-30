@@ -41,7 +41,6 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/property.h>
@@ -68,6 +67,7 @@
 #include <modules/animation/datastructures/invalidationtrack.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframesequence.h>
+#include <modules/animation/datastructures/optiontrack.h>  // IWYU pragma: keep
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/valuekeyframesequence.h>
@@ -155,15 +155,12 @@ AnimationModule::AnimationModule(InviwoApplication* app)
             interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
         });
 
-    const auto optionReghelper = [&]<typename T>() {
-        using PropertyType = OptionProperty<T>;
-        using ValueType = typename PropertyType::value_type;
-        propertyHelper<PropertyType>();
-        interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
-    };
-
-    util::for_each_type<ScalarTypes>{}(optionReghelper);
-    util::for_each_type<std::tuple<std::string>>{}(optionReghelper);
+    // OptionProperties are animated using their selected index through the BaseOptionProperty
+    // interface. A single OptionTrack handles all OptionProperty<T> regardless of the value type T,
+    // see TrackFactory::create(Property*). This avoids having to register a separate track for each
+    // option value type and also supports option properties with custom or unregistered enum value
+    // types.
+    registerTrack<OptionTrack>();
 
     // Camera property
     propertyHelper<CameraProperty, CameraKeyframe>();
@@ -201,7 +198,7 @@ AnimationModule::~AnimationModule() {
     unRegisterAll();
 }
 
-int AnimationModule::getVersion() const { return 3; }
+int AnimationModule::getVersion() const { return 4; }
 
 std::unique_ptr<VersionConverter> AnimationModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -273,6 +270,31 @@ bool AnimationModule::Converter::convert(TxElement* root) {
                      xml::Kind::property("org.inviwo.DoubleProperty")},
                     "type", "org.inviwo.DoubleProperty", "org.inviwo.DoubleRefProperty");
             }
+            [[fallthrough]];
+        }
+        case 3: {
+            // OptionProperties are now animated with the index-based OptionTrack instead of a
+            // value-based PropertyTrack registered per value type. The old keyframes stored the
+            // selected value, which cannot be converted to an index without the list of options.
+            // Remove the old option-property tracks so that loading does not fail; the user has to
+            // recreate them.
+            constexpr std::string_view oldOptionTrackPrefix =
+                "org.inviwo.animation.PropertyTrack.for.org.inviwo.OptionProperty";
+            xml::visitMatchingNodesRecursive(
+                root, xml::ElementMatcher{"tracks", {}}, [&](TxElement* tracks) {
+                    std::vector<TxElement*> toRemove;
+                    for (TiXmlElement* track = tracks->FirstChildElement("track"); track;
+                         track = track->NextSiblingElement("track")) {
+                        if (const auto type = track->Attribute("type");
+                            type && type->starts_with(oldOptionTrackPrefix)) {
+                            toRemove.push_back(track);
+                        }
+                    }
+                    for (auto* track : toRemove) {
+                        tracks->RemoveChild(track);
+                        res |= true;
+                    }
+                });
             [[fallthrough]];
         }
         default:
