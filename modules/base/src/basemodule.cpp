@@ -156,6 +156,8 @@
 #include <modules/base/processors/volumesliceextractor.h>
 #include <modules/base/processors/volumeslicetolayer.h>
 #include <modules/base/processors/volumesource.h>
+#include <modules/base/processors/temporalvolumesource.h>
+#include <modules/base/processors/temporalvolumeplayer.h>
 #include <modules/base/processors/volumedownsample.h>
 #include <modules/base/processors/volumesubset.h>
 #include <modules/base/processors/volumetospatialsampler.h>
@@ -298,6 +300,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSliceExtractor>();
     registerProcessor<VolumeSliceToLayer>();
     registerProcessor<VolumeSource>();
+    registerProcessor<TemporalVolumeSource>();
+    registerProcessor<TemporalVolumePlayer>();
     registerProcessor<VolumeSubset>();
     registerProcessor<VolumeToSpatialSampler>();
     registerProcessor<MeshSplatProcessor>();

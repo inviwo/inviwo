@@ -32,6 +32,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/datastructures/datasequence.h>
+#include <inviwo/core/datastructures/volume/temporalvolume.h>
 
 // Cameras
 #include <inviwo/core/datastructures/camera/camera.h>
@@ -210,6 +211,11 @@ InviwoCore::InviwoCore(InviwoApplication* app)
         SequenceCompositeSink<DataInport<Mesh, 0>, DataOutport<DataSequence<Mesh>>>>();
     registerProcessor<
         SequenceCompositeSink<DataInport<Mesh, 0, true>, DataOutport<DataSequence<Mesh>>>>();
+
+    // TemporalVolume is non-copyable, so only register its ports (not the sequence/composite
+    // defaults which would require a clone()).
+    registerPort<TemporalVolumeInport>();
+    registerPort<TemporalVolumeOutport>();
 
     // Register Defaults for Datatypes
     // clang-format off
