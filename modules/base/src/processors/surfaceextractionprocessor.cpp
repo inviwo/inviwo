@@ -121,7 +121,7 @@ void SurfaceExtraction::process() {
                                      std::numeric_limits<double>::lowest());
         minmax =
             std::accumulate(volume_.begin(), volume_.end(), minmax,
-                            [](decltype(minmax) mm, std::shared_ptr<const Volume> v) {
+                            [](decltype(minmax) mm, const std::shared_ptr<const Volume>& v) {
                                 return std::make_pair(std::min(mm.first, v->dataMap.dataRange.x),
                                                       std::max(mm.second, v->dataMap.dataRange.y));
                             });

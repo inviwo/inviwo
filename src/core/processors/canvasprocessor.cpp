@@ -357,7 +357,7 @@ Canvas* CanvasProcessor::getCanvas() const {
 
 void CanvasProcessor::process() {
     if (inport_.isChanged()) {
-        int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
+        const int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
         colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
         colorLayer_.setMaxValue(layers - 1);
     }

@@ -195,14 +195,14 @@ PixelValue::PixelValue()
     addProperties(pickingValue_, pickingStrValue_, depthValue_, depthStrValue_, coordinates_,
                   mouseMove_);
 
-    for (auto& p : getProperties()) {
+    for (const auto& p : getProperties()) {
         p->setSerializationMode(PropertySerializationMode::None);
     }
 }
 
 void PixelValue::process() {
     if (inport_.isChanged()) {
-        size_t numCh = inport_.getData()->getNumberOfColorLayers();
+        const size_t numCh = inport_.getData()->getNumberOfColorLayers();
         for (size_t i = 0; i < 8; i++) {
             pixelValues_[i].setVisible(i < numCh);
             pixelStrValues_[i].setVisible(i < numCh);
@@ -216,7 +216,7 @@ void PixelValue::process() {
 void PixelValue::mouseMoveEvent(Event* theEvent) {
     if (!inport_.hasData()) return;
 
-    if (auto mouseEvent = theEvent->getAs<MouseEvent>()) {
+    if (auto* mouseEvent = theEvent->getAs<MouseEvent>()) {
         auto img = inport_.getData();
         auto dims = img->getDimensions();
         auto numCh = img->getNumberOfColorLayers();

@@ -117,7 +117,7 @@ void AxisAlignedCutPlane::process() {
 
     if (volume_.isChanged()) {
         for (size_t i = 0; i < 3; ++i) {
-            normalizedPropertyUpdate(slices_[i], volDims[i]);
+            normalizedPropertyUpdate(slices_[i], static_cast<int>(volDims[i]));
             slices_[i].setCurrentStateAsDefault();
         }
         const auto channels = volume->getDataFormat()->getComponents();

@@ -119,7 +119,7 @@ void ISORaycaster::initializeResources() {
 
 void ISORaycaster::process() {
     if (volumePort_.isChanged()) {
-        std::size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
+        const std::size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
 
         if (channels == channel_.size()) return;
 
