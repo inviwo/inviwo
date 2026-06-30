@@ -31,6 +31,22 @@ The encode side wrappers in the FFmpeg module were renamed for symmetry with the
 The new counterparts are `ffmpeg::InputContext` in `<inviwo/ffmpeg/wrap/inputcontext.h>` and `ffmpeg::Decoder` in `<inviwo/ffmpeg/wrap/decoder.h>`.
 
 
+## 2026-06-30 TemporalVolume — lazily loaded time-varying volumes
+Added `TemporalVolume`, a new core data structure for large time-dependent volumetric data where only a sliding window of frames fits in memory. Unlike `VolumeSequence` (`DataSequence<Volume>`), which keeps every frame in memory, `TemporalVolume` keeps metadata (frame count, time values, and a `prototype` volume) always available while loading individual frames on demand into a bounded LRU cache, with optional background prefetching via the application thread pool.
+
+New core types (in `inviwo/core/datastructures/volume/temporalvolume.h`):
+- `VolumeLoader` — abstract interface for loading a single frame by index, plus `times()` and a metadata-only `prototype()`.
+- `ProceduralLoader` — a `VolumeLoader` that generates frames on the fly via a callable.
+- `TemporalVolume` — owns a `VolumeLoader`, an LRU cache, and prefetch futures. Provides `get(index)`, `get(time)`, `interpolate(time)` (returns the two bracketing frames and a blend factor), `prefetch(...)`, and cache control. Non-copyable, shared via `std::shared_ptr`.
+- `TemporalVolumeInport` / `TemporalVolumeOutport` port aliases (registered in core).
+
+New processors and loaders:
+- `FileSequenceLoader` (base, `modules/base/io/filesequenceloader.h`) — a `VolumeLoader` reading one volume file per frame using the `DataReaderFactory`.
+- `TemporalVolumeSource` (base) — loads a folder of volume files as a lazily-loaded `TemporalVolume`.
+- `TemporalVolumePlayer` (base) — resolves the current time into a single `Volume`, optionally linearly interpolating between frames on the CPU, and prefetches upcoming frames.
+- `TemporalVolumeRaycaster` (basegl) — like `StandardVolumeRaycaster`, but consumes a `TemporalVolume` and performs the time interpolation on the GPU by uploading the two bracketing frames as 3D textures and blending them in the shader. Backed by the new `TemporalVolumeComponent` shader component.
+
+
 ## 2026-05-27 Python JSON module
 The JSON module now provides Python bindings, enabling seamless conversion between Inviwo properties, ports, and JSON-compatible Python objects (e.g., dictionaries, lists). These bindings are available under the `inviwopy.json` submodule. Added `toJson` and `fromJson` functions in `inviwopy.json` for converting properties, inports, and outports to and from JSON-compatible Python objects.
 
