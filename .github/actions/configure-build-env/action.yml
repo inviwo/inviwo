@@ -56,7 +56,7 @@ runs:
       uses: petersteneteg/ccache-action@v2.4.0
       with:
         variant: ccache
-        max-size: "1500M"
+        max-size: "2500M"
         verbose: 2
         save: "${{ github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
         append-timestamp: true
