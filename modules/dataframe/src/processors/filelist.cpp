@@ -29,7 +29,6 @@
 
 #include <inviwo/dataframe/processors/filelist.h>
 #include <inviwo/core/util/raiiutils.h>
-#include <inviwo/core/util/zip.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
 
@@ -38,6 +37,7 @@
 #include <vector>
 #include <regex>
 #include <chrono>
+#include <algorithm>
 
 #include <fmt/format.h>
 #include <fmt/std.h>
@@ -110,9 +110,9 @@ FileList::FileList()
                                             const BitSet& indices,
                                             [[maybe_unused]] std::string_view source) {
         if (action == BrushingAction::Select && target == BrushingTarget::Row) {
-            if (files_.empty() || indices.empty()) {
+            if (files_.empty()) {
                 selected_.set("");
-            } else {
+            } else if (!indices.empty()) {
                 const Property::OnChangeBlocker block{selectedIndex_};
                 selectedIndex_.set(indices.min());
                 selected_.set(files_[std::min(files_.size() - 1, size_t{indices.min()})].path());
