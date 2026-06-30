@@ -67,6 +67,16 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    template <typename F>
+    void setColumn(const ColumnOptionProperty& property, F memberfunc) {
+        if (!dataFramePort_.hasData()) return;
+        if (auto idx = property.get(); idx == -1) {
+            std::invoke(memberfunc, scatterPlot_, nullptr);
+        } else {
+            std::invoke(memberfunc, scatterPlot_, dataFramePort_.getData()->getColumn(idx).get());
+        }
+    }
+
     DataFrameInport dataFramePort_;
     BrushingAndLinkingInport brushingPort_;
     ImageInport backgroundPort_;

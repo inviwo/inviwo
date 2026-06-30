@@ -107,7 +107,8 @@ ScatterPlotProcessor::ScatterPlotProcessor()
             if (auto data = dataFramePort_.getData()) {
                 BitSet indices;
                 auto iCol = data->getIndexColumn();
-                const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                const auto& indexCol =
+                    iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
                 for (auto idx : highlighted) {
                     indices.add(indexCol[idx]);
                 }
@@ -120,7 +121,8 @@ ScatterPlotProcessor::ScatterPlotProcessor()
             if (auto data = dataFramePort_.getData()) {
                 BitSet indices;
                 auto iCol = data->getIndexColumn();
-                const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                const auto& indexCol =
+                    iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
                 for (auto idx : selected) {
                     indices.add(indexCol[idx]);
                 }
@@ -133,7 +135,8 @@ ScatterPlotProcessor::ScatterPlotProcessor()
             if (auto data = dataFramePort_.getData()) {
                 BitSet indices;
                 auto iCol = data->getIndexColumn();
-                const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                const auto& indexCol =
+                    iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
                 for (auto idx : filtered) {
                     indices.add(indexCol[idx]);
                 }
@@ -150,24 +153,15 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     addProperties(scatterPlot_.properties_, xAxis_, yAxis_, colorCol_, radiusCol_, sortCol_,
                   sortOrder_);
 
-    auto setColumn = [this](const ColumnOptionProperty& property, auto memberfunc) {
-        if (!dataFramePort_.hasData()) return;
-        if (auto idx = property.get(); idx == -1) {
-            std::invoke(memberfunc, scatterPlot_, nullptr);
-        } else {
-            std::invoke(memberfunc, scatterPlot_, dataFramePort_.getData()->getColumn(idx).get());
-        }
-    };
-
-    xAxis_.onChange([this, setColumn]() { setColumn(xAxis_, &ScatterPlotGL::setXAxis); });
-    yAxis_.onChange([this, setColumn]() { setColumn(yAxis_, &ScatterPlotGL::setYAxis); });
-    colorCol_.onChange([this, setColumn]() { setColumn(colorCol_, &ScatterPlotGL::setColorData); });
-    radiusCol_.onChange(
-        [this, setColumn]() { setColumn(radiusCol_, &ScatterPlotGL::setRadiusData); });
-    sortCol_.onChange([this, setColumn]() { setColumn(sortCol_, &ScatterPlotGL::setSortingData); });
+    yAxis_.onChange([this]() { setColumn(yAxis_, &ScatterPlotGL::setYAxis); });
+    colorCol_.onChange([this]() { setColumn(colorCol_, &ScatterPlotGL::setColorData); });
+    radiusCol_.onChange([this]() { setColumn(radiusCol_, &ScatterPlotGL::setRadiusData); });
+    sortCol_.onChange([this]() { setColumn(sortCol_, &ScatterPlotGL::setSortingData); });
     sortOrder_.onChange([this]() { scatterPlot_.setSortingOrder(sortOrder_); });
+}
 
-    dataFramePort_.onChange([this, setColumn]() {
+void ScatterPlotProcessor::process() {
+    if (dataFramePort_.isChanged()) {
         setColumn(xAxis_, &ScatterPlotGL::setXAxis);
         setColumn(yAxis_, &ScatterPlotGL::setYAxis);
         setColumn(colorCol_, &ScatterPlotGL::setColorData);
@@ -177,11 +171,9 @@ ScatterPlotProcessor::ScatterPlotProcessor()
         if (dataFramePort_.hasData()) {
             scatterPlot_.setIndexColumn(dataFramePort_.getData()->getIndexColumn());
         }
-    });
-}
+    }
 
-void ScatterPlotProcessor::process() {
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     if (dataFramePort_.isChanged()) {
         indexToRowMap_ = [&]() {
