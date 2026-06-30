@@ -36,7 +36,6 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -54,6 +53,7 @@
 #include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/datastructures/cameratrack.h>  // IWYU pragma: keep
 #include <modules/animation/datastructures/controltrack.h>
+#include <modules/animation/datastructures/optiontrack.h>
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/valuekeyframesequence.h>
@@ -245,6 +245,15 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
 
     registerTrackToWidgetMap(CallbackTrack::classIdentifier(),
                              PropertyTrackWidgetQt::classIdentifier());
+
+    // A single OptionTrack handles all OptionProperty<T> regardless of the value type T. It derives
+    // from BasePropertyTrack and exposes a BaseOptionProperty, so it reuses the generic property
+    // track widget and sequence editor.
+    registerTrackToWidgetMap(OptionTrack::classIdentifier(),
+                             PropertyTrackWidgetQt::classIdentifier());
+
+    registerTrackToSequenceEditorMap(OptionTrack::classIdentifier(),
+                                     PropertySequenceEditor::classIdentifier());
 
     registerTrackToWidgetMap(ControlTrack::classIdentifier(),
                              ControlTrackWidgetQt::classIdentifier());

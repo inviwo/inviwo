@@ -54,8 +54,6 @@
 
 namespace inviwo {
 class Serializer;
-template <typename T>
-class OptionProperty;
 
 namespace animation {
 class Keyframe;
@@ -74,30 +72,12 @@ void setPropertyFromKeyframeHelper(Prop* property, const Key* keyframe) {
 }
 
 /**
- * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
- * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
- */
-template <typename T>
-void setPropertyFromKeyframeHelper(OptionProperty<T>* property, const ValueKeyframe<T>* keyframe) {
-    property->setSelectedValue(keyframe->getValue());
-}
-
-/**
  * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
  * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
 template <typename Prop, typename Key>
 void setKeyframeFromPropertyHelper(const Prop* property, Key* keyframe) {
     keyframe->setValue(property->get());
-}
-
-/**
- * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
- */
-template <typename T>
-void setKeyframeFromPropertyHelper(const OptionProperty<T>* property, ValueKeyframe<T>* keyframe) {
-    keyframe->setValue(property->getSelectedValue());
 }
 
 /*
