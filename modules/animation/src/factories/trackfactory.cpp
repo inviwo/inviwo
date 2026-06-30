@@ -29,13 +29,16 @@
 
 #include <modules/animation/factories/trackfactory.h>
 
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/logcentral.h>
+#include <modules/animation/datastructures/optiontrack.h>
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/factories/trackfactoryobject.h>
 
 #include <ostream>
+#include <string_view>
 #include <utility>
 
 namespace inviwo {
@@ -51,9 +54,8 @@ std::unique_ptr<Track> TrackFactory::create(std::string_view key) const {
 }
 
 std::unique_ptr<Track> TrackFactory::create(Property* property) const {
-    auto it = propertyToTrackMap_.find(property->getClassIdentifier());
-    if (it != propertyToTrackMap_.end()) {
-        if (auto track = create(it->second)) {
+    const auto createTrack = [&](std::string_view trackId) -> std::unique_ptr<Track> {
+        if (auto track = create(trackId)) {
             if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
                 try {
                     basePropertyTrack->setProperty(property);
@@ -61,11 +63,25 @@ std::unique_ptr<Track> TrackFactory::create(Property* property) const {
                     log::warn("{} Invalid property class identified?", e.getMessage());
                     return nullptr;
                 }
-
                 return track;
             }
         }
+        return nullptr;
+    };
+
+    if (auto it = propertyToTrackMap_.find(property->getClassIdentifier());
+        it != propertyToTrackMap_.end()) {
+        return createTrack(it->second);
     }
+
+    // Any OptionProperty<T> can be animated by the generic OptionTrack using the selected index
+    // through the BaseOptionProperty interface. This avoids having to register a separate track for
+    // each option value type and also supports option properties with custom or unregistered enum
+    // value types.
+    if (dynamic_cast<BaseOptionProperty*>(property)) {
+        return createTrack(OptionTrack::classIdentifier());
+    }
+
     return nullptr;
 }
 
