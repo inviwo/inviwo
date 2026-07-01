@@ -176,9 +176,6 @@ StreamParticles::StreamParticles()
         buffersDirty_ = true;
     });
 
-    seedingSpace_.onChange([this]() { buffersDirty_ = true; });
-    seeds_.onChange([this]() { buffersDirty_ = true; });
-
     timer_.start();
 }
 
@@ -198,7 +195,10 @@ void StreamParticles::initializeResources() {
 }
 
 void StreamParticles::process() {
-    if (buffersDirty_) initBuffers();
+    if (seeds_.isChanged() || seedingSpace_.isModified() || buffersDirty_) {
+        initBuffers();
+    }
+
     reseed();
     advect();
     meshPort_.setData(mesh_);

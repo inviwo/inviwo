@@ -49,6 +49,8 @@ template <typename T>
 std::string convert(T&& val) {
     if constexpr (fmt::formattable<T>) {
         return fmt::to_string(val);
+    } else if constexpr (std::is_base_of_v<Document, T>) {
+        return val;
     } else if constexpr (util::is_stream_insertable<T>::value) {
         std::stringstream value;
         value << std::boolalpha << std::forward<T>(val);

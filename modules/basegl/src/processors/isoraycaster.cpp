@@ -32,35 +32,17 @@
 #include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorinfo.h>
-#include <inviwo/core/processors/processorstate.h>
-#include <inviwo/core/processors/processortags.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/exception.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/volume/volumeutils.h>
 
-#include <cstddef>
-#include <functional>
 #include <memory>
 #include <sstream>
-#include <string>
-#include <string_view>
-#include <type_traits>
-#include <utility>
 
 namespace inviwo {
 class Deserializer;
@@ -69,7 +51,7 @@ const ProcessorInfo ISORaycaster::processorInfo_{
     "org.inviwo.ISORaycaster",  // Class identifier
     "ISO Raycaster",            // Display name
     "Volume Rendering",         // Category
-    CodeState::Stable,          // Code state
+    CodeState::Deprecated,      // Code state
     Tags::GL,                   // Tags
 };
 const ProcessorInfo& ISORaycaster::getProcessorInfo() const { return processorInfo_; }
@@ -83,7 +65,7 @@ ISORaycaster::ISORaycaster()
     , backgroundPort_("bg")
     , outport_("outport")
     , surfaceColor_("surfaceColor", "Surface Color", vec4(1, 1, 1, 1))
-    , channel_("channel", "Render Channel")
+    , channel_("channel", "Render Channel", util::enumeratedOptions("Channel", 4))
     , raycasting_("raycasting", "Raycasting")
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , lighting_("lighting", "Lighting", &camera_) {
@@ -99,34 +81,10 @@ ISORaycaster::ISORaycaster()
 
     backgroundPort_.setOptional(true);
 
-    volumePort_.onChange([this]() {
-        if (volumePort_.hasData()) {
-            std::size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-
-            if (channels == channel_.size()) return;
-
-            channel_.clearOptions();
-            for (int i = 0; i < static_cast<int>(channels); i++) {
-                std::stringstream ss;
-                ss << "Channel " << i;
-                channel_.addOption(ss.str(), ss.str(), i);
-            }
-            channel_.setCurrentStateAsDefault();
-        }
-    });
-
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
-    addProperty(surfaceColor_);
-    addProperty(channel_);
-    addProperty(raycasting_);
-    addProperty(camera_);
-    addProperty(lighting_);
-
-    std::stringstream ss;
-    ss << "Channel " << 0;
-    channel_.addOption(ss.str(), ss.str(), 0);
+    addProperties(surfaceColor_, channel_, raycasting_, camera_, lighting_);
 
     raycasting_.compositingMode_.setVisible(false);
     setAllPropertiesCurrentStateAsDefault();
@@ -141,6 +99,12 @@ void ISORaycaster::initializeResources() {
 }
 
 void ISORaycaster::process() {
+    if (const size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
+        channel_ >= static_cast<int>(channels)) {
+        throw Exception(SourceContext{}, "Channel is greater than the available channels {} >= {}",
+                        channel_.get() + 1, channels);
+    }
+
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
 

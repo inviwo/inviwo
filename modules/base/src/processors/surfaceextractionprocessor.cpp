@@ -107,33 +107,28 @@ SurfaceExtraction::SurfaceExtraction()
     addPort(volume_);
     addPort(outport_);
 
-    addProperty(method_);
-    addProperty(isoValue_);
-    addProperty(invertIso_);
-    addProperty(encloseSurface_);
-    addProperty(colors_);
-
-    volume_.onChange([this]() {
-        updateColors();
-        if (volume_.hasData()) {
-            auto minmax = std::make_pair(std::numeric_limits<double>::max(),
-                                         std::numeric_limits<double>::lowest());
-            minmax = std::accumulate(volume_.begin(), volume_.end(), minmax,
-                                     [](decltype(minmax) mm, std::shared_ptr<const Volume> v) {
-                                         return std::make_pair(
-                                             std::min(mm.first, v->dataMap.dataRange.x),
-                                             std::max(mm.second, v->dataMap.dataRange.y));
-                                     });
-
-            isoValue_.setMinValue(static_cast<float>(minmax.first));
-            isoValue_.setMaxValue(static_cast<float>(minmax.second));
-        }
-    });
+    addProperties(method_, isoValue_, invertIso_, encloseSurface_, colors_);
 }
 
 SurfaceExtraction::~SurfaceExtraction() = default;
 
 void SurfaceExtraction::process() {
+
+    if (volume_.isChanged()) {
+        updateColors();
+
+        auto minmax = std::make_pair(std::numeric_limits<double>::max(),
+                                     std::numeric_limits<double>::lowest());
+        minmax =
+            std::accumulate(volume_.begin(), volume_.end(), minmax,
+                            [](decltype(minmax) mm, const std::shared_ptr<const Volume>& v) {
+                                return std::make_pair(std::min(mm.first, v->dataMap.dataRange.x),
+                                                      std::max(mm.second, v->dataMap.dataRange.y));
+                            });
+
+        isoValue_.setMinValue(static_cast<float>(minmax.first));
+        isoValue_.setMaxValue(static_cast<float>(minmax.second));
+    }
 
     const auto computeSurface = [this](vec4 color, std::shared_ptr<const Volume> vol) {
         return [vol, color, method = method_.get(), iso = isoValue_.get(),

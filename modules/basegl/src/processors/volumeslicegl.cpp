@@ -257,8 +257,6 @@ VolumeSliceGL::VolumeSliceGL()
 
     addPorts(inport_, outport_);
 
-    inport_.onChange([this]() { updateMaxSliceNumber(); });
-
     addProperties(sliceAlongAxis_, sliceX_, sliceY_, sliceZ_, planeNormal_, planePosition_,
                   trafoGroup_, pickGroup_, tfGroup_, sampleQuery_, worldPosition_,
                   handleInteractionEvents_, mouseShiftSlice_, stepSliceUp_, stepSliceDown_,

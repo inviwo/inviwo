@@ -117,19 +117,16 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
     death_.onChange([this]() { onYAxisChange(); });
     persistence_.onChange([this]() { onYAxisChange(); });
     colorCol_.onChange([this]() { onColorChange(); });
-
-    dataFrame_.onChange([this]() {
-        onXAxisChange();
-        onYAxisChange();
-        onColorChange();
-
-        if (dataFrame_.hasData()) {
-            persistenceDiagramPlot_.setIndexColumn(dataFrame_.getData()->getIndexColumn());
-        }
-    });
 }
 
 void PersistenceDiagramPlotProcessor::process() {
+    if (dataFrame_.isChanged()) {
+        onXAxisChange();
+        onYAxisChange();
+        onColorChange();
+        persistenceDiagramPlot_.setIndexColumn(dataFrame_.getData()->getIndexColumn());
+    }
+
     if (brushingPort_.isConnected()) {
         if (brushingPort_.isChanged()) {
             persistenceDiagramPlot_.setSelectedIndices(brushingPort_.getSelectedIndices());

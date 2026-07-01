@@ -50,25 +50,21 @@ ImageToLayer::ImageToLayer()
     : Processor{}
     , inport_{"inport", "Input image"_help, OutportDeterminesSize::Yes}
     , outport_{"outport", "Selected layer "_help}
-    , outputLayer_{"outputLayer", "Output Layer"} {
+    , outputLayer_{"outputLayer",
+                   "Output Layer",
+                   "Determines which layer of the input image is used as new color layer"_help,
+                   {{"color0", "Color Layer 1", 0},
+                    {"color1", "Color Layer 2", 1},
+                    {"color2", "Color Layer 3", 2},
+                    {"color3", "Color Layer 4", 3},
+                    {"color4", "Color Layer 5", 4},
+                    {"color5", "Color Layer 6", 5},
+                    {"color6", "Color Layer 7", 6},
+                    {"depth", "Depth Layer", static_cast<int>(LayerEnum::Depth)},
+                    {"picking", "Picking Layer", static_cast<int>(LayerEnum::Picking)}}} {
 
     addPorts(inport_, outport_);
     addProperties(outputLayer_);
-
-    auto populateOptionProperty = [this]() {
-        std::vector<OptionPropertyIntOption> options;
-        if (inport_.hasData()) {
-            for (auto&& [i, layer] : util::enumerate<int>(*inport_.getData())) {
-                options.emplace_back(fmt::format("color{}", i),
-                                     fmt::format("Color Layer {}", i + 1), i);
-            }
-            options.emplace_back("depth", "Depth Layer", static_cast<int>(LayerEnum::Depth));
-            options.emplace_back("picking", "Picking Layer", static_cast<int>(LayerEnum::Picking));
-        }
-        outputLayer_.replaceOptions(options);
-    };
-
-    inport_.onChange(populateOptionProperty);
 }
 
 void ImageToLayer::process() {
@@ -80,6 +76,12 @@ void ImageToLayer::process() {
             case static_cast<int>(LayerEnum::Picking):
                 return data->getPickingLayer()->clone();
             default:
+                const auto nColorLayers = inport_.getData()->getNumberOfColorLayers();
+                if (outputLayer_.get() >= static_cast<int>(nColorLayers)) {
+                    throw Exception(SourceContext{},
+                                    "Selected color layer '{}' is out of bounds '{}'",
+                                    outputLayer_.get(), nColorLayers);
+                }
                 return data->getColorLayer(outputLayer_.get())->clone();
         }
     }();

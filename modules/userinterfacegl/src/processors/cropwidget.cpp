@@ -219,7 +219,6 @@ CropWidget::CropWidget()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    volume_.onChange([this]() { updateAxisRanges(); });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     static constexpr std::array<InteractionElement, 3> elem = {
@@ -233,8 +232,16 @@ CropWidget::CropWidget()
 CropWidget::~CropWidget() = default;
 
 void CropWidget::process() {
+    if (volume_.isChanged()) {
+        updateAxisRanges();
+    }
+
     if (!interactionHandleMesh_[0]) {
         initMesh();
+    }
+
+    if (volume_.isChanged()) {
+        updateAxisRanges();
     }
 
     utilgl::activateTargetAndClearOrCopySource(outport_, inport_);

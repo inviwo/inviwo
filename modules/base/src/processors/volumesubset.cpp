@@ -95,10 +95,12 @@ VolumeSubset::VolumeSubset()
     rangeX_.setSerializationMode(PropertySerializationMode::All);
     rangeY_.setSerializationMode(PropertySerializationMode::All);
     rangeZ_.setSerializationMode(PropertySerializationMode::All);
+}
 
-    inport_.onChange([this]() {
-        NetworkLock lock(this);
+VolumeSubset::~VolumeSubset() = default;
 
+void VolumeSubset::process() {
+    if (inport_.isChanged()) {
         // Update to the new dimensions.
         dims_ = inport_.getData()->getDimensions();
 
@@ -110,12 +112,8 @@ VolumeSubset::VolumeSubset()
         rangeX_.setCurrentStateAsDefault();
         rangeY_.setCurrentStateAsDefault();
         rangeZ_.setCurrentStateAsDefault();
-    });
-}
+    }
 
-VolumeSubset::~VolumeSubset() = default;
-
-void VolumeSubset::process() {
     if (enabled_.get()) {
         const auto vol = inport_.getData()->getRepresentation<VolumeRAM>();
         const size3_t inputDims = vol->getDimensions();

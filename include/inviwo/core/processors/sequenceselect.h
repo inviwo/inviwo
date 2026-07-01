@@ -80,17 +80,17 @@ SequenceSelect<T, OutportType>::SequenceSelect()
 
     addPorts(inport_, outport_);
     addProperties(index_, next_, prev_);
-
-    inport_.onChange([this]() {
-        if (auto data = inport_.getData()) {
-            index_.setMaxValue(std::max(data->size(), 1uz) - 1uz);
-        }
-    });
 }
 
 template <typename T, typename OutportType>
 void SequenceSelect<T, OutportType>::process() {
     if (!inport_.isReady()) return;
+
+    if (inport_.isChanged()) {
+        if (auto data = inport_.getData()) {
+            index_.setMaxValue(std::max(data->size(), 1uz) - 1uz);
+        }
+    }
 
     if (auto data = inport_.getData()) {
         if (data->size() == 0) {

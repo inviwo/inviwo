@@ -100,13 +100,14 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
     , sampler_("sampler", "The created sampler"_help)
     , timestamp_("timestamp", "Timestamp", "The timestamp to sample at"_help) {
 
-    addPort(volumeSequence_);
-    addPort(sampler_);
+    addPorts(volumeSequence_, sampler_);
     addProperty(timestamp_);
 
     timestamp_.setSerializationMode(PropertySerializationMode::All);
+}
 
-    volumeSequence_.onChange([&]() {
+void VolumeSequenceSingleTimestepSamplerProcessor::process() {
+    if (volumeSequence_.isChanged()) {
         if (!sampler_.hasData()) return;
         auto seq = volumeSequence_.getData();
         if (!util::hasTimestamps(*seq, false)) {
@@ -122,10 +123,7 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
         timestamp_.setCurrentStateAsDefault();
 
         timestamp_.set(newRange.first + t * (newRange.second - newRange.first));
-    });
-}
-
-void VolumeSequenceSingleTimestepSamplerProcessor::process() {
+    }
 
     float t = 0;
     auto vols = util::getVolumesForTimestep(*volumeSequence_.getData(), timestamp_.get());

@@ -163,8 +163,6 @@ ImagePlotProcessor::ImagePlotProcessor()
     rangeXaxis_.onChange(linkAxisRanges(rangeXaxis_, xAxis_.range_));
     rangeYaxis_.onChange(linkAxisRanges(rangeYaxis_, yAxis_.range_));
 
-    // adjust axis ranges when input volume, i.e. its basis, changes
-    imgInport_.onChange([this]() { adjustRanges(); });
     // sync ranges when custom range is enabled or disabled
     rangeMode_.onChange([this]() { adjustRanges(); });
 
@@ -176,6 +174,11 @@ ImagePlotProcessor::ImagePlotProcessor()
 }
 
 void ImagePlotProcessor::process() {
+    if (imgInport_.isChanged()) {
+        // adjust axis ranges when input volume, i.e. its basis, changes
+        adjustRanges();
+    }
+
     utilgl::activateTargetAndClearOrCopySource(outport_, bgInport_);
 
     utilgl::DepthFuncState depthfunc(GL_ALWAYS);

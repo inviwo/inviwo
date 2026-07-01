@@ -112,10 +112,12 @@ ImageSubsetGL::ImageSubsetGL()
     // serialize them so we can do a proper renormalization when we load new data.
     rangeX_.setSerializationMode(PropertySerializationMode::All);
     rangeY_.setSerializationMode(PropertySerializationMode::All);
+}
 
-    inport_.onChange([this]() {
-        NetworkLock lock(this);
+ImageSubsetGL::~ImageSubsetGL() = default;
 
+void ImageSubsetGL::process() {
+    if (inport_.isChanged()) {
         // Update to the new dimensions.
         auto dims = inport_.getData()->getDimensions();
 
@@ -125,12 +127,8 @@ ImageSubsetGL::ImageSubsetGL()
         // set the new dimensions to default if we were to press reset
         rangeX_.setCurrentStateAsDefault();
         rangeY_.setCurrentStateAsDefault();
-    });
-}
+    }
 
-ImageSubsetGL::~ImageSubsetGL() = default;
-
-void ImageSubsetGL::process() {
     const ivec2 offset{rangeX_.get().x, rangeY_.get().x};
     const ivec2 dim = ivec2{rangeX_.get().y, rangeY_.get().y} - offset;
     auto inputDim = inport_.getData()->getDimensions();

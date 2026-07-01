@@ -278,8 +278,6 @@ ParallelCoordinates::ParallelCoordinates()
         lineShader_.build();
     }
 
-    dataFrame_.onChange([&]() { createOrUpdateProperties(); });
-
     resetHandlePositions_.onChange([&]() {
         for (auto& axis : axes_) {
             axis.pcp->moveHandle(true, std::numeric_limits<double>::max());
@@ -336,6 +334,10 @@ void ParallelCoordinates::adjustMargins() {
 ParallelCoordinates::~ParallelCoordinates() = default;
 
 void ParallelCoordinates::process() {
+    if (dataFrame_.isChanged()) {
+        createOrUpdateProperties();
+    }
+
     const utilgl::ClearColor clearColor{vec4{0.0}};
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 

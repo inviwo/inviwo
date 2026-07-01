@@ -82,8 +82,6 @@ PixelToBufferProcessor::PixelToBufferProcessor()
     addPort(inport_);
     addPort(pixelValues_);
 
-    inport_.onChange([this]() { inportChanged(); });
-
     addProperty(fromPixel_);
     addProperty(channel_);
     addProperty(clearValues_);
@@ -92,15 +90,13 @@ PixelToBufferProcessor::PixelToBufferProcessor()
     pixelValues_.setData(values_);
 }
 
-void PixelToBufferProcessor::inportChanged() {
-    if (!inport_.hasData()) return;
-
-    auto data = inport_.getData();
-    fromPixel_.setMaxValue(ivec2(data->getDimensions()) - 1);
-    channel_.setMaxValue(static_cast<int>(data->getDataFormat()->getComponents()) - 1);
-}
-
 void PixelToBufferProcessor::process() {
+    if (inport_.isChanged()) {
+        auto data = inport_.getData();
+        fromPixel_.setMaxValue(ivec2(data->getDimensions()) - 1);
+        channel_.setMaxValue(static_cast<int>(data->getDataFormat()->getComponents()) - 1);
+    }
+
     double value =
         inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>()->getAsNormalizedDVec4(
             fromPixel_.get())[channel_.get()];

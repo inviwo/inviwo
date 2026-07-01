@@ -95,7 +95,6 @@ MetaDataProcessor<T, TInport, TOutport>::MetaDataProcessor()
             detail::clearMetaData(metadata_);
         }
     };
-    inport_.onChange(updateMeta);
     inport_.onConnect(updateMeta);
     inport_.onDisconnect(updateMeta);
 
@@ -105,6 +104,14 @@ MetaDataProcessor<T, TInport, TOutport>::MetaDataProcessor()
 template <typename T, typename TInport, typename TOutport>
     requires std::derived_from<T, MetaDataOwner>
 void MetaDataProcessor<T, TInport, TOutport>::process() {
+    if (inport_.isChanged()) {
+        if (auto data = inport_.getData()) {
+            detail::updateMetaData(metadata_, *data);
+        } else {
+            detail::clearMetaData(metadata_);
+        }
+    }
+
     outport_.setData(inport_.getData());
 }
 template <typename T, typename TInport, typename TOutport>

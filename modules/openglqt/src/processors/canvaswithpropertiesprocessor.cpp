@@ -213,10 +213,6 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
 
     layerIndex_.setSerializationMode(PropertySerializationMode::All);
     layerIndex_.readonlyDependsOn(layerType_, [](const auto& p) { return p != LayerType::Color; });
-    inport_.onChange([&]() {
-        const int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
-        layerIndex_.setMaxValue(layers - 1);
-    });
 
     isSink_.setUpdate([this]() { return processorWidget_ && processorWidget_->isVisible(); });
     isReady_.setUpdate([this, defaultCheck = getDefaultIsReadyUpdater(this)]() -> ProcessorStatus {
@@ -232,6 +228,11 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
 CanvasWithPropertiesProcessor::~CanvasWithPropertiesProcessor() = default;
 
 void CanvasWithPropertiesProcessor::process() {
+    if (inport_.isChanged()) {
+        const int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
+        layerIndex_.setMaxValue(layers - 1);
+    }
+
     if (auto* widget =
             static_cast<CanvasWithPropertiesProcessorWidgetQt*>(processorWidget_.get())) {
         widget->setProperties(paths_.get());

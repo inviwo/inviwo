@@ -58,7 +58,7 @@ LayerSeriesSource::LayerSeriesSource(InviwoApplication* app)
                    "")
     , findFilesButton_("findFiles", "Update File List")
     , currentIndex_("currentIndex", "Index", 1, 1, 1, 1)
-    , fileName_("fileName", "ile Name") {
+    , fileName_("fileName", "File Name") {
 
     addPorts(outport_);
     addProperties(filePattern_, findFilesButton_, currentIndex_, fileName_);

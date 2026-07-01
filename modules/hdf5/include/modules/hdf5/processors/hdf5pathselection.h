@@ -56,8 +56,6 @@ protected:
     virtual void process() override;
 
 private:
-    void onDataChange();
-
     Inport inport_;
     Outport outport_;
 
