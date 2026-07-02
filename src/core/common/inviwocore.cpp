@@ -207,6 +207,11 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerDefaultsForDataType<LightSource>();
     registerDefaultsForDataType<std::filesystem::path>();
 
+    registerProcessor<
+        SequenceCompositeSink<DataInport<Mesh, 0>, DataOutport<DataSequence<Mesh>>>>();
+    registerProcessor<
+        SequenceCompositeSink<DataInport<Mesh, 0, true>, DataOutport<DataSequence<Mesh>>>>();
+
     // Register Defaults for Datatypes
     // clang-format off
     using types = std::tuple<

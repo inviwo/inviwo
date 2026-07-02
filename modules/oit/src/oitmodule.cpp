@@ -68,8 +68,11 @@ OITModule::OITModule(InviwoApplication* app) : InviwoModule(app, "Oit") {
     registerProcessor<VolumeRasterizer>();
 
     // Ports
-    registerPort<RasterizationInport>();
-    registerPort<RasterizationOutport>();
+    registerDefaultsForDataType<Rasterization>();
+    registerProcessor<SequenceCompositeSink<DataInport<Rasterization, 0>,
+                                            DataOutport<DataSequence<Rasterization>>>>();
+    registerProcessor<SequenceCompositeSink<DataInport<Rasterization, 0, true>,
+                                            DataOutport<DataSequence<Rasterization>>>>();
 }
 
 int OITModule::getVersion() const { return 1; }
