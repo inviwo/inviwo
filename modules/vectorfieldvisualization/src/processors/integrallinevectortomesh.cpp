@@ -286,10 +286,6 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     colorBy_.onChange(updateVisibility);
     updateVisibility();
 
-    lines_.onChange([&]() { updateOptions(); });
-
-    colors_.onChange([&]() { updateOptions(); });
-
     setFromData_.onChange([&]() {
         if (lines_.hasData()) {
             double minT = std::numeric_limits<double>::max();
@@ -333,6 +329,10 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 }
 
 void IntegralLineVectorToMesh::process() {
+    if (lines_.isChanged() || colors_.isChanged()) {
+        updateOptions();
+    }
+
     if (colorBy_.size() == 0) {
         updateOptions();
     }

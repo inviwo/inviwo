@@ -92,13 +92,15 @@ TMIP::TMIP()
 
     addProperty(outputType_);
 
-    inport_.onChange([this]() { initializeResources(); });
-
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxSamplers_);
     maxSamplers_ -= 1;
 }
 
 void TMIP::process() {
+    if (inport_.isChanged()) {
+        initializeResources();
+    }
+
     auto volumes = inport_.getData();
 
     if (volumes->empty()) {

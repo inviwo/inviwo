@@ -114,8 +114,6 @@ MultichannelRaycaster::MultichannelRaycaster()
 
     addProperties(raycasting_, camera_, lighting_, positionIndicator_, transferFunctions_);
 
-    volumePort_.onChange([this]() { initializeResources(); });
-
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -148,6 +146,10 @@ void MultichannelRaycaster::initializeResources() {
 }
 
 void MultichannelRaycaster::process() {
+    if (volumePort_.isChanged()) {
+        initializeResources();
+    }
+
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
 
