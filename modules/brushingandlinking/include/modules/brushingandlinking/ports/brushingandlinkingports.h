@@ -328,12 +328,12 @@ private:
 
 template <>
 struct PortTraits<BrushingAndLinkingInport> {
-    static std::string_view classIdentifier() { return "BrushingAndLinkingInport"; }
+    static std::string_view classIdentifier() { return "org.inviwo.BrushingAndLinkingInport"; }
 };
 
 template <>
 struct PortTraits<BrushingAndLinkingOutport> {
-    static std::string_view classIdentifier() { return "BrushingAndLinkingOutport"; }
+    static std::string_view classIdentifier() { return "org.inviwo.BrushingAndLinkingOutport"; }
 };
 
 }  // namespace inviwo
