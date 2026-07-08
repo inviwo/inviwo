@@ -248,7 +248,7 @@ void NetworkEditor::addPropertyWidgets(Processor* processor) {
         return item.first != processor && item.second->isSelected();
     });
     if (it == processorGraphicsItems_.end() ||
-        QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)) {
+        QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
         QCoreApplication::postEvent(
             mainWindow_->getPropertyListWidget(),
             new PropertyListEvent(PropertyListEvent::Action::Add, processor->getIdentifier()),
