@@ -172,10 +172,10 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
     connect(view_->selectionModel(), &QItemSelectionModel::currentRowChanged, this,
             [this](const QModelIndex& current, const QModelIndex&) {
                 if (const auto* item = utilqt::getData(current, Role::Item).value<const Item*>()) {
-                    helpWidget_->showDocForClassName(item->info.classIdentifier);
                     if (!win_->tabifiedDockWidgets(this).contains(helpWidget_)) {
                         helpWidget_->raise();
                     }
+                    helpWidget_->showDocForClassName(item->info.classIdentifier);
                 }
             });
 
