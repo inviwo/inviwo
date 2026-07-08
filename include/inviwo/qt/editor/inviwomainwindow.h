@@ -30,17 +30,12 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/networkeditorobserver.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/applicationbase/undomanager.h>
-#include <inviwo/core/network/workspaceannotations.h>
 
 #include <QMainWindow>
 #include <QMenu>
-#include <QMenuBar>
-#include <QAction>
-#include <QByteArray>
 
 #include <tclap/CmdLine.h>
 
@@ -61,6 +56,7 @@ class SettingsWidget;
 class HelpWidget;
 class WelcomeWidget;
 class AnnotationsWidget;
+class NetworkAnnotationWidget;
 class InviwoApplication;
 class InviwoDockWidget;
 class InviwoEditMenu;
@@ -114,6 +110,7 @@ public:
     PropertyListWidget* getPropertyListWidget() const;
     ConsoleWidget* getConsoleWidget() const;
     AnnotationsWidget* getAnnotationsWidget() const;
+    NetworkAnnotationWidget* getNetworkAnnotationWidget() const;
     HelpWidget* getHelpWidget() const;
     InviwoApplication* getInviwoApplication() const;
     EditorSettings* getEditorSettings() const;
@@ -269,6 +266,7 @@ private:
     /// Use delayed initialization as it can be expensive.
     WelcomeWidget* welcomeWidget_ = nullptr;
     AnnotationsWidget* annotationsWidget_ = nullptr;
+    NetworkAnnotationWidget* networkAnnotationWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
     std::unique_ptr<FileAssociations> fileAssociations_;
 

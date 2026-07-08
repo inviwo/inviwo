@@ -57,7 +57,7 @@ ProcessorNetwork::ProcessorNetwork(InviwoApplication* application, std::string_v
     , identifier_{identifier}
     , application_(application)
     , evaluator_{nullptr}
-    , linkEvaluator_(this) {}
+    , linkEvaluator_{this} {}
 
 ProcessorNetwork::~ProcessorNetwork() {
     lock();
@@ -69,7 +69,7 @@ Processor* ProcessorNetwork::addProcessor(std::shared_ptr<Processor> processor) 
 
     processor->setIdentifier(util::findUniqueIdentifier(
         util::stripIdentifier(processor->getIdentifier()),
-        [&](std::string_view id) { return getProcessorByIdentifier(id) == nullptr; }, ""));
+        [this](std::string_view id) { return getProcessorByIdentifier(id) == nullptr; }, ""));
 
     notifyObserversProcessorNetworkWillAddProcessor(processor.get());
     processors_.emplace(processor->getIdentifier(), processor);

@@ -56,7 +56,8 @@ enum InviwoUserGraphicsItemType {
     ProcessorLinkGraphicsType,
     ProcessorInportGraphicsType,
     ProcessorOutportGraphicsType,
-    ProcessorErrorItemType
+    ProcessorErrorItemType,
+    NetworkAnnotationType
 };
 
 namespace depth {
@@ -67,6 +68,8 @@ static constexpr double processorError = 2.5;
 static constexpr double processor = 2.0;
 static constexpr double connection = 1.0;
 static constexpr double link = 0.0;
+static constexpr double annotationSelected = -0.5;
+static constexpr double annotation = -1.0;
 }  // namespace depth
 
 class Port;

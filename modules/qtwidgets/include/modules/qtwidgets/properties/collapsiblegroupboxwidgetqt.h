@@ -64,9 +64,9 @@ class IVW_MODULE_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidg
                                                              public PropertyOwnerObserver {
 
 public:
-    CollapsibleGroupBoxWidgetQt(CompositeProperty* property, bool isCheckable = false);
-    CollapsibleGroupBoxWidgetQt(Processor* property, bool isCheckable = false);
-    CollapsibleGroupBoxWidgetQt(Settings* property, bool isCheckable = false);
+    explicit CollapsibleGroupBoxWidgetQt(CompositeProperty* property, bool isCheckable = false);
+    explicit CollapsibleGroupBoxWidgetQt(Processor* property, bool isCheckable = false);
+    explicit CollapsibleGroupBoxWidgetQt(Settings* property, bool isCheckable = false);
     CollapsibleGroupBoxWidgetQt(Property* property, PropertyOwner* owner,
                                 std::string_view displayName = "", bool isCheckable = false);
 

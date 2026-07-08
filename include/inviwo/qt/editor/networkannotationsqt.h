@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,47 +30,44 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <inviwo/core/network/workspacemanager.h>
-#include <inviwo/qt/editor/workspaceannotationsqt.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
+#include <inviwo/core/network/networkannotations.h>
 
-#include <memory>
-#include <functional>
+#include <vector>
+#include <optional>
 
-class QVBoxLayout;
-class QScrollArea;
-class QString;
+class QGraphicsItem;
 
 namespace inviwo {
 
-class InviwoApplication;
-class NetworkEditorView;
+class NetworkEditor;
+class ProcessorNetwork;
+class NetworkAnnotationGraphicsItem;
 
-class IVW_QTEDITOR_API AnnotationsWidget : public InviwoDockWidget {
+class IVW_QTEDITOR_API NetworkAnnotationsQt : public NetworkAnnotationsObserver {
 public:
-    AnnotationsWidget(InviwoApplication* app, NetworkEditorView* networkEditorView,
-                      QWidget* parent);
-    virtual ~AnnotationsWidget();
+    explicit NetworkAnnotationsQt(NetworkEditor* editor);
+    NetworkAnnotationsQt(const NetworkAnnotationsQt&) = delete;
+    NetworkAnnotationsQt(NetworkAnnotationsQt&&) = delete;
+    NetworkAnnotationsQt& operator=(const NetworkAnnotationsQt&) = delete;
+    NetworkAnnotationsQt& operator=(NetworkAnnotationsQt&&) = delete;
 
-    WorkspaceAnnotationsQt& getAnnotations();
-    const WorkspaceAnnotationsQt& getAnnotations() const;
+    virtual ~NetworkAnnotationsQt();
 
-protected:
-    void updateWidget();
+    NetworkAnnotationGraphicsItem* getGraphicsItem(size_t index);
+    const NetworkAnnotationGraphicsItem* getGraphicsItem(size_t index) const;
 
-    WorkspaceAnnotationsQt annotations_;
-    QVBoxLayout* layout_ = nullptr;
-    QWidget* mainWidget_ = nullptr;
-    QScrollArea* scrollArea_ = nullptr;
-    ///< Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
-    ///< Called before modules have been unregistered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
+    std::optional<size_t> getIndex(const QGraphicsItem* item) const;
 
-    WorkspaceManager::SerializationHandle annotationSerializationHandle_;
-    WorkspaceManager::DeserializationHandle annotationDeserializationHandle_;
-    WorkspaceManager::ClearHandle annotationClearHandle_;
-    WorkspaceAnnotations::ModifiedHandle annotationModifiedHandle_;
+    void showAnnotationDetails(NetworkAnnotationGraphicsItem* item);
+    void hideAnnotationDetails(NetworkAnnotationGraphicsItem* item);
+
+private:
+    virtual void onNetworkAnnotationAdded(NetworkAnnotation&, size_t) override;
+    virtual void onNetworkAnnotationWasRemoved(NetworkAnnotation&, size_t) override;
+    virtual void onNetworkAnnotationChanged(NetworkAnnotation&, size_t) override;
+
+    NetworkEditor* editor_;
+    std::vector<NetworkAnnotationGraphicsItem*> annotationGraphicItems_;
 };
 
 }  // namespace inviwo

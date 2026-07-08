@@ -39,7 +39,6 @@
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/links/linkevaluator.h>
 #include <inviwo/core/util/observer.h>
-#include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/iterrange.h>
 #include <inviwo/core/util/transformiterator.h>
 

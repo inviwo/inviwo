@@ -62,6 +62,7 @@
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <modules/qtwidgets/keyboardutils.h>
 #include <modules/qtwidgets/processors/processordockwidgetqt.h>
+#include <modules/qtwidgets/networkannotationwidget.h>
 
 #include <inviwo/qt/applicationbase/measureperformance.h>
 
@@ -107,6 +108,7 @@
 #include <QToolButton>
 #include <QStackedWidget>
 #include <QApplication>
+#include <QMenuBar>
 
 #include <fmt/std.h>
 #include <fmt/chrono.h>
@@ -397,8 +399,24 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     annotationsWidget_->setVisible(true);
     annotationsWidget_->loadState();
 
+    networkAnnotationWidget_ = new NetworkAnnotationWidget{app_->getProcessorNetwork(), this};
+    tabifyDockWidget(annotationsWidget_, networkAnnotationWidget_);
+    networkAnnotationWidget_->setVisible(true);
+    networkAnnotationWidget_->loadState();
+    connect(networkAnnotationWidget_, &NetworkAnnotationWidget::modifiedAnnotation, this,
+            [this](size_t index, const NetworkAnnotation& annotation) {
+                app_->getNetworkAnnotations().update(index, annotation);
+            });
+    connect(networkEditor_.get(), &NetworkEditor::showNetworkAnnotationDetails, this,
+            [this](size_t index) {
+                networkAnnotationWidget_->showAnnotation(
+                    index, app_->getNetworkAnnotations().getAnnotation(index));
+            });
+    connect(networkEditor_.get(), &NetworkEditor::hideNetworkAnnotationDetails,
+            networkAnnotationWidget_, &NetworkAnnotationWidget::hideAnnotation);
+
     helpWidget_ = new HelpWidget(this);
-    tabifyDockWidget(annotationsWidget_, helpWidget_);
+    tabifyDockWidget(networkAnnotationWidget_, helpWidget_);
     helpWidget_->setVisible(true);
     helpWidget_->loadState();
 
@@ -945,6 +963,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
         viewMenuItem->addAction(propertyListWidget_->toggleViewAction());
         annotationsWidget_->toggleViewAction()->setText(tr("&Workspace Annotations"));
         viewMenuItem->addAction(annotationsWidget_->toggleViewAction());
+        networkAnnotationWidget_->toggleViewAction()->setText(tr("&Network Annotations"));
+        viewMenuItem->addAction(networkAnnotationWidget_->toggleViewAction());
         resourceManagerDockWidget_->toggleViewAction()->setText(tr("&Resource Manager"));
         viewMenuItem->addAction(resourceManagerDockWidget_->toggleViewAction());
         consoleWidget_->toggleViewAction()->setText(tr("&Output Console"));
@@ -1681,6 +1701,10 @@ PropertyListWidget* InviwoMainWindow::getPropertyListWidget() const { return pro
 ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget_.get(); }
 
 AnnotationsWidget* InviwoMainWindow::getAnnotationsWidget() const { return annotationsWidget_; }
+
+NetworkAnnotationWidget* InviwoMainWindow::getNetworkAnnotationWidget() const {
+    return networkAnnotationWidget_;
+}
 
 HelpWidget* InviwoMainWindow::getHelpWidget() const { return helpWidget_; }
 

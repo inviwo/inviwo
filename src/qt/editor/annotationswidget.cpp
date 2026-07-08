@@ -55,21 +55,34 @@ AnnotationsWidget::AnnotationsWidget(InviwoApplication* app, NetworkEditorView* 
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
+    
+    QSizePolicy sp(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+    sp.setVerticalStretch(1);
+    sp.setHorizontalStretch(1);
+    setSizePolicy(sp);
+
+    const auto space = utilqt::refSpacePx(this);
 
     scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);
     scrollArea_->setMinimumWidth(300);
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+#ifdef __APPLE__
+    // Scrollbars are overlayed in different way on mac...
+    scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+#else
+    scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+#endif
     scrollArea_->setFrameShape(QFrame::NoFrame);
-    scrollArea_->setContentsMargins(0, 0, 0, 0);
+    scrollArea_->setContentsMargins(0, space, 0, space);
 
     mainWidget_ = new QWidget();
     layout_ = new QVBoxLayout(mainWidget_);
     layout_->setAlignment(Qt::AlignTop);
-
-    const auto space = utilqt::refSpacePx(this);
     layout_->setContentsMargins(0, space, 0, space);
     layout_->setSpacing(space);
+
     scrollArea_->setWidget(mainWidget_);
 
     setWidget(scrollArea_);
@@ -77,7 +90,7 @@ AnnotationsWidget::AnnotationsWidget(InviwoApplication* app, NetworkEditorView* 
     // Need to delay this until the qtwidgets module is loaded to get access to the qt widgets
     onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister([&]() { updateWidget(); });
     onModulesWillUnregister_ = app->getModuleManager().onModulesWillUnregister([&]() {
-        while (auto item = layout_->takeAt(0)) {
+        while (auto* item = layout_->takeAt(0)) {
             delete item;
         }
     });
@@ -140,12 +153,12 @@ WorkspaceAnnotationsQt& AnnotationsWidget::getAnnotations() { return annotations
 const WorkspaceAnnotationsQt& AnnotationsWidget::getAnnotations() const { return annotations_; }
 
 void AnnotationsWidget::updateWidget() {
-    auto groupBox =
+    auto* groupBox =
         new CollapsibleGroupBoxWidgetQt(nullptr, &annotations_, "Workspace Annotations");
     layout_->addWidget(groupBox);
     groupBox->initState();
 
-    for (auto p : annotations_.getProperties()) {
+    for (auto* p : annotations_.getProperties()) {
         groupBox->addProperty(p);
     }
 

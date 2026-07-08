@@ -42,6 +42,7 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
 #include <inviwo/core/common/inviwoapplicationutil.h>
+#include <inviwo/core/network/networkannotations.h>
 
 #include <queue>
 #include <memory>
@@ -156,6 +157,10 @@ public:
 
     CommandLineParser& getCommandLineParser();
     const CommandLineParser& getCommandLineParser() const;
+
+    NetworkAnnotations& getNetworkAnnotations();
+    const NetworkAnnotations& getNetworkAnnotations() const;
+
     /**
      * @brief Add an action that can be shown in for example property widget context menu.
      * Will be shown when right clicking on a property in the NetworkEditor.
@@ -455,6 +460,8 @@ protected:
     Queue queue_;  // "Interaction/GUI" queue
 
     util::OnScopeExit clearAllSingeltons_;
+
+    NetworkAnnotations networkAnnotations_;
 
     std::unique_ptr<ResourceManager> resourceManager_;
 
