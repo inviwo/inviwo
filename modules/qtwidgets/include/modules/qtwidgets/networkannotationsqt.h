@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,49 +28,50 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/network/workspacemanager.h>
-#include <inviwo/qt/editor/workspaceannotationsqt.h>
+#include <inviwo/core/network/networkannotations.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 
+#include <optional>
 #include <memory>
-#include <functional>
 
 class QVBoxLayout;
 class QScrollArea;
-class QString;
 
 namespace inviwo {
 
-class InviwoApplication;
-class NetworkEditorView;
+class NetworkEditor;
 
-class IVW_QTEDITOR_API AnnotationsWidget : public InviwoDockWidget {
+class IVW_MODULE_QTWIDGETS_API NetworkAnnotationsQt : public InviwoDockWidget {
 public:
-    AnnotationsWidget(InviwoApplication* app, NetworkEditorView* networkEditorView,
-                      QWidget* parent);
-    virtual ~AnnotationsWidget();
+    explicit NetworkAnnotationsQt(std::shared_ptr<NetworkAnnotations> annotations, QWidget* parent = nullptr);
+    virtual ~NetworkAnnotationsQt();
 
-    WorkspaceAnnotationsQt& getAnnotations();
-    const WorkspaceAnnotationsQt& getAnnotations() const;
+    void setNetworkAnnotations(const std::shared_ptr<NetworkAnnotations>& annotations);
 
-protected:
-    void updateWidget();
+    void showAnnotation(size_t index);
+    void hideAnnotation(size_t index);
+    void clear();
 
-    WorkspaceAnnotationsQt annotations_;
-    QVBoxLayout* layout_ = nullptr;
+private:
+    void updateWidgets();
+
     QWidget* mainWidget_ = nullptr;
+    QVBoxLayout* layout_ = nullptr;
     QScrollArea* scrollArea_ = nullptr;
-    ///< Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
-    ///< Called before modules have been unregistered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 
-    WorkspaceManager::SerializationHandle annotationSerializationHandle_;
-    WorkspaceManager::DeserializationHandle annotationDeserializationHandle_;
-    WorkspaceManager::ClearHandle annotationClearHandle_;
-    WorkspaceAnnotations::ModifiedHandle annotationModifiedHandle_;
+    std::shared_ptr<NetworkAnnotations> annotations_;
+    std::optional<size_t> annotationIndex_;
+
+    StringProperty title_;
+    FloatVec3Property color_;
+    StringProperty markdown_;
+    OptionProperty<Description::TextAlignment> alignment_;
+    IntProperty textWidth_;
 };
 
 }  // namespace inviwo

@@ -46,6 +46,7 @@ set(HEADER_FILES
     include/modules/qtwidgets/keyboardutils.h
     include/modules/qtwidgets/labelgraphicsitem.h
     include/modules/qtwidgets/mousecursorutils.h
+    include/modules/qtwidgets/networkannotationsqt.h
     include/modules/qtwidgets/numberlineedit.h
     include/modules/qtwidgets/ordinalbasewidget.h
     include/modules/qtwidgets/processors/processorwidgetqt.h
@@ -118,6 +119,7 @@ set(SOURCE_FILES
     src/lightpositionwidgetqt.cpp
     src/lineeditqt.cpp
     src/mousecursorutils.cpp
+    src/networkannotationsqt.cpp
     src/numberlineedit.cpp
     src/numberwidget.cpp
     src/ordinalbasewidget.cpp

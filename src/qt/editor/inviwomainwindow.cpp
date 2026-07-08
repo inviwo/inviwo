@@ -62,6 +62,7 @@
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <modules/qtwidgets/keyboardutils.h>
 #include <modules/qtwidgets/processors/processordockwidgetqt.h>
+#include <modules/qtwidgets/networkannotationsqt.h>
 
 #include <inviwo/qt/applicationbase/measureperformance.h>
 
@@ -107,6 +108,7 @@
 #include <QToolButton>
 #include <QStackedWidget>
 #include <QApplication>
+#include <QMenuBar>
 
 #include <fmt/std.h>
 #include <fmt/chrono.h>
@@ -397,8 +399,14 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     annotationsWidget_->setVisible(true);
     annotationsWidget_->loadState();
 
+    networkAnnotationsWidget_ =
+        new NetworkAnnotationsQt{app_->getProcessorNetwork()->getNetworkAnnotations(), this};
+    tabifyDockWidget(annotationsWidget_, networkAnnotationsWidget_);
+    networkAnnotationsWidget_->setVisible(true);
+    networkAnnotationsWidget_->loadState();
+
     helpWidget_ = new HelpWidget(this);
-    tabifyDockWidget(annotationsWidget_, helpWidget_);
+    tabifyDockWidget(networkAnnotationsWidget_, helpWidget_);
     helpWidget_->setVisible(true);
     helpWidget_->loadState();
 
@@ -945,6 +953,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
         viewMenuItem->addAction(propertyListWidget_->toggleViewAction());
         annotationsWidget_->toggleViewAction()->setText(tr("&Workspace Annotations"));
         viewMenuItem->addAction(annotationsWidget_->toggleViewAction());
+        networkAnnotationsWidget_->toggleViewAction()->setText(tr("&Network Annotations"));
+        viewMenuItem->addAction(networkAnnotationsWidget_->toggleViewAction());
         resourceManagerDockWidget_->toggleViewAction()->setText(tr("&Resource Manager"));
         viewMenuItem->addAction(resourceManagerDockWidget_->toggleViewAction());
         consoleWidget_->toggleViewAction()->setText(tr("&Output Console"));
@@ -1679,6 +1689,10 @@ PropertyListWidget* InviwoMainWindow::getPropertyListWidget() const { return pro
 ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget_.get(); }
 
 AnnotationsWidget* InviwoMainWindow::getAnnotationsWidget() const { return annotationsWidget_; }
+
+NetworkAnnotationsQt* InviwoMainWindow::getNetworkAnnotationsWidget() const {
+    return networkAnnotationsWidget_;
+}
 
 HelpWidget* InviwoMainWindow::getHelpWidget() const { return helpWidget_; }
 
