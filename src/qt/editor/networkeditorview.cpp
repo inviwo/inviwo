@@ -76,9 +76,10 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     NetworkEditorObserver::addObservation(editor_);
     QGraphicsView::setScene(editor_);
 
-    auto grid = new QGridLayout(viewport());
+    auto* grid = new QGridLayout(this);
     const auto space = utilqt::refSpacePx(this);
-    grid->setContentsMargins(space, space, space, space);
+    const auto scrollbarWidth = utilqt::emToPx(this, 0.75 + 0.125);  // QScrollBar in inviwo.qss
+    grid->setContentsMargins(space, space, space + scrollbarWidth, space + scrollbarWidth);
 
     {
         grid->addWidget(overlay_, 0, 0, Qt::AlignTop | Qt::AlignLeft);
