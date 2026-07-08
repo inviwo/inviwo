@@ -64,7 +64,7 @@ ProcessorNetwork::~ProcessorNetwork() {
 }
 
 Processor* ProcessorNetwork::addProcessor(std::shared_ptr<Processor> processor) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
 
     processor->setIdentifier(util::findUniqueIdentifier(
         util::stripIdentifier(processor->getIdentifier()),
@@ -114,7 +114,7 @@ void ProcessorNetwork::removeProcessorHelper(Processor* processor) {
     // Remove all links for this processor
     auto toDelete =
         util::copy_if(links_, [&](const PropertyLink& link) { return link.involves(processor); });
-    for (auto& link : toDelete) {
+    for (const auto& link : toDelete) {
         removeLink(link.getSource(), link.getDestination());
     }
 }
@@ -212,7 +212,7 @@ void ProcessorNetwork::removeConnection(Outport* src, Inport* dst) {
 }
 
 bool ProcessorNetwork::isConnected(const PortConnection& connection) const {
-    return connections_.find(connection) != connections_.end();
+    return connections_.contains(connection);
 }
 bool ProcessorNetwork::isConnected(Outport* src, Inport* dst) const {
     return isConnected(PortConnection(src, dst));
@@ -223,7 +223,7 @@ const std::vector<PortConnection>& ProcessorNetwork::getConnections() const {
 }
 
 bool ProcessorNetwork::isPortInNetwork(Port* port) const {
-    if (auto* processor = port->getProcessor()) {
+    if (const auto* processor = port->getProcessor()) {
         if (processor == getProcessorByIdentifier(processor->getIdentifier())) {
             return true;
         }
@@ -279,7 +279,7 @@ void ProcessorNetwork::removeLink(Property* src, Property* dst) {
 }
 
 void ProcessorNetwork::onWillRemoveProperty(Property* property, size_t /*index*/) {
-    if (auto* comp = dynamic_cast<PropertyOwner*>(property)) {
+    if (const auto* comp = dynamic_cast<PropertyOwner*>(property)) {
         size_t i = 0;
         for (auto* p : comp->getProperties()) {
             onWillRemoveProperty(p, i);
@@ -289,12 +289,10 @@ void ProcessorNetwork::onWillRemoveProperty(Property* property, size_t /*index*/
 
     auto toDelete =
         util::copy_if(links_, [&](const PropertyLink& link) { return link.involves(property); });
-    for (auto& link : toDelete) removeLink(link);
+    for (const auto& link : toDelete) removeLink(link);
 }
 
-bool ProcessorNetwork::isLinked(const PropertyLink& link) const {
-    return links_.find(link) != links_.end();
-}
+bool ProcessorNetwork::isLinked(const PropertyLink& link) const { return links_.contains(link); }
 bool ProcessorNetwork::isLinked(Property* src, Property* dst) const {
     return isLinked(PropertyLink(src, dst));
 }
@@ -334,8 +332,8 @@ bool ProcessorNetwork::empty() const { return processors_.empty(); }
 size_t ProcessorNetwork::size() const { return processors_.size(); }
 
 void ProcessorNetwork::accept(NetworkVisitor& visitor) {
-    for (auto& p : processors_) {
-        p.second->accept(visitor);
+    for (const auto& [_, p] : processors_) {
+        p->accept(visitor);
     }
 }
 
@@ -361,7 +359,7 @@ void ProcessorNetwork::onProcessorPortRemoved(Processor*, Port* port) {
     auto toDelete = util::copy_if(connectionsVec_, [&](const PortConnection& item) {
         return item.getInport() == port || item.getOutport() == port;
     });
-    for (auto& item : toDelete) {
+    for (const auto& item : toDelete) {
         removeConnection(item.getOutport(), item.getInport());
     }
 }
@@ -623,7 +621,7 @@ bool ProcessorNetwork::isDeserializing() const { return deserializing_; }
 
 Property* ProcessorNetwork::getProperty(std::string_view path) const {
     const auto [processorId, propertyPath] = util::splitByFirst(path, '.');
-    if (auto* processor = getProcessorByIdentifier(processorId)) {
+    if (const auto* processor = getProcessorByIdentifier(processorId)) {
         return processor->getPropertyByPath(propertyPath);
     }
     return nullptr;
@@ -631,7 +629,7 @@ Property* ProcessorNetwork::getProperty(std::string_view path) const {
 
 Port* ProcessorNetwork::getPort(std::string_view path) const {
     const auto [processorId, portId] = util::splitByFirst(path, '.');
-    if (auto* processor = getProcessorByIdentifier(processorId)) {
+    if (const auto* processor = getProcessorByIdentifier(processorId)) {
         return processor->getPort(portId);
     }
     return nullptr;
@@ -639,7 +637,7 @@ Port* ProcessorNetwork::getPort(std::string_view path) const {
 
 Inport* ProcessorNetwork::getInport(std::string_view path) const {
     const auto [processorId, portId] = util::splitByFirst(path, '.');
-    if (auto* processor = getProcessorByIdentifier(processorId)) {
+    if (const auto* processor = getProcessorByIdentifier(processorId)) {
         return processor->getInport(portId);
     }
     return nullptr;
@@ -647,7 +645,7 @@ Inport* ProcessorNetwork::getInport(std::string_view path) const {
 
 Outport* ProcessorNetwork::getOutport(std::string_view path) const {
     const auto [processorId, portId] = util::splitByFirst(path, '.');
-    if (auto* processor = getProcessorByIdentifier(processorId)) {
+    if (const auto* processor = getProcessorByIdentifier(processorId)) {
         return processor->getOutport(portId);
     }
     return nullptr;
@@ -655,7 +653,7 @@ Outport* ProcessorNetwork::getOutport(std::string_view path) const {
 
 bool ProcessorNetwork::isPropertyInNetwork(Property* prop) const {
     if (auto* owner = prop->getOwner()) {
-        if (auto* processor = owner->getProcessor()) {
+        if (const auto* processor = owner->getProcessor()) {
             return processor == util::map_find_or_null(processors_, processor->getIdentifier(),
                                                        [](const auto& p) { return p.get(); });
         }

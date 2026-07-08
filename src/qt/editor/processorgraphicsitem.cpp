@@ -481,7 +481,7 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
                 QApplication::mouseButtons() == Qt::MouseButton::NoButton) {
                 processorMeta_->setPosition(ivec2(newPos.x(), newPos.y()));
             }
-            if (auto editor = qobject_cast<NetworkEditor*>(scene())) {
+            if (auto* editor = getNetworkEditor()) {
                 editor->updateSceneSize();
             }
             return newPos;
@@ -499,7 +499,7 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
             if (processorMeta_) {
                 processorMeta_->setVisible(isVisible());
             }
-            if (auto editor = qobject_cast<NetworkEditor*>(scene())) {
+            if (auto* editor = getNetworkEditor()) {
                 editor->updateSceneSize();
             }
             break;
@@ -516,7 +516,7 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
 }
 
 void ProcessorGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* e) {
-    if (auto editor = getNetworkEditor()) {
+    if (auto* editor = getNetworkEditor()) {
         if (QApplication::keyboardModifiers() & Qt::AltModifier) {
             editor->showProcessorHelp(processor_->getClassIdentifier(), true);
             return;
@@ -525,7 +525,7 @@ void ProcessorGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     QGraphicsItem::mousePressEvent(e);
 }
 void ProcessorGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
-    if (auto editor = getNetworkEditor()) {
+    if (auto* editor = getNetworkEditor()) {
         if (QApplication::keyboardModifiers() & Qt::AltModifier) {
             editor->showProcessorHelp(processor_->getClassIdentifier(), true);
             return;
@@ -538,13 +538,13 @@ void ProcessorGraphicsItem::updateWidgets() {
     if (isSelected()) {
         setZValue(depth::processorSelected);
         if (!highlight_) {
-            if (auto editor = getNetworkEditor()) {
+            if (auto* editor = getNetworkEditor()) {
                 editor->addPropertyWidgets(processor_);
             }
         }
     } else {
         setZValue(depth::processor);
-        if (auto editor = getNetworkEditor()) {
+        if (auto* editor = getNetworkEditor()) {
             editor->removePropertyWidgets(processor_);
         }
     }

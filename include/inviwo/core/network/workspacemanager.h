@@ -88,7 +88,7 @@ public:
     using ModifiedCallback = typename ModifiedDispatcher::Callback;
     using ModifiedHandle = typename ModifiedDispatcher::Handle;
 
-    WorkspaceManager(InviwoApplication* app);
+    explicit WorkspaceManager(InviwoApplication* app);
     ~WorkspaceManager();
 
     /**
