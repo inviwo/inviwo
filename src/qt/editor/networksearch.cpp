@@ -157,8 +157,7 @@ NetworkSearch::NetworkSearch(InviwoMainWindow* win)
                  const auto& moduleMap =
                      std::any_cast<const std::unordered_map<std::string, std::string>&>(anyData);
                  bool moduleMatch = false;
-                 auto mit = moduleMap.find(p.getClassIdentifier());
-                 if (mit != moduleMap.end()) {
+                 if (auto mit = moduleMap.find(p.getClassIdentifier()); mit != moduleMap.end()) {
                      moduleMatch |= find(mit->second, s);
                  }
                  return moduleMatch;
@@ -170,7 +169,7 @@ NetworkSearch::NetworkSearch(InviwoMainWindow* win)
     , edit_{new QLineEdit(this)} {
 
     setObjectName("NetworkSearch");
-    auto hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
     hLayout->addWidget(edit_);
@@ -193,27 +192,30 @@ NetworkSearch::NetworkSearch(InviwoMainWindow* win)
 }
 
 void NetworkSearch::updateSearch(const QString& str) {
-    auto app = win_->getInviwoApplication();
-    auto network = app->getProcessorNetwork();
-    auto editor = win_->getNetworkEditor();
+    auto* app = win_->getInviwoApplication();
+    auto* network = app->getProcessorNetwork();
+    const auto* editor = win_->getNetworkEditor();
 
     if (str.isEmpty()) {
         // nothing selected
-        editor->clearSelection();
+        network->forEachProcessor([editor](Processor* p) {
+            auto* pgi = editor->getProcessorGraphicsItem(p);
+            pgi->setHighlight(false);
+        });
         return;
     }
 
     dsl_.setSearchString(utilqt::fromQString(str));
     network->forEachProcessor([&](Processor* p) {
-        bool match = dsl_.match(*p);
-        auto pgi = editor->getProcessorGraphicsItem(p);
-        pgi->setHighlight(true);
-        pgi->setSelected(match);
+        const bool match = dsl_.match(*p);
+        auto* pgi = editor->getProcessorGraphicsItem(p);
+        pgi->setHighlight(match);
     });
 }
 
 void NetworkSearch::focusInEvent(QFocusEvent*) {
     edit_->setFocus();
+    win_->getNetworkEditor()->clearSelection();
     updateSearch(edit_->text());
 }
 
@@ -222,39 +224,38 @@ void NetworkSearch::focusOutEvent(QFocusEvent*) {}
 bool NetworkSearch::eventFilter(QObject* watched, QEvent* event) {
     if (watched == edit_) {
         if (event->type() == QEvent::FocusOut) {
-            auto app = win_->getInviwoApplication();
-            auto editor = win_->getNetworkEditor();
-            auto network = app->getProcessorNetwork();
-            network->forEachProcessor(
-                [&](Processor* p) { editor->getProcessorGraphicsItem(p)->setHighlight(false); });
+            auto* app = win_->getInviwoApplication();
+            const auto* editor = win_->getNetworkEditor();
+            auto* network = app->getProcessorNetwork();
+            network->forEachProcessor([editor](Processor* p) {
+                editor->getProcessorGraphicsItem(p)->setHighlight(false);
+            });
             setVisible(false);
             return false;
         } else if (event->type() == QEvent::KeyPress) {
-            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+            const QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
             if (keyEvent->key() == Qt::Key_Escape) {
                 edit_->text().clear();
-                auto app = win_->getInviwoApplication();
-                auto editor = win_->getNetworkEditor();
-                auto network = app->getProcessorNetwork();
-                network->forEachProcessor([&](Processor* p) {
-                    auto pgi = editor->getProcessorGraphicsItem(p);
+                auto* app = win_->getInviwoApplication();
+                const auto* editor = win_->getNetworkEditor();
+                auto* network = app->getProcessorNetwork();
+                network->forEachProcessor([editor](Processor* p) {
+                    auto* pgi = editor->getProcessorGraphicsItem(p);
                     pgi->setHighlight(false);
-                    pgi->setSelected(false);
                 });
                 setVisible(false);
                 return true;
             } else if (keyEvent->key() == Qt::Key_Return) {
                 edit_->text().clear();
-                auto app = win_->getInviwoApplication();
-                auto editor = win_->getNetworkEditor();
-                auto props = win_->getPropertyListWidget();
-                auto network = app->getProcessorNetwork();
+                auto* app = win_->getInviwoApplication();
+                const auto* editor = win_->getNetworkEditor();
+                auto* props = win_->getPropertyListWidget();
+                auto* network = app->getProcessorNetwork();
 
                 Property* selectedProperty = nullptr;
                 network->forEachProcessor([&](Processor* p) {
-                    auto pgi = editor->getProcessorGraphicsItem(p);
-                    if (pgi->isSelected()) {
-                        pgi->setSelected(false);
+                    auto* pgi = editor->getProcessorGraphicsItem(p);
+                    if (pgi->isHighlighted()) {
                         pgi->setHighlight(false);
                         pgi->setSelected(true);
 
@@ -269,7 +270,6 @@ bool NetworkSearch::eventFilter(QObject* watched, QEvent* event) {
                         }
                     } else {
                         pgi->setHighlight(false);
-                        pgi->setSelected(false);
                     }
                 });
 

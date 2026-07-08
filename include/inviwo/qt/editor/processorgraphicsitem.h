@@ -133,6 +133,7 @@ public:
 #endif
 
     void setHighlight(bool val);
+    bool isHighlighted() const;
 
     static constexpr QSizeF size{150.0, 50.0};
 

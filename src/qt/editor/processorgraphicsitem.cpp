@@ -56,6 +56,7 @@
 #include <QApplication>
 #include <QGraphicsDropShadowEffect>
 #include <QPainter>
+#include <QGradient>
 #include <QStyleOptionGraphicsItem>
 #include <QVector2D>
 #include <QTextCursor>
@@ -409,7 +410,17 @@ void ProcessorGraphicsItem::paint(QPainter* p,
     p->save();
     p->setRenderHint(QPainter::Antialiasing, true);
 
-    if (isSelected()) {
+    if (highlight_) {
+        QLinearGradient gradient{QPointF{0, 0},
+                                 QPointF{ProcessorGraphicsItem::size.width() / 2.0,
+                                         ProcessorGraphicsItem::size.height() / 2.0}};
+        gradient.setColorAt(0.0, backgroundColor_);
+        gradient.setColorAt(0.3, backgroundColor_);
+        gradient.setColorAt(0.3000001, selectionColor);
+        gradient.setColorAt(1.0, selectionColor);
+        gradient.setSpread(QGradient::PadSpread);
+        p->setBrush(gradient);
+    } else if (isSelected()) {
         p->setBrush(selectionColor);
     } else {
         p->setBrush(backgroundColor_);
@@ -477,7 +488,7 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
         }
         case QGraphicsItem::ItemSelectedHasChanged:
             updateWidgets();
-            if (!highlight_ && processorMeta_) {
+            if (processorMeta_) {
                 processorMeta_->setSelected(isSelected());
             }
             if (errorText_) {
@@ -665,7 +676,14 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     showToolTipHelper(e, utilqt::toLocalQString(doc));
 }
 
-void ProcessorGraphicsItem::setHighlight(bool val) { highlight_ = val; }
+void ProcessorGraphicsItem::setHighlight(bool val) {
+    if (val != highlight_) {
+        highlight_ = val;
+        update();
+    }
+}
+
+bool ProcessorGraphicsItem::isHighlighted() const { return highlight_; }
 
 void ProcessorGraphicsItem::processorException(std::string_view message) {
     updateStatus(std::string{message});
