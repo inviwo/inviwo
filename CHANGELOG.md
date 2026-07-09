@@ -31,6 +31,11 @@ The encode side wrappers in the FFmpeg module were renamed for symmetry with the
 The new counterparts are `ffmpeg::InputContext` in `<inviwo/ffmpeg/wrap/inputcontext.h>` and `ffmpeg::Decoder` in `<inviwo/ffmpeg/wrap/decoder.h>`.
 
 
+## 2026-09-02 Processor Network Annotations
+It is now possible to annotate processors in the processor network. The network annotations are part of the workspace and are customizable. Select one or more processors and use the context menu to add a new annotation.
+
+![Boron workspace with network annotations](resources/changelog/networkannotation.jpg)
+
 ## 2026-05-27 Python JSON module
 The JSON module now provides Python bindings, enabling seamless conversion between Inviwo properties, ports, and JSON-compatible Python objects (e.g., dictionaries, lists). These bindings are available under the `inviwopy.json` submodule. Added `toJson` and `fromJson` functions in `inviwopy.json` for converting properties, inports, and outports to and from JSON-compatible Python objects.
 

@@ -4,6 +4,7 @@
         <file alias="changelog.md">../CHANGELOG.md</file>
     </qresource>
      <qresource prefix="/resources/changelog/">
+        <file alias="networkannotation.jpg">changelog/networkannotation.jpg</file>
         <file alias="camera-cube.jpg">changelog/camera-cube.jpg</file>
         <file alias="canvas-with-properties.jpg">changelog/canvas-with-properties.jpg</file>
         <file alias="brushing.jpg">changelog/brushing.jpg</file>
