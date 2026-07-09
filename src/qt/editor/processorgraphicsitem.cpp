@@ -537,10 +537,8 @@ void ProcessorGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 void ProcessorGraphicsItem::updateWidgets() {
     if (isSelected()) {
         setZValue(depth::processorSelected);
-        if (!highlight_) {
-            if (auto* editor = getNetworkEditor()) {
-                editor->addPropertyWidgets(processor_);
-            }
+        if (auto* editor = getNetworkEditor()) {
+            editor->addPropertyWidgets(processor_);
         }
     } else {
         setZValue(depth::processor);
