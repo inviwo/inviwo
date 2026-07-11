@@ -184,17 +184,6 @@ LayerShader::LayerShader()
     valueAxis_.input.strings[1].setDisplayName("unit").setCurrentStateAsDefault();
     valueAxis_.output.strings[0].setDisplayName("name").setCurrentStateAsDefault();
     valueAxis_.output.strings[1].setDisplayName("unit").setCurrentStateAsDefault();
-
-    inport_.onChange([this]() {
-        if (inport_.hasData()) {
-            inputFormat_.set(inport_.getData()->getDataFormat()->getString());
-            dataRange_.input.set(inport_.getData()->dataMap.dataRange);
-            valueRange_.input.set(inport_.getData()->dataMap.valueRange);
-            valueAxis_.input.strings[0].set(inport_.getData()->dataMap.valueAxis.name);
-            valueAxis_.input.strings[1].set(
-                fmt::to_string(inport_.getData()->dataMap.valueAxis.unit));
-        }
-    });
 }
 
 void LayerShader::initializeShader(Shader& shader) {
@@ -204,13 +193,21 @@ void LayerShader::initializeShader(Shader& shader) {
 }
 
 void LayerShader::preProcess(TextureUnitContainer&, Shader& shader, const Layer&, Layer& output) {
+    if (inport_.isChanged()) {
+        inputFormat_.set(inport_.getData()->getDataFormat()->getString());
+        dataRange_.input.set(inport_.getData()->dataMap.dataRange);
+        valueRange_.input.set(inport_.getData()->dataMap.valueRange);
+        valueAxis_.input.strings[0].set(inport_.getData()->dataMap.valueAxis.name);
+        valueAxis_.input.strings[1].set(fmt::to_string(inport_.getData()->dataMap.valueAxis.unit));
+    }
+
     utilgl::setShaderUniforms(
         shader, utilgl::createGLOutputConversion(output.dataMap, output.getDataFormat()),
         "outputMap");
 }
 
 LayerConfig LayerShader::outputConfig(const Layer& input) const {
-    auto inputFormat = inport_.getData()->getDataFormat();
+    const auto* inputFormat = inport_.getData()->getDataFormat();
     const auto* format = [&]() {
         const auto numericType = format_.get() == DataFormatId::NotSpecialized
                                      ? inputFormat->getNumericType()

@@ -34,31 +34,19 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/light/lightingstate.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorinfo.h>
-#include <inviwo/core/processors/processorstate.h>
-#include <inviwo/core/processors/processortags.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/raycastingproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/valuewrapper.h>
-#include <inviwo/core/properties/volumeindicatorproperty.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/sourcecontext.h>
-#include <inviwo/core/util/stringconversion.h>
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
@@ -66,20 +54,12 @@
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/volume/volumegl.h>                             // IWYU pragma: keep
+#include <modules/opengl/volume/volumegl.h>  // IWYU pragma: keep
 #include <modules/opengl/volume/volumeutils.h>
 
 #include <bitset>
-#include <cstddef>
-#include <functional>
 #include <memory>
-#include <string>
 #include <string_view>
-#include <type_traits>
-#include <unordered_set>
-#include <utility>
-#include <vector>
-#include <type_traits>
 
 namespace inviwo {
 class Deserializer;
@@ -113,7 +93,7 @@ VolumeRaycaster::VolumeRaycaster()
     , outport_("outport", "output image containing volume rendering of the input"_help)
     , channel_("channel", "Render Channel",
                "selects which channel of the input volume is rendered"_help,
-               std::vector<OptionPropertyIntOption>{{"Channel 1", "Channel 1", 0}}, size_t{0})
+               util::enumeratedOptions("Channel", 4))
     , raycasting_("raycaster", "Raycasting")
     , isotfComposite_("isotfComposite", "TF & Isovalues", &volumePort_)
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
@@ -142,22 +122,6 @@ VolumeRaycaster::VolumeRaycaster()
     updateTFHistSel();
     channel_.onChange(updateTFHistSel);
 
-    volumePort_.onChange([this]() {
-        if (volumePort_.hasData()) {
-            size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-
-            if (channels == channel_.size()) return;
-
-            std::vector<OptionPropertyIntOption> channelOptions;
-            channelOptions.reserve(channels);
-            for (size_t i = 0; i < channels; i++) {
-                channelOptions.emplace_back(fmt::format("Channel {}", i + 1),
-                                            fmt::format("Channel {}", i + 1), static_cast<int>(i));
-            }
-            channel_.replaceOptions(channelOptions);
-            channel_.setCurrentStateAsDefault();
-        }
-    });
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
@@ -197,6 +161,12 @@ void VolumeRaycaster::initializeResources() {
 }
 
 void VolumeRaycaster::process() {
+    if (const size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
+        channel_ >= static_cast<int>(channels)) {
+        throw Exception(SourceContext{}, "Channel is greater than the available channels {} >= {}",
+                        channel_.get() + 1, channels);
+    }
+
     if (volumePort_.isChanged()) {
         dispatchOne(
             [volume = volumePort_.getData()]() {

@@ -81,9 +81,10 @@ DiscardShortLines::DiscardShortLines()
 
     dataMinLength_.setReadOnly(true);
     dataMaxLength_.setReadOnly(true);
+}
 
-    linesIn_.onChange([&]() {
-        if (!linesIn_.hasData()) return;
+void DiscardShortLines::process() {
+    if (linesIn_.isChanged()) {
         auto linesPtr = linesIn_.getData();
         auto& lines = *linesPtr;
         if (lines.size() == 0) return;
@@ -104,10 +105,7 @@ DiscardShortLines::DiscardShortLines()
         minLength_.setMinValue(minL);
         minLength_.setMaxValue(maxL);
         minLength_.set(minL + t * (maxL - minL));
-    });
-}
-
-void DiscardShortLines::process() {
+    }
 
     auto linesData = linesIn_.getData();
     auto& lines = *linesData;

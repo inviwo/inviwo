@@ -101,17 +101,17 @@ OpacityOptimization::OpacityOptimization()
                     {"meshrendering.vert", "opactopt/mesh/approximportancesum.frag",
                      Shader::Build::No},
                     {"meshrendering.vert", "opactopt/mesh/approxblending.frag", Shader::Build::No}}}
-    , lineShaders_{{{"opactopt/line/linerenderer.vert", "linerenderer.geom",
+    , lineShaders_{{{"opactopt/line/linerenderer.vert", "opactopt/line/linerenderer.geom",
                      "opactopt/line/projectimportance.frag", Shader::Build::No},
-                    {"opactopt/line/linerenderer.vert", "linerenderer.geom",
+                    {"opactopt/line/linerenderer.vert", "opactopt/line/linerenderer.geom",
                      "opactopt/line/approximportancesum.frag", Shader::Build::No},
-                    {"opactopt/line/linerenderer.vert", "linerenderer.geom",
+                    {"opactopt/line/linerenderer.vert", "opactopt/line/linerenderer.geom",
                      "opactopt/line/approxblending.frag", Shader::Build::No}}}
-    , lineAdjacencyShaders_{{{"opactopt/line/linerenderer.vert", "linerenderer.geom",
+    , lineAdjacencyShaders_{{{"opactopt/line/linerenderer.vert", "opactopt/line/linerenderer.geom",
                               "opactopt/line/projectimportance.frag", Shader::Build::No},
-                             {"opactopt/line/linerenderer.vert", "linerenderer.geom",
+                             {"opactopt/line/linerenderer.vert", "opactopt/line/linerenderer.geom",
                               "opactopt/line/approximportancesum.frag", Shader::Build::No},
-                             {"opactopt/line/linerenderer.vert", "linerenderer.geom",
+                             {"opactopt/line/linerenderer.vert", "opactopt/line/linerenderer.geom",
                               "opactopt/line/approxblending.frag", Shader::Build::No}}}
     , pointShaders_{{{"opactopt/point/basicpointrenderer.vert",
                       "opactopt/point/projectimportance.frag", Shader::Build::No},

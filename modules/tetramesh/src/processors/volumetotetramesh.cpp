@@ -31,6 +31,7 @@
 #include <inviwo/tetramesh/datastructures/volumetetramesh.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
@@ -59,20 +60,15 @@ VolumeToTetraMesh::VolumeToTetraMesh()
 
     addPorts(inport_, outport_);
     addProperties(channel_);
-
-    inport_.onChange([this]() {
-        if (inport_.hasData()) {
-            const auto channels = inport_.getData()->getDataFormat()->getComponents();
-            if (channels != channel_.size()) {
-                channel_.replaceOptions(std::vector<OptionPropertyIntOption>{
-                    channelsList.begin(), channelsList.begin() + channels});
-                channel_.setCurrentStateAsDefault();
-            }
-        }
-    });
 }
 
 void VolumeToTetraMesh::process() {
+    if (const size_t channels = inport_.getData()->getDataFormat()->getComponents();
+        channel_ >= static_cast<int>(channels)) {
+        throw Exception(SourceContext{}, "Channel is greater than the available channels {} >= {}",
+                        channel_.get() + 1, channels);
+    }
+
     auto tetraMesh =
         std::make_shared<VolumeTetraMesh>(inport_.getData(), channel_.getSelectedValue());
 

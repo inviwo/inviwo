@@ -118,8 +118,12 @@ HdrBloom::HdrBloom()
     bright_.fbo.activate();
     bright_.fbo.attachColorTexture(&bright_.tex);
     FrameBufferObject::deactivateFBO();
+}
 
-    inport_.onChange([this]() {
+HdrBloom::~HdrBloom() {}
+
+void HdrBloom::process() {
+    if (inport_.isChanged()) {
         const DataFormatBase* format = inport_.getData()->getDataFormat();
         const auto swizzleMask = inport_.getData()->getColorLayer()->getSwizzleMask();
 
@@ -133,12 +137,8 @@ HdrBloom::HdrBloom()
 
             outport_.setData(img);
         }
-    });
-}
+    }
 
-HdrBloom::~HdrBloom() {}
-
-void HdrBloom::process() {
     if (!enable_.get()) {
         outport_.setData(inport_.getData());
         return;

@@ -51,7 +51,7 @@
 #include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/texture2d.h>          // IWYU pragma: keep
+#include <modules/opengl/texture/texture2d.h>  // IWYU pragma: keep
 
 #include <array>
 #include <functional>
@@ -124,21 +124,6 @@ FXAA::FXAA()
     fxaa_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     dither_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     quality_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    inport_.onChange([this]() {
-        const DataFormatBase* format = inport_.getData()->getDataFormat();
-        const auto swizzleMask = inport_.getData()->getColorLayer()->getSwizzleMask();
-
-        if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
-            swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
-            auto dim = outport_.getData()->getDimensions();
-            Image* img = new Image(dim, format);
-            img->copyMetaDataFrom(*inport_.getData());
-            // forward swizzle mask of the input
-            img->getColorLayer()->setSwizzleMask(swizzleMask);
-
-            outport_.setData(img);
-        }
-    });
 }
 
 FXAA::~FXAA() {
@@ -170,6 +155,22 @@ void FXAA::initializeResources() {
 }
 
 void FXAA::process() {
+    if (inport_.isChanged()) {
+        const DataFormatBase* format = inport_.getData()->getDataFormat();
+        const auto swizzleMask = inport_.getData()->getColorLayer()->getSwizzleMask();
+
+        if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
+            swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
+            auto dim = outport_.getData()->getDimensions();
+            Image* img = new Image(dim, format);
+            img->copyMetaDataFrom(*inport_.getData());
+            // forward swizzle mask of the input
+            img->getColorLayer()->setSwizzleMask(swizzleMask);
+
+            outport_.setData(img);
+        }
+    }
+
     if (!enable_.get()) {
         outport_.setData(inport_.getData());
         return;
