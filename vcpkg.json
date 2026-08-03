@@ -53,23 +53,28 @@
     "ffmpeg"
   ],
   "features": {
-    "hdf5" : {
+    "hdf5": {
       "description": "Get HDF from vcpkg, needed for the hdf module",
       "dependencies": [
         {
           "name": "hdf5",
-          "features": ["cpp","zlib"]
+          "features": [
+            "cpp",
+            "zlib"
+          ]
         }
       ]
     },
-    "ffmpeg" : {
+    "ffmpeg": {
       "description": "Get ffmpeg from vcpkg, needed for the ffmpeg module",
-      "dependencies": ["ffmpeg"]
+      "dependencies": [
+        "ffmpeg"
+      ]
     },
-    "qt":  {
+    "qt": {
       "description": "Get Qt from vcpkg",
       "dependencies": [
-        { 
+        {
           "name": "qtbase",
           "default-features": false,
           "features": [
@@ -90,16 +95,16 @@
               "platform": "linux"
             },
             {
-             "name": "xrender",
-             "platform": "linux"
+              "name": "xrender",
+              "platform": "linux"
             },
             {
-             "name": "wayland",
-             "platform": "linux"
+              "name": "wayland",
+              "platform": "linux"
             },
             {
-             "name": "egl",
-             "platform": "linux"
+              "name": "egl",
+              "platform": "linux"
             }
           ]
         },
@@ -112,14 +117,16 @@
         "python3"
       ]
     },
-    "ttk": { 
-      "description": "Support topology-tool-kit modules", 
-      "dependencies": ["topology-tool-kit"]
+    "ttk": {
+      "description": "Support topology-tool-kit modules",
+      "dependencies": [
+        "topology-tool-kit"
+      ]
     },
     "vtk": {
-      "description": "Support VTK modules", 
+      "description": "Support VTK modules",
       "dependencies": [
-        { 
+        {
           "name": "vtk",
           "default-features": false,
           "features": [
@@ -129,55 +136,71 @@
         }
       ]
     },
-    "dicom" : {
+    "dicom": {
       "description": "Grassroots DICOM library",
-      "dependencies": ["gdcm"]
+      "dependencies": [
+        "gdcm"
+      ]
     },
     "graphviz": {
       "description": "Enable graph layout using graphviz",
-      "dependencies": ["graphviz"]
+      "dependencies": [
+        "graphviz"
+      ]
     },
     "openmesh": {
       "description": "OpenMesh library",
-      "dependencies": ["openmesh"]
+      "dependencies": [
+        "openmesh"
+      ]
     },
     "nanovg": {
       "description": "NanoVG library",
-      "dependencies": ["nanovg"]
+      "dependencies": [
+        "nanovg"
+      ]
     },
-    "sgct-tracy" : {
+    "sgct-tracy": {
       "description": "Inviwo Dome dependencies",
       "dependencies": [
         {
-            "name": "tracy",
-            "features" : ["gui-tools"]
+          "name": "tracy",
+          "features": [
+            "gui-tools"
+          ]
         },
         {
-            "name": "sgct",
-            "features" : ["tracy", "freetype"]
+          "name": "sgct",
+          "features": [
+            "tracy",
+            "freetype"
+          ]
         }
       ]
     },
-    "sgct" : {
+    "sgct": {
       "description": "Inviwo Dome dependencies",
       "dependencies": [
         {
-            "name": "sgct",
-            "features" : ["freetype"]
+          "name": "sgct",
+          "features": [
+            "freetype"
+          ]
         }
       ]
     },
-    "or-tools" : {
+    "or-tools": {
       "description": "Google Optimization Tools",
       "dependencies": [
-       "or-tools"
+        "or-tools"
       ]
     },
-     "ezc3d" : {
+    "ezc3d": {
       "description": "C3D reader/writer library",
       "dependencies": [
-       "ezc3d"
+        "ezc3d"
       ]
     }
-  }
+  },
+  "builtin-baseline": "9e593bb18ea69cc5095e012465dcd675a822ed0d"
 }
