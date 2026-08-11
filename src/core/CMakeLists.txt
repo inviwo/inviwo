@@ -386,6 +386,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/indexmapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/indirectiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/interpolation.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/rayplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/introspection.h
@@ -787,6 +788,7 @@ set(SOURCE_FILES
     util/imageramutils.cpp
     util/imagesampler.cpp
     util/indirectiterator.cpp
+    util/intersection.cpp
     util/introspection.cpp
     util/inviwosetupinfo.cpp
     util/isstreaminsertable.cpp
@@ -886,6 +888,7 @@ set(TEST_FILES
     tests/unittests/image-tests.cpp
     tests/unittests/indirectiterator-tests.cpp
     tests/unittests/interpolation-tests.cpp
+    tests/unittests/intersection-test.cpp
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/metadata-test.cpp
     tests/unittests/network-evaluator-test.cpp
