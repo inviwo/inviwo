@@ -43,6 +43,7 @@
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/typelist.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/ports/datainport.h>
@@ -66,6 +67,7 @@ class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
                             public StructuredGridEntity<3>,
                             public MetaDataOwner {
 public:
+    using Bases = TypeList<StructuredGridEntity<3>, MetaDataOwner>;
     using Config = VolumeConfig;
     explicit Volume(size3_t defaultDimensions = VolumeConfig::defaultDimensions,
                     const DataFormatBase* defaultFormat = VolumeConfig::defaultFormat,

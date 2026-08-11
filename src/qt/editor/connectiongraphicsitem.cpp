@@ -67,12 +67,12 @@ QPainterPath CurveGraphicsItem::obtainCurvePath() const {
 QPainterPath CurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endPoint) const {
     const int startOff = 6;
 
-    QPointF curvStart = startPoint + QPointF(0, startOff);
-    QPointF curvEnd = endPoint - QPointF(0, startOff);
+    QPointF curveStart = startPoint + QPointF(0, startOff);
+    QPointF curveEnd = endPoint - QPointF(0, startOff);
 
-    double delta = std::abs(curvEnd.y() - curvStart.y());
+    double delta = std::abs(curveEnd.y() - curveStart.y());
 
-    QPointF o = curvEnd - curvStart;
+    QPointF o = curveEnd - curveStart;
     double min = 37 - startOff * 2;
     min = std::min(min, std::sqrt(o.x() * o.x() + o.y() * o.y()));
     static const double max = 40.0;
@@ -80,20 +80,19 @@ QPainterPath CurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endP
     if (delta > max) delta = max;
 
     QPointF off(0, delta);
-    QPointF ctrlPoint1 = curvStart + off;
-    QPointF ctrlPoint2 = curvEnd - off;
+    QPointF ctrlPoint1 = curveStart + off;
+    QPointF ctrlPoint2 = curveEnd - off;
 
     QPainterPath bezierCurve;
     bezierCurve.moveTo(startPoint);
-    bezierCurve.lineTo(curvStart);
-    bezierCurve.cubicTo(ctrlPoint1, ctrlPoint2, curvEnd);
+    bezierCurve.lineTo(curveStart);
+    bezierCurve.cubicTo(ctrlPoint1, ctrlPoint2, curveEnd);
     bezierCurve.lineTo(endPoint);
 
     return bezierCurve;
 }
 
 void CurveGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
-    const auto color = getColor();
     auto stroker = QPainterPathStroker{};
     stroker.setCapStyle(Qt::RoundCap);
     if (isSelected()) {
@@ -104,14 +103,19 @@ void CurveGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWid
         stroker.setWidth(2.5);
     }
 
-    p->setBrush(color);
+    QLinearGradient gradient{getStartPoint(), getEndPoint()};
+    gradient.setColorAt(0.0, getStartColor());
+    gradient.setColorAt(1.0, getEndColor());
+    p->setBrush(gradient);
+
+    // p->setBrush(color);
     p->drawPath(stroker.createStroke(path_));
 }
 
 QPainterPath CurveGraphicsItem::shape() const {
-    QPainterPathStroker pathStrocker;
-    pathStrocker.setWidth(10.0);
-    return pathStrocker.createStroke(path_);
+    QPainterPathStroker pathStroker;
+    pathStroker.setWidth(10.0);
+    return pathStroker.createStroke(path_);
 }
 
 void CurveGraphicsItem::resetBorderColors() {
@@ -144,10 +148,11 @@ void CurveGraphicsItem::setSelectedBorderColor(QColor selectedBorderColor) {
     selectedBorderColor_ = selectedBorderColor;
 }
 
-QColor CurveGraphicsItem::getColor() const { return color_; }
+QColor CurveGraphicsItem::getStartColor() const { return color_; }
+QColor CurveGraphicsItem::getEndColor() const { return color_; }
 
-ConnectionOutportDragGraphicsItem::ConnectionOutportDragGraphicsItem(ProcessorOutportGraphicsItem* outport,
-                                                       QPointF endPoint, QColor color)
+ConnectionOutportDragGraphicsItem::ConnectionOutportDragGraphicsItem(
+    ProcessorOutportGraphicsItem* outport, QPointF endPoint, QColor color)
     : CurveGraphicsItem(color), endPoint_{endPoint}, outport_(outport) {}
 
 ConnectionOutportDragGraphicsItem::~ConnectionOutportDragGraphicsItem() = default;
@@ -315,6 +320,13 @@ QPointF ConnectionGraphicsItem::getStartPoint() const {
 
 QPointF ConnectionGraphicsItem::getEndPoint() const {
     return inport_->mapToScene(inport_->rect().center());
+}
+
+QColor ConnectionGraphicsItem::getStartColor() const {
+    return utilqt::toQColor(connection_.getOutport()->getColorCode());
+}
+QColor ConnectionGraphicsItem::getEndColor() const {
+    return utilqt::toQColor(connection_.getInport()->getColorCode());
 }
 
 void ConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {

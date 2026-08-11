@@ -440,6 +440,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/transparentmaps.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/typelist.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/typetraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unicodefloatingpoint.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/unindent.h
@@ -837,6 +838,7 @@ set(SOURCE_FILES
     util/threadutil.cpp
     util/timer.cpp
     util/transparentmaps.cpp
+    util/typelist.cpp
     util/typetraits.cpp
     util/unicodefloatingpoint.cpp
     util/unindent.cpp

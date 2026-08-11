@@ -34,7 +34,6 @@
 #include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/propertyconverter.h>
 #include <inviwo/core/util/exception.h>

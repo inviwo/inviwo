@@ -101,23 +101,14 @@ pybind11::classh<Port, Inport> exposeInport(pybind11::module& m, const std::stri
 
     pybind11::classh<Port, Inport> pyInport{m, StrBuffer{"{}Inport", name}.c_str()};
 
-    exposeIterRangeGenerator<typename Port::const_iterator>(pyInport, "Data");
-    exposeIterRangeGenerator<typename Port::const_iterator_port>(pyInport, "OutportAndData");
-
     pyInport
         .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
         .def("hasData", &Port::hasData)
         .def("getData", &Port::getData)
         .def("getVectorData", &Port::getVectorData)
         .def("getSourceVectorData", &Port::getSourceVectorData)
-        .def("data",
-             [](Port* p) {
-                 return util::IterRangeGenerator<typename Port::const_iterator>(p->begin(),
-                                                                                p->end());
-             })
-        .def("outportAndData", [](Port* p) {
-            return util::IterRangeGenerator<typename Port::const_iterator_port>(
-                p->outportAndData());
+        .def("data", [](Port* p) {
+            return util::IterRangeGenerator<typename Port::iterator>(p->begin(), p->end());
         });
 
     return pyInport;
@@ -131,6 +122,9 @@ void exposeStandardDataPorts(pybind11::module& m, const std::string& name) {
                         "class identifier. Have you provided a DataTraits<{0}> specialization?",
                         util::parseTypeIdName(typeid(T).name()));
     }
+
+    exposeIterRangeGenerator<FlatInportIterator<T>>(m, name + "FlatInportIterator");
+    exposeIterRangeGenerator<RegularInportIterator<T>>(m, name + "RegularInportIterator");
 
     exposeInport<DataInport<T>>(m, name);
     exposeInport<DataInport<T, 0>>(m, name + "Multi");

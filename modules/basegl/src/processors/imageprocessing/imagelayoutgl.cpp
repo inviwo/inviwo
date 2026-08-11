@@ -57,6 +57,7 @@
 #include <modules/opengl/texture/textureutils.h>
 
 #include <algorithm>
+#include <ranges>
 #include <cstddef>
 #include <iterator>
 #include <limits>
@@ -147,11 +148,10 @@ ImageLayoutGL::ImageLayoutGL()
 
     addPort(multiinport_);
     multiinport_.setIsReadyUpdater([this]() {
-        const auto& outports = multiinport_.getConnectedOutports();
-        size_t minNum = std::min(outports.size(), viewManager_.size());
         return multiinport_.isConnected() &&
-               util::all_of(outports.begin(), outports.begin() + minNum,
-                            [](Outport* p) { return p->isReady(); });
+               std::ranges::all_of(
+                   multiinport_.getConnectedOutports() | std::views::take(viewManager_.size()),
+                   [](Outport* p) { return p->isReady(); });
     });
     // Ensure that viewports are up-to-date
     // before isConnectionActive is called
@@ -215,8 +215,7 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
         // Note, no auto since we want a copy of the views
         std::vector<ViewManager::View> prevViews = viewManager_.getViews();
         updateViewports(resizeEvent->size(), true);
-        auto& outports = multiinport_.getConnectedOutports();
-        size_t minNum = std::min(outports.size(), viewManager_.size());
+        const auto minNum = std::min(multiinport_.getNumberOfConnections(), viewManager_.size());
 
         auto changedFromZeroDim = [](int prev, int current) {
             return (prev <= 0 && current > 0) || (prev > 0 && current <= 0);
@@ -225,7 +224,7 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
         bool updated = false;
         for (size_t i = 0; i < minNum; ++i) {
             ResizeEvent e(uvec2(viewManager_[i].size));
-            multiinport_.propagateEvent(&e, outports[i]);
+            multiinport_.propagateEvent(&e, multiinport_.getConnectedOutport(i));
             // Only evaluate connections if they will be displayed
             if (i < prevViews.size() &&
                 (changedFromZeroDim(prevViews[i].size.x, viewManager_[i].size.x) ||
@@ -236,19 +235,18 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
                 updated = true;
             }
         }
-        for (size_t i = minNum; i < outports.size(); ++i) {
+        for (size_t i = minNum; i < multiinport_.getNumberOfConnections(); ++i) {
             ResizeEvent e(size2_t(0));
-            multiinport_.propagateEvent(&e, outports[i]);
+            multiinport_.propagateEvent(&e, multiinport_.getConnectedOutport(i));
         }
         if (updated || prevViews.size() != viewManager_.size()) {
             multiinport_.readyUpdate();
             notifyObserversActiveConnectionsChange(this);
         }
     } else {
-        auto& data = multiinport_.getConnectedOutports();
         auto prop = [&](Event* newEvent, size_t ind) {
-            if (ind < viewManager_.size() && ind < data.size()) {
-                multiinport_.propagateEvent(newEvent, data[ind]);
+            if (ind < viewManager_.size() && ind < multiinport_.getNumberOfConnections()) {
+                multiinport_.propagateEvent(newEvent, multiinport_.getConnectedOutport(ind));
             }
         };
         auto propagated = viewManager_.propagateEvent(event, prop);
@@ -407,7 +405,7 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
                          dim.x),
         leftBounds.x, leftBounds.y);
 
-    const int portCount = static_cast<int>(multiinport_.getConnectedOutports().size());
+    const int portCount = static_cast<int>(multiinport_.getNumberOfConnections());
 
     const int widthMultiple = portCount > 1 ? dim.x / portCount : dim.x;
     const int heightMultiple = portCount > 1 ? dim.y / portCount : dim.y;

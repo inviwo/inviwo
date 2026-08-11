@@ -41,8 +41,9 @@ Inport::Inport(std::string_view identifier, Document help)
     : Port(identifier, std::move(help))
     , isReady_{false, [](const bool& /*isReady*/) {},
                [this]() {
-                   return (isConnected() && util::all_of(connectedOutports_,
-                                                         [](Outport* p) { return p->isReady(); }));
+                   return (isConnected() &&
+                           std::ranges::all_of(getConnectedOutports(),
+                                               [](Outport* p) { return p->isReady(); }));
                }}
     , isOptional_(
           false, [](const bool& /*isOptional*/) {}, []() { return false; })
@@ -50,9 +51,9 @@ Inport::Inport(std::string_view identifier, Document help)
 
 Inport::~Inport() = default;
 
-bool Inport::isConnected() const { return !connectedOutports_.empty(); }
+bool Inport::isConnected() const { return getNumberOfConnections() > 0; }
 
-size_t Inport::getNumberOfConnections() const { return connectedOutports_.size(); }
+Outport* Inport::getConnectedOutport() const { return getConnectedOutport(0); }
 
 bool Inport::isReady() const { return isReady_; }
 
@@ -82,49 +83,29 @@ void Inport::propagateEvent(Event* event, Outport* target) {
             used |= event->markAsUnused();
         }
         event->setUsed(used);
-    }
+    } 
 }
 
-void Inport::connectTo(Outport* outport) {
-    if (!isConnectedTo(outport)) {
-        connectedOutports_.push_back(outport);
-        outport->connectTo(this);  // add this to the outport.
-        setChanged(true);          // mark that we should call onChange.
-        isReady_.update();
-        onConnectCallback_.invokeAll();
-        onConnectDispatcher_.invoke(outport);
-        invalidate(InvalidationLevel::InvalidOutput);
-    }
+void Inport::doConnectTo(Outport* outport) {
+    outport->connectTo(this);  // add this to the outport.
+    setChanged(true);          // mark that we should call onChange.
+    isReady_.update();
+    onConnectCallback_.invokeAll();
+    onConnectDispatcher_.invoke(outport);
+    invalidate(InvalidationLevel::InvalidOutput);
 }
 
-void Inport::disconnectFrom(Outport* outport) {
-    auto it = std::find(connectedOutports_.begin(), connectedOutports_.end(), outport);
-    if (it != connectedOutports_.end()) {
-        connectedOutports_.erase(it);
-        outport->disconnectFrom(this);  // remove this from outport.
-        setChanged(true);               // mark that we should call onChange.
-        isReady_.update();
-        onDisconnectCallback_.invokeAll();
-        onDisconnectDispatcher_.invoke(outport);
-        invalidate(InvalidationLevel::InvalidOutput);
-    }
+void Inport::doDisconnectFrom(Outport* outport) {
+    outport->disconnectFrom(this);  // remove this from outport.
+    setChanged(true);               // mark that we should call onChange.
+    isReady_.update();
+    onDisconnectCallback_.invokeAll();
+    onDisconnectDispatcher_.invoke(outport);
+    invalidate(InvalidationLevel::InvalidOutput);
 }
 
 bool Inport::isConnectedTo(const Outport* outport) const {
-    return std::find(connectedOutports_.begin(), connectedOutports_.end(), outport) !=
-           connectedOutports_.end();
-}
-
-Outport* Inport::getConnectedOutport() const {
-    if (!connectedOutports_.empty()) {
-        return connectedOutports_.front();
-    } else {
-        return nullptr;
-    }
-}
-
-const std::vector<Outport*>& Inport::getConnectedOutports() const noexcept {
-    return connectedOutports_;
+    return std::ranges::contains(getConnectedOutports(), outport);
 }
 
 void Inport::callOnChangeIfChanged() const {

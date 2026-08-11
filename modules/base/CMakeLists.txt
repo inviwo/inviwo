@@ -120,6 +120,7 @@ set(HEADER_FILES
     include/modules/base/processors/randomspheregenerator.h
     include/modules/base/processors/sequencesource.h
     include/modules/base/processors/singlevoxel.h
+    include/modules/base/processors/spatialboundingbox.h
     include/modules/base/processors/spotlightsourceprocessor.h
     include/modules/base/processors/stereocamerasyncer.h
     include/modules/base/processors/surfaceextractionprocessor.h
@@ -288,6 +289,7 @@ set(SOURCE_FILES
     src/processors/randomspheregenerator.cpp
     src/processors/sequencesource.cpp
     src/processors/singlevoxel.cpp
+    src/processors/spatialboundingbox.cpp
     src/processors/spotlightsourceprocessor.cpp
     src/processors/stereocamerasyncer.cpp
     src/processors/surfaceextractionprocessor.cpp

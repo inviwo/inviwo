@@ -41,7 +41,6 @@ https://prideout.net/blog/old/blog/index.html@p=61.html
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>

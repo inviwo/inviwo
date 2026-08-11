@@ -308,11 +308,11 @@ BaseImageInport<N>::BaseImageInport(std::string_view identifier, Document help,
 
     this->isReady_.setUpdate([this]() {
         if (isOutportDeterminingSize()) {
-            return (this->isConnected() && util::all_of(this->connectedOutports_,
-                                                        [](Outport* p) { return p->isReady(); }));
+            return (this->isConnected() &&
+                    util::all_of(this->outports_, [](auto* p) { return p->port()->isReady(); }));
         } else {
-            return (this->isConnected() && util::all_of(this->connectedOutports_, [&](Outport* p) {
-                        return static_cast<ImageOutport*>(p)->isReady(this);
+            return (this->isConnected() && util::all_of(this->outports_, [&](auto* p) {
+                        return static_cast<ImageOutport*>(p->port())->isReady(this);
                     }));
         }
     });
@@ -347,8 +347,8 @@ template <size_t N>
 std::vector<std::shared_ptr<const Image>> BaseImageInport<N>::getVectorData() const {
     std::vector<std::shared_ptr<const Image>> res;
 
-    for (auto outport : this->connectedOutports_) {
-        auto imgport = static_cast<ImageOutport*>(outport);
+    for (auto outport : this->outports_) {
+        auto imgport = static_cast<ImageOutport*>(outport->port());
         if (auto img = getImage(imgport)) res.emplace_back(img);
     }
 
@@ -360,8 +360,8 @@ std::vector<std::pair<Outport*, std::shared_ptr<const Image>>>
 BaseImageInport<N>::getSourceVectorData() const {
     std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> res;
 
-    for (auto outport : this->connectedOutports_) {
-        auto imgport = static_cast<ImageOutport*>(outport);
+    for (auto outport : this->outports_) {
+        auto imgport = static_cast<ImageOutport*>(outport->port());
         if (auto img = getImage(imgport)) res.emplace_back(imgport, img);
     }
 
@@ -420,14 +420,14 @@ Document BaseImageInport<N>::getInfo() const {
 template <size_t N>
 bool BaseImageInport<N>::hasData() const {
     if constexpr (N == 0) {
-        return this->isConnected() && util::any_of(this->connectedOutports_, [this](Outport* p) {
-                   return getImage(static_cast<ImageOutport*>(p)) != nullptr;
+        return this->isConnected() && util::any_of(this->outports_, [this](auto* p) {
+                   return getImage(static_cast<ImageOutport*>(p->port())) != nullptr;
                });
     } else {
         // Note: Cannot use ImageOutport::hasData() as getData()
         // depends on the ImageInport
-        return this->isConnected() && util::all_of(this->connectedOutports_, [this](Outport* p) {
-                   return getImage(static_cast<ImageOutport*>(p)) != nullptr;
+        return this->isConnected() && util::all_of(this->outports_, [this](auto* p) {
+                   return getImage(static_cast<ImageOutport*>(p->port())) != nullptr;
                });
     }
 }

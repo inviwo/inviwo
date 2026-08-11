@@ -44,7 +44,6 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -129,6 +128,7 @@
 #include <modules/base/processors/randommeshgenerator.h>
 #include <modules/base/processors/randomspheregenerator.h>
 #include <modules/base/processors/singlevoxel.h>
+#include <modules/base/processors/spatialboundingbox.h>
 #include <modules/base/processors/spotlightsourceprocessor.h>
 #include <modules/base/processors/stereocamerasyncer.h>
 #include <modules/base/processors/surfaceextractionprocessor.h>
@@ -270,6 +270,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<RandomMeshGenerator>();
     registerProcessor<RandomSphereGenerator>();
     registerProcessor<SingleVoxel>();
+    registerProcessor<SpatialBoundingBox>();
     registerProcessor<SpotLightSourceProcessor>();
     registerProcessor<StereoCameraSyncer>();
     registerProcessor<SurfaceExtraction>();
