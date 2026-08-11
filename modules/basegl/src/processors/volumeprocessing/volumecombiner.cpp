@@ -35,9 +35,7 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/ports/outport.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>

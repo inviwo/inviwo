@@ -37,7 +37,7 @@
 namespace inviwo {
 
 PythonInport::PythonInport(std::string_view identifier, Document help)
-    : Inport{identifier, std::move(help)} {}
+    : Inport{identifier, std::move(help)}, outport_{nullptr} {}
 
 bool PythonInport::canConnectTo(const Port* port) const {
     if (dynamic_cast<const PythonOutport*>(port)) {
@@ -47,17 +47,50 @@ bool PythonInport::canConnectTo(const Port* port) const {
     return false;
 }
 
+void PythonInport::connectTo(Outport* outport) {
+    if (!outport) return;
+    if (isConnectedTo(outport)) return;
+
+    if (outport_) {
+        throw Exception("Trying to connect to a full port.");
+    }
+
+    if (auto pythonOutport = dynamic_cast<PythonOutport*>(outport)) {
+        outport_ = pythonOutport;
+        doConnectTo(outport);
+    } else {
+        throw Exception("Trying to connect incompatible ports.");
+    }
+}
+
+void PythonInport::disconnectFrom(Outport* outport) {
+    if (outport_ == outport) {
+        outport_ = nullptr;
+        doDisconnectFrom(outport);
+    }
+}
+
+size_t PythonInport::getNumberOfConnections() const { return outport_ ? 1 : 0; }
+
+Outport* PythonInport::getConnectedOutport(size_t i) const {
+    if (i == 0) {
+        return outport_;
+    } else {
+        return nullptr;
+    }
+}
+
 pybind11::object PythonInport::getData() const {
-    if (isConnected()) {
-        return static_cast<const PythonOutport*>(connectedOutports_[0])->getData();
+    if (outport_) {
+        return outport_->getData();
     } else {
         return {};
     }
 }
 
 bool PythonInport::hasData() const {
-    if (isConnected()) {
-        return static_cast<const PythonOutport*>(connectedOutports_[0])->hasData();
+    if (outport_) {
+        return outport_->hasData();
     } else {
         return false;
     }
@@ -89,9 +122,8 @@ Document PythonInport::getInfo() const {
 }
 
 DataInfo PythonInport::getDataInfo() const {
-    return {.cid = "org.inviwo.python.object",
-            .name = "Python Object",
-            .color = uvec3{12, 240, 153}};
+    return {
+        .cid = "org.inviwo.python.object", .name = "Python Object", .color = uvec3{12, 240, 153}};
 }
 
 }  // namespace inviwo

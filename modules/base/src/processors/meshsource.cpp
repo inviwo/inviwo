@@ -33,7 +33,6 @@
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>

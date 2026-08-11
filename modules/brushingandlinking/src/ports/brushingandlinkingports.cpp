@@ -53,13 +53,15 @@ namespace inviwo {
 
 BrushingAndLinkingInport::BrushingAndLinkingInport(
     std::string_view identifier, std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
-    : Inport(identifier, Document{}), manager_(this, invalidationLevels) {
+    : Inport(identifier, Document{}), manager_(this, invalidationLevels), outport_{nullptr} {
     setOptional(true);
 }
 BrushingAndLinkingInport::BrushingAndLinkingInport(
     std::string_view identifier, Document help,
     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
-    : Inport(identifier, Document{std::move(help)}), manager_(this, invalidationLevels) {
+    : Inport(identifier, Document{std::move(help)})
+    , manager_(this, invalidationLevels)
+    , outport_{nullptr} {
     setOptional(true);
 }
 
@@ -193,6 +195,36 @@ bool BrushingAndLinkingInport::canConnectTo(const Port* port) const {
     }
 
     return false;
+}
+
+void BrushingAndLinkingInport::connectTo(Outport* outport) {
+    if (!outport) return;
+    if (isConnectedTo(outport)) return;
+
+    if (outport_) {
+        throw Exception("Trying to connect to a full port.");
+    }
+
+    if (auto bnlOutport = dynamic_cast<BrushingAndLinkingOutport*>(outport)) {
+        outport_ = bnlOutport;
+        doConnectTo(outport);
+    } else {
+        throw Exception("Trying to connect incompatible ports.");
+    }
+}
+void BrushingAndLinkingInport::disconnectFrom(Outport* outport) {
+    if (outport_ == outport) {
+        outport_ = nullptr;
+        doDisconnectFrom(outport);
+    }
+}
+size_t BrushingAndLinkingInport::getNumberOfConnections() const { return outport_ ? 1 : 0; }
+Outport* BrushingAndLinkingInport::getConnectedOutport(size_t i) const {
+    if (i == 0) {
+        return outport_;
+    } else {
+        return nullptr;
+    }
 }
 
 std::string_view BrushingAndLinkingInport::getClassIdentifier() const {

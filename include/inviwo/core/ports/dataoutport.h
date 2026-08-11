@@ -38,6 +38,7 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/detected.h>
 #include <inviwo/core/resourcemanager/resource.h>
+#include <inviwo/core/datastructures/datasequence.h>
 
 #include <glm/fwd.hpp>
 
@@ -50,7 +51,7 @@ namespace inviwo {
  * DataOutport hold data of type T
  */
 template <typename T>
-class DataOutport : public Outport, public OutportIterableImpl<DataOutport<T>, T> {
+class DataOutport : public Outport, public detail::DataOutportImpl<DataOutport<T>> {
 public:
     using type = T;
     DataOutport(std::string_view identifier, Document help = {});
@@ -79,10 +80,10 @@ public:
      * Pass data along to the port using the Move constructor.
      * Example:
      * ```c++
-     * void SomePorcessor::process() {
+     * void SomeProcessor::process() {
      *     std::vector<vec3> points;
-     *      /// code to fill the points-vector with data
-     *      myPort_.setData(std::move(points));
+     *     /// code to fill the points-vector with data
+     *     myPort_.setData(std::move(points));
      * }
      * ```
      */
@@ -111,7 +112,7 @@ struct PortTraits<DataOutport<T>> {
 
 template <typename T>
 DataOutport<T>::DataOutport(std::string_view identifier, Document help)
-    : Outport(identifier, std::move(help)), OutportIterableImpl<DataOutport<T>, T>{}, data_() {
+    : Outport(identifier, std::move(help)), detail::DataOutportImpl<DataOutport<T>>{}, data_() {
 
     isReady_.setUpdate([this]() {
         return invalidationLevel_ == InvalidationLevel::Valid && data_.get() != nullptr;

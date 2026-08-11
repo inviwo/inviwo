@@ -42,7 +42,6 @@
 #include <inviwo/core/interaction/trackball.h>
 #include <inviwo/core/interaction/trackballobject.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>

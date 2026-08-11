@@ -30,7 +30,6 @@
 #include <modules/oit/oitmodule.h>
 
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/util/exception.h>
 #include <modules/oit/ports/rasterizationport.h>
 #include <modules/oit/processors/calcnormalsprocessor.h>

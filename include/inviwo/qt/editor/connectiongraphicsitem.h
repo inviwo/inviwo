@@ -67,7 +67,8 @@ public:
     virtual QPointF getEndPoint() const = 0;
 
     virtual QPainterPath shape() const override;
-    virtual QColor getColor() const;
+    virtual QColor getStartColor() const;
+    virtual QColor getEndColor() const;
 
     virtual void updateShape();
 
@@ -196,6 +197,9 @@ public:
     // Override
     virtual QPointF getStartPoint() const override;
     virtual QPointF getEndPoint() const override;
+
+    virtual QColor getStartColor() const override;
+    virtual QColor getEndColor() const override;
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* e) override;
 

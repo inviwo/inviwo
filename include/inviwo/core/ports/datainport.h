@@ -34,7 +34,6 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/porttraits.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/util/glmvec.h>
@@ -57,7 +56,7 @@ namespace inviwo {
  * returned by @c getData().
  */
 template <typename T, size_t N = 1, bool Flat = false>
-class DataInport : public Inport, public InportIterable<DataInport<T, N, Flat>, T, Flat> {
+class DataInport : public Inport {
 public:
     using type = T;
     using value_type = std::shared_ptr<const T>;
@@ -71,10 +70,14 @@ public:
     virtual uvec3 getColorCode() const override;
     virtual Document getInfo() const override;
 
+    virtual Outport* getConnectedOutport(size_t i) const override;
     virtual size_t getMaxNumberOfConnections() const override;
+    virtual size_t getNumberOfConnections() const override;
+    using Inport::getConnectedOutport;
 
     virtual bool canConnectTo(const Port* port) const override;
     virtual void connectTo(Outport* port) override;
+    virtual void disconnectFrom(Outport* outport) override;
     virtual bool isConnected() const override;
 
     virtual std::shared_ptr<const T> getData() const;
@@ -84,6 +87,13 @@ public:
     virtual bool hasData() const;
 
     virtual DataInfo getDataInfo() const override;
+
+    using iterator = std::conditional_t<Flat, FlatInportIterator<T>, RegularInportIterator<T>>;
+    iterator begin() const noexcept { return iterator{outports_.begin(), outports_.end()}; }
+    iterator end() const noexcept { return iterator{outports_.end(), outports_.end()}; }
+
+protected:
+    std::vector<DataOutportInterface<T>*> outports_;
 };
 
 template <typename T>
@@ -124,7 +134,7 @@ struct PortTraits<DataInport<T, N, Flat>> {
 
 template <typename T, size_t N, bool Flat>
 DataInport<T, N, Flat>::DataInport(std::string_view identifier, Document help)
-    : Inport(identifier, std::move(help)), InportIterable<DataInport<T, N, Flat>, T, Flat>{} {}
+    : Inport(identifier, std::move(help)) {}
 
 template <typename T, size_t N, bool Flat>
 std::string_view DataInport<T, N, Flat>::getClassIdentifier() const {
@@ -134,6 +144,20 @@ std::string_view DataInport<T, N, Flat>::getClassIdentifier() const {
 template <typename T, size_t N, bool Flat>
 uvec3 DataInport<T, N, Flat>::getColorCode() const {
     return DataTraits<T>::colorCode();
+}
+
+template <typename T, size_t N, bool Flat>
+Outport* DataInport<T, N, Flat>::getConnectedOutport(size_t i) const {
+    if (i < outports_.size()) {
+        return outports_[i]->port();
+    } else {
+        return nullptr;
+    }
+}
+
+template <typename T, size_t N, bool Flat>
+size_t DataInport<T, N, Flat>::getNumberOfConnections() const {
+    return outports_.size();
 }
 
 template <typename T, size_t N, bool Flat>
@@ -149,13 +173,10 @@ template <typename T, size_t N, bool Flat>
 bool DataInport<T, N, Flat>::canConnectTo(const Port* port) const {
     if (!port || port->getProcessor() == getProcessor() || circularConnection(port)) return false;
 
-    if constexpr (Flat) {
-        if (dynamic_cast<const OutportIterable<T>*>(port)) {
-            return true;
+    if (auto* outportData = dynamic_cast<const DataOutportInterface<T>*>(port)) {
+        if constexpr (!Flat) {
+            if (outportData->flat()) return false;
         }
-    }
-
-    if (dynamic_cast<const DataOutport<T>*>(port)) {
         return true;
     }
 
@@ -163,28 +184,44 @@ bool DataInport<T, N, Flat>::canConnectTo(const Port* port) const {
 }
 
 template <typename T, size_t N, bool Flat>
-void DataInport<T, N, Flat>::connectTo(Outport* port) {
-    if (!port) return;
+void DataInport<T, N, Flat>::connectTo(Outport* outport) {
+    if (!outport) return;
+    if (isConnectedTo(outport)) return;
 
-    const DataOutport<T>* dataPort = dynamic_cast<const DataOutport<T>*>(port);
-    const OutportIterable<T>* flatPort =
-        Flat ? dynamic_cast<const OutportIterable<T>*>(port) : nullptr;
+    if (auto* outportData = dynamic_cast<DataOutportInterface<T>*>(outport)) {
+        if constexpr (!Flat) {
+            if (outportData->flat()) {
+                throw Exception("Trying to connect incompatible ports.");
+            }
+        }
 
-    if (dataPort == nullptr && flatPort == nullptr)
+        if (getNumberOfConnections() + 1 > getMaxNumberOfConnections()) {
+            throw Exception("Trying to connect to a full port.");
+        }
+        outports_.push_back(outportData);
+
+        doConnectTo(outport);
+    } else {
         throw Exception("Trying to connect incompatible ports.");
-
-    if (getNumberOfConnections() + 1 > getMaxNumberOfConnections())
-        throw Exception("Trying to connect to a full port.");
-
-    Inport::connectTo(port);
+    }
 }
+
+template <typename T, size_t N, bool Flat>
+void DataInport<T, N, Flat>::disconnectFrom(Outport* outport) {
+    if (auto it = std::ranges::find_if(outports_, [&](auto* dp) { return dp->port() == outport; });
+        it != outports_.end()) {
+
+        outports_.erase(it);
+        doDisconnectFrom(outport);
+    }
+};
 
 template <typename T, size_t N, bool Flat>
 bool DataInport<T, N, Flat>::isConnected() const {
     if constexpr (N == 0) {
-        return !connectedOutports_.empty();
+        return !outports_.empty();
     } else {
-        return connectedOutports_.size() >= 1 && connectedOutports_.size() <= N;
+        return outports_.size() >= 1 && outports_.size() <= N;
     }
 }
 
@@ -193,9 +230,8 @@ bool DataInport<T, N, Flat>::hasData() const {
     if constexpr (N == 0) {
         return isConnected() && this->begin() != this->end();
     } else {
-        return isConnected() && util::all_of(connectedOutports_, [](Outport* p) {
-                   return static_cast<DataOutport<T>*>(p)->hasData();
-               });
+        return isConnected() &&
+               util::all_of(outports_, [](auto* p) { return p->port()->hasData(); });
     }
 }
 
@@ -230,15 +266,17 @@ DataInport<T, N, Flat>::getSourceVectorData() const {
         res.reserve(N);
     }
 
-    for (auto outport : connectedOutports_) {
+    for (auto* outport : outports_) {
         // Safe to static cast since we are unable to connect other outport types.
         if (Flat) {
-            if (auto iterable = dynamic_cast<OutportIterable<T>*>(outport)) {
-                for (auto elem : *iterable) res.emplace_back(outport, elem);
-            }
+            res.append_range(std::views::iota(0uz, outport->size()) |
+                             std::views::transform([&](size_t i) {
+                                 return std::pair{outport->port(), outport->getElement(i)};
+                             }));
         } else {
-            auto dataport = static_cast<DataOutport<T>*>(outport);
-            if (dataport->hasData()) res.emplace_back(dataport, dataport->getData());
+            if (auto data = outport->getElement(0)) {
+                res.emplace_back(outport->port(), data);
+            }
         }
     }
 

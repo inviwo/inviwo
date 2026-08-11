@@ -179,7 +179,8 @@ TEST(PortTests, SingleInportOutport) {
         EXPECT_EQ(sink.inport.getMaxNumberOfConnections(), 1);
         EXPECT_EQ(sink.inport.getNumberOfConnections(), 1);
         EXPECT_EQ(sink.inport.getConnectedOutport(), &source1.outport);
-        EXPECT_THAT(sink.inport.getConnectedOutports(), ElementsAre(&source1.outport));
+        EXPECT_THAT(sink.inport.getConnectedOutports() | std::ranges::to<std::vector>(),
+                    ElementsAre(&source1.outport));
         EXPECT_FALSE(sink.inport.isOptional());
 
         EXPECT_TRUE(sink.inport.hasData());
@@ -191,7 +192,6 @@ TEST(PortTests, SingleInportOutport) {
         EXPECT_THAT(sink.inport.getVectorData(), ElementsAre(Pointee(1)));
         EXPECT_THAT(sink.inport.getSourceVectorData(),
                     ElementsAre(Pair(&source1.outport, Pointee(1))));
-        EXPECT_THAT(sink.inport.outportAndData(), ElementsAre(Pair(&source1.outport, Pointee(1))));
     });
 
     network.addConnection(&source1.outport, &sink.inport);
@@ -216,7 +216,8 @@ TEST(PortTests, MultiInportOutport) {
             EXPECT_EQ(sink.inport.getMaxNumberOfConnections(), std::numeric_limits<size_t>::max());
             EXPECT_EQ(sink.inport.getNumberOfConnections(), 1);
             EXPECT_EQ(sink.inport.getConnectedOutport(), &source1.outport);
-            EXPECT_THAT(sink.inport.getConnectedOutports(), ElementsAre(&source1.outport));
+            EXPECT_THAT(sink.inport.getConnectedOutports() | std::ranges::to<std::vector>(),
+                        ElementsAre(&source1.outport));
             EXPECT_FALSE(sink.inport.isOptional());
 
             EXPECT_TRUE(sink.inport.hasData());
@@ -228,8 +229,6 @@ TEST(PortTests, MultiInportOutport) {
             EXPECT_THAT(sink.inport.getVectorData(), ElementsAre(Pointee(1)));
             EXPECT_THAT(sink.inport.getSourceVectorData(),
                         ElementsAre(Pair(&source1.outport, Pointee(1))));
-            EXPECT_THAT(sink.inport.outportAndData(),
-                        ElementsAre(Pair(&source1.outport, Pointee(1))));
         })
         .WillOnce([&]() {
             EXPECT_TRUE(sink.inport.isConnected());
@@ -238,7 +237,7 @@ TEST(PortTests, MultiInportOutport) {
             EXPECT_EQ(sink.inport.getMaxNumberOfConnections(), std::numeric_limits<size_t>::max());
             EXPECT_EQ(sink.inport.getNumberOfConnections(), 2);
             EXPECT_EQ(sink.inport.getConnectedOutport(), &source1.outport);
-            EXPECT_THAT(sink.inport.getConnectedOutports(),
+            EXPECT_THAT(sink.inport.getConnectedOutports() | std::ranges::to<std::vector>(),
                         ElementsAre(&source1.outport, &source2.outport));
             EXPECT_FALSE(sink.inport.isOptional());
 
@@ -252,13 +251,9 @@ TEST(PortTests, MultiInportOutport) {
             EXPECT_THAT(sink.inport.getSourceVectorData(),
                         ElementsAre(Pair(&source1.outport, Pointee(1)),
                                     Pair(&source2.outport, Pointee(2))));
-            EXPECT_THAT(sink.inport.outportAndData(),
-                        ElementsAre(Pair(&source1.outport, Pointee(1)),
-                                    Pair(&source2.outport, Pointee(2))));
 
             EXPECT_THAT(util::enumerate(sink.inport),
                         ElementsAre(ZipPair(Eq(0), Pointee(1)), ZipPair(Eq(1), Pointee(2))));
-
         });
 
     network.addConnection(&source1.outport, &sink.inport);
@@ -285,7 +280,8 @@ TEST(PortTests, FlatMultiInportOutport) {
             EXPECT_EQ(sink.inport.getMaxNumberOfConnections(), std::numeric_limits<size_t>::max());
             EXPECT_EQ(sink.inport.getNumberOfConnections(), 1);
             EXPECT_EQ(sink.inport.getConnectedOutport(), &source1.outport);
-            EXPECT_THAT(sink.inport.getConnectedOutports(), ElementsAre(&source1.outport));
+            EXPECT_THAT(sink.inport.getConnectedOutports() | std::ranges::to<std::vector>(),
+                        ElementsAre(&source1.outport));
             EXPECT_FALSE(sink.inport.isOptional());
 
             EXPECT_TRUE(sink.inport.hasData());
@@ -297,8 +293,6 @@ TEST(PortTests, FlatMultiInportOutport) {
             EXPECT_THAT(sink.inport.getVectorData(), ElementsAre(Pointee(1)));
             EXPECT_THAT(sink.inport.getSourceVectorData(),
                         ElementsAre(Pair(&source1.outport, Pointee(1))));
-            EXPECT_THAT(sink.inport.outportAndData(),
-                        ElementsAre(Pair(&source1.outport, Pointee(1))));
         })
         .WillOnce([&]() {
             EXPECT_TRUE(sink.inport.isConnected());
@@ -307,7 +301,7 @@ TEST(PortTests, FlatMultiInportOutport) {
             EXPECT_EQ(sink.inport.getMaxNumberOfConnections(), std::numeric_limits<size_t>::max());
             EXPECT_EQ(sink.inport.getNumberOfConnections(), 2);
             EXPECT_EQ(sink.inport.getConnectedOutport(), &source1.outport);
-            EXPECT_THAT(sink.inport.getConnectedOutports(),
+            EXPECT_THAT(sink.inport.getConnectedOutports() | std::ranges::to<std::vector>(),
                         ElementsAre(&source1.outport, &source2.outport));
             EXPECT_FALSE(sink.inport.isOptional());
 
@@ -321,11 +315,6 @@ TEST(PortTests, FlatMultiInportOutport) {
                         ElementsAre(Pointee(1), Pointee(2), Pointee(3), Pointee(4)));
             EXPECT_THAT(
                 sink.inport.getSourceVectorData(),
-                ElementsAre(Pair(&source1.outport, Pointee(1)), Pair(&source2.outport, Pointee(2)),
-                            Pair(&source2.outport, Pointee(3)),
-                            Pair(&source2.outport, Pointee(4))));
-            EXPECT_THAT(
-                sink.inport.outportAndData(),
                 ElementsAre(Pair(&source1.outport, Pointee(1)), Pair(&source2.outport, Pointee(2)),
                             Pair(&source2.outport, Pointee(3)),
                             Pair(&source2.outport, Pointee(4))));

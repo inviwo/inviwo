@@ -31,7 +31,6 @@
 
 #include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
