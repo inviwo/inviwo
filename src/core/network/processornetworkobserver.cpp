@@ -126,4 +126,18 @@ void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidRemoveLink(
         [&](ProcessorNetworkObserver* o) { o->onProcessorNetworkDidRemoveLink(propertyLink); });
 }
 
+void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidAddAnnotation(
+    size_t annotationIndex) {
+    forEachObserver([&](ProcessorNetworkObserver* o) {
+        o->onProcessorNetworkDidAddAnnotation(annotationIndex);
+    });
+}
+
+void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillRemoveAnnotation(
+    size_t annotationIndex) {
+    forEachObserver([&](ProcessorNetworkObserver* o) {
+        o->onProcessorNetworkWillRemoveAnnotation(annotationIndex);
+    });
+}
+
 }  // namespace inviwo

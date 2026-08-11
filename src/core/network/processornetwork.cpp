@@ -51,12 +51,16 @@
 namespace inviwo {
 
 ProcessorNetwork::ProcessorNetwork(InviwoApplication* application)
-    : ProcessorNetworkObservable()
-    , ProcessorObserver()
-    , PropertyOwnerObserver()
-    , application_(application)
+    : ProcessorNetworkObservable{}
+    , ProcessorObserver{}
+    , PropertyOwnerObserver{}
+    , application_{application}
     , evaluator_{nullptr}
-    , linkEvaluator_(this) {}
+    , annotations_{std::make_shared<NetworkAnnotations>()}
+    , linkEvaluator_{this} {
+
+    annotations_->addObserver(this);
+}
 
 ProcessorNetwork::~ProcessorNetwork() {
     lock();
@@ -68,7 +72,7 @@ Processor* ProcessorNetwork::addProcessor(std::shared_ptr<Processor> processor) 
 
     processor->setIdentifier(util::findUniqueIdentifier(
         util::stripIdentifier(processor->getIdentifier()),
-        [&](std::string_view id) { return getProcessorByIdentifier(id) == nullptr; }, ""));
+        [this](std::string_view id) { return getProcessorByIdentifier(id) == nullptr; }, ""));
 
     notifyObserversProcessorNetworkWillAddProcessor(processor.get());
     processors_.emplace(processor->getIdentifier(), processor);
@@ -117,6 +121,9 @@ void ProcessorNetwork::removeProcessorHelper(Processor* processor) {
     for (auto& link : toDelete) {
         removeLink(link.getSource(), link.getDestination());
     }
+
+    // remove processor from all annotations
+    annotations_->removeProcessor(processor);
 }
 
 std::shared_ptr<Processor> ProcessorNetwork::removeProcessor(std::string_view identifier) {
@@ -316,6 +323,24 @@ std::vector<PropertyLink> ProcessorNetwork::getLinksBetweenProcessors(Processor*
     return linkEvaluator_.getLinksBetweenProcessors(p1, p2);
 }
 
+size_t ProcessorNetwork::addNetworkAnnotation(std::span<const Processor* const> processors) {
+    return annotations_->add(processors);
+}
+
+size_t ProcessorNetwork::addNetworkAnnotation(NetworkAnnotation&& annotation) {
+    return annotations_->add(std::move(annotation));
+}
+
+NetworkAnnotation ProcessorNetwork::removeNetworkAnnotation(size_t annotationIndex) {
+    auto annotation = annotations_->getAnnotation(annotationIndex);
+    annotations_->remove(annotationIndex);
+    return annotation;
+}
+
+std::shared_ptr<NetworkAnnotations> ProcessorNetwork::getNetworkAnnotations() const {
+    return annotations_;
+}
+
 void ProcessorNetwork::evaluateLinksFromProperty(Property* source) {
     linkEvaluator_.evaluateLinksFromProperty(source);
 }
@@ -327,6 +352,8 @@ void ProcessorNetwork::clear() {
     for (auto* processor : processors) {
         removeProcessor(processor);
     }
+
+    annotations_->clear();
 }
 
 bool ProcessorNetwork::empty() const { return processors_.empty(); }
@@ -391,6 +418,19 @@ void ProcessorNetwork::onProcessorMetaDataSelectionChange() {
     notifyObserversProcessorNetworkChanged();
 }
 
+void ProcessorNetwork::onNetworkAnnotationAdded(NetworkAnnotation&, size_t annotationIndex) {
+    notifyObserversProcessorNetworkDidAddAnnotation(annotationIndex);
+}
+
+void ProcessorNetwork::onNetworkAnnotationWillBeRemoved(NetworkAnnotation&,
+                                                        size_t annotationIndex) {
+    notifyObserversProcessorNetworkWillRemoveAnnotation(annotationIndex);
+}
+
+void ProcessorNetwork::onNetworkAnnotationChanged(NetworkAnnotation&, size_t) {
+    notifyObserversProcessorNetworkChanged();
+}
+
 void ProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("ProcessorNetworkVersion", processorNetworkVersion_);
 
@@ -408,6 +448,8 @@ void ProcessorNetwork::serialize(Serializer& s) const {
                          link.getSource()->getPath(nested.addAttribute("src"));
                          link.getDestination()->getPath(nested.addAttribute("dst"));
                      });
+
+    annotations_->serialize(s);
 }
 
 void ProcessorNetwork::addPropertyOwnerObservation(PropertyOwner* po) {
@@ -615,6 +657,8 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         clear();
         throw AbortException("Unknown Exception during deserialization.");
     }
+
+    annotations_->deserialize(d);
 
     notifyObserversProcessorNetworkChanged();
 }

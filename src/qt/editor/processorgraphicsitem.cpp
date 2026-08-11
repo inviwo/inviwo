@@ -78,17 +78,13 @@ int pointSizeToPixelSize(const int pointSize) {
 constexpr double labelMargin = 8.0;
 constexpr double tagMargin = 4.0;
 
-constexpr QRectF itemRect{
-    -ProcessorGraphicsItem::size.width() / 2, -ProcessorGraphicsItem::size.height() / 2,
-    ProcessorGraphicsItem::size.width(), ProcessorGraphicsItem::size.height()};
-
-constexpr QRectF countRect{itemRect.adjusted(120.0, -40.0, -5.0, 0.0)};
+constexpr QRectF countRect{ProcessorGraphicsItem::itemRect.adjusted(120.0, -40.0, -5.0, 0.0)};
 
 constexpr QRectF progressRect{
     QPointF{-((ProcessorGraphicsItem::size.width() / 2.0) - labelMargin), 9.0 - 2.5},
     QPointF{(ProcessorGraphicsItem::size.width() / 2.0) - labelMargin, 9.0 + 2.5}};
 
-constexpr QPointF statusPosition{itemRect.topRight() + QPointF(-9.0f, 9.0f)};
+constexpr QPointF statusPosition{ProcessorGraphicsItem::itemRect.topRight() + QPointF(-9.0f, 9.0f)};
 
 class UpdateStatusEvent : public QEvent {
 public:

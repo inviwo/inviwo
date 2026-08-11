@@ -135,6 +135,9 @@ public:
     void setHighlight(bool val);
 
     static constexpr QSizeF size{150.0, 50.0};
+    static constexpr QRectF itemRect{
+        -ProcessorGraphicsItem::size.width() / 2, -ProcessorGraphicsItem::size.height() / 2,
+        ProcessorGraphicsItem::size.width(), ProcessorGraphicsItem::size.height()};
 
     enum class PortType : std::uint8_t { In, Out };
     static QPointF portOffset(PortType type, size_t index);

@@ -68,6 +68,10 @@ public:
     virtual void onProcessorNetworkWillRemoveLink(const PropertyLink&) {}
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink&) {}
 
+    // Network Annotations
+    virtual void onProcessorNetworkDidAddAnnotation(size_t) {}
+    virtual void onProcessorNetworkWillRemoveAnnotation(size_t) {}
+
     virtual void onProcessorBackgroundJobsChanged(Processor*, int /*diff*/, int /*total*/) {}
 };
 
@@ -94,6 +98,10 @@ public:
     void notifyObserversProcessorNetworkDidAddLink(const PropertyLink& propertyLink);
     void notifyObserversProcessorNetworkWillRemoveLink(const PropertyLink& propertyLink);
     void notifyObserversProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink);
+
+    // Network Annotations
+    void notifyObserversProcessorNetworkDidAddAnnotation(size_t annotationIndex);
+    void notifyObserversProcessorNetworkWillRemoveAnnotation(size_t annotationIndex);
 
     void notifyObserversProcessorBackgroundJobsChanged(Processor* p, int diff, int total);
 };

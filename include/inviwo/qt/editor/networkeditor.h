@@ -35,6 +35,7 @@
 
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/network/networkannotations.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/processors/processorpair.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
@@ -76,6 +77,8 @@ class LinkDialog;
 class InviwoMainWindow;
 class Image;
 class MenuItem;
+struct NetworkAnnotation;
+class NetworkAnnotationGraphicsItem;
 class ProcessorDragHelper;
 class ConnectionOutDragHelper;
 class ConnectionInDragHelper;
@@ -92,6 +95,7 @@ class DataVisualizer;
  */
 class IVW_QTEDITOR_API NetworkEditor : public QGraphicsScene,
                                        public Observable<NetworkEditorObserver>,
+                                       public NetworkAnnotationsObserver,
                                        public ProcessorNetworkObserver {
 #include <warn/push>
 #include <warn/ignore/all>
@@ -120,6 +124,9 @@ public:
     void removePropertyWidgets(Processor* processor);
     void showProcessorHelp(const std::string& classIdentifier, bool raise = false);
 
+    void addNetworkAnnotationWidgets(size_t annotationIndex);
+    void removeNetworkAnnotationWidgets(size_t annotationIndex);
+
     static QPointF snapToGrid(QPointF pos);
 
     // Called from ProcessorPortGraphicsItems mouse events.
@@ -139,12 +146,15 @@ public:
     LinkConnectionGraphicsItem* getLinkGraphicsItem(const ProcessorPair& key) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItem(Processor* processor1,
                                                     Processor* processor2) const;
+    NetworkAnnotationGraphicsItem* getNetworkAnnotationGraphicsItem(size_t annotationIndex) const;
+
     ProcessorGraphicsItem* getProcessorGraphicsItemAt(const QPointF pos) const;
     ProcessorInportGraphicsItem* getProcessorInportGraphicsItemAt(const QPointF pos) const;
     ProcessorOutportGraphicsItem* getProcessorOutportGraphicsItemAt(const QPointF pos) const;
 
     ConnectionGraphicsItem* getConnectionGraphicsItemAt(const QPointF pos) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItemAt(const QPointF pos) const;
+    NetworkAnnotationGraphicsItem* getNetworkAnnotationGraphicsItemAt(const QPointF pos) const;
 
     void setBackgroundVisible(bool visible);
     bool isBackgroundVisible() const;
@@ -184,6 +194,9 @@ protected:
                                const std::unordered_set<CompositeProcessor*>& selectedComposites);
     void addSequenceMenuItems(QMenu& menu, const std::vector<Processor*>& selectedProcessors,
                               const std::unordered_set<SequenceProcessor*>& selectedSequences);
+    void addNetworkAnnotationMenuItems(QMenu& menu,
+                                       const std::vector<Processor*>& selectedProcessors,
+                                       const std::unordered_set<size_t>& selectedAnnotations);
 
     void addCopyPasteMenuItems(QMenu& menu, const QList<QGraphicsItem*>& activeItems,
                                const ivec2& position);
@@ -226,6 +239,10 @@ private:
     virtual void onProcessorNetworkDidAddLink(const PropertyLink& propertyLink) override;
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink) override;
 
+    virtual void onNetworkAnnotationAdded(NetworkAnnotation&, size_t) override;
+    virtual void onNetworkAnnotationWillBeRemoved(NetworkAnnotation&, size_t) override;
+    virtual void onNetworkAnnotationChanged(NetworkAnnotation&, size_t) override;
+
     // Processors
     ProcessorGraphicsItem* addProcessorRepresentations(Processor* processor);
     void removeProcessorRepresentations(Processor* processor);
@@ -241,6 +258,10 @@ private:
     void removeLink(LinkConnectionGraphicsItem* linkGraphicsItem);
     LinkConnectionGraphicsItem* addLinkGraphicsItem(Processor* processor1, Processor* processor2);
     void removeLinkGraphicsItem(LinkConnectionGraphicsItem* linkGraphicsItem);
+
+    // Network Annotations
+    NetworkAnnotationGraphicsItem* addNetworkAnnotationGraphicsItem(size_t annotationIndex);
+    void removeNetworkAnnotationGraphicsItem(size_t annotationIndex);
 
     // Get QGraphicsItems
     template <typename T>
@@ -260,6 +281,7 @@ private:
     using ProcessorMap = std::map<Processor*, ProcessorGraphicsItem*>;
     using ConnectionMap = std::map<PortConnection, ConnectionGraphicsItem*>;
     using LinkMap = std::map<ProcessorPair, LinkConnectionGraphicsItem*>;
+    using AnnotationsMap = std::map<size_t, NetworkAnnotationGraphicsItem*>;
 
     // Drag n drop state
     ProcessorDragHelper* processorDragHelper_;
@@ -273,6 +295,7 @@ private:
     ProcessorMap processorGraphicsItems_;
     ConnectionMap connectionGraphicsItems_;
     LinkMap linkGraphicsItems_;
+    AnnotationsMap networkAnnotationGraphicsItems_;
 
     mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0, 0}};
 

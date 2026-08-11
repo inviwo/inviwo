@@ -204,6 +204,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/network/autolinker.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/evaluationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/lambdanetworkvisitor.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/networkannotations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networkedge.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networklock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networkutils.h
@@ -629,6 +630,7 @@ set(SOURCE_FILES
     network/autolinker.cpp
     network/evaluationerrorhandler.cpp
     network/lambdanetworkvisitor.cpp
+    network/networkannotations.cpp
     network/networkedge.cpp
     network/networklock.cpp
     network/networkutils.cpp

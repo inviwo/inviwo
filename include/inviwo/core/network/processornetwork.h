@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
+#include <inviwo/core/network/networkannotations.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/metadata/processormetadata.h>
@@ -73,7 +74,8 @@ class IVW_CORE_API ProcessorNetwork : public Serializable,
                                       public ProcessorNetworkObservable,
                                       public ProcessorObserver,
                                       public PropertyOwnerObserver,
-                                      public ProcessorMetaDataObserver {
+                                      public ProcessorMetaDataObserver,
+                                      public NetworkAnnotationsObserver {
 public:
     explicit ProcessorNetwork(InviwoApplication* application);
     ProcessorNetwork(const ProcessorNetwork&) = delete;
@@ -381,6 +383,12 @@ public:
     std::vector<Property*> getPropertiesLinkedTo(Property* property);
     std::vector<PropertyLink> getLinksBetweenProcessors(Processor* p1, Processor* p2);
 
+    size_t addNetworkAnnotation(std::span<const Processor* const> processors);
+    size_t addNetworkAnnotation(NetworkAnnotation&& annotation);
+    NetworkAnnotation removeNetworkAnnotation(size_t annotationIndex);
+
+    std::shared_ptr<NetworkAnnotations> getNetworkAnnotations() const;
+
     /**
      * @brief Get Property by path
      * @param path string of dot separated identifiers starting with a processor identifier followed
@@ -483,6 +491,11 @@ private:
     virtual void onProcessorMetaDataVisibilityChange() override;
     virtual void onProcessorMetaDataSelectionChange() override;
 
+    // NetworkAnnotationObserver overrides
+    virtual void onNetworkAnnotationAdded(NetworkAnnotation&, size_t) override;
+    virtual void onNetworkAnnotationWillBeRemoved(NetworkAnnotation&, size_t) override;
+    virtual void onNetworkAnnotationChanged(NetworkAnnotation&, size_t index) override;
+
     void addPropertyOwnerObservation(PropertyOwner*);
     void removePropertyOwnerObservation(PropertyOwner*);
 
@@ -501,6 +514,7 @@ private:
     // depends on the order of connections, ideally we would get rid of this.
     std::vector<PortConnection> connectionsVec_;
     std::unordered_set<PropertyLink> links_;
+    std::shared_ptr<NetworkAnnotations> annotations_;
 
     LinkEvaluator linkEvaluator_;
     std::vector<Processor*> processorsInvalidating_;

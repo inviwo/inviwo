@@ -34,13 +34,9 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/applicationbase/undomanager.h>
-#include <inviwo/core/network/workspaceannotations.h>
 
 #include <QMainWindow>
 #include <QMenu>
-#include <QMenuBar>
-#include <QAction>
-#include <QByteArray>
 
 #include <tclap/CmdLine.h>
 
@@ -61,6 +57,7 @@ class SettingsWidget;
 class HelpWidget;
 class WelcomeWidget;
 class AnnotationsWidget;
+class NetworkAnnotationsQt;
 class InviwoApplication;
 class InviwoDockWidget;
 class InviwoEditMenu;
@@ -114,6 +111,7 @@ public:
     PropertyListWidget* getPropertyListWidget() const;
     ConsoleWidget* getConsoleWidget() const;
     AnnotationsWidget* getAnnotationsWidget() const;
+    NetworkAnnotationsQt* getNetworkAnnotationsWidget() const;
     HelpWidget* getHelpWidget() const;
     InviwoApplication* getInviwoApplication() const;
     EditorSettings* getEditorSettings() const;
@@ -269,6 +267,7 @@ private:
     /// Use delayed initialization as it can be expensive.
     WelcomeWidget* welcomeWidget_ = nullptr;
     AnnotationsWidget* annotationsWidget_ = nullptr;
+    NetworkAnnotationsQt* networkAnnotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
     std::unique_ptr<FileAssociations> fileAssociations_;
 
