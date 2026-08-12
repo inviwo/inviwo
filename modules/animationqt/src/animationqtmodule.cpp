@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -231,8 +232,8 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
     util::for_each_type<std::tuple<float, double, int, unsigned int, size_t, std::string>>{}(
         Reghelper<OptionProperty>{}, *this);
 
-    util::for_each_type<
-        std::tuple<BoolProperty, FileProperty, StringProperty, TransferFunctionProperty>>{}(
+    util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty,
+                                   TransferFunctionProperty, IsoValueProperty>>{}(
         [&]<typename Prop>() {
             registerPropertyTrackHelper<Prop, ValueKeyframe<typename Prop::value_type>>(*this);
         });

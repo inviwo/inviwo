@@ -39,6 +39,7 @@
 #include <inviwo/core/datastructures/histogram.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/datastructures/tfdata.h>
+#include <inviwo/core/util/defaultvalues.h>
 
 namespace inviwo {
 
@@ -56,6 +57,7 @@ class IVW_CORE_API IsoValueProperty : public Property,
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.IsoValueProperty"};
+    using value_type = IsoValueCollection;
 
     IsoValueProperty(std::string_view identifier, std::string_view displayName, Document help,
                      const IsoValueCollection& value = {}, TFData port = {},

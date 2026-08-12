@@ -40,47 +40,50 @@
 namespace inviwo::views {
 
 namespace detail {
-// Set-union merge function: emit the element present at each merge position. When both ranges
-// hold an equivalent element the pair collapses to a single output (`p1`).
-struct union_fn {
+// Set-intersection merge function: emit an element only where both ranges hold an equivalent
+// element, skip positions unique to either range.
+struct intersection_fn {
     template <typename T>
     constexpr std::optional<T> operator()(const T* p1, const T* p2) const {
-        return p1 ? std::optional<T>{*p1} : std::optional<T>{*p2};
+        if (p1 && p2) return std::optional<T>{*p1};
+        return std::nullopt;
     }
 };
 }  // namespace detail
 
 template <std::ranges::input_range V1, std::ranges::input_range V2,
           typename Comp = std::ranges::less>
-class set_union : public set_transform<V1, V2, Comp, detail::union_fn> {
+class set_intersection : public set_transform<V1, V2, Comp, detail::intersection_fn> {
 public:
-    using set_transform<V1, V2, Comp, detail::union_fn>::set_transform;
+    using set_transform<V1, V2, Comp, detail::intersection_fn>::set_transform;
 };
 
 template <std::ranges::viewable_range R1, std::ranges::viewable_range R2,
           typename Comp = std::ranges::less>
-set_union(R1&&, R2&&, Comp = {}) -> set_union<std::views::all_t<R1>, std::views::all_t<R2>, Comp>;
+set_intersection(R1&&, R2&&, Comp = {})
+    -> set_intersection<std::views::all_t<R1>, std::views::all_t<R2>, Comp>;
 
 namespace detail {
 template <std::ranges::view V2, typename Comp = std::ranges::less>
-class set_union_adaptor : public std::ranges::range_adaptor_closure<set_union_adaptor<V2, Comp>> {
+class set_intersection_adaptor
+    : public std::ranges::range_adaptor_closure<set_intersection_adaptor<V2, Comp>> {
     V2 r2_;
     Comp comp_;
 
 public:
-    explicit constexpr set_union_adaptor(V2 r2, Comp comp = {})
+    explicit constexpr set_intersection_adaptor(V2 r2, Comp comp = {})
         : r2_(std::move(r2)), comp_(std::move(comp)) {}
 
     template <std::ranges::viewable_range R1>
     constexpr auto operator()(R1&& r1) const {
-        return set_union{std::views::all(std::forward<R1>(r1)), r2_, comp_};
+        return set_intersection{std::views::all(std::forward<R1>(r1)), r2_, comp_};
     }
 };
 }  // namespace detail
 
 template <std::ranges::viewable_range R2, typename Comp = std::ranges::less>
-constexpr auto set_union_with(R2&& r2, Comp comp = {}) {
-    return detail::set_union_adaptor<std::views::all_t<R2>, Comp>{
+constexpr auto set_intersection_with(R2&& r2, Comp comp = {}) {
+    return detail::set_intersection_adaptor<std::views::all_t<R2>, Comp>{
         std::views::all(std::forward<R2>(r2)), std::move(comp)};
 }
 

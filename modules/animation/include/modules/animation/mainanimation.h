@@ -85,7 +85,7 @@ private:
     void addKeyframeCallback(Property* property);
     /**
      * Module callbacks must return void
-     * @see addSequence(Property* property, Seconds time)
+     * @see addKeyframeSequence(Property* property, Seconds time)
      */
     void addKeyframeSequenceCallback(Property* property);
 
