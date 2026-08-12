@@ -164,7 +164,7 @@ template <typename... Args>
 auto makeFormatter(Args&&... args) {  // NOLINT(cppcoreguidelines-missing-std-forward)
     using FormatArgs = fmt::format_string<Args...>;
     return [fArgs = fmt::make_format_args(args...)](FormatArgs snippet) {
-        return fmt::vformat(snippet, fArgs);
+        return fmt::vformat(snippet.get(), fArgs);
     };
 }
 
