@@ -71,7 +71,7 @@ class set_intersection_adaptor
     Comp comp_;
 
 public:
-    constexpr set_intersection_adaptor(V2 r2, Comp comp = {})
+    explicit constexpr set_intersection_adaptor(V2 r2, Comp comp = {})
         : r2_(std::move(r2)), comp_(std::move(comp)) {}
 
     template <std::ranges::viewable_range R1>

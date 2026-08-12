@@ -86,7 +86,8 @@ TEST(SetIntersection, SecondEmpty) {
 }
 
 TEST(SetIntersection, BothEmpty) {
-    std::vector<int> a{}, b{};
+    std::vector<int> a{};
+    std::vector<int> b{};
     auto v = views::set_intersection{std::views::all(a), std::views::all(b)} |
              std::ranges::to<std::vector>();
     EXPECT_TRUE(v.empty());
@@ -120,9 +121,8 @@ TEST(SetIntersection, DuplicatesTakeMinCount) {
 TEST(SetIntersection, CustomComparatorDescending) {
     std::vector<int> a{7, 5, 3, 1};
     std::vector<int> b{8, 5, 3, 2};
-    auto v =
-        views::set_intersection{std::views::all(a), std::views::all(b), std::greater<int>{}} |
-        std::ranges::to<std::vector>();
+    auto v = views::set_intersection{std::views::all(a), std::views::all(b), std::greater<int>{}} |
+             std::ranges::to<std::vector>();
     EXPECT_EQ(v, (std::vector<int>{5, 3}));
 }
 
@@ -177,10 +177,12 @@ static_assert(std::forward_iterator<std::ranges::iterator_t<V>>);
 static_assert(std::ranges::common_range<V>);
 
 TEST(SetIntersection, MultipassYieldsSameSequence) {
-    std::vector<int> a{1, 3, 5}, b{3, 4, 5};
+    std::vector<int> a{1, 3, 5};
+    std::vector<int> b{3, 4, 5};
     auto v = views::set_intersection{std::views::all(a), std::views::all(b)};
 
-    std::vector<int> first, second;
+    std::vector<int> first;
+    std::vector<int> second;
     for (auto x : v) first.push_back(x);
     for (auto x : v) second.push_back(x);  // second pass
     EXPECT_EQ(first, second);
@@ -188,7 +190,8 @@ TEST(SetIntersection, MultipassYieldsSameSequence) {
 }
 
 TEST(SetIntersection, IteratorEquality) {
-    std::vector<int> a{1, 2, 3}, b{2, 3, 4};
+    std::vector<int> a{1, 2, 3};
+    std::vector<int> b{2, 3, 4};
     auto v = views::set_intersection{std::views::all(a), std::views::all(b)};
     auto i = v.begin();
     auto j = v.begin();
@@ -200,7 +203,8 @@ TEST(SetIntersection, IteratorEquality) {
 }
 
 TEST(SetIntersection, EndIsIteratorAndDistanceWorks) {
-    std::vector<int> a{1, 2, 3, 4, 5, 6}, b{2, 4, 6};
+    std::vector<int> a{1, 2, 3, 4, 5, 6};
+    std::vector<int> b{2, 4, 6};
     auto v = views::set_intersection{std::views::all(a), std::views::all(b)};
     EXPECT_EQ(std::ranges::distance(v.begin(), v.end()), 3);
     auto it = std::ranges::find(v, 4);
@@ -209,7 +213,8 @@ TEST(SetIntersection, EndIsIteratorAndDistanceWorks) {
 }
 
 TEST(SetIntersection, PostIncrementReturnsCopy) {
-    std::vector<int> a{1, 2, 3}, b{2, 3};
+    std::vector<int> a{1, 2, 3};
+    std::vector<int> b{2, 3};
     auto v = views::set_intersection{std::views::all(a), std::views::all(b)};
     auto it = v.begin();
     auto old = it++;

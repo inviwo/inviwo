@@ -112,6 +112,8 @@ public:
 
         bool atEnd() const { return it1_ == end1_ && it2_ == end2_; }
 
+        // NOLINTBEGIN(bugprone-branch-clone)
+
         // Materialize the element(s) at the current merge position into `b1`/`b2`. The side(s)
         // that participate in the position are engaged, the other stays empty. Precondition:
         // !atEnd().
@@ -145,6 +147,7 @@ public:
                 ++it2_;
             }
         }
+        // NOLINTEND(bugprone-branch-clone)
 
         // Advance until `fn_` yields a value at the current position or both ranges are
         // exhausted. This keeps the iterator on an emitted element between increments.

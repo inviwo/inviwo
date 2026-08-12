@@ -34,6 +34,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/chrono.h>
+#include <pybind11/native_enum.h>
 
 #include <inviwo/core/algorithm/easing.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -94,25 +95,29 @@ struct SecondsConverter {
 };
 
 void exposeEnums(py::module& m) {
-    py::enum_<AnimationState>(m, "AnimationState")
+    py::native_enum<AnimationState>(m, "AnimationState", "enum.Enum")
         .value("Paused", AnimationState::Paused)
         .value("Playing", AnimationState::Playing)
-        .value("Rendering", AnimationState::Rendering);
+        .value("Rendering", AnimationState::Rendering)
+        .finalize();
 
-    py::enum_<PlaybackMode>(m, "PlaybackMode")
+    py::native_enum<PlaybackMode>(m, "PlaybackMode", "enum.Enum")
         .value("Once", PlaybackMode::Once)
         .value("Loop", PlaybackMode::Loop)
-        .value("Swing", PlaybackMode::Swing);
+        .value("Swing", PlaybackMode::Swing)
+        .finalize();
 
-    py::enum_<PlaybackDirection>(m, "PlaybackDirection")
+    py::native_enum<PlaybackDirection>(m, "PlaybackDirection", "enum.Enum")
         .value("Forward", PlaybackDirection::Forward)
-        .value("Backward", PlaybackDirection::Backward);
+        .value("Backward", PlaybackDirection::Backward)
+        .finalize();
 
-    py::enum_<ControlAction>(m, "ControlAction")
+    py::native_enum<ControlAction>(m, "ControlAction", "enum.Enum")
         .value("Pause", ControlAction::Pause)
-        .value("Jump", ControlAction::Jump);
+        .value("Jump", ControlAction::Jump)
+        .finalize();
 
-    py::enum_<EasingType>(m, "EasingType")
+    py::native_enum<EasingType>(m, "EasingType", "enum.Enum")
         .value("Linear", EasingType::linear)
         .value("Quadratic", EasingType::quadratic)
         .value("Cubic", EasingType::cubic)
@@ -123,12 +128,14 @@ void exposeEnums(py::module& m) {
         .value("Exponential", EasingType::exponential)
         .value("Elastic", EasingType::elastic)
         .value("Back", EasingType::back)
-        .value("Bounce", EasingType::bounce);
+        .value("Bounce", EasingType::bounce)
+        .finalize();
 
-    py::enum_<EasingMode>(m, "EasingMode")
+    py::native_enum<EasingMode>(m, "EasingMode", "enum.Enum")
         .value("In", EasingMode::in)
         .value("Out", EasingMode::out)
-        .value("InOut", EasingMode::inOut);
+        .value("InOut", EasingMode::inOut)
+        .finalize();
 }
 
 void exposeAnimationTimeState(py::module& m) {
@@ -467,7 +474,9 @@ void exposeCallbackTrack(py::module& m) {
 
 void exposeAnimationClass(py::module& m) {
     py::classh<Animation>(m, "Animation")
-        .def(py::init([](std::string_view name) { return Animation{nullptr, name}; }),
+        .def(py::init([](std::string_view name) {
+                 return Animation{nullptr, name};
+             }),
              py::arg("name") = "Animation")
         .def_property(
             "name", [](const Animation& a) -> const std::string& { return a.getName(); },
@@ -486,19 +495,19 @@ void exposeAnimationClass(py::module& m) {
             py::keep_alive<0, 1>())
         .def(
             "add", [](Animation& a, Property* property) { return a.add(property); },
-            py::return_value_policy::reference_internal, py::arg("property"))
+            py::arg("property"))
         .def(
             "addKeyframe",
             [](Animation& a, Property* property, double time) {
                 return a.addKeyframe(property, Seconds{time});
             },
-            py::return_value_policy::reference_internal, py::arg("property"), py::arg("time"))
+            py::arg("property"), py::arg("time"))
         .def(
             "addKeyframeSequence",
             [](Animation& a, Property* property, double time) {
                 return a.addKeyframeSequence(property, Seconds{time});
             },
-            py::return_value_policy::reference_internal, py::arg("property"), py::arg("time"))
+            py::arg("property"), py::arg("time"))
         .def(
             "removeTrack", [](Animation& a, size_t i) { return a.remove(i); }, py::arg("index"))
         .def(

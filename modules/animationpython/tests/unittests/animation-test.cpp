@@ -952,7 +952,8 @@ scaleProp = proc.scale
 
 # Set scale to 1.0 and add a keyframe at t=0
 scaleProp.value = 1.0
-track = anim.add(scaleProp)
+tracks = anim.add(scaleProp)
+track = tracks[0]
 track.addKeyFrameUsingPropertyValue(0.0)
 
 # Set scale to 10.0 and add a keyframe at t=2
@@ -1028,7 +1029,8 @@ sizeProp = proc.getPropertyByIdentifier("size")
 
 # Add keyframes: 0.0->1.0, 1.0->5.0, 2.0->3.0
 sizeProp.value = 1.0
-track = anim.add(sizeProp)
+tracks = anim.add(sizeProp)
+track = tracks[0]
 track.addKeyFrameUsingPropertyValue(0.0)
 
 sizeProp.value = 5.0
