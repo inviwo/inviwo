@@ -30,12 +30,16 @@
 #include <modules/animation/interpolation/isovaluepropertyinterpolation.h>
 
 #include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/concat.h>
+#include <inviwo/core/util/settransform.h>
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <tuple>
 #include <vector>
+#include <ranges>
 
 namespace inviwo::animation {
 namespace {
@@ -55,71 +59,9 @@ TFPrimitiveData interpolate(const TFPrimitive& source, const TFPrimitive& destin
             .color = glm::mix(source.getColor(), destination.getColor(), t)};
 }
 
-std::vector<std::pair<size_t, size_t>> matchEqualPositions(const IsoValueCollection& source,
-                                                           const IsoValueCollection& destination) {
-    std::vector<std::pair<size_t, size_t>> matches;
-
-    size_t i = 0;
-    size_t j = 0;
-    while (i < source.size() && j < destination.size()) {
-        const auto sourcePos = source[i].getPosition();
-        const auto destinationPos = destination[j].getPosition();
-
-        if (std::abs(sourcePos - destinationPos) <= std::numeric_limits<double>::epsilon()) {
-            matches.emplace_back(i, j);
-            ++i;
-            ++j;
-        } else if (sourcePos < destinationPos) {
-            ++i;
-        } else {
-            ++j;
-        }
-    }
-
-    return matches;
-}
-
-std::vector<std::pair<size_t, size_t>> matchPointsByOrder(const IsoValueCollection& source,
-                                                          const IsoValueCollection& destination) {
-    std::vector<std::pair<size_t, size_t>> matches;
-    const auto count = std::min(source.size(), destination.size());
-    matches.reserve(count);
-
-    for (size_t i = 0; i < count; ++i) {
-        matches.emplace_back(i, i);
-    }
-
-    return matches;
-}
-
-template <typename Match>
-std::vector<TFPrimitiveData> interpolateIsoValues(const IsoValueCollection& source,
-                                                  const IsoValueCollection& destination, double t,
-                                                  Match match) {
-    const auto matches = match(source, destination);
-
-    std::vector<bool> matchedSource(source.size(), false);
-    std::vector<bool> matchedDestination(destination.size(), false);
-    std::vector<TFPrimitiveData> values;
-    values.reserve(source.size() + destination.size() - matches.size());
-
-    for (const auto& [i, j] : matches) {
-        values.push_back(interpolate(source[i], destination[j], t));
-        matchedSource[i] = true;
-        matchedDestination[j] = true;
-    }
-    for (size_t i = 0; i < source.size(); ++i) {
-        if (!matchedSource[i]) values.push_back(fadeOut(source[i], t));
-    }
-    for (size_t j = 0; j < destination.size(); ++j) {
-        if (!matchedDestination[j]) values.push_back(fadeIn(destination[j], t));
-    }
-    return values;
-}
-
 template <typename Value, typename InterpolateValue>
-void interpolatePropertyValue(const std::vector<std::unique_ptr<ValueKeyframe<Value>>>& keys, Seconds to,
-                              Value& out, InterpolateValue interpolateValue) {
+void interpolatePropertyValue(const std::vector<std::unique_ptr<ValueKeyframe<Value>>>& keys,
+                              Seconds to, Value& out, InterpolateValue interpolateValue) {
 
     auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
         return time < key->getTime();
@@ -130,48 +72,75 @@ void interpolatePropertyValue(const std::vector<std::unique_ptr<ValueKeyframe<Va
     interpolateValue(prev, next, to, out);
 }
 
+double interpolationTime(Seconds t1, Seconds t2, std::optional<EasingType> easeIn,
+                         std::optional<EasingType> easeOut, Seconds to) {
+    return util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
+}
+
 }  // namespace
 
 namespace detail {
 
-static double interpolationTime(Seconds t1, Seconds t2, std::optional<EasingType> easeIn,
-                                std::optional<EasingType> easeOut, Seconds to) {
-    return util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
-}
-
-void interpolateIsoValuesFade(const IsoValueCollection& source, const IsoValueCollection& destination,
-                               double t, IsoValueCollection& out) {
-    if (source.getType() != destination.getType()) {
+void interpolateIsoValuesFade(const IsoValueCollection& source,
+                              const IsoValueCollection& destination, double t,
+                              IsoValueCollection& out) {
+    if (source.getMode() != destination.getMode()) {
         out = source;
         return;
     }
 
-    out = IsoValueCollection{interpolateIsoValues(source, destination, t, matchEqualPositions),
-                             source.getType()};
+    out.set(views::set_transform(
+        source, destination,
+        [](const TFPrimitive& a, const TFPrimitive& b) {
+            if (util::almostEqual(a.getPosition(), b.getPosition())) {
+                return false;
+            } else {
+                return a.getPosition() < b.getPosition();
+            }
+        },
+        [&](const TFPrimitive* src, const TFPrimitive* dst) -> std::optional<TFPrimitiveData> {
+            if (src && dst) {
+                return interpolate(*src, *dst, t);
+            } else if (src) {
+                return fadeOut(*src, t);
+            } else if (dst) {
+                return fadeIn(*dst, t);
+            } else {
+                return std::nullopt;
+            }
+        }));
 }
 
 void interpolateIsoValuesBlend(const IsoValueCollection& source,
-                                          const IsoValueCollection& destination, double t,
-                                          IsoValueCollection& out) {
-    if (source.getType() != destination.getType()) {
+                               const IsoValueCollection& destination, double t,
+                               IsoValueCollection& out) {
+    if (source.getMode() != destination.getMode()) {
         out = source;
         return;
     }
 
-    out = IsoValueCollection{interpolateIsoValues(source, destination, t, matchPointsByOrder),
-                             source.getType()};
+    auto matched = std::views::zip(source, destination) | std::views::transform([&](auto item) {
+                       return interpolate(std::get<0>(item), std::get<1>(item), t);
+                   });
+
+    const auto count = std::min(source.size(), destination.size());
+    const auto& biggerOne = source.size() < destination.size() ? destination : source;
+    const auto& op = source.size() < destination.size() ? fadeIn : fadeOut;
+    auto rest = biggerOne | std::views::drop(count) |
+                std::views::transform([&](const TFPrimitive& item) { return op(item, t); });
+    out.set(views::concat(matched, rest));
 }
 
 }  // namespace detail
 
 IsoValuePropertyInterpolationFade::IsoValuePropertyInterpolationFade(InviwoApplication* app)
-    : InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
-                         IsoValueProperty::value_type>(app) {}
+    : InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>, IsoValueProperty::value_type>(
+          app) {}
 
 IsoValuePropertyInterpolationFade::IsoValuePropertyInterpolationFade(
     const IsoValuePropertyInterpolationFade& rhs)
-    : InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
-                         IsoValueProperty::value_type>(rhs) {}
+    : InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>, IsoValueProperty::value_type>(
+          rhs) {}
 
 IsoValuePropertyInterpolationFade* IsoValuePropertyInterpolationFade::clone() const {
     return new IsoValuePropertyInterpolationFade(*this);
@@ -194,20 +163,20 @@ bool IsoValuePropertyInterpolationFade::equal(const Interpolation& other) const 
 void IsoValuePropertyInterpolationFade::operator()(
     const std::vector<std::unique_ptr<ValueKeyframe<IsoValueProperty::value_type>>>& keys,
     Seconds /*from*/, Seconds to, IsoValueProperty::value_type& out) const {
-    interpolatePropertyValue(keys, to, out, [](const auto& prev, const auto& next, Seconds time,
-                                               IsoValueCollection& value) {
-        detail::interpolateIsoValuesFade(prev.getValue(), next.getValue(),
-                                          detail::interpolationTime(prev.getTime(), next.getTime(),
-                                                                    prev.getEaseIn(),
-                                                                    next.getEaseOut(), time),
-                                          value);
-    });
+    interpolatePropertyValue(
+        keys, to, out,
+        [](const auto& prev, const auto& next, Seconds time, IsoValueCollection& value) {
+            detail::interpolateIsoValuesFade(
+                prev.getValue(), next.getValue(),
+                interpolationTime(prev.getTime(), next.getTime(), prev.getEaseIn(),
+                                  next.getEaseOut(), time),
+                value);
+        });
 }
 
-IsoValuePropertyInterpolationBlend::IsoValuePropertyInterpolationBlend(
-    InviwoApplication* app)
-    : InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
-                         IsoValueProperty::value_type>(app)
+IsoValuePropertyInterpolationBlend::IsoValuePropertyInterpolationBlend(InviwoApplication* app)
+    : InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>, IsoValueProperty::value_type>(
+          app)
     , segments{"segments", "Segments", util::ordinalCount(16uz)}
     , simplify{"simplify", "Simplify", util::ordinalLength(0.0, 0.1).setInc(0.0001)} {
     addProperties(segments, simplify);
@@ -215,21 +184,18 @@ IsoValuePropertyInterpolationBlend::IsoValuePropertyInterpolationBlend(
 
 IsoValuePropertyInterpolationBlend::IsoValuePropertyInterpolationBlend(
     const IsoValuePropertyInterpolationBlend& rhs)
-    : InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>,
-                         IsoValueProperty::value_type>(rhs)
+    : InterpolationTyped<ValueKeyframe<IsoValueProperty::value_type>, IsoValueProperty::value_type>(
+          rhs)
     , segments{rhs.segments}
     , simplify{rhs.simplify} {
     addProperties(segments, simplify);
 }
 
-IsoValuePropertyInterpolationBlend*
-IsoValuePropertyInterpolationBlend::clone() const {
+IsoValuePropertyInterpolationBlend* IsoValuePropertyInterpolationBlend::clone() const {
     return new IsoValuePropertyInterpolationBlend(*this);
 }
 
-std::string_view IsoValuePropertyInterpolationBlend::getDisplayName() const {
-    return "Blend";
-}
+std::string_view IsoValuePropertyInterpolationBlend::getDisplayName() const { return "Blend"; }
 
 std::string_view IsoValuePropertyInterpolationBlend::classIdentifier() {
     return "org.inviwo.animation.IsoValuePropertyInterpolationBlend";
@@ -246,14 +212,15 @@ bool IsoValuePropertyInterpolationBlend::equal(const Interpolation& other) const
 void IsoValuePropertyInterpolationBlend::operator()(
     const std::vector<std::unique_ptr<ValueKeyframe<IsoValueProperty::value_type>>>& keys,
     Seconds /*from*/, Seconds to, IsoValueProperty::value_type& out) const {
-    interpolatePropertyValue(keys, to, out, [](const auto& prev, const auto& next, Seconds time,
-                                               IsoValueCollection& value) {
-        detail::interpolateIsoValuesBlend(
-            prev.getValue(), next.getValue(),
-            detail::interpolationTime(prev.getTime(), next.getTime(), prev.getEaseIn(),
-                                      next.getEaseOut(), time),
-            value);
-    });
+    interpolatePropertyValue(
+        keys, to, out,
+        [](const auto& prev, const auto& next, Seconds time, IsoValueCollection& value) {
+            detail::interpolateIsoValuesBlend(
+                prev.getValue(), next.getValue(),
+                interpolationTime(prev.getTime(), next.getTime(), prev.getEaseIn(),
+                                  next.getEaseOut(), time),
+                value);
+        });
 }
 
 }  // namespace inviwo::animation

@@ -146,13 +146,4 @@ private:
     TFData data_;
 };
 
-template <>
-struct InviwoDefaults<IsoValueCollection> {
-    static constexpr auto get() {
-        return InviwoDefaultData{StaticString{"IsoValueCollection"}, uvec2(1, 1),
-                                 IsoValueCollection{}, IsoValueCollection{},
-                                 IsoValueCollection{}, IsoValueCollection{}};
-    }
-};
-
 }  // namespace inviwo

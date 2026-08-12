@@ -42,6 +42,7 @@
 
 namespace inviwo {
 class TransferFunction;
+class IsoValueCollection;
 }
 
 namespace inviwo::animation {
@@ -97,6 +98,10 @@ std::string_view ConstantInterpolation<Key, Result>::classIdentifier() {
     } else if constexpr (std::is_same_v<V, TransferFunction>) {
         static const std::string identifier =
             "org.inviwo.animation.constantinterpolation.TransferFunction";
+        return identifier;
+    } else if constexpr (std::is_same_v<V, IsoValueCollection>) {
+        static const std::string identifier =
+            "org.inviwo.animation.constantinterpolation.IsoValueCollection";
         return identifier;
     } else {
         static const auto identifier =

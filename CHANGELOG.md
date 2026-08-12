@@ -38,9 +38,7 @@ if (track) {
 // New usage
 auto tracks = animation.add(property);
 for (auto track : tracks) {
-    if (track) {
-        track->addKeyframe(time);
-    }
+    track->addKeyframe(time);
 }
 ```
 
