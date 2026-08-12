@@ -29,177 +29,33 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/settransform.h>
 
 #include <ranges>
-#include <iterator>
 #include <concepts>
 #include <functional>
-#include <type_traits>
+#include <optional>
 #include <utility>
-#include <memory>
 
 namespace inviwo::views {
 
+namespace detail {
+// Set-intersection merge function: emit an element only where both ranges hold an equivalent
+// element, skip positions unique to either range.
+struct intersection_fn {
+    template <typename T>
+    constexpr std::optional<T> operator()(const T* p1, const T* p2) const {
+        if (p1 && p2) return std::optional<T>{*p1};
+        return std::nullopt;
+    }
+};
+}  // namespace detail
+
 template <std::ranges::input_range V1, std::ranges::input_range V2,
           typename Comp = std::ranges::less>
-    requires std::ranges::view<V1> && std::ranges::view<V2> &&
-             std::common_reference_with<std::ranges::range_reference_t<V1>,
-                                        std::ranges::range_reference_t<V2>> &&
-             std::common_with<std::ranges::range_value_t<V1>, std::ranges::range_value_t<V2>> &&
-             std::indirect_strict_weak_order<Comp, std::ranges::iterator_t<V1>,
-                                             std::ranges::iterator_t<V2>>
-class set_intersection : public std::ranges::view_interface<set_intersection<V1, V2, Comp>> {
+class set_intersection : public set_transform<V1, V2, Comp, detail::intersection_fn> {
 public:
-    using value_type =
-        std::common_type_t<std::ranges::range_value_t<V1>, std::ranges::range_value_t<V2>>;
-
-    using reference = std::common_reference_t<std::ranges::range_reference_t<V1>,
-                                              std::ranges::range_reference_t<V2>>;
-
-    using difference_type = std::common_type_t<std::ranges::range_difference_t<V1>,
-                                               std::ranges::range_difference_t<V2>>;
-
-private:
-    static constexpr bool both_forward =
-        std::ranges::forward_range<V1> && std::ranges::forward_range<V2>;
-
-    static constexpr bool both_common =
-        std::ranges::common_range<V1> && std::ranges::common_range<V2>;
-
-    V1 base1_{};
-    V2 base2_{};
-    Comp comp_{};
-
-public:
-    class iterator {
-    public:
-        using iterator_concept =
-            std::conditional_t<both_forward, std::forward_iterator_tag, std::input_iterator_tag>;
-        // Stay at input_iterator_tag: operator* returns common_reference_t which may be a
-        // prvalue. C++20's iterator_category contract requires an lvalue reference for
-        // anything stronger than input.
-        using iterator_category = std::input_iterator_tag;
-        using value_type = set_intersection::value_type;
-        using reference = set_intersection::reference;
-        using difference_type = set_intersection::difference_type;
-        using pointer = void;
-
-    private:
-        using It1 = std::ranges::iterator_t<V1>;
-        using It2 = std::ranges::iterator_t<V2>;
-        using Sen1 = std::ranges::sentinel_t<V1>;
-        using Sen2 = std::ranges::sentinel_t<V2>;
-
-        It1 it1_{};
-        Sen1 end1_{};
-        It2 it2_{};
-        Sen2 end2_{};
-        Comp* comp_ = nullptr;
-
-        friend class set_intersection;
-
-        // Advance both cursors until they point at equivalent elements (an element of the
-        // intersection) or one range is exhausted. This keeps the iterator on a valid
-        // intersection element between increments.
-        void satisfy() {
-            while (it1_ != end1_ && it2_ != end2_) {
-                if ((*comp_)(*it1_, *it2_)) {
-                    ++it1_;
-                } else if ((*comp_)(*it2_, *it1_)) {
-                    ++it2_;
-                } else {
-                    return;  // equivalent -> found an intersection element
-                }
-            }
-            // One range is exhausted, there are no more intersection elements. Canonicalize
-            // to a unique past-the-end state so end() and iterator equality are well-defined.
-            if constexpr (both_forward && both_common) {
-                it1_ = end1_;
-                it2_ = end2_;
-            }
-        }
-
-    public:
-        iterator() = default;
-
-        iterator(It1 it1, Sen1 end1, It2 it2, Sen2 end2, Comp& comp)
-            : it1_(std::move(it1))
-            , end1_(std::move(end1))
-            , it2_(std::move(it2))
-            , end2_(std::move(end2))
-            , comp_(std::addressof(comp)) {
-            satisfy();
-        }
-
-        reference operator*() const { return static_cast<reference>(*it1_); }
-
-        iterator& operator++() {
-            ++it1_;
-            ++it2_;
-            satisfy();
-            return *this;
-        }
-
-        // For input-only, operator++(int) must return void. For forward, it must return
-        // a copy of the iterator (the "multipass" post-increment).
-        decltype(auto) operator++(int) {
-            if constexpr (both_forward) {
-                auto tmp = *this;
-                ++(*this);
-                return tmp;
-            } else {
-                ++(*this);
-            }
-        }
-
-        friend bool operator==(const iterator& it, std::default_sentinel_t) {
-            return it.it1_ == it.end1_ || it.it2_ == it.end2_;
-        }
-
-        // Iterator/iterator equality: only meaningful (and only required) for forward.
-        friend bool operator==(const iterator& a, const iterator& b)
-            requires both_forward
-        {
-            return a.it1_ == b.it1_ && a.it2_ == b.it2_;
-        }
-    };
-
-    set_intersection()
-        requires std::default_initializable<V1> && std::default_initializable<V2> &&
-                     std::default_initializable<Comp>
-    = default;
-
-    constexpr set_intersection(V1 b1, V2 b2, Comp c = Comp{})
-        : base1_(std::move(b1)), base2_(std::move(b2)), comp_(std::move(c)) {}
-
-    constexpr V1 base1() const&
-        requires std::copy_constructible<V1>
-    {
-        return base1_;
-    }
-    constexpr V2 base2() const&
-        requires std::copy_constructible<V2>
-    {
-        return base2_;
-    }
-    constexpr V1 base1() && { return std::move(base1_); }
-    constexpr V2 base2() && { return std::move(base2_); }
-
-    constexpr iterator begin() {
-        return iterator{std::ranges::begin(base1_), std::ranges::end(base1_),
-                        std::ranges::begin(base2_), std::ranges::end(base2_), comp_};
-    }
-
-    // When both bases are forward + common, expose a real end() iterator so the view
-    // models common_range. Otherwise fall back to default_sentinel.
-    constexpr auto end() {
-        if constexpr (both_forward && both_common) {
-            return iterator{std::ranges::end(base1_), std::ranges::end(base1_),
-                            std::ranges::end(base2_), std::ranges::end(base2_), comp_};
-        } else {
-            return std::default_sentinel;
-        }
-    }
+    using set_transform<V1, V2, Comp, detail::intersection_fn>::set_transform;
 };
 
 template <std::ranges::viewable_range R1, std::ranges::viewable_range R2,

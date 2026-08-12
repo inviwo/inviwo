@@ -417,6 +417,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/settings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/systemsettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/unitsettings.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/settransform.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/sharedlibrary.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/shuntingyard.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singlefileobserver.h
@@ -814,6 +815,7 @@ set(SOURCE_FILES
     util/settings/settings.cpp
     util/settings/systemsettings.cpp
     util/settings/unitsettings.cpp
+    util/settransform.cpp
     util/sharedlibrary.cpp
     util/shuntingyard.cpp
     util/singlefileobserver.cpp
