@@ -81,16 +81,16 @@ var NAVTREEINDEX =
 "classinviwo_1_1TouchPoint.html#a199cb9c2b064b5236d94bf252f2626ef",
 "classinviwo_1_1Version.html#a0042ace8e97cb8dc7600afcd840c155e",
 "classinviwo_1_1VolumeRaycastVisualizer.html#a4e1b40c36b4fc997a06a571934265892",
-"classinviwo_1_1animation_1_1Animation.html#a801f1dc4526a7565004d81d8bc1cc0a0",
-"classinviwo_1_1animation_1_1KeyframeSequenceWidgetQt.html",
-"classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093",
-"functions_e.html",
-"namespaceinviwo_1_1meshutil.html#a776cc183c44c144cd82c90a36621a7eb",
-"namespaceinviwo_1_1util.html#ac5210a10605942a6808dc8f4fc095509",
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01T_01_5_00_01A_01_4_01_4.html",
-"structinviwo_1_1ProcessorInfo.html#aa3c739ee0ed28ed7c3660b733b05c055",
-"structinviwo_1_1ZoomOptions.html",
-"structinviwo_1_1util_1_1SplatSettings.html#ae0cfff33bc197a372469561da3f3bc58"
+"classinviwo_1_1animation_1_1Animation.html#a76de0aed5c4482861964467184982bdf",
+"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html",
+"classinviwo_1_1plot_1_1AxisRenderProcessor.html#acd6617b0ddbd2520aa27dd16b2fb7e5a",
+"concepts.html",
+"namespaceinviwo_1_1filesystem.html#aea08a44a49a90d298bc2808c72c51861",
+"namespaceinviwo_1_1util.html#aba248938bdec0647ee6706ea2ece4c8c",
+"structinviwo_1_1DataTraits_3_01std_1_1filesystem_1_1path_01_4.html",
+"structinviwo_1_1ProcessorInfo.html#a3dfc6e6eead4089b0b87e4d91800a56c",
+"structinviwo_1_1WorkspaceAnnotationsQt_1_1ProcessorShim.html",
+"structinviwo_1_1util_1_1SplatSettings.html"
 ];
 
 const SYNCONMSG = 'click to disable panel synchronization';

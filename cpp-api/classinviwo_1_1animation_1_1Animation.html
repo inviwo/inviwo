@@ -152,11 +152,11 @@ using&#160;</td><td class="memItemRight"><b>iterator</b> = <a class="el" href="s
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac8c83e369297a9122f83a16585b10337" id="r_ac8c83e369297a9122f83a16585b10337"><td class="memItemLeft"><a class="el" href="classinviwo_1_1animation_1_1BasePropertyTrack.html">BasePropertyTrack</a> *&#160;</td><td class="memItemRight"><a class="el" href="#ac8c83e369297a9122f83a16585b10337">add</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property)</td></tr>
+<tr class="memitem:aac62308e77dac1a6b4c2ef9fc680449b" id="r_aac62308e77dac1a6b4c2ef9fc680449b"><td class="memItemLeft">std::vector&lt; <a class="el" href="classinviwo_1_1animation_1_1BasePropertyTrack.html">BasePropertyTrack</a> * &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aac62308e77dac1a6b4c2ef9fc680449b">add</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property)</td></tr>
 <tr class="memitem:a797f615bdaeb781a20a435b554f90acf" id="r_a797f615bdaeb781a20a435b554f90acf"><td class="memItemLeft"><a id="a797f615bdaeb781a20a435b554f90acf" name="a797f615bdaeb781a20a435b554f90acf"></a>
 void&#160;</td><td class="memItemRight"><b>add</b> (std::unique_ptr&lt; <a class="el" href="classinviwo_1_1animation_1_1Track.html">Track</a> &gt; track)</td></tr>
-<tr class="memitem:a895fd1af788c20d1498e0e950db6e33d" id="r_a895fd1af788c20d1498e0e950db6e33d"><td class="memItemLeft"><a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a895fd1af788c20d1498e0e950db6e33d">addKeyframe</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, Seconds time)</td></tr>
-<tr class="memitem:af5c20a59631336d17fd266115ff06775" id="r_af5c20a59631336d17fd266115ff06775"><td class="memItemLeft"><a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> *&#160;</td><td class="memItemRight"><a class="el" href="#af5c20a59631336d17fd266115ff06775">addKeyframeSequence</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, Seconds time)</td></tr>
+<tr class="memitem:a239999f8afe95d3b029c0b6a6c8c362c" id="r_a239999f8afe95d3b029c0b6a6c8c362c"><td class="memItemLeft">std::vector&lt; <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> * &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a239999f8afe95d3b029c0b6a6c8c362c">addKeyframe</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, Seconds time)</td></tr>
+<tr class="memitem:a28925834383d39c5d247923b805b46ca" id="r_a28925834383d39c5d247923b805b46ca"><td class="memItemLeft">std::vector&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> * &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a28925834383d39c5d247923b805b46ca">addKeyframeSequence</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, Seconds time)</td></tr>
 <tr class="memitem:af50d8f93d61bbec6bb46903e3c8709ee" id="r_af50d8f93d61bbec6bb46903e3c8709ee"><td class="memItemLeft"><a id="af50d8f93d61bbec6bb46903e3c8709ee" name="af50d8f93d61bbec6bb46903e3c8709ee"></a>
 &#160;</td><td class="memItemRight"><b>Animation</b> (Animation &amp;&amp;)=default</td></tr>
 <tr class="memitem:ab56f7791bd6ef28027fa1b441dad539d" id="r_ab56f7791bd6ef28027fa1b441dad539d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ab56f7791bd6ef28027fa1b441dad539d">Animation</a> (<a class="el" href="classinviwo_1_1animation_1_1AnimationManager.html">AnimationManager</a> *animationManager=nullptr, std::string_view name=&quot;Animation&quot;)</td></tr>
@@ -316,7 +316,7 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Creates an empty <a class="el" href="classinviwo_1_1animation_1_1Animation.html" title="Animation data structure, owns a list of tracks. Each Track usually represents a value to be animated...">Animation</a>. <a class="el" href="classinviwo_1_1animation_1_1AnimationManager.html">AnimationManager</a> is required only for the Property-based adding convenience functions: <a class="el" href="#ac8c83e369297a9122f83a16585b10337">add(Property* property)</a> <a class="el" href="#a895fd1af788c20d1498e0e950db6e33d">addKeyframe(Property* property, Seconds time)</a> <a class="el" href="#af5c20a59631336d17fd266115ff06775">addKeyframeSequence(Property* property, Seconds time)</a> Trying to use these functions with an invalid <a class="el" href="classinviwo_1_1animation_1_1AnimationManager.html">AnimationManager</a> will throw Exceptions.</p>
+<p>Creates an empty <a class="el" href="classinviwo_1_1animation_1_1Animation.html" title="Animation data structure, owns a list of tracks. Each Track usually represents a value to be animated...">Animation</a>. <a class="el" href="classinviwo_1_1animation_1_1AnimationManager.html">AnimationManager</a> is required only for the Property-based adding convenience functions: <a class="el" href="#aac62308e77dac1a6b4c2ef9fc680449b">add(Property* property)</a> <a class="el" href="#a239999f8afe95d3b029c0b6a6c8c362c">addKeyframe(Property* property, Seconds time)</a> <a class="el" href="#a28925834383d39c5d247923b805b46ca">addKeyframeSequence(Property* property, Seconds time)</a> Trying to use these functions with an invalid <a class="el" href="classinviwo_1_1animation_1_1AnimationManager.html">AnimationManager</a> will throw Exceptions.</p>
 <dl class="section note"><dt>Note</dt><dd>nullptr to <a class="el" href="classinviwo_1_1animation_1_1AnimationManager.html">AnimationManager</a> should mainly be used for unit testing and the likes. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -329,21 +329,21 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="ac8c83e369297a9122f83a16585b10337" name="ac8c83e369297a9122f83a16585b10337"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac8c83e369297a9122f83a16585b10337">&#9670;&#160;</a></span>add()</h2>
+<a id="aac62308e77dac1a6b4c2ef9fc680449b" name="aac62308e77dac1a6b4c2ef9fc680449b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac62308e77dac1a6b4c2ef9fc680449b">&#9670;&#160;</a></span>add()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1animation_1_1BasePropertyTrack.html">BasePropertyTrack</a> * inviwo::animation::Animation::add </td>
+          <td class="memname">std::vector&lt; <a class="el" href="classinviwo_1_1animation_1_1BasePropertyTrack.html">BasePropertyTrack</a> * &gt; inviwo::animation::Animation::add </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1Property.html">Property</a> *</td>          <td class="paramname"><span class="paramname"><em>property</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Adds a <a class="el" href="classinviwo_1_1animation_1_1PropertyTrack.html">PropertyTrack</a>, or returns an existing it has one for the property. The added <a class="el" href="classinviwo_1_1animation_1_1PropertyTrack.html">PropertyTrack</a> will be removed if the property is removed. </p><dl class="section return"><dt>Returns</dt><dd><a class="el" href="classinviwo_1_1animation_1_1BasePropertyTrack.html">BasePropertyTrack</a> if added, nullptr otherwise. </dd></dl>
+<p>Adds PropertyTracks, or returns existing ones for the property. If the property is a <a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a>, tracks are added recursively for all sub-properties. The added <a class="el" href="classinviwo_1_1animation_1_1PropertyTrack.html">PropertyTrack</a> will be removed if the property is removed. </p><dl class="section return"><dt>Returns</dt><dd>BasePropertyTracks if added, empty otherwise. </dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1animation_1_1BasePropertyTrack.html">BasePropertyTrack</a> </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
@@ -354,14 +354,14 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
 
 </div>
 </div>
-<a id="a895fd1af788c20d1498e0e950db6e33d" name="a895fd1af788c20d1498e0e950db6e33d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a895fd1af788c20d1498e0e950db6e33d">&#9670;&#160;</a></span>addKeyframe()</h2>
+<a id="a239999f8afe95d3b029c0b6a6c8c362c" name="a239999f8afe95d3b029c0b6a6c8c362c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a239999f8afe95d3b029c0b6a6c8c362c">&#9670;&#160;</a></span>addKeyframe()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> * inviwo::animation::Animation::addKeyframe </td>
+          <td class="memname">std::vector&lt; <a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> * &gt; inviwo::animation::Animation::addKeyframe </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1Property.html">Property</a> *</td>          <td class="paramname"><span class="paramname"><em>property</em></span>, </td>
         </tr>
@@ -372,7 +372,7 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add keyframe at specified time. Creates a new track if no track with the supplied property exists. The <a class="el" href="classinviwo_1_1animation_1_1PropertyTrack.html">PropertyTrack</a> will be removed if the property is removed. </p><dl class="section return"><dt>Returns</dt><dd><a class="el" href="classinviwo_1_1animation_1_1Keyframe.html">Keyframe</a> if successsfully added, nullptr otherwise. </dd></dl>
+<p>Add keyframes at specified time. Creates a new track if no track with the supplied property exists. The <a class="el" href="classinviwo_1_1animation_1_1PropertyTrack.html">PropertyTrack</a> will be removed if the property is removed. </p><dl class="section return"><dt>Returns</dt><dd>Keyframes if successsfully added, empty otherwise. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname">Exception</td><td>if no <a class="el" href="classinviwo_1_1animation_1_1AnimationManager.html">AnimationManager</a> has been supplied. </td></tr>
@@ -382,14 +382,14 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
 
 </div>
 </div>
-<a id="af5c20a59631336d17fd266115ff06775" name="af5c20a59631336d17fd266115ff06775"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af5c20a59631336d17fd266115ff06775">&#9670;&#160;</a></span>addKeyframeSequence()</h2>
+<a id="a28925834383d39c5d247923b805b46ca" name="a28925834383d39c5d247923b805b46ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28925834383d39c5d247923b805b46ca">&#9670;&#160;</a></span>addKeyframeSequence()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> * inviwo::animation::Animation::addKeyframeSequence </td>
+          <td class="memname">std::vector&lt; <a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> * &gt; inviwo::animation::Animation::addKeyframeSequence </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1Property.html">Property</a> *</td>          <td class="paramname"><span class="paramname"><em>property</em></span>, </td>
         </tr>
@@ -400,7 +400,7 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add sequence at specified time. Creates a new track if no track with the supplied property exists. The <a class="el" href="classinviwo_1_1animation_1_1PropertyTrack.html">PropertyTrack</a> will be removed if the property is removed. </p><dl class="section return"><dt>Returns</dt><dd><a class="el" href="classinviwo_1_1animation_1_1KeyframeSequence.html">KeyframeSequence</a> if successsfully added, nullptr otherwise. </dd></dl>
+<p>Add sequences at specified time. Creates a new track if no track with the supplied property exists. The <a class="el" href="classinviwo_1_1animation_1_1PropertyTrack.html">PropertyTrack</a> will be removed if the property is removed. </p><dl class="section return"><dt>Returns</dt><dd>KeyframeSequences if successsfully added, empty otherwise. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname">Exception</td><td>if no <a class="el" href="classinviwo_1_1animation_1_1AnimationManager.html">AnimationManager</a> has been supplied. </td></tr>

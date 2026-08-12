@@ -491,7 +491,9 @@ var hierarchy =
     [ "inviwo::util::DefaultColorRepresentation&lt; ivec4 &gt;", "structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec4_01_4.html", null ],
     [ "inviwo::animation::detail::DefaultInterpolationCreator&lt; Key &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator.html", null ],
     [ "inviwo::animation::detail::DefaultInterpolationCreator&lt; CameraKeyframe &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator_3_01CameraKeyframe_01_4.html", null ],
+    [ "inviwo::animation::detail::DefaultInterpolationCreator&lt; ValueKeyframe&lt; IsoValueCollection &gt; &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator_3_01ValueKeyframe_3_01IsoValueCollection_01_4_01_4.html", null ],
     [ "inviwo::animation::detail::DefaultInterpolationCreator&lt; ValueKeyframe&lt; T &gt; &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator_3_01ValueKeyframe_3_01T_01_4_01_4.html", null ],
+    [ "inviwo::animation::detail::DefaultInterpolationCreator&lt; ValueKeyframe&lt; TransferFunction &gt; &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator_3_01ValueKeyframe_3_01TransferFunction_01_4_01_4.html", null ],
     [ "inviwo::animation::detail::DefaultSequenceCreator&lt; Seq &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultSequenceCreator.html", null ],
     [ "inviwo::animation::detail::DefaultSequenceCreator&lt; KeyframeSequenceTyped&lt; Key &gt; &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultSequenceCreator_3_01KeyframeSequenceTyped_3_01Key_01_4_01_4.html", null ],
     [ "inviwo::util::DefaultTraversalFilter", "structinviwo_1_1util_1_1DefaultTraversalFilter.html", null ],
@@ -1070,6 +1072,10 @@ var hierarchy =
             [ "inviwo::animation::ConstantInterpolation< Key, Result >", "classinviwo_1_1animation_1_1ConstantInterpolation.html", null ],
             [ "inviwo::animation::LinearInterpolation< Key, Result >", "classinviwo_1_1animation_1_1LinearInterpolation.html", null ]
           ] ],
+          [ "inviwo::animation::InterpolationTyped< ValueKeyframe< IsoValueCollection >, IsoValueCollection >", "classinviwo_1_1animation_1_1InterpolationTyped.html", [
+            [ "inviwo::animation::IsoValuePropertyInterpolationBlend", "classinviwo_1_1animation_1_1IsoValuePropertyInterpolationBlend.html", null ],
+            [ "inviwo::animation::IsoValuePropertyInterpolationFade", "classinviwo_1_1animation_1_1IsoValuePropertyInterpolationFade.html", null ]
+          ] ],
           [ "inviwo::animation::InterpolationTyped< ValueKeyframe< TransferFunction >, TransferFunction >", "classinviwo_1_1animation_1_1InterpolationTyped.html", [
             [ "inviwo::animation::TFInterpolationBlend", "classinviwo_1_1animation_1_1TFInterpolationBlend.html", null ],
             [ "inviwo::animation::TFInterpolationOptimalTransport", "classinviwo_1_1animation_1_1TFInterpolationOptimalTransport.html", null ]
@@ -1539,6 +1545,7 @@ var hierarchy =
       ] ],
       [ "inviwo::animation::InterpolationFactoryObjectKeyframe< Keyframe >", "classinviwo_1_1animation_1_1InterpolationFactoryObjectKeyframe.html", null ]
     ] ],
+    [ "inviwo::views::detail::intersection_fn", "structinviwo_1_1views_1_1detail_1_1intersection__fn.html", null ],
     [ "inviwo::InviwoDefaultData&lt; T, N &gt;", "structinviwo_1_1InviwoDefaultData.html", null ],
     [ "inviwo::InviwoDefaults&lt; T &gt;", "structinviwo_1_1InviwoDefaults.html", null ],
     [ "inviwo::InviwoDefaults&lt; bool &gt;", "structinviwo_1_1InviwoDefaults_3_01bool_01_4.html", null ],
@@ -1613,7 +1620,7 @@ var hierarchy =
     [ "inviwo::SearchDSL&lt; Ts &gt;::Item", "structinviwo_1_1SearchDSL_1_1Item.html", null ],
     [ "inviwo::filters::ItemFilter", "structinviwo_1_1filters_1_1ItemFilter.html", null ],
     [ "inviwo::util::sequence&lt; T &gt;::iterator", "structinviwo_1_1util_1_1sequence_1_1iterator.html", null ],
-    [ "inviwo::views::set_union&lt; V1, V2, Comp &gt;::iterator", "classinviwo_1_1views_1_1set__union_1_1iterator.html", null ],
+    [ "inviwo::views::set_transform&lt; V1, V2, Comp, Fn &gt;::iterator", "classinviwo_1_1views_1_1set__transform_1_1iterator.html", null ],
     [ "inviwo::util::detailzip::iterator_tools&lt; T &gt;", "structinviwo_1_1util_1_1detailzip_1_1iterator__tools.html", null ],
     [ "inviwo::util::detailzip::iterator_tools&lt; std::tuple&lt; Ts... &gt; &gt;", "structinviwo_1_1util_1_1detailzip_1_1iterator__tools_3_01std_1_1tuple_3_01Ts_8_8_8_01_4_01_4.html", null ],
     [ "inviwo::pool::detail::JobTraits&lt; Job &gt;", "structinviwo_1_1pool_1_1detail_1_1JobTraits.html", null ],
@@ -3111,6 +3118,7 @@ var hierarchy =
     [ "inviwo::util::RandomSphericalPointGeneration", "structinviwo_1_1util_1_1RandomSphericalPointGeneration.html", null ],
     [ "std::ranges::range_adaptor_closure", null, [
       [ "inviwo::detail::CodePointsAdaptor", "structinviwo_1_1detail_1_1CodePointsAdaptor.html", null ],
+      [ "inviwo::views::detail::set_intersection_adaptor< V2, Comp >", "classinviwo_1_1views_1_1detail_1_1set__intersection__adaptor.html", null ],
       [ "inviwo::views::detail::set_union_adaptor< V2, Comp >", "classinviwo_1_1views_1_1detail_1_1set__union__adaptor.html", null ]
     ] ],
     [ "inviwo::utilgl::RangeConversionMap", "structinviwo_1_1utilgl_1_1RangeConversionMap.html", null ],
@@ -3720,6 +3728,7 @@ var hierarchy =
     [ "inviwo::hdf5::TypeMap&lt; unsigned short &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01unsigned_01short_01_4.html", null ],
     [ "inviwo::UnicodeFloat", "structinviwo_1_1UnicodeFloat.html", null ],
     [ "inviwo::UniformLabelAtlasGL", "classinviwo_1_1UniformLabelAtlasGL.html", null ],
+    [ "inviwo::views::detail::union_fn", "structinviwo_1_1views_1_1detail_1_1union__fn.html", null ],
     [ "std::unique_ptr&lt; T &gt;", null, [
       [ "inviwo::QPtr< inviwo::PythonEditorWidget >", "classinviwo_1_1QPtr.html", null ],
       [ "inviwo::QPtr< QToolBar >", "classinviwo_1_1QPtr.html", null ],
@@ -3742,9 +3751,15 @@ var hierarchy =
     ] ],
     [ "inviwo::ViewManager::View", "structinviwo_1_1ViewManager_1_1View.html", null ],
     [ "std::ranges::view_interface", null, [
+      [ "inviwo::views::set_transform< V1, V2, std::ranges::less, detail::intersection_fn >", "classinviwo_1_1views_1_1set__transform.html", [
+        [ "inviwo::views::set_intersection< V1, V2, Comp >", "classinviwo_1_1views_1_1set__intersection.html", null ]
+      ] ],
+      [ "inviwo::views::set_transform< V1, V2, std::ranges::less, detail::union_fn >", "classinviwo_1_1views_1_1set__transform.html", [
+        [ "inviwo::views::set_union< V1, V2, Comp >", "classinviwo_1_1views_1_1set__union.html", null ]
+      ] ],
       [ "inviwo::concat_view< Rs >", "classinviwo_1_1concat__view.html", null ],
       [ "inviwo::detail::Utf8CodePointRange< View >", "classinviwo_1_1detail_1_1Utf8CodePointRange.html", null ],
-      [ "inviwo::views::set_union< V1, V2, Comp >", "classinviwo_1_1views_1_1set__union.html", null ]
+      [ "inviwo::views::set_transform< V1, V2, Comp, Fn >", "classinviwo_1_1views_1_1set__transform.html", null ]
     ] ],
     [ "inviwo::ViewManager", "classinviwo_1_1ViewManager.html", null ],
     [ "inviwo::utilgl::Viewport", "structinviwo_1_1utilgl_1_1Viewport.html", null ],

@@ -23,7 +23,9 @@ var annotated_dup =
           [ "AnimateSequence&lt; CameraProperty, CameraKeyframeSequence &gt;", "structinviwo_1_1animation_1_1detail_1_1AnimateSequence_3_01CameraProperty_00_01CameraKeyframeSequence_01_4.html", null ],
           [ "DefaultInterpolationCreator", "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator.html", null ],
           [ "DefaultInterpolationCreator&lt; CameraKeyframe &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator_3_01CameraKeyframe_01_4.html", null ],
+          [ "DefaultInterpolationCreator&lt; ValueKeyframe&lt; IsoValueCollection &gt; &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator_3_01ValueKeyframe_3_01IsoValueCollection_01_4_01_4.html", null ],
           [ "DefaultInterpolationCreator&lt; ValueKeyframe&lt; T &gt; &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator_3_01ValueKeyframe_3_01T_01_4_01_4.html", null ],
+          [ "DefaultInterpolationCreator&lt; ValueKeyframe&lt; TransferFunction &gt; &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultInterpolationCreator_3_01ValueKeyframe_3_01TransferFunction_01_4_01_4.html", null ],
           [ "DefaultSequenceCreator", "structinviwo_1_1animation_1_1detail_1_1DefaultSequenceCreator.html", null ],
           [ "DefaultSequenceCreator&lt; KeyframeSequenceTyped&lt; Key &gt; &gt;", "structinviwo_1_1animation_1_1detail_1_1DefaultSequenceCreator_3_01KeyframeSequenceTyped_3_01Key_01_4_01_4.html", null ]
         ] ],
@@ -77,6 +79,8 @@ var annotated_dup =
         [ "InvalidationKeyframeSequence", "classinviwo_1_1animation_1_1InvalidationKeyframeSequence.html", null ],
         [ "InvalidationSequenceEditor", "classinviwo_1_1animation_1_1InvalidationSequenceEditor.html", null ],
         [ "InvalidationTrack", "classinviwo_1_1animation_1_1InvalidationTrack.html", "classinviwo_1_1animation_1_1InvalidationTrack" ],
+        [ "IsoValuePropertyInterpolationBlend", "classinviwo_1_1animation_1_1IsoValuePropertyInterpolationBlend.html", null ],
+        [ "IsoValuePropertyInterpolationFade", "classinviwo_1_1animation_1_1IsoValuePropertyInterpolationFade.html", null ],
         [ "Keyframe", "classinviwo_1_1animation_1_1Keyframe.html", null ],
         [ "KeyframeEditorWidget", "classinviwo_1_1animation_1_1KeyframeEditorWidget.html", null ],
         [ "KeyframeFactory", "classinviwo_1_1animation_1_1KeyframeFactory.html", null ],
@@ -555,9 +559,14 @@ var annotated_dup =
       ] ],
       [ "views", null, [
         [ "detail", null, [
-          [ "set_union_adaptor", "classinviwo_1_1views_1_1detail_1_1set__union__adaptor.html", null ]
+          [ "intersection_fn", "structinviwo_1_1views_1_1detail_1_1intersection__fn.html", null ],
+          [ "set_intersection_adaptor", "classinviwo_1_1views_1_1detail_1_1set__intersection__adaptor.html", null ],
+          [ "set_union_adaptor", "classinviwo_1_1views_1_1detail_1_1set__union__adaptor.html", null ],
+          [ "union_fn", "structinviwo_1_1views_1_1detail_1_1union__fn.html", null ]
         ] ],
-        [ "set_union", "classinviwo_1_1views_1_1set__union.html", "classinviwo_1_1views_1_1set__union" ]
+        [ "set_intersection", "classinviwo_1_1views_1_1set__intersection.html", null ],
+        [ "set_transform", "classinviwo_1_1views_1_1set__transform.html", "classinviwo_1_1views_1_1set__transform" ],
+        [ "set_union", "classinviwo_1_1views_1_1set__union.html", null ]
       ] ],
       [ "xml", "namespaceinviwo_1_1xml.html", [
         [ "ElementMatcher", "structinviwo_1_1xml_1_1ElementMatcher.html", "structinviwo_1_1xml_1_1ElementMatcher" ],

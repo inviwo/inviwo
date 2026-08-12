@@ -50,6 +50,8 @@ var namespaceinviwo_1_1animation =
     [ "InvalidationKeyframeSequence", "classinviwo_1_1animation_1_1InvalidationKeyframeSequence.html", null ],
     [ "InvalidationSequenceEditor", "classinviwo_1_1animation_1_1InvalidationSequenceEditor.html", null ],
     [ "InvalidationTrack", "classinviwo_1_1animation_1_1InvalidationTrack.html", "classinviwo_1_1animation_1_1InvalidationTrack" ],
+    [ "IsoValuePropertyInterpolationBlend", "classinviwo_1_1animation_1_1IsoValuePropertyInterpolationBlend.html", null ],
+    [ "IsoValuePropertyInterpolationFade", "classinviwo_1_1animation_1_1IsoValuePropertyInterpolationFade.html", null ],
     [ "Keyframe", "classinviwo_1_1animation_1_1Keyframe.html", null ],
     [ "KeyframeEditorWidget", "classinviwo_1_1animation_1_1KeyframeEditorWidget.html", null ],
     [ "KeyframeFactory", "classinviwo_1_1animation_1_1KeyframeFactory.html", null ],

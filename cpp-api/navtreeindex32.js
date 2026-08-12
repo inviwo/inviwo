@@ -1,5 +1,12 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1ProcessorInfo.html#a3dfc6e6eead4089b0b87e4d91800a56c":[2,0,0,852,5],
+"structinviwo_1_1ProcessorInfo.html#a3dfc6e6eead4089b0b87e4d91800a56c":[4,0,1,862,5],
+"structinviwo_1_1ProcessorInfo.html#a73ee300447fec6bf02343fe794da5b20":[2,0,0,852,1],
+"structinviwo_1_1ProcessorInfo.html#a73ee300447fec6bf02343fe794da5b20":[4,0,1,862,1],
+"structinviwo_1_1ProcessorInfo.html#a883e93e6920c6efb56e63f8c75901300":[2,0,0,852,3],
+"structinviwo_1_1ProcessorInfo.html#a883e93e6920c6efb56e63f8c75901300":[4,0,1,862,3],
+"structinviwo_1_1ProcessorInfo.html#aa3c739ee0ed28ed7c3660b733b05c055":[2,0,0,852,2],
 "structinviwo_1_1ProcessorInfo.html#aa3c739ee0ed28ed7c3660b733b05c055":[4,0,1,862,2],
 "structinviwo_1_1ProcessorListModel_1_1Item.html":[2,0,0,856,0],
 "structinviwo_1_1ProcessorListModel_1_1Item.html":[4,0,1,866,0],
@@ -242,12 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1VolumeGLProcessor_1_1FBO.html":[2,0,0,1321,0],
 "structinviwo_1_1VolumeGLProcessor_1_1FBO.html":[4,0,1,1331,0],
 "structinviwo_1_1VolumeReprConfig.html":[2,0,0,1354],
-"structinviwo_1_1VolumeReprConfig.html":[4,0,1,1364],
-"structinviwo_1_1WorkspaceAnnotationsQt_1_1ProcessorShim.html":[2,0,0,1388,0],
-"structinviwo_1_1WorkspaceAnnotationsQt_1_1ProcessorShim.html":[4,0,1,1398,0],
-"structinviwo_1_1WorkspaceAnnotations_1_1Base64Image.html":[2,0,0,1387,0],
-"structinviwo_1_1WorkspaceAnnotations_1_1Base64Image.html":[4,0,1,1397,0],
-"structinviwo_1_1WorkspaceInfo.html":[2,0,0,1390],
-"structinviwo_1_1WorkspaceInfo.html":[4,0,1,1400],
-"structinviwo_1_1ZoomOptions.html":[2,0,0,1397]
+"structinviwo_1_1VolumeReprConfig.html":[4,0,1,1364]
 };

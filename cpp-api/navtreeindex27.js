@@ -1,5 +1,9 @@
 var NAVTREEINDEX27 =
 {
+"classinviwo_1_1plot_1_1AxisRenderProcessor.html#acd6617b0ddbd2520aa27dd16b2fb7e5a":[4,0,1,22,8,0],
+"classinviwo_1_1plot_1_1AxisRenderer.html":[2,0,0,15,4],
+"classinviwo_1_1plot_1_1AxisRenderer.html":[4,0,1,22,5],
+"classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[2,0,0,15,4,0],
 "classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[4,0,1,22,5,0],
 "classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[2,0,0,15,4,1],
 "classinviwo_1_1plot_1_1AxisRenderer.html#af160296a42a0b6c91c861a649966ea10":[4,0,1,22,5,1],
@@ -205,9 +209,12 @@ var NAVTREEINDEX27 =
 "classinviwo_1_1utilqt_1_1EditorFileObserver.html":[2,0,0,24,0],
 "classinviwo_1_1utilqt_1_1EditorFileObserver.html":[4,0,1,33,1],
 "classinviwo_1_1utilqt_1_1detail_1_1QtProcessFrontHelper.html":[4,0,1,33,0,0],
-"classinviwo_1_1views_1_1detail_1_1set__union__adaptor.html":[4,0,1,34,0,0],
-"classinviwo_1_1views_1_1set__union.html":[4,0,1,34,1],
-"classinviwo_1_1views_1_1set__union_1_1iterator.html":[4,0,1,34,1,0],
+"classinviwo_1_1views_1_1detail_1_1set__intersection__adaptor.html":[4,0,1,34,0,1],
+"classinviwo_1_1views_1_1detail_1_1set__union__adaptor.html":[4,0,1,34,0,2],
+"classinviwo_1_1views_1_1set__intersection.html":[4,0,1,34,1],
+"classinviwo_1_1views_1_1set__transform.html":[4,0,1,34,2],
+"classinviwo_1_1views_1_1set__transform_1_1iterator.html":[4,0,1,34,2,0],
+"classinviwo_1_1views_1_1set__union.html":[4,0,1,34,3],
 "classinviwo_1_1xml_1_1Kind.html":[2,0,0,25,2],
 "classinviwo_1_1xml_1_1Kind.html":[4,0,1,35,2],
 "conceptinviwo_1_1CharRange.html":[2,0,0,1398],
@@ -242,12 +249,5 @@ var NAVTREEINDEX27 =
 "conceptinviwo_1_1util_1_1Vec2D.html":[2,0,0,20,70],
 "conceptinviwo_1_1util_1_1Vec2D.html":[3,0,3,2],
 "conceptinviwo_1_1util_1_1hasRAMrepresentation.html":[2,0,0,20,68],
-"conceptinviwo_1_1util_1_1hasRAMrepresentation.html":[3,0,3,0],
-"concepts.html":[3],
-"examples.html":[5],
-"functions.html":[4,3,0],
-"functions.html":[4,3,0,0],
-"functions_b.html":[4,3,0,1],
-"functions_c.html":[4,3,0,2],
-"functions_d.html":[4,3,0,3]
+"conceptinviwo_1_1util_1_1hasRAMrepresentation.html":[3,0,3,0]
 };
