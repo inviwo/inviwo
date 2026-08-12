@@ -45,20 +45,11 @@ namespace inviwo {
 
 class ImageOutport;
 
-class IVW_CORE_API ImagePortBase {
-public:
-    virtual ~ImagePortBase() = default;
-    virtual bool isOutportDeterminingSize() const = 0;
-    virtual void setOutportDeterminesSize(bool outportDeterminesSize) = 0;
-};
-
 enum class OutportDeterminesSize { Yes, No };
 enum class HandleResizeEvents { Yes, No };
 
 IVW_CORE_API std::string_view enumToStr(OutportDeterminesSize ods);
 IVW_CORE_API std::string_view enumToStr(HandleResizeEvents hre);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, OutportDeterminesSize ods);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, HandleResizeEvents hre);
 
 /**
  * @ingroup ports
@@ -100,7 +91,7 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, HandleResizeEvents hre);
  *
  */
 template <size_t N = 1>
-class BaseImageInport : public DataInport<Image, N>, public ImagePortBase {
+class BaseImageInport : public DataInport<Image, N> {
 public:
     BaseImageInport(std::string_view identifier, Document help = {},
                     OutportDeterminesSize value = OutportDeterminesSize::No);
@@ -114,15 +105,12 @@ public:
     virtual std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> getSourceVectorData()
         const override;
 
-    virtual bool isOutportDeterminingSize() const override;
-    virtual void setOutportDeterminesSize(bool outportDeterminesSize) override;
+    bool isOutportDeterminingSize() const;
+    void setOutportDeterminesSize(bool outportDeterminesSize);
     void setOutportDeterminesSize(OutportDeterminesSize outportDeterminesSize);
 
-    void passOnDataToOutport(ImageOutport* outport) const;
-
     virtual Document getInfo() const override;
-
-    bool hasData() const override;
+    virtual bool hasData() const override;
 
 private:
     std::shared_ptr<const Image> getImage(ImageOutport* port) const;
@@ -391,15 +379,6 @@ template <size_t N>
 void BaseImageInport<N>::setOutportDeterminesSize(bool outportDeterminesSize) {
     outportDeterminesSize_ =
         (outportDeterminesSize ? OutportDeterminesSize::Yes : OutportDeterminesSize::No);
-}
-
-template <size_t N>
-void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
-    if (this->hasData()) {
-        std::shared_ptr<const Image> img = getData();
-        std::shared_ptr<Image> out = outport->getEditableData();
-        if (out) img->copyRepresentationsTo(out.get());
-    }
 }
 
 template <size_t N>

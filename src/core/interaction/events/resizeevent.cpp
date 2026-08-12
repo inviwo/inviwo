@@ -50,8 +50,10 @@ ResizeEvent* ResizeEvent::clone() const { return new ResizeEvent(*this); }
 bool ResizeEvent::shouldPropagateTo(Inport* inport, Processor* processor, Outport* source) {
     // Only propagate to image ports in the same port group.
     if (processor->getPortGroup(inport) == processor->getPortGroup(source)) {
-        if (dynamic_cast<ImagePortBase*>(inport)) return true;
-        if (dynamic_cast<DataInport<DataSequence<Image>>*>(inport)) return true;
+        const auto cid = inport->getClassIdentifier();
+        return cid == PortTraits<ImageInport>::classIdentifier() ||
+               cid == PortTraits<ImageMultiInport>::classIdentifier() ||
+               cid == PortTraits<DataInport<DataSequence<Image>>>::classIdentifier();
     }
     return false;
 }

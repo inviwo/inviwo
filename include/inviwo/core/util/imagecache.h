@@ -70,7 +70,7 @@ public:
 
 private:
     mutable bool valid_;
-    std::shared_ptr<const Image> master_;  // non-owning reference.
+    std::shared_ptr<const Image> master_;
 
     using Cache = std::unordered_map<glm::size2_t, std::shared_ptr<Image>>;
     mutable Cache cache_;
