@@ -95,7 +95,7 @@ private:
 class IVW_MODULE_QTWIDGETS_API PropertyListEvent : public QEvent {
     Q_GADGET
 public:
-    enum class Action { Add = 0, Remove = 1, FocusProperty = 2 };
+    enum class Action : std::uint8_t { Add = 0, Remove = 1, FocusProperty = 2 };
     PropertyListEvent(Action action, std::string_view identifier);
     static QEvent::Type type();
     Action action;

@@ -245,7 +245,7 @@ QWidget* PropertyListFrame::findWidgetFor(Property* property) {
 
     std::vector<PropertyOwner*> stack{};
     QWidget* widget = nullptr;
-    auto owner = property->getOwner();
+    auto* owner = property->getOwner();
     while (owner) {
         if (auto* processor = dynamic_cast<Processor*>(owner)) {
             if (auto it = processorMap_.find(processor); it != processorMap_.end()) {
@@ -269,7 +269,7 @@ QWidget* PropertyListFrame::findWidgetFor(Property* property) {
         stack.pop_back();
         if (auto* cp = dynamic_cast<CompositeProperty*>(owner)) {
             if (auto* cw = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(widget)) {
-                if (auto pw = cw->widgetForProperty(cp)) {
+                if (auto* pw = cw->widgetForProperty(cp)) {
                     widget = pw;
                     continue;
                 }
@@ -279,7 +279,7 @@ QWidget* PropertyListFrame::findWidgetFor(Property* property) {
     }
 
     if (auto* cw = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(widget)) {
-        if (auto pw = cw->widgetForProperty(property)) {
+        if (auto* pw = cw->widgetForProperty(property)) {
             return pw;
         }
     }
@@ -344,14 +344,14 @@ void PropertyListWidget::removeAndDeletePropertyWidgets(Property* property) {
 bool PropertyListWidget::event(QEvent* e) {
     // The network editor will post these events.
     if (e->type() == PropertyListEvent::type()) {
-        PropertyListEvent* ple = static_cast<PropertyListEvent*>(e);
+        auto* ple = static_cast<PropertyListEvent*>(e);
         ple->accept();
 
         auto network = app_->getProcessorNetwork();
 
         switch (ple->action) {
             case PropertyListEvent::Action::Add: {
-                if (auto processor = network->getProcessorByIdentifier(ple->identifier)) {
+                if (auto* processor = network->getProcessorByIdentifier(ple->identifier)) {
                     if (processor->getNetwork() == network) {
                         addProcessorProperties(processor);
                     }
@@ -359,7 +359,7 @@ bool PropertyListWidget::event(QEvent* e) {
                 break;
             }
             case PropertyListEvent::Action::Remove: {
-                if (auto processor = network->getProcessorByIdentifier(ple->identifier)) {
+                if (auto* processor = network->getProcessorByIdentifier(ple->identifier)) {
                     if (processor->getNetwork() == network) {
                         removeProcessorProperties(processor);
                     }
@@ -367,7 +367,7 @@ bool PropertyListWidget::event(QEvent* e) {
                 break;
             }
             case PropertyListEvent::Action::FocusProperty: {
-                if (auto property = network->getProperty(ple->identifier)) {
+                if (auto* property = network->getProperty(ple->identifier)) {
                     focusProperty(property);
                 }
                 break;
@@ -391,7 +391,7 @@ QEvent::Type PropertyListEvent::type() {
 }
 
 void PropertyListWidget::focusProperty(Property* property) {
-    if (auto widget = frame_->findWidgetFor(property)) {
+    if (auto* widget = frame_->findWidgetFor(property)) {
         widget->setFocus();
     }
 }

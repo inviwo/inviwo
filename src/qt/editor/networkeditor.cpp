@@ -244,11 +244,11 @@ void NetworkEditor::removeProcessorGraphicsItem(Processor* processor) {
 }
 
 void NetworkEditor::addPropertyWidgets(Processor* processor) {
-    auto it = std::find_if(
-        processorGraphicsItems_.begin(), processorGraphicsItems_.end(),
-        [&](const auto& item) { return item.first != processor && item.second->isSelected(); });
+    auto it = std::ranges::find_if(processorGraphicsItems_, [&](const auto& item) {
+        return item.first != processor && item.second->isSelected();
+    });
     if (it == processorGraphicsItems_.end() ||
-        QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)) {
+        QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
         QCoreApplication::postEvent(
             mainWindow_->getPropertyListWidget(),
             new PropertyListEvent(PropertyListEvent::Action::Add, processor->getIdentifier()),
@@ -272,10 +272,10 @@ ConnectionGraphicsItem* NetworkEditor::addConnectionGraphicsItem(const PortConne
     Outport* outport = connection.getOutport();
     Inport* inport = connection.getInport();
 
-    auto outProcessor = getProcessorGraphicsItem(outport->getProcessor());
-    auto inProcessor = getProcessorGraphicsItem(inport->getProcessor());
+    auto* outProcessor = getProcessorGraphicsItem(outport->getProcessor());
+    auto* inProcessor = getProcessorGraphicsItem(inport->getProcessor());
 
-    auto connectionGraphicsItem =
+    auto* connectionGraphicsItem =
         new ConnectionGraphicsItem(outProcessor->getOutportGraphicsItem(outport),
                                    inProcessor->getInportGraphicsItem(inport), connection);
 
@@ -324,8 +324,8 @@ void NetworkEditor::removeLink(LinkConnectionGraphicsItem* linkGraphicsItem) {
         linkGraphicsItem->getDestProcessorGraphicsItem()->getProcessor());
 
     rendercontext::activateDefault();
-    NetworkLock lock(network_);
-    for (auto& link : links) {
+    const NetworkLock lock(network_);
+    for (const auto& link : links) {
         network_->removeLink(link.getSource(), link.getDestination());
     }
 }
@@ -340,7 +340,7 @@ void NetworkEditor::removeLinkGraphicsItem(LinkConnectionGraphicsItem* linkGraph
 }
 
 void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2) {
-    auto dialog = new LinkDialog(processor1, processor2, mainWindow_);
+    auto* dialog = new LinkDialog(processor1, processor2, mainWindow_);
     dialog->show();
 }
 
@@ -1094,7 +1094,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
 
     // Remove Processors. It is important to remove processors last.
     util::erase_remove_if(items, [&](QGraphicsItem* item) {
-        if (auto* pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+        if (const auto* pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             network_->removeProcessor(pgi->getProcessor());
             return true;
         } else {
@@ -1421,7 +1421,7 @@ void NetworkEditor::onProcessorNetworkDidRemoveLink(const PropertyLink& property
     if (network_
             ->getLinksBetweenProcessors(propertyLink.getSource()->getOwner()->getProcessor(),
                                         propertyLink.getDestination()->getOwner()->getProcessor())
-            .size() == 0) {
+            .empty()) {
         removeLinkGraphicsItem(
             getLinkGraphicsItem(propertyLink.getSource()->getOwner()->getProcessor(),
                                 propertyLink.getDestination()->getOwner()->getProcessor()));

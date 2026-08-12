@@ -98,14 +98,12 @@ void updateProcessorTarget(ProcessorGraphicsItem*& target, ProcessorGraphicsItem
 
     if (target) {
         target->setHighlight(false);
-        target->setSelected(false);
         target = nullptr;
     }
 
     if (source && source->getProcessor() != processor) {
         target = source;
         target->setHighlight(true);
-        target->setSelected(true);
     }
 }
 
