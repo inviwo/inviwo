@@ -30,7 +30,9 @@
 
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 
+#include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/fmtutils.h>
+#include <inviwo/core/properties/optionpropertytraits.h>
 
 #include <array>
 #include <string_view>
@@ -96,18 +98,28 @@ struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTarget {
 
     constexpr auto operator<=>(const BrushingTarget& other) const = default;
 
-    IVW_MODULE_BRUSHINGANDLINKING_API friend std::istream& operator>>(std::istream& ss,
-                                                                      BrushingTarget& bt);
-
     std::string_view getString() const { return target_; }
 
     static const BrushingTarget Row;
     static const BrushingTarget Column;
 
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
+
 private:
     std::string_view findOrAdd(std::string_view target);
 
     std::string_view target_;
+};
+
+inline auto format_as(const BrushingTarget& target) { return target.getString(); }
+
+template <>
+struct OptionPropertyTraits<BrushingTarget> {
+    static std::string_view classIdentifier() {
+        static const auto identifier = "org.inviwo.OptionProperty.BrushingTarget";
+        return identifier;
+    }
 };
 
 }  // namespace inviwo

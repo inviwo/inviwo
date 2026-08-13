@@ -38,6 +38,13 @@
 
 #include <memory>
 #include <modules/brushingandlinking/processors/propertytobrushing.h>
+#include <modules/brushingandlinking/processors/sequencebrush.h>
+
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
 
 namespace inviwo {
 class InviwoApplication;
@@ -181,6 +188,11 @@ BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app)
     registerProcessor<BrushingAndLinkingProcessor>();
     registerProcessor<CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>>();
     registerProcessor<PropertyToBrushing>();
+    registerProcessor<SequenceBrush<Volume>>();
+    registerProcessor<SequenceBrush<Layer>>();
+    registerProcessor<SequenceBrush<Image>>();
+    registerProcessor<SequenceBrush<Mesh>>();
+    registerProcessor<SequenceBrush<BufferBase>>();
 
     // Ports
     registerPort<BrushingAndLinkingOutport>();

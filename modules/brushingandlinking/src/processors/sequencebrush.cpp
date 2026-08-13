@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,47 +27,8 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/serializable.h>
-#include <string>
+#include <modules/brushingandlinking/processors/sequencebrush.h>
 
 namespace inviwo {
-
-class IVW_CORE_API PropertySemantics {
-public:
-    PropertySemantics();
-    explicit PropertySemantics(std::string_view semantic);
-    PropertySemantics(const PropertySemantics& rhs) = default;
-    PropertySemantics(PropertySemantics&& rhs) noexcept = default;
-    PropertySemantics& operator=(const PropertySemantics& that) = default;
-    PropertySemantics& operator=(PropertySemantics&& that) noexcept = default;
-    ~PropertySemantics() noexcept = default;
-
-    const std::string& getString() const;
-
-    bool operator==(const PropertySemantics&) const = default;
-    auto operator<=>(const PropertySemantics&) const = default;
-
-    void serialize(Serializer& s) const;
-    void deserialize(Deserializer& d);
-
-    static const PropertySemantics Default;
-    static const PropertySemantics Text;
-    static const PropertySemantics SpinBox;
-    static const PropertySemantics Color;
-    static const PropertySemantics LightPosition;
-    static const PropertySemantics TextEditor;
-    static const PropertySemantics Multiline;
-    static const PropertySemantics ImageEditor;
-    static const PropertySemantics ShaderEditor;
-    static const PropertySemantics PythonEditor;
-
-private:
-    std::string semantic_;
-};
-
-inline const auto& format_as(const PropertySemantics& semantics) { return semantics.getString(); }
 
 }  // namespace inviwo
