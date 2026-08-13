@@ -93,6 +93,104 @@ struct SequenceToDataFrameTraits<Volume> {
     }
 };
 
+template <>
+struct SequenceToDataFrameTraits<Layer> {
+    static auto header(DataFrame& df) {
+        return std::tuple{df.addColumn<int>("X"),
+                          df.addColumn<int>("Y"),
+                          df.addCategoricalColumn("Format"),
+                          df.addColumn<int>("Channels"),
+                          df.addColumn<double>("Data Min"),
+                          df.addColumn<double>("Data Max"),
+                          df.addColumn<double>("Value Min"),
+                          df.addColumn<double>("Value Max"),
+                          df.addCategoricalColumn("Axis"),
+                          df.addCategoricalColumn("Unit"),
+                          df.addCategoricalColumn("Filename")};
+    }
+    static void add(const Layer& layer, auto& cols) {
+        auto& [x, y, format, channels, dMin, dMax, vMin, vMax, axis, unit, file] = cols;
+
+        x->add(static_cast<int>(layer.getDimensions().x));
+        y->add(static_cast<int>(layer.getDimensions().y));
+
+        format->add(layer.getDataFormat()->getString());
+        channels->add(static_cast<int>(layer.getDataFormat()->getComponents()));
+
+        dMin->add(layer.dataMap.dataRange.x);
+        dMax->add(layer.dataMap.dataRange.y);
+        vMin->add(layer.dataMap.valueRange.x);
+        vMax->add(layer.dataMap.valueRange.y);
+
+        axis->add(layer.dataMap.valueAxis.name);
+        unit->add(fmt::to_string(layer.dataMap.valueAxis.unit));
+
+        if (auto* filename = layer.getMetaData<StringMetaData>("filename")) {
+            file->add(filename->get());
+        } else {
+            file->add("");
+        }
+    }
+};
+
+template <>
+struct SequenceToDataFrameTraits<Image> {
+    static auto header(DataFrame& df) {
+        return std::tuple{df.addColumn<int>("X"), df.addColumn<int>("Y"),
+                          df.addCategoricalColumn("Format"), df.addColumn<int>("Channels"),
+                          df.addCategoricalColumn("Filename")};
+    }
+    static void add(const Image& image, auto& cols) {
+        auto& [x, y, format, channels, file] = cols;
+
+        x->add(static_cast<int>(image.getDimensions().x));
+        y->add(static_cast<int>(image.getDimensions().y));
+
+        format->add(image.getDataFormat()->getString());
+        channels->add(static_cast<int>(image.getDataFormat()->getComponents()));
+
+        if (auto* filename = image.getMetaData<StringMetaData>("filename")) {
+            file->add(filename->get());
+        } else {
+            file->add("");
+        }
+    }
+};
+
+template <>
+struct SequenceToDataFrameTraits<Mesh> {
+    static auto header(DataFrame& df) {
+        return std::tuple{df.addColumn<int>("Buffers"), df.addColumn<int>("IndexBuffers"),
+                          df.addCategoricalColumn("Filename")};
+    }
+    static void add(const Mesh& mesh, auto& cols) {
+        auto& [buffers, indexBuffers, file] = cols;
+
+        buffers->add(static_cast<int>(mesh.getNumberOfBuffers()));
+        indexBuffers->add(static_cast<int>(mesh.getNumberOfIndices()));
+
+        if (auto* filename = mesh.getMetaData<StringMetaData>("filename")) {
+            file->add(filename->get());
+        } else {
+            file->add("");
+        }
+    }
+};
+
+template <>
+struct SequenceToDataFrameTraits<BufferBase> {
+    static auto header(DataFrame& df) {
+        return std::tuple{df.addColumn<int>("Size"), df.addCategoricalColumn("Format"),
+                          df.addColumn<int>("Components")};
+    }
+    static void add(const BufferBase& buffer, auto& cols) {
+        auto& [size, format, components] = cols;
+        size->add(static_cast<int>(buffer.getSize()));
+        format->add(buffer.getDataFormat()->getString());
+        components->add(static_cast<int>(buffer.getDataFormat()->getComponents()));
+    }
+};
+
 template <typename T>
 class SequenceToDataFrame : public Processor {
 public:
