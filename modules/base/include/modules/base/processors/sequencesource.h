@@ -52,7 +52,6 @@
 #include <inviwo/core/util/statecoordinator.h>
 #include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <modules/base/properties/basisproperty.h>
 
 #include <functional>
 #include <memory>
@@ -109,9 +108,9 @@ private:
     void load(bool deserialize = false);
     void loadFile(bool deserialize = false);
     void loadFolder(bool deserialize = false);
-
     static void loadAndAddToSequence(const std::filesystem::path& file, Sequence& sequence,
                                      DataReaderFactory& rf, MetaDataOwner* md);
+    static void addMetaData(Type& data, const std::filesystem::path& path);
 
     DataReaderFactory* rf_;
     std::shared_ptr<Sequence> sequence_;
@@ -126,7 +125,6 @@ private:
     OptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
 
-    BasisProperty basis_;
     typename Conf::Info information_;
 
     bool deserialized_ = false;
@@ -184,18 +182,15 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
           "*")
     , reader_("reader", "Data Reader")
     , reload_("reload", "Reload data")
-    , basis_("Basis", "Basis and offset")
-    , information_("Information", "Data information") {
+    , information_{} {
 
     file_.setContentType(toLower(Conf::name));
     folder_.setContentType(toLower(Conf::name));
 
     addPort(outport_);
-    addProperties(inputType_, folder_, filter_, file_, reload_, information_, basis_);
+    addProperties(inputType_, folder_, filter_, file_, reload_);
 
-    // It does not make sense to change these for an entire sequence
-    information_.setReadOnly(true);
-    basis_.setReadOnly(true);
+    Conf::add(information_, *this);
 
     util::updateFilenameFilters<Sequence>(*rf_, file_, reader_);
     util::updateReaderFromFile(file_, reader_);
@@ -269,7 +264,6 @@ void SequenceSource<Conf>::loadFile(bool deserialize) {
     }
 
     if (sequence_ && !sequence_->empty() && (*sequence_)[0]) {
-        basis_.updateForNewEntity(*(*sequence_)[0], deserialize);
         const auto overwrite = deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No;
         Conf::updateForNew(information_, *(*sequence_)[0], overwrite);
     }
@@ -282,12 +276,12 @@ void SequenceSource<Conf>::loadAndAddToSequence(const std::filesystem::path& fil
 
     if (auto reader1 = rf.getReaderForTypeAndExtension<Type>(file)) {
         auto data1 = reader1->readData(file, md);
-        data1->template setMetaData<StringMetaData>(fileMetaData, file.generic_string());
+        addMetaData(*data1, file);
         sequence.push_back(data1);
     } else if (auto reader2 = rf.getReaderForTypeAndExtension<Sequence>(file)) {
         auto tempSequence = reader2->readData(file, md);
         for (auto&& data2 : *tempSequence) {
-            data2->template setMetaData<StringMetaData>(fileMetaData, file.generic_string());
+            addMetaData(*data2, file);
             sequence.push_back(data2);
         }
     } else {
@@ -321,21 +315,26 @@ void SequenceSource<Conf>::loadFolder(bool deserialize) {
     if (sequence_ && !sequence_->empty()) {
         // store filename in metadata
         for (auto data : *sequence_) {
-            if (!data->template hasMetaData<StringMetaData>(fileMetaData)) {
-                data->template setMetaData<StringMetaData>(fileMetaData,
-                                                           file_.get().generic_string());
-            }
+            addMetaData(*data, file_.get());
         }
 
         // set basis of first data
         if ((*sequence_)[0]) {
-            basis_.updateForNewEntity(*(*sequence_)[0], deserialize);
             const auto overwrite =
                 deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No;
             Conf::updateForNew(information_, *(*sequence_)[0], overwrite);
         }
     } else {
         outport_.detachData();
+    }
+}
+
+template <typename Conf>
+void SequenceSource<Conf>::addMetaData(Type& data, const std::filesystem::path& path) {
+    if constexpr (std::derived_from<Type, MetaDataOwner>) {
+        if (!data.template hasMetaData<StringMetaData>(fileMetaData)) {
+            data.template setMetaData<StringMetaData>(fileMetaData, path.generic_string());
+        }
     }
 }
 
@@ -357,8 +356,6 @@ void SequenceSource<Conf>::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     util::updateFilenameFilters<Sequence>(*rf_, file_, reader_);
     // It does not make sense to change these for an entire sequence
-    information_.setReadOnly(true);
-    basis_.setReadOnly(true);
     deserialized_ = true;
 }
 
