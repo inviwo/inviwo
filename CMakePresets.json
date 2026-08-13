@@ -69,7 +69,7 @@
       "name": "modules",
       "hidden": true,
       "cacheVariables": {
-        "IVW_EXTERNAL_MODULES" : "${sourceParentDir}/modules/misc;${sourceParentDir}/modules/medvis;${sourceParentDir}/modules/molvis;${sourceParentDir}/modules/tensorvis;${sourceParentDir}/modules/topovis;${sourceParentDir}/modules/vectorvis"
+        "IVW_EXTERNAL_MODULES" : "${sourceParentDir}/modules/misc;${sourceParentDir}/modules/medvis;${sourceParentDir}/modules/molvis;${sourceParentDir}/modules/tensorvis;${sourceParentDir}/modules/topovis;${sourceParentDir}/modules/vectorvis;${sourceParentDir}/modules/infravis"
       }
     },
     {
