@@ -61,7 +61,6 @@ struct LayerConf {
     }
     static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {
         info.info.updateForNewLayer(data, overwrite);
-
         info.basis.updateForNewEntity(data, overwrite == util::OverwriteState::Yes);
     }
 };

@@ -117,10 +117,10 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
     registerProcessor<FileList>();
     registerProcessor<ImageToDataFrame>();
     registerProcessor<SequenceToDataFrame<Volume>>();
-    //registerProcessor<SequenceToDataFrame<Layer>>();
-    //registerProcessor<SequenceToDataFrame<Image>>();
-    //registerProcessor<SequenceToDataFrame<Mesh>>();
-    //registerProcessor<SequenceToDataFrame<BufferBase>>();
+    registerProcessor<SequenceToDataFrame<Layer>>();
+    registerProcessor<SequenceToDataFrame<Image>>();
+    registerProcessor<SequenceToDataFrame<Mesh>>();
+    registerProcessor<SequenceToDataFrame<BufferBase>>();
 
     registerProcessor<SyntheticDataFrame>();
     registerProcessor<TFFromDataFrameColumn>();

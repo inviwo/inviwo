@@ -66,22 +66,32 @@ class DataReaderFactory;
 class Deserializer;
 class InviwoApplication;
 
-// Conf struct example
-// struct VolumeConf {
-//    using Type = Volume;
-//    using Sequence = DataSequence<Type>;
-//    using Info = VolumeInformationProperty;
-//    using Outport = VolumeSequenceOutport;
-///   static constexpr auto name = DataTraits<Type>::dataName();
-//    static constexpr auto plural = "s";
-//    static constexpr size_t dim = 3;
-//    static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {
-//        info.updateForNewVolume(data, overwrite);
-//    }
-// };
-
 /**
- * @brief Loads a vector of volumes
+ * @brief Loads a sequence of data
+ *
+ * Conf struct example
+ * struct VolumeConf {
+ *     using Type = Volume;
+ *     using Sequence = DataSequence<Type>;
+ *     using Outport = VolumeSequenceOutport;
+ *     static constexpr auto name = DataTraits<Type>::dataName();
+ *     static constexpr auto plural = "s";
+ *     static constexpr size_t dim = 3;
+ *
+ *     struct Info {
+ *         BasisProperty basis{"Basis", "Basis and offset"};
+ *         VolumeInformationProperty info{"Information", "Data information"};
+ *     };
+ *     static void add(Info& info, auto& processor) {
+ *         processor.addProperties(info.basis, info.info);
+ *         info.basis.setReadOnly(true);
+ *         info.info.setReadOnly(true);
+ *     }
+ *     static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {
+ *         info.info.updateForNewVolume(data, overwrite);
+ *         info.basis.updateForNewEntity(data, overwrite == util::OverwriteState::Yes);
+ *     }
+ * };
  */
 template <typename Conf>
 class SequenceSource : public Processor {
