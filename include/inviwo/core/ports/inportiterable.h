@@ -138,7 +138,7 @@ public:
         return i;
     }
 
-    bool operator<=>(const RegularInportIterator& rhs) const = default;
+    auto operator<=>(const RegularInportIterator& rhs) const = default;
 
 protected:
     void maybeAdvancePort() {

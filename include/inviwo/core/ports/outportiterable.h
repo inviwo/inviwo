@@ -38,6 +38,8 @@
 
 namespace inviwo {
 
+class Outport;
+
 template <typename T>
 class DataOutport;
 
@@ -61,14 +63,14 @@ struct DataOutportImpl;
 template <typename Self, typename T, bool Flat>
 struct DataOutportBase : DataOutportInterface<T> {
     virtual size_t size() const final {
-        if constexpr (Flat) {
-            if constexpr (requires {
-                              { getElements()->size() } -> std::convertible_to<size_t>;
-                          }) {
-                return getElements()->size();
-            }
+        if constexpr (Flat && requires {
+                          { getElements()->size() } -> std::convertible_to<size_t>;
+                      }) {
+            return getElements()->size();
+
+        } else {
+            return 1;
         }
-        return 1;
     }
     auto getElements() const { return static_cast<const Self*>(this)->getData(); }
     virtual bool flat() const final { return Flat; }
@@ -142,7 +144,6 @@ struct DataOutportFlat<DataOutport<DataSequence<T>>>
     }
 };
 
-
 template <typename T>
 concept hasBases = requires { typename T::Bases; };
 
@@ -158,9 +159,7 @@ struct Bases<TypeList<Ts...>> {
 
 template <hasBases T>
 struct Bases<T> {
-    using type = JoinTypeLists<
-        TypeList<T>, 
-        typename Bases<typename T::Bases>::type>;
+    using type = JoinTypeLists<TypeList<T>, typename Bases<typename T::Bases>::type>;
 };
 
 template <typename T>
