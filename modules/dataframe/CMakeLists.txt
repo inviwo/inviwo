@@ -27,6 +27,7 @@ set(HEADER_FILES
     include/inviwo/dataframe/processors/filelist.h
     include/inviwo/dataframe/processors/imagetodataframe.h
     include/inviwo/dataframe/processors/pathsequencetodataframe.h
+    include/inviwo/dataframe/processors/sequencetodataframe.h
     include/inviwo/dataframe/processors/syntheticdataframe.h
     include/inviwo/dataframe/processors/tffromdataframecolumn.h
     include/inviwo/dataframe/processors/volumesequencetodataframe.h
@@ -69,6 +70,7 @@ set(SOURCE_FILES
     src/processors/filelist.cpp
     src/processors/imagetodataframe.cpp
     src/processors/pathsequencetodataframe.cpp
+    src/processors/sequencetodataframe.cpp
     src/processors/syntheticdataframe.cpp
     src/processors/tffromdataframecolumn.cpp
     src/processors/volumesequencetodataframe.cpp

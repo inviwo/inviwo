@@ -121,6 +121,10 @@ void SequenceProcessor::process() {
 }
 
 void SequenceProcessor::createNetworkCopies(size_t count) {
+    if (count < 1) {
+        copies_.clear();
+        return;
+    }
     if (copies_.size() + 1 == count) return;
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 32};
