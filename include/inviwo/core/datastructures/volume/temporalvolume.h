@@ -259,7 +259,7 @@ struct DataTraits<TemporalVolume> {
     static constexpr std::string_view classIdentifier() { return "org.inviwo.TemporalVolume"; }
     static constexpr std::string_view dataName() { return "TemporalVolume"; }
     static constexpr uvec3 colorCode() { return uvec3{210, 130, 130}; }
-    static Document info(const TemporalVolume& data);
+    IVW_CORE_API static Document info(const TemporalVolume& data);
 };
 
 using TemporalVolumeInport = DataInport<TemporalVolume>;
