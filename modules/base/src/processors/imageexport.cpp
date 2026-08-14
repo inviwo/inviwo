@@ -48,6 +48,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <modules/base/processors/dataexport.h>
 
 #include <functional>
