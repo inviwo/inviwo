@@ -278,7 +278,7 @@ size2_t CanvasProcessor::getCustomDimensions() const { return customInputDimensi
 
 void CanvasProcessor::sizeChanged() {
     const NetworkLock lock(this);
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
 
     customInputDimensions_.setVisible(enableCustomInputDimensions_);
     customInputDimensions_.setReadOnly(keepAspectRatio_);

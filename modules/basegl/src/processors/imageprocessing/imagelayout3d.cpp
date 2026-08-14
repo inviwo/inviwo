@@ -165,6 +165,7 @@ DynImagePort::DynImagePort(DynImagePort&& rhs) noexcept
     , imageSize{rhs.imageSize}
     , oldImageSize{rhs.oldImageSize}
     , sizeCallback{imageSize->onChangeScoped([this]() {
+        rendercontext::activateDefault();
         ResizeEvent e{imageSize->get(), oldImageSize};
         port->propagateEvent(&e);
         oldImageSize = imageSize->get();
@@ -181,6 +182,7 @@ DynImagePort& DynImagePort::operator=(DynImagePort&& that) noexcept {
         std::swap(that.oldImageSize, oldImageSize);
 
         sizeCallback = imageSize->onChangeScoped([this]() {
+            rendercontext::activateDefault();
             ResizeEvent e{imageSize->get(), oldImageSize};
             port->propagateEvent(&e);
             oldImageSize = imageSize->get();

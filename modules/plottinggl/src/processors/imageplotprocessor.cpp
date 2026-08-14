@@ -267,7 +267,7 @@ void ImagePlotProcessor::onStatusChange() {
     viewManager_.replace(0, viewport_);
 
     if (imgInport_.isConnected()) {
-        RenderContext::getPtr()->activateDefaultRenderContext();
+        rendercontext::activateDefault();
         ResizeEvent e(size2_t(viewManager_[0].size));
         imgInport_.propagateEvent(&e, imgInport_.getConnectedOutport());
     }

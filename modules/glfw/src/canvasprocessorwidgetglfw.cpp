@@ -89,7 +89,7 @@ void CanvasProcessorWidgetGLFW::propagateResizeEvent() {
     CanvasProcessorWidget::setDimensions(screenDimensions_);
 
     NetworkLock lock;
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
     ResizeEvent resizeEvent(screenDimensions_, previousScreenDimensions);
     getProcessor()->propagateEvent(&resizeEvent, nullptr);
 }

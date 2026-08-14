@@ -299,7 +299,7 @@ void ImageOverlayGL::onStatusChange() {
         // update viewport stored in view manager
         viewManager_.replace(0, overlayProperty_.getViewport());
 
-        RenderContext::getPtr()->activateDefaultRenderContext();
+        rendercontext::activateDefault();
 
         ResizeEvent e(uvec2(viewManager_[0].size));
         overlayPort_.propagateEvent(&e, overlayPort_.getConnectedOutport());
