@@ -20,26 +20,19 @@
 
 #include <tidds/ddsbase.h>
 
+#include <stdexcept>
+
 #ifdef WIN32
 #define snprintf _snprintf
 #endif
 
-#define DDS_MAXSTR (256)
-
-#define DDS_BLOCKSIZE (1 << 20)
-#define DDS_INTERLEAVE (1 << 24)
-
-#define DDS_RL (7)
-
-FILE* DDS_file;
-
-char DDS_ID[] = "DDS v3d\n";
-char DDS_ID2[] = "DDS v3e\n";
-
-unsigned int DDS_buffer;
-int DDS_bufsize, DDS_bitcnt;
-
-unsigned short int DDS_INTEL = 1;
+constexpr unsigned int DDS_MAXSTR = 256;
+constexpr unsigned int DDS_BLOCKSIZE = 1 << 20;
+constexpr unsigned int DDS_INTERLEAVE = 1 << 24;
+constexpr int DDS_RL = 7;
+constexpr char DDS_ID[] = "DDS v3d\n";
+constexpr char DDS_ID2[] = "DDS v3e\n";
+constexpr unsigned short int DDS_INTEL = 1;
 
 unsigned int checksum(unsigned char* data, unsigned int bytes);
 
@@ -51,12 +44,6 @@ inline unsigned int DDS_shiftr(const unsigned int value, const int bits) {
     return ((bits >= 32) ? 0 : value >> bits);
 }
 
-static void initbuffer() {
-    DDS_buffer = 0;
-    DDS_bufsize = 0;
-    DDS_bitcnt = 0;
-}
-
 static void DDS_swapuint(unsigned int* x) {
     unsigned int tmp = *x;
 
@@ -64,67 +51,79 @@ static void DDS_swapuint(unsigned int* x) {
          ((tmp & 0xff000000) >> 24);
 }
 
-static void writebits(FILE* file, unsigned int value, int bits) {
-    if (bits < 0 || bits > 32) ERRORMSG();
-
-    if (bits == 0) return;
-
-    value &= DDS_shiftl(1, bits) - 1;
-
-    if (DDS_bufsize + bits < 32) {
-        DDS_buffer = DDS_shiftl(DDS_buffer, bits) | value;
-        DDS_bufsize += bits;
-    } else {
-        DDS_buffer = DDS_shiftl(DDS_buffer, 32 - DDS_bufsize);
-        DDS_bufsize += bits - 32;
-        DDS_buffer |= DDS_shiftr(value, DDS_bufsize);
-        DDS_swapuint(&DDS_buffer);
-        if (fwrite(&DDS_buffer, 4, 1, file) != 1) ERRORMSG();
-        DDS_buffer = value & (DDS_shiftl(1, DDS_bufsize) - 1);
-    }
-
-    DDS_bitcnt += bits;
-}
-
-static void flushbits(FILE* file) {
-    if (DDS_bufsize > 0) {
-        DDS_buffer = DDS_shiftl(DDS_buffer, 32 - DDS_bufsize);
-        DDS_swapuint(&DDS_buffer);
-        if (fwrite(&DDS_buffer, (DDS_bufsize + 7) / 8, 1, file) != 1) ERRORMSG();
-        DDS_bitcnt += (32 - DDS_bufsize) & 7;
-    }
-}
-
-static unsigned int readbits(FILE* file, int bits) {
-    unsigned int value;
-
-    if (bits < 0 || bits > 32) ERRORMSG();
-
-    if (bits == 0) return (0);
-
-    if (bits < DDS_bufsize) {
-        DDS_bufsize -= bits;
-        value = DDS_shiftr(DDS_buffer, DDS_bufsize);
-    } else {
-        value = DDS_shiftl(DDS_buffer, bits - DDS_bufsize);
-        DDS_buffer = 0;
-        if (fread(&DDS_buffer, 1, 4, file) <= 0)
-            DDS_buffer = 0;
-        else
-            DDS_swapuint(&DDS_buffer);
-        DDS_bufsize += 32 - bits;
-        value |= DDS_shiftr(DDS_buffer, DDS_bufsize);
-    }
-
-    DDS_buffer &= DDS_shiftl(1, DDS_bufsize) - 1;
-    DDS_bitcnt += bits;
-
-    return (value);
-}
-
 inline int DDS_code(int bits) { return (bits > 1 ? bits - 1 : bits); }
 
 inline int DDS_decode(int bits) { return (bits >= 1 ? bits + 1 : bits); }
+
+struct DDSBuffer {
+    unsigned int buffer{0};
+    int bufsize{0};
+    int bitcnt{0};
+
+    void initbuffer() {
+        buffer = 0;
+        bufsize = 0;
+        bitcnt = 0;
+    }
+
+    void writebits(FILE* file, unsigned int value, int bits) {
+        if (bits < 0 || bits > 32) ERRORMSG();
+
+        if (bits == 0) return;
+
+        value &= DDS_shiftl(1, bits) - 1;
+
+        if (bufsize + bits < 32) {
+            buffer = DDS_shiftl(buffer, bits) | value;
+            bufsize += bits;
+        } else {
+            buffer = DDS_shiftl(buffer, 32 - bufsize);
+            bufsize += bits - 32;
+            buffer |= DDS_shiftr(value, bufsize);
+            DDS_swapuint(&buffer);
+            if (fwrite(&buffer, 4, 1, file) != 1) ERRORMSG();
+            buffer = value & (DDS_shiftl(1, bufsize) - 1);
+        }
+
+        bitcnt += bits;
+    }
+
+    void flushbits(FILE* file) {
+        if (bufsize > 0) {
+            buffer = DDS_shiftl(buffer, 32 - bufsize);
+            DDS_swapuint(&buffer);
+            if (fwrite(&buffer, (bufsize + 7) / 8, 1, file) != 1) ERRORMSG();
+            bitcnt += (32 - bufsize) & 7;
+        }
+    }
+
+    unsigned int readbits(FILE* file, int bits) {
+        unsigned int value;
+
+        if (bits < 0 || bits > 32) ERRORMSG();
+
+        if (bits == 0) return 0;
+
+        if (bits < bufsize) {
+            bufsize -= bits;
+            value = DDS_shiftr(buffer, bufsize);
+        } else {
+            value = DDS_shiftl(buffer, bits - bufsize);
+            buffer = 0;
+            if (fread(&buffer, 1, 4, file) <= 0)
+                buffer = 0;
+            else
+                DDS_swapuint(&buffer);
+            bufsize += 32 - bits;
+            value |= DDS_shiftr(buffer, bufsize);
+        }
+
+        buffer &= DDS_shiftl(1, bufsize) - 1;
+        bitcnt += bits;
+
+        return value;
+    }
+};
 
 // deinterleave a byte stream
 static void deinterleave(unsigned char* data, size_t bytes, size_t skip, size_t block = 0,
@@ -136,7 +135,7 @@ static void deinterleave(unsigned char* data, size_t bytes, size_t skip, size_t 
     if (skip <= 1) return;
 
     if (block == 0) {
-        if ((data2 = (unsigned char*)malloc(bytes)) == NULL) ERRORMSG();
+        if ((data2 = (unsigned char*)malloc(bytes)) == nullptr) ERRORMSG();
 
         if (!restore)
             for (ptr = data2, i = 0; i < skip; i++)
@@ -147,7 +146,8 @@ static void deinterleave(unsigned char* data, size_t bytes, size_t skip, size_t 
 
         memcpy(data, data2, bytes);
     } else {
-        if ((data2 = (unsigned char*)malloc((bytes < skip * block) ? bytes : skip * block)) == NULL)
+        if ((data2 = (unsigned char*)malloc((bytes < skip * block) ? bytes : skip * block)) ==
+            nullptr)
             ERRORMSG();
 
         if (!restore) {
@@ -206,16 +206,18 @@ void writeDDSfile(const char* filename, unsigned char* data, size_t bytes, unsig
     if (skip < 1 || skip > 4) skip = 1;
     if (strip < 1 || strip > 65536) strip = 1;
 
-    if ((DDS_file = fopen(filename, "wb")) == NULL) ERRORMSG();
+    FILE* DDS_file = fopen(filename, "wb");
+
+    if (DDS_file == nullptr) ERRORMSG();
 
     fprintf(DDS_file, "%s", (version == 1) ? DDS_ID : DDS_ID2);
 
     deinterleave(data, bytes, skip, DDS_INTERLEAVE);
 
-    initbuffer();
+    DDSBuffer buf{};
 
-    writebits(DDS_file, skip - 1, 2);
-    writebits(DDS_file, strip++ - 1, 16);
+    buf.writebits(DDS_file, skip - 1, 2);
+    buf.writebits(DDS_file, strip++ - 1, 16);
 
     ptr1 = ptr2 = data;
     pre1 = pre2 = 0;
@@ -259,8 +261,8 @@ void writeDDSfile(const char* filename, unsigned char* data, size_t bytes, unsig
             cnt2 += cnt1;
             if (bits1 > bits2) bits2 = bits1;
         } else {
-            writebits(DDS_file, cnt2, DDS_RL);
-            writebits(DDS_file, DDS_code(bits2), 3);
+            buf.writebits(DDS_file, cnt2, DDS_RL);
+            buf.writebits(DDS_file, DDS_code(bits2), 3);
 
             while (cnt2-- > 0) {
                 tmp2 = *ptr2++;
@@ -273,7 +275,7 @@ void writeDDSfile(const char* filename, unsigned char* data, size_t bytes, unsig
                 while (act2 < -128) act2 += 256;
                 while (act2 > 127) act2 -= 256;
 
-                writebits(DDS_file, act2 + (1 << bits2) / 2, bits2);
+                buf.writebits(DDS_file, act2 + (1 << bits2) / 2, bits2);
             }
 
             cnt2 = cnt1;
@@ -289,8 +291,8 @@ void writeDDSfile(const char* filename, unsigned char* data, size_t bytes, unsig
         cnt2 += cnt1;
         if (bits1 > bits2) bits2 = bits1;
     } else {
-        writebits(DDS_file, cnt2, DDS_RL);
-        writebits(DDS_file, DDS_code(bits2), 3);
+        buf.writebits(DDS_file, cnt2, DDS_RL);
+        buf.writebits(DDS_file, DDS_code(bits2), 3);
 
         while (cnt2-- > 0) {
             tmp2 = *ptr2++;
@@ -303,7 +305,7 @@ void writeDDSfile(const char* filename, unsigned char* data, size_t bytes, unsig
             while (act2 < -128) act2 += 256;
             while (act2 > 127) act2 -= 256;
 
-            writebits(DDS_file, act2 + (1 << bits2) / 2, bits2);
+            buf.writebits(DDS_file, act2 + (1 << bits2) / 2, bits2);
         }
 
         cnt2 = cnt1;
@@ -311,8 +313,8 @@ void writeDDSfile(const char* filename, unsigned char* data, size_t bytes, unsig
     }
 
     if (cnt2 != 0) {
-        writebits(DDS_file, cnt2, DDS_RL);
-        writebits(DDS_file, DDS_code(bits2), 3);
+        buf.writebits(DDS_file, cnt2, DDS_RL);
+        buf.writebits(DDS_file, DDS_code(bits2), 3);
 
         while (cnt2-- > 0) {
             tmp2 = *ptr2++;
@@ -325,11 +327,11 @@ void writeDDSfile(const char* filename, unsigned char* data, size_t bytes, unsig
             while (act2 < -128) act2 += 256;
             while (act2 > 127) act2 -= 256;
 
-            writebits(DDS_file, act2 + (1 << bits2) / 2, bits2);
+            buf.writebits(DDS_file, act2 + (1 << bits2) / 2, bits2);
         }
     }
 
-    flushbits(DDS_file);
+    buf.flushbits(DDS_file);
     fclose(DDS_file);
 
     if (nofree == 0)
@@ -342,61 +344,61 @@ void writeDDSfile(const char* filename, unsigned char* data, size_t bytes, unsig
 unsigned char* readDDSfile(const char* filename, size_t* bytes) {
     int version = 1;
 
-    unsigned int skip, strip;
+    FILE* DDS_file = fopen(filename, "rb");
 
-    unsigned char* data = 0;
-    unsigned char* ptr = 0;
+    if (DDS_file == nullptr) return nullptr;
 
-    unsigned int cnt, cnt1, cnt2;
-    int bits, act;
-
-    if ((DDS_file = fopen(filename, "rb")) == NULL) return (NULL);
-
-    for (cnt = 0; DDS_ID[cnt] != '\0'; cnt++)
+    for (unsigned int cnt = 0; DDS_ID[cnt] != '\0'; cnt++) {
         if (fgetc(DDS_file) != DDS_ID[cnt]) {
             fclose(DDS_file);
             version = 0;
             break;
         }
+    }
 
     if (version == 0) {
-        if ((DDS_file = fopen(filename, "rb")) == NULL) return (NULL);
+        if ((DDS_file = fopen(filename, "rb")) == nullptr) return (nullptr);
 
-        for (cnt = 0; DDS_ID2[cnt] != '\0'; cnt++)
+        for (unsigned int cnt = 0; DDS_ID2[cnt] != '\0'; cnt++) {
             if (fgetc(DDS_file) != DDS_ID2[cnt]) {
                 fclose(DDS_file);
-                return (NULL);
+                return nullptr;
             }
-
+        }
         version = 2;
     }
 
-    initbuffer();
+    DDSBuffer buf{};
 
-    skip = readbits(DDS_file, 2) + 1;
-    strip = readbits(DDS_file, 16) + 1;
+    unsigned int skip = buf.readbits(DDS_file, 2) + 1;
+    unsigned int strip = buf.readbits(DDS_file, 16) + 1;
 
-    data = NULL;
-    cnt = act = 0;
+    unsigned char* data = nullptr;
+    unsigned char* ptr = nullptr;
+    unsigned int cnt = 0;
+    int act = 0;
 
-    while ((cnt1 = readbits(DDS_file, DDS_RL)) != 0) {
-        bits = DDS_decode(readbits(DDS_file, 3));
+    unsigned int cnt1;
+    while ((cnt1 = buf.readbits(DDS_file, DDS_RL)) != 0) {
+        int bits = DDS_decode(buf.readbits(DDS_file, 3));
 
-        for (cnt2 = 0; cnt2 < cnt1; cnt2++) {
-            if (cnt <= strip)
-                act += readbits(DDS_file, bits) - (1 << bits) / 2;
-            else
-                act += *(ptr - strip) - *(ptr - strip - 1) + readbits(DDS_file, bits) -
+        for (unsigned int cnt2 = 0; cnt2 < cnt1; cnt2++) {
+            if (cnt <= strip) {
+                act += buf.readbits(DDS_file, bits) - (1 << bits) / 2;
+            } else {
+                act += *(ptr - strip) - *(ptr - strip - 1) + buf.readbits(DDS_file, bits) -
                        (1 << bits) / 2;
+            }
 
             while (act < 0) act += 256;
             while (act > 255) act -= 256;
 
             if (cnt % DDS_BLOCKSIZE == 0) {
-                if (data == NULL) {
-                    if ((data = (unsigned char*)malloc(DDS_BLOCKSIZE)) == NULL) ERRORMSG();
-                } else if ((data = (unsigned char*)realloc(data, cnt + DDS_BLOCKSIZE)) == NULL)
+                if (data == nullptr) {
+                    if ((data = (unsigned char*)malloc(DDS_BLOCKSIZE)) == nullptr) ERRORMSG();
+                } else if ((data = (unsigned char*)realloc(data, cnt + DDS_BLOCKSIZE)) == nullptr) {
                     ERRORMSG();
+                }
 
                 ptr = &data[cnt];
             }
@@ -408,9 +410,9 @@ unsigned char* readDDSfile(const char* filename, size_t* bytes) {
 
     fclose(DDS_file);
 
-    if (cnt == 0) return (NULL);
+    if (cnt == 0) return nullptr;
 
-    if ((data = (unsigned char*)realloc(data, cnt)) == NULL) ERRORMSG();
+    if ((data = (unsigned char*)realloc(data, cnt)) == nullptr) ERRORMSG();
 
     if (version == 1)
         interleave(data, cnt, skip);
@@ -419,14 +421,16 @@ unsigned char* readDDSfile(const char* filename, size_t* bytes) {
 
     *bytes = cnt;
 
-    return (data);
+    return data;
 }
 
 // write a RAW file
 void writeRAWfile(const char* filename, unsigned char* data, size_t bytes, int nofree) {
     if (bytes < 1) ERRORMSG();
 
-    if ((DDS_file = fopen(filename, "wb")) == NULL) ERRORMSG();
+    FILE* DDS_file = fopen(filename, "wb");
+
+    if (DDS_file == nullptr) ERRORMSG();
     if (fwrite(data, 1, bytes, DDS_file) != bytes) ERRORMSG();
 
     fclose(DDS_file);
@@ -439,15 +443,17 @@ unsigned char* readRAWfile(const char* filename, size_t* bytes) {
     unsigned char* data;
     size_t cnt, blkcnt;
 
-    if ((DDS_file = fopen(filename, "rb")) == NULL) return (NULL);
+    FILE* DDS_file = fopen(filename, "rb");
 
-    data = NULL;
+    if (DDS_file == nullptr) return nullptr;
+
+    data = nullptr;
     cnt = 0;
 
     do {
-        if (data == NULL) {
-            if ((data = (unsigned char*)malloc(DDS_BLOCKSIZE)) == NULL) ERRORMSG();
-        } else if ((data = (unsigned char*)realloc(data, cnt + DDS_BLOCKSIZE)) == NULL)
+        if (data == nullptr) {
+            if ((data = (unsigned char*)malloc(DDS_BLOCKSIZE)) == nullptr) ERRORMSG();
+        } else if ((data = (unsigned char*)realloc(data, cnt + DDS_BLOCKSIZE)) == nullptr)
             ERRORMSG();
 
         blkcnt = fread(&data[cnt], 1, DDS_BLOCKSIZE, DDS_file);
@@ -456,10 +462,10 @@ unsigned char* readRAWfile(const char* filename, size_t* bytes) {
 
     if (cnt == 0) {
         free(data);
-        return (NULL);
+        return (nullptr);
     }
 
-    if ((data = (unsigned char*)realloc(data, cnt)) == NULL) ERRORMSG();
+    if ((data = (unsigned char*)realloc(data, cnt)) == nullptr) ERRORMSG();
 
     fclose(DDS_file);
 
@@ -505,7 +511,7 @@ void writePNMimage(const char* filename, const unsigned char* image, unsigned in
             ERRORMSG();
     }
 
-    if ((data = (unsigned char*)malloc(strlen(str) + width * height * components)) == NULL)
+    if ((data = (unsigned char*)malloc(strlen(str) + width * height * components)) == nullptr)
         ERRORMSG();
 
     memcpy(data, str, strlen(str));
@@ -532,15 +538,15 @@ unsigned char* readPNMimage(const char* filename, unsigned int* width, unsigned 
     int pnmtype, maxval;
     unsigned char* image;
 
-    if ((data = readDDSfile(filename, &bytes)) == NULL)
-        if ((data = readRAWfile(filename, &bytes)) == NULL) return (NULL);
+    if ((data = readDDSfile(filename, &bytes)) == nullptr)
+        if ((data = readRAWfile(filename, &bytes)) == nullptr) return nullptr;
 
-    if (bytes < 4) return (NULL);
+    if (bytes < 4) return (nullptr);
 
     memcpy(str, data, 3);
     str[3] = '\0';
 
-    if (sscanf(str, "P%1d\n", &pnmtype) != 1) return (NULL);
+    if (sscanf(str, "P%1d\n", &pnmtype) != 1) return nullptr;
 
     ptr1 = data + 3;
     while (*ptr1 == '\n' || *ptr1 == '#') {
@@ -582,7 +588,8 @@ unsigned char* readPNMimage(const char* filename, unsigned int* width, unsigned 
     else
         ERRORMSG();
 
-    if ((image = (unsigned char*)malloc((*width) * (*height) * (*components))) == NULL) ERRORMSG();
+    if ((image = (unsigned char*)malloc((*width) * (*height) * (*components))) == nullptr)
+        ERRORMSG();
     if (data + bytes != ptr2 + (*width) * (*height) * (*components)) ERRORMSG();
 
     if (*components == 2) swapshort(ptr2, (*width) * (*height));
@@ -590,7 +597,7 @@ unsigned char* readPNMimage(const char* filename, unsigned int* width, unsigned 
     memcpy(image, ptr2, (*width) * (*height) * (*components));
     free(data);
 
-    return (image);
+    return image;
 }
 
 // write a compressed PVM volume
@@ -607,7 +614,7 @@ void writePVMvolume(const char* filename, const unsigned char* volume, unsigned 
 
     if (width < 1 || height < 1 || depth < 1 || components < 1) ERRORMSG();
 
-    if (description == NULL && courtesy == NULL && parameter == NULL && comment == NULL)
+    if (description == nullptr && courtesy == nullptr && parameter == nullptr && comment == nullptr)
         if (scalex == 1.0f && scaley == 1.0f && scalez == 1.0f)
             snprintf(str, DDS_MAXSTR, "PVM\n%d %d %d\n%d\n", width, height, depth, components);
         else
@@ -617,9 +624,10 @@ void writePVMvolume(const char* filename, const unsigned char* volume, unsigned 
         snprintf(str, DDS_MAXSTR, "PVM3\n%d %d %d\n%g %g %g\n%d\n", width, height, depth, scalex,
                  scaley, scalez, components);
 
-    if (description == NULL && courtesy == NULL && parameter == NULL && comment == NULL) {
+    if (description == nullptr && courtesy == nullptr && parameter == nullptr &&
+        comment == nullptr) {
         if ((data = (unsigned char*)malloc(strlen(str) + width * height * depth * components)) ==
-            NULL)
+            nullptr)
             ERRORMSG();
 
         memcpy(data, str, strlen(str));
@@ -628,35 +636,35 @@ void writePVMvolume(const char* filename, const unsigned char* volume, unsigned 
         writeDDSfile(filename, data, strlen(str) + width * height * depth * components, components,
                      width);
     } else {
-        if (description != NULL) len1 = strlen((char*)description) + 1;
-        if (courtesy != NULL) len2 = strlen((char*)courtesy) + 1;
-        if (parameter != NULL) len3 = strlen((char*)parameter) + 1;
-        if (comment != NULL) len4 = strlen((char*)comment) + 1;
+        if (description != nullptr) len1 = strlen((char*)description) + 1;
+        if (courtesy != nullptr) len2 = strlen((char*)courtesy) + 1;
+        if (parameter != nullptr) len3 = strlen((char*)parameter) + 1;
+        if (comment != nullptr) len4 = strlen((char*)comment) + 1;
 
         if ((data = (unsigned char*)malloc(strlen(str) + width * height * depth * components +
-                                           len1 + len2 + len3 + len4)) == NULL)
+                                           len1 + len2 + len3 + len4)) == nullptr)
             ERRORMSG();
 
         memcpy(data, str, strlen(str));
         memcpy(data + strlen(str), volume, width * height * depth * components);
 
-        if (description == NULL)
+        if (description == nullptr)
             *(data + strlen(str) + width * height * depth * components) = '\0';
         else
             memcpy(data + strlen(str) + width * height * depth * components, description, len1);
 
-        if (courtesy == NULL)
+        if (courtesy == nullptr)
             *(data + strlen(str) + width * height * depth * components + len1) = '\0';
         else
             memcpy(data + strlen(str) + width * height * depth * components + len1, courtesy, len2);
 
-        if (parameter == NULL)
+        if (parameter == nullptr)
             *(data + strlen(str) + width * height * depth * components + len1 + len2) = '\0';
         else
             memcpy(data + strlen(str) + width * height * depth * components + len1 + len2,
                    parameter, len3);
 
-        if (comment == NULL)
+        if (comment == nullptr)
             *(data + strlen(str) + width * height * depth * components + len1 + len2 + len3) = '\0';
         else
             memcpy(data + strlen(str) + width * height * depth * components + len1 + len2 + len3,
@@ -674,7 +682,8 @@ unsigned char* readPVMvolume(const char* filename, unsigned int* width, unsigned
                              float* scaley, float* scalez, unsigned char** description,
                              unsigned char** courtesy, unsigned char** parameter,
                              unsigned char** comment) {
-    unsigned char *data, *ptr;
+    unsigned char* data;
+    unsigned char* ptr;
     size_t bytes;
     unsigned int numc;
 
@@ -682,14 +691,22 @@ unsigned char* readPVMvolume(const char* filename, unsigned int* width, unsigned
 
     unsigned char* volume;
 
-    float sx = 1.0f, sy = 1.0f, sz = 1.0f;
+    float sx = 1.0f;
+    float sy = 1.0f;
+    float sz = 1.0f;
 
-    size_t len1 = 0, len2 = 0, len3 = 0, len4 = 0;
+    size_t len1 = 0;
+    size_t len2 = 0;
+    size_t len3 = 0;
+    size_t len4 = 0;
 
-    if ((data = readDDSfile(filename, &bytes)) == NULL) return (NULL);
-    if (bytes < 5) return (NULL);
+    data = readDDSfile(filename, &bytes);
+    if (!data) return nullptr;
+    if (bytes < 5) return nullptr;
 
-    if ((data = (unsigned char*)realloc(data, bytes + 1)) == NULL) ERRORMSG();
+    if ((data = (unsigned char*)realloc(data, bytes + 1)) == nullptr) {
+        throw std::runtime_error("Failed to reallocate memory");
+    }
     data[bytes] = '\0';
 
     if (strncmp((char*)data, "PVM\n", 4) != 0) {
@@ -699,7 +716,7 @@ unsigned char* readPVMvolume(const char* filename, unsigned int* width, unsigned
             version = 3;
         else {
             free(data);
-            return (NULL);
+            return (nullptr);
         }
 
         if (sscanf((char*)&data[5], "%u %u %u\n%g %g %g\n", width, height, depth, &sx, &sy, &sz) !=
@@ -714,7 +731,7 @@ unsigned char* readPVMvolume(const char* filename, unsigned int* width, unsigned
         ptr = &data[4];
     }
 
-    if (scalex != NULL && scaley != NULL && scalez != NULL) {
+    if (scalex != nullptr && scaley != nullptr && scalez != nullptr) {
         *scalex = sx;
         *scaley = sy;
         *scalez = sz;
@@ -724,7 +741,7 @@ unsigned char* readPVMvolume(const char* filename, unsigned int* width, unsigned
     if (sscanf((char*)ptr, "%u\n", &numc) != 1) ERRORMSG();
     if (numc < 1) ERRORMSG();
 
-    if (components != NULL)
+    if (components != nullptr)
         *components = numc;
     else if (numc != 1)
         ERRORMSG();
@@ -739,7 +756,7 @@ unsigned char* readPVMvolume(const char* filename, unsigned int* width, unsigned
         len4 =
             strlen((char*)(ptr + (*width) * (*height) * (*depth) * numc + len1 + len2 + len3)) + 1;
     if ((volume = (unsigned char*)malloc((*width) * (*height) * (*depth) * numc + len1 + len2 +
-                                         len3 + len4)) == NULL)
+                                         len3 + len4)) == nullptr)
         ERRORMSG();
     if (data + bytes != ptr + (*width) * (*height) * (*depth) * numc + len1 + len2 + len3 + len4)
         ERRORMSG();
@@ -747,32 +764,32 @@ unsigned char* readPVMvolume(const char* filename, unsigned int* width, unsigned
     memcpy(volume, ptr, (*width) * (*height) * (*depth) * numc + len1 + len2 + len3 + len4);
     free(data);
 
-    if (description != NULL) {
+    if (description != nullptr) {
         if (len1 > 1)
             *description = volume + (*width) * (*height) * (*depth) * numc;
         else
-            *description = NULL;
+            *description = nullptr;
     }
 
-    if (courtesy != NULL) {
+    if (courtesy != nullptr) {
         if (len2 > 1)
             *courtesy = volume + (*width) * (*height) * (*depth) * numc + len1;
         else
-            *courtesy = NULL;
+            *courtesy = nullptr;
     }
 
-    if (parameter != NULL) {
+    if (parameter != nullptr) {
         if (len3 > 1)
             *parameter = volume + (*width) * (*height) * (*depth) * numc + len1 + len2;
         else
-            *parameter = NULL;
+            *parameter = nullptr;
     }
 
-    if (comment != NULL) {
+    if (comment != nullptr) {
         if (len4 > 1)
             *comment = volume + (*width) * (*height) * (*depth) * numc + len1 + len2 + len3;
         else
-            *comment = NULL;
+            *comment = nullptr;
     }
 
     return (volume);
@@ -921,7 +938,7 @@ unsigned char* quantize(unsigned char* volume, unsigned int width, unsigned int 
     BOOLINT done;
 
     if ((volume3 = (unsigned short int*)malloc(width * height * depth *
-                                               sizeof(unsigned short int))) == NULL)
+                                               sizeof(unsigned short int))) == nullptr)
         ERRORMSG();
 
     vmin = vmax = 256 * volume[0] + volume[1];
@@ -978,7 +995,7 @@ unsigned char* quantize(unsigned char* volume, unsigned int width, unsigned int 
             for (i = 0; i < 65536; i++) err[i] *= 255.0f / err[65535];
     }
 
-    if ((volume2 = (unsigned char*)malloc(width * height * depth)) == NULL) ERRORMSG();
+    if ((volume2 = (unsigned char*)malloc(width * height * depth)) == nullptr) ERRORMSG();
 
     for (k = 0; k < depth; k++)
         for (j = 0; j < height; j++)
