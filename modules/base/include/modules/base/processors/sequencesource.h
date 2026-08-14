@@ -35,7 +35,7 @@
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/metadata/metadata.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
@@ -52,6 +52,7 @@
 #include <inviwo/core/util/statecoordinator.h>
 #include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <functional>
 #include <memory>
@@ -94,7 +95,7 @@ class InviwoApplication;
  * };
  */
 template <typename Conf>
-class SequenceSource : public Processor {
+class SequenceSource : public PoolProcessor {
     enum class InputType : std::uint8_t { SingleFile, Folder };
 
 public:
@@ -118,12 +119,11 @@ private:
     void load(bool deserialize = false);
     void loadFile(bool deserialize = false);
     void loadFolder(bool deserialize = false);
-    static void loadAndAddToSequence(const std::filesystem::path& file, Sequence& sequence,
-                                     DataReaderFactory& rf, MetaDataOwner* md);
+    static auto loadSequence(const std::filesystem::path& file, const FileExtension& ext,
+                             DataReaderFactory& rf, MetaDataOwner* md) -> Sequence;
     static void addMetaData(Type& data, const std::filesystem::path& path);
 
     DataReaderFactory* rf_;
-    std::shared_ptr<Sequence> sequence_;
 
     typename Conf::Outport outport_;
 
@@ -173,7 +173,7 @@ IVW_MODULE_BASE_API std::optional<std::filesystem::path> getFirstFileInFolder(
 
 template <typename Conf>
 SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
-    : Processor()
+    : PoolProcessor()
     , rf_{util::getDataReaderFactory(app)}
     , outport_("data", Document{fmt::format("A sequence of {}{}", Conf::name, Conf::plural)})
     , inputType_(
@@ -248,6 +248,7 @@ void SequenceSource<Conf>::SequenceSource::load(bool deserialize) {
             loadFolder(deserialize);
             break;
         case InputType::SingleFile:
+            [[fallthrough]];
         default:
             loadFile(deserialize);
             break;
@@ -255,45 +256,21 @@ void SequenceSource<Conf>::SequenceSource::load(bool deserialize) {
 }
 
 template <typename Conf>
-void SequenceSource<Conf>::loadFile(bool deserialize) {
-    if (file_.get().empty()) return;
+auto SequenceSource<Conf>::loadSequence(const std::filesystem::path& file, const FileExtension& ext,
+                                        DataReaderFactory& rf, MetaDataOwner* mdo) -> Sequence {
 
-    const auto sext = file_.getSelectedExtension();
-    try {
-        if (auto reader = rf_->getReaderForTypeAndExtension<Sequence>(sext, file_.get())) {
-            sequence_ = reader->readData(file_.get(), this);
-        } else {
-            throw DataReaderException(SourceContext{}, "Could not find a data reader for file: {}",
-                                      file_.get());
+    if (auto reader1 = rf.getReaderForTypeAndExtension<Type>(ext, file)) {
+        auto data = reader1->readData(file, mdo);
+        addMetaData(*data, file);
+        Sequence sequence;
+        sequence.push_back(data);
+        return sequence;
+    } else if (auto reader2 = rf.getReaderForTypeAndExtension<Sequence>(ext, file)) {
+        auto sequence = reader2->readData(file, mdo);
+        for (auto&& data : *sequence) {
+            addMetaData(*data, file);
         }
-    } catch (const DataReaderException& e) {
-        log::exception(e);
-        sequence_.reset();
-        loadingFailed_ = true;
-        isReady_.update();
-    }
-
-    if (sequence_ && !sequence_->empty() && (*sequence_)[0]) {
-        const auto overwrite = deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No;
-        Conf::updateForNew(information_, *(*sequence_)[0], overwrite);
-    }
-}
-
-template <typename Conf>
-void SequenceSource<Conf>::loadAndAddToSequence(const std::filesystem::path& file,
-                                                Sequence& sequence, DataReaderFactory& rf,
-                                                MetaDataOwner* md) {
-
-    if (auto reader1 = rf.getReaderForTypeAndExtension<Type>(file)) {
-        auto data1 = reader1->readData(file, md);
-        addMetaData(*data1, file);
-        sequence.push_back(data1);
-    } else if (auto reader2 = rf.getReaderForTypeAndExtension<Sequence>(file)) {
-        auto tempSequence = reader2->readData(file, md);
-        for (auto&& data2 : *tempSequence) {
-            addMetaData(*data2, file);
-            sequence.push_back(data2);
-        }
+        return *std::move(sequence);
     } else {
         throw DataReaderException(SourceContext{}, "Could not find a data reader for file: {}",
                                   file);
@@ -301,42 +278,60 @@ void SequenceSource<Conf>::loadAndAddToSequence(const std::filesystem::path& fil
 }
 
 template <typename Conf>
+void SequenceSource<Conf>::loadFile(bool deserialize) {
+    if (file_.get().empty()) return;
+
+    auto loader = [rf = rf_, ext = file_.getSelectedExtension(), file = file_.get(),
+                   mdo = static_cast<MetaDataOwner*>(this)](pool::Stop stop,
+                                                            pool::Progress progress) -> Sequence {
+        if (stop) return {};
+        progress(0.0);
+        util::OnScopeExit done{[&]() { progress(1.0); }};
+        return loadSequence(file, ext, *rf, mdo);
+    };
+    dispatchOne(loader, [this, deserialize](Sequence sequence) {
+        if (!sequence.empty() && sequence[0]) {
+            const auto overwrite =
+                deserialize ? util::OverwriteState::Yes : util::OverwriteState::No;
+            Conf::updateForNew(information_, *sequence[0], overwrite);
+        }
+        outport_.setData(std::make_shared<Sequence>(std::move(sequence)));
+        newResults();
+    });
+}
+
+template <typename Conf>
 void SequenceSource<Conf>::loadFolder(bool deserialize) {
     if (folder_.get().empty()) return;
 
-    sequence_ = std::make_shared<Sequence>();
+    auto sequence = std::make_shared<Sequence>();
+
+    std::vector<std::function<Sequence(pool::Stop, pool::Progress)>> loaders;
 
     const auto files = filesystem::getDirectoryContents(folder_.get());
     for (const auto& f : files) {
         auto file = folder_.get() / f;
         if (filesystem::wildcardStringMatch(filter_, file.generic_string())) {
-            try {
-                loadAndAddToSequence(file, *sequence_, *rf_, this);
-            } catch (const DataReaderException& e) {
-                log::exception(e);
-                sequence_.reset();
-                loadingFailed_ = true;
-                isReady_.update();
-                break;
-            }
+            loaders.emplace_back([rf = rf_, file, mdo = static_cast<MetaDataOwner*>(this)](
+                                     pool::Stop stop, pool::Progress progress) -> Sequence {
+                if (stop) return {};
+                progress(0.0);
+                util::OnScopeExit done{[&]() { progress(1.0); }};
+                return loadSequence(file, FileExtension{}, *rf, mdo);
+            });
         }
     }
 
-    if (sequence_ && !sequence_->empty()) {
-        // store filename in metadata
-        for (auto data : *sequence_) {
-            addMetaData(*data, file_.get());
-        }
-
-        // set basis of first data
-        if ((*sequence_)[0]) {
+    dispatchMany(loaders, [this, deserialize](std::vector<Sequence> sequences) {
+        auto result = std::make_shared<Sequence>(sequences | std::views::join);
+        if (!result->empty() && (*result)[0]) {
             const auto overwrite =
-                deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No;
-            Conf::updateForNew(information_, *(*sequence_)[0], overwrite);
+                deserialize ? util::OverwriteState::Yes : util::OverwriteState::No;
+            Conf::updateForNew(information_, *(*result)[0], overwrite);
         }
-    } else {
-        outport_.detachData();
-    }
+        outport_.setData(result);
+        newResults();
+    });
 }
 
 template <typename Conf>
@@ -355,17 +350,12 @@ void SequenceSource<Conf>::process() {
         load(deserialized_);
         deserialized_ = false;
     }
-
-    if (sequence_ && !sequence_->empty()) {
-        outport_.setData(sequence_);
-    }
 }
 
 template <typename Conf>
 void SequenceSource<Conf>::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     util::updateFilenameFilters<Sequence>(*rf_, file_, reader_);
-    // It does not make sense to change these for an entire sequence
     deserialized_ = true;
 }
 
