@@ -83,7 +83,7 @@ the converter registries owned by the <code class="xref py py-class docutils lit
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">inviwopy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ivwjson</span>
 
-<span class="n">prop</span> <span class="o">=</span> <span class="n">inviwopy</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">FloatProperty</span><span class="p">(</span><span class="s2">&quot;threshold&quot;</span><span class="p">,</span> <span class="s2">&quot;Threshold&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">prop</span> <span class="o">=</span> <span class="n">inviwopy</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">FloatProperty</span><span class="p">(</span><span class="s2">"threshold"</span><span class="p">,</span> <span class="s2">"Threshold"</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">ivwjson</span><span class="o">.</span><span class="n">toJson</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>        <span class="c1"># -&gt; Python dict</span>
 <span class="n">ivwjson</span><span class="o">.</span><span class="n">fromJson</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>       <span class="c1"># update prop from a dict</span>
 </pre></div>
