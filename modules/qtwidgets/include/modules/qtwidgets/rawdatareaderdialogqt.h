@@ -39,6 +39,8 @@
 #include <string>
 
 #include <QDialog>
+#include <QApplication>
+#include <QThread>
 
 class QComboBox;
 class QDoubleSpinBox;
@@ -49,9 +51,23 @@ class QCheckBox;
 
 namespace inviwo {
 
+namespace detail {
+
+struct QThreadChecker {
+    QThreadChecker() {
+        if (QApplication::instance()->thread() != QThread::currentThread()) {
+            throw Exception(SourceContext{},
+                            "RawDataReaderDialogQt must be created in the main thread");
+        }
+    }
+};
+
+}  // namespace detail
+
 class DataFormatBase;
 
-class IVW_MODULE_QTWIDGETS_API RawDataReaderDialogQt : public VolumeDataReaderDialog,
+class IVW_MODULE_QTWIDGETS_API RawDataReaderDialogQt : private detail::QThreadChecker,
+                                                       public VolumeDataReaderDialog,
                                                        public QDialog {
 public:
     RawDataReaderDialogQt();
