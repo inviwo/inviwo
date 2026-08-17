@@ -76,6 +76,8 @@ public:
     std::array<GLenum, 3> getWrapping() const;
 
 private:
+    void validateDimensions(size3_t) const;
+
     size3_t dimensions_;
 };
 

@@ -78,6 +78,8 @@ public:
     void resize(size2_t dimensions);
 
 private:
+    void validateDimensions(size2_t) const;
+
     size2_t dimensions_;
 };
 
