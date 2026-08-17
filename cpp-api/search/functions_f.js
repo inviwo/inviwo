@@ -2,7 +2,7 @@ var searchData=
 [
   ['paint_0',['paint',['../classinviwo_1_1CurveGraphicsItem.html#a9864da5e5089d440cec2c124b6dc7321',1,'inviwo::CurveGraphicsItem::paint()'],['../classinviwo_1_1DialogConnectionGraphicsItem.html#ab52f4de2224992bac9609bbd813a9dea',1,'inviwo::DialogConnectionGraphicsItem::paint()'],['../classinviwo_1_1LinkGraphicsItem.html#ab777631bcc0c17ebcce07d47bfc1143b',1,'inviwo::LinkGraphicsItem::paint()']]],
   ['parallelepiped_1',['parallelepiped',['../namespaceinviwo_1_1meshutil.html#a7b46ed43ca77d6c87bfef81a9a23b3ef',1,'inviwo::meshutil']]],
-  ['parsetypeidname_2',['parseTypeIdName',['../namespaceinviwo_1_1util.html#a17cede42366cbed152e45d50fb16d062',1,'inviwo::util']]],
+  ['parsetypeidname_2',['parseTypeIdName',['../namespaceinviwo_1_1util.html#a17cede42366cbed152e45d50fb16d062',1,'inviwo::util::parseTypeIdName()'],['../namespaceinviwo.html#afe5ea4aef284b1a0c8c0d71569afb9d1',1,'inviwo::parseTypeIdName()']]],
   ['pause_3',['pause',['../classinviwo_1_1animation_1_1AnimationController.html#a6511c972028fff299d31c7d6641bd72f',1,'inviwo::animation::AnimationController']]],
   ['percentiles_4',['percentiles',['../namespaceinviwo_1_1statsutil.html#aadd88798eec33f67b58834ca3311a3f9',1,'inviwo::statsutil']]],
   ['perlinnoise_5',['perlinNoise',['../namespaceinviwo_1_1util.html#a35a361515d9e7661be39f493d796dca6',1,'inviwo::util']]],

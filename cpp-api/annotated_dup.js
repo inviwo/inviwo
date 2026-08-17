@@ -176,7 +176,7 @@ var annotated_dup =
       ] ],
       [ "detail", null, [
         [ "begin_tag_t", "structinviwo_1_1detail_1_1begin__tag__t.html", null ],
-        [ "Build", "classinviwo_1_1detail_1_1Build.html", null ],
+        [ "Build", "classinviwo_1_1detail_1_1Build.html", "classinviwo_1_1detail_1_1Build" ],
         [ "CodePointsAdaptor", "structinviwo_1_1detail_1_1CodePointsAdaptor.html", null ],
         [ "ColorConverter", "structinviwo_1_1detail_1_1ColorConverter.html", null ],
         [ "ColorConverter&lt; dvec3 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01dvec3_01_4.html", null ],

@@ -5,6 +5,7 @@ var classinviwo_1_1DataFormatBase =
     [ "getNumericType", "classinviwo_1_1DataFormatBase.html#a8ceffe9a50574f69e91746611083d775", null ],
     [ "getPrecision", "classinviwo_1_1DataFormatBase.html#a227d5695d294c28a77576eeb2685c903", null ],
     [ "getRank", "classinviwo_1_1DataFormatBase.html#abcba0f3882dc92ceb2eabf82d97c579d", null ],
+    [ "getSize", "classinviwo_1_1DataFormatBase.html#adef81c34eace246ae3a00ec4107a14fd", null ],
     [ "getSizeInBytes", "classinviwo_1_1DataFormatBase.html#a29e12597a077b76c7fda0b2a027af4f9", null ],
     [ "getString", "classinviwo_1_1DataFormatBase.html#aa57f6b2f1e1fc98d9c003f8d5196b781", null ]
 ];

@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['volumesequencesource_0',['VolumeSequenceSource',['../namespaceinviwo.html#a9ad6a9b496de9ef5e64d4eb6e07dbe9c',1,'inviwo']]]
+  ['scopedclockcpu_0',['ScopedClockCPU',['../namespaceinviwo.html#a805f6499529f32e5da1c8c4d09bd12f5',1,'inviwo']]],
+  ['scopedclockgl_1',['ScopedClockGL',['../namespaceinviwo.html#aa9bc4adec8778181ef760044d0d2688a',1,'inviwo']]],
+  ['spheremesh_2',['SphereMesh',['../group__typedmesh.html#ga2d8fc4330041da81252febcd0a8c0dac',1,'inviwo']]]
 ];
