@@ -109,6 +109,10 @@ public:
     void downloadToPBO() const;
     void loadFromPBO(const Texture*);
 
+    static size_t maxTextureSize();
+    static size_t maxTexture3DSize();
+    static size_t maxTextureArraySize();
+
 protected:
     void bindFromPBO() const;
     void bindToPBO() const;

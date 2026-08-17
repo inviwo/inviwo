@@ -31,6 +31,7 @@
 
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmfmt.h>
 #include <modules/opengl/glformats.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglcapabilities.h>
@@ -49,14 +50,20 @@ Texture2D::Texture2D(size2_t dimensions, GLFormat glFormat, GLenum filtering,
                      const SwizzleMask& swizzleMask, const std::array<GLenum, 2>& wrapping,
                      GLint level)
     : Texture(GL_TEXTURE_2D, glFormat, filtering, swizzleMask, std::span(wrapping), level)
-    , dimensions_(dimensions) {}
+    , dimensions_(dimensions) {
 
-Texture2D::Texture2D(size2_t dimensions, GLenum format, GLenum internalformat, GLenum dataType,
+    validateDimensions(dimensions_);
+}
+
+Texture2D::Texture2D(size2_t dimensions, GLenum format, GLenum internalFormat, GLenum dataType,
                      GLenum filtering, const SwizzleMask& swizzleMask,
                      const std::array<GLenum, 2>& wrapping, GLint level)
-    : Texture(GL_TEXTURE_2D, format, internalformat, dataType, filtering, swizzleMask,
+    : Texture(GL_TEXTURE_2D, format, internalFormat, dataType, filtering, swizzleMask,
               std::span(wrapping), level)
-    , dimensions_(dimensions) {}
+    , dimensions_(dimensions) {
+
+    validateDimensions(dimensions_);
+}
 
 Texture2D::Texture2D(const Texture2D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
     initialize(nullptr);
@@ -146,7 +153,20 @@ std::array<GLenum, 2> Texture2D::getWrapping() const {
     return wrapping;
 }
 
+void Texture2D::validateDimensions(size2_t dims) const {
+    if (glm::any(glm::equal(dims, size2_t{0}))) {
+        throw Exception{SourceContext{}, "Texture dimensions have to be greater than 0, got {}",
+                        dims};
+    }
+    if (glm::any(glm::equal(dims, size2_t{maxTextureSize()}))) {
+        throw Exception{SourceContext{}, "Texture size: {}, not supported, max is: {}", dims,
+                        maxTextureSize()};
+    }
+}
+
 void Texture2D::resize(size2_t dimensions) {
+    validateDimensions(dimensions);
+
     if (dimensions_ != dimensions) {
         dimensions_ = dimensions;
         setPBOAsInvalid();

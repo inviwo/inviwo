@@ -432,6 +432,39 @@ void Texture::loadFromPBO(const Texture* src) {
     LGL_ERROR;
 }
 
+size_t Texture::maxTextureSize() {
+    static const size_t size = []() {
+        int val{-1};
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
+        if (val < 0) {
+            throw Exception{SourceContext{}, "Unable to get GL_MAX_TEXTURE_SIZE"};
+        }
+        return static_cast<size_t>(val);
+    }();
+    return size;
+}
+size_t Texture::maxTexture3DSize() {
+    static const size_t size = []() {
+        int val{-1};
+        glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &val);
+        if (val < 0) {
+            throw Exception{SourceContext{}, "Unable to get GL_MAX_3D_TEXTURE_SIZE"};
+        }
+        return static_cast<size_t>(val);
+    }();
+    return size;
+}
+size_t Texture::maxTextureArraySize() {
+    static const size_t size = []() {
+        int val{-1};
+        glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &val);
+        if (val < 0) {
+            throw Exception{SourceContext{}, "Unable to get GL_MAX_ARRAY_TEXTURE_LAYERS"};
+        }
+        return static_cast<size_t>(val);
+    }();
+    return size;
+}
 void Texture::setupAsyncReadBackPBO() const {
     bind();
     glBindBuffer(GL_PIXEL_PACK_BUFFER, pboBack_);
