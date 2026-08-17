@@ -49,7 +49,6 @@ RawVolumeReader::RawVolumeReader()
     , spacing_(0.01f)
     , format_(nullptr)
     , byteOffset_(0u)
-    , parametersSet_(false)
     , compression_{Compression::Disabled} {
     addExtension(FileExtension("raw", "Raw binary file"));
 }
@@ -62,7 +61,6 @@ RawVolumeReader::RawVolumeReader(const RawVolumeReader& rhs)
     , spacing_(rhs.spacing_)
     , format_(rhs.format_)
     , byteOffset_(rhs.byteOffset_)
-    , parametersSet_(false)
     , compression_{rhs.compression_} {}
 
 RawVolumeReader& RawVolumeReader::operator=(const RawVolumeReader& that) {
@@ -95,76 +93,71 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& p
 
     rawFile_ = filePath;
 
-    if (!parametersSet_) {
-        auto readerDialog = util::dynamic_unique_ptr_cast<VolumeDataReaderDialog>(
-            InviwoApplication::getPtr()->getDialogFactory()->create("RawVolumeReader"));
-        if (!readerDialog) {
-            throw DataReaderException("No data reader dialog found.");
-        }
-        readerDialog->setFile(rawFile_);
+    auto readerDialog = util::dynamic_unique_ptr_cast<VolumeDataReaderDialog>(
+        InviwoApplication::getPtr()->getDialogFactory()->create("RawVolumeReader"));
+    if (!readerDialog) {
+        throw DataReaderException("No data reader dialog found.");
+    }
+    readerDialog->setFile(rawFile_);
+
+    if (metadata) {
+        readerDialog->setFormat(
+            DataFormatBase::get(static_cast<DataFormatId>(metadata->getMetaData<IntMetaData>(
+                "rawReaderData.formatid", static_cast<int>(readerDialog->getFormat()->getId())))));
+        readerDialog->setDimensions(metadata->getMetaData<Size3MetaData>(
+            "rawReaderData.dimensions", readerDialog->getDimensions()));
+
+        readerDialog->setByteOrder(static_cast<ByteOrder>(metadata->getMetaData<IntMetaData>(
+            "rawReaderData.byteOrder", static_cast<int>(readerDialog->getByteOrder()))));
+        readerDialog->setCompression(static_cast<Compression>(metadata->getMetaData<IntMetaData>(
+            "rawReaderData.compression", static_cast<int>(readerDialog->getCompression()))));
+
+        auto datamap = readerDialog->getDataMapper();
+        datamap.dataRange = metadata->getMetaData<DoubleVec2MetaData>(
+            "rawReaderData.dataMapper.dataRange", datamap.dataRange);
+        datamap.valueRange = metadata->getMetaData<DoubleVec2MetaData>(
+            "rawReaderData.dataMapper.valueRange", datamap.valueRange);
+
+        auto unit = units::to_string(datamap.valueAxis.unit);
+        unit =
+            metadata->getMetaData<StringMetaData>("rawReaderData.dataMapper.valueAxis.unit", unit);
+        datamap.valueAxis.unit = units::unit_from_string(unit);
+
+        readerDialog->setDataMapper(datamap);
+
+        readerDialog->setByteOffset(metadata->getMetaData<SizeMetaData>(
+            "rawReaderData.byteOffset", readerDialog->getByteOffset()));
+    }
+
+    if (readerDialog->show()) {
+        format_ = readerDialog->getFormat();
+        dimensions_ = readerDialog->getDimensions();
+        byteOrder_ = readerDialog->getByteOrder();
+        spacing_ = static_cast<glm::vec3>(readerDialog->getSpacing());
+        dataMapper_ = readerDialog->getDataMapper();
+        byteOffset_ = readerDialog->getByteOffset();
+        compression_ = readerDialog->getCompression();
 
         if (metadata) {
-            readerDialog->setFormat(
-                DataFormatBase::get(static_cast<DataFormatId>(metadata->getMetaData<IntMetaData>(
-                    "rawReaderData.formatid",
-                    static_cast<int>(readerDialog->getFormat()->getId())))));
-            readerDialog->setDimensions(metadata->getMetaData<Size3MetaData>(
-                "rawReaderData.dimensions", readerDialog->getDimensions()));
+            metadata->setMetaData<IntMetaData>("rawReaderData.formatid",
+                                               static_cast<int>(format_->getId()));
+            metadata->setMetaData<Size3MetaData>("rawReaderData.dimensions", dimensions_);
+            metadata->setMetaData<IntMetaData>("rawReaderData.byteOrder",
+                                               static_cast<int>(byteOrder_));
+            metadata->setMetaData<DoubleVec2MetaData>("rawReaderData.dataMapper.dataRange",
+                                                      dataMapper_.dataRange);
+            metadata->setMetaData<DoubleVec2MetaData>("rawReaderData.dataMapper.valueRange",
+                                                      dataMapper_.valueRange);
+            metadata->setMetaData<StringMetaData>("rawReaderData.dataMapper.valueAxis.unit",
+                                                  units::to_string(dataMapper_.valueAxis.unit));
 
-            readerDialog->setByteOrder(static_cast<ByteOrder>(metadata->getMetaData<IntMetaData>(
-                "rawReaderData.byteOrder", static_cast<int>(readerDialog->getByteOrder()))));
-            readerDialog->setCompression(
-                static_cast<Compression>(metadata->getMetaData<IntMetaData>(
-                    "rawReaderData.compression",
-                    static_cast<int>(readerDialog->getCompression()))));
-
-            auto datamap = readerDialog->getDataMapper();
-            datamap.dataRange = metadata->getMetaData<DoubleVec2MetaData>(
-                "rawReaderData.dataMapper.dataRange", datamap.dataRange);
-            datamap.valueRange = metadata->getMetaData<DoubleVec2MetaData>(
-                "rawReaderData.dataMapper.valueRange", datamap.valueRange);
-
-            auto unit = units::to_string(datamap.valueAxis.unit);
-            unit = metadata->getMetaData<StringMetaData>("rawReaderData.dataMapper.valueAxis.unit",
-                                                         unit);
-            datamap.valueAxis.unit = units::unit_from_string(unit);
-
-            readerDialog->setDataMapper(datamap);
-
-            readerDialog->setByteOffset(metadata->getMetaData<SizeMetaData>(
-                "rawReaderData.byteOffset", readerDialog->getByteOffset()));
+            metadata->setMetaData<SizeMetaData>("rawReaderData.byteOffset", byteOffset_);
+            metadata->setMetaData<IntMetaData>("rawReaderData.compression",
+                                               static_cast<int>(compression_));
         }
 
-        if (readerDialog->show()) {
-            format_ = readerDialog->getFormat();
-            dimensions_ = readerDialog->getDimensions();
-            byteOrder_ = readerDialog->getByteOrder();
-            spacing_ = static_cast<glm::vec3>(readerDialog->getSpacing());
-            dataMapper_ = readerDialog->getDataMapper();
-            byteOffset_ = readerDialog->getByteOffset();
-            compression_ = readerDialog->getCompression();
-
-            if (metadata) {
-                metadata->setMetaData<IntMetaData>("rawReaderData.formatid",
-                                                   static_cast<int>(format_->getId()));
-                metadata->setMetaData<Size3MetaData>("rawReaderData.dimensions", dimensions_);
-                metadata->setMetaData<IntMetaData>("rawReaderData.byteOrder",
-                                                   static_cast<int>(byteOrder_));
-                metadata->setMetaData<DoubleVec2MetaData>("rawReaderData.dataMapper.dataRange",
-                                                          dataMapper_.dataRange);
-                metadata->setMetaData<DoubleVec2MetaData>("rawReaderData.dataMapper.valueRange",
-                                                          dataMapper_.valueRange);
-                metadata->setMetaData<StringMetaData>("rawReaderData.dataMapper.valueAxis.unit",
-                                                      units::to_string(dataMapper_.valueAxis.unit));
-
-                metadata->setMetaData<SizeMetaData>("rawReaderData.byteOffset", byteOffset_);
-                metadata->setMetaData<IntMetaData>("rawReaderData.compression",
-                                                   static_cast<int>(compression_));
-            }
-
-        } else {
-            throw DataReaderException("Raw data import terminated by user");
-        }
+    } else {
+        throw DataReaderException("Raw data import terminated by user");
     }
 
     if (format_) {
