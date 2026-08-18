@@ -53,12 +53,15 @@
 #include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/utfutils.h>
 
 #include <functional>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
+#include <regex>
+#include <expected>
 
 #include <fmt/format.h>
 
@@ -138,7 +141,6 @@ private:
     typename Conf::Info information_;
 
     bool deserialized_ = false;
-    bool loadingFailed_ = false;
 };
 
 template <typename Conf>
@@ -166,8 +168,8 @@ const ProcessorInfo& SequenceSource<Conf>::getProcessorInfo() const {
 
 namespace util {
 
-IVW_MODULE_BASE_API std::optional<std::filesystem::path> getFirstFileInFolder(
-    const std::filesystem::path& folder, const std::string& filter);
+IVW_MODULE_BASE_API std::expected<std::filesystem::path, std::string_view> getFirstFileInFolder(
+    const std::filesystem::path& folder, std::string_view filter);
 
 }  // namespace util
 
@@ -205,40 +207,38 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
     util::updateFilenameFilters<Sequence>(*rf_, file_, reader_);
     util::updateReaderFromFile(file_, reader_);
 
-    auto singlefileCallback = [](auto& p) { return p.get() == InputType::SingleFile; };
+    auto singleFileCallback = [](auto& p) { return p.get() == InputType::SingleFile; };
     auto folderCallback = [](auto& p) { return p.get() == InputType::Folder; };
 
-    file_.visibilityDependsOn(inputType_, singlefileCallback);
-    reader_.visibilityDependsOn(inputType_, singlefileCallback);
+    file_.visibilityDependsOn(inputType_, singleFileCallback);
+    reader_.visibilityDependsOn(inputType_, singleFileCallback);
     folder_.visibilityDependsOn(inputType_, folderCallback);
     filter_.visibilityDependsOn(inputType_, folderCallback);
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() {
+    isReady_.setUpdate([this]() -> ProcessorStatus {
+        static constexpr std::string_view noFileReason{"No valid input file"};
+        if (error()) {
+            return {ProcessorStatus::Error, error().value()};
+        }
         if (inputType_ == InputType::SingleFile) {
-            return !loadingFailed_ && std::filesystem::is_regular_file(file_.get()) &&
-                   !reader_.getSelectedValue().empty();
-        } else {
-            if (auto first = util::getFirstFileInFolder(folder_, filter_)) {
-                return !loadingFailed_ && std::filesystem::is_regular_file(*first);
+            if (std::filesystem::is_regular_file(file_.get()) &&
+                !reader_.getSelectedValue().empty()) {
+                return ProcessorStatus::Ready;
             } else {
-                return false;
+                return {ProcessorStatus::NotReady, noFileReason};
+            }
+        } else {
+            if (auto first = util::getFirstFileInFolder(folder_.get(), filter_.get())) {
+                return ProcessorStatus::Ready;
+            } else {
+                return {ProcessorStatus::Error, first.error()};
             }
         }
     });
 
-    auto change = [this]() {
-        loadingFailed_ = false;
-        isReady_.update();
-    };
-    file_.onChange([this, change]() {
-        util::updateReaderFromFile(file_, reader_);
-        change();
-    });
-    reader_.onChange(change);
-    folder_.onChange(change);
-    filter_.onChange(change);
+    file_.onChange([this]() { util::updateReaderFromFile(file_, reader_); });
 }
 
 template <typename Conf>
@@ -281,7 +281,7 @@ template <typename Conf>
 void SequenceSource<Conf>::loadFile(bool deserialize) {
     if (file_.get().empty()) return;
 
-    auto loader = [rf = rf_, ext = file_.getSelectedExtension(), file = file_.get(),
+    auto loader = [rf = rf_, ext = reader_.getSelectedValue(), file = file_.get(),
                    mdo = static_cast<MetaDataOwner*>(this)](pool::Stop stop,
                                                             pool::Progress progress) -> Sequence {
         if (stop) return {};
@@ -308,18 +308,36 @@ void SequenceSource<Conf>::loadFolder(bool deserialize) {
 
     std::vector<std::function<Sequence(pool::Stop, pool::Progress)>> loaders;
 
-    const auto files = filesystem::getDirectoryContents(folder_.get());
-    for (const auto& f : files) {
-        auto file = folder_.get() / f;
-        if (filesystem::wildcardStringMatch(filter_, file.generic_string())) {
-            loaders.emplace_back([rf = rf_, file, mdo = static_cast<MetaDataOwner*>(this)](
-                                     pool::Stop stop, pool::Progress progress) -> Sequence {
-                if (stop) return {};
-                progress(0.0);
-                util::OnScopeExit done{[&]() { progress(1.0); }};
-                return loadSequence(file, FileExtension{}, *rf, mdo);
-            });
+    std::optional<std::regex> re = std::nullopt;
+
+    if (!filter_.get().empty()) {
+        const auto filter = filter_.get() | views::codePoints;
+        re = std::regex{filter.begin(), filter.end()};
+    }
+
+    auto files = std::filesystem::directory_iterator{folder_.get()} |
+                 std::views::filter([](const std::filesystem::directory_entry& entry) {
+                     return entry.is_regular_file();
+                 }) |
+                 std::views::transform(
+                     [](const std::filesystem::directory_entry& entry) { return entry.path(); });
+
+    for (const auto& file : files) {
+        if (std::ranges::ends_with(file.native() | views::codePoints,
+                                   std::string_view{".DS_Store"} | views::codePoints)) {
+            continue;
         }
+
+        auto fv = file.native() | views::codePoints;
+        if (re && !regex_match(fv.begin(), fv.end(), *re)) continue;
+
+        loaders.emplace_back([rf = rf_, file, mdo = static_cast<MetaDataOwner*>(this)](
+                                 pool::Stop stop, pool::Progress progress) -> Sequence {
+            if (stop) return {};
+            progress(0.0);
+            util::OnScopeExit done{[&]() { progress(1.0); }};
+            return loadSequence(file, FileExtension{}, *rf, mdo);
+        });
     }
 
     dispatchMany(loaders, [this, deserialize](std::vector<Sequence> sequences) {

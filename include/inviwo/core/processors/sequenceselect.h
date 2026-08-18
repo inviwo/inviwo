@@ -99,8 +99,13 @@ void SequenceSelect<T, OutportType>::process() {
         }
         index_.setMaxValue(std::max(data->size(), 1uz) - 1uz);
 
-        size_t index = std::clamp(index_.get(), 0uz, data->size() - 1);
-        outport_.setData((*data)[index]);
+        if (index_.get() < data->size()) {
+            outport_.setData((*data)[index_.get()]);
+        } else {
+            outport_.detachData();
+            throw Exception(SourceContext{}, "Index out of range {} >= {}", index_.get(),
+                            data->size());
+        }
     } else {
         outport_.detachData();
     }
