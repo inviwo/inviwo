@@ -214,7 +214,7 @@ std::shared_ptr<const Image> ImageOutport::getDataForPort(const Inport* port) co
             return img;
         }
     }
-    return nullptr;
+    return getData();
 }
 
 void ImageOutport::setDimensions(const size2_t& newDimension) {
@@ -241,7 +241,7 @@ size2_t ImageOutport::getDimensions() const {
 std::shared_ptr<Image> ImageOutport::getEditableData() const {
     if (image_) {
         return image_;
-    } else {    
+    } else {
         return nullptr;
     }
 }
