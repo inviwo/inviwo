@@ -998,6 +998,7 @@ find_package(flags CONFIG REQUIRED)
 find_package(tracywrap CONFIG REQUIRED)
 find_package(FastFloat CONFIG REQUIRED)
 find_package(curlcpp CONFIG REQUIRED)
+find_package(InviwoCloudFiles CONFIG REQUIRED)
 
 if(APPLE)
     find_library(CORESERVICES_LIBRARY CoreServices)
@@ -1035,6 +1036,7 @@ target_link_libraries(inviwo-core
         BZip2::BZip2
         ZLIB::ZLIB
         liblzma::liblzma
+        inviwo::cloudfiles
 )
 
 # Core header files used in PCH file
