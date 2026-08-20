@@ -82,7 +82,7 @@ protected:
     void load();
     void handleError(std::string_view error);
 
-    virtual void configureReader(DataReader& reader) {}
+    virtual void configureReader(DataReader&) {}
 
     // Called to transform the loaded data of ReaderType to the DataType expected by the port
     virtual std::shared_ptr<DataType> transform(std::shared_ptr<ReaderType> data);

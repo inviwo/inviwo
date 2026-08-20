@@ -106,8 +106,8 @@ class SequenceSource : public PoolProcessor {
     enum class InputType : std::uint8_t { SingleFile, Folder };
 
 public:
-    using Type = typename Conf::Type;
-    using Sequence = typename Conf::Sequence;
+    using Type = Conf::Type;
+    using Sequence = Conf::Sequence;
     static constexpr std::string_view fileMetaData = "filename";
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -128,7 +128,7 @@ private:
     void loadFolder(bool deserialize = false);
     static auto loadSequence(const std::filesystem::path& file, const FileExtension& ext,
                              DataReaderFactory& rf, MetaDataOwner* md,
-                             std::function<void(DataReader&)> configReader) -> Sequence;
+                             const std::function<void(DataReader&)>& configReader) -> Sequence;
     static void addMetaData(Type& data, const std::filesystem::path& path);
 
     DataReaderFactory* rf_;
@@ -271,7 +271,8 @@ void SequenceSource<Conf>::SequenceSource::load(bool deserialize) {
 template <typename Conf>
 auto SequenceSource<Conf>::loadSequence(const std::filesystem::path& file, const FileExtension& ext,
                                         DataReaderFactory& rf, MetaDataOwner* mdo,
-                                        std::function<void(DataReader&)> configReader) -> Sequence {
+                                        const std::function<void(DataReader&)>& configReader)
+    -> Sequence {
 
     if (auto reader1 = rf.getReaderForTypeAndExtension<Type>(ext, file)) {
         configReader(*reader1);

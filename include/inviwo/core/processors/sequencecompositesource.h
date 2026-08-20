@@ -85,9 +85,6 @@ class SequenceCompositeSource : public SequenceCompositeSourceBase {
     using OutportData = typename OutportType::type;
     using InportSequenceData = typename InportSequenceType::type;
 
-    static_assert(std::is_same_v<typename InportSequenceData::type, OutportData>,
-                  "InportSequenceType and OutportType must work with the same data type");
-
 public:
     SequenceCompositeSource();
     SequenceCompositeSource(const SequenceCompositeSource&) = delete;
@@ -138,9 +135,11 @@ struct ProcessorTraits<SequenceCompositeSource<InportSequenceType, OutportType>>
     static ProcessorInfo getProcessorInfo() {
         using sequenceType = typename InportSequenceType::type;
         using intype = typename sequenceType::type;
-        using outtype = typename sequenceType::type;
-        static_assert(std::is_same_v<intype, outtype>, "type mismatch");
-        auto name = fmt::format("{} Meta Source", DataTraits<intype>::dataName());
+        using outtype = typename OutportType::type;
+        static_assert(std::is_same_v<intype, outtype>,
+                      "InportSequenceType and OutportType must work with the same data type");
+
+        auto name = fmt::format("{} Meta Sequence Source", DataTraits<intype>::dataName());
         auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
                                          SequenceCompositeSourceBase::identifierSuffix());
         return {
