@@ -279,7 +279,7 @@ size_t SequenceInput::size() const {
     return 0;
 }
 
-void SequenceInput::setSorting(Sorting sortOrder) {}
+void SequenceInput::setSorting(Sorting) {}
 
 const std::vector<std::shared_ptr<const Image>>& SequenceInput::getData() {
     data.clear();
