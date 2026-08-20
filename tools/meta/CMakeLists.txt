@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23...3.27 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.23...4.2 FATAL_ERROR)
 project(inviwo-meta VERSION 0.0.1 DESCRIPTION "CMakeList Parser" LANGUAGES CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -50,7 +50,7 @@ target_sources(inviwo-meta
         ${sources}
 )
 set_target_properties(inviwo-meta PROPERTIES
-    CXX_STANDARD 20
+    CXX_STANDARD 23
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
     FOLDER tools

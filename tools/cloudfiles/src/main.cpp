@@ -77,9 +77,9 @@ int main(int argc, char** argv) {
                 }
 
                 const auto s = cloudfiles::status(path);
-                fmt::print("{:<14} placeholder={:<5} size={:>12} {}\n",
-                           cloudfiles::toString(s.availability), s.isPlaceholder,
-                           s.size ? std::to_string(*s.size) : std::string{"?"}, path);
+                fmt::print("{:<14} placeholder={:<5} size={:>12} {}\n", s.availability,
+                           s.isPlaceholder, s.size ? std::to_string(*s.size) : std::string{"?"},
+                           path);
             } catch (const std::exception& e) {
                 fmt::print("error: {}: {}\n", path, e.what());
                 ++failures;

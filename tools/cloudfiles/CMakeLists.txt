@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23...3.27 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.23...4.2 FATAL_ERROR)
 project(inviwo-cloudfiles VERSION 0.0.1
     DESCRIPTION "Query and control OneDrive/iCloud on-demand files" LANGUAGES CXX)
 
@@ -39,11 +39,11 @@ target_sources(inviwo-cloudfiles
         ${sources}
 )
 set_target_properties(inviwo-cloudfiles PROPERTIES
-    CXX_STANDARD 20
+    CXX_STANDARD 23
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
     FOLDER tools
-    XCODE_GENERATE_SCHEME YES
+    XCODE_GENERATE_SCHEME OFF
 )
 
 ivw_define_standard_properties(inviwo-cloudfiles)
@@ -70,9 +70,10 @@ if(IVW_APP_CLOUDFILES_CLI)
     )
     set_target_properties(inviwo-cloudfiles-cli PROPERTIES
         FOLDER tools
-        CXX_STANDARD 20
+        CXX_STANDARD 23
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF
+        XCODE_GENERATE_SCHEME OFF
     )
     ivw_default_install_targets(inviwo-cloudfiles-cli)
 endif()
