@@ -35,10 +35,9 @@
 
 #include <inviwo/cloudfiles/cloudfiles.hpp>
 
-// clang-format off
 #include <windows.h>
+#include <winternl.h>
 #include <cfapi.h>
-// clang-format on
 
 #include <filesystem>
 
@@ -51,14 +50,14 @@ namespace {
 
 [[noreturn]] void throwLastError(std::string_view what, const std::filesystem::path& path) {
     const DWORD err = ::GetLastError();
-    throw CloudFilesError(
+    throw std::runtime_error(
         fmt::format("{} failed for '{}' (error {})", what, path, static_cast<unsigned long>(err)));
 }
 
 [[noreturn]] void throwHResult(std::string_view what, const std::filesystem::path& path,
                                HRESULT hr) {
-    throw CloudFilesError(fmt::format("{} failed for '{}' (hr 0x{:08x})", what, path,
-                                      static_cast<unsigned long>(hr)));
+    throw std::runtime_error(fmt::format("{} failed for '{}' (hr 0x{:08x})", what, path,
+                                         static_cast<unsigned long>(hr)));
 }
 
 DWORD getAttributes(const std::filesystem::path& path) {
