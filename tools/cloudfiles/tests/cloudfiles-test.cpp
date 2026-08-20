@@ -62,17 +62,17 @@ private:
 }  // namespace
 
 TEST(CloudFiles, ToStringCoversAllValues) {
-    EXPECT_EQ(toString(Availability::NotACloudFile), "NotACloudFile");
-    EXPECT_EQ(toString(Availability::Available), "Available");
-    EXPECT_EQ(toString(Availability::NotAvailable), "NotAvailable");
-    EXPECT_EQ(toString(Availability::Downloading), "Downloading");
-    EXPECT_EQ(toString(Availability::Unknown), "Unknown");
+    EXPECT_EQ(format_as(Availability::NotACloudFile), "NotACloudFile");
+    EXPECT_EQ(format_as(Availability::Available), "Available");
+    EXPECT_EQ(format_as(Availability::NotAvailable), "NotAvailable");
+    EXPECT_EQ(format_as(Availability::Downloading), "Downloading");
+    EXPECT_EQ(format_as(Availability::Unknown), "Unknown");
 }
 
 TEST(CloudFiles, StatusOnMissingFileThrows) {
     const std::filesystem::path missing =
         std::filesystem::temp_directory_path() / "inviwo-cloudfiles-does-not-exist.xyz";
-    EXPECT_THROW(inviwo::cloudfiles::status(missing), CloudFilesError);
+    EXPECT_THROW(inviwo::cloudfiles::status(missing), std::runtime_error);
 }
 
 TEST(CloudFiles, RegularFileIsLocallyAvailable) {
@@ -96,14 +96,14 @@ TEST(CloudFiles, DownloadRegularFileMatchesPlatformSupport) {
         // A regular local file is already available; downloading should be a no-op.
         EXPECT_NO_THROW(download(file.path()));
     } else {
-        EXPECT_THROW(download(file.path()), CloudFilesError);
+        EXPECT_THROW(download(file.path()), std::runtime_error);
     }
 }
 
 TEST(CloudFiles, OffloadRegularFileThrows) {
     TempFile file;
     // A regular local file is not a cloud placeholder, so offloading is never valid.
-    EXPECT_THROW(offload(file.path()), CloudFilesError);
+    EXPECT_THROW(offload(file.path()), std::runtime_error);
 }
 
 }  // namespace inviwo::cloudfiles
