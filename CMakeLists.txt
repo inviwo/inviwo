@@ -27,7 +27,7 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.23...4.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.23...4.2 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 
@@ -210,7 +210,7 @@ if(IVW_TEST_INTEGRATION_TESTS OR IVW_TEST_UNIT_TESTS)
     add_subdirectory(tests/testutil)         # Add test utils, used in the module unit tests
 endif()
 
-add_subdirectory(src/sys)                    # Add inviwo module system
+add_subdirectory(src/sys)                    # Add inviwo module system, this will also register inviwo::core
 add_subdirectory(src/py)                     # Add inviwo python helper
 
 # Add all the applications, uses the modules.
