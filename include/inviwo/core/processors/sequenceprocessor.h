@@ -170,9 +170,9 @@ private:
 
         SequenceProcessor& comp;
         Property* subProperty;
+        std::vector<Property*> subPropertyCopies;
         Property* superProperty = nullptr;
-        const BaseCallBack* subCallback = nullptr;
-        const BaseCallBack* superCallback = nullptr;
+        std::vector<std::shared_ptr<std::function<void()>>> callbacks;
         bool onChangeActive = false;
         PropertyObserverDelegate superObserver;
     };

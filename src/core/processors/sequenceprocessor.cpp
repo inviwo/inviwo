@@ -145,14 +145,31 @@ void SequenceProcessor::createNetworkCopies(size_t count) {
         copy.net->addObserver(this);
         d.deserialize("ProcessorNetwork", *copy.net);
 
-        for (auto* sinkProcessor : copy.sinks) {
-            for (auto* inport : sinkProcessor->getInports()) {
-                auto e = std::unique_ptr<Event>{lastResize_->clone()};
-                inport->propagateEvent(e.get(), nullptr);
+        for (auto&& [subProperty, handler] : handlers_) {
+            if (auto* sub = copy.net->getProperty(subProperty->getPath())) {
+                handlers_[subProperty]->subPropertyCopies.push_back(sub);
+            }
+        }
+
+        if (lastResize_) {
+            for (auto* sinkProcessor : copy.sinks) {
+                for (auto* inport : sinkProcessor->getInports()) {
+                    auto e = std::unique_ptr<Event>{lastResize_->clone()};
+                    inport->propagateEvent(e.get(), nullptr);
+                }
             }
         }
     }
     while (copies_.size() + 1 > count) {
+        for (auto&& [subProperty, handler] : handlers_) {
+            std::erase_if(handler->subPropertyCopies, [&](Property* subCopy) {
+                return !subCopy->getOwner() || !subCopy->getOwner()->getProcessor() ||
+                       !subCopy->getOwner()->getProcessor()->getNetwork() ||
+                       subCopy->getOwner()->getProcessor()->getNetwork() ==
+                           copies_.back().net.get();
+            });
+        }
+
         copies_.pop_back();
     }
 }
@@ -253,6 +270,13 @@ Property* SequenceProcessor::addSuperProperty(Property* subProperty) {
     } else {
         if (subProperty->getOwner()->getProcessor()->getNetwork() == sub_.net.get()) {
             handlers_[subProperty] = std::make_unique<PropertyHandler>(*this, subProperty);
+
+            for (auto& item : copies_) {
+                if (auto* sub = item.net->getProperty(subProperty->getPath())) {
+                    handlers_[subProperty]->subPropertyCopies.push_back(sub);
+                }
+            }
+
             return handlers_[subProperty]->superProperty;
         } else {
             throw Exception(SourceContext{}, "Could not find property {}", subProperty->getPath());
@@ -403,16 +427,19 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
     : comp{composite}
     , subProperty{aSubProperty}
     , superProperty{subProperty->clone()}
-    , subCallback{subProperty->onChange([this]() {
-        if (onChangeActive) return;
-        const util::KeepTrueWhileInScope active{&onChangeActive};
-        superProperty->set(subProperty);
-    })}
-    , superCallback{superProperty->onChange([this]() {
-        if (onChangeActive) return;
-        const util::KeepTrueWhileInScope active{&onChangeActive};
-        subProperty->set(superProperty);
-    })} {
+    , callbacks{subProperty->onChangeScoped([this]() {
+                    if (onChangeActive) return;
+                    const util::KeepTrueWhileInScope active{&onChangeActive};
+                    superProperty->set(subProperty);
+                }),
+                superProperty->onChangeScoped([this]() {
+                    if (onChangeActive) return;
+                    const util::KeepTrueWhileInScope active{&onChangeActive};
+                    subProperty->set(superProperty);
+                    for (auto* subCopy : subPropertyCopies) {
+                        subCopy->set(superProperty);
+                    }
+                })} {
 
     subProperty->setMetaData<BoolMetaData>(meta::exposed, true);
 
@@ -481,8 +508,7 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
 }
 
 SequenceProcessor::PropertyHandler::~PropertyHandler() {
-    superProperty->removeOnChange(superCallback);
-    subProperty->removeOnChange(subCallback);
+    callbacks.clear();
     delete comp.removeProperty(superProperty);
 }
 

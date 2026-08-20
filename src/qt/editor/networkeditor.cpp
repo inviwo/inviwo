@@ -890,7 +890,7 @@ void NetworkEditor::addSequenceMenuItems(
                 rendercontext::activateDefault();
                 util::replaceSelectionWithSequenceProcessor(*network_);
             }));
-    sequenceAction->setEnabled(selectedProcessors.size() > 1);
+    sequenceAction->setEnabled(selectedProcessors.size() > 0);
 
     // TODO(Peter)
     // auto* expandAction =

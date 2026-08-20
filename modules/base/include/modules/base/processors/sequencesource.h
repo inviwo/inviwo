@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/fileextension.h>
@@ -95,6 +96,9 @@ class InviwoApplication;
  *         info.info.updateForNewVolume(data, overwrite);
  *         info.basis.updateForNewEntity(data, overwrite == util::OverwriteState::Yes);
  *     }
+ *     static auto getReaderConfig(Info& info) -> std::function<void(DataReader&)> {
+ *         return [](DataReader&) {};
+ *     }
  * };
  */
 template <typename Conf>
@@ -123,7 +127,8 @@ private:
     void loadFile(bool deserialize = false);
     void loadFolder(bool deserialize = false);
     static auto loadSequence(const std::filesystem::path& file, const FileExtension& ext,
-                             DataReaderFactory& rf, MetaDataOwner* md) -> Sequence;
+                             DataReaderFactory& rf, MetaDataOwner* md,
+                             std::function<void(DataReader&)> configReader) -> Sequence;
     static void addMetaData(Type& data, const std::filesystem::path& path);
 
     DataReaderFactory* rf_;
@@ -133,7 +138,9 @@ private:
     OptionProperty<InputType> inputType_;
     FileProperty file_;
     DirectoryProperty folder_;
-    StringProperty filter_;
+    StringProperty include_;
+    StringProperty exclude_;
+    OrdinalProperty<size_t> max_;
 
     OptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
@@ -169,7 +176,7 @@ const ProcessorInfo& SequenceSource<Conf>::getProcessorInfo() const {
 namespace util {
 
 IVW_MODULE_BASE_API std::expected<std::filesystem::path, std::string_view> getFirstFileInFolder(
-    const std::filesystem::path& folder, std::string_view filter);
+    const std::filesystem::path& folder, std::string_view include, std::string_view exclude);
 
 }  // namespace util
 
@@ -188,10 +195,13 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
             "If using single file mode, the file to load"_help)
     , folder_("folder", fmt::format("{} folder", Conf::name),
               "If using folder mode, the folder to look for data sets in"_help)
-    , filter_(
-          "filter_", "Filter",
-          "If using folder mode, apply filter to the folder contents to find wanted data sets"_help,
-          "*")
+
+    , include_{"include", "include",
+               "Any path the includes this regular expressions will be include"_help, ""}
+    , exclude_{"exclude", "exclude",
+               "Any path the includes this regular expressions will be excluded"_help, ""}
+    , max_{"max", "max", util::ordinalCount(0uz)}
+
     , reader_("reader", "Data Reader")
     , reload_("reload", "Reload data")
     , information_{} {
@@ -200,7 +210,7 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
     folder_.setContentType(toLower(Conf::name));
 
     addPort(outport_);
-    addProperties(inputType_, folder_, filter_, file_, reload_);
+    addProperties(inputType_, folder_, include_, exclude_, max_, file_, reload_);
 
     Conf::add(information_, *this);
 
@@ -213,7 +223,9 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
     file_.visibilityDependsOn(inputType_, singleFileCallback);
     reader_.visibilityDependsOn(inputType_, singleFileCallback);
     folder_.visibilityDependsOn(inputType_, folderCallback);
-    filter_.visibilityDependsOn(inputType_, folderCallback);
+    include_.visibilityDependsOn(inputType_, folderCallback);
+    exclude_.visibilityDependsOn(inputType_, folderCallback);
+    max_.visibilityDependsOn(inputType_, folderCallback);
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
@@ -230,7 +242,8 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
                 return {ProcessorStatus::NotReady, noFileReason};
             }
         } else {
-            if (auto first = util::getFirstFileInFolder(folder_.get(), filter_.get())) {
+            if (auto first =
+                    util::getFirstFileInFolder(folder_.get(), include_.get(), exclude_.get())) {
                 return ProcessorStatus::Ready;
             } else {
                 return {ProcessorStatus::Error, first.error()};
@@ -257,15 +270,18 @@ void SequenceSource<Conf>::SequenceSource::load(bool deserialize) {
 
 template <typename Conf>
 auto SequenceSource<Conf>::loadSequence(const std::filesystem::path& file, const FileExtension& ext,
-                                        DataReaderFactory& rf, MetaDataOwner* mdo) -> Sequence {
+                                        DataReaderFactory& rf, MetaDataOwner* mdo,
+                                        std::function<void(DataReader&)> configReader) -> Sequence {
 
     if (auto reader1 = rf.getReaderForTypeAndExtension<Type>(ext, file)) {
+        configReader(*reader1);
         auto data = reader1->readData(file, mdo);
         addMetaData(*data, file);
         Sequence sequence;
         sequence.push_back(data);
         return sequence;
     } else if (auto reader2 = rf.getReaderForTypeAndExtension<Sequence>(ext, file)) {
+        configReader(*reader2);
         auto sequence = reader2->readData(file, mdo);
         for (auto&& data : *sequence) {
             addMetaData(*data, file);
@@ -282,12 +298,13 @@ void SequenceSource<Conf>::loadFile(bool deserialize) {
     if (file_.get().empty()) return;
 
     auto loader = [rf = rf_, ext = reader_.getSelectedValue(), file = file_.get(),
-                   mdo = static_cast<MetaDataOwner*>(this)](pool::Stop stop,
-                                                            pool::Progress progress) -> Sequence {
+                   mdo = static_cast<MetaDataOwner*>(this),
+                   configReader = Conf::getReaderConfig(information_)](
+                      pool::Stop stop, pool::Progress progress) -> Sequence {
         if (stop) return {};
         progress(0.0);
         util::OnScopeExit done{[&]() { progress(1.0); }};
-        return loadSequence(file, ext, *rf, mdo);
+        return loadSequence(file, ext, *rf, mdo, configReader);
     };
     dispatchOne(loader, [this, deserialize](Sequence sequence) {
         if (!sequence.empty() && sequence[0]) {
@@ -304,41 +321,63 @@ template <typename Conf>
 void SequenceSource<Conf>::loadFolder(bool deserialize) {
     if (folder_.get().empty()) return;
 
-    auto sequence = std::make_shared<Sequence>();
+    std::optional<std::regex> includeRe = std::nullopt;
+    std::optional<std::regex> excludeRe = std::nullopt;
 
-    std::vector<std::function<Sequence(pool::Stop, pool::Progress)>> loaders;
-
-    std::optional<std::regex> re = std::nullopt;
-
-    if (!filter_.get().empty()) {
-        const auto filter = filter_.get() | views::codePoints;
-        re = std::regex{filter.begin(), filter.end()};
+    if (!include_.get().empty()) {
+        const auto filter = include_.get() | views::codePoints;
+        includeRe = std::regex{filter.begin(), filter.end()};
+    }
+    if (!exclude_.get().empty()) {
+        const auto filter = exclude_.get() | views::codePoints;
+        excludeRe = std::regex{filter.begin(), filter.end()};
     }
 
-    auto files = std::filesystem::directory_iterator{folder_.get()} |
-                 std::views::filter([](const std::filesystem::directory_entry& entry) {
-                     return entry.is_regular_file();
-                 }) |
-                 std::views::transform(
-                     [](const std::filesystem::directory_entry& entry) { return entry.path(); });
+    auto files =
+        std::filesystem::directory_iterator{folder_.get()} |
+        std::views::filter(
+            [](const std::filesystem::directory_entry& entry) { return entry.is_regular_file(); }) |
+        std::views::transform(
+            [](const std::filesystem::directory_entry& entry) { return entry.path(); }) |
 
-    for (const auto& file : files) {
-        if (std::ranges::ends_with(file.native() | views::codePoints,
-                                   std::string_view{".DS_Store"} | views::codePoints)) {
-            continue;
-        }
+        std::views::filter([&](const std::filesystem::path& path) {
+            const auto pv = path.native() | views::codePoints;
 
-        auto fv = file.native() | views::codePoints;
-        if (re && !regex_match(fv.begin(), fv.end(), *re)) continue;
+            bool included = true;
+            if (includeRe && !regex_search(pv.begin(), pv.end(), *includeRe)) {
+                included &= false;
+            }
+            if (excludeRe && regex_search(pv.begin(), pv.end(), *excludeRe)) {
+                included &= false;
+            }
 
-        loaders.emplace_back([rf = rf_, file, mdo = static_cast<MetaDataOwner*>(this)](
-                                 pool::Stop stop, pool::Progress progress) -> Sequence {
-            if (stop) return {};
-            progress(0.0);
-            util::OnScopeExit done{[&]() { progress(1.0); }};
-            return loadSequence(file, FileExtension{}, *rf, mdo);
-        });
-    }
+            if (std::ranges::ends_with(path.native() | views::codePoints,
+                                       std::string_view{".DS_Store"} | views::codePoints)) {
+                included &= false;
+            }
+
+            return included;
+        }) |
+        std::ranges::to<std::vector>();
+
+    std::ranges::sort(files);
+
+    const auto max = max_.get() != 0 ? max_.get() : std::numeric_limits<size_t>::max();
+
+    const auto loaders =
+        files | std::views::take(max) |
+        std::views::transform([&](const std::filesystem::path& path)
+                                  -> std::function<Sequence(pool::Stop, pool::Progress)> {
+            return [rf = rf_, path, mdo = static_cast<MetaDataOwner*>(this),
+                    configReader = Conf::getReaderConfig(information_)](
+                       pool::Stop stop, pool::Progress progress) -> Sequence {
+                if (stop) return {};
+                progress(0.0);
+                util::OnScopeExit done{[&]() { progress(1.0); }};
+                return loadSequence(path, FileExtension{}, *rf, mdo, configReader);
+            };
+        }) |
+        std::ranges::to<std::vector>();
 
     dispatchMany(loaders, [this, deserialize](std::vector<Sequence> sequences) {
         auto result = std::make_shared<Sequence>(sequences | std::views::join);
@@ -364,7 +403,8 @@ void SequenceSource<Conf>::addMetaData(Type& data, const std::filesystem::path& 
 template <typename Conf>
 void SequenceSource<Conf>::process() {
     if (file_.isModified() || reload_.isModified() || folder_.isModified() ||
-        filter_.isModified() || reader_.isModified()) {
+        include_.isModified() || exclude_.isModified() || max_.isModified() ||
+        reader_.isModified()) {
         load(deserialized_);
         deserialized_ = false;
     }

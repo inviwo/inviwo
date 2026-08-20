@@ -32,45 +32,57 @@
 namespace inviwo {
 
 std::expected<std::filesystem::path, std::string_view> util::getFirstFileInFolder(
-    const std::filesystem::path& folder, std::string_view filter) {
+    const std::filesystem::path& folder, std::string_view include, std::string_view exclude) {
 
     if (!std::filesystem::is_directory(folder)) {
         static constexpr std::string_view noFolderReason{"Not a folder"};
         return std::unexpected(noFolderReason);
     }
 
-    auto view = std::filesystem::directory_iterator{folder} |
-                std::views::filter([](const std::filesystem::directory_entry& entry) {
-                    return entry.is_regular_file();
-                }) |
-                std::views::transform(
-                    [](const std::filesystem::directory_entry& entry) { return entry.path(); });
+    try {
+        std::optional<std::regex> includeRe = std::nullopt;
+        std::optional<std::regex> excludeRe = std::nullopt;
 
-    if (filter.empty()) {
+        if (!include.empty()) {
+            const auto filter = include | views::codePoints;
+            includeRe = std::regex{filter.begin(), filter.end()};
+        }
+        if (!exclude.empty()) {
+            const auto filter = exclude | views::codePoints;
+            excludeRe = std::regex{filter.begin(), filter.end()};
+        }
+
+        auto view = std::filesystem::directory_iterator{folder} |
+                    std::views::filter([](const std::filesystem::directory_entry& entry) {
+                        return entry.is_regular_file();
+                    }) |
+                    std::views::transform([](const std::filesystem::directory_entry& entry) {
+                        return entry.path();
+                    }) |
+                    std::views::filter([&](const std::filesystem::path& path) {
+                        auto pv = path.native() | views::codePoints;
+
+                        bool included = true;
+
+                        if (includeRe && !regex_search(pv.begin(), pv.end(), *includeRe)) {
+                            included &= false;
+                        }
+                        if (excludeRe && regex_search(pv.begin(), pv.end(), *excludeRe)) {
+                            included &= false;
+                        }
+
+                        return included;
+                    });
+
         if (std::ranges::begin(view) != std::ranges::end(view)) {
-            return *std::ranges::begin(view);
+            return std::ranges::min(view);
         } else {
-            static constexpr std::string_view emptyFolderReason{"Empty folder"};
-            return std::unexpected(emptyFolderReason);
+            static constexpr std::string_view noMatchesReason{"No matching files"};
+            return std::unexpected(noMatchesReason);
         }
-    } else {
-        try {
-            const auto fv = filter | views::codePoints;
-            const auto re = std::regex{fv.begin(), fv.end()};
-            auto matches = view | std::views::filter([&](const std::filesystem::path& path) {
-                               auto pv = path.native() | views::codePoints;
-                               return regex_match(pv.begin(), pv.end(), re);
-                           });
-            if (std::ranges::begin(matches) != std::ranges::end(matches)) {
-                return *std::ranges::begin(matches);
-            } else {
-                static constexpr std::string_view noMatchesReason{"No matching files"};
-                return std::unexpected(noMatchesReason);
-            }
-        } catch (const std::regex_error&) {
-            static constexpr std::string_view invalidFilterReason{"Invalid filter"};
-            return std::unexpected(invalidFilterReason);
-        }
+    } catch (const std::regex_error&) {
+        static constexpr std::string_view invalidFilterReason{"Invalid filter"};
+        return std::unexpected(invalidFilterReason);
     }
 }
 
