@@ -68,7 +68,6 @@ private:
     const DataFormatBase* format_;
     DataMapper dataMapper_;
     size_t byteOffset_;
-    bool parametersSet_;
     Compression compression_;
 };
 
