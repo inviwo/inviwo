@@ -32,6 +32,7 @@ Checks: >
     -modernize-use-default-member-init,
   performance-*,
   portability-*,
+    -portability-avoid-pragma-once
   readability-*,
     -readability-else-after-return,
     -readability-redundant-member-init,
