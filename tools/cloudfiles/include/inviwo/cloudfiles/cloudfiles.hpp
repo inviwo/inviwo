@@ -53,7 +53,7 @@ enum class Availability {
 };
 
 /// Human readable name of an Availability value.
-INVIWO_CLOUDFILES_API std::string_view toString(Availability availability);
+INVIWO_CLOUDFILES_API std::string_view format_as(Availability availability);
 
 /**
  * The result of querying a file with @ref status.
@@ -67,19 +67,10 @@ struct INVIWO_CLOUDFILES_API Status {
     std::optional<std::uintmax_t> size;
 };
 
-/**
- * Thrown by the cloudfiles functions when an operation fails.
- */
-class INVIWO_CLOUDFILES_API CloudFilesError : public std::runtime_error {
-public:
-    explicit CloudFilesError(const std::string& message);
-    explicit CloudFilesError(const char* message);
-};
-
 /// Whether the current platform has a real cloud provider backend.
 INVIWO_CLOUDFILES_API bool isSupported() noexcept;
 
-/// Query the availability of @p path. Throws @ref CloudFilesError if the file does not exist.
+/// Query the availability of @p path. Throws @ref std::runtime_error if the file does not exist.
 INVIWO_CLOUDFILES_API Status status(const std::filesystem::path& path);
 
 /// Convenience for `status(path).availability` being Available or NotACloudFile.
@@ -91,13 +82,14 @@ INVIWO_CLOUDFILES_API bool isCloudFile(const std::filesystem::path& path);
 /**
  * Trigger a download (hydration) of @p path so that its data becomes available locally. On some
  * platforms this only starts an asynchronous download; use @ref status to observe progress.
- * Throws @ref CloudFilesError on failure.
+ * Throws @ref std::runtime_error on failure.
  */
 INVIWO_CLOUDFILES_API void download(const std::filesystem::path& path);
 
 /**
  * Offload (dehydrate/evict) @p path to free up local disk space, keeping the file available
- * on-demand from the cloud provider. Throws @ref CloudFilesError on failure or when the operation
+ * on-demand from the cloud provider. Throws @ref std::runtime_error on failure or when the
+ * operation
  * is not supported for the given file.
  */
 INVIWO_CLOUDFILES_API void offload(const std::filesystem::path& path);
