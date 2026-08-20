@@ -33,10 +33,7 @@
 
 namespace inviwo::cloudfiles {
 
-CloudFilesError::CloudFilesError(const std::string& message) : std::runtime_error(message) {}
-CloudFilesError::CloudFilesError(const char* message) : std::runtime_error(message) {}
-
-std::string_view toString(Availability availability) {
+std::string_view format_as(Availability availability) {
     switch (availability) {
         case Availability::NotACloudFile:
             return "NotACloudFile";
