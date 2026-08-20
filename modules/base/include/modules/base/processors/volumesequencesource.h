@@ -63,6 +63,9 @@ struct VolumeConf {
         info.info.updateForNewVolume(data, overwrite);
         info.basis.updateForNewEntity(data, overwrite == util::OverwriteState::Yes);
     }
+    static auto getReaderConfig(Info& info) -> std::function<void(DataReader&)> {
+        return [](DataReader&) {};
+    }
 };
 }  // namespace detail
 
