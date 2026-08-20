@@ -3067,6 +3067,9 @@ var hierarchy =
     [ "QTableView", null, [
       [ "inviwo::DataFrameTableView", "classinviwo_1_1DataFrameTableView.html", null ]
     ] ],
+    [ "inviwo::detail::QThreadChecker", "structinviwo_1_1detail_1_1QThreadChecker.html", [
+      [ "inviwo::RawDataReaderDialogQt", "classinviwo_1_1RawDataReaderDialogQt.html", null ]
+    ] ],
     [ "QTreeView", null, [
       [ "inviwo::ProcessorListView", "classinviwo_1_1ProcessorListView.html", null ],
       [ "inviwo::WorkspaceGridView", "classinviwo_1_1WorkspaceGridView.html", null ],

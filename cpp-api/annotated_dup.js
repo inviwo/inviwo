@@ -202,6 +202,7 @@ var annotated_dup =
         [ "OutportIterableWrapper&lt; std::vector&lt; std::unique_ptr&lt; T &gt;, Alloc &gt; &gt;", "classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ],
         [ "OutportIterableWrapper&lt; std::vector&lt; T *, Alloc &gt; &gt;", "structinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_01_5_00_01Alloc_01_4_01_4.html", null ],
         [ "OutportIterableWrapper&lt; std::vector&lt; T, Alloc &gt; &gt;", "classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html", null ],
+        [ "QThreadChecker", "structinviwo_1_1detail_1_1QThreadChecker.html", null ],
         [ "static_size_t", "structinviwo_1_1detail_1_1static__size__t.html", null ],
         [ "static_size_t&lt; char[N]&gt;", "structinviwo_1_1detail_1_1static__size__t_3_01char_0fN_0e_4.html", null ],
         [ "static_size_t&lt; StaticString&lt; N &gt; &gt;", "structinviwo_1_1detail_1_1static__size__t_3_01StaticString_3_01N_01_4_01_4.html", null ],
