@@ -77,15 +77,16 @@ bool isUbiquitous(NSURL* url) {
 std::string describeError(NSError* err) {
     if (err == nil) return "unknown error";
     const long code = static_cast<long>([err code]);
-    std::string desc = fmt::format("{} (domain {}, code {})",
-                                   [[err localizedDescription] UTF8String],
-                                   [[err domain] UTF8String], code);
+    std::string desc =
+        fmt::format("{} (domain {}, code {})", [[err localizedDescription] UTF8String],
+                    [[err domain] UTF8String], code);
     // Cocoa 257/513 from the iCloud daemon means the process was denied by macOS privacy (TCC).
     if ([[err domain] isEqualToString:NSCocoaErrorDomain] &&
         (code == NSFileReadNoPermissionError || code == NSFileWriteNoPermissionError)) {
         desc +=
             ". macOS denied the operation: grant the host application Full Disk Access "
-            "(System Settings > Privacy & Security), or add the iCloud entitlements when sandboxed.";
+            "(System Settings > Privacy & Security), or add the iCloud entitlements when "
+            "sandboxed.";
     }
     return desc;
 }
@@ -97,7 +98,7 @@ bool isSupported() noexcept { return true; }
 Status status(const std::filesystem::path& path) {
     std::error_code ec;
     if (!std::filesystem::exists(path, ec)) {
-        throw CloudFilesError(fmt::format("File does not exist: {}", path));
+        throw std::runtime_error(fmt::format("File does not exist: {}", path));
     }
 
     Status result;
@@ -119,9 +120,7 @@ Status status(const std::filesystem::path& path) {
         }
 
         NSNumber* downloading = nil;
-        [url getResourceValue:&downloading
-                       forKey:NSURLUbiquitousItemIsDownloadingKey
-                        error:nil];
+        [url getResourceValue:&downloading forKey:NSURLUbiquitousItemIsDownloadingKey error:nil];
         if (downloading != nil && [downloading boolValue]) {
             result.availability = Availability::Downloading;
             return result;
@@ -133,7 +132,8 @@ Status status(const std::filesystem::path& path) {
                         error:nil];
         if (downloadStatus == nil) {
             result.availability = dataless ? Availability::NotAvailable : Availability::Available;
-        } else if ([downloadStatus isEqualToString:NSURLUbiquitousItemDownloadingStatusNotDownloaded]) {
+        } else if ([downloadStatus
+                       isEqualToString:NSURLUbiquitousItemDownloadingStatusNotDownloaded]) {
             result.availability = Availability::NotAvailable;
         } else {
             // NSURLUbiquitousItemDownloadingStatusDownloaded or ...Current
@@ -158,37 +158,38 @@ void download(const std::filesystem::path& path) {
                                         options:0
                                           error:&coordinationError
                                      byAccessor:^(NSURL* readingURL) {
-                                         NSError* readError = nil;
-                                         NSFileHandle* handle =
-                                             [NSFileHandle fileHandleForReadingFromURL:readingURL
-                                                                                 error:&readError];
-                                         if (handle == nil) {
-                                             accessorError = readError;
-                                             return;
-                                         }
-                                         [handle readDataOfLength:1];  // fault the data in
-                                         [handle closeFile];
+                                       NSError* readError = nil;
+                                       NSFileHandle* handle =
+                                           [NSFileHandle fileHandleForReadingFromURL:readingURL
+                                                                               error:&readError];
+                                       if (handle == nil) {
+                                           accessorError = readError;
+                                           return;
+                                       }
+                                       [handle readDataOfLength:1];  // fault the data in
+                                       [handle closeFile];
                                      }];
         [coordinator release];
 
         NSError* failure = coordinationError != nil ? coordinationError : accessorError;
         if (failure != nil) {
-            error = fmt::format("download failed for '{}': {}", path.string(),
-                                describeError(failure));
+            error =
+                fmt::format("download failed for '{}': {}", path.string(), describeError(failure));
         }
     }
 
-    if (error) throw CloudFilesError(*error);
+    if (error) throw std::runtime_error(*error);
 }
 
 void offload(const std::filesystem::path& path) {
-    // Third-party File Providers under ~/Library/CloudStorage (OneDrive, Dropbox, Google Drive, ...)
-    // have no public eviction API on macOS; only iCloud items can be evicted programmatically.
+    // Third-party File Providers under ~/Library/CloudStorage (OneDrive, Dropbox, Google Drive,
+    // ...) have no public eviction API on macOS; only iCloud items can be evicted programmatically.
     if (path.string().find("/Library/CloudStorage/") != std::string::npos) {
-        throw CloudFilesError(fmt::format(
-            "Offloading is not supported for third-party cloud providers such as OneDrive on macOS; "
-            "use the provider's Finder extension ('Free up space') instead: {}",
-            path.string()));
+        throw std::runtime_error(
+            fmt::format("Offloading is not supported for third-party cloud providers such as "
+                        "OneDrive on macOS; "
+                        "use the provider's Finder extension ('Free up space') instead: {}",
+                        path.string()));
     }
 
     std::optional<std::string> error;
@@ -206,7 +207,7 @@ void offload(const std::filesystem::path& path) {
         }
     }
 
-    if (error) throw CloudFilesError(*error);
+    if (error) throw std::runtime_error(*error);
 }
 
 }  // namespace inviwo::cloudfiles::detail
