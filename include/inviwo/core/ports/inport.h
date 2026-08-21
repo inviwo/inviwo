@@ -151,9 +151,9 @@ protected:
     virtual void invalidate(InvalidationLevel invalidationLevel);
 
     /**
-     * Called with true by Outport::setValid, which is call by Processor::setValid,
+     * Called with true by Outport::setValid called by Processor::setValid,
      * which is called after Processor:process. From above in the network.
-     * called with false (reset) by Processor::setValid after the Processor::process from below
+     * Called with false (reset) by Processor::setValid after the Processor::process from below
      */
     virtual void setChanged(bool changed);
 

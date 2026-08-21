@@ -67,21 +67,21 @@ QPainterPath CurveGraphicsItem::obtainCurvePath() const {
 QPainterPath CurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endPoint) const {
     const int startOff = 6;
 
-    QPointF curveStart = startPoint + QPointF(0, startOff);
-    QPointF curveEnd = endPoint - QPointF(0, startOff);
+    const QPointF curveStart = startPoint + QPointF(0, startOff);
+    const QPointF curveEnd = endPoint - QPointF(0, startOff);
 
     double delta = std::abs(curveEnd.y() - curveStart.y());
 
-    QPointF o = curveEnd - curveStart;
+    const QPointF o = curveEnd - curveStart;
     double min = 37 - startOff * 2;
     min = std::min(min, std::sqrt(o.x() * o.x() + o.y() * o.y()));
     static const double max = 40.0;
     if (delta < min) delta = min;
     if (delta > max) delta = max;
 
-    QPointF off(0, delta);
-    QPointF ctrlPoint1 = curveStart + off;
-    QPointF ctrlPoint2 = curveEnd - off;
+    const QPointF off(0, delta);
+    const QPointF ctrlPoint1 = curveStart + off;
+    const QPointF ctrlPoint2 = curveEnd - off;
 
     QPainterPath bezierCurve;
     bezierCurve.moveTo(startPoint);

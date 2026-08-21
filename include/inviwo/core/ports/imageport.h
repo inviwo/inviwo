@@ -96,7 +96,10 @@ public:
     BaseImageInport(std::string_view identifier, Document help = {},
                     OutportDeterminesSize value = OutportDeterminesSize::No);
     BaseImageInport(std::string_view identifier, bool outportDeterminesSize);
-
+    BaseImageInport(const BaseImageInport&) = delete;
+    BaseImageInport(BaseImageInport&&) = delete;
+    BaseImageInport& operator=(const BaseImageInport&) = delete;
+    BaseImageInport& operator=(BaseImageInport&&) = delete;
     virtual ~BaseImageInport();
     virtual std::string_view getClassIdentifier() const override;
 
@@ -309,7 +312,7 @@ std::string_view BaseImageInport<N>::getClassIdentifier() const {
 template <size_t N>
 std::shared_ptr<const Image> BaseImageInport<N>::getData() const {
     if (this->isConnected()) {
-        auto imgport = static_cast<ImageOutport*>(this->getConnectedOutport());
+        auto* imgport = static_cast<ImageOutport*>(this->getConnectedOutport());
         return getImage(imgport);
     } else {
         return nullptr;
@@ -321,7 +324,7 @@ std::vector<std::shared_ptr<const Image>> BaseImageInport<N>::getVectorData() co
     std::vector<std::shared_ptr<const Image>> res;
 
     for (auto outport : this->outports_) {
-        auto imgport = static_cast<ImageOutport*>(outport->port());
+        auto* imgport = static_cast<ImageOutport*>(outport->port());
         if (auto img = getImage(imgport)) res.emplace_back(img);
     }
 
@@ -334,7 +337,7 @@ BaseImageInport<N>::getSourceVectorData() const {
     std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> res;
 
     for (auto outport : this->outports_) {
-        auto imgport = static_cast<ImageOutport*>(outport->port());
+        auto* imgport = static_cast<ImageOutport*>(outport->port());
         if (auto img = getImage(imgport)) res.emplace_back(imgport, img);
     }
 

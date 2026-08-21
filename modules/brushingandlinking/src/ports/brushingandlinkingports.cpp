@@ -53,14 +53,16 @@ namespace inviwo {
 
 BrushingAndLinkingInport::BrushingAndLinkingInport(
     std::string_view identifier, std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
-    : Inport(identifier, Document{}), manager_(this, invalidationLevels), outport_{nullptr} {
+    : Inport(identifier, Document{})
+    , manager_(this, std::move(invalidationLevels))
+    , outport_{nullptr} {
     setOptional(true);
 }
 BrushingAndLinkingInport::BrushingAndLinkingInport(
     std::string_view identifier, Document help,
     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
     : Inport(identifier, Document{std::move(help)})
-    , manager_(this, invalidationLevels)
+    , manager_(this, std::move(invalidationLevels))
     , outport_{nullptr} {
     setOptional(true);
 }
@@ -205,7 +207,7 @@ void BrushingAndLinkingInport::connectTo(Outport* outport) {
         throw Exception("Trying to connect to a full port.");
     }
 
-    if (auto bnlOutport = dynamic_cast<BrushingAndLinkingOutport*>(outport)) {
+    if (auto* bnlOutport = dynamic_cast<BrushingAndLinkingOutport*>(outport)) {
         outport_ = bnlOutport;
         doConnectTo(outport);
     } else {

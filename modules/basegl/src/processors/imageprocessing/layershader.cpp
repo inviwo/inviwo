@@ -206,7 +206,7 @@ void LayerShader::preProcess(TextureUnitContainer&, Shader& shader, const Layer&
         "outputMap");
 }
 
-void LayerShader::postProcess(const Layer& input, Layer& output) {
+void LayerShader::postProcess(const Layer& input, [[maybe_unused]] Layer& output) {
     inputFormat_.set(input.getDataFormat()->getString());
     dataRange_.input.set(input.dataMap.dataRange);
     valueRange_.input.set(input.dataMap.valueRange);

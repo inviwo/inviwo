@@ -45,6 +45,11 @@ class DataOutport;
 
 template <typename T>
 struct DataOutportInterface {
+    DataOutportInterface() = default;
+    DataOutportInterface(const DataOutportInterface&) = delete;
+    DataOutportInterface(DataOutportInterface&&) = delete;
+    DataOutportInterface& operator=(const DataOutportInterface&) = delete;
+    DataOutportInterface& operator=(DataOutportInterface&&) = delete;
     virtual ~DataOutportInterface() = default;
     virtual size_t size() const = 0;
     virtual std::shared_ptr<const T> getElement(size_t i) const = 0;

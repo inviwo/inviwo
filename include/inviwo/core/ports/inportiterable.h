@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/ports/outportiterable.h>
 
 #include <ranges>
 

@@ -189,12 +189,12 @@ void SurfaceExtraction::process() {
 
     if (stateChange) {  // Need to recompute all...
         for (auto [i, vol] : util::enumerate(volume_)) {
-            jobs.push_back(computeSurface(getColor(i), vol));
+            jobs.emplace_back(computeSurface(getColor(i), vol));
         }
     } else if (colors_.isModified()) {
         for (auto [i, mesh] : util::enumerate(meshes_)) {
             if (colors_[i]->isModified()) {
-                jobs.push_back(changeColor(getColor(i), mesh));
+                jobs.emplace_back(changeColor(getColor(i), mesh));
             } else {
                 jobs.emplace_back([m = mesh](pool::Progress progress) {
                     progress(1.0);
@@ -204,7 +204,7 @@ void SurfaceExtraction::process() {
         }
     }
     dispatchMany(jobs, [this](std::vector<std::shared_ptr<Mesh>> result) {
-        meshes_ = result;
+        meshes_ = std::move(result);
         auto sequence = std::make_shared<DataSequence<Mesh>>(meshes_);
         outport_.setData(sequence);
         newResults();
