@@ -165,6 +165,8 @@ void SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport
     std::shared_ptr<Inport> inport) {
     if (auto typedInport = std::dynamic_pointer_cast<BrushingAndLinkingInport>(inport)) {
         removePortFromGroups(superInport_.get());
+        outport_.getManager().setParent(nullptr);
+
         superInport_ = typedInport;
         addPortToGroup(superInport_.get(), "default");
 
