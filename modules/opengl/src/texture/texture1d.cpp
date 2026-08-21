@@ -48,13 +48,17 @@ Texture1D::Texture1D(size_t width, GLFormat glFormat, GLenum filtering,
                      const SwizzleMask& swizzleMask, GLenum wrapping, GLint level)
     : Texture(GL_TEXTURE_1D, glFormat, filtering, swizzleMask,
               std::span<const GLenum, 1>(&wrapping, 1), level)
-    , width_(width) {}
+    , width_(width) {
+    validateDimensions(width_);
+}
 
-Texture1D::Texture1D(size_t width, GLenum format, GLenum internalformat, GLenum dataType,
+Texture1D::Texture1D(size_t width, GLenum format, GLenum internalFormat, GLenum dataType,
                      GLenum filtering, const SwizzleMask& swizzleMask, GLenum wrapping, GLint level)
-    : Texture(GL_TEXTURE_1D, format, internalformat, dataType, filtering, swizzleMask,
+    : Texture(GL_TEXTURE_1D, format, internalFormat, dataType, filtering, swizzleMask,
               std::span<const GLenum, 1>(&wrapping, 1), level)
-    , width_(width) {}
+    , width_(width) {
+    validateDimensions(width_);
+}
 
 Texture1D::Texture1D(const Texture1D& rhs) : Texture(rhs), width_(rhs.width_) {
     initialize(nullptr);
@@ -141,7 +145,20 @@ GLenum Texture1D::getWrapping() const {
     return wrapping;
 }
 
+void Texture1D::validateDimensions(size_t dims) {
+    if (dims == 0) {
+        throw Exception{SourceContext{}, "Texture dimensions have to be greater than 0, got {}",
+                        dims};
+    }
+    if (dims > maxTextureSize()) {
+        throw Exception{SourceContext{}, "Texture size: {}, not supported, max is: {}", dims,
+                        maxTextureSize()};
+    }
+}
+
 void Texture1D::resize(size_t width) {
+    validateDimensions(width);
+
     if (width_ != width) {
         width_ = width;
         setPBOAsInvalid();
