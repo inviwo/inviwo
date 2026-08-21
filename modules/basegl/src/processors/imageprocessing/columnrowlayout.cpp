@@ -201,10 +201,10 @@ const std::vector<std::shared_ptr<const Image>>& MultiInput::getData() {
 
 void MultiInput::propagateSizes() {
     for (auto&& [view, outport] : std::views::zip(views(), outports)) {
-        if (!view.empty()) {
-            ResizeEvent e{view.size};
-            inport.propagateEvent(&e, outport);
-        }
+        // Propagate a 1x1 size to "non-active" ports, to ensure that we don't leave a "large"
+        // entry in requestedDimensions_ in the ImageOutport.
+        ResizeEvent e{view.empty() ? size2_t{1, 1} : size2_t{view.size}};
+        inport.propagateEvent(&e, outport);
     }
 }
 
@@ -765,10 +765,6 @@ glm::dvec2 remapToSubImage(glm::dvec2 normCoord, glm::dvec2 size, glm::dvec2 sub
 }
 
 void Layout::calculateViews(ivec2 imgSize) {
-    if (imgSize.x == 0 || imgSize.y == 0) {
-        log::warn("Empty img {}", imgSize);
-    }
-
     std::vector<double> xpos;
     {
         xpos.emplace_back(0.0);
@@ -784,6 +780,9 @@ void Layout::calculateViews(ivec2 imgSize) {
         ypos.insert(ypos.end(), hs.begin(), hs.end());
         ypos.emplace_back(0.0);
     }
+
+    const auto nonActive = views_ | std::views::transform([](auto& view) { return view.empty(); }) |
+                           std::ranges::to<std::vector>();
 
     views_.clear();
     eventTransformer_.views.clear();
@@ -807,7 +806,14 @@ void Layout::calculateViews(ivec2 imgSize) {
             ++i;
         }
     }
-    notifyObserversActiveConnectionsChange(this);
+
+    if (!std::ranges::equal(views_ | std::views::transform([](auto& view) { return view.empty(); }),
+                            nonActive)) {
+        for (auto* port : getInports()) {
+            port->readyUpdate();
+        }
+        notifyObserversActiveConnectionsChange(this);
+    }
 }
 
 void Layout::splittersChanged() {

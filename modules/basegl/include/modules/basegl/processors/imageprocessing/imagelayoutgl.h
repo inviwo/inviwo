@@ -88,7 +88,7 @@ protected:
     void onStatusChange(bool propagate = true);
 
 private:
-    ImageMultiInport multiinport_;
+    ImageMultiInport multiInport_;
     ImageOutport outport_;
 
     OptionProperty<Layout> layout_;

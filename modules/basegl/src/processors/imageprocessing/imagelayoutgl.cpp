@@ -105,7 +105,7 @@ const ProcessorInfo& ImageLayoutGL::getProcessorInfo() const { return processorI
 
 ImageLayoutGL::ImageLayoutGL()
     : Processor()
-    , multiinport_("multiinport", "Multi-inport for multiple images."_help)
+    , multiInport_("multiinport", "Multi-inport for multiple images."_help)
     , outport_("outport", "Resulting layout of input images"_help)
     , layout_("layout", "Layout", "Applied layout"_help,
               {{"single", "Single", Layout::Single},
@@ -146,17 +146,17 @@ ImageLayoutGL::ImageLayoutGL()
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    addPort(multiinport_);
-    multiinport_.setIsReadyUpdater([this]() {
-        return multiinport_.isConnected() &&
+    addPort(multiInport_);
+    multiInport_.setIsReadyUpdater([this]() {
+        return multiInport_.isConnected() &&
                std::ranges::all_of(
-                   multiinport_.getConnectedOutports() | std::views::take(viewManager_.size()),
+                   multiInport_.getConnectedOutports() | std::views::take(viewManager_.size()),
                    [](Outport* p) { return p->isReady(); });
     });
     // Ensure that viewports are up-to-date
     // before isConnectionActive is called
-    multiinport_.onConnect([this]() { updateViewports(currentDim_, true); });
-    multiinport_.onDisconnect([this]() { updateViewports(currentDim_, true); });
+    multiInport_.onConnect([this]() { updateViewports(currentDim_, true); });
+    multiInport_.onDisconnect([this]() { updateViewports(currentDim_, true); });
 
     addPort(outport_);
 
@@ -211,47 +211,36 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
     if (event->hasBeenUsed()) return;
 
     if (event->hash() == ResizeEvent::chash()) {
-        auto resizeEvent = static_cast<ResizeEvent*>(event);
+        auto* resizeEvent = static_cast<ResizeEvent*>(event);
         // Note, no auto since we want a copy of the views
-        std::vector<ViewManager::View> prevViews = viewManager_.getViews();
+        const auto nonActive = viewManager_.getViews() |
+                               std::views::transform([](auto& view) { return view.empty(); }) |
+                               std::ranges::to<std::vector>();
+
         updateViewports(resizeEvent->size(), true);
-        const auto minNum = std::min(multiinport_.getNumberOfConnections(), viewManager_.size());
 
-        auto changedFromZeroDim = [](int prev, int current) {
-            return (prev <= 0 && current > 0) || (prev > 0 && current <= 0);
-        };
+        for (size_t i = 0; i < multiInport_.getNumberOfConnections(); ++i) {
+            ResizeEvent e{i >= viewManager_.size() || viewManager_[i].empty()
+                              ? size2_t{1, 1}
+                              : size2_t{viewManager_[i].size}};
+            multiInport_.propagateEvent(&e, multiInport_.getConnectedOutport(i));
+        }
 
-        bool updated = false;
-        for (size_t i = 0; i < minNum; ++i) {
-            ResizeEvent e(uvec2(viewManager_[i].size));
-            multiinport_.propagateEvent(&e, multiinport_.getConnectedOutport(i));
-            // Only evaluate connections if they will be displayed
-            if (i < prevViews.size() &&
-                (changedFromZeroDim(prevViews[i].size.x, viewManager_[i].size.x) ||
-                 changedFromZeroDim(prevViews[i].size.y, viewManager_[i].size.y))) {
-                updated = true;
-            } else if (glm::any(glm::lessThanEqual(viewManager_[i].size, ivec2(0)))) {
-                // New view has zero size
-                updated = true;
-            }
-        }
-        for (size_t i = minNum; i < multiinport_.getNumberOfConnections(); ++i) {
-            ResizeEvent e(size2_t(0));
-            multiinport_.propagateEvent(&e, multiinport_.getConnectedOutport(i));
-        }
-        if (updated || prevViews.size() != viewManager_.size()) {
-            multiinport_.readyUpdate();
+        if (!std::ranges::equal(viewManager_.getViews() |
+                                    std::views::transform([](auto& view) { return view.empty(); }),
+                                nonActive)) {
+            multiInport_.readyUpdate();
             notifyObserversActiveConnectionsChange(this);
         }
     } else {
         auto prop = [&](Event* newEvent, size_t ind) {
-            if (ind < viewManager_.size() && ind < multiinport_.getNumberOfConnections()) {
-                multiinport_.propagateEvent(newEvent, multiinport_.getConnectedOutport(ind));
+            if (ind < viewManager_.size() && ind < multiInport_.getNumberOfConnections()) {
+                multiInport_.propagateEvent(newEvent, multiInport_.getConnectedOutport(ind));
             }
         };
         auto propagated = viewManager_.propagateEvent(event, prop);
-        if (!propagated && event->shouldPropagateTo(&multiinport_, this, source)) {
-            multiinport_.propagateEvent(event);
+        if (!propagated && event->shouldPropagateTo(&multiInport_, this, source)) {
+            multiInport_.propagateEvent(event);
         }
     }
 }
@@ -326,15 +315,15 @@ void ImageLayoutGL::onStatusChange(bool propagate) {
 }
 
 bool ImageLayoutGL::isConnectionActive([[maybe_unused]] Inport* from, Outport* to) const {
-    IVW_ASSERT(from == &multiinport_,
+    IVW_ASSERT(from == &multiInport_,
                "ImageLayoutGL was designed for one inport but isConnectionActive was called with "
                "another inport");
-    const auto ports = multiinport_.getConnectedOutports();
-    auto portIt = std::find(ports.begin(), ports.end(), to);
+    const auto ports = multiInport_.getConnectedOutports();
+    auto portIt = std::ranges::find(ports, to);
     auto id = static_cast<size_t>(std::distance(ports.begin(), portIt));
     if (id < viewManager_.size()) {
         // Note: We cannot use Outport dimensions since it might not exist
-        return glm::compMul(viewManager_.getViews()[id].size) != 0;
+        return !viewManager_[id].empty();
     } else {
         // More connections than views
         return false;
@@ -343,7 +332,7 @@ bool ImageLayoutGL::isConnectionActive([[maybe_unused]] Inport* from, Outport* t
 
 void ImageLayoutGL::process() {
     TextureUnit::setZeroUnit();
-    auto images = multiinport_.getVectorData();
+    auto images = multiInport_.getVectorData();
 
     TextureUnit colorUnit, depthUnit, pickingUnit;
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
@@ -405,7 +394,7 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
                          dim.x),
         leftBounds.x, leftBounds.y);
 
-    const int portCount = static_cast<int>(multiinport_.getNumberOfConnections());
+    const int portCount = static_cast<int>(multiInport_.getNumberOfConnections());
 
     const int widthMultiple = portCount > 1 ? dim.x / portCount : dim.x;
     const int heightMultiple = portCount > 1 ? dim.y / portCount : dim.y;
