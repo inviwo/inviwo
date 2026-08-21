@@ -94,11 +94,10 @@ MultiInput::MultiInput(std::function<void(bool)> aUpdate,
     , callbacks{} {
     inport.setIsReadyUpdater([this]() {
         return inport.isConnected() &&
-               std::ranges::any_of(std::views::zip(inport.getConnectedOutports(), views()),
-                                   [](auto item) {
-                                       auto [port, view] = item;
-                                       return !view.empty() && port->isReady();
-                                   });
+               std::ranges::any_of(std::views::zip(outports, views()), [](auto item) {
+                   auto [port, view] = item;
+                   return !view.empty() && port->isReady();
+               });
     });
 
     inport.onConnect([this]() {
@@ -114,7 +113,7 @@ MultiInput::MultiInput(std::function<void(bool)> aUpdate,
 void MultiInput::addPorts(Processor* p) { p->addPort(inport); }
 void MultiInput::removePorts(Processor* p) { p->removePort(&inport); }
 
-size_t MultiInput::size() const { return inport.getConnectedOutports().size(); }
+size_t MultiInput::size() const { return outports.size(); }
 
 void MultiInput::setSorting(Sorting sSortOrder) {
     sortOrder = sSortOrder;
@@ -222,7 +221,7 @@ void MultiInput::propagateEvent(Event* event, Processor* p, Outport* source) {
 
 size_t MultiInput::indexOf(Outport* to) const {
     auto portIt = std::ranges::find(outports, to);
-    return static_cast<size_t>(std::distance(outports.begin(), portIt));
+    return static_cast<size_t>(std::ranges::distance(outports.begin(), portIt));
 }
 
 bool MultiInput::updateLabels(std::vector<std::string>& labels, std::string_view format) const {
