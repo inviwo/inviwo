@@ -71,8 +71,11 @@ struct DataOutportBase : DataOutportInterface<T> {
         if constexpr (Flat && requires {
                           { getElements()->size() } -> std::convertible_to<size_t>;
                       }) {
-            return getElements()->size();
-
+            if (auto data = getElements()) {
+                return data->size();
+            } else {
+                return 0;
+            }
         } else {
             return 1;
         }
