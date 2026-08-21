@@ -53,6 +53,7 @@
 #include <modules/basegl/viewmanager.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 
@@ -149,9 +150,12 @@ ImageLayoutGL::ImageLayoutGL()
     addPort(multiInport_);
     multiInport_.setIsReadyUpdater([this]() {
         return multiInport_.isConnected() &&
-               std::ranges::all_of(
-                   multiInport_.getConnectedOutports() | std::views::take(viewManager_.size()),
-                   [](Outport* p) { return p->isReady(); });
+               std::ranges::any_of(
+                   std::views::zip(multiInport_.getConnectedOutports(), viewManager_.getViews()),
+                   [](auto item) {
+                       auto [port, view] = item;
+                       return !view.empty() && port->isReady();
+                   });
     });
     // Ensure that viewports are up-to-date
     // before isConnectionActive is called
@@ -332,8 +336,6 @@ bool ImageLayoutGL::isConnectionActive([[maybe_unused]] Inport* from, Outport* t
 
 void ImageLayoutGL::process() {
     TextureUnit::setZeroUnit();
-    auto images = multiInport_.getVectorData();
-
     TextureUnit colorUnit, depthUnit, pickingUnit;
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
@@ -342,16 +344,40 @@ void ImageLayoutGL::process() {
     shader_.setUniform("depth_", depthUnit.getUnitNumber());
     shader_.setUniform("picking_", pickingUnit.getUnitNumber());
 
-    size_t minNum = std::min(images.size(), viewManager_.size());
-    for (size_t i = 0; i < minNum; ++i) {
-        if (glm::any(glm::lessThanEqual(viewManager_[i].size, ivec2(0)))) {
-            continue;
+    auto images =
+        multiInport_.getConnectedOutports() | std::views::transform([&](Outport* outport) {
+            if (outport->isReady()) {
+                return static_cast<ImageOutport*>(outport)->getDataForPort(&multiInport_);
+            } else {
+                return std::shared_ptr<const Image>{};
+            }
+        });
+
+    for (auto&& [image, view] : std::views::zip(images, viewManager_.getViews())) {
+        if (!view.empty() && image) {
+            utilgl::bindTextures(*image, colorUnit, depthUnit, pickingUnit);
+            glViewport(view.pos.x, view.pos.y, view.size.x, view.size.y);
+            utilgl::singleDrawImagePlaneRect();
         }
-        utilgl::bindTextures(*images[i], colorUnit, depthUnit, pickingUnit);
-        glViewport(viewManager_[i].pos.x, viewManager_[i].pos.y, viewManager_[i].size.x,
-                   viewManager_[i].size.y);
-        utilgl::singleDrawImagePlaneRect();
     }
+
+    auto noise = SharedOpenGLResources::getPtr()->getNoiseShader();
+    noise->activate();
+    for (auto&& [image, view] : std::views::zip(images, viewManager_.getViews())) {
+        if (!view.empty() && !image) {
+            glViewport(view.pos.x, view.pos.y, view.size.x, view.size.y);
+            utilgl::singleDrawImagePlaneRect();
+        }
+    }
+
+    for (auto&& view : viewManager_.getViews() | std::views::drop(images.size())) {
+        if (!view.empty()) {
+            glViewport(view.pos.x, view.pos.y, view.size.x, view.size.y);
+            utilgl::singleDrawImagePlaneRect();
+        }
+    }
+
+    noise->deactivate();
 
     ivec2 dim = outport_.getData()->getDimensions();
     glViewport(0, 0, dim.x, dim.y);
