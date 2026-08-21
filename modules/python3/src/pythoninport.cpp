@@ -55,7 +55,7 @@ void PythonInport::connectTo(Outport* outport) {
         throw Exception("Trying to connect to a full port.");
     }
 
-    if (auto pythonOutport = dynamic_cast<PythonOutport*>(outport)) {
+    if (auto* pythonOutport = dynamic_cast<PythonOutport*>(outport)) {
         outport_ = pythonOutport;
         doConnectTo(outport);
     } else {

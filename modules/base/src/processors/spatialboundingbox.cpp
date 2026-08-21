@@ -39,10 +39,12 @@ namespace inviwo {
 const ProcessorInfo SpatialBoundingBox::processorInfo_{
     "org.inviwo.SpatialBoundingBox",  // Class identifier
     "Spatial Bounding Box",           // Display name
-    "Undefined",                      // Category
+    "Geometry",                       // Category
     CodeState::Stable,                // Code state
     Tags::CPU,                        // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+    R"(This processor takes an arbitrary `SpatialEntity`, for example a Layer, Mesh,
+    or Volume, and outputs its bounding box as a Mesh. The bounding box mesh is given in
+    model coordinates using the same world transformation as the input.)"_unindentHelp,
 };
 
 const ProcessorInfo& SpatialBoundingBox::getProcessorInfo() const { return processorInfo_; }
@@ -62,7 +64,7 @@ void SpatialBoundingBox::process() {
     mesh->setWorldMatrix(inport_.getData()->getWorldMatrix());
 
     for (auto i : std::views::iota(0uz, 3uz)) {
-        if (auto* axis = inport_.getData()->getAxis(i)) {
+        if (const auto* axis = inport_.getData()->getAxis(i)) {
             mesh->axes[i] = *axis;
         }
     }

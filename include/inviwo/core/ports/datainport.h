@@ -64,6 +64,10 @@ public:
     static constexpr size_t maxConnections = N;
 
     DataInport(std::string_view identifier, Document help = {});
+    DataInport(const DataInport&) = delete;
+    DataInport(DataInport&&) = delete;
+    DataInport& operator=(const DataInport&) = delete;
+    DataInport& operator=(DataInport&&) = delete;
     virtual ~DataInport() = default;
 
     virtual std::string_view getClassIdentifier() const override;

@@ -55,6 +55,10 @@ class DataOutport : public Outport, public detail::DataOutportImpl<DataOutport<T
 public:
     using type = T;
     DataOutport(std::string_view identifier, Document help = {});
+    DataOutport(const DataOutport&) = delete;
+    DataOutport(DataOutport&&) = delete;
+    DataOutport& operator=(const DataOutport&) = delete;
+    DataOutport& operator=(DataOutport&&) = delete;
     virtual ~DataOutport() = default;
 
     virtual std::string_view getClassIdentifier() const override;
