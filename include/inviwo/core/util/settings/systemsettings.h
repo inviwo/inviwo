@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
 
 namespace inviwo {
 
@@ -60,7 +61,9 @@ public:
     MultiFileProperty moduleSearchPaths_;
     BoolProperty runtimeModuleReloading_;
     OptionProperty<MessageBreakLevel> breakOnMessage_;
+    EventProperty breakOnNextMessageProperty_;
     BoolProperty breakOnException_;
+    EventProperty breakOnNextExceptionProperty_;
     BoolProperty stackTraceInException_;
     BoolProperty enableResourceTracking_;
 
@@ -71,6 +74,9 @@ public:
 
     std::unique_ptr<LogStream> cout_;
     std::unique_ptr<LogStream> cerr_;
+
+    bool breakOnNextException_;
+    bool breakOnException();
 };
 
 }  // namespace inviwo

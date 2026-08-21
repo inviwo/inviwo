@@ -63,7 +63,23 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                       {MessageBreakLevel::Off, MessageBreakLevel::Error, MessageBreakLevel::Warn,
                        MessageBreakLevel::Info},
                       0}
+    , breakOnNextMessageProperty_{"breakOnNextMessage",
+                                  "Break On Next Warning/Error",
+                                  [](Event*) {
+                                      LogCentral::getPtr()->setMessageBreakOnNextLevel(
+                                          MessageBreakLevel::Warn);
+                                  },
+                                  IvwKey::M,
+                                  KeyState::Press,
+                                  KeyModifier::Control | KeyModifier::Alt}
     , breakOnException_{"breakOnException", "Break on Exception", false}
+    , breakOnNextExceptionProperty_{"breakOnNextException",
+                                    "Break On Next Exception",
+                                    [this](Event*) { breakOnNextException_ = true; },
+                                    IvwKey::E,
+                                    KeyState::Press,
+                                    KeyModifier::Control | KeyModifier::Alt}
+
     , stackTraceInException_{"stackTraceInException", "Create Stack Trace for Exceptions", false}
     , enableResourceTracking_{"enableResurceTracking",
                               "Track creation and destruction of resources",
@@ -76,18 +92,19 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                     "This does not work when console "
                     "logging is enabled with --logconsole or -c"_help,
                     false}
-    , redirectCerr_{
-          "redirectCerr", "Redirect cerr to LogCentral",
-          "Enabling this means that any std::cerr messages will no longer end up in the "
-          "console, which can be confusing. "
-          "This does not work when console logging is enabled with --logconsole or -c"_help,
-          false} {
+    , redirectCerr_{"redirectCerr", "Redirect cerr to LogCentral",
+                    "Enabling this means that any std::cerr messages will no longer end up in the "
+                    "console, which can be confusing. "
+                    "This does not work when console logging is enabled with --logconsole or -c"_help,
+                    false}
+    , breakOnNextException_{false} {
 
     addProperties(poolSize_, enablePortInspectors_, portInspectorSize_, enableTouchProperty_,
                   enableGesturesProperty_, enablePickingProperty_, enableSoundProperty_,
                   logStackTraceProperty_, moduleSearchPaths_, runtimeModuleReloading_,
-                  breakOnMessage_, breakOnException_, stackTraceInException_,
-                  enableResourceTracking_, redirectCout_, redirectCerr_);
+                  breakOnMessage_, breakOnNextMessageProperty_, breakOnException_,
+                  breakOnNextExceptionProperty_, stackTraceInException_, enableResourceTracking_,
+                  redirectCout_, redirectCerr_);
 
     logStackTraceProperty_.onChange(
         [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });
@@ -148,6 +165,11 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     });
 
     load();
+}
+
+bool SystemSettings::breakOnException() {
+    util::OnScopeExit reset{[this]() { breakOnNextException_ = false; }};
+    return breakOnException_.get() || breakOnNextException_;
 }
 
 SystemSettings::~SystemSettings() = default;
