@@ -168,7 +168,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
 }
 
 bool SystemSettings::breakOnException() {
-    util::OnScopeExit reset{[this]() { breakOnNextException_ = false; }};
+    const util::OnScopeExit reset{[this]() { breakOnNextException_ = false; }};
     return breakOnException_.get() || breakOnNextException_;
 }
 
