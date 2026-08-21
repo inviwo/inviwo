@@ -152,7 +152,7 @@ void Texture3D::upload(const void* data) {
     LGL_ERROR;
 }
 
-void Texture3D::validateDimensions(size3_t dims) const {
+void Texture3D::validateDimensions(size3_t dims) {
     if (glm::any(glm::equal(dims, size3_t{0}))) {
         throw Exception{SourceContext{}, "Texture dimensions have to be greater than 0, got {}",
                         dims};
