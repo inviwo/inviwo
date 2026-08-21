@@ -65,7 +65,6 @@ struct IVW_MODULE_BASEGL_API DynImagePort {
     TransformationList* transform;
     FloatVec2Property* size;
     IntSize2Property* imageSize;
-    size2_t oldImageSize;
     std::shared_ptr<std::function<void()>> sizeCallback;
 
     struct Picking {

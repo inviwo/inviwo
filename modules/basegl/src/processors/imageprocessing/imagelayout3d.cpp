@@ -42,7 +42,6 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/stringshaderresource.h>
 
-
 #include <glm/gtx/transform.hpp>
 
 namespace inviwo {
@@ -144,12 +143,10 @@ DynImagePort::DynImagePort(ImageLayout3D* layoutProcessor, std::string_view iden
     , transform{aTransform}
     , size{aSize}
     , imageSize{anImageSize}
-    , oldImageSize{imageSize->get()}
     , sizeCallback{imageSize->onChangeScoped([this]() {
         rendercontext::activateDefault();
-        ResizeEvent e{imageSize->get(), oldImageSize};
+        ResizeEvent e{imageSize->get()};
         port->propagateEvent(&e);
-        oldImageSize = imageSize->get();
     })}
     , picking{} {
 
@@ -163,12 +160,10 @@ DynImagePort::DynImagePort(DynImagePort&& rhs) noexcept
     , transform{rhs.transform}
     , size{rhs.size}
     , imageSize{rhs.imageSize}
-    , oldImageSize{rhs.oldImageSize}
     , sizeCallback{imageSize->onChangeScoped([this]() {
         rendercontext::activateDefault();
-        ResizeEvent e{imageSize->get(), oldImageSize};
+        ResizeEvent e{imageSize->get()};
         port->propagateEvent(&e);
-        oldImageSize = imageSize->get();
     })}
     , picking{rhs.picking} {}
 
@@ -179,13 +174,11 @@ DynImagePort& DynImagePort::operator=(DynImagePort&& that) noexcept {
         std::swap(that.size, size);
         std::swap(that.transform, transform);
         std::swap(that.imageSize, imageSize);
-        std::swap(that.oldImageSize, oldImageSize);
 
         sizeCallback = imageSize->onChangeScoped([this]() {
             rendercontext::activateDefault();
-            ResizeEvent e{imageSize->get(), oldImageSize};
+            ResizeEvent e{imageSize->get()};
             port->propagateEvent(&e);
-            oldImageSize = imageSize->get();
         });
         that.sizeCallback.reset();
 
@@ -358,11 +351,10 @@ void ImageLayout3D::propagateEvent(Event* event, Outport* source) {
         }
     }
 
-    if (/*auto* resizeEvent = */event->getAs<ResizeEvent>()) {
+    if (/*auto* resizeEvent = */ event->getAs<ResizeEvent>()) {
         for (auto& port : vecPorts_) {
-            ResizeEvent e{port.imageSize->get(), port.oldImageSize};
+            ResizeEvent e{port.imageSize->get()};
             port.port->propagateEvent(&e);
-            port.oldImageSize = port.imageSize->get();
         }
     }
 

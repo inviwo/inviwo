@@ -105,7 +105,7 @@ void ImageExport::sendResizeEvent() {
 
     if (newSize != prevSize_) {
         rendercontext::activateDefault();
-        ResizeEvent event{newSize, prevSize_};
+        ResizeEvent event{newSize};
         this->port_.propagateEvent(&event, nullptr);
         prevSize_ = newSize;
     }
