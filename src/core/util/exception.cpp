@@ -58,7 +58,7 @@ std::vector<std::string> stackTrace() {
 
 bool breakOnException() {
     if (InviwoApplication::isInitialized()) {
-        return InviwoApplication::getPtr()->getSystemSettings().breakOnException_;
+        return InviwoApplication::getPtr()->getSystemSettings().breakOnException();
     }
     return false;
 }

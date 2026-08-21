@@ -101,6 +101,7 @@ public:
     bool getLogStacktrace() const;
 
     void setMessageBreakLevel(MessageBreakLevel level);
+    void setMessageBreakOnNextLevel(MessageBreakLevel level);
     MessageBreakLevel getMessageBreakLevel() const;
 
 private:
@@ -117,6 +118,7 @@ private:
 #include <warn/pop>
     bool logStacktrace_ = false;
     MessageBreakLevel breakLevel_ = MessageBreakLevel::Off;
+    MessageBreakLevel breakOnNextLevel_ = MessageBreakLevel::Off;
 };
 
 /**

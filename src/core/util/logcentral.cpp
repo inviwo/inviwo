@@ -43,6 +43,23 @@
 
 namespace inviwo {
 
+namespace {
+constexpr bool shouldBreak(LogLevel level, MessageBreakLevel breakLevel) {
+    switch (breakLevel) {
+        case MessageBreakLevel::Off:
+            return false;
+        case MessageBreakLevel::Error:
+            return level >= LogLevel::Error;
+        case MessageBreakLevel::Warn:
+            return level >= LogLevel::Warn;
+        case MessageBreakLevel::Info:
+            return level >= LogLevel::Info;
+        default:
+            return false;
+    }
+}
+}  // namespace
+
 LogCentral::LogCentral() : logVerbosity_(LogVerbosity::Info), logStacktrace_(false) {}
 
 void LogCentral::setVerbosity(LogVerbosity verbosity) {
@@ -73,6 +90,7 @@ void LogCentral::log(std::string_view source, LogLevel level, LogAudience audien
                      std::string_view msg) {
 
     auto breakLevel = MessageBreakLevel::Off;
+    auto breakOnNextLevel = MessageBreakLevel::Off;
     {
         const std::scoped_lock lock{mutex_};
         fmt::memory_buffer buff;
@@ -102,22 +120,14 @@ void LogCentral::log(std::string_view source, LogLevel level, LogAudience audien
         }
 
         breakLevel = breakLevel_;
+        breakOnNextLevel = breakOnNextLevel_;
     }
 
-    switch (breakLevel) {
-        case MessageBreakLevel::Off:
-            break;
-        case MessageBreakLevel::Error:
-            if (level >= LogLevel::Error) util::debugBreak();
-            break;
-        case MessageBreakLevel::Warn:
-            if (level >= LogLevel::Warn) util::debugBreak();
-            break;
-        case MessageBreakLevel::Info:
-            if (level >= LogLevel::Info) util::debugBreak();
-            break;
-        default:
-            break;
+    if (shouldBreak(level, breakOnNextLevel)) {
+        setMessageBreakOnNextLevel(MessageBreakLevel::Off);
+        util::debugBreak();
+    } else if (shouldBreak(level, breakLevel)) {
+        util::debugBreak();
     }
 }
 
@@ -135,6 +145,12 @@ void LogCentral::setMessageBreakLevel(MessageBreakLevel level) {
     const std::scoped_lock lock{mutex_};
     breakLevel_ = level;
 }
+
+void LogCentral::setMessageBreakOnNextLevel(MessageBreakLevel level) {
+    const std::scoped_lock lock{mutex_};
+    breakOnNextLevel_ = level;
+}
+
 MessageBreakLevel LogCentral::getMessageBreakLevel() const {
     const std::scoped_lock lock{mutex_};
     return breakLevel_;
