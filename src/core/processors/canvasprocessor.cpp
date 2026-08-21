@@ -171,7 +171,6 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                           "is not visible. Can be enable if you only want to save images and "
                           "not show the canvas for example"_help,
                           false}
-    , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{
           createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::classIdentifier)} {
     addPort(inport_);
@@ -278,7 +277,7 @@ size2_t CanvasProcessor::getCustomDimensions() const { return customInputDimensi
 
 void CanvasProcessor::sizeChanged() {
     const NetworkLock lock(this);
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
 
     customInputDimensions_.setVisible(enableCustomInputDimensions_);
     customInputDimensions_.setReadOnly(keepAspectRatio_);
@@ -290,9 +289,7 @@ void CanvasProcessor::sizeChanged() {
         customInputDimensions_.set(calcScaledSize(dimensions_, aspectRatioScaling_));
     }
 
-    ResizeEvent resizeEvent{enableCustomInputDimensions_ ? customInputDimensions_ : dimensions_,
-                            previousImageSize_};
-    previousImageSize_ = resizeEvent.size();
+    ResizeEvent resizeEvent{enableCustomInputDimensions_ ? customInputDimensions_ : dimensions_};
 
     inputSize_.invalidate(InvalidationLevel::Valid, &customInputDimensions_);
     inport_.propagateEvent(&resizeEvent);

@@ -48,6 +48,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <modules/base/processors/dataexport.h>
 
 #include <functional>
@@ -104,7 +105,8 @@ void ImageExport::sendResizeEvent() {
     const size2_t newSize = outportDeterminesSize_ ? size2_t{0} : *imageSize_;
 
     if (newSize != prevSize_) {
-        ResizeEvent event{newSize, prevSize_};
+        rendercontext::activateDefault();
+        ResizeEvent event{newSize};
         this->port_.propagateEvent(&event, nullptr);
         prevSize_ = newSize;
     }

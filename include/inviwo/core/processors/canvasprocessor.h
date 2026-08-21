@@ -129,7 +129,6 @@ private:
     void sizeChanged();
     static size2_t calcScaledSize(size2_t size, float scale);
 
-    size2_t previousImageSize_;
     ProcessorWidgetMetaData* widgetMetaData_;
 };
 

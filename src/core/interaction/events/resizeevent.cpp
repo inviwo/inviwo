@@ -39,11 +39,7 @@
 
 namespace inviwo {
 
-ResizeEvent::ResizeEvent(size2_t canvasSize)
-    : Event(), size_(canvasSize), previousSize_(canvasSize) {}
-
-ResizeEvent::ResizeEvent(size2_t canvasSize, size2_t previousSize)
-    : Event(), size_(canvasSize), previousSize_(previousSize) {}
+ResizeEvent::ResizeEvent(size2_t canvasSize) : Event(), size_(canvasSize) {}
 
 ResizeEvent* ResizeEvent::clone() const { return new ResizeEvent(*this); }
 
@@ -58,17 +54,12 @@ bool ResizeEvent::shouldPropagateTo(Inport* inport, Processor* processor, Outpor
 
 size2_t ResizeEvent::size() const { return size_; }
 
-size2_t ResizeEvent::previousSize() const { return previousSize_; }
-
-void ResizeEvent::setSize(size2_t csize) { size_ = csize; }
-
-void ResizeEvent::setPreviousSize(size2_t previousSize) { previousSize_ = previousSize; }
+void ResizeEvent::setSize(size2_t newSize) { size_ = newSize; }
 
 uint64_t ResizeEvent::hash() const { return chash(); }
 
 void ResizeEvent::print(fmt::memory_buffer& buff) const {
-    util::printEvent(buff, "ResizeEvent", std::make_pair("size", size_),
-                     std::make_pair("prev", previousSize_));
+    util::printEvent(buff, "ResizeEvent", std::make_pair("size", size_));
 }
 
 }  // namespace inviwo

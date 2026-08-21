@@ -49,6 +49,7 @@
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <modules/basegl/datastructures/splittersettings.h>
 #include <modules/basegl/properties/splitterproperty.h>
 #include <modules/basegl/rendering/splitterrenderer.h>
@@ -527,6 +528,7 @@ void Layout::calculateViews(ivec2 imgSize) {
 
 void Layout::splittersChanged() {
     const NetworkLock lock(this);
+    rendercontext::activateDefault();
     ResizeEvent e(currentDim_);
     propagateEvent(&e, &outport_);
 }
