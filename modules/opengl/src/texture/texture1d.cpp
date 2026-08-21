@@ -145,7 +145,7 @@ GLenum Texture1D::getWrapping() const {
     return wrapping;
 }
 
-void Texture1D::validateDimensions(size_t dims) const {
+void Texture1D::validateDimensions(size_t dims) {
     if (dims == 0) {
         throw Exception{SourceContext{}, "Texture dimensions have to be greater than 0, got {}",
                         dims};

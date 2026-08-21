@@ -74,7 +74,7 @@ public:
     void resize(size_t width);
 
 private:
-    void validateDimensions(size_t) const;
+    static void validateDimensions(size_t);
     size_t width_;
 };
 
