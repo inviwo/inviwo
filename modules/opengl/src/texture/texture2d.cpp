@@ -153,7 +153,7 @@ std::array<GLenum, 2> Texture2D::getWrapping() const {
     return wrapping;
 }
 
-void Texture2D::validateDimensions(size2_t dims) const {
+void Texture2D::validateDimensions(size2_t dims) {
     if (glm::any(glm::equal(dims, size2_t{0}))) {
         throw Exception{SourceContext{}, "Texture dimensions have to be greater than 0, got {}",
                         dims};
