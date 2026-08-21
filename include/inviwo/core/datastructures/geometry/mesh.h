@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/geometry/meshrepresentation.h>
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/typelist.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/ports/datainport.h>
@@ -55,6 +56,7 @@ class IVW_CORE_API Mesh : public DataGroup<Mesh, MeshRepresentation>,
                           public SpatialEntity,
                           public MetaDataOwner {
 public:
+    using Bases = TypeList<SpatialEntity, MetaDataOwner>;
     struct IVW_CORE_API MeshInfo {
         DrawType dt = DrawType::Points;
         ConnectivityType ct = ConnectivityType::None;

@@ -105,8 +105,7 @@ void ProcessorNetwork::removeProcessorHelper(Processor* processor) {
         }
     }
     for (auto* inport : processor->getInports()) {
-        const std::vector<Outport*> outports = inport->getConnectedOutports();
-        for (auto* outport : outports) {
+        for (auto* outport : inport->getConnectedOutports() | std::views::reverse) {
             removeConnection(outport, inport);
         }
     }

@@ -97,6 +97,8 @@ void SequenceSelect<T, OutportType>::process() {
             outport_.detachData();
             return;
         }
+        index_.setMaxValue(std::max(data->size(), 1uz) - 1uz);
+
         size_t index = std::clamp(index_.get(), 0uz, data->size() - 1);
         outport_.setData((*data)[index]);
     } else {

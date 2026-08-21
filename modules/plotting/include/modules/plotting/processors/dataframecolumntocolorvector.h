@@ -33,7 +33,6 @@
 
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>

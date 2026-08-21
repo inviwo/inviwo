@@ -40,12 +40,12 @@
 #include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/datastructures/histogramtools.h>
 #include <inviwo/core/datastructures/datasequence.h>
-#include <inviwo/core/metadata/metadataowner.h>
-
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/util/typelist.h>
 
 namespace inviwo {
 
@@ -58,6 +58,7 @@ class IVW_CORE_API Layer : public Data<Layer, LayerRepresentation>,
                            public StructuredGridEntity<2>,
                            public MetaDataOwner {
 public:
+    using Bases = TypeList<StructuredGridEntity<2>, MetaDataOwner>;
     using Config = LayerConfig;
 
     explicit Layer(size2_t defaultDimensions = LayerConfig::defaultDimensions,

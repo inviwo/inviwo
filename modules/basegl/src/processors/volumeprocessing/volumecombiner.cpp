@@ -35,9 +35,7 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/ports/outport.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
@@ -286,11 +284,10 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
 void VolumeCombiner::updateProperties() {
     std::string desc;
     std::vector<OptionPropertyIntOption> options;
-    for (auto&& p : util::enumerate(inport_.getConnectedOutports())) {
-        const auto str =
-            fmt::format("v{}: {}", p.first() + 1, p.second()->getProcessor()->getDisplayName());
+    for (auto&& [i, outport] : std::views::zip(std::views::iota(0uz), inport_.getConnectedOutports())) {
+        const auto str = fmt::format("v{}: {}", i + 1, outport->getProcessor()->getDisplayName());
         fmt::format_to(std::back_inserter(desc), "{}\n", str);
-        options.emplace_back("v" + toString(p.first() + 1), str, static_cast<int>(p.first()));
+        options.emplace_back("v" + toString(i + 1), str, static_cast<int>(i));
     }
     options.emplace_back("maxRange", "min/max {v1, v2, ...}", -1);
     description_.set(desc);

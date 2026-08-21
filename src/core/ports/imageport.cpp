@@ -57,11 +57,6 @@ std::string_view enumToStr(HandleResizeEvents hre) {
                     static_cast<int>(hre));
 }
 
-std::ostream& operator<<(std::ostream& ss, OutportDeterminesSize ods) {
-    return ss << enumToStr(ods);
-}
-std::ostream& operator<<(std::ostream& ss, HandleResizeEvents hre) { return ss << enumToStr(hre); }
-
 ImageOutport::ImageOutport(std::string_view identifier, Document help, const DataFormatBase* format,
                            HandleResizeEvents handleResizeEvents)
     : DataOutport<Image>(identifier, std::move(help))
@@ -219,7 +214,7 @@ std::shared_ptr<const Image> ImageOutport::getDataForPort(const Inport* port) co
             return img;
         }
     }
-    return nullptr;
+    return getData();
 }
 
 void ImageOutport::setDimensions(const size2_t& newDimension) {

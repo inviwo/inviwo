@@ -240,7 +240,12 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     virtual bool canConnectTo(const Port* port) const override;
+    virtual void connectTo(Outport* outport) override;
+    virtual void disconnectFrom(Outport* outport) override;
     virtual size_t getMaxNumberOfConnections() const override { return 1; }
+    virtual size_t getNumberOfConnections() const override;
+    using Inport::getConnectedOutport;
+    virtual Outport* getConnectedOutport(size_t i) const override;
 
     virtual std::string_view getClassIdentifier() const override;
     virtual glm::uvec3 getColorCode() const override { return {160, 182, 240}; }
@@ -251,9 +256,10 @@ protected:
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
 
 private:
-    virtual void setChanged(bool changed = true, const Outport* source = nullptr) override;
+    virtual void setChanged(bool changed) override;
 
     BrushingAndLinkingManager manager_;
+    BrushingAndLinkingOutport* outport_;
 };
 /**
  * @ingroup ports

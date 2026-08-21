@@ -38,6 +38,8 @@
 
 namespace inviwo {
 
+class PythonOutport;
+
 class IVW_MODULE_PYTHON3_API PythonInport : public Inport {
 public:
     PythonInport(std::string_view identifier, Document help = {});
@@ -49,11 +51,19 @@ public:
     virtual DataInfo getDataInfo() const override;
 
     virtual size_t getMaxNumberOfConnections() const override { return 1; }
+    virtual size_t getNumberOfConnections() const override;
+    using Inport::getConnectedOutport;
+    virtual Outport* getConnectedOutport(size_t i) const override;
 
     virtual bool canConnectTo(const Port* port) const override;
+    virtual void connectTo(Outport* outport) override;
+    virtual void disconnectFrom(Outport* outport) override;
 
     pybind11::object getData() const;
     bool hasData() const;
+
+private:
+    PythonOutport* outport_;
 };
 
 template <>

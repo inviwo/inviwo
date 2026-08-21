@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,43 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-
-#include <inviwo/core/datastructures/geometry/plane.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorinfo.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/util/glmvec.h>
-
-#include <string>
-#include <vector>
-
-#include <fmt/base.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API MeshPlaneClipping : public Processor {
-public:
-    MeshPlaneClipping();
-    virtual ~MeshPlaneClipping() = default;
+template <typename... Ts>
+struct TypeList {
 
-    virtual void process() override;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    MeshInport inputMesh_;
-    FlatMultiDataInport<Plane> planes_;
-    MeshOutport outputMesh_;
-
-    BoolProperty clippingEnabled_;
-    BoolProperty capClippedHoles_;
+    template <typename... Us>
+    friend consteval auto operator+(TypeList, TypeList<Us...>) -> TypeList<Ts..., Us...> {
+        return {};
+    }
 };
+template <typename T>
+concept TypeListLike = requires(T t) {
+    []<typename... Ts>(TypeList<Ts...>) {}(t);
+};
+template <TypeListLike... Lists>
+using JoinTypeLists = decltype((TypeList<>{} + ... + Lists{}));
 
 }  // namespace inviwo

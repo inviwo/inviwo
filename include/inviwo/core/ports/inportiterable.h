@@ -30,292 +30,126 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/ports/outportiterable.h>
+
+#include <ranges>
 
 namespace inviwo {
 
 class Outport;
 
-template <typename InportType, typename T, bool Flat>
-class InportIterable {
+template <typename T>
+class FlatInportIterator {
+    using PortIter = typename std::vector<DataOutportInterface<T>*>::const_iterator;
+
 public:
-    InportIterable() = default;
-    virtual ~InportIterable() = default;
+    using difference_type = std::ptrdiff_t;
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = std::shared_ptr<const T>;
+    using pointer = std::shared_ptr<const T>;
+    using reference = std::shared_ptr<const T>;
 
-    template <typename Derived>
-    class const_iterator_base {
-    protected:
-        using self = Derived;
-        using PortIter = typename std::vector<Outport*>::const_iterator;
-        using DataIter = typename OutportIterable<T>::const_iterator;
+    FlatInportIterator() = default;
 
-    public:
-        const_iterator_base() = default;
-        explicit const_iterator_base(PortIter pIterBegin, PortIter pIterEnd)
-            : pIter_{pIterBegin}, pEnd_{pIterEnd}, dIter_{}, dEnd_{} {
-            if (pIter_ != pEnd_) {
-                auto ptr = dynamic_cast<OutportIterable<T>*>(*pIter_);
-                dIter_ = ptr->begin();
-                dEnd_ = ptr->end();
-                shouldGetNextPort();
+    explicit FlatInportIterator(PortIter pIterBegin, PortIter pIterEnd)
+        : portIter_{pIterBegin}, portEnd_{pIterEnd}, dataIndex_{0}, dataSize_{0} {
+        if (portIter_ != portEnd_) {
+            auto* ptr = *portIter_;
+            dataIndex_ = 0;
+            dataSize_ = ptr->size();
+            maybeAdvanceData();
+            maybeAdvancePort();
+        }
+    }
+    FlatInportIterator& operator++() {
+        ++dataIndex_;
+        maybeAdvancePort();
+        return *this;
+    }
+    FlatInportIterator operator++(int) {
+        auto i = *this;
+        ++(*this);
+        return i;
+    }
+
+    reference operator*() const { return (*portIter_)->getElement(dataIndex_); }
+    pointer operator->() const { return (*portIter_)->getElement(dataIndex_); }
+
+    friend bool operator==(const FlatInportIterator& lhs, const FlatInportIterator& rhs) {
+        return lhs.portIter_ == rhs.portIter_ && lhs.dataIndex_ == rhs.dataIndex_;
+    }
+    friend bool operator!=(const FlatInportIterator& lhs, const FlatInportIterator& rhs) {
+        return !(lhs == rhs);
+    }
+
+protected:
+    void maybeAdvancePort() {
+        while (dataIndex_ == dataSize_ && portIter_ != portEnd_) {
+            ++portIter_;
+            dataIndex_ = 0;
+            if (portIter_ != portEnd_) {
+                dataSize_ = (*portIter_)->size();
+            } else {
+                dataSize_ = 0;
             }
+            maybeAdvanceData();
         }
-        self& operator++() {
-            ++dIter_;
-            shouldGetNextPort();
-            return *static_cast<Derived*>(this);
+    }
+    void maybeAdvanceData() {
+        while (dataIndex_ < dataSize_ && (*portIter_)->getElement(dataIndex_) == nullptr) {
+            ++dataIndex_;
         }
-        self operator++(int) {
-            self i = *static_cast<Derived*>(this);
-            ++dIter_;
-            shouldGetNextPort();
-            return i;
-        }
-
-        friend bool operator==(const self& lhs, const self& rhs) {
-            return lhs.pIter_ == rhs.pIter_ && lhs.dIter_ == rhs.dIter_;
-        }
-        friend bool operator!=(const self& lhs, const self& rhs) { return !(lhs == rhs); }
-
-    protected:
-        void shouldGetNextPort() {
-            while (dIter_ == dEnd_ && pIter_ != pEnd_) {
-                ++pIter_;
-                if (pIter_ != pEnd_) {
-                    auto ptr = dynamic_cast<OutportIterable<T>*>(*pIter_);
-                    dIter_ = ptr->begin();
-                    dEnd_ = ptr->end();
-                }
-            }
-        }
-
-        PortIter pIter_;
-        PortIter pEnd_;
-        DataIter dIter_;
-        DataIter dEnd_;
-    };
-
-    class const_iterator : public const_iterator_base<const_iterator> {
-        using Base = const_iterator_base<const_iterator>;
-        using PortIter = typename Base::PortIter;
-
-    public:
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::forward_iterator_tag;
-        using value_type = std::shared_ptr<const T>;
-        using pointer = std::shared_ptr<const T>;
-        using reference = std::shared_ptr<const T>;
-
-        const_iterator() = default;
-        const_iterator(PortIter pIterBegin, PortIter pIterEnd) : Base(pIterBegin, pIterEnd) {}
-        reference operator*() const { return *Base::dIter_; }
-        pointer operator->() const { return *Base::dIter_; }
-    };
-
-    class const_iterator_port : public const_iterator_base<const_iterator_port> {
-        using Base = const_iterator_base<const_iterator_port>;
-        using PortIter = typename Base::PortIter;
-
-    public:
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::forward_iterator_tag;
-        using value_type = std::pair<Outport*, std::shared_ptr<const T>>;
-        using reference = std::pair<Outport*, std::shared_ptr<const T>>;
-        using pointer = void;
-
-        const_iterator_port() = default;
-        const_iterator_port(PortIter pIterBegin, PortIter pIterEnd) : Base(pIterBegin, pIterEnd) {}
-
-        reference operator*() const { return reference{*Base::pIter_, *Base::dIter_}; }
-    };
-
-    class const_iterator_changed : public const_iterator_base<const_iterator_changed> {
-        using Base = const_iterator_base<const_iterator_changed>;
-        using PortIter = typename Base::PortIter;
-
-    public:
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::forward_iterator_tag;
-        using value_type = std::pair<bool, std::shared_ptr<const T>>;
-        using reference = std::pair<bool, std::shared_ptr<const T>>;
-        using pointer = void;
-
-        const_iterator_changed() = default;
-        const_iterator_changed(PortIter pIterBegin, PortIter pIterEnd, const InportType& inport)
-            : Base(pIterBegin, pIterEnd), inport{inport} {}
-
-        reference operator*() const {
-            return reference{util::contains(inport.getChangedOutports(), *Base::pIter_),
-                             *Base::dIter_};
-        }
-
-    private:
-        const InportType& inport;
-    };
-
-    util::iter_range<const_iterator_port> outportAndData() const noexcept {
-        return util::iter_range<const_iterator_port>{
-            const_iterator_port{self().getConnectedOutports().begin(),
-                                self().getConnectedOutports().end()},
-            const_iterator_port{self().getConnectedOutports().end(),
-                                self().getConnectedOutports().end()}};
     }
 
-    util::iter_range<const_iterator_changed> changedAndData() const noexcept {
-        return util::iter_range<const_iterator_changed>{
-            const_iterator_changed{self().getConnectedOutports().begin(),
-                                   self().getConnectedOutports().end(), self()},
-            const_iterator_changed{self().getConnectedOutports().end(),
-                                   self().getConnectedOutports().end(), self()}};
-    }
-
-    const_iterator begin() const noexcept {
-        return const_iterator(self().getConnectedOutports().begin(),
-                              self().getConnectedOutports().end());
-    }
-    const_iterator end() const noexcept {
-        return const_iterator(self().getConnectedOutports().end(),
-                              self().getConnectedOutports().end());
-    }
-
-private:
-    InportType& self() { return static_cast<InportType&>(*this); }
-    const InportType& self() const { return static_cast<const InportType&>(*this); }
+    PortIter portIter_;
+    PortIter portEnd_;
+    size_t dataIndex_;
+    size_t dataSize_;
 };
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <typename T>
+class RegularInportIterator {
+    using PortIter = typename std::vector<DataOutportInterface<T>*>::const_iterator;
 
-// Specialization for non flat case.
-template <typename InportType, typename T>
-class InportIterable<InportType, T, false> {
 public:
-    InportIterable() = default;
-    virtual ~InportIterable() = default;
+    using difference_type = std::ptrdiff_t;
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = std::shared_ptr<const T>;
+    using pointer = std::shared_ptr<const T>;
+    using reference = std::shared_ptr<const T>;
 
-    template <typename Derived>
-    class const_iterator_base {
-    protected:
-        using self = Derived;
-        using PortIter = typename std::vector<Outport*>::const_iterator;
-
-    public:
-        const_iterator_base() = default;
-        explicit const_iterator_base(PortIter pIterBegin) : pIter_(pIterBegin) {}
-        self& operator++() {
-            ++pIter_;
-            return *static_cast<Derived*>(this);
-        }
-        self operator++(int) {
-            self i = *static_cast<Derived*>(this);
-            ++pIter_;
-            return i;
-        }
-        std::shared_ptr<const T> operator*() const {
-            return static_cast<DataOutport<T>*>(*pIter_)->getData();
-        }
-        std::shared_ptr<const T> operator->() const {
-            return static_cast<DataOutport<T>*>(*pIter_)->getData();
-        }
-        friend bool operator==(const self& lhs, const self& rhs) {
-            return lhs.pIter_ == rhs.pIter_;
-        }
-        friend bool operator!=(const self& lhs, const self& rhs) {
-            return lhs.pIter_ != rhs.pIter_;
-        }
-
-    protected:
-        PortIter pIter_;
-    };
-
-    class const_iterator : public const_iterator_base<const_iterator> {
-        using Base = const_iterator_base<const_iterator>;
-        using PortIter = typename Base::PortIter;
-
-    public:
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::forward_iterator_tag;
-        using value_type = std::shared_ptr<const T>;
-        using pointer = std::shared_ptr<const T>;
-        using reference = std::shared_ptr<const T>;
-
-        const_iterator() = default;
-        const_iterator(PortIter pIterBegin) : Base(pIterBegin) {}
-
-        std::shared_ptr<const T> operator*() const {
-            return static_cast<DataOutport<T>*>(*Base::pIter_)->getData();
-        }
-        std::shared_ptr<const T> operator->() const {
-            return static_cast<DataOutport<T>*>(*Base::pIter_)->getData();
-        }
-    };
-
-    class const_iterator_port : public const_iterator_base<const_iterator_port> {
-        using Base = const_iterator_base<const_iterator_port>;
-        using PortIter = typename Base::PortIter;
-
-    public:
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::forward_iterator_tag;
-        using value_type = std::pair<Outport*, std::shared_ptr<const T>>;
-        using reference = std::pair<Outport*, std::shared_ptr<const T>>;
-        using pointer = void;
-
-        const_iterator_port() = default;
-        const_iterator_port(PortIter pIterBegin) : Base(pIterBegin) {}
-
-        reference operator*() const {
-            return reference{*Base::pIter_, static_cast<DataOutport<T>*>(*Base::pIter_)->getData()};
-        }
-    };
-
-    class const_iterator_changed : public const_iterator_base<const_iterator_changed> {
-        using Base = const_iterator_base<const_iterator_changed>;
-        using PortIter = typename Base::PortIter;
-
-    public:
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::forward_iterator_tag;
-        using value_type = std::pair<bool, std::shared_ptr<const T>>;
-        using reference = std::pair<bool, std::shared_ptr<const T>>;
-        using pointer = void;
-
-        const_iterator_changed() = default;
-        const_iterator_changed(PortIter pIterBegin, const InportType& inport)
-            : Base(pIterBegin), inport{inport} {}
-
-        reference operator*() const {
-            return reference{util::contains(inport.getChangedOutports(), *Base::pIter_),
-                             static_cast<DataOutport<T>*>(*Base::pIter_)->getData()};
-        }
-
-        const InportType& inport;
-    };
-
-    util::iter_range<const_iterator_port> outportAndData() const noexcept {
-        return util::iter_range<const_iterator_port>{
-            const_iterator_port{self().getConnectedOutports().begin()},
-            const_iterator_port{self().getConnectedOutports().end()}};
+    RegularInportIterator() = default;
+    explicit RegularInportIterator(PortIter pIterBegin, PortIter pIterEnd)
+        : portIter_{pIterBegin}, portEnd_{pIterEnd} {
+        maybeAdvancePort();
     }
 
-    util::iter_range<const_iterator_changed> changedAndData() const noexcept {
-        return util::iter_range<const_iterator_changed>{
-            const_iterator_changed{self().getConnectedOutports().begin(), self()},
-            const_iterator_changed{self().getConnectedOutports().end(), self()}};
+    reference operator*() const { return (*portIter_)->getElement(0); }
+    pointer operator->() const { return (*portIter_)->getElement(0); }
+
+    RegularInportIterator& operator++() {
+        ++portIter_;
+        maybeAdvancePort();
+        return *this;
+    }
+    RegularInportIterator operator++(int) {
+        RegularInportIterator i = *this;
+        ++(*this);
+        return i;
     }
 
-    const_iterator begin() const noexcept {
-        return const_iterator(self().getConnectedOutports().begin());
-    }
-    const_iterator end() const noexcept {
-        return const_iterator(self().getConnectedOutports().end());
+    auto operator<=>(const RegularInportIterator& rhs) const = default;
+
+protected:
+    void maybeAdvancePort() {
+        while (portIter_ != portEnd_ && (*portIter_)->getElement(0) == nullptr) {
+            ++portIter_;
+        }
     }
 
-private:
-    InportType& self() noexcept { return static_cast<InportType&>(*this); }
-    const InportType& self() const noexcept { return static_cast<const InportType&>(*this); }
+    PortIter portIter_;
+    PortIter portEnd_;
 };
-
-#endif
 
 }  // namespace inviwo
