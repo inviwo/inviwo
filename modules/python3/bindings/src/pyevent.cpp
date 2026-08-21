@@ -499,10 +499,8 @@ void exposeEvents(pybind11::module& m) {
 
     py::classh<ResizeEvent, Event>(m, "ResizeEvent")
         .def(py::init<size2_t>(), py::arg("newSize"))
-        .def(py::init<size2_t, size2_t>(), py::arg("newSize"), py::arg("previousSize"))
         .def(py::init<ResizeEvent>())
         .def_property("size", &ResizeEvent::size, &ResizeEvent::setSize)
-        .def_property("previousSize", &ResizeEvent::previousSize, &ResizeEvent::setPreviousSize)
         .def_property_readonly_static("chash",
                                       [](const py::object&) { return ResizeEvent::chash(); });
 

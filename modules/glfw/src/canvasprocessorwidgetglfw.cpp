@@ -84,13 +84,12 @@ void CanvasProcessorWidgetGLFW::setOnTop(bool onTop) {
 }
 
 void CanvasProcessorWidgetGLFW::propagateResizeEvent() {
-    auto previousScreenDimensions = screenDimensions_;
     screenDimensions_ = canvas_->getFramebufferSize();
     CanvasProcessorWidget::setDimensions(screenDimensions_);
 
-    NetworkLock lock;
-    RenderContext::getPtr()->activateDefaultRenderContext();
-    ResizeEvent resizeEvent(screenDimensions_, previousScreenDimensions);
+    const NetworkLock lock{getProcessor()};
+    rendercontext::activateDefault();
+    ResizeEvent resizeEvent(screenDimensions_);
     getProcessor()->propagateEvent(&resizeEvent, nullptr);
 }
 

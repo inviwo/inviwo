@@ -264,21 +264,18 @@ void CanvasQOpenGLWidget::resizeEvent(QResizeEvent* event) {
     // Propagated an event with the physical (pixel) dimensions of the canvas
     // Note: QWidget::size() will return logical dimensions
     const auto dpr = window()->devicePixelRatio();
-    RenderContext::getPtr()->activateDefaultRenderContext();
 
+    rendercontext::activateDefault();
     const auto newSize = static_cast<size2_t>(dpr * utilqt::toGLM(event->size()));
-    const auto oldSize = event->oldSize().isValid()
-                             ? static_cast<size2_t>(dpr * utilqt::toGLM(event->oldSize()))
-                             : size2_t{0, 0};
-    ResizeEvent resizeEvent{newSize, oldSize};
+    ResizeEvent resizeEvent{newSize};
     propagateEvent(&resizeEvent, nullptr);
 }
 
 void CanvasQOpenGLWidget::triggerResizeEventPropagation() {
     const auto dpr = window()->devicePixelRatio();
 
-    RenderContext::getPtr()->activateDefaultRenderContext();
-    ResizeEvent resizeEvent{dpr * utilqt::toGLM(size()), dpr * utilqt::toGLM(size())};
+    rendercontext::activateDefault();
+    ResizeEvent resizeEvent{dpr * utilqt::toGLM(size())};
     propagateEvent(&resizeEvent, nullptr);
 }
 
