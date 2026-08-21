@@ -199,7 +199,7 @@ private:
 class IVW_CORE_API GestureEventMatcher final : public EventMatcher {
 public:
     explicit GestureEventMatcher(
-        GestureTypes types, GestureStates states = GestureStates(flags::any), int numFingers = -1,
+        GestureTypes types, GestureStates states = GestureStates(flags::any),
         KeyModifiers modifiers = KeyModifiers(flags::none),
         ModifierMatchingBehavior matching = ModifierMatchingBehavior::ExactMatch);
 
@@ -213,9 +213,6 @@ public:
 
     GestureStates states() const;
     void setStates(GestureState states);
-
-    int numFingers() const;
-    void setNumFingers(int numFingers);
 
     KeyModifiers modifiers() const;
     void setModifiers(KeyModifiers modifiers);
@@ -239,7 +236,6 @@ protected:
 private:
     ValueWrapper<GestureTypes> types_;
     ValueWrapper<GestureStates> states_;
-    ValueWrapper<int> numFingers_;
     ValueWrapper<KeyModifiers> modifiers_;
     ModifierMatchingBehavior matching_;
 };
