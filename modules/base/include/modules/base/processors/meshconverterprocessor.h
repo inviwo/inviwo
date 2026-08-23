@@ -32,6 +32,7 @@
 #include <modules/base/basemoduledefine.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/processors/processor.h>
@@ -64,7 +65,7 @@ private:
     enum class Type { ToPoints, ToLines };
 
     MeshFlatMultiInport inport_;
-    DataOutport<std::vector<std::shared_ptr<Mesh>>> outport_;
+    DataOutport<DataSequence<Mesh>> outport_;
     OptionProperty<Type> type_;
 };
 

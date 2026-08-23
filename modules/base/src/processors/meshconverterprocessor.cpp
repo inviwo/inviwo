@@ -74,7 +74,7 @@ MeshConverterProcessor::MeshConverterProcessor()
 }
 
 void MeshConverterProcessor::process() {
-    auto meshes = std::make_shared<std::vector<std::shared_ptr<Mesh>>>();
+    auto meshes = std::make_shared<DataSequence<Mesh>>();
     for (auto mesh : inport_) {
         if (mesh) {
             switch (type_.get()) {
