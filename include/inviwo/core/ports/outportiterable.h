@@ -69,8 +69,8 @@ template <typename Self, typename T, bool Flat>
 struct DataOutportBase : DataOutportInterface<T> {
     virtual size_t size() const final {
         if constexpr (Flat && requires {
-                          { getElements()->size() } -> std::convertible_to<size_t>;
-                      }) {
+                                  { getElements()->size() } -> std::convertible_to<size_t>;
+                              }) {
             if (auto data = getElements()) {
                 return data->size();
             } else {
@@ -119,6 +119,19 @@ struct DataOutportFlat<DataOutport<std::vector<T*, Alloc>>>
         if (auto data = this->getElements()) {
             if (i < data->size()) {
                 return std::shared_ptr<const T>(data, (*data)[i]);
+            }
+        }
+        return nullptr;
+    }
+};
+// Specialization for vector of data shared pointer
+template <typename T, typename Alloc>
+struct DataOutportFlat<DataOutport<std::vector<std::shared_ptr<T>, Alloc>>>
+    : DataOutportBase<DataOutport<std::vector<std::shared_ptr<T>, Alloc>>, T, true> {
+    virtual std::shared_ptr<const T> getElement(size_t i) const final {
+        if (auto data = this->getElements()) {
+            if (i < data->size()) {
+                return (*data)[i];
             }
         }
         return nullptr;
