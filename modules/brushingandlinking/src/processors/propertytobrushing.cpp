@@ -35,10 +35,10 @@ namespace inviwo {
 const ProcessorInfo PropertyToBrushing::processorInfo_{
     "org.inviwo.PropertyToBrushing",  // Class identifier
     "Property To Brushing",           // Display name
-    "Undefined",                      // Category
-    CodeState::Experimental,          // Code state
-    Tags::None,                       // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+    "Brushing And Linking",           // Category
+    CodeState::Stable,                // Code state
+    Tags::CPU,                        // Tags
+    R"(Creates Brushing & Linking events based on an integer range.)"_unindentHelp,
 };
 
 const ProcessorInfo& PropertyToBrushing::getProcessorInfo() const { return processorInfo_; }
@@ -49,34 +49,70 @@ PropertyToBrushing::PropertyToBrushing()
     , enable_("enable", "Enable", true)
     , index_{"index", "Index", 0, 0, 100, 1}
     , before_{"before", "Before", 0, 0, 100, 1}
-    , after_{"after", "After", 0, 0, 100, 1} {
+    , after_{"after", "After", 0, 0, 100, 1}
+    , action_{"action",
+              "Action",
+              {BrushingAction::Filter, BrushingAction::Select, BrushingAction::Highlight},
+              0}
+    , target_{"target", "Target", {BrushingTarget::Row, BrushingTarget::Column}, 0}
+    , currentAction_{std::nullopt}
+    , currentTarget_{BrushingTarget::Row} {
 
     addPorts(inport_);
-    addProperties(enable_, index_, before_, after_);
+    addProperties(enable_, index_, before_, after_, action_, target_);
 
     enable_.onChange([this] { updateBrushing(); });
     index_.onChange([this] { updateBrushing(); });
     before_.onChange([this] { updateBrushing(); });
     after_.onChange([this] { updateBrushing(); });
+
+    action_.onChange([this] { updateBrushing(); });
+    target_.onChange([this] { updateBrushing(); });
 }
 
 void PropertyToBrushing::process() {}
 
 void PropertyToBrushing::updateBrushing() {
-    BitSet bs{};
 
-    if (enable_.get()) {
-        bs.addRange(index_.getMinValue(), index_.getMaxValue());
-
-        const auto start = index_.get() >= index_.getMinValue() + before_.get()
-                               ? index_.get() - before_.get()
-                               : index_.getMinValue();
-        const auto end = index_.get() <= index_.getMaxValue() - after_.get()
-                             ? index_.get() + after_.get()
-                             : index_.getMaxValue();
-        bs.flipRange(start, end);
+    if (!enable_.get()) {
+        if (currentAction_ && *currentAction_ == BrushingAction::Filter) {
+            inport_.filter(getIdentifier(), BitSet{}, currentTarget_);
+            currentAction_.reset();
+        }
+        return;
     }
-    inport_.filter(getIdentifier(), bs);
+
+    if (currentAction_ && *currentAction_ == BrushingAction::Filter &&
+        action_.get() != BrushingAction::Filter) {
+        inport_.filter(getIdentifier(), BitSet{}, currentTarget_);
+    } else if (action_.get() == BrushingAction::Filter && target_.get() != currentTarget_) {
+        inport_.filter(getIdentifier(), BitSet{}, currentTarget_);
+    }
+
+    BitSet bs{};
+    bs.addRange(index_.getMinValue(), index_.getMaxValue());
+
+    const auto start = index_.get() >= index_.getMinValue() + before_.get()
+                           ? index_.get() - before_.get()
+                           : index_.getMinValue();
+    const auto end = index_.get() <= index_.getMaxValue() - after_.get()
+                         ? index_.get() + after_.get()
+                         : index_.getMaxValue();
+
+    if (action_.get() == BrushingAction::Filter) {
+        currentAction_ = BrushingAction::Filter;
+        currentTarget_ = target_.get();
+        bs.flipRange(start, end);
+        inport_.filter(getIdentifier(), bs, currentTarget_);
+    } else if (action_.get() == BrushingAction::Select) {
+        currentAction_ = BrushingAction::Select;
+        currentTarget_ = target_.get();
+        inport_.select(bs, currentTarget_);
+    } else if (action_.get() == BrushingAction::Highlight) {
+        currentAction_ = BrushingAction::Highlight;
+        currentTarget_ = target_.get();
+        inport_.highlight(bs, currentTarget_);
+    }
 }
 
 }  // namespace inviwo

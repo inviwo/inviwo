@@ -31,11 +31,15 @@
 
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
+
+#include <optional>
 
 namespace inviwo {
 
@@ -55,9 +59,16 @@ private:
     BrushingAndLinkingInport inport_;
 
     BoolProperty enable_;
+
     OrdinalProperty<uint32_t> index_;
     OrdinalProperty<uint32_t> before_;
     OrdinalProperty<uint32_t> after_;
+
+    OptionProperty<BrushingAction> action_;
+    OptionProperty<BrushingTarget> target_;
+
+    std::optional<BrushingAction> currentAction_;
+    BrushingTarget currentTarget_;
 };
 
 }  // namespace inviwo
