@@ -1,9 +1,5 @@
 var NAVTREEINDEX26 =
 {
-"classinviwo_1_1animation_1_1KeyframeSequenceFactory.html":[3,0,0,0,58],
-"classinviwo_1_1animation_1_1KeyframeSequenceFactory.html":[5,0,1,2,59],
-"classinviwo_1_1animation_1_1KeyframeSequenceObserver.html":[3,0,0,0,59],
-"classinviwo_1_1animation_1_1KeyframeSequenceObserver.html":[5,0,1,2,60],
 "classinviwo_1_1animation_1_1KeyframeSequenceObserverble.html":[3,0,0,0,60],
 "classinviwo_1_1animation_1_1KeyframeSequenceObserverble.html":[5,0,1,2,61],
 "classinviwo_1_1animation_1_1KeyframeSequenceTyped.html":[3,0,0,0,61],
@@ -249,5 +245,9 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1AxisProperty.html#a79773801e3f0355c18722f828d93bdc4":[3,0,0,15,3,5],
 "classinviwo_1_1plot_1_1AxisProperty.html#a79773801e3f0355c18722f828d93bdc4":[5,0,1,22,4,5],
 "classinviwo_1_1plot_1_1AxisProperty.html#a9ccc2cfdf238a1687200b6f0feaa4ee0":[3,0,0,15,3,6],
-"classinviwo_1_1plot_1_1AxisProperty.html#a9ccc2cfdf238a1687200b6f0feaa4ee0":[5,0,1,22,4,6]
+"classinviwo_1_1plot_1_1AxisProperty.html#a9ccc2cfdf238a1687200b6f0feaa4ee0":[5,0,1,22,4,6],
+"classinviwo_1_1plot_1_1AxisProperty.html#aa8b8fdcb42012eae4ac9387855bad919":[3,0,0,15,3,4],
+"classinviwo_1_1plot_1_1AxisProperty.html#aa8b8fdcb42012eae4ac9387855bad919":[5,0,1,22,4,4],
+"classinviwo_1_1plot_1_1AxisProperty.html#abc0c6f5733da1b032935df15fe5aeaef":[3,0,0,15,3,2],
+"classinviwo_1_1plot_1_1AxisProperty.html#abc0c6f5733da1b032935df15fe5aeaef":[5,0,1,22,4,2]
 };

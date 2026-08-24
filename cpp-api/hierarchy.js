@@ -1918,6 +1918,9 @@ var hierarchy =
       [ "inviwo::Volume", "classinviwo_1_1Volume.html", null ]
     ] ],
     [ "inviwo::util::MetaDataToProperty", "classinviwo_1_1util_1_1MetaDataToProperty.html", null ],
+    [ "inviwo::MetaDataTraits&lt; T &gt;", "structinviwo_1_1MetaDataTraits.html", null ],
+    [ "inviwo::MetaDataTraits&lt; std::map&lt; K, V, std::less&lt;&gt; &gt; &gt;", "structinviwo_1_1MetaDataTraits_3_01std_1_1map_3_01K_00_01V_00_01std_1_1less_3_4_01_4_01_4.html", null ],
+    [ "inviwo::MetaDataTraits&lt; std::vector&lt; T &gt; &gt;", "structinviwo_1_1MetaDataTraits_3_01std_1_1vector_3_01T_01_4_01_4.html", null ],
     [ "inviwo::util::detail::min&lt; T &gt;", "structinviwo_1_1util_1_1detail_1_1min.html", null ],
     [ "inviwo::MinMaxPropertyState&lt; T &gt;", "structinviwo_1_1MinMaxPropertyState.html", null ],
     [ "inviwo::utilgl::BlendModeState::Mode", "structinviwo_1_1utilgl_1_1BlendModeState_1_1Mode.html", null ],
@@ -3359,9 +3362,7 @@ var hierarchy =
         [ "inviwo::MetaDataType< std::string >", "classinviwo_1_1MetaDataType.html", null ],
         [ "inviwo::MetaDataType< T >", "classinviwo_1_1MetaDataType.html", null ],
         [ "inviwo::ProcessorMetaData", "classinviwo_1_1ProcessorMetaData.html", null ],
-        [ "inviwo::ProcessorWidgetMetaData", "classinviwo_1_1ProcessorWidgetMetaData.html", null ],
-        [ "inviwo::StdUnorderedMapMetaData< K, T >", "classinviwo_1_1StdUnorderedMapMetaData.html", null ],
-        [ "inviwo::StdVectorMetaData< T >", "classinviwo_1_1StdVectorMetaData.html", null ]
+        [ "inviwo::ProcessorWidgetMetaData", "classinviwo_1_1ProcessorWidgetMetaData.html", null ]
       ] ],
       [ "inviwo::OptionPropertyOption< T >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::Port", "classinviwo_1_1Port.html", [

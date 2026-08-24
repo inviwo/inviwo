@@ -1,9 +1,5 @@
 var NAVTREEINDEX30 =
 {
-"namespaceinviwo_1_1util.html#a9bb4e1d0a952f2a8216385f68ac32178":[3,0,0,20,323],
-"namespaceinviwo_1_1util.html#a9ed5a7a5992c633bb2e4450d792abee1":[3,0,0,20,245],
-"namespaceinviwo_1_1util.html#aa0b234248fa0f75afa5d053118ec319a":[3,0,0,20,124],
-"namespaceinviwo_1_1util.html#aa0b332bfbe81a59e686b443456ede545":[3,0,0,20,327],
 "namespaceinviwo_1_1util.html#aa15da526769c7e6cfac443da69fbeb01":[3,0,0,20,152],
 "namespaceinviwo_1_1util.html#aa18a8d1ff055cdc4871caaf9105fb714":[3,0,0,20,212],
 "namespaceinviwo_1_1util.html#aa2bb2a87355c0aa175f5dc794164c129":[3,0,0,20,330],
@@ -249,5 +245,9 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1ConvertibleLink.html":[3,0,0,181],
 "structinviwo_1_1ConvertibleLink.html":[5,0,1,191],
 "structinviwo_1_1DataInfo.html":[3,0,0,220],
-"structinviwo_1_1DataInfo.html":[5,0,1,230]
+"structinviwo_1_1DataInfo.html":[5,0,1,230],
+"structinviwo_1_1DataTraits.html":[3,0,0,234],
+"structinviwo_1_1DataTraits.html":[5,0,1,244],
+"structinviwo_1_1DataTraits_3_01DataFrame_01_4.html":[3,0,0,235],
+"structinviwo_1_1DataTraits_3_01DataFrame_01_4.html":[5,0,1,245]
 };
