@@ -183,8 +183,8 @@ void CanvasProcessorWidgetQt::propagateEvent(Event* event, Outport* source) {
 
 void CanvasProcessorWidgetQt::propagateResizeEvent() {
     if (!canvas_->isVisible()) {
-        RenderContext::getPtr()->activateDefaultRenderContext();
-        ResizeEvent resizeEvent{getDimensions(), getDimensions()};
+        rendercontext::activateDefault();
+        ResizeEvent resizeEvent{getDimensions()};
         getProcessor()->propagateEvent(&resizeEvent, nullptr);
     } else {
         canvas_->triggerResizeEventPropagation();

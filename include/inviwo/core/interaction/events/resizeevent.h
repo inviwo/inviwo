@@ -56,8 +56,7 @@ class Outport;
  */
 class IVW_CORE_API ResizeEvent : public Event {
 public:
-    ResizeEvent(size2_t newSize);
-    ResizeEvent(size2_t newSize, size2_t previousSize);
+    explicit ResizeEvent(size2_t canvasSize);
     ResizeEvent(const ResizeEvent& rhs) = default;
     ResizeEvent& operator=(const ResizeEvent& that) = default;
 
@@ -67,9 +66,7 @@ public:
     virtual bool shouldPropagateTo(Inport* inport, Processor* processor, Outport* source) override;
 
     size2_t size() const;
-    size2_t previousSize() const;
-    void setSize(size2_t csize);
-    void setPreviousSize(size2_t previousSize);
+    void setSize(size2_t newSize);
 
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash();
@@ -78,7 +75,6 @@ public:
 
 private:
     size2_t size_;
-    size2_t previousSize_;
 };
 
 constexpr uint64_t ResizeEvent::chash() { return util::constexpr_hash("org.inviwo.ResizeEvent"); }

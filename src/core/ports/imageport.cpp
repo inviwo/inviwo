@@ -151,8 +151,6 @@ void ImageOutport::pruneCache() {
 }
 
 void ImageOutport::disconnectFrom(Inport* inport) {
-    const auto oldSize = getLargestReqDim();
-
     requestedDimensions_.erase(inport);
     pruneCache();
 
@@ -169,7 +167,7 @@ void ImageOutport::disconnectFrom(Inport* inport) {
             }
         }
     }
-    ResizeEvent newEvent{newDimensions, oldSize};
+    ResizeEvent newEvent{newDimensions};
     getProcessor()->propagateEvent(&newEvent, this);
 
     DataOutport<Image>::disconnectFrom(inport);
