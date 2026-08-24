@@ -120,8 +120,8 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
         connect(helpBrowser_, &QTextBrowser::backwardAvailable, action, &QAction::setEnabled);
     }
     {
-        auto action = toolBar->addAction(QIcon(":/svgicons/link-right.svg"), tr("&Back"));
-        action->setShortcut(QKeySequence::Back);
+        auto action = toolBar->addAction(QIcon(":/svgicons/link-right.svg"), tr("&Forward"));
+        action->setShortcut(QKeySequence::Forward);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Forward");
         centralWidget->addAction(action);
@@ -146,8 +146,8 @@ void HelpWidget::showDocForClassName(std::string_view classIdentifier) {
 }
 
 void HelpWidget::resizeEvent(QResizeEvent* event) {
-    helpBrowser_->reload();
     InviwoDockWidget::resizeEvent(event);
+    QTimer::singleShot(200, this, [this]() { helpBrowser_->reload(); });
 }
 
 namespace {
