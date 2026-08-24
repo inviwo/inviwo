@@ -15,6 +15,7 @@ inviwopy.data
       Buffer
       BufferFLOAT32
       BufferFLOAT64
+      BufferFlatInportIteratorGenerator
       BufferFlatMultiInport
       BufferINT16
       BufferINT32
@@ -27,6 +28,7 @@ inviwopy.data
       BufferMat4FLOAT32
       BufferMultiInport
       BufferOutport
+      BufferRegularInportIteratorGenerator
       BufferTarget
       BufferType
       BufferUINT16
@@ -122,29 +124,37 @@ inviwopy.data
       InterpolationType
       IsoValueCollection
       Layer
+      LayerFlatInportIteratorGenerator
       LayerFlatMultiInport
       LayerInport
       LayerMultiInport
       LayerOutport
       LayerPy
+      LayerRegularInportIteratorGenerator
       LayerRepresentation
       LayerSequence
+      LayerSequenceFlatInportIteratorGenerator
       LayerSequenceFlatMultiInport
       LayerSequenceInport
       LayerSequenceMultiInport
       LayerSequenceOutport
+      LayerSequenceRegularInportIteratorGenerator
       LayerType
       Mesh
+      MeshFlatInportIteratorGenerator
       MeshFlatMultiInport
       MeshInfo
       MeshInport
       MeshMultiInport
       MeshOutport
+      MeshRegularInportIteratorGenerator
       MeshSequence
+      MeshSequenceFlatInportIteratorGenerator
       MeshSequenceFlatMultiInport
       MeshSequenceInport
       MeshSequenceMultiInport
       MeshSequenceOutport
+      MeshSequenceRegularInportIteratorGenerator
       OrthographicCamera
       PerspectiveCamera
       PlotCamera
@@ -163,17 +173,21 @@ inviwopy.data
       TransferFunction
       Unit
       Volume
+      VolumeFlatInportIteratorGenerator
       VolumeFlatMultiInport
       VolumeInport
       VolumeMultiInport
       VolumeOutport
       VolumePy
+      VolumeRegularInportIteratorGenerator
       VolumeRepresentation
       VolumeSequence
+      VolumeSequenceFlatInportIteratorGenerator
       VolumeSequenceFlatMultiInport
       VolumeSequenceInport
       VolumeSequenceMultiInport
       VolumeSequenceOutport
+      VolumeSequenceRegularInportIteratorGenerator
       Wrapping
       ZoomOptions
    

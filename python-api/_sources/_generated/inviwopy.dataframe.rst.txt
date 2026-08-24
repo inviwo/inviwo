@@ -21,10 +21,12 @@
       Column
       ColumnType
       DataFrame
+      DataFrameFlatInportIteratorGenerator
       DataFrameFlatMultiInport
       DataFrameInport
       DataFrameMultiInport
       DataFrameOutport
+      DataFrameRegularInportIteratorGenerator
       DoubleColumn
       FloatColumn
       IndexColumn

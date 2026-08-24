@@ -156,92 +156,136 @@
       WorkspaceManagerOnClearChangedCallbackHolder
       WorkspaceManagerOnModifiedCallbackHolder
       WorkspaceSaveMode
+      dmat2VectorFlatInportIteratorGenerator
       dmat2VectorFlatMultiInport
       dmat2VectorInport
       dmat2VectorMultiInport
       dmat2VectorOutport
+      dmat2VectorRegularInportIteratorGenerator
+      dmat3VectorFlatInportIteratorGenerator
       dmat3VectorFlatMultiInport
       dmat3VectorInport
       dmat3VectorMultiInport
       dmat3VectorOutport
+      dmat3VectorRegularInportIteratorGenerator
+      dmat4VectorFlatInportIteratorGenerator
       dmat4VectorFlatMultiInport
       dmat4VectorInport
       dmat4VectorMultiInport
       dmat4VectorOutport
+      dmat4VectorRegularInportIteratorGenerator
+      doubleVectorFlatInportIteratorGenerator
       doubleVectorFlatMultiInport
       doubleVectorInport
       doubleVectorMultiInport
       doubleVectorOutport
+      doubleVectorRegularInportIteratorGenerator
+      dvec2VectorFlatInportIteratorGenerator
       dvec2VectorFlatMultiInport
       dvec2VectorInport
       dvec2VectorMultiInport
       dvec2VectorOutport
+      dvec2VectorRegularInportIteratorGenerator
+      dvec3VectorFlatInportIteratorGenerator
       dvec3VectorFlatMultiInport
       dvec3VectorInport
       dvec3VectorMultiInport
       dvec3VectorOutport
+      dvec3VectorRegularInportIteratorGenerator
+      dvec4VectorFlatInportIteratorGenerator
       dvec4VectorFlatMultiInport
       dvec4VectorInport
       dvec4VectorMultiInport
       dvec4VectorOutport
+      dvec4VectorRegularInportIteratorGenerator
+      floatVectorFlatInportIteratorGenerator
       floatVectorFlatMultiInport
       floatVectorInport
       floatVectorMultiInport
       floatVectorOutport
+      floatVectorRegularInportIteratorGenerator
+      intVectorFlatInportIteratorGenerator
       intVectorFlatMultiInport
       intVectorInport
       intVectorMultiInport
       intVectorOutport
+      intVectorRegularInportIteratorGenerator
+      ivec2VectorFlatInportIteratorGenerator
       ivec2VectorFlatMultiInport
       ivec2VectorInport
       ivec2VectorMultiInport
       ivec2VectorOutport
+      ivec2VectorRegularInportIteratorGenerator
+      ivec3VectorFlatInportIteratorGenerator
       ivec3VectorFlatMultiInport
       ivec3VectorInport
       ivec3VectorMultiInport
       ivec3VectorOutport
+      ivec3VectorRegularInportIteratorGenerator
+      ivec4VectorFlatInportIteratorGenerator
       ivec4VectorFlatMultiInport
       ivec4VectorInport
       ivec4VectorMultiInport
       ivec4VectorOutport
+      ivec4VectorRegularInportIteratorGenerator
+      mat2VectorFlatInportIteratorGenerator
       mat2VectorFlatMultiInport
       mat2VectorInport
       mat2VectorMultiInport
       mat2VectorOutport
+      mat2VectorRegularInportIteratorGenerator
+      mat3VectorFlatInportIteratorGenerator
       mat3VectorFlatMultiInport
       mat3VectorInport
       mat3VectorMultiInport
       mat3VectorOutport
+      mat3VectorRegularInportIteratorGenerator
+      mat4VectorFlatInportIteratorGenerator
       mat4VectorFlatMultiInport
       mat4VectorInport
       mat4VectorMultiInport
       mat4VectorOutport
+      mat4VectorRegularInportIteratorGenerator
+      uintVectorFlatInportIteratorGenerator
       uintVectorFlatMultiInport
       uintVectorInport
       uintVectorMultiInport
       uintVectorOutport
+      uintVectorRegularInportIteratorGenerator
+      uvec2VectorFlatInportIteratorGenerator
       uvec2VectorFlatMultiInport
       uvec2VectorInport
       uvec2VectorMultiInport
       uvec2VectorOutport
+      uvec2VectorRegularInportIteratorGenerator
+      uvec3VectorFlatInportIteratorGenerator
       uvec3VectorFlatMultiInport
       uvec3VectorInport
       uvec3VectorMultiInport
       uvec3VectorOutport
+      uvec3VectorRegularInportIteratorGenerator
+      uvec4VectorFlatInportIteratorGenerator
       uvec4VectorFlatMultiInport
       uvec4VectorInport
       uvec4VectorMultiInport
       uvec4VectorOutport
+      uvec4VectorRegularInportIteratorGenerator
+      vec2VectorFlatInportIteratorGenerator
       vec2VectorFlatMultiInport
       vec2VectorInport
       vec2VectorMultiInport
       vec2VectorOutport
+      vec2VectorRegularInportIteratorGenerator
+      vec3VectorFlatInportIteratorGenerator
       vec3VectorFlatMultiInport
       vec3VectorInport
       vec3VectorMultiInport
       vec3VectorOutport
+      vec3VectorRegularInportIteratorGenerator
+      vec4VectorFlatInportIteratorGenerator
       vec4VectorFlatMultiInport
       vec4VectorInport
       vec4VectorMultiInport
       vec4VectorOutport
+      vec4VectorRegularInportIteratorGenerator
    
