@@ -44,6 +44,11 @@
 namespace inviwo {
 
 struct IVW_CORE_API SequenceCompositeDataBase {
+    SequenceCompositeDataBase() = default;
+    SequenceCompositeDataBase(const SequenceCompositeDataBase&) = delete;
+    SequenceCompositeDataBase(SequenceCompositeDataBase&&) = delete;
+    SequenceCompositeDataBase& operator=(const SequenceCompositeDataBase&) = delete;
+    SequenceCompositeDataBase& operator=(SequenceCompositeDataBase&&) = delete;
     virtual ~SequenceCompositeDataBase() = default;
 };
 

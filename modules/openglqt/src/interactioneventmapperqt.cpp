@@ -136,8 +136,8 @@ InteractionEventMapperQt::InteractionEventMapperQt(
     ContextMenuCallback contextMenu, std::function<void(Qt::CursorShape)> cursorChange)
     : QObject(parent)
     , propagator_{propagator}
-    , canvasDimensions_{canvasDimensions}
-    , imageDimensions_{imageDimensions}
+    , canvasDimensions_{std::move(canvasDimensions)}
+    , imageDimensions_{std::move(imageDimensions)}
     , depth_{std::move(depth)}
     , contextMenu_{std::move(contextMenu)}
     , cursorChange_{std::move(cursorChange)}

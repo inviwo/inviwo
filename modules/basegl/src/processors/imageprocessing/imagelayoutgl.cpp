@@ -361,7 +361,7 @@ void ImageLayoutGL::process() {
         }
     }
 
-    auto noise = SharedOpenGLResources::getPtr()->getNoiseShader();
+    auto* noise = SharedOpenGLResources::getPtr()->getNoiseShader();
     noise->activate();
     for (auto&& [image, view] : std::views::zip(images, viewManager_.getViews())) {
         if (!view.empty() && !image) {

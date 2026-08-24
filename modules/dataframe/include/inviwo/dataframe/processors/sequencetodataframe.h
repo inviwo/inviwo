@@ -85,7 +85,7 @@ struct SequenceToDataFrameTraits<Volume> {
         axis->add(volume.dataMap.valueAxis.name);
         unit->add(fmt::to_string(volume.dataMap.valueAxis.unit));
 
-        if (auto* filename = volume.getMetaData<StringMetaData>("filename")) {
+        if (const auto* filename = volume.getMetaData<StringMetaData>("filename")) {
             file->add(filename->get());
         } else {
             file->add("");
@@ -125,7 +125,7 @@ struct SequenceToDataFrameTraits<Layer> {
         axis->add(layer.dataMap.valueAxis.name);
         unit->add(fmt::to_string(layer.dataMap.valueAxis.unit));
 
-        if (auto* filename = layer.getMetaData<StringMetaData>("filename")) {
+        if (const auto* filename = layer.getMetaData<StringMetaData>("filename")) {
             file->add(filename->get());
         } else {
             file->add("");
@@ -149,7 +149,7 @@ struct SequenceToDataFrameTraits<Image> {
         format->add(image.getDataFormat()->getString());
         channels->add(static_cast<int>(image.getDataFormat()->getComponents()));
 
-        if (auto* filename = image.getMetaData<StringMetaData>("filename")) {
+        if (const auto* filename = image.getMetaData<StringMetaData>("filename")) {
             file->add(filename->get());
         } else {
             file->add("");
@@ -169,7 +169,7 @@ struct SequenceToDataFrameTraits<Mesh> {
         buffers->add(static_cast<int>(mesh.getNumberOfBuffers()));
         indexBuffers->add(static_cast<int>(mesh.getNumberOfIndices()));
 
-        if (auto* filename = mesh.getMetaData<StringMetaData>("filename")) {
+        if (const auto* filename = mesh.getMetaData<StringMetaData>("filename")) {
             file->add(filename->get());
         } else {
             file->add("");

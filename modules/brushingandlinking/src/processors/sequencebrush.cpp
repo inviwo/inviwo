@@ -29,6 +29,4 @@
 
 #include <modules/brushingandlinking/processors/sequencebrush.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

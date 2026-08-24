@@ -82,10 +82,9 @@ void PropertyToBrushing::updateBrushing() {
         return;
     }
 
-    if (currentAction_ && *currentAction_ == BrushingAction::Filter &&
-        action_.get() != BrushingAction::Filter) {
-        inport_.filter(getIdentifier(), BitSet{}, currentTarget_);
-    } else if (action_.get() == BrushingAction::Filter && target_.get() != currentTarget_) {
+    if ((currentAction_ && *currentAction_ == BrushingAction::Filter &&
+         action_.get() != BrushingAction::Filter) ||
+        (action_.get() == BrushingAction::Filter && target_.get() != currentTarget_)) {
         inport_.filter(getIdentifier(), BitSet{}, currentTarget_);
     }
 

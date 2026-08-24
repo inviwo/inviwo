@@ -117,7 +117,8 @@ inline auto format_as(const BrushingTarget& target) { return target.getString();
 template <>
 struct OptionPropertyTraits<BrushingTarget> {
     static std::string_view classIdentifier() {
-        static const auto identifier = "org.inviwo.OptionProperty.BrushingTarget";
+        static constexpr auto identifier =
+            std::string_view{"org.inviwo.OptionProperty.BrushingTarget"};
         return identifier;
     }
 };

@@ -165,7 +165,7 @@ private:
 
 public:
     SplitterPositions(std::string_view identifier, std::string_view displayName,
-                      std::function<void(SplitsView)> onChange, std::function<double()> minSize);
+                      std::function<void()> onChange, std::function<double()> minSize);
 
     SplitsView splits() const {
         return splitters_ | std::views::take(nSplitters_) | std::views::transform(toFloat) |
@@ -195,7 +195,7 @@ public:
 
 private:
     size_t nSplitters_;
-    std::function<void(SplitsView)> onChange_;
+    std::function<void()> onChange_;
     std::function<double()> minSize_;
     bool isEnforcing_;
 };

@@ -67,6 +67,10 @@ public:
     };
 
     explicit EventTransformer(const std::vector<View>& views = {});
+    EventTransformer(const EventTransformer&) = delete;
+    EventTransformer(EventTransformer&&) = default;
+    EventTransformer& operator=(const EventTransformer&) = delete;
+    EventTransformer& operator=(EventTransformer&&) = default;
     ~EventTransformer();
 
     bool propagateEvent(Event* event, Outport* source);

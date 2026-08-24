@@ -53,7 +53,6 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-
     void updateBrushing();
 
     BrushingAndLinkingInport inport_;

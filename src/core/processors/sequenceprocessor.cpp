@@ -81,7 +81,7 @@ SequenceProcessor::SequenceProcessor(std::string_view identifier, std::string_vi
         // keep the network locked, only unlock in the process function.
         net->lock();
         net->addObserver(this);
-        return NetEval{.net = std::move(net), .eval = std::move(eval)};
+        return NetEval{.net = std::move(net), .eval = std::move(eval), .sinks{}, .sources{}};
     }()} {
 
     loadSubNetwork(file);

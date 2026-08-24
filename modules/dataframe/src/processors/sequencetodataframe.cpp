@@ -29,6 +29,4 @@
 
 #include <inviwo/dataframe/processors/sequencetodataframe.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -209,7 +209,7 @@ inline void transformAndSendEvent(
     const std::function<void(Event&, const EventTransformer::View&)>& propagate) {
 
     TouchEvent newEvent{originalEvent};
-    /*
+    /* TODO(Peter)
     newEvent.setCanvasSize(view.size());
     newEvent.setNdc(view.globalNdcToLocalNdc(originalEvent.ndc()));
 
@@ -275,7 +275,7 @@ struct SM {
 }  // namespace
 
 struct EventTransformer::MouseSM {
-    MouseSM(const std::vector<EventTransformer::View>& views)
+    explicit MouseSM(const std::vector<EventTransformer::View>& views)
         : activeView{}, sm{views, activeView} {}
 
     std::optional<size_t> activeView;
@@ -283,7 +283,7 @@ struct EventTransformer::MouseSM {
 };
 
 struct EventTransformer::GestureSM {
-    GestureSM(const std::vector<EventTransformer::View>& views)
+    explicit GestureSM(const std::vector<EventTransformer::View>& views)
         : activeView{}, sm{views, activeView} {}
 
     std::optional<size_t> activeView;
@@ -291,7 +291,7 @@ struct EventTransformer::GestureSM {
 };
 
 struct EventTransformer::TouchSM {
-    TouchSM(const std::vector<EventTransformer::View>& views)
+    explicit TouchSM(const std::vector<EventTransformer::View>& views)
         : activeView{}, sm{views, activeView} {}
 
     std::optional<size_t> activeView;

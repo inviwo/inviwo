@@ -891,7 +891,7 @@ void NetworkEditor::addSequenceMenuItems(
                 rendercontext::activateDefault();
                 util::replaceSelectionWithSequenceProcessor(*network_);
             }));
-    sequenceAction->setEnabled(selectedProcessors.size() > 0);
+    sequenceAction->setEnabled(!selectedProcessors.empty());
 
     auto* expandAction =
         menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Sequence"));

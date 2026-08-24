@@ -381,7 +381,7 @@ bool Input::updateLabels(std::vector<std::string>& labels, std::string_view form
 }
 
 void Input::setSorting(Sorting sortOrder) {
-    return std::visit([&](auto& i) { return i.setSorting(sortOrder); }, input_);
+    std::visit([&](auto& i) { return i.setSorting(sortOrder); }, input_);
 }
 
 void Input::setMode(Processor* p, InputMode mode, const std::function<void(bool)>& update,
@@ -401,7 +401,7 @@ void Input::setMode(Processor* p, InputMode mode, const std::function<void(bool)
 }
 
 SplitterPositions::SplitterPositions(std::string_view identifier, std::string_view displayName,
-                                     std::function<void(SplitsView)> onChange,
+                                     std::function<void()> onChange,
                                      std::function<double()> minSize)
     : splitters_{identifier, displayName}
     , nSplitters_{0}
@@ -412,11 +412,11 @@ SplitterPositions::SplitterPositions(std::string_view identifier, std::string_vi
 void SplitterPositions::enforceOrder(size_t changedIndex) {
     if (isEnforcing_) return;
     if (nSplitters_ == 0) {
-        onChange_(splits());
+        onChange_();
         return;
     }
     if (changedIndex >= nSplitters_) {
-        onChange_(splits());
+        onChange_();
         return;
     }
 
@@ -441,7 +441,7 @@ void SplitterPositions::enforceOrder(size_t changedIndex) {
         }
         sliderPos = position(i);
     }
-    onChange_(splits());
+    onChange_();
 }
 
 bool SplitterPositions::updateSize(size_t newSize) {
@@ -534,12 +534,12 @@ Layout::Layout()
     , minWidth_("minWidth", "Minimum Width (px)", 10, 0, 4096, 1, InvalidationLevel::InvalidOutput,
                 PropertySemantics::SpinBox)
     , horizontalSplitters_(
-          "horizontalSplitters", "Horizontal Splits", [this](auto splits) { splittersChanged(); },
+          "horizontalSplitters", "Horizontal Splits", [this]() { splittersChanged(); },
           [this]() {
               return static_cast<double>(minWidth_.get()) / static_cast<double>(currentDim_.x);
           })
     , verticalSplitters_(
-          "verticalSplitters", "Vertical Splits", [this](auto splits) { splittersChanged(); },
+          "verticalSplitters", "Vertical Splits", [this]() { splittersChanged(); },
           [this]() {
               return static_cast<double>(minWidth_.get()) / static_cast<double>(currentDim_.y);
           })
@@ -639,7 +639,7 @@ void Layout::process() {
     }
     shader_.deactivate();
 
-    auto noise = SharedOpenGLResources::getPtr()->getNoiseShader();
+    auto* noise = SharedOpenGLResources::getPtr()->getNoiseShader();
     noise->activate();
     for (auto&& [image, view] : std::views::zip(images, views_)) {
         if (!view.empty() && !image) {
@@ -678,8 +678,8 @@ void Layout::process() {
             updateLabelTextures();
         }
 
-        utilgl::DepthFuncState depthFunc(GL_ALWAYS);
-        utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+        const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         for (auto&& [tex, view] : std::views::zip(textObjects_, views_)) {
             // use integer position for best results
             const vec2 size(tex.bbox.textExtent);
@@ -753,6 +753,7 @@ void Layout::updateSplitters(bool connect) {
     }
 }
 
+namespace {
 glm::dvec2 remapToSubImage(glm::dvec2 normCoord, glm::dvec2 size, glm::dvec2 subPos,
                            glm::dvec2 subSize) {
     // 1. Convert full-image normalized [-1,1] to pixel coordinates
@@ -762,6 +763,7 @@ glm::dvec2 remapToSubImage(glm::dvec2 normCoord, glm::dvec2 size, glm::dvec2 sub
     // 3. Convert local pixel to normalized [-1,1] in sub-image space
     return (localPixel / subSize) * 2.0 - 1.0;
 }
+}  // namespace
 
 void Layout::calculateViews(ivec2 imgSize) {
     std::vector<double> xpos;
