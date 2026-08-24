@@ -58,6 +58,7 @@ private:
     virtual void initializeShader(Shader& shader) override;
     virtual void preProcess(TextureUnitContainer& cont, Shader& shader, const Layer& input,
                             Layer& output) override;
+    virtual void postProcess(const Layer& input, Layer& output) override;
     virtual LayerConfig outputConfig(const Layer& input) const override;
 
     explicit LayerShader(std::shared_ptr<StringShaderResource> fragmentShader);

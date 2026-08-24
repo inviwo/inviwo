@@ -30,411 +30,191 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/datastructures/datasequence.h>
+#include <inviwo/core/util/typelist.h>
 
 #include <vector>
 #include <memory>
 
 namespace inviwo {
 
-/* using type erasure
- * https://aherrmann.github.io/programming/2014/10/19/type-erasure-with-merged-concepts/
- */
+class Outport;
 
 template <typename T>
 class DataOutport;
 
 template <typename T>
-struct OutportIterable {
-    OutportIterable() = default;
-    virtual ~OutportIterable() = default;
-
-    class const_iterator {
-    public:
-        using difference_type = std::ptrdiff_t;
-        using value_type = T;
-        using pointer = std::shared_ptr<const T>;
-        using reference = std::shared_ptr<const T>;
-        using iterator_category = std::forward_iterator_tag;
-
-        const_iterator() : self_(nullptr) {};
-        template <typename Wrapper>
-        const_iterator(Wrapper wrapper) : self_(std::make_unique<Model<Wrapper>>(wrapper)) {}
-        const_iterator(const const_iterator& rhs)
-            : self_(rhs.self_ ? rhs.self_->clone() : nullptr) {}
-        const_iterator& operator=(const const_iterator& that) {
-            if (this != &that) {
-                std::unique_ptr<Concept> s(that.self_ ? that.self_->clone() : nullptr);
-                std::swap(s, self_);
-            }
-            return *this;
-        }
-
-        const_iterator& operator++() {
-            self_->inc();
-            return *this;
-        }
-        const_iterator operator++(int) {
-            const_iterator i{*this};
-            self_->inc();
-            return i;
-        }
-
-        reference operator*() const { return self_->get(); }
-        pointer operator->() const { return self_->get(); }
-
-        bool operator==(const const_iterator& rhs) const {
-            if (self_ && rhs.self_) {
-                return self_->equal(*(rhs.self_));
-            } else if (self_) {
-                return self_->end();
-            } else if (rhs.self_) {
-                return rhs.self_->end();
-            } else {
-                return true;
-            }
-        }
-        bool operator!=(const const_iterator& rhs) const { return !(*this == rhs); }
-
-    private:
-        struct Concept {
-            virtual ~Concept() = default;
-            virtual Concept* clone() = 0;
-            virtual void inc() = 0;
-            virtual std::shared_ptr<const T> get() = 0;
-            virtual bool equal(const Concept& that) const = 0;
-            virtual bool end() const = 0;
-        };
-
-        template <typename U>
-        class Model : public Concept {
-        public:
-            Model(U data) : data_(data) {}
-
-            virtual Model<U>* clone() override { return new Model<U>(*this); };
-            virtual void inc() override { data_.inc(); };
-            virtual std::shared_ptr<const T> get() override { return data_.get(); };
-            virtual bool equal(const Concept& that) const override {
-                return data_.equal(static_cast<const Model<U>&>(that).data_);
-            };
-            virtual bool end() const override { return data_.end(); }
-
-        private:
-            U data_;
-        };
-
-        std::unique_ptr<Concept> self_;
-    };
-
-    virtual const_iterator begin() const = 0;
-    virtual const_iterator end() const = 0;
+struct DataOutportInterface {
+    DataOutportInterface() = default;
+    DataOutportInterface(const DataOutportInterface&) = delete;
+    DataOutportInterface(DataOutportInterface&&) = delete;
+    DataOutportInterface& operator=(const DataOutportInterface&) = delete;
+    DataOutportInterface& operator=(DataOutportInterface&&) = delete;
+    virtual ~DataOutportInterface() = default;
+    virtual size_t size() const = 0;
+    virtual std::shared_ptr<const T> getElement(size_t i) const = 0;
+    virtual bool flat() const = 0;
+    virtual Outport* port() = 0;
 };
 
 namespace detail {
 
-// Base template for single data ptr
 template <typename T>
-class OutportIterableWrapper {
-public:
-    OutportIterableWrapper() : data_(nullptr) {}
-    explicit OutportIterableWrapper(const DataOutport<T>& port) : data_{port.getData()} {}
+struct DataOutportFlat;
 
-    std::shared_ptr<const T> get() { return data_; };
+template <typename T>
+struct DataOutportImpl;
 
-    void inc() { data_.reset(); };
-    bool equal(const OutportIterableWrapper& rhs) const { return data_ == rhs.data_; };
-    bool end() const { return data_ == nullptr; }
-
-private:
-    std::shared_ptr<const T> data_;
-};
-
-// Specialization for vector of shared_ptr<data>.
-template <typename T, typename Alloc>
-class OutportIterableWrapper<std::vector<std::shared_ptr<T>, Alloc>> {
-public:
-    using Iter = typename std::vector<std::shared_ptr<T>, Alloc>::const_iterator;
-    OutportIterableWrapper() : iter_(), iterEnd_(), end_(true) {}
-    OutportIterableWrapper(const DataOutport<std::vector<std::shared_ptr<T>, Alloc>>& port)
-        : iter_{port.hasData() ? port.getData()->begin() : Iter{}}
-        , iterEnd_{port.hasData() ? port.getData()->end() : Iter{}}
-        , end_{iter_ == iterEnd_} {}
-
-    std::shared_ptr<const T> get() { return *iter_; };
-
-    void inc() {
-        ++iter_;
-        if (iter_ == iterEnd_) {
-            end_ = true;
-        }
-    };
-
-    bool equal(const OutportIterableWrapper& rhs) const {
-        if (end_ && rhs.end_) {
-            return true;
-        } else if (end_ != rhs.end_) {
-            return false;
+template <typename Self, typename T, bool Flat>
+struct DataOutportBase : DataOutportInterface<T> {
+    virtual size_t size() const final {
+        if constexpr (Flat && requires {
+                                  { getElements()->size() } -> std::convertible_to<size_t>;
+                              }) {
+            if (auto data = getElements()) {
+                return data->size();
+            } else {
+                return 0;
+            }
         } else {
-            return iter_ == rhs.iter_;
+            return 1;
         }
     }
-    bool end() const { return end_; }
+    auto getElements() const { return static_cast<const Self*>(this)->getData(); }
+    virtual bool flat() const final { return Flat; }
+    virtual Outport* port() final { return static_cast<Self*>(this); }
+};
 
-private:
-    Iter iter_;
-    Iter iterEnd_;
-    bool end_;
+template <typename Self, typename T>
+struct DataOutportRegular : DataOutportBase<Self, T, false> {
+    virtual std::shared_ptr<const T> getElement(size_t i) const final {
+        if (auto data = this->getElements()) {
+            if (i == 0) {
+                return data;
+            }
+        }
+        return nullptr;
+    }
 };
 
 // Specialization for vector of data
 template <typename T, typename Alloc>
-class OutportIterableWrapper<std::vector<T, Alloc>> {
-public:
-    using Iter = typename std::vector<T, Alloc>::const_iterator;
-
-    OutportIterableWrapper() : data_(), iter_(), iterEnd_(), end_(true) {}
-    OutportIterableWrapper(const DataOutport<std::vector<T, Alloc>>& port)
-        : data_{port.getData()}
-        , iter_{port.hasData() ? port.getData()->begin() : Iter{}}
-        , iterEnd_{port.hasData() ? port.getData()->end() : Iter{}}
-        , end_{iter_ == iterEnd_} {}
-
-    std::shared_ptr<const T> get() { return std::shared_ptr<const T>(data_, &(*iter_)); };
-
-    void inc() {
-        ++iter_;
-        if (iter_ == iterEnd_) {
-            end_ = true;
+struct DataOutportFlat<DataOutport<std::vector<T, Alloc>>>
+    : DataOutportBase<DataOutport<std::vector<T, Alloc>>, T, true> {
+    virtual std::shared_ptr<const T> getElement(size_t i) const final {
+        if (auto data = this->getElements()) {
+            if (i < data->size()) {
+                return std::shared_ptr<const T>(data, &(*data)[i]);
+            }
         }
-    };
-
-    bool equal(const OutportIterableWrapper& rhs) const {
-        if (end_ && rhs.end_) {
-            return true;
-        } else if (end_ != rhs.end_) {
-            return false;
-        } else {
-            return iter_ == rhs.iter_;
-        }
+        return nullptr;
     }
-
-    bool end() const { return end_; }
-
-private:
-    std::shared_ptr<const std::vector<T, Alloc>> data_;
-    Iter iter_;
-    Iter iterEnd_;
-    bool end_;
 };
 
 // Specialization for vector of data pointer
 template <typename T, typename Alloc>
-struct OutportIterableWrapper<std::vector<T*, Alloc>> {
-public:
-    using Iter = typename std::vector<T*, Alloc>::const_iterator;
-
-    OutportIterableWrapper() : data_(), iter_(), iterEnd_(), end_(true) {}
-    OutportIterableWrapper(const DataOutport<std::vector<T*, Alloc>>& port)
-        : data_{port.getData()}
-        , iter_{port.hasData() ? port.getData()->begin() : Iter{}}
-        , iterEnd_{port.hasData() ? port.getData()->end() : Iter{}}
-        , end_{iter_ == iterEnd_} {}
-
-    std::shared_ptr<const T> get() { return std::shared_ptr<const T>(data_, *iter_); };
-
-    void inc() {
-        ++iter_;
-        if (iter_ == iterEnd_) {
-            end_ = true;
+struct DataOutportFlat<DataOutport<std::vector<T*, Alloc>>>
+    : DataOutportBase<DataOutport<std::vector<T*, Alloc>>, T, true> {
+    virtual std::shared_ptr<const T> getElement(size_t i) const final {
+        if (auto data = this->getElements()) {
+            if (i < data->size()) {
+                return std::shared_ptr<const T>(data, (*data)[i]);
+            }
         }
-    };
-
-    bool equal(const OutportIterableWrapper& rhs) const {
-        if (end_ && rhs.end_) {
-            return true;
-        } else if (end_ != rhs.end_) {
-            return false;
-        } else {
-            return iter_ == rhs.iter_;
-        }
+        return nullptr;
     }
-
-    bool end() const { return end_; }
-
-private:
-    std::shared_ptr<const std::vector<T*, Alloc>> data_;
-    Iter iter_;
-    Iter iterEnd_;
-    bool end_;
+};
+// Specialization for vector of data shared pointer
+template <typename T, typename Alloc>
+struct DataOutportFlat<DataOutport<std::vector<std::shared_ptr<T>, Alloc>>>
+    : DataOutportBase<DataOutport<std::vector<std::shared_ptr<T>, Alloc>>, T, true> {
+    virtual std::shared_ptr<const T> getElement(size_t i) const final {
+        if (auto data = this->getElements()) {
+            if (i < data->size()) {
+                return (*data)[i];
+            }
+        }
+        return nullptr;
+    }
 };
 
 // Specialization for vector of data unique pointer
 template <typename T, typename Alloc>
-class OutportIterableWrapper<std::vector<std::unique_ptr<T>, Alloc>> {
-public:
-    using Iter = typename std::vector<std::unique_ptr<T>, Alloc>::const_iterator;
-
-    OutportIterableWrapper() : data_(), iter_(), iterEnd_(), end_(true) {}
-    OutportIterableWrapper(const DataOutport<std::vector<std::unique_ptr<T>, Alloc>>& port)
-        : data_{port.getData()}
-        , iter_{port.hasData() ? port.getData()->begin() : Iter{}}
-        , iterEnd_{port.hasData() ? port.getData()->end() : Iter{}}
-        , end_{iter_ == iterEnd_} {}
-
-    std::shared_ptr<const T> get() { return std::shared_ptr<const T>(data_, (*iter_).get()); };
-
-    void inc() {
-        ++iter_;
-        if (iter_ == iterEnd_) {
-            end_ = true;
+struct DataOutportFlat<DataOutport<std::vector<std::unique_ptr<T>, Alloc>>>
+    : DataOutportBase<DataOutport<std::vector<std::unique_ptr<T>, Alloc>>, T, true> {
+    virtual std::shared_ptr<const T> getElement(size_t i) const final {
+        if (auto data = this->getElements()) {
+            if (i < data->size()) {
+                return std::shared_ptr<const T>(data, (*data)[i].get());
+            }
         }
-    };
-
-    bool equal(const OutportIterableWrapper& rhs) const {
-        if (end_ && rhs.end_) {
-            return true;
-        } else if (end_ != rhs.end_) {
-            return false;
-        } else {
-            return iter_ == rhs.iter_;
-        }
+        return nullptr;
     }
-
-    bool end() const { return end_; }
-
-private:
-    std::shared_ptr<const std::vector<std::unique_ptr<T>, Alloc>> data_;
-    Iter iter_;
-    Iter iterEnd_;
-    bool end_;
 };
-
 // Specialization for DataSequence of data
 template <typename T>
-class OutportIterableWrapper<DataSequence<T>> {
-public:
-    using Iter = typename DataSequence<T>::const_iterator;
-
-    OutportIterableWrapper() : iter_(), iterEnd_(), end_(true) {}
-    explicit OutportIterableWrapper(const DataOutport<DataSequence<T>>& port)
-        : iter_{port.hasData() ? port.getData()->begin() : Iter{}}
-        , iterEnd_{port.hasData() ? port.getData()->end() : Iter{}}
-        , end_{iter_ == iterEnd_} {}
-
-    std::shared_ptr<const T> get() { return *iter_; };
-
-    void inc() {
-        ++iter_;
-        if (iter_ == iterEnd_) {
-            end_ = true;
+struct DataOutportFlat<DataOutport<DataSequence<T>>>
+    : DataOutportBase<DataOutport<DataSequence<T>>, T, true> {
+    virtual std::shared_ptr<const T> getElement(size_t i) const final {
+        if (auto data = this->getElements()) {
+            if (i < data->size()) {
+                return (*data)[i];
+            }
         }
-    };
-
-    bool equal(const OutportIterableWrapper& rhs) const {
-        if (end_ && rhs.end_) {
-            return true;
-        } else if (end_ != rhs.end_) {
-            return false;
-        } else {
-            return iter_ == rhs.iter_;
-        }
+        return nullptr;
     }
-
-    bool end() const { return end_; }
-
-private:
-    Iter iter_;
-    Iter iterEnd_;
-    bool end_;
 };
+
+template <typename T>
+concept hasBases = requires { typename T::Bases; };
+
+template <typename T>
+struct Bases {
+    using type = TypeList<T>;
+};
+
+template <typename... Ts>
+struct Bases<TypeList<Ts...>> {
+    using type = JoinTypeLists<typename Bases<Ts>::type...>;
+};
+
+template <hasBases T>
+struct Bases<T> {
+    using type = JoinTypeLists<TypeList<T>, typename Bases<typename T::Bases>::type>;
+};
+
+template <typename T>
+using bases_t = Bases<T>::type;
+
+template <typename Self, typename T>
+struct DataBases {};
+template <typename Self, template <typename...> typename L, typename... Ts>
+struct DataBases<Self, L<Ts...>> : DataOutportRegular<Self, Ts>... {};
+
+template <typename T>
+struct DataOutportImpl<DataOutport<T>> : DataBases<DataOutport<T>, bases_t<T>> {};
+
+template <typename T, typename Alloc>
+struct DataOutportImpl<DataOutport<std::vector<T, Alloc>>>
+    : DataOutportRegular<DataOutport<std::vector<T, Alloc>>, std::vector<T, Alloc>>,
+      DataOutportFlat<DataOutport<std::vector<T, Alloc>>> {};
+
+template <typename T, typename Alloc>
+struct DataOutportImpl<DataOutport<std::vector<T*, Alloc>>>
+    : DataOutportRegular<DataOutport<std::vector<T*, Alloc>>, std::vector<T*, Alloc>>,
+      DataOutportFlat<DataOutport<std::vector<T*, Alloc>>> {};
+
+template <typename T, typename Alloc>
+struct DataOutportImpl<DataOutport<std::vector<std::unique_ptr<T>, Alloc>>>
+    : DataOutportRegular<DataOutport<std::vector<std::unique_ptr<T>, Alloc>>,
+                         std::vector<std::unique_ptr<T>, Alloc>>,
+      DataOutportFlat<DataOutport<std::vector<std::unique_ptr<T>, Alloc>>> {};
+
+template <typename T>
+struct DataOutportImpl<DataOutport<DataSequence<T>>>
+    : DataOutportRegular<DataOutport<DataSequence<T>>, DataSequence<T>>,
+      DataOutportFlat<DataOutport<DataSequence<T>>> {};
 
 }  // namespace detail
-
-// Base template for single data ptr
-template <typename Derived, typename T, typename Enable = void>
-struct OutportIterableImpl : public OutportIterable<T> {
-    using Container = T;
-    using const_iterator = typename OutportIterable<T>::const_iterator;
-
-    virtual const_iterator begin() const override {
-        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
-    }
-    virtual const_iterator end() const override {
-        return detail::OutportIterableWrapper<Container>{};
-    }
-};
-
-// Specialization for vector of shared_ptr<data>.
-template <typename Derived, typename T, typename Alloc>
-struct OutportIterableImpl<Derived, std::vector<std::shared_ptr<T>, Alloc>>
-    : public OutportIterable<T> {
-    using Container = std::vector<std::shared_ptr<T>, Alloc>;
-    using const_iterator = typename OutportIterable<T>::const_iterator;
-
-    virtual const_iterator begin() const override {
-        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
-    }
-    virtual const_iterator end() const override {
-        return detail::OutportIterableWrapper<Container>{};
-    }
-};
-
-// Specialization for vector of data
-template <typename Derived, typename T, typename Alloc>
-struct OutportIterableImpl<Derived, std::vector<T, Alloc>> : public OutportIterable<T> {
-    using Container = std::vector<T, Alloc>;
-    using const_iterator = typename OutportIterable<T>::const_iterator;
-
-    virtual const_iterator begin() const override {
-        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
-    }
-    virtual const_iterator end() const override {
-        return detail::OutportIterableWrapper<Container>{};
-    }
-};
-
-// Specialization for vector of data pointer
-template <typename Derived, typename T, typename Alloc>
-struct OutportIterableImpl<Derived, std::vector<T*, Alloc>> : public OutportIterable<T> {
-    using Container = std::vector<T*, Alloc>;
-    using const_iterator = typename OutportIterable<T>::const_iterator;
-
-    virtual const_iterator begin() const override {
-        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
-    }
-    virtual const_iterator end() const override {
-        return detail::OutportIterableWrapper<Container>{};
-    }
-};
-
-// Specialization for vector of data unique pointer
-template <typename Derived, typename T, typename Alloc>
-struct OutportIterableImpl<Derived, std::vector<std::unique_ptr<T>, Alloc>>
-    : public OutportIterable<T> {
-    using Container = std::vector<std::unique_ptr<T>, Alloc>;
-    using const_iterator = typename OutportIterable<T>::const_iterator;
-
-    virtual const_iterator begin() const override {
-        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
-    }
-    virtual const_iterator end() const override {
-        return detail::OutportIterableWrapper<Container>{};
-    }
-};
-
-// Specialization for DataSequence of data
-template <typename Derived, typename T>
-struct OutportIterableImpl<Derived, DataSequence<T>> : public OutportIterable<T> {
-    using Container = DataSequence<T>;
-    using const_iterator = typename OutportIterable<T>::const_iterator;
-
-    virtual const_iterator begin() const override {
-        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
-    }
-    virtual const_iterator end() const override {
-        return detail::OutportIterableWrapper<Container>{};
-    }
-};
 
 }  // namespace inviwo

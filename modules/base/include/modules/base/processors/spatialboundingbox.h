@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,25 +31,17 @@
 
 #include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/geometry/plane.h>
-#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorinfo.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/util/glmvec.h>
-
-#include <string>
-#include <vector>
-
-#include <fmt/base.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API MeshPlaneClipping : public Processor {
+class IVW_MODULE_BASE_API SpatialBoundingBox : public Processor {
 public:
-    MeshPlaneClipping();
-    virtual ~MeshPlaneClipping() = default;
+    SpatialBoundingBox();
 
     virtual void process() override;
 
@@ -57,12 +49,9 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    MeshInport inputMesh_;
-    FlatMultiDataInport<Plane> planes_;
-    MeshOutport outputMesh_;
-
-    BoolProperty clippingEnabled_;
-    BoolProperty capClippedHoles_;
+    DataInport<SpatialEntity> inport_;
+    MeshOutport mesh_;
+    FloatVec4Property color_;
 };
 
 }  // namespace inviwo

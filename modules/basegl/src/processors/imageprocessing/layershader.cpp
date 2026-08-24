@@ -206,6 +206,14 @@ void LayerShader::preProcess(TextureUnitContainer&, Shader& shader, const Layer&
         "outputMap");
 }
 
+void LayerShader::postProcess(const Layer& input, [[maybe_unused]] Layer& output) {
+    inputFormat_.set(input.getDataFormat()->getString());
+    dataRange_.input.set(input.dataMap.dataRange);
+    valueRange_.input.set(input.dataMap.valueRange);
+    valueAxis_.input.strings[0].set(input.dataMap.valueAxis.name);
+    valueAxis_.input.strings[1].set(fmt::to_string(input.dataMap.valueAxis.unit));
+}
+
 LayerConfig LayerShader::outputConfig(const Layer& input) const {
     const auto* inputFormat = inport_.getData()->getDataFormat();
     const auto* format = [&]() {

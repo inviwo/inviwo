@@ -31,9 +31,7 @@
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
@@ -76,7 +74,7 @@ MeshConverterProcessor::MeshConverterProcessor()
 }
 
 void MeshConverterProcessor::process() {
-    auto meshes = std::make_shared<std::vector<std::shared_ptr<Mesh>>>();
+    auto meshes = std::make_shared<DataSequence<Mesh>>();
     for (auto mesh : inport_) {
         if (mesh) {
             switch (type_.get()) {

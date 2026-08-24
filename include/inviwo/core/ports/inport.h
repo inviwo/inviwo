@@ -38,6 +38,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <ranges>
 
 namespace inviwo {
 
@@ -86,15 +87,19 @@ public:
 
     // Called from the processor network to create connections.
     virtual bool canConnectTo(const Port* port) const = 0;
-    virtual void connectTo(Outport* outport);
-    virtual void disconnectFrom(Outport* outport);
+    virtual void connectTo(Outport* outport) = 0;
+    virtual void disconnectFrom(Outport* outport) = 0;
 
     virtual bool isConnectedTo(const Outport* outport) const;
-    virtual Outport* getConnectedOutport() const;
-    const std::vector<Outport*>& getConnectedOutports() const noexcept;
+    auto getConnectedOutports() const {
+        return std::views::iota(0uz, getNumberOfConnections()) |
+               std::views::transform([this](size_t i) { return getConnectedOutport(i); });
+    }
+
+    virtual Outport* getConnectedOutport(size_t i) const = 0;
     virtual size_t getMaxNumberOfConnections() const = 0;
-    virtual size_t getNumberOfConnections() const;
-    virtual const std::vector<const Outport*>& getChangedOutports() const;
+    virtual size_t getNumberOfConnections() const = 0;
+    Outport* getConnectedOutport() const;
 
     /**
      * Propagate event upwards towards connected outports, if targets is nullptr, propagate the
@@ -135,6 +140,8 @@ protected:
     Inport(std::string_view identifier, Document help);
 
     bool circularConnection(const Port* port) const;
+    void doConnectTo(Outport* outport);
+    void doDisconnectFrom(Outport* outport);
 
     /**
      * Called by Outport::invalidate on its connected inports, which is call by
@@ -142,14 +149,13 @@ protected:
      * network.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
-    /**
-     * Called by Outport::setValid, which is call by Processor::setValid, which is called after
-     * Processor:process. From above in the network.
-     */
-    virtual void setValid(const Outport* source);
 
-    // Usually called with false (reset) by Processor::setValid after the Processor::process
-    virtual void setChanged(bool changed = true, const Outport* source = nullptr);
+    /**
+     * Called with true by Outport::setValid called by Processor::setValid,
+     * which is called after Processor:process. From above in the network.
+     * Called with false (reset) by Processor::setValid after the Processor::process from below
+     */
+    virtual void setChanged(bool changed);
 
     // Called by the processor network.
     void callOnChangeIfChanged() const;
@@ -158,16 +164,11 @@ protected:
 
     StateCoordinator<bool> isReady_;
     StateCoordinator<bool> isOptional_;
-    std::vector<Outport*> connectedOutports_;
 
 private:
     bool changed_;
 
     CallBackList onChangeCallback_;
-    std::vector<const Outport*> changedSources_;
-
-    InvalidationLevel lastInvalidationLevel_;  // Used for the onInvalid callback.
-
     CallBackList onConnectCallback_;
     CallBackList onDisconnectCallback_;
     Dispatcher<void(Outport*)> onConnectDispatcher_;

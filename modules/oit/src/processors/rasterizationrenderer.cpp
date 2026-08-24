@@ -33,8 +33,6 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/inportiterable.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>

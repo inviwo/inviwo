@@ -68,11 +68,9 @@ void Outport::invalidate(InvalidationLevel invalidationLevel) {
     isReady_.update();
 }
 
-InvalidationLevel Outport::getInvalidationLevel() const { return invalidationLevel_; }
-
 void Outport::setValid() {
     invalidationLevel_ = InvalidationLevel::Valid;
-    for (auto inport : connectedInports_) inport->setValid(this);
+    for (auto* inport : connectedInports_) inport->setChanged(true);
     isReady_.update();
 }
 

@@ -153,6 +153,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     addProperties(scatterPlot_.properties_, xAxis_, yAxis_, colorCol_, radiusCol_, sortCol_,
                   sortOrder_);
 
+    xAxis_.onChange([this]() { setColumn(xAxis_, &ScatterPlotGL::setXAxis); });
     yAxis_.onChange([this]() { setColumn(yAxis_, &ScatterPlotGL::setYAxis); });
     colorCol_.onChange([this]() { setColumn(colorCol_, &ScatterPlotGL::setColorData); });
     radiusCol_.onChange([this]() { setColumn(radiusCol_, &ScatterPlotGL::setRadiusData); });
@@ -176,6 +177,14 @@ void ScatterPlotProcessor::process() {
     const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     if (dataFramePort_.isChanged()) {
+        setColumn(xAxis_, &ScatterPlotGL::setXAxis);
+        setColumn(yAxis_, &ScatterPlotGL::setYAxis);
+        setColumn(colorCol_, &ScatterPlotGL::setColorData);
+        setColumn(radiusCol_, &ScatterPlotGL::setRadiusData);
+        setColumn(sortCol_, &ScatterPlotGL::setSortingData);
+
+        scatterPlot_.setIndexColumn(dataFramePort_.getData()->getIndexColumn());
+
         indexToRowMap_ = [&]() {
             auto iCol = dataFramePort_.getData()->getIndexColumn();
             auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();

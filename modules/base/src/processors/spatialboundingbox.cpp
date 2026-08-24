@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,53 +27,49 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/volumesequencetospatial4dsampler.h>
+#include <modules/base/processors/spatialboundingbox.h>
 
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorinfo.h>
-#include <inviwo/core/processors/processorstate.h>
-#include <inviwo/core/processors/processortags.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/util/spatial4dsampler.h>
-#include <inviwo/core/util/volumesequencesampler.h>
+#include <modules/base/algorithm/meshutils.h>
 
-#include <functional>
-#include <memory>
-#include <string_view>
-
-#include <fmt/base.h>
+#include <ranges>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VolumeSequenceToSpatial4DSampler::processorInfo_{
-    "org.inviwo.VolumeSequenceToSpatial4DSampler",  // Class identifier
-    "Volume Sequence To Spatial 4D Sampler",        // Display name
-    "Spatial Sampler",                              // Category
-    CodeState::Experimental,                        // Code state
-    Tags::None,                                     // Tags
+const ProcessorInfo SpatialBoundingBox::processorInfo_{
+    "org.inviwo.SpatialBoundingBox",  // Class identifier
+    "Spatial Bounding Box",           // Display name
+    "Geometry",                       // Category
+    CodeState::Stable,                // Code state
+    Tags::CPU,                        // Tags
+    R"(This processor takes an arbitrary `SpatialEntity`, for example a Layer, Mesh,
+    or Volume, and outputs its bounding box as a Mesh. The bounding box mesh is given in
+    model coordinates using the same world transformation as the input.)"_unindentHelp,
 };
-const ProcessorInfo& VolumeSequenceToSpatial4DSampler::getProcessorInfo() const {
-    return processorInfo_;
+
+const ProcessorInfo& SpatialBoundingBox::getProcessorInfo() const { return processorInfo_; }
+
+SpatialBoundingBox::SpatialBoundingBox()
+    : Processor{}
+    , inport_("inport", "Input Spatial Entity"_help)
+    , mesh_("mesh", "The bounding box mesh"_help)
+    , color_("color", "Color", util::ordinalColor(vec4{1.0f}).set("Line color of the mesh"_help)) {
+
+    addPorts(inport_, mesh_);
+    addProperty(color_);
 }
 
-VolumeSequenceToSpatial4DSampler::VolumeSequenceToSpatial4DSampler()
-    : Processor()
-    , volumeSequence_("volumeSequence")
-    , sampler_("sampler")
-    , allowLooping_("allowLooping", "Allow Looping", true) {
-    addPort(volumeSequence_);
-    addPort(sampler_);
+void SpatialBoundingBox::process() {
+    auto mesh = meshutil::boundingBoxAdjacency(inport_.getData()->getModelMatrix(), color_);
+    mesh->setWorldMatrix(inport_.getData()->getWorldMatrix());
 
-    addProperty(allowLooping_);
-}
+    for (auto i : std::views::iota(0uz, 3uz)) {
+        if (const auto* axis = inport_.getData()->getAxis(i)) {
+            mesh->axes[i] = *axis;
+        }
+    }
 
-void VolumeSequenceToSpatial4DSampler::process() {
-    auto sampler =
-        std::make_shared<VolumeSequenceSampler>(volumeSequence_.getData(), allowLooping_.get());
-    sampler_.setData(sampler);
+    mesh_.setData(mesh);
 }
 
 }  // namespace inviwo

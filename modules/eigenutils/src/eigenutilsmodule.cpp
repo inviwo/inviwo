@@ -32,7 +32,6 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/modulepath.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/stringconversion.h>

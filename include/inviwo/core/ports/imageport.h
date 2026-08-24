@@ -45,20 +45,11 @@ namespace inviwo {
 
 class ImageOutport;
 
-class IVW_CORE_API ImagePortBase {
-public:
-    virtual ~ImagePortBase() = default;
-    virtual bool isOutportDeterminingSize() const = 0;
-    virtual void setOutportDeterminesSize(bool outportDeterminesSize) = 0;
-};
-
 enum class OutportDeterminesSize { Yes, No };
 enum class HandleResizeEvents { Yes, No };
 
 IVW_CORE_API std::string_view enumToStr(OutportDeterminesSize ods);
 IVW_CORE_API std::string_view enumToStr(HandleResizeEvents hre);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, OutportDeterminesSize ods);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, HandleResizeEvents hre);
 
 /**
  * @ingroup ports
@@ -100,12 +91,15 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, HandleResizeEvents hre);
  *
  */
 template <size_t N = 1>
-class BaseImageInport : public DataInport<Image, N>, public ImagePortBase {
+class BaseImageInport : public DataInport<Image, N> {
 public:
     BaseImageInport(std::string_view identifier, Document help = {},
                     OutportDeterminesSize value = OutportDeterminesSize::No);
     BaseImageInport(std::string_view identifier, bool outportDeterminesSize);
-
+    BaseImageInport(const BaseImageInport&) = delete;
+    BaseImageInport(BaseImageInport&&) = delete;
+    BaseImageInport& operator=(const BaseImageInport&) = delete;
+    BaseImageInport& operator=(BaseImageInport&&) = delete;
     virtual ~BaseImageInport();
     virtual std::string_view getClassIdentifier() const override;
 
@@ -114,15 +108,12 @@ public:
     virtual std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> getSourceVectorData()
         const override;
 
-    virtual bool isOutportDeterminingSize() const override;
-    virtual void setOutportDeterminesSize(bool outportDeterminesSize) override;
+    bool isOutportDeterminingSize() const;
+    void setOutportDeterminesSize(bool outportDeterminesSize);
     void setOutportDeterminesSize(OutportDeterminesSize outportDeterminesSize);
 
-    void passOnDataToOutport(ImageOutport* outport) const;
-
     virtual Document getInfo() const override;
-
-    bool hasData() const override;
+    virtual bool hasData() const override;
 
 private:
     std::shared_ptr<const Image> getImage(ImageOutport* port) const;
@@ -321,7 +312,7 @@ std::string_view BaseImageInport<N>::getClassIdentifier() const {
 template <size_t N>
 std::shared_ptr<const Image> BaseImageInport<N>::getData() const {
     if (this->isConnected()) {
-        auto imgport = static_cast<ImageOutport*>(this->getConnectedOutport());
+        auto* imgport = static_cast<ImageOutport*>(this->getConnectedOutport());
         return getImage(imgport);
     } else {
         return nullptr;
@@ -332,8 +323,8 @@ template <size_t N>
 std::vector<std::shared_ptr<const Image>> BaseImageInport<N>::getVectorData() const {
     std::vector<std::shared_ptr<const Image>> res;
 
-    for (auto outport : this->connectedOutports_) {
-        auto imgport = static_cast<ImageOutport*>(outport);
+    for (auto outport : this->outports_) {
+        auto* imgport = static_cast<ImageOutport*>(outport->port());
         if (auto img = getImage(imgport)) res.emplace_back(img);
     }
 
@@ -345,8 +336,8 @@ std::vector<std::pair<Outport*, std::shared_ptr<const Image>>>
 BaseImageInport<N>::getSourceVectorData() const {
     std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> res;
 
-    for (auto outport : this->connectedOutports_) {
-        auto imgport = static_cast<ImageOutport*>(outport);
+    for (auto outport : this->outports_) {
+        auto* imgport = static_cast<ImageOutport*>(outport->port());
         if (auto img = getImage(imgport)) res.emplace_back(imgport, img);
     }
 
@@ -379,15 +370,6 @@ void BaseImageInport<N>::setOutportDeterminesSize(bool outportDeterminesSize) {
 }
 
 template <size_t N>
-void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
-    if (this->hasData()) {
-        std::shared_ptr<const Image> img = getData();
-        std::shared_ptr<Image> out = outport->getEditableData();
-        if (out) img->copyRepresentationsTo(out.get());
-    }
-}
-
-template <size_t N>
 Document BaseImageInport<N>::getInfo() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
@@ -405,14 +387,14 @@ Document BaseImageInport<N>::getInfo() const {
 template <size_t N>
 bool BaseImageInport<N>::hasData() const {
     if constexpr (N == 0) {
-        return this->isConnected() && util::any_of(this->connectedOutports_, [this](Outport* p) {
-                   return getImage(static_cast<ImageOutport*>(p)) != nullptr;
+        return this->isConnected() && util::any_of(this->outports_, [this](auto* p) {
+                   return getImage(static_cast<ImageOutport*>(p->port())) != nullptr;
                });
     } else {
         // Note: Cannot use ImageOutport::hasData() as getData()
         // depends on the ImageInport
-        return this->isConnected() && util::all_of(this->connectedOutports_, [this](Outport* p) {
-                   return getImage(static_cast<ImageOutport*>(p)) != nullptr;
+        return this->isConnected() && util::all_of(this->outports_, [this](auto* p) {
+                   return getImage(static_cast<ImageOutport*>(p->port())) != nullptr;
                });
     }
 }

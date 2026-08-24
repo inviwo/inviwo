@@ -33,6 +33,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/typelist.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/datastructures/unitsystem.h>
 
@@ -127,6 +128,10 @@ public:
      */
     virtual const Axis* getAxis(size_t index) const = 0;
 
+    static constexpr uvec3 colorCode{168, 81, 81};
+    static constexpr std::string_view classIdentifier{"org.inviwo.SpatialEntity"};
+    static constexpr std::string_view dataName{"SpatialEntity"};
+
 protected:
     mutable std::unique_ptr<SpatialCoordinateTransformer> transformer_;
     mutable std::unique_ptr<SpatialCameraCoordinateTransformer> cameraTransformer_;
@@ -151,6 +156,7 @@ public:
 template <unsigned int N>
 class StructuredGridEntity : public SpatialEntity {
 public:
+    using Bases = TypeList<SpatialEntity>;
     StructuredGridEntity() = default;
     StructuredGridEntity(const StructuredGridEntity<N>& rhs) = default;
     StructuredGridEntity(const glm::vec<N, size_t>& dimensions, const glm::vec<N, float>& spacing);
