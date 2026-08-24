@@ -1,15 +1,5 @@
 var NAVTREEINDEX9 =
 {
-"classinviwo_1_1InviwoModule.html#ac36e8ea348a7ec2de7b155d51d6557d0":[3,0,0,507,6],
-"classinviwo_1_1InviwoModule.html#ac36e8ea348a7ec2de7b155d51d6557d0":[5,0,1,517,6],
-"classinviwo_1_1InviwoModule.html#ac892983fed296c0fcc1e4a9fab7bee95":[3,0,0,507,4],
-"classinviwo_1_1InviwoModule.html#ac892983fed296c0fcc1e4a9fab7bee95":[5,0,1,517,4],
-"classinviwo_1_1InviwoModule.html#ad08053fc1d110a251aeb18311846a569":[3,0,0,507,8],
-"classinviwo_1_1InviwoModule.html#ad08053fc1d110a251aeb18311846a569":[5,0,1,517,8],
-"classinviwo_1_1InviwoModule.html#aec618a62fbfac6fbc67dd951f58bb178":[3,0,0,507,13],
-"classinviwo_1_1InviwoModule.html#aec618a62fbfac6fbc67dd951f58bb178":[5,0,1,517,13],
-"classinviwo_1_1InviwoModule.html#aff6681a946543700db5656b7b95ab666":[3,0,0,507,3],
-"classinviwo_1_1InviwoModule.html#aff6681a946543700db5656b7b95ab666":[5,0,1,517,3],
 "classinviwo_1_1InviwoModuleFactoryObject.html":[3,0,0,508],
 "classinviwo_1_1InviwoModuleFactoryObject.html":[5,0,1,518],
 "classinviwo_1_1InviwoModuleFactoryObjectTemplate.html":[3,0,0,509],
@@ -249,5 +239,15 @@ var NAVTREEINDEX9 =
 "classinviwo_1_1LayerInformationVisualizer.html#a3f2179e293a8dbc932b825efc482e788":[5,0,1,583,4],
 "classinviwo_1_1LayerInformationVisualizer.html#a52265286d87f530fd77eac7d5e2b3406":[3,0,0,573,5],
 "classinviwo_1_1LayerInformationVisualizer.html#a52265286d87f530fd77eac7d5e2b3406":[5,0,1,583,5],
-"classinviwo_1_1LayerInformationVisualizer.html#a57d8c3a5cae04ed32bc0c8537c9cc40f":[3,0,0,573,2]
+"classinviwo_1_1LayerInformationVisualizer.html#a57d8c3a5cae04ed32bc0c8537c9cc40f":[3,0,0,573,2],
+"classinviwo_1_1LayerInformationVisualizer.html#a57d8c3a5cae04ed32bc0c8537c9cc40f":[5,0,1,583,2],
+"classinviwo_1_1LayerInformationVisualizer.html#a80f660312a07a04f3177479814b4fac7":[3,0,0,573,6],
+"classinviwo_1_1LayerInformationVisualizer.html#a80f660312a07a04f3177479814b4fac7":[5,0,1,583,6],
+"classinviwo_1_1LayerInformationVisualizer.html#a8c7445ff5171ab08cd75975e543bf784":[3,0,0,573,7],
+"classinviwo_1_1LayerInformationVisualizer.html#a8c7445ff5171ab08cd75975e543bf784":[5,0,1,583,7],
+"classinviwo_1_1LayerInformationVisualizer.html#aad8b72992576a87d384851397c78ec28":[3,0,0,573,0],
+"classinviwo_1_1LayerInformationVisualizer.html#aad8b72992576a87d384851397c78ec28":[5,0,1,583,0],
+"classinviwo_1_1LayerInformationVisualizer.html#ae2e70ee947b3611e8ac03b28c036f727":[3,0,0,573,3],
+"classinviwo_1_1LayerInformationVisualizer.html#ae2e70ee947b3611e8ac03b28c036f727":[5,0,1,583,3],
+"classinviwo_1_1LayerInvert.html":[3,0,0,574]
 };

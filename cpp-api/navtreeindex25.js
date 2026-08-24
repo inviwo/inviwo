@@ -1,9 +1,5 @@
 var NAVTREEINDEX25 =
 {
-"classinviwo_1_1animation_1_1Animation.html#a6fae95a3f84994f271e9894722574cc3":[3,0,0,0,0,4],
-"classinviwo_1_1animation_1_1Animation.html#a6fae95a3f84994f271e9894722574cc3":[5,0,1,2,1,4],
-"classinviwo_1_1animation_1_1Animation.html#a76de0aed5c4482861964467184982bdf":[3,0,0,0,0,8],
-"classinviwo_1_1animation_1_1Animation.html#a76de0aed5c4482861964467184982bdf":[5,0,1,2,1,8],
 "classinviwo_1_1animation_1_1Animation.html#a7c0874408d83cc3a848e9243bf33513e":[3,0,0,0,0,14],
 "classinviwo_1_1animation_1_1Animation.html#a7c0874408d83cc3a848e9243bf33513e":[5,0,1,2,1,14],
 "classinviwo_1_1animation_1_1Animation.html#a801f1dc4526a7565004d81d8bc1cc0a0":[3,0,0,0,0,12],
@@ -249,5 +245,9 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1animation_1_1KeyframeSequenceFactory.html":[3,0,0,0,58],
 "classinviwo_1_1animation_1_1KeyframeSequenceFactory.html":[5,0,1,2,59],
 "classinviwo_1_1animation_1_1KeyframeSequenceObserver.html":[3,0,0,0,59],
-"classinviwo_1_1animation_1_1KeyframeSequenceObserver.html":[5,0,1,2,60]
+"classinviwo_1_1animation_1_1KeyframeSequenceObserver.html":[5,0,1,2,60],
+"classinviwo_1_1animation_1_1KeyframeSequenceObserverble.html":[3,0,0,0,60],
+"classinviwo_1_1animation_1_1KeyframeSequenceObserverble.html":[5,0,1,2,61],
+"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html":[3,0,0,0,61],
+"classinviwo_1_1animation_1_1KeyframeSequenceTyped.html":[5,0,1,2,62]
 };

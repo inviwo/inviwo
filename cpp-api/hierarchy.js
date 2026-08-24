@@ -127,6 +127,9 @@ var hierarchy =
         [ "inviwo::RepresentationFactoryObjectTemplate< Representation, Derived >", "classinviwo_1_1RepresentationFactoryObjectTemplate.html", null ]
       ] ]
     ] ],
+    [ "inviwo::detail::Bases&lt; T &gt;", "structinviwo_1_1detail_1_1Bases.html", null ],
+    [ "inviwo::detail::Bases&lt; T &gt;", "structinviwo_1_1detail_1_1Bases_3_01T_01_4.html", null ],
+    [ "inviwo::detail::Bases&lt; TypeList&lt; Ts... &gt; &gt;", "structinviwo_1_1detail_1_1Bases_3_01TypeList_3_01Ts_8_8_8_01_4_01_4.html", null ],
     [ "inviwo::detail::begin_tag_t", "structinviwo_1_1detail_1_1begin__tag__t.html", null ],
     [ "inviwo::BitSet::BitSetIterator", "classinviwo_1_1BitSet_1_1BitSetIterator.html", null ],
     [ "inviwo::plot::BoxSelection", "classinviwo_1_1plot_1_1BoxSelection.html", null ],
@@ -244,17 +247,6 @@ var hierarchy =
     [ "inviwo::utilgl::BlendModeState::Config", "structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html", null ],
     [ "inviwo::dispatching::detail::Cons&lt; typename, typename &gt;", "structinviwo_1_1dispatching_1_1detail_1_1Cons.html", null ],
     [ "inviwo::dispatching::detail::Cons&lt; T, std::tuple&lt; Args... &gt; &gt;", "structinviwo_1_1dispatching_1_1detail_1_1Cons_3_01T_00_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html", null ],
-    [ "inviwo::OutportIterable&lt; T &gt;::const_iterator", "classinviwo_1_1OutportIterable_1_1const__iterator.html", null ],
-    [ "inviwo::InportIterable&lt; InportType, T, Flat &gt;::const_iterator_base&lt; Derived &gt;", "classinviwo_1_1InportIterable_1_1const__iterator__base.html", null ],
-    [ "inviwo::InportIterable&lt; InportType, T, Flat &gt;::const_iterator_base&lt; const_iterator &gt;", "classinviwo_1_1InportIterable_1_1const__iterator__base.html", [
-      [ "inviwo::InportIterable< InportType, T, Flat >::const_iterator", "classinviwo_1_1InportIterable_1_1const__iterator.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; InportType, T, Flat &gt;::const_iterator_base&lt; const_iterator_changed &gt;", "classinviwo_1_1InportIterable_1_1const__iterator__base.html", [
-      [ "inviwo::InportIterable< InportType, T, Flat >::const_iterator_changed", "classinviwo_1_1InportIterable_1_1const__iterator__changed.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; InportType, T, Flat &gt;::const_iterator_base&lt; const_iterator_port &gt;", "classinviwo_1_1InportIterable_1_1const__iterator__base.html", [
-      [ "inviwo::InportIterable< InportType, T, Flat >::const_iterator_port", "classinviwo_1_1InportIterable_1_1const__iterator__port.html", null ]
-    ] ],
     [ "inviwo::ContextHolder", "classinviwo_1_1ContextHolder.html", [
       [ "inviwo::CanvasContextHolder", "classinviwo_1_1CanvasContextHolder.html", null ]
     ] ],
@@ -283,6 +275,13 @@ var hierarchy =
     ] ],
     [ "inviwo::Data&lt; Volume, VolumeRepresentation &gt;", "classinviwo_1_1Data.html", [
       [ "inviwo::Volume", "classinviwo_1_1Volume.html", null ]
+    ] ],
+    [ "inviwo::detail::DataBases&lt; Self, T &gt;", "structinviwo_1_1detail_1_1DataBases.html", null ],
+    [ "inviwo::detail::DataBases&lt; DataOutport&lt; T &gt;, bases_t&lt; T &gt; &gt;", "structinviwo_1_1detail_1_1DataBases.html", [
+      [ "inviwo::detail::DataOutportImpl< DataOutport< T > >", "structinviwo_1_1detail_1_1DataOutportImpl_3_01DataOutport_3_01T_01_4_01_4.html", [
+        [ "inviwo::DataOutport< inviwo::DataSequence< T > >", "classinviwo_1_1DataOutport.html", null ],
+        [ "inviwo::DataOutport< T >", "classinviwo_1_1DataOutport.html", null ]
+      ] ]
     ] ],
     [ "inviwo::DataFormatBase", "classinviwo_1_1DataFormatBase.html", [
       [ "inviwo::DataFormat< T >", "classinviwo_1_1DataFormat.html", null ]
@@ -323,6 +322,137 @@ var hierarchy =
     [ "inviwo::DataInfo", "structinviwo_1_1DataInfo.html", null ],
     [ "inviwo::DataMapper", "classinviwo_1_1DataMapper.html", null ],
     [ "inviwo::utilgl::DataMinMaxGL", "classinviwo_1_1utilgl_1_1DataMinMaxGL.html", null ],
+    [ "inviwo::detail::DataOutportFlat&lt; T &gt;", "structinviwo_1_1detail_1_1DataOutportFlat.html", null ],
+    [ "inviwo::detail::DataOutportImpl&lt; T &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< std::filesystem::path >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< DataSequence< std::filesystem::path > >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< BufferBase >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< Layer >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< LayerSequence >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< Mesh >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< MeshSequence >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< Volume >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< VolumeSequence >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< DataFrame >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< Eigen::MatrixXf >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< Handle >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< json >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< Rasterization >", "classinviwo_1_1DataOutport.html", [
+        [ "inviwo::RasterizationOutport", "classinviwo_1_1RasterizationOutport.html", null ]
+      ] ],
+      [ "inviwo::DataOutport< TetraMesh >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< IntegralLineSet >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< SeedPointVector< Dims > >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< SeedPoint2DVector >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< SeedPoint3DVector >", "classinviwo_1_1DataOutport.html", null ],
+      [ "inviwo::DataOutport< SeedPoint4DVector >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; DataType &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< DataType >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; Image &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< Image >", "classinviwo_1_1DataOutport.html", [
+        [ "inviwo::ImageOutport", "classinviwo_1_1ImageOutport.html", null ]
+      ] ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; inviwo::DataFrame &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< inviwo::DataFrame >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; inviwo::DataSequence&lt; inviwo::Image &gt; &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< inviwo::DataSequence< inviwo::Image > >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; inviwo::DataSequence&lt; inviwo::Mesh &gt; &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< inviwo::DataSequence< inviwo::Mesh > >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; inviwo::LightSource &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< inviwo::LightSource >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; inviwo::Plane &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< inviwo::Plane >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; inviwo::Spatial4DSampler&lt; dvec3 &gt; &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< inviwo::Spatial4DSampler< dvec3 > >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; inviwo::SpatialSampler&lt; dvec2 &gt; &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< inviwo::SpatialSampler< dvec2 > >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; inviwo::SpatialSampler&lt; dvec3 &gt; &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< inviwo::SpatialSampler< dvec3 > >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; std::vector&lt; float &gt; &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< std::vector< float > >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; std::vector&lt; inviwo::Plane &gt; &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< std::vector< inviwo::Plane > >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; std::vector&lt; std::string &gt; &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< std::vector< std::string > >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; std::vector&lt; uint32_t &gt; &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< std::vector< uint32_t > >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; std::vector&lt; vec3 &gt; &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< std::vector< vec3 > >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::detail::DataOutportImpl&lt; DataOutport&lt; std::vector&lt; vec4 &gt; &gt; &gt;", "structinviwo_1_1detail_1_1DataOutportImpl.html", [
+      [ "inviwo::DataOutport< std::vector< vec4 > >", "classinviwo_1_1DataOutport.html", null ]
+    ] ],
+    [ "inviwo::DataOutportInterface&lt; T &gt;", "structinviwo_1_1DataOutportInterface.html", [
+      [ "inviwo::detail::DataOutportBase< DataOutport< DataSequence< T > >, T, true >", "structinviwo_1_1detail_1_1DataOutportBase.html", [
+        [ "inviwo::detail::DataOutportFlat< DataOutport< DataSequence< T > > >", "structinviwo_1_1detail_1_1DataOutportFlat_3_01DataOutport_3_01DataSequence_3_01T_01_4_01_4_01_4.html", [
+          [ "inviwo::detail::DataOutportImpl< DataOutport< DataSequence< T > > >", "structinviwo_1_1detail_1_1DataOutportImpl_3_01DataOutport_3_01DataSequence_3_01T_01_4_01_4_01_4.html", null ]
+        ] ]
+      ] ],
+      [ "inviwo::detail::DataOutportBase< DataOutport< std::vector< T *, Alloc > >, T, true >", "structinviwo_1_1detail_1_1DataOutportBase.html", [
+        [ "inviwo::detail::DataOutportFlat< DataOutport< std::vector< T *, Alloc > > >", "structinviwo_1_1detail_1_1DataOutportFlat_3_01DataOutport_3_01std_1_1vector_3_01T_01_5_00_01Alloc_01_4_01_4_01_4.html", [
+          [ "inviwo::detail::DataOutportImpl< DataOutport< std::vector< T *, Alloc > > >", "structinviwo_1_1detail_1_1DataOutportImpl_3_01DataOutport_3_01std_1_1vector_3_01T_01_5_00_01Alloc_01_4_01_4_01_4.html", null ]
+        ] ]
+      ] ],
+      [ "inviwo::detail::DataOutportBase< DataOutport< std::vector< T, Alloc > >, T, true >", "structinviwo_1_1detail_1_1DataOutportBase.html", [
+        [ "inviwo::detail::DataOutportFlat< DataOutport< std::vector< T, Alloc > > >", "structinviwo_1_1detail_1_1DataOutportFlat_3_01DataOutport_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4_01_4.html", [
+          [ "inviwo::detail::DataOutportImpl< DataOutport< std::vector< T, Alloc > > >", "structinviwo_1_1detail_1_1DataOutportImpl_3_01DataOutport_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4_01_4.html", null ]
+        ] ]
+      ] ],
+      [ "inviwo::detail::DataOutportBase< DataOutport< std::vector< std::shared_ptr< T >, Alloc > >, T, true >", "structinviwo_1_1detail_1_1DataOutportBase.html", [
+        [ "inviwo::detail::DataOutportFlat< DataOutport< std::vector< std::shared_ptr< T >, Alloc > > >", "structinviwo_1_1detail_1_1DataOutportFlat_3_01DataOutport_3_01std_1_1vector_3_01std_1_1shared__p07f8377276d7dccaf9367063b371ab16.html", null ]
+      ] ],
+      [ "inviwo::detail::DataOutportBase< DataOutport< std::vector< std::unique_ptr< T >, Alloc > >, T, true >", "structinviwo_1_1detail_1_1DataOutportBase.html", [
+        [ "inviwo::detail::DataOutportFlat< DataOutport< std::vector< std::unique_ptr< T >, Alloc > > >", "structinviwo_1_1detail_1_1DataOutportFlat_3_01DataOutport_3_01std_1_1vector_3_01std_1_1unique__pb54d3cc59a6be1fa5ac82a0681f9fc22.html", [
+          [ "inviwo::detail::DataOutportImpl< DataOutport< std::vector< std::unique_ptr< T >, Alloc > > >", "structinviwo_1_1detail_1_1DataOutportImpl_3_01DataOutport_3_01std_1_1vector_3_01std_1_1unique__pe5ecb144996d3da7285efcfc2497bd59.html", null ]
+        ] ]
+      ] ],
+      [ "inviwo::detail::DataOutportBase< DataOutport< DataSequence< T > >, T, false >", "structinviwo_1_1detail_1_1DataOutportBase.html", [
+        [ "inviwo::detail::DataOutportRegular< DataOutport< DataSequence< T > >, DataSequence< T > >", "structinviwo_1_1detail_1_1DataOutportRegular.html", [
+          [ "inviwo::detail::DataOutportImpl< DataOutport< DataSequence< T > > >", "structinviwo_1_1detail_1_1DataOutportImpl_3_01DataOutport_3_01DataSequence_3_01T_01_4_01_4_01_4.html", null ]
+        ] ]
+      ] ],
+      [ "inviwo::detail::DataOutportBase< DataOutport< std::vector< T *, Alloc > >, T, false >", "structinviwo_1_1detail_1_1DataOutportBase.html", [
+        [ "inviwo::detail::DataOutportRegular< DataOutport< std::vector< T *, Alloc > >, std::vector< T *, Alloc > >", "structinviwo_1_1detail_1_1DataOutportRegular.html", [
+          [ "inviwo::detail::DataOutportImpl< DataOutport< std::vector< T *, Alloc > > >", "structinviwo_1_1detail_1_1DataOutportImpl_3_01DataOutport_3_01std_1_1vector_3_01T_01_5_00_01Alloc_01_4_01_4_01_4.html", null ]
+        ] ]
+      ] ],
+      [ "inviwo::detail::DataOutportBase< DataOutport< std::vector< T, Alloc > >, T, false >", "structinviwo_1_1detail_1_1DataOutportBase.html", [
+        [ "inviwo::detail::DataOutportRegular< DataOutport< std::vector< T, Alloc > >, std::vector< T, Alloc > >", "structinviwo_1_1detail_1_1DataOutportRegular.html", [
+          [ "inviwo::detail::DataOutportImpl< DataOutport< std::vector< T, Alloc > > >", "structinviwo_1_1detail_1_1DataOutportImpl_3_01DataOutport_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4_01_4.html", null ]
+        ] ]
+      ] ],
+      [ "inviwo::detail::DataOutportBase< DataOutport< std::vector< std::unique_ptr< T >, Alloc > >, T, false >", "structinviwo_1_1detail_1_1DataOutportBase.html", [
+        [ "inviwo::detail::DataOutportRegular< DataOutport< std::vector< std::unique_ptr< T >, Alloc > >, std::vector< std::unique_ptr< T >, Alloc > >", "structinviwo_1_1detail_1_1DataOutportRegular.html", [
+          [ "inviwo::detail::DataOutportImpl< DataOutport< std::vector< std::unique_ptr< T >, Alloc > > >", "structinviwo_1_1detail_1_1DataOutportImpl_3_01DataOutport_3_01std_1_1vector_3_01std_1_1unique__pe5ecb144996d3da7285efcfc2497bd59.html", null ]
+        ] ]
+      ] ],
+      [ "inviwo::detail::DataOutportBase< Self, T, false >", "structinviwo_1_1detail_1_1DataOutportBase.html", [
+        [ "inviwo::detail::DataOutportRegular< Self, T >", "structinviwo_1_1detail_1_1DataOutportRegular.html", null ]
+      ] ],
+      [ "inviwo::detail::DataOutportBase< Self, T, Flat >", "structinviwo_1_1detail_1_1DataOutportBase.html", null ]
+    ] ],
+    [ "inviwo::DataOutportInterface&lt; Ts &gt;", "structinviwo_1_1DataOutportInterface.html", [
+      [ "inviwo::detail::DataOutportBase< Self, Ts, false >", "structinviwo_1_1detail_1_1DataOutportBase.html", [
+        [ "inviwo::detail::DataOutportRegular< Self, Ts >", "structinviwo_1_1detail_1_1DataOutportRegular.html", [
+          [ "inviwo::detail::DataBases< Self, L< Ts... > >", "structinviwo_1_1detail_1_1DataBases_3_01Self_00_01L_3_01Ts_8_8_8_01_4_01_4.html", null ]
+        ] ]
+      ] ]
+    ] ],
     [ "inviwo::DataReader", "classinviwo_1_1DataReader.html", [
       [ "inviwo::DataReaderType< Mesh >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::AmiraMeshReader", "classinviwo_1_1AmiraMeshReader.html", null ],
@@ -834,6 +964,7 @@ var hierarchy =
           ] ]
         ] ],
         [ "inviwo::SingleVoxel", "classinviwo_1_1SingleVoxel.html", null ],
+        [ "inviwo::SpatialBoundingBox", "classinviwo_1_1SpatialBoundingBox.html", null ],
         [ "inviwo::SphereRenderer", "classinviwo_1_1SphereRenderer.html", null ],
         [ "inviwo::SplitImage", "classinviwo_1_1SplitImage.html", null ],
         [ "inviwo::SpotLightSourceProcessor", "classinviwo_1_1SpotLightSourceProcessor.html", null ],
@@ -1305,6 +1436,7 @@ var hierarchy =
     [ "inviwo::dataframefilters::Filters", "structinviwo_1_1dataframefilters_1_1Filters.html", null ],
     [ "inviwo::animation::FindDivisionsResult", "structinviwo_1_1animation_1_1FindDivisionsResult.html", null ],
     [ "inviwo::ViewEvent::FitData", "structinviwo_1_1ViewEvent_1_1FitData.html", null ],
+    [ "inviwo::FlatInportIterator&lt; T &gt;", "classinviwo_1_1FlatInportIterator.html", null ],
     [ "inviwo::ViewEvent::FlipUp", "structinviwo_1_1ViewEvent_1_1FlipUp.html", null ],
     [ "inviwo::ViewEvent::FlipView", "structinviwo_1_1ViewEvent_1_1FlipView.html", null ],
     [ "inviwo::TextRenderer::FontCache", "structinviwo_1_1TextRenderer_1_1FontCache.html", null ],
@@ -1411,11 +1543,6 @@ var hierarchy =
       [ "inviwo::DataFrameDockTable", "classinviwo_1_1DataFrameDockTable.html", null ],
       [ "inviwo::DataFrameTable", "classinviwo_1_1DataFrameTable.html", null ]
     ] ],
-    [ "inviwo::ImagePortBase", "classinviwo_1_1ImagePortBase.html", [
-      [ "inviwo::BaseImageInport< 1 >", "classinviwo_1_1BaseImageInport.html", null ],
-      [ "inviwo::BaseImageInport< 0 >", "classinviwo_1_1BaseImageInport.html", null ],
-      [ "inviwo::BaseImageInport< N >", "classinviwo_1_1BaseImageInport.html", null ]
-    ] ],
     [ "inviwo::ImageReuseCache", "classinviwo_1_1ImageReuseCache.html", null ],
     [ "inviwo::ImgRect", "structinviwo_1_1ImgRect.html", null ],
     [ "inviwo::ShaderObject::InDeclaration", "structinviwo_1_1ShaderObject_1_1InDeclaration.html", null ],
@@ -1429,96 +1556,6 @@ var hierarchy =
     [ "inviwo::log::info&lt; Args &gt;", "structinviwo_1_1log_1_1info.html", null ],
     [ "inviwo::InportFactoryObject", "classinviwo_1_1InportFactoryObject.html", [
       [ "inviwo::InportFactoryObjectTemplate< T >", "classinviwo_1_1InportFactoryObjectTemplate.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; InportType, T, Flat &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< std::filesystem::path >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< DataSequence< std::filesystem::path > >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< BufferBase >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< T, 0, false >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< T, 0, true >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< Layer >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< Layer, 0 >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< Layer, 0, true >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< Mesh >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< Mesh, 0 >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< Mesh, 0, true >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< MeshSequence >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< Volume >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< VolumeSequence >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< DataFrame >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< DataFrame, 0 >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< Eigen::MatrixXf >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< Handle >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< json >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< Rasterization, 0 >", "classinviwo_1_1DataInport.html", [
-        [ "inviwo::RasterizationInport", "classinviwo_1_1RasterizationInport.html", null ]
-      ] ],
-      [ "inviwo::DataInport< TetraMesh >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< TetraMesh, 0 >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< TetraMesh, 0, true >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< IntegralLineSet >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< SeedPointVector< Dims >, 0 >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< SeedPoint2DVector, 0 >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< SeedPoint3DVector, 0 >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< SeedPoint4DVector, 0 >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; DataType, 1, false &gt;, DataType, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< DataType >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; dmat4, 1, false &gt;, dmat4, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< dmat4 >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; Image, N, false &gt;, Image, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< Image, 1 >", "classinviwo_1_1DataInport.html", [
-        [ "inviwo::BaseImageInport< N >", "classinviwo_1_1BaseImageInport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::DataFrame, 1, false &gt;, inviwo::DataFrame, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< inviwo::DataFrame >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::DataSequence&lt; inviwo::Image &gt;, 1, false &gt;, inviwo::DataSequence&lt; inviwo::Image &gt;, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< inviwo::DataSequence< inviwo::Image > >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::LightSource, 1, false &gt;, inviwo::LightSource, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< inviwo::LightSource >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::Spatial4DSampler&lt; dvec3 &gt;, 1, false &gt;, inviwo::Spatial4DSampler&lt; dvec3 &gt;, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< inviwo::Spatial4DSampler< dvec3 > >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::SpatialSampler&lt; dvec3 &gt;, 1, false &gt;, inviwo::SpatialSampler&lt; dvec3 &gt;, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< inviwo::SpatialSampler< dvec3 > >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::Volume, 1, false &gt;, inviwo::Volume, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< inviwo::Volume >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::Volume, N, false &gt;, inviwo::Volume, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< inviwo::Volume, 0 >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::Volume, N, Flat &gt;, inviwo::Volume, Flat &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< inviwo::Volume, 0, true >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; std::vector&lt; std::shared_ptr&lt; inviwo::Volume &gt; &gt;, 1, false &gt;, std::vector&lt; std::shared_ptr&lt; inviwo::Volume &gt; &gt;, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< std::vector< std::shared_ptr< inviwo::Volume > > >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; std::vector&lt; std::string &gt;, 1, false &gt;, std::vector&lt; std::string &gt;, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< std::vector< std::string > >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; std::vector&lt; vec4 &gt;, 1, false &gt;, std::vector&lt; vec4 &gt;, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< std::vector< vec4 > >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; T, 1, false &gt;, T, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< inviwo::DataSequence< T > >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< std::vector< T > >", "classinviwo_1_1DataInport.html", null ],
-      [ "inviwo::DataInport< T, N, Flat >", "classinviwo_1_1DataInport.html", [
-        [ "inviwo::BaseImageInport< 1 >", "classinviwo_1_1BaseImageInport.html", null ],
-        [ "inviwo::BaseImageInport< 0 >", "classinviwo_1_1BaseImageInport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; typename Tracer::Sampler, 1, false &gt;, typename Tracer::Sampler, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< typename Tracer::Sampler >", "classinviwo_1_1DataInport.html", null ]
-    ] ],
-    [ "inviwo::InportIterable&lt; DataInport&lt; typename Tracer::Sampler, N, false &gt;, typename Tracer::Sampler, false &gt;", "classinviwo_1_1InportIterable.html", [
-      [ "inviwo::DataInport< typename Tracer::Sampler, 0 >", "classinviwo_1_1DataInport.html", null ]
     ] ],
     [ "inviwo::layout::Input", "structinviwo_1_1layout_1_1Input.html", null ],
     [ "std::integral_constant", null, [
@@ -2556,139 +2593,6 @@ var hierarchy =
     [ "inviwo::OutportFactoryObject", "classinviwo_1_1OutportFactoryObject.html", [
       [ "inviwo::OutportFactoryObjectTemplate< T >", "classinviwo_1_1OutportFactoryObjectTemplate.html", null ]
     ] ],
-    [ "inviwo::OutportIterable&lt; T &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< T >, T >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< inviwo::DataSequence< T > >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< T >", "classinviwo_1_1DataOutport.html", null ]
-      ] ],
-      [ "inviwo::OutportIterableImpl< Derived, DataSequence< T > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01DataSequence_3_01T_01_4_01_4.html", null ],
-      [ "inviwo::OutportIterableImpl< Derived, std::vector< T *, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01T_01_5_00_01Alloc_01_4_01_4.html", null ],
-      [ "inviwo::OutportIterableImpl< Derived, std::vector< T, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html", null ],
-      [ "inviwo::OutportIterableImpl< Derived, std::vector< std::shared_ptr< T >, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ],
-      [ "inviwo::OutportIterableImpl< Derived, std::vector< std::unique_ptr< T >, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ],
-      [ "inviwo::OutportIterableImpl< Derived, T, Enable >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< std::filesystem::path >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< DataSequence< std::filesystem::path > >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< BufferBase >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< Layer >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< LayerSequence >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< Mesh >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< MeshSequence >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< Volume >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< VolumeSequence >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< DataFrame >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< Eigen::MatrixXf >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< Handle >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< json >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< Rasterization >", "classinviwo_1_1DataOutport.html", [
-          [ "inviwo::RasterizationOutport", "classinviwo_1_1RasterizationOutport.html", null ]
-        ] ],
-        [ "inviwo::DataOutport< TetraMesh >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< IntegralLineSet >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< SeedPointVector< Dims > >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< SeedPoint2DVector >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< SeedPoint3DVector >", "classinviwo_1_1DataOutport.html", null ],
-        [ "inviwo::DataOutport< SeedPoint4DVector >", "classinviwo_1_1DataOutport.html", null ]
-      ] ],
-      [ "inviwo::OutportIterableImpl< Derived, DataSequence< T > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01DataSequence_3_01T_01_4_01_4.html", null ],
-      [ "inviwo::OutportIterableImpl< Derived, std::vector< T *, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01T_01_5_00_01Alloc_01_4_01_4.html", null ],
-      [ "inviwo::OutportIterableImpl< Derived, std::vector< T, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html", null ],
-      [ "inviwo::OutportIterableImpl< Derived, std::vector< std::shared_ptr< T >, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ],
-      [ "inviwo::OutportIterableImpl< Derived, std::vector< std::unique_ptr< T >, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; DataType &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< DataType >, DataType >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< DataType >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; Image &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< Image >, Image >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< Image >", "classinviwo_1_1DataOutport.html", [
-          [ "inviwo::ImageOutport", "classinviwo_1_1ImageOutport.html", null ]
-        ] ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; inviwo::DataFrame &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< inviwo::DataFrame >, inviwo::DataFrame >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< inviwo::DataFrame >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; inviwo::DataSequence&lt; inviwo::Image &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< inviwo::DataSequence< inviwo::Image > >, inviwo::DataSequence< inviwo::Image > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< inviwo::DataSequence< inviwo::Image > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; inviwo::DataSequence&lt; inviwo::Mesh &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< inviwo::DataSequence< inviwo::Mesh > >, inviwo::DataSequence< inviwo::Mesh > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< inviwo::DataSequence< inviwo::Mesh > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; inviwo::LightSource &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< inviwo::LightSource >, inviwo::LightSource >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< inviwo::LightSource >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; inviwo::Plane &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< inviwo::Plane >, inviwo::Plane >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< inviwo::Plane >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; inviwo::Spatial4DSampler&lt; dvec3 &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< inviwo::Spatial4DSampler< dvec3 > >, inviwo::Spatial4DSampler< dvec3 > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< inviwo::Spatial4DSampler< dvec3 > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; inviwo::SpatialSampler&lt; dvec2 &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< inviwo::SpatialSampler< dvec2 > >, inviwo::SpatialSampler< dvec2 > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< inviwo::SpatialSampler< dvec2 > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; inviwo::SpatialSampler&lt; dvec3 &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< inviwo::SpatialSampler< dvec3 > >, inviwo::SpatialSampler< dvec3 > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< inviwo::SpatialSampler< dvec3 > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; std::vector&lt; float &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< std::vector< float > >, std::vector< float > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< std::vector< float > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; std::vector&lt; inviwo::Plane &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< std::vector< inviwo::Plane > >, std::vector< inviwo::Plane > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< std::vector< inviwo::Plane > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; std::vector&lt; std::shared_ptr&lt; inviwo::Mesh &gt; &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< std::vector< std::shared_ptr< inviwo::Mesh > > >, std::vector< std::shared_ptr< inviwo::Mesh > > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< std::vector< std::shared_ptr< inviwo::Mesh > > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; std::vector&lt; std::string &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< std::vector< std::string > >, std::vector< std::string > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< std::vector< std::string > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; std::vector&lt; uint32_t &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< std::vector< uint32_t > >, std::vector< uint32_t > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< std::vector< uint32_t > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; std::vector&lt; vec3 &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< std::vector< vec3 > >, std::vector< vec3 > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< std::vector< vec3 > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::OutportIterable&lt; std::vector&lt; vec4 &gt; &gt;", "structinviwo_1_1OutportIterable.html", [
-      [ "inviwo::OutportIterableImpl< DataOutport< std::vector< vec4 > >, std::vector< vec4 > >", "structinviwo_1_1OutportIterableImpl.html", [
-        [ "inviwo::DataOutport< std::vector< vec4 > >", "classinviwo_1_1DataOutport.html", null ]
-      ] ]
-    ] ],
-    [ "inviwo::detail::OutportIterableWrapper&lt; T &gt;", "classinviwo_1_1detail_1_1OutportIterableWrapper.html", null ],
-    [ "inviwo::detail::OutportIterableWrapper&lt; DataSequence&lt; T &gt; &gt;", "classinviwo_1_1detail_1_1OutportIterableWrapper_3_01DataSequence_3_01T_01_4_01_4.html", null ],
-    [ "inviwo::detail::OutportIterableWrapper&lt; std::vector&lt; std::shared_ptr&lt; T &gt;, Alloc &gt; &gt;", "classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ],
-    [ "inviwo::detail::OutportIterableWrapper&lt; std::vector&lt; std::unique_ptr&lt; T &gt;, Alloc &gt; &gt;", "classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ],
-    [ "inviwo::detail::OutportIterableWrapper&lt; std::vector&lt; T *, Alloc &gt; &gt;", "structinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_01_5_00_01Alloc_01_4_01_4.html", null ],
-    [ "inviwo::detail::OutportIterableWrapper&lt; std::vector&lt; T, Alloc &gt; &gt;", "classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html", null ],
     [ "inviwo::ffmpeg::OutputFormat", "classinviwo_1_1ffmpeg_1_1OutputFormat.html", null ],
     [ "std::pair&lt; T1, T2 &gt;", null, [
       [ "inviwo::util::iter_range< Iter >", "structinviwo_1_1util_1_1iter__range.html", [
@@ -3151,6 +3055,7 @@ var hierarchy =
     ] ],
     [ "inviwo::animation::RecorderOptions", "structinviwo_1_1animation_1_1RecorderOptions.html", null ],
     [ "inviwo::statsutil::RegresionResult", "structinviwo_1_1statsutil_1_1RegresionResult.html", null ],
+    [ "inviwo::RegularInportIterator&lt; T &gt;", "classinviwo_1_1RegularInportIterator.html", null ],
     [ "inviwo::command::RemoveConnection", "structinviwo_1_1command_1_1RemoveConnection.html", null ],
     [ "inviwo::command::RemoveLink", "structinviwo_1_1command_1_1RemoveLink.html", null ],
     [ "inviwo::command::RemoveProcessor", "structinviwo_1_1command_1_1RemoveProcessor.html", null ],
@@ -3386,7 +3291,9 @@ var hierarchy =
           [ "inviwo::DataInport< Eigen::MatrixXf >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< Handle >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< json >", "classinviwo_1_1DataInport.html", null ],
-          [ "inviwo::DataInport< Rasterization, 0 >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< Rasterization, 0 >", "classinviwo_1_1DataInport.html", [
+            [ "inviwo::RasterizationInport", "classinviwo_1_1RasterizationInport.html", null ]
+          ] ],
           [ "inviwo::DataInport< TetraMesh >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< TetraMesh, 0 >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< TetraMesh, 0, true >", "classinviwo_1_1DataInport.html", null ],
@@ -3395,7 +3302,9 @@ var hierarchy =
           [ "inviwo::DataInport< SeedPoint2DVector, 0 >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< SeedPoint3DVector, 0 >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< SeedPoint4DVector, 0 >", "classinviwo_1_1DataInport.html", null ],
-          [ "inviwo::DataInport< Image, 1 >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< Image, 1 >", "classinviwo_1_1DataInport.html", [
+            [ "inviwo::BaseImageInport< N >", "classinviwo_1_1BaseImageInport.html", null ]
+          ] ],
           [ "inviwo::DataInport< DataType >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::DataFrame >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< typename Tracer::Sampler >", "classinviwo_1_1DataInport.html", null ],
@@ -3405,6 +3314,7 @@ var hierarchy =
           [ "inviwo::DataInport< inviwo::Spatial4DSampler< dvec3 > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::Volume, 0 >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::DataSequence< T > >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< inviwo::SpatialEntity >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::SpatialSampler< dvec3 > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::Volume, 0, true >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< std::vector< std::shared_ptr< inviwo::Volume > > >", "classinviwo_1_1DataInport.html", null ],
@@ -3414,7 +3324,10 @@ var hierarchy =
           [ "inviwo::DataInport< inviwo::DataSequence< inviwo::Image > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< dmat4 >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::BrushingAndLinkingInport", "classinviwo_1_1BrushingAndLinkingInport.html", null ],
-          [ "inviwo::DataInport< T, N, Flat >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< T, N, Flat >", "classinviwo_1_1DataInport.html", [
+            [ "inviwo::BaseImageInport< 1 >", "classinviwo_1_1BaseImageInport.html", null ],
+            [ "inviwo::BaseImageInport< 0 >", "classinviwo_1_1BaseImageInport.html", null ]
+          ] ],
           [ "inviwo::PythonInport", "classinviwo_1_1PythonInport.html", null ]
         ] ],
         [ "inviwo::Outport", "classinviwo_1_1Outport.html", [
@@ -3449,9 +3362,8 @@ var hierarchy =
           [ "inviwo::DataOutport< inviwo::LightSource >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< inviwo::SpatialSampler< dvec2 > >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< inviwo::Plane >", "classinviwo_1_1DataOutport.html", null ],
-          [ "inviwo::DataOutport< std::vector< std::shared_ptr< inviwo::Mesh > > >", "classinviwo_1_1DataOutport.html", null ],
-          [ "inviwo::DataOutport< std::vector< vec3 > >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< inviwo::DataSequence< inviwo::Mesh > >", "classinviwo_1_1DataOutport.html", null ],
+          [ "inviwo::DataOutport< std::vector< vec3 > >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< std::vector< inviwo::Plane > >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< inviwo::SpatialSampler< dvec3 > >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< inviwo::Spatial4DSampler< dvec3 > >", "classinviwo_1_1DataOutport.html", null ],
@@ -3719,6 +3631,7 @@ var hierarchy =
     [ "inviwo::buffertraits::TypedMeshBufferBase&lt; uint32_t, 1, static_cast&lt; int &gt;(BufferType::PickingAttrib)&gt;", "classinviwo_1_1buffertraits_1_1TypedMeshBufferBase.html", [
       [ "inviwo::buffertraits::PickingBuffer", "classinviwo_1_1buffertraits_1_1PickingBuffer.html", null ]
     ] ],
+    [ "inviwo::TypeList&lt; Ts &gt;", "structinviwo_1_1TypeList.html", null ],
     [ "inviwo::hdf5::TypeMap&lt; T &gt;", "structinviwo_1_1hdf5_1_1TypeMap.html", null ],
     [ "inviwo::hdf5::TypeMap&lt; char &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01char_01_4.html", null ],
     [ "inviwo::hdf5::TypeMap&lt; double &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01double_01_4.html", null ],

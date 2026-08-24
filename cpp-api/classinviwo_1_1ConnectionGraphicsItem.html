@@ -143,6 +143,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab7723843a46e496320b6ea1772a6b22f" id="r_ab7723843a46e496320b6ea1772a6b22f"><td class="memItemLeft"><a id="ab7723843a46e496320b6ea1772a6b22f" name="ab7723843a46e496320b6ea1772a6b22f"></a>
 &#160;</td><td class="memItemRight"><b>ConnectionGraphicsItem</b> (const ConnectionGraphicsItem &amp;)=delete</td></tr>
 <tr class="memitem:a64f9666873c2b526aeace634cab2c640" id="r_a64f9666873c2b526aeace634cab2c640"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a64f9666873c2b526aeace634cab2c640">ConnectionGraphicsItem</a> (<a class="el" href="classinviwo_1_1ProcessorOutportGraphicsItem.html">ProcessorOutportGraphicsItem</a> *outport, <a class="el" href="classinviwo_1_1ProcessorInportGraphicsItem.html">ProcessorInportGraphicsItem</a> *inport, const <a class="el" href="classinviwo_1_1PortConnection.html">PortConnection</a> &amp;connection)</td></tr>
+<tr class="memitem:a9cd6642adc6ddc8ef29a46263ca4245d" id="r_a9cd6642adc6ddc8ef29a46263ca4245d"><td class="memItemLeft">virtual QColor&#160;</td><td class="memItemRight"><a class="el" href="#a9cd6642adc6ddc8ef29a46263ca4245d">getEndColor</a> () const override</td></tr>
 <tr class="memitem:ac577c15025ee9ac6cf3ed911a2117701" id="r_ac577c15025ee9ac6cf3ed911a2117701"><td class="memItemLeft">virtual QPointF&#160;</td><td class="memItemRight"><a class="el" href="#ac577c15025ee9ac6cf3ed911a2117701">getEndPoint</a> () const override</td></tr>
 <tr class="memitem:a5deb73b348134b7607ce3ac5ef212e82" id="r_a5deb73b348134b7607ce3ac5ef212e82"><td class="memItemLeft"><a id="a5deb73b348134b7607ce3ac5ef212e82" name="a5deb73b348134b7607ce3ac5ef212e82"></a>
 <a class="el" href="classinviwo_1_1Inport.html">Inport</a> *&#160;</td><td class="memItemRight"><b>getInport</b> () const</td></tr>
@@ -158,6 +159,7 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classinviwo_1_1ProcessorGraphicsItem.html">ProcessorGraphicsItem</a> *&#160;</td><td class="memItemRight"><b>getOutProcessor</b> () const</td></tr>
 <tr class="memitem:a40188f5f440b5f4a070c92c417401dac" id="r_a40188f5f440b5f4a070c92c417401dac"><td class="memItemLeft"><a id="a40188f5f440b5f4a070c92c417401dac" name="a40188f5f440b5f4a070c92c417401dac"></a>
 <a class="el" href="classinviwo_1_1PortConnection.html">PortConnection</a>&#160;</td><td class="memItemRight"><b>getPortConnection</b> () const</td></tr>
+<tr class="memitem:aab006fb205a8efc448a89817eeb75f43" id="r_aab006fb205a8efc448a89817eeb75f43"><td class="memItemLeft">virtual QColor&#160;</td><td class="memItemRight"><a class="el" href="#aab006fb205a8efc448a89817eeb75f43">getStartColor</a> () const override</td></tr>
 <tr class="memitem:a2c1904205ee7ce05a3cb6eea2b4048ff" id="r_a2c1904205ee7ce05a3cb6eea2b4048ff"><td class="memItemLeft">virtual QPointF&#160;</td><td class="memItemRight"><a class="el" href="#a2c1904205ee7ce05a3cb6eea2b4048ff">getStartPoint</a> () const override</td></tr>
 <tr class="memitem:a7a178ef9c38ceced43690fc954d06fd3" id="r_a7a178ef9c38ceced43690fc954d06fd3"><td class="memItemLeft"><a id="a7a178ef9c38ceced43690fc954d06fd3" name="a7a178ef9c38ceced43690fc954d06fd3"></a>
 virtual QVariant&#160;</td><td class="memItemRight"><b>itemChange</b> (GraphicsItemChange change, const QVariant &amp;value) override</td></tr>
@@ -176,8 +178,6 @@ virtual QRectF&#160;</td><td class="memItemRight"><b>boundingRect</b> () const o
 &#160;</td><td class="memItemRight"><b>CurveGraphicsItem</b> (CurveGraphicsItem &amp;&amp;)=delete</td></tr>
 <tr class="memitem:a5288f61124d725c21ca16db6f86ff3de inherit pub_methods_classinviwo_1_1CurveGraphicsItem" id="r_a5288f61124d725c21ca16db6f86ff3de"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>CurveGraphicsItem</b> (QColor color=QColor(38, 38, 38), QColor borderColor=Qt::black, QColor selectedBorderColor=Qt::darkRed)</td></tr>
-<tr class="memitem:a866b7f0db94377c37e9a4751ed385436 inherit pub_methods_classinviwo_1_1CurveGraphicsItem" id="r_a866b7f0db94377c37e9a4751ed385436"><td class="memItemLeft">
-virtual QColor&#160;</td><td class="memItemRight"><b>getColor</b> () const</td></tr>
 <tr class="memitem:a6c96c7ee3a01f20943070f4a28cfc868 inherit pub_methods_classinviwo_1_1CurveGraphicsItem" id="r_a6c96c7ee3a01f20943070f4a28cfc868"><td class="memItemLeft">
 virtual QPainterPath&#160;</td><td class="memItemRight"><b>obtainCurvePath</b> () const</td></tr>
 <tr class="memitem:adcc8d821ba6f1719a06a678d9d7085b0 inherit pub_methods_classinviwo_1_1CurveGraphicsItem" id="r_adcc8d821ba6f1719a06a678d9d7085b0"><td class="memItemLeft">
@@ -271,6 +271,33 @@ QColor&#160;</td><td class="memItemRight"><b>selectedBorderColor_</b></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a9cd6642adc6ddc8ef29a46263ca4245d" name="a9cd6642adc6ddc8ef29a46263ca4245d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cd6642adc6ddc8ef29a46263ca4245d">&#9670;&#160;</a></span>getEndColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual QColor inviwo::ConnectionGraphicsItem::getEndColor </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1CurveGraphicsItem.html">inviwo::CurveGraphicsItem</a>.</p>
+
+</div>
+</div>
 <a id="ac577c15025ee9ac6cf3ed911a2117701" name="ac577c15025ee9ac6cf3ed911a2117701"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac577c15025ee9ac6cf3ed911a2117701">&#9670;&#160;</a></span>getEndPoint()</h2>
 
@@ -295,6 +322,33 @@ QColor&#160;</td><td class="memItemRight"><b>selectedBorderColor_</b></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classinviwo_1_1CurveGraphicsItem.html">inviwo::CurveGraphicsItem</a>.</p>
+
+</div>
+</div>
+<a id="aab006fb205a8efc448a89817eeb75f43" name="aab006fb205a8efc448a89817eeb75f43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab006fb205a8efc448a89817eeb75f43">&#9670;&#160;</a></span>getStartColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual QColor inviwo::ConnectionGraphicsItem::getStartColor </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1CurveGraphicsItem.html">inviwo::CurveGraphicsItem</a>.</p>
 
 </div>
 </div>

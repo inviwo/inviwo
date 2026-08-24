@@ -1,15 +1,5 @@
 var NAVTREEINDEX11 =
 {
-"classinviwo_1_1ListProperty.html#ab16ac5ec376bbc78bb01a15a2663e1bd":[3,0,0,629,12],
-"classinviwo_1_1ListProperty.html#ab16ac5ec376bbc78bb01a15a2663e1bd":[5,0,1,639,12],
-"classinviwo_1_1ListProperty.html#ac6235d7dd096af294e5ddff85e3773c2":[3,0,0,629,3],
-"classinviwo_1_1ListProperty.html#ac6235d7dd096af294e5ddff85e3773c2":[5,0,1,639,3],
-"classinviwo_1_1ListProperty.html#ad777edf5c387cea6c15321c9ed03b552":[3,0,0,629,5],
-"classinviwo_1_1ListProperty.html#ad777edf5c387cea6c15321c9ed03b552":[5,0,1,639,5],
-"classinviwo_1_1ListProperty.html#ad8e5dd2d52ff89171f35def07c567c17":[3,0,0,629,4],
-"classinviwo_1_1ListProperty.html#ad8e5dd2d52ff89171f35def07c567c17":[5,0,1,639,4],
-"classinviwo_1_1ListProperty.html#adee1653492417e799dba5a172ccc3e99":[3,0,0,629,9],
-"classinviwo_1_1ListProperty.html#adee1653492417e799dba5a172ccc3e99":[5,0,1,639,9],
 "classinviwo_1_1ListProperty.html#ae5bd3bdbc3594709b5ff9fcbb7d9dde3":[3,0,0,629,2],
 "classinviwo_1_1ListProperty.html#ae5bd3bdbc3594709b5ff9fcbb7d9dde3":[5,0,1,639,2],
 "classinviwo_1_1ListProperty.html#af881084763ff7260762cd0155ecca6ca":[3,0,0,629,7],
@@ -249,5 +239,15 @@ var NAVTREEINDEX11 =
 "classinviwo_1_1MetaDataOwner.html":[3,0,0,677],
 "classinviwo_1_1MetaDataOwner.html":[5,0,1,687],
 "classinviwo_1_1MetaDataOwner.html#a0cc52ac4aae07fc14df9aa43f9ab1a80":[3,0,0,677,0],
-"classinviwo_1_1MetaDataOwner.html#a0cc52ac4aae07fc14df9aa43f9ab1a80":[5,0,1,687,0]
+"classinviwo_1_1MetaDataOwner.html#a0cc52ac4aae07fc14df9aa43f9ab1a80":[5,0,1,687,0],
+"classinviwo_1_1MetaDataProcessor.html":[3,0,0,678],
+"classinviwo_1_1MetaDataProcessor.html":[5,0,1,688],
+"classinviwo_1_1MetaDataProcessor.html#a7742bb250b44e80f89a23d53df5eb9f8":[3,0,0,678,0],
+"classinviwo_1_1MetaDataProcessor.html#a7742bb250b44e80f89a23d53df5eb9f8":[5,0,1,688,0],
+"classinviwo_1_1MetaDataType.html":[3,0,0,682],
+"classinviwo_1_1MetaDataType.html":[5,0,1,692],
+"classinviwo_1_1MinMaxProperty.html":[2,4,25],
+"classinviwo_1_1MinMaxProperty.html#a30712d9f3d25b1e5d2cd9e2e2f2acf97":[2,4,25,6],
+"classinviwo_1_1MinMaxProperty.html#a4fc769fb6894236c252b5ca060d8ee8e":[2,4,25,7],
+"classinviwo_1_1MinMaxProperty.html#a53c0183756381225422269a77927839e":[2,4,25,2]
 };

@@ -1,15 +1,5 @@
 var NAVTREEINDEX10 =
 {
-"classinviwo_1_1LayerInformationVisualizer.html#a57d8c3a5cae04ed32bc0c8537c9cc40f":[5,0,1,583,2],
-"classinviwo_1_1LayerInformationVisualizer.html#a80f660312a07a04f3177479814b4fac7":[3,0,0,573,6],
-"classinviwo_1_1LayerInformationVisualizer.html#a80f660312a07a04f3177479814b4fac7":[5,0,1,583,6],
-"classinviwo_1_1LayerInformationVisualizer.html#a8c7445ff5171ab08cd75975e543bf784":[3,0,0,573,7],
-"classinviwo_1_1LayerInformationVisualizer.html#a8c7445ff5171ab08cd75975e543bf784":[5,0,1,583,7],
-"classinviwo_1_1LayerInformationVisualizer.html#aad8b72992576a87d384851397c78ec28":[3,0,0,573,0],
-"classinviwo_1_1LayerInformationVisualizer.html#aad8b72992576a87d384851397c78ec28":[5,0,1,583,0],
-"classinviwo_1_1LayerInformationVisualizer.html#ae2e70ee947b3611e8ac03b28c036f727":[3,0,0,573,3],
-"classinviwo_1_1LayerInformationVisualizer.html#ae2e70ee947b3611e8ac03b28c036f727":[5,0,1,583,3],
-"classinviwo_1_1LayerInvert.html":[3,0,0,574],
 "classinviwo_1_1LayerInvert.html":[5,0,1,584],
 "classinviwo_1_1LayerNormalization.html":[3,0,0,575],
 "classinviwo_1_1LayerNormalization.html":[5,0,1,585],
@@ -249,5 +239,15 @@ var NAVTREEINDEX10 =
 "classinviwo_1_1ListProperty.html#aa34dd3be06852cd93b1d401976297aed":[3,0,0,629,11],
 "classinviwo_1_1ListProperty.html#aa34dd3be06852cd93b1d401976297aed":[5,0,1,639,11],
 "classinviwo_1_1ListProperty.html#aa9e43a9d7ee11a3097729c246e545443":[3,0,0,629,0],
-"classinviwo_1_1ListProperty.html#aa9e43a9d7ee11a3097729c246e545443":[5,0,1,639,0]
+"classinviwo_1_1ListProperty.html#aa9e43a9d7ee11a3097729c246e545443":[5,0,1,639,0],
+"classinviwo_1_1ListProperty.html#ab16ac5ec376bbc78bb01a15a2663e1bd":[3,0,0,629,12],
+"classinviwo_1_1ListProperty.html#ab16ac5ec376bbc78bb01a15a2663e1bd":[5,0,1,639,12],
+"classinviwo_1_1ListProperty.html#ac6235d7dd096af294e5ddff85e3773c2":[3,0,0,629,3],
+"classinviwo_1_1ListProperty.html#ac6235d7dd096af294e5ddff85e3773c2":[5,0,1,639,3],
+"classinviwo_1_1ListProperty.html#ad777edf5c387cea6c15321c9ed03b552":[3,0,0,629,5],
+"classinviwo_1_1ListProperty.html#ad777edf5c387cea6c15321c9ed03b552":[5,0,1,639,5],
+"classinviwo_1_1ListProperty.html#ad8e5dd2d52ff89171f35def07c567c17":[3,0,0,629,4],
+"classinviwo_1_1ListProperty.html#ad8e5dd2d52ff89171f35def07c567c17":[5,0,1,639,4],
+"classinviwo_1_1ListProperty.html#adee1653492417e799dba5a172ccc3e99":[3,0,0,629,9],
+"classinviwo_1_1ListProperty.html#adee1653492417e799dba5a172ccc3e99":[5,0,1,639,9]
 };

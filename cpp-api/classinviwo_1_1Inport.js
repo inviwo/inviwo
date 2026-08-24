@@ -6,6 +6,6 @@ var classinviwo_1_1Inport =
     [ "onChange", "classinviwo_1_1Inport.html#a6c83746820fd3520e02e392ef4ce85b9", null ],
     [ "propagateEvent", "classinviwo_1_1Inport.html#a0ad122bd694fbba4e5f304c972371d97", null ],
     [ "readyUpdate", "classinviwo_1_1Inport.html#a1530f461996eb5f8aa085fdacf482b63", null ],
-    [ "setOptional", "classinviwo_1_1Inport.html#afe1660c34699d0c8dfcd79d4ef8d8495", null ],
-    [ "setValid", "classinviwo_1_1Inport.html#a03741026d1ceaf6fd907d3026d57e361", null ]
+    [ "setChanged", "classinviwo_1_1Inport.html#aaecdc6f95c4b142df176de70b48174c3", null ],
+    [ "setOptional", "classinviwo_1_1Inport.html#afe1660c34699d0c8dfcd79d4ef8d8495", null ]
 ];

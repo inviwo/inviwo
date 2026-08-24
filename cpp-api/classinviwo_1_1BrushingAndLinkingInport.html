@@ -137,9 +137,14 @@ using&#160;</td><td class="memItemRight"><b>type</b> = void</td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa7d1e2437bfc69cf812f151d2eae2a72" id="r_aa7d1e2437bfc69cf812f151d2eae2a72"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#aa7d1e2437bfc69cf812f151d2eae2a72">canConnectTo</a> (const <a class="el" href="classinviwo_1_1Port.html">Port</a> *port) const override</td></tr>
+<tr class="memitem:a27861cb06273c6446c7d587f5cf18bb5" id="r_a27861cb06273c6446c7d587f5cf18bb5"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a27861cb06273c6446c7d587f5cf18bb5">connectTo</a> (Outport *outport) override</td></tr>
 <tr class="memitem:aae1a522467d182b9d34d6a26fd1334fc" id="r_aae1a522467d182b9d34d6a26fd1334fc"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aae1a522467d182b9d34d6a26fd1334fc">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
+<tr class="memitem:a6feefd06d83a41e340d17ce6664eed06" id="r_a6feefd06d83a41e340d17ce6664eed06"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a6feefd06d83a41e340d17ce6664eed06">disconnectFrom</a> (Outport *outport) override</td></tr>
 <tr class="memitem:a838ceeb246231241b4443d75ee49a58a" id="r_a838ceeb246231241b4443d75ee49a58a"><td class="memItemLeft">virtual std::string_view&#160;</td><td class="memItemRight"><a class="el" href="#a838ceeb246231241b4443d75ee49a58a">getClassIdentifier</a> () const override</td></tr>
 <tr class="memitem:a9e13cd28f41420e334017fa5a911559f" id="r_a9e13cd28f41420e334017fa5a911559f"><td class="memItemLeft">virtual glm::uvec3&#160;</td><td class="memItemRight"><a class="el" href="#a9e13cd28f41420e334017fa5a911559f">getColorCode</a> () const override</td></tr>
+<tr class="memitem:a611fa3fc01a6daf3e3474f128f84bbf2" id="r_a611fa3fc01a6daf3e3474f128f84bbf2"><td class="memItemLeft"><a id="a611fa3fc01a6daf3e3474f128f84bbf2" name="a611fa3fc01a6daf3e3474f128f84bbf2"></a>
+Outport *&#160;</td><td class="memItemRight"><b>getConnectedOutport</b> () const</td></tr>
+<tr class="memitem:ac511ca79be2c3ada6462a94b85925142" id="r_ac511ca79be2c3ada6462a94b85925142"><td class="memItemLeft">virtual Outport *&#160;</td><td class="memItemRight"><a class="el" href="#ac511ca79be2c3ada6462a94b85925142">getConnectedOutport</a> (size_t i) const override</td></tr>
 <tr class="memitem:aa58554c3fa0acf8a5e66f9a8a67bf25c" id="r_aa58554c3fa0acf8a5e66f9a8a67bf25c"><td class="memItemLeft">virtual <a class="el" href="structinviwo_1_1DataInfo.html">DataInfo</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa58554c3fa0acf8a5e66f9a8a67bf25c">getDataInfo</a> () const override</td></tr>
 <tr class="memitem:abe9dbda3e2fad228233ec9616b076693" id="r_abe9dbda3e2fad228233ec9616b076693"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight"><a class="el" href="#abe9dbda3e2fad228233ec9616b076693">getInfo</a> () const override</td></tr>
 <tr class="memitem:adb1929b6661370c834670c13aa1fd892" id="r_adb1929b6661370c834670c13aa1fd892"><td class="memItemLeft"><a id="adb1929b6661370c834670c13aa1fd892" name="adb1929b6661370c834670c13aa1fd892"></a>
@@ -147,21 +152,14 @@ BrushingAndLinkingManager &amp;&#160;</td><td class="memItemRight"><b>getManager
 <tr class="memitem:a7174fec536f789db0a5c0a973def63f7" id="r_a7174fec536f789db0a5c0a973def63f7"><td class="memItemLeft"><a id="a7174fec536f789db0a5c0a973def63f7" name="a7174fec536f789db0a5c0a973def63f7"></a>
 const BrushingAndLinkingManager &amp;&#160;</td><td class="memItemRight"><b>getManager</b> () const</td></tr>
 <tr class="memitem:a6f741692aefb567e9070911c47b2e0be" id="r_a6f741692aefb567e9070911c47b2e0be"><td class="memItemLeft">virtual size_t&#160;</td><td class="memItemRight"><a class="el" href="#a6f741692aefb567e9070911c47b2e0be">getMaxNumberOfConnections</a> () const override</td></tr>
+<tr class="memitem:a5c995f5aa920539b2f6a1b5b59328b83" id="r_a5c995f5aa920539b2f6a1b5b59328b83"><td class="memItemLeft">virtual size_t&#160;</td><td class="memItemRight"><a class="el" href="#a5c995f5aa920539b2f6a1b5b59328b83">getNumberOfConnections</a> () const override</td></tr>
 <tr class="memitem:a2e98aa3032e8b65611124c3b905267d5" id="r_a2e98aa3032e8b65611124c3b905267d5"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a2e98aa3032e8b65611124c3b905267d5">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
 <tr class="memitem:a19607fad230e8e17d30802a4cf76b381" id="r_a19607fad230e8e17d30802a4cf76b381"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a19607fad230e8e17d30802a4cf76b381">setInvalidationLevels</a> (std::vector&lt; <a class="el" href="structinviwo_1_1BrushingTargetsInvalidationLevel.html">BrushingTargetsInvalidationLevel</a> &gt; invalidationLevels)</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Inport"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Inport.html">inviwo::Inport</a></td></tr>
-<tr class="memitem:a7109ffafce3bedf23eb4debfb188bb22 inherit pub_methods_classinviwo_1_1Inport" id="r_a7109ffafce3bedf23eb4debfb188bb22"><td class="memItemLeft">
-virtual void&#160;</td><td class="memItemRight"><b>connectTo</b> (Outport *outport)</td></tr>
-<tr class="memitem:aae31fb61e9d9159e63fa4d8e93305dec inherit pub_methods_classinviwo_1_1Inport" id="r_aae31fb61e9d9159e63fa4d8e93305dec"><td class="memItemLeft">
-virtual void&#160;</td><td class="memItemRight"><b>disconnectFrom</b> (Outport *outport)</td></tr>
-<tr class="memitem:aa3751bbfa0fb4af2d91ac105561ea642 inherit pub_methods_classinviwo_1_1Inport" id="r_aa3751bbfa0fb4af2d91ac105561ea642"><td class="memItemLeft">
-virtual const std::vector&lt; const Outport * &gt; &amp;&#160;</td><td class="memItemRight"><b>getChangedOutports</b> () const</td></tr>
-<tr class="memitem:a344af903ebceccefe55720f509f0720e inherit pub_methods_classinviwo_1_1Inport" id="r_a344af903ebceccefe55720f509f0720e"><td class="memItemLeft">
-virtual Outport *&#160;</td><td class="memItemRight"><b>getConnectedOutport</b> () const</td></tr>
-<tr class="memitem:aa5bc698cdc34ec9026d080c5b2338b5d inherit pub_methods_classinviwo_1_1Inport" id="r_aa5bc698cdc34ec9026d080c5b2338b5d"><td class="memItemLeft">
-const std::vector&lt; Outport * &gt; &amp;&#160;</td><td class="memItemRight"><b>getConnectedOutports</b> () const noexcept</td></tr>
-<tr class="memitem:a6e136e3b3329d30a1d59fe09e8cf1404 inherit pub_methods_classinviwo_1_1Inport" id="r_a6e136e3b3329d30a1d59fe09e8cf1404"><td class="memItemLeft">
-virtual size_t&#160;</td><td class="memItemRight"><b>getNumberOfConnections</b> () const</td></tr>
+<tr class="memitem:a611fa3fc01a6daf3e3474f128f84bbf2 inherit pub_methods_classinviwo_1_1Inport" id="r_a611fa3fc01a6daf3e3474f128f84bbf2"><td class="memItemLeft">
+Outport *&#160;</td><td class="memItemRight"><b>getConnectedOutport</b> () const</td></tr>
+<tr class="memitem:ac67d00df93ed89e912c01916ea4cb13d inherit pub_methods_classinviwo_1_1Inport" id="r_ac67d00df93ed89e912c01916ea4cb13d"><td class="memItemLeft">
+auto&#160;</td><td class="memItemRight"><b>getConnectedOutports</b> () const</td></tr>
 <tr class="memitem:a916e2696adc8e4a8dd5f6751602d2554 inherit pub_methods_classinviwo_1_1Inport" id="r_a916e2696adc8e4a8dd5f6751602d2554"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Inport.html#a916e2696adc8e4a8dd5f6751602d2554">isChanged</a> () const</td></tr>
 <tr class="memitem:abda495ce380d4c269f548c2bd4ee58af inherit pub_methods_classinviwo_1_1Inport" id="r_abda495ce380d4c269f548c2bd4ee58af"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Inport.html#abda495ce380d4c269f548c2bd4ee58af">isConnected</a> () const override</td></tr>
 <tr class="memitem:a7f8b03c9d68ecd97c3d35578ac81666b inherit pub_methods_classinviwo_1_1Inport" id="r_a7f8b03c9d68ecd97c3d35578ac81666b"><td class="memItemLeft">
@@ -229,9 +227,12 @@ Protected Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight"><b>callOnChangeIfChanged</b> () const</td></tr>
 <tr class="memitem:af896ae84aeb42e757f264364f7cdf3a9 inherit pro_methods_classinviwo_1_1Inport" id="r_af896ae84aeb42e757f264364f7cdf3a9"><td class="memItemLeft">
 bool&#160;</td><td class="memItemRight"><b>circularConnection</b> (const Port *port) const</td></tr>
+<tr class="memitem:a37f70bfd7858a60897851c286de5ce9c inherit pro_methods_classinviwo_1_1Inport" id="r_a37f70bfd7858a60897851c286de5ce9c"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>doConnectTo</b> (Outport *outport)</td></tr>
+<tr class="memitem:ad22f5596b24bd0bd6c65af1bfa20ab70 inherit pro_methods_classinviwo_1_1Inport" id="r_ad22f5596b24bd0bd6c65af1bfa20ab70"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>doDisconnectFrom</b> (Outport *outport)</td></tr>
 <tr class="memitem:ad6a2f3d753a1bbc43cc14a814408ea94 inherit pro_methods_classinviwo_1_1Inport" id="r_ad6a2f3d753a1bbc43cc14a814408ea94"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>Inport</b> (std::string_view identifier, <a class="el" href="classinviwo_1_1Document.html">Document</a> help)</td></tr>
-<tr class="memitem:a03741026d1ceaf6fd907d3026d57e361 inherit pro_methods_classinviwo_1_1Inport" id="r_a03741026d1ceaf6fd907d3026d57e361"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Inport.html#a03741026d1ceaf6fd907d3026d57e361">setValid</a> (const Outport *source)</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Port"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Port.html">inviwo::Port</a></td></tr>
 <tr class="memitem:ab084e1d8aa0c233598c2eecdaddc59dd inherit pro_methods_classinviwo_1_1Port" id="r_ab084e1d8aa0c233598c2eecdaddc59dd"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Port.html#ab084e1d8aa0c233598c2eecdaddc59dd">Port</a> (std::string_view identifier, <a class="el" href="classinviwo_1_1Document.html">Document</a> help)</td></tr>
 <tr class="memitem:abff33ef934fbf12985fb8ed04d18664a inherit pro_methods_classinviwo_1_1Port" id="r_abff33ef934fbf12985fb8ed04d18664a"><td class="memItemLeft">
@@ -248,8 +249,6 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a5b908ed2aee574f933f42505981beff7 inherit pro_static_methods_classinviwo_1_1Inport" id="r_a5b908ed2aee574f933f42505981beff7"><td class="memItemLeft">
 static <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight"><b>getDefaultPortInfo</b> (const Inport *port, std::string_view portname)</td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1Inport"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1Inport.html">inviwo::Inport</a></td></tr>
-<tr class="memitem:ab7420c4e15b2d5a0e797c5db8e16c4f7 inherit pro_attribs_classinviwo_1_1Inport" id="r_ab7420c4e15b2d5a0e797c5db8e16c4f7"><td class="memItemLeft">
-std::vector&lt; Outport * &gt;&#160;</td><td class="memItemRight"><b>connectedOutports_</b></td></tr>
 <tr class="memitem:a385f4527d79ed507bc0b774db68a6547 inherit pro_attribs_classinviwo_1_1Inport" id="r_a385f4527d79ed507bc0b774db68a6547"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1StateCoordinator.html">StateCoordinator</a>&lt; bool &gt;&#160;</td><td class="memItemRight"><b>isOptional_</b></td></tr>
 <tr class="memitem:ad7937516d72419143f3c7ac843bc8ed2 inherit pro_attribs_classinviwo_1_1Inport" id="r_ad7937516d72419143f3c7ac843bc8ed2"><td class="memItemLeft">
@@ -293,6 +292,33 @@ Processor *&#160;</td><td class="memItemRight"><b>processor_</b></td></tr>
 
 </div>
 </div>
+<a id="a27861cb06273c6446c7d587f5cf18bb5" name="a27861cb06273c6446c7d587f5cf18bb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27861cb06273c6446c7d587f5cf18bb5">&#9670;&#160;</a></span>connectTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::BrushingAndLinkingInport::connectTo </td>
+          <td>(</td>
+          <td class="paramtype">Outport *</td>          <td class="paramname"><span class="paramname"><em>outport</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Inport.html">inviwo::Inport</a>.</p>
+
+</div>
+</div>
 <a id="aae1a522467d182b9d34d6a26fd1334fc" name="aae1a522467d182b9d34d6a26fd1334fc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aae1a522467d182b9d34d6a26fd1334fc">&#9670;&#160;</a></span>deserialize()</h2>
 
@@ -317,6 +343,33 @@ Processor *&#160;</td><td class="memItemRight"><b>processor_</b></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1Port.html">inviwo::Port</a>.</p>
+
+</div>
+</div>
+<a id="a6feefd06d83a41e340d17ce6664eed06" name="a6feefd06d83a41e340d17ce6664eed06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6feefd06d83a41e340d17ce6664eed06">&#9670;&#160;</a></span>disconnectFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::BrushingAndLinkingInport::disconnectFrom </td>
+          <td>(</td>
+          <td class="paramtype">Outport *</td>          <td class="paramname"><span class="paramname"><em>outport</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Inport.html">inviwo::Inport</a>.</p>
 
 </div>
 </div>
@@ -372,6 +425,33 @@ Processor *&#160;</td><td class="memItemRight"><b>processor_</b></td></tr>
 <p>Returns the RGB color code used to colorize all ports of this type. This color code is for instance used in the <a class="el" href="classinviwo_1_1NetworkEditor.html">NetworkEditor</a>. To distinguish different port types through their color, this method should be overloaded in derived classes. </p>
 
 <p>Implements <a class="el" href="classinviwo_1_1Port.html#a4a4e1fa8b669dedf737d67442030b58b">inviwo::Port</a>.</p>
+
+</div>
+</div>
+<a id="ac511ca79be2c3ada6462a94b85925142" name="ac511ca79be2c3ada6462a94b85925142"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac511ca79be2c3ada6462a94b85925142">&#9670;&#160;</a></span>getConnectedOutport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual Outport * inviwo::BrushingAndLinkingInport::getConnectedOutport </td>
+          <td>(</td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>i</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Inport.html">inviwo::Inport</a>.</p>
 
 </div>
 </div>
@@ -449,6 +529,33 @@ Processor *&#160;</td><td class="memItemRight"><b>processor_</b></td></tr>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Inport.html">inviwo::Inport</a>.</p>
+
+</div>
+</div>
+<a id="a5c995f5aa920539b2f6a1b5b59328b83" name="a5c995f5aa920539b2f6a1b5b59328b83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c995f5aa920539b2f6a1b5b59328b83">&#9670;&#160;</a></span>getNumberOfConnections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t inviwo::BrushingAndLinkingInport::getNumberOfConnections </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

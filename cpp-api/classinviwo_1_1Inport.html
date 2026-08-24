@@ -166,17 +166,18 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 <area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::Spatial4DSampler&lt; dvec3 &gt; &gt;" shape="rect" coords="419,2128,828,2152"/>
 <area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::Volume, 0 &gt;" shape="rect" coords="419,2184,828,2208"/>
 <area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::DataSequence&lt; T &gt; &gt;" shape="rect" coords="419,2240,828,2264"/>
-<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::SpatialSampler&lt; dvec3 &gt; &gt;" shape="rect" coords="419,2296,828,2320"/>
-<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::Volume, 0, true &gt;" shape="rect" coords="419,2352,828,2376"/>
-<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; std::vector&lt; std::shared_ptr&lt; inviwo::Volume &gt; &gt; &gt;" shape="rect" coords="419,2408,828,2432"/>
-<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; std::vector&lt; std::string &gt; &gt;" shape="rect" coords="419,2464,828,2488"/>
-<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; std::vector&lt; T &gt; &gt;" shape="rect" coords="419,2520,828,2544"/>
-<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::Volume &gt;" shape="rect" coords="419,2576,828,2600"/>
-<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::DataSequence&lt; inviwo::Image &gt; &gt;" shape="rect" coords="419,2632,828,2656"/>
-<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; dmat4 &gt;" shape="rect" coords="419,2688,828,2712"/>
-<area href="classinviwo_1_1BrushingAndLinkingInport.html" alt="inviwo::BrushingAndLinkingInport" shape="rect" coords="419,2744,828,2768"/>
-<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; T, N, Flat &gt;" shape="rect" coords="419,2800,828,2824"/>
-<area href="classinviwo_1_1PythonInport.html" alt="inviwo::PythonInport" shape="rect" coords="419,2856,828,2880"/>
+<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::SpatialEntity &gt;" shape="rect" coords="419,2296,828,2320"/>
+<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::SpatialSampler&lt; dvec3 &gt; &gt;" shape="rect" coords="419,2352,828,2376"/>
+<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::Volume, 0, true &gt;" shape="rect" coords="419,2408,828,2432"/>
+<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; std::vector&lt; std::shared_ptr&lt; inviwo::Volume &gt; &gt; &gt;" shape="rect" coords="419,2464,828,2488"/>
+<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; std::vector&lt; std::string &gt; &gt;" shape="rect" coords="419,2520,828,2544"/>
+<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; std::vector&lt; T &gt; &gt;" shape="rect" coords="419,2576,828,2600"/>
+<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::Volume &gt;" shape="rect" coords="419,2632,828,2656"/>
+<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; inviwo::DataSequence&lt; inviwo::Image &gt; &gt;" shape="rect" coords="419,2688,828,2712"/>
+<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; dmat4 &gt;" shape="rect" coords="419,2744,828,2768"/>
+<area href="classinviwo_1_1BrushingAndLinkingInport.html" alt="inviwo::BrushingAndLinkingInport" shape="rect" coords="419,2800,828,2824"/>
+<area href="classinviwo_1_1DataInport.html" alt="inviwo::DataInport&lt; T, N, Flat &gt;" shape="rect" coords="419,2856,828,2880"/>
+<area href="classinviwo_1_1PythonInport.html" alt="inviwo::PythonInport" shape="rect" coords="419,2912,828,2936"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -184,20 +185,20 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a12f90f66bf1460eac32c7bf14617a27a" id="r_a12f90f66bf1460eac32c7bf14617a27a"><td class="memItemLeft"><a id="a12f90f66bf1460eac32c7bf14617a27a" name="a12f90f66bf1460eac32c7bf14617a27a"></a>
 virtual bool&#160;</td><td class="memItemRight"><b>canConnectTo</b> (const Port *port) const =0</td></tr>
-<tr class="memitem:a7109ffafce3bedf23eb4debfb188bb22" id="r_a7109ffafce3bedf23eb4debfb188bb22"><td class="memItemLeft"><a id="a7109ffafce3bedf23eb4debfb188bb22" name="a7109ffafce3bedf23eb4debfb188bb22"></a>
-virtual void&#160;</td><td class="memItemRight"><b>connectTo</b> (Outport *outport)</td></tr>
-<tr class="memitem:aae31fb61e9d9159e63fa4d8e93305dec" id="r_aae31fb61e9d9159e63fa4d8e93305dec"><td class="memItemLeft"><a id="aae31fb61e9d9159e63fa4d8e93305dec" name="aae31fb61e9d9159e63fa4d8e93305dec"></a>
-virtual void&#160;</td><td class="memItemRight"><b>disconnectFrom</b> (Outport *outport)</td></tr>
-<tr class="memitem:aa3751bbfa0fb4af2d91ac105561ea642" id="r_aa3751bbfa0fb4af2d91ac105561ea642"><td class="memItemLeft"><a id="aa3751bbfa0fb4af2d91ac105561ea642" name="aa3751bbfa0fb4af2d91ac105561ea642"></a>
-virtual const std::vector&lt; const Outport * &gt; &amp;&#160;</td><td class="memItemRight"><b>getChangedOutports</b> () const</td></tr>
-<tr class="memitem:a344af903ebceccefe55720f509f0720e" id="r_a344af903ebceccefe55720f509f0720e"><td class="memItemLeft"><a id="a344af903ebceccefe55720f509f0720e" name="a344af903ebceccefe55720f509f0720e"></a>
-virtual Outport *&#160;</td><td class="memItemRight"><b>getConnectedOutport</b> () const</td></tr>
-<tr class="memitem:aa5bc698cdc34ec9026d080c5b2338b5d" id="r_aa5bc698cdc34ec9026d080c5b2338b5d"><td class="memItemLeft"><a id="aa5bc698cdc34ec9026d080c5b2338b5d" name="aa5bc698cdc34ec9026d080c5b2338b5d"></a>
-const std::vector&lt; Outport * &gt; &amp;&#160;</td><td class="memItemRight"><b>getConnectedOutports</b> () const noexcept</td></tr>
+<tr class="memitem:a662208e94b6d4ffc49056d3ccccb2160" id="r_a662208e94b6d4ffc49056d3ccccb2160"><td class="memItemLeft"><a id="a662208e94b6d4ffc49056d3ccccb2160" name="a662208e94b6d4ffc49056d3ccccb2160"></a>
+virtual void&#160;</td><td class="memItemRight"><b>connectTo</b> (Outport *outport)=0</td></tr>
+<tr class="memitem:aef3700eccb5063b01aadb42a02b7a1f8" id="r_aef3700eccb5063b01aadb42a02b7a1f8"><td class="memItemLeft"><a id="aef3700eccb5063b01aadb42a02b7a1f8" name="aef3700eccb5063b01aadb42a02b7a1f8"></a>
+virtual void&#160;</td><td class="memItemRight"><b>disconnectFrom</b> (Outport *outport)=0</td></tr>
+<tr class="memitem:a611fa3fc01a6daf3e3474f128f84bbf2" id="r_a611fa3fc01a6daf3e3474f128f84bbf2"><td class="memItemLeft"><a id="a611fa3fc01a6daf3e3474f128f84bbf2" name="a611fa3fc01a6daf3e3474f128f84bbf2"></a>
+Outport *&#160;</td><td class="memItemRight"><b>getConnectedOutport</b> () const</td></tr>
+<tr class="memitem:afdca42f9f555b08ceb3921937b4b14e5" id="r_afdca42f9f555b08ceb3921937b4b14e5"><td class="memItemLeft"><a id="afdca42f9f555b08ceb3921937b4b14e5" name="afdca42f9f555b08ceb3921937b4b14e5"></a>
+virtual Outport *&#160;</td><td class="memItemRight"><b>getConnectedOutport</b> (size_t i) const =0</td></tr>
+<tr class="memitem:ac67d00df93ed89e912c01916ea4cb13d" id="r_ac67d00df93ed89e912c01916ea4cb13d"><td class="memItemLeft"><a id="ac67d00df93ed89e912c01916ea4cb13d" name="ac67d00df93ed89e912c01916ea4cb13d"></a>
+auto&#160;</td><td class="memItemRight"><b>getConnectedOutports</b> () const</td></tr>
 <tr class="memitem:a804f322e030348b1b3750f26d264d8c9" id="r_a804f322e030348b1b3750f26d264d8c9"><td class="memItemLeft"><a id="a804f322e030348b1b3750f26d264d8c9" name="a804f322e030348b1b3750f26d264d8c9"></a>
 virtual size_t&#160;</td><td class="memItemRight"><b>getMaxNumberOfConnections</b> () const =0</td></tr>
-<tr class="memitem:a6e136e3b3329d30a1d59fe09e8cf1404" id="r_a6e136e3b3329d30a1d59fe09e8cf1404"><td class="memItemLeft"><a id="a6e136e3b3329d30a1d59fe09e8cf1404" name="a6e136e3b3329d30a1d59fe09e8cf1404"></a>
-virtual size_t&#160;</td><td class="memItemRight"><b>getNumberOfConnections</b> () const</td></tr>
+<tr class="memitem:a00a7bd9be397343be158e0caea678cc7" id="r_a00a7bd9be397343be158e0caea678cc7"><td class="memItemLeft"><a id="a00a7bd9be397343be158e0caea678cc7" name="a00a7bd9be397343be158e0caea678cc7"></a>
+virtual size_t&#160;</td><td class="memItemRight"><b>getNumberOfConnections</b> () const =0</td></tr>
 <tr class="memitem:a916e2696adc8e4a8dd5f6751602d2554" id="r_a916e2696adc8e4a8dd5f6751602d2554"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a916e2696adc8e4a8dd5f6751602d2554">isChanged</a> () const</td></tr>
 <tr class="memitem:abda495ce380d4c269f548c2bd4ee58af" id="r_abda495ce380d4c269f548c2bd4ee58af"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#abda495ce380d4c269f548c2bd4ee58af">isConnected</a> () const override</td></tr>
 <tr class="memitem:a7f8b03c9d68ecd97c3d35578ac81666b" id="r_a7f8b03c9d68ecd97c3d35578ac81666b"><td class="memItemLeft"><a id="a7f8b03c9d68ecd97c3d35578ac81666b" name="a7f8b03c9d68ecd97c3d35578ac81666b"></a>
@@ -271,12 +272,14 @@ Protected Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight"><b>callOnChangeIfChanged</b> () const</td></tr>
 <tr class="memitem:af896ae84aeb42e757f264364f7cdf3a9" id="r_af896ae84aeb42e757f264364f7cdf3a9"><td class="memItemLeft"><a id="af896ae84aeb42e757f264364f7cdf3a9" name="af896ae84aeb42e757f264364f7cdf3a9"></a>
 bool&#160;</td><td class="memItemRight"><b>circularConnection</b> (const Port *port) const</td></tr>
+<tr class="memitem:a37f70bfd7858a60897851c286de5ce9c" id="r_a37f70bfd7858a60897851c286de5ce9c"><td class="memItemLeft"><a id="a37f70bfd7858a60897851c286de5ce9c" name="a37f70bfd7858a60897851c286de5ce9c"></a>
+void&#160;</td><td class="memItemRight"><b>doConnectTo</b> (Outport *outport)</td></tr>
+<tr class="memitem:ad22f5596b24bd0bd6c65af1bfa20ab70" id="r_ad22f5596b24bd0bd6c65af1bfa20ab70"><td class="memItemLeft"><a id="ad22f5596b24bd0bd6c65af1bfa20ab70" name="ad22f5596b24bd0bd6c65af1bfa20ab70"></a>
+void&#160;</td><td class="memItemRight"><b>doDisconnectFrom</b> (Outport *outport)</td></tr>
 <tr class="memitem:ad6a2f3d753a1bbc43cc14a814408ea94" id="r_ad6a2f3d753a1bbc43cc14a814408ea94"><td class="memItemLeft"><a id="ad6a2f3d753a1bbc43cc14a814408ea94" name="ad6a2f3d753a1bbc43cc14a814408ea94"></a>
 &#160;</td><td class="memItemRight"><b>Inport</b> (std::string_view identifier, <a class="el" href="classinviwo_1_1Document.html">Document</a> help)</td></tr>
 <tr class="memitem:a6a7bcedd5b9248d3e84acffe5fd28291" id="r_a6a7bcedd5b9248d3e84acffe5fd28291"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a6a7bcedd5b9248d3e84acffe5fd28291">invalidate</a> (<a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel)</td></tr>
-<tr class="memitem:a435cc390b39389bc1a9fa33e4415a63f" id="r_a435cc390b39389bc1a9fa33e4415a63f"><td class="memItemLeft"><a id="a435cc390b39389bc1a9fa33e4415a63f" name="a435cc390b39389bc1a9fa33e4415a63f"></a>
-virtual void&#160;</td><td class="memItemRight"><b>setChanged</b> (bool changed=true, const Outport *source=nullptr)</td></tr>
-<tr class="memitem:a03741026d1ceaf6fd907d3026d57e361" id="r_a03741026d1ceaf6fd907d3026d57e361"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a03741026d1ceaf6fd907d3026d57e361">setValid</a> (const Outport *source)</td></tr>
+<tr class="memitem:aaecdc6f95c4b142df176de70b48174c3" id="r_aaecdc6f95c4b142df176de70b48174c3"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aaecdc6f95c4b142df176de70b48174c3">setChanged</a> (bool changed)</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Port"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Port.html">inviwo::Port</a></td></tr>
 <tr class="memitem:ab084e1d8aa0c233598c2eecdaddc59dd inherit pro_methods_classinviwo_1_1Port" id="r_ab084e1d8aa0c233598c2eecdaddc59dd"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Port.html#ab084e1d8aa0c233598c2eecdaddc59dd">Port</a> (std::string_view identifier, <a class="el" href="classinviwo_1_1Document.html">Document</a> help)</td></tr>
 <tr class="memitem:abff33ef934fbf12985fb8ed04d18664a inherit pro_methods_classinviwo_1_1Port" id="r_abff33ef934fbf12985fb8ed04d18664a"><td class="memItemLeft">
@@ -289,8 +292,6 @@ static <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:ab7420c4e15b2d5a0e797c5db8e16c4f7" id="r_ab7420c4e15b2d5a0e797c5db8e16c4f7"><td class="memItemLeft"><a id="ab7420c4e15b2d5a0e797c5db8e16c4f7" name="ab7420c4e15b2d5a0e797c5db8e16c4f7"></a>
-std::vector&lt; Outport * &gt;&#160;</td><td class="memItemRight"><b>connectedOutports_</b></td></tr>
 <tr class="memitem:a385f4527d79ed507bc0b774db68a6547" id="r_a385f4527d79ed507bc0b774db68a6547"><td class="memItemLeft"><a id="a385f4527d79ed507bc0b774db68a6547" name="a385f4527d79ed507bc0b774db68a6547"></a>
 <a class="el" href="classinviwo_1_1StateCoordinator.html">StateCoordinator</a>&lt; bool &gt;&#160;</td><td class="memItemRight"><b>isOptional_</b></td></tr>
 <tr class="memitem:ad7937516d72419143f3c7ac843bc8ed2" id="r_ad7937516d72419143f3c7ac843bc8ed2"><td class="memItemLeft"><a id="ad7937516d72419143f3c7ac843bc8ed2" name="ad7937516d72419143f3c7ac843bc8ed2"></a>
@@ -492,6 +493,32 @@ class&#160;</td><td class="memItemRight"><b>ProcessorNetworkEvaluator</b></td></
 
 </div>
 </div>
+<a id="aaecdc6f95c4b142df176de70b48174c3" name="aaecdc6f95c4b142df176de70b48174c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaecdc6f95c4b142df176de70b48174c3">&#9670;&#160;</a></span>setChanged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::Inport::setChanged </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>changed</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Called with true by <a class="el" href="classinviwo_1_1Outport.html#a6a1f2142e9f8683c774f160cc0efc205">Outport::setValid</a> called by <a class="el" href="classinviwo_1_1Processor.html#a3b59c6bac28be62250911b9e1e006f1a">Processor::setValid</a>, which is called after <a class="el" href="classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result.">Processor</a>:process. From above in the network. Called with false (reset) by <a class="el" href="classinviwo_1_1Processor.html#a3b59c6bac28be62250911b9e1e006f1a">Processor::setValid</a> after the <a class="el" href="classinviwo_1_1Processor.html#a8aec4f59f1cccfa4f37993958f095359">Processor::process</a> from below </p>
+
+</div>
+</div>
 <a id="afe1660c34699d0c8dfcd79d4ef8d8495" name="afe1660c34699d0c8dfcd79d4ef8d8495"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afe1660c34699d0c8dfcd79d4ef8d8495">&#9670;&#160;</a></span>setOptional()</h2>
 
@@ -507,32 +534,6 @@ class&#160;</td><td class="memItemRight"><b>ProcessorNetworkEvaluator</b></td></
       </table>
 </div><div class="memdoc">
 <p>An inport can be set optional, in which case the processor will by default be ready even if no outport is connected. This means that an optional inport may not have any connected outports when evaluating the <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a>, i.e. when <a class="el" href="classinviwo_1_1Processor.html#a8aec4f59f1cccfa4f37993958f095359">Processor::process()</a> is called. Hence one needs to check manually that the port isReady before using it. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="#a258de5abc6d26f9d150c6f8de8b2175f">isReady</a> </dd></dl>
-
-</div>
-</div>
-<a id="a03741026d1ceaf6fd907d3026d57e361" name="a03741026d1ceaf6fd907d3026d57e361"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a03741026d1ceaf6fd907d3026d57e361">&#9670;&#160;</a></span>setValid()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void inviwo::Inport::setValid </td>
-          <td>(</td>
-          <td class="paramtype">const Outport *</td>          <td class="paramname"><span class="paramname"><em>source</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Called by <a class="el" href="classinviwo_1_1Outport.html#a6a1f2142e9f8683c774f160cc0efc205">Outport::setValid</a>, which is call by <a class="el" href="classinviwo_1_1Processor.html#a3b59c6bac28be62250911b9e1e006f1a">Processor::setValid</a>, which is called after <a class="el" href="classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result.">Processor</a>:process. From above in the network. </p>
 
 </div>
 </div>

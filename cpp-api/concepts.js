@@ -13,6 +13,7 @@ var concepts =
       ] ],
       [ "detail", null, [
         [ "derefClassIdentifiable", "conceptinviwo_1_1detail_1_1derefClassIdentifiable.html", null ],
+        [ "hasBases", "conceptinviwo_1_1detail_1_1hasBases.html", null ],
         [ "is_shared_ptr", "conceptinviwo_1_1detail_1_1is__shared__ptr.html", null ],
         [ "is_transparent", "conceptinviwo_1_1detail_1_1is__transparent.html", null ],
         [ "is_unique_ptr", "conceptinviwo_1_1detail_1_1is__unique__ptr.html", null ],
@@ -31,6 +32,7 @@ var concepts =
       [ "RepresentationOf", "conceptinviwo_1_1RepresentationOf.html", null ],
       [ "Settable", "conceptinviwo_1_1Settable.html", null ],
       [ "StringRange", "conceptinviwo_1_1StringRange.html", null ],
+      [ "TypeListLike", "conceptinviwo_1_1TypeListLike.html", null ],
       [ "WCharRange", "conceptinviwo_1_1WCharRange.html", null ]
     ] ]
 ];
