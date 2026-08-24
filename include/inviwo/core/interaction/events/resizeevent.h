@@ -56,7 +56,7 @@ class Outport;
  */
 class IVW_CORE_API ResizeEvent : public Event {
 public:
-    ResizeEvent(size2_t canvasSize);
+    explicit ResizeEvent(size2_t canvasSize);
     ResizeEvent(const ResizeEvent& rhs) = default;
     ResizeEvent& operator=(const ResizeEvent& that) = default;
 
