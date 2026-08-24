@@ -153,11 +153,16 @@ SequenceCompositeSource<BrushingAndLinkingInport,
 template <>
 void SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::process() {}
 
-// Specialize to do nothing
 template <>
-size_t
-SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::sequenceSize() const {
+size_t SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::sequenceSize()
+    const {
     return 0;
+}
+
+template <>
+std::shared_ptr<Processor> SequenceCompositeSource<
+    BrushingAndLinkingInport, BrushingAndLinkingOutport>::createConverter() const {
+    return nullptr;
 }
 
 template <>

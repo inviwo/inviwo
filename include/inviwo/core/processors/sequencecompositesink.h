@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processortraits.h>
+#include <inviwo/core/processors/sequenceselect.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/porttraits.h>
@@ -79,6 +80,8 @@ public:
     virtual void newData() = 0;
 
     virtual void superProcessEnd() = 0;
+
+    virtual std::shared_ptr<Processor> createConverter() const = 0;
 };
 
 /**
@@ -128,6 +131,10 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
 
     virtual void superProcessEnd() override { superOutport_->setData(data_->data); }
+
+    virtual std::shared_ptr<Processor> createConverter() const override {
+        return std::make_shared<SequenceSelect<InportData>>();
+    }
 
 private:
     std::shared_ptr<SequenceCompositeData<OutportSequenceData>> data_;

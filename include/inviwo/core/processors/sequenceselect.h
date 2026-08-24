@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/util/utilities.h>
 
 namespace inviwo {
 /**
@@ -69,7 +70,10 @@ protected:
 
 template <typename T, typename OutportType>
 SequenceSelect<T, OutportType>::SequenceSelect()
-    : Processor()
+    : Processor(
+          util::stripIdentifier(
+              ProcessorTraits<SequenceSelect<T, OutportType>>::getProcessorInfo().displayName),
+          ProcessorTraits<SequenceSelect<T, OutportType>>::getProcessorInfo().displayName)
     , inport_{"inport", "Sequence of data to select from"_help}
     , outport_{"outport", "The selected item"_help}
     , index_{"index", "Index", util::ordinalCount(0uz)}

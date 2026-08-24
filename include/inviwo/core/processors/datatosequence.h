@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/utilities.h>
 
 namespace inviwo {
 
@@ -44,7 +45,12 @@ namespace inviwo {
 template <typename T>
 class DataToSequence : public Processor {
 public:
-    DataToSequence() : Processor(), inport_{"inport"}, outport_{"outport"} {
+    DataToSequence()
+        : Processor(util::stripIdentifier(
+                        ProcessorTraits<DataToSequence<T>>::getProcessorInfo().displayName),
+                    ProcessorTraits<DataToSequence<T>>::getProcessorInfo().displayName)
+        , inport_{"inport"}
+        , outport_{"outport"} {
         addPorts(inport_, outport_);
     }
     DataToSequence(const DataToSequence&) = delete;

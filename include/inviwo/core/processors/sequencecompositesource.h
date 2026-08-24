@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processortraits.h>
+#include <inviwo/core/processors/datatosequence.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/porttraits.h>
@@ -65,6 +66,8 @@ public:
 
     virtual size_t sequenceSize() const = 0;
     virtual void setSequenceIndex(size_t) = 0;
+
+    virtual std::shared_ptr<Processor> createConverter() const = 0;
 };
 
 /**
@@ -123,6 +126,10 @@ public:
         invalidate(InvalidationLevel::InvalidOutput);
     }
 
+    virtual std::shared_ptr<Processor> createConverter() const override {
+        return std::make_shared<DataToSequence<OutportData>>();
+    }
+
 private:
     ///< To be added to SequenceProcessor, not itself
     std::shared_ptr<InportSequenceType> superInport_;
@@ -133,9 +140,9 @@ private:
 template <typename InportSequenceType, typename OutportType>
 struct ProcessorTraits<SequenceCompositeSource<InportSequenceType, OutportType>> {
     static ProcessorInfo getProcessorInfo() {
-        using sequenceType = typename InportSequenceType::type;
-        using intype = typename sequenceType::type;
-        using outtype = typename OutportType::type;
+        using sequenceType = InportSequenceType::type;
+        using intype = sequenceType::type;
+        using outtype = OutportType::type;
         static_assert(std::is_same_v<intype, outtype>,
                       "InportSequenceType and OutportType must work with the same data type");
 

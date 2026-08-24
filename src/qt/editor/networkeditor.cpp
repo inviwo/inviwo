@@ -841,6 +841,7 @@ void NetworkEditor::addCompositeMenuItems(
     auto* expandAction =
         menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Composite"));
     connect(expandAction, &QAction::triggered, this, util::exceptionGuarded([selectedComposites]() {
+                rendercontext::activateDefault();
                 for (auto* p : selectedComposites) {
                     util::expandCompositeProcessorIntoNetwork(*p);
                 }
@@ -892,16 +893,15 @@ void NetworkEditor::addSequenceMenuItems(
             }));
     sequenceAction->setEnabled(selectedProcessors.size() > 0);
 
-    // TODO(Peter)
-    // auto* expandAction =
-    //    menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand
-    //    Sequence"));
-    // connect(expandAction, &QAction::triggered, this, [selectedSequences]() {
-    //    for (auto& p : selectedSequences) {
-    //         util::expandSequenceProcessorIntoNetwork(*p);
-    //    }
-    //});
-    // expandAction->setDisabled(selectedSequences.empty());
+    auto* expandAction =
+        menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Sequence"));
+    connect(expandAction, &QAction::triggered, this, util::exceptionGuarded([selectedSequences]() {
+                rendercontext::activateDefault();
+                for (auto& p : selectedSequences) {
+                    util::expandSequenceProcessorIntoNetwork(*p);
+                }
+            }));
+    expandAction->setDisabled(selectedSequences.empty());
 
     auto* selectPropAction =
         menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Configure Properties"));

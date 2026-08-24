@@ -32,6 +32,7 @@
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/compositesource.h>
 #include <inviwo/core/processors/compositesink.h>
+#include <inviwo/core/processors/processorutils.h>
 
 #include <inviwo/core/processors/sequenceprocessor.h>
 #include <inviwo/core/processors/sequencecompositesource.h>
@@ -164,6 +165,8 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         const NetworkLock lock(&network);
 
         const auto selected = util::getSelected(&network);
+        if (selected.empty()) return;
+
         const auto connections = network.getConnections();
         const auto links = network.getLinks();
 
@@ -311,28 +314,63 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
     }
 }
 
+namespace {
+
+void markAsConverterFor(Processor& converter, const SequenceCompositeSinkBase& meta) {
+    converter.setMetaData<MetaDataType<std::string>>("converterForSink",
+                                                     std::string{meta.getIdentifier()});
+}
+Processor* isConverterFor(Processor& processor, const SequenceCompositeSinkBase& meta) {
+    if (auto* cm = processor.getMetaData<MetaDataType<std::string>>("converterForSink")) {
+        if (cm->get() == meta.getIdentifier()) {
+            return &processor;
+        }
+    }
+    return nullptr;
+}
+
+void markAsConverterFor(Processor& converter, const SequenceCompositeSourceBase& meta) {
+    converter.setMetaData<MetaDataType<std::string>>("converterForSource",
+                                                     std::string{meta.getIdentifier()});
+}
+Processor* isConverterFor(Processor& processor, const SequenceCompositeSourceBase& meta) {
+    if (auto* cm = processor.getMetaData<MetaDataType<std::string>>("converterForSource")) {
+        if (cm->get() == meta.getIdentifier()) {
+            return &processor;
+        }
+    }
+    return nullptr;
+}
+
+}  // namespace
+
 void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
     try {
         const NetworkLock lock(&network);
 
         const auto selected = util::getSelected(&network);
+        if (selected.empty()) return;
+
         const auto connections = network.getConnections();
         const auto links = network.getLinks();
 
         auto* app = network.getApplication();
         auto* pf = app->getProcessorFactory();
 
-        auto comp = std::make_shared<SequenceProcessor>("sequence", "Sequence", app);
-        auto* meta = comp->createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+        const auto id = fmt::format("{}{}Sequence", selected.front()->getIdentifier(),
+                                    selected.size() > 1 ? "Etc" : "");
+        const auto name = fmt::format("{} {} Sequence", selected.front()->getDisplayName(),
+                                      selected.size() > 1 ? "Etc" : "");
+        auto sequence = std::make_shared<SequenceProcessor>(id, name, app);
         auto center = util::getCenterPosition(selected);
-        meta->setPosition(center);
+        util::setPosition(sequence.get(), center);
 
-        auto& subNetwork = comp->getSubNetwork();
+        auto& subNetwork = sequence->getSubNetwork();
         const NetworkLock subLock(&subNetwork);
         for (auto* p : selected) {
             subNetwork.addProcessor(network.removeProcessor(p));
         }
-        network.addProcessor(comp);
+        network.addProcessor(sequence);
         util::offsetPosition(selected, -center);
         util::setSelected(selected, false);
 
@@ -348,8 +386,29 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
             const auto portId = outport->getClassIdentifier();
             if (auto metaSource =
                     addMetaSource<SequenceCompositeSourceBase>(inports, subNetwork, portId, pf)) {
-                // TODO(Peter)
-                // network.addConnection(outport, &metaSource->getSuperInport());
+
+                auto& superInport = metaSource->getSuperInport();
+                if (superInport.canConnectTo(outport)) {
+                    network.addConnection(outport, &superInport);
+                } else if (auto converter = metaSource->createConverter()) {
+                    if (!converter->getInports().empty() && !converter->getOutports().empty()) {
+                        auto* converterInport = converter->getInports().front();
+                        auto* converterOutport = converter->getOutports().front();
+
+                        if (converterInport->canConnectTo(outport) &&
+                            superInport.canConnectTo(converterOutport)) {
+                            markAsConverterFor(*converter, *metaSource);
+                            const auto outportPosition = util::getPosition(outport->getProcessor());
+
+                            util::setPosition(converter.get(),
+                                              glm::ivec2{glm::mix(center, outportPosition, 0.5)});
+
+                            network.addProcessor(converter);
+                            network.addConnection(outport, converterInport);
+                            network.addConnection(converterOutport, &superInport);
+                        }
+                    }
+                }
             } else {
                 log::error(missingMessage, portId, "Sequence Source", "SequenceCompositeSource");
             }
@@ -357,12 +416,42 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
 
         for (const auto& [outport, inports] : outConnections) {
             const auto portId = inports.front()->getClassIdentifier();
-            if (auto metasink =
+            if (auto metaSink =
                     addMetaSink<SequenceCompositeSinkBase>(outport, subNetwork, portId, pf)) {
-                // TODO(Peter)
-                // for (auto* inport : inports) {
-                //     network.addConnection(&metasink->getSuperOutport(), inport);
-                // }
+
+                auto& superOutport = metaSink->getSuperOutport();
+                for (auto* inport : inports) {
+                    if (inport->canConnectTo(&superOutport)) {
+                        network.addConnection(&superOutport, inport);
+                    }
+                }
+                if (auto converter = metaSink->createConverter()) {
+                    if (!converter->getInports().empty() && !converter->getOutports().empty()) {
+                        auto* converterInport = converter->getInports().front();
+                        auto* converterOutport = converter->getOutports().front();
+
+                        bool added = false;
+                        for (auto* inport : inports) {
+                            if (converterInport->canConnectTo(&superOutport) &&
+                                inport->canConnectTo(converterOutport)) {
+                                if (!added) {
+                                    markAsConverterFor(*converter, *metaSink);
+                                    const auto inportPosition =
+                                        util::getPosition(inport->getProcessor());
+
+                                    util::setPosition(
+                                        converter.get(),
+                                        glm::ivec2{glm::mix(center, inportPosition, 0.5)});
+                                    network.addProcessor(converter);
+                                    added = true;
+                                }
+                                network.addConnection(&superOutport, converterInport);
+                                network.addConnection(converterOutport, inport);
+                            }
+                        }
+                    }
+                }
+
             } else {
                 log::error(missingMessage, portId, "Sequence Sink", "SequenceCompositeSink");
             }
@@ -376,16 +465,111 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
         }
         for (const auto& [src, dests] : inLinks) {
             for (auto* dst : dests) {
-                network.addLink(src, comp->addSuperProperty(dst));
+                network.addLink(src, sequence->addSuperProperty(dst));
             }
         }
         for (const auto& [src, dests] : outLinks) {
-            auto* superSrc = comp->addSuperProperty(src);
+            auto* superSrc = sequence->addSuperProperty(src);
             for (auto* dst : dests) {
                 network.addLink(superSrc, dst);
             }
         }
+    } catch (const Exception& e) {
+        log::exception(e);
+    }
+}
 
+void util::expandSequenceProcessorIntoNetwork(SequenceProcessor& sequence) {
+    try {
+        // Make sure we delete the composite as the last thing we do, after any locks
+        auto holder = sequence.shared_from_this();
+        auto& network = *sequence.getNetwork();
+        auto& subNetwork = sequence.getSubNetwork();
+        const NetworkLock lock(&network);
+        const NetworkLock subLock(&subNetwork);
+
+        const auto subProcessors = subNetwork.getProcessors();
+        const auto subConnections = subNetwork.getConnections();
+        const auto connections = network.getConnections();
+
+        // Gather Links
+        auto subLinks = subNetwork.getLinks();
+        for (auto& l : network.getLinks()) {
+            if (l.getSource()->getOwner()->getProcessor() == &sequence) {
+                if (auto* orgSource = sequence.getSubProperty(l.getSource())) {
+                    network.removeLink(l);
+                    subLinks.emplace_back(orgSource, l.getDestination());
+                }
+            } else if (l.getDestination()->getOwner()->getProcessor() == &sequence) {
+                if (auto* orgDest = sequence.getSubProperty(l.getDestination())) {
+                    network.removeLink(l);
+                    subLinks.emplace_back(l.getSource(), orgDest);
+                }
+            }
+        }
+
+        // Move Processors
+        for (auto* p : subProcessors) {
+            auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p);
+            auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p);
+            if (!sink && !source) {
+                network.addProcessor(subNetwork.removeProcessor(p));
+            }
+        }
+        auto* meta = sequence.createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+        util::offsetPosition(subProcessors, meta->getPosition());
+        util::setSelected(subProcessors, true);
+
+        // Connections
+        for (auto& subConnection : subConnections) {
+            if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(
+                    subConnection.getInport()->getProcessor())) {
+                for (auto& connection : connections) {
+                    if (connection.getOutport() == &sink->getSuperOutport()) {
+                        if (auto* converter =
+                                isConverterFor(*connection.getInport()->getProcessor(), *sink)) {
+
+                            const auto inports =
+                                converter->getOutports().front()->getConnectedInports() |
+                                std::ranges::to<std::vector>();
+                            auto keepAlive = network.removeProcessor(converter);
+                            for (auto* inport : inports) {
+                                network.addConnection(subConnection.getOutport(), inport);
+                            }
+                        } else {
+                            network.removeConnection(connection);
+                            network.addConnection(subConnection.getOutport(),
+                                                  connection.getInport());
+                        }
+                    }
+                }
+            } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(
+                           subConnection.getOutport()->getProcessor())) {
+                for (auto& connection : connections) {
+                    if (connection.getInport() == &source->getSuperInport()) {
+                        if (auto* converter =
+                                isConverterFor(*connection.getOutport()->getProcessor(), *source)) {
+                            auto* outport = converter->getInports().front()->getConnectedOutport();
+                            network.removeProcessor(converter);
+                            network.addConnection(outport, subConnection.getInport());
+                        } else {
+                            network.removeConnection(connection);
+                            network.addConnection(connection.getOutport(),
+                                                  subConnection.getInport());
+                        }
+                    }
+                }
+            } else {
+                network.addConnection(subConnection);
+            }
+        }
+
+        // Links
+        for (auto& l : subLinks) {
+            network.addLink(l);
+        }
+
+        network.removeProcessor(&sequence);
     } catch (const Exception& e) {
         log::exception(e);
     }
