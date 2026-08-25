@@ -67,30 +67,44 @@ jobs:
             printf 'Write a suitable CHANGELOG.md entry for this PR.'
           } > /tmp/prompt.txt
 
-      - name: "Install Copilot CLI"
-        if: steps.check.outputs.changed == 'false'
-        run: npm install -g @github/copilot
-
-      - name: "Generate changelog suggestion"
-        id: inference
-        if: steps.check.outputs.changed == 'false'
-        env:
-          COPILOT_GITHUB_TOKEN: ${{ github.token }}
-        uses: actions/ai-inference@v3
-        with:
-          prompt-file: /tmp/prompt.txt
-          system-prompt-file: .github/prompts/changelog-suggestion-system.txt
-          model: gpt-4.1
-
-      - name: "Post or update PR comment"
+      - name: "Generate suggestion and post comment"
         if: steps.check.outputs.changed == 'false'
         uses: actions/github-script@v7
-        env:
-          SUGGESTION: ${{ steps.inference.outputs.response }}
         with:
           script: |
+            const fs = require('fs');
             const marker = '<!-- changelog-suggestion-bot -->';
-            const suggestion = process.env.SUGGESTION || '(no suggestion generated)';
+
+            // Read prompt files
+            const prompt = fs.readFileSync('/tmp/prompt.txt', 'utf8');
+            const systemPrompt = fs.readFileSync('.github/prompts/changelog-suggestion-system.txt', 'utf8');
+
+            // Call Copilot chat completions API (requires copilot-requests: write)
+            let suggestion = '(no suggestion generated)';
+            try {
+              const resp = await fetch('https://api.githubcopilot.com/chat/completions', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `******
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  model: 'gpt-4.1',
+                  messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user',   content: prompt },
+                  ],
+                }),
+              });
+              if (resp.ok) {
+                const data = await resp.json();
+                suggestion = data.choices?.[0]?.message?.content ?? suggestion;
+              } else {
+                core.warning(`Copilot API returned ${resp.status}: ${await resp.text()}`);
+              }
+            } catch (err) {
+              core.warning(`Failed to call Copilot API: ${err.message}`);
+            }
 
             const body = [
               marker,
