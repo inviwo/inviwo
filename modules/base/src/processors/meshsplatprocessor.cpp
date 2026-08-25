@@ -73,7 +73,7 @@ MeshSplatProcessor::MeshSplatProcessor()
     , volume_{"volume", "Volume Settings"}
     , volumeDims_{"volumeDims", "Volume Dimensions",
                   util::ordinalCount(size3_t{64}, size3_t(512)).setMin(size3_t(1))}
-    , basis_{"basis", "Basis", util::ordinalMatrix(mat4{1.0f}).setInc(0.00001)}
+    , basis_{"basis", "Basis"}
     , range_{"range", "Data range"}
     , valueName{"valueName", "Value name", ""}
     , valueUnit{"valueUnit", "Value unit", ""} {
@@ -86,13 +86,12 @@ MeshSplatProcessor::MeshSplatProcessor()
 
 void MeshSplatProcessor::process() {
     if (!meshInport_.hasData()) return;
-    auto mesh = meshInport_.getData();
 
     const util::SplatSettings settings{
         .dimensions = volumeDims_.get(),
-        .modelMatrix = basis_.get(),
-        .pointTransform = mesh->getCoordinateTransformer().getDataToWorldMatrix(),
-        .axes = mesh->axes,
+        .modelMatrix = basis_.getMatrix(),
+
+        .axes = meshInport_.getData()->axes,
         .valueAxis =
             Axis{.name = valueName.get(), .unit = units::unit_from_string(valueUnit.get())},
         .kernel = kernelType_.get(),
@@ -100,52 +99,60 @@ void MeshSplatProcessor::process() {
         .weight = weight_.get(),
         .error = error_.get()};
 
-    std::span<const vec3> positions;
-    std::span<const float> radii;
-    std::span<const float> weights;
+    std::vector<util::SplatInput> inputs;
+    std::vector<std::shared_ptr<const Mesh>> meshes;
 
-    const auto* positionBuffer = mesh->getBuffer(BufferType::PositionAttrib);
-    positionBuffer->getRepresentation<BufferRAM>()->dispatch<void>([&](auto posRep) {
-        using ValueType = util::PrecisionValueType<decltype(posRep)>;
-        if constexpr (std::is_same_v<ValueType, vec3>) {
-            positions = posRep->getDataContainer();
-        }
-    });
+    for (auto mesh : meshInport_) {
 
-    if (perPointSize_.get()) {
-        if (const auto* radiiBuffer = mesh->getBuffer(BufferType::RadiiAttrib)) {
-            radiiBuffer->getRepresentation<BufferRAM>()->dispatch<void>([&](auto radiiRep) {
-                using ValueType = util::PrecisionValueType<decltype(radiiRep)>;
-                if constexpr (std::is_same_v<ValueType, float>) {
-                    radii = radiiRep->getDataContainer();
-                }
-            });
+        meshes.push_back(mesh);
+        auto& input = inputs.emplace_back(util::SplatInput{
+            .pointTransform = mesh->getCoordinateTransformer().getDataToWorldMatrix()});
+
+        const auto* positionBuffer = mesh->getBuffer(BufferType::PositionAttrib);
+        positionBuffer->getRepresentation<BufferRAM>()->dispatch<void>([&](auto posRep) {
+            using ValueType = util::PrecisionValueType<decltype(posRep)>;
+            if constexpr (std::is_same_v<ValueType, vec3>) {
+                input.positions = posRep->getDataContainer();
+            }
+        });
+
+        if (perPointSize_.get()) {
+            if (const auto* radiiBuffer = mesh->getBuffer(BufferType::RadiiAttrib)) {
+                radiiBuffer->getRepresentation<BufferRAM>()->dispatch<void>([&](auto radiiRep) {
+                    using ValueType = util::PrecisionValueType<decltype(radiiRep)>;
+                    if constexpr (std::is_same_v<ValueType, float>) {
+                        input.sizes = radiiRep->getDataContainer();
+                    }
+                });
+            }
+            if (input.sizes.empty()) {
+                log::warn(
+                    "Per-point size enabled but no valid Radii buffer found. Falling back to "
+                    "global "
+                    "size.");
+            }
         }
-        if (radii.empty()) {
-            log::warn(
-                "Per-point size enabled but no valid Radii buffer found. Falling back to global "
-                "size.");
+
+        if (perPointWeight_.get()) {
+            if (const auto* scalarBuffer = mesh->getBuffer(BufferType::ScalarMetaAttrib)) {
+                scalarBuffer->getRepresentation<BufferRAM>()->dispatch<void>([&](auto scalarRep) {
+                    using ValueType = util::PrecisionValueType<decltype(scalarRep)>;
+                    if constexpr (std::is_same_v<ValueType, float>) {
+                        input.weights = scalarRep->getDataContainer();
+                    }
+                });
+            }
+            if (input.weights.empty()) {
+                log::warn(
+                    "Per-point weight enabled but no valid ScalarMeta buffer found. Falling back "
+                    "to "
+                    "global weight.");
+            }
         }
     }
 
-    if (perPointWeight_.get()) {
-        if (const auto* scalarBuffer = mesh->getBuffer(BufferType::ScalarMetaAttrib)) {
-            scalarBuffer->getRepresentation<BufferRAM>()->dispatch<void>([&](auto scalarRep) {
-                using ValueType = util::PrecisionValueType<decltype(scalarRep)>;
-                if constexpr (std::is_same_v<ValueType, float>) {
-                    weights = scalarRep->getDataContainer();
-                }
-            });
-        }
-        if (weights.empty()) {
-            log::warn(
-                "Per-point weight enabled but no valid ScalarMeta buffer found. Falling back to "
-                "global weight.");
-        }
-    }
-
-    auto [collect, jobs] = util::splatJobs(positions, radii, weights, settings);
-    dispatchMany(jobs, [this, collect, mesh](std::vector<vec2> results) {
+    auto [collect, jobs] = util::splatJobs(inputs, settings);
+    dispatchMany(jobs, [this, collect, meshes](std::vector<vec2> results) {
         auto volume = collect(std::move(results));
         range_.updateFromVolume(volume);
         volume->dataMap.dataRange = range_.getDataRange();

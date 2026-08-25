@@ -59,9 +59,9 @@ enum class SplatKernel : std::uint8_t {
 IVW_MODULE_BASE_API std::string_view enumToStr(SplatKernel k);
 
 struct IVW_MODULE_BASE_API SplatSettings {
-    size3_t dimensions{64};     //!< Output volume dimensions (voxels)
-    mat4 modelMatrix{1.0f};     //!< basis (columns 0..2) and offset (column 3) in world space
-    mat4 pointTransform{1.0f};  //!< applied to each position before splatting, e.g. data to world
+    size3_t dimensions{64};  //!< Output volume dimensions (voxels)
+    mat4 modelMatrix{1.0f};  //!< basis (columns 0..2) and offset (column 3) in world space
+
     std::array<Axis, 3> axes = util::defaultAxes<3>();
     Axis valueAxis = {};
     SplatKernel kernel{SplatKernel::Gaussian};
@@ -69,6 +69,14 @@ struct IVW_MODULE_BASE_API SplatSettings {
     float weight{1.0f};
     float error{0.01f};   //!< Used to calculate the support size in case of a Gaussian kernel
     std::size_t jobs{0};  //!< Number of Z-slabs to split the volume into; 0 = auto
+};
+
+struct IVW_MODULE_BASE_API SplatInput {
+    std::span<const vec3> positions{};
+    std::span<const float> sizes{};
+    std::span<const float> weights{};
+
+    mat4 pointTransform{1.0f};  //!< applied to each position before splatting, e.g. data to world
 };
 
 /**
@@ -96,17 +104,21 @@ struct IVW_MODULE_BASE_API SplatSettings {
  *         @c settings.dimensions has a zero component, or if @c settings.defaultSigma /
  *         @c settings.cutoff are non-positive.
  */
-IVW_MODULE_BASE_API std::shared_ptr<Volume> splat(std::span<const vec3> positions,
-                                                  std::span<const float> radii,
-                                                  std::span<const float> weights,
+IVW_MODULE_BASE_API std::shared_ptr<Volume> splat(const SplatInput& input,
                                                   const SplatSettings& settings);
 
 IVW_MODULE_BASE_API
 std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
           std::vector<std::function<vec2(const std::function<void(double)>&,
                                          const std::function<bool()>&)>>>
-splatJobs(std::span<const vec3> positions, std::span<const float> sizes,
-          std::span<const float> weights, const SplatSettings& settings);
+splatJobs(const SplatInput& input, const SplatSettings& settings);
+
+IVW_MODULE_BASE_API
+std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
+          std::vector<std::function<vec2(const std::function<void(double)>&,
+                                         const std::function<bool()>&)>>>
+splatJobs(std::span<const SplatInput> inputs, const SplatSettings& settings);
+
 
 }  // namespace util
 }  // namespace inviwo

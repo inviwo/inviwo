@@ -45,7 +45,7 @@ TEST(SplatTest, SinglePointCenter) {
         }
     });
 
-    auto volume = util::splat(positions, radii, weights, settings);
+    auto volume = util::splat({positions, radii, weights}, settings);
     ASSERT_EQ(volume->getDimensions(), size3_t(5));
     // Check that the center voxel is nonzero
     const auto* ram = volume->getRepresentation<VolumeRAM>();
