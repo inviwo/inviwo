@@ -43,24 +43,34 @@ jobs:
           PR_TITLE:  ${{ github.event.pull_request.title }}
           PR_BODY:   ${{ github.event.pull_request.body }}
         run: |
-          # Write diff to a temp file (truncated to keep within context limits)
+          TODAY=$(date -u +%Y-%m-%d)
+
+          # Fetch and truncate the PR diff (14 KB limit)
           gh pr diff ${{ github.event.pull_request.number }} 2>/dev/null \
             | head -c 14000 > /tmp/pr.diff
           echo "... (diff truncated for brevity)" >> /tmp/pr.diff
 
-          # Write the first 3000 chars of CHANGELOG.md for style reference
-          head -c 3000 CHANGELOG.md > /tmp/changelog.head.md || echo "(CHANGELOG.md not found)" > /tmp/changelog.head.md
+          # First 3000 chars of CHANGELOG.md for style reference
+          CHANGELOG_HEAD=$(head -c 3000 CHANGELOG.md 2>/dev/null || echo "(CHANGELOG.md not found)")
 
-          # Write PR metadata to files so YAML special characters are handled safely
-          date -u +%Y-%m-%d > /tmp/today.txt
-          printf '%s' "${PR_TITLE:-}" > /tmp/pr_title.txt
-          printf '%s' "${PR_BODY:-(none)}" > /tmp/pr_body.txt
+          # Build the full user-prompt as a plain text file.
+          # Using printf + cat avoids any YAML parsing of PR content.
+          {
+            printf 'Today: %s\n\n' "$TODAY"
+            printf 'PR title: %s\n\n' "${PR_TITLE:-}"
+            printf 'PR description:\n%s\n\n' "${PR_BODY:-(none)}"
+            printf 'Code diff:\n```diff\n'
+            cat /tmp/pr.diff
+            printf '\n```\n\n'
+            printf 'Existing CHANGELOG.md (style reference only):\n%s\n\n' "$CHANGELOG_HEAD"
+            printf 'Write a suitable CHANGELOG.md entry for this PR.'
+          } > /tmp/prompt.txt
 
       - name: "Set up Node.js"
         if: steps.check.outputs.changed == 'false'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: "Install Copilot CLI"
         if: steps.check.outputs.changed == 'false'
@@ -71,13 +81,8 @@ jobs:
         if: steps.check.outputs.changed == 'false'
         uses: actions/ai-inference@v1
         with:
-          prompt-file: .github/prompts/changelog-suggestion.prompt.yml
-          file_input: |
-            today: /tmp/today.txt
-            pr_title: /tmp/pr_title.txt
-            pr_body: /tmp/pr_body.txt
-            diff: /tmp/pr.diff
-            changelog: /tmp/changelog.head.md
+          prompt-file: /tmp/prompt.txt
+          system-prompt-file: .github/prompts/changelog-suggestion-system.txt
           model: gpt-4.1
           token: ${{ github.token }}
 
