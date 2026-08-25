@@ -78,7 +78,9 @@ public:
     constexpr char32_t operator*() const { return current_; }
 
     constexpr Utf8CodePointIterator& operator++() {
-        current_ = utf8::next(it_, end_);
+        utf8::next(it_, end_);
+        current_ = it_ == end_ ? 0 : utf8::peek_next(it_, end_);
+
         return *this;
     }
     constexpr Utf8CodePointIterator operator++(int) {
@@ -180,10 +182,12 @@ constexpr wchar_t codePointToWChar(char32_t cp) {
 inline constexpr auto wChars =
     std::views::transform([](char32_t cp) -> wchar_t { return codePointToWChar(cp); });
 
-constexpr int codePointToLower(int cp) noexcept {
-    return cp > std::numeric_limits<unsigned char>::max() ? cp : std::tolower(cp);
+constexpr char32_t codePointToLower(char32_t cp) noexcept {
+    return cp > static_cast<char32_t>(std::numeric_limits<unsigned char>::max())
+               ? cp
+               : static_cast<char32_t>(std::tolower(static_cast<int>(cp)));
 }
-constexpr int noTransform(int cp) noexcept { return cp; }
+constexpr char32_t noTransform(char32_t cp) noexcept { return cp; }
 
 template <StringRange A, StringRange B, typename Transform>
 constexpr auto stringCompare(A&& a, B&& b, Transform transform) {
