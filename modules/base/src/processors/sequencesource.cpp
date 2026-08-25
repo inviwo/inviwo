@@ -31,8 +31,55 @@
 
 namespace inviwo {
 
-std::expected<std::filesystem::path, std::string_view> util::getFirstFileInFolder(
-    const std::filesystem::path& folder, std::string_view include, std::string_view exclude) {
+namespace {
+
+auto filteredFilesView(const std::filesystem::path& folder, std::string_view include,
+                       std::string_view exclude) {
+
+    std::optional<std::wregex> includeRe = std::nullopt;
+    std::optional<std::wregex> excludeRe = std::nullopt;
+
+    if (!include.empty()) {
+        const auto v = include | views::codePoints | views::wChars | std::ranges::to<std::vector>();
+        includeRe = std::wregex{v.begin(), v.end()};
+    }
+    if (!exclude.empty()) {
+        const auto v = exclude | views::codePoints | views::wChars | std::ranges::to<std::vector>();
+        excludeRe.emplace(v.begin(), v.end());
+    }
+
+    return std::filesystem::directory_iterator{folder} |
+           std::views::filter([](const std::filesystem::directory_entry& entry) {
+               return entry.is_regular_file();
+           }) |
+           std::views::transform(
+               [](const std::filesystem::directory_entry& entry) { return entry.path(); }) |
+           std::views::filter([includeRe, excludeRe](const std::filesystem::path& path) {
+               auto pv = path.native() | views::codePoints | views::wChars;
+               static_assert(std::forward_iterator<decltype(pv.begin())>);
+               static_assert(std::forward_iterator<decltype(pv.end())>);
+
+               bool included = true;
+
+               if (includeRe && !regex_search(pv.begin(), pv.end(), *includeRe)) {
+                   included &= false;
+               }
+               if (excludeRe && regex_search(pv.begin(), pv.end(), *excludeRe)) {
+                   included &= false;
+               }
+               if (std::ranges::ends_with(path.native() | views::codePoints,
+                                          std::string_view{".DS_Store"} | views::codePoints)) {
+                   included &= false;
+               }
+               return included;
+           });
+}
+
+std::expected<decltype(filteredFilesView(std::filesystem::path{}, std::string_view{},
+                                         std::string_view{})),
+              std::string_view>
+getFolderView(const std::filesystem::path& folder, std::string_view include,
+              std::string_view exclude) {
 
     if (!std::filesystem::is_directory(folder)) {
         static constexpr std::string_view noFolderReason{"Not a folder"};
@@ -40,53 +87,9 @@ std::expected<std::filesystem::path, std::string_view> util::getFirstFileInFolde
     }
 
     try {
-        std::optional<std::wregex> includeRe = std::nullopt;
-        std::optional<std::wregex> excludeRe = std::nullopt;
-
-        if (!include.empty()) {
-            const auto v =
-                include | views::codePoints | views::wChars | std::ranges::to<std::vector>();
-
-            static_assert(std::forward_iterator<decltype(v.begin())>);
-            static_assert(std::forward_iterator<decltype(v.end())>);
-
-            includeRe = std::wregex{v.begin(), v.end()};
-        }
-        if (!exclude.empty()) {
-            const auto v =
-                exclude | views::codePoints | views::wChars | std::ranges::to<std::vector>();
-            excludeRe.emplace(v.begin(), v.end());
-        }
-
-        auto view =
-            std::filesystem::directory_iterator{folder} |
-            std::views::filter([](const std::filesystem::directory_entry& entry) {
-                return entry.is_regular_file();
-            }) |
-            std::views::transform(
-                [](const std::filesystem::directory_entry& entry) { return entry.path(); }) |
-            std::views::filter([&](const std::filesystem::path& path) {
-                auto pv = path.native() | views::codePoints | views::wChars;
-                static_assert(std::forward_iterator<decltype(pv.begin())>);
-                static_assert(std::forward_iterator<decltype(pv.end())>);
-
-                bool included = true;
-
-                if (includeRe && !regex_search(pv.begin(), pv.end(), *includeRe)) {
-                    included &= false;
-                }
-                if (excludeRe && regex_search(pv.begin(), pv.end(), *excludeRe)) {
-                    included &= false;
-                }
-                if (std::ranges::ends_with(path.native() | views::codePoints,
-                                           std::string_view{".DS_Store"} | views::codePoints)) {
-                    included &= false;
-                }
-                return included;
-            });
-
+        auto view = filteredFilesView(folder, include, exclude);
         if (std::ranges::begin(view) != std::ranges::end(view)) {
-            return std::ranges::min(view);
+            return view;
         } else {
             static constexpr std::string_view noMatchesReason{"No matching files"};
             return std::unexpected(noMatchesReason);
@@ -95,6 +98,26 @@ std::expected<std::filesystem::path, std::string_view> util::getFirstFileInFolde
         static constexpr std::string_view invalidFilterReason{"Invalid filter"};
         return std::unexpected(invalidFilterReason);
     }
+}
+
+}  // namespace
+
+std::expected<std::vector<std::filesystem::path>, std::string_view> util::getFilesInFolder(
+    const std::filesystem::path& folder, std::string_view include, std::string_view exclude) {
+
+    return getFolderView(folder, include, exclude)
+        .transform([](auto value) -> std::vector<std::filesystem::path> {
+            auto files = value | std::ranges::to<std::vector>();
+            std::ranges::sort(files);
+            return files;
+        });
+}
+
+std::expected<std::filesystem::path, std::string_view> util::getFirstFileInFolder(
+    const std::filesystem::path& folder, std::string_view include, std::string_view exclude) {
+
+    return getFolderView(folder, include, exclude)
+        .transform([](auto value) -> std::filesystem::path { return std::ranges::min(value); });
 }
 
 }  // namespace inviwo

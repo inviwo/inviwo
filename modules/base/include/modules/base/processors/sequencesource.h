@@ -176,6 +176,10 @@ const ProcessorInfo& SequenceSource<Conf>::getProcessorInfo() const {
 
 namespace util {
 
+IVW_MODULE_BASE_API std::expected<std::vector<std::filesystem::path>, std::string_view>
+getFilesInFolder(const std::filesystem::path& folder, std::string_view include,
+                 std::string_view exclude);
+
 IVW_MODULE_BASE_API std::expected<std::filesystem::path, std::string_view> getFirstFileInFolder(
     const std::filesystem::path& folder, std::string_view include, std::string_view exclude);
 
@@ -327,50 +331,15 @@ template <typename Conf>
 void SequenceSource<Conf>::loadFolder(bool deserialize) {
     if (folder_.get().empty()) return;
 
-    std::optional<std::wregex> includeRe = std::nullopt;
-    std::optional<std::wregex> excludeRe = std::nullopt;
-
-    if (!include_.get().empty()) {
-        const auto v =
-            include_.get() | views::codePoints | views::wChars | std::ranges::to<std::vector>();
-        includeRe.emplace(v.begin(), v.end());
+    const auto files = util::getFilesInFolder(folder_.get(), include_.get(), exclude_.get());
+    if (!files) {
+        throw Exception{files.error(), SourceContext{}};
     }
-    if (!exclude_.get().empty()) {
-        const auto v =
-            exclude_.get() | views::codePoints | views::wChars | std::ranges::to<std::vector>();
-        excludeRe.emplace(v.begin(), v.end());
-    }
-
-    auto files =
-
-        std::views::filter(
-            [](const std::filesystem::directory_entry& entry) { return entry.is_regular_file(); }) |
-        std::views::transform(
-            [](const std::filesystem::directory_entry& entry) { return entry.path(); }) |
-        std::views::filter([&](const std::filesystem::path& path) {
-            const auto pv = path.native() | views::codePoints | views::wChars;
-
-            bool included = true;
-            if (includeRe && !regex_search(pv.begin(), pv.end(), *includeRe)) {
-                included &= false;
-            }
-            if (excludeRe && regex_search(pv.begin(), pv.end(), *excludeRe)) {
-                included &= false;
-            }
-            if (std::ranges::ends_with(path.native() | views::codePoints,
-                                       std::string_view{".DS_Store"} | views::codePoints)) {
-                included &= false;
-            }
-            return included;
-        }) |
-        std::ranges::to<std::vector>();
-
-    std::ranges::sort(files);
 
     const auto max = max_.get() != 0 ? max_.get() : std::numeric_limits<size_t>::max();
 
     const auto loaders =
-        files | std::views::take(max) |
+        files.value() | std::views::take(max) |
         std::views::transform([&](const std::filesystem::path& path)
                                   -> std::function<Sequence(pool::Stop, pool::Progress)> {
             return [rf = rf_, path, mdo = static_cast<MetaDataOwner*>(this),
