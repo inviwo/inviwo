@@ -4,23 +4,22 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
-  
-# Minimal permissions: read repo content, comment on PRs, call GitHub Models
+
+# Minimal permissions: read repo content, comment on PRs, run Copilot inference
 permissions:
   contents: read
   pull-requests: write
-  models: read
 
 jobs:
   changelog:
     name: "Changelog Check"
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     # Skip PRs explicitly labelled as not needing a changelog entry
     if: ${{ !contains(github.event.pull_request.labels.*.name, 'no-changelog') }}
 
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: "Check if CHANGELOG.md was modified"
         id: check
@@ -36,22 +35,109 @@ jobs:
             echo "⚠️  CHANGELOG.md was NOT updated in this PR."
           fi
 
-      - name: "Set up Python"
-        if: steps.check.outputs.changed == 'false'
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.12'
-
-      - name: "Install Python dependencies"
-        if: steps.check.outputs.changed == 'false'
-        run: pip install openai --quiet
-
-      - name: "Generate and post changelog suggestion"
+      - name: "Prepare prompt inputs"
+        id: prep
         if: steps.check.outputs.changed == 'false'
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-          PR_NUMBER:    ${{ github.event.pull_request.number }}
-          PR_TITLE:     ${{ github.event.pull_request.title }}
-          PR_BODY:      ${{ github.event.pull_request.body }}
-          REPO:         ${{ github.repository }}
-        run: python3 .github/scripts/generate_changelog_suggestion.py
+          GH_TOKEN:  ${{ github.token }}
+          PR_TITLE:  ${{ github.event.pull_request.title }}
+          PR_BODY:   ${{ github.event.pull_request.body }}
+        run: |
+          # Write diff to a temp file (truncated to keep within context limits)
+          gh pr diff ${{ github.event.pull_request.number }} 2>/dev/null \
+            | head -c 14000 > /tmp/pr.diff
+          echo "... (diff truncated for brevity)" >> /tmp/pr.diff
+
+          # Write the first 3000 chars of CHANGELOG.md for style reference
+          head -c 3000 CHANGELOG.md > /tmp/changelog.head.md || echo "(CHANGELOG.md not found)" > /tmp/changelog.head.md
+
+          # Write PR metadata to files so YAML special characters are handled safely
+          date -u +%Y-%m-%d > /tmp/today.txt
+          printf '%s' "${PR_TITLE:-}" > /tmp/pr_title.txt
+          printf '%s' "${PR_BODY:-(none)}" > /tmp/pr_body.txt
+
+      - name: "Set up Node.js"
+        if: steps.check.outputs.changed == 'false'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "Install Copilot CLI"
+        if: steps.check.outputs.changed == 'false'
+        run: npm install -g @github/copilot
+
+      - name: "Generate changelog suggestion"
+        id: inference
+        if: steps.check.outputs.changed == 'false'
+        uses: actions/ai-inference@v1
+        with:
+          prompt-file: .github/prompts/changelog-suggestion.prompt.yml
+          file_input: |
+            today: /tmp/today.txt
+            pr_title: /tmp/pr_title.txt
+            pr_body: /tmp/pr_body.txt
+            diff: /tmp/pr.diff
+            changelog: /tmp/changelog.head.md
+          model: gpt-4.1
+          token: ${{ github.token }}
+
+      - name: "Post or update PR comment"
+        if: steps.check.outputs.changed == 'false'
+        uses: actions/github-script@v7
+        env:
+          SUGGESTION: ${{ steps.inference.outputs.response }}
+        with:
+          script: |
+            const marker = '<!-- changelog-suggestion-bot -->';
+            const suggestion = process.env.SUGGESTION || '(no suggestion generated)';
+
+            const body = [
+              marker,
+              '## 📝 Suggested `CHANGELOG.md` entry',
+              '',
+              '`CHANGELOG.md` was not updated in this PR. Based on the diff, here is a suggested entry — add it at the **top** of `CHANGELOG.md` if appropriate:',
+              '',
+              '```markdown',
+              suggestion,
+              '```',
+              '',
+              '<details>',
+              '<summary>ℹ️ About this suggestion</summary>',
+              '',
+              'This entry was generated automatically by analysing the PR diff with an AI model.',
+              'Please review it carefully; it may need adjustments to accurately reflect the intent of the changes.',
+              '',
+              '**When a changelog entry is required:** changes that affect the public C++/Python API,',
+              'behaviour visible to other module authors, or anything that requires a migration step.',
+              '',
+              '**When it can be skipped:** pure internal refactors, test-only changes, documentation',
+              'fixes, or CI tweaks. Add the `no-changelog` label to this PR to silence this bot.',
+              '',
+              '</details>',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+              console.log(`Updated existing bot comment #${existing.id}.`);
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+              console.log('Posted new bot comment.');
+            }
