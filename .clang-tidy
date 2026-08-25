@@ -21,6 +21,7 @@ Checks: >
     -llvm-include-order,
     -llvm-else-after-return,
     -llvm-header-guard,
+    -llvm-prefer-static-over-anonymous-namespace,
   misc-*,
     -misc-include-cleaner,
     -misc-non-private-member-variables-in-classes,
