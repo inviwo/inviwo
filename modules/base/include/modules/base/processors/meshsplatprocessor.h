@@ -11,6 +11,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <modules/base/properties/datarangeproperty.h>
+#include <modules/base/properties/transformlistproperty.h>
 
 #include <modules/base/basemoduledefine.h>
 
@@ -22,11 +23,10 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
     virtual void process() override;
 
 private:
-    MeshInport meshInport_;
+    MeshFlatMultiInport meshInport_;
     VolumeOutport volumeOutport_;
 
     OptionProperty<util::SplatKernel> kernelType_;
@@ -39,7 +39,7 @@ private:
 
     CompositeProperty volume_;
     IntSize3Property volumeDims_;
-    FloatMat4Property basis_;
+    TransformListProperty basis_;
 
     DataRangeProperty range_;
 
