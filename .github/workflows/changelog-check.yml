@@ -54,30 +54,29 @@ jobs:
           # First 3000 chars of CHANGELOG.md for style reference
           CHANGELOG_HEAD=$(head -c 3000 CHANGELOG.md 2>/dev/null || echo "(CHANGELOG.md not found)")
 
-          # Build the full user-prompt as a plain text file.
-          # Using printf + cat avoids any YAML parsing of PR content.
-          {
-            printf 'Today: %s\n\n' "$TODAY"
-            printf 'PR title: %s\n\n' "${PR_TITLE:-}"
-            printf 'PR description:\n%s\n\n' "${PR_BODY:-(none)}"
-            printf 'Code diff:\n```diff\n'
-            cat /tmp/pr.diff
-            printf '\n```\n\n'
-            printf 'Existing CHANGELOG.md (style reference only):\n%s\n\n' "$CHANGELOG_HEAD"
-            printf 'Write a suitable CHANGELOG.md entry for this PR.'
-          } > /tmp/prompt.txt
+          SYSTEM_PROMPT=$(cat .github/prompts/changelog-suggestion-system.txt)
 
-      - name: "Install Copilot CLI"
-        if: steps.check.outputs.changed == 'false'
-        run: npm install -g @github/copilot
+          # Build the user prompt text
+          USER_PROMPT=$(printf 'Today: %s\n\nPR title: %s\n\nPR description:\n%s\n\nCode diff:\n```diff\n%s\n```\n\nExisting CHANGELOG.md (style reference only):\n%s\n\nWrite a suitable CHANGELOG.md entry for this PR.' \
+            "$TODAY" "${PR_TITLE:-}" "${PR_BODY:-(none)}" "$(cat /tmp/pr.diff)" "$CHANGELOG_HEAD")
+
+          # Write messages JSON file for actions/ai-inference
+          python3 -c "
+          import json, sys
+          system = sys.argv[1]
+          user   = sys.argv[2]
+          print(json.dumps([
+            {'role': 'system', 'content': system},
+            {'role': 'user',   'content': user},
+          ]))
+          " "$SYSTEM_PROMPT" "$USER_PROMPT" > /tmp/messages.json
 
       - name: "Generate changelog suggestion"
         id: inference
         if: steps.check.outputs.changed == 'false'
         uses: actions/ai-inference@v3
         with:
-          prompt-file: /tmp/prompt.txt
-          system-prompt-file: .github/prompts/changelog-suggestion-system.txt
+          messages-file: /tmp/messages.json
           model: gpt-4.1
 
       - name: "Post or update PR comment"
