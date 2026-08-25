@@ -70,6 +70,8 @@ jobs:
           system-prompt-file: ${{ runner.temp }}/changelog_system_prompt.txt
           prompt-file: ${{ runner.temp }}/changelog_user_prompt.txt
         env:
+          # Copilot CLI auth: PAT with the "Copilot Requests" permission.
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }}
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: "Post changelog suggestion"
