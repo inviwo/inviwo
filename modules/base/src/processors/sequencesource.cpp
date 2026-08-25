@@ -40,16 +40,22 @@ std::expected<std::filesystem::path, std::string_view> util::getFirstFileInFolde
     }
 
     try {
-        std::optional<std::regex> includeRe = std::nullopt;
-        std::optional<std::regex> excludeRe = std::nullopt;
+        std::optional<std::wregex> includeRe = std::nullopt;
+        std::optional<std::wregex> excludeRe = std::nullopt;
 
         if (!include.empty()) {
-            const auto filter = include | views::codePoints;
-            includeRe = std::regex{filter.begin(), filter.end()};
+            const auto v =
+                include | views::codePoints | views::wChars | std::ranges::to<std::vector>();
+
+            static_assert(std::forward_iterator<decltype(v.begin())>);
+            static_assert(std::forward_iterator<decltype(v.end())>);
+
+            includeRe = std::wregex{v.begin(), v.end()};
         }
         if (!exclude.empty()) {
-            const auto filter = exclude | views::codePoints;
-            excludeRe = std::regex{filter.begin(), filter.end()};
+            const auto v =
+                exclude | views::codePoints | views::wChars | std::ranges::to<std::vector>();
+            excludeRe.emplace(v.begin(), v.end());
         }
 
         auto view = std::filesystem::directory_iterator{folder} |
@@ -60,7 +66,9 @@ std::expected<std::filesystem::path, std::string_view> util::getFirstFileInFolde
                         return entry.path();
                     }) |
                     std::views::filter([&](const std::filesystem::path& path) {
-                        auto pv = path.native() | views::codePoints;
+                        auto pv = path.native() | views::codePoints | views::wChars;
+                        static_assert(std::forward_iterator<decltype(pv.begin())>);
+                        static_assert(std::forward_iterator<decltype(pv.end())>);
 
                         bool included = true;
 

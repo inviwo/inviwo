@@ -30,9 +30,12 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/exception.h>
 
 #include <cwctype>
 #include <cstdint>
+#include <limits>
+#include <type_traits>
 #include <string_view>
 #include <ranges>
 #include <algorithm>
@@ -54,38 +57,28 @@ concept StringRange = CharRange<R> || WCharRange<R>;
 
 namespace detail {
 
-constexpr int utf8ByteCount(int32_t cp) noexcept {
-    if (cp < 0x0) return 0;
-    if (cp < 0x0080) return 1;
-    if (cp < 0x0800) return 2;
-    if (cp < 0x10000) return 3;
-    return 4;
-}
-
 template <std::input_iterator Iter, std::sentinel_for<Iter> Sentinel>
 class Utf8CodePointIterator {
 public:
-    using iterator_category = std::forward_iterator_tag;
-    using value_type = int32_t;
+    using iterator_category =
+        std::conditional_t<std::bidirectional_iterator<Iter>, std::bidirectional_iterator_tag,
+                           std::forward_iterator_tag>;
+    using value_type = char32_t;
     using difference_type = std::ptrdiff_t;
-    using pointer = const int32_t*;
-    using reference = int32_t;
+    using pointer = const char32_t*;
+    using reference = char32_t;
 
     constexpr Utf8CodePointIterator() = default;
-    constexpr Utf8CodePointIterator(Iter it, Sentinel end)
-        : it_{it}
+    constexpr Utf8CodePointIterator(Iter start, Iter it, Sentinel end)
+        : start_{start}
+        , it_{it}
         , end_{end}
-        , current_{it_ == end ? -1 : static_cast<int32_t>(utf8::peek_next(it_, end_))} {}
+        , current_{it_ == end_ ? 0 : utf8::peek_next(it_, end_)} {}
 
-    constexpr int32_t operator*() const { return current_; }
+    constexpr char32_t operator*() const { return current_; }
 
     constexpr Utf8CodePointIterator& operator++() {
-        std::advance(it_, utf8ByteCount(current_));
-        if (it_ != end_) {
-            current_ = static_cast<int32_t>(utf8::peek_next(it_, end_));
-        } else {
-            current_ = -1;
-        }
+        current_ = utf8::next(it_, end_);
         return *this;
     }
     constexpr Utf8CodePointIterator operator++(int) {
@@ -94,12 +87,27 @@ public:
         return tmp;
     }
 
+    constexpr Utf8CodePointIterator& operator--()
+        requires std::bidirectional_iterator<Iter>
+    {
+        current_ = utf8::prior(it_, start_);
+        return *this;
+    }
+    constexpr Utf8CodePointIterator operator--(int)
+        requires std::bidirectional_iterator<Iter>
+    {
+        auto tmp = *this;
+        --(*this);
+        return tmp;
+    }
+
     constexpr bool operator==(const Utf8CodePointIterator& other) const { return it_ == other.it_; }
 
 private:
+    Iter start_{};
     Iter it_{};
     Sentinel end_{};
-    int32_t current_{-1};
+    char32_t current_{};
 };
 
 template <CharRange View>
@@ -112,10 +120,10 @@ public:
     constexpr explicit Utf8CodePointRange(View view) : view_{std::move(view)} {}
 
     constexpr Utf8CodePointIterator<Iter, Sentinel> begin() const {
-        return {std::ranges::begin(view_), std::ranges::end(view_)};
+        return {std::ranges::begin(view_), std::ranges::begin(view_), std::ranges::end(view_)};
     }
     constexpr Utf8CodePointIterator<Iter, Sentinel> end() const {
-        return {std::ranges::end(view_), std::ranges::end(view_)};
+        return {std::ranges::begin(view_), std::ranges::end(view_), std::ranges::end(view_)};
     }
 
 private:
@@ -126,25 +134,51 @@ template <CharRange Range>
 Utf8CodePointRange(Range&&) -> Utf8CodePointRange<std::views::all_t<Range>>;
 
 /**
- * Range adaptor that transforms a range of char (UTF-8) or wchar_t into a range of int32_t
+ * Range adaptor that transforms a range of char (UTF-8) or wchar_t into a range of char32_t
  * Unicode code points. Supports both function-call and pipe ('|') syntax via
  * std::ranges::range_adaptor_closure (C++23).
  *
  * @example
- * for (int32_t cp : myUtf8String | detail::codePoints) { ... }
- * for (int32_t cp : detail::codePoints(myWstring)) { ... }
+ * for (char32_t cp : myUtf8String | detail::codePoints) { ... }
+ * for (char32_t cp : detail::codePoints(myWstring)) { ... }
  */
 struct CodePointsAdaptor : std::ranges::range_adaptor_closure<CodePointsAdaptor> {
     constexpr auto operator()(CharRange auto&& r) const {
         return Utf8CodePointRange<std::views::all_t<decltype(r)>>{std::forward<decltype(r)>(r)};
     }
     constexpr auto operator()(WCharRange auto&& r) const {
-        return std::forward<decltype(r)>(r) |
-               std::views::transform([](wchar_t c) -> int32_t { return static_cast<int32_t>(c); });
+        return std::forward<decltype(r)>(r) | std::views::transform([](wchar_t c) -> char32_t {
+                   return static_cast<char32_t>(c);
+               });
     }
 };
 
 inline constexpr CodePointsAdaptor codePoints{};
+
+/**
+ * Cast a Unicode code point to wchar_t. Throws if wchar_t cannot represent the code point,
+ * e.g. for code points above U+FFFF on platforms with a 16-bit wchar_t (Windows).
+ */
+constexpr wchar_t codePointToWChar(char32_t cp) {
+    if constexpr (sizeof(wchar_t) < 4) {
+        if (cp > static_cast<char32_t>(std::numeric_limits<wchar_t>::max())) {
+            throw Exception(SourceContext{}, "Code point U+{:04X} does not fit in wchar_t",
+                            static_cast<std::uint32_t>(cp));
+        }
+    }
+    return static_cast<wchar_t>(cp);
+}
+
+/**
+ * Range adaptor that casts a range of char32_t code points to wchar_t, for use with facilities
+ * such as std::wregex. Throws if a code point does not fit in wchar_t (see codePointToWChar).
+ * Supports both function-call and pipe ('|') syntax.
+ *
+ * @example
+ * auto w = myUtf8String | views::codePoints | views::wchars;
+ */
+inline constexpr auto wChars =
+    std::views::transform([](char32_t cp) -> wchar_t { return codePointToWChar(cp); });
 
 constexpr int codePointToLower(int cp) noexcept {
     return cp > std::numeric_limits<unsigned char>::max() ? cp : std::tolower(cp);
@@ -157,13 +191,14 @@ constexpr auto stringCompare(A&& a, B&& b, Transform transform) {
     auto rb = codePoints(std::forward<B>(b));
     return std::lexicographical_compare_three_way(
         ra.begin(), ra.end(), rb.begin(), rb.end(),
-        [&](int32_t x, int32_t y) { return transform(x) <=> transform(y); });
+        [&](char32_t x, char32_t y) { return transform(x) <=> transform(y); });
 }
 
 }  // namespace detail
 
 namespace views {
 inline constexpr detail::CodePointsAdaptor codePoints{};
+inline constexpr auto wChars = detail::wChars;
 }  // namespace views
 
 /**

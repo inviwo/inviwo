@@ -322,16 +322,18 @@ template <typename Conf>
 void SequenceSource<Conf>::loadFolder(bool deserialize) {
     if (folder_.get().empty()) return;
 
-    std::optional<std::regex> includeRe = std::nullopt;
-    std::optional<std::regex> excludeRe = std::nullopt;
+    std::optional<std::wregex> includeRe = std::nullopt;
+    std::optional<std::wregex> excludeRe = std::nullopt;
 
     if (!include_.get().empty()) {
-        const auto filter = include_.get() | views::codePoints;
-        includeRe = std::regex{filter.begin(), filter.end()};
+        const auto v =
+            include_.get() | views::codePoints | views::wChars | std::ranges::to<std::vector>();
+        includeRe.emplace(v.begin(), v.end());
     }
     if (!exclude_.get().empty()) {
-        const auto filter = exclude_.get() | views::codePoints;
-        excludeRe = std::regex{filter.begin(), filter.end()};
+        const auto v =
+            exclude_.get() | views::codePoints | views::wChars | std::ranges::to<std::vector>();
+        excludeRe.emplace(v.begin(), v.end());
     }
 
     auto files =
@@ -342,9 +344,10 @@ void SequenceSource<Conf>::loadFolder(bool deserialize) {
             [](const std::filesystem::directory_entry& entry) { return entry.path(); }) |
 
         std::views::filter([&](const std::filesystem::path& path) {
-            const auto pv = path.native() | views::codePoints;
+            const auto pv = path.native() | views::codePoints | views::wChars;
 
             bool included = true;
+
             if (includeRe && !regex_search(pv.begin(), pv.end(), *includeRe)) {
                 included &= false;
             }
