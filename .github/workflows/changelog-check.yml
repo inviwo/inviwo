@@ -70,7 +70,7 @@ jobs:
       - name: "Generate changelog suggestion"
         id: inference
         if: steps.check.outputs.changed == 'false'
-        uses: actions/ai-inference@v1
+        uses: actions/ai-inference@v3
         with:
           prompt-file: /tmp/prompt.txt
           system-prompt-file: .github/prompts/changelog-suggestion-system.txt
