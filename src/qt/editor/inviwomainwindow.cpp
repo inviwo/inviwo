@@ -557,11 +557,11 @@ void InviwoMainWindow::addActions() {  // NOLINT
         newAction->setShortcut(QKeySequence::New);
         newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         addAction(newAction);
-        connect(newAction, &QAction::triggered, this, [this]() {
-            if (newWorkspace()) {
-                hideWelcomeScreen();
-            }
-        });
+        connect(newAction, &QAction::triggered, this, util::exceptionGuarded([this]() {
+                    if (newWorkspace()) {
+                        hideWelcomeScreen();
+                    }
+                }));
         fileMenuItem->addAction(newAction);
         workspaceToolBar->addAction(newAction);
     }
@@ -571,11 +571,11 @@ void InviwoMainWindow::addActions() {  // NOLINT
         openAction->setShortcut(QKeySequence::Open);
         openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         addAction(openAction);
-        connect(openAction, &QAction::triggered, this, [this]() {
-            if (openWorkspace()) {
-                hideWelcomeScreen();
-            }
-        });
+        connect(openAction, &QAction::triggered, this, util::exceptionGuarded([this]() {
+                    if (openWorkspace()) {
+                        hideWelcomeScreen();
+                    }
+                }));
         fileMenuItem->addAction(openAction);
         workspaceToolBar->addAction(openAction);
     }
@@ -614,11 +614,11 @@ void InviwoMainWindow::addActions() {  // NOLINT
         auto* appendAction =
             new QAction(QIcon(":/svgicons/open-append.svg"), tr("&Append Workspace"), this);
         addAction(appendAction);
-        connect(appendAction, &QAction::triggered, this, [this]() {
-            if (appendWorkspace()) {
-                hideWelcomeScreen();
-            }
-        });
+        connect(appendAction, &QAction::triggered, this, util::exceptionGuarded([this]() {
+                    if (appendWorkspace()) {
+                        hideWelcomeScreen();
+                    }
+                }));
         fileMenuItem->addAction(appendAction);
     }
     {
@@ -1536,18 +1536,20 @@ WelcomeWidget* inviwo::InviwoMainWindow::getWelcomeWidget() {
                 saveWindowState();
             }
         });
-        connect(welcomeWidget_, &WelcomeWidget::newWorkspace, this, [this]() {
-            hideWelcomeScreen();
-            newWorkspace();
-            saveWindowState();
-        });
-        connect(welcomeWidget_, &WelcomeWidget::restoreWorkspace, this, [this]() {
-            hideWelcomeScreen();
-            if (askToSaveWorkspaceChanges()) {
-                restoreWorkspace();
-            }
-            saveWindowState();
-        });
+        connect(welcomeWidget_, &WelcomeWidget::newWorkspace, this,
+                util::exceptionGuarded([this]() {
+                    hideWelcomeScreen();
+                    newWorkspace();
+                    saveWindowState();
+                }));
+        connect(welcomeWidget_, &WelcomeWidget::restoreWorkspace, this,
+                util::exceptionGuarded([this]() {
+                    hideWelcomeScreen();
+                    if (askToSaveWorkspaceChanges()) {
+                        restoreWorkspace();
+                    }
+                    saveWindowState();
+                }));
     }
 
     return welcomeWidget_;
