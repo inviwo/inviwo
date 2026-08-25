@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  copilot-requests: write
 
 jobs:
   changelog:
@@ -66,16 +67,6 @@ jobs:
             printf 'Write a suitable CHANGELOG.md entry for this PR.'
           } > /tmp/prompt.txt
 
-      - name: "Set up Node.js"
-        if: steps.check.outputs.changed == 'false'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: "Install Copilot CLI"
-        if: steps.check.outputs.changed == 'false'
-        run: npm install -g @github/copilot
-
       - name: "Generate changelog suggestion"
         id: inference
         if: steps.check.outputs.changed == 'false'
@@ -84,7 +75,6 @@ jobs:
           prompt-file: /tmp/prompt.txt
           system-prompt-file: .github/prompts/changelog-suggestion-system.txt
           model: gpt-4.1
-          token: ${{ github.token }}
 
       - name: "Post or update PR comment"
         if: steps.check.outputs.changed == 'false'
