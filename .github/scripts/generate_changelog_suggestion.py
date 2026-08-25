@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-"""Generate a CHANGELOG.md suggestion for PRs that don't update it.
+"""Build a CHANGELOG.md suggestion prompt and post the AI result as a PR comment.
 
-Reads the PR diff, consults the GitHub Models API (GPT-4o, no extra secrets
-required — only GITHUB_TOKEN + models:read permission), and posts / updates
-a single review comment on the PR with the suggested entry.
+The model call itself is delegated to the `actions/ai-inference` GitHub Action
+(GitHub Copilot CLI), so this script is split into two subcommands:
+
+  build-prompt  Gather the PR diff + CHANGELOG.md context and write the system
+                and user prompt files consumed by actions/ai-inference.
+  post-comment  Read the model response produced by actions/ai-inference and
+                upsert a single review comment on the PR.
+
+Only GITHUB_TOKEN is required — no extra secrets or third-party dependencies.
 """
 
 from __future__ import annotations
@@ -17,12 +23,12 @@ from datetime import date
 
 # ── constants ────────────────────────────────────────────────────────────────
 MARKER          = "<!-- changelog-suggestion-bot -->"
-# Azure-hosted endpoint for GitHub Models — accessed via GITHUB_TOKEN + models:read permission.
-# See: https://docs.github.com/en/github-models/use-github-models/prototyping-with-ai-models
-MODELS_ENDPOINT = "https://models.inference.ai.azure.com"
-MODEL           = "gpt-4o"
 MAX_DIFF_CHARS  = 14_000   # keep well within model context limits
 MAX_CHANGELOG_CHARS = 3_000
+
+_TEMP = os.environ.get("RUNNER_TEMP", ".")
+SYSTEM_PROMPT_FILE = os.path.join(_TEMP, "changelog_system_prompt.txt")
+USER_PROMPT_FILE   = os.path.join(_TEMP, "changelog_user_prompt.txt")
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
@@ -81,29 +87,27 @@ def upsert_comment(repo: str, pr_number: str, body: str) -> None:
         print("Posted new bot comment.")
 
 
-# ── main ─────────────────────────────────────────────────────────────────────
+# ── subcommands ──────────────────────────────────────────────────────────────
 
-def main() -> None:
-    token     = os.environ["GITHUB_TOKEN"]
+def build_prompt() -> None:
+    """Write the system and user prompt files for actions/ai-inference."""
     pr_number = os.environ["PR_NUMBER"]
     pr_title  = os.environ.get("PR_TITLE", "").strip()
     pr_body   = os.environ.get("PR_BODY", "").strip()
     repo      = os.environ["REPO"]
     today     = date.today().strftime("%Y-%m-%d")
 
-    # ── gather context ───────────────────────────────────────────────────────
-    diff = get_pr_diff(repo, pr_number)
+    try:
+        diff = get_pr_diff(repo, pr_number)
+    except Exception as exc:  # noqa: BLE001 - never fail the check on diff issues
+        print(f"Warning: could not fetch PR diff: {exc}", file=sys.stderr)
+        diff = "(diff unavailable)"
 
     try:
         with open("CHANGELOG.md", encoding="utf-8") as fh:
             changelog_head = fh.read(MAX_CHANGELOG_CHARS)
     except FileNotFoundError:
         changelog_head = "(CHANGELOG.md not found)"
-
-    # ── call GitHub Models (OpenAI-compatible endpoint) ──────────────────────
-    from openai import OpenAI  # installed in CI step
-
-    client = OpenAI(base_url=MODELS_ENDPOINT, api_key=token)
 
     system_prompt = f"""\
 You are a technical writer maintaining the CHANGELOG.md for Inviwo, an open-source
@@ -140,19 +144,30 @@ Existing CHANGELOG.md (first {MAX_CHANGELOG_CHARS} chars — style reference onl
 
 Write a suitable CHANGELOG.md entry for this PR."""
 
-    response = client.chat.completions.create(
-        model=MODEL,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user",   "content": user_prompt},
-        ],
-        max_tokens=900,
-        temperature=0.25,
-    )
+    with open(SYSTEM_PROMPT_FILE, "w", encoding="utf-8") as fh:
+        fh.write(system_prompt)
+    with open(USER_PROMPT_FILE, "w", encoding="utf-8") as fh:
+        fh.write(user_prompt)
 
-    suggestion = response.choices[0].message.content.strip()
+    print(f"Wrote system prompt to {SYSTEM_PROMPT_FILE}")
+    print(f"Wrote user prompt to {USER_PROMPT_FILE}")
 
-    # ── build PR comment ─────────────────────────────────────────────────────
+
+def post_comment() -> None:
+    """Upsert the PR comment using the model response from actions/ai-inference."""
+    pr_number     = os.environ["PR_NUMBER"]
+    repo          = os.environ["REPO"]
+    response_file = os.environ.get("RESPONSE_FILE", "").strip()
+
+    suggestion = ""
+    if response_file and os.path.isfile(response_file):
+        with open(response_file, encoding="utf-8") as fh:
+            suggestion = fh.read().strip()
+
+    if not suggestion:
+        print("No model response available — skipping comment.")
+        return
+
     comment = f"""{MARKER}
 ## 📝 Suggested `CHANGELOG.md` entry
 
@@ -180,6 +195,19 @@ fixes, or CI tweaks. Add the `no-changelog` label to this PR to silence this bot
 
     upsert_comment(repo, pr_number, comment)
     print("Done ✅")
+
+
+# ── main ─────────────────────────────────────────────────────────────────────
+
+def main() -> None:
+    command = sys.argv[1] if len(sys.argv) > 1 else ""
+    if command == "build-prompt":
+        build_prompt()
+    elif command == "post-comment":
+        post_comment()
+    else:
+        print("Usage: generate_changelog_suggestion.py {build-prompt|post-comment}", file=sys.stderr)
+        sys.exit(2)
 
 
 if __name__ == "__main__":

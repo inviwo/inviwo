@@ -5,11 +5,11 @@ on:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
   
-# Minimal permissions: read repo content, comment on PRs, call GitHub Models
+# Minimal permissions: read repo content, comment on PRs, make Copilot requests
 permissions:
   contents: read
   pull-requests: write
-  models: read
+  copilot-requests: write
 
 jobs:
   changelog:
@@ -42,11 +42,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: "Install Python dependencies"
-        if: steps.check.outputs.changed == 'false'
-        run: pip install openai --quiet
-
-      - name: "Generate and post changelog suggestion"
+      - name: "Build changelog prompt"
         if: steps.check.outputs.changed == 'false'
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -54,4 +50,33 @@ jobs:
           PR_TITLE:     ${{ github.event.pull_request.title }}
           PR_BODY:      ${{ github.event.pull_request.body }}
           REPO:         ${{ github.repository }}
-        run: python3 .github/scripts/generate_changelog_suggestion.py
+        run: python3 .github/scripts/generate_changelog_suggestion.py build-prompt
+
+      - name: "Set up Node.js"
+        if: steps.check.outputs.changed == 'false'
+        uses: actions/setup-node@v7
+
+      - name: "Install Copilot CLI"
+        if: steps.check.outputs.changed == 'false'
+        run: npm install -g @github/copilot
+
+      - name: "Generate changelog suggestion"
+        id: inference
+        if: steps.check.outputs.changed == 'false'
+        continue-on-error: true
+        uses: actions/ai-inference@v3
+        with:
+          model: gpt-4.1
+          system-prompt-file: ${{ runner.temp }}/changelog_system_prompt.txt
+          prompt-file: ${{ runner.temp }}/changelog_user_prompt.txt
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: "Post changelog suggestion"
+        if: steps.check.outputs.changed == 'false' && steps.inference.outputs.response-file != ''
+        env:
+          GITHUB_TOKEN:  ${{ github.token }}
+          PR_NUMBER:     ${{ github.event.pull_request.number }}
+          REPO:          ${{ github.repository }}
+          RESPONSE_FILE: ${{ steps.inference.outputs.response-file }}
+        run: python3 .github/scripts/generate_changelog_suggestion.py post-comment
