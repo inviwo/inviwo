@@ -67,6 +67,10 @@ jobs:
             printf 'Write a suitable CHANGELOG.md entry for this PR.'
           } > /tmp/prompt.txt
 
+      - name: "Install Copilot CLI"
+        if: steps.check.outputs.changed == 'false'
+        run: npm install -g @github/copilot
+
       - name: "Generate changelog suggestion"
         id: inference
         if: steps.check.outputs.changed == 'false'
