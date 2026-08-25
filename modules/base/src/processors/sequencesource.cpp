@@ -58,29 +58,32 @@ std::expected<std::filesystem::path, std::string_view> util::getFirstFileInFolde
             excludeRe.emplace(v.begin(), v.end());
         }
 
-        auto view = std::filesystem::directory_iterator{folder} |
-                    std::views::filter([](const std::filesystem::directory_entry& entry) {
-                        return entry.is_regular_file();
-                    }) |
-                    std::views::transform([](const std::filesystem::directory_entry& entry) {
-                        return entry.path();
-                    }) |
-                    std::views::filter([&](const std::filesystem::path& path) {
-                        auto pv = path.native() | views::codePoints | views::wChars;
-                        static_assert(std::forward_iterator<decltype(pv.begin())>);
-                        static_assert(std::forward_iterator<decltype(pv.end())>);
+        auto view =
+            std::filesystem::directory_iterator{folder} |
+            std::views::filter([](const std::filesystem::directory_entry& entry) {
+                return entry.is_regular_file();
+            }) |
+            std::views::transform(
+                [](const std::filesystem::directory_entry& entry) { return entry.path(); }) |
+            std::views::filter([&](const std::filesystem::path& path) {
+                auto pv = path.native() | views::codePoints | views::wChars;
+                static_assert(std::forward_iterator<decltype(pv.begin())>);
+                static_assert(std::forward_iterator<decltype(pv.end())>);
 
-                        bool included = true;
+                bool included = true;
 
-                        if (includeRe && !regex_search(pv.begin(), pv.end(), *includeRe)) {
-                            included &= false;
-                        }
-                        if (excludeRe && regex_search(pv.begin(), pv.end(), *excludeRe)) {
-                            included &= false;
-                        }
-
-                        return included;
-                    });
+                if (includeRe && !regex_search(pv.begin(), pv.end(), *includeRe)) {
+                    included &= false;
+                }
+                if (excludeRe && regex_search(pv.begin(), pv.end(), *excludeRe)) {
+                    included &= false;
+                }
+                if (std::ranges::ends_with(path.native() | views::codePoints,
+                                           std::string_view{".DS_Store"} | views::codePoints)) {
+                    included &= false;
+                }
+                return included;
+            });
 
         if (std::ranges::begin(view) != std::ranges::end(view)) {
             return std::ranges::min(view);

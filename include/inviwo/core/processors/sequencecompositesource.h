@@ -131,7 +131,7 @@ public:
     }
 
 private:
-    ///< To be added to SequenceProcessor, not itself
+    //! To be added to SequenceProcessor, not itself
     std::shared_ptr<InportSequenceType> superInport_;
     OutportType outport_;
     size_t sequenceIndex_ = 0;

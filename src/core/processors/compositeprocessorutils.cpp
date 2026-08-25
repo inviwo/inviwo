@@ -521,10 +521,10 @@ void util::expandSequenceProcessorIntoNetwork(SequenceProcessor& sequence) {
         util::setSelected(subProcessors, true);
 
         // Connections
-        for (auto& subConnection : subConnections) {
+        for (const auto& subConnection : subConnections) {
             if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(
                     subConnection.getInport()->getProcessor())) {
-                for (auto& connection : connections) {
+                for (const auto& connection : connections) {
                     if (connection.getOutport() == &sink->getSuperOutport()) {
                         if (auto* converter =
                                 isConverterFor(*connection.getInport()->getProcessor(), *sink)) {
@@ -545,7 +545,7 @@ void util::expandSequenceProcessorIntoNetwork(SequenceProcessor& sequence) {
                 }
             } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(
                            subConnection.getOutport()->getProcessor())) {
-                for (auto& connection : connections) {
+                for (const auto& connection : connections) {
                     if (connection.getInport() == &source->getSuperInport()) {
                         if (auto* converter =
                                 isConverterFor(*connection.getOutport()->getProcessor(), *source)) {

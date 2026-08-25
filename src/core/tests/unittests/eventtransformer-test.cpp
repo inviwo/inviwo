@@ -45,11 +45,14 @@
 #include <tuple>
 #include <vector>
 #include <string_view>
+#include <algorithm>
 
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 
 namespace inviwo {
+
+namespace {
 
 auto strToLayer(std::string_view str) {
     auto colAndRow = [line = size_t{0},
@@ -78,10 +81,10 @@ auto strToLayer(std::string_view str) {
 
     auto lines = util::splitStringView(str, '\n');
 
-    std::span<std::string_view> imgRows{lines.data() + upperLeft.y + 1,
-                                        lowerRight.y - upperLeft.y - 1};
+    const std::span<std::string_view> imgRows{lines.data() + upperLeft.y + 1,
+                                              lowerRight.y - upperLeft.y - 1};
 
-    size2_t dims = size2_t{lowerRight.x - upperLeft.x - 1, lowerRight.y - upperLeft.y - 1};
+    const auto dims = size2_t{lowerRight.x - upperLeft.x - 1, lowerRight.y - upperLeft.y - 1};
 
     LayerRAMPrecision<short> layer{dims};
     auto* data = layer.getDataTyped();
@@ -89,7 +92,7 @@ auto strToLayer(std::string_view str) {
     for (auto [rowNumber, row] :
          util::enumerate(util::as_range(imgRows.rbegin(), imgRows.rend()))) {
         auto cols = row.substr(upperLeft.x + 1, lowerRight.x - upperLeft.x - 1);
-        std::transform(cols.begin(), cols.end(), data + rowNumber * dims.x, [](auto c) {
+        std::ranges::transform(cols, data + rowNumber * dims.x, [](auto c) {
             if (c < '9' && c >= '0') {
                 return static_cast<short>(c - '0');
             } else {
@@ -132,11 +135,13 @@ constexpr std::string_view img1 = R"( Picking index 1, 2, 3, 4
       0    5   10   15   20   25   30   35   40   45   50   55   60   65   70
 )";
 
+}  // namespace
+
 TEST(EventTransform, setup) {
     const auto layer = strToLayer(img1);
     const auto im = util::IndexMapper2D(layer.getDimensions());
-    auto data = layer.getDataTyped();
-    std::span s(data, glm::compMul(layer.getDimensions()));
+    const auto* data = layer.getDataTyped();
+    const std::span s(data, glm::compMul(layer.getDimensions()));
 
     EXPECT_EQ(layer.getDimensions(), size2_t(70, 25));
 
@@ -149,11 +154,11 @@ TEST(EventTransform, setup) {
 
 TEST(EventTransform, construct) {
 
-    EventTransformer::View view{.globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
-                                .propagateEvent = [](Event*, Outport*) {},
-                                .size = []() { return size2_t(70, 25); }};
+    const EventTransformer::View view{.globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
+                                      .propagateEvent = [](Event*, Outport*) {},
+                                      .size = []() { return size2_t(70, 25); }};
 
-    EventTransformer transformer{{view}};
+    const EventTransformer transformer{{view}};
 }
 
 // Helper: create two side-by-side views splitting at ndc.x == 0
@@ -165,27 +170,25 @@ struct TwoViewFixture {
     int e1Count = 0;
     int e2Count = 0;
 
-    EventTransformer::View view1{.globalNdcToLocalNdc =
-                                     [](const dvec3& ndc) {
-                                         return dvec3{ndc.x * 2.0 + 1.0, ndc.y, ndc.z};
-                                     },
-                                 .propagateEvent =
-                                     [this](Event* event, Outport*) {
-                                         e1.reset(event->clone());
-                                         ++e1Count;
-                                     },
-                                 .size = []() { return size2_t(35, 25); }};
+    EventTransformer::View view1{
+        .globalNdcToLocalNdc =
+            [](const dvec3& ndc) { return dvec3{ndc.x * 2.0 + 1.0, ndc.y, ndc.z}; },
+        .propagateEvent =
+            [this](Event* event, Outport*) {
+                e1.reset(event->clone());
+                ++e1Count;
+            },
+        .size = []() { return size2_t(35, 25); }};
 
-    EventTransformer::View view2{.globalNdcToLocalNdc =
-                                     [](const dvec3& ndc) {
-                                         return dvec3{ndc.x * 2.0 - 1.0, ndc.y, ndc.z};
-                                     },
-                                 .propagateEvent =
-                                     [this](Event* event, Outport*) {
-                                         e2.reset(event->clone());
-                                         ++e2Count;
-                                     },
-                                 .size = []() { return size2_t(35, 25); }};
+    EventTransformer::View view2{
+        .globalNdcToLocalNdc =
+            [](const dvec3& ndc) { return dvec3{ndc.x * 2.0 - 1.0, ndc.y, ndc.z}; },
+        .propagateEvent =
+            [this](Event* event, Outport*) {
+                e2.reset(event->clone());
+                ++e2Count;
+            },
+        .size = []() { return size2_t(35, 25); }};
 
     EventTransformer transformer{{view1, view2}};
 
@@ -407,13 +410,13 @@ TEST(EventTransform, DoubleClick) {
 TEST(EventTransform, EventUsedPropagation) {
     std::unique_ptr<Event> received;
 
-    EventTransformer::View view{.globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
-                                .propagateEvent =
-                                    [&](Event* event, Outport*) {
-                                        event->markAsUsed();
-                                        received.reset(event->clone());
-                                    },
-                                .size = []() { return size2_t(70, 25); }};
+    const EventTransformer::View view{.globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
+                                      .propagateEvent =
+                                          [&](Event* event, Outport*) {
+                                              event->markAsUsed();
+                                              received.reset(event->clone());
+                                          },
+                                      .size = []() { return size2_t(70, 25); }};
 
     EventTransformer transformer{{view}};
 
@@ -433,9 +436,10 @@ TEST(EventTransform, EventUsedPropagation) {
 }
 
 TEST(EventTransform, EventNotUsedPropagation) {
-    EventTransformer::View view{.globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
-                                .propagateEvent = [](Event*, Outport*) { /* don't mark as used */ },
-                                .size = []() { return size2_t(70, 25); }};
+    const EventTransformer::View view{
+        .globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
+        .propagateEvent = [](Event*, Outport*) { /* don't mark as used */ },
+        .size = []() { return size2_t(70, 25); }};
 
     EventTransformer transformer{{view}};
 
@@ -453,7 +457,7 @@ TEST(EventTransform, EventNotUsedPropagation) {
 }
 
 TEST(EventTransform, WheelEventUsedPropagation) {
-    EventTransformer::View view{
+    const EventTransformer::View view{
         .globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
         .propagateEvent = [](Event* event, Outport*) { event->markAsUsed(); },
         .size = []() { return size2_t(70, 25); }};
@@ -472,7 +476,7 @@ TEST(EventTransform, CoordinateTransformEdgeCases) {
     std::unique_ptr<Event> received;
 
     // Single view covering the full range
-    EventTransformer::View view{
+    const EventTransformer::View view{
         .globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
         .propagateEvent = [&](Event* event, Outport*) { received.reset(event->clone()); },
         .size = []() { return size2_t(100, 100); }};

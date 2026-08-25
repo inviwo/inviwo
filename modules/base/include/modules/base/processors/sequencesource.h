@@ -75,6 +75,7 @@ class InviwoApplication;
  * @brief Loads a sequence of data
  *
  * Conf struct example
+ * @code{.cpp}
  * struct VolumeConf {
  *     using Type = Volume;
  *     using Sequence = DataSequence<Type>;
@@ -98,8 +99,8 @@ class InviwoApplication;
  *     }
  *     static auto getReaderConfig(Info& info) -> std::function<void(DataReader&)> {
  *         return [](DataReader&) {};
- *     }
  * };
+ * @endcode
  */
 template <typename Conf>
 class SequenceSource : public PoolProcessor {
@@ -197,9 +198,13 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
               "If using folder mode, the folder to look for data sets in"_help)
 
     , include_{"include", "include",
-               "Any path the includes this regular expressions will be include"_help, ""}
+               R"(Any path that matches this regular expression will be included.
+               If the string is empty, all paths will be included)"_unindentHelp,
+               ""}
     , exclude_{"exclude", "exclude",
-               "Any path the includes this regular expressions will be excluded"_help, ""}
+               R"(Any path that matches this regular expression will be excluded.
+               If the string is empty, all paths will be included)"_unindentHelp,
+               ""}
     , max_{"max", "max", util::ordinalCount(0uz)}
 
     , reader_("reader", "Data Reader")
@@ -337,29 +342,25 @@ void SequenceSource<Conf>::loadFolder(bool deserialize) {
     }
 
     auto files =
-        std::filesystem::directory_iterator{folder_.get()} |
+
         std::views::filter(
             [](const std::filesystem::directory_entry& entry) { return entry.is_regular_file(); }) |
         std::views::transform(
             [](const std::filesystem::directory_entry& entry) { return entry.path(); }) |
-
         std::views::filter([&](const std::filesystem::path& path) {
             const auto pv = path.native() | views::codePoints | views::wChars;
 
             bool included = true;
-
             if (includeRe && !regex_search(pv.begin(), pv.end(), *includeRe)) {
                 included &= false;
             }
             if (excludeRe && regex_search(pv.begin(), pv.end(), *excludeRe)) {
                 included &= false;
             }
-
             if (std::ranges::ends_with(path.native() | views::codePoints,
                                        std::string_view{".DS_Store"} | views::codePoints)) {
                 included &= false;
             }
-
             return included;
         }) |
         std::ranges::to<std::vector>();

@@ -190,6 +190,7 @@ const std::vector<std::shared_ptr<const Image>>& MultiInput::getData() {
 
     for (auto&& [view, outport] : std::views::zip(views(), outports)) {
         if (!view.empty() && outport->isReady()) {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
             data.emplace_back(static_cast<ImageOutport*>(outport)->getDataForPort(&inport));
         } else {
             data.emplace_back(nullptr);
@@ -233,7 +234,7 @@ bool MultiInput::updateLabels(std::vector<std::string>& labels, std::string_view
     }
     try {
         StrBuffer buff;
-        for (auto&& [outport, label, i] : std::views::zip(outports, labels, std::views::iota(0))) {
+        for (auto&& [outport, label, i] : std::views::zip(outports, labels, std::views::iota(1))) {
             if (outport && outport->getProcessor()) {
                 buff.replace(fmt::runtime(format),
                              fmt::arg("id", outport->getProcessor()->getIdentifier()),
@@ -321,7 +322,8 @@ bool SequenceInput::updateLabels(std::vector<std::string>& labels, std::string_v
         }
         try {
             StrBuffer buff;
-            for (auto&& [i, label] : std::views::zip(std::views::iota(0ul, seq->size()), labels)) {
+            for (auto&& [i, label] :
+                 std::views::zip(std::views::iota(1ul, seq->size() + 1), labels)) {
 
                 buff.replace(fmt::runtime(format), fmt::arg("index", i));
                 if (label != buff.view()) {
@@ -381,7 +383,7 @@ bool Input::updateLabels(std::vector<std::string>& labels, std::string_view form
 }
 
 void Input::setSorting(Sorting sortOrder) {
-    std::visit([&](auto& i) { return i.setSorting(sortOrder); }, input_);
+    std::visit([&](auto& i) { i.setSorting(sortOrder); }, input_);
 }
 
 void Input::setMode(Processor* p, InputMode mode, const std::function<void(bool)>& update,
@@ -554,11 +556,11 @@ Layout::Layout()
                    }}
     , labels_{"labels", "Labels", false}
     , format_{"format", "Format",
-              "Format string, arguments 'id', 'name', and 'index' are supported,"
-              " default: '{id}'"_help,
+              "Format string, arguments `id`, `name`, and `index` are supported,"
+              " default: `{id}`"_help,
               "{id}"}
     , font_{"font", "Font Settings"}
-    , color_{"color", "Color", util::ordinalColor(vec4(1.0f, 1.0f, 1.0f, 1.0f))}
+    , color_{"color", "Color", util::ordinalColor(vec4(0.5f, 0.5f, 0.5f, 1.0f))}
     , position_{"position", "Position", vec2(0.0f, 0.0f)}
     , offset_{"offset", "Offset", ivec2(0, 0)}
 

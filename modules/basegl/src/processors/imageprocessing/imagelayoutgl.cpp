@@ -347,6 +347,7 @@ void ImageLayoutGL::process() {
     auto images =
         multiInport_.getConnectedOutports() | std::views::transform([&](Outport* outport) {
             if (outport->isReady()) {
+                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
                 return static_cast<ImageOutport*>(outport)->getDataForPort(&multiInport_);
             } else {
                 return std::shared_ptr<const Image>{};

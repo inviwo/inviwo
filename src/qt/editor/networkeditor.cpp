@@ -897,7 +897,7 @@ void NetworkEditor::addSequenceMenuItems(
         menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Sequence"));
     connect(expandAction, &QAction::triggered, this, util::exceptionGuarded([selectedSequences]() {
                 rendercontext::activateDefault();
-                for (auto& p : selectedSequences) {
+                for (const auto& p : selectedSequences) {
                     util::expandSequenceProcessorIntoNetwork(*p);
                 }
             }));

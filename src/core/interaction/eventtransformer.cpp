@@ -73,6 +73,7 @@ struct Pressing {};
 
 struct SM {
     auto operator()() const noexcept {
+        // NOLINTNEXTLINE(google-build-using-namespace)
         using namespace sml;
 
         static constexpr auto updateView = [](const auto& base,
@@ -158,6 +159,7 @@ struct Active {};
 
 struct SM {
     auto operator()() const noexcept {
+        // NOLINTNEXTLINE(google-build-using-namespace)
         using namespace sml;
 
         static constexpr auto updateView = [](const auto& base,
@@ -238,6 +240,7 @@ struct Active {};
 
 struct SM {
     auto operator()() const noexcept {
+        // NOLINTNEXTLINE(google-build-using-namespace)
         using namespace sml;
 
         static constexpr auto updateView = [](const auto& base,
