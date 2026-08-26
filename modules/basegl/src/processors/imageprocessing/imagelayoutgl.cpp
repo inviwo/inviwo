@@ -214,8 +214,7 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
-    if (event->hash() == ResizeEvent::chash()) {
-        auto* resizeEvent = static_cast<ResizeEvent*>(event);
+    if (auto* resizeEvent = event->getAs<ResizeEvent>()) {
         // Note, no auto since we want a copy of the views
         const auto nonActive = viewManager_.getViews() |
                                std::views::transform([](auto& view) { return view.empty(); }) |

@@ -356,10 +356,12 @@ bool InteractionEventMapperQt::mapGestureEvent(QGestureEvent* ge) {
     if (!handleGestures_) return false;
 
     if (auto* gesture = ge->gesture(Qt::PanGesture)) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
         auto* panGesture = static_cast<QPanGesture*>(gesture);
         mapPanTriggered(panGesture);
     }
     if (auto* gesture = ge->gesture(Qt::PinchGesture)) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
         auto* pinchGesture = static_cast<QPinchGesture*>(gesture);
         mapPinchTriggered(pinchGesture);
     }

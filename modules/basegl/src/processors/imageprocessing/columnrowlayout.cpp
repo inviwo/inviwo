@@ -756,6 +756,7 @@ void Layout::updateSplitters(bool connect) {
 }
 
 namespace {
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 glm::dvec2 remapToSubImage(glm::dvec2 normCoord, glm::dvec2 size, glm::dvec2 subPos,
                            glm::dvec2 subSize) {
     // 1. Convert full-image normalized [-1,1] to pixel coordinates

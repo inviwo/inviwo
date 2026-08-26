@@ -344,6 +344,7 @@ Processor* isConverterFor(Processor& processor, const SequenceCompositeSourceBas
 
 }  // namespace
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
     try {
         const NetworkLock lock(&network);
@@ -479,6 +480,7 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
     }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void util::expandSequenceProcessorIntoNetwork(SequenceProcessor& sequence) {
     try {
         // Make sure we delete the composite as the last thing we do, after any locks

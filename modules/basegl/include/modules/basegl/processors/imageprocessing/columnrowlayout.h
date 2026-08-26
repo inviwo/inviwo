@@ -186,7 +186,7 @@ public:
     }
     size_t size() const { return nSplitters_; }
 
-    void enforceOrder(size_t fixedSliderIndex);
+    void enforceOrder(size_t changedIndex);
     bool updateSize(size_t newSize);
     void spaceEvenly();
     void deserialized();
