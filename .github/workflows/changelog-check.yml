@@ -66,7 +66,7 @@ jobs:
         continue-on-error: true
         uses: actions/ai-inference@v3
         with:
-          model: gpt-4.1
+          model: gpt-5.4
           system-prompt-file: ${{ runner.temp }}/changelog_system_prompt.txt
           prompt-file: ${{ runner.temp }}/changelog_user_prompt.txt
         env:
