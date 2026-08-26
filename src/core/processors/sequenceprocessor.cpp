@@ -99,7 +99,7 @@ void SequenceProcessor::process() {
     createNetworkCopies(size);
 
     for (auto&& sink : sub_.sinks) {
-        sink->newData();
+        sink->newData(size);
     }
 
     if (size > 0) {
@@ -344,12 +344,15 @@ void SequenceProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
         p->accept(visitor);
 
         if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
+            sink->sync(nullptr);
+
             auto& port = sink->getSuperOutport();
             const auto id = util::findUniqueIdentifier(
                 port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; },
                 "");
             port.setIdentifier(id);
             addPort(port);
+            sink->setSequenceIndex(0);
             sub_.sinks.push_back(sink);
         } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
             auto& port = source->getSuperInport();
@@ -370,10 +373,8 @@ void SequenceProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
         if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
             if (auto* org = dynamic_cast<SequenceCompositeSinkBase*>(
                     sub_.net->getProcessorByIdentifier(sink->getIdentifier()))) {
-
-                sink->setSuperOutport(org->getSuperOutportShared());
-                sink->setData(org->getData());
-
+                sink->sync(org);
+                sink->setSequenceIndex(std::distance(copies_.begin(), it) + 1);
                 copy.sinks.push_back(sink);
             } else {
                 throw Exception(SourceContext{}, "Could not find original sink for {}",
