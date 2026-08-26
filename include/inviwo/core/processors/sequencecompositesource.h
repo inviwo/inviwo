@@ -122,8 +122,8 @@ public:
     virtual void setSequenceIndex(size_t index) override {
         if (index != sequenceIndex_) {
             sequenceIndex_ = index;
+            invalidate(InvalidationLevel::InvalidOutput);
         }
-        invalidate(InvalidationLevel::InvalidOutput);
     }
 
     virtual std::shared_ptr<Processor> createConverter() const override {

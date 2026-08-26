@@ -103,16 +103,23 @@ void SequenceProcessor::process() {
     }
 
     if (size > 0) {
-        std::ranges::for_each(sub_.sources, [&](auto* source) { source->setSequenceIndex(0); });
+        std::ranges::for_each(sub_.sources, [&](auto* source) {
+            if (source->getSuperInport().isChanged()) {
+                source->invalidate(InvalidationLevel::InvalidOutput);
+            }
+        });
         const util::OnScopeExit lock{[this]() { sub_.net->lock(); }};
         sub_.net->unlock();  // This will trigger an evaluation of the sub network.
     }
 
-    for (size_t i = 1; i < size; ++i) {
-        std::ranges::for_each(copies_[i - 1].sources,
-                              [&](auto& source) { source->setSequenceIndex(i); });
-        const util::OnScopeExit lock{[&]() { copies_[i - 1].net->lock(); }};
-        copies_[i - 1].net->unlock();  // This will trigger an evaluation of the sub network.
+    for (auto& copy : copies_) {
+        std::ranges::for_each(copy.sources, [&](auto& source) {
+            if (source->getSuperInport().isChanged()) {
+                source->invalidate(InvalidationLevel::InvalidOutput);
+            }
+        });
+        const util::OnScopeExit lock{[&]() { copy.net->lock(); }};
+        copy.net->unlock();  // This will trigger an evaluation of the sub network.
     }
 
     for (auto&& sink : sub_.sinks) {
@@ -319,6 +326,13 @@ void SequenceProcessor::onProcessorNetworkEvaluateRequest() {
         invalidate(InvalidationLevel::InvalidOutput);
     }
 }
+void SequenceProcessor::onProcessorBackgroundJobsChanged(Processor*, int diff, int) {
+    if (diff > 0) {
+        notifyObserversStartBackgroundWork(this, diff);
+    } else {
+        notifyObserversFinishBackgroundWork(this, -diff);
+    }
+}
 
 void SequenceProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
     if (p->getNetwork() == sub_.net.get()) {
@@ -344,6 +358,8 @@ void SequenceProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
                 "");
             port.setIdentifier(id);
             addPort(port);
+
+            source->setSequenceIndex(0);
             sub_.sources.push_back(source);
         }
     } else if (auto it = std::ranges::find_if(
@@ -369,6 +385,7 @@ void SequenceProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
                     sub_.net->getProcessorByIdentifier(source->getIdentifier()))) {
 
                 source->setSuperInport(org->getSuperInportShared());
+                source->setSequenceIndex(std::distance(copies_.begin(), it) + 1);
                 copy.sources.push_back(source);
             } else {
                 throw Exception(SourceContext{}, "Could not find original source for {}",
@@ -407,14 +424,6 @@ void SequenceProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
         } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
             std::erase(copy.sources, source);
         }
-    }
-}
-
-void SequenceProcessor::onProcessorBackgroundJobsChanged(Processor*, int diff, int) {
-    if (diff > 0) {
-        notifyObserversStartBackgroundWork(this, diff);
-    } else {
-        notifyObserversFinishBackgroundWork(this, -diff);
     }
 }
 
