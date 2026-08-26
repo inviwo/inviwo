@@ -132,6 +132,11 @@ private:
                              const std::function<void(DataReader&)>& configReader) -> Sequence;
     static void addMetaData(Type& data, const std::filesystem::path& path);
 
+    static std::optional<std::string_view> toOpt(const StringProperty& prop) {
+        return prop.get().empty() ? std::optional<std::string_view>{}
+                                  : std::string_view{prop.get()};
+    }
+
     DataReaderFactory* rf_;
 
     typename Conf::Outport outport_;
@@ -176,12 +181,15 @@ const ProcessorInfo& SequenceSource<Conf>::getProcessorInfo() const {
 
 namespace util {
 
-IVW_MODULE_BASE_API std::expected<std::vector<std::filesystem::path>, std::string_view>
-getFilesInFolder(const std::filesystem::path& folder, std::string_view include,
-                 std::string_view exclude);
+IVW_MODULE_BASE_API auto getFilesInFolder(const std::filesystem::path& folder,
+                                          std::optional<std::string_view> include,
+                                          std::optional<std::string_view> exclude)
+    -> std::expected<std::vector<std::filesystem::path>, std::string_view>;
 
-IVW_MODULE_BASE_API std::expected<std::filesystem::path, std::string_view> getFirstFileInFolder(
-    const std::filesystem::path& folder, std::string_view include, std::string_view exclude);
+IVW_MODULE_BASE_API auto getFileInFolder(const std::filesystem::path& folder,
+                                         std::optional<std::string_view> include,
+                                         std::optional<std::string_view> exclude)
+    -> std::expected<std::filesystem::path, std::string_view>;
 
 }  // namespace util
 
@@ -251,11 +259,11 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
                 return {ProcessorStatus::NotReady, noFileReason};
             }
         } else {
-            if (auto first =
-                    util::getFirstFileInFolder(folder_.get(), include_.get(), exclude_.get())) {
+            if (auto file =
+                    util::getFileInFolder(folder_.get(), toOpt(include_), toOpt(exclude_))) {
                 return ProcessorStatus::Ready;
             } else {
-                return {ProcessorStatus::Error, first.error()};
+                return {ProcessorStatus::Error, file.error()};
             }
         }
     });
@@ -331,15 +339,18 @@ template <typename Conf>
 void SequenceSource<Conf>::loadFolder(bool deserialize) {
     if (folder_.get().empty()) return;
 
-    const auto files = util::getFilesInFolder(folder_.get(), include_.get(), exclude_.get());
-    if (!files) {
-        throw Exception{files.error(), SourceContext{}};
-    }
+    const auto files =
+        util::getFilesInFolder(folder_.get(), toOpt(include_), toOpt(exclude_))
+            .or_else([&](std::string_view error)
+                         -> std::expected<std::vector<std::filesystem::path>, std::string_view> {
+                throw Exception(error, SourceContext{});
+            })
+            .value();
 
     const auto max = max_.get() != 0 ? max_.get() : std::numeric_limits<size_t>::max();
 
     const auto loaders =
-        files.value() | std::views::take(max) |
+        files | std::views::take(max) |
         std::views::transform([&](const std::filesystem::path& path)
                                   -> std::function<Sequence(pool::Stop, pool::Progress)> {
             return [rf = rf_, path, mdo = static_cast<MetaDataOwner*>(this),

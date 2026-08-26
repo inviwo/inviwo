@@ -33,20 +33,21 @@ namespace inviwo {
 
 namespace {
 
-auto filteredFilesView(const std::filesystem::path& folder, std::string_view include,
-                       std::string_view exclude) {
+auto filteredFilesView(const std::filesystem::path& folder, std::optional<std::string_view> include,
+                       std::optional<std::string_view> exclude) {
 
-    std::optional<std::wregex> includeRe = std::nullopt;
-    std::optional<std::wregex> excludeRe = std::nullopt;
+    static constexpr auto makeRegex = [](std::string_view pattern) {
+        const auto v = pattern | views::codePoints | views::wChars | std::ranges::to<std::vector>();
+        return std::wregex{v.begin(), v.end()};
+    };
 
-    if (!include.empty()) {
-        const auto v = include | views::codePoints | views::wChars | std::ranges::to<std::vector>();
-        includeRe = std::wregex{v.begin(), v.end()};
-    }
-    if (!exclude.empty()) {
-        const auto v = exclude | views::codePoints | views::wChars | std::ranges::to<std::vector>();
-        excludeRe.emplace(v.begin(), v.end());
-    }
+    static constexpr auto search = [](auto&& view, const std::wregex& regex) {
+        return regex_search(view.begin(), view.end(), regex);
+    };
+
+    static constexpr auto ends_with = [](const std::filesystem::path& path, std::string_view str) {
+        return std::ranges::ends_with(path.native() | views::codePoints, str | views::codePoints);
+    };
 
     return std::filesystem::directory_iterator{folder} |
            std::views::filter([](const std::filesystem::directory_entry& entry) {
@@ -54,32 +55,23 @@ auto filteredFilesView(const std::filesystem::path& folder, std::string_view inc
            }) |
            std::views::transform(
                [](const std::filesystem::directory_entry& entry) { return entry.path(); }) |
-           std::views::filter([includeRe, excludeRe](const std::filesystem::path& path) {
-               auto pv = path.native() | views::codePoints | views::wChars;
-               static_assert(std::forward_iterator<decltype(pv.begin())>);
-               static_assert(std::forward_iterator<decltype(pv.end())>);
+           std::views::filter(
+               [includeRe = include.transform(makeRegex),
+                excludeRe = exclude.transform(makeRegex)](const std::filesystem::path& path) {
+                   auto pv = path.native() | views::codePoints | views::wChars;
 
-               bool included = true;
-
-               if (includeRe && !regex_search(pv.begin(), pv.end(), *includeRe)) {
-                   included &= false;
-               }
-               if (excludeRe && regex_search(pv.begin(), pv.end(), *excludeRe)) {
-                   included &= false;
-               }
-               if (std::ranges::ends_with(path.native() | views::codePoints,
-                                          std::string_view{".DS_Store"} | views::codePoints)) {
-                   included &= false;
-               }
-               return included;
-           });
+                   return (!includeRe || search(pv, *includeRe)) &&
+                          (!excludeRe || !search(pv, *excludeRe)) &&
+                          !ends_with(path, std::string_view{".DS_Store"});
+               });
 }
 
-std::expected<decltype(filteredFilesView(std::filesystem::path{}, std::string_view{},
-                                         std::string_view{})),
-              std::string_view>
-getFolderView(const std::filesystem::path& folder, std::string_view include,
-              std::string_view exclude) {
+using FilesView = decltype(filteredFilesView(
+    std::filesystem::path{}, std::optional<std::string_view>{}, std::optional<std::string_view>{}));
+
+auto getFolderView(const std::filesystem::path& folder, std::optional<std::string_view> include,
+                   std::optional<std::string_view> exclude)
+    -> std::expected<FilesView, std::string_view> {
 
     if (!std::filesystem::is_directory(folder)) {
         static constexpr std::string_view noFolderReason{"Not a folder"};
@@ -102,8 +94,10 @@ getFolderView(const std::filesystem::path& folder, std::string_view include,
 
 }  // namespace
 
-std::expected<std::vector<std::filesystem::path>, std::string_view> util::getFilesInFolder(
-    const std::filesystem::path& folder, std::string_view include, std::string_view exclude) {
+auto util::getFilesInFolder(const std::filesystem::path& folder,
+                            std::optional<std::string_view> include,
+                            std::optional<std::string_view> exclude)
+    -> std::expected<std::vector<std::filesystem::path>, std::string_view> {
 
     return getFolderView(folder, include, exclude)
         .transform([](auto value) -> std::vector<std::filesystem::path> {
@@ -113,11 +107,13 @@ std::expected<std::vector<std::filesystem::path>, std::string_view> util::getFil
         });
 }
 
-std::expected<std::filesystem::path, std::string_view> util::getFirstFileInFolder(
-    const std::filesystem::path& folder, std::string_view include, std::string_view exclude) {
+auto util::getFileInFolder(const std::filesystem::path& folder,
+                           std::optional<std::string_view> include,
+                           std::optional<std::string_view> exclude)
+    -> std::expected<std::filesystem::path, std::string_view> {
 
     return getFolderView(folder, include, exclude)
-        .transform([](auto value) -> std::filesystem::path { return std::ranges::min(value); });
+        .transform([](auto value) -> std::filesystem::path { return *std::ranges::begin(value); });
 }
 
 }  // namespace inviwo
