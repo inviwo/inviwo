@@ -309,15 +309,16 @@ const std::vector<Port*>& Processor::getPortsInSameGroup(Port* port) const {
 }
 
 void Processor::invalidate(InvalidationLevel invalidationLevel, Property* modifiedProperty) {
-    notifyObserversInvalidationBegin(this);
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
     if (!isValid()) {
+        notifyObserversInvalidationBegin(this);
+
         // We need to always propagate the invalidation here even if we have already done so before
         // since processors with optional inports can have become valid while this is still
         // invalid. Hence we need to make sure we invalidate them again
         for (auto& port : outports_) port->invalidate(InvalidationLevel::InvalidOutput);
+        notifyObserversInvalidationEnd(this);
     }
-    notifyObserversInvalidationEnd(this);
 }
 
 bool Processor::isSource() const { return isSource_; }
