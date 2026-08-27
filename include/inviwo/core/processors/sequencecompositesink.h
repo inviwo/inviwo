@@ -64,6 +64,7 @@ public:
      */
     virtual Outport& getSuperOutport() = 0;
 
+    virtual void createSuperOutport(std::string_view id) = 0;
     virtual void sync(SequenceCompositeSinkBase* source) = 0;
 
     virtual void newData(size_t size) = 0;
@@ -109,6 +110,7 @@ public:
      */
     virtual Outport& getSuperOutport() override;
 
+    virtual void createSuperOutport(std::string_view id) override;
     virtual void sync(SequenceCompositeSinkBase* source) override;
 
     virtual void newData(size_t size) override;
@@ -122,6 +124,9 @@ public:
     virtual std::shared_ptr<Processor> createConverter() const override {
         return std::make_shared<SequenceSelect<InportData>>();
     }
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     static std::string superPortIdentifier(Port* port) {
         auto portIdentifier = port->getIdentifier();
@@ -193,6 +198,12 @@ template <typename InportType, typename OutportSequenceType>
 Outport& SequenceCompositeSink<InportType, OutportSequenceType>::getSuperOutport() {
     return *superOutport_;
 }
+template <typename InportType, typename OutportSequenceType>
+void SequenceCompositeSink<InportType, OutportSequenceType>::createSuperOutport(
+    std::string_view id) {
+    superOutport_ = std::make_shared<OutportSequenceType>(id);
+    addPortToGroup(superOutport_.get(), "default");
+}
 
 template <typename InportType, typename OutportSequenceType>
 void SequenceCompositeSink<InportType, OutportSequenceType>::sync(
@@ -208,9 +219,6 @@ void SequenceCompositeSink<InportType, OutportSequenceType>::sync(
             throw Exception(SourceContext{}, "SequenceCompositeSinkBase of wrong type");
         }
     } else {
-        auto* outport = inport_.getConnectedOutport();
-        superOutport_ = std::make_shared<OutportSequenceType>(superPortIdentifier(outport));
-        addPortToGroup(superOutport_.get(), "default");
         data_ = std::make_shared<
             std::vector<std::shared_ptr<const typename OutportSequenceData::type>>>();
     }
@@ -227,6 +235,18 @@ void SequenceCompositeSink<InportType, OutportSequenceType>::superProcessEnd() {
     if (std::ranges::all_of(*data_, [](auto& item) { return item != nullptr; })) {
         superOutport_->setData(std::make_shared<OutportSequenceData>(std::from_range, *data_));
     }
+}
+
+template <typename InportType, typename OutportSequenceType>
+void SequenceCompositeSink<InportType, OutportSequenceType>::serialize(Serializer& s) const {
+    SequenceCompositeSinkBase::serialize(s);
+    s.serialize("SuperOutport", *superOutport_);
+}
+
+template <typename InportType, typename OutportSequenceType>
+void SequenceCompositeSink<InportType, OutportSequenceType>::deserialize(Deserializer& d) {
+    SequenceCompositeSinkBase::deserialize(d);
+    d.deserialize("SuperOutport", *superOutport_);
 }
 
 }  // namespace inviwo

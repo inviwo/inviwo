@@ -105,13 +105,27 @@ auto partitionLinks(const std::vector<PropertyLink>& links, const std::vector<Pr
     return {internal, inLinks, outLinks};
 }
 
+std::string superPortIdentifier(Port* port) {
+    auto portIdentifier = port->getIdentifier();
+    // Make first letter uppercase for readability when combined with processor
+    // display name
+    if (!portIdentifier.empty()) {
+        portIdentifier.front() = static_cast<char>(std::toupper(portIdentifier.front()));
+    }
+    return util::stripIdentifier(
+        fmt::format("{}{}", port->getProcessor()->getDisplayName(), portIdentifier));
+}
+
 template <typename Source>
 std::shared_ptr<Source> addMetaSource(const std::vector<Inport*>& inports,
                                       ProcessorNetwork& subNetwork, std::string_view portId,
                                       const ProcessorFactory* pf) {
     if (auto metaSource = std::dynamic_pointer_cast<Source>(
             pf->createShared(fmt::format("{}{}", portId, Source::identifierSuffix())))) {
+
+        metaSource->createSuperInport(superPortIdentifier(inports.front()));
         subNetwork.addProcessor(metaSource);
+
         for (auto* inport : inports) {
             subNetwork.addConnection(metaSource->getOutports().front(), inport);
         }
@@ -126,6 +140,7 @@ std::shared_ptr<Sink> addMetaSink(Outport* outport, ProcessorNetwork& subNetwork
                                   std::string_view portId, const ProcessorFactory* pf) {
     if (auto metasink = std::dynamic_pointer_cast<Sink>(std::shared_ptr<Processor>(
             pf->createShared(fmt::format("{}{}", portId, Sink::identifierSuffix()))))) {
+        metasink->createSuperOutport(superPortIdentifier(outport));
         subNetwork.addProcessor(metasink);
         subNetwork.addConnection(outport, metasink->getInports().front());
         return metasink;

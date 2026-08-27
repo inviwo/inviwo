@@ -64,6 +64,8 @@ public:
 
     virtual void sync(SequenceCompositeSourceBase* source) = 0;
 
+    virtual void createSuperInport(std::string_view id) = 0;
+
     virtual size_t sequenceSize() const = 0;
     virtual void setSequenceIndex(size_t) = 0;
 
@@ -107,6 +109,8 @@ public:
 
     virtual void sync(SequenceCompositeSourceBase* source) override;
 
+    virtual void createSuperInport(std::string_view id) override;
+
     virtual void propagateEvent(Event* event, Outport* source) override;
 
     virtual size_t sequenceSize() const override {
@@ -127,16 +131,8 @@ public:
         return std::make_shared<DataToSequence<OutportData>>();
     }
 
-    static std::string superPortIdentifier(Port* port) {
-        auto portIdentifier = port->getIdentifier();
-        // Make first letter uppercase for readability when combined with processor
-        // display name
-        if (!portIdentifier.empty()) {
-            portIdentifier.front() = static_cast<char>(std::toupper(portIdentifier.front()));
-        }
-        return util::stripIdentifier(
-            fmt::format("{}{}", port->getProcessor()->getDisplayName(), portIdentifier));
-    }
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 private:
     //! To be added to SequenceProcessor, not itself
@@ -199,6 +195,13 @@ Inport& SequenceCompositeSource<InportSequenceType, OutportType>::getSuperInport
 }
 
 template <typename InportSequenceType, typename OutportType>
+void SequenceCompositeSource<InportSequenceType, OutportType>::createSuperInport(
+    std::string_view id) {
+    superInport_ = std::make_shared<InportSequenceType>(id);
+    addPortToGroup(superInport_.get(), "default");
+}
+
+template <typename InportSequenceType, typename OutportType>
 void SequenceCompositeSource<InportSequenceType, OutportType>::sync(
     SequenceCompositeSourceBase* source) {
 
@@ -206,18 +209,15 @@ void SequenceCompositeSource<InportSequenceType, OutportType>::sync(
         if (auto* typedSource =
                 dynamic_cast<SequenceCompositeSource<InportSequenceType, OutportType>*>(source)) {
             superInport_ = typedSource->superInport_;
+            addPortToGroup(superInport_.get(), "default");
         } else {
             throw Exception(SourceContext{}, "SequenceCompositeSinkBase of wrong type");
         }
     } else {
-        auto* inport = outport_.getConnectedInports().front();
-        superInport_ = std::make_shared<InportSequenceType>(superPortIdentifier(inport));
-
         const auto optional = std::ranges::all_of(outport_.getConnectedInports(),
                                                   [](auto* port) { return port->isOptional(); });
         superInport_->setOptional(optional);
     }
-    addPortToGroup(superInport_.get(), "default");
 }
 
 template <typename InportSequenceType, typename OutportType>
@@ -230,6 +230,18 @@ void SequenceCompositeSource<InportSequenceType, OutportType>::propagateEvent(Ev
     if (event->shouldPropagateTo(superInport_.get(), this, source)) {
         superInport_->propagateEvent(event);
     }
+}
+
+template <typename InportSequenceType, typename OutportType>
+void SequenceCompositeSource<InportSequenceType, OutportType>::serialize(Serializer& s) const {
+    SequenceCompositeSourceBase::serialize(s);
+    s.serialize("SuperInport", *superInport_);
+}
+
+template <typename InportSequenceType, typename OutportType>
+void SequenceCompositeSource<InportSequenceType, OutportType>::deserialize(Deserializer& d) {
+    SequenceCompositeSourceBase::deserialize(d);
+    d.deserialize("SuperInport", *superInport_);
 }
 
 }  // namespace inviwo
