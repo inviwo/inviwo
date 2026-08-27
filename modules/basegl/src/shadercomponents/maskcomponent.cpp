@@ -135,7 +135,7 @@ MaskComponent::MaskComponent(VolumeInport& port)
     , shader_{{{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
                {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
                {ShaderType::Fragment, std::static_pointer_cast<const ShaderResource>(frag_)}},
-              Shader::Build::Yes}
+              Shader::Build::No}
     , fbo_{} {
 
     options_.addProperties(maskMissingValue_, maskZero_, maskNaN_, maskInf_);
@@ -195,6 +195,10 @@ void MaskComponent::preprocess() {
                                             maskNaN_.get(), maskInf_.get()));
         // The shader will rebuild itself.
         dirty = true;
+    }
+
+    if (!shader_.isReady()) {
+        shader_.build();
     }
 
     if (!dirty) return;
