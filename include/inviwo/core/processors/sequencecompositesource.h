@@ -64,7 +64,7 @@ public:
 
     virtual void sync(SequenceCompositeSourceBase* source) = 0;
 
-    virtual void createSuperInport(std::string_view id) = 0;
+    virtual void createSuperInport(std::string_view id, bool optional) = 0;
 
     virtual size_t sequenceSize() const = 0;
     virtual void setSequenceIndex(size_t) = 0;
@@ -109,7 +109,7 @@ public:
 
     virtual void sync(SequenceCompositeSourceBase* source) override;
 
-    virtual void createSuperInport(std::string_view id) override;
+    virtual void createSuperInport(std::string_view id, bool optional) override;
 
     virtual void propagateEvent(Event* event, Outport* source) override;
 
@@ -196,15 +196,15 @@ Inport& SequenceCompositeSource<InportSequenceType, OutportType>::getSuperInport
 
 template <typename InportSequenceType, typename OutportType>
 void SequenceCompositeSource<InportSequenceType, OutportType>::createSuperInport(
-    std::string_view id) {
+    std::string_view id, bool optional) {
     superInport_ = std::make_shared<InportSequenceType>(id);
+    superInport_->setOptional(optional);
     addPortToGroup(superInport_.get(), "default");
 }
 
 template <typename InportSequenceType, typename OutportType>
 void SequenceCompositeSource<InportSequenceType, OutportType>::sync(
     SequenceCompositeSourceBase* source) {
-
     if (source) {
         if (auto* typedSource =
                 dynamic_cast<SequenceCompositeSource<InportSequenceType, OutportType>*>(source)) {
@@ -213,10 +213,6 @@ void SequenceCompositeSource<InportSequenceType, OutportType>::sync(
         } else {
             throw Exception(SourceContext{}, "SequenceCompositeSinkBase of wrong type");
         }
-    } else {
-        const auto optional = std::ranges::all_of(outport_.getConnectedInports(),
-                                                  [](auto* port) { return port->isOptional(); });
-        superInport_->setOptional(optional);
     }
 }
 
@@ -235,12 +231,13 @@ void SequenceCompositeSource<InportSequenceType, OutportType>::propagateEvent(Ev
 template <typename InportSequenceType, typename OutportType>
 void SequenceCompositeSource<InportSequenceType, OutportType>::serialize(Serializer& s) const {
     SequenceCompositeSourceBase::serialize(s);
-    s.serialize("SuperInport", *superInport_);
+    if (superInport_) s.serialize("SuperInport", *superInport_);
 }
 
 template <typename InportSequenceType, typename OutportType>
 void SequenceCompositeSource<InportSequenceType, OutportType>::deserialize(Deserializer& d) {
     SequenceCompositeSourceBase::deserialize(d);
+    if (!superInport_) createSuperInport("inport", false);
     d.deserialize("SuperInport", *superInport_);
 }
 

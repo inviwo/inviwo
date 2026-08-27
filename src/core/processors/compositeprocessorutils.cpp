@@ -122,13 +122,15 @@ std::shared_ptr<Source> addMetaSource(const std::vector<Inport*>& inports,
                                       const ProcessorFactory* pf) {
     if (auto metaSource = std::dynamic_pointer_cast<Source>(
             pf->createShared(fmt::format("{}{}", portId, Source::identifierSuffix())))) {
-
-        metaSource->createSuperInport(superPortIdentifier(inports.front()));
         subNetwork.addProcessor(metaSource);
-
+        bool optional = true;
         for (auto* inport : inports) {
+            optional &= inport->isOptional();
             subNetwork.addConnection(metaSource->getOutports().front(), inport);
         }
+        metaSource->getSuperInport().setOptional(optional);
+        metaSource->getSuperInport().setIdentifier(superPortIdentifier(inports.front()));
+
         return metaSource;
     } else {
         return nullptr;
@@ -140,9 +142,10 @@ std::shared_ptr<Sink> addMetaSink(Outport* outport, ProcessorNetwork& subNetwork
                                   std::string_view portId, const ProcessorFactory* pf) {
     if (auto metasink = std::dynamic_pointer_cast<Sink>(std::shared_ptr<Processor>(
             pf->createShared(fmt::format("{}{}", portId, Sink::identifierSuffix()))))) {
-        metasink->createSuperOutport(superPortIdentifier(outport));
         subNetwork.addProcessor(metasink);
         subNetwork.addConnection(outport, metasink->getInports().front());
+
+        metasink->getSuperOutport().setIdentifier(superPortIdentifier(outport));
         return metasink;
     } else {
         return nullptr;
@@ -333,6 +336,41 @@ Processor* isConverterFor(Processor& processor, const SequenceCompositeSourceBas
     return nullptr;
 }
 
+template <typename Source>
+std::shared_ptr<Source> addMetaSequenceSource(const std::vector<Inport*>& inports,
+                                              ProcessorNetwork& subNetwork, std::string_view portId,
+                                              const ProcessorFactory* pf) {
+    if (auto metaSource = std::dynamic_pointer_cast<Source>(
+            pf->createShared(fmt::format("{}{}", portId, Source::identifierSuffix())))) {
+
+        const auto optional =
+            std::ranges::all_of(inports, [](auto* port) { return port->isOptional(); });
+        metaSource->createSuperInport(superPortIdentifier(inports.front()), optional);
+        subNetwork.addProcessor(metaSource);
+
+        for (auto* inport : inports) {
+            subNetwork.addConnection(metaSource->getOutports().front(), inport);
+        }
+        return metaSource;
+    } else {
+        return nullptr;
+    }
+}
+
+template <typename Sink>
+std::shared_ptr<Sink> addMetaSequenceSink(Outport* outport, ProcessorNetwork& subNetwork,
+                                          std::string_view portId, const ProcessorFactory* pf) {
+    if (auto metasink = std::dynamic_pointer_cast<Sink>(std::shared_ptr<Processor>(
+            pf->createShared(fmt::format("{}{}", portId, Sink::identifierSuffix()))))) {
+        metasink->createSuperOutport(superPortIdentifier(outport));
+        subNetwork.addProcessor(metasink);
+        subNetwork.addConnection(outport, metasink->getInports().front());
+        return metasink;
+    } else {
+        return nullptr;
+    }
+}
+
 }  // namespace
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
@@ -376,8 +414,8 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
 
         for (const auto& [outport, inports] : inConnections) {
             const auto portId = outport->getClassIdentifier();
-            if (auto metaSource =
-                    addMetaSource<SequenceCompositeSourceBase>(inports, subNetwork, portId, pf)) {
+            if (auto metaSource = addMetaSequenceSource<SequenceCompositeSourceBase>(
+                    inports, subNetwork, portId, pf)) {
 
                 auto& superInport = metaSource->getSuperInport();
                 if (superInport.canConnectTo(outport)) {
@@ -408,8 +446,8 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
 
         for (const auto& [outport, inports] : outConnections) {
             const auto portId = inports.front()->getClassIdentifier();
-            if (auto metaSink =
-                    addMetaSink<SequenceCompositeSinkBase>(outport, subNetwork, portId, pf)) {
+            if (auto metaSink = addMetaSequenceSink<SequenceCompositeSinkBase>(outport, subNetwork,
+                                                                               portId, pf)) {
 
                 auto& superOutport = metaSink->getSuperOutport();
                 for (auto* inport : inports) {

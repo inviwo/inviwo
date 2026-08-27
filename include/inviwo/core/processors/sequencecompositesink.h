@@ -240,12 +240,13 @@ void SequenceCompositeSink<InportType, OutportSequenceType>::superProcessEnd() {
 template <typename InportType, typename OutportSequenceType>
 void SequenceCompositeSink<InportType, OutportSequenceType>::serialize(Serializer& s) const {
     SequenceCompositeSinkBase::serialize(s);
-    s.serialize("SuperOutport", *superOutport_);
+    if (superOutport_) s.serialize("SuperOutport", *superOutport_);
 }
 
 template <typename InportType, typename OutportSequenceType>
 void SequenceCompositeSink<InportType, OutportSequenceType>::deserialize(Deserializer& d) {
     SequenceCompositeSinkBase::deserialize(d);
+    if (!superOutport_) createSuperOutport("outport");
     d.deserialize("SuperOutport", *superOutport_);
 }
 

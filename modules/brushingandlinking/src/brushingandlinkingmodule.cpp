@@ -174,18 +174,11 @@ void SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport
                 SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>*>(
                 source)) {
             superInport_ = typedSource->superInport_;
-
+            addPortToGroup(superInport_.get(), "default");
         } else {
             throw Exception(SourceContext{}, "SequenceCompositeSinkBase of wrong type");
         }
-    } else {
-        auto* inport = outport_.getConnectedInports().front();
-        superInport_ = std::make_shared<BrushingAndLinkingInport>(superPortIdentifier(inport));
-        const auto optional = std::ranges::all_of(outport_.getConnectedInports(),
-                                                  [](auto* port) { return port->isOptional(); });
-        superInport_->setOptional(optional);
     }
-    addPortToGroup(superInport_.get(), "default");
     outport_.getManager().setParent(&superInport_->getManager());
 }
 
