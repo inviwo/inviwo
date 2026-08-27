@@ -137,8 +137,8 @@ inline float kernelNormFactor(float s) {
 }
 
 template <SplatKernel K>
-void splatImpl(const SplatInput& input, const SplatSettings& settings, mat4 indexToWorld,
-               mat4 worldToIndex, float* data,
+void splatImpl(std::span<const SplatInput> inputs, const SplatSettings& settings, mat4 indexToWorld,
+               mat4 worldToIndex, std::span<float> data,
                std::vector<std::function<vec2(const std::function<void(double)>&,
                                               const std::function<bool()>&)>>& jobs) {
 
@@ -154,13 +154,9 @@ void splatImpl(const SplatInput& input, const SplatSettings& settings, mat4 inde
         vec3{glm::length(basisWorld[0]), glm::length(basisWorld[1]), glm::length(basisWorld[2])} /
         vec3{dims};
 
-    const mat4 pointTransform{input.pointTransform};
-
     const float size = settings.size;
     const float weight = settings.weight;
     const float error = settings.error;
-    const bool perPointSize = !input.sizes.empty();
-    const bool perPointWeight = !input.weights.empty();
 
     const std::size_t poolSize = util::getPoolSize();
     std::size_t nJobs = settings.jobs;
@@ -171,9 +167,8 @@ void splatImpl(const SplatInput& input, const SplatSettings& settings, mat4 inde
     if (nJobs == 0) nJobs = 1;
 
     auto processSlab = [&](std::size_t zStart, std::size_t zStop) {
-        return [zStart, zStop, positions = input.positions, sizes = input.sizes,
-                weights = input.weights, indexToWorld, worldToIndex, data, dims, size, weight,
-                error, perPointSize, perPointWeight, voxelSizeWorld, pointTransform](
+        return [zStart, zStop, inputs = inputs | std::ranges::to<std::vector>(), indexToWorld,
+                worldToIndex, data, dims, size, weight, error, voxelSizeWorld](
                    const std::function<void(double)>& progress, const std::function<bool()>& stop) {
             const util::IndexMapper3D idx(dims);
             const auto dimsI = ivec3{dims};
@@ -181,57 +176,74 @@ void splatImpl(const SplatInput& input, const SplatSettings& settings, mat4 inde
             auto minMax =
                 vec2{std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest()};
 
-            for (std::size_t p = 0; p < positions.size(); ++p) {
-                if (stop && stop()) return minMax;
-                if (progress) {
-                    progress(static_cast<double>(p) / static_cast<double>(positions.size()));
-                }
-                const vec3 pw = util::transformPos(pointTransform, positions[p]);
-                const float s = (perPointSize ? sizes[p] : 1.0f) * size;
-                const float w = (perPointWeight ? weights[p] : 1.0f) * weight;
-                if (s <= 0.0f || w <= 0.0f) continue;
+            const auto allPoints = std::ranges::fold_left(
+                inputs | std::views::transform([](auto& input) { return input.positions.size(); }),
+                0uz, std::plus<>{});
+            const auto progressStep = allPoints / 100;
+            auto currentPoint = 0uz;
 
-                const float support = [&]() {
-                    if constexpr (K == SplatKernel::Gaussian) {
-                        return static_cast<float>(gaussian_support(s, error));
-                    } else {
-                        (void)error;
-                        return s;
+            for (auto& input : inputs) {
+                const mat4 pointTransform{input.pointTransform};
+                const bool perPointSize = !input.sizes.empty();
+                const bool perPointWeight = !input.weights.empty();
+
+                for (std::size_t p = 0; p < input.positions.size(); ++p) {
+                    if (stop && stop()) return minMax;
+                    if (progress) {
+                        if (currentPoint % progressStep == 0) {
+                            progress(static_cast<double>(currentPoint) /
+                                     static_cast<double>(allPoints));
+                        }
+                        ++currentPoint;
                     }
-                }();
+                    const vec3 pw = util::transformPos(pointTransform, input.positions[p]);
+                    const float s = (perPointSize ? input.sizes[p] : 1.0f) * size;
+                    const float w = (perPointWeight ? input.weights[p] : 1.0f) * weight;
+                    if (s <= 0.0f || w <= 0.0f) continue;
 
-                // Conservative footprint in index space
-                const vec3 footprintWorld{support, support, support};
-                const vec3 footprintIndex = footprintWorld / voxelSizeWorld;
-                const vec3 centerIndex = vec3{worldToIndex * vec4{pw, 1.0f}};
+                    const float support = [&]() {
+                        if constexpr (K == SplatKernel::Gaussian) {
+                            return static_cast<float>(gaussian_support(s, error));
+                        } else {
+                            (void)error;
+                            return s;
+                        }
+                    }();
 
-                const auto lo = ivec3{glm::floor(centerIndex - footprintIndex)};
-                const auto hi = ivec3{glm::ceil(centerIndex + footprintIndex)} + ivec3{1};
+                    // Conservative footprint in index space
+                    const vec3 footprintWorld{support, support, support};
+                    const vec3 footprintIndex = footprintWorld / voxelSizeWorld;
+                    const vec3 centerIndex = vec3{worldToIndex * vec4{pw, 1.0f}};
 
-                const int z0 = std::max(lo.z, static_cast<int>(zStart));
-                const int z1 = std::min(hi.z, static_cast<int>(zStop));
-                if (z0 >= z1) continue;
+                    const auto lo = ivec3{glm::floor(centerIndex - footprintIndex)};
+                    const auto hi = ivec3{glm::ceil(centerIndex + footprintIndex)} + ivec3{1};
 
-                const int y0 = std::max(lo.y, 0);
-                const int y1 = std::min(hi.y, dimsI.y);
-                if (y0 >= y1) continue;
+                    const int z0 = std::max(lo.z, static_cast<int>(zStart));
+                    const int z1 = std::min(hi.z, static_cast<int>(zStop));
+                    if (z0 >= z1) continue;
 
-                const int x0 = std::max(lo.x, 0);
-                const int x1 = std::min(hi.x, dimsI.x);
-                if (x0 >= x1) continue;
+                    const int y0 = std::max(lo.y, 0);
+                    const int y1 = std::min(hi.y, dimsI.y);
+                    if (y0 >= y1) continue;
 
-                const float support2 = support * support;
+                    const int x0 = std::max(lo.x, 0);
+                    const int x1 = std::min(hi.x, dimsI.x);
+                    if (x0 >= x1) continue;
 
-                const auto f = w * kernelNormFactor<K>(s);
-                for (int z = z0; z < z1; ++z) {
-                    for (int y = y0; y < y1; ++y) {
-                        for (int x = x0; x < x1; ++x) {
-                            const auto voxelWorld = vec3{indexToWorld * vec4{ivec3{x, y, z}, 1.0f}};
-                            const vec3 d = voxelWorld - pw;
-                            const float d2 = glm::dot(d, d);
-                            if (d2 > support2) continue;
-                            const float contrib = f * evalKernel<K>(d2, s);
-                            data[idx(size3_t{x, y, z})] += contrib;
+                    const float support2 = support * support;
+
+                    const auto f = w * kernelNormFactor<K>(s);
+                    for (int z = z0; z < z1; ++z) {
+                        for (int y = y0; y < y1; ++y) {
+                            for (int x = x0; x < x1; ++x) {
+                                const auto voxelWorld =
+                                    vec3{indexToWorld * vec4{ivec3{x, y, z}, 1.0f}};
+                                const vec3 d = voxelWorld - pw;
+                                const float d2 = glm::dot(d, d);
+                                if (d2 > support2) continue;
+                                const float contrib = f * evalKernel<K>(d2, s);
+                                data[idx(size3_t{x, y, z})] += contrib;
+                            }
                         }
                     }
                 }
@@ -268,76 +280,8 @@ std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
           std::vector<std::function<vec2(const std::function<void(double)>&,
                                          const std::function<bool()>&)>>>
 splatJobs(const SplatInput& input, const SplatSettings& settings) {
-    if (settings.dimensions.x == 0 || settings.dimensions.y == 0 || settings.dimensions.z == 0) {
-        throw Exception("Volume dimensions must be non-zero");
-    }
-    if (settings.size < 0.0f) {
-        throw Exception("Size must be positive");
-    }
-    if (settings.weight < 0.0f) {
-        throw Exception("Weight must be positive");
-    }
-    if (settings.error < 0.0f) {
-        throw Exception("Error must be positive");
-    }
-    if (!input.sizes.empty() && input.sizes.size() != input.positions.size()) {
-        throw Exception("Sizes size does not match positions size");
-    }
-    if (!input.weights.empty() && input.weights.size() != input.positions.size()) {
-        throw Exception("Weights size does not match positions size");
-    }
-
-    auto rep = std::make_shared<VolumeRAMPrecision<float>>(settings.dimensions);
-    std::fill_n(rep->getDataTyped(),
-                settings.dimensions.x * settings.dimensions.y * settings.dimensions.z, 0.0f);
-
-    auto volume = std::make_shared<Volume>(rep);
-    volume->setModelMatrix(dmat4{settings.modelMatrix});
-    volume->axes = settings.axes;
-    volume->dataMap.valueAxis = settings.valueAxis;
-
-    const auto indexToWorld = volume->getCoordinateTransformer().getIndexToWorldMatrix();
-    const auto worldToIndex = volume->getCoordinateTransformer().getWorldToIndexMatrix();
-
-    const std::function<std::shared_ptr<Volume>(std::vector<vec2>)> collect =
-        [volume](const std::vector<vec2>& minMaxes) {
-            vec2 minMax{std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest()};
-            for (auto& val : minMaxes) {
-                minMax.x = std::min(minMax.x, val.x);
-                minMax.y = std::max(minMax.y, val.y);
-            }
-            volume->dataMap.dataRange = dvec2{minMax};
-            volume->dataMap.valueRange = volume->dataMap.dataRange;
-            return volume;
-        };
-
-    std::vector<
-        std::function<vec2(const std::function<void(double)>&, const std::function<bool()>&)>>
-        jobs;
-    if (!input.positions.empty()) {
-        float* data = rep->getDataTyped();
-
-        switch (settings.kernel) {
-            case SplatKernel::Gaussian:
-                splatImpl<SplatKernel::Gaussian>(input, settings, indexToWorld, worldToIndex, data,
-                                                 jobs);
-                break;
-            case SplatKernel::Epanechnikov:
-                splatImpl<SplatKernel::Epanechnikov>(input, settings, indexToWorld, worldToIndex,
-                                                     data, jobs);
-                break;
-            case SplatKernel::Triangular:
-                splatImpl<SplatKernel::Triangular>(input, settings, indexToWorld, worldToIndex,
-                                                   data, jobs);
-                break;
-            case SplatKernel::Uniform:
-                splatImpl<SplatKernel::Uniform>(input, settings, indexToWorld, worldToIndex, data,
-                                                jobs);
-                break;
-        }
-    }
-
-    return {collect, jobs};
+    std::array<SplatInput, 1> inputs{input};
+    return splatJobs(inputs, settings);
 }
 
 std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
@@ -393,29 +337,25 @@ splatJobs(std::span<const SplatInput> inputs, const SplatSettings& settings) {
         std::function<vec2(const std::function<void(double)>&, const std::function<bool()>&)>>
         jobs;
 
-    for (const auto& input : inputs) {
-        if (!input.positions.empty()) {
-            float* data = rep->getDataTyped();
+    auto data = rep->getView();
 
-            switch (settings.kernel) {
-                case SplatKernel::Gaussian:
-                    splatImpl<SplatKernel::Gaussian>(input, settings, indexToWorld, worldToIndex,
-                                                     data, jobs);
-                    break;
-                case SplatKernel::Epanechnikov:
-                    splatImpl<SplatKernel::Epanechnikov>(input, settings, indexToWorld,
-                                                         worldToIndex, data, jobs);
-                    break;
-                case SplatKernel::Triangular:
-                    splatImpl<SplatKernel::Triangular>(input, settings, indexToWorld, worldToIndex,
-                                                       data, jobs);
-                    break;
-                case SplatKernel::Uniform:
-                    splatImpl<SplatKernel::Uniform>(input, settings, indexToWorld, worldToIndex,
-                                                    data, jobs);
-                    break;
-            }
-        }
+    switch (settings.kernel) {
+        case SplatKernel::Gaussian:
+            splatImpl<SplatKernel::Gaussian>(inputs, settings, indexToWorld, worldToIndex, data,
+                                             jobs);
+            break;
+        case SplatKernel::Epanechnikov:
+            splatImpl<SplatKernel::Epanechnikov>(inputs, settings, indexToWorld, worldToIndex, data,
+                                                 jobs);
+            break;
+        case SplatKernel::Triangular:
+            splatImpl<SplatKernel::Triangular>(inputs, settings, indexToWorld, worldToIndex, data,
+                                               jobs);
+            break;
+        case SplatKernel::Uniform:
+            splatImpl<SplatKernel::Uniform>(inputs, settings, indexToWorld, worldToIndex, data,
+                                            jobs);
+            break;
     }
 
     return {collect, jobs};
