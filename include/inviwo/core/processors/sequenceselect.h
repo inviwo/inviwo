@@ -38,6 +38,8 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/util/utilities.h>
 
+#include <optional>
+
 namespace inviwo {
 /**
  * Template for processors that want to select an element from an
@@ -77,9 +79,25 @@ SequenceSelect<T, OutportType>::SequenceSelect()
     , inport_{"inport", "Sequence of data to select from"_help}
     , outport_{"outport", "The selected item"_help}
     , index_{"index", "Index", util::ordinalCount(0uz)}
-    , next_{"next", "Next", [this](Event*) { index_.set(index_.get() + 1uz); }, IvwKey::Up,
+    , next_{"next", "Next",
+            [this](Event*) {
+                if (index_.get() + 1 > index_.getMaxValue()) {
+                    index_.set(0uz);
+                } else {
+                    index_.set(index_.get() + 1uz);
+                }
+            },
+            IvwKey::Up,
+
             KeyState::Press}
-    , prev_{"prev", "Prev", [this](Event*) { index_.set(std::max(index_.get(), 1uz) - 1uz); },
+    , prev_{"prev", "Prev",
+            [this](Event*) {
+                if (index_.get() == 0) {
+                    index_.set(index_.getMaxValue());
+                } else {
+                    index_.set(std::max(index_.get(), 1uz) - 1uz);
+                }
+            },
             IvwKey::Down, KeyState::Press} {
 
     addPorts(inport_, outport_);

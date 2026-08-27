@@ -389,8 +389,8 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
 
         const auto id = fmt::format("{}{}Sequence", selected.front()->getIdentifier(),
                                     selected.size() > 1 ? "Etc" : "");
-        const auto name = fmt::format("{} {} Sequence", selected.front()->getDisplayName(),
-                                      selected.size() > 1 ? "Etc" : "");
+        const auto name = fmt::format("{}{} Sequence", selected.front()->getDisplayName(),
+                                      selected.size() > 1 ? " Etc" : "");
         auto sequence = std::make_shared<SequenceProcessor>(id, name, app);
         auto center = util::getCenterPosition(selected);
         util::setPosition(sequence.get(), center);
