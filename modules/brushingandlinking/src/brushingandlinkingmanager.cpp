@@ -77,6 +77,22 @@ BrushingAndLinkingManager::~BrushingAndLinkingManager() {
     for (auto child : children_) {
         child->setParent(nullptr);
     }
+
+    if (parent_) {
+        parent_->removeChild(this);
+
+        // set manager as modified since filter actions might have changed when removing the parent
+        for (const auto& [action, targets] : parent_->getTargets()) {
+            for (const auto& t : targets) {
+                modifications_[t] |= fromAction(action);
+            }
+        }
+
+        if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
+            const auto* outport = std::get<BrushingAndLinkingOutport*>(owner_);
+            outport->getProcessor()->invalidate(getInvalidationLevel());
+        }
+    }
 }
 
 void BrushingAndLinkingManager::brush(BrushingAction action, BrushingTarget target,
