@@ -355,6 +355,7 @@ void SequenceProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
             sink->setSequenceIndex(0);
             sub_.sinks.push_back(sink);
         } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
+            source->sync(nullptr);
             auto& port = source->getSuperInport();
             const auto id = util::findUniqueIdentifier(
                 port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; },
@@ -384,8 +385,7 @@ void SequenceProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
         } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
             if (auto* org = dynamic_cast<SequenceCompositeSourceBase*>(
                     sub_.net->getProcessorByIdentifier(source->getIdentifier()))) {
-
-                source->setSuperInport(org->getSuperInportShared());
+                source->sync(org);
                 source->setSequenceIndex(std::distance(copies_.begin(), it) + 1);
                 copy.sources.push_back(source);
             } else {

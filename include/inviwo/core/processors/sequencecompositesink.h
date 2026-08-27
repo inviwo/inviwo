@@ -123,6 +123,17 @@ public:
         return std::make_shared<SequenceSelect<InportData>>();
     }
 
+    static std::string superPortIdentifier(Port* port) {
+        auto portIdentifier = port->getIdentifier();
+        // Make first letter uppercase for readability when combined with processor
+        // display name
+        if (!portIdentifier.empty()) {
+            portIdentifier.front() = static_cast<char>(std::toupper(portIdentifier.front()));
+        }
+        return util::stripIdentifier(
+            fmt::format("{}{}", port->getProcessor()->getDisplayName(), portIdentifier));
+    }
+
 private:
     std::shared_ptr<std::vector<std::shared_ptr<const typename OutportSequenceData::type>>> data_;
     InportType inport_;
@@ -197,7 +208,8 @@ void SequenceCompositeSink<InportType, OutportSequenceType>::sync(
             throw Exception(SourceContext{}, "SequenceCompositeSinkBase of wrong type");
         }
     } else {
-        superOutport_ = std::make_shared<OutportSequenceType>("outport");
+        auto* outport = inport_.getConnectedOutport();
+        superOutport_ = std::make_shared<OutportSequenceType>(superPortIdentifier(outport));
         addPortToGroup(superOutport_.get(), "default");
         data_ = std::make_shared<
             std::vector<std::shared_ptr<const typename OutportSequenceData::type>>>();

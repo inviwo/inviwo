@@ -112,23 +112,9 @@ std::shared_ptr<Source> addMetaSource(const std::vector<Inport*>& inports,
     if (auto metaSource = std::dynamic_pointer_cast<Source>(
             pf->createShared(fmt::format("{}{}", portId, Source::identifierSuffix())))) {
         subNetwork.addProcessor(metaSource);
-        bool optional = true;
         for (auto* inport : inports) {
-            optional &= inport->isOptional();
             subNetwork.addConnection(metaSource->getOutports().front(), inport);
         }
-        metaSource->getSuperInport().setOptional(optional);
-        auto portIdentifier = inports.front()->getIdentifier();
-        // Make first letter uppercase for readability when combined with processor
-        // display name
-        if (!portIdentifier.empty()) {
-            portIdentifier.front() = static_cast<char>(std::toupper(portIdentifier.front()));
-        }
-
-        auto id = util::stripIdentifier(
-            fmt::format("{}{}", inports.front()->getProcessor()->getDisplayName(), portIdentifier));
-        metaSource->getSuperInport().setIdentifier(id);
-
         return metaSource;
     } else {
         return nullptr;
@@ -142,16 +128,6 @@ std::shared_ptr<Sink> addMetaSink(Outport* outport, ProcessorNetwork& subNetwork
             pf->createShared(fmt::format("{}{}", portId, Sink::identifierSuffix()))))) {
         subNetwork.addProcessor(metasink);
         subNetwork.addConnection(outport, metasink->getInports().front());
-
-        auto portIdentifier = outport->getIdentifier();
-        // Make first letter uppercase for readability when combined with processor
-        // display name
-        if (!portIdentifier.empty()) {
-            portIdentifier.front() = static_cast<char>(std::toupper(portIdentifier.front()));
-        }
-        auto id = util::stripIdentifier(
-            fmt::format("{}{}", outport->getProcessor()->getDisplayName(), portIdentifier));
-        metasink->getSuperOutport().setIdentifier(id);
         return metasink;
     } else {
         return nullptr;

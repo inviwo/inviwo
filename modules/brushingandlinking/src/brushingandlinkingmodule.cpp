@@ -166,20 +166,27 @@ std::shared_ptr<Processor> SequenceCompositeSource<
 }
 
 template <>
-void SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::setSuperInport(
-    std::shared_ptr<Inport> inport) {
-    if (auto typedInport = std::dynamic_pointer_cast<BrushingAndLinkingInport>(inport)) {
-        removePortFromGroups(superInport_.get());
-        outport_.getManager().setParent(nullptr);
+void SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>::sync(
+    SequenceCompositeSourceBase* source) {
 
-        superInport_ = typedInport;
-        addPortToGroup(superInport_.get(), "default");
+    if (source) {
+        if (auto* typedSource = dynamic_cast<
+                SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>*>(
+                source)) {
+            superInport_ = typedSource->superInport_;
 
-        outport_.getManager().setParent(&superInport_->getManager());
+        } else {
+            throw Exception(SourceContext{}, "SequenceCompositeSinkBase of wrong type");
+        }
     } else {
-        throw Exception(SourceContext{}, "Got port of type {}, expected {}",
-                        inport->getClassIdentifier(), superInport_->getClassIdentifier());
+        auto* inport = outport_.getConnectedInports().front();
+        superInport_ = std::make_shared<BrushingAndLinkingInport>(superPortIdentifier(inport));
+        const auto optional = std::ranges::all_of(outport_.getConnectedInports(),
+                                                  [](auto* port) { return port->isOptional(); });
+        superInport_->setOptional(optional);
     }
+    addPortToGroup(superInport_.get(), "default");
+    outport_.getManager().setParent(&superInport_->getManager());
 }
 
 BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app)
