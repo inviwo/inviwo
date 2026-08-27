@@ -138,14 +138,12 @@ struct ProcessorTraits<
 
 // Specialize to pass on the manager
 template <>
-SequenceCompositeSource<BrushingAndLinkingInport,
-                        BrushingAndLinkingOutport>::SequenceCompositeSource()
-    : SequenceCompositeSourceBase()
-    , superInport_{std::make_shared<BrushingAndLinkingInport>("inport")}
-    , outport_{"outport"} {
-    addPort(outport_);
+void SequenceCompositeSource<BrushingAndLinkingInport,
+                             BrushingAndLinkingOutport>::createSuperInport(std::string_view id,
+                                                                           bool optional) {
+    superInport_ = std::make_shared<BrushingAndLinkingInport>(id);
+    superInport_->setOptional(optional);
     addPortToGroup(superInport_.get(), "default");
-
     outport_.getManager().setParent(&superInport_->getManager());
 }
 
@@ -173,13 +171,15 @@ void SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport
         if (auto* typedSource = dynamic_cast<
                 SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>*>(
                 source)) {
+            // set the new parent before we assign the superInport_ since that is the current
+            // parent.
+            outport_.getManager().setParent(&typedSource->superInport_->getManager());
             superInport_ = typedSource->superInport_;
             addPortToGroup(superInport_.get(), "default");
         } else {
             throw Exception(SourceContext{}, "SequenceCompositeSinkBase of wrong type");
         }
     }
-    outport_.getManager().setParent(&superInport_->getManager());
 }
 
 BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app)

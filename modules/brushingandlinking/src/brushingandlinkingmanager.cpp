@@ -73,7 +73,11 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(
     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
     : owner_(outport), invalidationLevels_(std::move(invalidationLevels)) {}
 
-BrushingAndLinkingManager::~BrushingAndLinkingManager() = default;
+BrushingAndLinkingManager::~BrushingAndLinkingManager() {
+    for (auto child : children_) {
+        child->setParent(nullptr);
+    }
+}
 
 void BrushingAndLinkingManager::brush(BrushingAction action, BrushingTarget target,
                                       const BitSet& indices, std::string_view source) {
@@ -355,6 +359,8 @@ bool BrushingAndLinkingManager::isHighlighted(uint32_t idx, BrushingTarget targe
 }
 
 void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
+    if (parent_ == parent) return;
+
     if (parent_) {
         parent_->removeChild(this);
 
@@ -391,6 +397,8 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
         }
     }
 }
+
+BrushingAndLinkingManager* BrushingAndLinkingManager::getParent() const { return parent_; }
 
 void BrushingAndLinkingManager::onBrush(
     std::function<void(BrushingAction, BrushingTarget, const BitSet&, std::string_view)> callback) {

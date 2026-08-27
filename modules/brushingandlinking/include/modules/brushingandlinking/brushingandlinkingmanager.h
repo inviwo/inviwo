@@ -328,6 +328,7 @@ public:
      * register a parent manager for the propagation of brushing actions
      */
     void setParent(BrushingAndLinkingManager* parent);
+    BrushingAndLinkingManager* getParent() const;
 
     /**
      * Add a \p callback to the manager that gets called when a brushing action is triggered.
