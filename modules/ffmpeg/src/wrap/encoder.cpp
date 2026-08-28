@@ -47,7 +47,7 @@ Encoder::Encoder(CodecID codecId) : Encoder{findEncoder(codecId.id)} {}
 
 Encoder::~Encoder() { avcodec_free_context(&ctx); }
 
-void Encoder::open(AVDictionary* opt_arg) {
+void Encoder::open(AVDictionary* opt_arg) const {
     AVDictionary* opt = nullptr;
     av_dict_copy(&opt, opt_arg, 0);
 
@@ -60,13 +60,13 @@ void Encoder::open(AVDictionary* opt_arg) {
     }
 }
 
-void Encoder::sendFrame(const Frame& frame) {
+void Encoder::sendFrame(const Frame& frame) const {
     if (auto ret = avcodec_send_frame(ctx, frame.frame); ret < 0) {
         throw Exception(SourceContext{}, "Error sending a frame to the encoder: {}", Error(ret));
     }
 }
 
-int Encoder::receivePacket(Packet& pkt) {
+int Encoder::receivePacket(Packet& pkt) const {
     auto ret = avcodec_receive_packet(ctx, pkt.pkt);
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return ret;
 

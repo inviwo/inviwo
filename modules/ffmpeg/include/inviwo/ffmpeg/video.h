@@ -40,6 +40,7 @@
 
 #include <inviwo/core/util/glmvec.h>
 
+#include <chrono>
 #include <cstddef>
 #include <filesystem>
 #include <memory>
@@ -71,13 +72,14 @@ namespace ffmpeg {
  */
 class IVW_MODULE_FFMPEG_API Video : NoMoveCopy {
 public:
+    using Seconds = std::chrono::duration<double>;
+
     struct Info {
         size2_t dimensions{0, 0};
         /// Layer data format the frames are decoded into
         const DataFormatBase* format = nullptr;
         double frameRate = 0.0;
-        /// Duration in seconds
-        double duration = 0.0;
+        Seconds duration{0.0};
         /// Number of frames, might be an estimate based on duration and frame rate
         std::ptrdiff_t frames = 0;
         std::string codec;
@@ -91,14 +93,25 @@ public:
      * decoder available for it
      */
     explicit Video(const std::filesystem::path& filename, int streamIndex = -1);
+    Video(const Video&) = delete;
+    Video(Video&&) = delete;
+    Video& operator=(const Video&) = delete;
+    Video& operator=(Video&&) = delete;
     ~Video();
 
     const Info& info() const;
     const std::filesystem::path& filename() const;
     int streamIndex() const;
 
-    /// Index of the frame shown at @p time seconds
-    std::ptrdiff_t frameAt(double time) const;
+    /// Index of the frame shown at @p time
+    std::ptrdiff_t frameAt(Seconds time) const;
+    /// Presentation time of frame @p index
+    Seconds timeOf(std::ptrdiff_t index) const;
+
+    /// Index of the most recently decoded frame, or -1 if nothing has been decoded yet
+    std::ptrdiff_t currentFrame() const;
+    /// Presentation time of the most recently decoded frame
+    Seconds currentTime() const;
 
     /**
      * @brief Decode the frame at @p index
@@ -121,6 +134,8 @@ public:
 
     /// Position the stream so that the next call to readNextFrame() returns frame @p index
     void seekToFrame(std::ptrdiff_t index);
+    /// Position the stream so that the next call to readNextFrame() returns the frame at @p time
+    void seekToTime(Seconds time);
 
 private:
     /// Decode the next frame into frame_, returns false at the end of the stream
@@ -145,6 +160,8 @@ private:
     Info info_;
     /// Index of the frame held by frame_, or -1 if nothing has been decoded since the last seek
     std::ptrdiff_t current_;
+    /// Frames decoded before this index are skipped, a seek lands on the preceding keyframe
+    std::ptrdiff_t pending_;
     bool draining_;
 };
 

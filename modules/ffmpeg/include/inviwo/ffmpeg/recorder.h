@@ -55,7 +55,7 @@ public:
     ~Recorder();
 
     const OutputStream& getStream();
-    const OutputContext& getFormat();
+    const OutputContext& getOutputContext();
 
     /**
      * Copies the image data in layer into a ffmpeg frames and enques that for encoding

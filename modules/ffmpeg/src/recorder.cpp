@@ -103,7 +103,7 @@ Recorder::~Recorder() {
 }
 
 const OutputStream& Recorder::getStream() { return stream; }
-const OutputContext& Recorder::getFormat() { return out; }
+const OutputContext& Recorder::getOutputContext() { return out; }
 
 void Recorder::queueFrame(const LayerRAM& layer) {
     std::optional<Frame> frame;

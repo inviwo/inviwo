@@ -26,6 +26,7 @@ The encode side wrappers in the FFmpeg module were renamed for symmetry with the
 - `ffmpeg::Format` in `<inviwo/ffmpeg/wrap/format.h>` is now `ffmpeg::OutputContext` in `<inviwo/ffmpeg/wrap/outputcontext.h>`
 - `ffmpeg::Codec` in `<inviwo/ffmpeg/wrap/codec.h>` is now `ffmpeg::Encoder` in `<inviwo/ffmpeg/wrap/encoder.h>`
 - `ffmpeg::OutputStream::codec` is now `ffmpeg::OutputStream::encoder`
+- `ffmpeg::Recorder::getFormat()` is now `ffmpeg::Recorder::getOutputContext()`
 
 The new counterparts are `ffmpeg::InputContext` in `<inviwo/ffmpeg/wrap/inputcontext.h>` and `ffmpeg::Decoder` in `<inviwo/ffmpeg/wrap/decoder.h>`.
 

@@ -56,23 +56,27 @@ public:
      * @throws Exception if no decoder is available for the codec or if it cannot be opened
      */
     explicit Decoder(const AVStream* stream);
+    Decoder(const Decoder&) = delete;
+    Decoder(Decoder&&) = delete;
+    Decoder& operator=(const Decoder&) = delete;
+    Decoder& operator=(Decoder&&) = delete;
     ~Decoder();
 
-    void sendPacket(const Packet& pkt);
+    void sendPacket(const Packet& pkt) const;
 
     /// Signal end of stream to the decoder, any remaining frames can then be collected with
     /// receiveFrame()
-    void flush();
+    void flush() const;
 
     /**
      * @brief Retrieve the next decoded frame
      * @return 0 on success, AVERROR(EAGAIN) if more packets are needed, AVERROR_EOF if the decoder
      * has been fully drained
      */
-    int receiveFrame(Frame& frame);
+    int receiveFrame(Frame& frame) const;
 
     /// Discard any buffered state, must be called after seeking
-    void reset();
+    void reset() const;
 
     CodecID codecID() const;
     int width() const;

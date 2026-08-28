@@ -44,7 +44,9 @@ extern "C" {
 #include <libswscale/swscale.h>
 }
 
+#include <array>
 #include <cmath>
+#include <limits>
 
 #include <fmt/std.h>
 
@@ -67,11 +69,11 @@ Target targetFor(enum AVPixelFormat source) {
     const bool deep = desc && desc->comp[0].depth > 8;
 
     if (gray) {
-        return deep ? Target{AV_PIX_FMT_GRAY16, DataUInt16::get()}
-                    : Target{AV_PIX_FMT_GRAY8, DataUInt8::get()};
+        return deep ? Target{.pixelFormat = AV_PIX_FMT_GRAY16, .format = DataUInt16::get()}
+                    : Target{.pixelFormat = AV_PIX_FMT_GRAY8, .format = DataUInt8::get()};
     } else {
-        return deep ? Target{AV_PIX_FMT_RGBA64, DataVec4UInt16::get()}
-                    : Target{AV_PIX_FMT_RGBA, DataVec4UInt8::get()};
+        return deep ? Target{.pixelFormat = AV_PIX_FMT_RGBA64, .format = DataVec4UInt16::get()}
+                    : Target{.pixelFormat = AV_PIX_FMT_RGBA, .format = DataVec4UInt8::get()};
     }
 }
 
@@ -86,12 +88,13 @@ Video::Video(const std::filesystem::path& filename, int streamIndex)
     , stream_{input_.stream(streamIndex_)}
     , decoder_{stream_}
     , packet_{}
-    , frame_{Frame::alloc()}
+    , frame_{Frame::NoBuffers{}}
     , scaler_{std::nullopt}
     , scalerSourceFormat_{AV_PIX_FMT_NONE}
     , targetFormat_{AV_PIX_FMT_NONE}
     , info_{}
     , current_{-1}
+    , pending_{std::numeric_limits<std::ptrdiff_t>::min()}
     , draining_{false} {
 
     const auto* codecpar = stream_->codecpar;
@@ -120,15 +123,17 @@ Video::Video(const std::filesystem::path& filename, int streamIndex)
     }
 
     if (stream_->duration != AV_NOPTS_VALUE && stream_->duration > 0) {
-        info_.duration = static_cast<double>(stream_->duration) * av_q2d(stream_->time_base);
+        info_.duration =
+            Seconds{static_cast<double>(stream_->duration) * av_q2d(stream_->time_base)};
     } else if (input_.ctx->duration != AV_NOPTS_VALUE && input_.ctx->duration > 0) {
-        info_.duration = static_cast<double>(input_.ctx->duration) / AV_TIME_BASE;
+        info_.duration = Seconds{static_cast<double>(input_.ctx->duration) / AV_TIME_BASE};
     }
 
     if (stream_->nb_frames > 0) {
         info_.frames = static_cast<std::ptrdiff_t>(stream_->nb_frames);
-    } else if (info_.duration > 0.0) {
-        info_.frames = static_cast<std::ptrdiff_t>(std::llround(info_.duration * info_.frameRate));
+    } else if (info_.duration.count() > 0.0) {
+        info_.frames =
+            static_cast<std::ptrdiff_t>(std::llround(info_.duration.count() * info_.frameRate));
     }
 
     info_.dimensions = size2_t{codecpar->width, codecpar->height};
@@ -142,14 +147,22 @@ const Video::Info& Video::info() const { return info_; }
 const std::filesystem::path& Video::filename() const { return input_.filename; }
 int Video::streamIndex() const { return streamIndex_; }
 
-std::ptrdiff_t Video::frameAt(double time) const {
-    return static_cast<std::ptrdiff_t>(std::llround(time * info_.frameRate));
+std::ptrdiff_t Video::frameAt(Seconds time) const {
+    return static_cast<std::ptrdiff_t>(std::llround(time.count() * info_.frameRate));
 }
+
+Video::Seconds Video::timeOf(std::ptrdiff_t index) const {
+    return Seconds{static_cast<double>(index) / info_.frameRate};
+}
+
+std::ptrdiff_t Video::currentFrame() const { return current_; }
+
+Video::Seconds Video::currentTime() const { return timeOf(current_); }
 
 int64_t Video::timestampOf(std::ptrdiff_t index) const {
     const int64_t start = stream_->start_time != AV_NOPTS_VALUE ? stream_->start_time : 0;
-    const double seconds = static_cast<double>(index) / info_.frameRate;
-    return start + std::llround(seconds / av_q2d(stream_->time_base));
+    const auto seconds = timeOf(index);
+    return start + std::llround(seconds.count() / av_q2d(stream_->time_base));
 }
 
 std::ptrdiff_t Video::indexOfCurrentFrame() const {
@@ -194,12 +207,20 @@ void Video::seekToFrame(std::ptrdiff_t index) {
     decoder_.reset();
     draining_ = false;
     current_ = index - 1;
+    pending_ = index;
 }
 
+void Video::seekToTime(Seconds time) { seekToFrame(frameAt(time)); }
+
 std::shared_ptr<Layer> Video::readNextFrame(std::shared_ptr<Layer> reuse) {
-    if (!decodeNextFrame()) return nullptr;
-    current_ = indexOfCurrentFrame();
-    return toLayer(std::move(reuse));
+    while (decodeNextFrame()) {
+        current_ = indexOfCurrentFrame();
+        if (current_ >= pending_) {
+            pending_ = std::numeric_limits<std::ptrdiff_t>::min();
+            return toLayer(std::move(reuse));
+        }
+    }
+    return nullptr;
 }
 
 std::shared_ptr<Layer> Video::readFrame(std::ptrdiff_t index, std::shared_ptr<Layer> reuse) {
@@ -222,15 +243,9 @@ std::shared_ptr<Layer> Video::readFrame(std::ptrdiff_t index, std::shared_ptr<La
     if (target < next || target > next + maxForwardDecode) {
         seekToFrame(target);
     }
+    pending_ = target;
 
-    while (decodeNextFrame()) {
-        current_ = indexOfCurrentFrame();
-        if (current_ >= target) {
-            return toLayer(std::move(reuse));
-        }
-    }
-
-    return nullptr;
+    return readNextFrame(std::move(reuse));
 }
 
 std::shared_ptr<Layer> Video::toLayer(std::shared_ptr<Layer> reuse) {
@@ -256,27 +271,32 @@ std::shared_ptr<Layer> Video::toLayer(std::shared_ptr<Layer> reuse) {
 
     auto* ram = layer->getEditableRepresentation<LayerRAM>();
     auto* data = static_cast<uint8_t*>(ram->getData());
+
+    // All four target pixel formats, GRAY8, GRAY16, RGBA, and RGBA64, are single plane and packed,
+    // so only plane 0 is used. getSizeInBytes() accounts for both the component size and the
+    // number of channels.
     const auto stride = static_cast<int>(info_.dimensions.x * info_.format->getSizeInBytes());
 
     // Layers have their origin in the lower left corner, ffmpeg frames are top-down. Flip by
     // starting at the last row and using a negative stride.
-    uint8_t* dst[4] = {data + static_cast<std::ptrdiff_t>(height - 1) * stride, nullptr, nullptr,
-                       nullptr};
-    const int dstStride[4] = {-stride, 0, 0, 0};
+    const std::array<uint8_t*, 4> dst{data + static_cast<std::ptrdiff_t>(height - 1) * stride,
+                                      nullptr, nullptr, nullptr};
+    const std::array<int, 4> dstStride{-stride, 0, 0, 0};
 
-    scaler_->scale(frame_.frame->data, frame_.frame->linesize, 0, frame_.frame->height, dst,
-                   dstStride);
+    scaler_->scale(frame_.frame->data, frame_.frame->linesize, 0, frame_.frame->height, dst.data(),
+                   dstStride.data());
 
     const auto pts = frame_.frame->best_effort_timestamp;
     const int64_t start = stream_->start_time != AV_NOPTS_VALUE ? stream_->start_time : 0;
-    const double time = pts != AV_NOPTS_VALUE
-                            ? static_cast<double>(pts - start) * av_q2d(stream_->time_base)
-                            : static_cast<double>(current_) / info_.frameRate;
+    const auto time = pts != AV_NOPTS_VALUE
+                          ? Seconds{static_cast<double>(pts - start) * av_q2d(stream_->time_base)}
+                          : timeOf(current_);
 
+    layer->setMetaData<StringMetaData>("filename", input_.filename.generic_string());
     layer->setMetaData<IntMetaData>("frameIndex", static_cast<int>(current_));
     layer->setMetaData<IntMetaData>("frameCount", static_cast<int>(info_.frames));
     layer->setMetaData<DoubleMetaData>("frameRate", info_.frameRate);
-    layer->setMetaData<DoubleMetaData>("time", time);
+    layer->setMetaData<DoubleMetaData>("time", time.count());
 
     return layer;
 }

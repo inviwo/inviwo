@@ -38,10 +38,18 @@ namespace inviwo::ffmpeg {
 class IVW_MODULE_FFMPEG_API Packet : NoMoveCopy {
 public:
     Packet();
+    Packet(const Packet&) = delete;
+    Packet(Packet&&) = delete;
+    Packet& operator=(const Packet&) = delete;
+    Packet& operator=(Packet&&) = delete;
     ~Packet();
 
-    /// Release any data referenced by the packet and reset it to its default state
-    void unref();
+    /**
+     * @brief Release the reference to the data buffer the packet points to and reset it to its
+     * default state. The buffer itself is reference counted by ffmpeg and freed once the last
+     * reference is gone, the AVPacket is owned by this class and freed in the destructor.
+     */
+    void unref() const;
 
     AVPacket* pkt;
 };

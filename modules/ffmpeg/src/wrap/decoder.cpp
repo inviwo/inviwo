@@ -67,19 +67,19 @@ Decoder::Decoder(const AVStream* stream) : ctx{nullptr} {
 
 Decoder::~Decoder() { avcodec_free_context(&ctx); }
 
-void Decoder::sendPacket(const Packet& pkt) {
+void Decoder::sendPacket(const Packet& pkt) const {
     if (auto ret = avcodec_send_packet(ctx, pkt.pkt); ret < 0) {
         throw Exception(SourceContext{}, "Error sending a packet to the decoder: {}", Error{ret});
     }
 }
 
-void Decoder::flush() {
+void Decoder::flush() const {
     if (auto ret = avcodec_send_packet(ctx, nullptr); ret < 0) {
         throw Exception(SourceContext{}, "Error flushing the decoder: {}", Error{ret});
     }
 }
 
-int Decoder::receiveFrame(Frame& frame) {
+int Decoder::receiveFrame(Frame& frame) const {
     auto ret = avcodec_receive_frame(ctx, frame.frame);
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return ret;
 
@@ -89,7 +89,7 @@ int Decoder::receiveFrame(Frame& frame) {
     return ret;
 }
 
-void Decoder::reset() { avcodec_flush_buffers(ctx); }
+void Decoder::reset() const { avcodec_flush_buffers(ctx); }
 
 CodecID Decoder::codecID() const { return ctx->codec_id; }
 int Decoder::width() const { return ctx->width; }
