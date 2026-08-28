@@ -177,6 +177,9 @@ void SequenceProcessor::createNetworkCopies(size_t count) {
             });
         }
 
+        copies_.back().eval.reset();  // We don't want any evaluation remove this first
+        copies_.back().net.reset();   // Next remove the network before we remove the copy since
+                                      // ProcessorNetworkObserver callbacks will try to use the copy
         copies_.pop_back();
     }
 }
