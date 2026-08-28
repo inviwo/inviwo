@@ -62,6 +62,7 @@ private:
     OptionProperty<BrushingAction> action_;
     OptionProperty<BrushingTarget> target_;
     OrdinalProperty<size_t> maxSize_;
+    OrdinalProperty<size_t> minSize_;
 };
 
 template <typename T>
@@ -104,10 +105,11 @@ SequenceBrush<T>::SequenceBrush()
               {BrushingAction::Filter, BrushingAction::Select, BrushingAction::Highlight},
               1}
     , target_{"target", "Target", {BrushingTarget::Row, BrushingTarget::Column}, 0}
-    , maxSize_{"maxSize", "Max Size", util::ordinalCount(0uz)} {
+    , maxSize_{"maxSize", "Max Size", util::ordinalCount(0uz)}
+    , minSize_{"minSize", "Min Size", util::ordinalCount(0uz)} {
     addPorts(inport_, bnl_, outport_);
 
-    addProperties(action_, target_, maxSize_);
+    addProperties(action_, target_, maxSize_, minSize_);
 
     bnl_.setInvalidationLevels(
         {{BrushingModifications{flags::any}, InvalidationLevel::Valid},
@@ -122,12 +124,20 @@ void SequenceBrush<T>::process() {
              {{target_.get()}, fromAction(action_.get()), InvalidationLevel::InvalidOutput}});
     }
 
-    const auto data = inport_.getData();
+    const auto sequence = inport_.getData();
     auto brushed = std::make_shared<DataSequence<T>>();
-    for (auto i : bnl_.getIndices(action_.get(), target_.get())) {
+
+    const auto& indices = bnl_.getIndices(action_.get(), target_.get());
+    for (auto i : indices) {
         if (maxSize_ != 0 && i >= maxSize_) break;
-        if (i >= data->size()) break;
-        brushed->push_back(data->at(i));
+        if (i >= sequence->size()) break;
+        brushed->push_back(sequence->at(i));
+    }
+
+    for (auto&& [i, data] : std::views::zip(std::views::iota(0uz), *sequence)) {
+        if (brushed->size() >= minSize_.get()) break;
+        if (indices.contains(i)) continue;
+        brushed->push_back(sequence->at(i));
     }
 
     outport_.setData(brushed);
