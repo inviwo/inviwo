@@ -51,7 +51,7 @@ public:
 
         log::info("Recording to: {}", filename);
         log::info("  - Format:   {}", recorder->getFormat().outputFormat().desc());
-        log::info("  - Codec:    {}", recorder->getStream().codec.codecID());
+        log::info("  - Codec:    {}", recorder->getStream().encoder.codecID());
     }
     virtual ~FFmpegRecorder() = default;
 

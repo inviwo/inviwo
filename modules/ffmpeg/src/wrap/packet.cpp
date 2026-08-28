@@ -44,4 +44,6 @@ Packet::Packet() : pkt{av_packet_alloc()} {
 }
 Packet::~Packet() { av_packet_free(&pkt); }
 
+void Packet::unref() { av_packet_unref(pkt); }
+
 }  // namespace inviwo::ffmpeg

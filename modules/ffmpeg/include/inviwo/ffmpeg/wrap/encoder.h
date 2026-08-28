@@ -29,40 +29,39 @@
 #pragma once
 
 #include <inviwo/ffmpeg/ffmpegmoduledefine.h>
+
 #include <inviwo/ffmpeg/util.h>
+#include <inviwo/ffmpeg/wrap/frame.h>
 #include <inviwo/ffmpeg/wrap/packet.h>
 #include <inviwo/ffmpeg/wrap/codecid.h>
-#include <inviwo/ffmpeg/wrap/outputformat.h>
 
-#include <filesystem>
-#include <optional>
-
-struct AVOutputFormat;
-struct AVFormatContext;
-struct AVStream;
+struct AVCodec;
+struct AVCodecContext;
 struct AVDictionary;
 
 namespace inviwo::ffmpeg {
 
-class IVW_MODULE_FFMPEG_API Format : NoMoveCopy {
+/**
+ * @brief RAII wrapper around an AVCodecContext set up for encoding.
+ * @see Decoder for the decoding counterpart
+ */
+class IVW_MODULE_FFMPEG_API Encoder : NoMoveCopy {
 public:
-    Format(OutputFormat outputFormat, const std::filesystem::path& aFilename);
-    Format(const std::filesystem::path& aFilename);
-    ~Format();
-    void open();
+    Encoder(const AVCodec* codec);
+    Encoder(CodecID codec);
 
-    void writeHeader(AVDictionary** options);
+    ~Encoder();
+    void sendFrame(const Frame& frame);
+    int receivePacket(Packet& pkt);
 
-    void writeTrailer();
+    CodecID codecID() const;
 
-    void writeFrame(const Packet& pkt);
-    AVStream* newStream();
-    int queryCodec(CodecID codecId, std::optional<int> stdCompliance = std::nullopt);
+    void open(AVDictionary* opt_arg);
 
-    OutputFormat outputFormat() const;
+    AVCodecContext* ctx;
 
-    std::filesystem::path filename;
-    AVFormatContext* ctx;
+private:
+    const AVCodec* findEncoder(CodecID codecId);
 };
 
 }  // namespace inviwo::ffmpeg

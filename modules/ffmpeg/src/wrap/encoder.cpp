@@ -26,24 +26,63 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/ffmpeg/ffmpegmoduledefine.h>
-#include <inviwo/ffmpeg/util.h>
+#include <inviwo/ffmpeg/wrap/encoder.h>
 
-struct AVPacket;
+#include <inviwo/core/util/exception.h>
+
+extern "C" {
+#include <libavcodec/avcodec.h>
+}
 
 namespace inviwo::ffmpeg {
 
-class IVW_MODULE_FFMPEG_API Packet : NoMoveCopy {
-public:
-    Packet();
-    ~Packet();
+Encoder::Encoder(const AVCodec* codec) : ctx{avcodec_alloc_context3(codec)} {
+    if (!ctx) {
+        throw Exception(SourceContext{}, "Could not alloc an encoding context");
+    }
+}
 
-    /// Release any data referenced by the packet and reset it to its default state
-    void unref();
+Encoder::Encoder(CodecID codecId) : Encoder{findEncoder(codecId.id)} {}
 
-    AVPacket* pkt;
-};
+Encoder::~Encoder() { avcodec_free_context(&ctx); }
+
+void Encoder::open(AVDictionary* opt_arg) {
+    AVDictionary* opt = nullptr;
+    av_dict_copy(&opt, opt_arg, 0);
+
+    /* open the codec */
+    int ret = avcodec_open2(ctx, ctx->codec, &opt);
+
+    av_dict_free(&opt);
+    if (ret < 0) {
+        throw Exception(SourceContext{}, "Could not open video codec: {}", Error{ret});
+    }
+}
+
+void Encoder::sendFrame(const Frame& frame) {
+    if (auto ret = avcodec_send_frame(ctx, frame.frame); ret < 0) {
+        throw Exception(SourceContext{}, "Error sending a frame to the encoder: {}", Error(ret));
+    }
+}
+
+int Encoder::receivePacket(Packet& pkt) {
+    auto ret = avcodec_receive_packet(ctx, pkt.pkt);
+    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return ret;
+
+    if (ret < 0) {
+        throw Exception(SourceContext{}, "Error encoding a frame: {}", Error(ret));
+    }
+    return ret;
+}
+CodecID Encoder::codecID() const { return ctx->codec_id; }
+
+const AVCodec* Encoder::findEncoder(CodecID codecId) {
+    auto codec = avcodec_find_encoder(codecId.id);
+    if (!codec) {
+        throw Exception(SourceContext{}, "Could not find encoder for '{}'", codecId.name());
+    }
+    return codec;
+}
 
 }  // namespace inviwo::ffmpeg
