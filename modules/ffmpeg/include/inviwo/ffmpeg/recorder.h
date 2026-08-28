@@ -34,7 +34,7 @@
 
 #include <inviwo/ffmpeg/outputstream.h>
 #include <inviwo/ffmpeg/wrap/packet.h>
-#include <inviwo/ffmpeg/wrap/format.h>
+#include <inviwo/ffmpeg/wrap/outputcontext.h>
 
 #include <thread>
 #include <queue>
@@ -55,7 +55,7 @@ public:
     ~Recorder();
 
     const OutputStream& getStream();
-    const Format& getFormat();
+    const OutputContext& getFormat();
 
     /**
      * Copies the image data in layer into a ffmpeg frames and enques that for encoding
@@ -67,7 +67,7 @@ private:
     void run();
 
     Mode mode;
-    Format out;
+    OutputContext out;
     OutputStream stream;
     Packet pkt;
 

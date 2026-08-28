@@ -34,9 +34,9 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/threadutil.h>
 
-#include <inviwo/ffmpeg/wrap/codec.h>
+#include <inviwo/ffmpeg/wrap/encoder.h>
 #include <inviwo/ffmpeg/wrap/codecid.h>
-#include <inviwo/ffmpeg/wrap/format.h>
+#include <inviwo/ffmpeg/wrap/outputcontext.h>
 #include <inviwo/ffmpeg/wrap/frame.h>
 #include <inviwo/ffmpeg/wrap/outputformat.h>
 #include <inviwo/ffmpeg/wrap/packet.h>
@@ -172,7 +172,7 @@ void MovieExport::process() {
 
         log::info("Recording to: {}", file_.get());
         log::info("  - Format:   {}", recorder->getFormat().outputFormat().desc());
-        log::info("  - Codec:    {}", recorder->getStream().codec.codecID());
+        log::info("  - Codec:    {}", recorder->getStream().encoder.codecID());
     }
 
     if (recorder) {

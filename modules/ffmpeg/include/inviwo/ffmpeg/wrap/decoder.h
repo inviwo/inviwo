@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,24 +26,60 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/ffmpeg/ffmpegmoduledefine.h>
-#include <inviwo/ffmpeg/util.h>
 
-struct AVPacket;
+#include <inviwo/ffmpeg/util.h>
+#include <inviwo/ffmpeg/wrap/frame.h>
+#include <inviwo/ffmpeg/wrap/packet.h>
+#include <inviwo/ffmpeg/wrap/codecid.h>
+
+extern "C" {
+#include <libavutil/avutil.h>
+}
+
+struct AVCodecContext;
+struct AVStream;
 
 namespace inviwo::ffmpeg {
 
-class IVW_MODULE_FFMPEG_API Packet : NoMoveCopy {
+/**
+ * @brief RAII wrapper around an AVCodecContext set up for decoding.
+ * @see Encoder for the encoding counterpart
+ */
+class IVW_MODULE_FFMPEG_API Decoder : NoMoveCopy {
 public:
-    Packet();
-    ~Packet();
+    /**
+     * @brief Create and open a decoder matching the codec parameters of @p stream
+     * @throws Exception if no decoder is available for the codec or if it cannot be opened
+     */
+    explicit Decoder(const AVStream* stream);
+    ~Decoder();
 
-    /// Release any data referenced by the packet and reset it to its default state
-    void unref();
+    void sendPacket(const Packet& pkt);
 
-    AVPacket* pkt;
+    /// Signal end of stream to the decoder, any remaining frames can then be collected with
+    /// receiveFrame()
+    void flush();
+
+    /**
+     * @brief Retrieve the next decoded frame
+     * @return 0 on success, AVERROR(EAGAIN) if more packets are needed, AVERROR_EOF if the decoder
+     * has been fully drained
+     */
+    int receiveFrame(Frame& frame);
+
+    /// Discard any buffered state, must be called after seeking
+    void reset();
+
+    CodecID codecID() const;
+    int width() const;
+    int height() const;
+    enum AVPixelFormat pixelFormat() const;
+
+    AVCodecContext* ctx;
 };
 
 }  // namespace inviwo::ffmpeg

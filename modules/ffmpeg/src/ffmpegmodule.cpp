@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/ffmpeg/ffmpegmodule.h>
+#include <inviwo/ffmpeg/ffmpegvideoreader.h>
 #include <inviwo/ffmpeg/processors/movieexport.h>
 #include <inviwo/ffmpeg/ffmpeganimationrecorder.h>
 
@@ -86,6 +87,9 @@ FFmpegModule::FFmpegModule(InviwoApplication* app)
 
     // Processors
     registerProcessor<MovieExport>();
+
+    registerDataReader(std::make_unique<FFmpegLayerReader>());
+    registerDataReader(std::make_unique<FFmpegLayerSequenceReader>());
 
     av_log_set_callback(ffmpeg_log_callback);
 

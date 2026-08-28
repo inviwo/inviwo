@@ -32,9 +32,9 @@
 
 #include <inviwo/ffmpeg/util.h>
 
-#include <inviwo/ffmpeg/wrap/format.h>
+#include <inviwo/ffmpeg/wrap/outputcontext.h>
 #include <inviwo/ffmpeg/wrap/frame.h>
-#include <inviwo/ffmpeg/wrap/codec.h>
+#include <inviwo/ffmpeg/wrap/encoder.h>
 #include <inviwo/ffmpeg/wrap/codecid.h>
 #include <inviwo/ffmpeg/wrap/swscale.h>
 
@@ -60,14 +60,14 @@ struct IVW_MODULE_FFMPEG_API OutputStream : NoMoveCopy {
         int64_t bitRate = 400000;
     };
 
-    OutputStream(Format& format, Options opts);
+    OutputStream(OutputContext& format, Options opts);
 
     void openVideo(AVDictionary* opt_arg = nullptr);
 
     Frame* fillFrame(Frame& dst, std::function<void(AVFrame* pict, int width, int height)> filler);
 
     enum AVPixelFormat sourceFormat;
-    Codec codec;
+    Encoder encoder;
     AVStream* stream;
 
     std::optional<Frame> tmpFrame;

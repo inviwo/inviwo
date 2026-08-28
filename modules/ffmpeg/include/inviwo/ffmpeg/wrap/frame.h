@@ -51,6 +51,12 @@ public:
     operator bool() const;
     void makeWritable();
 
+    /**
+     * @brief Allocate an AVFrame without any data buffers, for use as a decoder destination where
+     * the decoder provides the buffers.
+     */
+    static Frame alloc();
+
     AVFrame* frame;
 };
 

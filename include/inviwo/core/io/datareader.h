@@ -36,6 +36,7 @@
 #include <memory>
 #include <any>
 #include <ios>
+#include <string_view>
 #include <typeindex>
 
 namespace inviwo {
@@ -45,6 +46,19 @@ class MetaDataOwner;
 /**
  * @defgroup dataio Data Reader & Writers
  */
+
+/**
+ * @ingroup dataio
+ * @brief Option keys shared between data readers, @see DataReader::setOption
+ */
+namespace reader::option {
+/// Index of the item to read, `std::ptrdiff_t`. Negative values are counted from the end.
+inline constexpr std::string_view index = "index";
+/// Number of items to read, `std::ptrdiff_t`. A negative value means all remaining items.
+inline constexpr std::string_view count = "count";
+/// Step between the items to read, `std::ptrdiff_t`.
+inline constexpr std::string_view stride = "stride";
+}  // namespace reader::option
 
 /**
  * @ingroup dataio

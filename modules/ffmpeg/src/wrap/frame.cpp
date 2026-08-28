@@ -67,6 +67,15 @@ Frame::~Frame() {
 
 Frame::operator bool() const { return frame != nullptr; }
 
+Frame Frame::alloc() {
+    Frame result{};
+    result.frame = av_frame_alloc();
+    if (!result.frame) {
+        throw inviwo::Exception("Could not allocate frame.");
+    }
+    return result;
+}
+
 void Frame::makeWritable() {
     if (auto ret = av_frame_make_writable(frame); ret < 0) {
         throw inviwo::Exception(SourceContext{}, "Could not make video frame writable {}",
