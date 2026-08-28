@@ -77,22 +77,7 @@ BrushingAndLinkingManager::~BrushingAndLinkingManager() {
     for (auto child : children_) {
         child->setParent(nullptr);
     }
-
-    if (parent_) {
-        parent_->removeChild(this);
-
-        // set manager as modified since filter actions might have changed when removing the parent
-        for (const auto& [action, targets] : parent_->getTargets()) {
-            for (const auto& t : targets) {
-                modifications_[t] |= fromAction(action);
-            }
-        }
-
-        if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
-            const auto* outport = std::get<BrushingAndLinkingOutport*>(owner_);
-            outport->getProcessor()->invalidate(getInvalidationLevel());
-        }
-    }
+    removeParent();
 }
 
 void BrushingAndLinkingManager::brush(BrushingAction action, BrushingTarget target,
@@ -306,10 +291,6 @@ void BrushingAndLinkingManager::highlight(const BitSet& indices, BrushingTarget 
     brush(BrushingAction::Highlight, target, indices);
 }
 
-void BrushingAndLinkingManager::clearFiltered() {
-    throw Exception("clearing filtered indices is no longer supported");
-}
-
 void BrushingAndLinkingManager::clearSelected(BrushingTarget target) {
     clearIndices(BrushingAction::Select, target);
 }
@@ -377,22 +358,38 @@ bool BrushingAndLinkingManager::isHighlighted(uint32_t idx, BrushingTarget targe
 void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
     if (parent_ == parent) return;
 
-    if (parent_) {
-        parent_->removeChild(this);
+    removeParent();
+    addParent(parent);
+}
 
-        // set manager as modified since filter actions might have changed when removing the parent
-        for (const auto& [action, targets] : parent_->getTargets()) {
-            for (const auto& t : targets) {
-                modifications_[t] |= fromAction(action);
+BrushingAndLinkingManager* BrushingAndLinkingManager::getParent() const { return parent_; }
+
+void BrushingAndLinkingManager::addChild(BrushingAndLinkingManager* child) {
+    [[maybe_unused]] auto [_, inserted] = children_.insert(child);
+    IVW_ASSERT(inserted, "child manager already added");
+}
+
+void BrushingAndLinkingManager::removeChild(BrushingAndLinkingManager* child) {
+    if (child) {
+        children_.erase(child);
+        if (std::holds_alternative<BrushingAndLinkingInport*>(child->owner_)) {
+            const auto* inport = std::get<BrushingAndLinkingInport*>(child->owner_);
+
+            for (auto&& [action, targetmap] : util::zip(BrushingActions, selections_)) {
+                if (std::holds_alternative<IndexListTargets>(targetmap)) {
+                    for (auto&& [target, indexList] : std::get<IndexListTargets>(targetmap)) {
+                        if (indexList.removeSources({inport->getPath()})) {
+                            // inform parent manager
+                            propagate(action, target);
+                        }
+                    }
+                }
             }
         }
-
-        if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
-            const auto* outport = std::get<BrushingAndLinkingOutport*>(owner_);
-            outport->getProcessor()->invalidate(getInvalidationLevel());
-        }
     }
+}
 
+void BrushingAndLinkingManager::addParent(BrushingAndLinkingManager* parent) {
     parent_ = parent;
     if (parent_) {
         parent_->addChild(this);
@@ -402,7 +399,7 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
         };
 
         // propagate all selections of the manager to the parent
-        for (auto&& [action, map] : util::zip(BrushingActions, selections_)) {
+        for (auto&& [action, map] : std::views::zip(BrushingActions, selections_)) {
             std::visit(util::overloaded{[&, actionLocal = action](const BitSetTargets& set) {
                                             propagateTargets(actionLocal, set);
                                         },
@@ -413,8 +410,27 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
         }
     }
 }
+void BrushingAndLinkingManager::removeParent() {
+    if (parent_) {
+        parent_->removeChild(this);
 
-BrushingAndLinkingManager* BrushingAndLinkingManager::getParent() const { return parent_; }
+        // set manager as modified since filter actions might have changed when removing the parent
+        for (const auto& [action, targets] : parent_->getTargets()) {
+            for (const auto& t : targets) {
+                modifications_[t] |= fromAction(action);
+            }
+        }
+
+        std::visit(util::overloaded{[&](BrushingAndLinkingOutport* outport) {
+                                        if (auto* p = outport->getProcessor()) {
+                                            p->invalidate(getInvalidationLevel());
+                                        }
+                                    },
+                                    [&](BrushingAndLinkingInport*) {}},
+                   owner_);
+        parent_ = nullptr;
+    }
+}
 
 void BrushingAndLinkingManager::onBrush(
     std::function<void(BrushingAction, BrushingTarget, const BitSet&, std::string_view)> callback) {
@@ -542,31 +558,6 @@ void BrushingAndLinkingManager::propagate(BrushingAction action,
 
             if (localIndices) {
                 parent_->brush(action, target, *localIndices, source);
-            }
-        }
-    }
-}
-
-void BrushingAndLinkingManager::addChild(BrushingAndLinkingManager* child) {
-    [[maybe_unused]] auto [_, inserted] = children_.insert(child);
-    IVW_ASSERT(inserted, "child manager already added");
-}
-
-void BrushingAndLinkingManager::removeChild(BrushingAndLinkingManager* child) {
-    if (child) {
-        children_.erase(child);
-        if (std::holds_alternative<BrushingAndLinkingInport*>(child->owner_)) {
-            const auto* inport = std::get<BrushingAndLinkingInport*>(child->owner_);
-
-            for (auto&& [action, targetmap] : util::zip(BrushingActions, selections_)) {
-                if (std::holds_alternative<IndexListTargets>(targetmap)) {
-                    for (auto&& [target, indexList] : std::get<IndexListTargets>(targetmap)) {
-                        if (indexList.removeSources({inport->getPath()})) {
-                            // inform parent manager
-                            propagate(action, target);
-                        }
-                    }
-                }
             }
         }
     }
