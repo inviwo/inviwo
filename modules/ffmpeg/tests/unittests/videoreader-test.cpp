@@ -59,7 +59,7 @@ constexpr uint8_t topRow = 250;
 constexpr uint8_t bottomRow = 5;
 
 /// Luma of the interior of frame @p index
-constexpr uint8_t lumaOf(int index) { return static_cast<uint8_t>(20 + 20 * index); }
+constexpr char lumaOf(int index) { return static_cast<char>(20 + 20 * index); }
 
 /**
  * Write an uncompressed YUV4MPEG2 file. Each frame is filled with lumaOf(index), except for the
@@ -74,18 +74,16 @@ std::filesystem::path writeVideo(const std::filesystem::path& path,
 
     for (int i = 0; i < frames; ++i) {
         file << "FRAME\n";
-        std::vector<uint8_t> luma(static_cast<size_t>(width) * height, lumaOf(i));
-        std::fill_n(luma.begin(), width, topRow);  // row 0 of a y4m frame is the top row
-        std::fill_n(luma.end() - width, width, bottomRow);
-        file.write(reinterpret_cast<const char*>(luma.data()),
-                   static_cast<std::streamsize>(luma.size()));
+        std::vector<char> luma(static_cast<size_t>(width) * height, lumaOf(i));
+        std::fill_n(luma.begin(), width, static_cast<char>(topRow));  // y4m row 0 is the top row
+        std::fill_n(luma.end() - width, width, static_cast<char>(bottomRow));
+        file.write(luma.data(), static_cast<std::streamsize>(luma.size()));
 
         if (colorspace == "420") {
-            const std::vector<uint8_t> chroma(static_cast<size_t>(width / 2) * (height / 2), 128);
-            file.write(reinterpret_cast<const char*>(chroma.data()),
-                       static_cast<std::streamsize>(chroma.size()));
-            file.write(reinterpret_cast<const char*>(chroma.data()),
-                       static_cast<std::streamsize>(chroma.size()));
+            const std::vector<char> chroma(static_cast<size_t>(width / 2) * (height / 2),
+                                           static_cast<char>(128));
+            file.write(chroma.data(), static_cast<std::streamsize>(chroma.size()));
+            file.write(chroma.data(), static_cast<std::streamsize>(chroma.size()));
         }
     }
     return path;
@@ -166,7 +164,7 @@ TEST_F(VideoReader, NegativeIndexCountsFromTheEnd) {
 
 TEST_F(VideoReader, TimeOption) {
     FFmpegLayerReader reader;
-    ASSERT_TRUE(reader.setOption(videoreader::option::time, 0.2));
+    ASSERT_TRUE(reader.setOption(videoreader::option::time, FFmpegLayerReader::Seconds{0.2}));
     EXPECT_DOUBLE_EQ(center(*reader.readData(gray)), lumaOf(2));
 }
 
@@ -217,14 +215,16 @@ TEST_F(VideoReader, SequenceCountIsClampedToTheVideoLength) {
 }
 
 TEST_F(VideoReader, VideoInfo) {
-    ffmpeg::Video video{gray};
+    const ffmpeg::Video video{gray};
     const auto& info = video.info();
 
     EXPECT_EQ(info.dimensions, size2_t(width, height));
     EXPECT_EQ(info.format, DataUInt8::get());
     EXPECT_DOUBLE_EQ(info.frameRate, frameRate);
     EXPECT_EQ(info.frames, frames);
-    EXPECT_EQ(video.frameAt(0.3), 3);
+    EXPECT_EQ(video.frameAt(ffmpeg::Video::Seconds{0.3}), 3);
+    EXPECT_DOUBLE_EQ(video.timeOf(3).count(), 0.3);
+    EXPECT_DOUBLE_EQ(info.duration.count(), static_cast<double>(frames) / frameRate);
 }
 
 TEST_F(VideoReader, ReadNextFrameEndsWithNullptr) {
@@ -233,8 +233,20 @@ TEST_F(VideoReader, ReadNextFrameEndsWithNullptr) {
         auto layer = video.readNextFrame();
         ASSERT_TRUE(layer) << "frame " << i;
         EXPECT_DOUBLE_EQ(center(*layer), lumaOf(i));
+        EXPECT_EQ(video.currentFrame(), i);
     }
     EXPECT_FALSE(video.readNextFrame());
+}
+
+TEST_F(VideoReader, SeekToTime) {
+    ffmpeg::Video video{gray};
+    video.seekToTime(ffmpeg::Video::Seconds{0.4});
+
+    auto layer = video.readNextFrame();
+    ASSERT_TRUE(layer);
+    EXPECT_EQ(video.currentFrame(), 4);
+    EXPECT_DOUBLE_EQ(video.currentTime().count(), 0.4);
+    EXPECT_DOUBLE_EQ(center(*layer), lumaOf(4));
 }
 
 TEST_F(VideoReader, MatchingDestinationLayerIsReused) {

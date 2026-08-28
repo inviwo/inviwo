@@ -171,7 +171,7 @@ void MovieExport::process() {
         notifyObserversStartBackgroundWork(this, 1);
 
         log::info("Recording to: {}", file_.get());
-        log::info("  - Format:   {}", recorder->getFormat().outputFormat().desc());
+        log::info("  - Format:   {}", recorder->getOutputContext().outputFormat().desc());
         log::info("  - Codec:    {}", recorder->getStream().encoder.codecID());
     }
 

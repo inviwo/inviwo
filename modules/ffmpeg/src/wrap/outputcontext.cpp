@@ -37,17 +37,20 @@ extern "C" {
 
 #include <fmt/std.h>
 
+#include <utility>
+
 namespace inviwo::ffmpeg {
 
-OutputContext::OutputContext(OutputFormat outputFormat, const std::filesystem::path& aFilename)
-    : filename{aFilename} {
+OutputContext::OutputContext(OutputFormat outputFormat, std::filesystem::path aFilename)
+    : filename{std::move(aFilename)}, ctx{nullptr} {
     avformat_alloc_output_context2(&ctx, outputFormat.of, nullptr, filename.string().c_str());
     if (!ctx) {
         throw inviwo::Exception("Could not deduce output format from file extension");
     }
 }
 
-OutputContext::OutputContext(const std::filesystem::path& aFilename) : filename{aFilename} {
+OutputContext::OutputContext(std::filesystem::path aFilename)
+    : filename{std::move(aFilename)}, ctx{nullptr} {
     avformat_alloc_output_context2(&ctx, nullptr, nullptr, filename.string().c_str());
     if (!ctx) {
         throw inviwo::Exception("Could not deduce output format from file extension");
@@ -72,7 +75,7 @@ void OutputContext::open() {
     }
 }
 
-void OutputContext::writeHeader(AVDictionary** options) {
+void OutputContext::writeHeader(AVDictionary** options) const {
     /* Write the stream header, if any. */
     if (auto ret = avformat_write_header(ctx, options); ret < 0) {
         throw inviwo::Exception(SourceContext{}, "Error occurred when writing header, file: {}",
@@ -80,14 +83,14 @@ void OutputContext::writeHeader(AVDictionary** options) {
     }
 }
 
-void OutputContext::writeTrailer() {
+void OutputContext::writeTrailer() const {
     if (auto ret = av_write_trailer(ctx); ret < 0) {
         throw inviwo::Exception(SourceContext{}, "Error occurred when writing trailer, file: {}",
                                 Error{ret});
     }
 }
 
-void OutputContext::writeFrame(const Packet& pkt) {
+void OutputContext::writeFrame(const Packet& pkt) const {
     /* pkt is now blank (av_interleaved_write_frame() takes ownership of
      * its contents and resets pkt), so that no unreferencing is necessary.
      * This would be different if one used av_write_frame(). */
@@ -97,7 +100,7 @@ void OutputContext::writeFrame(const Packet& pkt) {
     }
 }
 
-AVStream* OutputContext::newStream() {
+AVStream* OutputContext::newStream() const {
     AVStream* stream = avformat_new_stream(ctx, nullptr);
     if (!stream) {
         throw inviwo::Exception("Could not allocate AVStream");
@@ -105,7 +108,7 @@ AVStream* OutputContext::newStream() {
     return stream;
 }
 
-int OutputContext::queryCodec(CodecID codecId, std::optional<int> stdCompliance) {
+int OutputContext::queryCodec(CodecID codecId, std::optional<int> stdCompliance) const {
     return avformat_query_codec(ctx->oformat, codecId.id,
                                 stdCompliance.value_or(FF_COMPLIANCE_NORMAL));
 }

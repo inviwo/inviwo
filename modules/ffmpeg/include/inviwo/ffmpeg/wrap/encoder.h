@@ -47,16 +47,20 @@ namespace inviwo::ffmpeg {
  */
 class IVW_MODULE_FFMPEG_API Encoder : NoMoveCopy {
 public:
-    Encoder(const AVCodec* codec);
-    Encoder(CodecID codec);
-
+    explicit Encoder(const AVCodec* codec);
+    explicit Encoder(CodecID codec);
+    Encoder(const Encoder&) = delete;
+    Encoder(Encoder&&) = delete;
+    Encoder& operator=(const Encoder&) = delete;
+    Encoder& operator=(Encoder&&) = delete;
     ~Encoder();
-    void sendFrame(const Frame& frame);
-    int receivePacket(Packet& pkt);
+
+    void sendFrame(const Frame& frame) const;
+    int receivePacket(Packet& pkt) const;
 
     CodecID codecID() const;
 
-    void open(AVDictionary* opt_arg);
+    void open(AVDictionary* opt_arg) const;
 
     AVCodecContext* ctx;
 

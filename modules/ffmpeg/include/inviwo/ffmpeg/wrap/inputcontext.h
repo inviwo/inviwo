@@ -46,7 +46,11 @@ namespace inviwo::ffmpeg {
  */
 class IVW_MODULE_FFMPEG_API InputContext : NoMoveCopy {
 public:
-    explicit InputContext(const std::filesystem::path& aFilename);
+    explicit InputContext(std::filesystem::path aFilename);
+    InputContext(const InputContext&) = delete;
+    InputContext(InputContext&&) = delete;
+    InputContext& operator=(const InputContext&) = delete;
+    InputContext& operator=(InputContext&&) = delete;
     ~InputContext();
 
     /**

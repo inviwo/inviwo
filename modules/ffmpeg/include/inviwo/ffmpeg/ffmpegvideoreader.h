@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/io/datareader.h>
 
+#include <chrono>
 #include <cstddef>
 #include <optional>
 #include <string_view>
@@ -45,8 +46,8 @@ namespace inviwo {
  * inviwo::reader::option
  */
 namespace videoreader::option {
-/// Time in seconds of the frame to read, `double`. Mutually exclusive with reader::option::index,
-/// whichever was set last is used.
+/// Time of the frame to read, `std::chrono::duration<double>` seconds. Mutually exclusive with
+/// reader::option::index, whichever was set last is used.
 inline constexpr std::string_view time = "time";
 /// Index of the video stream to read, `int`. A negative value selects the best stream.
 inline constexpr std::string_view stream = "stream";
@@ -59,15 +60,20 @@ inline constexpr std::string_view stream = "stream";
  * Supported options
  *  - reader::option::index    frame to read, `std::ptrdiff_t`, negative values count from the end,
  *                             defaults to 0
- *  - videoreader::option::time   time in seconds of the frame to read, `double`
+ *  - videoreader::option::time   time of the frame to read, `std::chrono::duration<double>`
  *  - videoreader::option::stream video stream to read, `int`, defaults to -1
  */
 class IVW_MODULE_FFMPEG_API FFmpegLayerReader : public DataReaderType<Layer> {
 public:
+    using Seconds = std::chrono::duration<double>;
+
     FFmpegLayerReader();
     FFmpegLayerReader(const FFmpegLayerReader& rhs) = default;
+    FFmpegLayerReader(FFmpegLayerReader&& rhs) noexcept = default;
+    FFmpegLayerReader& operator=(const FFmpegLayerReader& that) = default;
+    FFmpegLayerReader& operator=(FFmpegLayerReader&& that) noexcept = default;
     virtual FFmpegLayerReader* clone() const override;
-    virtual ~FFmpegLayerReader() = default;
+    virtual ~FFmpegLayerReader() override = default;
 
     virtual std::shared_ptr<Layer> readData(const std::filesystem::path& filePath) override;
     using DataReaderType<Layer>::readData;
@@ -77,7 +83,7 @@ public:
 
 private:
     std::ptrdiff_t index_ = 0;
-    std::optional<double> time_ = std::nullopt;
+    std::optional<Seconds> time_ = std::nullopt;
     int stream_ = -1;
 };
 
@@ -101,11 +107,13 @@ public:
 
     FFmpegLayerSequenceReader();
     FFmpegLayerSequenceReader(const FFmpegLayerSequenceReader& rhs) = default;
+    FFmpegLayerSequenceReader(FFmpegLayerSequenceReader&& rhs) noexcept = default;
+    FFmpegLayerSequenceReader& operator=(const FFmpegLayerSequenceReader& that) = default;
+    FFmpegLayerSequenceReader& operator=(FFmpegLayerSequenceReader&& that) noexcept = default;
     virtual FFmpegLayerSequenceReader* clone() const override;
-    virtual ~FFmpegLayerSequenceReader() = default;
+    virtual ~FFmpegLayerSequenceReader() override = default;
 
-    virtual std::shared_ptr<LayerSequence> readData(
-        const std::filesystem::path& filePath) override;
+    virtual std::shared_ptr<LayerSequence> readData(const std::filesystem::path& filePath) override;
     using DataReaderType<LayerSequence>::readData;
 
     virtual bool setOption(std::string_view key, std::any value) override;

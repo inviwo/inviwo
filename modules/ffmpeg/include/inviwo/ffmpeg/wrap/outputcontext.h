@@ -50,18 +50,22 @@ namespace inviwo::ffmpeg {
  */
 class IVW_MODULE_FFMPEG_API OutputContext : NoMoveCopy {
 public:
-    OutputContext(OutputFormat outputFormat, const std::filesystem::path& aFilename);
-    OutputContext(const std::filesystem::path& aFilename);
+    OutputContext(OutputFormat outputFormat, std::filesystem::path aFilename);
+    explicit OutputContext(std::filesystem::path aFilename);
+    OutputContext(const OutputContext&) = delete;
+    OutputContext(OutputContext&&) = delete;
+    OutputContext& operator=(const OutputContext&) = delete;
+    OutputContext& operator=(OutputContext&&) = delete;
     ~OutputContext();
     void open();
 
-    void writeHeader(AVDictionary** options);
+    void writeHeader(AVDictionary** options) const;
 
-    void writeTrailer();
+    void writeTrailer() const;
 
-    void writeFrame(const Packet& pkt);
-    AVStream* newStream();
-    int queryCodec(CodecID codecId, std::optional<int> stdCompliance = std::nullopt);
+    void writeFrame(const Packet& pkt) const;
+    AVStream* newStream() const;
+    int queryCodec(CodecID codecId, std::optional<int> stdCompliance = std::nullopt) const;
 
     OutputFormat outputFormat() const;
 

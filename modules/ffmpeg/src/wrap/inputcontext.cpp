@@ -37,10 +37,12 @@ extern "C" {
 
 #include <fmt/std.h>
 
+#include <utility>
+
 namespace inviwo::ffmpeg {
 
-InputContext::InputContext(const std::filesystem::path& aFilename)
-    : filename{aFilename}, ctx{nullptr} {
+InputContext::InputContext(std::filesystem::path aFilename)
+    : filename{std::move(aFilename)}, ctx{nullptr} {
 
     if (auto ret = avformat_open_input(&ctx, filename.string().c_str(), nullptr, nullptr);
         ret < 0) {

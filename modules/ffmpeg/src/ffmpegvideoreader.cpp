@@ -68,8 +68,8 @@ constexpr std::array<std::pair<std::string_view, std::string_view>, 17> videoExt
 // descriptions to be able to register for the same file extensions
 void addVideoExtensions(DataReader& reader, std::string_view suffix) {
     for (auto&& [extension, description] : videoExtensions) {
-        reader.addExtension(
-            FileExtension{LCString{extension}, fmt::format("{}{}", description, suffix)});
+        reader.addExtension(FileExtension{.extension = LCString{extension},
+                                          .description = fmt::format("{}{}", description, suffix)});
     }
 }
 
@@ -80,6 +80,16 @@ std::optional<std::ptrdiff_t> toOffset(const std::any& value) {
         return static_cast<std::ptrdiff_t>(*integer);
     } else if (const auto* unsignedSize = std::any_cast<size_t>(&value)) {
         return static_cast<std::ptrdiff_t>(*unsignedSize);
+    }
+    return std::nullopt;
+}
+
+/// Accept both a chrono duration and a plain number of seconds
+std::optional<FFmpegLayerReader::Seconds> toSeconds(const std::any& value) {
+    if (const auto* seconds = std::any_cast<FFmpegLayerReader::Seconds>(&value)) {
+        return *seconds;
+    } else if (const auto* number = std::any_cast<double>(&value)) {
+        return FFmpegLayerReader::Seconds{*number};
     }
     return std::nullopt;
 }
@@ -118,7 +128,7 @@ bool FFmpegLayerReader::setOption(std::string_view key, std::any value) {
             return true;
         }
     } else if (key == videoreader::option::time) {
-        if (const auto* time = std::any_cast<double>(&value)) {
+        if (auto time = toSeconds(value)) {
             time_ = *time;
             return true;
         }
