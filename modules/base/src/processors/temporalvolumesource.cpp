@@ -67,8 +67,8 @@ namespace {
 std::optional<double> numberFromName(const std::filesystem::path& path) {
     const auto stem = path.stem().string();
     auto end = stem.rend();
-    auto digitsEnd = std::find_if(stem.rbegin(), end,
-                                  [](unsigned char c) { return std::isdigit(c) != 0; });
+    auto digitsEnd =
+        std::find_if(stem.rbegin(), end, [](unsigned char c) { return std::isdigit(c) != 0; });
     if (digitsEnd == end) {
         return std::nullopt;
     }
@@ -102,8 +102,8 @@ TemporalVolumeSource::TemporalVolumeSource(InviwoApplication* app)
                  {"fileNumber", "File Number", TimeMode::FileNumber}},
                 0}
     , cacheSize_{"cacheSize", "Cache Size",
-                 util::ordinalCount<size_t>(8u, 256u)
-                     .set("Maximum number of decoded frames kept in memory"_help)}
+                 util::ordinalCount<size_t>(8u, 256u).set(
+                     "Maximum number of decoded frames kept in memory"_help)}
     , reload_{"reload", "Reload", "Reload the data from disk"_help} {
 
     addPort(outport_);
@@ -145,13 +145,13 @@ void TemporalVolumeSource::load() {
     }
 
     // Assign time values according to the selected mode.
-    std::vector<double> times;
+    std::vector<Seconds> times;
     if (timeMode_.get() == TimeMode::FileNumber) {
         times.reserve(paths.size());
         bool allValid = true;
         for (const auto& path : paths) {
             if (auto number = numberFromName(path)) {
-                times.push_back(*number);
+                times.push_back(Seconds{*number});
             } else {
                 allValid = false;
                 break;
@@ -164,9 +164,9 @@ void TemporalVolumeSource::load() {
     }
 
     try {
-        auto loader = std::make_unique<FileSequenceLoader>(
-            std::move(paths), std::move(times), util::getDataReaderFactory(app_),
-            reader_.getSelectedValue());
+        auto loader = std::make_unique<FileSequenceLoader>(std::move(paths), std::move(times),
+                                                           util::getDataReaderFactory(app_),
+                                                           reader_.getSelectedValue());
         outport_.setData(std::make_shared<TemporalVolume>(std::move(loader), cacheSize_.get()));
     } catch (const Exception& e) {
         outport_.clear();
