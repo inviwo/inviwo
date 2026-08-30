@@ -38,28 +38,31 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/glmvec.h>
 
+#include <chrono>
 #include <memory>
 #include <vector>
 
 namespace inviwo {
 
+using namespace std::chrono_literals;
+
 namespace {
 
 constexpr std::string_view frameKey = "frameIndex";
 
-std::shared_ptr<const Volume> makePrototype() {
-    return std::make_shared<Volume>(size3_t{2, 2, 2}, DataUInt8::get());
+VolumeConfig makePrototype() {
+    return VolumeConfig{.dimensions = size3_t{2, 2, 2}, .format = DataUInt8::get()};
 }
 
 // Generates volumes tagged with their frame index and time so tests can verify which frame is
 // returned without inspecting voxel data.
-std::unique_ptr<ProceduralLoader> makeLoader(size_t count, std::vector<double> times = {}) {
+std::unique_ptr<ProceduralLoader> makeLoader(size_t count, std::vector<Seconds> times = {}) {
     return std::make_unique<ProceduralLoader>(
         count, std::move(times), makePrototype(),
-        [](size_t index, double time) -> std::shared_ptr<Volume> {
+        [](size_t index, Seconds time, std::shared_ptr<Volume>) -> std::shared_ptr<Volume> {
             auto volume = std::make_shared<Volume>(size3_t{2, 2, 2}, DataUInt8::get());
             volume->setMetaData<DoubleMetaData, double>(frameKey, static_cast<double>(index));
-            volume->setMetaData<DoubleMetaData, double>("time", time);
+            volume->setMetaData<DoubleMetaData, double>("time", time.count());
             return volume;
         });
 }
@@ -76,25 +79,25 @@ TEST(TemporalVolumeTest, Metadata) {
     EXPECT_EQ(tv.size(), 5u);
     EXPECT_FALSE(tv.empty());
     EXPECT_EQ(tv.numCached(), 0u);
-    EXPECT_EQ(tv.prototype().getDimensions(), (size3_t{2, 2, 2}));
+    EXPECT_EQ(tv.prototype().dimensions.value(), (size3_t{2, 2, 2}));
 }
 
 TEST(TemporalVolumeTest, DefaultTimes) {
     TemporalVolume tv{makeLoader(4)};
     const auto times = tv.times();
     ASSERT_EQ(times.size(), 4u);
-    EXPECT_DOUBLE_EQ(times[0], 0.0);
-    EXPECT_DOUBLE_EQ(times[3], 3.0);
-    EXPECT_DOUBLE_EQ(tv.timeRange().first, 0.0);
-    EXPECT_DOUBLE_EQ(tv.timeRange().second, 3.0);
+    EXPECT_DOUBLE_EQ(times[0].count(), 0.0);
+    EXPECT_DOUBLE_EQ(times[3].count(), 3.0);
+    EXPECT_DOUBLE_EQ(tv.timeRange().first.count(), 0.0);
+    EXPECT_DOUBLE_EQ(tv.timeRange().second.count(), 3.0);
 }
 
 TEST(TemporalVolumeTest, CustomTimes) {
-    TemporalVolume tv{makeLoader(4, {0.0, 10.0, 20.0, 30.0})};
+    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
     const auto times = tv.times();
     ASSERT_EQ(times.size(), 4u);
-    EXPECT_DOUBLE_EQ(times[1], 10.0);
-    EXPECT_DOUBLE_EQ(tv.timeRange().second, 30.0);
+    EXPECT_DOUBLE_EQ(times[1].count(), 10.0);
+    EXPECT_DOUBLE_EQ(tv.timeRange().second.count(), 30.0);
 }
 
 TEST(TemporalVolumeTest, GetByIndex) {
@@ -105,54 +108,54 @@ TEST(TemporalVolumeTest, GetByIndex) {
 }
 
 TEST(TemporalVolumeTest, GetByTime) {
-    TemporalVolume tv{makeLoader(4, {0.0, 10.0, 20.0, 30.0})};
-    EXPECT_EQ(frameIndexOf(tv.get(0.0)), 0);
-    EXPECT_EQ(frameIndexOf(tv.get(9.0)), 1);   // nearest to 10
-    EXPECT_EQ(frameIndexOf(tv.get(14.0)), 1);  // nearest to 10
-    EXPECT_EQ(frameIndexOf(tv.get(16.0)), 2);  // nearest to 20
-    EXPECT_EQ(frameIndexOf(tv.get(100.0)), 3);
+    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
+    EXPECT_EQ(frameIndexOf(tv.get(0.0s)), 0);
+    EXPECT_EQ(frameIndexOf(tv.get(9.0s)), 1);   // nearest to 10
+    EXPECT_EQ(frameIndexOf(tv.get(14.0s)), 1);  // nearest to 10
+    EXPECT_EQ(frameIndexOf(tv.get(16.0s)), 2);  // nearest to 20
+    EXPECT_EQ(frameIndexOf(tv.get(100.0s)), 3);
 }
 
 TEST(TemporalVolumeTest, NearestIndex) {
-    TemporalVolume tv{makeLoader(4, {0.0, 10.0, 20.0, 30.0})};
-    EXPECT_EQ(tv.nearestIndex(-5.0), 0u);
-    EXPECT_EQ(tv.nearestIndex(4.0), 0u);
-    EXPECT_EQ(tv.nearestIndex(6.0), 1u);
-    EXPECT_EQ(tv.nearestIndex(25.0), 2u);  // tie breaks toward the earlier frame
-    EXPECT_EQ(tv.nearestIndex(50.0), 3u);
+    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
+    EXPECT_EQ(tv.nearestIndex(-5.0s), 0u);
+    EXPECT_EQ(tv.nearestIndex(4.0s), 0u);
+    EXPECT_EQ(tv.nearestIndex(6.0s), 1u);
+    EXPECT_EQ(tv.nearestIndex(25.0s), 2u);  // tie breaks toward the earlier frame
+    EXPECT_EQ(tv.nearestIndex(50.0s), 3u);
 }
 
 TEST(TemporalVolumeTest, InterpolateWithinRange) {
-    TemporalVolume tv{makeLoader(4, {0.0, 10.0, 20.0, 30.0})};
+    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
 
-    auto frame = tv.interpolate(5.0);
+    auto frame = tv.interpolate(5.0s);
     EXPECT_EQ(frameIndexOf(frame.a), 0);
     EXPECT_EQ(frameIndexOf(frame.b), 1);
     EXPECT_DOUBLE_EQ(frame.t, 0.5);
 
-    frame = tv.interpolate(22.5);
+    frame = tv.interpolate(22.5s);
     EXPECT_EQ(frameIndexOf(frame.a), 2);
     EXPECT_EQ(frameIndexOf(frame.b), 3);
     EXPECT_DOUBLE_EQ(frame.t, 0.25);
 }
 
 TEST(TemporalVolumeTest, InterpolateAtExactFrame) {
-    TemporalVolume tv{makeLoader(4, {0.0, 10.0, 20.0, 30.0})};
-    auto frame = tv.interpolate(10.0);
+    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
+    auto frame = tv.interpolate(10.0s);
     EXPECT_EQ(frameIndexOf(frame.a), 1);
     EXPECT_EQ(frameIndexOf(frame.b), 2);
     EXPECT_DOUBLE_EQ(frame.t, 0.0);
 }
 
 TEST(TemporalVolumeTest, InterpolateClampsOutsideRange) {
-    TemporalVolume tv{makeLoader(4, {0.0, 10.0, 20.0, 30.0})};
+    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
 
-    auto before = tv.interpolate(-100.0);
+    auto before = tv.interpolate(-100.0s);
     EXPECT_EQ(frameIndexOf(before.a), 0);
     EXPECT_EQ(frameIndexOf(before.b), 0);
     EXPECT_DOUBLE_EQ(before.t, 0.0);
 
-    auto after = tv.interpolate(100.0);
+    auto after = tv.interpolate(100.0s);
     EXPECT_EQ(frameIndexOf(after.a), 3);
     EXPECT_EQ(frameIndexOf(after.b), 3);
     EXPECT_DOUBLE_EQ(after.t, 0.0);
@@ -216,13 +219,14 @@ TEST(TemporalVolumeTest, PrefetchRange) {
 
 TEST(TemporalVolumeTest, ProceduralLoaderDirect) {
     ProceduralLoader loader{
-        3, {1.0, 2.0, 3.0}, makePrototype(),
-        [](size_t index, double) { return std::make_shared<Volume>(size3_t{index + 1}); }};
+        3, {1.0s, 2.0s, 3.0s}, makePrototype(), [](size_t index, Seconds, std::shared_ptr<Volume>) {
+            return std::make_shared<Volume>(size3_t{index + 1});
+        }};
     EXPECT_EQ(loader.size(), 3u);
     ASSERT_EQ(loader.times().size(), 3u);
-    EXPECT_DOUBLE_EQ(loader.times()[2], 3.0);
+    EXPECT_DOUBLE_EQ(loader.times()[2].count(), 3.0);
     EXPECT_EQ(loader.load(1)->getDimensions(), (size3_t{2}));
-    EXPECT_NE(loader.prototype(), nullptr);
+    EXPECT_NE(loader.prototype().format, nullptr);
 }
 
 }  // namespace inviwo

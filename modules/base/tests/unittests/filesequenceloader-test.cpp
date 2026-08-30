@@ -44,6 +44,7 @@
 #include <inviwo/core/util/glmvec.h>
 
 #include <atomic>
+#include <chrono>
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -52,6 +53,8 @@
 #include <fmt/format.h>
 
 namespace inviwo {
+
+using namespace std::chrono_literals;
 
 namespace {
 
@@ -111,8 +114,8 @@ TEST(FileSequenceLoaderTest, LoadsPrototypeOnce) {
     FileSequenceLoader loader{fix.paths(5), {}, &fix.factory};
     EXPECT_EQ(loader.size(), 5u);
     EXPECT_EQ(*fix.readCount, 1);
-    EXPECT_NE(loader.prototype(), nullptr);
-    EXPECT_EQ(loader.prototype()->getDimensions(), (size3_t{2, 2, 2}));
+    EXPECT_NE(loader.prototype().format, nullptr);
+    EXPECT_EQ(loader.prototype().dimensions.value(), (size3_t{2, 2, 2}));
 }
 
 TEST(FileSequenceLoaderTest, LoadsFramesByIndex) {
@@ -131,14 +134,14 @@ TEST(FileSequenceLoaderTest, DefaultTimesAreIndices) {
 
 TEST(FileSequenceLoaderTest, CustomTimes) {
     Fixture fix;
-    FileSequenceLoader loader{fix.paths(3), {0.0, 5.0, 10.0}, &fix.factory};
+    FileSequenceLoader loader{fix.paths(3), {0.0s, 5.0s, 10.0s}, &fix.factory};
     ASSERT_EQ(loader.times().size(), 3u);
-    EXPECT_DOUBLE_EQ(loader.times()[1], 5.0);
+    EXPECT_DOUBLE_EQ(loader.times()[1].count(), 5.0);
 }
 
 TEST(FileSequenceLoaderTest, RejectsMismatchedTimes) {
     Fixture fix;
-    EXPECT_THROW(FileSequenceLoader(fix.paths(3), {0.0, 1.0}, &fix.factory), Exception);
+    EXPECT_THROW(FileSequenceLoader(fix.paths(3), {0.0s, 1.0s}, &fix.factory), Exception);
 }
 
 TEST(FileSequenceLoaderTest, RejectsEmptyPaths) {
@@ -154,8 +157,8 @@ TEST(FileSequenceLoaderTest, ThrowsWithoutReader) {
 
 TEST(FileSequenceLoaderTest, IntegratesWithTemporalVolumeLazily) {
     Fixture fix;
-    auto loader = std::make_unique<FileSequenceLoader>(fix.paths(10), std::vector<double>{},
-                                                       &fix.factory);
+    auto loader =
+        std::make_unique<FileSequenceLoader>(fix.paths(10), std::vector<Seconds>{}, &fix.factory);
     TemporalVolume tv{std::move(loader), 4};
 
     // Only the prototype has been read so far.
