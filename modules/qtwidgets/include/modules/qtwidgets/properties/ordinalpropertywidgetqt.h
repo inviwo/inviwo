@@ -61,7 +61,7 @@
 #include <QSize>
 #include <QSizePolicy>
 #include <QWidget>
-#include <QMenu>        // IWYU pragma: keep
+#include <QMenu>  // IWYU pragma: keep
 
 #include <glm/geometric.hpp>
 
@@ -73,6 +73,8 @@ template <typename T>
 class OrdinalProperty;
 template <typename T>
 class OrdinalRefProperty;
+template <typename T>
+class OrdinalOptProperty;
 }  // namespace inviwo
 
 namespace inviwo {
@@ -326,6 +328,172 @@ std::unique_ptr<QMenu> OrdinalLikePropertyWidgetQt<Prop, Sem>::getContextMenu() 
 
     connect(settingsAction, &QAction::triggered, this,
             &OrdinalLikePropertyWidgetQt<Prop, Sem>::showSettings);
+
+    settingsAction->setEnabled(!property_->getReadOnly());
+
+    return menu;
+}
+
+/**
+ * Property widget for OrdinalOptProperty. Uses clearable NumberWidget editors that display a
+ * placeholder ("Unset") when the property is empty. Clearing any editor empties the whole
+ * property, typing into any editor engages it (all-or-nothing).
+ */
+template <typename T, OrdinalPropertyWidgetQtSemantics Sem>
+class OrdinalOptPropertyWidgetQt final : public PropertyWidgetQt {
+public:
+    using BT = typename util::value_type<T>::type;
+
+    explicit OrdinalOptPropertyWidgetQt(OrdinalOptProperty<T>* property);
+    virtual ~OrdinalOptPropertyWidgetQt() = default;
+    virtual void updateFromProperty() override;
+    virtual std::unique_ptr<QMenu> getContextMenu() override;
+
+private:
+    void setPropertyValue(size_t editorId);
+    void showSettings();
+
+    OrdinalOptProperty<T>* ordinal_;
+    EditableLabelQt* label_;
+    OrdinalOptPropertySettingsWidgetQt<T>* settings_;
+    std::vector<NumberWidget<BT>*> editors_;
+};
+
+template <typename T, OrdinalPropertyWidgetQtSemantics Sem>
+OrdinalOptPropertyWidgetQt<T, Sem>::OrdinalOptPropertyWidgetQt(OrdinalOptProperty<T>* property)
+    : PropertyWidgetQt(property)
+    , ordinal_(property)
+    , label_{new EditableLabelQt(this, property)}
+    , settings_(nullptr) {
+
+    auto* hLayout = new QHBoxLayout();
+    hLayout->setContentsMargins(0, 0, 0, 0);
+    hLayout->setSpacing(getSpacing());
+    hLayout->addWidget(label_);
+
+    auto* centralWidget = new QWidget();
+    auto policy = centralWidget->sizePolicy();
+    policy.setHorizontalStretch(3);
+    centralWidget->setSizePolicy(policy);
+
+    auto* gridLayout = new QGridLayout();
+    centralWidget->setLayout(gridLayout);
+    gridLayout->setContentsMargins(0, 0, 0, 0);
+    gridLayout->setSpacing(0);
+
+    for (size_t row = 0; row < util::extent_v<T, 1>; row++) {
+        for (size_t col = 0; col < util::extent_v<T, 0>; col++) {
+            auto* editor = new NumberWidget<BT>();
+            editor->setClearable(true);
+            editor->setPlaceholder("Unset");
+            editors_.push_back(editor);
+
+            connect(editor, &BaseNumberWidget::valueChanged, this,
+                    [this, index = col + row * util::extent<T, 0>::value]() {
+                        this->setPropertyValue(index);
+                    });
+
+            auto sp = editor->sizePolicy();
+            sp.setHorizontalPolicy(QSizePolicy::Expanding);
+            editor->setSizePolicy(sp);
+
+            if constexpr (util::extent<T, 0>::value > 1 && util::extent<T, 1>::value == 1) {
+                constexpr std::array<const char*, 4> labels{"x", "y", "z", "w"};
+                editor->setPrefix(labels[col]);
+            }
+
+            auto layoutCol = col;
+            auto layoutRow = row;
+            // vectors should be drawn in row major while matrices are column major
+            if constexpr (util::rank_v<T> > 1) {
+                std::swap(layoutCol, layoutRow);
+            }
+            gridLayout->addWidget(editor, static_cast<int>(layoutRow), static_cast<int>(layoutCol));
+        }
+    }
+
+    if (!editors_.empty()) {
+        setFocusPolicy(editors_.front()->focusPolicy());
+        setFocusProxy(editors_.front());
+    }
+
+    hLayout->addWidget(centralWidget);
+
+    centralWidget->setMinimumHeight(centralWidget->sizeHint().height());
+    auto sp = centralWidget->sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Fixed);
+    centralWidget->setSizePolicy(sp);
+
+    setLayout(hLayout);
+
+    setFixedHeight(sizeHint().height());
+    sp = sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Fixed);
+    setSizePolicy(sp);
+
+    updateFromProperty();
+}
+
+template <typename T, OrdinalPropertyWidgetQtSemantics Sem>
+void OrdinalOptPropertyWidgetQt<T, Sem>::updateFromProperty() {
+    const T min = ordinal_->getMinValue();
+    const T max = ordinal_->getMaxValue();
+    const T inc = ordinal_->getIncrement();
+    const std::optional<T> val = ordinal_->get();
+
+    constexpr size_t nelem = util::flat_extent<T>::value;
+    const auto mincb = ordinal_->getMinConstraintBehaviour();
+    const auto maxcb = ordinal_->getMaxConstraintBehaviour();
+
+    for (size_t i = 0; i < nelem; i++) {
+        editors_[i]->setMinValue(util::glmcomp(min, i), mincb);
+        editors_[i]->setMaxValue(util::glmcomp(max, i), maxcb);
+        editors_[i]->setIncrement(util::glmcomp(inc, i));
+        if (val) {
+            editors_[i]->initValueOptional(util::glmcomp(*val, i));
+        } else {
+            editors_[i]->initValueOptional(std::nullopt);
+        }
+    }
+}
+
+template <typename T, OrdinalPropertyWidgetQtSemantics Sem>
+void OrdinalOptPropertyWidgetQt<T, Sem>::setPropertyValue(size_t editorId) {
+    ordinal_->setInitiatingWidget(this);
+    if (!editors_[editorId]->getValueOptional().has_value()) {
+        // clearing any component empties the whole property
+        util::exceptionGuard([&]() { ordinal_->clear(); });
+    } else {
+        // engage using the current fallback for components that are still empty
+        T val = ordinal_->value();
+        for (size_t i = 0; i < editors_.size(); ++i) {
+            if (auto v = editors_[i]->getValueOptional()) {
+                util::glmcomp(val, i) = *v;
+            }
+        }
+        util::exceptionGuard([&]() { ordinal_->set(val); });
+    }
+    ordinal_->clearInitiatingWidget();
+}
+
+template <typename T, OrdinalPropertyWidgetQtSemantics Sem>
+void OrdinalOptPropertyWidgetQt<T, Sem>::showSettings() {
+    if (!settings_) {
+        settings_ = new OrdinalOptPropertySettingsWidgetQt<T>(ordinal_, this);
+    }
+    settings_->showWidget();
+}
+
+template <typename T, OrdinalPropertyWidgetQtSemantics Sem>
+std::unique_ptr<QMenu> OrdinalOptPropertyWidgetQt<T, Sem>::getContextMenu() {
+    auto menu = PropertyWidgetQt::getContextMenu();
+
+    auto settingsAction = menu->addAction(tr("&Property settings..."));
+    settingsAction->setToolTip(
+        tr("&Open the property settings dialog to adjust min, max, and increment values"));
+
+    connect(settingsAction, &QAction::triggered, this,
+            &OrdinalOptPropertyWidgetQt<T, Sem>::showSettings);
 
     settingsAction->setEnabled(!property_->getReadOnly());
 
