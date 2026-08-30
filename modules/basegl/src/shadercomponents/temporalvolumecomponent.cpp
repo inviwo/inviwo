@@ -60,8 +60,8 @@ TemporalVolumeComponent::TemporalVolumeComponent(std::string_view name, Gradient
                     InvalidationLevel::InvalidResources}
     , prefetch{"prefetch", "Prefetch", "Schedule background loading of upcoming frames"_help, true}
     , prefetchAhead{"prefetchAhead", "Prefetch Ahead",
-                    util::ordinalCount<size_t>(2u, 16u)
-                        .set("Number of upcoming frames to prefetch"_help)}
+                    util::ordinalCount<size_t>(2u, 16u).set(
+                        "Number of upcoming frames to prefetch"_help)}
     // No port is passed to the IsoTFProperty: the TF operates in normalized space and the data
     // map is supplied manually in process() from the temporal volume prototype.
     , isoTF_{"isotf", "TF & Iso Values"} {}
@@ -82,7 +82,7 @@ void TemporalVolumeComponent::process(Shader& shader, TextureUnitContainer& cont
     auto temporal = volumePort.getData();
     if (!temporal || temporal->empty()) return;
 
-    const double t = time.get();
+    const Seconds t{time.get()};
 
     std::shared_ptr<const Volume> a;
     std::shared_ptr<const Volume> b;
@@ -107,7 +107,8 @@ void TemporalVolumeComponent::process(Shader& shader, TextureUnitContainer& cont
     // Transfer function and isovalues
     utilgl::bindAndSetUniforms(shader, cont, isoTF_.tf_);
     detail::setUniforms(shader, isoTF_.tf_);
-    detail::setUniforms(shader, isoTF_.isovalues_, &temporal->prototype().dataMap);
+    const DataMapper dataMap = temporal->prototype().dataMap();
+    detail::setUniforms(shader, isoTF_.isovalues_, &dataMap);
 
     if (prefetch.get()) {
         const size_t current = temporal->nearestIndex(t);
@@ -219,7 +220,9 @@ std::string TemporalVolumeComponent::getGradientString() const {
 
 std::optional<size_t> TemporalVolumeComponent::channelsForVolume() const {
     if (auto data = volumePort.getData(); data && !data->empty()) {
-        return data->prototype().getDataFormat()->getComponents();
+        if (const auto* format = data->prototype().format) {
+            return format->getComponents();
+        }
     }
     return std::nullopt;
 }

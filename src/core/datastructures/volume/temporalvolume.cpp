@@ -37,37 +37,39 @@
 #include <algorithm>
 
 #include <fmt/format.h>
+#include <fmt/chrono.h>
 
 namespace inviwo {
 
-ProceduralLoader::ProceduralLoader(size_t count, std::vector<double> times,
-                                   std::shared_ptr<const Volume> prototype, Generator generator)
+ProceduralLoader::ProceduralLoader(size_t count, std::vector<Seconds> times, VolumeConfig prototype,
+                                   Generator generator)
     : count_{count}
     , times_{std::move(times)}
     , prototype_{std::move(prototype)}
     , generator_{std::move(generator)} {}
 
-std::shared_ptr<Volume> ProceduralLoader::load(size_t index) {
-    const double time = (index < times_.size()) ? times_[index] : static_cast<double>(index);
-    return generator_(index, time);
+std::shared_ptr<Volume> ProceduralLoader::load(size_t index, std::shared_ptr<Volume> reuse) {
+    const Seconds time =
+        (index < times_.size()) ? times_[index] : Seconds{static_cast<double>(index)};
+    return generator_(index, time, std::move(reuse));
 }
 
 size_t ProceduralLoader::size() const { return count_; }
 
-std::span<const double> ProceduralLoader::times() const { return times_; }
+std::span<const Seconds> ProceduralLoader::times() const { return times_; }
 
-std::shared_ptr<const Volume> ProceduralLoader::prototype() const { return prototype_; }
+VolumeConfig ProceduralLoader::prototype() const { return prototype_; }
 
 namespace {
 
-std::vector<double> resolveTimes(const VolumeLoader& loader) {
+std::vector<Seconds> resolveTimes(const VolumeLoader& loader) {
     const auto loaderTimes = loader.times();
     if (!loaderTimes.empty()) {
-        return std::vector<double>(loaderTimes.begin(), loaderTimes.end());
+        return std::vector<Seconds>(loaderTimes.begin(), loaderTimes.end());
     }
-    std::vector<double> result(loader.size());
+    std::vector<Seconds> result(loader.size());
     for (size_t i = 0; i < result.size(); ++i) {
-        result[i] = static_cast<double>(i);
+        result[i] = Seconds{static_cast<double>(i)};
     }
     return result;
 }
@@ -76,15 +78,12 @@ std::vector<double> resolveTimes(const VolumeLoader& loader) {
 
 TemporalVolume::TemporalVolume(std::unique_ptr<VolumeLoader> loader, size_t cacheSize)
     : loader_{std::move(loader)}
-    , prototype_{loader_ ? loader_->prototype() : nullptr}
-    , times_{loader_ ? resolveTimes(*loader_) : std::vector<double>{}}
+    , prototype_{loader_ ? loader_->prototype() : VolumeConfig{}}
+    , times_{loader_ ? resolveTimes(*loader_) : std::vector<Seconds>{}}
     , cacheSize_{std::max<size_t>(2, cacheSize)} {
 
     if (!loader_) {
         throw Exception("TemporalVolume requires a non-null VolumeLoader");
-    }
-    if (!prototype_) {
-        throw Exception("VolumeLoader::prototype() returned a null Volume");
     }
 }
 
@@ -108,18 +107,18 @@ size_t TemporalVolume::size() const { return times_.size(); }
 
 bool TemporalVolume::empty() const { return times_.empty(); }
 
-std::span<const double> TemporalVolume::times() const { return times_; }
+std::span<const Seconds> TemporalVolume::times() const { return times_; }
 
-std::pair<double, double> TemporalVolume::timeRange() const {
+std::pair<Seconds, Seconds> TemporalVolume::timeRange() const {
     if (times_.empty()) {
-        return {0.0, 0.0};
+        return {Seconds{0.0}, Seconds{0.0}};
     }
     return {times_.front(), times_.back()};
 }
 
-const Volume& TemporalVolume::prototype() const { return *prototype_; }
+const VolumeConfig& TemporalVolume::prototype() const { return prototype_; }
 
-size_t TemporalVolume::nearestIndex(double time) const {
+size_t TemporalVolume::nearestIndex(Seconds time) const {
     const size_t n = times_.size();
     if (n == 0) {
         return 0;
@@ -159,17 +158,18 @@ std::shared_ptr<const Volume> TemporalVolume::get(size_t index) const {
     }
 
     // Not cached and not pending, load synchronously without holding the lock.
+    auto reuse = takeReuse();
     lock.unlock();
-    auto volume = loader_->load(index);
+    auto volume = loader_->load(index, std::move(reuse));
     lock.lock();
     return insert(index, std::move(volume));
 }
 
-std::shared_ptr<const Volume> TemporalVolume::get(double time) const {
+std::shared_ptr<const Volume> TemporalVolume::get(Seconds time) const {
     return get(nearestIndex(time));
 }
 
-TemporalVolume::Frame TemporalVolume::interpolate(double time) const {
+TemporalVolume::Frame TemporalVolume::interpolate(Seconds time) const {
     const size_t n = times_.size();
     if (n == 0) {
         return {nullptr, nullptr, 0.0};
@@ -186,8 +186,8 @@ TemporalVolume::Frame TemporalVolume::interpolate(double time) const {
     const auto upper = std::upper_bound(times_.begin(), times_.end(), time);
     const auto ib = static_cast<size_t>(std::distance(times_.begin(), upper));
     const size_t ia = ib - 1;
-    const double ta = times_[ia];
-    const double tb = times_[ib];
+    const Seconds ta = times_[ia];
+    const Seconds tb = times_[ib];
     const double factor = (tb > ta) ? (time - ta) / (tb - ta) : 0.0;
     return {get(ia), get(ib), factor};
 }
@@ -210,7 +210,9 @@ void TemporalVolume::prefetch(size_t index) const {
     }
 
     pending_.emplace(
-        index, app->dispatchPool([loader = loader_.get(), index]() { return loader->load(index); }));
+        index, app->dispatchPool([loader = loader_.get(), index, reuse = takeReuse()]() mutable {
+            return loader->load(index, std::move(reuse));
+        }));
 }
 
 void TemporalVolume::prefetch(size_t first, size_t count) const {
@@ -239,6 +241,7 @@ void TemporalVolume::clearCache() {
     const std::scoped_lock lock{mutex_};
     cache_.clear();
     lruOrder_.clear();
+    reusePool_.clear();
 }
 
 std::shared_ptr<const Volume> TemporalVolume::insert(size_t index,
@@ -265,8 +268,24 @@ void TemporalVolume::evict() const {
     while (cache_.size() > cacheSize_ && !lruOrder_.empty()) {
         const size_t lru = lruOrder_.back();
         lruOrder_.pop_back();
-        cache_.erase(lru);
+        if (auto it = cache_.find(lru); it != cache_.end()) {
+            // If we are the sole owner of the evicted volume, keep it around so its storage can be
+            // reused by a subsequent load and avoid a reallocation.
+            if (it->second.use_count() == 1 && reusePool_.size() < cacheSize_) {
+                reusePool_.push_back(std::const_pointer_cast<Volume>(std::move(it->second)));
+            }
+            cache_.erase(it);
+        }
     }
+}
+
+std::shared_ptr<Volume> TemporalVolume::takeReuse() const {
+    if (reusePool_.empty()) {
+        return nullptr;
+    }
+    auto volume = std::move(reusePool_.back());
+    reusePool_.pop_back();
+    return volume;
 }
 
 Document DataTraits<TemporalVolume>::info(const TemporalVolume& data) {
@@ -281,9 +300,10 @@ Document DataTraits<TemporalVolume>::info(const TemporalVolume& data) {
         const auto [first, last] = data.timeRange();
         tb(H("Time Range"), fmt::format("[{}, {}]", first, last));
 
-        const Volume& prototype = data.prototype();
-        tb(H("Dimensions"), prototype.getDimensions());
-        tb(H("Format"), prototype.getDataFormat()->getString());
+        const VolumeConfig& prototype = data.prototype();
+        tb(H("Dimensions"), prototype.dimensions.value_or(VolumeConfig::defaultDimensions));
+        tb(H("Format"),
+           (prototype.format ? prototype.format : VolumeConfig::defaultFormat)->getString());
     }
     return doc;
 }
