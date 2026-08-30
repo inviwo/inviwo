@@ -29,7 +29,6 @@
 
 #include <modules/base/io/filesequenceloader.h>
 
-#include <inviwo/core/datastructures/nodata.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datareaderexception.h>
@@ -43,7 +42,7 @@
 namespace inviwo {
 
 FileSequenceLoader::FileSequenceLoader(std::vector<std::filesystem::path> paths,
-                                       std::vector<double> times, DataReaderFactory* factory,
+                                       std::vector<Seconds> times, DataReaderFactory* factory,
                                        FileExtension extension)
     : paths_{std::move(paths)}
     , times_{std::move(times)}
@@ -64,8 +63,7 @@ FileSequenceLoader::FileSequenceLoader(std::vector<std::filesystem::path> paths,
     }
 
     // Load the first frame once to obtain a metadata-only prototype.
-    auto first = readFile(0);
-    prototype_ = std::make_shared<Volume>(*first, noData, first->config());
+    prototype_ = readFile(0)->config();
 }
 
 std::shared_ptr<Volume> FileSequenceLoader::readFile(size_t index) const {
@@ -76,8 +74,8 @@ std::shared_ptr<Volume> FileSequenceLoader::readFile(size_t index) const {
                       ? factory_->getReaderForTypeAndExtension<Volume>(path)
                       : factory_->getReaderForTypeAndExtension<Volume>(extension_, path);
     if (!reader) {
-        throw DataReaderException(SourceContext{},
-                                  "Unable to find a Volume reader for file: {}", path);
+        throw DataReaderException(SourceContext{}, "Unable to find a Volume reader for file: {}",
+                                  path);
     }
     auto volume = reader->readData(path);
     if (!volume->hasMetaData<StringMetaData>("filename")) {
@@ -86,18 +84,19 @@ std::shared_ptr<Volume> FileSequenceLoader::readFile(size_t index) const {
     return volume;
 }
 
-std::shared_ptr<Volume> FileSequenceLoader::load(size_t index) {
+std::shared_ptr<Volume> FileSequenceLoader::load(size_t index, std::shared_ptr<Volume>) {
     if (index >= paths_.size()) {
         throw RangeException(SourceContext{}, "Frame index {} out of range [0, {})", index,
                              paths_.size());
     }
+    // The reader always allocates a fresh volume, so the reuse hint is ignored.
     return readFile(index);
 }
 
 size_t FileSequenceLoader::size() const { return paths_.size(); }
 
-std::span<const double> FileSequenceLoader::times() const { return times_; }
+std::span<const Seconds> FileSequenceLoader::times() const { return times_; }
 
-std::shared_ptr<const Volume> FileSequenceLoader::prototype() const { return prototype_; }
+VolumeConfig FileSequenceLoader::prototype() const { return prototype_; }
 
 }  // namespace inviwo
