@@ -32,11 +32,13 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeconfig.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/document.h>
 
+#include <chrono>
 #include <cstddef>
 #include <functional>
 #include <future>
@@ -50,6 +52,9 @@
 
 namespace inviwo {
 
+/// Physical time value of a TemporalVolume frame, seconds stored as a double.
+using Seconds = std::chrono::duration<double>;
+
 /**
  * @ingroup datastructures
  *
@@ -58,7 +63,7 @@ namespace inviwo {
  *
  * A VolumeLoader decouples the storage format from the time axis and cache management of
  * TemporalVolume. Implementations are responsible only for loading a single frame by index and
- * for providing the time axis and a metadata-only @c prototype Volume.
+ * for providing the time axis and a metadata-only @c prototype VolumeConfig.
  *
  * @note Implementations of @c load() must be **thread-safe** since it may be called concurrently
  * from a background thread pool. @c prototype() must be cheap and must not load any voxel data.
@@ -77,24 +82,27 @@ public:
     /**
      * Load the volume at the given @p index. May be called from a background thread, hence
      * implementations must be re-entrant and thread-safe.
+     *
+     * @param reuse an optional volume whose storage may be reused to avoid reallocation. It may be
+     *              null and must be ignored if its format or dimensions do not match the frame.
      */
-    virtual std::shared_ptr<Volume> load(size_t index) = 0;
+    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse = {}) = 0;
 
     /// Total number of frames.
     virtual size_t size() const = 0;
 
     /**
-     * Physical time value for each frame (e.g. seconds, milliseconds). The returned span must
-     * either be empty (in which case frame indices 0,1,2,… are used as time values) or have a
-     * size equal to @c size(). The values are expected to be sorted in ascending order.
+     * Physical time value for each frame. The returned span must either be empty (in which case
+     * frame indices 0,1,2,… are used as time values) or have a size equal to @c size(). The values
+     * are expected to be sorted in ascending order.
      */
-    virtual std::span<const double> times() const = 0;
+    virtual std::span<const Seconds> times() const = 0;
 
     /**
-     * A prototype Volume with correct dimensions, format, basis, dataMap, and axes — but no voxel
-     * data. Used by downstream consumers that need metadata without triggering a load.
+     * A prototype VolumeConfig describing dimensions, format, basis, dataMap, and axes — but no
+     * voxel data. Used by downstream consumers that need metadata without triggering a load.
      */
-    virtual std::shared_ptr<const Volume> prototype() const = 0;
+    virtual VolumeConfig prototype() const = 0;
 };
 
 /**
@@ -106,27 +114,29 @@ public:
  */
 class IVW_CORE_API ProceduralLoader : public VolumeLoader {
 public:
-    /// Signature of the generator callable, given a frame @c index and its @c time value.
-    using Generator = std::function<std::shared_ptr<Volume>(size_t index, double time)>;
+    /// Signature of the generator callable, given a frame @c index, its @c time value, and an
+    /// optional @c reuse volume whose storage may be reused (may be null, see VolumeLoader::load).
+    using Generator = std::function<std::shared_ptr<Volume>(size_t index, Seconds time,
+                                                            std::shared_ptr<Volume> reuse)>;
 
     /**
      * @param count      number of frames
      * @param times      physical time values, either empty or of size @p count
-     * @param prototype  metadata-only prototype volume, must not be null
+     * @param prototype  metadata-only prototype config
      * @param generator  callable producing the volume for a given index/time
      */
-    ProceduralLoader(size_t count, std::vector<double> times,
-                     std::shared_ptr<const Volume> prototype, Generator generator);
+    ProceduralLoader(size_t count, std::vector<Seconds> times, VolumeConfig prototype,
+                     Generator generator);
 
-    virtual std::shared_ptr<Volume> load(size_t index) override;
+    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse = {}) override;
     virtual size_t size() const override;
-    virtual std::span<const double> times() const override;
-    virtual std::shared_ptr<const Volume> prototype() const override;
+    virtual std::span<const Seconds> times() const override;
+    virtual VolumeConfig prototype() const override;
 
 private:
     size_t count_;
-    std::vector<double> times_;
-    std::shared_ptr<const Volume> prototype_;
+    std::vector<Seconds> times_;
+    VolumeConfig prototype_;
     Generator generator_;
 };
 
@@ -176,23 +186,23 @@ public:
     /// Whether there are no frames.
     bool empty() const;
     /// The physical time value of each frame (size equals @c size()).
-    std::span<const double> times() const;
+    std::span<const Seconds> times() const;
     /// The time value of the first and last frame, or {0, 0} if empty.
-    std::pair<double, double> timeRange() const;
-    /// A prototype Volume describing dimensions, format, basis, and the DataMapper (no voxel data).
-    const Volume& prototype() const;
+    std::pair<Seconds, Seconds> timeRange() const;
+    /// A prototype VolumeConfig describing dimensions, format, basis, and the DataMapper.
+    const VolumeConfig& prototype() const;
 
     // ── Time helpers ─────────────────────────────────────────────────────────────────────────
 
     /// Index of the frame whose time is closest to @p time.
-    size_t nearestIndex(double time) const;
+    size_t nearestIndex(Seconds time) const;
 
     // ── Synchronous access ───────────────────────────────────────────────────────────────────
 
     /// Frame by index. Blocks if not cached. Returns nullptr if @p index is out of bounds.
     std::shared_ptr<const Volume> get(size_t index) const;
     /// Frame nearest to the given @p time value. Blocks if not cached.
-    std::shared_ptr<const Volume> get(double time) const;
+    std::shared_ptr<const Volume> get(Seconds time) const;
 
     // ── Interpolated access ──────────────────────────────────────────────────────────────────
 
@@ -201,7 +211,7 @@ public:
      * are synchronously loaded if not cached. If @p time is outside the time range, the nearest
      * frame is returned in both @c a and @c b with a blend factor of 0.
      */
-    Frame interpolate(double time) const;
+    Frame interpolate(Seconds time) const;
 
     // ── Prefetch (non-blocking) ──────────────────────────────────────────────────────────────
 
@@ -228,16 +238,20 @@ private:
     void touch(size_t index) const;
     /// Evict least-recently-used entries until the cache fits (mutex must be held).
     void evict() const;
+    /// Take a reusable volume from the reuse pool, or null if the pool is empty (mutex must be
+    /// held).
+    std::shared_ptr<Volume> takeReuse() const;
 
     std::unique_ptr<VolumeLoader> loader_;
-    std::shared_ptr<const Volume> prototype_;
-    std::vector<double> times_;
+    VolumeConfig prototype_;
+    std::vector<Seconds> times_;
     size_t cacheSize_;
 
     mutable std::mutex mutex_;
     mutable std::list<size_t> lruOrder_;  //!< front == most recently used
     mutable std::unordered_map<size_t, std::shared_ptr<const Volume>> cache_;
     mutable std::unordered_map<size_t, std::future<std::shared_ptr<Volume>>> pending_;
+    mutable std::vector<std::shared_ptr<Volume>> reusePool_;  //!< evicted, uniquely-owned volumes
 };
 
 template <>
