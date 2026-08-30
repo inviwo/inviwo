@@ -74,22 +74,22 @@ public:
      * size
      * @throws DataReaderException if no reader is found for the first file or it fails to load
      */
-    FileSequenceLoader(std::vector<std::filesystem::path> paths, std::vector<double> times,
+    FileSequenceLoader(std::vector<std::filesystem::path> paths, std::vector<Seconds> times,
                        DataReaderFactory* factory, FileExtension extension = {});
 
-    virtual std::shared_ptr<Volume> load(size_t index) override;
+    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse = {}) override;
     virtual size_t size() const override;
-    virtual std::span<const double> times() const override;
-    virtual std::shared_ptr<const Volume> prototype() const override;
+    virtual std::span<const Seconds> times() const override;
+    virtual VolumeConfig prototype() const override;
 
 private:
     std::shared_ptr<Volume> readFile(size_t index) const;
 
     std::vector<std::filesystem::path> paths_;
-    std::vector<double> times_;
+    std::vector<Seconds> times_;
     DataReaderFactory* factory_;
     FileExtension extension_;
-    std::shared_ptr<const Volume> prototype_;
+    VolumeConfig prototype_;
     mutable std::mutex readerMutex_;
 };
 
