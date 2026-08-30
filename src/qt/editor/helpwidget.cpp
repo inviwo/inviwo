@@ -147,7 +147,11 @@ void HelpWidget::showDocForClassName(std::string_view classIdentifier) {
 
 void HelpWidget::resizeEvent(QResizeEvent* event) {
     InviwoDockWidget::resizeEvent(event);
-    QTimer::singleShot(200, this, [this]() { helpBrowser_->reload(); });
+    QTimer::singleShot(200, this, [this]() {
+        if (isVisible()) {
+            helpBrowser_->reload();
+        }
+    });
 }
 
 namespace {
