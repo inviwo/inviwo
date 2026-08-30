@@ -290,6 +290,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/multifileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionpropertytraits.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinaloptproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalrefproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/planeproperty.h
@@ -710,6 +711,7 @@ set(SOURCE_FILES
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
     properties/optionpropertytraits.cpp
+    properties/ordinaloptproperty.cpp
     properties/ordinalproperty.cpp
     properties/ordinalrefproperty.cpp
     properties/planeproperty.cpp
@@ -902,6 +904,7 @@ set(TEST_FILES
     tests/unittests/network-evaluator-test.cpp
     tests/unittests/optimaltransport-test.cpp
     tests/unittests/optionproperty-test.cpp
+    tests/unittests/ordinaloptproperty-test.cpp
     tests/unittests/ordinalproperty-test.cpp
     tests/unittests/permutations-test.cpp
     tests/unittests/picking-test.cpp
