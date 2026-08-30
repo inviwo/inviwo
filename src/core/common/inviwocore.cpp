@@ -95,6 +95,7 @@
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinaloptproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/planeproperty.h>
 #include <inviwo/core/properties/positionproperty.h>
@@ -164,7 +165,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerMetaData(std::make_unique<PositionMetaData>());
     registerMetaData(std::make_unique<ProcessorMetaData>());
     registerMetaData(std::make_unique<ProcessorWidgetMetaData>());
-    registerMetaData(std::make_unique<MetaDataType<std::map<std::string, std::string, std::less<>>>>());
+    registerMetaData(
+        std::make_unique<MetaDataType<std::map<std::string, std::string, std::less<>>>>());
     registerMetaData(std::make_unique<MetaDataType<std::vector<std::string>>>());
 
     // Register Cameras
@@ -280,6 +282,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type<OrdinalTypes>{}([&]<typename T>() {
         registerProperty<OrdinalProperty<T>>();
         registerProperty<OrdinalRefProperty<T>>();
+        registerProperty<OrdinalOptProperty<T>>();
     });
 
     // Register MinMaxProperty widgets
@@ -358,6 +361,22 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type_pair<Mat2s, Mat2s>{}(ordinalLikeConverters);
     util::for_each_type_pair<Mat3s, Mat3s>{}(ordinalLikeConverters);
     util::for_each_type_pair<Mat4s, Mat4s>{}(ordinalLikeConverters);
+
+    const auto ordinalOptConverters = [&]<typename T>() {
+        registerPropertyConverter(
+            std::make_unique<
+                OrdinalToOrdinalOptConverter<OrdinalProperty<T>, OrdinalOptProperty<T>>>());
+        registerPropertyConverter(
+            std::make_unique<
+                OrdinalOptToOrdinalConverter<OrdinalOptProperty<T>, OrdinalProperty<T>>>());
+    };
+    util::for_each_type<Scalars>{}(ordinalOptConverters);
+    util::for_each_type<Vec2s>{}(ordinalOptConverters);
+    util::for_each_type<Vec3s>{}(ordinalOptConverters);
+    util::for_each_type<Vec4s>{}(ordinalOptConverters);
+    util::for_each_type<Mat2s>{}(ordinalOptConverters);
+    util::for_each_type<Mat3s>{}(ordinalOptConverters);
+    util::for_each_type<Mat4s>{}(ordinalOptConverters);
 
     const auto scalarStringConverter = [&]<typename T>() {
         registerPropertyConverter(std::make_unique<ScalarToStringConverter<OrdinalProperty<T>>>());
