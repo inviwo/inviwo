@@ -92,11 +92,10 @@ TemporalVolumePlayer::TemporalVolumePlayer()
                      {{"nearest", "Nearest", Interpolation::Nearest},
                       {"linear", "Linear", Interpolation::Linear}},
                      1}
-    , prefetch_{"prefetch", "Prefetch",
-                "Schedule background loading of upcoming frames"_help, true}
-    , prefetchAhead_{"prefetchAhead", "Prefetch Ahead",
-                     util::ordinalCount<size_t>(2u, 16u)
-                         .set("Number of upcoming frames to prefetch"_help)} {
+    , prefetch_{"prefetch", "Prefetch", "Schedule background loading of upcoming frames"_help, true}
+    , prefetchAhead_{
+          "prefetchAhead", "Prefetch Ahead",
+          util::ordinalCount<size_t>(2u, 16u).set("Number of upcoming frames to prefetch"_help)} {
 
     addPort(inport_);
     addPort(outport_);
@@ -112,11 +111,11 @@ void TemporalVolumePlayer::process() {
 
     if (inport_.isChanged()) {
         const auto [first, last] = temporal->timeRange();
-        time_.setMinValue(first);
-        time_.setMaxValue(last);
+        time_.setMinValue(first.count());
+        time_.setMaxValue(last.count());
     }
 
-    const double t = time_.get();
+    const Seconds t{time_.get()};
 
     if (interpolation_.get() == Interpolation::Linear) {
         auto frame = temporal->interpolate(t);
