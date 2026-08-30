@@ -32,12 +32,13 @@ The new counterparts are `ffmpeg::InputContext` in `<inviwo/ffmpeg/wrap/inputcon
 
 
 ## 2026-06-30 TemporalVolume — lazily loaded time-varying volumes
-Added `TemporalVolume`, a new core data structure for large time-dependent volumetric data where only a sliding window of frames fits in memory. Unlike `VolumeSequence` (`DataSequence<Volume>`), which keeps every frame in memory, `TemporalVolume` keeps metadata (frame count, time values, and a `prototype` volume) always available while loading individual frames on demand into a bounded LRU cache, with optional background prefetching via the application thread pool.
+Added `TemporalVolume`, a new core data structure for large time-dependent volumetric data where only a sliding window of frames fits in memory. Unlike `VolumeSequence` (`DataSequence<Volume>`), which keeps every frame in memory, `TemporalVolume` keeps metadata (frame count, time values, and a `prototype` config) always available while loading individual frames on demand into a bounded LRU cache, with optional background prefetching via the application thread pool.
 
 New core types (in `inviwo/core/datastructures/volume/temporalvolume.h`):
-- `VolumeLoader` — abstract interface for loading a single frame by index, plus `times()` and a metadata-only `prototype()`.
+- `Seconds` — a `std::chrono::duration<double>` alias used for all frame time values.
+- `VolumeLoader` — abstract interface for loading a single frame by index, optionally reusing a passed destination volume to avoid reallocation, plus `times()` (as `Seconds`) and a metadata-only `prototype()` returning a `VolumeConfig`.
 - `ProceduralLoader` — a `VolumeLoader` that generates frames on the fly via a callable.
-- `TemporalVolume` — owns a `VolumeLoader`, an LRU cache, and prefetch futures. Provides `get(index)`, `get(time)`, `interpolate(time)` (returns the two bracketing frames and a blend factor), `prefetch(...)`, and cache control. Non-copyable, shared via `std::shared_ptr`.
+- `TemporalVolume` — owns a `VolumeLoader`, an LRU cache, prefetch futures, and a pool of reusable volume buffers. Provides `get(index)`, `get(time)`, `interpolate(time)` (returns the two bracketing frames and a blend factor), `prefetch(...)`, and cache control. Non-copyable, shared via `std::shared_ptr`.
 - `TemporalVolumeInport` / `TemporalVolumeOutport` port aliases (registered in core).
 
 New processors and loaders:

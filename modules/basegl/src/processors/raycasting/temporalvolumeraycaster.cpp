@@ -58,7 +58,10 @@ namespace {
 std::function<std::optional<dmat4>()> temporalBoundingBox(const TemporalVolumeInport& port) {
     return [&port]() -> std::optional<dmat4> {
         if (auto data = port.getData(); data && !data->empty()) {
-            return util::calcBoundingBox(data->prototype());
+            const VolumeConfig& config = data->prototype();
+            const dmat4 model = config.model.value_or(VolumeConfig::defaultModel);
+            const dmat4 world = config.world.value_or(VolumeConfig::defaultWorld);
+            return world * model;
         }
         return std::nullopt;
     };
