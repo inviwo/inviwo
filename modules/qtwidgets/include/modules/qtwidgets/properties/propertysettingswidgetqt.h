@@ -74,9 +74,30 @@ template <typename T>
 class OrdinalProperty;
 template <typename T>
 class OrdinalRefProperty;
+template <typename T>
+class OrdinalOptProperty;
 }  // namespace inviwo
 
 namespace inviwo {
+
+namespace detail {
+
+// Extracts the underlying numeric type and current display value of an ordinal-like property so
+// that the settings dialog can be reused for OrdinalOptProperty whose value_type is std::optional.
+template <typename Prop>
+struct OrdinalSettingsTraits {
+    using value_type = typename Prop::value_type;
+    using elem_type = typename util::value_type<value_type>::type;
+    static value_type displayValue(const Prop* p) { return p->get(); }
+};
+template <typename T>
+struct OrdinalSettingsTraits<OrdinalOptProperty<T>> {
+    using value_type = T;
+    using elem_type = typename util::value_type<T>::type;
+    static value_type displayValue(const OrdinalOptProperty<T>* p) { return p->value(); }
+};
+
+}  // namespace detail
 
 class IVW_MODULE_QTWIDGETS_API SinglePropertySetting {
 public:
@@ -93,8 +114,8 @@ public:
 template <typename Prop>
 class OrdinalLikePropertySettingsWidgetQt : public QDialog, public PropertyWidget {
 public:
-    using T = typename Prop::value_type;
-    using BT = typename util::value_type<T>::type;
+    using T = typename detail::OrdinalSettingsTraits<Prop>::value_type;
+    using BT = typename detail::OrdinalSettingsTraits<Prop>::elem_type;
     OrdinalLikePropertySettingsWidgetQt(Prop* property, QWidget* widget);
     virtual ~OrdinalLikePropertySettingsWidgetQt();
 
@@ -132,6 +153,10 @@ using OrdinalPropertySettingsWidgetQt = OrdinalLikePropertySettingsWidgetQt<Ordi
 template <typename T>
 using OrdinalRefPropertySettingsWidgetQt =
     OrdinalLikePropertySettingsWidgetQt<OrdinalRefProperty<T>>;
+
+template <typename T>
+using OrdinalOptPropertySettingsWidgetQt =
+    OrdinalLikePropertySettingsWidgetQt<OrdinalOptProperty<T>>;
 
 template <typename Prop>
 OrdinalLikePropertySettingsWidgetQt<Prop>::OrdinalLikePropertySettingsWidgetQt(Prop* property,
@@ -293,8 +318,9 @@ void OrdinalLikePropertySettingsWidgetQt<Prop>::apply() {
 
 template <typename Prop>
 void OrdinalLikePropertySettingsWidgetQt<Prop>::reload() {
-    std::array<T, 4> vals{property_->getMinValue(), property_->get(), property_->getMaxValue(),
-                          property_->getIncrement()};
+    std::array<T, 4> vals{property_->getMinValue(),
+                          detail::OrdinalSettingsTraits<Prop>::displayValue(property_),
+                          property_->getMaxValue(), property_->getIncrement()};
 
     QLocale locale = settings_[0].additionalFields_[0]->locale();
     for (size_t i = 0; i < settings_.size(); i++) {

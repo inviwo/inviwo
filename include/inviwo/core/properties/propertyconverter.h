@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinaloptproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -91,6 +92,38 @@ protected:
         }
         dst->setIncrement(static_cast<typename DstProperty::value_type>(src->getIncrement()));
         dst->set(static_cast<typename DstProperty::value_type>(src->get()));
+    }
+};
+
+/**
+ * Converts a plain OrdinalProperty into an OrdinalOptProperty. The destination always ends up
+ * holding a value.
+ */
+template <typename SrcOrdinal, typename DstOpt>
+class OrdinalToOrdinalOptConverter : public TemplatePropertyConverter<SrcOrdinal, DstOpt> {
+protected:
+    virtual void convertimpl(const SrcOrdinal* src, DstOpt* dst) const override {
+        using T = typename SrcOrdinal::value_type;
+        if (dst->isLinkingMinBound()) dst->setMinValue(static_cast<T>(src->getMinValue()));
+        if (dst->isLinkingMaxBound()) dst->setMaxValue(static_cast<T>(src->getMaxValue()));
+        dst->setIncrement(static_cast<T>(src->getIncrement()));
+        dst->set(static_cast<T>(src->get()));
+    }
+};
+
+/**
+ * Converts an OrdinalOptProperty into a plain OrdinalProperty. The value is only propagated when
+ * the source holds one.
+ */
+template <typename SrcOpt, typename DstOrdinal>
+class OrdinalOptToOrdinalConverter : public TemplatePropertyConverter<SrcOpt, DstOrdinal> {
+protected:
+    virtual void convertimpl(const SrcOpt* src, DstOrdinal* dst) const override {
+        using T = typename DstOrdinal::value_type;
+        if (dst->isLinkingMinBound()) dst->setMinValue(static_cast<T>(src->getMinValue()));
+        if (dst->isLinkingMaxBound()) dst->setMaxValue(static_cast<T>(src->getMaxValue()));
+        dst->setIncrement(static_cast<T>(src->getIncrement()));
+        if (const auto v = src->get()) dst->set(static_cast<T>(*v));
     }
 };
 
