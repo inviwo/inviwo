@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,27 +27,17 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/util/observer.h>
-
-#include <string>
+#include <inviwo/qt/editor/networkeditorobserver.h>
 
 namespace inviwo {
 
-struct NetworkAnnotation;
+void NetworkEditorObservable::notifyObserversNetworkEditorFileChanged(
+    const std::string& newFilename) {
+    forEachObserver([&](NetworkEditorObserver* o) { o->onNetworkEditorFileChanged(newFilename); });
+}
 
-class IVW_QTEDITOR_API NetworkEditorObserver : public Observer {
-public:
-    virtual void onNetworkEditorFileChanged([[maybe_unused]] const std::string& newFilename) {}
-    virtual void onSceneSizeChanged() {}
-};
-
-class IVW_QTEDITOR_API NetworkEditorObservable : public Observable<NetworkEditorObserver> {
-public:
-    void notifyObserversNetworkEditorFileChanged(const std::string& newFilename);
-    void notifyObserversSceneSizeChanged();
-};
+void NetworkEditorObservable::notifyObserversSceneSizeChanged() {
+    forEachObserver([&](NetworkEditorObserver* o) { o->onSceneSizeChanged(); });
+}
 
 }  // namespace inviwo

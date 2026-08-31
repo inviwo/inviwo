@@ -93,6 +93,7 @@ set(SOURCE_FILES
     linkgraphicsitem.cpp
     networkautomation.cpp
     networkeditor.cpp
+    networkeditorobserver.cpp
     networkeditorview.cpp
     networksearch.cpp
     pilllistview.cpp

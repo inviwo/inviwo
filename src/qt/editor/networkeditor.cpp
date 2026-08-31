@@ -379,7 +379,7 @@ bool NetworkEditor::isBackgroundVisible() const { return backgroundVisible_; }
 void NetworkEditor::updateSceneSize() {
     if (adjustSceneToChange_ && !processorItem_) {
         setSceneRect(getProcessorsBoundingRect());
-        forEachObserver([&](auto o) { o->onSceneSizeChanged(); });
+        notifyObserversSceneSizeChanged();
     }
 }
 
