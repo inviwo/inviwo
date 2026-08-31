@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,36 +30,45 @@
 #pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/hdf5/ports/hdf5port.h>
+#include <modules/hdf5/datastructures/hdf5handle.h>
+#include <modules/hdf5/datastructures/hdf5selection.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <H5Cpp.h>
-#include <warn/pop>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+
+#include <functional>
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 
+class DataFormatBase;
+
 namespace hdf5 {
 
-class IVW_MODULE_HDF5_API PathSelection : public Processor {
-public:
-    PathSelection();
-    virtual ~PathSelection() = default;
+/**
+ * Read the dataset at @p handle into a Volume. The @p selection defines a hyperslab per dimension
+ * in column major (Inviwo) order. If @p type is null the data format is deduced from the dataset.
+ * @p getVolume is used to allocate the resulting Volume, allowing the caller to reuse storage.
+ */
+IVW_MODULE_HDF5_API std::shared_ptr<Volume> getVolumeAtPathAsType(
+    const Handle& handle, std::vector<Selection> selection, const DataFormatBase* type,
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume);
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+/**
+ * Read the dataset at @p handle into a Layer. @see getVolumeAtPathAsType.
+ */
+IVW_MODULE_HDF5_API std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle,
+                                                                std::vector<Selection> selection,
+                                                                const DataFormatBase* type);
 
-protected:
-    virtual void process() override;
-
-private:
-    Inport inport_;
-    Outport outport_;
-
-    OptionPropertyString selection_;
-};
+/**
+ * Read the dataset at @p handle into a Buffer. @see getVolumeAtPathAsType.
+ */
+IVW_MODULE_HDF5_API std::shared_ptr<BufferBase> getBufferAtPathAsType(
+    const Handle& handle, std::vector<Selection> selection, const DataFormatBase* type);
 
 }  // namespace hdf5
+
 }  // namespace inviwo

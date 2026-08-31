@@ -32,7 +32,6 @@
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/hdf5/ports/hdf5port.h>
-#include <modules/hdf5/datastructures/hdf5metadata.h>
 #include <modules/hdf5/hdf5utils.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -70,12 +69,11 @@ protected:
 private:
     void makeDataFrame();
     void onDataChange();
-    std::string getDescription(const MetaData& meta) const;
 
     // Rebuilds the dynamic column-selection properties from dataMatches_.
     void rebuildColumnProperties();
 
-    std::vector<MetaData> dataMatches_;
+    std::vector<DataSetInfo> dataMatches_;
 
     Inport inport_;
     DataFrameOutport outport_;

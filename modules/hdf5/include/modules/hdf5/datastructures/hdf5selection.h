@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,37 +29,25 @@
 
 #pragma once
 
-#include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/hdf5/ports/hdf5port.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <H5Cpp.h>
-#include <warn/pop>
+#include <cstddef>
 
 namespace inviwo {
 
 namespace hdf5 {
 
-class IVW_MODULE_HDF5_API PathSelection : public Processor {
-public:
-    PathSelection();
-    virtual ~PathSelection() = default;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
-    virtual void process() override;
-
-private:
-    Inport inport_;
-    Outport outport_;
-
-    OptionPropertyString selection_;
+/**
+ * A hyperslab selection along all dimensions of an HDF5 dataset. The number of selected elements
+ * along a dimension is `(end - start) / stride`. Dimensions are given in column major (Inviwo)
+ * order.
+ */
+struct Selection {
+    Selection(size_t startval, size_t endval, size_t strideval)
+        : start(startval), end(endval), stride(strideval) {}
+    size_t start;
+    size_t end;
+    size_t stride;
 };
 
 }  // namespace hdf5
+
 }  // namespace inviwo

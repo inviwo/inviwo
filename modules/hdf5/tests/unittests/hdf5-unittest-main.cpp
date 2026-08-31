@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,34 @@
  *
  *********************************************************************************/
 
-#pragma once
+#ifdef _MSC_VER
+#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#endif
 
-#include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/hdf5/ports/hdf5port.h>
+#include <inviwo/testutil/configurablegtesteventlistener.h>
+
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/consolelogger.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <H5Cpp.h>
+#include <gtest/gtest.h>
 #include <warn/pop>
 
-namespace inviwo {
+#include <memory>
 
-namespace hdf5 {
+int main(int argc, char** argv) {
 
-class IVW_MODULE_HDF5_API PathSelection : public Processor {
-public:
-    PathSelection();
-    virtual ~PathSelection() = default;
+    inviwo::LogCentral::init();
+    auto logger = std::make_shared<inviwo::ConsoleLogger>();
+    inviwo::LogCentral::getPtr()->setVerbosity(inviwo::LogVerbosity::Error);
+    inviwo::LogCentral::getPtr()->registerLogger(logger);
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
-    virtual void process() override;
-
-private:
-    Inport inport_;
-    Outport outport_;
-
-    OptionPropertyString selection_;
-};
-
-}  // namespace hdf5
-}  // namespace inviwo
+    int ret = -1;
+    {
+        ::testing::InitGoogleTest(&argc, argv);
+        inviwo::ConfigurableGTestEventListener::setup();
+        ret = RUN_ALL_TESTS();
+    }
+    return ret;
+}

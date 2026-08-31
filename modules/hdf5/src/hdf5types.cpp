@@ -41,12 +41,12 @@ IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(
     const H5::DataSet& dataset) {
     NumericType numerictype;
     const int components = 1;
-    size_t presision = 8;
+    size_t precision = 8;
 
     switch (dataset.getTypeClass()) {
         case H5T_INTEGER: {
             H5::IntType type = dataset.getIntType();
-            presision = type.getPrecision();
+            precision = type.getPrecision();
 
             switch (type.getSign()) {
                 case H5T_SGN_NONE: {
@@ -68,7 +68,7 @@ IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(
         case H5T_FLOAT: {
             H5::FloatType type = dataset.getFloatType();
             numerictype = NumericType::Float;
-            presision = type.getPrecision();
+            precision = type.getPrecision();
             break;
         }
         case H5T_ARRAY: {
@@ -82,7 +82,7 @@ IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(
         }
     }
 
-    return DataFormatBase::get(numerictype, components, presision);
+    return DataFormatBase::get(numerictype, components, precision);
 }
 
 #include <warn/pop>

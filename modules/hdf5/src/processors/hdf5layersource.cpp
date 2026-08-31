@@ -29,9 +29,12 @@
 
 #include <modules/hdf5/processors/hdf5layersource.h>
 #include <modules/hdf5/datastructures/hdf5handle.h>
+#include <modules/hdf5/hdf5read.h>
 #include <modules/hdf5/datastructures/hdf5path.h>
+#include <modules/hdf5/hdf5utils.h>
 #include <inviwo/core/network/networklock.h>
-#include <inviwo/core/util/zip.h>
+
+#include <algorithm>
 #include <numeric>
 
 namespace inviwo {
@@ -58,13 +61,7 @@ HDF5ToLayer::HDF5ToLayer()
     , evaluate_("evaluate", "Load")
     , information_("Information", "Data information")
     , outputGroup_("outputGroup", "Operations", InvalidationLevel::Valid)
-    , datatype_("convertType", "Convert to type",
-                {{"none", "No conversion", 0},
-                 {"float", "Float", 0},
-                 {"double", "Double", 1},
-                 {"uchar", "Unsigned Char", 2},
-                 {"ushort", "Unsigned Short", 3}},
-                0)
+    , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
     , selection_("selection", "Selection", 4)
     , dirty_(false) {
 
@@ -112,21 +109,20 @@ void HDF5ToLayer::process() try {
 void HDF5ToLayer::onDataChange() {
     if (inport_.hasData()) {
         const auto data = inport_.getData();
-        std::vector<MetaData> metadata = util::getMetaData(data->getGroup());
+        std::vector<DataSetInfo> metadata = util::getDataSets(*data);
 
         layerMatches_.clear();
-        std::copy_if(metadata.begin(), metadata.end(), std::back_inserter(layerMatches_),
-                     [](const MetaData& meta) {
-                         auto dims = meta.getColumnMajorDimensions();
-                         return meta.type_ == MetaData::HDFType::DataSet && dims.size() >= 2ull &&
-                                std::accumulate(dims.begin(), dims.end(), 1ull,
-                                                std::multiplies<size_t>()) > 0ull;
-                     });
+        std::ranges::copy_if(
+            metadata, std::back_inserter(layerMatches_), [](const DataSetInfo& meta) {
+                auto dims = meta.getColumnMajorDimensions();
+                return dims.size() >= 2ull &&
+                       std::ranges::fold_left(dims, size_t{1}, std::multiplies{}) > 0ull;
+            });
 
         std::vector<OptionPropertyStringOption> layerOptions;
         for (const auto& meta : layerMatches_) {
             const auto path = meta.path_.toString();
-            layerOptions.emplace_back(path, getDescription(meta), path);
+            layerOptions.emplace_back(path, util::dataSetDescription(meta), path);
         }
         layerSelection_.replaceOptions(layerOptions);
         layerSelection_.setCurrentStateAsDefault();
@@ -137,16 +133,10 @@ void HDF5ToLayer::onDataChange() {
     onSelectionChange();
 }
 
-std::string HDF5ToLayer::getDescription(const MetaData& meta) {
-    return meta.path_.toString() +
-           (meta.format_ ? (" " + std::string(meta.format_->getString())) : "") + " [" +
-           joinString(meta.getColumnMajorDimensions(), ", ") + "]";
-}
-
 void HDF5ToLayer::onSelectionChange() {
     dirty_ = true;
     if (!layerMatches_.empty()) {
-        MetaData layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
+        DataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
         selection_.update(layerMeta);
     }
 }
@@ -154,101 +144,16 @@ void HDF5ToLayer::onSelectionChange() {
 void HDF5ToLayer::makeLayer() {
     if (inport_.hasData()) {
         const auto data = inport_.getData();
-        MetaData layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
+        DataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
 
-        auto format = [&]() -> const DataFormatBase* {
-            switch (datatype_.getSelectedIndex()) {
-                case 1:
-                    return DataFloat32::get();
-                case 2:
-                    return DataFloat64::get();
-                case 3:
-                    return DataUInt8::get();
-                case 4:
-                    return DataUInt16::get();
-                default:
-                    return nullptr;
-            }
-        }();
-
-        layer_ = data->getLayerAtPathAsType(
-            Path(data->getGroup().getObjName()) + layerMeta.path_, selection_.getSelection(),
-            format);
+        layer_ = getLayerAtPathAsType(*data + layerMeta.path_, selection_.getSelection(),
+                                      util::conversionFormat(datatype_.getSelectedIndex()));
     }
 }
 
 void HDF5ToLayer::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     deserialized_ = true;
-}
-
-// DimSelection -----------------------------------------------------------------------
-
-HDF5ToLayer::DimSelection::DimSelection(const std::string& identifier,
-                                        const std::string& displayName, InvalidationLevel level)
-    : CompositeProperty(identifier, displayName, level, PropertySemantics::Default)
-    , range("range", "Range", 0, 255, 0, 255, 1, 1)
-    , stride("stride", "Stride", 1, 1, 255) {
-
-    addProperty(range);
-    addProperty(stride);
-}
-
-void HDF5ToLayer::DimSelection::update(int newMax) {
-    range.setRangeMax(newMax);
-    range.setEnd(std::min(range.getEnd(), newMax));
-    stride.set(std::min(stride.get(), newMax));
-    stride.setMaxValue(std::max(10, newMax));
-}
-
-// DimSelections ----------------------------------------------------------------------
-
-HDF5ToLayer::DimSelections::DimSelections(const std::string& identifier,
-                                          const std::string& displayName, size_t maxRank,
-                                          InvalidationLevel level)
-    : CompositeProperty(identifier, displayName, level, PropertySemantics::Default)
-    , maxRank_(maxRank)
-    , rank_(maxRank) {
-
-    char last = 'Z';
-    for (size_t i = 0; i < maxRank_; ++i) {
-        const auto ind = fmt::to_string(static_cast<char>(last - maxRank + i + 1));
-        selection_.push_back(std::make_unique<DimSelection>("dim" + ind, ind));
-        addProperty(selection_[i].get(), false);
-    }
-}
-
-void HDF5ToLayer::DimSelections::update(const MetaData& meta) {
-    const NetworkLock lock{this};
-    auto cmdims = meta.getColumnMajorDimensions();
-    rank_ = cmdims.size();
-
-    for (auto&& [index, selection] : inviwo::util::enumerate(selection_)) {
-        selection->setVisible(index >= maxRank_ - rank_);
-    }
-
-    for (size_t i = 0; i < rank_; ++i) {
-        selection_[i + maxRank_ - rank_]->update(static_cast<int>(cmdims[i]));
-    }
-}
-
-std::vector<Handle::Selection> HDF5ToLayer::DimSelections::getSelection() const {
-    std::vector<Handle::Selection> selection;
-    for (size_t i = maxRank_ - rank_; i < maxRank_; i++) {
-        selection.emplace_back(selection_[i]->range.get().x, selection_[i]->range.get().y,
-                               selection_[i]->stride.get());
-    }
-    return selection;
-}
-
-std::vector<Handle::Selection> HDF5ToLayer::DimSelections::getMaxSelection() const {
-    std::vector<Handle::Selection> selection;
-    for (size_t i = maxRank_ - rank_; i < maxRank_; i++) {
-        selection.emplace_back(selection_[i]->range.getRangeMin(),
-                               selection_[i]->range.getRangeMax(),
-                               selection_[i]->stride.getMinValue());
-    }
-    return selection;
 }
 
 }  // namespace hdf5

@@ -28,71 +28,54 @@
  *********************************************************************************/
 
 #include <modules/hdf5/datastructures/hdf5path.h>
-#include <inviwo/core/util/stringconversion.h>
+
+#include <ranges>
+#include <string_view>
 
 namespace inviwo {
 
 namespace hdf5 {
 
-Path::Path() = default;
+Path::Path() : path_{"/"} {}
 
-Path::Path(const std::string& path) : path_{} { splitString(path); }
+Path::Path(std::string_view path) : path_{"/"} { append(path); }
 
-Path::Path(const Path& rhs) = default;
-Path::Path(Path&& rhs) = default;
-
-Path& Path::operator=(const Path& that) = default;
-Path& Path::operator=(Path&& that) = default;
-
-Path& Path::push(const std::string& path) {
-    splitString(path);
+Path& Path::push(std::string_view path) {
+    append(path);
     return *this;
 }
 Path& Path::push(const Path& rhs) {
-    for (auto elem : rhs.path_) {
-        path_.push_back(elem);
-    }
+    append(rhs.path_);
     return *this;
 }
 Path& Path::pop() {
-    path_.pop_back();
+    if (const auto pos = path_.rfind('/'); pos == 0) {
+        path_ = "/";
+    } else if (pos != std::string::npos) {
+        path_.erase(pos);
+    }
     return *this;
 }
 
 Path& Path::operator+=(const Path& rhs) {
-    for (auto elem : rhs.path_) {
-        path_.push_back(elem);
-    }
+    append(rhs.path_);
     return *this;
 }
-Path& Path::operator+=(const std::string& path) {
-    splitString(path);
+Path& Path::operator+=(std::string_view path) {
+    append(path);
     return *this;
 }
 
-Path::operator std::string() const { return toString(); }
+Path::operator const std::string&() const { return path_; }
 
-std::string Path::toString() const { return "/" + joinString(path_, "/"); }
+const std::string& Path::toString() const { return path_; }
 
-void Path::splitString(const std::string& string) {
-    std::stringstream data(string);
-
-    std::string line;
-    while (std::getline(data, line, '/')) {
-        if (!line.empty()) path_.push_back(line);
+void Path::append(std::string_view path) {
+    for (const auto part : std::views::split(path, '/')) {
+        if (part.empty()) continue;
+        if (path_.size() != 1) path_.push_back('/');
+        path_.append(part.begin(), part.end());
     }
-}
-
-Path operator+(const Path& lhs, const Path& rhs) {
-    Path newpath(lhs);
-    newpath.push(rhs);
-    return newpath;
-}
-
-Path operator+(const Path& lhs, const std::string& rhs) {
-    Path newpath(lhs);
-    newpath.push(rhs);
-    return newpath;
 }
 
 }  // namespace hdf5

@@ -29,7 +29,9 @@
 
 #include <modules/hdf5/processors/hdf5dataframesource.h>
 #include <modules/hdf5/datastructures/hdf5handle.h>
+#include <modules/hdf5/hdf5read.h>
 #include <modules/hdf5/datastructures/hdf5path.h>
+#include <modules/hdf5/hdf5utils.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
@@ -99,15 +101,14 @@ void HDF5ToDataFrame::process() try {
 void HDF5ToDataFrame::onDataChange() {
     if (inport_.hasData()) {
         const auto data = inport_.getData();
-        const std::vector<MetaData> metadata = util::getMetaData(data->getGroup());
+        const std::vector<DataSetInfo> metadata = util::getDataSets(*data);
 
         dataMatches_.clear();
-        std::copy_if(metadata.begin(), metadata.end(), std::back_inserter(dataMatches_),
-                     [](const MetaData& meta) {
-                         const auto dims = meta.getColumnMajorDimensions();
-                         return meta.type_ == MetaData::HDFType::DataSet && dims.size() == 1ull &&
-                                dims[0] > 0ull;
-                     });
+        std::ranges::copy_if(metadata, std::back_inserter(dataMatches_),
+                             [](const DataSetInfo& meta) {
+                                 const auto dims = meta.getColumnMajorDimensions();
+                                 return dims.size() == 1ull && dims[0] > 0ull;
+                             });
 
         rebuildColumnProperties();
     } else {
@@ -132,7 +133,7 @@ void HDF5ToDataFrame::rebuildColumnProperties() {
         const auto& meta = dataMatches_[i];
         // Use a sanitised version of the path as identifier to stay unique.
         const std::string id = "col" + std::to_string(i);
-        const std::string displayName = getDescription(meta);
+        const std::string displayName = util::dataSetDescription(meta);
 
         auto prop = std::make_unique<BoolProperty>(id, displayName, true);
         columns_.addProperty(prop.get(), false);
@@ -140,13 +141,6 @@ void HDF5ToDataFrame::rebuildColumnProperties() {
     }
 
     columns_.setCurrentStateAsDefault();
-}
-
-std::string HDF5ToDataFrame::getDescription(const MetaData& meta) const {
-    const auto dims = meta.getColumnMajorDimensions();
-    return meta.path_.toString() +
-           (meta.format_ ? (" " + std::string(meta.format_->getString())) : "") + " [" +
-           joinString(dims, ", ") + "]";
 }
 
 void HDF5ToDataFrame::makeDataFrame() {
@@ -168,8 +162,7 @@ void HDF5ToDataFrame::makeDataFrame() {
     }
 
     // Verify all enabled datasets have the same number of elements.
-    const size_t expectedRows =
-        dataMatches_[enabledIndices[0]].getColumnMajorDimensions()[0];
+    const size_t expectedRows = dataMatches_[enabledIndices[0]].getColumnMajorDimensions()[0];
 
     for (size_t idx : enabledIndices) {
         const size_t rows = dataMatches_[idx].getColumnMajorDimensions()[0];
@@ -184,14 +177,13 @@ void HDF5ToDataFrame::makeDataFrame() {
     auto df = std::make_shared<DataFrame>();
 
     for (size_t idx : enabledIndices) {
-        const MetaData& meta = dataMatches_[idx];
+        const DataSetInfo& meta = dataMatches_[idx];
         const size_t rows = meta.getColumnMajorDimensions()[0];
 
         // Build a full-range selection for this 1-D dataset.
         const std::vector<Handle::Selection> selection{{0, rows, 1}};
 
-        auto buffer = data->getBufferAtPathAsType(
-            Path(data->getGroup().getObjName()) + meta.path_, selection, nullptr);
+        auto buffer = getBufferAtPathAsType(*data + meta.path_, selection, nullptr);
 
         // Use the last path component as column header.
         const std::string pathStr = meta.path_.toString();

@@ -32,21 +32,22 @@
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/hdf5/ports/hdf5port.h>
-#include <modules/hdf5/datastructures/hdf5metadata.h>
 #include <modules/hdf5/hdf5utils.h>
+#include <modules/hdf5/properties/dimselectionsproperty.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
 
 #include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/datastructures/volumereusecache.h>
+
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 
@@ -65,52 +66,16 @@ protected:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    class DimSelection : public CompositeProperty {
-    public:
-        DimSelection(const std::string& identifier, const std::string& displayName,
-                     InvalidationLevel = InvalidationLevel::InvalidOutput);
-
-        DimSelection(const DimSelection& rhs) = default;
-        virtual ~DimSelection() = default;
-
-        IntMinMaxProperty range;
-        IntProperty stride;
-
-        void update(int newMax);
-    };
-
-    class DimSelections : public CompositeProperty {
-    public:
-        DimSelections(const std::string& identifier, const std::string& displayName, size_t maxRank,
-                      InvalidationLevel = InvalidationLevel::InvalidOutput);
-
-        DimSelections(const DimSelections& rhs) = default;
-        virtual ~DimSelections() = default;
-
-        std::vector<Handle::Selection> getSelection() const;
-        std::vector<Handle::Selection> getMaxSelection() const;
-
-        void update(const MetaData& meta);
-
-        BoolProperty adjustBasis_;
-
-    private:
-        size_t maxRank_;
-        size_t rank_;
-        std::vector<std::unique_ptr<DimSelection>> selection_;
-    };
-
     void makeVolume();
     void onDataChange();
 
     void onSelectionChange();
     void onBasisSelectionChange();
 
-    dmat4 getBasisFromMeta(MetaData);
-    std::string getDescription(const MetaData& meta);
+    dmat4 getBasisFromMeta(DataSetInfo);
 
-    std::vector<MetaData> volumeMatches_;
-    std::vector<MetaData> basisMatches_;
+    std::vector<DataSetInfo> volumeMatches_;
+    std::vector<DataSetInfo> basisMatches_;
 
     Inport inport_;
     VolumeOutport outport_;
@@ -130,7 +95,8 @@ private:
 
     CompositeProperty outputGroup_;
     OptionPropertyInt datatype_;
-    DimSelections selection_;
+    BoolProperty adjustBasis_;
+    DimSelectionsProperty selection_;
 
     VolumeReuseCache cache_;
 
