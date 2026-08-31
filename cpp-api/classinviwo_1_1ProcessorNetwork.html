@@ -185,6 +185,8 @@ const std::vector&lt; <a class="el" href="classinviwo_1_1PortConnection.html">Po
 <tr class="memdesc:ac82496f98f36cde2f6b1f64029206ff7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all connections in the network. <br /></td></tr>
 <tr class="memitem:a841f3f5a7a28ff0059fb8de2d01113ac" id="r_a841f3f5a7a28ff0059fb8de2d01113ac"><td class="memItemLeft"><a id="a841f3f5a7a28ff0059fb8de2d01113ac" name="a841f3f5a7a28ff0059fb8de2d01113ac"></a>
 <a class="el" href="classinviwo_1_1ProcessorNetworkEvaluator.html">ProcessorNetworkEvaluator</a> *&#160;</td><td class="memItemRight"><b>getEvaluator</b> () const</td></tr>
+<tr class="memitem:a6e0493623b00eee4af589af4efcf6bbc" id="r_a6e0493623b00eee4af589af4efcf6bbc"><td class="memItemLeft"><a id="a6e0493623b00eee4af589af4efcf6bbc" name="a6e0493623b00eee4af589af4efcf6bbc"></a>
+const std::string &amp;&#160;</td><td class="memItemRight"><b>getIdentifier</b> () const</td></tr>
 <tr class="memitem:a23aa5baa5bb3c91d259fc229a3888c84" id="r_a23aa5baa5bb3c91d259fc229a3888c84"><td class="memItemLeft"><a class="el" href="classinviwo_1_1Inport.html">Inport</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a23aa5baa5bb3c91d259fc229a3888c84">getInport</a> (std::string_view path) const</td></tr>
 <tr class="memdesc:a23aa5baa5bb3c91d259fc229a3888c84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <a class="el" href="classinviwo_1_1Inport.html" title="Abstract base class for all inports An Inport can be connected to an Outport. The approved connection...">Inport</a> by path.  <br /></td></tr>
 <tr class="memitem:ad566dab86e9ead0a087b86fb4c75ebde" id="r_ad566dab86e9ead0a087b86fb4c75ebde"><td class="memItemLeft">std::vector&lt; <a class="el" href="classinviwo_1_1PropertyLink.html">PropertyLink</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ad566dab86e9ead0a087b86fb4c75ebde">getLinks</a> () const</td></tr>
@@ -236,8 +238,8 @@ ProcessorNetwork &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (cons
 ProcessorNetwork &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (ProcessorNetwork &amp;&amp;)=delete</td></tr>
 <tr class="memitem:a016cc6c43e35fdb3ccbf2adbb97f420f" id="r_a016cc6c43e35fdb3ccbf2adbb97f420f"><td class="memItemLeft"><a id="a016cc6c43e35fdb3ccbf2adbb97f420f" name="a016cc6c43e35fdb3ccbf2adbb97f420f"></a>
 &#160;</td><td class="memItemRight"><b>ProcessorNetwork</b> (const ProcessorNetwork &amp;)=delete</td></tr>
-<tr class="memitem:a6443c9009b394d78c923073b04d5a296" id="r_a6443c9009b394d78c923073b04d5a296"><td class="memItemLeft"><a id="a6443c9009b394d78c923073b04d5a296" name="a6443c9009b394d78c923073b04d5a296"></a>
-&#160;</td><td class="memItemRight"><b>ProcessorNetwork</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *application)</td></tr>
+<tr class="memitem:a4a00706b5b41a0c3bd1bfe27fe5b8f28" id="r_a4a00706b5b41a0c3bd1bfe27fe5b8f28"><td class="memItemLeft"><a id="a4a00706b5b41a0c3bd1bfe27fe5b8f28" name="a4a00706b5b41a0c3bd1bfe27fe5b8f28"></a>
+&#160;</td><td class="memItemRight"><b>ProcessorNetwork</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *application, std::string_view identifier=&quot;network&quot;)</td></tr>
 <tr class="memitem:abdb50e6705e371ae60097c436009b085" id="r_abdb50e6705e371ae60097c436009b085"><td class="memItemLeft"><a id="abdb50e6705e371ae60097c436009b085" name="abdb50e6705e371ae60097c436009b085"></a>
 &#160;</td><td class="memItemRight"><b>ProcessorNetwork</b> (ProcessorNetwork &amp;&amp;)=delete</td></tr>
 <tr class="memitem:a546a4a423635a285ed0b3c6189e24c30" id="r_a546a4a423635a285ed0b3c6189e24c30"><td class="memItemLeft">auto&#160;</td><td class="memItemRight"><a class="el" href="#a546a4a423635a285ed0b3c6189e24c30">processorRange</a> () const</td></tr>
@@ -252,6 +254,8 @@ int&#160;</td><td class="memItemRight"><b>runningBackgroundJobs</b> () const</td
 <tr class="memitem:a1917109abada2ca828facb4124d43bc8" id="r_a1917109abada2ca828facb4124d43bc8"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a1917109abada2ca828facb4124d43bc8">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
 <tr class="memitem:a5a0fe429d0776d0caeca3d5ad67188b2" id="r_a5a0fe429d0776d0caeca3d5ad67188b2"><td class="memItemLeft"><a id="a5a0fe429d0776d0caeca3d5ad67188b2" name="a5a0fe429d0776d0caeca3d5ad67188b2"></a>
 void&#160;</td><td class="memItemRight"><b>setEvaluator</b> (<a class="el" href="classinviwo_1_1ProcessorNetworkEvaluator.html">ProcessorNetworkEvaluator</a> *evaluator)</td></tr>
+<tr class="memitem:a3777d28c2017032283f940b466883200" id="r_a3777d28c2017032283f940b466883200"><td class="memItemLeft"><a id="a3777d28c2017032283f940b466883200" name="a3777d28c2017032283f940b466883200"></a>
+void&#160;</td><td class="memItemRight"><b>setIdentifier</b> (std::string_view identifier)</td></tr>
 <tr class="memitem:aadddccd9f220e82b3af76e195d48f1ac" id="r_aadddccd9f220e82b3af76e195d48f1ac"><td class="memItemLeft"><a id="aadddccd9f220e82b3af76e195d48f1ac" name="aadddccd9f220e82b3af76e195d48f1ac"></a>
 size_t&#160;</td><td class="memItemRight"><b>size</b> () const</td></tr>
 <tr class="memitem:a97bae12e1b6a65e32549816a7b8a8e99" id="r_a97bae12e1b6a65e32549816a7b8a8e99"><td class="memItemLeft"><a id="a97bae12e1b6a65e32549816a7b8a8e99" name="a97bae12e1b6a65e32549816a7b8a8e99"></a>

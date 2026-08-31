@@ -123,12 +123,16 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight"><b>BrushingTarget</b> (const BrushingTarget &amp;rhs)=default</td></tr>
 <tr class="memitem:abe1ddc8468bf5f9a7b80ecb58181406f" id="r_abe1ddc8468bf5f9a7b80ecb58181406f"><td class="memItemLeft"><a id="abe1ddc8468bf5f9a7b80ecb58181406f" name="abe1ddc8468bf5f9a7b80ecb58181406f"></a>
 &#160;</td><td class="memItemRight"><b>BrushingTarget</b> (std::string_view target)</td></tr>
+<tr class="memitem:a078bfc4302ded542fd4f617b1cee40a1" id="r_a078bfc4302ded542fd4f617b1cee40a1"><td class="memItemLeft"><a id="a078bfc4302ded542fd4f617b1cee40a1" name="a078bfc4302ded542fd4f617b1cee40a1"></a>
+void&#160;</td><td class="memItemRight"><b>deserialize</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d)</td></tr>
 <tr class="memitem:a34511899fd73d13459779a75f3f78308" id="r_a34511899fd73d13459779a75f3f78308"><td class="memItemLeft"><a id="a34511899fd73d13459779a75f3f78308" name="a34511899fd73d13459779a75f3f78308"></a>
 std::string_view&#160;</td><td class="memItemRight"><b>getString</b> () const</td></tr>
 <tr class="memitem:a5f53ebc9b126bdc765e4818588d495cf" id="r_a5f53ebc9b126bdc765e4818588d495cf"><td class="memItemLeft"><a id="a5f53ebc9b126bdc765e4818588d495cf" name="a5f53ebc9b126bdc765e4818588d495cf"></a>
 constexpr auto&#160;</td><td class="memItemRight"><b>operator&lt;=&gt;</b> (const BrushingTarget &amp;other) const =default</td></tr>
 <tr class="memitem:a7225bb5fd5f8a89ef371e107d640f3d9" id="r_a7225bb5fd5f8a89ef371e107d640f3d9"><td class="memItemLeft"><a id="a7225bb5fd5f8a89ef371e107d640f3d9" name="a7225bb5fd5f8a89ef371e107d640f3d9"></a>
 BrushingTarget &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const BrushingTarget &amp;rhs)=default</td></tr>
+<tr class="memitem:a7b7e8700e7ab8c74763ecb7882ae38f3" id="r_a7b7e8700e7ab8c74763ecb7882ae38f3"><td class="memItemLeft"><a id="a7b7e8700e7ab8c74763ecb7882ae38f3" name="a7b7e8700e7ab8c74763ecb7882ae38f3"></a>
+void&#160;</td><td class="memItemRight"><b>serialize</b> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -136,11 +140,6 @@ Static Public Attributes</h2></td></tr>
 static const BrushingTarget&#160;</td><td class="memItemRight"><b>Column</b></td></tr>
 <tr class="memitem:a055cafe2dae7876e2a07c8e1894dfb5c" id="r_a055cafe2dae7876e2a07c8e1894dfb5c"><td class="memItemLeft"><a id="a055cafe2dae7876e2a07c8e1894dfb5c" name="a055cafe2dae7876e2a07c8e1894dfb5c"></a>
 static const BrushingTarget&#160;</td><td class="memItemRight"><b>Row</b></td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:a15414015d81a7f854656d09829642283" id="r_a15414015d81a7f854656d09829642283"><td class="memItemLeft"><a id="a15414015d81a7f854656d09829642283" name="a15414015d81a7f854656d09829642283"></a>
-IVW_MODULE_BRUSHINGANDLINKING_API friend std::istream &amp;&#160;</td><td class="memItemRight"><b>operator&gt;&gt;</b> (std::istream &amp;ss, BrushingTarget &amp;bt)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a target for brushing and linking actions.</p>

@@ -141,6 +141,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a79ee1f308589cda72f10558638f12183" id="r_a79ee1f308589cda72f10558638f12183"><td class="memItemLeft"><a id="a79ee1f308589cda72f10558638f12183" name="a79ee1f308589cda72f10558638f12183"></a>
+virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6">Processor</a> &gt;&#160;</td><td class="memItemRight"><b>createConverter</b> () const =0</td></tr>
+<tr class="memitem:ade981e5f8ab6ed9dd28cd0609386e893" id="r_ade981e5f8ab6ed9dd28cd0609386e893"><td class="memItemLeft"><a id="ade981e5f8ab6ed9dd28cd0609386e893" name="ade981e5f8ab6ed9dd28cd0609386e893"></a>
+virtual void&#160;</td><td class="memItemRight"><b>createSuperInport</b> (std::string_view id, bool optional)=0</td></tr>
 <tr class="memitem:ad520d738de65d830a0a7e1fe91e6bba1" id="r_ad520d738de65d830a0a7e1fe91e6bba1"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1Inport.html">Inport</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ad520d738de65d830a0a7e1fe91e6bba1">getSuperInport</a> ()=0</td></tr>
 <tr class="memitem:a32ce63da86f38004073efe212489f4f0" id="r_a32ce63da86f38004073efe212489f4f0"><td class="memItemLeft"><a id="a32ce63da86f38004073efe212489f4f0" name="a32ce63da86f38004073efe212489f4f0"></a>
 SequenceCompositeSourceBase &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const SequenceCompositeSourceBase &amp;)=delete</td></tr>
@@ -154,6 +158,8 @@ SequenceCompositeSourceBase &amp;&#160;</td><td class="memItemRight"><b>operator
 virtual size_t&#160;</td><td class="memItemRight"><b>sequenceSize</b> () const =0</td></tr>
 <tr class="memitem:af967a089cf895aa3987910712dfd9b7e" id="r_af967a089cf895aa3987910712dfd9b7e"><td class="memItemLeft"><a id="af967a089cf895aa3987910712dfd9b7e" name="af967a089cf895aa3987910712dfd9b7e"></a>
 virtual void&#160;</td><td class="memItemRight"><b>setSequenceIndex</b> (size_t)=0</td></tr>
+<tr class="memitem:a5c1434acee0953e40ba503e05c7528a6" id="r_a5c1434acee0953e40ba503e05c7528a6"><td class="memItemLeft"><a id="a5c1434acee0953e40ba503e05c7528a6" name="a5c1434acee0953e40ba503e05c7528a6"></a>
+virtual void&#160;</td><td class="memItemRight"><b>sync</b> (SequenceCompositeSourceBase *source)=0</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Processor"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a06088cebce8b3d454b56abf70458b62e inherit pub_methods_classinviwo_1_1Processor" id="r_a06088cebce8b3d454b56abf70458b62e"><td class="memItemLeft">
 virtual void&#160;</td><td class="memItemRight"><b>accept</b> (<a class="el" href="classinviwo_1_1NetworkVisitor.html">NetworkVisitor</a> &amp;visitor)</td></tr>

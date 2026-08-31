@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 </div><!--header-->
 <div class="contents">
 
-<p>static constexpr auto name = <a class="el" href="structinviwo_1_1DataTraits.html#a70bc89235f2ada970ab0dd76c42eec51">DataTraits&lt;Type&gt;::dataName()</a>;  
+<p>Loads a sequence of data.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;modules/base/processors/sequencesource.h&gt;</code></p>
@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
  <div class="center">
   <img src="classinviwo_1_1SequenceSource.png" usemap="#inviwo_3A_3ASequenceSource_3C_20Conf_20_3E_map" alt=""/>
   <map id="inviwo_3A_3ASequenceSource_3C_20Conf_20_3E_map" name="inviwo_3A_3ASequenceSource_3C_20Conf_20_3E_map">
+<area href="classinviwo_1_1PoolProcessor.html" alt="inviwo::PoolProcessor" shape="rect" coords="885,280,1170,304"/>
 <area href="classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result." alt="inviwo::Processor" shape="rect" coords="885,224,1170,248"/>
 <area href="classinviwo_1_1PropertyOwner.html" alt="inviwo::PropertyOwner" shape="rect" coords="295,168,580,192"/>
 <area href="classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get MetaDataOwner is the base class for all the objec..." alt="inviwo::MetaDataOwner" shape="rect" coords="590,168,875,192"/>
@@ -143,10 +144,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ace83e784b054a41e33531c0187e5b009" id="r_ace83e784b054a41e33531c0187e5b009"><td class="memItemLeft"><a id="ace83e784b054a41e33531c0187e5b009" name="ace83e784b054a41e33531c0187e5b009"></a>
-using&#160;</td><td class="memItemRight"><b>Sequence</b> = typename Conf::Sequence</td></tr>
-<tr class="memitem:ae025e23aa8aae5f9ff303c6abad4455a" id="r_ae025e23aa8aae5f9ff303c6abad4455a"><td class="memItemLeft"><a id="ae025e23aa8aae5f9ff303c6abad4455a" name="ae025e23aa8aae5f9ff303c6abad4455a"></a>
-using&#160;</td><td class="memItemRight"><b>Type</b> = typename Conf::Type</td></tr>
+<tr class="memitem:a79c894afe283a7ef5c3d54f99f23312b" id="r_a79c894afe283a7ef5c3d54f99f23312b"><td class="memItemLeft"><a id="a79c894afe283a7ef5c3d54f99f23312b" name="a79c894afe283a7ef5c3d54f99f23312b"></a>
+using&#160;</td><td class="memItemRight"><b>Sequence</b> = Conf::Sequence</td></tr>
+<tr class="memitem:a5efabe7f1487f316237454e702caaaaf" id="r_a5efabe7f1487f316237454e702caaaaf"><td class="memItemLeft"><a id="a5efabe7f1487f316237454e702caaaaf" name="a5efabe7f1487f316237454e702caaaaf"></a>
+using&#160;</td><td class="memItemRight"><b>Type</b> = Conf::Type</td></tr>
 <tr class="inherit_header pub_types_classinviwo_1_1Processor"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a54efc0672583e4cc7676c0c377eaf9c7 inherit pub_types_classinviwo_1_1Processor" id="r_a54efc0672583e4cc7676c0c377eaf9c7"><td class="memItemLeft">
 using&#160;</td><td class="memItemRight"><b>NameDispatcher</b> = <a class="el" href="classinviwo_1_1Dispatcher.html">Dispatcher</a>&lt;void(std::string_view, std::string_view)&gt;</td></tr>
@@ -173,6 +174,32 @@ SequenceSource &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (Sequen
 &#160;</td><td class="memItemRight"><b>SequenceSource</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app)</td></tr>
 <tr class="memitem:a81b381b75243d623a46b75ae9b57ed99" id="r_a81b381b75243d623a46b75ae9b57ed99"><td class="memItemLeft"><a id="a81b381b75243d623a46b75ae9b57ed99" name="a81b381b75243d623a46b75ae9b57ed99"></a>
 &#160;</td><td class="memItemRight"><b>SequenceSource</b> (SequenceSource &amp;&amp;)=delete</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1PoolProcessor"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1PoolProcessor.html">inviwo::PoolProcessor</a></td></tr>
+<tr class="memitem:afb9ad6695eb3f034f687fd8b683f0d3f inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_afb9ad6695eb3f034f687fd8b683f0d3f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#afb9ad6695eb3f034f687fd8b683f0d3f">delayDispatch</a> () const</td></tr>
+<tr class="memitem:aa8f024c5bd3b88446d62abedac1b47d7 inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_aa8f024c5bd3b88446d62abedac1b47d7"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#aa8f024c5bd3b88446d62abedac1b47d7">delayInvalidation</a> () const</td></tr>
+<tr class="memitem:adec005642721be405f245f0e9c065ebd inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_adec005642721be405f245f0e9c065ebd"><td class="memTemplParams" colspan="2">template&lt;typename Job, typename Done&gt; </td></tr>
+<tr class="memitem:adec005642721be405f245f0e9c065ebd inherit pub_methods_classinviwo_1_1PoolProcessor template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#adec005642721be405f245f0e9c065ebd">dispatchMany</a> (std::vector&lt; Job &gt; jobs, Done &amp;&amp;done)</td></tr>
+<tr class="memitem:a57b22eff57e5ac373bd0c671507cb4d7 inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_a57b22eff57e5ac373bd0c671507cb4d7"><td class="memTemplParams" colspan="2">template&lt;typename Job, typename Done&gt; </td></tr>
+<tr class="memitem:a57b22eff57e5ac373bd0c671507cb4d7 inherit pub_methods_classinviwo_1_1PoolProcessor template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#a57b22eff57e5ac373bd0c671507cb4d7">dispatchOne</a> (Job &amp;&amp;job, Done &amp;&amp;done)</td></tr>
+<tr class="memitem:a260d2b225b762d2fd7451ed54a09549b inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_a260d2b225b762d2fd7451ed54a09549b"><td class="memItemLeft">const std::optional&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#a260d2b225b762d2fd7451ed54a09549b">error</a> () const</td></tr>
+<tr class="memitem:a045a9f6b040b7db47d7a887747dcbdf5 inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_a045a9f6b040b7db47d7a887747dcbdf5"><td class="memItemLeft"><a class="el" href="namespaceinviwo_1_1pool.html#a9d13e28d8b8012a39177819e13aaaa5b">pool::Options</a>&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#a045a9f6b040b7db47d7a887747dcbdf5">getOptions</a> () const</td></tr>
+<tr class="memitem:a0d4232b6c9445819cd031e959be9835f inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_a0d4232b6c9445819cd031e959be9835f"><td class="memItemLeft">virtual std::string&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#a0d4232b6c9445819cd031e959be9835f">handleError</a> ()</td></tr>
+<tr class="memitem:ac6e0e43b23307c94e2e68bc4c9622319 inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_ac6e0e43b23307c94e2e68bc4c9622319"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#ac6e0e43b23307c94e2e68bc4c9622319">hasJobs</a> ()</td></tr>
+<tr class="memitem:a12a44b414c3c01e2f79889bdc3c8ab90 inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_a12a44b414c3c01e2f79889bdc3c8ab90"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#a12a44b414c3c01e2f79889bdc3c8ab90">invalidate</a> (<a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel, <a class="el" href="classinviwo_1_1Property.html">Property</a> *source=nullptr) override</td></tr>
+<tr class="memitem:a847a7d63c824f70500584de74229255f inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_a847a7d63c824f70500584de74229255f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#a847a7d63c824f70500584de74229255f">keepOldJobs</a> () const</td></tr>
+<tr class="memitem:a76c953f6bf28a00dde51042a219299be inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_a76c953f6bf28a00dde51042a219299be"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#a76c953f6bf28a00dde51042a219299be">newResults</a> ()</td></tr>
+<tr class="memitem:a929b39be1ff6f49f76f50042408c73f2 inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_a929b39be1ff6f49f76f50042408c73f2"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#a929b39be1ff6f49f76f50042408c73f2">newResults</a> (const std::vector&lt; <a class="el" href="classinviwo_1_1Outport.html">Outport</a> * &gt; &amp;outports)</td></tr>
+<tr class="memitem:a7d381b681bd43e600e864a54aa5f9ecd inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_a7d381b681bd43e600e864a54aa5f9ecd"><td class="memItemLeft">
+<a class="el" href="classinviwo_1_1PoolProcessor.html#ac38eeb9bbf6bb53e00e803da57774bc5">PoolProcessor</a> &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const <a class="el" href="classinviwo_1_1PoolProcessor.html#ac38eeb9bbf6bb53e00e803da57774bc5">PoolProcessor</a> &amp;)=delete</td></tr>
+<tr class="memitem:ad889605515be4c7f0b1824f21e65bb62 inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_ad889605515be4c7f0b1824f21e65bb62"><td class="memItemLeft">
+<a class="el" href="classinviwo_1_1PoolProcessor.html#ac38eeb9bbf6bb53e00e803da57774bc5">PoolProcessor</a> &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (<a class="el" href="classinviwo_1_1PoolProcessor.html#ac38eeb9bbf6bb53e00e803da57774bc5">PoolProcessor</a> &amp;&amp;)=delete</td></tr>
+<tr class="memitem:ae133eef534996f4d74165c0e84c0de4e inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_ae133eef534996f4d74165c0e84c0de4e"><td class="memItemLeft">
+&#160;</td><td class="memItemRight"><b>PoolProcessor</b> (const PoolProcessor &amp;)=delete</td></tr>
+<tr class="memitem:ac38eeb9bbf6bb53e00e803da57774bc5 inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_ac38eeb9bbf6bb53e00e803da57774bc5"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#ac38eeb9bbf6bb53e00e803da57774bc5">PoolProcessor</a> (<a class="el" href="namespaceinviwo_1_1pool.html#a9d13e28d8b8012a39177819e13aaaa5b">pool::Options</a> options=<a class="el" href="namespaceinviwo_1_1pool.html#a9d13e28d8b8012a39177819e13aaaa5b">pool::Options</a>{flags::empty}, const std::string &amp;identifier=&quot;&quot;, const std::string &amp;displayName=&quot;&quot;)</td></tr>
+<tr class="memitem:a447623287793348ab6a2378b9ab0cad2 inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_a447623287793348ab6a2378b9ab0cad2"><td class="memItemLeft">
+&#160;</td><td class="memItemRight"><b>PoolProcessor</b> (PoolProcessor &amp;&amp;)=delete</td></tr>
+<tr class="memitem:af9efa96424943439965222f32f3d9fcc inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_af9efa96424943439965222f32f3d9fcc"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#af9efa96424943439965222f32f3d9fcc">queuedDispatch</a> () const</td></tr>
+<tr class="memitem:a00454a599d063fe1a0067cf21ad116ba inherit pub_methods_classinviwo_1_1PoolProcessor" id="r_a00454a599d063fe1a0067cf21ad116ba"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1PoolProcessor.html#a00454a599d063fe1a0067cf21ad116ba">stopJobs</a> ()</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Processor"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a06088cebce8b3d454b56abf70458b62e inherit pub_methods_classinviwo_1_1Processor" id="r_a06088cebce8b3d454b56abf70458b62e"><td class="memItemLeft">
 virtual void&#160;</td><td class="memItemRight"><b>accept</b> (<a class="el" href="classinviwo_1_1NetworkVisitor.html">NetworkVisitor</a> &amp;visitor)</td></tr>
@@ -237,7 +264,6 @@ bool&#160;</td><td class="memItemRight"><b>hasInteractionHandler</b> () const</t
 <tr class="memitem:a6e3f92a4db563891a96e7f17039afbb8 inherit pub_methods_classinviwo_1_1Processor" id="r_a6e3f92a4db563891a96e7f17039afbb8"><td class="memItemLeft">
 bool&#160;</td><td class="memItemRight"><b>hasProcessorWidget</b> () const</td></tr>
 <tr class="memitem:a9ca0ca1407ee6e9f0c5e3a9b1a453dd1 inherit pub_methods_classinviwo_1_1Processor" id="r_a9ca0ca1407ee6e9f0c5e3a9b1a453dd1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">initializeResources</a> ()</td></tr>
-<tr class="memitem:a60ba7b32a166fbdf87e140b9b2cc654c inherit pub_methods_classinviwo_1_1Processor" id="r_a60ba7b32a166fbdf87e140b9b2cc654c"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a60ba7b32a166fbdf87e140b9b2cc654c">invalidate</a> (<a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel, Property *modifiedProperty=nullptr) override</td></tr>
 <tr class="memitem:af5ca45df8fe5ad88e2857f39cf7fe771 inherit pub_methods_classinviwo_1_1Processor" id="r_af5ca45df8fe5ad88e2857f39cf7fe771"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#af5ca45df8fe5ad88e2857f39cf7fe771">invokeEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event) override</td></tr>
 <tr class="memitem:a92e39a99e6e1dbd8e4d4756b8e56df22 inherit pub_methods_classinviwo_1_1Processor" id="r_a92e39a99e6e1dbd8e4d4756b8e56df22"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a92e39a99e6e1dbd8e4d4756b8e56df22">isConnectionActive</a> (<a class="el" href="classinviwo_1_1Inport.html">Inport</a> *inport, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> *outport) const</td></tr>
 <tr class="memitem:ad92dc01e0538cd13ea49613d9b310ec4 inherit pub_methods_classinviwo_1_1Processor" id="r_ad92dc01e0538cd13ea49613d9b310ec4"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#ad92dc01e0538cd13ea49613d9b310ec4">isReady</a> () const</td></tr>
@@ -526,9 +552,38 @@ friend&#160;</td><td class="memItemRight"><b>Property</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename Conf&gt;<br />
-class inviwo::SequenceSource&lt; Conf &gt;</div><p>static constexpr auto name = <a class="el" href="structinviwo_1_1DataTraits.html#a70bc89235f2ada970ab0dd76c42eec51">DataTraits&lt;Type&gt;::dataName()</a>; </p>
-<p>Loads a vector of volumes </p>
-</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+class inviwo::SequenceSource&lt; Conf &gt;</div><p>Loads a sequence of data. </p>
+<p>Conf struct example </p><div class="fragment"><div class="line"><span class="keyword">struct </span>VolumeConf {</div>
+<div class="line">    <span class="keyword">using </span>Type = <a class="code hl_class" href="classinviwo_1_1Volume.html">Volume</a>;</div>
+<div class="line">    <span class="keyword">using </span>Sequence = <a class="code hl_class" href="classinviwo_1_1DataSequence.html">DataSequence&lt;Type&gt;</a>;</div>
+<div class="line">    <span class="keyword">using </span><a class="code hl_class" href="classinviwo_1_1Outport.html">Outport</a> = VolumeSequenceOutport;</div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> name = <a class="code hl_function" href="structinviwo_1_1DataTraits.html#a70bc89235f2ada970ab0dd76c42eec51">DataTraits&lt;Type&gt;::dataName</a>();</div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> plural = <span class="stringliteral">&quot;s&quot;</span>;</div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">size_t</span> dim = 3;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">struct </span>Info {</div>
+<div class="line">        <a class="code hl_class" href="classinviwo_1_1BasisProperty.html">BasisProperty</a> basis{<span class="stringliteral">&quot;Basis&quot;</span>, <span class="stringliteral">&quot;Basis and offset&quot;</span>};</div>
+<div class="line">        <a class="code hl_class" href="classinviwo_1_1VolumeInformationProperty.html">VolumeInformationProperty</a> info{<span class="stringliteral">&quot;Information&quot;</span>, <span class="stringliteral">&quot;Data information&quot;</span>};</div>
+<div class="line">    };</div>
+<div class="line">    <span class="keyword">static</span> <span class="keywordtype">void</span> add(Info&amp; info, <span class="keyword">auto</span>&amp; processor) {</div>
+<div class="line">        processor.addProperties(info.basis, info.info);</div>
+<div class="line">        info.basis.setReadOnly(<span class="keyword">true</span>);</div>
+<div class="line">        info.info.setReadOnly(<span class="keyword">true</span>);</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keyword">static</span> <span class="keywordtype">void</span> updateForNew(Info&amp; info, <span class="keyword">const</span> Type&amp; data, util::OverwriteState overwrite) {</div>
+<div class="line">        info.info.updateForNewVolume(data, overwrite);</div>
+<div class="line">        info.basis.updateForNewEntity(data, overwrite == util::OverwriteState::Yes);</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keyword">static</span> <span class="keyword">auto</span> getReaderConfig(Info&amp; info) -&gt; std::function&lt;void(DataReader&amp;)&gt; {</div>
+<div class="line">        <span class="keywordflow">return</span> [](DataReader&amp;) {};</div>
+<div class="line">};</div>
+<div class="ttc" id="aclassinviwo_1_1BasisProperty_html"><div class="ttname"><a href="classinviwo_1_1BasisProperty.html">inviwo::BasisProperty</a></div><div class="ttdef"><b>Definition</b> basisproperty.h:64</div></div>
+<div class="ttc" id="aclassinviwo_1_1DataSequence_html"><div class="ttname"><a href="classinviwo_1_1DataSequence.html">inviwo::DataSequence</a></div><div class="ttdef"><b>Definition</b> datasequence.h:45</div></div>
+<div class="ttc" id="aclassinviwo_1_1Outport_html"><div class="ttname"><a href="classinviwo_1_1Outport.html">inviwo::Outport</a></div><div class="ttdoc">Abstract base class for all outports The Outport can be connected to an arbitrary number of Inports.</div><div class="ttdef"><b>Definition</b> outport.h:51</div></div>
+<div class="ttc" id="aclassinviwo_1_1VolumeInformationProperty_html"><div class="ttname"><a href="classinviwo_1_1VolumeInformationProperty.html">inviwo::VolumeInformationProperty</a></div><div class="ttdef"><b>Definition</b> volumeinformationproperty.h:56</div></div>
+<div class="ttc" id="aclassinviwo_1_1Volume_html"><div class="ttname"><a href="classinviwo_1_1Volume.html">inviwo::Volume</a></div><div class="ttdef"><b>Definition</b> volume.h:68</div></div>
+<div class="ttc" id="astructinviwo_1_1DataTraits_html_a70bc89235f2ada970ab0dd76c42eec51"><div class="ttname"><a href="structinviwo_1_1DataTraits.html#a70bc89235f2ada970ab0dd76c42eec51">inviwo::DataTraits::dataName</a></div><div class="ttdeci">static constexpr std::string_view dataName()</div><div class="ttdef"><b>Definition</b> datatraits.h:97</div></div>
+</div><!-- fragment --> </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a540c14da7bfe06adeeb89ef6290e0fb9" name="a540c14da7bfe06adeeb89ef6290e0fb9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a540c14da7bfe06adeeb89ef6290e0fb9">&#9670;&#160;</a></span>deserialize()</h2>
 

@@ -1,7 +1,5 @@
 var NAVTREEINDEX4 =
 {
-"classinviwo_1_1DataFrameTable.html#ab483a8684864af25011eee785dd85948":[3,0,0,211,1],
-"classinviwo_1_1DataFrameTable.html#ab483a8684864af25011eee785dd85948":[5,0,1,221,1],
 "classinviwo_1_1DataFrameTableProcessorWidget.html":[3,0,0,212],
 "classinviwo_1_1DataFrameTableProcessorWidget.html":[5,0,1,222],
 "classinviwo_1_1DataFrameTableProcessorWidget.html#a69a7daaeba4b2efaefec876c66ee93fe":[3,0,0,212,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX4 =
 "classinviwo_1_1DirectionalLightSourceProcessor.html#ac6b73a411e9a5092ee0888ed0c27f2ac":[5,0,1,293,0],
 "classinviwo_1_1DirectoryProperty.html":[2,4,12],
 "classinviwo_1_1DirectoryProperty.html#a2eeefb2679cef790d4428855f4008bcf":[2,4,12,1],
-"classinviwo_1_1DirectoryProperty.html#a6496405b7efad8131f7915bee35ce128":[2,4,12,0]
+"classinviwo_1_1DirectoryProperty.html#a6496405b7efad8131f7915bee35ce128":[2,4,12,0],
+"classinviwo_1_1DirectoryToStringConverter.html":[3,0,0,285],
+"classinviwo_1_1DirectoryToStringConverter.html":[5,0,1,295]
 };

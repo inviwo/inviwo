@@ -114,8 +114,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('D_1_2a_2inviwo
   <div class="headertitle"><div class="title">D:/a/inviwo/inviwo/inviwo/include/inviwo/core/util/utfutils.h</div></div>
 </div><!--header-->
 <div class="contents">
-<p>Range adaptor that transforms a range of char (UTF-8) or wchar_t into a range of int32_t Unicode code points. Supports both function-call and pipe ('|') syntax via std::ranges::range_adaptor_closure (C++23).</p>
-<p>for (int32_t cp : myUtf8String | detail::codePoints) { ... } for (int32_t cp : detail::codePoints(myWstring)) { ... }</p>
+<p>Range adaptor that transforms a range of char (UTF-8) or wchar_t into a range of char32_t Unicode code points. Supports both function-call and pipe ('|') syntax via std::ranges::range_adaptor_closure (C++23).</p>
+<p>for (char32_t cp : myUtf8String | detail::codePoints) { ... } for (char32_t cp : detail::codePoints(myWstring)) { ... }</p>
 <div class="fragment"><div class="line"><span class="comment">/*********************************************************************************</span></div>
 <div class="line"><span class="comment"> *</span></div>
 <div class="line"><span class="comment"> * Inviwo - Interactive Visualization Workshop</span></div>
@@ -148,9 +148,12 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('D_1_2a_2inviwo
 <div class="line"><span class="preprocessor">#pragma once</span></div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">#include &lt;inviwo/core/common/inviwocoredefine.h&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;inviwo/core/util/exception.h&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">#include &lt;cwctype&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string_view&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;ranges&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
@@ -172,38 +175,30 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('D_1_2a_2inviwo
 <div class="line"> </div>
 <div class="line"><span class="keyword">namespace </span>detail {</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">constexpr</span> <span class="keywordtype">int</span> utf8ByteCount(int32_t cp) <span class="keyword">noexcept</span> {</div>
-<div class="line">    <span class="keywordflow">if</span> (cp &lt; 0x0) <span class="keywordflow">return</span> 0;</div>
-<div class="line">    <span class="keywordflow">if</span> (cp &lt; 0x0080) <span class="keywordflow">return</span> 1;</div>
-<div class="line">    <span class="keywordflow">if</span> (cp &lt; 0x0800) <span class="keywordflow">return</span> 2;</div>
-<div class="line">    <span class="keywordflow">if</span> (cp &lt; 0x10000) <span class="keywordflow">return</span> 3;</div>
-<div class="line">    <span class="keywordflow">return</span> 4;</div>
-<div class="line">}</div>
-<div class="line"> </div>
 <div class="line"><span class="keyword">template</span> &lt;std::input_iterator Iter, std::sentinel_for&lt;Iter&gt; Sentinel&gt;</div>
 <div class="line"><span class="keyword">class </span>Utf8CodePointIterator {</div>
 <div class="line"><span class="keyword">public</span>:</div>
-<div class="line">    <span class="keyword">using </span>iterator_category = std::forward_iterator_tag;</div>
-<div class="line">    <span class="keyword">using </span>value_type = int32_t;</div>
+<div class="line">    <span class="keyword">using </span>iterator_category =</div>
+<div class="line">        std::conditional_t&lt;std::bidirectional_iterator&lt;Iter&gt;, std::bidirectional_iterator_tag,</div>
+<div class="line">                           std::forward_iterator_tag&gt;;</div>
+<div class="line">    <span class="keyword">using </span>value_type = char32_t;</div>
 <div class="line">    <span class="keyword">using </span>difference_type = std::ptrdiff_t;</div>
-<div class="line">    <span class="keyword">using </span>pointer = <span class="keyword">const</span> int32_t*;</div>
-<div class="line">    <span class="keyword">using </span>reference = int32_t;</div>
+<div class="line">    <span class="keyword">using </span>pointer = <span class="keyword">const</span> <span class="keywordtype">char32_t</span>*;</div>
+<div class="line">    <span class="keyword">using </span>reference = char32_t;</div>
 <div class="line"> </div>
 <div class="line">    <span class="keyword">constexpr</span> Utf8CodePointIterator() = <span class="keywordflow">default</span>;</div>
-<div class="line">    <span class="keyword">constexpr</span> Utf8CodePointIterator(Iter it, Sentinel end)</div>
-<div class="line">        : it_{it}</div>
+<div class="line">    <span class="keyword">constexpr</span> Utf8CodePointIterator(Iter start, Iter it, Sentinel end)</div>
+<div class="line">        : start_{start}</div>
+<div class="line">        , it_{it}</div>
 <div class="line">        , end_{end}</div>
-<div class="line">        , current_{it_ == end ? -1 : <span class="keyword">static_cast&lt;</span>int32_t<span class="keyword">&gt;</span>(utf8::peek_next(it_, end_))} {}</div>
+<div class="line">        , current_{it_ == end_ ? 0 : utf8::peek_next(it_, end_)} {}</div>
 <div class="line"> </div>
-<div class="line">    <span class="keyword">constexpr</span> int32_t operator*()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> current_; }</div>
+<div class="line">    <span class="keyword">constexpr</span> <span class="keywordtype">char32_t</span> operator*()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> current_; }</div>
 <div class="line"> </div>
 <div class="line">    <span class="keyword">constexpr</span> Utf8CodePointIterator&amp; operator++() {</div>
-<div class="line">        std::advance(it_, utf8ByteCount(current_));</div>
-<div class="line">        <span class="keywordflow">if</span> (it_ != end_) {</div>
-<div class="line">            current_ = <span class="keyword">static_cast&lt;</span>int32_t<span class="keyword">&gt;</span>(utf8::peek_next(it_, end_));</div>
-<div class="line">        } <span class="keywordflow">else</span> {</div>
-<div class="line">            current_ = -1;</div>
-<div class="line">        }</div>
+<div class="line">        utf8::next(it_, end_);</div>
+<div class="line">        current_ = it_ == end_ ? 0 : utf8::peek_next(it_, end_);</div>
+<div class="line"> </div>
 <div class="line">        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
 <div class="line">    }</div>
 <div class="line">    <span class="keyword">constexpr</span> Utf8CodePointIterator operator++(<span class="keywordtype">int</span>) {</div>
@@ -212,12 +207,27 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('D_1_2a_2inviwo
 <div class="line">        <span class="keywordflow">return</span> tmp;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
+<div class="line">    <span class="keyword">constexpr</span> Utf8CodePointIterator&amp; operator--()</div>
+<div class="line">        <span class="keyword">requires</span> std::bidirectional_iterator&lt;Iter&gt;</div>
+<div class="line">    {</div>
+<div class="line">        current_ = utf8::prior(it_, start_);</div>
+<div class="line">        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keyword">constexpr</span> Utf8CodePointIterator operator--(<span class="keywordtype">int</span>)</div>
+<div class="line">        <span class="keyword">requires</span> std::bidirectional_iterator&lt;Iter&gt;</div>
+<div class="line">    {</div>
+<div class="line">        <span class="keyword">auto</span> tmp = *<span class="keyword">this</span>;</div>
+<div class="line">        --(*this);</div>
+<div class="line">        <span class="keywordflow">return</span> tmp;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
 <div class="line">    <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> Utf8CodePointIterator&amp; other)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> it_ == other.it_; }</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">private</span>:</div>
+<div class="line">    Iter start_{};</div>
 <div class="line">    Iter it_{};</div>
 <div class="line">    Sentinel end_{};</div>
-<div class="line">    int32_t current_{-1};</div>
+<div class="line">    <span class="keywordtype">char32_t</span> current_{};</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">template</span> &lt;CharRange View&gt;</div>
@@ -230,10 +240,10 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('D_1_2a_2inviwo
 <div class="line">    <span class="keyword">constexpr</span> <span class="keyword">explicit</span> Utf8CodePointRange(View view) : view_{std::move(view)} {}</div>
 <div class="line"> </div>
 <div class="line">    <span class="keyword">constexpr</span> Utf8CodePointIterator&lt;Iter, Sentinel&gt; begin()<span class="keyword"> const </span>{</div>
-<div class="line">        <span class="keywordflow">return</span> {std::ranges::begin(view_), std::ranges::end(view_)};</div>
+<div class="line">        <span class="keywordflow">return</span> {std::ranges::begin(view_), std::ranges::begin(view_), std::ranges::end(view_)};</div>
 <div class="line">    }</div>
 <div class="line">    <span class="keyword">constexpr</span> Utf8CodePointIterator&lt;Iter, Sentinel&gt; end()<span class="keyword"> const </span>{</div>
-<div class="line">        <span class="keywordflow">return</span> {std::ranges::end(view_), std::ranges::end(view_)};</div>
+<div class="line">        <span class="keywordflow">return</span> {std::ranges::begin(view_), std::ranges::end(view_), std::ranges::end(view_)};</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">private</span>:</div>
@@ -248,17 +258,33 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('D_1_2a_2inviwo
 <div class="line">        <span class="keywordflow">return</span> Utf8CodePointRange&lt;std::views::all_t&lt;<span class="keyword">decltype</span>(r)&gt;&gt;{std::forward&lt;decltype(r)&gt;(r)};</div>
 <div class="line">    }</div>
 <div class="line">    <span class="keyword">constexpr</span> <span class="keyword">auto</span> operator()(WCharRange <span class="keyword">auto</span>&amp;&amp; r)<span class="keyword"> const </span>{</div>
-<div class="line">        <span class="keywordflow">return</span> std::forward&lt;decltype(r)&gt;(r) |</div>
-<div class="line">               std::views::transform([](<span class="keywordtype">wchar_t</span> c) -&gt; int32_t { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>int32_t<span class="keyword">&gt;</span>(c); });</div>
+<div class="line">        <span class="keywordflow">return</span> std::forward&lt;decltype(r)&gt;(r) | std::views::transform([](<span class="keywordtype">wchar_t</span> c) -&gt; <span class="keywordtype">char32_t</span> {</div>
+<div class="line">                   <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">char32_t</span><span class="keyword">&gt;</span>(c);</div>
+<div class="line">               });</div>
 <div class="line">    }</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">inline</span> <span class="keyword">constexpr</span> CodePointsAdaptor codePoints{};</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">constexpr</span> <span class="keywordtype">int</span> codePointToLower(<span class="keywordtype">int</span> cp) <span class="keyword">noexcept</span> {</div>
-<div class="line">    <span class="keywordflow">return</span> cp &gt; std::numeric_limits&lt;unsigned char&gt;::max() ? cp : std::tolower(cp);</div>
+<div class="line"></div>
+<div class="line"><span class="keyword">constexpr</span> <span class="keywordtype">wchar_t</span> codePointToWChar(<span class="keywordtype">char32_t</span> cp) {</div>
+<div class="line">    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (<span class="keyword">sizeof</span>(wchar_t) &lt; 4) {</div>
+<div class="line">        <span class="keywordflow">if</span> (cp &gt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">char32_t</span><span class="keyword">&gt;</span>(std::numeric_limits&lt;wchar_t&gt;::max())) {</div>
+<div class="line">            <span class="keywordflow">throw</span> Exception(SourceContext{}, <span class="stringliteral">&quot;Code point U+{:04X} does not fit in wchar_t&quot;</span>,</div>
+<div class="line">                            <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(cp));</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">wchar_t</span><span class="keyword">&gt;</span>(cp);</div>
 <div class="line">}</div>
-<div class="line"><span class="keyword">constexpr</span> <span class="keywordtype">int</span> noTransform(<span class="keywordtype">int</span> cp) <span class="keyword">noexcept</span> { <span class="keywordflow">return</span> cp; }</div>
+<div class="line"></div>
+<div class="line"><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> wChars =</div>
+<div class="line">    std::views::transform([](<span class="keywordtype">char32_t</span> cp) -&gt; <span class="keywordtype">wchar_t</span> { <span class="keywordflow">return</span> codePointToWChar(cp); });</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">constexpr</span> <span class="keywordtype">char32_t</span> codePointToLower(<span class="keywordtype">char32_t</span> cp) <span class="keyword">noexcept</span> {</div>
+<div class="line">    <span class="keywordflow">return</span> cp &gt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">char32_t</span><span class="keyword">&gt;</span>(std::numeric_limits&lt;unsigned char&gt;::max())</div>
+<div class="line">               ? cp</div>
+<div class="line">               : <span class="keyword">static_cast&lt;</span><span class="keywordtype">char32_t</span><span class="keyword">&gt;</span>(std::tolower(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(cp)));</div>
+<div class="line">}</div>
+<div class="line"><span class="keyword">constexpr</span> <span class="keywordtype">char32_t</span> noTransform(<span class="keywordtype">char32_t</span> cp) <span class="keyword">noexcept</span> { <span class="keywordflow">return</span> cp; }</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">template</span> &lt;StringRange A, StringRange B, <span class="keyword">typename</span> Transform&gt;</div>
 <div class="line"><span class="keyword">constexpr</span> <span class="keyword">auto</span> stringCompare(A&amp;&amp; a, B&amp;&amp; b, Transform transform) {</div>
@@ -266,13 +292,14 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('D_1_2a_2inviwo
 <div class="line">    <span class="keyword">auto</span> rb = codePoints(std::forward&lt;B&gt;(b));</div>
 <div class="line">    <span class="keywordflow">return</span> std::lexicographical_compare_three_way(</div>
 <div class="line">        ra.begin(), ra.end(), rb.begin(), rb.end(),</div>
-<div class="line">        [&amp;](int32_t x, int32_t y) { return transform(x) &lt;=&gt; transform(y); });</div>
+<div class="line">        [&amp;](<span class="keywordtype">char32_t</span> x, <span class="keywordtype">char32_t</span> y) { return transform(x) &lt;=&gt; transform(y); });</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line">}  <span class="comment">// namespace detail</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">namespace </span>views {</div>
 <div class="line"><span class="keyword">inline</span> <span class="keyword">constexpr</span> detail::CodePointsAdaptor codePoints{};</div>
+<div class="line"><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> wChars = detail::wChars;</div>
 <div class="line">}  <span class="comment">// namespace views</span></div>
 <div class="line"></div>
 <div class="line"><span class="keyword">struct </span>IVW_CORE_API CaseInsensitiveEqual {</div>

@@ -435,6 +435,8 @@ using&#160;</td><td class="memItemRight"><b>iterator</b> = std::vector&lt;<a cla
 void&#160;</td><td class="memItemRight"><b>calculateViews</b> (ivec2 imgSize)</td></tr>
 <tr class="memitem:a706fba50c12d3618f1e99fdec6642890 inherit pro_methods_classinviwo_1_1Layout" id="r_a706fba50c12d3618f1e99fdec6642890"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>splittersChanged</b> ()</td></tr>
+<tr class="memitem:a40a18e456c77245319f9caf04e222186 inherit pro_methods_classinviwo_1_1Layout" id="r_a40a18e456c77245319f9caf04e222186"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>updateLabelTextures</b> ()</td></tr>
 <tr class="memitem:ab4a39365d79143b251815dd273104a80 inherit pro_methods_classinviwo_1_1Layout" id="r_ab4a39365d79143b251815dd273104a80"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>updateSplitters</b> (bool connect)</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Processor"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
@@ -499,10 +501,18 @@ void&#160;</td><td class="memItemRight"><b>forEachObserver</b> (C callback)</td>
 <tr class="memitem:af79dedcc137d212c5d0225dc8cee3380 inherit pro_static_methods_classinviwo_1_1Processor" id="r_af79dedcc137d212c5d0225dc8cee3380"><td class="memItemLeft">
 static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html">ProcessorStatus</a>()&gt;&#160;</td><td class="memItemRight"><b>getDefaultIsReadyUpdater</b> (<a class="el" href="classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6">Processor</a> *)</td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1Layout"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1Layout.html">inviwo::Layout</a></td></tr>
+<tr class="memitem:a317d433ad2251992f0c56df0b7353bb3 inherit pro_attribs_classinviwo_1_1Layout" id="r_a317d433ad2251992f0c56df0b7353bb3"><td class="memItemLeft">
+FloatVec4Property&#160;</td><td class="memItemRight"><b>color_</b></td></tr>
 <tr class="memitem:aec566392e43529c0df068b327e16331a inherit pro_attribs_classinviwo_1_1Layout" id="r_aec566392e43529c0df068b327e16331a"><td class="memItemLeft">
 ivec2&#160;</td><td class="memItemRight"><b>currentDim_</b></td></tr>
 <tr class="memitem:a02a58385c572b5d859375d9a9c02636f inherit pro_attribs_classinviwo_1_1Layout" id="r_a02a58385c572b5d859375d9a9c02636f"><td class="memItemLeft">
 bool&#160;</td><td class="memItemRight"><b>deserialized_</b></td></tr>
+<tr class="memitem:a441d0d4cf58a573f74dfb6d330f786bd inherit pro_attribs_classinviwo_1_1Layout" id="r_a441d0d4cf58a573f74dfb6d330f786bd"><td class="memItemLeft">
+<a class="el" href="classinviwo_1_1EventTransformer.html">EventTransformer</a>&#160;</td><td class="memItemRight"><b>eventTransformer_</b></td></tr>
+<tr class="memitem:a26d46e46f9917cac10b520c79f87d387 inherit pro_attribs_classinviwo_1_1Layout" id="r_a26d46e46f9917cac10b520c79f87d387"><td class="memItemLeft">
+<a class="el" href="classinviwo_1_1FontProperty.html">FontProperty</a>&#160;</td><td class="memItemRight"><b>font_</b></td></tr>
+<tr class="memitem:a175419d4d66df98701cafa3713872d35 inherit pro_attribs_classinviwo_1_1Layout" id="r_a175419d4d66df98701cafa3713872d35"><td class="memItemLeft">
+<a class="el" href="classinviwo_1_1StringProperty.html">StringProperty</a>&#160;</td><td class="memItemRight"><b>format_</b></td></tr>
 <tr class="memitem:a54307a136940ef6959769ea2d23e019e inherit pro_attribs_classinviwo_1_1Layout" id="r_a54307a136940ef6959769ea2d23e019e"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1SplitterRenderer.html">SplitterRenderer</a>&#160;</td><td class="memItemRight"><b>horizontalRenderer_</b></td></tr>
 <tr class="memitem:a9cc65a574428c20aff8566480caf56db inherit pro_attribs_classinviwo_1_1Layout" id="r_a9cc65a574428c20aff8566480caf56db"><td class="memItemLeft">
@@ -511,24 +521,40 @@ bool&#160;</td><td class="memItemRight"><b>deserialized_</b></td></tr>
 <a class="el" href="structinviwo_1_1layout_1_1Input.html">layout::Input</a>&#160;</td><td class="memItemRight"><b>input_</b></td></tr>
 <tr class="memitem:ac528bb327f5865af59e191e6a3c5d4c9 inherit pro_attribs_classinviwo_1_1Layout" id="r_ac528bb327f5865af59e191e6a3c5d4c9"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; layout::InputMode &gt;&#160;</td><td class="memItemRight"><b>inputMode_</b></td></tr>
+<tr class="memitem:a91bb0b945c3fecb52794a598c43dad91 inherit pro_attribs_classinviwo_1_1Layout" id="r_a91bb0b945c3fecb52794a598c43dad91"><td class="memItemLeft">
+<a class="el" href="classinviwo_1_1BoolCompositeProperty.html">BoolCompositeProperty</a>&#160;</td><td class="memItemRight"><b>labels_</b></td></tr>
 <tr class="memitem:a8f2a54f16657ff79349df53f0f2e23ab inherit pro_attribs_classinviwo_1_1Layout" id="r_a8f2a54f16657ff79349df53f0f2e23ab"><td class="memItemLeft">
 IntProperty&#160;</td><td class="memItemRight"><b>minWidth_</b></td></tr>
+<tr class="memitem:a253cc82804ac675277286a35f1b368c6 inherit pro_attribs_classinviwo_1_1Layout" id="r_a253cc82804ac675277286a35f1b368c6"><td class="memItemLeft">
+IntVec2Property&#160;</td><td class="memItemRight"><b>offset_</b></td></tr>
 <tr class="memitem:aadc82985acfd271762ebf114da8efa99 inherit pro_attribs_classinviwo_1_1Layout" id="r_aadc82985acfd271762ebf114da8efa99"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1ImageOutport.html">ImageOutport</a>&#160;</td><td class="memItemRight"><b>outport_</b></td></tr>
+<tr class="memitem:a47352e4a8c8adaf22054fc6c6d82e634 inherit pro_attribs_classinviwo_1_1Layout" id="r_a47352e4a8c8adaf22054fc6c6d82e634"><td class="memItemLeft">
+FloatVec2Property&#160;</td><td class="memItemRight"><b>position_</b></td></tr>
 <tr class="memitem:a9bd23243fceb630cc7cf1408b4641192 inherit pro_attribs_classinviwo_1_1Layout" id="r_a9bd23243fceb630cc7cf1408b4641192"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1Shader.html">Shader</a>&#160;</td><td class="memItemRight"><b>shader_</b></td></tr>
+<tr class="memitem:ac9561676aa9ecb9eb0ec48f4a575bd3b inherit pro_attribs_classinviwo_1_1Layout" id="r_ac9561676aa9ecb9eb0ec48f4a575bd3b"><td class="memItemLeft">
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; layout::Sorting &gt;&#160;</td><td class="memItemRight"><b>sorting_</b></td></tr>
 <tr class="memitem:a17aa8a26c64a6c2ed184fb72a57e9609 inherit pro_attribs_classinviwo_1_1Layout" id="r_a17aa8a26c64a6c2ed184fb72a57e9609"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1ButtonProperty.html">ButtonProperty</a>&#160;</td><td class="memItemRight"><b>splitEvenly_</b></td></tr>
 <tr class="memitem:ad13737077de056c501d013e690056a0e inherit pro_attribs_classinviwo_1_1Layout" id="r_ad13737077de056c501d013e690056a0e"><td class="memItemLeft">
 std::vector&lt; float &gt;&#160;</td><td class="memItemRight"><b>splits_</b></td></tr>
 <tr class="memitem:a1d37efcdc1a68e097d3768e78605d068 inherit pro_attribs_classinviwo_1_1Layout" id="r_a1d37efcdc1a68e097d3768e78605d068"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1SplitterProperty.html">SplitterProperty</a>&#160;</td><td class="memItemRight"><b>splitterSettings_</b></td></tr>
+<tr class="memitem:a822aca3a74d8ae29c70c3d8a8765c673 inherit pro_attribs_classinviwo_1_1Layout" id="r_a822aca3a74d8ae29c70c3d8a8765c673"><td class="memItemLeft">
+std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><b>textLabels_</b></td></tr>
+<tr class="memitem:a129dde8a33785160a17e2bebb68445e0 inherit pro_attribs_classinviwo_1_1Layout" id="r_a129dde8a33785160a17e2bebb68445e0"><td class="memItemLeft">
+std::vector&lt; <a class="el" href="structinviwo_1_1TextTextureObject.html">TextTextureObject</a> &gt;&#160;</td><td class="memItemRight"><b>textObjects_</b></td></tr>
+<tr class="memitem:adc28992e42c9a436ff0a8323c5208453 inherit pro_attribs_classinviwo_1_1Layout" id="r_adc28992e42c9a436ff0a8323c5208453"><td class="memItemLeft">
+<a class="el" href="classinviwo_1_1TextRenderer.html">TextRenderer</a>&#160;</td><td class="memItemRight"><b>textRenderer_</b></td></tr>
+<tr class="memitem:a76c83eb65473b5ea4e530d20e3972b1b inherit pro_attribs_classinviwo_1_1Layout" id="r_a76c83eb65473b5ea4e530d20e3972b1b"><td class="memItemLeft">
+<a class="el" href="classinviwo_1_1TextureQuadRenderer.html">TextureQuadRenderer</a>&#160;</td><td class="memItemRight"><b>textureRenderer_</b></td></tr>
 <tr class="memitem:a784ead63b64f94bfe884c48d340f76bf inherit pro_attribs_classinviwo_1_1Layout" id="r_a784ead63b64f94bfe884c48d340f76bf"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1SplitterRenderer.html">SplitterRenderer</a>&#160;</td><td class="memItemRight"><b>verticalRenderer_</b></td></tr>
 <tr class="memitem:ab726607d144dc0f927c945f12bc07259 inherit pro_attribs_classinviwo_1_1Layout" id="r_ab726607d144dc0f927c945f12bc07259"><td class="memItemLeft">
 <a class="el" href="structinviwo_1_1layout_1_1SplitterPositions.html">layout::SplitterPositions</a>&#160;</td><td class="memItemRight"><b>verticalSplitters_</b></td></tr>
-<tr class="memitem:a00418b66e12541345b89295cd113995e inherit pro_attribs_classinviwo_1_1Layout" id="r_a00418b66e12541345b89295cd113995e"><td class="memItemLeft">
-<a class="el" href="classinviwo_1_1ViewManager.html">ViewManager</a>&#160;</td><td class="memItemRight"><b>viewManager_</b></td></tr>
+<tr class="memitem:af12188c95e8ca3da308a2ddf9c8659e5 inherit pro_attribs_classinviwo_1_1Layout" id="r_af12188c95e8ca3da308a2ddf9c8659e5"><td class="memItemLeft">
+std::vector&lt; <a class="el" href="structinviwo_1_1layout_1_1View.html">layout::View</a> &gt;&#160;</td><td class="memItemRight"><b>views_</b></td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1Processor"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:acbccbc04b0b13d5459c69db0ba583341 inherit pro_attribs_classinviwo_1_1Processor" id="r_acbccbc04b0b13d5459c69db0ba583341"><td class="memItemLeft">
 <a class="el" href="classinviwo_1_1StateCoordinator.html">StateCoordinator</a>&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html">ProcessorStatus</a> &gt;&#160;</td><td class="memItemRight"><b>isReady_</b></td></tr>

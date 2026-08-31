@@ -141,6 +141,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a190bd19dad9d89f96fcb85b4761f5bd7" id="r_a190bd19dad9d89f96fcb85b4761f5bd7"><td class="memItemLeft">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a190bd19dad9d89f96fcb85b4761f5bd7">createConverter</a> () const override</td></tr>
+<tr class="memitem:a747ddd57ab59798696b7bcdcdaed504d" id="r_a747ddd57ab59798696b7bcdcdaed504d"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a747ddd57ab59798696b7bcdcdaed504d">createSuperInport</a> (std::string_view id, bool optional) override</td></tr>
 <tr class="memitem:aa9cfa7419df9153d3ae191a080b797b6" id="r_aa9cfa7419df9153d3ae191a080b797b6"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa9cfa7419df9153d3ae191a080b797b6">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
 <tr class="memitem:a46ca5b447df44afcee70b09dffdc733c" id="r_a46ca5b447df44afcee70b09dffdc733c"><td class="memItemLeft">virtual const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a46ca5b447df44afcee70b09dffdc733c">getProcessorInfo</a> () const override</td></tr>
 <tr class="memitem:abf26a5b253f0e1fe7b97def8fbb120c9" id="r_abf26a5b253f0e1fe7b97def8fbb120c9"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1Inport.html">Inport</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#abf26a5b253f0e1fe7b97def8fbb120c9">getSuperInport</a> () override</td></tr>
@@ -157,6 +159,7 @@ SequenceCompositeSource &amp;&#160;</td><td class="memItemRight"><b>operator=</b
 <tr class="memitem:af3059dbe4021e06c5b8c91aa6765e769" id="r_af3059dbe4021e06c5b8c91aa6765e769"><td class="memItemLeft">virtual size_t&#160;</td><td class="memItemRight"><a class="el" href="#af3059dbe4021e06c5b8c91aa6765e769">sequenceSize</a> () const override</td></tr>
 <tr class="memitem:a59a4a8112ad5ed0fa60945385d1117ba" id="r_a59a4a8112ad5ed0fa60945385d1117ba"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a59a4a8112ad5ed0fa60945385d1117ba">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
 <tr class="memitem:ad73db6e908d6c5dc29fe6c86b2f81e74" id="r_ad73db6e908d6c5dc29fe6c86b2f81e74"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ad73db6e908d6c5dc29fe6c86b2f81e74">setSequenceIndex</a> (size_t index) override</td></tr>
+<tr class="memitem:a0c175c3e0b486c87b1148dba6ad16bc3" id="r_a0c175c3e0b486c87b1148dba6ad16bc3"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a0c175c3e0b486c87b1148dba6ad16bc3">sync</a> (SequenceCompositeSourceBase *source) override</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1SequenceCompositeSourceBase"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1SequenceCompositeSourceBase.html">inviwo::SequenceCompositeSourceBase</a></td></tr>
 <tr class="memitem:a32ce63da86f38004073efe212489f4f0 inherit pub_methods_classinviwo_1_1SequenceCompositeSourceBase" id="r_a32ce63da86f38004073efe212489f4f0"><td class="memItemLeft">
 SequenceCompositeSourceBase &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const SequenceCompositeSourceBase &amp;)=delete</td></tr>
@@ -529,6 +532,68 @@ class inviwo::SequenceCompositeSource&lt; InportSequenceType, OutportType &gt;</
 <dd>
 <a class="el" href="classinviwo_1_1SequenceCompositeSink.html">SequenceCompositeSink</a> </dd></dl>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a190bd19dad9d89f96fcb85b4761f5bd7" name="a190bd19dad9d89f96fcb85b4761f5bd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a190bd19dad9d89f96fcb85b4761f5bd7">&#9670;&#160;</a></span>createConverter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InportSequenceType, typename OutportType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt; <a class="el" href="classinviwo_1_1SequenceCompositeSource.html">inviwo::SequenceCompositeSource</a>&lt; InportSequenceType, OutportType &gt;::createConverter </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1SequenceCompositeSourceBase.html">inviwo::SequenceCompositeSourceBase</a>.</p>
+
+</div>
+</div>
+<a id="a747ddd57ab59798696b7bcdcdaed504d" name="a747ddd57ab59798696b7bcdcdaed504d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a747ddd57ab59798696b7bcdcdaed504d">&#9670;&#160;</a></span>createSuperInport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InportSequenceType, typename OutportType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classinviwo_1_1SequenceCompositeSource.html">inviwo::SequenceCompositeSource</a>&lt; InportSequenceType, OutportType &gt;::createSuperInport </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>optional</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1SequenceCompositeSourceBase.html">inviwo::SequenceCompositeSourceBase</a>.</p>
+
+</div>
+</div>
 <a id="aa9cfa7419df9153d3ae191a080b797b6" name="aa9cfa7419df9153d3ae191a080b797b6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa9cfa7419df9153d3ae191a080b797b6">&#9670;&#160;</a></span>deserialize()</h2>
 
@@ -763,6 +828,35 @@ template&lt;typename InportSequenceType, typename OutportType&gt; </div>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1SequenceCompositeSourceBase.html">inviwo::SequenceCompositeSourceBase</a>.</p>
+
+</div>
+</div>
+<a id="a0c175c3e0b486c87b1148dba6ad16bc3" name="a0c175c3e0b486c87b1148dba6ad16bc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c175c3e0b486c87b1148dba6ad16bc3">&#9670;&#160;</a></span>sync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InportSequenceType, typename OutportType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classinviwo_1_1SequenceCompositeSource.html">inviwo::SequenceCompositeSource</a>&lt; InportSequenceType, OutportType &gt;::sync </td>
+          <td>(</td>
+          <td class="paramtype">SequenceCompositeSourceBase *</td>          <td class="paramname"><span class="paramname"><em>source</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

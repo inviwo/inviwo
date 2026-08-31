@@ -138,12 +138,10 @@ dvec2&#160;</td><td class="memItemRight"><b>deltaPos</b> () const</td></tr>
 <tr class="memitem:a3e08d175726e90fbdb700f5a4ae63ad1" id="r_a3e08d175726e90fbdb700f5a4ae63ad1"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a3e08d175726e90fbdb700f5a4ae63ad1">depth</a> () const</td></tr>
 <tr class="memitem:ab99a48a822059de2e5a01096c2eedc20" id="r_ab99a48a822059de2e5a01096c2eedc20"><td class="memItemLeft"><a id="ab99a48a822059de2e5a01096c2eedc20" name="ab99a48a822059de2e5a01096c2eedc20"></a>
 &#160;</td><td class="memItemRight"><b>GestureEvent</b> (const GestureEvent &amp;rhs)=default</td></tr>
-<tr class="memitem:a027e56d097df99a8d62cd7b1a62f54d0" id="r_a027e56d097df99a8d62cd7b1a62f54d0"><td class="memItemLeft"><a id="a027e56d097df99a8d62cd7b1a62f54d0" name="a027e56d097df99a8d62cd7b1a62f54d0"></a>
-&#160;</td><td class="memItemRight"><b>GestureEvent</b> (dvec2 deltaPos, double deltaDistance, GestureType type, GestureState state, int numFingers, dvec2 screenPosNorm, uvec2 canvasSize, double depth=1.0)</td></tr>
+<tr class="memitem:a192236522c48fe4294d33f9f555688ef" id="r_a192236522c48fe4294d33f9f555688ef"><td class="memItemLeft"><a id="a192236522c48fe4294d33f9f555688ef" name="a192236522c48fe4294d33f9f555688ef"></a>
+&#160;</td><td class="memItemRight"><b>GestureEvent</b> (dvec2 deltaPos, double deltaDistance, GestureType type, GestureState state, dvec2 screenPosNorm, uvec2 canvasSize, double depth=1.0)</td></tr>
 <tr class="memitem:a115e1c4fbad00c9081a967dd7b14637b" id="r_a115e1c4fbad00c9081a967dd7b14637b"><td class="memItemLeft">virtual uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#a115e1c4fbad00c9081a967dd7b14637b">hash</a> () const override</td></tr>
 <tr class="memitem:af8a8ec2481d3e497440da66822a6ab6a" id="r_af8a8ec2481d3e497440da66822a6ab6a"><td class="memItemLeft">dvec3&#160;</td><td class="memItemRight"><a class="el" href="#af8a8ec2481d3e497440da66822a6ab6a">ndc</a> () const</td></tr>
-<tr class="memitem:a73a2f2bc2ca920760d9554c4da320c8f" id="r_a73a2f2bc2ca920760d9554c4da320c8f"><td class="memItemLeft"><a id="a73a2f2bc2ca920760d9554c4da320c8f" name="a73a2f2bc2ca920760d9554c4da320c8f"></a>
-int&#160;</td><td class="memItemRight"><b>numFingers</b> () const</td></tr>
 <tr class="memitem:a0fb7ded403a54901e58bda8dea2176db" id="r_a0fb7ded403a54901e58bda8dea2176db"><td class="memItemLeft"><a id="a0fb7ded403a54901e58bda8dea2176db" name="a0fb7ded403a54901e58bda8dea2176db"></a>
 GestureEvent &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const GestureEvent &amp;that)=default</td></tr>
 <tr class="memitem:a3eb32bc29f567d00f46111cd4fad3c5b" id="r_a3eb32bc29f567d00f46111cd4fad3c5b"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a3eb32bc29f567d00f46111cd4fad3c5b">print</a> (fmt::memory_buffer &amp;buff) const override</td></tr>
@@ -153,6 +151,8 @@ dvec2&#160;</td><td class="memItemRight"><b>screenPosNormalized</b> () const</td
 void&#160;</td><td class="memItemRight"><b>setCanvasSize</b> (uvec2 size)</td></tr>
 <tr class="memitem:acee684cbddfa8bc0ba78b8076f156603" id="r_acee684cbddfa8bc0ba78b8076f156603"><td class="memItemLeft"><a id="acee684cbddfa8bc0ba78b8076f156603" name="acee684cbddfa8bc0ba78b8076f156603"></a>
 void&#160;</td><td class="memItemRight"><b>setDepth</b> (double depth)</td></tr>
+<tr class="memitem:a59572f4e904b6da66bfde35702795d29" id="r_a59572f4e904b6da66bfde35702795d29"><td class="memItemLeft"><a id="a59572f4e904b6da66bfde35702795d29" name="a59572f4e904b6da66bfde35702795d29"></a>
+void&#160;</td><td class="memItemRight"><b>setNdc</b> (dvec3 ndc)</td></tr>
 <tr class="memitem:a80121a8310d6ae2d58bc4ee463061c5b" id="r_a80121a8310d6ae2d58bc4ee463061c5b"><td class="memItemLeft"><a id="a80121a8310d6ae2d58bc4ee463061c5b" name="a80121a8310d6ae2d58bc4ee463061c5b"></a>
 void&#160;</td><td class="memItemRight"><b>setScreenPosNormalized</b> (dvec2)</td></tr>
 <tr class="memitem:ae7ec5d54d53e672c1b849baba5d241d2" id="r_ae7ec5d54d53e672c1b849baba5d241d2"><td class="memItemLeft"><a id="ae7ec5d54d53e672c1b849baba5d241d2" name="ae7ec5d54d53e672c1b849baba5d241d2"></a>
@@ -194,8 +194,8 @@ bool&#160;</td><td class="memItemRight"><b>hasBeenUsed</b> () const</td></tr>
 bool&#160;</td><td class="memItemRight"><b>hasVisitedProcessor</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *) const</td></tr>
 <tr class="memitem:a11edb90998a3e60d07cf2efb95b1732b inherit pub_methods_classinviwo_1_1Event" id="r_a11edb90998a3e60d07cf2efb95b1732b"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Event.html#a11edb90998a3e60d07cf2efb95b1732b">markAsUnused</a> ()</td></tr>
 <tr class="memitem:af40929045df4e6ab6196eb27e3ae283c inherit pub_methods_classinviwo_1_1Event" id="r_af40929045df4e6ab6196eb27e3ae283c"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Event.html#af40929045df4e6ab6196eb27e3ae283c">markAsUsed</a> ()</td></tr>
-<tr class="memitem:ae07240a41f75f23f7b6e31b9be9385a3 inherit pub_methods_classinviwo_1_1Event" id="r_ae07240a41f75f23f7b6e31b9be9385a3"><td class="memItemLeft">
-void&#160;</td><td class="memItemRight"><b>markAsVisited</b> (Event &amp;)</td></tr>
+<tr class="memitem:ae2299c1444adb0d2f0f93dd87a4f64b3 inherit pub_methods_classinviwo_1_1Event" id="r_ae2299c1444adb0d2f0f93dd87a4f64b3"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>markAsVisited</b> (const Event &amp;)</td></tr>
 <tr class="memitem:af996a1173c55a70bf1d9f0bd8cbd1d14 inherit pub_methods_classinviwo_1_1Event" id="r_af996a1173c55a70bf1d9f0bd8cbd1d14"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Event.html#af996a1173c55a70bf1d9f0bd8cbd1d14">markAsVisited</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
 <tr class="memitem:a8a54a8f200562cddde2f8d944fac9406 inherit pub_methods_classinviwo_1_1Event" id="r_a8a54a8f200562cddde2f8d944fac9406"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Event.html#a8a54a8f200562cddde2f8d944fac9406">setUsed</a> (bool isUsed)</td></tr>
 <tr class="memitem:a4d9619ffb42945ef721584cff32719b5 inherit pub_methods_classinviwo_1_1Event" id="r_a4d9619ffb42945ef721584cff32719b5"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Event.html#a4d9619ffb42945ef721584cff32719b5">shouldPropagateTo</a> (<a class="el" href="classinviwo_1_1Inport.html">Inport</a> *inport, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> *source)</td></tr>

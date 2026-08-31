@@ -119,8 +119,8 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('structinviwo_1
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae992471986407a6113278dc7430ab87a" id="r_ae992471986407a6113278dc7430ab87a"><td class="memItemLeft"><a id="ae992471986407a6113278dc7430ab87a" name="ae992471986407a6113278dc7430ab87a"></a>
 void&#160;</td><td class="memItemRight"><b>deserialized</b> ()</td></tr>
-<tr class="memitem:a70e4d06253a3a0190ea42613d321384b" id="r_a70e4d06253a3a0190ea42613d321384b"><td class="memItemLeft"><a id="a70e4d06253a3a0190ea42613d321384b" name="a70e4d06253a3a0190ea42613d321384b"></a>
-void&#160;</td><td class="memItemRight"><b>enforceOrder</b> (size_t fixedSliderIndex)</td></tr>
+<tr class="memitem:a8a46bfda78e71bd54ffb3c8bf80ec346" id="r_a8a46bfda78e71bd54ffb3c8bf80ec346"><td class="memItemLeft"><a id="a8a46bfda78e71bd54ffb3c8bf80ec346" name="a8a46bfda78e71bd54ffb3c8bf80ec346"></a>
+void&#160;</td><td class="memItemRight"><b>enforceOrder</b> (size_t changedIndex)</td></tr>
 <tr class="memitem:ad7383ed4d285153c3281cd588563c480" id="r_ad7383ed4d285153c3281cd588563c480"><td class="memItemLeft"><a id="ad7383ed4d285153c3281cd588563c480" name="ad7383ed4d285153c3281cd588563c480"></a>
 DoubleProperty *&#160;</td><td class="memItemRight"><b>get</b> (size_t i)</td></tr>
 <tr class="memitem:adf36f8bb6e41a3fa3e7dbdaf6084ea49" id="r_adf36f8bb6e41a3fa3e7dbdaf6084ea49"><td class="memItemLeft"><a id="adf36f8bb6e41a3fa3e7dbdaf6084ea49" name="adf36f8bb6e41a3fa3e7dbdaf6084ea49"></a>
@@ -133,10 +133,10 @@ void&#160;</td><td class="memItemRight"><b>set</b> (size_t i, double pos)</td></
 size_t&#160;</td><td class="memItemRight"><b>size</b> () const</td></tr>
 <tr class="memitem:a804fabf0369fd25e7fca49210a8113ff" id="r_a804fabf0369fd25e7fca49210a8113ff"><td class="memItemLeft"><a id="a804fabf0369fd25e7fca49210a8113ff" name="a804fabf0369fd25e7fca49210a8113ff"></a>
 void&#160;</td><td class="memItemRight"><b>spaceEvenly</b> ()</td></tr>
-<tr class="memitem:a5471bb497d85a457a3d3e7dcdcfd1ecf" id="r_a5471bb497d85a457a3d3e7dcdcfd1ecf"><td class="memItemLeft"><a id="a5471bb497d85a457a3d3e7dcdcfd1ecf" name="a5471bb497d85a457a3d3e7dcdcfd1ecf"></a>
-auto&#160;</td><td class="memItemRight"><b>splits</b> () const</td></tr>
-<tr class="memitem:a781a61cff0961ea660ced154f6dee441" id="r_a781a61cff0961ea660ced154f6dee441"><td class="memItemLeft"><a id="a781a61cff0961ea660ced154f6dee441" name="a781a61cff0961ea660ced154f6dee441"></a>
-&#160;</td><td class="memItemRight"><b>SplitterPositions</b> (std::string_view identifier, std::string_view displayName, std::function&lt; double()&gt; minSpacing)</td></tr>
+<tr class="memitem:adf5b3b26e5953783acfd2fa231678c63" id="r_adf5b3b26e5953783acfd2fa231678c63"><td class="memItemLeft"><a id="adf5b3b26e5953783acfd2fa231678c63" name="adf5b3b26e5953783acfd2fa231678c63"></a>
+SplitsView&#160;</td><td class="memItemRight"><b>splits</b> () const</td></tr>
+<tr class="memitem:a0ffd44765f36498d8a7dbfab0834ff7d" id="r_a0ffd44765f36498d8a7dbfab0834ff7d"><td class="memItemLeft"><a id="a0ffd44765f36498d8a7dbfab0834ff7d" name="a0ffd44765f36498d8a7dbfab0834ff7d"></a>
+&#160;</td><td class="memItemRight"><b>SplitterPositions</b> (std::string_view identifier, std::string_view displayName, std::function&lt; void()&gt; onChange, std::function&lt; double()&gt; minSize)</td></tr>
 <tr class="memitem:ac3ed4362aafb70e760e982039bd3c3f3" id="r_ac3ed4362aafb70e760e982039bd3c3f3"><td class="memItemLeft"><a id="ac3ed4362aafb70e760e982039bd3c3f3" name="ac3ed4362aafb70e760e982039bd3c3f3"></a>
 bool&#160;</td><td class="memItemRight"><b>updateSize</b> (size_t newSize)</td></tr>
 </table><table class="memberdecls">

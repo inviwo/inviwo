@@ -111,11 +111,9 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">inviwo::ImageLayoutGL Class Reference<div class="ingroups"><a class="el" href="group__processors.html">Processors</a></div></div></div>
+  <div class="headertitle"><div class="title">inviwo::ImageLayoutGL Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;modules/basegl/processors/imageprocessing/imagelayoutgl.h&gt;</code></p>
 <div id="dynsection-0" class="dynheader closed"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::ImageLayoutGL:</div>
 <div id="dynsection-0-summary" class="dynsummary">
 </div>
@@ -524,47 +522,7 @@ friend&#160;</td><td class="memItemRight"><b>ProcessorNetworkEvaluator</b></td><
 <tr class="memitem:a2ee140459222d207768dd50042fa99f7 inherit pro_attribs_classinviwo_1_1ProcessorObservable" id="r_a2ee140459222d207768dd50042fa99f7"><td class="memItemLeft">
 friend&#160;</td><td class="memItemRight"><b>Property</b></td></tr>
 </table>
-<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><img src="org.inviwo.ImageLayoutGL.png?classIdentifier=org.inviwo.ImageLayoutGL" alt="" class="inline"/></p>
-<p>Provides layouting for multiple input images. The order of the input images will determine the result. A mouse click activates the respective area for handling mouse/key interactions. Available layouts include </p><table class="doxtable">
-<tr>
-<td><span class="tt">Single</span></td><td>The first input image fills the entire output.</td></tr>
-<tr>
-<td><span class="tt">Horizontal Split</span></td><td>Two images are put on top of each other.</td></tr>
-<tr>
-<td><span class="tt">Vertical Split</span></td><td>Two images are put next to each other side by side.</td></tr>
-<tr>
-<td><span class="tt">Cross Split</span></td><td>Two-by-two layout of up to four images filled from left to right and top to bottom.</td></tr>
-<tr>
-<td><span class="tt">Three Left, One Right</span></td><td>The first 3 images are vertically arranged on the left, the fourth is shown on the right.</td></tr>
-<tr>
-<td><span class="tt">Three Right, One Left</span></td><td>The first 3 images are vertically arranged on the right, the fourth is shown on the left.</td></tr>
-<tr>
-<td><span class="tt">Horizontal Split Multiple</span></td><td>Two or more images are put on top of each other.</td></tr>
-<tr>
-<td><span class="tt">Vertical Split Multiple</span></td><td>Two or more images are put next to each other side by side.</td></tr>
-</table>
-<p>Minimum left/right/top/bottom sizes will be respected until the output size is smaller than the minimum. Maximum left/right/top/bottom sizes will be respected until there is a conflict, for example max left and right set to 500 but output size is larger than 500+500, at which point left/bottom will have precedence.</p>
-<h3 class="doxsection"><a class="anchor" id="autotoc_md29"></a>
-Inports</h3>
-<ul>
-<li><b><a class="el" href="classinviwo_1_1Image.html">Image</a> <a class="el" href="classinviwo_1_1Inport.html" title="Abstract base class for all inports An Inport can be connected to an Outport. The approved connection...">Inport</a></b> Multi-inport for multiple images.</li>
-</ul>
-<h3 class="doxsection"><a class="anchor" id="autotoc_md30"></a>
-Outports</h3>
-<ul>
-<li><b>outport</b> Resulting layout of input images</li>
-</ul>
-<h3 class="doxsection"><a class="anchor" id="autotoc_md31"></a>
-Properties</h3>
-<ul>
-<li><b><a class="el" href="classinviwo_1_1Layout.html">Layout</a></b> Applied layout <span class="tt">Single</span>, <span class="tt">Horizontal Split</span>, <span class="tt">Cross Split</span>, <span class="tt">Three Left, One Right</span>, <span class="tt">Three Right, One Left</span>, <span class="tt">Horizontal Split Multiple</span> or <span class="tt">Vertical Split Multiple</span></li>
-<li><b>Split Position</b> Position of the layout splitter.<ul>
-<li><b>Left/Right/Top/Bottom min/max</b> Minimum and maximum size in pixels of the corresponding side. </li>
-</ul>
-</li>
-</ul>
-</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a9b904830127c72677e01d9f736d3eb08" name="a9b904830127c72677e01d9f736d3eb08"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9b904830127c72677e01d9f736d3eb08">&#9670;&#160;</a></span>getProcessorInfo()</h2>
 

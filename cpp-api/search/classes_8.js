@@ -92,7 +92,7 @@ var searchData=
   ['indirectiterator_3c_20typename_20std_3a_3avector_3c_20std_3a_3aunique_5fptr_3c_20seq_20_3e_20_3e_3a_3aiterator_20_3e_89',['IndirectIterator&lt; typename std::vector&lt; std::unique_ptr&lt; Seq &gt; &gt;::iterator &gt;',['../structinviwo_1_1util_1_1IndirectIterator.html',1,'inviwo::util']]],
   ['indirectiterator_3c_20typename_20std_3a_3avector_3c_20std_3a_3aunique_5fptr_3c_20track_20_3e_20_3e_3a_3aconst_5fiterator_20_3e_90',['IndirectIterator&lt; typename std::vector&lt; std::unique_ptr&lt; Track &gt; &gt;::const_iterator &gt;',['../structinviwo_1_1util_1_1IndirectIterator.html',1,'inviwo::util']]],
   ['indirectiterator_3c_20typename_20std_3a_3avector_3c_20std_3a_3aunique_5fptr_3c_20track_20_3e_20_3e_3a_3aiterator_20_3e_91',['IndirectIterator&lt; typename std::vector&lt; std::unique_ptr&lt; Track &gt; &gt;::iterator &gt;',['../structinviwo_1_1util_1_1IndirectIterator.html',1,'inviwo::util']]],
-  ['info_92',['Info',['../structinviwo_1_1util_1_1ColumnMapper_1_1Info.html',1,'inviwo::util::ColumnMapper']]],
+  ['info_92',['Info',['../structinviwo_1_1detail_1_1LayerConf_1_1Info.html',1,'inviwo::detail::LayerConf::Info'],['../structinviwo_1_1detail_1_1MeshConf_1_1Info.html',1,'inviwo::detail::MeshConf::Info'],['../structinviwo_1_1detail_1_1VolumeConf_1_1Info.html',1,'inviwo::detail::VolumeConf::Info'],['../structinviwo_1_1util_1_1ColumnMapper_1_1Info.html',1,'inviwo::util::ColumnMapper::Info']]],
   ['info_93',['info',['../structinviwo_1_1log_1_1info.html',1,'inviwo::log']]],
   ['inport_94',['Inport',['../classinviwo_1_1Inport.html',1,'inviwo']]],
   ['inportfactory_95',['InportFactory',['../classinviwo_1_1InportFactory.html',1,'inviwo']]],

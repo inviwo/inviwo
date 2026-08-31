@@ -121,10 +121,14 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight"><b>deserialize</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d)</td></tr>
 <tr class="memitem:a6e7bea6e5e2b4fadd0005285614852d5" id="r_a6e7bea6e5e2b4fadd0005285614852d5"><td class="memItemLeft"><a id="a6e7bea6e5e2b4fadd0005285614852d5" name="a6e7bea6e5e2b4fadd0005285614852d5"></a>
 const std::string &amp;&#160;</td><td class="memItemRight"><b>getString</b> () const</td></tr>
+<tr class="memitem:aab7a6bcb11d48f3e562335079a27c743" id="r_aab7a6bcb11d48f3e562335079a27c743"><td class="memItemLeft"><a id="aab7a6bcb11d48f3e562335079a27c743" name="aab7a6bcb11d48f3e562335079a27c743"></a>
+auto&#160;</td><td class="memItemRight"><b>operator&lt;=&gt;</b> (const PropertySemantics &amp;) const =default</td></tr>
 <tr class="memitem:a25f04f42117d2bb4aaf206773e5251a8" id="r_a25f04f42117d2bb4aaf206773e5251a8"><td class="memItemLeft"><a id="a25f04f42117d2bb4aaf206773e5251a8" name="a25f04f42117d2bb4aaf206773e5251a8"></a>
 PropertySemantics &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const PropertySemantics &amp;that)=default</td></tr>
 <tr class="memitem:a3cb71a97f26029a533d64d08f54f9239" id="r_a3cb71a97f26029a533d64d08f54f9239"><td class="memItemLeft"><a id="a3cb71a97f26029a533d64d08f54f9239" name="a3cb71a97f26029a533d64d08f54f9239"></a>
 PropertySemantics &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (PropertySemantics &amp;&amp;that) noexcept=default</td></tr>
+<tr class="memitem:ae2a9ccc7465513b6fbd8a6f36c3645c5" id="r_ae2a9ccc7465513b6fbd8a6f36c3645c5"><td class="memItemLeft"><a id="ae2a9ccc7465513b6fbd8a6f36c3645c5" name="ae2a9ccc7465513b6fbd8a6f36c3645c5"></a>
+bool&#160;</td><td class="memItemRight"><b>operator==</b> (const PropertySemantics &amp;) const =default</td></tr>
 <tr class="memitem:a9ede81a673cb0f49ab329cef509e7129" id="r_a9ede81a673cb0f49ab329cef509e7129"><td class="memItemLeft"><a id="a9ede81a673cb0f49ab329cef509e7129" name="a9ede81a673cb0f49ab329cef509e7129"></a>
 &#160;</td><td class="memItemRight"><b>PropertySemantics</b> (const PropertySemantics &amp;rhs)=default</td></tr>
 <tr class="memitem:a6fe7f76f850a17df7006f588b5641693" id="r_a6fe7f76f850a17df7006f588b5641693"><td class="memItemLeft"><a id="a6fe7f76f850a17df7006f588b5641693" name="a6fe7f76f850a17df7006f588b5641693"></a>
@@ -156,23 +160,6 @@ static const PropertySemantics&#160;</td><td class="memItemRight"><b>SpinBox</b>
 static const PropertySemantics&#160;</td><td class="memItemRight"><b>Text</b></td></tr>
 <tr class="memitem:a7d44d2600bf76d65f5f8afb4609c541e" id="r_a7d44d2600bf76d65f5f8afb4609c541e"><td class="memItemLeft"><a id="a7d44d2600bf76d65f5f8afb4609c541e" name="a7d44d2600bf76d65f5f8afb4609c541e"></a>
 static const PropertySemantics&#160;</td><td class="memItemRight"><b>TextEditor</b></td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:a261a4241085e4a01ae8cb8d13029171a" id="r_a261a4241085e4a01ae8cb8d13029171a"><td class="memItemLeft"><a id="a261a4241085e4a01ae8cb8d13029171a" name="a261a4241085e4a01ae8cb8d13029171a"></a>
-bool&#160;</td><td class="memItemRight"><b>operator!=</b> (const PropertySemantics &amp;lhs, const PropertySemantics &amp;rhs)</td></tr>
-<tr class="memitem:ace5447e4f786c177fdcd9fe8589b2ffa" id="r_ace5447e4f786c177fdcd9fe8589b2ffa"><td class="memItemLeft"><a id="ace5447e4f786c177fdcd9fe8589b2ffa" name="ace5447e4f786c177fdcd9fe8589b2ffa"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;</b> (const PropertySemantics &amp;lhs, const PropertySemantics &amp;rhs)</td></tr>
-<tr class="memitem:aa96aaa159ae9387741aa09779da8b2da" id="r_aa96aaa159ae9387741aa09779da8b2da"><td class="memItemLeft"><a id="aa96aaa159ae9387741aa09779da8b2da" name="aa96aaa159ae9387741aa09779da8b2da"></a>
-IVW_CORE_API friend std::ostream &amp;&#160;</td><td class="memItemRight"><b>operator&lt;&lt;</b> (std::ostream &amp;ss, const PropertySemantics &amp;obj)</td></tr>
-<tr class="memitem:a3ac32436883ddaea9aa81d9e33bded14" id="r_a3ac32436883ddaea9aa81d9e33bded14"><td class="memItemLeft"><a id="a3ac32436883ddaea9aa81d9e33bded14" name="a3ac32436883ddaea9aa81d9e33bded14"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&lt;=</b> (const PropertySemantics &amp;lhs, const PropertySemantics &amp;rhs)</td></tr>
-<tr class="memitem:a6a5ca3829cfd51b1c73c2ffb3c0801b1" id="r_a6a5ca3829cfd51b1c73c2ffb3c0801b1"><td class="memItemLeft"><a id="a6a5ca3829cfd51b1c73c2ffb3c0801b1" name="a6a5ca3829cfd51b1c73c2ffb3c0801b1"></a>
-bool&#160;</td><td class="memItemRight"><b>operator==</b> (const PropertySemantics &amp;lhs, const PropertySemantics &amp;rhs)</td></tr>
-<tr class="memitem:a8f6b5433df2af2566c7f40f7a1691f6f" id="r_a8f6b5433df2af2566c7f40f7a1691f6f"><td class="memItemLeft"><a id="a8f6b5433df2af2566c7f40f7a1691f6f" name="a8f6b5433df2af2566c7f40f7a1691f6f"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;</b> (const PropertySemantics &amp;lhs, const PropertySemantics &amp;rhs)</td></tr>
-<tr class="memitem:a9446d7688e6182ed8f410c6d1a94f7fc" id="r_a9446d7688e6182ed8f410c6d1a94f7fc"><td class="memItemLeft"><a id="a9446d7688e6182ed8f410c6d1a94f7fc" name="a9446d7688e6182ed8f410c6d1a94f7fc"></a>
-bool&#160;</td><td class="memItemRight"><b>operator&gt;=</b> (const PropertySemantics &amp;lhs, const PropertySemantics &amp;rhs)</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>include/inviwo/core/properties/<b>propertysemantics.h</b></li>

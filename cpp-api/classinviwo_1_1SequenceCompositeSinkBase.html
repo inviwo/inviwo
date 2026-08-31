@@ -141,7 +141,13 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ae1d78c331a8a3be53e5d6ece7036dcf5" id="r_ae1d78c331a8a3be53e5d6ece7036dcf5"><td class="memItemLeft"><a id="ae1d78c331a8a3be53e5d6ece7036dcf5" name="ae1d78c331a8a3be53e5d6ece7036dcf5"></a>
+virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6">Processor</a> &gt;&#160;</td><td class="memItemRight"><b>createConverter</b> () const =0</td></tr>
+<tr class="memitem:ae01bd85af6c9b9ef1f6f46a825f6bfd4" id="r_ae01bd85af6c9b9ef1f6f46a825f6bfd4"><td class="memItemLeft"><a id="ae01bd85af6c9b9ef1f6f46a825f6bfd4" name="ae01bd85af6c9b9ef1f6f46a825f6bfd4"></a>
+virtual void&#160;</td><td class="memItemRight"><b>createSuperOutport</b> (std::string_view id)=0</td></tr>
 <tr class="memitem:aa6cb378c97a20b13d67c0f5957464235" id="r_aa6cb378c97a20b13d67c0f5957464235"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1Outport.html">Outport</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#aa6cb378c97a20b13d67c0f5957464235">getSuperOutport</a> ()=0</td></tr>
+<tr class="memitem:a9ba6cdb9e6b6fc591d3ac6b8b5606ae8" id="r_a9ba6cdb9e6b6fc591d3ac6b8b5606ae8"><td class="memItemLeft"><a id="a9ba6cdb9e6b6fc591d3ac6b8b5606ae8" name="a9ba6cdb9e6b6fc591d3ac6b8b5606ae8"></a>
+virtual void&#160;</td><td class="memItemRight"><b>newData</b> (size_t size)=0</td></tr>
 <tr class="memitem:a5f63928d6d573a3a4b683210e0c42872" id="r_a5f63928d6d573a3a4b683210e0c42872"><td class="memItemLeft"><a id="a5f63928d6d573a3a4b683210e0c42872" name="a5f63928d6d573a3a4b683210e0c42872"></a>
 SequenceCompositeSinkBase &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const SequenceCompositeSinkBase &amp;)=delete</td></tr>
 <tr class="memitem:aaa2bff9ced0175ddf77ad6d764269bb9" id="r_aaa2bff9ced0175ddf77ad6d764269bb9"><td class="memItemLeft"><a id="aaa2bff9ced0175ddf77ad6d764269bb9" name="aaa2bff9ced0175ddf77ad6d764269bb9"></a>
@@ -150,10 +156,12 @@ SequenceCompositeSinkBase &amp;&#160;</td><td class="memItemRight"><b>operator=<
 &#160;</td><td class="memItemRight"><b>SequenceCompositeSinkBase</b> (const SequenceCompositeSinkBase &amp;)=delete</td></tr>
 <tr class="memitem:af8d5568c5f4671d58ce9cf8fbb3d9db5" id="r_af8d5568c5f4671d58ce9cf8fbb3d9db5"><td class="memItemLeft"><a id="af8d5568c5f4671d58ce9cf8fbb3d9db5" name="af8d5568c5f4671d58ce9cf8fbb3d9db5"></a>
 &#160;</td><td class="memItemRight"><b>SequenceCompositeSinkBase</b> (SequenceCompositeSinkBase &amp;&amp;)=delete</td></tr>
+<tr class="memitem:af93d83133e30e4171bc5b80784660ce1" id="r_af93d83133e30e4171bc5b80784660ce1"><td class="memItemLeft"><a id="af93d83133e30e4171bc5b80784660ce1" name="af93d83133e30e4171bc5b80784660ce1"></a>
+virtual void&#160;</td><td class="memItemRight"><b>setSequenceIndex</b> (size_t)=0</td></tr>
 <tr class="memitem:a7a8eeb2b6f98a2a3ebff387b38682129" id="r_a7a8eeb2b6f98a2a3ebff387b38682129"><td class="memItemLeft"><a id="a7a8eeb2b6f98a2a3ebff387b38682129" name="a7a8eeb2b6f98a2a3ebff387b38682129"></a>
 virtual void&#160;</td><td class="memItemRight"><b>superProcessEnd</b> ()=0</td></tr>
-<tr class="memitem:a34fed3d05bb6b6534e2b7b5c19766d7f" id="r_a34fed3d05bb6b6534e2b7b5c19766d7f"><td class="memItemLeft"><a id="a34fed3d05bb6b6534e2b7b5c19766d7f" name="a34fed3d05bb6b6534e2b7b5c19766d7f"></a>
-virtual void&#160;</td><td class="memItemRight"><b>superProcessStart</b> ()=0</td></tr>
+<tr class="memitem:add84169b44a50d98a939d937d71efb38" id="r_add84169b44a50d98a939d937d71efb38"><td class="memItemLeft"><a id="add84169b44a50d98a939d937d71efb38" name="add84169b44a50d98a939d937d71efb38"></a>
+virtual void&#160;</td><td class="memItemRight"><b>sync</b> (SequenceCompositeSinkBase *source)=0</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Processor"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a06088cebce8b3d454b56abf70458b62e inherit pub_methods_classinviwo_1_1Processor" id="r_a06088cebce8b3d454b56abf70458b62e"><td class="memItemLeft">
 virtual void&#160;</td><td class="memItemRight"><b>accept</b> (<a class="el" href="classinviwo_1_1NetworkVisitor.html">NetworkVisitor</a> &amp;visitor)</td></tr>

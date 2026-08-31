@@ -1,7 +1,5 @@
 var NAVTREEINDEX3 =
 {
-"classinviwo_1_1ColumnOptionProperty.html#a944ecefa79ab61ad70d16535a459adda":[5,0,1,159,4],
-"classinviwo_1_1ColumnOptionProperty.html#a9b770e71fc753988a59521f66a1d6d6c":[3,0,0,149,8],
 "classinviwo_1_1ColumnOptionProperty.html#a9b770e71fc753988a59521f66a1d6d6c":[5,0,1,159,8],
 "classinviwo_1_1ColumnOptionProperty.html#ab6da9b284353a72f273bf6ece441e7d5":[3,0,0,149,3],
 "classinviwo_1_1ColumnOptionProperty.html#ab6da9b284353a72f273bf6ece441e7d5":[5,0,1,159,3],
@@ -249,5 +247,7 @@ var NAVTREEINDEX3 =
 "classinviwo_1_1DataFrameTable.html#a1f4310fa4fd8de8360b3baaf1cd54b47":[3,0,0,211,0],
 "classinviwo_1_1DataFrameTable.html#a1f4310fa4fd8de8360b3baaf1cd54b47":[5,0,1,221,0],
 "classinviwo_1_1DataFrameTable.html#a316cb8eb6be4d6a2308b2b200498dc9f":[3,0,0,211,2],
-"classinviwo_1_1DataFrameTable.html#a316cb8eb6be4d6a2308b2b200498dc9f":[5,0,1,221,2]
+"classinviwo_1_1DataFrameTable.html#a316cb8eb6be4d6a2308b2b200498dc9f":[5,0,1,221,2],
+"classinviwo_1_1DataFrameTable.html#ab483a8684864af25011eee785dd85948":[3,0,0,211,1],
+"classinviwo_1_1DataFrameTable.html#ab483a8684864af25011eee785dd85948":[5,0,1,221,1]
 };

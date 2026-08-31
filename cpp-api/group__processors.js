@@ -1,9 +1,5 @@
 var group__processors =
 [
-    [ "inviwo::ImageLayoutGL", "classinviwo_1_1ImageLayoutGL.html", [
-      [ "isConnectionActive", "classinviwo_1_1ImageLayoutGL.html#aafc196718198091c7853eb41219ba61e", null ],
-      [ "process", "classinviwo_1_1ImageLayoutGL.html#ae42039a3d67ced931a062d97de7820c5", null ]
-    ] ],
     [ "inviwo::Processor", "classinviwo_1_1Processor.html", [
       [ "Processor", "classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6", null ],
       [ "accept", "classinviwo_1_1Processor.html#a06088cebce8b3d454b56abf70458b62e", null ],

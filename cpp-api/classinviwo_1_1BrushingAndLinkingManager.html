@@ -132,7 +132,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a402cc38aadb875969907a1851b1ebbcc" id="r_a402cc38aadb875969907a1851b1ebbcc"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a402cc38aadb875969907a1851b1ebbcc">brush</a> (<a class="el" href="namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6d">BrushingAction</a> action, <a class="el" href="structinviwo_1_1BrushingTarget.html">BrushingTarget</a> target, const <a class="el" href="classinviwo_1_1BitSet.html">BitSet</a> &amp;indices, std::string_view source={})</td></tr>
 <tr class="memitem:ab880dbf74f4fac61c04d834296331561" id="r_ab880dbf74f4fac61c04d834296331561"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ab880dbf74f4fac61c04d834296331561">BrushingAndLinkingManager</a> (<a class="el" href="classinviwo_1_1BrushingAndLinkingInport.html">BrushingAndLinkingInport</a> *inport, std::vector&lt; <a class="el" href="structinviwo_1_1BrushingTargetsInvalidationLevel.html">BrushingTargetsInvalidationLevel</a> &gt; invalidationLevels={ {<a class="el" href="#abceb64732a72395246da0bb1bfa696f6">AnyBrushingTarget</a>, BrushingModifications(flags::any), InvalidationLevel::InvalidOutput}})</td></tr>
 <tr class="memitem:aad0e4c8f368bc550846392d75ff6c2f2" id="r_aad0e4c8f368bc550846392d75ff6c2f2"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#aad0e4c8f368bc550846392d75ff6c2f2">BrushingAndLinkingManager</a> (<a class="el" href="classinviwo_1_1BrushingAndLinkingOutport.html">BrushingAndLinkingOutport</a> *outport, std::vector&lt; <a class="el" href="structinviwo_1_1BrushingTargetsInvalidationLevel.html">BrushingTargetsInvalidationLevel</a> &gt; invalidationLevels={ {<a class="el" href="#abceb64732a72395246da0bb1bfa696f6">AnyBrushingTarget</a>, BrushingModifications(flags::any), InvalidationLevel::InvalidOutput}})</td></tr>
-<tr class="memitem:a8a8607aa663f945f8f3a2b4cd6f0ec33" id="r_a8a8607aa663f945f8f3a2b4cd6f0ec33"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8a8607aa663f945f8f3a2b4cd6f0ec33">clearFiltered</a> ()</td></tr>
 <tr class="memitem:a961945240257a2c0df15af1d48cb69d1" id="r_a961945240257a2c0df15af1d48cb69d1"><td class="memItemLeft"><a id="a961945240257a2c0df15af1d48cb69d1" name="a961945240257a2c0df15af1d48cb69d1"></a>
 void&#160;</td><td class="memItemRight"><b>clearHighlighted</b> (<a class="el" href="structinviwo_1_1BrushingTarget.html">BrushingTarget</a> target=BrushingTarget::Row)</td></tr>
 <tr class="memdesc:a961945240257a2c0df15af1d48cb69d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">convenience function for clearIndices(BrushingAction::Highlight, target) <br /></td></tr>
@@ -172,6 +171,8 @@ size_t&#160;</td><td class="memItemRight"><b>getNumberOfHighlighted</b> (<a clas
 <tr class="memitem:aad1400fccebe0be211cd0b36b952473a" id="r_aad1400fccebe0be211cd0b36b952473a"><td class="memItemLeft"><a id="aad1400fccebe0be211cd0b36b952473a" name="aad1400fccebe0be211cd0b36b952473a"></a>
 size_t&#160;</td><td class="memItemRight"><b>getNumberOfSelected</b> (<a class="el" href="structinviwo_1_1BrushingTarget.html">BrushingTarget</a> target=BrushingTarget::Row) const</td></tr>
 <tr class="memdesc:aad1400fccebe0be211cd0b36b952473a"><td class="mdescLeft">&#160;</td><td class="mdescRight">convenience function for getIndices(BrushingAction::Select, target).size() <br /></td></tr>
+<tr class="memitem:a8909f99e82be9d8020226ff821c70a34" id="r_a8909f99e82be9d8020226ff821c70a34"><td class="memItemLeft"><a id="a8909f99e82be9d8020226ff821c70a34" name="a8909f99e82be9d8020226ff821c70a34"></a>
+<a class="el" href="#ab880dbf74f4fac61c04d834296331561">BrushingAndLinkingManager</a> *&#160;</td><td class="memItemRight"><b>getParent</b> () const</td></tr>
 <tr class="memitem:a52c0ae3c574e2d78ff54aad73d0f13cd" id="r_a52c0ae3c574e2d78ff54aad73d0f13cd"><td class="memItemLeft"><a id="a52c0ae3c574e2d78ff54aad73d0f13cd" name="a52c0ae3c574e2d78ff54aad73d0f13cd"></a>
 const <a class="el" href="classinviwo_1_1BitSet.html">BitSet</a> &amp;&#160;</td><td class="memItemRight"><b>getSelectedIndices</b> (<a class="el" href="structinviwo_1_1BrushingTarget.html">BrushingTarget</a> target=BrushingTarget::Row) const</td></tr>
 <tr class="memitem:a7668dbc179d12d074f7a771cd76e1598" id="r_a7668dbc179d12d074f7a771cd76e1598"><td class="memItemLeft"><a id="a7668dbc179d12d074f7a771cd76e1598" name="a7668dbc179d12d074f7a771cd76e1598"></a>
@@ -332,24 +333,6 @@ Static Public Attributes</h2></td></tr>
   </dd>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6d">BrushingAction</a> </dd></dl>
-
-</div>
-</div>
-<a id="a8a8607aa663f945f8f3a2b4cd6f0ec33" name="a8a8607aa663f945f8f3a2b4cd6f0ec33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a8607aa663f945f8f3a2b4cd6f0ec33">&#9670;&#160;</a></span>clearFiltered()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void inviwo::BrushingAndLinkingManager::clearFiltered </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000038">Deprecated</a></b></dt><dd>clearing filtered indices is no longer supported. Use <a class="el" href="#abea313062f50500529e9507943629377" title="convenience function for brush(BrushingAction::Filter, target, idx, source)">filter()</a> with an empty <a class="el" href="classinviwo_1_1BitSet.html" title="represents a bitset based on roaring bitmaps provided by the CRoaring library">BitSet</a></dd></dl>
 
 </div>
 </div>

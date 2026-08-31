@@ -3,7 +3,6 @@ var classinviwo_1_1BrushingAndLinkingManager =
     [ "BrushingAndLinkingManager", "classinviwo_1_1BrushingAndLinkingManager.html#ab880dbf74f4fac61c04d834296331561", null ],
     [ "BrushingAndLinkingManager", "classinviwo_1_1BrushingAndLinkingManager.html#aad0e4c8f368bc550846392d75ff6c2f2", null ],
     [ "brush", "classinviwo_1_1BrushingAndLinkingManager.html#a402cc38aadb875969907a1851b1ebbcc", null ],
-    [ "clearFiltered", "classinviwo_1_1BrushingAndLinkingManager.html#a8a8607aa663f945f8f3a2b4cd6f0ec33", null ],
     [ "clearHighlighted", "classinviwo_1_1BrushingAndLinkingManager.html#a961945240257a2c0df15af1d48cb69d1", null ],
     [ "clearIndices", "classinviwo_1_1BrushingAndLinkingManager.html#a9760d2409debca88c07a61e9fcc96855", null ],
     [ "clearModifications", "classinviwo_1_1BrushingAndLinkingManager.html#a740c999cb6bcd99eada35131d197e31b", null ],

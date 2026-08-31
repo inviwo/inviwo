@@ -141,9 +141,12 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ab8db794f759e77031e594660e8f49e75" id="r_ab8db794f759e77031e594660e8f49e75"><td class="memItemLeft">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ab8db794f759e77031e594660e8f49e75">createConverter</a> () const override</td></tr>
+<tr class="memitem:a082cb71d10330183ce7df4d9cd7838b2" id="r_a082cb71d10330183ce7df4d9cd7838b2"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a082cb71d10330183ce7df4d9cd7838b2">createSuperOutport</a> (std::string_view id) override</td></tr>
 <tr class="memitem:ada2c7a1cbc5d27b839f06858ad152bd1" id="r_ada2c7a1cbc5d27b839f06858ad152bd1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ada2c7a1cbc5d27b839f06858ad152bd1">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
 <tr class="memitem:a4c856cfa286ad09f8fb8b72cf344177f" id="r_a4c856cfa286ad09f8fb8b72cf344177f"><td class="memItemLeft">virtual const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a4c856cfa286ad09f8fb8b72cf344177f">getProcessorInfo</a> () const override</td></tr>
 <tr class="memitem:a49a5e5f9c2d29d538a169c8e0b0738b5" id="r_a49a5e5f9c2d29d538a169c8e0b0738b5"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1Outport.html">Outport</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a49a5e5f9c2d29d538a169c8e0b0738b5">getSuperOutport</a> () override</td></tr>
+<tr class="memitem:aff6f8c44a771800a0ae695fe523e6ecb" id="r_aff6f8c44a771800a0ae695fe523e6ecb"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aff6f8c44a771800a0ae695fe523e6ecb">newData</a> (size_t size) override</td></tr>
 <tr class="memitem:ab2817a3b209899ceac575d3658072cef" id="r_ab2817a3b209899ceac575d3658072cef"><td class="memItemLeft"><a id="ab2817a3b209899ceac575d3658072cef" name="ab2817a3b209899ceac575d3658072cef"></a>
 SequenceCompositeSink &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const SequenceCompositeSink &amp;)=delete</td></tr>
 <tr class="memitem:aac723c7eb60d6c967f06d75731a1b787" id="r_aac723c7eb60d6c967f06d75731a1b787"><td class="memItemLeft"><a id="aac723c7eb60d6c967f06d75731a1b787" name="aac723c7eb60d6c967f06d75731a1b787"></a>
@@ -154,8 +157,9 @@ SequenceCompositeSink &amp;&#160;</td><td class="memItemRight"><b>operator=</b> 
 <tr class="memitem:a3db9b0b2b20f8536b04a64bbb167ea52" id="r_a3db9b0b2b20f8536b04a64bbb167ea52"><td class="memItemLeft"><a id="a3db9b0b2b20f8536b04a64bbb167ea52" name="a3db9b0b2b20f8536b04a64bbb167ea52"></a>
 &#160;</td><td class="memItemRight"><b>SequenceCompositeSink</b> (SequenceCompositeSink &amp;&amp;)=delete</td></tr>
 <tr class="memitem:a75136dbff71b6cf250c4e73eb00b4146" id="r_a75136dbff71b6cf250c4e73eb00b4146"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a75136dbff71b6cf250c4e73eb00b4146">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
-<tr class="memitem:a5fb08d41a121f8245ff265efbd88e1f0" id="r_a5fb08d41a121f8245ff265efbd88e1f0"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a5fb08d41a121f8245ff265efbd88e1f0">superProcessEnd</a> () override</td></tr>
-<tr class="memitem:a480c787f3fc71508117eecc8fe3d087a" id="r_a480c787f3fc71508117eecc8fe3d087a"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a480c787f3fc71508117eecc8fe3d087a">superProcessStart</a> () override</td></tr>
+<tr class="memitem:a65e219f55c4dede1a02cde96766a96ed" id="r_a65e219f55c4dede1a02cde96766a96ed"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a65e219f55c4dede1a02cde96766a96ed">setSequenceIndex</a> (size_t index) override</td></tr>
+<tr class="memitem:a448f4147d4e72bb6eabf5fc6c759c4f0" id="r_a448f4147d4e72bb6eabf5fc6c759c4f0"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a448f4147d4e72bb6eabf5fc6c759c4f0">superProcessEnd</a> () override</td></tr>
+<tr class="memitem:a44d864e46960d6916cffd48e83cc3a15" id="r_a44d864e46960d6916cffd48e83cc3a15"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a44d864e46960d6916cffd48e83cc3a15">sync</a> (SequenceCompositeSinkBase *source) override</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1SequenceCompositeSinkBase"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1SequenceCompositeSinkBase.html">inviwo::SequenceCompositeSinkBase</a></td></tr>
 <tr class="memitem:a5f63928d6d573a3a4b683210e0c42872 inherit pub_methods_classinviwo_1_1SequenceCompositeSinkBase" id="r_a5f63928d6d573a3a4b683210e0c42872"><td class="memItemLeft">
 SequenceCompositeSinkBase &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const SequenceCompositeSinkBase &amp;)=delete</td></tr>
@@ -418,6 +422,14 @@ void&#160;</td><td class="memItemRight"><b>removeObserver</b> (<a class="el" hre
 <tr class="memitem:aceded27239088ecdeca8e590770614d9 inherit pub_methods_classinviwo_1_1Observable" id="r_aceded27239088ecdeca8e590770614d9"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Observable.html#aceded27239088ecdeca8e590770614d9">startBlockingNotifications</a> () override final</td></tr>
 <tr class="memitem:a4abfbec3338d1ca97e9c1177337f824f inherit pub_methods_classinviwo_1_1Observable" id="r_a4abfbec3338d1ca97e9c1177337f824f"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Observable.html#a4abfbec3338d1ca97e9c1177337f824f">stopBlockingNotifications</a> () override final</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:afa6d6e2fccab5408e1c0626bf5a914ce" id="r_afa6d6e2fccab5408e1c0626bf5a914ce"><td class="memItemLeft"><a id="afa6d6e2fccab5408e1c0626bf5a914ce" name="afa6d6e2fccab5408e1c0626bf5a914ce"></a>
+static std::string&#160;</td><td class="memItemRight"><b>superPortIdentifier</b> (<a class="el" href="classinviwo_1_1Port.html">Port</a> *port)</td></tr>
+<tr class="inherit_header pub_static_methods_classinviwo_1_1SequenceCompositeSinkBase"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="classinviwo_1_1SequenceCompositeSinkBase.html">inviwo::SequenceCompositeSinkBase</a></td></tr>
+<tr class="memitem:a3c6ceab6cf10d62510664b9e0186df34 inherit pub_static_methods_classinviwo_1_1SequenceCompositeSinkBase" id="r_a3c6ceab6cf10d62510664b9e0186df34"><td class="memItemLeft">
+static constexpr std::string_view&#160;</td><td class="memItemRight"><b>identifierSuffix</b> ()</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_classinviwo_1_1Processor"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
@@ -430,9 +442,6 @@ using&#160;</td><td class="memItemRight"><b>NameDispatcherHandle</b> = typename 
 using&#160;</td><td class="memItemRight"><b>const_iterator</b> = std::vector&lt;<a class="el" href="classinviwo_1_1Property.html">Property</a>*&gt;::const_iterator</td></tr>
 <tr class="memitem:af123641012bc263955cd12d6b365f05b inherit pub_types_classinviwo_1_1PropertyOwner" id="r_af123641012bc263955cd12d6b365f05b"><td class="memItemLeft">
 using&#160;</td><td class="memItemRight"><b>iterator</b> = std::vector&lt;<a class="el" href="classinviwo_1_1Property.html">Property</a>*&gt;::iterator</td></tr>
-<tr class="inherit_header pub_static_methods_classinviwo_1_1SequenceCompositeSinkBase"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="classinviwo_1_1SequenceCompositeSinkBase.html">inviwo::SequenceCompositeSinkBase</a></td></tr>
-<tr class="memitem:a3c6ceab6cf10d62510664b9e0186df34 inherit pub_static_methods_classinviwo_1_1SequenceCompositeSinkBase" id="r_a3c6ceab6cf10d62510664b9e0186df34"><td class="memItemLeft">
-static constexpr std::string_view&#160;</td><td class="memItemRight"><b>identifierSuffix</b> ()</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Processor"><td colspan="2" class="dyn-inherit"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a8b02d56fdf37b42ec6cfd600990bebc8 inherit pro_methods_classinviwo_1_1Processor" id="r_a8b02d56fdf37b42ec6cfd600990bebc8"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a8b02d56fdf37b42ec6cfd600990bebc8">addPortToGroup</a> (<a class="el" href="classinviwo_1_1Port.html">Port</a> *port, std::string_view portGroup)</td></tr>
 <tr class="memitem:a46d0dc5bd8ce5d056f56b716f7dc6ab8 inherit pro_methods_classinviwo_1_1Processor" id="r_a46d0dc5bd8ce5d056f56b716f7dc6ab8"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a46d0dc5bd8ce5d056f56b716f7dc6ab8">removePortFromGroups</a> (<a class="el" href="classinviwo_1_1Port.html">Port</a> *port)</td></tr>
@@ -529,6 +538,64 @@ class inviwo::SequenceCompositeSink&lt; InportType, OutportSequenceType &gt;</di
 <dd>
 <a class="el" href="classinviwo_1_1SequenceCompositeSource.html">SequenceCompositeSource</a> </dd></dl>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ab8db794f759e77031e594660e8f49e75" name="ab8db794f759e77031e594660e8f49e75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8db794f759e77031e594660e8f49e75">&#9670;&#160;</a></span>createConverter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InportType, typename OutportSequenceType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt; <a class="el" href="classinviwo_1_1SequenceCompositeSink.html">inviwo::SequenceCompositeSink</a>&lt; InportType, OutportSequenceType &gt;::createConverter </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1SequenceCompositeSinkBase.html">inviwo::SequenceCompositeSinkBase</a>.</p>
+
+</div>
+</div>
+<a id="a082cb71d10330183ce7df4d9cd7838b2" name="a082cb71d10330183ce7df4d9cd7838b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a082cb71d10330183ce7df4d9cd7838b2">&#9670;&#160;</a></span>createSuperOutport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InportType, typename OutportSequenceType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classinviwo_1_1SequenceCompositeSink.html">inviwo::SequenceCompositeSink</a>&lt; InportType, OutportSequenceType &gt;::createSuperOutport </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>id</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1SequenceCompositeSinkBase.html">inviwo::SequenceCompositeSinkBase</a>.</p>
+
+</div>
+</div>
 <a id="ada2c7a1cbc5d27b839f06858ad152bd1" name="ada2c7a1cbc5d27b839f06858ad152bd1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ada2c7a1cbc5d27b839f06858ad152bd1">&#9670;&#160;</a></span>deserialize()</h2>
 
@@ -617,6 +684,35 @@ template&lt;typename InportType, typename OutportSequenceType&gt; </div>
 
 </div>
 </div>
+<a id="aff6f8c44a771800a0ae695fe523e6ecb" name="aff6f8c44a771800a0ae695fe523e6ecb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff6f8c44a771800a0ae695fe523e6ecb">&#9670;&#160;</a></span>newData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InportType, typename OutportSequenceType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classinviwo_1_1SequenceCompositeSink.html">inviwo::SequenceCompositeSink</a>&lt; InportType, OutportSequenceType &gt;::newData </td>
+          <td>(</td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>size</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1SequenceCompositeSinkBase.html">inviwo::SequenceCompositeSinkBase</a>.</p>
+
+</div>
+</div>
 <a id="aa55351c4b1d54fdfea0ba80bc9473008" name="aa55351c4b1d54fdfea0ba80bc9473008"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa55351c4b1d54fdfea0ba80bc9473008">&#9670;&#160;</a></span>process()</h2>
 
@@ -680,8 +776,8 @@ template&lt;typename InportType, typename OutportSequenceType&gt; </div>
 
 </div>
 </div>
-<a id="a5fb08d41a121f8245ff265efbd88e1f0" name="a5fb08d41a121f8245ff265efbd88e1f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5fb08d41a121f8245ff265efbd88e1f0">&#9670;&#160;</a></span>superProcessEnd()</h2>
+<a id="a65e219f55c4dede1a02cde96766a96ed" name="a65e219f55c4dede1a02cde96766a96ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65e219f55c4dede1a02cde96766a96ed">&#9670;&#160;</a></span>setSequenceIndex()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -692,9 +788,9 @@ template&lt;typename InportType, typename OutportSequenceType&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void <a class="el" href="classinviwo_1_1SequenceCompositeSink.html">inviwo::SequenceCompositeSink</a>&lt; InportType, OutportSequenceType &gt;::superProcessEnd </td>
+          <td class="memname">virtual void <a class="el" href="classinviwo_1_1SequenceCompositeSink.html">inviwo::SequenceCompositeSink</a>&lt; InportType, OutportSequenceType &gt;::setSequenceIndex </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>index</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -709,8 +805,8 @@ template&lt;typename InportType, typename OutportSequenceType&gt; </div>
 
 </div>
 </div>
-<a id="a480c787f3fc71508117eecc8fe3d087a" name="a480c787f3fc71508117eecc8fe3d087a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a480c787f3fc71508117eecc8fe3d087a">&#9670;&#160;</a></span>superProcessStart()</h2>
+<a id="a448f4147d4e72bb6eabf5fc6c759c4f0" name="a448f4147d4e72bb6eabf5fc6c759c4f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a448f4147d4e72bb6eabf5fc6c759c4f0">&#9670;&#160;</a></span>superProcessEnd()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -721,7 +817,7 @@ template&lt;typename InportType, typename OutportSequenceType&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void <a class="el" href="classinviwo_1_1SequenceCompositeSink.html">inviwo::SequenceCompositeSink</a>&lt; InportType, OutportSequenceType &gt;::superProcessStart </td>
+          <td class="memname">void <a class="el" href="classinviwo_1_1SequenceCompositeSink.html">inviwo::SequenceCompositeSink</a>&lt; InportType, OutportSequenceType &gt;::superProcessEnd </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -729,7 +825,36 @@ template&lt;typename InportType, typename OutportSequenceType&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1SequenceCompositeSinkBase.html">inviwo::SequenceCompositeSinkBase</a>.</p>
+
+</div>
+</div>
+<a id="a44d864e46960d6916cffd48e83cc3a15" name="a44d864e46960d6916cffd48e83cc3a15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44d864e46960d6916cffd48e83cc3a15">&#9670;&#160;</a></span>sync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InportType, typename OutportSequenceType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classinviwo_1_1SequenceCompositeSink.html">inviwo::SequenceCompositeSink</a>&lt; InportType, OutportSequenceType &gt;::sync </td>
+          <td>(</td>
+          <td class="paramtype">SequenceCompositeSinkBase *</td>          <td class="paramname"><span class="paramname"><em>source</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
