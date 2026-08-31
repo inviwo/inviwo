@@ -64,7 +64,7 @@ class IVW_MODULE_OPENGLQT_API InteractionEventMapperQt : public QObject {
 public:
     using ContextMenuCallback = InteractionEvent::ContextMenuCallback;
 
-    InteractionEventMapperQt(QObject* parent, EventPropagator* propagator,
+    InteractionEventMapperQt(QWidget* parent, EventPropagator* propagator,
                              std::function<size2_t()> canvasDimensions,
                              std::function<size2_t()> imageDimensions,
                              std::function<double(dvec2)> depth, ContextMenuCallback contextMenu,
@@ -83,8 +83,8 @@ private:
     bool mapKeyPressEvent(QKeyEvent* keyEvent);
     bool mapKeyReleaseEvent(QKeyEvent* keyEvent);
     bool mapTouchEvent(QTouchEvent* e);
-    bool mapGestureEvent(QGestureEvent*);
-    bool mapPanTriggered(QPanGesture*);
+    bool mapGestureEvent(QGestureEvent* e);
+    bool mapPanTriggered(QPanGesture* e);
     bool mapPinchTriggered(QPinchGesture* e);
 
     bool showToolTip(QHelpEvent* e);
@@ -105,12 +105,12 @@ private:
     std::string toolTipText_;
 
     // Hacks for gestures
-    Qt::GestureType lastType_{};
     int lastNumFingers_{0};
-    vec2 screenPositionNormalized_{0};
 
     bool handleTouch_{true};
     bool handleGestures_{true};
+
+    QWidget* widget_;
 };
 
 }  // namespace inviwo

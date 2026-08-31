@@ -378,7 +378,7 @@ void exposeEvents(pybind11::module& m) {
                           }
                       })
         .def("markAsVisited", static_cast<bool (Event::*)(Processor*)>(&Event::markAsVisited))
-        .def("markAsVisited", static_cast<void (Event::*)(Event&)>(&Event::markAsVisited))
+        .def("markAsVisited", static_cast<void (Event::*)(const Event&)>(&Event::markAsVisited))
         .def("hasVisitedProcessor", &Event::hasVisitedProcessor)
         .def("getVisitedProcessors", &Event::getVisitedProcessors)
         .def("__repr__",

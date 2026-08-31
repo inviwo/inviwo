@@ -36,6 +36,9 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/util/utilities.h>
+
+#include <optional>
 
 namespace inviwo {
 /**
@@ -69,13 +72,32 @@ protected:
 
 template <typename T, typename OutportType>
 SequenceSelect<T, OutportType>::SequenceSelect()
-    : Processor()
+    : Processor(
+          util::stripIdentifier(
+              ProcessorTraits<SequenceSelect<T, OutportType>>::getProcessorInfo().displayName),
+          ProcessorTraits<SequenceSelect<T, OutportType>>::getProcessorInfo().displayName)
     , inport_{"inport", "Sequence of data to select from"_help}
     , outport_{"outport", "The selected item"_help}
     , index_{"index", "Index", util::ordinalCount(0uz)}
-    , next_{"next", "Next", [this](Event*) { index_.set(index_.get() + 1uz); }, IvwKey::Up,
+    , next_{"next", "Next",
+            [this](Event*) {
+                if (index_.get() + 1 > index_.getMaxValue()) {
+                    index_.set(0uz);
+                } else {
+                    index_.set(index_.get() + 1uz);
+                }
+            },
+            IvwKey::Up,
+
             KeyState::Press}
-    , prev_{"prev", "Prev", [this](Event*) { index_.set(std::max(index_.get(), 1uz) - 1uz); },
+    , prev_{"prev", "Prev",
+            [this](Event*) {
+                if (index_.get() == 0) {
+                    index_.set(index_.getMaxValue());
+                } else {
+                    index_.set(std::max(index_.get(), 1uz) - 1uz);
+                }
+            },
             IvwKey::Down, KeyState::Press} {
 
     addPorts(inport_, outport_);
@@ -99,8 +121,13 @@ void SequenceSelect<T, OutportType>::process() {
         }
         index_.setMaxValue(std::max(data->size(), 1uz) - 1uz);
 
-        size_t index = std::clamp(index_.get(), 0uz, data->size() - 1);
-        outport_.setData((*data)[index]);
+        if (index_.get() < data->size()) {
+            outport_.setData((*data)[index_.get()]);
+        } else {
+            outport_.detachData();
+            throw Exception(SourceContext{}, "Index out of range {} >= {}", index_.get(),
+                            data->size());
+        }
     } else {
         outport_.detachData();
     }

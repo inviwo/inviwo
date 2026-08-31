@@ -37,6 +37,8 @@
 #include <inviwo/core/processors/sequencecompositesink.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
@@ -46,6 +48,8 @@
 #include <inviwo/core/network/lambdanetworkvisitor.h>
 
 #include <algorithm>
+#include <memory_resource>
+#include <ranges>
 
 namespace inviwo {
 
@@ -71,41 +75,105 @@ const ProcessorInfo& SequenceProcessor::getProcessorInfo() const { return proces
 
 SequenceProcessor::SequenceProcessor(std::string_view identifier, std::string_view displayName,
                                      InviwoApplication* app, const std::filesystem::path& file)
-    : Processor(identifier, displayName)
-    , app_{app}
-    , subNetwork_{std::make_unique<ProcessorNetwork>(app)}
-    , evaluator_{std::make_unique<ProcessorNetworkEvaluator>(subNetwork_.get())} {
-
-    subNetwork_->addObserver(this);
-
-    // keep the network locked, only unlock in the process function.
-    subNetwork_->lock();
+    : Processor(identifier, displayName), app_{app}, sub_{[&] {
+        auto net =
+            std::make_unique<ProcessorNetwork>(app, fmt::format("{}MainSubNetwork", identifier));
+        auto eval = std::make_unique<ProcessorNetworkEvaluator>(net.get());
+        // keep the network locked, only unlock in the process function.
+        net->lock();
+        net->addObserver(this);
+        return NetEval{.net = std::move(net), .eval = std::move(eval), .sinks{}, .sources{}};
+    }()} {
 
     loadSubNetwork(file);
 }
 
-SequenceProcessor::~SequenceProcessor() = default;
+SequenceProcessor::~SequenceProcessor() { ProcessorNetworkObserver::removeObservations(); };
 
 void SequenceProcessor::process() {
+    constexpr auto evaluateNetwork = [](SequenceProcessor::NetEval& net) {
+        std::ranges::for_each(net.sources, [&](auto* source) {
+            if (source->getSuperInport().isChanged()) {
+                source->invalidate(InvalidationLevel::InvalidOutput);
+            }
+        });
+        const util::OnScopeExit lock{[&]() { net.net->lock(); }};
+        net.net->unlock();  // This will trigger an evaluation of the sub network.
+    };
+
     const util::KeepTrueWhileInScope processing{&isProcessing_};
 
-    static constexpr auto deref = [](auto&& item) -> decltype(auto) { return *item; };
+    const auto size = std::ranges::fold_left(
+        sub_.sources | std::views::transform([](auto* s) { return s->sequenceSize(); }), 0uz,
+        std::ranges::max);
 
-    std::ranges::for_each(sinks_, &SequenceCompositeSinkBase::superProcessStart, deref);
+    createNetworkCopies(size);
 
-    if (!sources_.empty()) {
-        const auto* shortest = std::ranges::min(
-            sources_, std::less<>{}, [](auto& source) { return source->sequenceSize(); });
-        const auto size = shortest->sequenceSize();
+    for (auto&& sink : sub_.sinks) sink->newData(size);
 
-        for (size_t i = 0; i < size; ++i) {
-            std::ranges::for_each(sources_, [&](auto& source) { source->setSequenceIndex(i); });
-            const util::OnScopeExit lock{[this]() { subNetwork_->lock(); }};
-            subNetwork_->unlock();  // This will trigger an evaluation of the sub network.
+    if (size > 0) evaluateNetwork(sub_);
+
+    for (auto& copy : copies_) evaluateNetwork(copy);
+
+    for (auto&& sink : sub_.sinks) sink->superProcessEnd();
+}
+
+void SequenceProcessor::createNetworkCopies(size_t count) {
+    if (count < 1) {
+        copies_.clear();
+        return;
+    }
+    if (copies_.size() + 1 == count) return;
+
+    std::pmr::monotonic_buffer_resource mbr{1024 * 32};
+    Serializer s{"", SerializeConstants::InviwoWorkspace, &mbr};
+    s.serialize("ProcessorNetwork", *sub_.net);
+    std::stringstream ss;
+    s.writeFile(ss, false);
+
+    auto* wm = app_->getWorkspaceManager();
+    auto d = wm->createWorkspaceDeserializer(ss, "");
+
+    while (copies_.size() + 1 < count) {
+        auto net = std::make_unique<ProcessorNetwork>(app_);
+        auto eval = std::make_unique<ProcessorNetworkEvaluator>(net.get());
+        auto& copy = copies_.emplace_back(std::move(net), std::move(eval));
+
+        copy.net->lock();
+        copy.net->addObserver(this);
+        d.deserialize("ProcessorNetwork", *copy.net);
+        copy.net->setIdentifier(fmt::format("{}CopySubNetwork{}", getIdentifier(), copies_.size()));
+
+        for (auto&& [subProperty, handler] : handlers_) {
+            if (auto* sub = copy.net->getProperty(subProperty->getPath())) {
+                handlers_[subProperty]->subPropertyCopies.push_back(sub);
+            }
+        }
+
+        if (lastResize_) {
+            for (auto* sinkProcessor : copy.sinks) {
+                for (auto* inport : sinkProcessor->getInports()) {
+                    auto e = std::unique_ptr<Event>{lastResize_->clone()};
+                    inport->propagateEvent(e.get(), nullptr);
+                }
+            }
         }
     }
+    while (copies_.size() + 1 > count) {
+        for (auto&& [subProperty, handler] : handlers_) {
+            std::erase_if(handler->subPropertyCopies, [&](Property* subCopy) {
+                return !subCopy->getOwner() || !subCopy->getOwner()->getProcessor() ||
+                       !subCopy->getOwner()->getProcessor()->getNetwork() ||
+                       subCopy->getOwner()->getProcessor()->getNetwork() ==
+                           copies_.back().net.get();
+            });
+        }
 
-    std::ranges::for_each(sinks_, &SequenceCompositeSinkBase::superProcessEnd, deref);
+        copies_.back().eval.reset();  // We don't want any evaluation remove this first
+        copies_.back().net.reset();   // Next remove the network before we remove the copy since
+                                      // ProcessorNetworkObserver callbacks will try to use the copy
+        copies_.pop_back();
+    }
 }
 
 void SequenceProcessor::propagateEvent(Event* event, Outport* source) {
@@ -115,20 +183,39 @@ void SequenceProcessor::propagateEvent(Event* event, Outport* source) {
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
-    for (auto& sinkProcessor : sinks_) {
+    auto last = std::unique_ptr<Event>{event->clone()};
+
+    if (auto* re = event->getAs<ResizeEvent>()) {
+        lastResize_ = std::unique_ptr<ResizeEvent>(re->clone());
+    }
+
+    for (auto* sinkProcessor : sub_.sinks) {
         if (&sinkProcessor->getSuperOutport() == source) {
             sinkProcessor->propagateEvent(event, source);
+        }
+    }
+    for (auto& copy : copies_) {
+        for (auto* sinkProcessor : copy.sinks) {
+            if (&sinkProcessor->getSuperOutport() == source) {
+                auto e = std::unique_ptr<Event>{last->clone()};
+                for (auto* s : copy.sources) {
+                    // mark the event as visited for the source,
+                    // we only need this to propagate though the sub network.
+                    e->markAsVisited(s);
+                }
+                sinkProcessor->propagateEvent(e.get(), source);
+            }
         }
     }
 }
 
 void SequenceProcessor::serialize(Serializer& s) const {
-    s.serialize("ProcessorNetwork", *subNetwork_);
+    s.serialize("ProcessorNetwork", *sub_.net);
     Processor::serialize(s);
 }
 
 void SequenceProcessor::deserialize(Deserializer& d) {
-    d.deserialize("ProcessorNetwork", *subNetwork_);
+    d.deserialize("ProcessorNetwork", *sub_.net);
     Processor::deserialize(d);
 }
 
@@ -136,25 +223,25 @@ void SequenceProcessor::saveSubNetwork(const std::filesystem::path& file) {
     Serializer s(filesystem::getPath(PathType::Workspaces) / "dummy.inv");
 
     Tags tags;
-    subNetwork_->forEachProcessor([&](auto p) { tags.addTags(p->getTags()); });
+    sub_.net->forEachProcessor([&](auto p) { tags.addTags(p->getTags()); });
 
     // The SequenceProcessorFactoryObject will deserialize the DisplayName and Tags to use in the
     // ProcessorInfo which will be displayed in the processor list
-    const InviwoSetupInfo info(*app_, *subNetwork_);
+    const InviwoSetupInfo info(*app_, *sub_.net);
     s.serialize("InviwoSetup", info);
     s.serialize("DisplayName", getDisplayName());
     s.serialize("Tags", tags.getString());
-    s.serialize("ProcessorNetwork", *subNetwork_);
+    s.serialize("ProcessorNetwork", *sub_.net);
 
     auto ofs = std::ofstream(file);
     s.writeFile(ofs, true);
 }
 
-ProcessorNetwork& SequenceProcessor::getSubNetwork() { return *subNetwork_; }
+ProcessorNetwork& SequenceProcessor::getSubNetwork() { return *sub_.net; }
 
 void SequenceProcessor::loadSubNetwork(const std::filesystem::path& file) {
     if (std::filesystem::is_regular_file(file)) {
-        subNetwork_->clear();
+        sub_.net->clear();
         auto* wm = app_->getWorkspaceManager();
         auto ifs = std::ifstream(file);
         auto d = wm->createWorkspaceDeserializer(
@@ -162,7 +249,7 @@ void SequenceProcessor::loadSubNetwork(const std::filesystem::path& file) {
         std::string name{getDisplayName()};
         d.deserialize("DisplayName", name);
         setDisplayName(name);
-        d.deserialize("ProcessorNetwork", *subNetwork_);
+        d.deserialize("ProcessorNetwork", *sub_.net);
     }
 }
 
@@ -183,8 +270,15 @@ Property* SequenceProcessor::addSuperProperty(Property* subProperty) {
     if (it != handlers_.end()) {
         return it->second->superProperty;
     } else {
-        if (subProperty->getOwner()->getProcessor()->getNetwork() == subNetwork_.get()) {
+        if (subProperty->getOwner()->getProcessor()->getNetwork() == sub_.net.get()) {
             handlers_[subProperty] = std::make_unique<PropertyHandler>(*this, subProperty);
+
+            for (auto& item : copies_) {
+                if (auto* sub = item.net->getProperty(subProperty->getPath())) {
+                    handlers_[subProperty]->subPropertyCopies.push_back(sub);
+                }
+            }
+
             return handlers_[subProperty]->superProperty;
         } else {
             throw Exception(SourceContext{}, "Could not find property {}", subProperty->getPath());
@@ -227,54 +321,105 @@ void SequenceProcessor::onProcessorNetworkEvaluateRequest() {
         invalidate(InvalidationLevel::InvalidOutput);
     }
 }
-
-void SequenceProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
-    LambdaNetworkVisitor visitor{[this](CompositeProperty& prop) {
-                                     prop.PropertyOwner::addObserver(this);
-                                     registerProperty(&prop);
-                                 },
-                                 [this](Property& prop) { registerProperty(&prop); }};
-    p->accept(visitor);
-
-    if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
-        auto& port = sink->getSuperOutport();
-        const auto id = util::findUniqueIdentifier(
-            port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; }, "");
-        port.setIdentifier(id);
-        addPort(port);
-        sinks_.push_back(sink);
-    } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
-        auto& port = source->getSuperInport();
-        const auto id = util::findUniqueIdentifier(
-            port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; }, "");
-        port.setIdentifier(id);
-        addPort(port);
-        sources_.push_back(source);
-    }
-}
-
-void SequenceProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
-    LambdaNetworkVisitor visitor{[this](CompositeProperty& prop) {
-                                     prop.PropertyOwner::removeObserver(this);
-                                     unregisterProperty(&prop);
-                                 },
-                                 [this](Property& prop) { unregisterProperty(&prop); }};
-    p->accept(visitor);
-
-    if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
-        removePort(&sink->getSuperOutport());
-        std::erase(sinks_, sink);
-    } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
-        removePort(&source->getSuperInport());
-        std::erase(sources_, source);
-    }
-}
-
 void SequenceProcessor::onProcessorBackgroundJobsChanged(Processor*, int diff, int) {
     if (diff > 0) {
         notifyObserversStartBackgroundWork(this, diff);
     } else {
         notifyObserversFinishBackgroundWork(this, -diff);
+    }
+}
+
+void SequenceProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
+    if (p->getNetwork() == sub_.net.get()) {
+        LambdaNetworkVisitor visitor{[this](CompositeProperty& prop) {
+                                         prop.PropertyOwner::addObserver(this);
+                                         registerProperty(&prop);
+                                     },
+                                     [this](Property& prop) { registerProperty(&prop); }};
+        p->accept(visitor);
+
+        if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
+            sink->sync(nullptr);
+
+            auto& port = sink->getSuperOutport();
+            const auto id = util::findUniqueIdentifier(
+                port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; },
+                "");
+            port.setIdentifier(id);
+            addPort(port);
+            sink->setSequenceIndex(0);
+            sub_.sinks.push_back(sink);
+        } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
+            source->sync(nullptr);
+            auto& port = source->getSuperInport();
+            const auto id = util::findUniqueIdentifier(
+                port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; },
+                "");
+            port.setIdentifier(id);
+            addPort(port);
+
+            source->setSequenceIndex(0);
+            sub_.sources.push_back(source);
+        }
+    } else if (auto it = std::ranges::find_if(
+                   copies_, [&](auto& copy) { return copy.net.get() == p->getNetwork(); });
+               it != copies_.end()) {
+        auto& copy = *it;
+
+        if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
+            if (auto* org = dynamic_cast<SequenceCompositeSinkBase*>(
+                    sub_.net->getProcessorByIdentifier(sink->getIdentifier()))) {
+                sink->sync(org);
+                sink->setSequenceIndex(std::distance(copies_.begin(), it) + 1);
+                copy.sinks.push_back(sink);
+            } else {
+                throw Exception(SourceContext{}, "Could not find original sink for {}",
+                                sink->getIdentifier());
+            }
+
+        } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
+            if (auto* org = dynamic_cast<SequenceCompositeSourceBase*>(
+                    sub_.net->getProcessorByIdentifier(source->getIdentifier()))) {
+                source->sync(org);
+                source->setSequenceIndex(std::distance(copies_.begin(), it) + 1);
+                copy.sources.push_back(source);
+            } else {
+                throw Exception(SourceContext{}, "Could not find original source for {}",
+                                source->getIdentifier());
+            }
+        }
+    } else {
+        throw Exception(SourceContext{}, "Could not find network for {}", p->getIdentifier());
+    }
+}
+
+void SequenceProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
+    if (p->getNetwork() == sub_.net.get()) {
+
+        LambdaNetworkVisitor visitor{[this](CompositeProperty& prop) {
+                                         prop.PropertyOwner::removeObserver(this);
+                                         unregisterProperty(&prop);
+                                     },
+                                     [this](Property& prop) { unregisterProperty(&prop); }};
+        p->accept(visitor);
+
+        if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
+            removePort(&sink->getSuperOutport());
+            std::erase(sub_.sinks, sink);
+        } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
+            removePort(&source->getSuperInport());
+            std::erase(sub_.sources, source);
+        }
+    } else if (auto it = std::ranges::find_if(
+                   copies_, [&](auto& copy) { return copy.net.get() == p->getNetwork(); });
+               it != copies_.end()) {
+        auto& copy = *it;
+
+        if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
+            std::erase(copy.sinks, sink);
+        } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
+            std::erase(copy.sources, source);
+        }
     }
 }
 
@@ -287,16 +432,19 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
     : comp{composite}
     , subProperty{aSubProperty}
     , superProperty{subProperty->clone()}
-    , subCallback{subProperty->onChange([this]() {
-        if (onChangeActive) return;
-        const util::KeepTrueWhileInScope active{&onChangeActive};
-        superProperty->set(subProperty);
-    })}
-    , superCallback{superProperty->onChange([this]() {
-        if (onChangeActive) return;
-        const util::KeepTrueWhileInScope active{&onChangeActive};
-        subProperty->set(superProperty);
-    })} {
+    , callbacks{subProperty->onChangeScoped([this]() {
+                    if (onChangeActive) return;
+                    const util::KeepTrueWhileInScope active{&onChangeActive};
+                    superProperty->set(subProperty);
+                }),
+                superProperty->onChangeScoped([this]() {
+                    if (onChangeActive) return;
+                    const util::KeepTrueWhileInScope active{&onChangeActive};
+                    subProperty->set(superProperty);
+                    for (auto* subCopy : subPropertyCopies) {
+                        subCopy->set(superProperty);
+                    }
+                })} {
 
     subProperty->setMetaData<BoolMetaData>(meta::exposed, true);
 
@@ -365,8 +513,7 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
 }
 
 SequenceProcessor::PropertyHandler::~PropertyHandler() {
-    superProperty->removeOnChange(superCallback);
-    subProperty->removeOnChange(subCallback);
+    callbacks.clear();
     delete comp.removeProperty(superProperty);
 }
 

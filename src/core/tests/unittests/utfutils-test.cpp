@@ -52,23 +52,23 @@ TEST(UtfUtils, CodePointsAdaptorUtf8FunctionCall) {
     // ASCII: each char is one code point
     const std::string_view ascii = "Hello";
     auto cps = detail::codePoints(ascii);
-    const std::vector<int32_t> result(cps.begin(), cps.end());
-    EXPECT_EQ(result, (std::vector<int32_t>{'H', 'e', 'l', 'l', 'o'}));
+    const std::vector<char32_t> result(cps.begin(), cps.end());
+    EXPECT_EQ(result, (std::vector<char32_t>{'H', 'e', 'l', 'l', 'o'}));
 }
 
 TEST(UtfUtils, CodePointsAdaptorUtf8PipeSyntax) {
     // Pipe syntax, multi-byte: "é" = U+00E9
     std::string_view u8str = "caf\xC3\xA9";  // "café"
-    std::vector<int32_t> result;
-    for (const int32_t cp : u8str | detail::codePoints) result.push_back(cp);
-    EXPECT_EQ(result, (std::vector<int32_t>{'c', 'a', 'f', 0x00E9}));
+    std::vector<char32_t> result;
+    for (const char32_t cp : u8str | detail::codePoints) result.push_back(cp);
+    EXPECT_EQ(result, (std::vector<char32_t>{'c', 'a', 'f', 0x00E9}));
 }
 
 TEST(UtfUtils, CodePointsAdaptorWChar) {
     std::wstring_view wstr = L"caf\u00E9";
-    std::vector<int32_t> result;
-    for (const int32_t cp : wstr | detail::codePoints) result.push_back(cp);
-    EXPECT_EQ(result, (std::vector<int32_t>{'c', 'a', 'f', 0x00E9}));
+    std::vector<char32_t> result;
+    for (const char32_t cp : wstr | detail::codePoints) result.push_back(cp);
+    EXPECT_EQ(result, (std::vector<char32_t>{'c', 'a', 'f', 0x00E9}));
 }
 
 // ---- CodePointsAdaptor — composed with std::ranges algorithms ----
@@ -76,7 +76,7 @@ TEST(UtfUtils, CodePointsAdaptorWChar) {
 TEST(UtfUtils, CodePointsWithRangesCountIf) {
     std::string_view u8str = "H\xC3\xA9llo W\xC3\xB6rld";  // Héllo Wörld
     auto nonAscii =
-        std::ranges::count_if(u8str | detail::codePoints, [](int32_t cp) { return cp > 127; });
+        std::ranges::count_if(u8str | detail::codePoints, [](char32_t cp) { return cp > 127; });
     EXPECT_EQ(nonAscii, 2);
 }
 
@@ -89,13 +89,13 @@ TEST(UtfUtils, CodePointsWithRangesEqual) {
 TEST(UtfUtils, CodePointsWithViewsTransform) {
     // All code points lowercased
     std::string_view u8str = "ABC";
-    std::vector<int32_t> lower;
-    for (auto cp : u8str | detail::codePoints | std::views::transform([](int32_t c) -> int32_t {
+    std::vector<char32_t> lower;
+    for (auto cp : u8str | detail::codePoints | std::views::transform([](char32_t c) -> char32_t {
                        return detail::codePointToLower(c);
                    })) {
         lower.push_back(cp);
     }
-    EXPECT_EQ(lower, (std::vector<int32_t>{'a', 'b', 'c'}));
+    EXPECT_EQ(lower, (std::vector<char32_t>{'a', 'b', 'c'}));
 }
 
 // ---- CaseInsensitiveEqual — same type comparisons ----

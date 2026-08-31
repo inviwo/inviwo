@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,45 +29,45 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/serializable.h>
-#include <string>
+#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/brushingandlinking/datastructures/brushingaction.h>
+
+#include <optional>
 
 namespace inviwo {
 
-class IVW_CORE_API PropertySemantics {
+class IVW_MODULE_BRUSHINGANDLINKING_API PropertyToBrushing : public Processor {
 public:
-    PropertySemantics();
-    explicit PropertySemantics(std::string_view semantic);
-    PropertySemantics(const PropertySemantics& rhs) = default;
-    PropertySemantics(PropertySemantics&& rhs) noexcept = default;
-    PropertySemantics& operator=(const PropertySemantics& that) = default;
-    PropertySemantics& operator=(PropertySemantics&& that) noexcept = default;
-    ~PropertySemantics() noexcept = default;
+    PropertyToBrushing();
 
-    const std::string& getString() const;
+    virtual void process() override;
 
-    bool operator==(const PropertySemantics&) const = default;
-    auto operator<=>(const PropertySemantics&) const = default;
-
-    void serialize(Serializer& s) const;
-    void deserialize(Deserializer& d);
-
-    static const PropertySemantics Default;
-    static const PropertySemantics Text;
-    static const PropertySemantics SpinBox;
-    static const PropertySemantics Color;
-    static const PropertySemantics LightPosition;
-    static const PropertySemantics TextEditor;
-    static const PropertySemantics Multiline;
-    static const PropertySemantics ImageEditor;
-    static const PropertySemantics ShaderEditor;
-    static const PropertySemantics PythonEditor;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    std::string semantic_;
-};
+    void updateBrushing();
 
-inline const auto& format_as(const PropertySemantics& semantics) { return semantics.getString(); }
+    BrushingAndLinkingInport inport_;
+
+    BoolProperty enable_;
+
+    OrdinalProperty<uint32_t> index_;
+    OrdinalProperty<uint32_t> before_;
+    OrdinalProperty<uint32_t> after_;
+
+    OptionProperty<BrushingAction> action_;
+    OptionProperty<BrushingTarget> target_;
+
+    std::optional<BrushingAction> currentAction_;
+    BrushingTarget currentTarget_;
+};
 
 }  // namespace inviwo

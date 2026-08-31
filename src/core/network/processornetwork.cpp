@@ -50,10 +50,11 @@
 
 namespace inviwo {
 
-ProcessorNetwork::ProcessorNetwork(InviwoApplication* application)
+ProcessorNetwork::ProcessorNetwork(InviwoApplication* application, std::string_view identifier)
     : ProcessorNetworkObservable()
     , ProcessorObserver()
     , PropertyOwnerObserver()
+    , identifier_{identifier}
     , application_(application)
     , evaluator_{nullptr}
     , linkEvaluator_(this) {}
@@ -388,8 +389,12 @@ void ProcessorNetwork::onProcessorMetaDataSelectionChange() {
     notifyObserversProcessorNetworkChanged();
 }
 
+const std::string& ProcessorNetwork::getIdentifier() const { return identifier_; }
+void ProcessorNetwork::setIdentifier(std::string_view identifier) { identifier_ = identifier; }
+
 void ProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("ProcessorNetworkVersion", processorNetworkVersion_);
+    s.serialize("Identifier", identifier_);
 
     s.serializeRange("Processors", "Processor", processors_,
                      [](Serializer& nested, const auto& item) { item.second->serialize(nested); });
@@ -509,6 +514,8 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         ProcessorNetworkConverter nv(version);
         d.convertVersion(&nv);
     }
+
+    d.deserialize("Identifier", identifier_);
 
     // Processors
     try {

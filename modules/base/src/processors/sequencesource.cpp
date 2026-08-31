@@ -31,16 +31,89 @@
 
 namespace inviwo {
 
-std::optional<std::filesystem::path> util::getFirstFileInFolder(const std::filesystem::path& folder,
-                                                                const std::string& filter) {
-    auto files = filesystem::getDirectoryContents(folder);
-    for (const auto& f : files) {
-        auto file = folder / f;
-        if (filesystem::wildcardStringMatch(filter, file.generic_string())) {
-            return file;
-        }
+namespace {
+
+auto filteredFilesView(const std::filesystem::path& folder, std::optional<std::string_view> include,
+                       std::optional<std::string_view> exclude) {
+
+    static constexpr auto makeRegex = [](std::string_view pattern) {
+        const auto v = pattern | views::codePoints | views::wChars | std::ranges::to<std::vector>();
+        return std::wregex{v.begin(), v.end()};
+    };
+
+    static constexpr auto search = [](auto&& view, const std::wregex& regex) {
+        return regex_search(view.begin(), view.end(), regex);
+    };
+
+    static constexpr auto ends_with = [](const std::filesystem::path& path, std::string_view str) {
+        return std::ranges::ends_with(path.native() | views::codePoints, str | views::codePoints);
+    };
+
+    return std::filesystem::directory_iterator{folder} |
+           std::views::filter([](const std::filesystem::directory_entry& entry) {
+               return entry.is_regular_file();
+           }) |
+           std::views::transform(
+               [](const std::filesystem::directory_entry& entry) { return entry.path(); }) |
+           std::views::filter(
+               [includeRe = include.transform(makeRegex),
+                excludeRe = exclude.transform(makeRegex)](const std::filesystem::path& path) {
+                   auto pv = path.native() | views::codePoints | views::wChars;
+
+                   return (!includeRe || search(pv, *includeRe)) &&
+                          (!excludeRe || !search(pv, *excludeRe)) &&
+                          !ends_with(path, std::string_view{".DS_Store"});
+               });
+}
+
+using FilesView = decltype(filteredFilesView(
+    std::filesystem::path{}, std::optional<std::string_view>{}, std::optional<std::string_view>{}));
+
+auto getFolderView(const std::filesystem::path& folder, std::optional<std::string_view> include,
+                   std::optional<std::string_view> exclude)
+    -> std::expected<FilesView, std::string_view> {
+
+    if (!std::filesystem::is_directory(folder)) {
+        static constexpr std::string_view noFolderReason{"Not a folder"};
+        return std::unexpected(noFolderReason);
     }
-    return std::nullopt;
+
+    try {
+        auto view = filteredFilesView(folder, include, exclude);
+        if (std::ranges::begin(view) != std::ranges::end(view)) {
+            return view;
+        } else {
+            static constexpr std::string_view noMatchesReason{"No matching files"};
+            return std::unexpected(noMatchesReason);
+        }
+    } catch (const std::regex_error&) {
+        static constexpr std::string_view invalidFilterReason{"Invalid filter"};
+        return std::unexpected(invalidFilterReason);
+    }
+}
+
+}  // namespace
+
+auto util::getFilesInFolder(const std::filesystem::path& folder,
+                            std::optional<std::string_view> include,
+                            std::optional<std::string_view> exclude)
+    -> std::expected<std::vector<std::filesystem::path>, std::string_view> {
+
+    return getFolderView(folder, include, exclude)
+        .transform([](auto value) -> std::vector<std::filesystem::path> {
+            auto files = value | std::ranges::to<std::vector>();
+            std::ranges::sort(files);
+            return files;
+        });
+}
+
+auto util::getFileInFolder(const std::filesystem::path& folder,
+                           std::optional<std::string_view> include,
+                           std::optional<std::string_view> exclude)
+    -> std::expected<std::filesystem::path, std::string_view> {
+
+    return getFolderView(folder, include, exclude)
+        .transform([](auto value) -> std::filesystem::path { return *std::ranges::begin(value); });
 }
 
 }  // namespace inviwo

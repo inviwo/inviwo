@@ -273,7 +273,7 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
         inport_.propagateEvent(resizeEvent);
 
         if (overlayPort_.isConnected()) {
-            ResizeEvent e(uvec2(viewManager_[0].size));
+            ResizeEvent e{viewManager_[0].empty() ? size2_t{1, 1} : size2_t{viewManager_[0].size}};
             overlayPort_.propagateEvent(&e);
         }
     } else {
@@ -301,7 +301,7 @@ void ImageOverlayGL::onStatusChange() {
 
         rendercontext::activateDefault();
 
-        ResizeEvent e(uvec2(viewManager_[0].size));
+        ResizeEvent e{viewManager_[0].empty() ? size2_t{1, 1} : size2_t{viewManager_[0].size}};
         overlayPort_.propagateEvent(&e, overlayPort_.getConnectedOutport());
     }
 }

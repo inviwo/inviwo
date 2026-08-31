@@ -168,7 +168,8 @@ bool ImageScaling::resizeInports() {
     // enable default render context since the latest change might be triggered by the Qt GUI
     rendercontext::activateDefault();
 
-    ResizeEvent e(calcInputImageSize());
+    const auto newSize = calcInputImageSize();
+    ResizeEvent e{glm::max(newSize, size2_t{1, 1})};
 
     bool used = e.hasBeenUsed();
     for (auto inport : getInports()) {

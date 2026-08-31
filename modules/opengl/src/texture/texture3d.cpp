@@ -53,23 +53,17 @@ Texture3D::Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering,
     : Texture(GL_TEXTURE_3D, glFormat, filtering, swizzleMask, std::span(wrapping), level)
     , dimensions_(dimensions) {
 
-    if (glm::any(glm::equal(dimensions_, size3_t{0}))) {
-        throw Exception{SourceContext{}, "All texture dimensions have to be greater than 0, got {}",
-                        dimensions_};
-    }
+    validateDimensions(dimensions_);
 }
 
-Texture3D::Texture3D(size3_t dimensions, GLenum format, GLenum internalformat, GLenum dataType,
+Texture3D::Texture3D(size3_t dimensions, GLenum format, GLenum internalFormat, GLenum dataType,
                      GLenum filtering, const SwizzleMask& swizzleMask,
                      const std::array<GLenum, 3>& wrapping, GLint level)
-    : Texture(GL_TEXTURE_3D, format, internalformat, dataType, filtering, swizzleMask,
+    : Texture(GL_TEXTURE_3D, format, internalFormat, dataType, filtering, swizzleMask,
               std::span(wrapping), level)
     , dimensions_(dimensions) {
 
-    if (glm::any(glm::equal(dimensions_, size3_t{0}))) {
-        throw Exception{SourceContext{}, "All texture dimensions have to be greater than 0, got {}",
-                        dimensions_};
-    }
+    validateDimensions(dimensions_);
 }
 
 Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
@@ -158,7 +152,20 @@ void Texture3D::upload(const void* data) {
     LGL_ERROR;
 }
 
+void Texture3D::validateDimensions(size3_t dims) {
+    if (glm::any(glm::equal(dims, size3_t{0}))) {
+        throw Exception{SourceContext{}, "Texture dimensions have to be greater than 0, got {}",
+                        dims};
+    }
+    if (glm::any(glm::equal(dims, size3_t{maxTexture3DSize()}))) {
+        throw Exception{SourceContext{}, "Texture size: {}, not supported, max is: {}", dims,
+                        maxTexture3DSize()};
+    }
+}
+
 void Texture3D::uploadAndResize(const void* data, const size3_t& dim) {
+    validateDimensions(dim);
+
     if (dimensions_ != dim) {
         dimensions_ = dim;
         setPBOAsInvalid();

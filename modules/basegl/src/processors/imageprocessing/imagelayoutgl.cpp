@@ -53,6 +53,7 @@
 #include <modules/basegl/viewmanager.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 
@@ -78,14 +79,36 @@ const ProcessorInfo ImageLayoutGL::processorInfo_{
     "Image Operation",           // Category
     CodeState::Experimental,     // Code state
     Tags::GL,                    // Tags
-};
+    R"(Provides layouting for multiple input images. The order of the input images will determine
+    the result. A mouse click activates the respective area for handling mouse/key interactions.
+    Available layouts include:
+
+    * __Single__ The first input image fills the entire output.
+    * __Horizontal Split__ Two images are put on top of each other.
+    * __Vertical Split__ Two images are put next to each other side by side.
+    * __Cross Split__ Two-by-two layout of up to four images filled from left to right and top
+      to bottom.
+    * __Three Left One Right__ The first 3 images are vertically arranged on the left, the fourth
+      is shown on the right.
+    * __Three Right One Left__ The first 3 images are vertically arranged on the right, the fourth
+      is shown on the left.
+    * __Horizontal Split Multiple__ Two or more images are put on top of each other.
+    * __Vertical Split Multiple__ Two or more images are put next to each other side by side.
+
+
+    Minimum left/right/top/bottom sizes will be respected until the output size is smaller than
+    the minimum. Maximum left/right/top/bottom sizes will be respected until there is a conflict,
+    for example max left and right set to 500 but output size is larger than 500+500, at which
+    point left/bottom will have precedence.
+    )"_unindentHelp};
+
 const ProcessorInfo& ImageLayoutGL::getProcessorInfo() const { return processorInfo_; }
 
 ImageLayoutGL::ImageLayoutGL()
     : Processor()
-    , multiinport_("multiinport")
-    , outport_("outport")
-    , layout_("layout", "Layout",
+    , multiInport_("multiinport", "Multi-inport for multiple images."_help)
+    , outport_("outport", "Resulting layout of input images"_help)
+    , layout_("layout", "Layout", "Applied layout"_help,
               {{"single", "Single", Layout::Single},
                {"horizontalSplit", "Horizontal Split", Layout::HorizontalSplit},
                {"verticalSplit", "Vertical Split", Layout::VerticalSplit},
@@ -103,7 +126,8 @@ ImageLayoutGL::ImageLayoutGL()
                                    0.f, 1.f)
     , vertical3Right1LeftSplitter_("vertical3Right1LeftSplitter", "Split Position", 2.0f / 3.0f,
                                    0.f, 1.f)
-    , bounds_("bounds", "Min/Max dimensions (px)")
+    , bounds_("bounds", "Min/Max dimensions (px)",
+              "Minimum and maximum size in pixels of the corresponding side."_help)
     , leftMinMax_("leftMinMax", "Left", 0, std::numeric_limits<int>::max(), 0,
                   std::numeric_limits<int>::max(), 1, 0, InvalidationLevel::InvalidOutput,
                   PropertySemantics::Text)  // note, min 1 to avoid zero size
@@ -123,17 +147,20 @@ ImageLayoutGL::ImageLayoutGL()
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    addPort(multiinport_);
-    multiinport_.setIsReadyUpdater([this]() {
-        return multiinport_.isConnected() &&
-               std::ranges::all_of(
-                   multiinport_.getConnectedOutports() | std::views::take(viewManager_.size()),
-                   [](Outport* p) { return p->isReady(); });
+    addPort(multiInport_);
+    multiInport_.setIsReadyUpdater([this]() {
+        return multiInport_.isConnected() &&
+               std::ranges::any_of(
+                   std::views::zip(multiInport_.getConnectedOutports(), viewManager_.getViews()),
+                   [](auto item) {
+                       auto [port, view] = item;
+                       return !view.empty() && port->isReady();
+                   });
     });
     // Ensure that viewports are up-to-date
     // before isConnectionActive is called
-    multiinport_.onConnect([this]() { updateViewports(currentDim_, true); });
-    multiinport_.onDisconnect([this]() { updateViewports(currentDim_, true); });
+    multiInport_.onConnect([this]() { updateViewports(currentDim_, true); });
+    multiInport_.onDisconnect([this]() { updateViewports(currentDim_, true); });
 
     addPort(outport_);
 
@@ -182,54 +209,41 @@ ImageLayoutGL::ImageLayoutGL()
 ImageLayoutGL::~ImageLayoutGL() = default;
 
 void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
-    if (event->hasVisitedProcessor(this)) return;
-    event->markAsVisited(this);
+    if (!event->markAsVisited(this)) return;
 
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
-    if (event->hash() == ResizeEvent::chash()) {
-        auto resizeEvent = static_cast<ResizeEvent*>(event);
+    if (auto* resizeEvent = event->getAs<ResizeEvent>()) {
         // Note, no auto since we want a copy of the views
-        std::vector<ViewManager::View> prevViews = viewManager_.getViews();
+        const auto nonActive = viewManager_.getViews() |
+                               std::views::transform([](auto& view) { return view.empty(); }) |
+                               std::ranges::to<std::vector>();
+
         updateViewports(resizeEvent->size(), true);
-        const auto minNum = std::min(multiinport_.getNumberOfConnections(), viewManager_.size());
 
-        auto changedFromZeroDim = [](int prev, int current) {
-            return (prev <= 0 && current > 0) || (prev > 0 && current <= 0);
-        };
+        for (size_t i = 0; i < multiInport_.getNumberOfConnections(); ++i) {
+            ResizeEvent e{i >= viewManager_.size() || viewManager_[i].empty()
+                              ? size2_t{1, 1}
+                              : size2_t{viewManager_[i].size}};
+            multiInport_.propagateEvent(&e, multiInport_.getConnectedOutport(i));
+        }
 
-        bool updated = false;
-        for (size_t i = 0; i < minNum; ++i) {
-            ResizeEvent e(uvec2(viewManager_[i].size));
-            multiinport_.propagateEvent(&e, multiinport_.getConnectedOutport(i));
-            // Only evaluate connections if they will be displayed
-            if (i < prevViews.size() &&
-                (changedFromZeroDim(prevViews[i].size.x, viewManager_[i].size.x) ||
-                 changedFromZeroDim(prevViews[i].size.y, viewManager_[i].size.y))) {
-                updated = true;
-            } else if (glm::any(glm::lessThanEqual(viewManager_[i].size, ivec2(0)))) {
-                // New view has zero size
-                updated = true;
-            }
-        }
-        for (size_t i = minNum; i < multiinport_.getNumberOfConnections(); ++i) {
-            ResizeEvent e(size2_t(0));
-            multiinport_.propagateEvent(&e, multiinport_.getConnectedOutport(i));
-        }
-        if (updated || prevViews.size() != viewManager_.size()) {
-            multiinport_.readyUpdate();
+        if (!std::ranges::equal(viewManager_.getViews() |
+                                    std::views::transform([](auto& view) { return view.empty(); }),
+                                nonActive)) {
+            multiInport_.readyUpdate();
             notifyObserversActiveConnectionsChange(this);
         }
     } else {
         auto prop = [&](Event* newEvent, size_t ind) {
-            if (ind < viewManager_.size() && ind < multiinport_.getNumberOfConnections()) {
-                multiinport_.propagateEvent(newEvent, multiinport_.getConnectedOutport(ind));
+            if (ind < viewManager_.size() && ind < multiInport_.getNumberOfConnections()) {
+                multiInport_.propagateEvent(newEvent, multiInport_.getConnectedOutport(ind));
             }
         };
         auto propagated = viewManager_.propagateEvent(event, prop);
-        if (!propagated && event->shouldPropagateTo(&multiinport_, this, source)) {
-            multiinport_.propagateEvent(event);
+        if (!propagated && event->shouldPropagateTo(&multiInport_, this, source)) {
+            multiInport_.propagateEvent(event);
         }
     }
 }
@@ -304,15 +318,15 @@ void ImageLayoutGL::onStatusChange(bool propagate) {
 }
 
 bool ImageLayoutGL::isConnectionActive([[maybe_unused]] Inport* from, Outport* to) const {
-    IVW_ASSERT(from == &multiinport_,
+    IVW_ASSERT(from == &multiInport_,
                "ImageLayoutGL was designed for one inport but isConnectionActive was called with "
                "another inport");
-    const auto ports = multiinport_.getConnectedOutports();
-    auto portIt = std::find(ports.begin(), ports.end(), to);
+    const auto ports = multiInport_.getConnectedOutports();
+    auto portIt = std::ranges::find(ports, to);
     auto id = static_cast<size_t>(std::distance(ports.begin(), portIt));
     if (id < viewManager_.size()) {
         // Note: We cannot use Outport dimensions since it might not exist
-        return glm::compMul(viewManager_.getViews()[id].size) != 0;
+        return !viewManager_[id].empty();
     } else {
         // More connections than views
         return false;
@@ -321,8 +335,6 @@ bool ImageLayoutGL::isConnectionActive([[maybe_unused]] Inport* from, Outport* t
 
 void ImageLayoutGL::process() {
     TextureUnit::setZeroUnit();
-    auto images = multiinport_.getVectorData();
-
     TextureUnit colorUnit, depthUnit, pickingUnit;
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
@@ -331,16 +343,41 @@ void ImageLayoutGL::process() {
     shader_.setUniform("depth_", depthUnit.getUnitNumber());
     shader_.setUniform("picking_", pickingUnit.getUnitNumber());
 
-    size_t minNum = std::min(images.size(), viewManager_.size());
-    for (size_t i = 0; i < minNum; ++i) {
-        if (glm::any(glm::lessThanEqual(viewManager_[i].size, ivec2(0)))) {
-            continue;
+    auto images =
+        multiInport_.getConnectedOutports() | std::views::transform([&](Outport* outport) {
+            if (outport->isReady()) {
+                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+                return static_cast<ImageOutport*>(outport)->getDataForPort(&multiInport_);
+            } else {
+                return std::shared_ptr<const Image>{};
+            }
+        });
+
+    for (auto&& [image, view] : std::views::zip(images, viewManager_.getViews())) {
+        if (!view.empty() && image) {
+            utilgl::bindTextures(*image, colorUnit, depthUnit, pickingUnit);
+            glViewport(view.pos.x, view.pos.y, view.size.x, view.size.y);
+            utilgl::singleDrawImagePlaneRect();
         }
-        utilgl::bindTextures(*images[i], colorUnit, depthUnit, pickingUnit);
-        glViewport(viewManager_[i].pos.x, viewManager_[i].pos.y, viewManager_[i].size.x,
-                   viewManager_[i].size.y);
-        utilgl::singleDrawImagePlaneRect();
     }
+
+    auto* noise = SharedOpenGLResources::getPtr()->getNoiseShader();
+    noise->activate();
+    for (auto&& [image, view] : std::views::zip(images, viewManager_.getViews())) {
+        if (!view.empty() && !image) {
+            glViewport(view.pos.x, view.pos.y, view.size.x, view.size.y);
+            utilgl::singleDrawImagePlaneRect();
+        }
+    }
+
+    for (auto&& view : viewManager_.getViews() | std::views::drop(images.size())) {
+        if (!view.empty()) {
+            glViewport(view.pos.x, view.pos.y, view.size.x, view.size.y);
+            utilgl::singleDrawImagePlaneRect();
+        }
+    }
+
+    noise->deactivate();
 
     ivec2 dim = outport_.getData()->getDimensions();
     glViewport(0, 0, dim.x, dim.y);
@@ -383,7 +420,7 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
                          dim.x),
         leftBounds.x, leftBounds.y);
 
-    const int portCount = static_cast<int>(multiinport_.getNumberOfConnections());
+    const int portCount = static_cast<int>(multiInport_.getNumberOfConnections());
 
     const int widthMultiple = portCount > 1 ? dim.x / portCount : dim.x;
     const int heightMultiple = portCount > 1 ? dim.y / portCount : dim.y;

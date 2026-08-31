@@ -36,6 +36,7 @@
 
 #include <modules/base/processors/sequencesource.h>
 #include <modules/base/properties/meshinformationproperty.h>
+#include <modules/base/properties/basisproperty.h>
 
 namespace inviwo {
 
@@ -43,14 +44,27 @@ namespace detail {
 struct MeshConf {
     using Type = Mesh;
     using Sequence = DataSequence<Type>;
-    using Info = MeshInformationProperty;
     using Outport = MeshSequenceOutport;
     static constexpr auto name = DataTraits<Type>::dataName();
     static constexpr auto plural = "es";
     static constexpr size_t dim = 3;
 
-    static void updateForNew(Info& info, const Type& data, util::OverwriteState) {
-        info.updateForNewMesh(data);
+    struct Info {
+        BasisProperty basis{"Basis", "Basis and offset"};
+        MeshInformationProperty info{"Information", "Data information"};
+    };
+    static void add(Info& info, auto& processor) {
+        processor.addProperties(info.basis, info.info);
+        // It does not make sense to change these for an entire sequence
+        info.basis.setReadOnly(true);
+        info.info.setReadOnly(true);
+    }
+    static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {
+        info.info.updateForNewMesh(data);
+        info.basis.updateForNewEntity(data, overwrite == util::OverwriteState::Yes);
+    }
+    static auto getReaderConfig(Info&) -> std::function<void(DataReader&)> {
+        return [](DataReader&) {};
     }
 };
 }  // namespace detail

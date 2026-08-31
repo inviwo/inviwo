@@ -82,6 +82,8 @@ protected:
     void load();
     void handleError(std::string_view error);
 
+    virtual void configureReader(DataReader&) {}
+
     // Called to transform the loaded data of ReaderType to the DataType expected by the port
     virtual std::shared_ptr<DataType> transform(std::shared_ptr<ReaderType> data);
 
@@ -183,6 +185,7 @@ void DataSource<DataType, PortType, ReaderType>::load() {
     const auto sext = extensions.getSelectedValue();
     if (auto reader =
             rf_->template getReaderForTypeAndExtension<ReaderType>(sext, filePath.get())) {
+        configureReader(*reader);
         try {
             auto data = transform(reader->readData(filePath.get()));
             port_.setData(data);

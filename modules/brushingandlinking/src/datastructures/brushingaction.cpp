@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 #include <algorithm>
 #include <memory>
@@ -54,6 +55,16 @@ std::string_view BrushingTarget::findOrAdd(std::string_view target) {
         return std::string_view{*targets.emplace_back(std::make_unique<const std::string>(target))};
     } else {
         return std::string_view{**it};
+    }
+}
+
+void BrushingTarget::serialize(Serializer& s) const {
+    s.serialize("target", target_, SerializationTarget::Attribute);
+}
+
+void BrushingTarget::deserialize(Deserializer& d) {
+    if (auto t = d.attribute("target")) {
+        target_ = findOrAdd(*t);
     }
 }
 
@@ -83,13 +94,6 @@ std::string_view enumToStr(BrushingModification bm) {
     }
     throw Exception(SourceContext{}, "Found invalid BrushingModification enum value '{}'",
                     static_cast<int>(bm));
-}
-
-std::istream& operator>>(std::istream& ss, BrushingTarget& bt) {
-    std::string str;
-    ss >> str;
-    bt = BrushingTarget(str);
-    return ss;
 }
 
 }  // namespace inviwo

@@ -73,7 +73,12 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(
     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
     : owner_(outport), invalidationLevels_(std::move(invalidationLevels)) {}
 
-BrushingAndLinkingManager::~BrushingAndLinkingManager() = default;
+BrushingAndLinkingManager::~BrushingAndLinkingManager() {
+    for (auto child : children_) {
+        child->setParent(nullptr);
+    }
+    removeParent();
+}
 
 void BrushingAndLinkingManager::brush(BrushingAction action, BrushingTarget target,
                                       const BitSet& indices, std::string_view source) {
@@ -286,10 +291,6 @@ void BrushingAndLinkingManager::highlight(const BitSet& indices, BrushingTarget 
     brush(BrushingAction::Highlight, target, indices);
 }
 
-void BrushingAndLinkingManager::clearFiltered() {
-    throw Exception("clearing filtered indices is no longer supported");
-}
-
 void BrushingAndLinkingManager::clearSelected(BrushingTarget target) {
     clearIndices(BrushingAction::Select, target);
 }
@@ -355,6 +356,61 @@ bool BrushingAndLinkingManager::isHighlighted(uint32_t idx, BrushingTarget targe
 }
 
 void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
+    if (parent_ == parent) return;
+
+    removeParent();
+    addParent(parent);
+}
+
+BrushingAndLinkingManager* BrushingAndLinkingManager::getParent() const { return parent_; }
+
+void BrushingAndLinkingManager::addChild(BrushingAndLinkingManager* child) {
+    [[maybe_unused]] auto [_, inserted] = children_.insert(child);
+    IVW_ASSERT(inserted, "child manager already added");
+}
+
+void BrushingAndLinkingManager::removeChild(BrushingAndLinkingManager* child) {
+    if (child) {
+        children_.erase(child);
+        if (std::holds_alternative<BrushingAndLinkingInport*>(child->owner_)) {
+            const auto* inport = std::get<BrushingAndLinkingInport*>(child->owner_);
+
+            for (auto&& [action, targetmap] : util::zip(BrushingActions, selections_)) {
+                if (std::holds_alternative<IndexListTargets>(targetmap)) {
+                    for (auto&& [target, indexList] : std::get<IndexListTargets>(targetmap)) {
+                        if (indexList.removeSources({inport->getPath()})) {
+                            // inform parent manager
+                            propagate(action, target);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void BrushingAndLinkingManager::addParent(BrushingAndLinkingManager* parent) {
+    parent_ = parent;
+    if (parent_) {
+        parent_->addChild(this);
+
+        auto propagateTargets = [&](BrushingAction action, const auto& map) {
+            propagate(action, util::transform(map, [](auto elem) { return elem.first; }));
+        };
+
+        // propagate all selections of the manager to the parent
+        for (auto&& [action, map] : std::views::zip(BrushingActions, selections_)) {
+            std::visit(util::overloaded{[&, actionLocal = action](const BitSetTargets& set) {
+                                            propagateTargets(actionLocal, set);
+                                        },
+                                        [&, actionLocal = action](const IndexListTargets& list) {
+                                            propagateTargets(actionLocal, list);
+                                        }},
+                       map);
+        }
+    }
+}
+void BrushingAndLinkingManager::removeParent() {
     if (parent_) {
         parent_->removeChild(this);
 
@@ -365,30 +421,14 @@ void BrushingAndLinkingManager::setParent(BrushingAndLinkingManager* parent) {
             }
         }
 
-        if (std::holds_alternative<BrushingAndLinkingOutport*>(owner_)) {
-            const auto* outport = std::get<BrushingAndLinkingOutport*>(owner_);
-            outport->getProcessor()->invalidate(getInvalidationLevel());
-        }
-    }
-
-    parent_ = parent;
-    if (parent_) {
-        parent_->addChild(this);
-
-        auto propagateTargets = [&](BrushingAction action, const auto& map) {
-            propagate(action, util::transform(map, [](auto elem) { return elem.first; }));
-        };
-
-        // propagate all selections of the manager to the parent
-        for (auto&& [action, map] : util::zip(BrushingActions, selections_)) {
-            std::visit(util::overloaded{[&, actionLocal = action](const BitSetTargets& set) {
-                                            propagateTargets(actionLocal, set);
-                                        },
-                                        [&, actionLocal = action](const IndexListTargets& list) {
-                                            propagateTargets(actionLocal, list);
-                                        }},
-                       map);
-        }
+        std::visit(util::overloaded{[&](BrushingAndLinkingOutport* outport) {
+                                        if (auto* p = outport->getProcessor()) {
+                                            p->invalidate(getInvalidationLevel());
+                                        }
+                                    },
+                                    [&](BrushingAndLinkingInport*) {}},
+                   owner_);
+        parent_ = nullptr;
     }
 }
 
@@ -518,31 +558,6 @@ void BrushingAndLinkingManager::propagate(BrushingAction action,
 
             if (localIndices) {
                 parent_->brush(action, target, *localIndices, source);
-            }
-        }
-    }
-}
-
-void BrushingAndLinkingManager::addChild(BrushingAndLinkingManager* child) {
-    [[maybe_unused]] auto [_, inserted] = children_.insert(child);
-    IVW_ASSERT(inserted, "child manager already added");
-}
-
-void BrushingAndLinkingManager::removeChild(BrushingAndLinkingManager* child) {
-    if (child) {
-        children_.erase(child);
-        if (std::holds_alternative<BrushingAndLinkingInport*>(child->owner_)) {
-            const auto* inport = std::get<BrushingAndLinkingInport*>(child->owner_);
-
-            for (auto&& [action, targetmap] : util::zip(BrushingActions, selections_)) {
-                if (std::holds_alternative<IndexListTargets>(targetmap)) {
-                    for (auto&& [target, indexList] : std::get<IndexListTargets>(targetmap)) {
-                        if (indexList.removeSources({inport->getPath()})) {
-                            // inform parent manager
-                            propagate(action, target);
-                        }
-                    }
-                }
             }
         }
     }

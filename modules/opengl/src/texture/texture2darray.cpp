@@ -31,6 +31,7 @@
 
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmfmt.h>
 #include <modules/opengl/glformats.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglcapabilities.h>
@@ -51,10 +52,10 @@ Texture2DArray::Texture2DArray(size3_t dimensions, GLFormat glFormat, GLenum fil
     : Texture(GL_TEXTURE_2D_ARRAY, glFormat, filtering, swizzleMask, std::span(wrap), level)
     , dimensions_(dimensions) {}
 
-Texture2DArray::Texture2DArray(size3_t dimensions, GLenum format, GLenum internalformat,
+Texture2DArray::Texture2DArray(size3_t dimensions, GLenum format, GLenum internalFormat,
                                GLenum dataType, GLenum filtering, const SwizzleMask& swizzleMask,
                                const std::array<GLenum, 2>& wrap, GLint level)
-    : Texture(GL_TEXTURE_2D_ARRAY, format, internalformat, dataType, filtering, swizzleMask,
+    : Texture(GL_TEXTURE_2D_ARRAY, format, internalFormat, dataType, filtering, swizzleMask,
               std::span(wrap), level)
     , dimensions_(dimensions) {}
 
@@ -142,6 +143,17 @@ void Texture2DArray::upload(const void* data) {
                     static_cast<GLsizei>(dimensions_.y), static_cast<GLsizei>(dimensions_.z),
                     format_, dataType_, data);
     LGL_ERROR;
+}
+
+void Texture2DArray::validateDimensions(size3_t dims) {
+    if (glm::any(glm::equal(dims, size3_t{0}))) {
+        throw Exception{SourceContext{}, "Texture dimensions have to be greater than 0, got {}",
+                        dims};
+    }
+    if (glm::any(glm::equal(dims, size3_t{size2_t{maxTextureSize()}, maxTextureArraySize()}))) {
+        throw Exception{SourceContext{}, "Texture size: {}, not supported, max is: {}", dims,
+                        size3_t{size2_t{maxTextureSize()}, maxTextureArraySize()}};
+    }
 }
 
 void Texture2DArray::uploadAndResize(const void* data, const size3_t& dim) {

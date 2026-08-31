@@ -112,9 +112,9 @@ public:
             DataSequence tmp(that);
             swap(tmp);
         }
-        return this;
+        return *this;
     }
-    DataSequence& operator=(DataSequence&&) noexcept = delete;
+    DataSequence& operator=(DataSequence&&) noexcept = default;
 
     ~DataSequence() = default;
 

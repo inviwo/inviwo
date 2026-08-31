@@ -41,7 +41,7 @@ namespace inviwo {
 class IVW_CORE_API GestureEvent : public InteractionEvent {
 public:
     GestureEvent(dvec2 deltaPos, double deltaDistance, GestureType type, GestureState state,
-                 int numFingers, dvec2 screenPosNorm, uvec2 canvasSize, double depth = 1.0);
+                 dvec2 screenPosNorm, uvec2 canvasSize, double depth = 1.0);
 
     GestureEvent(const GestureEvent& rhs) = default;
     GestureEvent& operator=(const GestureEvent& that) = default;
@@ -52,7 +52,6 @@ public:
     double deltaDistance() const;
     GestureType type() const;
     GestureState state() const;
-    int numFingers() const;
     dvec2 screenPosNormalized() const;
     void setScreenPosNormalized(dvec2);
 
@@ -74,6 +73,7 @@ public:
      * And the upper right far (1,1,1)
      */
     dvec3 ndc() const;
+    void setNdc(dvec3 ndc);
 
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.GestureEvent"); }
@@ -83,7 +83,6 @@ public:
 private:
     GestureType type_;
     GestureState state_;
-    int numFingers_;
 
     dvec2 deltaPos_;
     double deltaDistance_;

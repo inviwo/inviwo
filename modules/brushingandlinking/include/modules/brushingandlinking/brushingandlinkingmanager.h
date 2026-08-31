@@ -293,9 +293,6 @@ public:
      */
     void clearIndices(BrushingAction action, BrushingTarget target);
 
-    // clang-format off
-    [[deprecated("clearing filtered indices is no longer supported. Use filter() with an empty BitSet")]] void clearFiltered();
-    // clang-format on
     //! convenience function for clearIndices(BrushingAction::Select, target)
     void clearSelected(BrushingTarget target = BrushingTarget::Row);
     //! convenience function for clearIndices(BrushingAction::Highlight, target)
@@ -328,6 +325,7 @@ public:
      * register a parent manager for the propagation of brushing actions
      */
     void setParent(BrushingAndLinkingManager* parent);
+    BrushingAndLinkingManager* getParent() const;
 
     /**
      * Add a \p callback to the manager that gets called when a brushing action is triggered.
@@ -399,6 +397,10 @@ private:
     void propagate(BrushingAction action, const std::vector<BrushingTarget>& targets);
     void addChild(BrushingAndLinkingManager* child);
     void removeChild(BrushingAndLinkingManager* child);
+
+    void addParent(BrushingAndLinkingManager* parent);
+    void removeParent();
+
     const BitSet* getBitSet(BrushingAction action, BrushingTarget target) const;
 
     InvalidationLevel getInvalidationLevel(const BrushingTarget& target,

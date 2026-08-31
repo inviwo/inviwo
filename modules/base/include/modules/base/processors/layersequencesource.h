@@ -35,6 +35,7 @@
 #include <inviwo/core/ports/layerport.h>
 
 #include <modules/base/processors/sequencesource.h>
+#include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/layerinformationproperty.h>
 
 namespace inviwo {
@@ -43,14 +44,27 @@ namespace detail {
 struct LayerConf {
     using Type = Layer;
     using Sequence = DataSequence<Type>;
-    using Info = LayerInformationProperty;
     using Outport = LayerSequenceOutport;
     static constexpr auto name = DataTraits<Type>::dataName();
     static constexpr auto plural = "s";
     static constexpr size_t dim = 2;
 
+    struct Info {
+        BasisProperty basis{"Basis", "Basis and offset"};
+        LayerInformationProperty info{"Information", "Data information"};
+    };
+    static void add(Info& info, auto& processor) {
+        processor.addProperties(info.basis, info.info);
+        // It does not make sense to change these for an entire sequence
+        info.basis.setReadOnly(true);
+        info.info.setReadOnly(true);
+    }
     static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {
-        info.updateForNewLayer(data, overwrite);
+        info.info.updateForNewLayer(data, overwrite);
+        info.basis.updateForNewEntity(data, overwrite == util::OverwriteState::Yes);
+    }
+    static auto getReaderConfig(Info&) -> std::function<void(DataReader&)> {
+        return [](DataReader&) {};
     }
 };
 }  // namespace detail

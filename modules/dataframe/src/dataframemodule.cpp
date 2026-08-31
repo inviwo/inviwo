@@ -31,7 +31,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/moduleutils.h>
+
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -39,6 +39,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <modules/base/processors/filecache.h>
@@ -61,6 +62,7 @@
 #include <inviwo/dataframe/processors/dataframetomesh.h>
 #include <inviwo/dataframe/processors/filelist.h>
 #include <inviwo/dataframe/processors/imagetodataframe.h>
+#include <inviwo/dataframe/processors/sequencetodataframe.h>
 #include <inviwo/dataframe/processors/syntheticdataframe.h>
 #include <inviwo/dataframe/processors/tffromdataframecolumn.h>
 #include <inviwo/dataframe/processors/volumesequencetodataframe.h>
@@ -114,6 +116,12 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
     registerProcessor<DataFrameToVector>();
     registerProcessor<FileList>();
     registerProcessor<ImageToDataFrame>();
+    registerProcessor<SequenceToDataFrame<Volume>>();
+    registerProcessor<SequenceToDataFrame<Layer>>();
+    registerProcessor<SequenceToDataFrame<Image>>();
+    registerProcessor<SequenceToDataFrame<Mesh>>();
+    registerProcessor<SequenceToDataFrame<BufferBase>>();
+
     registerProcessor<SyntheticDataFrame>();
     registerProcessor<TFFromDataFrameColumn>();
     registerProcessor<VolumeToDataFrame>();

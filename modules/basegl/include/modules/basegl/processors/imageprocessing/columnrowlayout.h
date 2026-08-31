@@ -31,19 +31,25 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 
+#include <inviwo/core/interaction/eventtransformer.h>
+#include <inviwo/core/metadata/processormetadata.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/glmvec.h>
 #include <modules/basegl/datastructures/splittersettings.h>
 #include <modules/basegl/properties/splitterproperty.h>
 #include <modules/basegl/rendering/splitterrenderer.h>
-#include <modules/basegl/viewmanager.h>
+#include <modules/fontrendering/properties/fontproperty.h>
+#include <modules/fontrendering/textrenderer.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/rendering/texturequadrenderer.h>
 
 #include <variant>
 
@@ -54,63 +60,114 @@ class Event;
 namespace layout {
 enum class InputMode : std::uint8_t { Multi, Sequence };
 
-struct IVW_MODULE_BASEGL_API MultiInput {
-    explicit MultiInput(const std::function<void(bool)>& update);
+enum class Sorting : std::uint8_t {
+    ConnectionOrder,
+    ProcessorIdentifier,
+    ProcessorDisplayName,
+    ProcessorXPosition
+};
+
+struct IVW_MODULE_BASEGL_API View {
+    ivec2 pos;
+    ivec2 size;
+    bool empty() const { return glm::any(glm::lessThanEqual(size, ivec2(0))); }
+};
+
+struct IVW_MODULE_BASEGL_API MultiInput : ProcessorMetaDataObserver {
+    explicit MultiInput(std::function<void(bool)> update,
+                        std::function<const std::vector<View>&()> views);
 
     void addPorts(Processor* p);
     void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
-    void propagateSizes(ViewManager& vm);
+    void propagateSizes();
     void propagateEvent(Event* event, size_t index);
     void propagateEvent(Event* event, Processor* p, Outport* source);
     size_t indexOf(Outport* to) const;
+    bool updateLabels(std::vector<std::string>& labels, std::string_view format) const;
+    void setSorting(Sorting sortOrder);
 
 private:
+    virtual void onProcessorMetaDataPositionChange() override;
+
+    void sortInputChanged();
+
+    void sort();
+
+    std::function<void(bool)> update;
+    std::function<const std::vector<View>&()> views;
+
+    Sorting sortOrder;
     ImageMultiInport inport;
+    std::vector<Outport*> outports;
     std::vector<std::shared_ptr<const Image>> data;
+    std::vector<Processor::NameDispatcherHandle> callbacks;
 };
 
 struct IVW_MODULE_BASEGL_API SequenceInput {
-    explicit SequenceInput(const std::function<void(bool)>& update);
+    explicit SequenceInput(std::function<void(bool)> update,
+                           std::function<const std::vector<View>&()> views);
 
     void addPorts(Processor* p);
     void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
-    void propagateSizes(ViewManager& vm);
+    void propagateSizes();
     void propagateEvent(Event* event, size_t index);
     void propagateEvent(Event* event, Processor* p, Outport* source);
     static size_t indexOf(Outport*);
+    bool updateLabels(std::vector<std::string>& labels, std::string_view format) const;
+    void setSorting(Sorting sortOrder);
 
 private:
+    std::function<void(bool)> update;
+    std::function<const std::vector<View>&()> views;
+
     DataInport<DataSequence<Image>> inport;
     std::vector<std::shared_ptr<const Image>> data;
 };
 
 struct IVW_MODULE_BASEGL_API Input {
-    explicit Input(const std::function<void(bool)>& update);
+    explicit Input(const std::function<void(bool)>& update,
+                   const std::function<const std::vector<View>&()>& views);
 
     void addPorts(Processor* p);
     void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
-    void propagateSizes(ViewManager& vm);
+    void propagateSizes();
     void propagateEvent(Event* event, size_t index);
     void propagateEvent(Event* event, Processor* p, Outport* source);
     size_t indexOf(Outport* to) const;
+    bool updateLabels(std::vector<std::string>& labels, std::string_view format) const;
+    void setSorting(Sorting sortOrder);
 
-    void setMode(Processor* p, InputMode mode, const std::function<void(bool)>& update);
+    void setMode(Processor* p, InputMode mode, const std::function<void(bool)>& update,
+                 const std::function<const std::vector<View>&()>& views);
 
 private:
     std::variant<MultiInput, SequenceInput> input_;
 };
 
 struct IVW_MODULE_BASEGL_API SplitterPositions {
-    SplitterPositions(std::string_view identifier, std::string_view displayName,
-                      std::function<double()> minSpacing);
+private:
+    static constexpr auto toFloat = [](const Property* prop) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+        return static_cast<const DoubleProperty*>(prop);
+    };
+    static constexpr auto visible = [](const Property* prop) { return prop->getVisible(); };
+    static constexpr auto getter = [](const DoubleProperty* prop) { return prop->get(); };
 
-    auto splits() const {
+    using SplitsView = decltype(std::declval<const CompositeProperty&>() |
+                                std::views::take(std::declval<size_t>()) |
+                                std::views::transform(toFloat) | std::views::transform(getter));
+
+public:
+    SplitterPositions(std::string_view identifier, std::string_view displayName,
+                      std::function<void()> onChange, std::function<double()> minSize);
+
+    SplitsView splits() const {
         return splitters_ | std::views::take(nSplitters_) | std::views::transform(toFloat) |
                std::views::transform(getter);
     }
@@ -129,7 +186,7 @@ struct IVW_MODULE_BASEGL_API SplitterPositions {
     }
     size_t size() const { return nSplitters_; }
 
-    void enforceOrder(size_t fixedSliderIndex);
+    void enforceOrder(size_t changedIndex);
     bool updateSize(size_t newSize);
     void spaceEvenly();
     void deserialized();
@@ -138,15 +195,9 @@ struct IVW_MODULE_BASEGL_API SplitterPositions {
 
 private:
     size_t nSplitters_;
-    std::function<double()> minSpacing_;
+    std::function<void()> onChange_;
+    std::function<double()> minSize_;
     bool isEnforcing_;
-
-    static constexpr auto toFloat = [](const Property* prop) {
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
-        return static_cast<const DoubleProperty*>(prop);
-    };
-    static constexpr auto visible = [](const Property* prop) { return prop->getVisible(); };
-    static constexpr auto getter = [](const DoubleProperty* prop) { return prop->get(); };
 };
 
 }  // namespace layout
@@ -172,13 +223,16 @@ protected:
     void updateSplitters(bool connect);
     void calculateViews(ivec2 imgSize);
     void splittersChanged();
+    void updateLabelTextures();
 
     layout::Input input_;
     ImageOutport outport_;
 
-    ViewManager viewManager_;
+    EventTransformer eventTransformer_;
+    std::vector<layout::View> views_;
 
     OptionProperty<layout::InputMode> inputMode_;
+    OptionProperty<layout::Sorting> sorting_;
     SplitterProperty splitterSettings_;
     IntProperty minWidth_;
     layout::SplitterPositions horizontalSplitters_;
@@ -186,10 +240,23 @@ protected:
     SplitterRenderer horizontalRenderer_;
     SplitterRenderer verticalRenderer_;
     ButtonProperty splitEvenly_;
+
+    BoolCompositeProperty labels_;
+    StringProperty format_;
+    FontProperty font_;
+    FloatVec4Property color_;
+    FloatVec2Property position_;
+    IntVec2Property offset_;
+
     ivec2 currentDim_;
     Shader shader_;
     bool deserialized_;
     std::vector<float> splits_;
+
+    TextRenderer textRenderer_;
+    std::vector<std::string> textLabels_;
+    std::vector<TextTextureObject> textObjects_;
+    TextureQuadRenderer textureRenderer_;
 };
 
 class IVW_MODULE_BASEGL_API ColumnLayout : public Layout {

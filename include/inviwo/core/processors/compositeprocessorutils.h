@@ -35,6 +35,7 @@ namespace inviwo {
 
 class ProcessorNetwork;
 class CompositeProcessor;
+class SequenceProcessor;
 
 namespace util {
 
@@ -58,6 +59,8 @@ IVW_CORE_API void replaceSelectionWithCompositeProcessor(ProcessorNetwork& netwo
 IVW_CORE_API void expandCompositeProcessorIntoNetwork(CompositeProcessor& composite);
 
 IVW_CORE_API void replaceSelectionWithSequenceProcessor(ProcessorNetwork& network);
+
+IVW_CORE_API void expandSequenceProcessorIntoNetwork(SequenceProcessor& sequence);
 
 }  // namespace util
 
