@@ -76,7 +76,8 @@ const ProcessorInfo& SequenceProcessor::getProcessorInfo() const { return proces
 SequenceProcessor::SequenceProcessor(std::string_view identifier, std::string_view displayName,
                                      InviwoApplication* app, const std::filesystem::path& file)
     : Processor(identifier, displayName), app_{app}, sub_{[&] {
-        auto net = std::make_unique<ProcessorNetwork>(app);
+        auto net =
+            std::make_unique<ProcessorNetwork>(app, fmt::format("{}MainSubNetwork", identifier));
         auto eval = std::make_unique<ProcessorNetworkEvaluator>(net.get());
         // keep the network locked, only unlock in the process function.
         net->lock();
@@ -90,6 +91,16 @@ SequenceProcessor::SequenceProcessor(std::string_view identifier, std::string_vi
 SequenceProcessor::~SequenceProcessor() { ProcessorNetworkObserver::removeObservations(); };
 
 void SequenceProcessor::process() {
+    constexpr auto evaluateNetwork = [](SequenceProcessor::NetEval& net) {
+        std::ranges::for_each(net.sources, [&](auto* source) {
+            if (source->getSuperInport().isChanged()) {
+                source->invalidate(InvalidationLevel::InvalidOutput);
+            }
+        });
+        const util::OnScopeExit lock{[&]() { net.net->lock(); }};
+        net.net->unlock();  // This will trigger an evaluation of the sub network.
+    };
+
     const util::KeepTrueWhileInScope processing{&isProcessing_};
 
     const auto size = std::ranges::fold_left(
@@ -98,33 +109,13 @@ void SequenceProcessor::process() {
 
     createNetworkCopies(size);
 
-    for (auto&& sink : sub_.sinks) {
-        sink->newData(size);
-    }
+    for (auto&& sink : sub_.sinks) sink->newData(size);
 
-    if (size > 0) {
-        std::ranges::for_each(sub_.sources, [&](auto* source) {
-            if (source->getSuperInport().isChanged()) {
-                source->invalidate(InvalidationLevel::InvalidOutput);
-            }
-        });
-        const util::OnScopeExit lock{[this]() { sub_.net->lock(); }};
-        sub_.net->unlock();  // This will trigger an evaluation of the sub network.
-    }
+    if (size > 0) evaluateNetwork(sub_);
 
-    for (auto& copy : copies_) {
-        std::ranges::for_each(copy.sources, [&](auto& source) {
-            if (source->getSuperInport().isChanged()) {
-                source->invalidate(InvalidationLevel::InvalidOutput);
-            }
-        });
-        const util::OnScopeExit lock{[&]() { copy.net->lock(); }};
-        copy.net->unlock();  // This will trigger an evaluation of the sub network.
-    }
+    for (auto& copy : copies_) evaluateNetwork(copy);
 
-    for (auto&& sink : sub_.sinks) {
-        sink->superProcessEnd();
-    }
+    for (auto&& sink : sub_.sinks) sink->superProcessEnd();
 }
 
 void SequenceProcessor::createNetworkCopies(size_t count) {
@@ -151,6 +142,7 @@ void SequenceProcessor::createNetworkCopies(size_t count) {
         copy.net->lock();
         copy.net->addObserver(this);
         d.deserialize("ProcessorNetwork", *copy.net);
+        copy.net->setIdentifier(fmt::format("{}CopySubNetwork{}", getIdentifier(), copies_.size()));
 
         for (auto&& [subProperty, handler] : handlers_) {
             if (auto* sub = copy.net->getProperty(subProperty->getPath())) {
