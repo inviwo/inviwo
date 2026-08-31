@@ -75,7 +75,8 @@ class IVW_CORE_API ProcessorNetwork : public Serializable,
                                       public PropertyOwnerObserver,
                                       public ProcessorMetaDataObserver {
 public:
-    explicit ProcessorNetwork(InviwoApplication* application);
+    explicit ProcessorNetwork(InviwoApplication* application,
+                              std::string_view identifier = "network");
     ProcessorNetwork(const ProcessorNetwork&) = delete;
     ProcessorNetwork(ProcessorNetwork&&) = delete;
     ProcessorNetwork& operator=(const ProcessorNetwork&) = delete;
@@ -432,6 +433,9 @@ public:
     void unlock();
     bool islocked() const;
 
+    const std::string& getIdentifier() const;
+    void setIdentifier(std::string_view identifier);
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
     bool isDeserializing() const;
@@ -488,6 +492,7 @@ private:
 
     static const int processorNetworkVersion_;
 
+    std::string identifier_;
     unsigned int locked_ = 0;
     bool deserializing_ = false;
     int backgoundJobs_ = 0;
