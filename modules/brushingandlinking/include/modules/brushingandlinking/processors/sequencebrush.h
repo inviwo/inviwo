@@ -134,7 +134,7 @@ void SequenceBrush<T>::process() {
         brushed->push_back(sequence->at(i));
     }
 
-    for (auto&& [i, data] : std::views::zip(std::views::iota(0uz), *sequence)) {
+    for (auto&& [i, data] : std::views::zip(std::views::iota(std::uint32_t{0}), *sequence)) {
         if (brushed->size() >= minSize_.get()) break;
         if (indices.contains(i)) continue;
         brushed->push_back(sequence->at(i));
