@@ -54,11 +54,23 @@ LayerSource::LayerSource(InviwoApplication* app, const std::filesystem::path& fi
                       .set(PropertySemantics::Text)
                       .set(ReadOnly::Yes))
     , basis_("Basis", "Basis and offset")
-    , information_("Information", "Data information") {
+    , information_("Information", "Data information")
+    , options_{"options", "Options"}
+    , index_{"index", "index", util::ordinalOptCount<size_t>()} {
 
     DataSource<Layer, LayerOutport>::filePath.setDisplayName("Image File");
-    addProperties(dimensions_, basis_, information_);
+    options_.addProperties(index_);
+    addProperties(dimensions_, basis_, information_, options_);
     basis_.onChange([this]() { reload.setModified(); });
+    options_.onChange([this]() { reload.setModified(); });
+}
+
+void LayerSource::configureReader(DataReader& reader) {
+    if (index_.get().has_value()) {
+        if (!reader.setOption(reader::option::index, index_.get().value())) {
+            log::warn("Reader does not support the index option");
+        }
+    }
 }
 
 void LayerSource::dataLoaded(std::shared_ptr<Layer> data) {
