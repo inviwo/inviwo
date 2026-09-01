@@ -36,7 +36,7 @@ jobs:
         
         include:
           - system: windows
-            os: 'windows-2022'
+            os: 'windows-2025-vs2026'
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
@@ -49,7 +49,7 @@ jobs:
               fi
           
           - system: macos
-            os: 'macos-15'
+            os: 'macos-26'
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
