@@ -345,7 +345,6 @@ public:
     using BT = typename util::value_type<T>::type;
 
     explicit OrdinalOptPropertyWidgetQt(OrdinalOptProperty<T>* property);
-    virtual ~OrdinalOptPropertyWidgetQt() = default;
     virtual void updateFromProperty() override;
     virtual std::unique_ptr<QMenu> getContextMenu() override;
 

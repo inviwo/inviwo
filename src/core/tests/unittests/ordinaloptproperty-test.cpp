@@ -41,7 +41,7 @@
 namespace inviwo {
 
 TEST(OrdinalOptProperty, DefaultIsEmpty) {
-    OrdinalOptProperty<float> prop{"test", "test"};
+    const OrdinalOptProperty<float> prop{"test", "test"};
     EXPECT_FALSE(prop.hasValue());
     EXPECT_EQ(prop.get(), std::nullopt);
 }
@@ -55,8 +55,9 @@ TEST(OrdinalOptProperty, SetAndClear) {
 
     prop.set(3.0f);
     EXPECT_TRUE(prop.hasValue());
-    ASSERT_TRUE(prop.get().has_value());
-    EXPECT_EQ(*prop.get(), 3.0f);
+    const auto value = prop.get();
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(*value, 3.0f);
 
     prop.clear();
     EXPECT_FALSE(prop.hasValue());
@@ -82,8 +83,9 @@ TEST(OrdinalOptProperty, ClampsWhenEngaged) {
                                    {0.0f, ConstraintBehavior::Editable},
                                    {10.0f, ConstraintBehavior::Editable}};
     prop.set(20.0f);
-    ASSERT_TRUE(prop.get().has_value());
-    EXPECT_EQ(*prop.get(), 10.0f);
+    const auto value = prop.get();
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(*value, 10.0f);
 }
 
 TEST(OrdinalOptProperty, ComponentSetEngages) {
@@ -96,7 +98,9 @@ TEST(OrdinalOptProperty, ComponentSetEngages) {
 
     prop.set(5.0f, 0);
     ASSERT_TRUE(prop.hasValue());
-    EXPECT_EQ(prop.get()->x, 5.0f);
+    const auto value = prop.get();
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(value->x, 5.0f);
 }
 
 TEST(OrdinalOptProperty, Linking) {
@@ -113,8 +117,9 @@ TEST(OrdinalOptProperty, Linking) {
 
     src.set(4.0f);
     dst.set(static_cast<const Property*>(&src));
-    ASSERT_TRUE(dst.get().has_value());
-    EXPECT_EQ(*dst.get(), 4.0f);
+    const auto value = dst.get();
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(*value, 4.0f);
 
     src.clear();
     dst.set(static_cast<const Property*>(&src));
@@ -151,8 +156,9 @@ TEST(OrdinalOptProperty, SerializeCopyEngaged) {
     Deserializer d{xml};
     d.deserialize("Property", dst);
 
-    ASSERT_TRUE(dst.get().has_value());
-    EXPECT_EQ(*dst.get(), 7.0f);
+    const auto value = dst.get();
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(*value, 7.0f);
 }
 
 TEST(OrdinalOptProperty, SerializeCopyEmpty) {
