@@ -41,8 +41,10 @@
 #include <inviwo/core/util/glmmatext.h>
 #include <inviwo/core/util/docutils.h>
 
+#include <limits>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include <fmt/base.h>
@@ -275,6 +277,244 @@ private:
     ValueWrapper<ConstraintBehavior> minConstraint_;
     ValueWrapper<ConstraintBehavior> maxConstraint_;
 };
+
+namespace util {
+
+namespace detail {
+template <typename T>
+inline constexpr bool isOptional = false;
+template <typename T>
+inline constexpr bool isOptional<std::optional<T>> = true;
+}  // namespace detail
+
+/**
+ * A factory function for OrdinalOptProperties representing Colors, @see util::ordinalColor
+ * ```{.cpp}
+ * color{"cubeColor", "Cube Color", util::ordinalOptColor(0.11f, 0.42f, 0.63f)}
+ * ```
+ * Without arguments the property will start out empty, that is std::nullopt.
+ */
+IVW_CORE_API OrdinalOptPropertyState<vec4> ordinalOptColor(
+    float r, float g, float b, float a = 1.0f,
+    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+IVW_CORE_API OrdinalOptPropertyState<vec4> ordinalOptColor(
+    const vec4& value, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+IVW_CORE_API OrdinalOptPropertyState<vec3> ordinalOptColor(
+    const vec3& value, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+IVW_CORE_API OrdinalOptPropertyState<vec4> ordinalOptColor(
+    const std::optional<vec4>& value = std::nullopt,
+    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+IVW_CORE_API OrdinalOptPropertyState<vec3> ordinalOptColor(
+    const std::optional<vec3>& value,
+    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+
+IVW_CORE_API OrdinalOptPropertyState<vec3> ordinalOptLight(
+    const std::optional<vec3>& pos = std::nullopt, float min = -100.0, float max = 100.0,
+    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+
+/**
+ * A factory function for configuring a OrdinalOptProperty representing a generic vector, with a
+ * symmetric range around zero, and Ignored boundary constraints. The invalidation level defaults to
+ * InvalidOutput, and the property semantics to Default.
+ * @param value the default value for the property, std::nullopt means the property is empty
+ * @param minMax used to construct the range of the property like min = T{-minMax}, max = T{minMax}.
+ * The constraint behavior will be Ignore.
+ */
+template <typename T = double, typename U = T>
+OrdinalOptPropertyState<T> ordinalOptSymmetricVector(const std::optional<T>& value = std::nullopt,
+                                                     const U& minMax = U{100}) {
+    using V = util::value_type_t<T>;
+    if constexpr (std::is_floating_point_v<util::value_type_t<T>>) {
+        return {value,
+                T{-minMax},
+                ConstraintBehavior::Ignore,
+                T{minMax},
+                ConstraintBehavior::Ignore,
+                T{static_cast<V>(0.1)},
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::Default};
+    } else if constexpr (std::is_signed_v<util::value_type_t<T>>) {
+        return {value,
+                T{-minMax},
+                ConstraintBehavior::Ignore,
+                T{minMax},
+                ConstraintBehavior::Ignore,
+                T{static_cast<V>(1)},
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::Default};
+    } else {
+        return {value,
+                T{static_cast<V>(0)},
+                ConstraintBehavior::Ignore,
+                T{minMax},
+                ConstraintBehavior::Ignore,
+                T{static_cast<V>(1)},
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::Default};
+    }
+}
+/// @copydoc util::ordinalOptSymmetricVector
+template <typename T, typename U = T>
+    requires(!detail::isOptional<T>)
+OrdinalOptPropertyState<T> ordinalOptSymmetricVector(const T& value, const U& minMax = U{100}) {
+    return ordinalOptSymmetricVector(std::optional<T>{value}, minMax);
+}
+
+/**
+ * A factory function for configuring a OrdinalOptProperty representing a count. It will have a
+ * Immutable min at zero and an upper Ignored max. The increment will be one. The invalidation level
+ * defaults to InvalidOutput, and the property semantics to Default.
+ * @param value the default value for the property, std::nullopt means the property is empty
+ * @param max used to construct the max value. The max constraint behavior will be Ignore.
+ */
+template <typename T = size_t, typename U = T>
+OrdinalOptPropertyState<T> ordinalOptCount(const std::optional<T>& value = std::nullopt,
+                                           const U& max = U{100}) {
+    using V = util::value_type_t<T>;
+    return {value,
+            T{static_cast<V>(0)},
+            ConstraintBehavior::Immutable,
+            T{max},
+            ConstraintBehavior::Ignore,
+            T{static_cast<V>(1)},
+            InvalidationLevel::InvalidOutput,
+            PropertySemantics::Default};
+}
+/// @copydoc util::ordinalOptCount
+template <typename T, typename U = T>
+    requires(!detail::isOptional<T>)
+OrdinalOptPropertyState<T> ordinalOptCount(const T& value, const U& max = U{100}) {
+    return ordinalOptCount(std::optional<T>{value}, max);
+}
+
+/**
+ * A factory function for configuring a OrdinalOptProperty representing a length. It will have a
+ * Immutable min at zero and an upper Ignored max. The invalidation level defaults to InvalidOutput,
+ * and the property semantics to Default.
+ * @param value the default value for the property, std::nullopt means the property is empty
+ * @param max used to construct the max value. The max constraint behavior will be Ignore.
+ */
+template <typename T = double, typename U = T>
+OrdinalOptPropertyState<T> ordinalOptLength(const std::optional<T>& value = std::nullopt,
+                                            const U& max = U{100}) {
+    using V = util::value_type_t<T>;
+    return {value,
+            T{static_cast<V>(0.0)},
+            ConstraintBehavior::Immutable,
+            T(max),
+            ConstraintBehavior::Ignore,
+            T{static_cast<V>(0.1)},
+            InvalidationLevel::InvalidOutput,
+            PropertySemantics::Default};
+}
+/// @copydoc util::ordinalOptLength
+template <typename T, typename U = T>
+    requires(!detail::isOptional<T>)
+OrdinalOptPropertyState<T> ordinalOptLength(const T& value, const U& max = U{100}) {
+    return ordinalOptLength(std::optional<T>{value}, max);
+}
+
+/**
+ * A factory function for configuring a OrdinalOptProperty representing a scale factor. It will have
+ * a Immutable min at epsilon and an upper Ignored max. The invalidation level default to
+ * InvalidOutput, and the property semantics to Default.
+ * @param value the default value for the property, std::nullopt means the property is empty
+ * @param max used to construct the max value. The max constraint behavior will be Ignore.
+ */
+template <typename T = double, typename U = T>
+OrdinalOptPropertyState<T> ordinalOptScale(const std::optional<T>& value = std::nullopt,
+                                           const U& max = U{100}) {
+    using V = util::value_type_t<T>;
+    return {value,
+            T{static_cast<V>(100) * std::numeric_limits<V>::epsilon()},
+            ConstraintBehavior::Immutable,
+            T{max},
+            ConstraintBehavior::Ignore,
+            T{max / static_cast<U>(256)},
+            InvalidationLevel::InvalidOutput,
+            PropertySemantics::Default};
+}
+/// @copydoc util::ordinalOptScale
+template <typename T, typename U = T>
+    requires(!detail::isOptional<T>)
+OrdinalOptPropertyState<T> ordinalOptScale(const T& value, const U& max = U{100}) {
+    return ordinalOptScale(std::optional<T>{value}, max);
+}
+
+/**
+ * A factory function for configuring a OrdinalOptProperty representing a generic matrix initialized
+ * with @p value, with a symmetric range around zero, and Ignored boundary constraints.
+ * The invalidation level defaults to InvalidOutput, and the property semantics to Default.
+ * @param value the default value for the property, std::nullopt means the property is empty
+ * @param minMax used to construct the range of the property like min = util::filled<M>(-minMax),
+ * max = util::filled<M>(minMax). The constraint behavior will be Ignore.
+ */
+template <typename M, typename U = typename M::value_type>
+    requires(util::rank_v<M> > 1)
+OrdinalOptPropertyState<M> ordinalOptMatrix(const std::optional<M>& value = std::nullopt,
+                                            const U& minMax = U{100}) {
+    using V = util::value_type_t<M>;
+    if constexpr (std::is_floating_point_v<util::value_type_t<V>>) {
+        return {value,
+                M{V{0}} - minMax,
+                ConstraintBehavior::Ignore,
+                M{V{0}} + minMax,
+                ConstraintBehavior::Ignore,
+                M{V{0}} + static_cast<V>(0.1),
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::Default};
+    } else if constexpr (std::is_signed_v<util::value_type_t<V>>) {
+        return {value,
+                M{V{0}} - minMax,
+                ConstraintBehavior::Ignore,
+                M{V{0}} + minMax,
+                ConstraintBehavior::Ignore,
+                M{V{0}} + static_cast<V>(1),
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::Default};
+    } else {
+        return {value,
+                M{V{0}},
+                ConstraintBehavior::Ignore,
+                M{minMax},
+                ConstraintBehavior::Ignore,
+                M{V{0}} + static_cast<V>(1),
+                InvalidationLevel::InvalidOutput,
+                PropertySemantics::Default};
+    }
+}
+/// @copydoc util::ordinalOptMatrix
+template <typename M, typename U = typename M::value_type>
+    requires(util::rank_v<M> > 1)
+OrdinalOptPropertyState<M> ordinalOptMatrix(const M& value, const U& minMax = U{100}) {
+    return ordinalOptMatrix<M>(std::optional<M>{value}, minMax);
+}
+
+/**
+ * A factory function for configuring a OrdinalOptProperty representing a generic matrix filled with
+ * the given value @p value, with a symmetric range around zero, and Ignored boundary constraints.
+ * The invalidation level defaults to InvalidOutput, and the property semantics to Default.
+ * @param value the default value for the property, std::nullopt means the property is empty
+ * @param minMax used to construct the range of the property like min = util::filled<M>(-minMax),
+ * max = util::filled<M>(minMax). The constraint behavior will be Ignore.
+ */
+template <typename M, typename T = typename M::value_type, typename U = T>
+    requires(util::rank_v<M> > 1)
+OrdinalOptPropertyState<M> ordinalOptFilledMatrix(const std::optional<T>& value = std::nullopt,
+                                                  const U& minMax = U{100}) {
+    using V = util::value_type_t<M>;
+    const std::optional<M> matrix =
+        value ? std::optional<M>{M{V{0}} + static_cast<V>(*value)} : std::nullopt;
+    return ordinalOptMatrix<M>(matrix, minMax);
+}
+/// @copydoc util::ordinalOptFilledMatrix
+template <typename M, typename T, typename U = T>
+    requires(util::rank_v<M> > 1 && !detail::isOptional<T>)
+OrdinalOptPropertyState<M> ordinalOptFilledMatrix(const T& value, const U& minMax = U{100}) {
+    return ordinalOptFilledMatrix<M>(std::optional<T>{value}, minMax);
+}
+
+}  // namespace util
 
 template <typename T>
 struct PropertyTraits<OrdinalOptProperty<T>> {
