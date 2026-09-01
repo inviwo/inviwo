@@ -153,7 +153,7 @@ TEST(SerialitionContainerTest, IndexFunctions) {
                              deserializer::IndexFunctions{
                                  .makeNew = []() { return 0; },
                                  .onNew = [&](int&, size_t) {},
-                                 .onRemove = [](int&) {},
+                                 .onRemove = [](int&, size_t) {},
                              });
 
     ASSERT_EQ(5, vector.size());

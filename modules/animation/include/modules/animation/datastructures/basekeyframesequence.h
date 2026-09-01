@@ -329,16 +329,15 @@ void BaseKeyframeSequence<Key>::deserialize(Deserializer& d) {
     }
 
     d.deserialize("keyframes", keyframes_, "keyframe",
-                  deserializer::IndexFunctions{.makeNew = []() { return std::unique_ptr<Key>{}; },
-                                               .onNew =
-                                                   [&](std::unique_ptr<Key>& key, size_t) {
-                                                       notifyKeyframeAdded(key.get(), this);
-                                                       key->addObserver(this);
-                                                   },
-                                               .onRemove =
-                                                   [&](std::unique_ptr<Key>& key) {
-                                                       notifyKeyframeRemoved(key.get(), this);
-                                                   }});
+                  deserializer::IndexFunctions{
+                      .makeNew = []() { return std::unique_ptr<Key>{}; },
+                      .onNew =
+                          [&](std::unique_ptr<Key>& key, size_t) {
+                              notifyKeyframeAdded(key.get(), this);
+                              key->addObserver(this);
+                          },
+                      .onRemove = [&](std::unique_ptr<Key>& key,
+                                      size_t) { notifyKeyframeRemoved(key.get(), this); }});
 }
 
 #endif

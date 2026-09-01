@@ -424,7 +424,7 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
                               notifyTFPrimitiveAdded(*this, *p);
                           },
                       .onRemove =
-                          [&](std::unique_ptr<TFPrimitive>& p) {
+                          [&](std::unique_ptr<TFPrimitive>& p, size_t) {
                               std::erase(sorted_, p.get());
                               notifyTFPrimitiveRemoved(*this, *p);
                           }});

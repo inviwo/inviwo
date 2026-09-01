@@ -86,7 +86,7 @@ WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManage
                           .onNew = [&](std::unique_ptr<Animation>&,
                                        size_t) { addInternal(--animations_.end()); },
                           .onRemove =
-                              [&](std::unique_ptr<Animation>& anim) {
+                              [&](std::unique_ptr<Animation>& anim, size_t) {
                                   // Previously last element was removed
                                   onChanged_.invoke(size(), *anim);
                               }});
