@@ -33,6 +33,7 @@
 
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/ports/layerport.h>
+#include <inviwo/core/properties/ordinaloptproperty.h>
 
 #include <modules/base/processors/sequencesource.h>
 #include <modules/base/properties/basisproperty.h>
@@ -52,19 +53,41 @@ struct LayerConf {
     struct Info {
         BasisProperty basis{"Basis", "Basis and offset"};
         LayerInformationProperty info{"Information", "Data information"};
+        CompositeProperty options{"options", "Options"};
+        OrdinalOptProperty<size_t> index{"index", "index", util::ordinalOptCount<size_t>()};
+        OrdinalOptProperty<size_t> count{"count", "count",
+                                         util::ordinalOptCount<size_t>().setMin(1)};
+        OrdinalOptProperty<size_t> stride{"stride", "stride",
+                                          util::ordinalOptCount<size_t>().setMin(1uz)};
     };
     static void add(Info& info, auto& processor) {
-        processor.addProperties(info.basis, info.info);
+        processor.addProperties(info.basis, info.info, info.options);
         // It does not make sense to change these for an entire sequence
         info.basis.setReadOnly(true);
         info.info.setReadOnly(true);
+
+        info.options.addProperties(info.index, info.count, info.stride);
     }
     static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {
         info.info.updateForNewLayer(data, overwrite);
         info.basis.updateForNewEntity(data, overwrite == util::OverwriteState::Yes);
     }
-    static auto getReaderConfig(Info&) -> std::function<void(DataReader&)> {
-        return [](DataReader&) {};
+    static auto getReaderConfig(Info& info) -> std::function<void(DataReader&)> {
+        return [index = info.index.get(), count = info.count.get(),
+                stride = info.stride.get()](DataReader& reader) {
+            for (auto&& [option, value] :
+                 std::to_array<std::pair<std::string_view, std::optional<size_t>>>(
+                     {{reader::option::index, index},
+                      {reader::option::count, count},
+                      {reader::option::count, stride}})) {
+
+                if (value) {
+                    if (!reader.setOption(option, value.value())) {
+                        log::warn("Reader does not support the {} option", option);
+                    }
+                }
+            }
+        };
     }
 };
 }  // namespace detail

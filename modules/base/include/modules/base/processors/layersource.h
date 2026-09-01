@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinaloptproperty.h>
 #include <modules/base/processors/datasource.h>
 #include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/layerinformationproperty.h>
@@ -56,10 +57,15 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void configureReader(DataReader&) override;
+
 private:
     IntVec2Property dimensions_;
     BasisProperty basis_;
     LayerInformationProperty information_;
+
+    CompositeProperty options_;
+    OrdinalOptProperty<size_t> index_;
 };
 
 }  // namespace inviwo
