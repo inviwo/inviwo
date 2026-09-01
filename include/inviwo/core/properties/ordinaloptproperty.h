@@ -157,12 +157,14 @@ public:
                        OrdinalOptPropertyState<T> state);
 
     OrdinalOptProperty(const OrdinalOptProperty<T>& rhs) = default;
+    OrdinalOptProperty(OrdinalOptProperty<T>&& rhs) = default;
+    OrdinalOptProperty<T>& operator=(const OrdinalOptProperty<T>& that) = delete;
+    OrdinalOptProperty<T>& operator=(OrdinalOptProperty<T>&& that) = delete;
     OrdinalOptProperty<T>& operator=(const std::optional<T>& value);
     OrdinalOptProperty<T>& operator=(const T& value);
     virtual OrdinalOptProperty<T>* clone() const override;
     virtual ~OrdinalOptProperty();
 
-    operator std::optional<T>() const;
     explicit operator bool() const;
 
     /**
@@ -225,15 +227,15 @@ public:
     virtual std::string_view getClassIdentifier() const override;
 
     const T& getMinValue() const;
-    void setMinValue(const T& value);
+    void setMinValue(const T& newMinValue);
     ConstraintBehavior getMinConstraintBehaviour() const;
 
     const T& getMaxValue() const;
-    void setMaxValue(const T& value);
+    void setMaxValue(const T& newMaxValue);
     ConstraintBehavior getMaxConstraintBehaviour() const;
 
     const T& getIncrement() const;
-    void setIncrement(const T& value);
+    void setIncrement(const T& newInc);
 
     void set(const OrdinalOptProperty* srcProperty);
     virtual void set(const Property* src) override;
@@ -598,11 +600,6 @@ OrdinalOptProperty<T>::~OrdinalOptProperty() = default;
 template <typename T>
 std::string_view OrdinalOptProperty<T>::getClassIdentifier() const {
     return PropertyTraits<OrdinalOptProperty<T>>::classIdentifier();
-}
-
-template <typename T>
-OrdinalOptProperty<T>::operator std::optional<T>() const {
-    return value_;
 }
 
 template <typename T>

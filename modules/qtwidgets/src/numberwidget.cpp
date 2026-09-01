@@ -356,10 +356,11 @@ void BaseNumberWidget::changeEvent(QEvent* event) {
 }
 
 void BaseNumberWidget::updateText() {
-    const QString str =
-        (clearable_ && isEmpty())
-            ? QString{}
-            : ((isReadOnly() || !isEnabled()) ? getPrefixedText() : getTextFromValue(true));
+    const QString str = [this]() {
+        if (clearable_ && isEmpty()) return QString{};
+        if (isReadOnly() || !isEnabled()) return getPrefixedText();
+        return getTextFromValue(true);
+    }();
     if (str != text()) {
         setText(str);
     }
