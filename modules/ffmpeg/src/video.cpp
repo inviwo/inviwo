@@ -269,6 +269,15 @@ std::shared_ptr<Layer> Video::toLayer(std::shared_ptr<Layer> reuse) {
                                        swizzlemasks::defaultColor(info_.format->getComponents()));
     }();
 
+    // Preserve the aspect ratio of the video, normalizing the larger dimension to 1
+    glm::dmat3 basis{1.0};
+    if (info_.dimensions.x < info_.dimensions.y) {
+        basis[0][0] = static_cast<double>(info_.dimensions.x) / static_cast<double>(info_.dimensions.y);
+    } else {
+        basis[1][1] = static_cast<double>(info_.dimensions.y) / static_cast<double>(info_.dimensions.x);
+    }
+    layer->setBasis(basis);
+
     auto* ram = layer->getEditableRepresentation<LayerRAM>();
     auto* data = static_cast<uint8_t*>(ram->getData());
 
