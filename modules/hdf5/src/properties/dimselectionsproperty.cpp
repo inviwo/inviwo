@@ -91,12 +91,4 @@ std::vector<Selection> DimSelectionsProperty::getSelection() const {
     return selection;
 }
 
-std::vector<Selection> DimSelectionsProperty::getMaxSelection() const {
-    std::vector<Selection> selection;
-    for (size_t i = maxRank_ - rank_; i < maxRank_; ++i) {
-        selection.push_back(selection_[i]->getMaxSelection());
-    }
-    return selection;
-}
-
 }  // namespace inviwo::hdf5

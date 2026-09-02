@@ -63,7 +63,7 @@ public:
     virtual ~DimSelectionProperty() = default;
 
     /**
-     * Adapt the property ranges to a dimension of size @p dimSize and clamp the current values.
+     * Adapt the start and count max values to @p dimSize.
      */
     void update(size_t dimSize);
 
@@ -72,17 +72,9 @@ public:
      */
     [[nodiscard]] Selection getSelection() const;
 
-    /**
-     * The maximal selection covering the whole dimension, i.e. `{0, dimSize, 1}`.
-     */
-    [[nodiscard]] Selection getMaxSelection() const;
-
-    IntSizeTProperty start_;
-    IntSizeTProperty count_;
-    IntSizeTProperty stride_;
-
-private:
-    size_t dimSize_ = 0;
+    IntSizeTProperty start;
+    IntSizeTProperty count;
+    IntSizeTProperty stride;
 };
 
 }  // namespace inviwo::hdf5

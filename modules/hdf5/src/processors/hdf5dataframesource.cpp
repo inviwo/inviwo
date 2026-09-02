@@ -45,7 +45,7 @@ const ProcessorInfo HDF5ToDataFrame::processorInfo_{
     "org.inviwo.hdf5.ToDataFrame",               // Class identifier
     "HDF5 To DataFrame",                         // Display name
     "Data Input",                                // Category
-    CodeState::Stable,                           // Code state
+    CodeState::Experimental,                     // Code state
     Tags::CPU | Tag{"HDF5"} | Tag{"DataFrame"},  // Tags
     "Load a DataFrame from an HDF5 file handle. "
     "Each enabled 1-D dataset becomes one column."_help,
@@ -53,68 +53,98 @@ const ProcessorInfo HDF5ToDataFrame::processorInfo_{
 const ProcessorInfo& HDF5ToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 HDF5ToDataFrame::HDF5ToDataFrame()
-    : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , automaticEvaluation_("automaticEvaluation", "Automatic loading", true,
-                           InvalidationLevel::Valid)
-    , evaluate_("evaluate", "Load")
-    , columns_("columns", "Columns")
-    , dirty_(false) {
+    : Processor(), inport_("inport"), outport_("outport"), columns_("columns", "Columns") {
 
     addPort(inport_);
     addPort(outport_);
 
-    inport_.onChange([this]() { onDataChange(); });
-
-    automaticEvaluation_.onChange([this]() { evaluate_.setReadOnly(automaticEvaluation_); });
-    evaluate_.onChange([this]() { dirty_ = true; });
-
     columns_.setCollapsed(false);
-    columns_.onChange([this]() {
-        if (automaticEvaluation_) {
-            dirty_ = true;
-            this->invalidate(InvalidationLevel::InvalidOutput);
-        }
-    });
 
-    addProperties(automaticEvaluation_, evaluate_, columns_);
+    addProperties(columns_);
 }
 
 HDF5ToDataFrame::~HDF5ToDataFrame() = default;
 
 void HDF5ToDataFrame::process() try {
-    if (dirty_) {
-        dirty_ = false;
-        makeDataFrame();
-        deserialized_ = false;
+    const auto data = inport_.getData();
+
+    if (inport_.isChanged()) {
+        const auto metadata = util::getDataSets(*data);
+        dataMatches_.assign_range(metadata | std::views::filter([](const DataSetInfo& meta) {
+                                      return meta.dimensions.size() == 1ull &&
+                                             meta.dimensions[0] > 0ull;
+                                  }));
+
+        rebuildColumnProperties();
     }
-    if (dataFrame_) {
-        outport_.setData(dataFrame_);
+
+    if (dataMatches_.empty()) return;
+
+    // Collect the enabled datasets.
+    std::vector<size_t> enabledIndices;
+    for (size_t i = 0; i < columnProps_.size(); ++i) {
+        if (columnProps_[i]->get()) {
+            enabledIndices.push_back(i);
+        }
     }
+
+    if (enabledIndices.empty()) return;
+
+    // Verify all enabled datasets have the same number of elements.
+    const size_t expectedRows = dataMatches_[enabledIndices[0]].dimensions[0];
+
+    for (const size_t idx : enabledIndices) {
+        const size_t rows = dataMatches_[idx].dimensions[0];
+        if (rows != expectedRows) {
+            throw Exception(SourceContext{},
+                            "Cannot create DataFrame: dataset '{}' has {} rows but '{}' has {}",
+                            dataMatches_[enabledIndices[0]].path.toString(), expectedRows,
+                            dataMatches_[idx].path.toString(), rows);
+        }
+    }
+
+    auto df = std::make_shared<DataFrame>();
+
+    for (const size_t idx : enabledIndices) {
+        const DataSetInfo& meta = dataMatches_[idx];
+        const size_t rows = meta.dimensions[0];
+
+        // Build a full-range selection for this 1-D dataset.
+        const std::vector<Selection> selection{{0, rows, 1}};
+
+        auto buffer = getBufferAtPathAsType(*data + meta.path, selection, nullptr);
+
+        // Use the last path component as column header.
+        const std::string pathStr = meta.path.toString();
+        const auto slash = pathStr.rfind('/');
+        const std::string header =
+            (slash != std::string::npos) ? pathStr.substr(slash + 1) : pathStr;
+
+        // Read unit from HDF5 attribute if present.
+        Unit unit{};
+        try {
+            auto dataset = data->getGroup().openDataSet(meta.path);
+            if (dataset.attrExists("units")) {
+                const auto attr = dataset.openAttribute("units");
+                if (attr.getDataType().getClass() == H5T_STRING) {
+                    std::string unitStr;
+                    attr.read(attr.getStrType(), unitStr);
+                    unit = units::unit_from_string(unitStr);
+                }
+            }
+        } catch (...) {
+            // Attribute reading is best-effort; ignore failures.
+        }
+
+        df->addColumnFromBuffer(header, buffer, unit);
+    }
+
+    df->updateIndexBuffer();
+
+    outport_.setData(df);
+
 } catch (H5::Exception& e) {
     throw Exception(SourceContext{}, "Error reading HDF5 data: {}", e.getDetailMsg());
-}
-
-void HDF5ToDataFrame::onDataChange() {
-    if (inport_.hasData()) {
-        const auto data = inport_.getData();
-        const std::vector<DataSetInfo> metadata = util::getDataSets(*data);
-
-        dataMatches_.clear();
-        std::ranges::copy_if(metadata, std::back_inserter(dataMatches_),
-                             [](const DataSetInfo& meta) {
-                                 const auto dims = meta.getColumnMajorDimensions();
-                                 return dims.size() == 1ull && dims[0] > 0ull;
-                             });
-
-        rebuildColumnProperties();
-    } else {
-        dataMatches_.clear();
-        rebuildColumnProperties();
-    }
-
-    dirty_ = true;
 }
 
 void HDF5ToDataFrame::rebuildColumnProperties() {
@@ -139,83 +169,6 @@ void HDF5ToDataFrame::rebuildColumnProperties() {
     }
 
     columns_.setCurrentStateAsDefault();
-}
-
-void HDF5ToDataFrame::makeDataFrame() {
-    if (!inport_.hasData() || dataMatches_.empty()) return;
-
-    const auto data = inport_.getData();
-
-    // Collect the enabled datasets.
-    std::vector<size_t> enabledIndices;
-    for (size_t i = 0; i < columnProps_.size(); ++i) {
-        if (columnProps_[i]->get()) {
-            enabledIndices.push_back(i);
-        }
-    }
-
-    if (enabledIndices.empty()) {
-        dataFrame_ = std::make_shared<DataFrame>();
-        return;
-    }
-
-    // Verify all enabled datasets have the same number of elements.
-    const size_t expectedRows = dataMatches_[enabledIndices[0]].getColumnMajorDimensions()[0];
-
-    for (const size_t idx : enabledIndices) {
-        const size_t rows = dataMatches_[idx].getColumnMajorDimensions()[0];
-        if (rows != expectedRows) {
-            throw Exception(SourceContext{},
-                            "Cannot create DataFrame: dataset '{}' has {} rows but '{}' has {}",
-                            dataMatches_[enabledIndices[0]].path_.toString(), expectedRows,
-                            dataMatches_[idx].path_.toString(), rows);
-        }
-    }
-
-    auto df = std::make_shared<DataFrame>();
-
-    for (const size_t idx : enabledIndices) {
-        const DataSetInfo& meta = dataMatches_[idx];
-        const size_t rows = meta.getColumnMajorDimensions()[0];
-
-        // Build a full-range selection for this 1-D dataset.
-        const std::vector<Selection> selection{{0, rows, 1}};
-
-        auto buffer = getBufferAtPathAsType(*data + meta.path_, selection, nullptr);
-
-        // Use the last path component as column header.
-        const std::string pathStr = meta.path_.toString();
-        const auto slash = pathStr.rfind('/');
-        const std::string header =
-            (slash != std::string::npos) ? pathStr.substr(slash + 1) : pathStr;
-
-        // Read unit from HDF5 attribute if present.
-        Unit unit{};
-        try {
-            auto dataset = data->getGroup().openDataSet(meta.path_);
-            if (dataset.attrExists("units")) {
-                const auto attr = dataset.openAttribute("units");
-                if (attr.getDataType().getClass() == H5T_STRING) {
-                    std::string unitStr;
-                    attr.read(attr.getStrType(), unitStr);
-                    unit = units::unit_from_string(unitStr);
-                }
-            }
-        } catch (...) {
-            // Attribute reading is best-effort; ignore failures.
-        }
-
-        df->addColumnFromBuffer(header, buffer, unit);
-    }
-
-    df->updateIndexBuffer();
-    dataFrame_ = std::move(df);
-}
-
-void HDF5ToDataFrame::deserialize(Deserializer& d) {
-    Processor::deserialize(d);
-    deserialized_ = true;
-    dirty_ = true;
 }
 
 }  // namespace inviwo::hdf5

@@ -54,100 +54,55 @@ HDF5ToBuffer::HDF5ToBuffer()
     , inport_("inport")
     , outport_("outport")
     , bufferSelection_("bufferSelection", "Dataset")
-    , automaticEvaluation_("automaticEvaluation", "Automatic loading", true,
-                           InvalidationLevel::Valid)
-    , evaluate_("evaluate", "Load")
-    , outputGroup_("outputGroup", "Operations", InvalidationLevel::Valid)
+    , outputGroup_("outputGroup", "Operations")
     , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
-    , selection_("selection", "Selection", 4)
-    , dirty_(false) {
+    , selection_("selection", "Selection", 4) {
 
     addPort(inport_);
     addPort(outport_);
-    inport_.onChange([this]() { onDataChange(); });
 
     bufferSelection_.onChange([this]() { onSelectionChange(); });
     bufferSelection_.setSerializationMode(PropertySerializationMode::All);
 
-    automaticEvaluation_.onChange([this]() { evaluate_.setReadOnly(automaticEvaluation_); });
-
-    evaluate_.onChange([this]() { dirty_ = true; });
-
     outputGroup_.addProperties(datatype_, selection_);
-    outputGroup_.onChange([this]() {
-        if (automaticEvaluation_) {
-            dirty_ = true;
-            this->invalidate(InvalidationLevel::InvalidOutput);
-        }
-    });
-
-    addProperties(bufferSelection_, automaticEvaluation_, evaluate_, outputGroup_);
+    addProperties(bufferSelection_, outputGroup_);
 }
 
 HDF5ToBuffer::~HDF5ToBuffer() = default;
 
 void HDF5ToBuffer::process() try {
-    if (dirty_) {
-        dirty_ = false;
-        makeBuffer();
-        deserialized_ = false;
+    const auto data = inport_.getData();
+
+    if (inport_.isChanged()) {
+        bufferMatches_ = util::getDataSets(*data);
+
+        std::vector<OptionPropertyStringOption> bufferOptions;
+        for (const auto& info : bufferMatches_) {
+            bufferOptions.emplace_back(info.path.toString(), util::dataSetDescription(info),
+                                       info.path.toString());
+        }
+        bufferSelection_.replaceOptions(bufferOptions);
+        bufferSelection_.setCurrentStateAsDefault();
     }
 
-    if (buffer_) {
-        outport_.setData(buffer_);
-    }
+    onSelectionChange();
+
+    const DataSetInfo bufferMeta = bufferMatches_[bufferSelection_.getSelectedIndex()];
+
+    auto buffer = getBufferAtPathAsType(*data + bufferMeta.path, selection_.getSelection(),
+                                        util::conversionFormat(datatype_.getSelectedIndex()));
+
+    outport_.setData(buffer);
+
 } catch (H5::Exception& e) {
     throw Exception(SourceContext{}, "Error reading HDF5 data: {}", e.getDetailMsg());
 }
 
-void HDF5ToBuffer::onDataChange() {
-    if (inport_.hasData()) {
-        const auto data = inport_.getData();
-        std::vector<DataSetInfo> metadata = util::getDataSets(*data);
-
-        bufferMatches_.clear();
-        std::ranges::copy_if(
-            metadata, std::back_inserter(bufferMatches_), [](const DataSetInfo& meta) {
-                auto dims = meta.getColumnMajorDimensions();
-                return !dims.empty() &&
-                       std::ranges::fold_left(dims, size_t{1}, std::multiplies{}) > 0ull;
-            });
-
-        std::vector<OptionPropertyStringOption> bufferOptions;
-        for (const auto& meta : bufferMatches_) {
-            const auto path = meta.path_.toString();
-            bufferOptions.emplace_back(path, util::dataSetDescription(meta), path);
-        }
-        bufferSelection_.replaceOptions(bufferOptions);
-        bufferSelection_.setCurrentStateAsDefault();
-    } else {
-        bufferSelection_.clearOptions();
-    }
-
-    onSelectionChange();
-}
-
 void HDF5ToBuffer::onSelectionChange() {
-    dirty_ = true;
     if (!bufferMatches_.empty()) {
         const DataSetInfo bufferMeta = bufferMatches_[bufferSelection_.getSelectedIndex()];
         selection_.update(bufferMeta);
     }
-}
-
-void HDF5ToBuffer::makeBuffer() {
-    if (inport_.hasData()) {
-        const auto data = inport_.getData();
-        const DataSetInfo bufferMeta = bufferMatches_[bufferSelection_.getSelectedIndex()];
-
-        buffer_ = getBufferAtPathAsType(*data + bufferMeta.path_, selection_.getSelection(),
-                                        util::conversionFormat(datatype_.getSelectedIndex()));
-    }
-}
-
-void HDF5ToBuffer::deserialize(Deserializer& d) {
-    Processor::deserialize(d);
-    deserialized_ = true;
 }
 
 }  // namespace inviwo::hdf5

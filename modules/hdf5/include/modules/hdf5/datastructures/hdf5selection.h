@@ -29,17 +29,32 @@
 
 #pragma once
 
+#include <modules/hdf5/hdf5moduledefine.h>
+
 #include <cstddef>
+#include <algorithm>
 
 namespace inviwo::hdf5 {
 
 /**
  * A hyperslab selection along all dimensions of an HDF5 dataset.
  */
-struct Selection {
+struct IVW_MODULE_HDF5_API Selection {
     size_t start{0};
     size_t count{0};
     size_t stride{1};
 };
+
+inline constexpr Selection clamp(const Selection& selection, size_t size) {
+    if (size == 0) return {.start = 0uz, .count = 0uz, .stride = 1uz};
+
+    const auto start = std::min(selection.start, size - 1uz);
+    const auto stride = std::max(1uz, selection.stride);
+
+    const auto maxCount = ((size - 1 - start) / stride) + 1uz;
+    const auto count = selection.count == 0 ? maxCount : std::min(selection.count, maxCount);
+
+    return Selection{.start = start, .count = count, .stride = stride};
+}
 
 }  // namespace inviwo::hdf5

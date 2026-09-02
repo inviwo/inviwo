@@ -42,26 +42,22 @@ DimSelectionProperty::DimSelectionProperty(std::string_view identifier,
                                            std::string_view displayName,
                                            InvalidationLevel invalidationLevel)
     : CompositeProperty(identifier, displayName, invalidationLevel)
-    , start_("start", "Start", "First element to read along this dimension"_help, size_t{0},
-             {size_t{0}, ConstraintBehavior::Immutable}, {size_t{255}, ConstraintBehavior::Mutable})
-    , count_("count", "Count", "Number of elements to read, 0 selects all remaining elements"_help,
-             size_t{0}, {size_t{0}, ConstraintBehavior::Immutable},
-             {size_t{255}, ConstraintBehavior::Mutable})
-    , stride_("stride", "Stride", "Step between selected elements"_help, size_t{1},
-              {size_t{1}, ConstraintBehavior::Immutable},
-              {size_t{255}, ConstraintBehavior::Mutable}) {
+    , start("start", "Start", "First element to read along this dimension"_help, size_t{0},
+            {size_t{0}, ConstraintBehavior::Immutable}, {size_t{255}, ConstraintBehavior::Mutable})
+    , count("count", "Count", "Number of elements to read, 0 selects all remaining elements"_help,
+            size_t{0}, {size_t{0}, ConstraintBehavior::Immutable},
+            {size_t{255}, ConstraintBehavior::Mutable})
+    , stride("stride", "Stride", "Step between selected elements"_help, size_t{1},
+             {size_t{1}, ConstraintBehavior::Immutable},
+             {size_t{64}, ConstraintBehavior::Mutable}) {
 
-    addProperties(start_, count_, stride_);
+    addProperties(start, count, stride);
 }
 
 DimSelectionProperty::DimSelectionProperty(const DimSelectionProperty& rhs)
-    : CompositeProperty(rhs)
-    , start_(rhs.start_)
-    , count_(rhs.count_)
-    , stride_(rhs.stride_)
-    , dimSize_(rhs.dimSize_) {
+    : CompositeProperty(rhs), start(rhs.start), count(rhs.count), stride(rhs.stride) {
 
-    addProperties(start_, count_, stride_);
+    addProperties(start, count, stride);
 }
 
 DimSelectionProperty* DimSelectionProperty::clone() const {
@@ -69,19 +65,13 @@ DimSelectionProperty* DimSelectionProperty::clone() const {
 }
 
 void DimSelectionProperty::update(size_t dimSize) {
-    dimSize_ = dimSize;
     const size_t maxValue = std::max<size_t>(dimSize, 1);
-    start_.setMaxValue(maxValue);
-    count_.setMaxValue(maxValue);
-    stride_.setMaxValue(maxValue);
+    start.setMaxValue(maxValue);
+    count.setMaxValue(maxValue);
 }
 
 Selection DimSelectionProperty::getSelection() const {
-    return Selection{.start = std::min(start_.get(), dimSize_),
-                     .count = count_.get(),
-                     .stride = std::max(stride_.get(), 1uz)};
+    return Selection{.start = start.get(), .count = count.get(), .stride = stride.get()};
 }
-
-Selection DimSelectionProperty::getMaxSelection() const { return Selection{0, dimSize_, 1}; }
 
 }  // namespace inviwo::hdf5

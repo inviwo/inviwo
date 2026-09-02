@@ -65,8 +65,6 @@ protected:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    void makeLayer();
-    void onDataChange();
     void onSelectionChange();
 
     std::vector<DataSetInfo> layerMatches_;

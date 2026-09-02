@@ -56,7 +56,7 @@ HDF5ToLayer::HDF5ToLayer()
     , layerSelection_("layerSelection", "Layer")
     , automaticEvaluation_("automaticEvaluation", "Automatic loading", true,
                            InvalidationLevel::Valid)
-    , evaluate_("evaluate", "Load")
+    , evaluate_("evaluate", "Load", [this]() { dirty_ = true; })
     , information_("Information", "Data information")
     , outputGroup_("outputGroup", "Operations", InvalidationLevel::Valid)
     , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
@@ -65,14 +65,11 @@ HDF5ToLayer::HDF5ToLayer()
 
     addPort(inport_);
     addPort(outport_);
-    inport_.onChange([this]() { onDataChange(); });
 
     layerSelection_.onChange([this]() { onSelectionChange(); });
     layerSelection_.setSerializationMode(PropertySerializationMode::All);
 
     automaticEvaluation_.onChange([this]() { evaluate_.setReadOnly(automaticEvaluation_); });
-
-    evaluate_.onChange([this]() { dirty_ = true; });
 
     outputGroup_.addProperties(datatype_, selection_);
     outputGroup_.onChange([this]() {
@@ -88,64 +85,52 @@ HDF5ToLayer::HDF5ToLayer()
 HDF5ToLayer::~HDF5ToLayer() = default;
 
 void HDF5ToLayer::process() try {
+    const auto data = inport_.getData();
+    if (inport_.isChanged()) {
+
+        std::vector<DataSetInfo> metadata = util::getDataSets(*data);
+        layerMatches_.assign_range(metadata | std::views::filter([](const DataSetInfo& info) {
+                                       return info.dimensions.size() >= 2ull &&
+                                              std::ranges::fold_left(info.dimensions, size_t{1},
+                                                                     std::multiplies{}) > 100ull;
+                                   }));
+
+        std::vector<OptionPropertyStringOption> layerOptions;
+        for (const auto& info : layerMatches_) {
+            layerOptions.emplace_back(info.path.toString(), util::dataSetDescription(info),
+                                      info.path.toString());
+        }
+        layerSelection_.replaceOptions(layerOptions);
+        layerSelection_.setCurrentStateAsDefault();
+    }
+
+    onSelectionChange();
+
     if (dirty_) {
         dirty_ = false;
-        makeLayer();
+        const DataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
+
+        layer_ = getLayerAtPathAsType(*data + layerMeta.path, selection_.getSelection(),
+                                      util::conversionFormat(datatype_.getSelectedIndex()));
+        information_.updateForNewLayer(*layer_, deserialized_ ? inviwo::util::OverwriteState::Yes
+                                                              : inviwo::util::OverwriteState::No);
         deserialized_ = false;
     }
 
     if (layer_) {
-        information_.updateForNewLayer(*layer_, deserialized_ ? inviwo::util::OverwriteState::Yes
-                                                              : inviwo::util::OverwriteState::No);
         information_.updateLayer(*layer_);
         outport_.setData(layer_);
     }
+
 } catch (H5::Exception& e) {
     throw Exception(SourceContext{}, "Error reading HDF5 data: {}", e.getDetailMsg());
-}
-
-void HDF5ToLayer::onDataChange() {
-    if (inport_.hasData()) {
-        const auto data = inport_.getData();
-        std::vector<DataSetInfo> metadata = util::getDataSets(*data);
-
-        layerMatches_.clear();
-        std::ranges::copy_if(
-            metadata, std::back_inserter(layerMatches_), [](const DataSetInfo& meta) {
-                auto dims = meta.getColumnMajorDimensions();
-                return dims.size() >= 2ull &&
-                       std::ranges::fold_left(dims, size_t{1}, std::multiplies{}) > 0ull;
-            });
-
-        std::vector<OptionPropertyStringOption> layerOptions;
-        for (const auto& meta : layerMatches_) {
-            const auto path = meta.path_.toString();
-            layerOptions.emplace_back(path, util::dataSetDescription(meta), path);
-        }
-        layerSelection_.replaceOptions(layerOptions);
-        layerSelection_.setCurrentStateAsDefault();
-    } else {
-        layerSelection_.clearOptions();
-    }
-
-    onSelectionChange();
 }
 
 void HDF5ToLayer::onSelectionChange() {
     dirty_ = true;
     if (!layerMatches_.empty()) {
-        constDataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
-        selection_.update(layerMeta);
-    }
-}
-
-void HDF5ToLayer::makeLayer() {
-    if (inport_.hasData()) {
-        const auto data = inport_.getData();
         const DataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
-
-        layer_ = getLayerAtPathAsType(*data + layerMeta.path_, selection_.getSelection(),
-                                      util::conversionFormat(datatype_.getSelectedIndex()));
+        selection_.update(layerMeta);
     }
 }
 

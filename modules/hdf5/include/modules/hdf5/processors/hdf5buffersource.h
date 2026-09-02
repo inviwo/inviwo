@@ -60,30 +60,19 @@ public:
 
 protected:
     virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
 
 private:
-    void makeBuffer();
-    void onDataChange();
     void onSelectionChange();
 
     std::vector<DataSetInfo> bufferMatches_;
 
     Inport inport_;
     BufferOutport outport_;
-    std::shared_ptr<BufferBase> buffer_;
-
     OptionPropertyString bufferSelection_;
-
-    BoolProperty automaticEvaluation_;
-    ButtonProperty evaluate_;
 
     CompositeProperty outputGroup_;
     OptionPropertyInt datatype_;
     DimSelectionsProperty selection_;
-
-    bool dirty_;
-    bool deserialized_ = false;
 };
 
 }  // namespace inviwo::hdf5

@@ -91,6 +91,8 @@ public:
 
     [[nodiscard]] DataSet open() const;
 
+    [[nodiscard]] DataSet open(const Path& path) const;
+
     [[nodiscard]] Handle getHandleForPath(const std::string& path) const;
 
     /**
