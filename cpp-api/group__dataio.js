@@ -1,5 +1,6 @@
 var group__dataio =
 [
+    [ "inviwo::reader::option", "namespaceinviwo_1_1reader_1_1option.html", null ],
     [ "inviwo::AmiraMeshReader", "classinviwo_1_1AmiraMeshReader.html", null ],
     [ "inviwo::AmiraVolumeReader", "classinviwo_1_1AmiraVolumeReader.html", null ],
     [ "inviwo::AssimpReader", "classinviwo_1_1AssimpReader.html", [
@@ -52,6 +53,14 @@ var group__dataio =
     [ "inviwo::DatVolumeSequenceReader", "classinviwo_1_1DatVolumeSequenceReader.html", null ],
     [ "inviwo::DatVolumeWriter", "classinviwo_1_1DatVolumeWriter.html", [
       [ "writeData", "classinviwo_1_1DatVolumeWriter.html#a7c1dfa398abd67cb31c4e7a9c0caa72a", null ]
+    ] ],
+    [ "inviwo::FFmpegLayerReader", "classinviwo_1_1FFmpegLayerReader.html", [
+      [ "getOption", "classinviwo_1_1FFmpegLayerReader.html#aeb2cf9bfd5fe86a870b30140c802fa1f", null ],
+      [ "setOption", "classinviwo_1_1FFmpegLayerReader.html#a9c6fbef4b12f16c401085b26e933e16f", null ]
+    ] ],
+    [ "inviwo::FFmpegLayerSequenceReader", "classinviwo_1_1FFmpegLayerSequenceReader.html", [
+      [ "getOption", "classinviwo_1_1FFmpegLayerSequenceReader.html#ab4f2ae9f9a95159ef897f0f269e89594", null ],
+      [ "setOption", "classinviwo_1_1FFmpegLayerSequenceReader.html#a5003a3315f8caabcf9f465e095dedde7", null ]
     ] ],
     [ "inviwo::IvfVolumeReader", "classinviwo_1_1IvfVolumeReader.html", null ],
     [ "inviwo::IvfVolumeSequenceReader", "classinviwo_1_1IvfVolumeSequenceReader.html", null ],

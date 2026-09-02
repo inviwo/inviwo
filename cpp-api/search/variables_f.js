@@ -12,5 +12,7 @@ var searchData=
   ['snippet_9',['snippet',['../structinviwo_1_1ShaderComponent_1_1Segment.html#ac3189a604789226d2a842af5840ff149',1,'inviwo::ShaderComponent::Segment::snippet'],['../structinviwo_1_1ShaderSegment.html#a82147fea140d5ac41e14e396093b60c6',1,'inviwo::ShaderSegment::snippet']]],
   ['spacing_10',['spacing',['../structinviwo_1_1StipplingData.html#a250e19f0d8601679d5e7159b4d6a5976',1,'inviwo::StipplingData']]],
   ['squaregl_5f_11',['squareGL_',['../classinviwo_1_1CanvasGL.html#a437a2f4ff36685129ccfcaac704fb277',1,'inviwo::CanvasGL']]],
-  ['state_5f_12',['state_',['../classinviwo_1_1animation_1_1AnimationController.html#a75346c1ad06be1cf2912efeb43ab635d',1,'inviwo::animation::AnimationController']]]
+  ['state_5f_12',['state_',['../classinviwo_1_1animation_1_1AnimationController.html#a75346c1ad06be1cf2912efeb43ab635d',1,'inviwo::animation::AnimationController']]],
+  ['stream_13',['stream',['../namespaceinviwo_1_1videoreader_1_1option.html#ad32b729e0b40eb66af83302eef8d1f74',1,'inviwo::videoreader::option']]],
+  ['stride_14',['stride',['../namespaceinviwo_1_1reader_1_1option.html#a7f0dda54f4356eab8c14ea90797f92f0',1,'inviwo::reader::option']]]
 ];

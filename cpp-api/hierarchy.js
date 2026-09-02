@@ -471,6 +471,7 @@ var hierarchy =
       ] ],
       [ "inviwo::DataReaderType< Layer >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::CImgLayerReader", "classinviwo_1_1CImgLayerReader.html", null ],
+        [ "inviwo::FFmpegLayerReader", "classinviwo_1_1FFmpegLayerReader.html", null ],
         [ "inviwo::NrrdLayerReader", "classinviwo_1_1NrrdLayerReader.html", null ],
         [ "inviwo::PNGLayerReader", "classinviwo_1_1PNGLayerReader.html", null ],
         [ "inviwo::TIFFLayerReader", "classinviwo_1_1TIFFLayerReader.html", null ]
@@ -484,6 +485,9 @@ var hierarchy =
         [ "inviwo::IvfVolumeSequenceReader", "classinviwo_1_1IvfVolumeSequenceReader.html", null ],
         [ "inviwo::NiftiReader", "classinviwo_1_1NiftiReader.html", null ],
         [ "inviwo::NrrdVolumeSequenceReader", "classinviwo_1_1NrrdVolumeSequenceReader.html", null ]
+      ] ],
+      [ "inviwo::DataReaderType< LayerSequence >", "classinviwo_1_1DataReaderType.html", [
+        [ "inviwo::FFmpegLayerSequenceReader", "classinviwo_1_1FFmpegLayerSequenceReader.html", null ]
       ] ],
       [ "inviwo::DataReaderType< IsoValueCollection >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::IsoValueCollectionIIVReader", "classinviwo_1_1IsoValueCollectionIIVReader.html", null ]
@@ -1559,6 +1563,7 @@ var hierarchy =
     [ "inviwo::detail::LayerConf::Info", "structinviwo_1_1detail_1_1LayerConf_1_1Info.html", null ],
     [ "inviwo::detail::MeshConf::Info", "structinviwo_1_1detail_1_1MeshConf_1_1Info.html", null ],
     [ "inviwo::detail::VolumeConf::Info", "structinviwo_1_1detail_1_1VolumeConf_1_1Info.html", null ],
+    [ "inviwo::ffmpeg::Video::Info", "structinviwo_1_1ffmpeg_1_1Video_1_1Info.html", null ],
     [ "inviwo::util::ColumnMapper::Info", "structinviwo_1_1util_1_1ColumnMapper_1_1Info.html", null ],
     [ "inviwo::log::info&lt; Args &gt;", "structinviwo_1_1log_1_1info.html", null ],
     [ "inviwo::InportFactoryObject", "classinviwo_1_1InportFactoryObject.html", [
@@ -1990,16 +1995,20 @@ var hierarchy =
     ] ],
     [ "inviwo::NetworkVisitorEnter", "classinviwo_1_1NetworkVisitorEnter.html", null ],
     [ "inviwo::NetworkVisitorExit", "classinviwo_1_1NetworkVisitorExit.html", null ],
+    [ "inviwo::ffmpeg::Frame::NoBuffers", "structinviwo_1_1ffmpeg_1_1Frame_1_1NoBuffers.html", null ],
     [ "inviwo::NoData", "structinviwo_1_1NoData.html", null ],
     [ "inviwo::deserializer::Node", "structinviwo_1_1deserializer_1_1Node.html", null ],
     [ "inviwo::ProcessorListModel::Node", "structinviwo_1_1ProcessorListModel_1_1Node.html", null ],
     [ "inviwo::NodeSwitch", "classinviwo_1_1NodeSwitch.html", null ],
     [ "inviwo::ffmpeg::NoMoveCopy", "structinviwo_1_1ffmpeg_1_1NoMoveCopy.html", [
-      [ "inviwo::ffmpeg::Codec", "classinviwo_1_1ffmpeg_1_1Codec.html", null ],
-      [ "inviwo::ffmpeg::Format", "classinviwo_1_1ffmpeg_1_1Format.html", null ],
+      [ "inviwo::ffmpeg::Decoder", "classinviwo_1_1ffmpeg_1_1Decoder.html", null ],
+      [ "inviwo::ffmpeg::Encoder", "classinviwo_1_1ffmpeg_1_1Encoder.html", null ],
+      [ "inviwo::ffmpeg::InputContext", "classinviwo_1_1ffmpeg_1_1InputContext.html", null ],
+      [ "inviwo::ffmpeg::OutputContext", "classinviwo_1_1ffmpeg_1_1OutputContext.html", null ],
       [ "inviwo::ffmpeg::OutputStream", "structinviwo_1_1ffmpeg_1_1OutputStream.html", null ],
       [ "inviwo::ffmpeg::Packet", "classinviwo_1_1ffmpeg_1_1Packet.html", null ],
-      [ "inviwo::ffmpeg::SwScale", "classinviwo_1_1ffmpeg_1_1SwScale.html", null ]
+      [ "inviwo::ffmpeg::SwScale", "classinviwo_1_1ffmpeg_1_1SwScale.html", null ],
+      [ "inviwo::ffmpeg::Video", "classinviwo_1_1ffmpeg_1_1Video.html", null ]
     ] ],
     [ "inviwo::util::nonesuch", "structinviwo_1_1util_1_1nonesuch.html", null ],
     [ "inviwo::command::Nop", "structinviwo_1_1command_1_1Nop.html", null ],

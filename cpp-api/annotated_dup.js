@@ -235,17 +235,20 @@ var annotated_dup =
         [ "DispatchException", "classinviwo_1_1dispatching_1_1DispatchException.html", null ]
       ] ],
       [ "ffmpeg", null, [
-        [ "Codec", "classinviwo_1_1ffmpeg_1_1Codec.html", null ],
         [ "CodecID", "classinviwo_1_1ffmpeg_1_1CodecID.html", null ],
+        [ "Decoder", "classinviwo_1_1ffmpeg_1_1Decoder.html", "classinviwo_1_1ffmpeg_1_1Decoder" ],
+        [ "Encoder", "classinviwo_1_1ffmpeg_1_1Encoder.html", null ],
         [ "Error", "structinviwo_1_1ffmpeg_1_1Error.html", null ],
-        [ "Format", "classinviwo_1_1ffmpeg_1_1Format.html", null ],
-        [ "Frame", "classinviwo_1_1ffmpeg_1_1Frame.html", null ],
+        [ "Frame", "classinviwo_1_1ffmpeg_1_1Frame.html", "classinviwo_1_1ffmpeg_1_1Frame" ],
+        [ "InputContext", "classinviwo_1_1ffmpeg_1_1InputContext.html", "classinviwo_1_1ffmpeg_1_1InputContext" ],
         [ "NoMoveCopy", "structinviwo_1_1ffmpeg_1_1NoMoveCopy.html", null ],
+        [ "OutputContext", "classinviwo_1_1ffmpeg_1_1OutputContext.html", null ],
         [ "OutputFormat", "classinviwo_1_1ffmpeg_1_1OutputFormat.html", null ],
         [ "OutputStream", "structinviwo_1_1ffmpeg_1_1OutputStream.html", "structinviwo_1_1ffmpeg_1_1OutputStream" ],
-        [ "Packet", "classinviwo_1_1ffmpeg_1_1Packet.html", null ],
+        [ "Packet", "classinviwo_1_1ffmpeg_1_1Packet.html", "classinviwo_1_1ffmpeg_1_1Packet" ],
         [ "Recorder", "classinviwo_1_1ffmpeg_1_1Recorder.html", "classinviwo_1_1ffmpeg_1_1Recorder" ],
-        [ "SwScale", "classinviwo_1_1ffmpeg_1_1SwScale.html", null ]
+        [ "SwScale", "classinviwo_1_1ffmpeg_1_1SwScale.html", null ],
+        [ "Video", "classinviwo_1_1ffmpeg_1_1Video.html", "classinviwo_1_1ffmpeg_1_1Video" ]
       ] ],
       [ "filters", null, [
         [ "ItemFilter", "structinviwo_1_1filters_1_1ItemFilter.html", "structinviwo_1_1filters_1_1ItemFilter" ]
@@ -895,6 +898,8 @@ var annotated_dup =
       [ "FactoryObservable", "classinviwo_1_1FactoryObservable.html", null ],
       [ "FactoryObserver", "classinviwo_1_1FactoryObserver.html", null ],
       [ "FactoryRegister", "classinviwo_1_1FactoryRegister.html", "classinviwo_1_1FactoryRegister" ],
+      [ "FFmpegLayerReader", "classinviwo_1_1FFmpegLayerReader.html", "classinviwo_1_1FFmpegLayerReader" ],
+      [ "FFmpegLayerSequenceReader", "classinviwo_1_1FFmpegLayerSequenceReader.html", "classinviwo_1_1FFmpegLayerSequenceReader" ],
       [ "FFmpegModule", "classinviwo_1_1FFmpegModule.html", null ],
       [ "FFmpegRecorderFactory", "classinviwo_1_1FFmpegRecorderFactory.html", null ],
       [ "FileAssociationCommand", "structinviwo_1_1FileAssociationCommand.html", "structinviwo_1_1FileAssociationCommand" ],

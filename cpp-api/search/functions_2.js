@@ -87,5 +87,7 @@ var searchData=
   ['createworkspacedeserializer_84',['createWorkspaceDeserializer',['../classinviwo_1_1WorkspaceManager.html#abf5769acf7abad75b1b931c16f403394',1,'inviwo::WorkspaceManager']]],
   ['createworkspacedeserializerandinfo_85',['createWorkspaceDeserializerAndInfo',['../classinviwo_1_1WorkspaceManager.html#a2adb05d088c1fd3f407b8bb7a4b5c6c4',1,'inviwo::WorkspaceManager::createWorkspaceDeserializerAndInfo(std::istream &amp;stream, const std::filesystem::path &amp;refPath, Logger *logger=LogCentral::getPtr(), std::pmr::polymorphic_allocator&lt; std::byte &gt; alloc={}) const'],['../classinviwo_1_1WorkspaceManager.html#afecd4b311076947b8ae109589fdd6978',1,'inviwo::WorkspaceManager::createWorkspaceDeserializerAndInfo(const std::pmr::string &amp;xml, const std::filesystem::path &amp;refPath, Logger *logger=LogCentral::getPtr(), std::pmr::polymorphic_allocator&lt; std::byte &gt; alloc={}) const']]],
   ['cubeindicator_86',['cubeIndicator',['../namespaceinviwo_1_1meshutil.html#ab192283190c2d7297782e7a5981fdf9a',1,'inviwo::meshutil']]],
-  ['cubeplaneintersectionappend_87',['cubePlaneIntersectionAppend',['../namespaceinviwo_1_1util.html#a125fdc1aa254554458167122ca14c08b',1,'inviwo::util']]]
+  ['cubeplaneintersectionappend_87',['cubePlaneIntersectionAppend',['../namespaceinviwo_1_1util.html#a125fdc1aa254554458167122ca14c08b',1,'inviwo::util']]],
+  ['currentframe_88',['currentFrame',['../classinviwo_1_1ffmpeg_1_1Video.html#a1731d9f6cbd8326c52120ed3437ebd8e',1,'inviwo::ffmpeg::Video']]],
+  ['currenttime_89',['currentTime',['../classinviwo_1_1ffmpeg_1_1Video.html#a5de2a6fc37a49f53d360758c7759bad9',1,'inviwo::ffmpeg::Video']]]
 ];

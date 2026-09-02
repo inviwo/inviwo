@@ -131,6 +131,13 @@ var namespaceinviwo =
     [ "plot", "namespaceinviwo_1_1plot.html", "namespaceinviwo_1_1plot" ],
     [ "pool", "namespaceinviwo_1_1pool.html", "namespaceinviwo_1_1pool" ],
     [ "pyutil", "namespaceinviwo_1_1pyutil.html", "namespaceinviwo_1_1pyutil" ],
+    [ "reader", null, [
+      [ "option", "namespaceinviwo_1_1reader_1_1option.html", [
+        [ "count", "namespaceinviwo_1_1reader_1_1option.html#a63ac55f6666fbd8e36b03809d0fcd399", null ],
+        [ "index", "namespaceinviwo_1_1reader_1_1option.html#a8252c8e287b75c060127ba24dec89656", null ],
+        [ "stride", "namespaceinviwo_1_1reader_1_1option.html#a7f0dda54f4356eab8c14ea90797f92f0", null ]
+      ] ]
+    ] ],
     [ "statsutil", "namespaceinviwo_1_1statsutil.html", "namespaceinviwo_1_1statsutil" ],
     [ "swizzlemasks", "namespaceinviwo_1_1swizzlemasks.html", null ],
     [ "util", "namespaceinviwo_1_1util.html", "namespaceinviwo_1_1util" ],
@@ -138,6 +145,12 @@ var namespaceinviwo =
     [ "utildoc", "namespaceinviwo_1_1utildoc.html", "namespaceinviwo_1_1utildoc" ],
     [ "utilgl", "namespaceinviwo_1_1utilgl.html", "namespaceinviwo_1_1utilgl" ],
     [ "utilqt", "namespaceinviwo_1_1utilqt.html", "namespaceinviwo_1_1utilqt" ],
+    [ "videoreader", null, [
+      [ "option", "namespaceinviwo_1_1videoreader_1_1option.html", [
+        [ "stream", "namespaceinviwo_1_1videoreader_1_1option.html#ad32b729e0b40eb66af83302eef8d1f74", null ],
+        [ "time", "namespaceinviwo_1_1videoreader_1_1option.html#a901119598a7a94d2fd4771bb0ae12faf", null ]
+      ] ]
+    ] ],
     [ "xml", "namespaceinviwo_1_1xml.html", "namespaceinviwo_1_1xml" ],
     [ "AbortException", "classinviwo_1_1AbortException.html", null ],
     [ "AdvancedMaterialProperty", "classinviwo_1_1AdvancedMaterialProperty.html", "classinviwo_1_1AdvancedMaterialProperty" ],
@@ -446,6 +459,8 @@ var namespaceinviwo =
     [ "FactoryObservable", "classinviwo_1_1FactoryObservable.html", null ],
     [ "FactoryObserver", "classinviwo_1_1FactoryObserver.html", null ],
     [ "FactoryRegister", "classinviwo_1_1FactoryRegister.html", "classinviwo_1_1FactoryRegister" ],
+    [ "FFmpegLayerReader", "classinviwo_1_1FFmpegLayerReader.html", "classinviwo_1_1FFmpegLayerReader" ],
+    [ "FFmpegLayerSequenceReader", "classinviwo_1_1FFmpegLayerSequenceReader.html", "classinviwo_1_1FFmpegLayerSequenceReader" ],
     [ "FFmpegModule", "classinviwo_1_1FFmpegModule.html", null ],
     [ "FFmpegRecorderFactory", "classinviwo_1_1FFmpegRecorderFactory.html", null ],
     [ "FileAssociationCommand", "structinviwo_1_1FileAssociationCommand.html", "structinviwo_1_1FileAssociationCommand" ],
