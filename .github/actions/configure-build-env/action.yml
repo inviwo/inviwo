@@ -53,13 +53,14 @@ runs:
     - name: "Setup Ccache"
       id: ccache
       if: inputs.ccache
-      uses: petersteneteg/ccache-action@v2.4.0
+      uses: petersteneteg/ccache-action@v2.5.0
       with:
         variant: ccache
         max-size: "1500M"
         verbose: 2
         save: "${{ github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
         append-timestamp: true
+        evict-old-caches: true
         gh-token: ${{ inputs.gh-token }}
         key: inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}
         restore-keys: |
@@ -78,7 +79,7 @@ runs:
       if: runner.os == 'Windows' && inputs.ccache
       run: |
         mkdir build
-        cp ${{ steps.ccache.outputs.executable }} build/cl.exe
+        cp "${{ steps.ccache.outputs.executable }}" build/cl.exe
 
     - name: "Install Latest CMake"
       shell: bash
