@@ -81,7 +81,7 @@ runs:
       run: |
         mkdir build
         cp "${{ steps.ccache.outputs.executable }}" build/cl.exe
-        ./build/cl.exe --version
+        ./build/cl.exe /version
 
     - name: "Install Latest CMake"
       shell: bash
