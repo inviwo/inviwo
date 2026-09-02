@@ -70,6 +70,19 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> cylinder(
     const float& radius = 1.0f, const size_t& segments = 16, bool caps = true,
     std::shared_ptr<BasicMesh> mesh = nullptr);
 
+IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> point(vec3 position,
+                                                     vec4 color = vec4{1.0f, 0.0f, 0.0f, 1.0f});
+
+IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> line(vec3 start, vec3 stop,
+                                                    vec4 color = vec4{1.0f, 0.0f, 0.0f, 1.0f});
+
+IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> circle(vec3 center,
+                                                      vec3 normal = vec3{0.0f, 0.0f, 1.0f},
+                                                      vec4 color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                                                      float radius = 1.0f, size_t segments = 16);
+/**
+ * Creates a line with width @p width using a triangle strip.
+ */
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> line(
     const vec3& start, const vec3& stop, const vec3& normal,
     const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f), const float& width = 1.0f,
