@@ -40,6 +40,12 @@ namespace inviwo::ffmpeg {
 
 Frame::Frame() : frame{nullptr} {}
 
+Frame::Frame(NoBuffers) : frame{av_frame_alloc()} {
+    if (!frame) {
+        throw inviwo::Exception("Could not allocate frame.");
+    }
+}
+
 Frame::Frame(enum AVPixelFormat pix_fmt, int width, int height) : frame{av_frame_alloc()} {
 
     if (!frame) {

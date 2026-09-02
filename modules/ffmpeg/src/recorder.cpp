@@ -43,17 +43,18 @@ namespace inviwo::ffmpeg {
 
 namespace {
 
-bool writeFrame(Format& format, Codec& codec, AVStream* st, const Frame& frame, Packet& pkt) {
+bool writeFrame(OutputContext& format, Encoder& encoder, AVStream* st, const Frame& frame,
+                Packet& pkt) {
     // send the frame to the encoder
-    codec.sendFrame(frame);
+    encoder.sendFrame(frame);
 
     int ret = 0;
     while (ret >= 0) {
-        ret = codec.receivePacket(pkt);
+        ret = encoder.receivePacket(pkt);
         if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) break;
 
         // rescale output packet timestamp values from codec to stream timebase
-        av_packet_rescale_ts(pkt.pkt, codec.ctx->time_base, st->time_base);
+        av_packet_rescale_ts(pkt.pkt, encoder.ctx->time_base, st->time_base);
         pkt.pkt->stream_index = st->index;
 
         // Write the compressed frame to the media file.
@@ -102,7 +103,7 @@ Recorder::~Recorder() {
 }
 
 const OutputStream& Recorder::getStream() { return stream; }
-const Format& Recorder::getFormat() { return out; }
+const OutputContext& Recorder::getOutputContext() { return out; }
 
 void Recorder::queueFrame(const LayerRAM& layer) {
     std::optional<Frame> frame;
@@ -117,8 +118,8 @@ void Recorder::queueFrame(const LayerRAM& layer) {
             frame.emplace(std::move(unused_.back()));
             unused_.pop_back();
         } else if (queue_.size() < 30) {
-            frame.emplace(stream.codec.ctx->pix_fmt, stream.codec.ctx->width,
-                          stream.codec.ctx->height);
+            frame.emplace(stream.encoder.ctx->pix_fmt, stream.encoder.ctx->width,
+                          stream.encoder.ctx->height);
         } else {
             log::info("Queue saturated");
         }
@@ -214,7 +215,7 @@ void Recorder::run() {
                 }
 
                 frame.frame->pts = frameCount++;
-                writeFrame(out, stream.codec, stream.stream, frame, pkt);
+                writeFrame(out, stream.encoder, stream.stream, frame, pkt);
                 next += frameTime;
             }
 
@@ -232,12 +233,12 @@ void Recorder::run() {
                 }
 
                 frame.frame->pts = frameCount++;
-                writeFrame(out, stream.codec, stream.stream, frame, pkt);
+                writeFrame(out, stream.encoder, stream.stream, frame, pkt);
             }
         }
 
         // Flush the encoder
-        writeFrame(out, stream.codec, stream.stream, Frame{}, pkt);
+        writeFrame(out, stream.encoder, stream.stream, Frame{}, pkt);
 
         out.writeTrailer();
 

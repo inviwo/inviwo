@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/ffmpeg/ffmpegmodule.h>
+#include <inviwo/ffmpeg/ffmpegvideoreader.h>
 #include <inviwo/ffmpeg/processors/movieexport.h>
 #include <inviwo/ffmpeg/ffmpeganimationrecorder.h>
 
@@ -40,6 +41,8 @@ extern "C" {
 namespace {
 
 void ffmpeg_log_callback(void* ptr, int level, const char* fmt, va_list vl) {
+    if (level > AV_LOG_WARNING) return;
+
     std::array<char, 1024> line;
     std::string dynamicLine;
     static int print_prefix = 1;
@@ -87,6 +90,10 @@ FFmpegModule::FFmpegModule(InviwoApplication* app)
     // Processors
     registerProcessor<MovieExport>();
 
+    registerDataReader(std::make_unique<FFmpegLayerReader>());
+    registerDataReader(std::make_unique<FFmpegLayerSequenceReader>());
+
+    av_log_set_level(AV_LOG_WARNING);
     av_log_set_callback(ffmpeg_log_callback);
 
     registerRecorderFactory(std::make_unique<FFmpegRecorderFactory>());

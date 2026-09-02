@@ -26,43 +26,63 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/ffmpeg/ffmpegmoduledefine.h>
-#include <inviwo/ffmpeg/util.h>
-#include <inviwo/ffmpeg/wrap/packet.h>
-#include <inviwo/ffmpeg/wrap/codecid.h>
-#include <inviwo/ffmpeg/wrap/outputformat.h>
+#include <inviwo/ffmpeg/wrap/encoder.h>
 
-#include <filesystem>
-#include <optional>
+#include <inviwo/core/util/exception.h>
 
-struct AVOutputFormat;
-struct AVFormatContext;
-struct AVStream;
-struct AVDictionary;
+extern "C" {
+#include <libavcodec/avcodec.h>
+}
 
 namespace inviwo::ffmpeg {
 
-class IVW_MODULE_FFMPEG_API Format : NoMoveCopy {
-public:
-    Format(OutputFormat outputFormat, const std::filesystem::path& aFilename);
-    Format(const std::filesystem::path& aFilename);
-    ~Format();
-    void open();
+Encoder::Encoder(const AVCodec* codec) : ctx{avcodec_alloc_context3(codec)} {
+    if (!ctx) {
+        throw Exception(SourceContext{}, "Could not alloc an encoding context");
+    }
+}
 
-    void writeHeader(AVDictionary** options);
+Encoder::Encoder(CodecID codecId) : Encoder{findEncoder(codecId.id)} {}
 
-    void writeTrailer();
+Encoder::~Encoder() { avcodec_free_context(&ctx); }
 
-    void writeFrame(const Packet& pkt);
-    AVStream* newStream();
-    int queryCodec(CodecID codecId, std::optional<int> stdCompliance = std::nullopt);
+void Encoder::open(AVDictionary* opt_arg) const {
+    AVDictionary* opt = nullptr;
+    av_dict_copy(&opt, opt_arg, 0);
 
-    OutputFormat outputFormat() const;
+    /* open the codec */
+    int ret = avcodec_open2(ctx, ctx->codec, &opt);
 
-    std::filesystem::path filename;
-    AVFormatContext* ctx;
-};
+    av_dict_free(&opt);
+    if (ret < 0) {
+        throw Exception(SourceContext{}, "Could not open video codec: {}", Error{ret});
+    }
+}
+
+void Encoder::sendFrame(const Frame& frame) const {
+    if (auto ret = avcodec_send_frame(ctx, frame.frame); ret < 0) {
+        throw Exception(SourceContext{}, "Error sending a frame to the encoder: {}", Error(ret));
+    }
+}
+
+int Encoder::receivePacket(Packet& pkt) const {
+    auto ret = avcodec_receive_packet(ctx, pkt.pkt);
+    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return ret;
+
+    if (ret < 0) {
+        throw Exception(SourceContext{}, "Error encoding a frame: {}", Error(ret));
+    }
+    return ret;
+}
+CodecID Encoder::codecID() const { return ctx->codec_id; }
+
+const AVCodec* Encoder::findEncoder(CodecID codecId) {
+    auto codec = avcodec_find_encoder(codecId.id);
+    if (!codec) {
+        throw Exception(SourceContext{}, "Could not find encoder for '{}'", codecId.name());
+    }
+    return codec;
+}
 
 }  // namespace inviwo::ffmpeg

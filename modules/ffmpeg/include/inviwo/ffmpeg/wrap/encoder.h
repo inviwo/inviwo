@@ -30,56 +30,42 @@
 
 #include <inviwo/ffmpeg/ffmpegmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/layerram.h>
-
-#include <inviwo/ffmpeg/outputstream.h>
+#include <inviwo/ffmpeg/util.h>
+#include <inviwo/ffmpeg/wrap/frame.h>
 #include <inviwo/ffmpeg/wrap/packet.h>
-#include <inviwo/ffmpeg/wrap/outputcontext.h>
+#include <inviwo/ffmpeg/wrap/codecid.h>
 
-#include <thread>
-#include <queue>
-#include <vector>
-#include <filesystem>
-#include <mutex>
-#include <condition_variable>
-#include <exception>
+struct AVCodec;
+struct AVCodecContext;
+struct AVDictionary;
 
 namespace inviwo::ffmpeg {
 
-class IVW_MODULE_FFMPEG_API Recorder {
+/**
+ * @brief RAII wrapper around an AVCodecContext set up for encoding.
+ * @see Decoder for the decoding counterpart
+ */
+class IVW_MODULE_FFMPEG_API Encoder : NoMoveCopy {
 public:
-    enum class Mode { Time, Evaluation };
+    explicit Encoder(const AVCodec* codec);
+    explicit Encoder(CodecID codec);
+    Encoder(const Encoder&) = delete;
+    Encoder(Encoder&&) = delete;
+    Encoder& operator=(const Encoder&) = delete;
+    Encoder& operator=(Encoder&&) = delete;
+    ~Encoder();
 
-    Recorder(const std::filesystem::path& filename, OutputFormat format, Mode aMode,
-             OutputStream::Options opts);
-    ~Recorder();
+    void sendFrame(const Frame& frame) const;
+    int receivePacket(Packet& pkt) const;
 
-    const OutputStream& getStream();
-    const OutputContext& getOutputContext();
+    CodecID codecID() const;
 
-    /**
-     * Copies the image data in layer into a ffmpeg frames and enques that for encoding
-     * The layer will not be used after the return of the function.
-     */
-    void queueFrame(const LayerRAM& layer);
+    void open(AVDictionary* opt_arg) const;
+
+    AVCodecContext* ctx;
 
 private:
-    void run();
-
-    Mode mode;
-    OutputContext out;
-    OutputStream stream;
-    Packet pkt;
-
-    std::queue<Frame> queue_;
-    std::vector<Frame> unused_;
-    std::mutex mutex_;
-    std::condition_variable condition_;
-    std::atomic<bool> stop_;
-    std::exception_ptr eptr;
-    int frameRate;
-
-    std::thread worker;
+    const AVCodec* findEncoder(CodecID codecId);
 };
 
 }  // namespace inviwo::ffmpeg

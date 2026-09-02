@@ -29,35 +29,48 @@
 #pragma once
 
 #include <inviwo/ffmpeg/ffmpegmoduledefine.h>
-
 #include <inviwo/ffmpeg/util.h>
-#include <inviwo/ffmpeg/wrap/frame.h>
 #include <inviwo/ffmpeg/wrap/packet.h>
 #include <inviwo/ffmpeg/wrap/codecid.h>
+#include <inviwo/ffmpeg/wrap/outputformat.h>
 
-struct AVCodec;
-struct AVCodecContext;
+#include <filesystem>
+#include <optional>
+
+struct AVOutputFormat;
+struct AVFormatContext;
+struct AVStream;
 struct AVDictionary;
 
 namespace inviwo::ffmpeg {
 
-class IVW_MODULE_FFMPEG_API Codec : NoMoveCopy {
+/**
+ * @brief RAII wrapper around an AVFormatContext used for muxing, that is writing video files.
+ * @see InputContext for the demuxing counterpart
+ */
+class IVW_MODULE_FFMPEG_API OutputContext : NoMoveCopy {
 public:
-    Codec(const AVCodec* codec);
-    Codec(CodecID codec);
+    OutputContext(OutputFormat outputFormat, std::filesystem::path aFilename);
+    explicit OutputContext(std::filesystem::path aFilename);
+    OutputContext(const OutputContext&) = delete;
+    OutputContext(OutputContext&&) = delete;
+    OutputContext& operator=(const OutputContext&) = delete;
+    OutputContext& operator=(OutputContext&&) = delete;
+    ~OutputContext();
+    void open();
 
-    ~Codec();
-    void sendFrame(const Frame& frame);
-    int receivePacket(Packet& pkt);
+    void writeHeader(AVDictionary** options) const;
 
-    CodecID codecID() const;
+    void writeTrailer() const;
 
-    void open(AVDictionary* opt_arg);
+    void writeFrame(const Packet& pkt) const;
+    AVStream* newStream() const;
+    int queryCodec(CodecID codecId, std::optional<int> stdCompliance = std::nullopt) const;
 
-    AVCodecContext* ctx;
+    OutputFormat outputFormat() const;
 
-private:
-    const AVCodec* findEncoder(CodecID codecId);
+    std::filesystem::path filename;
+    AVFormatContext* ctx;
 };
 
 }  // namespace inviwo::ffmpeg

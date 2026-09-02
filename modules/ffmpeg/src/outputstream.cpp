@@ -40,64 +40,64 @@ extern "C" {
 
 namespace inviwo::ffmpeg {
 
-OutputStream::OutputStream(Format& format, Options opts)
+OutputStream::OutputStream(OutputContext& format, Options opts)
     : sourceFormat{opts.sourceFormat}
-    , codec{opts.codecId ? opts.codecId : format.outputFormat().defaultVideoCodec()}
+    , encoder{opts.codecId ? opts.codecId : format.outputFormat().defaultVideoCodec()}
     , stream{format.newStream()}
     , tmpFrame{std::nullopt}
     , scaler{std::nullopt} {
 
     stream->id = format.ctx->nb_streams - 1;
 
-    codec.ctx->bit_rate = opts.bitRate;
+    encoder.ctx->bit_rate = opts.bitRate;
 
-    codec.ctx->width = opts.width;
-    codec.ctx->height = opts.height;
+    encoder.ctx->width = opts.width;
+    encoder.ctx->height = opts.height;
 
     /* timebase: This is the fundamental unit of time (in seconds) in terms
      * of which frame timestamps are represented. For fixed-fps content,
      * timebase should be 1/frameRate and timestamp increments should be
      * identical to 1. */
     stream->time_base = AVRational{1, opts.frameRate};
-    codec.ctx->time_base = stream->time_base;
+    encoder.ctx->time_base = stream->time_base;
 
-    codec.ctx->gop_size = 12; /* emit one intra frame every twelve frames at most */
+    encoder.ctx->gop_size = 12; /* emit one intra frame every twelve frames at most */
 
     // Dynamically select the best pixel format the codec supports,
     // minimizing conversion loss from the source format (e.g., AV_PIX_FMT_RGBA).
     const enum AVPixelFormat* formats = nullptr;
-    avcodec_get_supported_config(codec.ctx, nullptr, AVCodecConfig::AV_CODEC_CONFIG_PIX_FORMAT, 0,
+    avcodec_get_supported_config(encoder.ctx, nullptr, AVCodecConfig::AV_CODEC_CONFIG_PIX_FORMAT, 0,
                                  reinterpret_cast<const void**>(&formats), nullptr);
     if (formats) {
-        codec.ctx->pix_fmt = avcodec_find_best_pix_fmt_of_list(formats, sourceFormat, 0, nullptr);
+        encoder.ctx->pix_fmt = avcodec_find_best_pix_fmt_of_list(formats, sourceFormat, 0, nullptr);
     } else {
-        codec.ctx->pix_fmt = AV_PIX_FMT_YUV420P;  // safe fallback
+        encoder.ctx->pix_fmt = AV_PIX_FMT_YUV420P;  // safe fallback
     }
 
-    if (codec.ctx->codec_id == AV_CODEC_ID_MPEG2VIDEO) {
+    if (encoder.ctx->codec_id == AV_CODEC_ID_MPEG2VIDEO) {
         /* just for testing, we also add B-frames */
-        codec.ctx->max_b_frames = 2;
+        encoder.ctx->max_b_frames = 2;
     }
-    if (codec.ctx->codec_id == AV_CODEC_ID_MPEG1VIDEO) {
+    if (encoder.ctx->codec_id == AV_CODEC_ID_MPEG1VIDEO) {
         /* Needed to avoid using macroblocks in which
          * some coeffs overflow. This does not happen
          * with normal video, it just happens here as
          * the motion of the chroma plane does not
          * match the luma plane. */
-        codec.ctx->mb_decision = 2;
+        encoder.ctx->mb_decision = 2;
     }
 
     /* Some formats want stream headers to be separate. */
     if (format.ctx->oformat->flags & AVFMT_GLOBALHEADER) {
-        codec.ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+        encoder.ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
     }
 }
 
 void OutputStream::openVideo(AVDictionary* opt_arg) {
-    codec.open(opt_arg);
+    encoder.open(opt_arg);
 
     /* copy the stream parameters to the muxer */
-    if (auto ret = avcodec_parameters_from_context(stream->codecpar, codec.ctx); ret < 0) {
+    if (auto ret = avcodec_parameters_from_context(stream->codecpar, encoder.ctx); ret < 0) {
         throw Exception(SourceContext{}, "Could not copy the stream parameters: {}", Error{ret});
     }
 }
@@ -109,21 +109,21 @@ Frame* OutputStream::fillFrame(Frame& dst,
      * internally; make sure we do not overwrite it here */
     dst.makeWritable();
 
-    if (codec.ctx->pix_fmt != sourceFormat) {
+    if (encoder.ctx->pix_fmt != sourceFormat) {
         if (!scaler) {
-            scaler.emplace(codec.ctx->width, codec.ctx->height, sourceFormat, codec.ctx->width,
-                           codec.ctx->height, codec.ctx->pix_fmt, SWS_BICUBIC, nullptr, nullptr,
-                           nullptr);
+            scaler.emplace(encoder.ctx->width, encoder.ctx->height, sourceFormat,
+                           encoder.ctx->width, encoder.ctx->height, encoder.ctx->pix_fmt,
+                           SWS_BICUBIC, nullptr, nullptr, nullptr);
         }
         if (!tmpFrame) {
-            tmpFrame.emplace(sourceFormat, codec.ctx->width, codec.ctx->height);
+            tmpFrame.emplace(sourceFormat, encoder.ctx->width, encoder.ctx->height);
         }
 
-        filler(tmpFrame->frame, codec.ctx->width, codec.ctx->height);
+        filler(tmpFrame->frame, encoder.ctx->width, encoder.ctx->height);
         scaler->scale((const uint8_t* const*)tmpFrame->frame->data, tmpFrame->frame->linesize, 0,
-                      codec.ctx->height, dst.frame->data, dst.frame->linesize);
+                      encoder.ctx->height, dst.frame->data, dst.frame->linesize);
     } else {
-        filler(dst.frame, codec.ctx->width, codec.ctx->height);
+        filler(dst.frame, encoder.ctx->width, encoder.ctx->height);
     }
 
     return &dst;

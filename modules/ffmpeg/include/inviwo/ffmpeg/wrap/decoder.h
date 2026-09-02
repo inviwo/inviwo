@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,60 +26,64 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/ffmpeg/ffmpegmoduledefine.h>
 
-#include <inviwo/core/datastructures/image/layerram.h>
-
-#include <inviwo/ffmpeg/outputstream.h>
+#include <inviwo/ffmpeg/util.h>
+#include <inviwo/ffmpeg/wrap/frame.h>
 #include <inviwo/ffmpeg/wrap/packet.h>
-#include <inviwo/ffmpeg/wrap/outputcontext.h>
+#include <inviwo/ffmpeg/wrap/codecid.h>
 
-#include <thread>
-#include <queue>
-#include <vector>
-#include <filesystem>
-#include <mutex>
-#include <condition_variable>
-#include <exception>
+extern "C" {
+#include <libavutil/avutil.h>
+}
+
+struct AVCodecContext;
+struct AVStream;
 
 namespace inviwo::ffmpeg {
 
-class IVW_MODULE_FFMPEG_API Recorder {
+/**
+ * @brief RAII wrapper around an AVCodecContext set up for decoding.
+ * @see Encoder for the encoding counterpart
+ */
+class IVW_MODULE_FFMPEG_API Decoder : NoMoveCopy {
 public:
-    enum class Mode { Time, Evaluation };
+    /**
+     * @brief Create and open a decoder matching the codec parameters of @p stream
+     * @throws Exception if no decoder is available for the codec or if it cannot be opened
+     */
+    explicit Decoder(const AVStream* stream);
+    Decoder(const Decoder&) = delete;
+    Decoder(Decoder&&) = delete;
+    Decoder& operator=(const Decoder&) = delete;
+    Decoder& operator=(Decoder&&) = delete;
+    ~Decoder();
 
-    Recorder(const std::filesystem::path& filename, OutputFormat format, Mode aMode,
-             OutputStream::Options opts);
-    ~Recorder();
+    void sendPacket(const Packet& pkt) const;
 
-    const OutputStream& getStream();
-    const OutputContext& getOutputContext();
+    /// Signal end of stream to the decoder, any remaining frames can then be collected with
+    /// receiveFrame()
+    void flush() const;
 
     /**
-     * Copies the image data in layer into a ffmpeg frames and enques that for encoding
-     * The layer will not be used after the return of the function.
+     * @brief Retrieve the next decoded frame
+     * @return 0 on success, AVERROR(EAGAIN) if more packets are needed, AVERROR_EOF if the decoder
+     * has been fully drained
      */
-    void queueFrame(const LayerRAM& layer);
+    int receiveFrame(Frame& frame) const;
 
-private:
-    void run();
+    /// Discard any buffered state, must be called after seeking
+    void reset() const;
 
-    Mode mode;
-    OutputContext out;
-    OutputStream stream;
-    Packet pkt;
+    CodecID codecID() const;
+    int width() const;
+    int height() const;
+    enum AVPixelFormat pixelFormat() const;
 
-    std::queue<Frame> queue_;
-    std::vector<Frame> unused_;
-    std::mutex mutex_;
-    std::condition_variable condition_;
-    std::atomic<bool> stop_;
-    std::exception_ptr eptr;
-    int frameRate;
-
-    std::thread worker;
+    AVCodecContext* ctx;
 };
 
 }  // namespace inviwo::ffmpeg

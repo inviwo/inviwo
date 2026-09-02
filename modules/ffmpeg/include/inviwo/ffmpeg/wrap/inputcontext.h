@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,62 +27,59 @@
  *
  *********************************************************************************/
 
-#include <inviwo/ffmpeg/wrap/codec.h>
+#pragma once
 
-#include <inviwo/core/util/exception.h>
+#include <inviwo/ffmpeg/ffmpegmoduledefine.h>
+#include <inviwo/ffmpeg/util.h>
+#include <inviwo/ffmpeg/wrap/packet.h>
 
-extern "C" {
-#include <libavcodec/avcodec.h>
-}
+#include <filesystem>
+
+struct AVFormatContext;
+struct AVStream;
 
 namespace inviwo::ffmpeg {
 
-Codec::Codec(const AVCodec* codec) : ctx{avcodec_alloc_context3(codec)} {
-    if (!ctx) {
-        throw Exception(SourceContext{}, "Could not alloc an encoding context");
-    }
-}
+/**
+ * @brief RAII wrapper around an AVFormatContext used for demuxing, that is reading media files.
+ * @see OutputContext for the muxing counterpart
+ */
+class IVW_MODULE_FFMPEG_API InputContext : NoMoveCopy {
+public:
+    explicit InputContext(std::filesystem::path aFilename);
+    InputContext(const InputContext&) = delete;
+    InputContext(InputContext&&) = delete;
+    InputContext& operator=(const InputContext&) = delete;
+    InputContext& operator=(InputContext&&) = delete;
+    ~InputContext();
 
-Codec::Codec(CodecID codecId) : Codec{findEncoder(codecId.id)} {}
+    /**
+     * @brief Index of the video stream ffmpeg considers the most suitable one
+     * @throws Exception if the file contains no video stream
+     */
+    int bestVideoStream() const;
 
-Codec::~Codec() { avcodec_free_context(&ctx); }
+    /**
+     * @throws RangeException if @p index is not a valid stream index
+     */
+    AVStream* stream(int index) const;
 
-void Codec::open(AVDictionary* opt_arg) {
-    AVDictionary* opt = nullptr;
-    av_dict_copy(&opt, opt_arg, 0);
+    int nbStreams() const;
 
-    /* open the codec */
-    int ret = avcodec_open2(ctx, ctx->codec, &opt);
+    /**
+     * @brief Read the next packet from the file
+     * @return false at end of file, true otherwise
+     */
+    bool readPacket(Packet& pkt);
 
-    av_dict_free(&opt);
-    if (ret < 0) {
-        throw Exception(SourceContext{}, "Could not open video codec: {}", Error{ret});
-    }
-}
+    /**
+     * @brief Seek to the keyframe at or before @p timestamp, given in the time base of stream
+     * @p streamIndex
+     */
+    void seek(int streamIndex, int64_t timestamp);
 
-void Codec::sendFrame(const Frame& frame) {
-    if (auto ret = avcodec_send_frame(ctx, frame.frame); ret < 0) {
-        throw Exception(SourceContext{}, "Error sending a frame to the encoder: {}", Error(ret));
-    }
-}
-
-int Codec::receivePacket(Packet& pkt) {
-    auto ret = avcodec_receive_packet(ctx, pkt.pkt);
-    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return ret;
-
-    if (ret < 0) {
-        throw Exception(SourceContext{}, "Error encoding a frame: {}", Error(ret));
-    }
-    return ret;
-}
-CodecID Codec::codecID() const { return ctx->codec_id; }
-
-const AVCodec* Codec::findEncoder(CodecID codecId) {
-    auto codec = avcodec_find_encoder(codecId.id);
-    if (!codec) {
-        throw Exception(SourceContext{}, "Could not find encoder for '{}'", codecId.name());
-    }
-    return codec;
-}
+    std::filesystem::path filename;
+    AVFormatContext* ctx;
+};
 
 }  // namespace inviwo::ffmpeg

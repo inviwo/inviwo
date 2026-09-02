@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/ffmpeg/wrap/format.h>
+#include <inviwo/ffmpeg/wrap/outputcontext.h>
 #include <inviwo/core/util/exception.h>
 
 extern "C" {
@@ -37,24 +37,27 @@ extern "C" {
 
 #include <fmt/std.h>
 
+#include <utility>
+
 namespace inviwo::ffmpeg {
 
-Format::Format(OutputFormat outputFormat, const std::filesystem::path& aFilename)
-    : filename{aFilename} {
+OutputContext::OutputContext(OutputFormat outputFormat, std::filesystem::path aFilename)
+    : filename{std::move(aFilename)}, ctx{nullptr} {
     avformat_alloc_output_context2(&ctx, outputFormat.of, nullptr, filename.string().c_str());
     if (!ctx) {
         throw inviwo::Exception("Could not deduce output format from file extension");
     }
 }
 
-Format::Format(const std::filesystem::path& aFilename) : filename{aFilename} {
+OutputContext::OutputContext(std::filesystem::path aFilename)
+    : filename{std::move(aFilename)}, ctx{nullptr} {
     avformat_alloc_output_context2(&ctx, nullptr, nullptr, filename.string().c_str());
     if (!ctx) {
         throw inviwo::Exception("Could not deduce output format from file extension");
     }
 }
 
-Format::~Format() {
+OutputContext::~OutputContext() {
     if (!(ctx->oformat->flags & AVFMT_NOFILE)) {
         /* Close the output file. */
         avio_closep(&ctx->pb);
@@ -62,7 +65,7 @@ Format::~Format() {
     avformat_free_context(ctx);
 }
 
-void Format::open() {
+void OutputContext::open() {
     if (!(ctx->oformat->flags & AVFMT_NOFILE)) {
         int ret = avio_open(&ctx->pb, filename.string().c_str(), AVIO_FLAG_WRITE);
         if (ret < 0) {
@@ -72,7 +75,7 @@ void Format::open() {
     }
 }
 
-void Format::writeHeader(AVDictionary** options) {
+void OutputContext::writeHeader(AVDictionary** options) const {
     /* Write the stream header, if any. */
     if (auto ret = avformat_write_header(ctx, options); ret < 0) {
         throw inviwo::Exception(SourceContext{}, "Error occurred when writing header, file: {}",
@@ -80,14 +83,14 @@ void Format::writeHeader(AVDictionary** options) {
     }
 }
 
-void Format::writeTrailer() {
+void OutputContext::writeTrailer() const {
     if (auto ret = av_write_trailer(ctx); ret < 0) {
         throw inviwo::Exception(SourceContext{}, "Error occurred when writing trailer, file: {}",
                                 Error{ret});
     }
 }
 
-void Format::writeFrame(const Packet& pkt) {
+void OutputContext::writeFrame(const Packet& pkt) const {
     /* pkt is now blank (av_interleaved_write_frame() takes ownership of
      * its contents and resets pkt), so that no unreferencing is necessary.
      * This would be different if one used av_write_frame(). */
@@ -97,7 +100,7 @@ void Format::writeFrame(const Packet& pkt) {
     }
 }
 
-AVStream* Format::newStream() {
+AVStream* OutputContext::newStream() const {
     AVStream* stream = avformat_new_stream(ctx, nullptr);
     if (!stream) {
         throw inviwo::Exception("Could not allocate AVStream");
@@ -105,11 +108,11 @@ AVStream* Format::newStream() {
     return stream;
 }
 
-int Format::queryCodec(CodecID codecId, std::optional<int> stdCompliance) {
+int OutputContext::queryCodec(CodecID codecId, std::optional<int> stdCompliance) const {
     return avformat_query_codec(ctx->oformat, codecId.id,
                                 stdCompliance.value_or(FF_COMPLIANCE_NORMAL));
 }
 
-OutputFormat Format::outputFormat() const { return ctx->oformat; }
+OutputFormat OutputContext::outputFormat() const { return ctx->oformat; }
 
 }  // namespace inviwo::ffmpeg

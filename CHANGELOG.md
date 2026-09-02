@@ -1,5 +1,35 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-08-28 Video readers in the FFmpeg module
+
+The FFmpeg module can now read video files, not only write them. Two data readers are registered for the common video container formats (`mp4`, `mov`, `mkv`, `webm`, `avi`, ...), which means the standard `LayerSource` and `LayerSequenceSource` processors can load videos.
+
+- `FFmpegLayerReader` reads a single frame as a `Layer`
+- `FFmpegLayerSequenceReader` reads a range of frames as a `LayerSequence`
+
+Both are configured through `DataReader::setOption`. Frequently used option keys are now declared in `inviwo::reader::option` in `<inviwo/core/io/datareader.h>` so that other readers can adopt them:
+
+- `reader::option::index`, the frame to read, `std::ptrdiff_t`, negative values count from the end
+- `reader::option::count`, the number of frames to read, `std::ptrdiff_t`, negative means all. The sequence reader defaults to 100 frames since videos can be arbitrarily long.
+- `reader::option::stride`, the step between frames, `std::ptrdiff_t`
+- `videoreader::option::time`, the time in seconds of the frame to read, `double`
+- `videoreader::option::stream`, the video stream to read, `int`, negative selects the best one
+
+Frames are decoded into the closest matching `Layer` format, that is grayscale videos yield single channel Layers and sources with more than 8 bits per component yield 16 bit Layers.
+
+`inviwo::ffmpeg::Video` provides the underlying random access to video frames and can decode into an existing `Layer` to avoid repeated allocations.
+
+### Migration guide
+
+The encode side wrappers in the FFmpeg module were renamed for symmetry with the new decode side ones:
+
+- `ffmpeg::Format` in `<inviwo/ffmpeg/wrap/format.h>` is now `ffmpeg::OutputContext` in `<inviwo/ffmpeg/wrap/outputcontext.h>`
+- `ffmpeg::Codec` in `<inviwo/ffmpeg/wrap/codec.h>` is now `ffmpeg::Encoder` in `<inviwo/ffmpeg/wrap/encoder.h>`
+- `ffmpeg::OutputStream::codec` is now `ffmpeg::OutputStream::encoder`
+- `ffmpeg::Recorder::getFormat()` is now `ffmpeg::Recorder::getOutputContext()`
+
+The new counterparts are `ffmpeg::InputContext` in `<inviwo/ffmpeg/wrap/inputcontext.h>` and `ffmpeg::Decoder` in `<inviwo/ffmpeg/wrap/decoder.h>`.
+
 
 ## 2026-05-27 Python JSON module
 The JSON module now provides Python bindings, enabling seamless conversion between Inviwo properties, ports, and JSON-compatible Python objects (e.g., dictionaries, lists). These bindings are available under the `inviwopy.json` submodule. Added `toJson` and `fromJson` functions in `inviwopy.json` for converting properties, inports, and outports to and from JSON-compatible Python objects.

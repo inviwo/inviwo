@@ -40,7 +40,17 @@ namespace inviwo::ffmpeg {
 
 class IVW_MODULE_FFMPEG_API Frame {
 public:
+    /// Tag for constructing an AVFrame without data buffers, @see Frame(NoBuffers)
+    struct NoBuffers {};
+
+    /// Construct a Frame without an AVFrame, sending it to an encoder signals end of stream
     Frame();
+
+    /**
+     * @brief Allocate an AVFrame without any data buffers, for use as a decoder destination where
+     * the decoder provides the buffers.
+     */
+    explicit Frame(NoBuffers);
 
     Frame(enum AVPixelFormat pix_fmt, int width, int height);
     Frame(const Frame&) = delete;
