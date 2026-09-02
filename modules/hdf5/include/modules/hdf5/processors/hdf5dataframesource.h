@@ -66,12 +66,8 @@ public:
 
 protected:
     virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
 
 private:
-    void makeDataFrame();
-    void onDataChange();
-
     // Rebuilds the dynamic column-selection properties from dataMatches_.
     void rebuildColumnProperties();
 
@@ -79,18 +75,11 @@ private:
 
     Inport inport_;
     DataFrameOutport outport_;
-    std::shared_ptr<DataFrame> dataFrame_;
-
-    BoolProperty automaticEvaluation_;
-    ButtonProperty evaluate_;
 
     /// One BoolProperty per available 1-D dataset – rebuilt on data change.
     CompositeProperty columns_;
     /// Parallel ownership array (same order as dataMatches_ after rebuild).
     std::vector<std::unique_ptr<BoolProperty>> columnProps_;
-
-    bool dirty_;
-    bool deserialized_ = false;
 };
 
 }  // namespace inviwo::hdf5

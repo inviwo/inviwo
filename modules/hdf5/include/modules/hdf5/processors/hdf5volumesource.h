@@ -68,7 +68,6 @@ protected:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    void makeVolume();
     void onDataChange();
 
     void onSelectionChange();
@@ -98,6 +97,7 @@ private:
     CompositeProperty outputGroup_;
     OptionPropertyInt datatype_;
     BoolProperty adjustBasis_;
+    BoolProperty adjustOffset_;
     DimSelectionsProperty selection_;
 
     VolumeReuseCache cache_;

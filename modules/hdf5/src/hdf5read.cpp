@@ -116,11 +116,12 @@ DimConfig<N> getDimConfig(const H5::DataSpace& dataSpace,
      * Solution reverse all the dimension lists.
      * Row major version of the selection to match the hdf row major dataDimensions.
      */
+    for (auto&& selection :
+         std::views::zip(selections | std::views::reverse, config.dataDimensions) |
+             std::views::transform([](auto&& item) { return std::apply(clamp, item); })) {
 
-    for (const auto& [selection, dim] :
-         std::views::zip(selections | std::views::reverse, config.dataDimensions)) {
         config.start.emplace_back(selection.start);
-        config.count.emplace_back(selection.count == 0 ? dim - selection.start : selection.count);
+        config.count.emplace_back(selection.count);
         config.stride.emplace_back(selection.stride);
     }
 
@@ -133,6 +134,7 @@ DimConfig<N> getDimConfig(const H5::DataSpace& dataSpace,
     }
 
     return config;
+}
 
 }  // namespace
 
@@ -141,9 +143,7 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
     const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume) {
 
     auto dataset = handle.open();
-
     const H5::DataSpace dataSpace = dataset.getSpace();
-
     const auto config = getDimConfig<3>(dataSpace, selection);
 
     dataSpace.selectHyperslab(H5S_SELECT_SET, config.count.data(), config.start.data(),
@@ -159,17 +159,12 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
             memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
     }
 
-    log::info("Data rank: {}, dims {}, size {}. Selection rank: 3, dims: {}, size: {}",
-              selection.size(), fmt::join(config.dataDimensions, " x "),
-              dataSpace.getSelectNpoints(), fmt::join(config.selectedDimensions, " x "),
-              memorySpace.getSelectNpoints());
-
     const DataFormatBase* format = type ? type : util::getDataFormatFromDataSet(dataset);
 
     // Reverse back the Column major
     auto volume =
-        getVolume({.dimensions = {config.selectedDimensions[2], config.selectedDimensions[1],
-                                  config.selectedDimensions[0]},
+        getVolume({.dimensions = size3_t{config.selectedDimensions[2], config.selectedDimensions[1],
+                                         config.selectedDimensions[0]},
                    .format = format});
     auto* volumeRam = volume->getEditableRepresentation<VolumeRAM>();
 
@@ -188,12 +183,7 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
                 throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
             }
 
-            auto res = ::inviwo::util::dataMinMax(data, memorySpace.getSelectNpoints(), ignore);
-
-            log::info("Read HDF volume type: {} data range: {}, {} file: {}",
-                      DataFormat<ValueType>::str(), res.first, res.second, dataset.getFileName());
-
-            return res;
+            return ::inviwo::util::dataMinMax(data, memorySpace.getSelectNpoints(), ignore);
         });
 
     volume->dataMap.dataRange.x = glm::compMin(minmax.first);
@@ -201,64 +191,40 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
     volume->dataMap.valueRange = volume->dataMap.dataRange;
     volume->discardHistograms();
 
+    log::info(
+        "Read HDF Volume: source dims {}, selection dims: {} type: {} data "
+        "range: {}, {} file: {}",
+        fmt::join(config.dataDimensions, " x "), fmt::join(config.selectedDimensions, " x "),
+        volume->getDataFormat()->getString(), minmax.first, minmax.second, dataset.getFileName());
+
     return volume;
 }
 
 std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Selection> selection,
                                             const DataFormatBase* type) {
     auto dataset = handle.open();
-
     const H5::DataSpace dataSpace = dataset.getSpace();
-    const size_t rank = dataSpace.getSimpleExtentNdims();
-    if (selection.size() != rank) {
-        throw Exception("Selection not of the same rank as the data");
-    }
 
-    std::vector<hsize_t> dataDimensions(rank);
-    dataSpace.getSimpleExtentDims(dataDimensions.data());
+    const auto config = getDimConfig<2>(dataSpace, selection);
+    dataSpace.selectHyperslab(H5S_SELECT_SET, config.count.data(), config.start.data(),
+                              config.stride.data(), nullptr);
 
-    std::vector<hsize_t> start(rank);
-    std::vector<hsize_t> count(rank);
-    std::vector<hsize_t> stride(rank);
-
-    // Row major (HDF/C) -> Column major (Inviwo): reverse selection
-    std::ranges::reverse(selection);
-
-    size2_t layerDimensions(1);
-    int resRank = 0;
-    std::vector<hsize_t> memoryDimensions{1, 1};
-
-    for (size_t i = 0; i < rank; ++i) {
-        start[i] = selection[i].start;
-        count[i] = selection[i].count == 0 ? dataDimensions[i] - start[i] : selection[i].count;
-        stride[i] = selection[i].stride;
-
-        if (count[i] > 1) {
-            if (resRank > 1) throw Exception("Invalid selection, resulting rank > 2");
-            memoryDimensions[resRank] = count[i];
-            layerDimensions[resRank] = count[i];
-            resRank++;
-        }
-    }
-
-    dataSpace.selectHyperslab(H5S_SELECT_SET, count.data(), start.data(), stride.data(), nullptr);
-
-    H5::DataSpace memorySpace(2, memoryDimensions.data());
+    H5::DataSpace memorySpace(2, config.selectedDimensions.data());
     memorySpace.selectAll();
 
-    hsize_t selectionSize = memorySpace.getSelectNpoints();
-
-    log::info("Data rank: {} dims {} size {} selection {} memory dim {}", rank,
-              joinString(dataDimensions, " x "), dataSpace.getSelectNpoints(),
-              memorySpace.getSelectNpoints(), layerDimensions);
+    if (memorySpace.getSelectNpoints() != dataSpace.getSelectNpoints()) {
+        throw Exception{
+            SourceContext{},
+            "Invalid selection, source selection size {} not equal to destination memory size {}",
+            memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
+    }
 
     const DataFormatBase* format = type ? type : util::getDataFormatFromDataSet(dataset);
 
-    // Reverse back to column major
-    std::ranges::reverse(&layerDimensions[0], &layerDimensions[0] + size2_t::length());
-
-    auto layer = std::make_shared<Layer>(
-        LayerConfig{.dimensions = layerDimensions, .format = format, .type = LayerType::Color});
+    auto layer = std::make_shared<Layer>(LayerConfig{
+        .dimensions = size2_t{config.selectedDimensions[1], config.selectedDimensions[0]},
+        .format = format,
+        .type = LayerType::Color});
     auto* layerRam = layer->getEditableRepresentation<LayerRAM>();
 
     IgnoreValues ignore{};
@@ -276,18 +242,19 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Se
                 throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
             }
 
-            auto res = ::inviwo::util::dataMinMax(data, selectionSize, ignore);
-
-            log::info("Read HDF layer type: {} data range: {}, {} file: {}",
-                      DataFormat<ValueType>::str(), res.first, res.second, dataset.getFileName());
-
-            return res;
+            return ::inviwo::util::dataMinMax(data, memorySpace.getSelectNpoints(), ignore);
         });
 
     layer->dataMap.dataRange.x = glm::compMin(minmax.first);
     layer->dataMap.dataRange.y = glm::compMax(minmax.second);
     layer->dataMap.valueRange = layer->dataMap.dataRange;
     layer->discardHistograms();
+
+    log::info(
+        "Read HDF Layer: source dims {}, selection dims: {} type: {} data "
+        "range: {}, {} file: {}",
+        fmt::join(config.dataDimensions, " x "), fmt::join(config.selectedDimensions, " x "),
+        layer->getDataFormat()->getString(), minmax.first, minmax.second, dataset.getFileName());
 
     return layer;
 }
@@ -298,44 +265,20 @@ std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
     auto dataset = handle.open();
 
     const H5::DataSpace dataSpace = dataset.getSpace();
-    const size_t rank = dataSpace.getSimpleExtentNdims();
-    if (selection.size() != rank) {
-        throw Exception("Selection not of the same rank as the data");
-    }
+    const auto config = getDimConfig<1>(dataSpace, selection);
 
-    std::vector<hsize_t> dataDimensions(rank);
-    dataSpace.getSimpleExtentDims(dataDimensions.data());
-
-    std::vector<hsize_t> start(rank);
-    std::vector<hsize_t> count(rank);
-    std::vector<hsize_t> stride(rank);
-
-    // Row major (HDF/C) -> Column major (Inviwo): reverse selection
-    std::ranges::reverse(selection);
-
-    hsize_t totalElements = 1;
-    for (size_t i = 0; i < rank; ++i) {
-        start[i] = selection[i].start;
-        count[i] = selection[i].count == 0 ? dataDimensions[i] - start[i] : selection[i].count;
-        stride[i] = selection[i].stride;
-        totalElements *= count[i];
-    }
-
-    dataSpace.selectHyperslab(H5S_SELECT_SET, count.data(), start.data(), stride.data(), nullptr);
-
-    H5::DataSpace memorySpace(1, &totalElements);
+    dataSpace.selectHyperslab(H5S_SELECT_SET, config.count.data(), config.start.data(),
+                              config.stride.data(), nullptr);
+    H5::DataSpace memorySpace(1, config.selectedDimensions.data());
     memorySpace.selectAll();
-
-    log::info("Data rank: {} dims {} elements {} buffer size {}", rank,
-              joinString(dataDimensions, " x "), dataSpace.getSelectNpoints(), totalElements);
 
     const DataFormatBase* format = type ? type : util::getDataFormatFromDataSet(dataset);
 
     auto buffer =
         dispatching::singleDispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars>(
             format->getId(), [&]<typename T>() -> std::shared_ptr<BufferBase> {
-                auto repr =
-                    std::make_shared<BufferRAMPrecision<T>>(static_cast<size_t>(totalElements));
+                auto repr = std::make_shared<BufferRAMPrecision<T>>(
+                    static_cast<size_t>(config.selectedDimensions[0]));
                 try {
                     dataset.read(repr->getDataContainer().data(), TypeMap<T>::getType(),
                                  memorySpace, dataSpace);
@@ -344,9 +287,13 @@ std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
                                     e.getDetailMsg());
                 }
                 log::info("Read HDF buffer type: {} size: {} file: {}", DataFormat<T>::str(),
-                          totalElements, dataset.getFileName());
+                          config.selectedDimensions[0], dataset.getFileName());
                 return std::make_shared<Buffer<T>>(repr);
             });
+
+    log::info("Read HDF Buffer: source dims {}, selection dim {} type: {} file: {}",
+              fmt::join(config.dataDimensions, " x "), fmt::join(config.selectedDimensions, " x "),
+              buffer->getDataFormat()->getString(), dataset.getFileName());
 
     return buffer;
 }

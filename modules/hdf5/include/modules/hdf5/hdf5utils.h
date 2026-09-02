@@ -49,12 +49,12 @@ namespace hdf5 {
  * HDF row major order).
  */
 struct IVW_MODULE_HDF5_API DataSetInfo {
-    Path path_;
-    const DataFormatBase* format_ = nullptr;
-    std::vector<size_t> dimensions_;
+    Path path;
+    const DataFormatBase* format = nullptr;
+    std::vector<size_t> dimensions;
 
     /// Dimensions in column major (Inviwo/OpenGL) order.
-    [[nodiscard]] std::vector<size_t> getColumnMajorDimensions() const;
+    [[nodiscard]] auto getColumnMajorDimensions() const { return dimensions | std::views::reverse; }
 };
 
 namespace util {

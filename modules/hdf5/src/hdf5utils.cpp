@@ -89,11 +89,7 @@ const DataFormatBase* getDataFormat(const H5::DataType& type) {
 
 }  // namespace
 
-std::vector<size_t> DataSetInfo::getColumnMajorDimensions() const {
-    std::vector<size_t> cmDims;
-    std::ranges::reverse_copy(dimensions_, std::back_inserter(cmDims));
-    return cmDims;
-}
+
 
 namespace util {
 
@@ -101,9 +97,9 @@ std::vector<DataSetInfo> getDataSets(const Handle& handle) {
     std::vector<DataSetInfo> datasets;
     const auto collect = [&](const Handle& group) {
         for (const auto& dataset : group.datasets()) {
-            datasets.emplace_back({.path_ = Path{dataset.getObjName()},
-                                   .format_ = getDataFormat(dataset.getDataType()),
-                                   .dimensions_ = getDimensions(dataset.getSpace())});
+            datasets.emplace_back(DataSetInfo{.path = Path{dataset.getObjName()},
+                                              .format = getDataFormat(dataset.getDataType()),
+                                              .dimensions = getDimensions(dataset.getSpace())});
         }
     };
     collect(handle);
@@ -113,8 +109,8 @@ std::vector<DataSetInfo> getDataSets(const Handle& handle) {
 
 std::string dataSetDescription(const DataSetInfo& info) {
     const auto dims = info.getColumnMajorDimensions();
-    return fmt::format("{}{}{} [{}]", info.path_.toString(), (info.format_ ? " " : ""),
-                       (info.format_ ? info.format_->getString() : ""), fmt::join(dims, ", "));
+    return fmt::format("{}{}{} [{}]", info.path.toString(), (info.format ? " " : ""),
+                       (info.format ? info.format->getString() : ""), fmt::join(dims, ", "));
 }
 
 std::vector<OptionPropertyIntOption> conversionOptions() {

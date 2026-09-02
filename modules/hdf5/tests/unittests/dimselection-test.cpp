@@ -55,8 +55,8 @@ TEST(DimSelectionProperty, DefaultSelectsAll) {
 TEST(DimSelectionProperty, StartAndCount) {
     DimSelectionProperty prop{"dim", "dim"};
     prop.update(10);
-    prop.start_.set(2);
-    prop.count_.set(3);
+    prop.start.set(2);
+    prop.count.set(3);
 
     const auto sel = prop.getSelection();
     EXPECT_EQ(sel.start, 2u);
