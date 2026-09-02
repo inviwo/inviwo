@@ -71,9 +71,7 @@ if(IVW_CFG_USE_CCACHE_MSVC)
     set(CMAKE_VS_GLOBALS
         "CLToolExe=cl.exe"
         "CLToolPath=${CMAKE_BINARY_DIR}"
-        # "TrackFileAccess=false"
         "UseMultiToolTask=true"
-        "DebugInformationFormat=OldStyle"
     )
 endif()
 option(IVW_CFG_USE_CCACHE_XCODE "build using cache in xcode" OFF)
