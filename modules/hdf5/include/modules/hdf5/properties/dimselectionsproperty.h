@@ -41,9 +41,7 @@
 #include <string_view>
 #include <vector>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 struct DataSetInfo;
 
@@ -61,13 +59,16 @@ public:
     DimSelectionsProperty(std::string_view identifier, std::string_view displayName, size_t maxRank,
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
     DimSelectionsProperty(const DimSelectionsProperty& rhs);
+    DimSelectionsProperty& operator=(const DimSelectionsProperty& that) = delete;
+    DimSelectionsProperty(DimSelectionsProperty&& rhs) = delete;
+    DimSelectionsProperty& operator=(DimSelectionsProperty&& that) = delete;
     virtual DimSelectionsProperty* clone() const override;
     virtual ~DimSelectionsProperty() = default;
 
     /**
-     * Adapt the visible sub-selections and their ranges to the dimensions of @p info.
+     * Adapt the visible sub-selections and their ranges to the dimensions of @p dataSetInfo.
      */
-    void update(const DataSetInfo& info);
+    void update(const DataSetInfo& dataSetInfo);
 
     /**
      * The current selection for each active dimension, in column major (Inviwo) order.
@@ -85,6 +86,4 @@ private:
     std::vector<std::unique_ptr<DimSelectionProperty>> selection_;
 };
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

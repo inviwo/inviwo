@@ -42,9 +42,7 @@
 
 #include <algorithm>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 namespace {
 
@@ -86,27 +84,27 @@ void readValueAttributes(const H5::DataSet& dataset, T& data, IgnoreValues& igno
     }
 }
 
-}  // namespace
+template <size_t N>
+struct DimConfig {
+    std::vector<hsize_t> start;
+    std::vector<hsize_t> count;
+    std::vector<hsize_t> stride;
+    std::vector<hsize_t> dataDimensions;
+    std::vector<hsize_t> selectedDimensions;
+};
 
-std::shared_ptr<Volume> getVolumeAtPathAsType(
-    const Handle& handle, std::vector<Selection> selection, const DataFormatBase* type,
-    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume) {
-
-    auto dataset = handle.open();
-
-    const H5::DataSpace dataSpace = dataset.getSpace();
+template <size_t N>
+DimConfig<N> getDimConfig(const H5::DataSpace& dataSpace,
+                          const std::vector<Selection>& selections) {
     const size_t rank = dataSpace.getSimpleExtentNdims();
-    if (selection.size() != rank) {
+    if (selections.size() != rank) {
         throw Exception("Selection not of the same rank as the data");
     }
 
-    std::vector<hsize_t> dataDimensions(rank);
-    dataSpace.getSimpleExtentDims(dataDimensions.data());
-    const hsize_t dataSize = dataSpace.getSelectNpoints();
+    DimConfig<N> config;
 
-    std::vector<hsize_t> start(rank);
-    std::vector<hsize_t> count(rank);
-    std::vector<hsize_t> stride(rank);
+    config.dataDimensions.resize(rank);
+    dataSpace.getSimpleExtentDims(config.dataDimensions.data());
 
     /*
      * Column major, i.e. the FIRST listed dimension is the fasted changing
@@ -118,43 +116,61 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
      * Solution reverse all the dimension lists.
      * Row major version of the selection to match the hdf row major dataDimensions.
      */
-    std::reverse(selection.begin(), selection.end());
 
-    size3_t volumeDimensions(1);
-    int resRank = 0;
-    std::vector<hsize_t> memoryDimensions{1, 1, 1};
-
-    for (size_t i = 0; i < rank; ++i) {
-        start[i] = selection[i].start;
-        count[i] =
-            static_cast<hsize_t>((selection[i].end - selection[i].start) / selection[i].stride);
-        stride[i] = selection[i].stride;
-
-        if (count[i] > 1) {
-            if (resRank > 2) throw Exception("Invalid selection, resulting rank > 3");
-            memoryDimensions[resRank] = count[i];
-            volumeDimensions[resRank] = count[i];
-            resRank++;
-        }
+    for (const auto& [selection, dim] :
+         std::views::zip(selections | std::views::reverse, config.dataDimensions)) {
+        config.start.emplace_back(selection.start);
+        config.count.emplace_back(selection.count == 0 ? dim - selection.start : selection.count);
+        config.stride.emplace_back(selection.stride);
     }
 
-    dataSpace.selectHyperslab(H5S_SELECT_SET, count.data(), start.data(), stride.data(), nullptr);
+    config.selectedDimensions.assign_range(config.count |
+                                           std::views::filter([](hsize_t c) { return c > 1; }));
 
-    H5::DataSpace memorySpace(3, memoryDimensions.data());
+    if (config.selectedDimensions.size() > N) {
+        throw Exception{SourceContext{}, "Invalid selection, resulting rank {} > {}",
+                        config.selectedDimensions.size(), N};
+    }
+
+    return config;
+
+}  // namespace
+
+std::shared_ptr<Volume> getVolumeAtPathAsType(
+    const Handle& handle, std::vector<Selection> selection, const DataFormatBase* type,
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume) {
+
+    auto dataset = handle.open();
+
+    const H5::DataSpace dataSpace = dataset.getSpace();
+
+    const auto config = getDimConfig<3>(dataSpace, selection);
+
+    dataSpace.selectHyperslab(H5S_SELECT_SET, config.count.data(), config.start.data(),
+                              config.stride.data(), nullptr);
+
+    H5::DataSpace memorySpace(3, config.selectedDimensions.data());
     memorySpace.selectAll();
 
-    hsize_t selectionSize = memorySpace.getSelectNpoints();
+    if (memorySpace.getSelectNpoints() != dataSpace.getSelectNpoints()) {
+        throw Exception{
+            SourceContext{},
+            "Invalid selection, source selection size {} not equal to destination memory size {}",
+            memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
+    }
 
-    log::info("Data rank: {} dims {} size {} selection {} memory size {} memory dim {}", rank,
-              joinString(dataDimensions, " x "), dataSize, dataSpace.getSelectNpoints(),
-              memorySpace.getSelectNpoints(), volumeDimensions);
+    log::info("Data rank: {}, dims {}, size {}. Selection rank: 3, dims: {}, size: {}",
+              selection.size(), fmt::join(config.dataDimensions, " x "),
+              dataSpace.getSelectNpoints(), fmt::join(config.selectedDimensions, " x "),
+              memorySpace.getSelectNpoints());
 
     const DataFormatBase* format = type ? type : util::getDataFormatFromDataSet(dataset);
 
     // Reverse back the Column major
-    std::reverse(&volumeDimensions[0], &volumeDimensions[0] + volumeDimensions.length());
-
-    auto volume = getVolume({.dimensions = volumeDimensions, .format = format});
+    auto volume =
+        getVolume({.dimensions = {config.selectedDimensions[2], config.selectedDimensions[1],
+                                  config.selectedDimensions[0]},
+                   .format = format});
     auto* volumeRam = volume->getEditableRepresentation<VolumeRAM>();
 
     IgnoreValues ignore{};
@@ -172,7 +188,7 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
                 throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
             }
 
-            auto res = ::inviwo::util::dataMinMax(data, selectionSize, ignore);
+            auto res = ::inviwo::util::dataMinMax(data, memorySpace.getSelectNpoints(), ignore);
 
             log::info("Read HDF volume type: {} data range: {}, {} file: {}",
                       DataFormat<ValueType>::str(), res.first, res.second, dataset.getFileName());
@@ -206,7 +222,7 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Se
     std::vector<hsize_t> stride(rank);
 
     // Row major (HDF/C) -> Column major (Inviwo): reverse selection
-    std::reverse(selection.begin(), selection.end());
+    std::ranges::reverse(selection);
 
     size2_t layerDimensions(1);
     int resRank = 0;
@@ -214,8 +230,7 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Se
 
     for (size_t i = 0; i < rank; ++i) {
         start[i] = selection[i].start;
-        count[i] =
-            static_cast<hsize_t>((selection[i].end - selection[i].start) / selection[i].stride);
+        count[i] = selection[i].count == 0 ? dataDimensions[i] - start[i] : selection[i].count;
         stride[i] = selection[i].stride;
 
         if (count[i] > 1) {
@@ -240,7 +255,7 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Se
     const DataFormatBase* format = type ? type : util::getDataFormatFromDataSet(dataset);
 
     // Reverse back to column major
-    std::reverse(&layerDimensions[0], &layerDimensions[0] + layerDimensions.length());
+    std::ranges::reverse(&layerDimensions[0], &layerDimensions[0] + size2_t::length());
 
     auto layer = std::make_shared<Layer>(
         LayerConfig{.dimensions = layerDimensions, .format = format, .type = LayerType::Color});
@@ -296,13 +311,12 @@ std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
     std::vector<hsize_t> stride(rank);
 
     // Row major (HDF/C) -> Column major (Inviwo): reverse selection
-    std::reverse(selection.begin(), selection.end());
+    std::ranges::reverse(selection);
 
     hsize_t totalElements = 1;
     for (size_t i = 0; i < rank; ++i) {
         start[i] = selection[i].start;
-        count[i] =
-            static_cast<hsize_t>((selection[i].end - selection[i].start) / selection[i].stride);
+        count[i] = selection[i].count == 0 ? dataDimensions[i] - start[i] : selection[i].count;
         stride[i] = selection[i].stride;
         totalElements *= count[i];
     }
@@ -337,6 +351,4 @@ std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
     return buffer;
 }
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

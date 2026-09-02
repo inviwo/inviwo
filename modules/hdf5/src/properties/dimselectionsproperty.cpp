@@ -37,9 +37,7 @@
 
 #include <fmt/format.h>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 std::string_view DimSelectionsProperty::getClassIdentifier() const { return classIdentifier; }
 
@@ -71,9 +69,9 @@ DimSelectionsProperty* DimSelectionsProperty::clone() const {
     return new DimSelectionsProperty(*this);
 }
 
-void DimSelectionsProperty::update(const DataSetInfo& meta) {
+void DimSelectionsProperty::update(const DataSetInfo& dataSetInfo) {
     const NetworkLock lock{this};
-    const auto cmdims = meta.getColumnMajorDimensions();
+    const auto cmdims = dataSetInfo.getColumnMajorDimensions();
     rank_ = std::min(cmdims.size(), maxRank_);
 
     for (auto&& [index, selection] : inviwo::util::enumerate(selection_)) {
@@ -101,6 +99,4 @@ std::vector<Selection> DimSelectionsProperty::getMaxSelection() const {
     return selection;
 }
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

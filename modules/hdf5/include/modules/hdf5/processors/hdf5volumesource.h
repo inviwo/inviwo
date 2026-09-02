@@ -49,13 +49,15 @@
 #include <memory>
 #include <vector>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 class IVW_MODULE_HDF5_API HDF5ToVolume : public Processor {
 public:
     HDF5ToVolume();
+    HDF5ToVolume(const HDF5ToVolume&) = delete;
+    HDF5ToVolume& operator=(const HDF5ToVolume&) = delete;
+    HDF5ToVolume(HDF5ToVolume&&) = delete;
+    HDF5ToVolume& operator=(HDF5ToVolume&&) = delete;
     virtual ~HDF5ToVolume();
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -72,7 +74,7 @@ private:
     void onSelectionChange();
     void onBasisSelectionChange();
 
-    dmat4 getBasisFromMeta(DataSetInfo);
+    dmat4 getBasisFromMeta(const DataSetInfo& meta);
 
     std::vector<DataSetInfo> volumeMatches_;
     std::vector<DataSetInfo> basisMatches_;
@@ -104,6 +106,4 @@ private:
     bool deserialized_ = false;
 };
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

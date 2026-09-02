@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,16 +37,14 @@
 #include <algorithm>
 #include <numeric>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 const ProcessorInfo HDF5ToBuffer::processorInfo_{
     "org.inviwo.hdf5.ToBuffer",  // Class identifier
     "HDF5 To Buffer",            // Display name
     "Data Input",                // Category
     CodeState::Stable,           // Code state
-    Tags::None,                  // Tags
+    Tags::CPU | Tag{"HDF5"},     // Tags
     "Load a buffer from an HDF5 file handle."_help,
 };
 const ProcessorInfo& HDF5ToBuffer::getProcessorInfo() const { return processorInfo_; }
@@ -132,7 +130,7 @@ void HDF5ToBuffer::onDataChange() {
 void HDF5ToBuffer::onSelectionChange() {
     dirty_ = true;
     if (!bufferMatches_.empty()) {
-        DataSetInfo bufferMeta = bufferMatches_[bufferSelection_.getSelectedIndex()];
+        const DataSetInfo bufferMeta = bufferMatches_[bufferSelection_.getSelectedIndex()];
         selection_.update(bufferMeta);
     }
 }
@@ -140,7 +138,7 @@ void HDF5ToBuffer::onSelectionChange() {
 void HDF5ToBuffer::makeBuffer() {
     if (inport_.hasData()) {
         const auto data = inport_.getData();
-        DataSetInfo bufferMeta = bufferMatches_[bufferSelection_.getSelectedIndex()];
+        const DataSetInfo bufferMeta = bufferMatches_[bufferSelection_.getSelectedIndex()];
 
         buffer_ = getBufferAtPathAsType(*data + bufferMeta.path_, selection_.getSelection(),
                                         util::conversionFormat(datatype_.getSelectedIndex()));
@@ -152,6 +150,4 @@ void HDF5ToBuffer::deserialize(Deserializer& d) {
     deserialized_ = true;
 }
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

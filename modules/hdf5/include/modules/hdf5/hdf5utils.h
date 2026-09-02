@@ -80,7 +80,7 @@ IVW_MODULE_HDF5_API std::vector<OptionPropertyIntOption> conversionOptions();
  * Map the selected index of the "Convert to type" property to a data format. Index 0 (no
  * conversion) returns nullptr.
  */
-IVW_MODULE_HDF5_API const DataFormatBase* conversionFormat(int index);
+IVW_MODULE_HDF5_API const DataFormatBase* conversionFormat(size_t index);
 
 }  // namespace util
 

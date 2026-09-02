@@ -44,13 +44,15 @@
 #include <memory>
 #include <vector>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 class IVW_MODULE_HDF5_API HDF5ToBuffer : public Processor {
 public:
     HDF5ToBuffer();
+    HDF5ToBuffer(const HDF5ToBuffer&) = delete;
+    HDF5ToBuffer& operator=(const HDF5ToBuffer&) = delete;
+    HDF5ToBuffer(HDF5ToBuffer&&) = delete;
+    HDF5ToBuffer& operator=(HDF5ToBuffer&&) = delete;
     virtual ~HDF5ToBuffer();
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -84,6 +86,4 @@ private:
     bool deserialized_ = false;
 };
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

@@ -78,7 +78,7 @@ TEST(HDF5Path, PlusEqualsMergesSegments) {
 
 TEST(HDF5Path, ImplicitStringConversion) {
     const Path path{"/a/b"};
-    const std::string str = path;
+    const std::string& str = path;
     EXPECT_EQ(str, "/a/b");
 }
 

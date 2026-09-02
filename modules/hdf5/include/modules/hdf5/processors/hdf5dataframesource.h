@@ -43,9 +43,7 @@
 #include <memory>
 #include <vector>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 /**
  * @brief Loads one or more 1-D datasets from an HDF5 file as columns of a DataFrame.
@@ -57,6 +55,10 @@ namespace hdf5 {
 class IVW_MODULE_HDF5_API HDF5ToDataFrame : public Processor {
 public:
     HDF5ToDataFrame();
+    HDF5ToDataFrame(const HDF5ToDataFrame&) = delete;
+    HDF5ToDataFrame& operator=(const HDF5ToDataFrame&) = delete;
+    HDF5ToDataFrame(HDF5ToDataFrame&&) = delete;
+    HDF5ToDataFrame& operator=(HDF5ToDataFrame&&) = delete;
     virtual ~HDF5ToDataFrame();
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -91,6 +93,4 @@ private:
     bool deserialized_ = false;
 };
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

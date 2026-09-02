@@ -46,8 +46,8 @@ Handle::Handle(const std::filesystem::path& filename)
 Handle::Handle(const std::filesystem::path& filename, Path path)
     : filename_(filename), path_(path), data_{load(filename_, path_)} {}
 
-Handle::Handle(std::filesystem::path filename, Path path, H5::Group data)
-    : filename_(std::move(filename)), path_(std::move(path)), data_(std::move(data)) {}
+Handle::Handle(std::filesystem::path filename, Path path, const H5::Group& data)
+    : filename_(std::move(filename)), path_(std::move(path)), data_(data) {}
 
 Handle Handle::getHandleForPath(const std::string& path) const {
     const Path newPath = path_ + path;

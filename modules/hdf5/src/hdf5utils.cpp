@@ -48,7 +48,7 @@ namespace hdf5 {
 
 namespace {
 
-std::vector<size_t> getDimensions(const H5::DataSpace space) {
+std::vector<size_t> getDimensions(const H5::DataSpace& space) {
     if (space.getSimpleExtentType() == H5S_SCALAR) {
         return {1};
     } else if (space.getSimpleExtentType() == H5S_SIMPLE) {
@@ -61,36 +61,37 @@ std::vector<size_t> getDimensions(const H5::DataSpace space) {
     }
 }
 
-const DataFormatBase* getDataFormat(const H5::DataType type) {
-    if (type == H5::PredType::NATIVE_FLOAT)
+const DataFormatBase* getDataFormat(const H5::DataType& type) {
+    if (type == H5::PredType::NATIVE_FLOAT) {
         return DataFormatBase::get(DataFormatId::Float32);
-    else if (type == H5::PredType::NATIVE_DOUBLE)
+    } else if (type == H5::PredType::NATIVE_DOUBLE) {
         return DataFormatBase::get(DataFormatId::Float64);
-    else if (type == H5::PredType::NATIVE_SCHAR)
+    } else if (type == H5::PredType::NATIVE_SCHAR) {
         return DataFormatBase::get(DataFormatId::Int8);
-    else if (type == H5::PredType::NATIVE_CHAR)
+    } else if (type == H5::PredType::NATIVE_CHAR) {
         return DataFormatBase::get(DataFormatId::UInt8);
-    else if (type == H5::PredType::NATIVE_SHORT)
+    } else if (type == H5::PredType::NATIVE_SHORT) {
         return DataFormatBase::get(DataFormatId::Int16);
-    else if (type == H5::PredType::NATIVE_USHORT)
+    } else if (type == H5::PredType::NATIVE_USHORT) {
         return DataFormatBase::get(DataFormatId::UInt16);
-    else if (type == H5::PredType::NATIVE_INT)
+    } else if (type == H5::PredType::NATIVE_INT) {
         return DataFormatBase::get(DataFormatId::Int32);
-    else if (type == H5::PredType::NATIVE_UINT)
+    } else if (type == H5::PredType::NATIVE_UINT) {
         return DataFormatBase::get(DataFormatId::UInt32);
-    else if (type == H5::PredType::NATIVE_LLONG)
+    } else if (type == H5::PredType::NATIVE_LLONG) {
         return DataFormatBase::get(DataFormatId::Int64);
-    else if (type == H5::PredType::NATIVE_ULLONG)
+    } else if (type == H5::PredType::NATIVE_ULLONG) {
         return DataFormatBase::get(DataFormatId::UInt64);
-    else
+    } else {
         return nullptr;
+    }
 }
 
 }  // namespace
 
 std::vector<size_t> DataSetInfo::getColumnMajorDimensions() const {
     std::vector<size_t> cmDims;
-    std::reverse_copy(dimensions_.begin(), dimensions_.end(), std::back_inserter(cmDims));
+    std::ranges::reverse_copy(dimensions_, std::back_inserter(cmDims));
     return cmDims;
 }
 
@@ -100,9 +101,9 @@ std::vector<DataSetInfo> getDataSets(const Handle& handle) {
     std::vector<DataSetInfo> datasets;
     const auto collect = [&](const Handle& group) {
         for (const auto& dataset : group.datasets()) {
-            datasets.push_back(DataSetInfo{Path{dataset.getObjName()},
-                                           getDataFormat(dataset.getDataType()),
-                                           getDimensions(dataset.getSpace())});
+            datasets.emplace_back({.path_ = Path{dataset.getObjName()},
+                                   .format_ = getDataFormat(dataset.getDataType()),
+                                   .dimensions_ = getDimensions(dataset.getSpace())});
         }
     };
     collect(handle);
@@ -112,9 +113,8 @@ std::vector<DataSetInfo> getDataSets(const Handle& handle) {
 
 std::string dataSetDescription(const DataSetInfo& info) {
     const auto dims = info.getColumnMajorDimensions();
-    return info.path_.toString() +
-           (info.format_ ? (" " + std::string(info.format_->getString())) : "") + " [" +
-           joinString(dims, ", ") + "]";
+    return fmt::format("{}{}{} [{}]", info.path_.toString(), (info.format_ ? " " : ""),
+                       (info.format_ ? info.format_->getString() : ""), fmt::join(dims, ", "));
 }
 
 std::vector<OptionPropertyIntOption> conversionOptions() {
@@ -125,7 +125,7 @@ std::vector<OptionPropertyIntOption> conversionOptions() {
             {"ushort", "Unsigned Short", 4}};
 }
 
-const DataFormatBase* conversionFormat(int index) {
+const DataFormatBase* conversionFormat(size_t index) {
     switch (index) {
         case 1:
             return DataFloat32::get();
