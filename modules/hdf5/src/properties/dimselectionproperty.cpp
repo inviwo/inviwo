@@ -34,9 +34,7 @@
 
 #include <algorithm>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 std::string_view DimSelectionProperty::getClassIdentifier() const { return classIdentifier; }
 
@@ -79,15 +77,11 @@ void DimSelectionProperty::update(size_t dimSize) {
 }
 
 Selection DimSelectionProperty::getSelection() const {
-    const size_t stride = std::max<size_t>(stride_.get(), 1);
-    const size_t start = std::min(start_.get(), dimSize_);
-    const size_t count = count_.get();
-    const size_t end = (count == 0) ? dimSize_ : std::min(start + count * stride, dimSize_);
-    return Selection{start, end, stride};
+    return Selection{.start = std::min(start_.get(), dimSize_),
+                     .count = count_.get(),
+                     .stride = std::max(stride_.get(), 1uz)};
 }
 
 Selection DimSelectionProperty::getMaxSelection() const { return Selection{0, dimSize_, 1}; }
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

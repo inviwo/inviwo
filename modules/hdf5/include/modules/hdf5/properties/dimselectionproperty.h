@@ -39,9 +39,7 @@
 
 #include <string_view>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 /**
  * @ingroup properties
@@ -58,6 +56,9 @@ public:
     DimSelectionProperty(std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
     DimSelectionProperty(const DimSelectionProperty& rhs);
+    DimSelectionProperty& operator=(const DimSelectionProperty& rhs) = delete;
+    DimSelectionProperty(DimSelectionProperty&&) = delete;
+    DimSelectionProperty& operator=(DimSelectionProperty&&) = delete;
     virtual DimSelectionProperty* clone() const override;
     virtual ~DimSelectionProperty() = default;
 
@@ -84,6 +85,4 @@ private:
     size_t dimSize_ = 0;
 };
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

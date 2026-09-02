@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,16 +39,14 @@
 #include <algorithm>
 #include <numeric>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 const ProcessorInfo HDF5ToDataFrame::processorInfo_{
-    "org.inviwo.hdf5.ToDataFrame",  // Class identifier
-    "HDF5 To DataFrame",            // Display name
-    "Data Input",                   // Category
-    CodeState::Stable,              // Code state
-    Tags::None,                     // Tags
+    "org.inviwo.hdf5.ToDataFrame",               // Class identifier
+    "HDF5 To DataFrame",                         // Display name
+    "Data Input",                                // Category
+    CodeState::Stable,                           // Code state
+    Tags::CPU | Tag{"HDF5"} | Tag{"DataFrame"},  // Tags
     "Load a DataFrame from an HDF5 file handle. "
     "Each enabled 1-D dataset becomes one column."_help,
 };
@@ -164,7 +162,7 @@ void HDF5ToDataFrame::makeDataFrame() {
     // Verify all enabled datasets have the same number of elements.
     const size_t expectedRows = dataMatches_[enabledIndices[0]].getColumnMajorDimensions()[0];
 
-    for (size_t idx : enabledIndices) {
+    for (const size_t idx : enabledIndices) {
         const size_t rows = dataMatches_[idx].getColumnMajorDimensions()[0];
         if (rows != expectedRows) {
             throw Exception(SourceContext{},
@@ -176,12 +174,12 @@ void HDF5ToDataFrame::makeDataFrame() {
 
     auto df = std::make_shared<DataFrame>();
 
-    for (size_t idx : enabledIndices) {
+    for (const size_t idx : enabledIndices) {
         const DataSetInfo& meta = dataMatches_[idx];
         const size_t rows = meta.getColumnMajorDimensions()[0];
 
         // Build a full-range selection for this 1-D dataset.
-        const std::vector<Handle::Selection> selection{{0, rows, 1}};
+        const std::vector<Selection> selection{{0, rows, 1}};
 
         auto buffer = getBufferAtPathAsType(*data + meta.path_, selection, nullptr);
 
@@ -220,6 +218,4 @@ void HDF5ToDataFrame::deserialize(Deserializer& d) {
     dirty_ = true;
 }
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

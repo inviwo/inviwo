@@ -46,13 +46,15 @@
 #include <memory>
 #include <vector>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 class IVW_MODULE_HDF5_API HDF5ToLayer : public Processor {
 public:
     HDF5ToLayer();
+    HDF5ToLayer(const HDF5ToLayer&) = delete;
+    HDF5ToLayer& operator=(const HDF5ToLayer&) = delete;
+    HDF5ToLayer(HDF5ToLayer&&) = delete;
+    HDF5ToLayer& operator=(HDF5ToLayer&&) = delete;
     virtual ~HDF5ToLayer();
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -88,6 +90,4 @@ private:
     bool deserialized_ = false;
 };
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

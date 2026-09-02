@@ -37,16 +37,14 @@
 #include <algorithm>
 #include <numeric>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 const ProcessorInfo HDF5ToLayer::processorInfo_{
-    "org.inviwo.hdf5.ToLayer",  // Class identifier
-    "HDF5 To Layer",            // Display name
-    "Data Input",               // Category
-    CodeState::Stable,          // Code state
-    Tags::None,                 // Tags
+    "org.inviwo.hdf5.ToLayer",               // Class identifier
+    "HDF5 To Layer",                         // Display name
+    "Data Input",                            // Category
+    CodeState::Stable,                       // Code state
+    Tags::CPU | Tag{"HDF5"} | Tag{"Layer"},  // Tags
     "Load a layer from an HDF5 file handle."_help,
 };
 const ProcessorInfo& HDF5ToLayer::getProcessorInfo() const { return processorInfo_; }
@@ -136,7 +134,7 @@ void HDF5ToLayer::onDataChange() {
 void HDF5ToLayer::onSelectionChange() {
     dirty_ = true;
     if (!layerMatches_.empty()) {
-        DataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
+        constDataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
         selection_.update(layerMeta);
     }
 }
@@ -144,7 +142,7 @@ void HDF5ToLayer::onSelectionChange() {
 void HDF5ToLayer::makeLayer() {
     if (inport_.hasData()) {
         const auto data = inport_.getData();
-        DataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
+        const DataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
 
         layer_ = getLayerAtPathAsType(*data + layerMeta.path_, selection_.getSelection(),
                                       util::conversionFormat(datatype_.getSelectedIndex()));
@@ -156,6 +154,4 @@ void HDF5ToLayer::deserialize(Deserializer& d) {
     deserialized_ = true;
 }
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

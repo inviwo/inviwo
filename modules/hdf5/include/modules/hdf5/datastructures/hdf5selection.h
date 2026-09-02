@@ -31,23 +31,15 @@
 
 #include <cstddef>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 /**
- * A hyperslab selection along all dimensions of an HDF5 dataset. The number of selected elements
- * along a dimension is `(end - start) / stride`. Dimensions are given in column major (Inviwo)
- * order.
+ * A hyperslab selection along all dimensions of an HDF5 dataset.
  */
 struct Selection {
-    Selection(size_t startval, size_t endval, size_t strideval)
-        : start(startval), end(endval), stride(strideval) {}
-    size_t start;
-    size_t end;
-    size_t stride;
+    size_t start{0};
+    size_t count{0};
+    size_t stride{1};
 };
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

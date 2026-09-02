@@ -172,7 +172,7 @@ void HDF5ToVolume::process() try {
     throw Exception(SourceContext{}, "Error reading HDF5 data: {}", e.getDetailMsg());
 }
 
-dmat4 HDF5ToVolume::getBasisFromMeta(DataSetInfo meta) {
+dmat4 HDF5ToVolume::getBasisFromMeta(const DataSetInfo& meta) {
     dmat4 basis(1.0);
 
     if (inport_.hasData()) {
@@ -182,7 +182,7 @@ dmat4 HDF5ToVolume::getBasisFromMeta(DataSetInfo meta) {
         int rank = space.getSimpleExtentNdims();
         if (rank != 2)
             throw DataReaderException(SourceContext{},
-                                      "Could not create Basis from: {} Invalid rank",
+                                      "Could not create Basis from: {} Invalid rank",
                                       meta.path_.toString());
         std::vector<hsize_t> dims(rank);
         space.getSimpleExtentDims(dims.data());
@@ -281,7 +281,7 @@ void HDF5ToVolume::onBasisSelectionChange() {
 void HDF5ToVolume::onSelectionChange() {
     dirty_ = true;
     if (!volumeMatches_.empty()) {
-        DataSetInfo volumeMeta = volumeMatches_[volumeSelection_.getSelectedIndex()];
+        const DataSetInfo volumeMeta = volumeMatches_[volumeSelection_.getSelectedIndex()];
         selection_.update(volumeMeta);
     }
 }
@@ -289,7 +289,7 @@ void HDF5ToVolume::onSelectionChange() {
 void HDF5ToVolume::makeVolume() {
     if (inport_.hasData()) {
         const auto data = inport_.getData();
-        DataSetInfo volumeMeta = volumeMatches_[volumeSelection_.getSelectedIndex()];
+        const DataSetInfo volumeMeta = volumeMatches_[volumeSelection_.getSelectedIndex()];
 
         const auto* format = util::conversionFormat(datatype_.getSelectedIndex());
 

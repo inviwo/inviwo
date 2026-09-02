@@ -64,7 +64,7 @@ namespace hdf5 {
  */
 class DataSet : public H5::DataSet {
 public:
-    explicit DataSet(H5::DataSet dataset) : H5::DataSet{std::move(dataset)} {}
+    explicit DataSet(const H5::DataSet& dataset) : H5::DataSet{dataset} {}
     DataSet(const DataSet&) = delete;
     DataSet& operator=(const DataSet&) = delete;
     DataSet(DataSet&&) = default;
@@ -74,8 +74,6 @@ public:
 
 class IVW_MODULE_HDF5_API Handle {
 public:
-    using Selection = ::inviwo::hdf5::Selection;
-
     Handle(const std::filesystem::path& filename);
     Handle(const std::filesystem::path& filename, Path path);
     Handle(const Handle& rhs) = default;
@@ -155,33 +153,12 @@ public:
     static constexpr std::string_view dataName{"HDF"};
 
 private:
-    Handle(std::filesystem::path filename, Path path, H5::Group data);
+    Handle(std::filesystem::path filename, Path path, const H5::Group& data);
 
     std::filesystem::path filename_;
     Path path_;
     H5::Group data_;
 };
-
-/*
-H5T_NATIVE_CHAR     char
-H5T_NATIVE_SCHAR    signed char
-H5T_NATIVE_UCHAR    unsigned char
-H5T_NATIVE_SHORT    short
-H5T_NATIVE_USHORT   unsigned short
-H5T_NATIVE_INT      int
-H5T_NATIVE_UINT     unsigned
-H5T_NATIVE_LONG     long
-H5T_NATIVE_ULONG    unsigned long
-H5T_NATIVE_LLONG    long long
-H5T_NATIVE_ULLONG   unsigned long long
-H5T_NATIVE_FLOAT    float
-H5T_NATIVE_DOUBLE   double
-H5T_NATIVE_LDOUBLE  long double
-H5T_NATIVE_HSIZE    hsize_t
-H5T_NATIVE_HSSIZE   hssize_t
-H5T_NATIVE_HERR     herr_t
-H5T_NATIVE_HBOOL    hbool_t
-*/
 
 }  // namespace hdf5
 

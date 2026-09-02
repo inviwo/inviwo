@@ -46,7 +46,7 @@ namespace hdf5 {
 class IVW_MODULE_HDF5_API Path {
 public:
     Path();
-    Path(std::string_view path);
+    explicit Path(std::string_view path);
     Path(const Path& rhs) = default;
     Path& operator=(const Path& that) = default;
     Path(Path&& rhs) = default;
