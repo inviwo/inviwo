@@ -63,10 +63,12 @@ MeshSplatProcessor::MeshSplatProcessor()
                    {"Uniform", "Uniform", util::SplatKernel::Uniform}},
                   0}
     , error_{"kernelCutoff", "Kernel Cutoff (error)",
-             util::ordinalScale(0.01f).setMin(0.0f).setMax(1.0f).setInc(0.00001f)}
+             util::ordinalScale(0.01f).setMin(0.0f).setMax(1.0f).setInc(0.00001f).set(
+                 "Used to calculate the support size in case of a Gaussian kernel"_help)}
 
     , perPointSize_{"perPointSize", "Use Per-Point Sizes", false}
-    , size_{"size", "Size", util::ordinalScale(1.0f).setInc(0.000001f)}
+    , size_{"size", "Size",
+            util::ordinalScale(1.0f).setInc(0.000001f).set("World space 'size' of the point"_help)}
 
     , perPointWeight_{"perPointWeight", "Use Per-Point Weights", false}
     , weight_{"weight", "Weight", util::ordinalScale(1.0f).setInc(0.000001f)}
