@@ -94,7 +94,7 @@ var searchData=
   ['meshvisualizer_91',['MeshVisualizer',['../classinviwo_1_1MeshVisualizer.html',1,'inviwo']]],
   ['meshvolumerenderer_92',['MeshVolumeRenderer',['../classinviwo_1_1MeshVolumeRenderer.html',1,'inviwo']]],
   ['message_93',['message',['../structinviwo_1_1log_1_1message.html',1,'inviwo::log']]],
-  ['metadata_94',['MetaData',['../structinviwo_1_1hdf5_1_1MetaData.html',1,'inviwo::hdf5::MetaData'],['../classinviwo_1_1MetaData.html',1,'inviwo::MetaData']]],
+  ['metadata_94',['MetaData',['../classinviwo_1_1MetaData.html',1,'inviwo']]],
   ['metadatafactory_95',['MetaDataFactory',['../classinviwo_1_1MetaDataFactory.html',1,'inviwo']]],
   ['metadatamap_96',['MetaDataMap',['../classinviwo_1_1MetaDataMap.html',1,'inviwo']]],
   ['metadataowner_97',['MetaDataOwner',['../classinviwo_1_1MetaDataOwner.html',1,'inviwo']]],

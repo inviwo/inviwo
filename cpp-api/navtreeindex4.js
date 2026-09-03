@@ -245,9 +245,9 @@ var NAVTREEINDEX4 =
 "classinviwo_1_1DirectionalLightSourceProcessor.html#a9905e2a74b30a6de7f14ae7d948d5b1e":[5,0,1,293,1],
 "classinviwo_1_1DirectionalLightSourceProcessor.html#ac6b73a411e9a5092ee0888ed0c27f2ac":[3,0,0,285,0],
 "classinviwo_1_1DirectionalLightSourceProcessor.html#ac6b73a411e9a5092ee0888ed0c27f2ac":[5,0,1,293,0],
-"classinviwo_1_1DirectoryProperty.html":[2,4,12],
-"classinviwo_1_1DirectoryProperty.html#a2eeefb2679cef790d4428855f4008bcf":[2,4,12,1],
-"classinviwo_1_1DirectoryProperty.html#a6496405b7efad8131f7915bee35ce128":[2,4,12,0],
+"classinviwo_1_1DirectoryProperty.html":[2,4,14],
+"classinviwo_1_1DirectoryProperty.html#a2eeefb2679cef790d4428855f4008bcf":[2,4,14,1],
+"classinviwo_1_1DirectoryProperty.html#a6496405b7efad8131f7915bee35ce128":[2,4,14,0],
 "classinviwo_1_1DirectoryToStringConverter.html":[3,0,0,287],
 "classinviwo_1_1DirectoryToStringConverter.html":[5,0,1,295]
 };

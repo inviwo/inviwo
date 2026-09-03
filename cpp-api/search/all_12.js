@@ -48,7 +48,7 @@ var searchData=
   ['segment_45',['Segment',['../structinviwo_1_1ShaderComponent_1_1Segment.html',1,'inviwo::ShaderComponent']]],
   ['select_46',['Select',['../namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6dae0626222614bdee31951d84c64e5e9ff',1,'inviwo']]],
   ['select_47',['select',['../classinviwo_1_1BrushingAndLinkingManager.html#ad7a398184a5d56cd684c4b199743aee0',1,'inviwo::BrushingAndLinkingManager']]],
-  ['selection_48',['Selection',['../structinviwo_1_1hdf5_1_1Handle_1_1Selection.html',1,'inviwo::hdf5::Handle']]],
+  ['selection_48',['Selection',['../structinviwo_1_1hdf5_1_1Selection.html',1,'inviwo::hdf5']]],
   ['selectioncolorproperty_49',['SelectionColorProperty',['../classinviwo_1_1SelectionColorProperty.html',1,'inviwo']]],
   ['selectioncolorstate_50',['SelectionColorState',['../structinviwo_1_1SelectionColorState.html',1,'inviwo']]],
   ['selectrows_51',['selectRows',['../namespaceinviwo_1_1dataframe.html#a8f1952fc5ac34c7d41ab9f7ea6307eaa',1,'inviwo::dataframe::selectRows(std::shared_ptr&lt; const Column &gt; col, Pred pred)'],['../namespaceinviwo_1_1dataframe.html#a7946d48188011059eb30a7874afe4efa',1,'inviwo::dataframe::selectRows(const Column &amp;col, const std::vector&lt; dataframefilters::ItemFilter &gt; &amp;filters)'],['../namespaceinviwo_1_1dataframe.html#af82405960c1e2f52a4c4ce48e25eb953',1,'inviwo::dataframe::selectRows(const DataFrame &amp;dataframe, dataframefilters::Filters filters)']]],

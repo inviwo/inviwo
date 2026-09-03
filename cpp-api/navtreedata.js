@@ -85,14 +85,14 @@ var NAVTREEINDEX =
 "classinviwo_1_1algorithm_1_1LineRenderer.html",
 "classinviwo_1_1animation_1_1KeyframeFactory.html",
 "classinviwo_1_1glui_1_1VBoxLayout.html",
-"classinviwo_1_1views_1_1set__transform.html",
-"namespaceinviwo_1_1csvfilters.html#a397cfebd45c0f6bdd1907df59eed9ed1",
-"namespaceinviwo_1_1util.html#a7b865dce555b84b782b67a36be048832",
-"structfmt_1_1formatter_3_01inviwo_1_1UnicodeFloat_01_4.html",
-"structinviwo_1_1NetworkDebugObserver.html#af0e4ea826661965ade5d258cba3b8d64",
-"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec",
-"structinviwo_1_1log_1_1info.html",
-"structinviwo_1_1utilgl_1_1ClearDepth.html"
+"classinviwo_1_1util_1_1cloneable__ptr.html",
+"namespaceinviwo_1_1color.html#aaf6dd516ba34489270fd65d4b0bf9111",
+"namespaceinviwo_1_1util.html#a6fd54c996575d2b47bea52c51ee3ec14",
+"namespacemembers_l.html",
+"structinviwo_1_1MinMaxPropertyState.html",
+"structinviwo_1_1StipplingData.html#a250e19f0d8601679d5e7159b4d6a5976",
+"structinviwo_1_1help_1_1HelpProcessor.html",
+"structinviwo_1_1utildoc_1_1TableBuilder_1_1Header.html"
 ];
 
 const SYNCONMSG = 'click to disable panel synchronization';

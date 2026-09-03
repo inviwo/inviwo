@@ -95,7 +95,7 @@ var NAVTREEINDEX16 =
 "classinviwo_1_1PropertyWidgetQt.html":[5,0,1,961],
 "classinviwo_1_1PropertyWidgetQt.html#a51015edf0ba5a5e494d8b2f52ec873f6":[3,0,0,953,0],
 "classinviwo_1_1PropertyWidgetQt.html#a51015edf0ba5a5e494d8b2f52ec873f6":[5,0,1,961,0],
-"classinviwo_1_1Property_1_1OnChangeBlocker.html":[2,4,31,0],
+"classinviwo_1_1Property_1_1OnChangeBlocker.html":[2,4,33,0],
 "classinviwo_1_1Python3GLModule.html":[3,0,0,959],
 "classinviwo_1_1Python3GLModule.html":[5,0,1,967],
 "classinviwo_1_1Python3Module.html":[3,0,0,960],

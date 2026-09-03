@@ -114,35 +114,46 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('classinviwo_1_
   <div class="headertitle"><div class="title">inviwo::hdf5::Path Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;modules/hdf5/datastructures/hdf5path.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a76d72feb5e2c8ac26bbf2dba6eddfdb6" id="r_a76d72feb5e2c8ac26bbf2dba6eddfdb6"><td class="memItemLeft"><a id="a76d72feb5e2c8ac26bbf2dba6eddfdb6" name="a76d72feb5e2c8ac26bbf2dba6eddfdb6"></a>
-&#160;</td><td class="memItemRight"><b>operator std::string</b> () const</td></tr>
+<tr class="memitem:a94a11865492af3d5a9c0bb0cba499f88" id="r_a94a11865492af3d5a9c0bb0cba499f88"><td class="memItemLeft"><a id="a94a11865492af3d5a9c0bb0cba499f88" name="a94a11865492af3d5a9c0bb0cba499f88"></a>
+&#160;</td><td class="memItemRight"><b>operator const std::string &amp;</b> () const</td></tr>
 <tr class="memitem:a3b8ddf69e6b6798a0b3522eebbfefa9c" id="r_a3b8ddf69e6b6798a0b3522eebbfefa9c"><td class="memItemLeft"><a id="a3b8ddf69e6b6798a0b3522eebbfefa9c" name="a3b8ddf69e6b6798a0b3522eebbfefa9c"></a>
 Path &amp;&#160;</td><td class="memItemRight"><b>operator+=</b> (const Path &amp;path)</td></tr>
-<tr class="memitem:a775cdc0bc22a625aaf9f3c496734c544" id="r_a775cdc0bc22a625aaf9f3c496734c544"><td class="memItemLeft"><a id="a775cdc0bc22a625aaf9f3c496734c544" name="a775cdc0bc22a625aaf9f3c496734c544"></a>
-Path &amp;&#160;</td><td class="memItemRight"><b>operator+=</b> (const std::string &amp;path)</td></tr>
-<tr class="memitem:ae93aefc91e59b7246aa2107087567589" id="r_ae93aefc91e59b7246aa2107087567589"><td class="memItemLeft"><a id="ae93aefc91e59b7246aa2107087567589" name="ae93aefc91e59b7246aa2107087567589"></a>
-Path &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const Path &amp;that)</td></tr>
-<tr class="memitem:aa8a7633a571ef9533de86311dc0ac2e3" id="r_aa8a7633a571ef9533de86311dc0ac2e3"><td class="memItemLeft"><a id="aa8a7633a571ef9533de86311dc0ac2e3" name="aa8a7633a571ef9533de86311dc0ac2e3"></a>
-Path &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (Path &amp;&amp;that)</td></tr>
-<tr class="memitem:a481d75aa96bc075192d518621dada942" id="r_a481d75aa96bc075192d518621dada942"><td class="memItemLeft"><a id="a481d75aa96bc075192d518621dada942" name="a481d75aa96bc075192d518621dada942"></a>
-&#160;</td><td class="memItemRight"><b>Path</b> (const Path &amp;rhs)</td></tr>
-<tr class="memitem:a9b695bb0503d8eeed9330dc826da0fc5" id="r_a9b695bb0503d8eeed9330dc826da0fc5"><td class="memItemLeft"><a id="a9b695bb0503d8eeed9330dc826da0fc5" name="a9b695bb0503d8eeed9330dc826da0fc5"></a>
-&#160;</td><td class="memItemRight"><b>Path</b> (const std::string &amp;path)</td></tr>
-<tr class="memitem:ac8b96cbb62e1eee8676d9e0ce15a1257" id="r_ac8b96cbb62e1eee8676d9e0ce15a1257"><td class="memItemLeft"><a id="ac8b96cbb62e1eee8676d9e0ce15a1257" name="ac8b96cbb62e1eee8676d9e0ce15a1257"></a>
-&#160;</td><td class="memItemRight"><b>Path</b> (Path &amp;&amp;rhs)</td></tr>
+<tr class="memitem:a25c1e0ebf3f675b9e6bd4fb4fe850477" id="r_a25c1e0ebf3f675b9e6bd4fb4fe850477"><td class="memItemLeft"><a id="a25c1e0ebf3f675b9e6bd4fb4fe850477" name="a25c1e0ebf3f675b9e6bd4fb4fe850477"></a>
+Path &amp;&#160;</td><td class="memItemRight"><b>operator+=</b> (std::string_view path)</td></tr>
+<tr class="memitem:abd5f723a5a698ef6507f304f0efc3dde" id="r_abd5f723a5a698ef6507f304f0efc3dde"><td class="memItemLeft"><a id="abd5f723a5a698ef6507f304f0efc3dde" name="abd5f723a5a698ef6507f304f0efc3dde"></a>
+Path &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const Path &amp;that)=default</td></tr>
+<tr class="memitem:a51e40d7457073c2d346adfde7ed36576" id="r_a51e40d7457073c2d346adfde7ed36576"><td class="memItemLeft"><a id="a51e40d7457073c2d346adfde7ed36576" name="a51e40d7457073c2d346adfde7ed36576"></a>
+Path &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (Path &amp;&amp;that)=default</td></tr>
+<tr class="memitem:a4d03fff1770f913fc3f5847febf105b1" id="r_a4d03fff1770f913fc3f5847febf105b1"><td class="memItemLeft"><a id="a4d03fff1770f913fc3f5847febf105b1" name="a4d03fff1770f913fc3f5847febf105b1"></a>
+&#160;</td><td class="memItemRight"><b>Path</b> (const Path &amp;rhs)=default</td></tr>
+<tr class="memitem:a556e351086386cc03210ef6e4d990e8a" id="r_a556e351086386cc03210ef6e4d990e8a"><td class="memItemLeft"><a id="a556e351086386cc03210ef6e4d990e8a" name="a556e351086386cc03210ef6e4d990e8a"></a>
+&#160;</td><td class="memItemRight"><b>Path</b> (Path &amp;&amp;rhs)=default</td></tr>
+<tr class="memitem:a2355f4cf7485e30e40325f83e682d1ab" id="r_a2355f4cf7485e30e40325f83e682d1ab"><td class="memItemLeft"><a id="a2355f4cf7485e30e40325f83e682d1ab" name="a2355f4cf7485e30e40325f83e682d1ab"></a>
+&#160;</td><td class="memItemRight"><b>Path</b> (std::string_view path)</td></tr>
 <tr class="memitem:ac71540003e47f636dcd593e2aa893369" id="r_ac71540003e47f636dcd593e2aa893369"><td class="memItemLeft"><a id="ac71540003e47f636dcd593e2aa893369" name="ac71540003e47f636dcd593e2aa893369"></a>
 Path &amp;&#160;</td><td class="memItemRight"><b>pop</b> ()</td></tr>
 <tr class="memitem:a1a1dc941cb5bccdb13a5be2c892bdadd" id="r_a1a1dc941cb5bccdb13a5be2c892bdadd"><td class="memItemLeft"><a id="a1a1dc941cb5bccdb13a5be2c892bdadd" name="a1a1dc941cb5bccdb13a5be2c892bdadd"></a>
 Path &amp;&#160;</td><td class="memItemRight"><b>push</b> (const Path &amp;path)</td></tr>
-<tr class="memitem:aea32b5d6081242e3668dc71ea6b0a09c" id="r_aea32b5d6081242e3668dc71ea6b0a09c"><td class="memItemLeft"><a id="aea32b5d6081242e3668dc71ea6b0a09c" name="aea32b5d6081242e3668dc71ea6b0a09c"></a>
-Path &amp;&#160;</td><td class="memItemRight"><b>push</b> (const std::string &amp;path)</td></tr>
-<tr class="memitem:af731ee49d801549c0e6959d0143804ad" id="r_af731ee49d801549c0e6959d0143804ad"><td class="memItemLeft"><a id="af731ee49d801549c0e6959d0143804ad" name="af731ee49d801549c0e6959d0143804ad"></a>
-std::string&#160;</td><td class="memItemRight"><b>toString</b> () const</td></tr>
+<tr class="memitem:a13b338464cc7dedcdefe22a2223db4ca" id="r_a13b338464cc7dedcdefe22a2223db4ca"><td class="memItemLeft"><a id="a13b338464cc7dedcdefe22a2223db4ca" name="a13b338464cc7dedcdefe22a2223db4ca"></a>
+Path &amp;&#160;</td><td class="memItemRight"><b>push</b> (std::string_view path)</td></tr>
+<tr class="memitem:ad72773bfcd729d3cb921d3fc586fa87e" id="r_ad72773bfcd729d3cb921d3fc586fa87e"><td class="memItemLeft"><a id="ad72773bfcd729d3cb921d3fc586fa87e" name="ad72773bfcd729d3cb921d3fc586fa87e"></a>
+const std::string &amp;&#160;</td><td class="memItemRight"><b>toString</b> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:a409ba3e63693f625f39ae86832ba7b7b" id="r_a409ba3e63693f625f39ae86832ba7b7b"><td class="memItemLeft"><a id="a409ba3e63693f625f39ae86832ba7b7b" name="a409ba3e63693f625f39ae86832ba7b7b"></a>
+Path&#160;</td><td class="memItemRight"><b>operator+</b> (const Path &amp;lhs, const Path &amp;rhs)</td></tr>
+<tr class="memitem:a627615ceff73f273fc90a09c48fb9f21" id="r_a627615ceff73f273fc90a09c48fb9f21"><td class="memItemLeft"><a id="a627615ceff73f273fc90a09c48fb9f21" name="a627615ceff73f273fc90a09c48fb9f21"></a>
+Path&#160;</td><td class="memItemRight"><b>operator+</b> (const Path &amp;lhs, std::string_view rhs)</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A normalized HDF5 group path, e.g. <span class="tt">/group/subgroup/dataset</span>. The path is stored as a single normalized string with a leading <span class="tt">/</span>, no trailing <span class="tt">/</span> and no empty segments. An empty path represents the root <span class="tt">/</span>. </p>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>modules/hdf5/include/modules/hdf5/datastructures/<b>hdf5path.h</b></li>
 </ul>
 </div><!-- contents -->

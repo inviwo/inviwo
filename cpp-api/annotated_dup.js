@@ -281,12 +281,19 @@ var annotated_dup =
         [ "WidgetSupplier", "classinviwo_1_1glui_1_1WidgetSupplier.html", null ]
       ] ],
       [ "hdf5", null, [
+        [ "DataSet", "classinviwo_1_1hdf5_1_1DataSet.html", null ],
+        [ "DataSetInfo", "structinviwo_1_1hdf5_1_1DataSetInfo.html", "structinviwo_1_1hdf5_1_1DataSetInfo" ],
+        [ "DimSelectionProperty", "classinviwo_1_1hdf5_1_1DimSelectionProperty.html", "classinviwo_1_1hdf5_1_1DimSelectionProperty" ],
+        [ "DimSelectionsProperty", "classinviwo_1_1hdf5_1_1DimSelectionsProperty.html", "classinviwo_1_1hdf5_1_1DimSelectionsProperty" ],
         [ "Exception", "classinviwo_1_1hdf5_1_1Exception.html", null ],
         [ "Handle", "classinviwo_1_1hdf5_1_1Handle.html", "classinviwo_1_1hdf5_1_1Handle" ],
+        [ "HDF5ToBuffer", "classinviwo_1_1hdf5_1_1HDF5ToBuffer.html", "classinviwo_1_1hdf5_1_1HDF5ToBuffer" ],
+        [ "HDF5ToDataFrame", "classinviwo_1_1hdf5_1_1HDF5ToDataFrame.html", "classinviwo_1_1hdf5_1_1HDF5ToDataFrame" ],
+        [ "HDF5ToLayer", "classinviwo_1_1hdf5_1_1HDF5ToLayer.html", "classinviwo_1_1hdf5_1_1HDF5ToLayer" ],
         [ "HDF5ToVolume", "classinviwo_1_1hdf5_1_1HDF5ToVolume.html", "classinviwo_1_1hdf5_1_1HDF5ToVolume" ],
-        [ "MetaData", "structinviwo_1_1hdf5_1_1MetaData.html", null ],
         [ "Path", "classinviwo_1_1hdf5_1_1Path.html", null ],
         [ "PathSelection", "classinviwo_1_1hdf5_1_1PathSelection.html", "classinviwo_1_1hdf5_1_1PathSelection" ],
+        [ "Selection", "structinviwo_1_1hdf5_1_1Selection.html", null ],
         [ "Source", "classinviwo_1_1hdf5_1_1Source.html", "classinviwo_1_1hdf5_1_1Source" ],
         [ "TypeMap", "structinviwo_1_1hdf5_1_1TypeMap.html", null ],
         [ "TypeMap&lt; char &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01char_01_4.html", null ],
@@ -298,8 +305,7 @@ var annotated_dup =
         [ "TypeMap&lt; unsigned char &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01unsigned_01char_01_4.html", null ],
         [ "TypeMap&lt; unsigned int &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01unsigned_01int_01_4.html", null ],
         [ "TypeMap&lt; unsigned long long &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01unsigned_01long_01long_01_4.html", null ],
-        [ "TypeMap&lt; unsigned short &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01unsigned_01short_01_4.html", null ],
-        [ "VolumeInfo", "structinviwo_1_1hdf5_1_1VolumeInfo.html", null ]
+        [ "TypeMap&lt; unsigned short &gt;", "structinviwo_1_1hdf5_1_1TypeMap_3_01unsigned_01short_01_4.html", null ]
       ] ],
       [ "help", null, [
         [ "HelpInport", "structinviwo_1_1help_1_1HelpInport.html", null ],

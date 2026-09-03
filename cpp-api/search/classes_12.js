@@ -28,7 +28,7 @@ var searchData=
   ['seedpointsfrommask_25',['SeedPointsFromMask',['../classinviwo_1_1SeedPointsFromMask.html',1,'inviwo']]],
   ['seedsfrommasksequence_26',['SeedsFromMaskSequence',['../classinviwo_1_1SeedsFromMaskSequence.html',1,'inviwo']]],
   ['segment_27',['Segment',['../structinviwo_1_1ShaderComponent_1_1Segment.html',1,'inviwo::ShaderComponent']]],
-  ['selection_28',['Selection',['../structinviwo_1_1hdf5_1_1Handle_1_1Selection.html',1,'inviwo::hdf5::Handle']]],
+  ['selection_28',['Selection',['../structinviwo_1_1hdf5_1_1Selection.html',1,'inviwo::hdf5']]],
   ['selectioncolorproperty_29',['SelectionColorProperty',['../classinviwo_1_1SelectionColorProperty.html',1,'inviwo']]],
   ['selectioncolorstate_30',['SelectionColorState',['../structinviwo_1_1SelectionColorState.html',1,'inviwo']]],
   ['sequence_31',['sequence',['../structinviwo_1_1util_1_1sequence.html',1,'inviwo::util']]],

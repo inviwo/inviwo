@@ -81,6 +81,17 @@ var group__properties =
       [ "updateFromLayer", "classinviwo_1_1DataRangeProperty.html#a8423daae1a67d042b956c07393dd454d", null ],
       [ "updateFromVolume", "classinviwo_1_1DataRangeProperty.html#a40bed184b875b046e70832b1676dfd2f", null ]
     ] ],
+    [ "inviwo::hdf5::DimSelectionProperty", "classinviwo_1_1hdf5_1_1DimSelectionProperty.html", [
+      [ "clone", "classinviwo_1_1hdf5_1_1DimSelectionProperty.html#ab13c05d046df203d93aeda339590a90c", null ],
+      [ "getSelection", "classinviwo_1_1hdf5_1_1DimSelectionProperty.html#a4bbd7e70de35f18d95a8f2c32492eeae", null ],
+      [ "update", "classinviwo_1_1hdf5_1_1DimSelectionProperty.html#a1aeb349acfb8764f72052db018a081d6", null ]
+    ] ],
+    [ "inviwo::hdf5::DimSelectionsProperty", "classinviwo_1_1hdf5_1_1DimSelectionsProperty.html", [
+      [ "clone", "classinviwo_1_1hdf5_1_1DimSelectionsProperty.html#a209f78ae6a9b5f6663fe1853f6a2397b", null ],
+      [ "getMaxSelection", "classinviwo_1_1hdf5_1_1DimSelectionsProperty.html#a6f096b76fdaa759932b5cab89a236830", null ],
+      [ "getSelection", "classinviwo_1_1hdf5_1_1DimSelectionsProperty.html#a424edcba5e056dc4b22f7d836f774503", null ],
+      [ "update", "classinviwo_1_1hdf5_1_1DimSelectionsProperty.html#aebc720b4972b24c47a314e7c25a17435", null ]
+    ] ],
     [ "inviwo::DirectoryProperty", "classinviwo_1_1DirectoryProperty.html", [
       [ "clone", "classinviwo_1_1DirectoryProperty.html#a6496405b7efad8131f7915bee35ce128", null ],
       [ "getClassIdentifierForWidget", "classinviwo_1_1DirectoryProperty.html#a2eeefb2679cef790d4428855f4008bcf", null ]

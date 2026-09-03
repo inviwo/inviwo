@@ -540,6 +540,10 @@ var hierarchy =
       ] ]
     ] ],
     [ "inviwo::DataSequence&lt; Data &gt;", "classinviwo_1_1DataSequence.html", null ],
+    [ "H5::DataSet", null, [
+      [ "inviwo::hdf5::DataSet", "classinviwo_1_1hdf5_1_1DataSet.html", null ]
+    ] ],
+    [ "inviwo::hdf5::DataSetInfo", "structinviwo_1_1hdf5_1_1DataSetInfo.html", null ],
     [ "inviwo::amira::DataSpec", "structinviwo_1_1amira_1_1DataSpec.html", null ],
     [ "inviwo::amira::DataSpecFormat", "structinviwo_1_1amira_1_1DataSpecFormat.html", null ],
     [ "inviwo::DataTraits&lt; T, typename &gt;", "structinviwo_1_1DataTraits.html", null ],
@@ -1038,6 +1042,9 @@ var hierarchy =
         [ "inviwo::WebBrowserProcessor", "classinviwo_1_1WebBrowserProcessor.html", null ],
         [ "inviwo::WorldTransformDeprecated< T >", "classinviwo_1_1WorldTransformDeprecated.html", null ],
         [ "inviwo::glui::GLUIProcessor", "classinviwo_1_1glui_1_1GLUIProcessor.html", null ],
+        [ "inviwo::hdf5::HDF5ToBuffer", "classinviwo_1_1hdf5_1_1HDF5ToBuffer.html", null ],
+        [ "inviwo::hdf5::HDF5ToDataFrame", "classinviwo_1_1hdf5_1_1HDF5ToDataFrame.html", null ],
+        [ "inviwo::hdf5::HDF5ToLayer", "classinviwo_1_1hdf5_1_1HDF5ToLayer.html", null ],
         [ "inviwo::hdf5::HDF5ToVolume", "classinviwo_1_1hdf5_1_1HDF5ToVolume.html", null ],
         [ "inviwo::hdf5::PathSelection", "classinviwo_1_1hdf5_1_1PathSelection.html", null ],
         [ "inviwo::hdf5::Source", "classinviwo_1_1hdf5_1_1Source.html", null ],
@@ -1166,6 +1173,8 @@ var hierarchy =
           ] ],
           [ "inviwo::TransformListProperty", "classinviwo_1_1TransformListProperty.html", null ],
           [ "inviwo::ValueAxisProperty", "classinviwo_1_1ValueAxisProperty.html", null ],
+          [ "inviwo::hdf5::DimSelectionProperty", "classinviwo_1_1hdf5_1_1DimSelectionProperty.html", null ],
+          [ "inviwo::hdf5::DimSelectionsProperty", "classinviwo_1_1hdf5_1_1DimSelectionsProperty.html", null ],
           [ "inviwo::plot::AxisStyleProperty", "classinviwo_1_1plot_1_1AxisStyleProperty.html", null ],
           [ "inviwo::plot::BoxSelectionProperty", "classinviwo_1_1plot_1_1BoxSelectionProperty.html", null ],
           [ "inviwo::plot::CategoricalAxisProperty", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html", null ],
@@ -1761,7 +1770,6 @@ var hierarchy =
     [ "inviwo::MeshShaderCache", "classinviwo_1_1MeshShaderCache.html", null ],
     [ "inviwo::MeshTexturing", "classinviwo_1_1MeshTexturing.html", null ],
     [ "inviwo::log::message&lt; Args &gt;", "structinviwo_1_1log_1_1message.html", null ],
-    [ "inviwo::hdf5::MetaData", "structinviwo_1_1hdf5_1_1MetaData.html", null ],
     [ "inviwo::MetaDataMap", "classinviwo_1_1MetaDataMap.html", null ],
     [ "inviwo::MetaDataOwner", "classinviwo_1_1MetaDataOwner.html", [
       [ "inviwo::Column", "classinviwo_1_1Column.html", [
@@ -3112,7 +3120,7 @@ var hierarchy =
     [ "inviwo::ScopedPropertySerializationMode", "classinviwo_1_1ScopedPropertySerializationMode.html", null ],
     [ "inviwo::SearchDSL&lt; Ts &gt;", "classinviwo_1_1SearchDSL.html", null ],
     [ "inviwo::ShaderComponent::Segment", "structinviwo_1_1ShaderComponent_1_1Segment.html", null ],
-    [ "inviwo::hdf5::Handle::Selection", "structinviwo_1_1hdf5_1_1Handle_1_1Selection.html", null ],
+    [ "inviwo::hdf5::Selection", "structinviwo_1_1hdf5_1_1Selection.html", null ],
     [ "inviwo::SelectionColorState", "structinviwo_1_1SelectionColorState.html", null ],
     [ "inviwo::util::sequence&lt; T &gt;", "structinviwo_1_1util_1_1sequence.html", null ],
     [ "inviwo::animation::SequenceEditorFactoryObject", "classinviwo_1_1animation_1_1SequenceEditorFactoryObject.html", [
@@ -3720,7 +3728,6 @@ var hierarchy =
     [ "inviwo::detail::VolumeConf", "structinviwo_1_1detail_1_1VolumeConf.html", null ],
     [ "inviwo::VolumeConfig", "structinviwo_1_1VolumeConfig.html", null ],
     [ "inviwo::VolumeFragmentListRenderer", "classinviwo_1_1VolumeFragmentListRenderer.html", null ],
-    [ "inviwo::hdf5::VolumeInfo", "structinviwo_1_1hdf5_1_1VolumeInfo.html", null ],
     [ "inviwo::VolumeNormalization", "classinviwo_1_1VolumeNormalization.html", null ],
     [ "inviwo::VolumeRAMSubSet", "classinviwo_1_1VolumeRAMSubSet.html", null ],
     [ "inviwo::VolumeReprConfig", "structinviwo_1_1VolumeReprConfig.html", null ],
