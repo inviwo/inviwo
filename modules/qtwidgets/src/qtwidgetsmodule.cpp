@@ -45,6 +45,7 @@
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinaloptproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -72,7 +73,7 @@
 #include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/listpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/multifilepropertywidgetqt.h>
-#include <modules/qtwidgets/properties/optionpropertywidgetqt.h>             // IWYU pragma: keep
+#include <modules/qtwidgets/properties/optionpropertywidgetqt.h>  // IWYU pragma: keep
 #include <modules/qtwidgets/properties/ordinalminmaxpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/ordinalminmaxtextpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
@@ -149,6 +150,16 @@ struct OrdinalWidgetReghelper {
     }
 };
 
+template <OrdinalPropertyWidgetQtSemantics Sem>
+struct OrdinalOptWidgetReghelper {
+    template <typename T>
+    auto operator()(QtWidgetsModule& qm, const PropertySemantics& semantics) {
+        using PropertyType = OrdinalOptProperty<T>;
+        using PropertyWidget = OrdinalOptPropertyWidgetQt<T, Sem>;
+        qm.registerPropertyWidget<PropertyWidget, PropertyType>(semantics);
+    }
+};
+
 struct MinMaxWidgetReghelper {
     template <typename T>
     auto operator()(QtWidgetsModule& qm, const PropertySemantics& semantics) {
@@ -170,8 +181,7 @@ struct MinMaxTextWidgetReghelper {
 }  // namespace
 
 QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
-    : InviwoModule(app, "QtWidgets")
-    , tfMenuHelper_(std::make_unique<TFMenuHelper>()) {
+    : InviwoModule(app, "QtWidgets"), tfMenuHelper_(std::make_unique<TFMenuHelper>()) {
     if (!qApp) {
         throw ModuleInitException("QApplication must be constructed before QtWidgetsModule");
     }
@@ -214,6 +224,14 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     util::for_each_type<OrdinalTypes>{}(
         OrdinalWidgetReghelper<OrdinalPropertyWidgetQtSemantics::SpinBox>{}, *this,
         PropertySemantics::SpinBox);
+
+    // Register optional ordinal property widgets
+    util::for_each_type<OrdinalTypes>{}(
+        OrdinalOptWidgetReghelper<OrdinalPropertyWidgetQtSemantics::Default>{}, *this,
+        PropertySemantics::Default);
+    util::for_each_type<OrdinalTypes>{}(
+        OrdinalOptWidgetReghelper<OrdinalPropertyWidgetQtSemantics::Text>{}, *this,
+        PropertySemantics::Text);
 
     // Register MinMaxProperty widgets
     using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
