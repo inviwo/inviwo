@@ -37,6 +37,7 @@
 #include <inviwo/core/util/zip.h>
 
 #include <random>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -88,6 +89,24 @@ void NetworkAnnotation::deserialize(Deserializer& d) {
     }
     d.deserialize("color", color);
     d.deserialize("Processors", processors, "item");
+}
+
+void NetworkAnnotation::addProcessors(const std::vector<Processor*>& selected) {
+    const auto dist = std::distance(processors.begin(), processors.end());
+    for (auto* p : selected) {
+        if (!std::ranges::contains(processors.begin(), processors.begin() + dist,
+                                   p->getIdentifier())) {
+            processors.emplace_back(p->getIdentifier());
+        }
+    }
+}
+
+void NetworkAnnotation::removeProcessors(const std::vector<Processor*>& selected) {
+    for (auto* p : selected) {
+        if (auto it = std::ranges::find(processors, p->getIdentifier()); it != processors.end()) {
+            processors.erase(it);
+        }
+    }
 }
 
 void NetworkAnnotationsObservable::notifyObserversAnnotationAdded(NetworkAnnotation& annotation,
@@ -239,6 +258,11 @@ void NetworkAnnotations::update(size_t index, NetworkAnnotation annotation) {
     if (index >= annotations_.size()) {
         throw RangeException{SourceContext{}, "index out or range {}", index};
     }
+    if (annotation.processors.empty()) {
+        remove(index);
+        return;
+    }
+
     annotations_[index] = std::move(annotation);
     notifyObserversAnnotationChanged(annotations_[index], index);
     if (workspaceManager_) {

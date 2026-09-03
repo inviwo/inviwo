@@ -958,7 +958,78 @@ void NetworkEditor::addNetworkAnnotationMenuItems(
                 }));
     }
 
+    if (!selectedProcessors.empty()) {
+        auto* addMenu = menu.addMenu(tr("Add &Processors to"));
+        auto& annotations = mainWindow_->getInviwoApplication()->getNetworkAnnotations();
+        for (auto annotationIndex : std::views::iota(0uz, annotations.size())) {
+            const auto& annotation = annotations.getAnnotation(annotationIndex);
+
+            const auto* action = addMenu->addAction(utilqt::toQString(
+                annotation.title.value_or(fmt::format("Annotation {}", annotationIndex + 1))));
+            connect(
+                action, &QAction::triggered, this,
+                util::exceptionGuarded([this, annotationIndex, selectedProcessors]() {
+                    auto* item = annotations_.getGraphicsItem(annotationIndex);
+                    auto& annotationManager =
+                        mainWindow_->getInviwoApplication()->getNetworkAnnotations();
+                    auto annotation = annotationManager.getAnnotation(annotationIndex);
+                    annotation.addProcessors(selectedProcessors);
+
+                    if (item) {
+                        item->setSelected(false);
+                    }
+                    annotationManager.update(annotationIndex, annotation);
+
+                    if (item) {
+                        item->setSelected(true);
+                    }
+                    mainWindow_->getNetworkAnnotationWidget()->showAnnotation(
+                        annotationIndex,
+                        mainWindow_->getInviwoApplication()->getNetworkAnnotations().getAnnotation(
+                            annotationIndex));
+                }));
+        }
+    }
+
     if (!selectedAnnotations.empty()) {
+        if (!selectedProcessors.empty()) {
+            auto* removeMenu = menu.addMenu(tr("&Remove Processors from"));
+            for (auto annotationIndex : selectedAnnotations) {
+                const auto& annotation =
+                    mainWindow_->getInviwoApplication()->getNetworkAnnotations().getAnnotation(
+                        annotationIndex);
+
+                const auto* action = removeMenu->addAction(utilqt::toQString(
+                    annotation.title.value_or(fmt::format("Annotation {}", annotationIndex + 1))));
+                connect(action, &QAction::triggered, this,
+                        util::exceptionGuarded([this, annotationIndex, selectedProcessors]() {
+                            auto* item = annotations_.getGraphicsItem(annotationIndex);
+                            auto& annotationManager =
+                                mainWindow_->getInviwoApplication()->getNetworkAnnotations();
+                            auto annotation = annotationManager.getAnnotation(annotationIndex);
+                            annotation.removeProcessors(selectedProcessors);
+
+                            if (item) {
+                                item->setSelected(false);
+                            }
+                            // keep track of whether the annotation is empty since update() will
+                            // remove annotations with no processors
+                            const bool empty = annotation.processors.empty();
+                            annotationManager.update(annotationIndex, annotation);
+
+                            if (!empty) {
+                                if (item) {
+                                    item->setSelected(true);
+                                }
+                                mainWindow_->getNetworkAnnotationWidget()->showAnnotation(
+                                    annotationIndex, mainWindow_->getInviwoApplication()
+                                                         ->getNetworkAnnotations()
+                                                         .getAnnotation(annotationIndex));
+                            }
+                        }));
+            }
+        }
+
         auto* editMenu = menu.addMenu(tr("&Edit Annotations"));
         for (auto annotationIndex : selectedAnnotations) {
             const auto& annotation =
@@ -980,13 +1051,13 @@ void NetworkEditor::addNetworkAnnotationMenuItems(
                 }));
         }
 
-        auto* clearMenu = menu.addMenu(tr("&Clear Annotations"));
+        auto* deleteMenu = menu.addMenu(tr("&Delete Annotations"));
         for (auto annotationIndex : selectedAnnotations) {
             const auto& annotation =
                 mainWindow_->getInviwoApplication()->getNetworkAnnotations().getAnnotation(
                     annotationIndex);
 
-            const auto* action = clearMenu->addAction(utilqt::toQString(
+            const auto* action = deleteMenu->addAction(utilqt::toQString(
                 annotation.title.value_or(fmt::format("Annotation {}", annotationIndex + 1))));
             connect(action, &QAction::triggered, this,
                     util::exceptionGuarded([this, annotationIndex]() {
@@ -1095,7 +1166,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         std::views::transform([](auto&& index) { return *index; }) |
         std::ranges::to<std::unordered_set>();
 
-    addNetworkAnnotationMenuItems(menu, activeProcessors, activeAnnotations);
+    addNetworkAnnotationMenuItems(*menu.addMenu("Annotations..."), activeProcessors,
+                                  activeAnnotations);
 
     menu.addSeparator();
 

@@ -67,6 +67,9 @@ struct IVW_CORE_API NetworkAnnotation {
 
     void serialize(Serializer& s) const;
     void deserialize(Deserializer& d);
+
+    void addProcessors(const std::vector<Processor*>& processors);
+    void removeProcessors(const std::vector<Processor*>& processors);
 };
 
 class IVW_CORE_API NetworkAnnotationsObserver : public Observer {
