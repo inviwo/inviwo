@@ -36,7 +36,7 @@ from .. util import *
 
 
 class TestData:
-    def __init__(self, name, module, path):
+    def __init__(self, name, module, path, overridePath=None):
         self.module = module
         self.path = path
         self.name = name
@@ -44,6 +44,8 @@ class TestData:
         self.config = {}
         self.workspaces = glob.glob(self.path + "/*.inv")
         self.textExtensions = ["txt", "csv"]
+        # root of an external tree mirroring <module>/<name>/<file>, may be None
+        self.overridePath = overridePath
 
         configfile = toPath(self.path, "config.json")
         if os.path.exists(configfile):
@@ -63,10 +65,30 @@ class TestData:
     def getWorkspaces(self):
         return self.workspaces
 
+    def getOverrideDir(self):
+        if not self.overridePath:
+            return None
+        overrideDir = toPath(self.overridePath, self.module, self.name)
+        return overrideDir if os.path.isdir(overrideDir) else None
+
+    def resolveRef(self, filename):
+        # per-file fallback: only use the override copy when it actually exists
+        overrideDir = self.getOverrideDir()
+        if overrideDir:
+            overrideFile = toPath(overrideDir, filename)
+            if os.path.exists(overrideFile):
+                return overrideFile
+        return toPath(self.path, filename)
+
+    def isOverridden(self, filename):
+        return self.resolveRef(filename) != toPath(self.path, filename)
+
     def getImages(self):
         imgs = glob.glob(self.path + "/*.png")
-        imgs = [os.path.relpath(x, self.path) for x in imgs]
-        return imgs
+        overrideDir = self.getOverrideDir()
+        if overrideDir:
+            imgs += glob.glob(overrideDir + "/*.png")
+        return sorted({os.path.basename(x) for x in imgs})
 
     def getTextExtensions(self):
         if "textExtensions" in self.config:
@@ -75,8 +97,13 @@ class TestData:
             return self.textExtensions
 
     def getTextFiles(self):
-        files = (f for ext in self.getTextExtensions() for f in glob.glob(f"{self.path}/*.{ext}"))
-        return [os.path.relpath(x, self.path) for x in files]
+        dirs = [self.path]
+        overrideDir = self.getOverrideDir()
+        if overrideDir:
+            dirs.append(overrideDir)
+        files = (f for d in dirs for ext in self.getTextExtensions()
+                for f in glob.glob(f"{d}/*.{ext}"))
+        return sorted({os.path.basename(x) for x in files})
 
     def report(self, report):
         report['module'] = self.module

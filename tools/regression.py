@@ -95,6 +95,21 @@ def makeCmdParser():
                         help="Select log level: DEBUG, INFO, WARN, ERROR, CRITICAL")
     parser.add_argument("--summary", action="store_true",
                         dest="summary", help="Print summary information")
+    parser.add_argument("-R", "--reference-path", type=str, action="store",
+                        dest="referencepath", default=None,
+                        help="Path to an external tree of override reference images/text "
+                            "files, layout <module>/<testname>/<file>. Falls back to the "
+                            "repo reference per-file when a file is missing here")
+    parser.add_argument("--save-references", type=str, nargs='?', const="override",
+                        choices=["override", "repo", "both"], action="store",
+                        dest="savereferences", default=None,
+                        help="After the run, save test output as new references for images/"
+                            "text files that were missing a reference or failed the "
+                            "tolerance check. 'override' writes to --reference-path, 'repo' "
+                            "overwrites the checked-in reference, 'both' does both")
+    parser.add_argument("--no-run", action="store_true", dest="norun",
+                        help="Skip running inviwo and reuse the previously saved report, "
+                            "useful together with --save-references")
 
     return parser.parse_args()
 
@@ -192,6 +207,17 @@ if __name__ == '__main__':
     if config.has_option("Inviwo", "activemodules"):
         activeModules = config.get("Inviwo", "activemodules").split(";")
 
+    referencepath = None
+    if args.referencepath:
+        if not os.path.isdir(args.referencepath):
+            print_error("Path to reference override is invalid: " + args.referencepath)
+            sys.exit(1)
+        referencepath = os.path.abspath(args.referencepath)
+
+    if args.savereferences in ("override", "both") and not referencepath:
+        print_error("'--save-references " + args.savereferences + "' needs '--reference-path'")
+        sys.exit(1)
+
     runSettings = ivwpy.regression.inviwoapp.RunSettings(
         timeout=60,
         activeModules=activeModules
@@ -209,7 +235,8 @@ if __name__ == '__main__':
                                    htmlFile="report",
                                    sqlFile="report",
                                    runSettings=runSettings,
-                                   testSettings=testSettings)
+                                   testSettings=testSettings,
+                                   referenceOverridePath=referencepath)
 
     testfilter = makeFilter(args.include, args.exclude)
     testrange = makeSlice(args.slice)
@@ -219,8 +246,17 @@ if __name__ == '__main__':
         exit(0)
 
     try:
-        app.runTests(testrange=testrange, testfilter=testfilter, onlyRunFailed=args.failed)
-        app.saveJson()
+        if not args.norun:
+            app.runTests(testrange=testrange, testfilter=testfilter, onlyRunFailed=args.failed)
+            app.saveJson()
+        else:
+            print_info("Skipping run, reusing the previously saved report")
+
+        if args.savereferences:
+            saved = app.saveReferences(target=args.savereferences)
+            tests = {test.toString() for test, _, _ in saved}
+            print_info(f"Saved {len(saved)} reference file(s) for {len(tests)} test(s)"
+                       f" (target: {args.savereferences})")
 
         header = None
         if args.header and os.path.exists(args.header):
@@ -253,4 +289,7 @@ if __name__ == '__main__':
     except ivwpy.regression.error.MissingInivioAppError as err:
         print_error(err.error)
         print_info("Check that option '-i' is correct")
+        sys.exit(1)
+    except ivwpy.regression.error.RegressionError as err:
+        print_error(err.error)
         sys.exit(1)

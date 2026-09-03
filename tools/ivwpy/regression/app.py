@@ -46,9 +46,10 @@ from . generatereport import *
 from . database import *
 from . reporttest import *
 from . logprinter import *
+from . error import *
 
 
-def findModuleTest(path):
+def findModuleTest(path, overridePath=None):
     # assume path points to a folder of modules.
     # look in folder path/<module>/tests/regression/*
     tests = []
@@ -58,7 +59,8 @@ def findModuleTest(path):
             tests.append(testdata.TestData(
                 name=testDir,
                 module=moduleDir,
-                path=toPath(regressionDir, testDir)
+                path=toPath(regressionDir, testDir),
+                overridePath=overridePath
             ))
     return tests
 
@@ -79,7 +81,8 @@ class App:
                  htmlFile="report",
                  sqlFile="report",
                  runSettings=inviwoapp.RunSettings(),
-                 testSettings=ReportTestSettings()):
+                 testSettings=ReportTestSettings(),
+                 referenceOverridePath=None):
 
         self.app = inviwoapp.InviwoApp(appPath, runSettings)
         self.output = outputDir
@@ -87,9 +90,10 @@ class App:
         self.htmlFile = htmlFile
         self.sqlFile = sqlFile
         self.testSettings = testSettings
+        self.referenceOverridePath = referenceOverridePath
         self.summary = App.Summary()
 
-        tests = [findModuleTest(p) for p in moduleTestPaths]
+        tests = [findModuleTest(p, referenceOverridePath) for p in moduleTestPaths]
 
         self.tests = list(itertools.chain(*tests))
         self.tests.sort(key=str)
@@ -199,7 +203,7 @@ class App:
 
         for file in txtFiles & refFiles:
             with open(toPath(outputdir, "imgtest", file), 'r') as txtFile, \
-                    open(toPath(test.path, file), 'r') as refFile:
+                    open(test.resolveRef(file), 'r') as refFile:
                 txtLines = txtFile.readlines()
                 refLines = refFile.readlines()
 
@@ -248,7 +252,7 @@ class App:
 
         for img in imgs & refs:
             with ImageCompare(testImage=toPath(testpath, img),
-                              refImage=toPath(test.path, img),
+                              refImage=test.resolveRef(img),
                               logscaleDifferenceImage=logscaleDifferenceImage,
                               invertDifferenceImage=invertDifferenceImage) as comp:
 
@@ -282,6 +286,49 @@ class App:
         if os.path.exists(oldimg) and os.path.exists(newimg) and filecmp.cmp(oldimg, newimg):
             os.remove(newimg)
             os.link(oldimg, newimg)
+
+    def findFailingFiles(self, report, key):
+        # files with no reference at all, plus files that failed the tolerance check
+        # (report['failures'] entries store the latter as a {filename: message} dict)
+        data = report.get(key, {})
+        names = set(data.get('missing_refs', []))
+        entry = next((f for f in report.get('failures', []) if f[0] == key), None)
+        if entry:
+            names |= set(entry[1].keys())
+        return names
+
+    def saveReference(self, test, filename, srcPath, target):
+        written = []
+        if target in ("override", "both"):
+            destDir = toPath(self.referenceOverridePath, test.module, test.name)
+            os.makedirs(destDir, exist_ok=True)
+            shutil.copyfile(srcPath, toPath(destDir, filename))
+            written.append((test, filename, "override"))
+        if target in ("repo", "both"):
+            shutil.copyfile(srcPath, toPath(test.path, filename))
+            written.append((test, filename, "repo"))
+        return written
+
+    def saveReferences(self, target="override"):
+        if target in ("override", "both") and not self.referenceOverridePath:
+            raise RegressionError(
+                "Cannot save references to an override path, no '--reference-path' was given")
+
+        testsByName = {test.toString(): test for test in self.tests}
+        saved = []
+        for name, report in self.reports.items():
+            test = testsByName.get(name)
+            outputdir = report.get('outputdir')
+            if test is None or not outputdir:
+                continue
+
+            for key in ("images", "txts"):
+                for filename in self.findFailingFiles(report, key):
+                    srcPath = toPath(outputdir, "imgtest", filename)
+                    if os.path.exists(srcPath):
+                        saved += self.saveReference(test, filename, srcPath, target)
+
+        return saved
 
     def printTestList(self, testrange=slice(0, None), testfilter=lambda x: True, printfun=print):
         printfun("List of regression tests")
