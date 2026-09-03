@@ -42,6 +42,7 @@
 #include <QPen>
 #include <QPainter>
 #include <QRectF>
+#include <QFontDatabase>
 
 namespace inviwo {
 
@@ -80,7 +81,11 @@ ProcessorErrorItem::ProcessorErrorItem(QGraphicsItem* parent)
 
     setPos(ProcessorErrorItem::offset);
 
-    text_->setFont(QFont("Segoe", 12, QFont::Normal, false));
+    QFont f{QFontDatabase::systemFont(QFontDatabase::GeneralFont)};
+    f.setWeight(QFont::Normal);
+    f.setPointSize(12);
+
+    text_->setFont(f);
     text_->setBrush(QBrush{Qt::white});
     hide();
 

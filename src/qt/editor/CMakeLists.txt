@@ -84,6 +84,7 @@ set(SOURCE_FILES
     lineediteventfilter.cpp
     linkdialog/linkdialog.cpp
     linkdialog/linkdialogcurvegraphicsitems.cpp
+    linkdialog/linkdialoggraphicsitems.cpp
     linkdialog/linkdialogprocessorgraphicsitems.cpp
     linkdialog/linkdialogpropertygraphicsitems.cpp
     linkdialog/linkdialogscene.cpp

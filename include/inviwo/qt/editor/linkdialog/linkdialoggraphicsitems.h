@@ -70,6 +70,11 @@ static const int propertyExpandCollapseOffset = 16;
 
 static const int arrowWidth = propertyWidth / 15;
 static const int arrowHeight = arrowWidth / 2;
+
+enum class FontType : std::uint8_t { Identifier, Class };
+
+IVW_QTEDITOR_API const QFont& getFont(FontType type);
+
 }  // namespace linkdialog
 
 enum InviwoLinkUserGraphicsItemType {

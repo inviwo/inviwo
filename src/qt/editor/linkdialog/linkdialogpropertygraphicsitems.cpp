@@ -52,24 +52,23 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogTreeIte
     setZValue(linkdialog::propertyDepth);
     setFlags(ItemSendsScenePositionChanges);
 
-    int propWidth =
-        linkdialog::propertyWidth - (getLevel() * linkdialog::propertyExpandCollapseOffset);
-    setRect(-propWidth / 2, -linkdialog::propertyHeight / 2, propWidth, linkdialog::propertyHeight);
+    const int propWidth = linkdialog::propertyWidth - (LinkDialogPropertyGraphicsItem::getLevel() *
+                                                       linkdialog::propertyExpandCollapseOffset);
+    setRect(-propWidth / 2.0, -linkdialog::propertyHeight / 2.0, propWidth,
+            linkdialog::propertyHeight);
 
-    auto displayName = new LabelGraphicsItem(this);
+    auto* displayName = new LabelGraphicsItem(this);
     displayName->setPos(rect().topLeft() + QPointF(linkdialog::offset, linkdialog::offset));
     displayName->setDefaultTextColor(Qt::black);
-    auto dispFont = QFont("Segoe", linkdialog::propertyLabelHeight, QFont::Bold, false);
+    auto dispFont = getFont(linkdialog::FontType::Identifier);
     dispFont.setPixelSize(linkdialog::propertyLabelHeight);
     displayName->setFont(dispFont);
     displayName->setCrop(static_cast<int>(rect().width() - 2.0 * linkdialog::offset));
     displayName->setText(utilqt::toQString(item_->getDisplayName()));
 
-    auto classIdentifier = new LabelGraphicsItem(this);
+    auto* classIdentifier = new LabelGraphicsItem(this);
     classIdentifier->setDefaultTextColor(Qt::black);
-    auto classFont = QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true);
-    classFont.setPixelSize(linkdialog::processorLabelHeight);
-    classIdentifier->setFont(classFont);
+    classIdentifier->setFont(getFont(linkdialog::FontType::Class));
     classIdentifier->setCrop(static_cast<int>(rect().width() - 2.0 * linkdialog::offset));
     auto offset = classIdentifier->boundingRect().height();
     classIdentifier->setPos(rect().bottomLeft() +
@@ -78,10 +77,10 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogTreeIte
     className = removeSubString(className, "Property");
     classIdentifier->setText(utilqt::toQString(className));
 
-    if (auto compProp = dynamic_cast<CompositeProperty*>(prop)) {
-        QPointF newPos(0.0f, rect().height());
-        for (auto& subProperty : compProp->getProperties()) {
-            auto item = new LinkDialogPropertyGraphicsItem(this, subProperty);
+    if (auto* compProp = dynamic_cast<CompositeProperty*>(prop)) {
+        const QPointF newPos(0.0f, rect().height());
+        for (const auto& subProperty : compProp->getProperties()) {
+            auto* item = new LinkDialogPropertyGraphicsItem(this, subProperty);
             subProperties_.push_back(item);
             item->hide();
             item->setParentItem(this);
