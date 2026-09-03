@@ -1,5 +1,7 @@
 var NAVTREEINDEX35 =
 {
+"structinviwo_1_1utilgl_1_1ClearDepth.html":[5,0,1,32,6],
+"structinviwo_1_1utilgl_1_1ColorMask.html":[3,0,0,24,6],
 "structinviwo_1_1utilgl_1_1ColorMask.html":[5,0,1,32,7],
 "structinviwo_1_1utilgl_1_1ColorMaskState.html":[3,0,0,24,9],
 "structinviwo_1_1utilgl_1_1ColorMaskState.html":[5,0,1,32,10],

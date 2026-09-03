@@ -524,6 +524,7 @@ var annotated_dup =
         [ "SawToothOptions", "structinviwo_1_1util_1_1SawToothOptions.html", null ],
         [ "sequence", "structinviwo_1_1util_1_1sequence.html", "structinviwo_1_1util_1_1sequence" ],
         [ "SharedSequenceData", "structinviwo_1_1util_1_1SharedSequenceData.html", null ],
+        [ "SplatInput", "structinviwo_1_1util_1_1SplatInput.html", "structinviwo_1_1util_1_1SplatInput" ],
         [ "SplatSettings", "structinviwo_1_1util_1_1SplatSettings.html", "structinviwo_1_1util_1_1SplatSettings" ],
         [ "starts_with_fn", "structinviwo_1_1util_1_1starts__with__fn.html", null ],
         [ "TempFileHandle", "classinviwo_1_1util_1_1TempFileHandle.html", null ],

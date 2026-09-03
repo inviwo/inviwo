@@ -154,7 +154,7 @@ var searchData=
   ['sizehint_151',['sizeHint',['../classinviwo_1_1CustomDoubleSpinBoxQt.html#adaae841d9c603ba8455455a1e67e8d32',1,'inviwo::CustomDoubleSpinBoxQt']]],
   ['sizeinbytes_152',['sizeInBytes',['../classinviwo_1_1DataFormat.html#ab1cfe4abcc7189dd22cc48d8ed9e815c',1,'inviwo::DataFormat']]],
   ['skipbyteordermark_153',['skipByteOrderMark',['../namespaceinviwo_1_1filesystem.html#a5a16aa05cabc3a84330617c3c4bddb90',1,'inviwo::filesystem']]],
-  ['splat_154',['splat',['../namespaceinviwo_1_1util.html#a5c7627ec6d23a7c618b51858910147ab',1,'inviwo::util']]],
+  ['splat_154',['splat',['../namespaceinviwo_1_1util.html#a3c7f70724710f3793597695eece9000a',1,'inviwo::util']]],
   ['splitbyfirst_155',['splitByFirst',['../namespaceinviwo_1_1util.html#a68531c2a1a0d7b50fbcd32b4ab6d03a2',1,'inviwo::util::splitByFirst(std::string_view str, char delimiter=&apos; &apos;)'],['../namespaceinviwo_1_1util.html#a72e4709f37d1f58ead6f6bb699964102',1,'inviwo::util::splitByFirst(std::string_view str, std::string_view delimiter)']]],
   ['splitbylast_156',['splitByLast',['../namespaceinviwo_1_1util.html#a7062e820ba75f7fb44e8b149e52dd979',1,'inviwo::util::splitByLast(std::string_view str, char delimiter=&apos; &apos;)'],['../namespaceinviwo_1_1util.html#a22420f375af97c3654f65bd70c7df79c',1,'inviwo::util::splitByLast(std::string_view str, std::string_view delimiter)']]],
   ['splitintoarray_157',['splitIntoArray',['../namespaceinviwo_1_1util.html#a2c50a6c28ee754b40778a405535ff2af',1,'inviwo::util']]],

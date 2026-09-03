@@ -195,6 +195,7 @@ Classes</h2></td></tr>
 <tr class="memitem:SawToothOptions" id="r_SawToothOptions"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1util_1_1SawToothOptions.html">SawToothOptions</a></td></tr>
 <tr class="memitem:sequence" id="r_sequence"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1util_1_1sequence.html">sequence</a></td></tr>
 <tr class="memitem:SharedSequenceData" id="r_SharedSequenceData"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1util_1_1SharedSequenceData.html">SharedSequenceData</a></td></tr>
+<tr class="memitem:SplatInput" id="r_SplatInput"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1util_1_1SplatInput.html">SplatInput</a></td></tr>
 <tr class="memitem:SplatSettings" id="r_SplatSettings"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a></td></tr>
 <tr class="memitem:starts_5Fwith_5Ffn" id="r_starts_5Fwith_5Ffn"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structinviwo_1_1util_1_1starts__with__fn.html">starts_with_fn</a></td></tr>
 <tr class="memitem:TempFileHandle" id="r_TempFileHandle"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1util_1_1TempFileHandle.html">TempFileHandle</a></td></tr>
@@ -1349,9 +1350,11 @@ VolumeSequence IVW_CORE_API&#160;</td><td class="memItemRight"><b>sortSequence</
 <tr class="memitem:aed0d09b6d1537336c6e8271dcd557c93" id="r_aed0d09b6d1537336c6e8271dcd557c93"><td class="memTemplParams" colspan="2"><a id="aed0d09b6d1537336c6e8271dcd557c93" name="aed0d09b6d1537336c6e8271dcd557c93"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:aed0d09b6d1537336c6e8271dcd557c93 template"><td class="memItemLeft">T&#160;</td><td class="memItemRight"><b>spherical</b> (T val)</td></tr>
-<tr class="memitem:a5c7627ec6d23a7c618b51858910147ab" id="r_a5c7627ec6d23a7c618b51858910147ab"><td class="memItemLeft">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a5c7627ec6d23a7c618b51858910147ab">splat</a> (std::span&lt; const vec3 &gt; positions, std::span&lt; const float &gt; radii, std::span&lt; const float &gt; weights, const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;settings)</td></tr>
-<tr class="memitem:af3a4e543c6467153670cacf64d91355d" id="r_af3a4e543c6467153670cacf64d91355d"><td class="memItemLeft"><a id="af3a4e543c6467153670cacf64d91355d" name="af3a4e543c6467153670cacf64d91355d"></a>
-IVW_MODULE_BASE_API std::pair&lt; std::function&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;(std::vector&lt; vec2 &gt;)&gt;, std::vector&lt; std::function&lt; vec2(const std::function&lt; void(double)&gt; &amp;, const std::function&lt; bool()&gt; &amp;)&gt; &gt; &gt;&#160;</td><td class="memItemRight"><b>splatJobs</b> (std::span&lt; const vec3 &gt; positions, std::span&lt; const float &gt; sizes, std::span&lt; const float &gt; weights, const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;settings)</td></tr>
+<tr class="memitem:a3c7f70724710f3793597695eece9000a" id="r_a3c7f70724710f3793597695eece9000a"><td class="memItemLeft">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a3c7f70724710f3793597695eece9000a">splat</a> (const <a class="el" href="structinviwo_1_1util_1_1SplatInput.html">SplatInput</a> &amp;input, const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;settings)</td></tr>
+<tr class="memitem:add630444c166fd9fc2d6df7fc503d399" id="r_add630444c166fd9fc2d6df7fc503d399"><td class="memItemLeft"><a id="add630444c166fd9fc2d6df7fc503d399" name="add630444c166fd9fc2d6df7fc503d399"></a>
+IVW_MODULE_BASE_API std::pair&lt; std::function&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;(std::vector&lt; vec2 &gt;)&gt;, std::vector&lt; std::function&lt; vec2(const std::function&lt; void(double)&gt; &amp;, const std::function&lt; bool()&gt; &amp;)&gt; &gt; &gt;&#160;</td><td class="memItemRight"><b>splatJobs</b> (const <a class="el" href="structinviwo_1_1util_1_1SplatInput.html">SplatInput</a> &amp;input, const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;settings)</td></tr>
+<tr class="memitem:ab7e90bbd4946884a7616be7ba7ddfb60" id="r_ab7e90bbd4946884a7616be7ba7ddfb60"><td class="memItemLeft"><a id="ab7e90bbd4946884a7616be7ba7ddfb60" name="ab7e90bbd4946884a7616be7ba7ddfb60"></a>
+IVW_MODULE_BASE_API std::pair&lt; std::function&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;(std::vector&lt; vec2 &gt;)&gt;, std::vector&lt; std::function&lt; vec2(const std::function&lt; void(double)&gt; &amp;, const std::function&lt; bool()&gt; &amp;)&gt; &gt; &gt;&#160;</td><td class="memItemRight"><b>splatJobs</b> (std::span&lt; const <a class="el" href="structinviwo_1_1util_1_1SplatInput.html">SplatInput</a> &gt; inputs, const <a class="el" href="structinviwo_1_1util_1_1SplatSettings.html">SplatSettings</a> &amp;settings)</td></tr>
 <tr class="memitem:a68531c2a1a0d7b50fbcd32b4ab6d03a2" id="r_a68531c2a1a0d7b50fbcd32b4ab6d03a2"><td class="memItemLeft">constexpr std::pair&lt; std::string_view, std::string_view &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a68531c2a1a0d7b50fbcd32b4ab6d03a2">splitByFirst</a> (std::string_view str, char delimiter=' ')</td></tr>
 <tr class="memdesc:a68531c2a1a0d7b50fbcd32b4ab6d03a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Divide a string into two parts by the first instance of a delimiter.  <br /></td></tr>
 <tr class="memitem:a72e4709f37d1f58ead6f6bb699964102" id="r_a72e4709f37d1f58ead6f6bb699964102"><td class="memItemLeft">constexpr std::pair&lt; std::string_view, std::string_view &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a72e4709f37d1f58ead6f6bb699964102">splitByFirst</a> (std::string_view str, std::string_view delimiter)</td></tr>
@@ -7642,8 +7645,8 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a id="a5c7627ec6d23a7c618b51858910147ab" name="a5c7627ec6d23a7c618b51858910147ab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5c7627ec6d23a7c618b51858910147ab">&#9670;&#160;</a></span>splat()</h2>
+<a id="a3c7f70724710f3793597695eece9000a" name="a3c7f70724710f3793597695eece9000a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c7f70724710f3793597695eece9000a">&#9670;&#160;</a></span>splat()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7651,17 +7654,7 @@ template&lt;typename T&gt; </div>
         <tr>
           <td class="memname">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; inviwo::util::splat </td>
           <td>(</td>
-          <td class="paramtype">std::span&lt; const vec3 &gt;</td>          <td class="paramname"><span class="paramname"><em>positions</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::span&lt; const float &gt;</td>          <td class="paramname"><span class="paramname"><em>radii</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::span&lt; const float &gt;</td>          <td class="paramname"><span class="paramname"><em>weights</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1util_1_1SplatInput.html">SplatInput</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>input</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

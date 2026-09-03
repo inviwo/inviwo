@@ -60,7 +60,7 @@ var searchData=
   ['points_57',['Points',['../structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html',1,'inviwo::plot::ScatterPlotGL']]],
   ['pointsizepolicy_58',['PointSizePolicy',['../structinviwo_1_1utilgl_1_1detail_1_1PointSizePolicy.html',1,'inviwo::utilgl::detail']]],
   ['pointsizestate_59',['PointSizeState',['../namespaceinviwo_1_1utilgl.html#a1c8a6f1aefe8940c13e76d22215ca1c5',1,'inviwo::utilgl']]],
-  ['pointtransform_60',['pointTransform',['../structinviwo_1_1util_1_1SplatSettings.html#ab72939613e735570d472ef4ecb2a1788',1,'inviwo::util::SplatSettings']]],
+  ['pointtransform_60',['pointTransform',['../structinviwo_1_1util_1_1SplatInput.html#aec4b1bec4f6ddac8d325464f1c88658b',1,'inviwo::util::SplatInput']]],
   ['poissondisk_61',['poissonDisk',['../namespaceinviwo_1_1util.html#a71b0885e5f02bce9ed3ef708fe9ff059',1,'inviwo::util']]],
   ['poissondotsalongx_5f_62',['poissonDotsAlongX_',['../classinviwo_1_1NoiseGenerator2D.html#a9811307589acf5d35d00ed41b2726bbb',1,'inviwo::NoiseGenerator2D']]],
   ['poissonmaxpoints_5f_63',['poissonMaxPoints_',['../classinviwo_1_1NoiseGenerator2D.html#ac8775f2a2cee70507367768c9096b64e',1,'inviwo::NoiseGenerator2D']]],

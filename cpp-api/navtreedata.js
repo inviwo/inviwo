@@ -92,7 +92,7 @@ var NAVTREEINDEX =
 "structinviwo_1_1NetworkDebugObserver.html#af0e4ea826661965ade5d258cba3b8d64",
 "structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec",
 "structinviwo_1_1log_1_1info.html",
-"structinviwo_1_1utilgl_1_1ColorMask.html"
+"structinviwo_1_1utilgl_1_1ClearDepth.html"
 ];
 
 const SYNCONMSG = 'click to disable panel synchronization';

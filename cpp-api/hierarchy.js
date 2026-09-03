@@ -3531,6 +3531,7 @@ var hierarchy =
       [ "inviwo::VolumeSampler< ReturnType >", "classinviwo_1_1VolumeSampler.html", null ]
     ] ],
     [ "inviwo::SphereConfig", "classinviwo_1_1SphereConfig.html", null ],
+    [ "inviwo::util::SplatInput", "structinviwo_1_1util_1_1SplatInput.html", null ],
     [ "inviwo::util::SplatSettings", "structinviwo_1_1util_1_1SplatSettings.html", null ],
     [ "inviwo::layout::SplitterPositions", "structinviwo_1_1layout_1_1SplitterPositions.html", null ],
     [ "inviwo::SplitterRenderer", "classinviwo_1_1SplitterRenderer.html", null ],
