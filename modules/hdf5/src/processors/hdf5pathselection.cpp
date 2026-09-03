@@ -28,7 +28,9 @@
  *********************************************************************************/
 
 #include <modules/hdf5/processors/hdf5pathselection.h>
-#include <modules/hdf5/datastructures/hdf5metadata.h>
+#include <modules/hdf5/datastructures/hdf5handle.h>
+
+#include <memory>
 
 namespace inviwo {
 
@@ -59,17 +61,18 @@ void PathSelection::process() {
     auto data = inport_.getData();
     if (inport_.isChanged()) {
         std::vector<OptionPropertyStringOption> options;
-        for (const auto& meta : util::getMetaData(data->getGroup())) {
-            if (meta.type_ == MetaData::HDFType::Group) {
-                const auto path = meta.path_.toString();
-                options.emplace_back(path, path, path);
-            }
-        }
+        const auto addGroup = [&](const Handle& group) {
+            const auto path = group.getPath().toString();
+            options.emplace_back(path, path, path);
+        };
+        addGroup(*data);
+        data->visitGroups(addGroup);
         selection_.replaceOptions(options);
         selection_.setCurrentStateAsDefault();
     }
 
-    outport_.setData(data->getHandleForPath(selection_.getSelectedValue()));
+    outport_.setData(
+        std::make_shared<Handle>(data->getHandleForPath(selection_.getSelectedValue())));
 }
 }  // namespace hdf5
 

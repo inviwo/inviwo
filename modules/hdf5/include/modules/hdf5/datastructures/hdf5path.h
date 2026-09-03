@@ -33,45 +33,51 @@
 
 #include <string>
 #include <string_view>
-#include <vector>
-#include <ostream>
 
 namespace inviwo {
 
 namespace hdf5 {
 
+/**
+ * A normalized HDF5 group path, e.g. `/group/subgroup/dataset`. The path is stored as a single
+ * normalized string with a leading `/`, no trailing `/` and no empty segments. An empty path
+ * represents the root `/`.
+ */
 class IVW_MODULE_HDF5_API Path {
 public:
     Path();
-    Path(const std::string& path);
-    Path(const Path& rhs);
-    Path& operator=(const Path& that);
-    Path(Path&& rhs);
-    Path& operator=(Path&& that);
+    explicit Path(std::string_view path);
+    Path(const Path& rhs) = default;
+    Path& operator=(const Path& that) = default;
+    Path(Path&& rhs) = default;
+    Path& operator=(Path&& that) = default;
 
-    Path& push(const std::string& path);
+    Path& push(std::string_view path);
     Path& push(const Path& path);
     Path& pop();
 
     Path& operator+=(const Path& path);
-    Path& operator+=(const std::string& path);
+    Path& operator+=(std::string_view path);
 
-    operator std::string() const;
+    operator const std::string&() const;
 
-    std::string toString() const;
+    [[nodiscard]] const std::string& toString() const;
+
+    friend Path operator+(const Path& lhs, const Path& rhs) {
+        Path result{lhs};
+        result.push(rhs);
+        return result;
+    }
+    friend Path operator+(const Path& lhs, std::string_view rhs) {
+        Path result{lhs};
+        result.push(rhs);
+        return result;
+    }
 
 private:
-    void splitString(const std::string& string);
-    std::vector<std::string> path_;
+    void append(std::string_view path);
+    std::string path_;
 };
-
-IVW_MODULE_HDF5_API Path operator+(const Path& lhs, const Path& rhs);
-IVW_MODULE_HDF5_API Path operator+(const Path& lhs, const std::string& rhs);
-
-template <typename CTy, typename CTr>
-std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os, const Path& path) {
-    return os << path.toString();
-}
 
 }  // namespace hdf5
 

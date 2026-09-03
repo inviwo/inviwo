@@ -30,23 +30,30 @@
 #pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/hdf5/ports/hdf5port.h>
+#include <modules/hdf5/hdf5utils.h>
+#include <modules/hdf5/properties/dimselectionsproperty.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/ports/bufferport.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <H5Cpp.h>
-#include <warn/pop>
+#include <memory>
+#include <vector>
 
-namespace inviwo {
+namespace inviwo::hdf5 {
 
-namespace hdf5 {
-
-class IVW_MODULE_HDF5_API PathSelection : public Processor {
+class IVW_MODULE_HDF5_API HDF5ToBuffer : public Processor {
 public:
-    PathSelection();
-    virtual ~PathSelection() = default;
+    HDF5ToBuffer();
+    HDF5ToBuffer(const HDF5ToBuffer&) = delete;
+    HDF5ToBuffer& operator=(const HDF5ToBuffer&) = delete;
+    HDF5ToBuffer(HDF5ToBuffer&&) = delete;
+    HDF5ToBuffer& operator=(HDF5ToBuffer&&) = delete;
+    virtual ~HDF5ToBuffer();
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -55,11 +62,17 @@ protected:
     virtual void process() override;
 
 private:
-    Inport inport_;
-    Outport outport_;
+    void onSelectionChange();
 
-    OptionPropertyString selection_;
+    std::vector<DataSetInfo> bufferMatches_;
+
+    Inport inport_;
+    BufferOutport outport_;
+    OptionPropertyString bufferSelection_;
+
+    CompositeProperty outputGroup_;
+    OptionPropertyInt datatype_;
+    DimSelectionsProperty selection_;
 };
 
-}  // namespace hdf5
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

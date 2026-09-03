@@ -30,8 +30,6 @@
 #pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/glmvec.h>
@@ -41,136 +39,128 @@
 #include <H5Cpp.h>
 #include <warn/pop>
 
-#include <modules/hdf5/hdf5utils.h>
 #include <modules/hdf5/hdf5types.h>
 #include <modules/hdf5/hdf5exception.h>
+#include <modules/hdf5/datastructures/hdf5path.h>
+#include <modules/hdf5/datastructures/hdf5selection.h>
 
 #include <limits>
+#include <memory>
 #include <functional>
+#include <utility>
+#include <ranges>
 #include <type_traits>
+#include <filesystem>
 #include <string>
 #include <vector>
 #include <ostream>
-#include <functional>
 
 namespace inviwo {
 
 namespace hdf5 {
 
+/**
+ * A small RAII wrapper around an open H5::DataSet that closes it on destruction.
+ */
+class DataSet : public H5::DataSet {
+public:
+    explicit DataSet(const H5::DataSet& dataset) : H5::DataSet{dataset} {}
+    DataSet(const DataSet&) = delete;
+    DataSet& operator=(const DataSet&) = delete;
+    DataSet(DataSet&&) = default;
+    DataSet& operator=(DataSet&&) = default;
+    ~DataSet() override { close(); }
+};
+
 class IVW_MODULE_HDF5_API Handle {
 public:
-    struct Selection {
-        Selection(size_t startval, size_t endval, size_t strideval)
-            : start(startval), end(endval), stride(strideval) {}
-        size_t start;
-        size_t end;
-        size_t stride;
-    };
-
     Handle(const std::filesystem::path& filename);
     Handle(const std::filesystem::path& filename, Path path);
-    Handle(const Handle& rhs);
-    Handle& operator=(const Handle& that);
-    Handle(Handle&& rhs);
-    Handle& operator=(Handle&& that);
+    Handle(const Handle& rhs) = default;
+    Handle& operator=(const Handle& that) = default;
+    Handle(Handle&& rhs) = default;
+    Handle& operator=(Handle&& that) = default;
 
-    ~Handle();
+    ~Handle() = default;
 
-    Document getInfo() const;
+    [[nodiscard]] Document getInfo() const;
 
-    const H5::Group& getGroup() const;
+    [[nodiscard]] const H5::Group& getGroup() const;
 
-    Handle* getHandleForPath(const std::string& path) const;
+    [[nodiscard]] const Path& getPath() const;
 
-    std::shared_ptr<Volume> getVolumeAtPathAsType(
-        const Path& path, std::vector<Selection> selection, const DataFormatBase* type,
-        const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume) const;
+    [[nodiscard]] DataSet open() const;
 
-    template <typename T>
-    std::vector<T> getVectorAtPath(const Path& path) const;
+    [[nodiscard]] DataSet open(const Path& path) const;
 
-    template <typename T>
-    std::vector<glm::tvec3<T, glm::defaultp>> getVectorOfVec3AtPath(const Path& path) const;
+    [[nodiscard]] Handle getHandleForPath(const std::string& path) const;
+
+    /**
+     * A lazy range yielding the attributes of this handle's group.
+     */
+    [[nodiscard]] auto attributes() const {
+        return std::views::iota(0, data_.getNumAttrs()) |
+               std::views::transform([this](int i) { return data_.openAttribute(i); });
+    }
+
+    /**
+     * A lazy range yielding the immediate child groups as Handles.
+     */
+    [[nodiscard]] auto groups() const {
+        return std::views::iota(hsize_t{0}, data_.getNumObjs()) |
+               std::views::filter(
+                   [this](hsize_t i) { return data_.getObjTypeByIdx(i) == H5G_GROUP; }) |
+               std::views::transform([this](hsize_t i) {
+                   const std::string childName = data_.getObjnameByIdx(i);
+                   return Handle{filename_, path_ + childName, data_.openGroup(childName)};
+               });
+    }
+
+    /**
+     * A lazy range yielding the immediate child datasets.
+     */
+    [[nodiscard]] auto datasets() const {
+        return std::views::iota(hsize_t{0}, data_.getNumObjs()) |
+               std::views::filter(
+                   [this](hsize_t i) { return data_.getObjTypeByIdx(i) == H5G_DATASET; }) |
+               std::views::transform([this](hsize_t i) {
+                   return DataSet{data_.openDataSet(data_.getObjnameByIdx(i))};
+               });
+    }
+
+    /**
+     * Recursively visit all descendant groups depth-first, invoking @p callback with each Handle.
+     */
+    template <typename Callback>
+    void visitGroups(const Callback& callback) const {
+        for (const Handle& child : groups()) {
+            callback(child);
+            child.visitGroups(callback);
+        }
+    }
+
+    friend Handle operator+(const Handle& lhs, const Path& rhs) {
+        Handle result{lhs};
+        result.path_ += rhs;
+        return result;
+    }
+    friend Handle operator+(const Handle& lhs, std::string_view rhs) {
+        Handle result{lhs};
+        result.path_ += rhs;
+        return result;
+    }
 
     static constexpr uvec3 colorCode{101, 101, 188};
     static constexpr std::string_view classIdentifier{"org.inviwo.hdf5.handle"};
     static constexpr std::string_view dataName{"HDF"};
 
 private:
-    double getMin(const DataFormatBase* type) const;
-    double getMax(const DataFormatBase* type) const;
+    Handle(std::filesystem::path filename, Path path, const H5::Group& data);
 
     std::filesystem::path filename_;
     Path path_;
     H5::Group data_;
 };
-
-template <typename T>
-std::vector<T> Handle::getVectorAtPath(const Path& path) const {
-    H5::DataSet ds = data_.openDataSet(path);
-    size_t rank = ds.getSpace().getSimpleExtentNdims();
-
-    hsize_t* dims = new hsize_t[rank];
-    ds.getSpace().getSimpleExtentDims(dims);
-
-    size_t size = 1;
-    for (size_t i = 0; i < rank; ++i) {
-        size *= dims[i];
-    }
-    H5::DataType dt = ds.getDataType();
-
-    if (dt == TypeMap<T>::getType()) {
-        std::vector<T> res(size);
-        ds.read(res.data(), ds.getDataType());
-        return res;
-    } else {
-        throw Exception("Trying to read invalid data type");
-    }
-}
-
-template <typename T>
-std::vector<glm::tvec3<T, glm::defaultp>> Handle::getVectorOfVec3AtPath(const Path& path) const {
-    H5::DataSet ds = data_.openDataSet(path);
-    size_t rank = ds.getSpace().getSimpleExtentNdims();
-
-    if (rank != 2) throw Exception("Trying to read data with invalid rank");
-
-    hsize_t* dims = new hsize_t[rank];
-    ds.getSpace().getSimpleExtentDims(dims);
-
-    if (dims[1] != 3) throw Exception("Trying to read data with invalid dimension");
-
-    H5::DataType dt = ds.getDataType();
-
-    if (dt == TypeMap<T>::getType()) {
-        std::vector<glm::tvec3<T, glm::defaultp>> res(dims[0]);
-        ds.read(reinterpret_cast<T*>(res.data()), ds.getDataType());
-        return res;
-    } else {
-        throw Exception("Trying to read invalid data type");
-    }
-}
-
-/*
-H5T_NATIVE_CHAR     char
-H5T_NATIVE_SCHAR    signed char
-H5T_NATIVE_UCHAR    unsigned char
-H5T_NATIVE_SHORT    short
-H5T_NATIVE_USHORT   unsigned short
-H5T_NATIVE_INT      int
-H5T_NATIVE_UINT     unsigned
-H5T_NATIVE_LONG     long
-H5T_NATIVE_ULONG    unsigned long
-H5T_NATIVE_LLONG    long long
-H5T_NATIVE_ULLONG   unsigned long long
-H5T_NATIVE_FLOAT    float
-H5T_NATIVE_DOUBLE   double
-H5T_NATIVE_LDOUBLE  long double
-H5T_NATIVE_HSIZE    hsize_t
-H5T_NATIVE_HSSIZE   hssize_t
-H5T_NATIVE_HERR     herr_t
-H5T_NATIVE_HBOOL    hbool_t
-*/
 
 }  // namespace hdf5
 

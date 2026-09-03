@@ -31,33 +31,58 @@
 
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <modules/hdf5/datastructures/hdf5path.h>
+#include <modules/hdf5/datastructures/hdf5handle.h>
 
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/properties/optionproperty.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <H5Cpp.h>
-#include <warn/pop>
-
+#include <string>
 #include <vector>
 
 namespace inviwo {
 
+class DataFormatBase;
+
 namespace hdf5 {
 
-struct IVW_MODULE_HDF5_API VolumeInfo {
-    Path path_;
-    int index_;
-    size3_t dim_;
+/**
+ * Lightweight description of an HDF5 dataset: its path, data format, and dimensions (stored in
+ * HDF row major order).
+ */
+struct IVW_MODULE_HDF5_API DataSetInfo {
+    Path path;
+    const DataFormatBase* format = nullptr;
+    std::vector<size_t> dimensions;
+
+    /// Dimensions in column major (Inviwo/OpenGL) order.
+    [[nodiscard]] auto getColumnMajorDimensions() const { return dimensions | std::views::reverse; }
 };
 
-using VolumeInfos = std::vector<VolumeInfo>;
-using Paths = std::vector<Path>;
+namespace util {
 
-IVW_MODULE_HDF5_API Paths findpaths(const H5::Group& grp, const Path& path,
-                                    const std::string& type);
-IVW_MODULE_HDF5_API bool isOfType(const H5::Group& grp, const std::string& type);
-IVW_MODULE_HDF5_API VolumeInfos getVolumeInfo(const H5::DataSet& ds, const Path& path);
+/**
+ * Collect info for every dataset reachable from @p handle, recursing into all subgroups.
+ */
+IVW_MODULE_HDF5_API std::vector<DataSetInfo> getDataSets(const Handle& handle);
+
+/**
+ * A human readable description of a dataset: path, data format and column major dimensions,
+ * e.g. `"/group/data FLOAT32 [64, 64, 64]"`.
+ */
+IVW_MODULE_HDF5_API std::string dataSetDescription(const DataSetInfo& info);
+
+/**
+ * The options for the "Convert to type" property shared by the data source processors. The
+ * selected index maps to a data format via @see conversionFormat.
+ */
+IVW_MODULE_HDF5_API std::vector<OptionPropertyIntOption> conversionOptions();
+
+/**
+ * Map the selected index of the "Convert to type" property to a data format. Index 0 (no
+ * conversion) returns nullptr.
+ */
+IVW_MODULE_HDF5_API const DataFormatBase* conversionFormat(size_t index);
+
+}  // namespace util
 
 }  // namespace hdf5
 

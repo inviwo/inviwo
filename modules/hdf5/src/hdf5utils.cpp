@@ -28,72 +28,115 @@
  *********************************************************************************/
 
 #include <modules/hdf5/hdf5utils.h>
-#include <memory>
+
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/stringconversion.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <H5Cpp.h>
+#include <warn/pop>
+
+#include <algorithm>
+#include <iterator>
+#include <string>
+#include <vector>
 
 namespace inviwo {
 
 namespace hdf5 {
 
-Paths findpaths(const H5::Group& grp, const Path& path, const std::string& type) {
-    Paths paths;
+namespace {
 
-    if (isOfType(grp, type)) {
-        paths.push_back(path);
+std::vector<size_t> getDimensions(const H5::DataSpace& space) {
+    if (space.getSimpleExtentType() == H5S_SCALAR) {
+        return {1};
+    } else if (space.getSimpleExtentType() == H5S_SIMPLE) {
+        const int rank = space.getSimpleExtentNdims();
+        std::vector<hsize_t> dims(rank);
+        space.getSimpleExtentDims(dims.data());
+        return {dims.begin(), dims.end()};
     } else {
-        for (hsize_t i = 0; i < grp.getNumObjs(); i++) {
-            std::string childName = grp.getObjnameByIdx(i);
-            if (grp.getObjTypeByIdx(i) == H5G_GROUP) {
-                H5::Group child = grp.openGroup(childName);
-                Paths newpaths = findpaths(child, path + childName, type);
-                paths.insert(paths.end(), newpaths.begin(), newpaths.end());
-            }
+        return {};
+    }
+}
+
+const DataFormatBase* getDataFormat(const H5::DataType& type) {
+    if (type == H5::PredType::NATIVE_FLOAT) {
+        return DataFormatBase::get(DataFormatId::Float32);
+    } else if (type == H5::PredType::NATIVE_DOUBLE) {
+        return DataFormatBase::get(DataFormatId::Float64);
+    } else if (type == H5::PredType::NATIVE_SCHAR) {
+        return DataFormatBase::get(DataFormatId::Int8);
+    } else if (type == H5::PredType::NATIVE_CHAR) {
+        return DataFormatBase::get(DataFormatId::UInt8);
+    } else if (type == H5::PredType::NATIVE_SHORT) {
+        return DataFormatBase::get(DataFormatId::Int16);
+    } else if (type == H5::PredType::NATIVE_USHORT) {
+        return DataFormatBase::get(DataFormatId::UInt16);
+    } else if (type == H5::PredType::NATIVE_INT) {
+        return DataFormatBase::get(DataFormatId::Int32);
+    } else if (type == H5::PredType::NATIVE_UINT) {
+        return DataFormatBase::get(DataFormatId::UInt32);
+    } else if (type == H5::PredType::NATIVE_LLONG) {
+        return DataFormatBase::get(DataFormatId::Int64);
+    } else if (type == H5::PredType::NATIVE_ULLONG) {
+        return DataFormatBase::get(DataFormatId::UInt64);
+    } else {
+        return nullptr;
+    }
+}
+
+}  // namespace
+
+
+
+namespace util {
+
+std::vector<DataSetInfo> getDataSets(const Handle& handle) {
+    std::vector<DataSetInfo> datasets;
+    const auto collect = [&](const Handle& group) {
+        for (const auto& dataset : group.datasets()) {
+            datasets.emplace_back(DataSetInfo{.path = Path{dataset.getObjName()},
+                                              .format = getDataFormat(dataset.getDataType()),
+                                              .dimensions = getDimensions(dataset.getSpace())});
         }
-    }
-    return paths;
+    };
+    collect(handle);
+    handle.visitGroups(collect);
+    return datasets;
 }
 
-VolumeInfos getVolumeInfo(const H5::DataSet& ds, const Path& path) {
-    auto size = std::make_unique<hsize_t[]>(ds.getSpace().getSimpleExtentNdims());
-    ds.getSpace().getSimpleExtentDims(size.get());
-    int sub_densities = (int)size[0];
-
-    VolumeInfos paths;
-
-    for (int i = 0; i < sub_densities; i++) {
-        VolumeInfo info;
-        info.path_ = path;
-        info.index_ = i;
-        info.dim_.x = size[1];
-        info.dim_.y = size[2];
-        info.dim_.z = size[3];
-
-        paths.push_back(info);
-    }
-
-    return paths;
+std::string dataSetDescription(const DataSetInfo& info) {
+    const auto dims = info.getColumnMajorDimensions();
+    return fmt::format("{}{}{} [{}]", info.path.toString(), (info.format ? " " : ""),
+                       (info.format ? info.format->getString() : ""), fmt::join(dims, ", "));
 }
 
-bool isOfType(const H5::Group& grp, const std::string& type) {
-    bool result = false;
-    try {
-        if (grp.attrExists("type")) {
-            H5::Attribute attr = grp.openAttribute("type");
-            H5::DataType dt = attr.getDataType();
-
-            if (dt.getClass() == H5T_STRING && dt.isVariableStr()) {
-                H5std_string val;
-                attr.read(dt, val);
-                if (val == type) {
-                    result = true;
-                }
-            }
-            dt.close();
-            attr.close();
-        }
-    } catch (const H5::AttributeIException&) {
-    }
-    return result;
+std::vector<OptionPropertyIntOption> conversionOptions() {
+    return {{"none", "No conversion", 0},
+            {"float", "Float", 1},
+            {"double", "Double", 2},
+            {"uchar", "Unsigned Char", 3},
+            {"ushort", "Unsigned Short", 4}};
 }
+
+const DataFormatBase* conversionFormat(size_t index) {
+    switch (index) {
+        case 1:
+            return DataFloat32::get();
+        case 2:
+            return DataFloat64::get();
+        case 3:
+            return DataUInt8::get();
+        case 4:
+            return DataUInt16::get();
+        default:
+            return nullptr;
+    }
+}
+
+}  // namespace util
 
 }  // namespace hdf5
 

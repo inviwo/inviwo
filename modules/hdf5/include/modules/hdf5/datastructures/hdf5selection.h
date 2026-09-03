@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,36 +30,31 @@
 #pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/hdf5/ports/hdf5port.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <H5Cpp.h>
-#include <warn/pop>
+#include <cstddef>
+#include <algorithm>
 
-namespace inviwo {
+namespace inviwo::hdf5 {
 
-namespace hdf5 {
-
-class IVW_MODULE_HDF5_API PathSelection : public Processor {
-public:
-    PathSelection();
-    virtual ~PathSelection() = default;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
-    virtual void process() override;
-
-private:
-    Inport inport_;
-    Outport outport_;
-
-    OptionPropertyString selection_;
+/**
+ * A hyperslab selection along all dimensions of an HDF5 dataset.
+ */
+struct IVW_MODULE_HDF5_API Selection {
+    size_t start{0};
+    size_t count{0};
+    size_t stride{1};
 };
 
-}  // namespace hdf5
-}  // namespace inviwo
+inline constexpr Selection clamp(const Selection& selection, size_t size) {
+    if (size == 0) return {.start = 0uz, .count = 0uz, .stride = 1uz};
+
+    const auto start = std::min(selection.start, size - 1uz);
+    const auto stride = std::max(1uz, selection.stride);
+
+    const auto maxCount = ((size - 1 - start) / stride) + 1uz;
+    const auto count = selection.count == 0 ? maxCount : std::min(selection.count, maxCount);
+
+    return Selection{.start = start, .count = count, .stride = stride};
+}
+
+}  // namespace inviwo::hdf5

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,66 +27,60 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/hdf5/hdf5moduledefine.h>
 #include <modules/hdf5/datastructures/hdf5path.h>
-
-#include <inviwo/core/util/formats.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <H5Cpp.h>
+#include <gtest/gtest.h>
 #include <warn/pop>
 
 #include <string>
-#include <vector>
-#include <ostream>
 
 namespace inviwo {
 
 namespace hdf5 {
 
-struct IVW_MODULE_HDF5_API MetaData {
-public:
-    enum class HDFType { Group, DataSet, Attribute };
-
-    MetaData(Path path, HDFType type, const DataFormatBase* format = nullptr,
-             std::vector<size_t> dimensions = std::vector<size_t>{});
-
-    MetaData(const MetaData& rhs);
-    MetaData& operator=(const MetaData& that);
-    MetaData(MetaData&& rhs);
-    MetaData& operator=(MetaData&& that);
-
-    std::string toString() const;
-
-    Path path_;
-    HDFType type_;
-    const DataFormatBase* format_;
-
-    // return dimension in column major mode as used by Inviwo /OpenGL
-    std::vector<size_t> getColumnMajorDimensions() const;
-    // return dimension in row major mode as used by hdf / C / C++
-    std::vector<size_t> getRowMajorDimensions() const;
-
-private:
-    // HDF Row major dimensions;
-    std::vector<size_t> dimensions_;
-};
-
-template <typename CTy, typename CTr>
-IVW_MODULE_HDF5_API std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
-                                                             const MetaData& metadata) {
-    return os << metadata.toString();
+TEST(HDF5Path, RoundTrip) {
+    const Path path{"/group/subgroup/dataset"};
+    EXPECT_EQ(path.toString(), "/group/subgroup/dataset");
 }
 
-namespace util {
+TEST(HDF5Path, SkipsEmptySegments) {
+    // Leading, trailing and repeated separators produce no empty components.
+    const Path path{"//group///dataset//"};
+    EXPECT_EQ(path.toString(), "/group/dataset");
+}
 
-IVW_MODULE_HDF5_API std::vector<MetaData> getMetaData(const H5::Group& grp, Path path = Path{});
-IVW_MODULE_HDF5_API std::vector<size_t> getDimensions(const H5::DataSpace space);
-IVW_MODULE_HDF5_API const DataFormatBase* getDataFormat(const H5::DataType type);
-}  // namespace util
+TEST(HDF5Path, EmptyIsRoot) {
+    const Path path{""};
+    EXPECT_EQ(path.toString(), "/");
+}
+
+TEST(HDF5Path, PushAndPop) {
+    Path path{"/a/b"};
+    path.push("c");
+    EXPECT_EQ(path.toString(), "/a/b/c");
+    path.pop();
+    EXPECT_EQ(path.toString(), "/a/b");
+}
+
+TEST(HDF5Path, Concatenation) {
+    const Path combined = Path{"/a"} + Path{"/b/c"};
+    EXPECT_EQ(combined.toString(), "/a/b/c");
+}
+
+TEST(HDF5Path, PlusEqualsMergesSegments) {
+    Path path{"/a"};
+    path += Path{"/b"};
+    path += "c/d";
+    EXPECT_EQ(path.toString(), "/a/b/c/d");
+}
+
+TEST(HDF5Path, ImplicitStringConversion) {
+    const Path path{"/a/b"};
+    const std::string& str = path;
+    EXPECT_EQ(str, "/a/b");
+}
 
 }  // namespace hdf5
 

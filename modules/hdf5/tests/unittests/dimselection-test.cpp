@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,41 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/hdf5/ports/hdf5port.h>
+#include <modules/hdf5/properties/dimselectionproperty.h>
+#include <modules/hdf5/properties/dimselectionsproperty.h>
+#include <modules/hdf5/datastructures/hdf5selection.h>
+#include <modules/hdf5/hdf5utils.h>
+#include <modules/hdf5/datastructures/hdf5path.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <H5Cpp.h>
+#include <gtest/gtest.h>
 #include <warn/pop>
 
-namespace inviwo {
+#include <vector>
 
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
-class IVW_MODULE_HDF5_API PathSelection : public Processor {
-public:
-    PathSelection();
-    virtual ~PathSelection() = default;
+TEST(DimSelectionProperty, DefaultSelectsAll) {
+    DimSelectionProperty prop{"dim", "dim"};
+    prop.update(10);
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    const auto sel = prop.getSelection();
+    EXPECT_EQ(sel.start, 0u);
+    EXPECT_EQ(sel.count, 0u);
+    EXPECT_EQ(sel.stride, 1u);
+}
 
-protected:
-    virtual void process() override;
+TEST(DimSelectionProperty, StartAndCount) {
+    DimSelectionProperty prop{"dim", "dim"};
+    prop.update(10);
+    prop.start.set(2);
+    prop.count.set(3);
 
-private:
-    Inport inport_;
-    Outport outport_;
+    const auto sel = prop.getSelection();
+    EXPECT_EQ(sel.start, 2u);
+    EXPECT_EQ(sel.count, 3u);
+    EXPECT_EQ(sel.stride, 1u);
+}
 
-    OptionPropertyString selection_;
-};
-
-}  // namespace hdf5
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

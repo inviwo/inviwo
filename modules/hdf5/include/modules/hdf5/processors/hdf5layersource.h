@@ -30,36 +30,62 @@
 #pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/hdf5/ports/hdf5port.h>
+#include <modules/hdf5/hdf5utils.h>
+#include <modules/hdf5/properties/dimselectionsproperty.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/ports/layerport.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <H5Cpp.h>
-#include <warn/pop>
+#include <modules/base/properties/layerinformationproperty.h>
 
-namespace inviwo {
+#include <memory>
+#include <vector>
 
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
-class IVW_MODULE_HDF5_API PathSelection : public Processor {
+class IVW_MODULE_HDF5_API HDF5ToLayer : public Processor {
 public:
-    PathSelection();
-    virtual ~PathSelection() = default;
+    HDF5ToLayer();
+    HDF5ToLayer(const HDF5ToLayer&) = delete;
+    HDF5ToLayer& operator=(const HDF5ToLayer&) = delete;
+    HDF5ToLayer(HDF5ToLayer&&) = delete;
+    HDF5ToLayer& operator=(HDF5ToLayer&&) = delete;
+    virtual ~HDF5ToLayer();
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:
     virtual void process() override;
+    virtual void deserialize(Deserializer& d) override;
 
 private:
-    Inport inport_;
-    Outport outport_;
+    void onSelectionChange();
 
-    OptionPropertyString selection_;
+    std::vector<DataSetInfo> layerMatches_;
+
+    Inport inport_;
+    LayerOutport outport_;
+    std::shared_ptr<Layer> layer_;
+
+    OptionPropertyString layerSelection_;
+
+    BoolProperty automaticEvaluation_;
+    ButtonProperty evaluate_;
+
+    LayerInformationProperty information_;
+
+    CompositeProperty outputGroup_;
+    OptionPropertyInt datatype_;
+    DimSelectionsProperty selection_;
+
+    bool dirty_;
+    bool deserialized_ = false;
 };
 
-}  // namespace hdf5
-}  // namespace inviwo
+}  // namespace inviwo::hdf5
