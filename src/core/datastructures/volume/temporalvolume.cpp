@@ -65,7 +65,7 @@ namespace {
 std::vector<Seconds> resolveTimes(const VolumeLoader& loader) {
     const auto loaderTimes = loader.times();
     if (!loaderTimes.empty()) {
-        return std::vector<Seconds>(loaderTimes.begin(), loaderTimes.end());
+        return {loaderTimes.begin(), loaderTimes.end()};
     }
     std::vector<Seconds> result(loader.size());
     for (size_t i = 0; i < result.size(); ++i) {
@@ -129,7 +129,7 @@ size_t TemporalVolume::nearestIndex(Seconds time) const {
     if (time >= times_.back()) {
         return n - 1;
     }
-    const auto upper = std::upper_bound(times_.begin(), times_.end(), time);
+    const auto upper = std::ranges::upper_bound(times_, time);
     const auto ib = static_cast<size_t>(std::distance(times_.begin(), upper));
     const size_t ia = ib - 1;
     return (time - times_[ia] <= times_[ib] - time) ? ia : ib;
@@ -172,24 +172,24 @@ std::shared_ptr<const Volume> TemporalVolume::get(Seconds time) const {
 TemporalVolume::Frame TemporalVolume::interpolate(Seconds time) const {
     const size_t n = times_.size();
     if (n == 0) {
-        return {nullptr, nullptr, 0.0};
+        return {.a = nullptr, .b = nullptr, .t = 0.0};
     }
     if (n == 1 || time <= times_.front()) {
         auto volume = get(size_t{0});
-        return {volume, volume, 0.0};
+        return {.a = volume, .b = volume, .t = 0.0};
     }
     if (time >= times_.back()) {
         auto volume = get(n - 1);
-        return {volume, volume, 0.0};
+        return {.a = volume, .b = volume, .t = 0.0};
     }
 
-    const auto upper = std::upper_bound(times_.begin(), times_.end(), time);
+    const auto upper = std::ranges::upper_bound(times_, time);
     const auto ib = static_cast<size_t>(std::distance(times_.begin(), upper));
     const size_t ia = ib - 1;
     const Seconds ta = times_[ia];
     const Seconds tb = times_[ib];
     const double factor = (tb > ta) ? (time - ta) / (tb - ta) : 0.0;
-    return {get(ia), get(ib), factor};
+    return {.a = get(ia), .b = get(ib), .t = factor};
 }
 
 void TemporalVolume::prefetch(size_t index) const {

@@ -55,7 +55,12 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API TemporalVolumeRaycaster : public VolumeRaycasterBase {
 public:
-    TemporalVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
+    explicit TemporalVolumeRaycaster(std::string_view identifier = "",
+                                     std::string_view displayName = "");
+    TemporalVolumeRaycaster(const TemporalVolumeRaycaster&) = delete;
+    TemporalVolumeRaycaster& operator=(const TemporalVolumeRaycaster&) = delete;
+    TemporalVolumeRaycaster(TemporalVolumeRaycaster&&) = delete;
+    TemporalVolumeRaycaster& operator=(TemporalVolumeRaycaster&&) = delete;
     virtual ~TemporalVolumeRaycaster() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

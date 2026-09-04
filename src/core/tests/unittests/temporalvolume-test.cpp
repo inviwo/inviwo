@@ -59,7 +59,7 @@ VolumeConfig makePrototype() {
 std::unique_ptr<ProceduralLoader> makeLoader(size_t count, std::vector<Seconds> times = {}) {
     return std::make_unique<ProceduralLoader>(
         count, std::move(times), makePrototype(),
-        [](size_t index, Seconds time, std::shared_ptr<Volume>) -> std::shared_ptr<Volume> {
+        [](size_t index, Seconds time, const std::shared_ptr<Volume>&) -> std::shared_ptr<Volume> {
             auto volume = std::make_shared<Volume>(size3_t{2, 2, 2}, DataUInt8::get());
             volume->setMetaData<DoubleMetaData, double>(frameKey, static_cast<double>(index));
             volume->setMetaData<DoubleMetaData, double>("time", time.count());
@@ -75,15 +75,16 @@ int frameIndexOf(const std::shared_ptr<const Volume>& volume) {
 }  // namespace
 
 TEST(TemporalVolumeTest, Metadata) {
-    TemporalVolume tv{makeLoader(5)};
+    const TemporalVolume tv{makeLoader(5)};
     EXPECT_EQ(tv.size(), 5u);
     EXPECT_FALSE(tv.empty());
     EXPECT_EQ(tv.numCached(), 0u);
+    EXPECT_TRUE(tv.prototype());
     EXPECT_EQ(tv.prototype().dimensions.value(), (size3_t{2, 2, 2}));
 }
 
 TEST(TemporalVolumeTest, DefaultTimes) {
-    TemporalVolume tv{makeLoader(4)};
+    const TemporalVolume tv{makeLoader(4)};
     const auto times = tv.times();
     ASSERT_EQ(times.size(), 4u);
     EXPECT_DOUBLE_EQ(times[0].count(), 0.0);
@@ -93,7 +94,7 @@ TEST(TemporalVolumeTest, DefaultTimes) {
 }
 
 TEST(TemporalVolumeTest, CustomTimes) {
-    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
+    const TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
     const auto times = tv.times();
     ASSERT_EQ(times.size(), 4u);
     EXPECT_DOUBLE_EQ(times[1].count(), 10.0);
@@ -101,14 +102,14 @@ TEST(TemporalVolumeTest, CustomTimes) {
 }
 
 TEST(TemporalVolumeTest, GetByIndex) {
-    TemporalVolume tv{makeLoader(5)};
+    const TemporalVolume tv{makeLoader(5)};
     EXPECT_EQ(frameIndexOf(tv.get(size_t{0})), 0);
     EXPECT_EQ(frameIndexOf(tv.get(size_t{3})), 3);
     EXPECT_EQ(tv.get(size_t{5}), nullptr);  // out of bounds
 }
 
 TEST(TemporalVolumeTest, GetByTime) {
-    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
+    const TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
     EXPECT_EQ(frameIndexOf(tv.get(0.0s)), 0);
     EXPECT_EQ(frameIndexOf(tv.get(9.0s)), 1);   // nearest to 10
     EXPECT_EQ(frameIndexOf(tv.get(14.0s)), 1);  // nearest to 10
@@ -117,7 +118,7 @@ TEST(TemporalVolumeTest, GetByTime) {
 }
 
 TEST(TemporalVolumeTest, NearestIndex) {
-    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
+    const TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
     EXPECT_EQ(tv.nearestIndex(-5.0s), 0u);
     EXPECT_EQ(tv.nearestIndex(4.0s), 0u);
     EXPECT_EQ(tv.nearestIndex(6.0s), 1u);
@@ -126,7 +127,7 @@ TEST(TemporalVolumeTest, NearestIndex) {
 }
 
 TEST(TemporalVolumeTest, InterpolateWithinRange) {
-    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
+    const TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
 
     auto frame = tv.interpolate(5.0s);
     EXPECT_EQ(frameIndexOf(frame.a), 0);
@@ -140,7 +141,7 @@ TEST(TemporalVolumeTest, InterpolateWithinRange) {
 }
 
 TEST(TemporalVolumeTest, InterpolateAtExactFrame) {
-    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
+    const TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
     auto frame = tv.interpolate(10.0s);
     EXPECT_EQ(frameIndexOf(frame.a), 1);
     EXPECT_EQ(frameIndexOf(frame.b), 2);
@@ -148,7 +149,7 @@ TEST(TemporalVolumeTest, InterpolateAtExactFrame) {
 }
 
 TEST(TemporalVolumeTest, InterpolateClampsOutsideRange) {
-    TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
+    const TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
 
     auto before = tv.interpolate(-100.0s);
     EXPECT_EQ(frameIndexOf(before.a), 0);
@@ -162,7 +163,7 @@ TEST(TemporalVolumeTest, InterpolateClampsOutsideRange) {
 }
 
 TEST(TemporalVolumeTest, CacheRespectsSize) {
-    TemporalVolume tv{makeLoader(8), 3};
+    const TemporalVolume tv{makeLoader(8), 3};
     EXPECT_EQ(tv.cacheSize(), 3u);
 
     for (size_t i = 0; i < 8; ++i) {
@@ -201,7 +202,7 @@ TEST(TemporalVolumeTest, SetCacheSizeEvicts) {
 }
 
 TEST(TemporalVolumeTest, Prefetch) {
-    TemporalVolume tv{makeLoader(5)};
+    const TemporalVolume tv{makeLoader(5)};
     tv.prefetch(2);
     tv.prefetch(3);
     // get() must return the correct frame regardless of whether the prefetch already completed.
@@ -210,7 +211,7 @@ TEST(TemporalVolumeTest, Prefetch) {
 }
 
 TEST(TemporalVolumeTest, PrefetchRange) {
-    TemporalVolume tv{makeLoader(10), 8};
+    const TemporalVolume tv{makeLoader(10), 8};
     tv.prefetch(0, 4);
     for (size_t i = 0; i < 4; ++i) {
         EXPECT_EQ(frameIndexOf(tv.get(i)), static_cast<int>(i));
@@ -218,10 +219,12 @@ TEST(TemporalVolumeTest, PrefetchRange) {
 }
 
 TEST(TemporalVolumeTest, ProceduralLoaderDirect) {
-    ProceduralLoader loader{
-        3, {1.0s, 2.0s, 3.0s}, makePrototype(), [](size_t index, Seconds, std::shared_ptr<Volume>) {
-            return std::make_shared<Volume>(size3_t{index + 1});
-        }};
+    ProceduralLoader loader{3,
+                            {1.0s, 2.0s, 3.0s},
+                            makePrototype(),
+                            [](size_t index, Seconds, const std::shared_ptr<Volume>&) {
+                                return std::make_shared<Volume>(size3_t{index + 1});
+                            }};
     EXPECT_EQ(loader.size(), 3u);
     ASSERT_EQ(loader.times().size(), 3u);
     EXPECT_DOUBLE_EQ(loader.times()[2].count(), 3.0);
