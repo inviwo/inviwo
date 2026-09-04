@@ -100,7 +100,6 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(CompositeProperty* prop
 CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Processor* processor, bool isCheckable)
     : CollapsibleGroupBoxWidgetQt(nullptr, processor, processor->getDisplayName(), isCheckable) {
 
-    // add observer for onProcessorIdentifierChange
     nameChange_ =
         processor->onDisplayNameChange([this](std::string_view newName, std::string_view) {
             displayName_ = newName;
@@ -358,7 +357,7 @@ std::string CollapsibleGroupBoxWidgetQt::getDisplayName() const { return display
 void CollapsibleGroupBoxWidgetQt::setDisplayName(const std::string& displayName) {
     displayName_ = displayName;
     if (propertyOwner_) {
-        if (auto p = dynamic_cast<Processor*>(propertyOwner_)) {
+        if (auto* p = dynamic_cast<Processor*>(propertyOwner_)) {
             p->setDisplayName(displayName);
         }
     }

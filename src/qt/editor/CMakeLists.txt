@@ -5,8 +5,10 @@ project(inviwo-qteditor)
 set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiondraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwomainwindow.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdraghelper.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkannotationgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processordraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorgraphicsitem.h
@@ -17,7 +19,6 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacegridview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacetreemodel.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacetreeview.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwomainwindow.h
 )
 
 # Add header files
@@ -40,6 +41,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkgraphicsitem.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkannotationsqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkautomation.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorview.h
@@ -91,8 +93,11 @@ set(SOURCE_FILES
     linkdialog/linkdialogview.cpp
     linkdraghelper.cpp
     linkgraphicsitem.cpp
+    networkannotationgraphicsitem.cpp
+    networkannotationsqt.cpp
     networkautomation.cpp
     networkeditor.cpp
+    networkeditorobserver.cpp
     networkeditorview.cpp
     networksearch.cpp
     pilllistview.cpp

@@ -65,29 +65,25 @@ class InviwoApplication;
 
 namespace detail {
 template <typename T>
-concept is_transparent = requires { typename T::key_compare::is_transparent; } ||
-                         requires {
-                             typename T::hasher::is_transparent;
-                             typename T::key_equal::is_transparent;
-                         };
+concept is_transparent = requires { typename T::key_compare::is_transparent; } || requires {
+    typename T::hasher::is_transparent;
+    typename T::key_equal::is_transparent;
+};
 
 template <typename T>
 concept derefClassIdentifiable = requires(const T& t) {
-                                     {
-                                         t->getClassIdentifier()
-                                         } -> std::equality_comparable_with<std::string_view>;
-                                 };
+    { t->getClassIdentifier() } -> std::equality_comparable_with<std::string_view>;
+};
 
 template <typename T>
 concept is_shared_ptr = requires { typename T::element_type; } &&
                         std::same_as<T, std::shared_ptr<typename T::element_type>>;
 
 template <typename T>
-concept is_unique_ptr =
-    requires {
-        typename T::element_type;
-        typename T::deleter_type;
-    } && std::same_as<T, std::unique_ptr<typename T::element_type, typename T::deleter_type>>;
+concept is_unique_ptr = requires {
+    typename T::element_type;
+    typename T::deleter_type;
+} && std::same_as<T, std::unique_ptr<typename T::element_type, typename T::deleter_type>>;
 
 }  // namespace detail
 
@@ -113,7 +109,7 @@ struct IdentifierFunctions {
     OnMove onMove = defaultOnMove;
 };
 
-constexpr auto defaultOnRemoveIndex = []<typename T>(T&) {};
+constexpr auto defaultOnRemoveIndex = []<typename T>(T&, size_t) {};
 
 template <typename MakeNew, typename OnNew = decltype(defaultOnNew),
           typename OnRemove = decltype(defaultOnRemoveIndex)>
@@ -145,31 +141,31 @@ struct MapFunctions {
 
 template <typename T, typename Functions>
 concept IdentifiableFunctions = requires(T& t, Functions f, size_t i, std::string_view s) {
-                                    { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
-                                    { std::invoke(f.makeNew) } -> std::same_as<T>;
-                                    { std::invoke(f.shouldMakeNew, s, i) } -> std::same_as<bool>;
-                                    { std::invoke(f.canRecreate, s, i) } -> std::same_as<bool>;
-                                    { std::invoke(f.onNew, t, i) };
-                                    { std::invoke(f.onRemove, s) };
-                                    { std::invoke(f.onMove, t, i) };
-                                };
+    { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
+    { std::invoke(f.makeNew) } -> std::same_as<T>;
+    { std::invoke(f.shouldMakeNew, s, i) } -> std::same_as<bool>;
+    { std::invoke(f.canRecreate, s, i) } -> std::same_as<bool>;
+    { std::invoke(f.onNew, t, i) };
+    { std::invoke(f.onRemove, s) };
+    { std::invoke(f.onMove, t, i) };
+};
 
 template <typename T, typename Functions>
 concept IndexableFunctions = requires(T& t, Functions f, size_t i, std::string_view s) {
-                                 { std::invoke(f.makeNew) } -> std::same_as<T>;
-                                 { std::invoke(f.onNew, t, i) };
-                                 { std::invoke(f.onRemove, t) };
-                             };
+    { std::invoke(f.makeNew) } -> std::same_as<T>;
+    { std::invoke(f.onNew, t, i) };
+    { std::invoke(f.onRemove, t, i) };
+};
 
 template <typename K, typename T, typename Functions>
 concept MappableFunctions = requires(const K& k, T& t, Functions f, size_t i, std::string_view s) {
-                                { std::invoke(f.idTransform, s) } -> std::same_as<K>;
-                                { std::invoke(f.makeNew) } -> std::same_as<T>;
-                                { std::invoke(f.shouldMakeNew, k) } -> std::same_as<bool>;
-                                { std::invoke(f.canRecreate, k) } -> std::same_as<bool>;
-                                { std::invoke(f.onNew, k, t) };
-                                { std::invoke(f.onRemove, k) };
-                            };
+    { std::invoke(f.idTransform, s) } -> std::same_as<K>;
+    { std::invoke(f.makeNew) } -> std::same_as<T>;
+    { std::invoke(f.shouldMakeNew, k) } -> std::same_as<bool>;
+    { std::invoke(f.canRecreate, k) } -> std::same_as<bool>;
+    { std::invoke(f.onNew, k, t) };
+    { std::invoke(f.onRemove, k) };
+};
 
 }  // namespace deserializer
 
@@ -325,10 +321,10 @@ public:
      * ```{.cpp}
      *    d.deserialize(("TFPrimitives", values_ "point", deserializer::IndexFunctions{
      *          .makeNew = []() { return std::unique_ptr<TFPrimitive>{}; },
-     *          .onNew = [&](std::unique_ptr<TFPrimitiveSet>& primitive) {
+     *          .onNew = [&](std::unique_ptr<TFPrimitiveSet>& primitive, size_t index) {
      *                  notifyControlPointAdded(primitive.get());
      *              },
-     *          .onRemove = [&](std::unique_ptr<TFPrimitiveSet>& primitive) {
+     *          .onRemove = [&](std::unique_ptr<TFPrimitiveSet>& primitive, size_t index) {
      *                  notifyControlPointRemoved(primitive.get());
      *              }});
      * ```
@@ -409,8 +405,8 @@ public:
     template <class T>
     void deserialize(std::string_view key, T& sObj)
         requires requires(T& t, Deserializer& d) {
-                     { t.deserialize(d) };
-                 };
+            { t.deserialize(d) };
+        };
 
     std::optional<std::string_view> attribute(std::string_view key) const;
     std::optional<std::string_view> attribute(std::string_view child, std::string_view key) const;
@@ -825,7 +821,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
         while (!container.empty()) {
             auto elem = std::move(container.back());
             container.pop_back();
-            f.onRemove(elem);
+            f.onRemove(elem, container.size());
         }
         return;
     }
@@ -833,7 +829,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
     const auto count = forEachChild(itemKey, [&](TiXmlElement&, size_t index) {
         if (index < container.size()) {
             if (objectNeedsRecreation(container[index])) {
-                f.onRemove(container[index]);
+                f.onRemove(container[index], index);
 
                 container[index] = f.makeNew();
                 deserialize(itemKey, container[index]);
@@ -851,7 +847,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
     while (container.size() > count) {
         auto elem = std::move(container.back());
         container.pop_back();
-        f.onRemove(elem);
+        f.onRemove(elem, container.size());
     }
 }
 
@@ -1154,8 +1150,8 @@ void Deserializer::deserializeAs(std::string_view key, std::unique_ptr<T>& data)
 template <typename T>
 void Deserializer::deserialize(std::string_view key, T& sObj)
     requires requires(T& t, Deserializer& d) {
-                 { t.deserialize(d) };
-             }
+        { t.deserialize(d) };
+    }
 {
     if (const NodeSwitch nodeSwitch{*this, key}) {
         sObj.deserialize(*this);

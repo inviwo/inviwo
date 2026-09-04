@@ -32,9 +32,11 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditorobserver.h>
 #include <inviwo/qt/editor/networkautomation.h>
+#include <inviwo/qt/editor/networkannotationsqt.h>
 
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/network/networkannotations.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/processors/processorpair.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
@@ -76,6 +78,8 @@ class LinkDialog;
 class InviwoMainWindow;
 class Image;
 class MenuItem;
+struct NetworkAnnotation;
+class NetworkAnnotationGraphicsItem;
 class ProcessorDragHelper;
 class ConnectionOutDragHelper;
 class ConnectionInDragHelper;
@@ -91,7 +95,7 @@ class DataVisualizer;
  * - inspector networks
  */
 class IVW_QTEDITOR_API NetworkEditor : public QGraphicsScene,
-                                       public Observable<NetworkEditorObserver>,
+                                       public NetworkEditorObservable,
                                        public ProcessorNetworkObserver {
 #include <warn/push>
 #include <warn/ignore/all>
@@ -139,12 +143,17 @@ public:
     LinkConnectionGraphicsItem* getLinkGraphicsItem(const ProcessorPair& key) const;
     LinkConnectionGraphicsItem* getLinkGraphicsItem(Processor* processor1,
                                                     Processor* processor2) const;
-    ProcessorGraphicsItem* getProcessorGraphicsItemAt(const QPointF pos) const;
-    ProcessorInportGraphicsItem* getProcessorInportGraphicsItemAt(const QPointF pos) const;
-    ProcessorOutportGraphicsItem* getProcessorOutportGraphicsItemAt(const QPointF pos) const;
 
-    ConnectionGraphicsItem* getConnectionGraphicsItemAt(const QPointF pos) const;
-    LinkConnectionGraphicsItem* getLinkGraphicsItemAt(const QPointF pos) const;
+    ProcessorGraphicsItem* getProcessorGraphicsItemAt(QPointF pos) const;
+    ProcessorInportGraphicsItem* getProcessorInportGraphicsItemAt(QPointF pos) const;
+    ProcessorOutportGraphicsItem* getProcessorOutportGraphicsItemAt(QPointF pos) const;
+
+    ConnectionGraphicsItem* getConnectionGraphicsItemAt(QPointF pos) const;
+    LinkConnectionGraphicsItem* getLinkGraphicsItemAt(QPointF pos) const;
+    NetworkAnnotationGraphicsItem* getNetworkAnnotationGraphicsItemAt(QPointF pos) const;
+
+    NetworkAnnotationsQt& getAnnotationManager();
+    const NetworkAnnotationsQt& getAnnotationManager() const;
 
     void setBackgroundVisible(bool visible);
     bool isBackgroundVisible() const;
@@ -152,7 +161,8 @@ public:
     void updateSceneSize();
     QRectF getProcessorsBoundingRect() const;
 
-    void ensureVisible(const std::vector<Processor*>& processors);
+    void ensureVisible(const std::vector<Processor*>& processors) const;
+    void ensureVisible(const QGraphicsItem* item) const;
 
     static std::string getMimeTag();
     void resetAllTimeMeasurements();
@@ -162,6 +172,10 @@ public:
     static constexpr std::string_view name{"NetworkEditor"};
 
     static constexpr int gridSpacing = 25;
+
+signals:
+    void showNetworkAnnotationDetails(size_t index);
+    void hideNetworkAnnotationDetails(size_t index);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
@@ -184,6 +198,9 @@ protected:
                                const std::unordered_set<CompositeProcessor*>& selectedComposites);
     void addSequenceMenuItems(QMenu& menu, const std::vector<Processor*>& selectedProcessors,
                               const std::unordered_set<SequenceProcessor*>& selectedSequences);
+    void addNetworkAnnotationMenuItems(QMenu& menu,
+                                       const std::vector<Processor*>& selectedProcessors,
+                                       const std::unordered_set<size_t>& selectedAnnotations);
 
     void addCopyPasteMenuItems(QMenu& menu, const QList<QGraphicsItem*>& activeItems,
                                const ivec2& position);
@@ -273,6 +290,8 @@ private:
     ProcessorMap processorGraphicsItems_;
     ConnectionMap connectionGraphicsItems_;
     LinkMap linkGraphicsItems_;
+
+    NetworkAnnotationsQt annotations_;
 
     mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0, 0}};
 

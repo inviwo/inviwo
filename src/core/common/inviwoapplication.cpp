@@ -142,6 +142,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
         PickingManager::deleteInstance();
         RenderContext::deleteInstance();
     }}
+    , networkAnnotations_{}
     , resourceManager_{std::make_unique<ResourceManager>()}
     , cameraFactory_{std::make_unique<CameraFactory>()}
     , dataReaderFactory_{std::make_unique<DataReaderFactory>()}
@@ -190,17 +191,22 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     workspaceManager_->registerFactory(getOutportFactory());
     workspaceManager_->registerFactory(getCameraFactory());
 
+    processorNetwork_->addObserver(&networkAnnotations_);
+
     callbacks_->networkClear = workspaceManager_->onClear([&]() {
         portInspectorManager_->clear();
         processorNetwork_->clear();
+        networkAnnotations_.clear();
     });
     callbacks_->networkSerialization = workspaceManager_->onSave([&](Serializer& s) {
         s.serialize("ProcessorNetwork", *processorNetwork_);
         s.serialize("PortInspectors", *portInspectorManager_);
+        s.serialize("NetworkAnnotations", networkAnnotations_);
     });
     callbacks_->networkDeserialization = workspaceManager_->onLoad([&](Deserializer& d) {
         d.deserialize("ProcessorNetwork", *processorNetwork_);
         d.deserialize("PortInspectors", *portInspectorManager_);
+        d.deserialize("NetworkAnnotations", networkAnnotations_);
     });
 
     callbacks_->presetsClear =
@@ -209,6 +215,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
         [&](Serializer& s) { propertyPresetManager_->saveWorkspacePresets(s); });
     callbacks_->presetsDeserialization = workspaceManager_->onLoad(
         [&](Deserializer& d) { propertyPresetManager_->loadWorkspacePresets(d); });
+
+    networkAnnotations_.setWorkspaceManager(workspaceManager_.get());
 
     // Make sure that all data formats are initialized.
     // Should only be called in the core library, i.e. in InviwoApplication constructor.
@@ -274,12 +282,18 @@ const CommandLineParser& InviwoApplication::getCommandLineParser() const {
 
 CommandLineParser& InviwoApplication::getCommandLineParser() { return *commandLineParser_; }
 
+NetworkAnnotations& InviwoApplication::getNetworkAnnotations() { return networkAnnotations_; }
+
+const NetworkAnnotations& InviwoApplication::getNetworkAnnotations() const {
+    return networkAnnotations_;
+}
+
 void InviwoApplication::printApplicationInfo() {
     log::info("Inviwo Version: {}", build::version);
     if (auto buildInfo = util::getBuildInfo()) {
         log::info("Build Date: {}", buildInfo->getDate());
         for (auto& modulesDir : buildInfo->modulesDirs) {
-            log::info("{}: {} SHA: {} {}", modulesDir.name, modulesDir.repo, modulesDir.sha,
+            log::info("{}: {} SHA: {} {}", modulesDir.name, modulesDir.repo, modulesDir.sha,
                       modulesDir.dirty ? "Dirty" : "");
         }
     }

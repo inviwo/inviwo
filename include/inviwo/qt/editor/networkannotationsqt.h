@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,28 +26,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/util/observer.h>
 
-#include <string>
+#include <inviwo/core/network/networkannotations.h>
+
+#include <vector>
+#include <optional>
+
+class QGraphicsItem;
 
 namespace inviwo {
 
-struct NetworkAnnotation;
+class NetworkEditor;
+class ProcessorNetwork;
+class NetworkAnnotationGraphicsItem;
 
-class IVW_QTEDITOR_API NetworkEditorObserver : public Observer {
+class IVW_QTEDITOR_API NetworkAnnotationsQt : public NetworkAnnotationsObserver {
 public:
-    virtual void onNetworkEditorFileChanged([[maybe_unused]] const std::string& newFilename) {}
-    virtual void onSceneSizeChanged() {}
-};
+    explicit NetworkAnnotationsQt(NetworkEditor* editor);
+    NetworkAnnotationsQt(const NetworkAnnotationsQt&) = delete;
+    NetworkAnnotationsQt(NetworkAnnotationsQt&&) = delete;
+    NetworkAnnotationsQt& operator=(const NetworkAnnotationsQt&) = delete;
+    NetworkAnnotationsQt& operator=(NetworkAnnotationsQt&&) = delete;
 
-class IVW_QTEDITOR_API NetworkEditorObservable : public Observable<NetworkEditorObserver> {
-public:
-    void notifyObserversNetworkEditorFileChanged(const std::string& newFilename);
-    void notifyObserversSceneSizeChanged();
+    virtual ~NetworkAnnotationsQt();
+
+    NetworkAnnotationGraphicsItem* getGraphicsItem(size_t index);
+    const NetworkAnnotationGraphicsItem* getGraphicsItem(size_t index) const;
+
+    std::optional<size_t> getIndex(const QGraphicsItem* item) const;
+
+    void showAnnotationDetails(NetworkAnnotationGraphicsItem* item);
+    void hideAnnotationDetails(NetworkAnnotationGraphicsItem* item);
+
+private:
+    virtual void onNetworkAnnotationAdded(NetworkAnnotation&, size_t) override;
+    virtual void onNetworkAnnotationWasRemoved(NetworkAnnotation&, size_t) override;
+    virtual void onNetworkAnnotationChanged(NetworkAnnotation&, size_t) override;
+
+    NetworkEditor* editor_;
+    std::vector<NetworkAnnotationGraphicsItem*> annotationGraphicItems_;
 };
 
 }  // namespace inviwo

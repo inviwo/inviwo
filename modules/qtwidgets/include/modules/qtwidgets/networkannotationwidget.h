@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,49 +28,71 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
+#include <inviwo/core/network/networkannotations.h>
 #include <inviwo/core/network/workspacemanager.h>
-#include <inviwo/qt/editor/workspaceannotationsqt.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
 
-#include <memory>
-#include <functional>
+#include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/numberwidget.h>
+
+#include <optional>
 
 class QVBoxLayout;
 class QScrollArea;
-class QString;
+class QToolButton;
+class QColorDialog;
+class QComboBox;
 
 namespace inviwo {
 
-class InviwoApplication;
-class NetworkEditorView;
+class ProcessorNetwork;
+class LineEditQt;
+class EditorDockWidget;
 
-class IVW_QTEDITOR_API AnnotationsWidget : public InviwoDockWidget {
+class IVW_MODULE_QTWIDGETS_API NetworkAnnotationWidget : public InviwoDockWidget {
+    Q_OBJECT
 public:
-    AnnotationsWidget(InviwoApplication* app, NetworkEditorView* networkEditorView,
-                      QWidget* parent);
-    virtual ~AnnotationsWidget();
+    explicit NetworkAnnotationWidget(ProcessorNetwork* network, QWidget* parent = nullptr);
+    NetworkAnnotationWidget(const NetworkAnnotationWidget&) = delete;
+    NetworkAnnotationWidget(NetworkAnnotationWidget&&) = delete;
+    NetworkAnnotationWidget& operator=(const NetworkAnnotationWidget&) = delete;
+    NetworkAnnotationWidget& operator=(NetworkAnnotationWidget&&) = delete;
 
-    WorkspaceAnnotationsQt& getAnnotations();
-    const WorkspaceAnnotationsQt& getAnnotations() const;
+    virtual ~NetworkAnnotationWidget();
 
-protected:
-    void updateWidget();
+    void setNetwork(ProcessorNetwork* network) { network_ = network; }
 
-    WorkspaceAnnotationsQt annotations_;
-    QVBoxLayout* layout_ = nullptr;
+    void showAnnotation(size_t index, const NetworkAnnotation& annotation);
+    void hideAnnotation(size_t index);
+    void clear();
+
+signals:
+    void modifiedAnnotation(size_t index, const NetworkAnnotation& annotation);
+
+private:
+    void updateWidgets();
+    void updateColorButton(QColor color);
+    void openColorDialog();
+    bool setDescription(const QString& text);
+
     QWidget* mainWidget_ = nullptr;
     QScrollArea* scrollArea_ = nullptr;
-    ///< Called after modules have been registered
-    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
-    ///< Called before modules have been unregistered
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 
-    WorkspaceManager::SerializationHandle annotationSerializationHandle_;
-    WorkspaceManager::DeserializationHandle annotationDeserializationHandle_;
+    ProcessorNetwork* network_;
+
+    std::optional<size_t> annotationIndex_;
+    NetworkAnnotation annotation_;
+
+    LineEditQt* lineEditTitle_;
+    LineEditQt* lineEditDesc_;
+    QComboBox* comboAlignment_;
+    NumberWidget<int>* numberTextWidth_;
+    QToolButton* btnColor_;
+    QColorDialog* colorDialog_;
+    EditorDockWidget* editorDockWidget_;
+
     WorkspaceManager::ClearHandle annotationClearHandle_;
-    WorkspaceAnnotations::ModifiedHandle annotationModifiedHandle_;
 };
 
 }  // namespace inviwo

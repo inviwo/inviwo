@@ -332,13 +332,13 @@ void Animation::serialize(Serializer& s) const {
 
 void Animation::deserialize(Deserializer& d) {
     d.deserialize("name", name_);
-    d.deserialize(
-        "tracks", tracks_, "track",
-        deserializer::IndexFunctions{
-            .makeNew = []() { return std::unique_ptr<Track>{}; },
-            .onNew = [&](std::unique_ptr<Track>& track,
-                         size_t) { trackAddedInternal(track.get()); },
-            .onRemove = [&](std::unique_ptr<Track>& track) { trackRemovedInternal(track.get()); }});
+    d.deserialize("tracks", tracks_, "track",
+                  deserializer::IndexFunctions{
+                      .makeNew = []() { return std::unique_ptr<Track>{}; },
+                      .onNew = [&](std::unique_ptr<Track>& track,
+                                   size_t) { trackAddedInternal(track.get()); },
+                      .onRemove = [&](std::unique_ptr<Track>& track,
+                                      size_t) { trackRemovedInternal(track.get()); }});
 }
 
 void Animation::onWillRemoveProperty(Property* property, size_t) {

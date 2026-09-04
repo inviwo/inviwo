@@ -39,6 +39,7 @@
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/networkannotations.h>
 #include <inviwo/core/processors/compositeprocessorutils.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
@@ -66,6 +67,7 @@
 #include <inviwo/qt/editor/editorsettings.h>
 #include <inviwo/qt/editor/linkdialog/linkdialog.h>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
+#include <inviwo/qt/editor/networkannotationgraphicsitem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/processorlinkgraphicsitem.h>
 #include <inviwo/qt/editor/processorlistwidget.h>
@@ -78,6 +80,7 @@
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/propertylistwidget.h>
+#include <modules/qtwidgets/networkannotationwidget.h>
 
 #include <inviwo/core/rendering/datavisualizermanager.h>
 
@@ -113,6 +116,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     , connectionInDragHelper_{new ConnectionInDragHelper(*this)}
     , processorItem_{nullptr}
     , automation_{*this}
+    , annotations_{this}
     , mainWindow_(mainWindow)
     , network_(mainWindow->getInviwoApplication()->getProcessorNetwork())
     , backgroundVisible_(true)
@@ -153,6 +157,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
         });
 
     network_->addObserver(this);
+    mainWindow->getInviwoApplication()->getNetworkAnnotations().addObserver(&annotations_);
 
     installEventFilter(processorDragHelper_);
 
@@ -272,8 +277,8 @@ ConnectionGraphicsItem* NetworkEditor::addConnectionGraphicsItem(const PortConne
     Outport* outport = connection.getOutport();
     Inport* inport = connection.getInport();
 
-    auto* outProcessor = getProcessorGraphicsItem(outport->getProcessor());
-    auto* inProcessor = getProcessorGraphicsItem(inport->getProcessor());
+    const auto* outProcessor = getProcessorGraphicsItem(outport->getProcessor());
+    const auto* inProcessor = getProcessorGraphicsItem(inport->getProcessor());
 
     auto* connectionGraphicsItem =
         new ConnectionGraphicsItem(outProcessor->getOutportGraphicsItem(outport),
@@ -345,7 +350,7 @@ void NetworkEditor::showLinkDialog(Processor* processor1, Processor* processor2)
 }
 
 std::shared_ptr<const Image> NetworkEditor::renderPortInspectorImage(Outport* outport) {
-    auto pim = mainWindow_->getInviwoApplication()->getPortInspectorManager();
+    auto* pim = mainWindow_->getInviwoApplication()->getPortInspectorManager();
     return pim->renderPortInspectorImage(outport);
 }
 
@@ -379,7 +384,7 @@ bool NetworkEditor::isBackgroundVisible() const { return backgroundVisible_; }
 void NetworkEditor::updateSceneSize() {
     if (adjustSceneToChange_ && !processorItem_) {
         setSceneRect(getProcessorsBoundingRect());
-        forEachObserver([&](auto o) { o->onSceneSizeChanged(); });
+        notifyObserversSceneSizeChanged();
     }
 }
 
@@ -395,25 +400,32 @@ QRectF NetworkEditor::getProcessorsBoundingRect() const {
 
 std::string NetworkEditor::getMimeTag() { return "application/x.vnd.inviwo.network+xml"; }
 
-ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItemAt(const QPointF pos) const {
+ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItemAt(QPointF pos) const {
     return getGraphicsItemAt<ProcessorGraphicsItem>(pos);
 }
-ProcessorInportGraphicsItem* NetworkEditor::getProcessorInportGraphicsItemAt(
-    const QPointF pos) const {
+ProcessorInportGraphicsItem* NetworkEditor::getProcessorInportGraphicsItemAt(QPointF pos) const {
     return getGraphicsItemAt<ProcessorInportGraphicsItem>(pos);
 }
 
-ProcessorOutportGraphicsItem* NetworkEditor::getProcessorOutportGraphicsItemAt(
-    const QPointF pos) const {
+ProcessorOutportGraphicsItem* NetworkEditor::getProcessorOutportGraphicsItemAt(QPointF pos) const {
     return getGraphicsItemAt<ProcessorOutportGraphicsItem>(pos);
 }
 
-ConnectionGraphicsItem* NetworkEditor::getConnectionGraphicsItemAt(const QPointF pos) const {
+ConnectionGraphicsItem* NetworkEditor::getConnectionGraphicsItemAt(QPointF pos) const {
     return getGraphicsItemAt<ConnectionGraphicsItem>(pos);
 }
-LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItemAt(const QPointF pos) const {
+LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItemAt(QPointF pos) const {
     return getGraphicsItemAt<LinkConnectionGraphicsItem>(pos);
 }
+
+NetworkAnnotationGraphicsItem* NetworkEditor::getNetworkAnnotationGraphicsItemAt(
+    QPointF pos) const {
+    return getGraphicsItemAt<NetworkAnnotationGraphicsItem>(pos);
+}
+
+NetworkAnnotationsQt& NetworkEditor::getAnnotationManager() { return annotations_; }
+
+const NetworkAnnotationsQt& NetworkEditor::getAnnotationManager() const { return annotations_; }
 
 void NetworkEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     util::exceptionGuard([&]() {
@@ -914,6 +926,150 @@ void NetworkEditor::addSequenceMenuItems(
             }));
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+void NetworkEditor::addNetworkAnnotationMenuItems(
+    QMenu& menu, const std::vector<Processor*>& selectedProcessors,
+    const std::unordered_set<size_t>& selectedAnnotations) {
+
+    auto matchingAnnotations =
+        selectedAnnotations | std::views::filter([&](auto index) {
+            return mainWindow_->getInviwoApplication()->getNetworkAnnotations().matches(
+                index, selectedProcessors);
+        }) |
+        std::ranges::to<std::vector>();
+
+    if (matchingAnnotations.empty() && !selectedProcessors.empty()) {
+        const auto* action =
+            menu.addAction(QIcon(":/svgicons/composite-create-enabled.svg"), tr("&Add Annotation"));
+        connect(action, &QAction::triggered, this,
+                util::exceptionGuarded([this, &selectedProcessors]() {
+                    const std::span<const Processor* const> processors{selectedProcessors};
+
+                    auto& annotations =
+                        mainWindow_->getInviwoApplication()->getNetworkAnnotations();
+
+                    const size_t annotationIndex = annotations.add(processors);
+                    const auto& annotation = annotations.getAnnotation(annotationIndex);
+                    clearSelection();
+                    if (auto* item = annotations_.getGraphicsItem(annotationIndex)) {
+                        item->setSelected(true);
+                    }
+                    mainWindow_->getNetworkAnnotationWidget()->showAnnotation(annotationIndex,
+                                                                              annotation);
+                }));
+    }
+
+    if (!selectedProcessors.empty()) {
+        auto* addMenu = menu.addMenu(tr("Add &Processors to"));
+        auto& annotations = mainWindow_->getInviwoApplication()->getNetworkAnnotations();
+        for (auto annotationIndex : std::views::iota(0uz, annotations.size())) {
+            const auto& annotation = annotations.getAnnotation(annotationIndex);
+
+            const auto* action = addMenu->addAction(utilqt::toQString(
+                annotation.title.value_or(fmt::format("Annotation {}", annotationIndex + 1))));
+            connect(
+                action, &QAction::triggered, this,
+                util::exceptionGuarded([this, annotationIndex, selectedProcessors]() {
+                    auto* item = annotations_.getGraphicsItem(annotationIndex);
+                    auto& annotationManager =
+                        mainWindow_->getInviwoApplication()->getNetworkAnnotations();
+                    auto annotation = annotationManager.getAnnotation(annotationIndex);
+                    annotation.addProcessors(selectedProcessors);
+
+                    if (item) {
+                        item->setSelected(false);
+                    }
+                    annotationManager.update(annotationIndex, annotation);
+
+                    if (item) {
+                        item->setSelected(true);
+                    }
+                    mainWindow_->getNetworkAnnotationWidget()->showAnnotation(
+                        annotationIndex,
+                        mainWindow_->getInviwoApplication()->getNetworkAnnotations().getAnnotation(
+                            annotationIndex));
+                }));
+        }
+    }
+
+    if (!selectedAnnotations.empty()) {
+        if (!selectedProcessors.empty()) {
+            auto* removeMenu = menu.addMenu(tr("&Remove Processors from"));
+            for (auto annotationIndex : selectedAnnotations) {
+                const auto& annotation =
+                    mainWindow_->getInviwoApplication()->getNetworkAnnotations().getAnnotation(
+                        annotationIndex);
+
+                const auto* action = removeMenu->addAction(utilqt::toQString(
+                    annotation.title.value_or(fmt::format("Annotation {}", annotationIndex + 1))));
+                connect(action, &QAction::triggered, this,
+                        util::exceptionGuarded([this, annotationIndex, selectedProcessors]() {
+                            auto* item = annotations_.getGraphicsItem(annotationIndex);
+                            auto& annotationManager =
+                                mainWindow_->getInviwoApplication()->getNetworkAnnotations();
+                            auto annotation = annotationManager.getAnnotation(annotationIndex);
+                            annotation.removeProcessors(selectedProcessors);
+
+                            if (item) {
+                                item->setSelected(false);
+                            }
+                            // keep track of whether the annotation is empty since update() will
+                            // remove annotations with no processors
+                            const bool empty = annotation.processors.empty();
+                            annotationManager.update(annotationIndex, annotation);
+
+                            if (!empty) {
+                                if (item) {
+                                    item->setSelected(true);
+                                }
+                                mainWindow_->getNetworkAnnotationWidget()->showAnnotation(
+                                    annotationIndex, mainWindow_->getInviwoApplication()
+                                                         ->getNetworkAnnotations()
+                                                         .getAnnotation(annotationIndex));
+                            }
+                        }));
+            }
+        }
+
+        auto* editMenu = menu.addMenu(tr("&Edit Annotations"));
+        for (auto annotationIndex : selectedAnnotations) {
+            const auto& annotation =
+                mainWindow_->getInviwoApplication()->getNetworkAnnotations().getAnnotation(
+                    annotationIndex);
+
+            const auto* action = editMenu->addAction(utilqt::toQString(
+                annotation.title.value_or(fmt::format("Annotation {}", annotationIndex + 1))));
+            connect(
+                action, &QAction::triggered, this,
+                util::exceptionGuarded([this, annotationIndex]() {
+                    if (auto* item = annotations_.getGraphicsItem(annotationIndex)) {
+                        item->setSelected(true);
+                    }
+                    mainWindow_->getNetworkAnnotationWidget()->showAnnotation(
+                        annotationIndex,
+                        mainWindow_->getInviwoApplication()->getNetworkAnnotations().getAnnotation(
+                            annotationIndex));
+                }));
+        }
+
+        auto* deleteMenu = menu.addMenu(tr("&Delete Annotations"));
+        for (auto annotationIndex : selectedAnnotations) {
+            const auto& annotation =
+                mainWindow_->getInviwoApplication()->getNetworkAnnotations().getAnnotation(
+                    annotationIndex);
+
+            const auto* action = deleteMenu->addAction(utilqt::toQString(
+                annotation.title.value_or(fmt::format("Annotation {}", annotationIndex + 1))));
+            connect(action, &QAction::triggered, this,
+                    util::exceptionGuarded([this, annotationIndex]() {
+                        mainWindow_->getInviwoApplication()->getNetworkAnnotations().remove(
+                            annotationIndex);
+                        mainWindow_->getNetworkAnnotationWidget()->hideAnnotation(annotationIndex);
+                    }));
+        }
+    }
+}
+
 void NetworkEditor::addCopyPasteMenuItems(QMenu& menu, const QList<QGraphicsItem*>& activeItems,
                                           const ivec2& position) {
     auto* cutAction = menu.addAction(QIcon(":/svgicons/edit-cut.svg"), tr("Cu&t"));
@@ -1004,6 +1160,18 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
     menu.addSeparator();
 
+    const auto activeAnnotations =
+        activeItems |
+        std::views::transform([this](auto* item) { return annotations_.getIndex(item); }) |
+        std::views::filter([](std::optional<size_t> index) { return index.has_value(); }) |
+        std::views::transform([](auto&& index) { return *index; }) |
+        std::ranges::to<std::unordered_set>();
+
+    addNetworkAnnotationMenuItems(*menu.addMenu("Annotations..."), activeProcessors,
+                                  activeAnnotations);
+
+    menu.addSeparator();
+
     const auto activeComposites =
         activeProcessors |
         std::views::transform([](auto* p) { return dynamic_cast<CompositeProcessor*>(p); }) |
@@ -1069,12 +1237,22 @@ void NetworkEditor::propagateEventToSelectedProcessorsAndSettings(KeyboardEvent&
 void NetworkEditor::deleteSelection() { deleteItems(selectedItems()); }
 
 void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
-    NetworkLock lock(network_);
+    const NetworkLock lock(network_);
     rendercontext::activateDefault();
 
+    // Remove Annotations
+    util::erase_remove_if(items, [this](const QGraphicsItem* item) {
+        if (const auto index = annotations_.getIndex(item); index.has_value()) {
+            mainWindow_->getInviwoApplication()->getNetworkAnnotations().remove(*index);
+            return true;
+        } else {
+            return false;
+        }
+    });
+
     // Remove Connections
-    util::erase_remove_if(items, [&](QGraphicsItem* item) {
-        if (auto cgi = qgraphicsitem_cast<ConnectionGraphicsItem*>(item)) {
+    util::erase_remove_if(items, [this](QGraphicsItem* item) {
+        if (auto* cgi = qgraphicsitem_cast<ConnectionGraphicsItem*>(item)) {
             removeConnection(cgi);
             return true;
         } else {
@@ -1083,8 +1261,8 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
     });
 
     // Remove Links
-    util::erase_remove_if(items, [&](QGraphicsItem* item) {
-        if (auto lgi = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)) {
+    util::erase_remove_if(items, [this](QGraphicsItem* item) {
+        if (auto* lgi = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)) {
             removeLink(lgi);
             return true;
         } else {
@@ -1093,7 +1271,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
     });
 
     // Remove Processors. It is important to remove processors last.
-    util::erase_remove_if(items, [&](QGraphicsItem* item) {
+    util::erase_remove_if(items, [this](QGraphicsItem* item) {
         if (const auto* pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             network_->removeProcessor(pgi->getProcessor());
             return true;
@@ -1201,16 +1379,24 @@ void NetworkEditor::paste(const QMimeData& mimeData) {
         });
 }
 
-void NetworkEditor::ensureVisible(const std::vector<Processor*>& processors) {
+void NetworkEditor::ensureVisible(const std::vector<Processor*>& processors) const {
     if (processors.empty()) return;
 
-    QRectF rect;
+    QRectF rect{};
     for (auto* item : processors) {
-        auto* pgi = getProcessorGraphicsItem(item);
+        const auto* pgi = getProcessorGraphicsItem(item);
         rect = rect.united(pgi->sceneBoundingRect());
     }
     for (auto* v : views()) {
         v->ensureVisible(rect);
+    }
+}
+
+void NetworkEditor::ensureVisible(const QGraphicsItem* item) const {
+    if (adjustSceneToChange_ && item && item->isVisible()) {
+        for (auto* v : views()) {
+            v->ensureVisible(item);
+        }
     }
 }
 
