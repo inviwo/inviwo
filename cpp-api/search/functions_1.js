@@ -16,7 +16,6 @@ var searchData=
   ['brushingandlinkingmanager_13',['BrushingAndLinkingManager',['../classinviwo_1_1BrushingAndLinkingManager.html#ab880dbf74f4fac61c04d834296331561',1,'inviwo::BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingInport *inport, std::vector&lt; BrushingTargetsInvalidationLevel &gt; invalidationLevels={ {AnyBrushingTarget, BrushingModifications(flags::any), InvalidationLevel::InvalidOutput}})'],['../classinviwo_1_1BrushingAndLinkingManager.html#aad0e4c8f368bc550846392d75ff6c2f2',1,'inviwo::BrushingAndLinkingManager::BrushingAndLinkingManager(BrushingAndLinkingOutport *outport, std::vector&lt; BrushingTargetsInvalidationLevel &gt; invalidationLevels={ {AnyBrushingTarget, BrushingModifications(flags::any), InvalidationLevel::InvalidOutput}})']]],
   ['brushingupdate_14',['brushingUpdate',['../classinviwo_1_1DataFrameTableProcessorWidget.html#a69a7daaeba4b2efaefec876c66ee93fe',1,'inviwo::DataFrameTableProcessorWidget']]],
   ['buffergl_15',['BufferGL',['../classinviwo_1_1BufferGL.html#ab49161288e5d034a87359d9441e39c87',1,'inviwo::BufferGL']]],
-  ['build_16',['Build',['../classinviwo_1_1detail_1_1Build.html#a3452f650f3668e45f9a6316d58138ee2',1,'inviwo::detail::Build']]],
-  ['button_17',['button',['../classinviwo_1_1MouseEvent.html#ac4da917bc47a9447eefa2f7c9ddd2191',1,'inviwo::MouseEvent']]],
-  ['buttonstate_18',['buttonState',['../classinviwo_1_1MouseInteractionEvent.html#a09ed6b580f64781d85c79126a7e95831',1,'inviwo::MouseInteractionEvent']]]
+  ['button_16',['button',['../classinviwo_1_1MouseEvent.html#ac4da917bc47a9447eefa2f7c9ddd2191',1,'inviwo::MouseEvent']]],
+  ['buttonstate_17',['buttonState',['../classinviwo_1_1MouseInteractionEvent.html#a09ed6b580f64781d85c79126a7e95831',1,'inviwo::MouseInteractionEvent']]]
 ];

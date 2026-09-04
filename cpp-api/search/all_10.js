@@ -13,7 +13,7 @@ var searchData=
   ['qtwidgetsmodule_10',['QtWidgetsModule',['../classinviwo_1_1QtWidgetsModule.html',1,'inviwo']]],
   ['query_11',['Query',['../structinviwo_1_1ClockGL_1_1Query.html',1,'inviwo::ClockGL']]],
   ['queue_12',['Queue',['../structinviwo_1_1InviwoApplication_1_1Queue.html',1,'inviwo::InviwoApplication']]],
-  ['queueddispatch_13',['QueuedDispatch',['../namespaceinviwo_1_1pool.html#a0800098fbdf7e02da630f3fce3e74d39a912f4c96d4cbc86810c93cbf112db52c',1,'inviwo::pool']]],
-  ['queueddispatch_14',['queuedDispatch',['../classinviwo_1_1PoolProcessor.html#af9efa96424943439965222f32f3d9fcc',1,'inviwo::PoolProcessor']]],
+  ['queueddispatch_13',['queuedDispatch',['../classinviwo_1_1PoolProcessor.html#af9efa96424943439965222f32f3d9fcc',1,'inviwo::PoolProcessor']]],
+  ['queueddispatch_14',['QueuedDispatch',['../namespaceinviwo_1_1pool.html#a0800098fbdf7e02da630f3fce3e74d39a912f4c96d4cbc86810c93cbf112db52c',1,'inviwo::pool']]],
   ['queueframe_15',['queueFrame',['../classinviwo_1_1ffmpeg_1_1Recorder.html#a6fe2e9811e44efd0d66f87ab09d59e19',1,'inviwo::ffmpeg::Recorder']]]
 ];

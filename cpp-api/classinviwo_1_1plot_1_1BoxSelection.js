@@ -4,5 +4,5 @@ var classinviwo_1_1plot_1_1BoxSelection =
     [ "addEventCallback", "classinviwo_1_1plot_1_1BoxSelection.html#abab0a90185cbe3d8d8dbe41b77c5f561", null ],
     [ "getDragRectangle", "classinviwo_1_1plot_1_1BoxSelection.html#a08962eadad91e38fd067b63e9b57d833", null ],
     [ "reset", "classinviwo_1_1plot_1_1BoxSelection.html#a9cf56ee054f93a1dd762140da83c8f85", null ],
-    [ "screenToData_", "classinviwo_1_1plot_1_1BoxSelection.html#a5f2162752427b706421dd49850632254", null ]
+    [ "screenToData_", "classinviwo_1_1plot_1_1BoxSelection.html#a57a50de1a7a19beab939e8f2d8e2f424", null ]
 ];

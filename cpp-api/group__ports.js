@@ -1,6 +1,6 @@
 var group__ports =
 [
-    [ "inviwo::BaseImageInport&lt; N &gt;", "classinviwo_1_1BaseImageInport.html", [
+    [ "inviwo::BaseImageInport< N >", "classinviwo_1_1BaseImageInport.html", [
       [ "getInfo", "classinviwo_1_1BaseImageInport.html#abdb75ff23df8824effea45e6fee40d3e", null ]
     ] ],
     [ "inviwo::BrushingAndLinkingInport", "classinviwo_1_1BrushingAndLinkingInport.html", [
@@ -19,11 +19,11 @@ var group__ports =
       [ "setInvalidationLevels", "classinviwo_1_1BrushingAndLinkingOutport.html#ab8dd5665e707cdb1d7d01516a121dd60", null ],
       [ "setValid", "classinviwo_1_1BrushingAndLinkingOutport.html#a98ab29d154f7771d7d37797e133f6cbb", null ]
     ] ],
-    [ "inviwo::DataInport&lt; T, N, Flat &gt;", "classinviwo_1_1DataInport.html", [
+    [ "inviwo::DataInport< T, N, Flat >", "classinviwo_1_1DataInport.html", [
       [ "getColorCode", "classinviwo_1_1DataInport.html#af4236498c4f1a8f70ebbd1df5e949e3b", null ],
       [ "getInfo", "classinviwo_1_1DataInport.html#a0cdb1be1c190675c88b4e9faa3274842", null ]
     ] ],
-    [ "inviwo::DataOutport&lt; T &gt;", "classinviwo_1_1DataOutport.html", [
+    [ "inviwo::DataOutport< T >", "classinviwo_1_1DataOutport.html", [
       [ "clear", "classinviwo_1_1DataOutport.html#a890b7bfa4fe1de30231f7ff6e16ad48a", null ],
       [ "detachData", "classinviwo_1_1DataOutport.html#a68c65508b50fb1e4bb8d0706a133a55d", null ],
       [ "getColorCode", "classinviwo_1_1DataOutport.html#a30a1647f8b30a27cd2c672cfdc3f1941", null ],

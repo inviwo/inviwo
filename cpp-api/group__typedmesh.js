@@ -6,11 +6,11 @@ var group__typedmesh =
     [ "inviwo::buffertraits::IndexBuffer", "classinviwo_1_1buffertraits_1_1IndexBuffer.html", null ],
     [ "inviwo::buffertraits::NormalBuffer", "classinviwo_1_1buffertraits_1_1NormalBuffer.html", null ],
     [ "inviwo::buffertraits::PickingBuffer", "classinviwo_1_1buffertraits_1_1PickingBuffer.html", null ],
-    [ "inviwo::buffertraits::PositionsBufferBase&lt; DIMS &gt;", "classinviwo_1_1buffertraits_1_1PositionsBufferBase.html", null ],
+    [ "inviwo::buffertraits::PositionsBufferBase< DIMS >", "classinviwo_1_1buffertraits_1_1PositionsBufferBase.html", null ],
     [ "inviwo::buffertraits::RadiiBuffer", "classinviwo_1_1buffertraits_1_1RadiiBuffer.html", null ],
     [ "inviwo::buffertraits::ScalarMetaBuffer", "classinviwo_1_1buffertraits_1_1ScalarMetaBuffer.html", null ],
-    [ "inviwo::buffertraits::TexCoordBuffer&lt; DIMS &gt;", "classinviwo_1_1buffertraits_1_1TexCoordBuffer.html", null ],
-    [ "inviwo::TypedMesh&lt; BufferTraits &gt;", "classinviwo_1_1TypedMesh.html", [
+    [ "inviwo::buffertraits::TexCoordBuffer< DIMS >", "classinviwo_1_1buffertraits_1_1TexCoordBuffer.html", null ],
+    [ "inviwo::TypedMesh< BufferTraits >", "classinviwo_1_1TypedMesh.html", [
       [ "addVertex", "classinviwo_1_1TypedMesh.html#a827a74be2582dbde141ec2a2c1cbd05b", null ],
       [ "addVertices", "classinviwo_1_1TypedMesh.html#a50d621b6246bf8320aa072fb964e669a", null ],
       [ "append", "classinviwo_1_1TypedMesh.html#ac2c7cc734dafc15fa30fb4efabc10cf9", null ],
@@ -23,9 +23,9 @@ var group__typedmesh =
       [ "setVertex", "classinviwo_1_1TypedMesh.html#a1fe4bc9d3bdc184706236165e80c0c67", null ],
       [ "setVertex", "classinviwo_1_1TypedMesh.html#aebfdb0a4017433d99c0f6c8d3799b526", null ]
     ] ],
-    [ "inviwo::buffertraits::TypedMeshBufferBase&lt; T, DIM, attrib, location &gt;", "classinviwo_1_1buffertraits_1_1TypedMeshBufferBase.html", null ],
-    [ "inviwo::BasicMesh", "group__typedmesh.html#ga99f563e4719dff2809e3baae6fa5c3ec", null ],
+    [ "inviwo::buffertraits::TypedMeshBufferBase< T, DIM, attrib, location >", "classinviwo_1_1buffertraits_1_1TypedMeshBufferBase.html", null ],
+    [ "inviwo::BasicMesh", "group__typedmesh.html#ga0d8285980d0ece5eca678282d437230f", null ],
     [ "inviwo::ColoredMesh", "group__typedmesh.html#ga49f50f4760a5c42168792e6fb1232ea7", null ],
-    [ "inviwo::PosTexColorMesh", "group__typedmesh.html#ga061ff3676981691b398f6c5650b48286", null ],
-    [ "inviwo::SphereMesh", "group__typedmesh.html#ga2d8fc4330041da81252febcd0a8c0dac", null ]
+    [ "inviwo::PosTexColorMesh", "group__typedmesh.html#gaf62c75e26fbcd5404859a165b89d7410", null ],
+    [ "inviwo::SphereMesh", "group__typedmesh.html#gafddba801d4e659e2242b0896545a5065", null ]
 ];
