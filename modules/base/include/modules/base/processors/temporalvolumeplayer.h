@@ -56,6 +56,10 @@ namespace inviwo {
 class IVW_MODULE_BASE_API TemporalVolumePlayer : public Processor {
 public:
     TemporalVolumePlayer();
+    TemporalVolumePlayer(const TemporalVolumePlayer&) = delete;
+    TemporalVolumePlayer(TemporalVolumePlayer&&) = delete;
+    TemporalVolumePlayer& operator=(const TemporalVolumePlayer&) = delete;
+    TemporalVolumePlayer& operator=(TemporalVolumePlayer&&) = delete;
     virtual ~TemporalVolumePlayer() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
