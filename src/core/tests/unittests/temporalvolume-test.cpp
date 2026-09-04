@@ -79,7 +79,7 @@ TEST(TemporalVolumeTest, Metadata) {
     EXPECT_EQ(tv.size(), 5u);
     EXPECT_FALSE(tv.empty());
     EXPECT_EQ(tv.numCached(), 0u);
-    EXPECT_TRUE(tv.prototype());
+    EXPECT_TRUE(tv.prototype().dimensions.has_value());
     EXPECT_EQ(tv.prototype().dimensions.value(), (size3_t{2, 2, 2}));
 }
 
