@@ -65,7 +65,7 @@ class FakeVolumeReader : public DataReaderType<Volume> {
 public:
     explicit FakeVolumeReader(std::shared_ptr<std::atomic<int>> readCount)
         : readCount_{std::move(readCount)} {
-        addExtension(FileExtension{"fake", "Fake Volume"});
+        addExtension(FileExtension{.extension = "fake", .description = "Fake Volume"});
     }
 
     virtual FakeVolumeReader* clone() const override { return new FakeVolumeReader(*this); }
@@ -90,10 +90,11 @@ struct Fixture {
         factory.registerObject(new FakeVolumeReader(readCount));
     }
 
-    std::vector<std::filesystem::path> paths(size_t count) const {
+    static std::vector<std::filesystem::path> paths(size_t count) {
         std::vector<std::filesystem::path> result;
+        result.reserve(count);
         for (size_t i = 0; i < count; ++i) {
-            result.push_back(std::filesystem::path{fmt::format("frame_{}.fake", i)});
+            result.emplace_back(fmt::format("frame_{}.fake", i));
         }
         return result;
     }
@@ -111,7 +112,7 @@ int numberOf(const std::shared_ptr<const Volume>& volume) {
 TEST(FileSequenceLoaderTest, LoadsPrototypeOnce) {
     Fixture fix;
     // Constructing the loader reads exactly one file (for the prototype).
-    FileSequenceLoader loader{fix.paths(5), {}, &fix.factory};
+    const FileSequenceLoader loader{fix.paths(5), {}, &fix.factory};
     EXPECT_EQ(loader.size(), 5u);
     EXPECT_EQ(*fix.readCount, 1);
     EXPECT_NE(loader.prototype().format, nullptr);
@@ -128,13 +129,13 @@ TEST(FileSequenceLoaderTest, LoadsFramesByIndex) {
 
 TEST(FileSequenceLoaderTest, DefaultTimesAreIndices) {
     Fixture fix;
-    FileSequenceLoader loader{fix.paths(3), {}, &fix.factory};
+    const FileSequenceLoader loader{fix.paths(3), {}, &fix.factory};
     EXPECT_TRUE(loader.times().empty());
 }
 
 TEST(FileSequenceLoaderTest, CustomTimes) {
     Fixture fix;
-    FileSequenceLoader loader{fix.paths(3), {0.0s, 5.0s, 10.0s}, &fix.factory};
+    const FileSequenceLoader loader{fix.paths(3), {0.0s, 5.0s, 10.0s}, &fix.factory};
     ASSERT_EQ(loader.times().size(), 3u);
     EXPECT_DOUBLE_EQ(loader.times()[1].count(), 5.0);
 }
@@ -151,7 +152,7 @@ TEST(FileSequenceLoaderTest, RejectsEmptyPaths) {
 
 TEST(FileSequenceLoaderTest, ThrowsWithoutReader) {
     DataReaderFactory empty;
-    std::vector<std::filesystem::path> paths{"frame_0.fake"};
+    const std::vector<std::filesystem::path> paths{"frame_0.fake"};
     EXPECT_THROW(FileSequenceLoader(paths, {}, &empty), DataReaderException);
 }
 
@@ -159,7 +160,7 @@ TEST(FileSequenceLoaderTest, IntegratesWithTemporalVolumeLazily) {
     Fixture fix;
     auto loader =
         std::make_unique<FileSequenceLoader>(fix.paths(10), std::vector<Seconds>{}, &fix.factory);
-    TemporalVolume tv{std::move(loader), 4};
+    const TemporalVolume tv{std::move(loader), 4};
 
     // Only the prototype has been read so far.
     EXPECT_EQ(*fix.readCount, 1);
