@@ -156,7 +156,7 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    static constexpr std::string_view defaultLabelFormat = "{:.4f}";
+    static constexpr std::string_view defaultLabelFormat = "{:.6g}";
 
 protected:
     void linePicked(PickingEvent* p);
