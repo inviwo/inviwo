@@ -121,10 +121,10 @@ TEST(FileSequenceLoaderTest, LoadsPrototypeOnce) {
 
 TEST(FileSequenceLoaderTest, LoadsFramesByIndex) {
     Fixture fix;
-    FileSequenceLoader loader{fix.paths(4), {}, &fix.factory};
+    const FileSequenceLoader loader{fix.paths(4), {}, &fix.factory};
 
-    EXPECT_EQ(loader.load(0)->getMetaData<IntMetaData>("number", -1), 0);
-    EXPECT_EQ(loader.load(3)->getMetaData<IntMetaData>("number", -1), 3);
+    EXPECT_EQ(loader.load(0, nullptr)->getMetaData<IntMetaData>("number", -1), 0);
+    EXPECT_EQ(loader.load(3, nullptr)->getMetaData<IntMetaData>("number", -1), 3);
 }
 
 TEST(FileSequenceLoaderTest, DefaultTimesAreIndices) {

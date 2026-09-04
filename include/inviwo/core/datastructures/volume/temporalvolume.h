@@ -86,7 +86,7 @@ public:
      * @param reuse an optional volume whose storage may be reused to avoid reallocation. It may be
      *              null and must be ignored if its format or dimensions do not match the frame.
      */
-    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse = {}) = 0;
+    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse) = 0;
 
     /// Total number of frames.
     virtual size_t size() const = 0;
@@ -128,7 +128,7 @@ public:
     ProceduralLoader(size_t count, std::vector<Seconds> times, VolumeConfig prototype,
                      Generator generator);
 
-    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse = {}) override;
+    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse) override;
     virtual size_t size() const override;
     virtual std::span<const Seconds> times() const override;
     virtual VolumeConfig prototype() const override;
