@@ -160,6 +160,12 @@ ParallelCoordinates::ParallelCoordinates()
     , labelFormat_("format", "Format", defaultLabelFormat)
     , labelColor_("color", "Color", vec4(.0, .0f, .0f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                   InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , labelingAlgorithm_{"labeling",
+                         "Labeling Algorithm",
+                         {{"matplotlib", "Matplotlib", LabelingAlgorithm::Matplotlib},
+                          {"limits", "Limits only", LabelingAlgorithm::Limits},
+                          {"limitsAndZero", "Limits And Zero", LabelingAlgorithm::LimitsAndZero}},
+                         1}
 
     , axesSettings_("axesSettings", "Axes Settings")
     , axisSize_("axisSize", "Size", 4.0f, 0.0f, 50.0f, 0.01f)
@@ -247,7 +253,7 @@ ParallelCoordinates::ParallelCoordinates()
 
     addProperty(labelSettings_);
     labelSettings_.insertProperty(0, showLabels_);
-    labelSettings_.addProperties(labelOffset_, labelFormat_, labelColor_);
+    labelSettings_.addProperties(labelOffset_, labelFormat_, labelColor_, labelingAlgorithm_);
     labelSettings_.setCollapsed(true);
 
     addProperty(axesSettings_);
