@@ -52,7 +52,6 @@ find_package(glm CONFIG REQUIRED)
 ivw_vcpkg_install(glm MODULE Core EXT)
 
 # Flags
-message(STATUS "add subdirectory: flags")
 add_subdirectory(flags) # We have local modifications
 ivw_register_license_file(NAME "Flags" MODULE Core EXT
     URL "http://grisumbras.github.io/enum-flags/"
@@ -61,7 +60,6 @@ ivw_register_license_file(NAME "Flags" MODULE Core EXT
 )
 
 # ticpp
-message(STATUS "add subdirectory: ticpp")
 add_subdirectory(ticpp) # We have local modifications
 ivw_register_license_file(NAME "TiCPP" TARGET ticpp MODULE Core EXT
     URL https://github.com/wxFormBuilder/ticpp
