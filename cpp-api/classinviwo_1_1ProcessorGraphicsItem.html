@@ -122,9 +122,9 @@ $(function(){initNavTree('classinviwo_1_1ProcessorGraphicsItem.html',''); initRe
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a80279d46882349b829fdfc52bc74d6d0" id="r_a80279d46882349b829fdfc52bc74d6d0"><td class="memItemLeft" align="right" valign="top"><a id="a80279d46882349b829fdfc52bc74d6d0" name="a80279d46882349b829fdfc52bc74d6d0"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>Type</b> = static_cast&lt;int&gt;(UserType) + static_cast&lt;int&gt;(ProcessorGraphicsType)
+<tr class="memitem:a66a48d0e2450fad37518bd7e0b3dd01b" id="r_a66a48d0e2450fad37518bd7e0b3dd01b"><td class="memItemLeft" align="right" valign="top"><a id="a66a48d0e2450fad37518bd7e0b3dd01b" name="a66a48d0e2450fad37518bd7e0b3dd01b"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>Type</b> = static_cast&lt;int&gt;(UserType) + static_cast&lt;int&gt;(ProcessorGraphicsType)
  }</td></tr>
-<tr class="separator:a80279d46882349b829fdfc52bc74d6d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a66a48d0e2450fad37518bd7e0b3dd01b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2ba71173180d4e4e1662f17660055b8" id="r_ad2ba71173180d4e4e1662f17660055b8"><td class="memItemLeft" align="right" valign="top"><a id="ad2ba71173180d4e4e1662f17660055b8" name="ad2ba71173180d4e4e1662f17660055b8"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>PortType</b> : std::uint8_t { <b>In</b>
 , <b>Out</b>
  }</td></tr>
@@ -255,6 +255,8 @@ static QPointF&#160;</td><td class="memItemRight" valign="bottom"><b>portOffset<
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
+<tr class="memitem:ad91f8551d34a9287bf2900d483e54d5a" id="r_ad91f8551d34a9287bf2900d483e54d5a"><td class="memItemLeft" align="right" valign="top">static constexpr QRectF&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad91f8551d34a9287bf2900d483e54d5a">itemRect</a></td></tr>
+<tr class="separator:ad91f8551d34a9287bf2900d483e54d5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac15ac64f605753ba6f5cdd9679a74382" id="r_ac15ac64f605753ba6f5cdd9679a74382"><td class="memItemLeft" align="right" valign="top"><a id="ac15ac64f605753ba6f5cdd9679a74382" name="ac15ac64f605753ba6f5cdd9679a74382"></a>
 static constexpr QSizeF&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> {150.0, 50.0}</td></tr>
 <tr class="separator:ac15ac64f605753ba6f5cdd9679a74382"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -697,6 +699,32 @@ std::unordered_set&lt; <a class="el" href="classinviwo_1_1ObservableInterface.ht
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1EditorGraphicsItem.html">inviwo::EditorGraphicsItem</a>.</p>
 
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="ad91f8551d34a9287bf2900d483e54d5a" name="ad91f8551d34a9287bf2900d483e54d5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad91f8551d34a9287bf2900d483e54d5a">&#9670;&#160;</a></span>itemRect</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr QRectF inviwo::ProcessorGraphicsItem::itemRect</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">        -ProcessorGraphicsItem::size.width() / 2, -ProcessorGraphicsItem::size.height() / 2,</div>
+<div class="line">        ProcessorGraphicsItem::size.width(), ProcessorGraphicsItem::size.height()}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>

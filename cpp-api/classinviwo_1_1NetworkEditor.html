@@ -94,6 +94,7 @@ $(function(){initNavTree('classinviwo_1_1NetworkEditor.html',''); initResizable(
 
 <div class="header">
   <div class="summary">
+<a href="#signals">Signals</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
@@ -114,13 +115,23 @@ $(function(){initNavTree('classinviwo_1_1NetworkEditor.html',''); initResizable(
  <div class="center">
   <img src="classinviwo_1_1NetworkEditor.png" usemap="#inviwo::NetworkEditor_map" alt=""/>
   <map id="inviwo::NetworkEditor_map" name="inviwo::NetworkEditor_map">
+<area href="classinviwo_1_1NetworkEditorObservable.html" alt="inviwo::NetworkEditorObservable" shape="rect" coords="287,112,564,136"/>
+<area href="classinviwo_1_1ProcessorNetworkObserver.html" alt="inviwo::ProcessorNetworkObserver" shape="rect" coords="574,112,851,136"/>
 <area href="classinviwo_1_1Observable.html" alt="inviwo::Observable&lt; NetworkEditorObserver &gt;" shape="rect" coords="287,56,564,80"/>
-<area href="classinviwo_1_1ProcessorNetworkObserver.html" alt="inviwo::ProcessorNetworkObserver" shape="rect" coords="574,56,851,80"/>
+<area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="574,56,851,80"/>
 <area href="classinviwo_1_1ObservableInterface.html" alt="inviwo::ObservableInterface" shape="rect" coords="287,0,564,24"/>
-<area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="574,0,851,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="signals" name="signals"></a>
+Signals</h2></td></tr>
+<tr class="memitem:ae3663e92113741bd2ac21a5567c98744" id="r_ae3663e92113741bd2ac21a5567c98744"><td class="memItemLeft" align="right" valign="top"><a id="ae3663e92113741bd2ac21a5567c98744" name="ae3663e92113741bd2ac21a5567c98744"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>hideNetworkAnnotationDetails</b> (size_t index)</td></tr>
+<tr class="separator:ae3663e92113741bd2ac21a5567c98744"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36cdc1428259d9d8256ba3a479e27ae4" id="r_a36cdc1428259d9d8256ba3a479e27ae4"><td class="memItemLeft" align="right" valign="top"><a id="a36cdc1428259d9d8256ba3a479e27ae4" name="a36cdc1428259d9d8256ba3a479e27ae4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>showNetworkAnnotationDetails</b> (size_t index)</td></tr>
+<tr class="separator:a36cdc1428259d9d8256ba3a479e27ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8861aad84242e8f5b1a275c6535b6bf3" id="r_a8861aad84242e8f5b1a275c6535b6bf3"><td class="memItemLeft" align="right" valign="top"><a id="a8861aad84242e8f5b1a275c6535b6bf3" name="a8861aad84242e8f5b1a275c6535b6bf3"></a>
@@ -144,45 +155,57 @@ std::unique_ptr&lt; QMimeData &gt;&#160;</td><td class="memItemRight" valign="bo
 <tr class="memitem:a7d3dceafed74e0d004f7c0749bb0ce4e" id="r_a7d3dceafed74e0d004f7c0749bb0ce4e"><td class="memItemLeft" align="right" valign="top"><a id="a7d3dceafed74e0d004f7c0749bb0ce4e" name="a7d3dceafed74e0d004f7c0749bb0ce4e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>deleteSelection</b> ()</td></tr>
 <tr class="separator:a7d3dceafed74e0d004f7c0749bb0ce4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e7ae6bbbcf0a5b072fd773aad7a767e" id="r_a0e7ae6bbbcf0a5b072fd773aad7a767e"><td class="memItemLeft" align="right" valign="top"><a id="a0e7ae6bbbcf0a5b072fd773aad7a767e" name="a0e7ae6bbbcf0a5b072fd773aad7a767e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>ensureVisible</b> (const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;processors)</td></tr>
-<tr class="separator:a0e7ae6bbbcf0a5b072fd773aad7a767e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa338516833297935254a8156502bd1bf" id="r_aa338516833297935254a8156502bd1bf"><td class="memItemLeft" align="right" valign="top"><a id="aa338516833297935254a8156502bd1bf" name="aa338516833297935254a8156502bd1bf"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ensureVisible</b> (const QGraphicsItem *item) const</td></tr>
+<tr class="separator:aa338516833297935254a8156502bd1bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43032e23477ecf07d40450736d31cb10" id="r_a43032e23477ecf07d40450736d31cb10"><td class="memItemLeft" align="right" valign="top"><a id="a43032e23477ecf07d40450736d31cb10" name="a43032e23477ecf07d40450736d31cb10"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ensureVisible</b> (const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;processors) const</td></tr>
+<tr class="separator:a43032e23477ecf07d40450736d31cb10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8e3e4d72a72d5aba54924da5e7c4a1d" id="r_ad8e3e4d72a72d5aba54924da5e7c4a1d"><td class="memItemLeft" align="right" valign="top"><a id="ad8e3e4d72a72d5aba54924da5e7c4a1d" name="ad8e3e4d72a72d5aba54924da5e7c4a1d"></a>
+<a class="el" href="classinviwo_1_1NetworkAnnotationsQt.html">NetworkAnnotationsQt</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getAnnotationManager</b> ()</td></tr>
+<tr class="separator:ad8e3e4d72a72d5aba54924da5e7c4a1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32276840324ca57cc80b595932fed9fa" id="r_a32276840324ca57cc80b595932fed9fa"><td class="memItemLeft" align="right" valign="top"><a id="a32276840324ca57cc80b595932fed9fa" name="a32276840324ca57cc80b595932fed9fa"></a>
+const <a class="el" href="classinviwo_1_1NetworkAnnotationsQt.html">NetworkAnnotationsQt</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getAnnotationManager</b> () const</td></tr>
+<tr class="separator:a32276840324ca57cc80b595932fed9fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a831328085b4dc0068b41d81e2224d425" id="r_a831328085b4dc0068b41d81e2224d425"><td class="memItemLeft" align="right" valign="top"><a id="a831328085b4dc0068b41d81e2224d425" name="a831328085b4dc0068b41d81e2224d425"></a>
 <a class="el" href="classinviwo_1_1ConnectionGraphicsItem.html">ConnectionGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getConnectionGraphicsItem</b> (const <a class="el" href="classinviwo_1_1PortConnection.html">PortConnection</a> &amp;key) const</td></tr>
 <tr class="separator:a831328085b4dc0068b41d81e2224d425"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a446544f7873ff1f2c58d363390d04bda" id="r_a446544f7873ff1f2c58d363390d04bda"><td class="memItemLeft" align="right" valign="top"><a id="a446544f7873ff1f2c58d363390d04bda" name="a446544f7873ff1f2c58d363390d04bda"></a>
-<a class="el" href="classinviwo_1_1ConnectionGraphicsItem.html">ConnectionGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getConnectionGraphicsItemAt</b> (const QPointF pos) const</td></tr>
-<tr class="separator:a446544f7873ff1f2c58d363390d04bda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49b82f4e0b11c92f98620fc1b6a54f60" id="r_a49b82f4e0b11c92f98620fc1b6a54f60"><td class="memItemLeft" align="right" valign="top"><a id="a49b82f4e0b11c92f98620fc1b6a54f60" name="a49b82f4e0b11c92f98620fc1b6a54f60"></a>
+<a class="el" href="classinviwo_1_1ConnectionGraphicsItem.html">ConnectionGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getConnectionGraphicsItemAt</b> (QPointF pos) const</td></tr>
+<tr class="separator:a49b82f4e0b11c92f98620fc1b6a54f60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c23a3debac162f3f73ad238b585ada6" id="r_a4c23a3debac162f3f73ad238b585ada6"><td class="memItemLeft" align="right" valign="top"><a id="a4c23a3debac162f3f73ad238b585ada6" name="a4c23a3debac162f3f73ad238b585ada6"></a>
 <a class="el" href="classinviwo_1_1LinkConnectionGraphicsItem.html">LinkConnectionGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getLinkGraphicsItem</b> (const <a class="el" href="classinviwo_1_1ProcessorPair.html">ProcessorPair</a> &amp;key) const</td></tr>
 <tr class="separator:a4c23a3debac162f3f73ad238b585ada6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c57c1a50a2166853c9d592578442c9c" id="r_a1c57c1a50a2166853c9d592578442c9c"><td class="memItemLeft" align="right" valign="top"><a id="a1c57c1a50a2166853c9d592578442c9c" name="a1c57c1a50a2166853c9d592578442c9c"></a>
 <a class="el" href="classinviwo_1_1LinkConnectionGraphicsItem.html">LinkConnectionGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getLinkGraphicsItem</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor1, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor2) const</td></tr>
 <tr class="separator:a1c57c1a50a2166853c9d592578442c9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a13b3d3ee37abbc66b3e89d9c9aba04" id="r_a9a13b3d3ee37abbc66b3e89d9c9aba04"><td class="memItemLeft" align="right" valign="top"><a id="a9a13b3d3ee37abbc66b3e89d9c9aba04" name="a9a13b3d3ee37abbc66b3e89d9c9aba04"></a>
-<a class="el" href="classinviwo_1_1LinkConnectionGraphicsItem.html">LinkConnectionGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getLinkGraphicsItemAt</b> (const QPointF pos) const</td></tr>
-<tr class="separator:a9a13b3d3ee37abbc66b3e89d9c9aba04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c2a5c5a759c7429155e5b2485332d48" id="r_a2c2a5c5a759c7429155e5b2485332d48"><td class="memItemLeft" align="right" valign="top"><a id="a2c2a5c5a759c7429155e5b2485332d48" name="a2c2a5c5a759c7429155e5b2485332d48"></a>
+<a class="el" href="classinviwo_1_1LinkConnectionGraphicsItem.html">LinkConnectionGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getLinkGraphicsItemAt</b> (QPointF pos) const</td></tr>
+<tr class="separator:a2c2a5c5a759c7429155e5b2485332d48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96f9bb677b0c52f5cb6e7aa3dacfc193" id="r_a96f9bb677b0c52f5cb6e7aa3dacfc193"><td class="memItemLeft" align="right" valign="top"><a id="a96f9bb677b0c52f5cb6e7aa3dacfc193" name="a96f9bb677b0c52f5cb6e7aa3dacfc193"></a>
 <a class="el" href="classinviwo_1_1InviwoMainWindow.html">InviwoMainWindow</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getMainWindow</b> () const</td></tr>
 <tr class="separator:a96f9bb677b0c52f5cb6e7aa3dacfc193"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe891b24ba2e3d0c8c78d2b143ebb1c0" id="r_afe891b24ba2e3d0c8c78d2b143ebb1c0"><td class="memItemLeft" align="right" valign="top"><a id="afe891b24ba2e3d0c8c78d2b143ebb1c0" name="afe891b24ba2e3d0c8c78d2b143ebb1c0"></a>
 <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getNetwork</b> () const</td></tr>
 <tr class="separator:afe891b24ba2e3d0c8c78d2b143ebb1c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31f050cc92cf1dc7c975fada13f7e15f" id="r_a31f050cc92cf1dc7c975fada13f7e15f"><td class="memItemLeft" align="right" valign="top"><a id="a31f050cc92cf1dc7c975fada13f7e15f" name="a31f050cc92cf1dc7c975fada13f7e15f"></a>
+<a class="el" href="classinviwo_1_1NetworkAnnotationGraphicsItem.html">NetworkAnnotationGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getNetworkAnnotationGraphicsItemAt</b> (QPointF pos) const</td></tr>
+<tr class="separator:a31f050cc92cf1dc7c975fada13f7e15f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a95cdb983ef0b7a79327eef544f2e86" id="r_a3a95cdb983ef0b7a79327eef544f2e86"><td class="memItemLeft" align="right" valign="top"><a id="a3a95cdb983ef0b7a79327eef544f2e86" name="a3a95cdb983ef0b7a79327eef544f2e86"></a>
 <a class="el" href="classinviwo_1_1TextLabelOverlay.html">TextLabelOverlay</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getOverlay</b> () const</td></tr>
 <tr class="separator:a3a95cdb983ef0b7a79327eef544f2e86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9592baea0033dbc09ceacfe982c3538" id="r_aa9592baea0033dbc09ceacfe982c3538"><td class="memItemLeft" align="right" valign="top"><a id="aa9592baea0033dbc09ceacfe982c3538" name="aa9592baea0033dbc09ceacfe982c3538"></a>
 <a class="el" href="classinviwo_1_1ProcessorGraphicsItem.html">ProcessorGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessorGraphicsItem</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *key) const</td></tr>
 <tr class="separator:aa9592baea0033dbc09ceacfe982c3538"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0df4901c203c7881188174bf4b92df0" id="r_ae0df4901c203c7881188174bf4b92df0"><td class="memItemLeft" align="right" valign="top"><a id="ae0df4901c203c7881188174bf4b92df0" name="ae0df4901c203c7881188174bf4b92df0"></a>
-<a class="el" href="classinviwo_1_1ProcessorGraphicsItem.html">ProcessorGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessorGraphicsItemAt</b> (const QPointF pos) const</td></tr>
-<tr class="separator:ae0df4901c203c7881188174bf4b92df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad65694f21fea135a6089e19dc13bdd37" id="r_ad65694f21fea135a6089e19dc13bdd37"><td class="memItemLeft" align="right" valign="top"><a id="ad65694f21fea135a6089e19dc13bdd37" name="ad65694f21fea135a6089e19dc13bdd37"></a>
-<a class="el" href="classinviwo_1_1ProcessorInportGraphicsItem.html">ProcessorInportGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessorInportGraphicsItemAt</b> (const QPointF pos) const</td></tr>
-<tr class="separator:ad65694f21fea135a6089e19dc13bdd37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8aa4fb2b0f1d3ea28cc10c38678e236" id="r_ad8aa4fb2b0f1d3ea28cc10c38678e236"><td class="memItemLeft" align="right" valign="top"><a id="ad8aa4fb2b0f1d3ea28cc10c38678e236" name="ad8aa4fb2b0f1d3ea28cc10c38678e236"></a>
-<a class="el" href="classinviwo_1_1ProcessorOutportGraphicsItem.html">ProcessorOutportGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessorOutportGraphicsItemAt</b> (const QPointF pos) const</td></tr>
-<tr class="separator:ad8aa4fb2b0f1d3ea28cc10c38678e236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d491b4e74c5123628f7263c96b59252" id="r_a0d491b4e74c5123628f7263c96b59252"><td class="memItemLeft" align="right" valign="top"><a id="a0d491b4e74c5123628f7263c96b59252" name="a0d491b4e74c5123628f7263c96b59252"></a>
+<a class="el" href="classinviwo_1_1ProcessorGraphicsItem.html">ProcessorGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessorGraphicsItemAt</b> (QPointF pos) const</td></tr>
+<tr class="separator:a0d491b4e74c5123628f7263c96b59252"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28c5636d46e4d6eebb902fe569c64063" id="r_a28c5636d46e4d6eebb902fe569c64063"><td class="memItemLeft" align="right" valign="top"><a id="a28c5636d46e4d6eebb902fe569c64063" name="a28c5636d46e4d6eebb902fe569c64063"></a>
+<a class="el" href="classinviwo_1_1ProcessorInportGraphicsItem.html">ProcessorInportGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessorInportGraphicsItemAt</b> (QPointF pos) const</td></tr>
+<tr class="separator:a28c5636d46e4d6eebb902fe569c64063"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2b0c56f987db527b6f17081f193a9e7" id="r_aa2b0c56f987db527b6f17081f193a9e7"><td class="memItemLeft" align="right" valign="top"><a id="aa2b0c56f987db527b6f17081f193a9e7" name="aa2b0c56f987db527b6f17081f193a9e7"></a>
+<a class="el" href="classinviwo_1_1ProcessorOutportGraphicsItem.html">ProcessorOutportGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessorOutportGraphicsItemAt</b> (QPointF pos) const</td></tr>
+<tr class="separator:aa2b0c56f987db527b6f17081f193a9e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9aa017e62ddf1483b74abac627f688fc" id="r_a9aa017e62ddf1483b74abac627f688fc"><td class="memItemLeft" align="right" valign="top"><a id="a9aa017e62ddf1483b74abac627f688fc" name="a9aa017e62ddf1483b74abac627f688fc"></a>
 QRectF&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessorsBoundingRect</b> () const</td></tr>
 <tr class="separator:a9aa017e62ddf1483b74abac627f688fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -237,6 +260,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>showProcessorHelp</b>
 <tr class="memitem:a1838220c6c2834de1802220e14209930" id="r_a1838220c6c2834de1802220e14209930"><td class="memItemLeft" align="right" valign="top"><a id="a1838220c6c2834de1802220e14209930" name="a1838220c6c2834de1802220e14209930"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateSceneSize</b> ()</td></tr>
 <tr class="separator:a1838220c6c2834de1802220e14209930"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1NetworkEditorObservable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1NetworkEditorObservable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1NetworkEditorObservable.html">inviwo::NetworkEditorObservable</a></td></tr>
+<tr class="memitem:a31bdf2974e16c71452f7d67eb4acee40 inherit pub_methods_classinviwo_1_1NetworkEditorObservable" id="r_a31bdf2974e16c71452f7d67eb4acee40"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversNetworkEditorFileChanged</b> (const std::string &amp;newFilename)</td></tr>
+<tr class="separator:a31bdf2974e16c71452f7d67eb4acee40 inherit pub_methods_classinviwo_1_1NetworkEditorObservable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bf3e2795c5134254af284eb56ae0ac8 inherit pub_methods_classinviwo_1_1NetworkEditorObservable" id="r_a0bf3e2795c5134254af284eb56ae0ac8"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversSceneSizeChanged</b> ()</td></tr>
+<tr class="separator:a0bf3e2795c5134254af284eb56ae0ac8 inherit pub_methods_classinviwo_1_1NetworkEditorObservable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; NetworkEditorObserver &gt;</a></td></tr>
 <tr class="memitem:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable" id="r_aa342929bb9eb6a886ce783bc59dcf7f6"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (<a class="el" href="classinviwo_1_1NetworkEditorObserver.html">NetworkEditorObserver</a> *observer)</td></tr>
@@ -336,6 +366,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addCompositeMenuItems
 <tr class="memitem:a5cf894a30c06eb90eed0dcbc697c750d" id="r_a5cf894a30c06eb90eed0dcbc697c750d"><td class="memItemLeft" align="right" valign="top"><a id="a5cf894a30c06eb90eed0dcbc697c750d" name="a5cf894a30c06eb90eed0dcbc697c750d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addCopyPasteMenuItems</b> (QMenu &amp;menu, const QList&lt; QGraphicsItem * &gt; &amp;activeItems, const ivec2 &amp;position)</td></tr>
 <tr class="separator:a5cf894a30c06eb90eed0dcbc697c750d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a4b47490b36cf57e904456ba7478a53" id="r_a7a4b47490b36cf57e904456ba7478a53"><td class="memItemLeft" align="right" valign="top"><a id="a7a4b47490b36cf57e904456ba7478a53" name="a7a4b47490b36cf57e904456ba7478a53"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addNetworkAnnotationMenuItems</b> (QMenu &amp;menu, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;selectedProcessors, const std::unordered_set&lt; size_t &gt; &amp;selectedAnnotations)</td></tr>
+<tr class="separator:a7a4b47490b36cf57e904456ba7478a53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf6317d4b0eb5c7b48414b67a4623255" id="r_abf6317d4b0eb5c7b48414b67a4623255"><td class="memItemLeft" align="right" valign="top"><a id="abf6317d4b0eb5c7b48414b67a4623255" name="abf6317d4b0eb5c7b48414b67a4623255"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addProcessorMenuItems</b> (QMenu &amp;menu, <a class="el" href="classinviwo_1_1ProcessorGraphicsItem.html">ProcessorGraphicsItem</a> *)</td></tr>
 <tr class="separator:abf6317d4b0eb5c7b48414b67a4623255"><td class="memSeparator" colspan="2">&#160;</td></tr>

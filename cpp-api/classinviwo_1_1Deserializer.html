@@ -644,13 +644,14 @@ requires deserializer::IndexableFunctions&lt;T, <a class="el" href="structinviwo
 <p>For more advanced deserialization. Useful when one has to call observer notifications. Example usage, serialize as usual </p><div class="fragment"><div class="line">s.serialize(<span class="stringliteral">&quot;TFPrimitives&quot;</span>, values_, <span class="stringliteral">&quot;point&quot;</span>);</div>
 </div><!-- fragment --><p> Then deserialize with notifications: </p><div class="fragment"><div class="line">d.deserialize((<span class="stringliteral">&quot;TFPrimitives&quot;</span>, values_ <span class="stringliteral">&quot;point&quot;</span>, <a class="code hl_struct" href="structinviwo_1_1deserializer_1_1IndexFunctions.html">deserializer::IndexFunctions</a>{</div>
 <div class="line">      .makeNew = []() { <span class="keywordflow">return</span> std::unique_ptr&lt;TFPrimitive&gt;{}; },</div>
-<div class="line">      .onNew = [&amp;](std::unique_ptr&lt;TFPrimitiveSet&gt;&amp; primitive) {</div>
+<div class="line">      .onNew = [&amp;](std::unique_ptr&lt;TFPrimitiveSet&gt;&amp; primitive, <span class="keywordtype">size_t</span> index) {</div>
 <div class="line">              notifyControlPointAdded(primitive.get());</div>
 <div class="line">          },</div>
-<div class="line">      .onRemove = [&amp;](std::unique_ptr&lt;TFPrimitiveSet&gt;&amp; primitive) {</div>
+<div class="line">      .onRemove = [&amp;](std::unique_ptr&lt;TFPrimitiveSet&gt;&amp; primitive, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="namespaceinviwo_1_1reader_1_1option.html#a8252c8e287b75c060127ba24dec89656">index</a>) {</div>
 <div class="line">              notifyControlPointRemoved(primitive.get());</div>
 <div class="line">          }});</div>
-<div class="ttc" id="astructinviwo_1_1deserializer_1_1IndexFunctions_html"><div class="ttname"><a href="structinviwo_1_1deserializer_1_1IndexFunctions.html">inviwo::deserializer::IndexFunctions</a></div><div class="ttdef"><b>Definition</b> deserializer.h:120</div></div>
+<div class="ttc" id="anamespaceinviwo_1_1reader_1_1option_html_a8252c8e287b75c060127ba24dec89656"><div class="ttname"><a href="namespaceinviwo_1_1reader_1_1option.html#a8252c8e287b75c060127ba24dec89656">inviwo::reader::option::index</a></div><div class="ttdeci">constexpr std::string_view index</div><div class="ttdoc">Index of the item to read, std::ptrdiff_t. Negative values are counted from the end.</div><div class="ttdef"><b>Definition</b> datareader.h:56</div></div>
+<div class="ttc" id="astructinviwo_1_1deserializer_1_1IndexFunctions_html"><div class="ttname"><a href="structinviwo_1_1deserializer_1_1IndexFunctions.html">inviwo::deserializer::IndexFunctions</a></div><div class="ttdef"><b>Definition</b> deserializer.h:116</div></div>
 </div><!-- fragment --> 
 </div>
 </div>

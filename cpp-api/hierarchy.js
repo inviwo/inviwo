@@ -640,6 +640,7 @@ var hierarchy =
     [ "inviwo::Delay", "classinviwo_1_1Delay.html", null ],
     [ "inviwo::utilgl::detail::DepthFuncPolicy", "structinviwo_1_1utilgl_1_1detail_1_1DepthFuncPolicy.html", null ],
     [ "inviwo::utilgl::detail::DepthMaskPolicy", "structinviwo_1_1utilgl_1_1detail_1_1DepthMaskPolicy.html", null ],
+    [ "inviwo::Description", "structinviwo_1_1Description.html", null ],
     [ "inviwo::DeserializationErrorHandle< T >", "classinviwo_1_1DeserializationErrorHandle.html", null ],
     [ "inviwo::util::detail::detector< Default, AlwaysVoid, Op, Args >", "structinviwo_1_1util_1_1detail_1_1detector.html", null ],
     [ "inviwo::util::detail::detector< Default, std::void_t< Op< Args... > >, Op, Args... >", "structinviwo_1_1util_1_1detail_1_1detector_3_01Default_00_01std_1_1void__t_3_01Op_3_01Args_8_8_8ec404f54ae48f65ab9e0d13e37a28e5f.html", null ],
@@ -1979,6 +1980,7 @@ var hierarchy =
     [ "inviwo::MoveOnlyValue< inviwo::utilgl::ScissorBox >", "classinviwo_1_1MoveOnlyValue.html", null ],
     [ "inviwo::MoveOnlyValue< inviwo::utilgl::Viewport >", "classinviwo_1_1MoveOnlyValue.html", null ],
     [ "inviwo::MoveOnlyValue< vec4 >", "classinviwo_1_1MoveOnlyValue.html", null ],
+    [ "inviwo::NetworkAnnotation", "structinviwo_1_1NetworkAnnotation.html", null ],
     [ "inviwo::NetworkAutomation", "classinviwo_1_1NetworkAutomation.html", null ],
     [ "inviwo::NetworkEdge", "structinviwo_1_1NetworkEdge.html", null ],
     [ "inviwo::NetworkLock", "structinviwo_1_1NetworkLock.html", null ],
@@ -2064,8 +2066,15 @@ var hierarchy =
         ] ]
       ] ],
       [ "inviwo::Observable< FactoryObserver< MetaData > >", "classinviwo_1_1Observable.html", null ],
+      [ "inviwo::Observable< NetworkAnnotationsObserver >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::NetworkAnnotationsObservable", "classinviwo_1_1NetworkAnnotationsObservable.html", [
+          [ "inviwo::NetworkAnnotations", "classinviwo_1_1NetworkAnnotations.html", null ]
+        ] ]
+      ] ],
       [ "inviwo::Observable< NetworkEditorObserver >", "classinviwo_1_1Observable.html", [
-        [ "inviwo::NetworkEditor", "classinviwo_1_1NetworkEditor.html", null ]
+        [ "inviwo::NetworkEditorObservable", "classinviwo_1_1NetworkEditorObservable.html", [
+          [ "inviwo::NetworkEditor", "classinviwo_1_1NetworkEditor.html", null ]
+        ] ]
       ] ],
       [ "inviwo::Observable< FactoryObserver< OutportFactoryObject > >", "classinviwo_1_1Observable.html", null ],
       [ "inviwo::Observable< FactoryObserver< PortInspectorFactoryObject > >", "classinviwo_1_1Observable.html", null ],
@@ -2319,10 +2328,14 @@ var hierarchy =
       ] ],
       [ "inviwo::FactoryObserver< T >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::LabelGraphicsItemObserver", "classinviwo_1_1LabelGraphicsItemObserver.html", null ],
+      [ "inviwo::NetworkAnnotationsObserver", "classinviwo_1_1NetworkAnnotationsObserver.html", [
+        [ "inviwo::NetworkAnnotationsQt", "classinviwo_1_1NetworkAnnotationsQt.html", null ]
+      ] ],
       [ "inviwo::NetworkEditorObserver", "classinviwo_1_1NetworkEditorObserver.html", [
         [ "inviwo::NetworkEditorView", "classinviwo_1_1NetworkEditorView.html", null ]
       ] ],
       [ "inviwo::ProcessorMetaDataObserver", "classinviwo_1_1ProcessorMetaDataObserver.html", [
+        [ "inviwo::NetworkAnnotationGraphicsItem", "classinviwo_1_1NetworkAnnotationGraphicsItem.html", null ],
         [ "inviwo::ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", null ],
         [ "inviwo::ProcessorNetwork", "classinviwo_1_1ProcessorNetwork.html", null ],
         [ "inviwo::layout::MultiInput", "structinviwo_1_1layout_1_1MultiInput.html", null ]
@@ -2344,6 +2357,7 @@ var hierarchy =
         [ "inviwo::ImageExport", "classinviwo_1_1ImageExport.html", null ],
         [ "inviwo::LinkDialogGraphicsScene", "classinviwo_1_1LinkDialogGraphicsScene.html", null ],
         [ "inviwo::NetWorkCefSynchronizer", "classinviwo_1_1NetWorkCefSynchronizer.html", null ],
+        [ "inviwo::NetworkAnnotations", "classinviwo_1_1NetworkAnnotations.html", null ],
         [ "inviwo::NetworkDebugObserver", "structinviwo_1_1NetworkDebugObserver.html", null ],
         [ "inviwo::NetworkEditor", "classinviwo_1_1NetworkEditor.html", null ],
         [ "inviwo::NetworkSyncServer", "classinviwo_1_1NetworkSyncServer.html", null ],
@@ -2546,6 +2560,7 @@ var hierarchy =
     [ "inviwo::OptionPropertyTraits< inviwo::ffmpeg::CodecID >", "structinviwo_1_1OptionPropertyTraits_3_01inviwo_1_1ffmpeg_1_1CodecID_01_4.html", null ],
     [ "inviwo::ffmpeg::OutputStream::Options", "structinviwo_1_1ffmpeg_1_1OutputStream_1_1Options.html", null ],
     [ "inviwo::OrdinalBaseWidget< T >", "classinviwo_1_1OrdinalBaseWidget.html", [
+      [ "inviwo::NumberWidget< int >", "classinviwo_1_1NumberWidget.html", null ],
       [ "inviwo::OrdinalSpinBoxWidget< float >", "classinviwo_1_1OrdinalSpinBoxWidget.html", null ],
       [ "inviwo::NumberWidget< T >", "classinviwo_1_1NumberWidget.html", null ],
       [ "inviwo::OrdinalEditorWidget< T >", "classinviwo_1_1OrdinalEditorWidget.html", null ],
@@ -2554,6 +2569,7 @@ var hierarchy =
     ] ],
     [ "inviwo::OrdinalBaseWidget< BT >", "classinviwo_1_1OrdinalBaseWidget.html", null ],
     [ "inviwo::OrdinalBaseWidget< float >", "classinviwo_1_1OrdinalBaseWidget.html", null ],
+    [ "inviwo::OrdinalBaseWidget< int >", "classinviwo_1_1OrdinalBaseWidget.html", null ],
     [ "inviwo::OrdinalPropertyState< T >", "structinviwo_1_1OrdinalPropertyState.html", null ],
     [ "inviwo::OrdinalRefPropertyState< T >", "structinviwo_1_1OrdinalRefPropertyState.html", null ],
     [ "inviwo::util::ostream_joiner< DelimT, charT, traits >", "classinviwo_1_1util_1_1ostream__joiner.html", null ],
@@ -2774,6 +2790,7 @@ var hierarchy =
         [ "inviwo::HelpWidget", "classinviwo_1_1HelpWidget.html", null ],
         [ "inviwo::InviwoAboutWindow", "classinviwo_1_1InviwoAboutWindow.html", null ],
         [ "inviwo::LinkDialog", "classinviwo_1_1LinkDialog.html", null ],
+        [ "inviwo::NetworkAnnotationWidget", "classinviwo_1_1NetworkAnnotationWidget.html", null ],
         [ "inviwo::ProcessorDockWidgetQt", "classinviwo_1_1ProcessorDockWidgetQt.html", null ],
         [ "inviwo::ProcessorListWidget", "classinviwo_1_1ProcessorListWidget.html", null ],
         [ "inviwo::PropertyEditorWidgetQt", "classinviwo_1_1PropertyEditorWidgetQt.html", null ],
@@ -2802,6 +2819,7 @@ var hierarchy =
       [ "inviwo::InviwoFileDialog", "classinviwo_1_1InviwoFileDialog.html", null ]
     ] ],
     [ "QGraphicsItem", null, [
+      [ "inviwo::NetworkAnnotationGraphicsItem", "classinviwo_1_1NetworkAnnotationGraphicsItem.html", null ],
       [ "inviwo::ProcessorLinkGraphicsItem", "classinviwo_1_1ProcessorLinkGraphicsItem.html", null ],
       [ "inviwo::TFControlPointConnection", "classinviwo_1_1TFControlPointConnection.html", null ],
       [ "inviwo::TFEditorPrimitive", "classinviwo_1_1TFEditorPrimitive.html", null ],
@@ -2863,6 +2881,7 @@ var hierarchy =
     ] ],
     [ "QLineEdit", null, [
       [ "inviwo::BaseNumberWidget", "classinviwo_1_1BaseNumberWidget.html", [
+        [ "inviwo::NumberWidget< int >", "classinviwo_1_1NumberWidget.html", null ],
         [ "inviwo::NumberWidget< T >", "classinviwo_1_1NumberWidget.html", null ]
       ] ],
       [ "inviwo::ColorLineEdit", "classinviwo_1_1ColorLineEdit.html", [
@@ -2899,6 +2918,7 @@ var hierarchy =
       [ "inviwo::LineEditEventFilter", "classinviwo_1_1LineEditEventFilter.html", null ],
       [ "inviwo::LinkDialogProcessorGraphicsItem", "classinviwo_1_1LinkDialogProcessorGraphicsItem.html", null ],
       [ "inviwo::LinkDragHelper", "classinviwo_1_1LinkDragHelper.html", null ],
+      [ "inviwo::NetworkAnnotationGraphicsItem", "classinviwo_1_1NetworkAnnotationGraphicsItem.html", null ],
       [ "inviwo::ProcessorDocsLoader", "classinviwo_1_1ProcessorDocsLoader.html", null ],
       [ "inviwo::ProcessorDragHelper", "classinviwo_1_1ProcessorDragHelper.html", null ],
       [ "inviwo::ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", null ],
