@@ -91,9 +91,9 @@ void NetworkAnnotation::deserialize(Deserializer& d) {
     d.deserialize("Processors", processors, "item");
 }
 
-void NetworkAnnotation::addProcessors(const std::vector<Processor*>& selected) {
+void NetworkAnnotation::addProcessors(const std::vector<Processor*>& selection) {
     const auto dist = std::distance(processors.begin(), processors.end());
-    for (auto* p : selected) {
+    for (auto* p : selection) {
         if (!std::ranges::contains(processors.begin(), processors.begin() + dist,
                                    p->getIdentifier())) {
             processors.emplace_back(p->getIdentifier());
@@ -101,8 +101,8 @@ void NetworkAnnotation::addProcessors(const std::vector<Processor*>& selected) {
     }
 }
 
-void NetworkAnnotation::removeProcessors(const std::vector<Processor*>& selected) {
-    for (auto* p : selected) {
+void NetworkAnnotation::removeProcessors(const std::vector<Processor*>& selection) {
+    for (auto* p : selection) {
         if (auto it = std::ranges::find(processors, p->getIdentifier()); it != processors.end()) {
             processors.erase(it);
         }

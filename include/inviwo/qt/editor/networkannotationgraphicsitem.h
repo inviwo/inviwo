@@ -84,7 +84,6 @@ private:
     const QRectF& rect() const;
     NetworkEditor* getNetworkEditor() const;
 
-    size_t index_;
     ProcessorNetwork* network_;
 
     std::vector<Processor*> processors_;

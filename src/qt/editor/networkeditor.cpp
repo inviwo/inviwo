@@ -926,6 +926,7 @@ void NetworkEditor::addSequenceMenuItems(
             }));
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void NetworkEditor::addNetworkAnnotationMenuItems(
     QMenu& menu, const std::vector<Processor*>& selectedProcessors,
     const std::unordered_set<size_t>& selectedAnnotations) {
