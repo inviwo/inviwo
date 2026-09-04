@@ -77,7 +77,7 @@ public:
     FileSequenceLoader(std::vector<std::filesystem::path> paths, std::vector<Seconds> times,
                        DataReaderFactory* factory, FileExtension extension = {});
 
-    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse = {}) override;
+    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse) override;
     virtual size_t size() const override;
     virtual std::span<const Seconds> times() const override;
     virtual VolumeConfig prototype() const override;

@@ -60,6 +60,10 @@ class InviwoApplication;
 class IVW_MODULE_BASE_API TemporalVolumeSource : public Processor {
 public:
     explicit TemporalVolumeSource(InviwoApplication* app);
+    TemporalVolumeSource(const TemporalVolumeSource&) = delete;
+    TemporalVolumeSource(TemporalVolumeSource&&) = delete;
+    TemporalVolumeSource& operator=(const TemporalVolumeSource&) = delete;
+    TemporalVolumeSource& operator=(TemporalVolumeSource&&) = delete;
     virtual ~TemporalVolumeSource() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -70,8 +74,8 @@ public:
 private:
     /// Time values assigned to each frame.
     enum class TimeMode : std::uint8_t {
-        Index,        //!< 0, 1, 2, … (frame index)
-        FileNumber,   //!< the number extracted from each file name
+        Index,       //!< 0, 1, 2, … (frame index)
+        FileNumber,  //!< the number extracted from each file name
     };
 
     void load();
