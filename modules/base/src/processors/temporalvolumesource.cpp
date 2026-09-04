@@ -151,7 +151,7 @@ void TemporalVolumeSource::load() {
         bool allValid = true;
         for (const auto& path : paths) {
             if (auto number = numberFromName(path)) {
-                times.push_back(Seconds{*number});
+                times.emplace_back(*number);
             } else {
                 allValid = false;
                 break;
