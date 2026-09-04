@@ -6,6 +6,7 @@ set(HEADER_FILES
     include/modules/plotting/algorithm/labeling.h
     include/modules/plotting/datastructures/axisdata.h
     include/modules/plotting/datastructures/boxselectiondata.h
+    include/modules/plotting/datastructures/griddata.h
     include/modules/plotting/datastructures/textdata.h
     include/modules/plotting/datastructures/tickdata.h
     include/modules/plotting/interaction/boxselection.h
@@ -16,6 +17,7 @@ set(HEADER_FILES
     include/modules/plotting/properties/axisstyleproperty.h
     include/modules/plotting/properties/boxselectionproperty.h
     include/modules/plotting/properties/categoricalaxisproperty.h
+    include/modules/plotting/properties/plotgridproperty.h
     include/modules/plotting/properties/plottextproperty.h
     include/modules/plotting/properties/tickproperty.h
     include/modules/plotting/utils/axisutils.h
@@ -29,6 +31,7 @@ set(SOURCE_FILES
     src/algorithm/labeling.cpp
     src/datastructures/axisdata.cpp
     src/datastructures/boxselectiondata.cpp
+    src/datastructures/griddata.cpp
     src/datastructures/textdata.cpp
     src/datastructures/tickdata.cpp
     src/interaction/boxselection.cpp
@@ -38,6 +41,7 @@ set(SOURCE_FILES
     src/properties/axisstyleproperty.cpp
     src/properties/boxselectionproperty.cpp
     src/properties/categoricalaxisproperty.cpp
+    src/properties/plotgridproperty.cpp
     src/properties/plottextproperty.cpp
     src/properties/tickproperty.cpp
     src/utils/axisutils.cpp

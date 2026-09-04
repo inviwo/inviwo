@@ -32,6 +32,7 @@
 #include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/geometry/stipplingdata.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
@@ -48,7 +49,6 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <modules/base/properties/transformlistproperty.h>
-#include <modules/basegl/datastructures/stipplingdata.h>
 #include <modules/basegl/properties/linesettingsproperty.h>
 #include <modules/basegl/properties/stipplingproperty.h>
 #include <modules/oit/datastructures/transformedrasterization.h>

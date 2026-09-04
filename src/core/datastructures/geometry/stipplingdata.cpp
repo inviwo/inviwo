@@ -27,6 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/datastructures/stipplingdata.h>
+#include <inviwo/core/datastructures/geometry/stipplingdata.h>
 
 namespace inviwo {}  // namespace inviwo

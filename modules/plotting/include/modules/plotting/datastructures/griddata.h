@@ -26,7 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/basegl/datastructures/stipplingdata.h>
+#include <modules/plotting/plottingmoduledefine.h>
 
-namespace inviwo {}  // namespace inviwo
+#include <inviwo/core/datastructures/geometry/stipplingdata.h>
+#include <inviwo/core/util/glmvec.h>
+
+#include <vector>
+
+namespace inviwo::plot {
+
+enum class PlotAxis : std::uint8_t { None, Major, Minor, Both };
+
+struct IVW_MODULE_PLOTTING_API GridData {
+    dvec2 majorRange{0.0, 100.0};
+    dvec2 minorRange{0.0, 100.0};
+
+    bool visible = true;
+    PlotAxis axis = PlotAxis::Both;
+    vec4 color = vec4{0.45f, 0.45f, 0.48f, 1.0f};
+    float width = 1.5f;
+
+    std::vector<double> horizontalPositions;
+    std::vector<double> verticalPositions;
+
+    StipplingData stippling{};
+
+    auto operator<=>(const GridData&) const = default;
+};
+
+}  // namespace inviwo::plot

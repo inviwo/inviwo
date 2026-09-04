@@ -35,7 +35,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/staticstring.h>
-#include <modules/basegl/datastructures/stipplingdata.h>
+#include <inviwo/core/datastructures/geometry/stipplingdata.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderobject.h>
 

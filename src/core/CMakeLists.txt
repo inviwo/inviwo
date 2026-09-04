@@ -70,6 +70,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/polygon.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemeshcreator.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/stipplingdata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/typedmesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/histogram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/histogramtools.h
@@ -510,6 +511,7 @@ set(SOURCE_FILES
     datastructures/geometry/plane.cpp
     datastructures/geometry/simplemesh.cpp
     datastructures/geometry/simplemeshcreator.cpp
+    datastructures/geometry/stipplingdata.cpp
     datastructures/histogram.cpp
     datastructures/histogramtools.cpp
     datastructures/image/image.cpp

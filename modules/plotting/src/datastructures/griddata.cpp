@@ -27,6 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/datastructures/stipplingdata.h>
+#include <modules/plotting/datastructures/griddata.h>
 
 namespace inviwo {}  // namespace inviwo

@@ -48,6 +48,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/marginproperty.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/algorithm/axislabeling.h>
 #include <inviwo/dataframe/properties/dataframecolormapproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 #include <modules/fontrendering/properties/fontproperty.h>
@@ -133,6 +134,7 @@ public:
     FloatProperty labelOffset_;
     StringProperty labelFormat_;
     FloatVec4Property labelColor_;
+    OptionProperty<LabelingAlgorithm> labelingAlgorithm_;
 
     CompositeProperty axesSettings_;
     FloatProperty axisSize_;
@@ -156,7 +158,7 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    static constexpr std::string_view defaultLabelFormat = "{:.4f}";
+    static constexpr std::string_view defaultLabelFormat = "{:.6g}";
 
 protected:
     void linePicked(PickingEvent* p);

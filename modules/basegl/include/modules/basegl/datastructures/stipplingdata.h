@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,6 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 
-#include <cstdint>
+#include <inviwo/core/datastructures/geometry/stipplingdata.h>
 
-namespace inviwo {
-
-/**
- * @brief  Settings for stippling (Dashed line, e.g., - - -)
- */
-struct IVW_MODULE_BASEGL_API StipplingData {
-    enum class Mode : std::uint8_t { None, ScreenSpace, WorldSpace };
-    float length = 20.f;   //!< refers to the length of one dash
-    float spacing = 10.f;  //!< spacing between two dashes
-    float offset = 0.f;    //!< offset for shifting the stipple pattern
-    float worldScale = 4.f;
-    Mode mode = Mode::None;
-
-    bool operator==(const StipplingData&) const = default;
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

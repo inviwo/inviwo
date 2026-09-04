@@ -30,8 +30,8 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 
-#include <modules/basegl/datastructures/stipplingdata.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/datastructures/geometry/stipplingdata.h>
 
 namespace inviwo {
 /**
