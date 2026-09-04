@@ -131,11 +131,10 @@ ParallelCoordinates::ParallelCoordinates()
     , selectedLine_("selectedLine", "Selected Line")
     , selectedLineWidth_("selectedLineWidth", "Line Width", 10.0f, 1.0f, 20.0f)
     , selectedLineColorOverride_("selectedLineColorOverride", "Override Line Color", true)
-    , selectedLineColor_("selectedLineColor", "Color", vec4(1.0f, 0.769f, 0.247f, 1.0f), vec4(0.0f),
-                         vec4(1.0f))
+    , selectedLineColor_{"selectedLineColor", "Color",
+                         util::ordinalColor(vec4{1.0f, 0.769f, 0.247f, 1.0f})}
     , showFiltered_("showFiltered", "Show Filtered", false)
-    , filterColor_("filterColor", "Filter Color", vec3(.2f, .2f, .2f), vec3(0.0f), vec3(1.0f),
-                   vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , filterColor_{"filterColor", "Filter Color", util::ordinalColor(vec3{0.2f, 0.2f, 0.2f})}
     , filterAlpha_("filterAlpha", "Filter Alpha", 0.75f)
     , filterIntensity_("filterIntensity", "Filter Mixing", 0.7f, 0.01f, 1.0f, 0.001f)
 
@@ -151,15 +150,13 @@ ParallelCoordinates::ParallelCoordinates()
                        util::ordinalSymmetricVector(0.0f, 360.0f)
                            .setInc(10.0f)
                            .set("Text rotation in degree"_help))
-    , captionColor_("color", "Color", vec4(.0, .0f, .0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-                    InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , captionColor_{"color", "Color", util::ordinalColor(vec4{0.0, 0.0f, 0.0f, 1.0f})}
 
     , labelSettings_("labels", "Label Settings", font::FontType::Label, 20, 0.0f, vec2{-1.0f, 0.0f})
-    , showLabels_("show", "Display min/max", true)
+    , showLabels_("show", "Show Labels", true)
     , labelOffset_("offset", "Offset", 15.0f, -50.0, 50.0f)
     , labelFormat_("format", "Format", defaultLabelFormat)
-    , labelColor_("color", "Color", vec4(.0, .0f, .0f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-                  InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , labelColor_{"color", "Color", util::ordinalColor(vec4{0.0, 0.0f, 0.0f, 1.0f})}
     , labelingAlgorithm_{"labeling",
                          "Labeling Algorithm",
                          {{"matplotlib", "Matplotlib", LabelingAlgorithm::Matplotlib},
@@ -168,23 +165,17 @@ ParallelCoordinates::ParallelCoordinates()
                          1}
 
     , axesSettings_("axesSettings", "Axes Settings")
-    , axisSize_("axisSize", "Size", 4.0f, 0.0f, 50.0f, 0.01f)
-    , axisColor_("axisColor", "Color", vec4(.3f, .3f, .3f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-                 InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , axisHoverColor_("axisHoverColor", "Hover Color", vec4(.8f, .8f, .8f, 1), vec4(0.0f),
-                      vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
-                      PropertySemantics::Color)
-    , axisSelectedColor_("axisSelectedColor", "Selected Color", vec4(.8f, .2f, .2f, 1), vec4(0.0f),
-                         vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
-                         PropertySemantics::Color)
+    , axisSize_("axisSize", "Thickness", 4.0f, 0.0f, 50.0f, 0.01f)
+    , axisColor_{"axisColor", "Color", util::ordinalColor(vec4{.3f, .3f, .3f, 1})}
+    , axisHoverColor_{"axisHoverColor", "Hover Color", util::ordinalColor(vec4{.8f, .8f, .8f, 1})}
+    , axisSelectedColor_{"axisSelectedColor", "Selected Color",
+                         util::ordinalColor(vec4{.8f, .2f, .2f, 1.0f})}
     , handlesVisible_("handlesVisible", "Handles Visible", true)
     , handleSize_("handleSize", "Handle Size", 20.0f, 15.0f, 100.0f)
-    , handleColor_("handleColor", "Handle Color (Not filtering)", vec4(.4f, .4f, .4f, 1),
-                   vec4(0.0f), vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
-                   PropertySemantics::Color)
-    , handleFilteredColor_("handleFilteredColor", "Handle Color (When filtering)",
-                           vec4(.6f, .6f, .6f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-                           InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , handleColor_{"handleColor", "Handle Color (Not filtering)",
+                   util::ordinalColor(vec4{.4f, .4f, .4f, 1.0f})}
+    , handleFilteredColor_{"handleFilteredColor", "Handle Color (When filtering)",
+                           util::ordinalColor(vec4{.6f, .6f, .6f, 1.0f})}
 
     , margins_("margins", "Margins")
     , includeLabelsInMargin_("includeLabelsInMargins", "Include labels", true)
@@ -200,9 +191,9 @@ ParallelCoordinates::ParallelCoordinates()
                     [&](dvec2 screenPos, const size2_t& /*dims*/) { return screenPos; },
                     MouseButton::Left}
 
-    , linePicking_(this, 1, [&](PickingEvent* p) { linePicked(p); })
+    , linePicking_(this, 1, [this](PickingEvent* p) { linePicked(p); })
     , axisPicking_(this, 1,
-                   [&](PickingEvent* p) {
+                   [this](PickingEvent* p) {
                        axisPicked(p, static_cast<std::uint32_t>(p->getPickedId()), PickType::Axis);
                    })
     , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag", Shader::Build::No)
@@ -222,7 +213,6 @@ ParallelCoordinates::ParallelCoordinates()
     boxSelectionProperty_.mode_.setVisible(false);
     boxSelectionProperty_.setCollapsed(true);
 
-    selectedLineColor_.setSemantics(PropertySemantics::Color);
     selectedLineColorOverride_.addProperty(selectedLineColor_);
     selectedLine_.addProperties(selectedLineWidth_, selectedLineColorOverride_);
     selectedLine_.setCollapsed(true);
