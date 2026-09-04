@@ -312,8 +312,9 @@ void PCPAxisSettings::update(AxisData& data) const {
         data.minorPositions.clear();
         updateLabels(data.labels, catCol_->getCategories());
     } else {
-        updateLabelPositions(data.majorPositions, data.minorPositions, LabelingAlgorithm::Limits,
-                             data.range, 10, 0, true);
+        updateLabelPositions(data.majorPositions, data.minorPositions,
+                             pcp_ ? pcp_->labelingAlgorithm_ : LabelingAlgorithm::Limits,
+                             data.range, 6, 0, true);
         updateLabels(data.labels, data.majorPositions,
                      pcp_ ? pcp_->labelFormat_ : ParallelCoordinates::defaultLabelFormat);
     }
