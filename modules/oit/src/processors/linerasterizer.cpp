@@ -48,9 +48,10 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <modules/base/properties/transformlistproperty.h>
-#include <modules/basegl/datastructures/stipplingdata.h>
+#include <modules/base/datastructures/stipplingdata.h>
 #include <modules/basegl/properties/linesettingsproperty.h>
 #include <modules/basegl/properties/stipplingproperty.h>
+#include <modules/basegl/util/shaderutils.h>
 #include <modules/oit/datastructures/transformedrasterization.h>
 #include <modules/oit/ports/rasterizationport.h>
 #include <modules/oit/rendering/fragmentlistrenderer.h>

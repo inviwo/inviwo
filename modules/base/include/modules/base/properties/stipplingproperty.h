@@ -28,35 +28,43 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/util/staticstring.h>
 #include <modules/base/datastructures/stipplingdata.h>
 
-namespace inviwo {
-/**
- * @brief Settings for line rendering
- */
-struct IVW_MODULE_BASEGL_API LineData {
-    float lineWidth = 1.f;
-    float antialiasing = 0.5f;
-    float miterLimit = 0.8f;
-    bool roundCaps = true;
-    bool pseudoLighting = false;
-    bool roundDepthProfile = false;
-    bool overrideColor = false;
-    bool overrideAlpha = false;
-    bool useMetaColor = false;
-    bool overrideLineWidth = false;
-    StipplingData stippling{};
-    vec4 defaultColor = vec4{1.0f, 0.7f, 0.2f, 1.0f};
-    vec3 overrideColorValue = vec3{0.7f, 0.7f, 0.7f};
-    float overrideAlphaValue = 1.0f;
-    TransferFunction metaColor{
-        {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}}, 
-         {.pos = 1.0, .color = vec4{1.0f, 1.0f, 1.0f, 1.0f}}}};
+#include <functional>
+#include <string>
+#include <string_view>
+#include <vector>
 
-    bool operator==(const LineData&) const = default;
+namespace inviwo {
+
+class IVW_MODULE_BASE_API StipplingProperty : public CompositeProperty {
+public:
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.StipplingProperty"};
+
+    StipplingProperty(std::string_view identifier, std::string_view displayName,
+                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                      PropertySemantics semantics = PropertySemantics::Default);
+    StipplingProperty(const StipplingProperty& rhs);
+    virtual StipplingProperty* clone() const override;
+    virtual ~StipplingProperty() = default;
+
+    OptionProperty<StipplingData::Mode> mode;
+    FloatProperty length;
+    FloatProperty spacing;
+    FloatProperty offset;
+    FloatProperty worldScale;
+
+    void update(StipplingData& data) const;
+
 };
 
 }  // namespace inviwo

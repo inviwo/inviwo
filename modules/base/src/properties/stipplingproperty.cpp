@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/properties/stipplingproperty.h>
+#include <modules/base/properties/stipplingproperty.h>
 
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/invalidationlevel.h>
@@ -35,9 +35,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/staticstring.h>
-#include <modules/basegl/datastructures/stipplingdata.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/shader/shaderobject.h>
+#include <modules/base/datastructures/stipplingdata.h>
 
 namespace inviwo {
 
@@ -101,39 +99,5 @@ void StipplingProperty::update(StipplingData& data) const {
     data.worldScale = worldScale.get();
     data.mode = mode.get();
 }
-
-namespace utilgl {
-
-void addShaderDefines(Shader& shader, const StipplingProperty& property) {
-    addShaderDefines(shader, property.mode.get());
-}
-
-void addShaderDefines(Shader& shader, const StipplingData::Mode& mode) {
-    std::string value;
-    switch (mode) {
-        case StipplingData::Mode::ScreenSpace:
-            value = "1";
-            break;
-        case StipplingData::Mode::WorldSpace:
-            value = "2";
-            break;
-        case StipplingData::Mode::None:
-        default:
-            break;
-    }
-
-    auto fragShader = shader.getFragmentShaderObject();
-    fragShader->setShaderDefine("ENABLE_STIPPLING", mode != StipplingData::Mode::None);
-    fragShader->addShaderDefine("STIPPLE_MODE", value);
-}
-
-void setShaderUniforms(Shader& shader, const StipplingProperty& property, const std::string& name) {
-    shader.setUniform(name + ".length", property.length.get());
-    shader.setUniform(name + ".spacing", property.spacing.get());
-    shader.setUniform(name + ".offset", property.offset.get());
-    shader.setUniform(name + ".worldScale", property.worldScale.get());
-}
-
-}  // namespace utilgl
 
 }  // namespace inviwo
