@@ -27,6 +27,7 @@ set(HEADER_FILES
     include/modules/plottinggl/utils/axis3dprocessorhelper.h
     include/modules/plottinggl/utils/axisprocessorhelper.h
     include/modules/plottinggl/utils/axisrenderer.h
+    include/modules/plottinggl/utils/gridrenderer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -55,6 +56,7 @@ set(SOURCE_FILES
     src/utils/axis3dprocessorhelper.cpp
     src/utils/axisprocessorhelper.cpp
     src/utils/axisrenderer.cpp
+    src/utils/gridrenderer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
