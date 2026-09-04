@@ -215,6 +215,7 @@ void NetworkSearch::updateSearch(const QString& str) {
 
 void NetworkSearch::focusInEvent(QFocusEvent*) {
     edit_->setFocus();
+    edit_->selectAll();
     win_->getNetworkEditor()->clearSelection();
     updateSearch(edit_->text());
 }

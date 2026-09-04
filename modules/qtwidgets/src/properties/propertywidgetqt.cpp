@@ -99,7 +99,8 @@ const int PropertyWidgetQt::minimumWidth = 200;
 const int PropertyWidgetQt::spacing = 7;
 const int PropertyWidgetQt::margin = 0;
 
-// The factor should be 16.0 at font size 12pt, we use Segoe UI at 9pt which gives an em at 9.0px
+// The factor should be 16.0 at font size 12pt, we use the default system font at 9pt which gives an
+// em at 9.0px
 const double PropertyWidgetQt::minimumWidthEm =
     PropertyWidgetQt::minimumWidth / static_cast<double>(utilqt::refEm());
 const double PropertyWidgetQt::spacingEm = utilqt::refSpaceEm();

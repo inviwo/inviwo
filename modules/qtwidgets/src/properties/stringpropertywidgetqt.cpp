@@ -78,6 +78,7 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
         if (property_->getSemantics().getString() == "Password") {
             lineEdit_->setEchoMode(QLineEdit::PasswordEchoOnEdit);
         }
+        lineEdit_->setPlaceholderText("<empty>");
 
         QSizePolicy sp = lineEdit_->sizePolicy();
         sp.setHorizontalStretch(3);

@@ -36,7 +36,6 @@
 General
 ************************/
 QWidget {
-    font-family: "Segoe UI";
     color: #9d9995;
     background: transparent;
 }

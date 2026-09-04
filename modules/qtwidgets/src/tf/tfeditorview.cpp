@@ -67,6 +67,7 @@
 #include <Qt>
 #include <QBrush>
 #include <QScrollBar>
+#include <QFontDatabase>
 #include <QtGlobal>
 #include <glm/vec2.hpp>
 
@@ -340,7 +341,14 @@ void TFEditorView::drawGrid(QPainter* painter, const QRectF& updateRect,
         }
     }
 
-    painter->setFont(QFont{"Segoe", 12, QFont::Normal, false});
+    static QFont font = []() {
+        QFont f{QFontDatabase::systemFont(QFontDatabase::GeneralFont)};
+        f.setWeight(QFont::Normal);
+        f.setPointSize(12);
+        return f;
+    }();
+
+    painter->setFont(font);
     painter->resetTransform();
     painter->setBackgroundMode(Qt::OpaqueMode);  // Default is Qt::TransparentMode
     painter->setBackground(QBrush(colorBg));     // Set background color

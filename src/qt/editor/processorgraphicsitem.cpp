@@ -64,6 +64,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QBrush>
 #include <QPen>
+#include <QFont>
+#include <QFontDatabase>
 
 #include <fmt/format.h>
 
@@ -105,20 +107,21 @@ enum class FontType : std::uint8_t { Name, Identifier, Tag, Count };
 
 const QFont& getFont(FontType type) {
     static const QFont name = []() {
-        QFont f("Segoe", 10, QFont::ExtraBold, false);
+        QFont f{QFontDatabase::systemFont(QFontDatabase::GeneralFont)};
+        f.setWeight(QFont::ExtraBold);
         f.setPixelSize(pointSizeToPixelSize(8));
         return f;
     }();
 
-    static const QFont identifier = []() {
-        QFont f("Segoe", 8, QFont::Normal, false);
-        f.setPixelSize(pointSizeToPixelSize(8));
+    static const QFont identifier = [&]() {
+        QFont f{name};
+        f.setWeight(QFont::Normal);
         return f;
     }();
 
     static const QFont tag = []() {
-        QFont f("Segoe", 8, QFont::Bold, false);
-        f.setPixelSize(pointSizeToPixelSize(8));
+        QFont f{name};
+        f.setWeight(QFont::Bold);
         return f;
     }();
 

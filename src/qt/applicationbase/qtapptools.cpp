@@ -238,26 +238,6 @@ void utilqt::configureInviwoQtApp() {
     defaultFormat.setMajorVersion(10);
     defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
     QSurfaceFormat::setDefaultFormat(defaultFormat);
-
-#ifdef WIN32
-    // set default font since the QApplication font is not properly initialized
-    // (see https://bugreports.qt.io/browse/QTBUG-22572)
-    //
-    // query system font and font size, then set the QApplication font (Win7: Segoe UI, 9pt)
-    //
-    NONCLIENTMETRICS metrics = {sizeof(NONCLIENTMETRICS)};
-    SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &metrics, 0);
-    int pointSize = metrics.lfMessageFont.lfHeight;
-    if (pointSize < 0) {
-        // height is in pixels, convert to points
-        HDC hDC = GetDC(NULL);
-        pointSize = MulDiv(abs(pointSize), 72, GetDeviceCaps(hDC, LOGPIXELSY));
-        ReleaseDC(NULL, hDC);
-    }
-
-    QApplication::setFont(
-        QFont(QString::fromWCharArray(metrics.lfMessageFont.lfFaceName), pointSize));
-#endif  // WIN32
 }
 
 void utilqt::configureInviwoDefaultNames() {
