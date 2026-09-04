@@ -31,11 +31,11 @@
 
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/geometry/stipplingdata.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <modules/basegl/datastructures/linedata.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
-#include <modules/basegl/datastructures/stipplingdata.h>
 #include <modules/basegl/properties/stipplingproperty.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/inviwoopengl.h>
