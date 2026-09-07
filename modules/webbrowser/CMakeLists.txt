@@ -51,6 +51,11 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET ${ORG_CMAKE_OSX_DEPLOYMENT_TARGET})
 # Inviwo: Linker errors if libcef_dll_wrapper is not built statically
 set(BUILD_SHARED_LIBS_TMP ${BUILD_SHARED_LIBS})
 set(BUILD_SHARED_LIBS OFF)
+
+# set the msvc debuginfo to /Z7 (default is /Zi) since that works better together with caching
+# defined in cmake/cef_variables.cmake
+set(CEF_DEBUG_INFO_FLAG /Z7)
+
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 # Group in folder
 
