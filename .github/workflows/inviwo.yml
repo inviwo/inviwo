@@ -233,6 +233,31 @@ jobs:
       with:
         limit-access-to-actor: true
 
+  ccache-summary:
+    name: "Ccache Summary"
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v7
+      with:
+        path: inviwo
+        submodules: false
+        sparse-checkout: |
+          .github/scripts
+
+    - name: "Download ccache summaries"
+      uses: actions/download-artifact@v8
+      with:
+        pattern: inviwo-ccache-summary-*
+        path: ccache-summaries
+      continue-on-error: true
+
+    - name: "Generate combined ccache summary"
+      shell: bash
+      run: python3 inviwo/.github/scripts/ccache-summary.py ccache-summaries >> "$GITHUB_STEP_SUMMARY"
+
   regression:
     name: "Regression"
     runs-on: [regression, macOS]

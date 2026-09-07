@@ -53,19 +53,20 @@ runs:
     - name: "Setup Ccache"
       id: ccache
       if: inputs.ccache
-      uses: petersteneteg/ccache-action@v2.6.0
+      uses: petersteneteg/ccache-action@v2.7.0
       with:
         variant: ccache
         install: "binary"
         max-size: "1500M"
         verbose: 2
+        job-summary: "Ccache"
+        summary-artifact: "inviwo-ccache-summary-${{ inputs.triplet }}-${{ inputs.configuration }}"
         save: "${{ github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
         append-timestamp: true
         evict-old-caches: "${{ github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
         gh-token: ${{ inputs.gh-token }}
         key: inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}
-        restore-keys: |
-          inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}
+        restore-keys: inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}
 
     - name: "Configure Ccache Debug"
       if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}"
