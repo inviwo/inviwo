@@ -15,8 +15,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # VCPKG_FEATURE_FLAGS: dependencygraph // Does not work at the moment
   CCACHE_BASEDIR: ${{ github.workspace }}
-  CCACHE_NODIRECT: true
-  CCACHE_NODEPEND: true
+  CCACHE_SLOPPINESS: pch_defines,time_macros
 
   # QT_DEBUG_PLUGINS: 1    # print qt plugin debug info
 
@@ -234,6 +233,31 @@ jobs:
       with:
         limit-access-to-actor: true
 
+  ccache-summary:
+    name: "Ccache Statistics"
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v7
+      with:
+        path: inviwo
+        submodules: false
+        sparse-checkout: |
+          .github/scripts
+
+    - name: "Download ccache summaries"
+      uses: actions/download-artifact@v8
+      with:
+        pattern: inviwo-ccache-summary-*
+        path: ccache-summaries
+      continue-on-error: true
+
+    - name: "Generate combined ccache summary"
+      shell: bash
+      run: python3 inviwo/.github/scripts/ccache-summary.py ccache-summaries >> "$GITHUB_STEP_SUMMARY"
+
   regression:
     name: "Regression"
     runs-on: [regression, macOS]
@@ -395,8 +419,7 @@ jobs:
     if: github.ref != 'refs/heads/master'
     permissions:
       pull-requests: write
-    env:
-      LLVM_VERSION: 19
+
     runs-on: ubuntu-26.04
     timeout-minutes: 320
     steps:
@@ -410,8 +433,7 @@ jobs:
     - name: "Install dependencies"
       uses: ./inviwo/.github/actions/install-dependencies
       with:
-        linux-compilter: clang
-        clang-version: ${{ env.LLVM_VERSION }}
+        linux-compiler: clang
 
     - name: "Configure build environment"
       uses: ./inviwo/.github/actions/configure-build-env

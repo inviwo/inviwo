@@ -102,7 +102,7 @@ std::pair<std::shared_ptr<const Volume>, std::shared_ptr<const Volume>> getVolum
         if (t < 0) {
             return std::make_pair(seq.front(), seq.front());
         }
-        size_t i = static_cast<size_t>((seq.size() - 1) * t);
+        size_t i = static_cast<size_t>(static_cast<double>(seq.size() - 1) * t);
         i = glm::clamp(i, static_cast<size_t>(0), seq.size() - 1);
         auto i2 = i + 1;
         if (i2 >= seq.size() - 1u) {

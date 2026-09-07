@@ -2,7 +2,7 @@ name: 'Install Inviwo dependencies'
 description: 'runs, Chocolatey, Brew and Apt to install dependencies'
 
 inputs:
-  linux-compilter:
+  linux-compiler:
     description: 'Which linux compiler to use (gcc or clang)'
     default: gcc
 
@@ -59,7 +59,7 @@ runs:
 
     - name: "Setup GCC ${{ inputs.gcc-version }}"
       shell: bash
-      if: runner.os == 'Linux' && inputs.linux-compilter == 'gcc'
+      if: runner.os == 'Linux' && inputs.linux-compiler == 'gcc'
       run: |
         sudo apt install --fix-missing  gcc-${{ inputs.gcc-version }} g++-${{ inputs.gcc-version }}
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${{ inputs.gcc-version }} 130 \
@@ -69,7 +69,7 @@ runs:
 
     - name: "Setup Clang ${{ inputs.clang-version }}"
       shell: bash
-      if: runner.os == 'Linux' && inputs.linux-compilter == 'clang'
+      if: runner.os == 'Linux' && inputs.linux-compiler == 'clang'
       run: |
         sudo apt install --fix-missing clang-${{ inputs.clang-version }} \
                                        clang-tidy-${{ inputs.clang-version }} \

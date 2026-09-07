@@ -84,9 +84,9 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
         for (auto& k : cubeEdgeIndices(dim.z)) {
             for (size_t j = 0; j < dim.y - 1; ++j) {
                 for (size_t i = 0; i < dim.x - 1; ++i) {
-                    double x = dx * i;
-                    double y = dy * j;
-                    double z = dz * k;
+                    double x = dx * static_cast<double>(i);
+                    double y = dy * static_cast<double>(j);
+                    double z = dz * static_cast<double>(k);
 
                     pos[0] = glm::vec3(x, y, z);
                     pos[1] = glm::vec3(x + dx, y, z);
@@ -119,9 +119,9 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
         for (size_t k = 0; k < dim.z - 1; ++k) {
             for (auto& j : cubeEdgeIndices(dim.y)) {
                 for (size_t i = 0; i < dim.x - 1; ++i) {
-                    double x = dx * i;
-                    double y = dy * j;
-                    double z = dz * k;
+                    double x = dx * static_cast<double>(i);
+                    double y = dy * static_cast<double>(j);
+                    double z = dz * static_cast<double>(k);
 
                     pos[0] = glm::vec3(x, y, z);
                     pos[1] = glm::vec3(x + dx, y, z);
@@ -154,9 +154,9 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
         for (size_t k = 0; k < dim.z - 1; ++k) {
             for (size_t j = 0; j < dim.y - 1; ++j) {
                 for (auto& i : cubeEdgeIndices(dim.x)) {
-                    double x = dx * i;
-                    double y = dy * j;
-                    double z = dz * k;
+                    double x = dx * static_cast<double>(i);
+                    double y = dy * static_cast<double>(j);
+                    double z = dz * static_cast<double>(k);
 
                     pos[0] = glm::vec3(x, y, z);
                     pos[1] = glm::vec3(x, y + dy, z);

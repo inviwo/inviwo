@@ -21,7 +21,7 @@ runs:
   using: "composite"
   steps:
     - name: "Setup MSVC"
-      uses: ilammy/msvc-dev-cmd@v1.13.0
+      uses: iShark5060/actions-msvc-dev-cmd@v1.2.0
 
     - name: "Get Vcpkg SHA"
       shell: bash
@@ -30,7 +30,7 @@ runs:
         echo "VCPKG_SHA=${SHA}" >> $GITHUB_ENV
 
     - name: "Clone Vcpkg"
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: microsoft/vcpkg
         ref: ${{ env.VCPKG_SHA }}
@@ -53,19 +53,20 @@ runs:
     - name: "Setup Ccache"
       id: ccache
       if: inputs.ccache
-      uses: petersteneteg/ccache-action@v2.5.0
+      uses: petersteneteg/ccache-action@v2.7.0
       with:
         variant: ccache
-        install: "yes"
+        install: "binary"
         max-size: "1500M"
         verbose: 2
+        job-summary: ""
+        summary-artifact: "inviwo-ccache-summary-${{ inputs.triplet }}-${{ inputs.configuration }}"
         save: "${{ github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
         append-timestamp: true
-        evict-old-caches: true
+        evict-old-caches: "${{ github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
         gh-token: ${{ inputs.gh-token }}
         key: inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}
-        restore-keys: |
-          inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}
+        restore-keys: inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}
 
     - name: "Configure Ccache Debug"
       if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}"
