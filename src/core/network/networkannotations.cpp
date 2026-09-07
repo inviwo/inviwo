@@ -204,7 +204,7 @@ void NetworkAnnotations::remove(size_t index) {
     }
     auto annotation = std::move(annotations_[index]);
     annotations_.erase(annotations_.begin() + static_cast<std::ptrdiff_t>(index));
-    notifyObserversAnnotationWasRemoved(annotations_[index], index);
+    notifyObserversAnnotationWasRemoved(annotation, index);
 
     if (workspaceManager_) {
         workspaceManager_->setModified();

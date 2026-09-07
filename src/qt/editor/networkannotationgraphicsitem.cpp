@@ -297,8 +297,8 @@ void NetworkAnnotationGraphicsItem::updateAnnotation(const NetworkAnnotation& an
         return QPointF{};
     };
     textWidth_ = [this, alignment, descriptionWidth]() {
-        if (alignment == Description::Alignment::Left ||
-            alignment == Description::Alignment::Right) {
+        if (description_->isVisible() && (alignment == Description::Alignment::Left ||
+                                          alignment == Description::Alignment::Right)) {
             return static_cast<double>(descriptionWidth);
         } else {
             return rect().width() - 2 * borderMargin;
