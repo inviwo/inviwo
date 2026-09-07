@@ -258,7 +258,7 @@ void CanvasQOpenGLWidget::resizeEvent(QResizeEvent* event) {
     pickingController_.setPickingSource(nullptr);
 
     setUpdatesEnabled(false);
-    util::OnScopeExit enable([&]() { setUpdatesEnabled(true); });
+    const util::OnScopeExit enable([&]() { setUpdatesEnabled(true); });
     QOpenGLWidget::resizeEvent(event);
 
     // Propagated an event with the physical (pixel) dimensions of the canvas
@@ -266,7 +266,7 @@ void CanvasQOpenGLWidget::resizeEvent(QResizeEvent* event) {
     const auto dpr = window()->devicePixelRatio();
 
     rendercontext::activateDefault();
-    const auto newSize = static_cast<size2_t>(dpr * utilqt::toGLM(event->size()));
+    const auto newSize = static_cast<size2_t>(glm::round(dpr * utilqt::toGLM(event->size())));
     ResizeEvent resizeEvent{newSize};
     propagateEvent(&resizeEvent, nullptr);
 }
@@ -275,7 +275,8 @@ void CanvasQOpenGLWidget::triggerResizeEventPropagation() {
     const auto dpr = window()->devicePixelRatio();
 
     rendercontext::activateDefault();
-    ResizeEvent resizeEvent{dpr * utilqt::toGLM(size())};
+    const auto newSize = static_cast<size2_t>(glm::round(dpr * utilqt::toGLM(size())));
+    ResizeEvent resizeEvent{newSize};
     propagateEvent(&resizeEvent, nullptr);
 }
 
@@ -291,7 +292,7 @@ void CanvasQOpenGLWidget::onContextMenu(
 
 size2_t CanvasQOpenGLWidget::getCanvasDimensions() const {
     const auto dpr = window()->devicePixelRatio();
-    return dpr * utilqt::toGLM(size());
+    return static_cast<size2_t>(glm::round(dpr * utilqt::toGLM(size())));
 }
 
 void CanvasQOpenGLWidget::propagateEvent(Event* e, Outport*) {

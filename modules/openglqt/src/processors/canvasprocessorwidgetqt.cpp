@@ -95,7 +95,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     const ivec2 pos = CanvasProcessorWidget::getPosition();
 
     const auto dpr = window()->devicePixelRatio();
-    const ivec2 logicalDim = pysicalDim / dpr;
+    const ivec2 logicalDim = static_cast<ivec2>(glm::round(pysicalDim / dpr));
     canvas_->setEventPropagator(this);
     canvas_->onContextMenu(
         [this](QMenu& menu, ContextMenuCategories actions) { return contextMenu(menu, actions); });
@@ -164,7 +164,7 @@ void CanvasProcessorWidgetQt::setPosition(ivec2 pos) {
 void CanvasProcessorWidgetQt::setDimensions(ivec2 dimensions) {
     if (dimensions != utilqt::toGLM(Super::size())) {
         const auto dpr = window()->devicePixelRatio();
-        const ivec2 logicalDim = dimensions / dpr;
+        const ivec2 logicalDim = static_cast<ivec2>(glm::round(dimensions / dpr));
         resize(logicalDim.x, logicalDim.y);  // This will trigger a resize event.
     }
 }
