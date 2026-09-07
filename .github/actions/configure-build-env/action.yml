@@ -59,7 +59,7 @@ runs:
         install: "binary"
         max-size: "1500M"
         verbose: 2
-        job-summary: "Ccache"
+        job-summary: ""
         summary-artifact: "inviwo-ccache-summary-${{ inputs.triplet }}-${{ inputs.configuration }}"
         save: "${{ github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
         append-timestamp: true

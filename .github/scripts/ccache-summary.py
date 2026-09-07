@@ -58,7 +58,6 @@ def main() -> int:
     root = sys.argv[1] if len(sys.argv) > 1 else "."
     summaries = load_summaries(root)
 
-    print("## Ccache Summary\n")
     if not summaries:
         print("No ccache summary artifacts were found.")
         return 0

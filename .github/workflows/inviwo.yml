@@ -234,7 +234,7 @@ jobs:
         limit-access-to-actor: true
 
   ccache-summary:
-    name: "Ccache Summary"
+    name: "Ccache Statistics"
     needs: build
     if: always()
     runs-on: ubuntu-latest
