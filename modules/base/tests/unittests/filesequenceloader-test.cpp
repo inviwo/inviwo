@@ -121,7 +121,7 @@ TEST(FileSequenceLoaderTest, LoadsPrototypeOnce) {
 
 TEST(FileSequenceLoaderTest, LoadsFramesByIndex) {
     Fixture fix;
-    const FileSequenceLoader loader{fix.paths(4), {}, &fix.factory};
+    FileSequenceLoader loader{fix.paths(4), {}, &fix.factory};
 
     EXPECT_EQ(loader.load(0, nullptr)->getMetaData<IntMetaData>("number", -1), 0);
     EXPECT_EQ(loader.load(3, nullptr)->getMetaData<IntMetaData>("number", -1), 3);
