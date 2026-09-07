@@ -37,7 +37,7 @@ public:
     void Print(std::pmr::string& out) const;
 
     // Print this declaration to a FILE stream.
-    virtual void Print(FILE* file) const;
+    void Print(FILE* file) const;
 
     virtual const char* Parse(const char* p, TiXmlParsingData* data, allocator_type alloc) override;
 

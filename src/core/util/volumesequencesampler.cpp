@@ -94,7 +94,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequenc
     }
 
     if (infsTime == size && infsDuration == size) {
-        double dur = 1.0 / (size - 1.0);
+        double dur = 1.0 / (static_cast<double>(size) - 1.0);
         double t = 0;
         for (auto& w : wrappers_) {
             w->duration_ = dur;
