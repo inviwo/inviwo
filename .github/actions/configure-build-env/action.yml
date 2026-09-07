@@ -21,7 +21,7 @@ runs:
   using: "composite"
   steps:
     - name: "Setup MSVC"
-      uses: ilammy/msvc-dev-cmd@v1.13.0
+      uses: iShark5060/actions-msvc-dev-cmd@v1.2.0
 
     - name: "Get Vcpkg SHA"
       shell: bash
@@ -30,7 +30,7 @@ runs:
         echo "VCPKG_SHA=${SHA}" >> $GITHUB_ENV
 
     - name: "Clone Vcpkg"
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: microsoft/vcpkg
         ref: ${{ env.VCPKG_SHA }}
@@ -56,7 +56,7 @@ runs:
       uses: petersteneteg/ccache-action@v2.6.0
       with:
         variant: ccache
-        install: "yes"
+        install: "binary"
         max-size: "1500M"
         verbose: 2
         save: "${{ github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"

@@ -394,8 +394,7 @@ jobs:
     if: github.ref != 'refs/heads/master'
     permissions:
       pull-requests: write
-    env:
-      LLVM_VERSION: 19
+
     runs-on: ubuntu-26.04
     timeout-minutes: 320
     steps:
@@ -409,8 +408,7 @@ jobs:
     - name: "Install dependencies"
       uses: ./inviwo/.github/actions/install-dependencies
       with:
-        linux-compilter: clang
-        clang-version: ${{ env.LLVM_VERSION }}
+        linux-compiler: clang
 
     - name: "Configure build environment"
       uses: ./inviwo/.github/actions/configure-build-env
