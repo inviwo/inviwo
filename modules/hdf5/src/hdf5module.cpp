@@ -32,6 +32,7 @@
 #include <modules/hdf5/ports/hdf5port.h>
 #include <modules/hdf5/processors/hdf5source.h>
 #include <modules/hdf5/processors/hdf5volumesource.h>
+#include <modules/hdf5/processors/hdf5temporalvolumesource.h>
 #include <modules/hdf5/processors/hdf5layersource.h>
 #include <modules/hdf5/processors/hdf5buffersource.h>
 #include <modules/hdf5/processors/hdf5dataframesource.h>
@@ -45,6 +46,7 @@ HDF5Module::HDF5Module(InviwoApplication* app) : InviwoModule(app, "HDF5") {
 
     registerProcessor<hdf5::Source>();
     registerProcessor<hdf5::HDF5ToVolume>();
+    registerProcessor<hdf5::HDF5ToTemporalVolume>();
     registerProcessor<hdf5::HDF5ToLayer>();
     registerProcessor<hdf5::HDF5ToBuffer>();
     registerProcessor<hdf5::HDF5ToDataFrame>();
