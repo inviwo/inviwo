@@ -33,6 +33,7 @@
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/demangle.h>
+#include <inviwo/core/util/invoke.h>
 
 #include <string>
 #include <string_view>
@@ -349,9 +350,9 @@ auto exceptionGuard(F&& fun) noexcept {
 
 template <typename F>
 auto exceptionGuarded(F&& fun) noexcept {
-    return [f = std::forward<F>(fun)]() mutable {
+    return [f = std::forward<F>(fun)]<typename... Args>(Args&&... args) mutable {
         try {
-            f();
+            return util::invoke(f, std::forward<Args>(args)...);
         } catch (const Exception& e) {
             log::exception(e);
         } catch (const std::exception& e) {
