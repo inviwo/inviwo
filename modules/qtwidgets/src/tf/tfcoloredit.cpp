@@ -51,13 +51,14 @@ TFColorEdit::TFColorEdit(QWidget* parent) : ColorLineEdit(parent) {
     setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred));
 }
 
-QSize TFColorEdit::sizeHint() const { return QSize(18, 18); }
+QSize TFColorEdit::sizeHint() const { return {18, 18}; }
 
-void TFColorEdit::setColor(const QColor& color, bool ambiguous) {
-    if (ambiguous) {
-        setInvalid(true);
+void TFColorEdit::setColor(std::optional<QColor> color, bool ambiguous) {
+    setEnabled(color.has_value() || ambiguous);
+    if (color.has_value()) {
+        ColorLineEdit::setColor(utilqt::tovec3(*color), ColorRepresentation::Hexadecimal);
     } else {
-        ColorLineEdit::setColor(utilqt::tovec3(color), ColorRepresentation::Hexadecimal);
+        setInvalid(true);
     }
 }
 

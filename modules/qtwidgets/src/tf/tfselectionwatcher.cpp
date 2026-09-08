@@ -39,6 +39,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <string_view>
+#include <ranges>
 
 #include <glm/vec3.hpp>
 
@@ -48,40 +49,40 @@ TFSelectionWatcher::TFSelectionWatcher(Property* property, std::span<TFPrimitive
     : property_(property), tfSets_(sets.begin(), sets.end()) {}
 
 void TFSelectionWatcher::setPosition(double pos) {
-    NetworkLock lock(property_);
-    util::KeepTrueWhileInScope b(&updateInProgress_);
+    const NetworkLock lock(property_);
+    const util::KeepTrueWhileInScope b(&updateInProgress_);
     for (auto& elem : tfSets_) {
         elem->setPosition(selectedPrimitives_, pos);
     }
-    emit updateWidgetPosition(pos, false);
+    emit updateWidgetPosition(pos) ;
 }
 
 void TFSelectionWatcher::setAlpha(double alpha) {
-    NetworkLock lock(property_);
-    util::KeepTrueWhileInScope b(&updateInProgress_);
+    const NetworkLock lock(property_);
+    const util::KeepTrueWhileInScope b(&updateInProgress_);
     std::ranges::for_each(selectedPrimitives_,
                           [&](TFPrimitive* p) { p->setAlpha(static_cast<float>(alpha)); });
-    emit updateWidgetAlpha(alpha, false);
+    emit updateWidgetAlpha(alpha);
 }
 
 void TFSelectionWatcher::setColor(const QColor& c) {
-    NetworkLock lock(property_);
-    util::KeepTrueWhileInScope b(&updateInProgress_);
+    const NetworkLock lock(property_);
+    const util::KeepTrueWhileInScope b(&updateInProgress_);
     const auto color = utilqt::tovec3(c);
     std::ranges::for_each(selectedPrimitives_, [&](TFPrimitive* p) { p->setColor(color); });
 
-    emit updateWidgetColor(c, false);
+    emit updateWidgetColor(c);
 }
 
-void TFSelectionWatcher::updateSelection(const std::vector<TFPrimitive*> selection) {
+void TFSelectionWatcher::updateSelection(const std::vector<TFPrimitive*>& selection) {
     // de-register all primitive callbacks
-    for (auto p : selectedPrimitives_) {
+    for (auto* p : selectedPrimitives_) {
         p->removeObserver(this);
     }
 
     // observe all primitives in new selection
     selectedPrimitives_.clear();
-    for (auto p : selection) {
+    for (auto* p : selection) {
         selectedPrimitives_.push_back(p);
         p->addObserver(this);
     }
@@ -103,33 +104,29 @@ void TFSelectionWatcher::informWidgets() {
     // check whether the position/alpha/color of all selected primitives is identical
     if (selectedPrimitives_.empty()) {
         // nothing selected, mark as ambiguous and use pos = 0, alpha = 0, color = [0,0,0]
-        emit updateWidgetPosition(0.0, true);
-        emit updateWidgetAlpha(0.0, true);
-        emit updateWidgetColor(QColor(), true);
+        emit updateWidgetPosition(std::nullopt, false);
+        emit updateWidgetAlpha(std::nullopt, false);
+        emit updateWidgetColor(std::nullopt, false);
     } else {
-        auto p = selectedPrimitives_.front();
-
-        // cache primitive data if it is a single element selection
-        if (selectedPrimitives_.size() == 1) {
-            cachedPos_ = p->getPosition();
-            cachedAlpha_ = p->getAlpha();
-            cachedColor_ = utilqt::toQColor(p->getColor());
-        }
+        const auto* p = selectedPrimitives_.front();
 
         bool ambiguousPos = false;
         bool ambiguousAlpha = false;
         bool ambiguousColor = false;
 
-        for (auto primitive : selectedPrimitives_) {
+        for (const auto* primitive : selectedPrimitives_ | std::views::drop(1)) {
             ambiguousPos |= (p->getPosition() != primitive->getPosition());
             ambiguousAlpha |= (p->getAlpha() != primitive->getAlpha());
-            ambiguousColor |= !(vec3(p->getColor()) == vec3(primitive->getColor()));
+            ambiguousColor |= (vec3(p->getColor()) != vec3(primitive->getColor()));
         }
 
-        emit updateWidgetPosition(ambiguousPos ? cachedPos_ : p->getPosition(), ambiguousPos);
-        emit updateWidgetAlpha(ambiguousAlpha ? cachedAlpha_ : p->getAlpha(), ambiguousAlpha);
-        emit updateWidgetColor(ambiguousColor ? cachedColor_ : utilqt::toQColor(p->getColor()),
-                               ambiguousColor);
+        emit updateWidgetPosition(ambiguousPos ? std::nullopt : std::optional{p->getPosition()},
+                                  ambiguousPos);
+        emit updateWidgetAlpha(ambiguousAlpha ? std::nullopt : std::optional{p->getAlpha()},
+                               ambiguousAlpha);
+        emit updateWidgetColor(
+            ambiguousColor ? std::nullopt : std::optional{utilqt::toQColor(p->getColor())},
+            ambiguousColor);
     }
 }
 

@@ -36,47 +36,53 @@
 
 #include <QSignalBlocker>
 #include <QSizePolicy>
+#include <QHBoxLayout>
+
 #include <glm/vec2.hpp>
 
 class QLayout;
 
 namespace inviwo {
 
-TFLineEdit::TFLineEdit(QWidget* parent) : QWidget(parent), value_(0.0), ambiguous_(true) {
-    spinbox_.setInvalid(ambiguous_);
+TFLineEdit::TFLineEdit(QWidget* parent) : QWidget(parent) {
+    numberWidget_.setClearable(true);
+    numberWidget_.setPlaceholder("<->");
+    numberWidget_.initValueOptional(std::nullopt);
+    numberWidget_.setEnabled(false);
 
-    connect(&spinbox_, &DoubleValueDragSpinBox::editingFinished, this,
-            [this]() { emit valueChanged(value()); });
-    connect(&spinbox_,
-            static_cast<void (DoubleValueDragSpinBox::*)(double)>(
-                &DoubleValueDragSpinBox::valueChanged),
-            [this]() { emit valueChanged(value()); });
+    connect(&numberWidget_, &BaseNumberWidget::valueChanged, this, [this]() {
+        if (auto v = value()) {
+            emit valueChanged(*v);
+        }
+    });
 
     setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred));
 
     // "steal" layout from spinbox and add it to this widget instead
-    QLayout* layout = spinbox_.layout();
+    auto* layout = new QHBoxLayout();
+    layout->setSpacing(0);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(&numberWidget_);
     setLayout(layout);
 }
 
-QSize TFLineEdit::sizeHint() const { return QSize(18, 18); }
+QSize TFLineEdit::sizeHint() const { return {18, 18}; }
 
 void TFLineEdit::setValidRange(const dvec2& range, double inc) {
-    spinbox_.setMinimum(range.x);
-    spinbox_.setMaximum(range.y);
+    const QSignalBlocker block{numberWidget_};
+    validRange_ = range;
+    numberWidget_.setMinValue(range.x, ConstraintBehavior::Immutable);
+    numberWidget_.setMaxValue(range.y, ConstraintBehavior::Immutable);
 
-    spinbox_.setSingleStep(inc);
-
-    // set "full" precision here, to avoid any rounding issues when round tripping
-    // other wise the widget will round the value to the nearest specified number of digits,
-    // which when converting back with valueMappingEnabled can end up outside of bounds.
-    spinbox_.setDecimals(20);
+    numberWidget_.setIncrement(inc);
 }
 
-dvec2 TFLineEdit::getValidRange() const { return dvec2{spinbox_.minimum(), spinbox_.maximum()}; }
+dvec2 TFLineEdit::getValidRange() const { return validRange_; }
 
 void TFLineEdit::setValueMapping(bool enable, const dvec2& range, double inc) {
-    const QSignalBlocker block{spinbox_};
+    const QSignalBlocker block{numberWidget_};
+
+    const auto prevValue = value();
 
     valueMappingEnabled_ = enable;
     valueRange_ = range;
@@ -88,27 +94,26 @@ void TFLineEdit::setValueMapping(bool enable, const dvec2& range, double inc) {
     }
 
     // update text
-    setValue(value_, ambiguous_);
+    setValue(prevValue, numberWidget_.isEnabled() && !prevValue.has_value());
 }
 
-void TFLineEdit::setValue(double value, bool ambiguous) {
-    const QSignalBlocker block{spinbox_};
-    ambiguous_ = ambiguous;
-    spinbox_.setInvalid(ambiguous);
+void TFLineEdit::setValue(std::optional<double> value, bool ambiguous) {
+    const QSignalBlocker block{numberWidget_};
 
-    if (!ambiguous) {
+    numberWidget_.setEnabled(value.has_value() || ambiguous);
+    numberWidget_.initValueOptional(value.transform([this](double v) {
         if (valueMappingEnabled_) {
-            value = value * (valueRange_.y - valueRange_.x) + valueRange_.x;
+            v = v * (valueRange_.y - valueRange_.x) + valueRange_.x;
         }
-        spinbox_.setValue(value);
-    }
+        return v;
+    }));
 }
 
-double TFLineEdit::value() const {
-    auto value = spinbox_.value();
-    if (valueMappingEnabled_) {
+std::optional<double> TFLineEdit::value() const {
+    auto value = numberWidget_.getValueOptional();
+    if (valueMappingEnabled_ && value) {
         // renormalize value to [0,1]
-        value = (value - valueRange_.x) / (valueRange_.y - valueRange_.x);
+        value = (*value - valueRange_.x) / (valueRange_.y - valueRange_.x);
     }
     return value;
 }
