@@ -53,7 +53,7 @@ runs:
     - name: "Setup Ccache"
       id: ccache
       if: inputs.ccache
-      uses: petersteneteg/ccache-action@v2.7.0
+      uses: petersteneteg/ccache-action@v2.8.0
       with:
         variant: ccache
         install: "binary"
