@@ -96,6 +96,8 @@ public:
     void setWrapping(bool wrapping);
     bool getWrapping() const;
 
+    virtual bool isEmpty() const { return false; }
+
     void setPercentageBarVisibility(bool visible);
     bool getPercentageBarVisibility() const;
 
@@ -129,8 +131,6 @@ protected:
     virtual bool updateValueFromText(const QString& str) = 0;
     virtual QString getTextFromValue(bool precise) const = 0;
     virtual std::tuple<std::optional<double>, PercentageBar> getPercentageBar() const = 0;
-
-    virtual bool isEmpty() const { return false; }
 
 private:
     enum class FocusAction : std::uint8_t { SetFocus, ClearFocus };

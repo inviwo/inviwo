@@ -84,39 +84,39 @@ OrdinalOptPropertyState<vec3> util::ordinalOptColor(const vec3& value,
 
 OrdinalOptPropertyState<vec4> util::ordinalOptColor(const std::optional<vec4>& value,
                                                     InvalidationLevel invalidationLevel) {
-    return {value,
-            vec4{0.0f},
-            ConstraintBehavior::Immutable,
-            vec4{1.0f},
-            ConstraintBehavior::Immutable,
-            vec4{0.01f},
-            invalidationLevel,
-            PropertySemantics::Color};
+    return {.value = value,
+            .min = vec4{0.0f},
+            .minConstraint = ConstraintBehavior::Immutable,
+            .max = vec4{1.0f},
+            .maxConstraint = ConstraintBehavior::Immutable,
+            .increment = vec4{0.01f},
+            .invalidationLevel = invalidationLevel,
+            .semantics = PropertySemantics::Color};
 }
 
 OrdinalOptPropertyState<vec3> util::ordinalOptColor(const std::optional<vec3>& value,
                                                     InvalidationLevel invalidationLevel) {
-    return {value,
-            vec3{0.0f},
-            ConstraintBehavior::Immutable,
-            vec3{1.0f},
-            ConstraintBehavior::Immutable,
-            vec3{0.01f},
-            invalidationLevel,
-            PropertySemantics::Color};
+    return {.value = value,
+            .min = vec3{0.0f},
+            .minConstraint = ConstraintBehavior::Immutable,
+            .max = vec3{1.0f},
+            .maxConstraint = ConstraintBehavior::Immutable,
+            .increment = vec3{0.01f},
+            .invalidationLevel = invalidationLevel,
+            .semantics = PropertySemantics::Color};
 }
 
 OrdinalOptPropertyState<vec3> util::ordinalOptLight(const std::optional<vec3>& pos, float min,
                                                     float max,
                                                     InvalidationLevel invalidationLevel) {
-    return {pos,
-            vec3{min},
-            ConstraintBehavior::Ignore,
-            vec3{max},
-            ConstraintBehavior::Ignore,
-            vec3{0.1f},
-            invalidationLevel,
-            PropertySemantics::LightPosition};
+    return {.value = pos,
+            .min = vec3{min},
+            .minConstraint = ConstraintBehavior::Ignore,
+            .max = vec3{max},
+            .maxConstraint = ConstraintBehavior::Ignore,
+            .increment = vec3{0.1f},
+            .invalidationLevel = invalidationLevel,
+            .semantics = PropertySemantics::LightPosition};
 }
 
 }  // namespace inviwo
