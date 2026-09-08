@@ -79,16 +79,33 @@ jobs:
             exit 0
           fi
 
-          # Collect all dependency names from vcpkg.json using jq
-          # Handles both string entries and object entries with a "name" field
-          DEPS=$(jq -r '
-            [
-              (.dependencies[]? | if type == "string" then . else .name end),
-              (.features | to_entries[]? | .value.dependencies[]?
-                | if type == "string" then . else .name end)
-            ] | unique | sort[]
-          ' "$VCPKG_JSON")
-          echo "Dependencies to check:"
+          # Collect all dependency names, including transitive dependencies, using
+          # vcpkg's own manifest resolver.
+          VCPKG_ROOT="/tmp/vcpkg"
+
+          git init "$VCPKG_ROOT"
+          git -C "$VCPKG_ROOT" remote add origin https://github.com/microsoft/vcpkg
+          git -C "$VCPKG_ROOT" fetch --depth 1 origin "$LATEST_COMMIT"
+          git -C "$VCPKG_ROOT" checkout FETCH_HEAD
+          "$VCPKG_ROOT/bootstrap-vcpkg.sh" -disableMetrics
+
+          mapfile -t FEATURE_FLAGS < <(jq -r '.features | keys[]? | "--x-feature=\(.)"' "$VCPKG_JSON")
+
+          DEPS=$(
+            "$VCPKG_ROOT/vcpkg" depend-info \
+              --format=list \
+              --sort=lexicographical \
+              "${FEATURE_FLAGS[@]}" \
+              2>&1 \
+              | python3 .github/scripts/collect-vcpkg-deps-from-depend-info.py
+          )
+
+          if [ -z "$DEPS" ]; then
+            echo "::error::vcpkg depend-info did not produce any dependencies"
+            exit 1
+          fi
+
+          echo "Dependencies to check (direct + transitive):"
           echo "$DEPS"
 
           # Fetch baseline.json from current and latest vcpkg commits
