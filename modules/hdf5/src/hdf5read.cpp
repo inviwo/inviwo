@@ -136,7 +136,34 @@ DimConfig<N> getDimConfig(const H5::DataSpace& dataSpace,
     return config;
 }
 
+VolumeConfig getVolumeConfig(const DataSet& dataset, const DimConfig<3>& config,
+                             const DataFormatBase* type) {
+    return {.dimensions = size3_t{config.selectedDimensions[2], config.selectedDimensions[1],
+                                  config.selectedDimensions[0]},
+            .format = type ? type : util::getDataFormatFromDataSet(dataset)};
+}
+
+LayerConfig getLayerConfig(const DataSet& dataset, const DimConfig<2>& config,
+                           const DataFormatBase* type) {
+    return {.dimensions = size2_t{config.selectedDimensions[1], config.selectedDimensions[0]},
+            .format = type ? type : util::getDataFormatFromDataSet(dataset),
+            .type = LayerType::Color};
+}
+
 }  // namespace
+
+VolumeConfig getVolumeConfig(const Handle& handle, std::vector<Selection> selection,
+                             const DataFormatBase* type) {
+    auto dataset = handle.open();
+    const auto config = getDimConfig<3>(dataset.getSpace(), selection);
+    return getVolumeConfig(dataset, config, type);
+}
+LayerConfig getLayerConfig(const Handle& handle, std::vector<Selection> selection,
+                           const DataFormatBase* type) {
+    auto dataset = handle.open();
+    const auto config = getDimConfig<2>(dataset.getSpace(), selection);
+    return getLayerConfig(dataset, config, type);
+}
 
 std::shared_ptr<Volume> getVolumeAtPathAsType(
     const Handle& handle, std::vector<Selection> selection, const DataFormatBase* type,
@@ -159,13 +186,8 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
             memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
     }
 
-    const DataFormatBase* format = type ? type : util::getDataFormatFromDataSet(dataset);
-
     // Reverse back the Column major
-    auto volume =
-        getVolume({.dimensions = size3_t{config.selectedDimensions[2], config.selectedDimensions[1],
-                                         config.selectedDimensions[0]},
-                   .format = format});
+    auto volume = getVolume(getVolumeConfig(dataset, config, type));
     auto* volumeRam = volume->getEditableRepresentation<VolumeRAM>();
 
     IgnoreValues ignore{};
@@ -219,12 +241,7 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Se
             memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
     }
 
-    const DataFormatBase* format = type ? type : util::getDataFormatFromDataSet(dataset);
-
-    auto layer = std::make_shared<Layer>(LayerConfig{
-        .dimensions = size2_t{config.selectedDimensions[1], config.selectedDimensions[0]},
-        .format = format,
-        .type = LayerType::Color});
+    auto layer = std::make_shared<Layer>(getLayerConfig(dataset, config, type));
     auto* layerRam = layer->getEditableRepresentation<LayerRAM>();
 
     IgnoreValues ignore{};
