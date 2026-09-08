@@ -47,9 +47,17 @@ class DataFormatBase;
 
 namespace hdf5 {
 
+IVW_MODULE_HDF5_API VolumeConfig getVolumeConfig(const Handle& handle,
+                                                 std::vector<Selection> selection,
+                                                 const DataFormatBase* type);
+IVW_MODULE_HDF5_API LayerConfig getLayerConfig(const Handle& handle,
+                                               std::vector<Selection> selection,
+                                               const DataFormatBase* type);
+
 /**
- * Read the dataset at @p handle into a Volume. The @p selection defines a hyperslab per dimension
- * in column major (Inviwo) order. If @p type is null the data format is deduced from the dataset.
+ * Read the dataset at @p handle into a Volume. The @p selection defines a hyperslab per
+ * dimension in column major (Inviwo) order. If @p type is null the data format is deduced from
+ * the dataset.
  * @p getVolume is used to allocate the resulting Volume, allowing the caller to reuse storage.
  */
 IVW_MODULE_HDF5_API std::shared_ptr<Volume> getVolumeAtPathAsType(
