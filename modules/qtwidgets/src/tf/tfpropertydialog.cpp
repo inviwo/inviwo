@@ -46,7 +46,7 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/glmvec.h>
-// #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/qtwidgets/colorwheel.h>
