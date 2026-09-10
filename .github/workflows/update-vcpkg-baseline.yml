@@ -34,7 +34,6 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: microsoft/vcpkg
-          ref: ${{ env.VCPKG_SHA }}
           fetch-depth: 0
           path: vcpkg
 
