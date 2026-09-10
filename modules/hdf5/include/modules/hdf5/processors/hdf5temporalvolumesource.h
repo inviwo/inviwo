@@ -74,7 +74,6 @@ protected:
 
 private:
     void onSelectionChange();
-    void onBasisSelectionChange();
 
     dmat4 getBasisFromMeta(const DataSetInfo& meta);
     dmat4 computeBasis(const DataSetInfo& volumeInfo);
@@ -86,9 +85,6 @@ private:
     TemporalVolumeOutport outport_;
 
     OptionPropertyString volumeSelection_;
-
-    BoolProperty automaticEvaluation_;
-    ButtonProperty evaluate_;
 
     CompositeProperty basisGroup_;
     OptionPropertyString basisSelection_;
@@ -102,7 +98,7 @@ private:
     DimSelectionsProperty selection_;
 
     CompositeProperty timeGroup_;
-    OptionPropertyInt timeDimension_;
+    OptionProperty<size_t> timeDimension_;
     DoubleProperty dt_;
     IntSizeTProperty cacheSize_;
 
