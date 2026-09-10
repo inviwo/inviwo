@@ -24,6 +24,13 @@ jobs:
           # The default GITHUB_TOKEN does not trigger other workflow runs.
           token: ${{ secrets.INVIWO_TEAM_SECRET }}
 
+      - name: "Clone Modules"
+        uses: actions/checkout@v7
+        with:
+          repository: inviwo/modules
+          path: modules
+          submodules: false
+
       - name: "Get Vcpkg SHA"
         shell: bash
         run: |
@@ -112,7 +119,11 @@ jobs:
 
           mapfile -t FEATURE_FLAGS < <(jq -r '.features | keys[]? | "--x-feature=\(.)"' vcpkg.json)
 
-          "$VCPKG_ROOT/vcpkg" depend-info --format=list --sort=lexicographical "${FEATURE_FLAGS[@]}" > /tmp/depend-info.txt
+          "$VCPKG_ROOT/vcpkg" depend-info --format=list --sort=lexicographical \
+            --overlay-ports=tools/vcpkg \
+            --overlay-ports=../modules/tools/vcpkg \
+            "${FEATURE_FLAGS[@]}" > /tmp/depend-info.txt
+
           DEPS=$(python3 .github/scripts/collect-vcpkg-deps-from-depend-info.py < /tmp/depend-info.txt)
 
           if [ -z "$DEPS" ]; then
