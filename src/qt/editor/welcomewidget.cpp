@@ -93,6 +93,7 @@
 #include <algorithm>
 #include <functional>
 #include <string>
+#include <utility>
 
 #ifndef INVIWO_ALL_DYN_LINK
 struct InitQtChangelogResources {
@@ -351,6 +352,15 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
     setObjectName("WelcomeWidget");
 
+    if (const auto stored = getSetting("expandedTreePaths"); stored.isValid()) {
+        const auto list = stored.toStringList();
+        expandedPaths_ = QSet<QString>(list.begin(), list.end());
+    } else {
+        // first run: match the previous hardcoded default of expanding these two sections
+        expandedPaths_ = {utilqt::toQString(WorkspaceTreeModel::recent),
+                          utilqt::toQString(WorkspaceTreeModel::examples)};
+    }
+
     filterModel_->setSourceModel(model_);
     filterModel_->setRecursiveFilteringEnabled(true);
     filterModel_->setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -455,6 +465,25 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
             connect(workspaceGridView_, &WorkspaceGridView::loadFile, this, loadFile);
             connect(workspaceGridView_, &WorkspaceGridView::selectFile, this, updateLoadButtons);
+
+            // record user-driven expand/collapse so it can be restored across rebuilds and
+            // restarts; suppressed while searching, see expandTreeView()
+            auto trackExpansion = [this](bool expand, bool fromGrid) {
+                return [this, expand, fromGrid](const QModelIndex& viewIndex) {
+                    if (searchActive_) return;
+                    const auto sourceIdx = toSource(viewIndex, fromGrid);
+                    if (!sourceIdx.isValid()) return;
+                    if (expand) {
+                        expandedPaths_.insert(nodePath(sourceIdx));
+                    } else {
+                        expandedPaths_.remove(nodePath(sourceIdx));
+                    }
+                };
+            };
+            connect(workspaceTreeView_, &QTreeView::expanded, this, trackExpansion(true, false));
+            connect(workspaceTreeView_, &QTreeView::collapsed, this, trackExpansion(false, false));
+            connect(workspaceGridView_, &QTreeView::expanded, this, trackExpansion(true, true));
+            connect(workspaceGridView_, &QTreeView::collapsed, this, trackExpansion(false, true));
 
             connect(
                 model_, &WorkspaceTreeModel::dataChanged, this,
@@ -750,25 +779,79 @@ void WelcomeWidget::selectFirstLeaf() {
     if (!gridIndex.isValid()) updateDetails(QModelIndex{});
 }
 
-void WelcomeWidget::expandTreeView() const {
-    auto expandSection = [&](std::string_view section) {
-        auto modelIdx = model_->getCategoryIndex(section);
-        if (auto filterIdx = filterModel_->mapFromSource(modelIdx); filterIdx.isValid()) {
-            workspaceTreeView_->expandRecursively(filterIdx);
-
-            if (auto proxyIdx = workspaceGridView_->proxy().mapFromSource(filterIdx);
-                proxyIdx.isValid()) {
-                workspaceGridView_->expandRecursively(proxyIdx);
-            }
-        }
-    };
-
+void WelcomeWidget::expandTreeView() {
     if (filterLineEdit_->text().isEmpty()) {
-        expandSection(WorkspaceTreeModel::recent);
-        expandSection(WorkspaceTreeModel::examples);
+        // leaving (or not in) search mode: restore whatever was expanded beforehand; 
+        // expandedPaths_ is left untouched while searchActive_, so it still holds that state
+        const bool wasSearching = searchActive_;
+        searchActive_ = false;
+        applyExpandedPaths(expandedPaths_);
+        if (wasSearching) {
+            ensureSelectionVisible();
+        }
     } else {
+        // search mode: show everything, but don't persist this transient state
+        searchActive_ = true;
         workspaceTreeView_->expandAll();
         workspaceGridView_->expandAll();
+    }
+}
+
+QString WelcomeWidget::nodePath(const QModelIndex& sourceIndex) {
+    QStringList parts;
+    for (auto idx = sourceIndex; idx.isValid(); idx = idx.parent()) {
+        parts.prepend(idx.data(Qt::DisplayRole).toString());
+    }
+    // separator can't be '/': Custom-category captions are themselves directory paths
+    return parts.join(QChar(0x1f));
+}
+
+QModelIndex WelcomeWidget::toSource(const QModelIndex& viewIndex, bool fromGrid) const {
+    if (!viewIndex.isValid()) return {};
+    if (fromGrid) {
+        return filterModel_->mapToSource(workspaceGridView_->proxy().mapToSource(viewIndex));
+    }
+    return filterModel_->mapToSource(viewIndex);
+}
+
+void WelcomeWidget::applyExpandedPaths(const QSet<QString>& paths) {
+    const QSet<QString> target = paths;  // defensive copy: collapseAll() below mutates expandedPaths_
+    const bool wasSearchActive = std::exchange(searchActive_, true);
+
+    workspaceTreeView_->collapseAll();
+    workspaceGridView_->collapseAll();
+
+    std::function<void(const QModelIndex&)> visit = [&](const QModelIndex& sourceParent) {
+        const int rows = model_->rowCount(sourceParent);
+        for (int row = 0; row < rows; ++row) {
+            const auto sourceIdx = model_->index(row, 0, sourceParent);
+            if (utilqt::getData(sourceIdx, Role::Type) == WorkspaceTreeModel::Type::File) continue;
+
+            if (target.contains(nodePath(sourceIdx))) {
+                if (auto filterIdx = filterModel_->mapFromSource(sourceIdx); filterIdx.isValid()) {
+                    workspaceTreeView_->expand(filterIdx);
+                    if (auto gridIdx = workspaceGridView_->proxy().mapFromSource(filterIdx);
+                        gridIdx.isValid()) {
+                        workspaceGridView_->expand(gridIdx);
+                    }
+                }
+            }
+            visit(sourceIdx);
+        }
+    };
+    visit({});
+
+    searchActive_ = wasSearchActive;
+    expandedPaths_ = target;
+}
+
+void WelcomeWidget::ensureSelectionVisible() {
+    QTreeView* view = workspaceGridView_->isVisible() ? static_cast<QTreeView*>(workspaceGridView_)
+                                                      : static_cast<QTreeView*>(workspaceTreeView_);
+    if (!view->selectionModel()) return;
+    for (auto idx = view->selectionModel()->currentIndex().parent(); idx.isValid();
+        idx = idx.parent()) {
+        view->expand(idx);
     }
 }
 
@@ -794,6 +877,7 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
 void WelcomeWidget::hideEvent(QHideEvent* event) {
     setSetting("changelogSplitter", saveState());
     setSetting("workspaceSplitter", workspaceSplitter_->saveState());
+    setSetting("expandedTreePaths", QStringList(expandedPaths_.values()));
 
     QSplitter::hideEvent(event);
 }
