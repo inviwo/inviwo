@@ -33,7 +33,8 @@ Checks: >
     -modernize-use-default-member-init,
   performance-*,
   portability-*,
-    -portability-avoid-pragma-once
+    -portability-avoid-pragma-once,
+    -portability-template-virtual-member-function,
   readability-*,
     -readability-else-after-return,
     -readability-redundant-member-init,
