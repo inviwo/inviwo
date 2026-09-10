@@ -55,7 +55,7 @@ jobs:
           BRANCH: bot/vcpkg-baseline-update
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
 
-          run: |
+        run: |
           set -euox pipefail
           
           cd inviwo
