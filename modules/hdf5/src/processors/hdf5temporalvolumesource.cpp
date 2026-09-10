@@ -50,15 +50,15 @@
 namespace inviwo::hdf5 {
 
 namespace {
-constexpr size_t kMaxRank = 6;
+constexpr size_t maxRank = 6;
 }  // namespace
 
 const ProcessorInfo HDF5ToTemporalVolume::processorInfo_{
-    "org.inviwo.hdf5.ToTemporalVolume",  // Class identifier
-    "HDF5 To Temporal Volume",           // Display name
-    "Data Input",                        // Category
-    CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
+    "org.inviwo.hdf5.ToTemporalVolume",       // Class identifier
+    "HDF5 To Temporal Volume",                // Display name
+    "Data Input",                             // Category
+    CodeState::Experimental,                  // Code state
+    Tags::CPU | Tag{"HDF5"} | Tag{"Volume"},  // Tags
     "Load a time-varying volume from a HDF5 file handle. Requires a dataset of rank >= 4, "
     "one dimension of which is designated as the time axis."_help,
 };
@@ -71,56 +71,64 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
 
     , volumeSelection_("volumeSelection", "Volume")
 
-    , automaticEvaluation_("automaticEvaluation", "Automatic loading", true,
-                           InvalidationLevel::Valid)
-    , evaluate_("evaluate", "Load", [this]() { dirty_ = true; })
-
     , basisGroup_("basisGroup", "Basis")
     , basisSelection_("basisSelection", "Source")
     , basis_("basis", "Matrix", mat4(1.0f), inviwo::util::filled<mat4>(-1000.f),
              inviwo::util::filled<mat4>(1000.f))
     , spacing_("spacing", "Spacing", vec3(0.01f), vec3(0.0f), vec3(1.0f))
-    , outputGroup_("outputGroup", "Operations", InvalidationLevel::Valid)
+    , outputGroup_("outputGroup", "Operations")
     , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
     , adjustBasis_("adjustBasis", "Automatically adjust basis", true)
     , adjustOffset_("adjustOffset", "Automatically adjust offset", true)
-    , selection_("selection", "Selection", kMaxRank)
-    , timeGroup_("timeGroup", "Time", InvalidationLevel::Valid)
-    , timeDimension_("timeDimension", "Time Dimension")
+    , selection_("selection", "Selection", maxRank)
+    , timeGroup_("timeGroup", "Time")
+    , timeDimension_(
+          "timeDimension", "Time Dimension",
+          []() {
+              std::vector<OptionPropertyOption<size_t>> opts;
+              constexpr char last = 'Z';
+              for (size_t i = 0; i < maxRank; ++i) {
+                  const auto ind = fmt::to_string(static_cast<char>(last - maxRank + i + 1));
+                  opts.emplace_back(ind, ind, i);
+              }
+              return opts;
+          }(),
+          0)
     , dt_("dt", "Time Step (s)", 1.0, 0.0001, 1000.0)
     , cacheSize_("cacheSize", "Cache Size",
                  inviwo::util::ordinalCount<size_t>(8u, 256u).set(
-                     "Maximum number of decoded frames kept in memory"_help))
-    , dirty_(false) {
+                     "Maximum number of decoded frames kept in memory"_help)) {
 
     addPort(inport_);
     addPort(outport_);
 
-    volumeSelection_.onChange([this]() { onSelectionChange(); });
     volumeSelection_.setSerializationMode(PropertySerializationMode::All);
 
-    automaticEvaluation_.onChange([this]() { evaluate_.setReadOnly(automaticEvaluation_); });
-
-    const auto markDirty = [this]() {
-        if (automaticEvaluation_) {
-            dirty_ = true;
-            this->invalidate(InvalidationLevel::InvalidOutput);
-        }
-    };
-
     basisGroup_.addProperties(basisSelection_, spacing_, basis_);
-    basisSelection_.onChange([this]() { onBasisSelectionChange(); });
+    basisSelection_.onChange([this]() {
+        switch (basisSelection_.getSelectedIndex()) {
+            case 0: {  // User defined basis
+                basis_.setReadOnly(false);
+                spacing_.setVisible(false);
+                break;
+            }
+            case 1: {  // User defined spacing
+                basis_.setReadOnly(true);
+                spacing_.setVisible(true);
+                break;
+            }
+            default: {
+                basis_.setReadOnly(true);
+                spacing_.setVisible(false);
+                break;
+            }
+        }
+    });
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
-    basisGroup_.onChange(markDirty);
-
     outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_, selection_);
-    outputGroup_.onChange(markDirty);
-
     timeGroup_.addProperties(timeDimension_, dt_, cacheSize_);
-    timeGroup_.onChange(markDirty);
 
-    addProperties(volumeSelection_, automaticEvaluation_, evaluate_, basisGroup_, outputGroup_,
-                  timeGroup_);
+    addProperties(volumeSelection_, basisGroup_, outputGroup_, timeGroup_);
 }
 
 HDF5ToTemporalVolume::~HDF5ToTemporalVolume() = default;
@@ -145,11 +153,12 @@ void HDF5ToTemporalVolume::process() try {
                                    }));
 
         // Update Volume Selection
-        std::vector<OptionPropertyStringOption> volumeOptions;
-        for (const auto& info : volumeMatches_) {
-            volumeOptions.emplace_back(info.path.toString(), util::dataSetDescription(info),
-                                       info.path.toString());
-        }
+        const auto volumeOptions =
+            volumeMatches_ | std::views::transform([](const auto& info) {
+                return OptionPropertyStringOption{
+                    info.path.toString(), util::dataSetDescription(info), info.path.toString()};
+            }) |
+            std::ranges::to<std::vector>();
 
         volumeSelection_.replaceOptions(volumeOptions);
         volumeSelection_.setCurrentStateAsDefault();
@@ -164,9 +173,6 @@ void HDF5ToTemporalVolume::process() try {
         }
         basisSelection_.replaceOptions(basisOptions);
         basisSelection_.setCurrentStateAsDefault();
-
-        onSelectionChange();
-        onBasisSelectionChange();
     }
 
     if (volumeMatches_.empty()) {
@@ -175,19 +181,17 @@ void HDF5ToTemporalVolume::process() try {
     }
 
     const auto& volumeInfo = volumeMatches_[volumeSelection_.getSelectedIndex()];
+    selection_.update(volumeInfo);
 
-    if (dirty_) {
-        const auto* format = util::conversionFormat(datatype_.getSelectedIndex());
-        const auto basis = computeBasis(volumeInfo);
+    const auto* format = util::conversionFormat(datatype_.getSelectedIndex());
+    const auto basis = computeBasis(volumeInfo);
 
-        auto loader = std::make_unique<HDF5TemporalVolumeLoader>(
-            *data + volumeInfo.path, selection_.getSelection(),
-            static_cast<size_t>(timeDimension_.getSelectedValue()), format, basis, dt_.get());
+    auto loader = std::make_unique<HDF5TemporalVolumeLoader>(
+        *data + volumeInfo.path, selection_.getSelection(),
+        static_cast<size_t>(timeDimension_.getSelectedValue()), format, basis, dt_.get());
 
-        outport_.setData(std::make_shared<TemporalVolume>(std::move(loader), cacheSize_.get()));
+    outport_.setData(std::make_shared<TemporalVolume>(std::move(loader), cacheSize_.get()));
 
-        dirty_ = false;
-    }
 } catch (H5::Exception& e) {
     throw Exception(SourceContext{}, "Error reading HDF5 data: {}", e.getDetailMsg());
 }
@@ -287,46 +291,6 @@ dmat4 HDF5ToTemporalVolume::getBasisFromMeta(const DataSetInfo& meta) {
         }
     }
     return basis;
-}
-
-void HDF5ToTemporalVolume::onBasisSelectionChange() {
-    switch (basisSelection_.getSelectedIndex()) {
-        case 0: {  // User defined basis
-            basis_.setReadOnly(false);
-            spacing_.setVisible(false);
-            break;
-        }
-        case 1: {  // User defined spacing
-            basis_.setReadOnly(true);
-            spacing_.setVisible(true);
-            break;
-        }
-        default: {
-            basis_.setReadOnly(true);
-            spacing_.setVisible(false);
-            break;
-        }
-    }
-}
-
-void HDF5ToTemporalVolume::onSelectionChange() {
-    dirty_ = true;
-    if (!volumeMatches_.empty()) {
-        const DataSetInfo volumeMeta = volumeMatches_[volumeSelection_.getSelectedIndex()];
-        selection_.update(volumeMeta);
-
-        const size_t rank = std::min(volumeMeta.dimensions.size(), kMaxRank);
-        const size_t numExtraDims = rank - 3;
-
-        std::vector<OptionPropertyIntOption> timeOptions;
-        for (size_t i = 0; i < numExtraDims; ++i) {
-            timeOptions.emplace_back(fmt::to_string(i), fmt::format("Extra Dimension {}", i),
-                                     static_cast<int>(i));
-        }
-        timeDimension_.replaceOptions(timeOptions);
-        timeDimension_.setSelectedIndex(static_cast<int>(timeOptions.size() - 1));
-        timeDimension_.setCurrentStateAsDefault();
-    }
 }
 
 }  // namespace inviwo::hdf5
