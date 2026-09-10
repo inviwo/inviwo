@@ -45,6 +45,8 @@
 #include <QFontMetrics>
 #include <warn/pop>
 
+#include <fmt/std.h>
+
 namespace {
 
 struct RegisterWorkspaceInfo {
@@ -266,10 +268,10 @@ WorkspaceTreeModel::WorkspaceTreeModel(InviwoApplication* app, QObject* parent)
     : QAbstractItemModel(parent), app_(app), root_{std::make_unique<TreeItem>(nullptr)} {
 
     addEntry(root_.get(), std::make_unique<TreeItem>(recent, Type::SubSection));
-    addEntry(root_.get(), std::make_unique<TreeItem>(restore, Type::SubSection));
     addEntry(root_.get(), std::make_unique<TreeItem>(custom, Type::Section));
     addEntry(root_.get(), std::make_unique<TreeItem>(examples, Type::Section));
     addEntry(root_.get(), std::make_unique<TreeItem>(tests, Type::Section));
+    addEntry(root_.get(), std::make_unique<TreeItem>(restore, Type::SubSection));
 }
 
 WorkspaceTreeModel::~WorkspaceTreeModel() = default;
@@ -445,7 +447,9 @@ void WorkspaceTreeModel::updateCustomEntries() {
 
         if (!std::filesystem::is_directory(path)) continue;
 
-        auto section = std::make_unique<TreeItem>(path.generic_string(), Type::SubSection);
+        const auto name = fmt::format("{} {}", fileProp->getDisplayName(), path);
+
+        auto section = std::make_unique<TreeItem>(name, Type::SubSection);
 
         std::filesystem::directory_iterator it(path);
 

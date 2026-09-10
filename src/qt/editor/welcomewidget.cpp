@@ -162,21 +162,6 @@ std::string markdownToHtml(std::string_view markdown) {
     return fmt::format("{}{}{}", htmlHeader, doc.str(), htmlFooter);
 }
 
-inline void setTabOrder(std::initializer_list<QWidget*> widgets) {
-#if QT_VERSION < QT_VERSION_CHECK(6, 6, 0)
-    QWidget* prev = nullptr;
-    for (const auto& widget : widgets) {
-        if (!prev) {
-            prev = widget;
-        } else {
-            QWidget::setTabOrder(prev, widget);
-            prev = widget;
-        }
-    }
-#else
-    QWidget::setTabOrder(widgets);
-#endif
-}
 }  // namespace
 
 class ChangeLog : public QTextBrowser {
