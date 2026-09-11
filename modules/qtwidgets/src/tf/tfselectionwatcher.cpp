@@ -54,7 +54,7 @@ void TFSelectionWatcher::setPosition(double pos) {
     for (auto& elem : tfSets_) {
         elem->setPosition(selectedPrimitives_, pos);
     }
-    emit updateWidgetPosition(pos) ;
+    emit updateWidgetPosition(pos);
 }
 
 void TFSelectionWatcher::setAlpha(double alpha) {
