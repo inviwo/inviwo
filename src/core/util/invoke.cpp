@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/tf/tfcoloredit.h>
+#include <inviwo/core/util/invoke.h>
 
-#include <inviwo/core/util/glmvec.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/properties/colorlineedit.h>
-
-#include <QSizePolicy>
-
-class QWidget;
-
-namespace inviwo {
-
-TFColorEdit::TFColorEdit(QWidget* parent) : ColorLineEdit(parent) {
-    setRepresentation(ColorRepresentation::Hexadecimal);
-
-    connect(this, &ColorLineEdit::colorChanged, this, [this]() {
-        // QColor(QString) should only be used for 6-digit hex codes, since
-        // 8-digit hex codes in Qt are in the form of #AARRGGBB while Inviwo uses #RRGGBBAA
-        emit colorChanged(utilqt::toQColor(getColor<vec3>()));
-    });
-
-    setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred));
-}
-
-QSize TFColorEdit::sizeHint() const { return {18, 18}; }
-
-void TFColorEdit::setColor(std::optional<QColor> color, bool ambiguous) {
-    setEnabled(color.has_value() || ambiguous);
-    if (color.has_value()) {
-        ColorLineEdit::setColor(utilqt::tovec3(*color), ColorRepresentation::Hexadecimal);
-    } else {
-        setInvalid(true);
-    }
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

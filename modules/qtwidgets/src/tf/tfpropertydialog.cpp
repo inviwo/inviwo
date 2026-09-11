@@ -46,6 +46,7 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/qtwidgets/colorwheel.h>
@@ -137,6 +138,7 @@ QComboBox* createModeComboBox(bool absolute) {
     cb->setCurrentIndex(absolute ? 1 : 0);
     return cb;
 }
+
 }  // namespace
 
 TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* property)
@@ -166,9 +168,9 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     , domainMin_{new QLabel("0.0")}
     , domainMax_{new QLabel("1.0")} {
 
-    if (auto titlebar = dynamic_cast<InviwoDockWidgetTitleBar*>(titleBarWidget())) {
-        if (auto layout = dynamic_cast<QHBoxLayout*>(titlebar->layout())) {
-            QToolButton* helpBtn = new QToolButton();
+    if (const auto* titlebar = dynamic_cast<InviwoDockWidgetTitleBar*>(titleBarWidget())) {
+        if (auto* layout = dynamic_cast<QHBoxLayout*>(titlebar->layout())) {
+            auto* helpBtn = new QToolButton();
             helpBtn->setIcon(QIcon(":/svgicons/dock-help.svg"));
             const auto iconsize =
                 utilqt::emToPx(this, QSizeF(titlebar->getIconSize(), titlebar->getIconSize()));
@@ -183,8 +185,8 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
         }
     }
 
-    if (auto owner = concept_->getProperty()->getOwner()) {
-        if (auto p = owner->getProcessor()) {
+    if (auto* owner = concept_->getProperty()->getOwner()) {
+        if (auto* p = owner->getProcessor()) {
             onNameChange_ = p->onDisplayNameChange(
                 [this](std::string_view, std::string_view) { updateTitleFromProperty(); });
         }
@@ -253,12 +255,12 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     }
 
     connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor, colorWheel_.get(),
-            [cw = colorWheel_.get()](const QColor& c, bool /*ambiguous*/) {
+            [cw = colorWheel_.get()](std::optional<QColor> c) {
                 const QSignalBlocker block(cw);
-                cw->setColor(c);
+                cw->setColor(c.value_or(QColor{}));
             });
-    connect(colorWheel_.get(), &ColorWheel::colorChange, tfSelectionWatcher_.get(),
-            &TFSelectionWatcher::setColor);
+    connect(colorWheel_.get(), &ColorWheel::colorChange, this,
+            util::exceptionGuarded([this](const QColor& c) { tfSelectionWatcher_->setColor(c); }));
 
     connect(chkShowHistogram_,
             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
@@ -304,25 +306,32 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
 
     // set up TF primitive widgets
     primitivePos_ = new TFLineEdit();
-    connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetPosition, primitivePos_,
-            &TFLineEdit::setValue);
-    connect(primitivePos_, &TFLineEdit::valueChanged, tfSelectionWatcher_.get(),
-            &TFSelectionWatcher::setPosition);
+    connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetPosition, this,
+            [this](std::optional<double> pos, bool ambiguous) {
+                primitivePos_->setValue(pos, pos.has_value() || ambiguous);
+            });
+    connect(
+        primitivePos_, &TFLineEdit::valueChanged, this,
+        util::exceptionGuarded([this](double value) { tfSelectionWatcher_->setPosition(value); }));
 
     primitiveAlpha_ = new TFLineEdit();
     // only accept values in [0, 1]
     primitiveAlpha_->setValidRange(dvec2(0.0, 1.0), 0.0001);
-    connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetAlpha, primitiveAlpha_,
-            &TFLineEdit::setValue);
-    connect(primitiveAlpha_, &TFLineEdit::valueChanged, tfSelectionWatcher_.get(),
-            &TFSelectionWatcher::setAlpha);
+    connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetAlpha, this,
+            [this](std::optional<double> alpha, bool ambiguous) {
+                primitiveAlpha_->setValue(alpha, alpha.has_value() || ambiguous);
+            });
+    connect(primitiveAlpha_, &TFLineEdit::valueChanged, this,
+            util::exceptionGuarded([this](double value) { tfSelectionWatcher_->setAlpha(value); }));
 
     primitiveColor_ = new TFColorEdit();
-    primitiveColor_->setColor(QColor(Qt::black), true);
-    connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor, primitiveColor_,
-            &TFColorEdit::setColor);
-    connect(primitiveColor_, &TFColorEdit::colorChanged, tfSelectionWatcher_.get(),
-            &TFSelectionWatcher::setColor);
+    primitiveColor_->setColor(std::nullopt, false);
+    connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor, this,
+            [this](std::optional<QColor> color, bool ambiguous) {
+                primitiveColor_->setColor(color, color.has_value() || ambiguous);
+            });
+    connect(primitiveColor_, &TFColorEdit::colorChanged, this,
+            util::exceptionGuarded([this](const QColor& c) { tfSelectionWatcher_->setColor(c); }));
 
     dataChange();
 
@@ -345,7 +354,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     rightLayout->addWidget(pointMoveMode_);
     rightLayout->addWidget(colorWheel_.get());
 
-    auto primitivePropLayout = new QGridLayout();
+    auto* primitivePropLayout = new QGridLayout();
     primitivePropLayout->setColumnStretch(0, 0);
     primitivePropLayout->setColumnStretch(1, 2);
 
@@ -401,15 +410,9 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
                 });
 
         connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor,
-                colorDialog_.get(),
-                [dialog = colorDialog_.get()](const QColor& c, bool /*ambiguous*/) {
-                    QSignalBlocker block(dialog);
-                    if (c.isValid()) {
-                        dialog->setCurrentColor(c);
-                    } else {
-                        // nothing selected
-                        dialog->setCurrentColor(QColor("#95baff"));
-                    }
+                colorDialog_.get(), [dialog = colorDialog_.get()](std::optional<QColor> c) {
+                    const QSignalBlocker block(dialog);
+                    dialog->setCurrentColor(c.value_or(QColor{"#95baff"}));
                 });
         connect(colorDialog_.get(), &QColorDialog::currentColorChanged, tfSelectionWatcher_.get(),
                 &TFSelectionWatcher::setColor);

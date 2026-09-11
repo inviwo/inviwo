@@ -108,6 +108,21 @@ void BaseNumberWidget::setPostfix(std::string_view postfix) {
 
 const QString& BaseNumberWidget::getPostfix() const { return postfix_; }
 
+void BaseNumberWidget::setClearable(bool clearable) {
+    clearable_ = clearable;
+    const QSignalBlocker blocker{this};
+    updateText();
+    update();
+}
+
+bool BaseNumberWidget::isClearable() const { return clearable_; }
+
+void BaseNumberWidget::setPlaceholder(std::string_view placeholder) {
+    placeholder_ = utilqt::toQString(placeholder);
+    QLineEdit::setPlaceholderText(placeholder_);
+    update();
+}
+
 void BaseNumberWidget::setWrapping(bool wrapping) { wrapping_ = wrapping; }
 
 bool BaseNumberWidget::getWrapping() const { return wrapping_; }
@@ -271,7 +286,7 @@ void BaseNumberWidget::paintEvent(QPaintEvent* event) {
         const QRect interiorRect{
             rect().adjusted(borderWidth, borderWidth, -borderWidth, -borderWidth)};
 
-        if (percentageBarVisible_) {
+        if (percentageBarVisible_ && !(clearable_ && isEmpty())) {
             drawPercentageBar(painter, interiorRect, hover);
         }
 
@@ -300,8 +315,13 @@ void BaseNumberWidget::paintEvent(QPaintEvent* event) {
         }
 
         painter.setFont(font());
-        painter.setPen(palette().color(QPalette::Text));
-        painter.drawText(event->rect(), Qt::AlignCenter, getPrefixedText());
+        if (clearable_ && isEmpty()) {
+            painter.setPen(palette().color(QPalette::PlaceholderText));
+            painter.drawText(event->rect(), Qt::AlignCenter, placeholder_);
+        } else {
+            painter.setPen(palette().color(QPalette::Text));
+            painter.drawText(event->rect(), Qt::AlignCenter, getPrefixedText());
+        }
     } else {
         QLineEdit::paintEvent(event);
     }
@@ -336,7 +356,10 @@ void BaseNumberWidget::changeEvent(QEvent* event) {
 }
 
 void BaseNumberWidget::updateText() {
-    const QString str = (isReadOnly() || !isEnabled()) ? getPrefixedText() : getTextFromValue(true);
+    const QString str =
+        (clearable_ && isEmpty())
+            ? QString{}
+            : ((isReadOnly() || !isEnabled()) ? getPrefixedText() : getTextFromValue(true));
     if (str != text()) {
         setText(str);
     }
