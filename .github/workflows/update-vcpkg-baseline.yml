@@ -91,7 +91,7 @@ jobs:
           fi
 
           # Extract current baseline from the checked-out branch.
-          # When updating an existing PR, this may differ from MAIN_BASELINE.
+          # When updating an existing PR, this may differ from VCPKG_SHA.
           CURRENT_BASELINE=$(jq -r '."vcpkg-configuration"."default-registry".baseline' vcpkg.json)
           echo "Current baseline on branch: $CURRENT_BASELINE"
 
@@ -140,7 +140,7 @@ jobs:
             git -C "$VCPKG_ROOT" show "${sha}:versions/baseline.json"
           }
 
-          fetch_baseline "$MAIN_BASELINE"  > /tmp/baseline_old.json
+          fetch_baseline "$VCPKG_SHA"  > /tmp/baseline_old.json
           fetch_baseline "$LATEST_COMMIT"  > /tmp/baseline_new.json
 
           # Write deps list to a file for the standalone comparison script
@@ -178,7 +178,7 @@ jobs:
           fi
 
           printf '## vcpkg baseline update\n\nUpdated baseline from `%s` to `%s`.\n\n### Changed dependencies\n```\n%s\n```\n\nFull vcpkg commit: https://github.com/microsoft/vcpkg/commit/%s\n' \
-            "${MAIN_BASELINE:0:10}" "${LATEST_COMMIT:0:10}" "$CHANGED" "$LATEST_COMMIT" \
+            "${VCPKG_SHA:0:10}" "${LATEST_COMMIT:0:10}" "$CHANGED" "$LATEST_COMMIT" \
             > /tmp/pr_body.txt
 
           if [ -n "$EXISTING_PR" ]; then
