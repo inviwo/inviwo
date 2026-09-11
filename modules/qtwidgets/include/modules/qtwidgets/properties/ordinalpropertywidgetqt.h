@@ -336,7 +336,7 @@ std::unique_ptr<QMenu> OrdinalLikePropertyWidgetQt<Prop, Sem>::getContextMenu() 
 
 /**
  * Property widget for OrdinalOptProperty. Uses clearable NumberWidget editors that display a
- * placeholder ("Unset") when the property is empty. Clearing any editor empties the whole
+ * placeholder ("<unset>") when the property is empty. Clearing any editor empties the whole
  * property, typing into any editor engages it (all-or-nothing).
  */
 template <typename T, OrdinalPropertyWidgetQtSemantics Sem>
@@ -384,7 +384,7 @@ OrdinalOptPropertyWidgetQt<T, Sem>::OrdinalOptPropertyWidgetQt(OrdinalOptPropert
         for (size_t col = 0; col < util::extent_v<T, 0>; col++) {
             auto* editor = new NumberWidget<BT>();
             editor->setClearable(true);
-            editor->setPlaceholder("Unset");
+            editor->setPlaceholder("<unset>");
             editors_.push_back(editor);
 
             connect(editor, &BaseNumberWidget::valueChanged, this,
