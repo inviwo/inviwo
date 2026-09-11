@@ -225,7 +225,7 @@ NetworkAnnotationWidget::NetworkAnnotationWidget(ProcessorNetwork* network, QWid
     scrollArea_->setFrameShape(QFrame::NoFrame);
     scrollArea_->setContentsMargins(0, space, 0, space);
 
-    lineEditTitle_->setPlaceholderText("<unset>");
+    lineEditTitle_->setPlaceholderText("<empty>");
     connect(lineEditTitle_, &LineEditQt::editingFinished, this, [this]() {
         if (annotationIndex_.has_value()) {
             if (!lineEditTitle_->text().isEmpty()) {
