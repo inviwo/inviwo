@@ -76,6 +76,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/raycasting/multichannelvolumeraycaster.h
     include/modules/basegl/processors/raycasting/sphericalvolumeraycaster.h
     include/modules/basegl/processors/raycasting/standardvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/temporalvolumeraycaster.h
     include/modules/basegl/processors/raycasting/texturedisosurfacerenderer.h
     include/modules/basegl/processors/raycasting/texturedvolumeraycaster.h
     include/modules/basegl/processors/raycasting/volumeraycasterbase.h
@@ -124,6 +125,7 @@ set(HEADER_FILES
     include/modules/basegl/shadercomponents/sphericalcomponent.h
     include/modules/basegl/shadercomponents/tfcomponent.h
     include/modules/basegl/shadercomponents/timecomponent.h
+    include/modules/basegl/shadercomponents/temporalvolumecomponent.h
     include/modules/basegl/shadercomponents/volumecomponent.h
     include/modules/basegl/util/glyphclipping.h
     include/modules/basegl/util/meshbnlgl.h
@@ -209,6 +211,7 @@ set(SOURCE_FILES
     src/processors/raycasting/multichannelvolumeraycaster.cpp
     src/processors/raycasting/sphericalvolumeraycaster.cpp
     src/processors/raycasting/standardvolumeraycaster.cpp
+    src/processors/raycasting/temporalvolumeraycaster.cpp
     src/processors/raycasting/texturedisosurfacerenderer.cpp
     src/processors/raycasting/texturedvolumeraycaster.cpp
     src/processors/raycasting/volumeraycasterbase.cpp
@@ -257,6 +260,7 @@ set(SOURCE_FILES
     src/shadercomponents/sphericalcomponent.cpp
     src/shadercomponents/tfcomponent.cpp
     src/shadercomponents/timecomponent.cpp
+    src/shadercomponents/temporalvolumecomponent.cpp
     src/shadercomponents/volumecomponent.cpp
     src/util/glyphclipping.cpp
     src/util/meshbnlgl.cpp

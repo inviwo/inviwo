@@ -95,6 +95,7 @@
 #include <modules/basegl/processors/raycasting/multichannelvolumeraycaster.h>
 #include <modules/basegl/processors/raycasting/sphericalvolumeraycaster.h>
 #include <modules/basegl/processors/raycasting/standardvolumeraycaster.h>
+#include <modules/basegl/processors/raycasting/temporalvolumeraycaster.h>
 #include <modules/basegl/processors/raycasting/texturedisosurfacerenderer.h>
 #include <modules/basegl/processors/raycasting/texturedvolumeraycaster.h>
 #include <modules/basegl/processors/redgreenprocessor.h>
@@ -168,6 +169,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<SphericalVolumeRaycaster>();
     registerProcessor<SplitImage>();
     registerProcessor<StandardVolumeRaycaster>();
+    registerProcessor<TemporalVolumeRaycaster>();
     registerProcessor<TubeRendering>();
     registerProcessor<VolumeRaycaster>();
     registerProcessor<VolumeSliceGL>();
