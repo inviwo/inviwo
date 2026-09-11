@@ -14,33 +14,61 @@ jobs:
     name: "Check and update vcpkg baseline"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: "Clone Inviwo"
         uses: actions/checkout@v7
         with:
+          path: inviwo
+          submodules: false
           # Use a PAT so that commits pushed by this workflow trigger CI on the PR.
           # The default GITHUB_TOKEN does not trigger other workflow runs.
           token: ${{ secrets.INVIWO_TEAM_SECRET }}
 
+      - name: "Clone Modules"
+        uses: actions/checkout@v7
+        with:
+          repository: inviwo/modules
+          path: modules
+          submodules: false
+
+      - name: "Get Vcpkg SHA"
+        shell: bash
+        run: |
+          SHA=`jq -r '.["vcpkg-configuration"].["default-registry"].baseline' inviwo/vcpkg.json`
+          echo "VCPKG_SHA=${SHA}" >> $GITHUB_ENV
+
+      - name: "Clone Vcpkg"
+        uses: actions/checkout@v7
+        with:
+          repository: microsoft/vcpkg
+          fetch-depth: 0
+          path: vcpkg
+
+      - name: "VCPKG Update"
+        shell: bash
+        run: |
+          cd vcpkg
+          ./bootstrap-vcpkg.sh
+          echo "VCPKG_INSTALLATION_ROOT=`pwd`" >> $GITHUB_ENV
+          echo "VCPKG_ROOT=`pwd`" >> $GITHUB_ENV
+
       - name: Check for vcpkg updates and create PR
+        shell: bash
         env:
           # Use INVIWO_TEAM_SECRET (PAT) instead of the default GITHUB_TOKEN so
           # that commits pushed by this scheduled workflow trigger CI on the PR.
           GH_TOKEN: ${{ secrets.INVIWO_TEAM_SECRET }}
+          BRANCH: bot/vcpkg-baseline-update
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+
         run: |
           set -euo pipefail
-
-          VCPKG_JSON="vcpkg.json"
-          BRANCH="bot/vcpkg-baseline-update"
-          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+          
+          cd inviwo
 
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Capture the main-branch baseline before possibly switching to the PR
-          # branch. This is used later to compute the full diff the PR introduces
-          # vs. main, so the PR description always reflects all cumulative changes.
-          MAIN_BASELINE=$(jq -r '."vcpkg-configuration"."default-registry".baseline' "$VCPKG_JSON")
-          echo "Main branch baseline: $MAIN_BASELINE"
+          echo "Main branch baseline: $VCPKG_SHA"
 
           # Check for an existing open PR at the beginning.
           EXISTING_PR=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty')
@@ -62,12 +90,13 @@ jobs:
           fi
 
           # Extract current baseline from the checked-out branch.
-          # When updating an existing PR, this may differ from MAIN_BASELINE.
-          CURRENT_BASELINE=$(jq -r '."vcpkg-configuration"."default-registry".baseline' "$VCPKG_JSON")
+          # When updating an existing PR, this may differ from VCPKG_SHA.
+          CURRENT_BASELINE=$(jq -r '."vcpkg-configuration"."default-registry".baseline' vcpkg.json)
           echo "Current baseline on branch: $CURRENT_BASELINE"
 
-          # Get latest commit SHA from microsoft/vcpkg
-          LATEST_COMMIT=$(gh api repos/microsoft/vcpkg/commits/master --jq '.sha')
+          # Get latest commit SHA from VCPKG_ROOT 
+          # which is the checked-out vcpkg commit from the master branch.
+          LATEST_COMMIT=$(git -C "$VCPKG_ROOT" rev-parse HEAD)
           echo "Latest vcpkg commit: $LATEST_COMMIT"
 
           if [ "$CURRENT_BASELINE" = "$LATEST_COMMIT" ]; then
@@ -81,24 +110,20 @@ jobs:
 
           # Collect all dependency names, including transitive dependencies, using
           # vcpkg's own manifest resolver.
-          VCPKG_ROOT="/tmp/vcpkg"
+          
+          # The checked-out manifest still uses CURRENT_BASELINE. Fetch it as
+          # well so vcpkg can resolve the manifest's version baseline.
+          git -C "$VCPKG_ROOT" fetch --depth 1 origin "$VCPKG_SHA"
+          git -C "$VCPKG_ROOT" fetch --depth 1 origin "$CURRENT_BASELINE"
 
-          git init "$VCPKG_ROOT"
-          git -C "$VCPKG_ROOT" remote add origin https://github.com/microsoft/vcpkg
-          git -C "$VCPKG_ROOT" fetch --depth 1 origin "$LATEST_COMMIT"
-          git -C "$VCPKG_ROOT" checkout FETCH_HEAD
-          "$VCPKG_ROOT/bootstrap-vcpkg.sh" -disableMetrics
+          mapfile -t FEATURE_FLAGS < <(jq -r '.features | keys[]? | "--x-feature=\(.)"' vcpkg.json)
 
-          mapfile -t FEATURE_FLAGS < <(jq -r '.features | keys[]? | "--x-feature=\(.)"' "$VCPKG_JSON")
+          "$VCPKG_ROOT/vcpkg" depend-info --format=list --sort=lexicographical \
+            --overlay-ports=tools/vcpkg \
+            --overlay-ports=../modules/tools/vcpkg \
+            "${FEATURE_FLAGS[@]}" > /tmp/depend-info.txt 2>&1
 
-          DEPS=$(
-            "$VCPKG_ROOT/vcpkg" depend-info \
-              --format=list \
-              --sort=lexicographical \
-              "${FEATURE_FLAGS[@]}" \
-              2>&1 \
-              | python3 .github/scripts/collect-vcpkg-deps-from-depend-info.py
-          )
+          DEPS=$(python3 .github/scripts/collect-vcpkg-deps-from-depend-info.py < /tmp/depend-info.txt)
 
           if [ -z "$DEPS" ]; then
             echo "::error::vcpkg depend-info did not produce any dependencies"
@@ -111,11 +136,10 @@ jobs:
           # Fetch baseline.json from current and latest vcpkg commits
           fetch_baseline() {
             local sha="$1"
-            gh api "repos/microsoft/vcpkg/contents/versions/baseline.json?ref=${sha}" \
-              --jq '.content' | base64 --decode
+            git -C "$VCPKG_ROOT" show "${sha}:versions/baseline.json"
           }
 
-          fetch_baseline "$MAIN_BASELINE"  > /tmp/baseline_old.json
+          fetch_baseline "$VCPKG_SHA"  > /tmp/baseline_old.json
           fetch_baseline "$LATEST_COMMIT"  > /tmp/baseline_new.json
 
           # Write deps list to a file for the standalone comparison script
@@ -138,9 +162,9 @@ jobs:
           echo "$CHANGED"
 
           # Update only the baseline value in vcpkg.json (preserves original formatting)
-          sed -i "s|\"baseline\": \"${CURRENT_BASELINE}\"|\"baseline\": \"${LATEST_COMMIT}\"|" "$VCPKG_JSON"
+          sed -i "s|\"baseline\": \"${CURRENT_BASELINE}\"|\"baseline\": \"${LATEST_COMMIT}\"|" vcpkg.json
 
-          git add "$VCPKG_JSON"
+          git add vcpkg.json
 
           # Write commit message to a file to avoid shell quoting issues
           printf 'chore: update vcpkg baseline to %s\n\nChanged dependencies:\n%s\n' \
@@ -153,7 +177,7 @@ jobs:
           fi
 
           printf '## vcpkg baseline update\n\nUpdated baseline from `%s` to `%s`.\n\n### Changed dependencies\n```\n%s\n```\n\nFull vcpkg commit: https://github.com/microsoft/vcpkg/commit/%s\n' \
-            "${MAIN_BASELINE:0:10}" "${LATEST_COMMIT:0:10}" "$CHANGED" "$LATEST_COMMIT" \
+            "${VCPKG_SHA:0:10}" "${LATEST_COMMIT:0:10}" "$CHANGED" "$LATEST_COMMIT" \
             > /tmp/pr_body.txt
 
           if [ -n "$EXISTING_PR" ]; then
