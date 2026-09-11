@@ -53,8 +53,8 @@
 // Returns whether the primitive of the current fragment is facing toward the camera.
 // Can _only_ be used in the fragment shader.
 bool isFacingForward(in vec3 normal, in vec3 worldPosition) {
-#if defined(__APPLE__)
-    // gl_FrontFacing is not working correctly on MacOS
+#if defined(__APPLE__) || !defined(gl_FrontFacing)
+    // gl_FrontFacing is not working correctly on MacOS and is not defined in compute shaders
     // Credit: https://makc3d.wordpress.com/2015/09/17/alternative-to-gl_frontfacing/
     vec3 fdx = dFdx(worldPosition);
     vec3 fdy = dFdy(worldPosition);

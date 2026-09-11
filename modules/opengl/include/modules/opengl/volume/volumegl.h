@@ -75,6 +75,7 @@ public:
     virtual const DataFormatBase* getDataFormat() const override;
 
     void bindTexture(GLenum texUnit) const;
+    void bindImageTexture(GLenum texUnit, GLenum texNumber, GLenum MEM_ACCESS) const;
     void unbindTexture() const;
 
     virtual void setDimensions(size3_t dimensions) override;
