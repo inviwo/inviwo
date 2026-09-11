@@ -884,7 +884,7 @@ Document OrdinalOptProperty<T>::getDescription() const {
 
     Document doc = Property::getDescription();
 
-    const utildoc::TableBuilder tb(doc.handle(), P::end());
+    utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(H("Has value"), value_.has_value() ? "yes" : "no");
 
     const T val = value();
