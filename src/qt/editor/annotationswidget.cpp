@@ -54,8 +54,8 @@ AnnotationsWidget::AnnotationsWidget(InviwoApplication* app, NetworkEditorView* 
     : InviwoDockWidget{"Annotations", parent, "AnnotationsWidget"} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
-    
+    resize(utilqt::emToPx(this, QSizeF(45, 60)));  // default size
+
     QSizePolicy sp(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
     sp.setVerticalStretch(1);
     sp.setHorizontalStretch(1);
@@ -65,7 +65,7 @@ AnnotationsWidget::AnnotationsWidget(InviwoApplication* app, NetworkEditorView* 
 
     scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);
-    scrollArea_->setMinimumWidth(300);
+    scrollArea_->setMinimumWidth(utilqt::emToPx(this, 30));
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 #ifdef __APPLE__
