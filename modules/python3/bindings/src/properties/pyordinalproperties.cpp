@@ -36,6 +36,7 @@
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/foreacharg.h>
+
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
@@ -104,6 +105,42 @@ struct OrdinalPropertyHelper {
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
+            .def("__getitem__",
+                 [](P& p, size_t idx) {
+                     if (idx >= util::extent_v<T>) throw py::index_error();
+                     return p.get(idx);
+                 })
+            .def("__getitem__",
+                 [](P& p, py::tuple indices) {
+                     if (indices.size() != 2) {
+                         throw py::index_error();
+                     }
+                     const auto i = indices[0].cast<int>();
+                     const auto j = indices[1].cast<int>();
+                     if (i >= static_cast<int>(util::extent_v<T, 0>) ||
+                         j >= static_cast<int>(util::extent_v<T, 1>) || i < 0 || j < 0) {
+                         throw py::index_error();
+                     }
+                     return p.get(i, j);
+                 })
+            .def("__setitem__",
+                 [](P& p, int idx, const P::component_type& t) {
+                     if (idx >= util::extent_v<T> || idx < 0) throw py::index_error();
+                     p.set(t, idx);
+                 })
+            .def("__setitem__",
+                 [](P& p, py::tuple indices, const P::component_type& t) {
+                     if (indices.size() != 2) {
+                         throw py::index_error();
+                     }
+                     const auto i = indices[0].cast<int>();
+                     const auto j = indices[1].cast<int>();
+                     if (i >= static_cast<int>(util::extent_v<T, 0>) ||
+                         j >= static_cast<int>(util::extent_v<T, 1>) || i < 0 || j < 0) {
+                         throw py::index_error();
+                     }
+                     p.set(t, i, j);
+                 })
             .def("__repr__", [](P& v) { return fmt::to_string(v.get()); });
 
         return prop;
