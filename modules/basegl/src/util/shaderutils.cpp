@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,37 +26,44 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/util/shaderutils.h>
 
-#include <inviwo/core/datastructures/transferfunction.h>
-#include <modules/base/datastructures/stipplingdata.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
 
-namespace inviwo {
-/**
- * @brief Settings for line rendering
- */
-struct IVW_MODULE_BASEGL_API LineData {
-    float lineWidth = 1.f;
-    float antialiasing = 0.5f;
-    float miterLimit = 0.8f;
-    bool roundCaps = true;
-    bool pseudoLighting = false;
-    bool roundDepthProfile = false;
-    bool overrideColor = false;
-    bool overrideAlpha = false;
-    bool useMetaColor = false;
-    bool overrideLineWidth = false;
-    StipplingData stippling{};
-    vec4 defaultColor = vec4{1.0f, 0.7f, 0.2f, 1.0f};
-    vec3 overrideColorValue = vec3{0.7f, 0.7f, 0.7f};
-    float overrideAlphaValue = 1.0f;
-    TransferFunction metaColor{
-        {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}}, 
-         {.pos = 1.0, .color = vec4{1.0f, 1.0f, 1.0f, 1.0f}}}};
+namespace inviwo::utilgl {
 
-    bool operator==(const LineData&) const = default;
-};
+void addShaderDefines(Shader& shader, const StipplingProperty& property) {
+    addShaderDefines(shader, property.mode.get());
+}
 
-}  // namespace inviwo
+void addShaderDefines(Shader& shader, StipplingData::Mode mode) {
+    const auto value = [mode]() -> std::string_view {
+        switch (mode) {
+            using enum StipplingData::Mode;
+            case ScreenSpace:
+                return "1";
+            case WorldSpace:
+                return "2";
+            case None:
+            default:
+                return {};
+        }
+    }();
+
+    auto* fragShader = shader.getFragmentShaderObject();
+    fragShader->setShaderDefine("ENABLE_STIPPLING", mode != StipplingData::Mode::None);
+    fragShader->addShaderDefine("STIPPLE_MODE", value);
+}
+
+void setShaderUniforms(Shader& shader, const StipplingProperty& property, std::string_view name) {
+    StrBuffer buff;
+    shader.setUniform(buff.replace("{}.length", name), property.length.get());
+    shader.setUniform(buff.replace("{}.spacing", name), property.spacing.get());
+    shader.setUniform(buff.replace("{}.offset", name), property.offset.get());
+    shader.setUniform(buff.replace("{}.worldScale", name), property.worldScale.get());
+}
+
+}  // namespace inviwo::utilgl

@@ -129,6 +129,7 @@ set(HEADER_FILES
     include/modules/basegl/util/meshbnlgl.h
     include/modules/basegl/util/meshtexturing.h
     include/modules/basegl/util/periodicitygl.h
+    include/modules/basegl/util/shaderutils.h
     include/modules/basegl/util/sphereconfig.h
     include/modules/basegl/util/uniformlabelatlasgl.h
     include/modules/basegl/viewmanager.h
@@ -145,7 +146,6 @@ set(SOURCE_FILES
     src/datastructures/linedata.cpp
     src/datastructures/meshshadercache.cpp
     src/datastructures/splittersettings.cpp
-    src/datastructures/stipplingdata.cpp
     src/datavisualizer/imagebackgroundvisualizer.cpp
     src/datavisualizer/imagevisualizer.cpp
     src/datavisualizer/layervisualizer.cpp
@@ -237,7 +237,6 @@ set(SOURCE_FILES
     src/processors/volumeslicegl.cpp
     src/properties/linesettingsproperty.cpp
     src/properties/splitterproperty.cpp
-    src/properties/stipplingproperty.cpp
     src/rendering/linerenderer.cpp
     src/rendering/splitterrenderer.cpp
     src/shadercomponents/atlascomponent.cpp
@@ -262,6 +261,7 @@ set(SOURCE_FILES
     src/util/meshbnlgl.cpp
     src/util/meshtexturing.cpp
     src/util/periodicitygl.cpp
+    src/util/shaderutils.cpp
     src/util/sphereconfig.cpp
     src/util/uniformlabelatlasgl.cpp
     src/viewmanager.cpp

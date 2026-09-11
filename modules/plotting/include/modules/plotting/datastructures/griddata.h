@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,35 +28,30 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/plotting/plottingmoduledefine.h>
 
-#include <inviwo/core/datastructures/transferfunction.h>
 #include <modules/base/datastructures/stipplingdata.h>
+#include <inviwo/core/util/glmvec.h>
 
-namespace inviwo {
-/**
- * @brief Settings for line rendering
- */
-struct IVW_MODULE_BASEGL_API LineData {
-    float lineWidth = 1.f;
-    float antialiasing = 0.5f;
-    float miterLimit = 0.8f;
-    bool roundCaps = true;
-    bool pseudoLighting = false;
-    bool roundDepthProfile = false;
-    bool overrideColor = false;
-    bool overrideAlpha = false;
-    bool useMetaColor = false;
-    bool overrideLineWidth = false;
+#include <vector>
+
+namespace inviwo::plot {
+
+enum class PlotAxis : std::uint8_t { None, Major, Minor, Both };
+
+struct IVW_MODULE_PLOTTING_API GridData {
+    dvec2 majorRange{0.0, 100.0};
+    dvec2 minorRange{0.0, 100.0};
+
+    bool visible = true;
+    PlotAxis axis = PlotAxis::Both;
+    vec4 color = vec4{0.45f, 0.45f, 0.48f, 1.0f};
+    float width = 1.5f;
+
+    std::vector<double> horizontalPositions;
+    std::vector<double> verticalPositions;
+
     StipplingData stippling{};
-    vec4 defaultColor = vec4{1.0f, 0.7f, 0.2f, 1.0f};
-    vec3 overrideColorValue = vec3{0.7f, 0.7f, 0.7f};
-    float overrideAlphaValue = 1.0f;
-    TransferFunction metaColor{
-        {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}}, 
-         {.pos = 1.0, .color = vec4{1.0f, 1.0f, 1.0f, 1.0f}}}};
-
-    bool operator==(const LineData&) const = default;
 };
 
-}  // namespace inviwo
+}  // namespace inviwo::plot

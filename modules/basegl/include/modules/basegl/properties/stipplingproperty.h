@@ -28,53 +28,8 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/util/staticstring.h>
-#include <modules/basegl/datastructures/stipplingdata.h>
+#include <modules/base/properties/stipplingproperty.h>
 
-#include <functional>
-#include <string>
-#include <string_view>
-#include <vector>
-
-namespace inviwo {
-class Shader;
-
-class IVW_MODULE_BASEGL_API StipplingProperty : public CompositeProperty {
-public:
-    virtual std::string_view getClassIdentifier() const override;
-    static constexpr std::string_view classIdentifier{"org.inviwo.StipplingProperty"};
-
-    StipplingProperty(std::string_view identifier, std::string_view displayName,
-                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                      PropertySemantics semantics = PropertySemantics::Default);
-    StipplingProperty(const StipplingProperty& rhs);
-    virtual StipplingProperty* clone() const override;
-    virtual ~StipplingProperty() = default;
-
-    OptionProperty<StipplingData::Mode> mode;
-    FloatProperty length;
-    FloatProperty spacing;
-    FloatProperty offset;
-    FloatProperty worldScale;
-
-    void update(StipplingData& data) const;
-
-};
-
-namespace utilgl {
-
-IVW_MODULE_BASEGL_API void addShaderDefines(Shader& shader, const StipplingProperty& property);
-IVW_MODULE_BASEGL_API void addShaderDefines(Shader& shader, const StipplingData::Mode& mode);
-IVW_MODULE_BASEGL_API void setShaderUniforms(Shader& shader, const StipplingProperty& property,
-                                             const std::string& name);
-
-}  // namespace utilgl
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
