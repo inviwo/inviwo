@@ -122,7 +122,7 @@ jobs:
           "$VCPKG_ROOT/vcpkg" depend-info --format=list --sort=lexicographical \
             --overlay-ports=tools/vcpkg \
             --overlay-ports=../modules/tools/vcpkg \
-            "${FEATURE_FLAGS[@]}" > /tmp/depend-info.txt
+            "${FEATURE_FLAGS[@]}" > /tmp/depend-info.txt 2>&1
 
           DEPS=$(python3 .github/scripts/collect-vcpkg-deps-from-depend-info.py < /tmp/depend-info.txt)
 
