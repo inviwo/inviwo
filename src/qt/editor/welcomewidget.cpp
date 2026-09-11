@@ -352,15 +352,6 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
     setObjectName("WelcomeWidget");
 
-    if (const auto stored = getSetting("expandedTreePaths"); stored.isValid()) {
-        const auto list = stored.toStringList();
-        expandedPaths_ = QSet<QString>(list.begin(), list.end());
-    } else {
-        // first run: match the previous hardcoded default of expanding these two sections
-        expandedPaths_ = {utilqt::toQString(WorkspaceTreeModel::recent),
-                          utilqt::toQString(WorkspaceTreeModel::examples)};
-    }
-
     filterModel_->setSourceModel(model_);
     filterModel_->setRecursiveFilteringEnabled(true);
     filterModel_->setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -781,7 +772,7 @@ void WelcomeWidget::selectFirstLeaf() {
 
 void WelcomeWidget::expandTreeView() {
     if (filterLineEdit_->text().isEmpty()) {
-        // leaving (or not in) search mode: restore whatever was expanded beforehand; 
+        // leaving (or not in) search mode: restore whatever was expanded beforehand;
         // expandedPaths_ is left untouched while searchActive_, so it still holds that state
         const bool wasSearching = searchActive_;
         searchActive_ = false;
@@ -815,7 +806,8 @@ QModelIndex WelcomeWidget::toSource(const QModelIndex& viewIndex, bool fromGrid)
 }
 
 void WelcomeWidget::applyExpandedPaths(const QSet<QString>& paths) {
-    const QSet<QString> target = paths;  // defensive copy: collapseAll() below mutates expandedPaths_
+    const QSet<QString> target =
+        paths;  // defensive copy: collapseAll() below mutates expandedPaths_
     const bool wasSearchActive = std::exchange(searchActive_, true);
 
     workspaceTreeView_->collapseAll();
@@ -850,18 +842,39 @@ void WelcomeWidget::ensureSelectionVisible() {
                                                       : static_cast<QTreeView*>(workspaceTreeView_);
     if (!view->selectionModel()) return;
     for (auto idx = view->selectionModel()->currentIndex().parent(); idx.isValid();
-        idx = idx.parent()) {
+         idx = idx.parent()) {
         view->expand(idx);
     }
 }
 
 void WelcomeWidget::showEvent(QShowEvent* event) {
+    const auto expandSection = [this](std::string_view section) {
+        auto modelIdx = model_->getCategoryIndex(section);
+        if (auto filterIdx = filterModel_->mapFromSource(modelIdx); filterIdx.isValid()) {
+            workspaceTreeView_->expandRecursively(filterIdx);
+
+            if (auto proxyIdx = workspaceGridView_->proxy().mapFromSource(filterIdx);
+                proxyIdx.isValid()) {
+                workspaceGridView_->expandRecursively(proxyIdx);
+            }
+        }
+    };
+
     if (!event->spontaneous()) {
         try {
             model_->updateRestoreEntries();
             model_->updateCustomEntries();
             model_->updateExampleEntries();
             model_->updateRegressionTestEntries();
+
+            if (const auto stored = getSetting("expandedTreePaths"); stored.isValid()) {
+                const auto list = stored.toStringList();
+                expandedPaths_ = QSet<QString>(list.begin(), list.end());
+            } else if (filterLineEdit_->text().isEmpty()) {
+                expandSection(WorkspaceTreeModel::recent);
+                expandSection(WorkspaceTreeModel::examples);
+            }
+
         } catch (const Exception& e) {
             log::exception(e);
         } catch (const std::exception& e) {

@@ -85,6 +85,7 @@ QWidget* TextSelectionDelegate::createEditor(QWidget* parent, const QStyleOption
         auto value = index.model()->data(index, Qt::EditRole).toString();
         auto widget = new QPlainTextEdit(value, parent);
         widget->setReadOnly(true);
+        widget->setFont(LogTableModelEntry::logFont());
         return widget;
     } else {
         return QItemDelegate::createEditor(parent, option, index);
