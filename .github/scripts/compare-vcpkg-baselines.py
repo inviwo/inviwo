@@ -36,7 +36,7 @@ def main() -> None:
             old_port = old_entry.get("port-version", "0") if old_entry else "0"
             new_ver = new_entry.get("baseline", "N/A") if new_entry else "N/A"
             new_port = new_entry.get("port-version", "0") if new_entry else "0"
-            changed.append(f"{dep}: {old_ver} (port-version: {old_port}) -> {new_ver} (port-version: {new_port})")
+            changed.append(f"{dep:30}: {old_ver:10} port: {old_port} -> {new_ver:10} port: {new_port}")
 
     print("\n".join(changed))
 
