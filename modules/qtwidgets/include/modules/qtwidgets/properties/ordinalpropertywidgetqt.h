@@ -472,6 +472,19 @@ void OrdinalOptPropertyWidgetQt<T, Sem>::setPropertyValue(size_t editorId) {
         }
         util::exceptionGuard([&]() { ordinal_->set(val); });
     }
+    // in case of vectors and matrices, update other components of the editor widget
+    if (util::extent_v<T, 0> > 0) {
+        const std::optional<T> val = ordinal_->get();
+        constexpr size_t nelem = util::flat_extent<T>::value;
+        for (size_t i = 0; i < nelem; i++) {
+            if (i == editorId) continue;
+            if (val) {
+                editors_[i]->initValueOptional(util::glmcomp(*val, i));
+            } else {
+                editors_[i]->initValueOptional(std::nullopt);
+            }
+        }
+    }
     ordinal_->clearInitiatingWidget();
 }
 
