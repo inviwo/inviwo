@@ -58,6 +58,8 @@ PathSelection::PathSelection()
 }
 
 void PathSelection::process() {
+    const std::scoped_lock lock{Handle::globalMutex()};
+
     auto data = inport_.getData();
     if (inport_.isChanged()) {
         std::vector<OptionPropertyStringOption> options;

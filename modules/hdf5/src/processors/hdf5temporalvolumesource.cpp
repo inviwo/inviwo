@@ -93,7 +93,7 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
               }
               return opts;
           }(),
-          0)
+          maxRank - 1)
     , dt_("dt", "Time Step (s)", 1.0, 0.0001, 1000.0)
     , cacheSize_("cacheSize", "Cache Size",
                  inviwo::util::ordinalCount<size_t>(8u, 256u).set(
@@ -125,15 +125,17 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
         }
     });
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
-    outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_, selection_);
+    outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_);
     timeGroup_.addProperties(timeDimension_, dt_, cacheSize_);
 
-    addProperties(volumeSelection_, basisGroup_, outputGroup_, timeGroup_);
+    addProperties(volumeSelection_, basisGroup_, timeGroup_, selection_, outputGroup_);
 }
 
 HDF5ToTemporalVolume::~HDF5ToTemporalVolume() = default;
 
 void HDF5ToTemporalVolume::process() try {
+    const std::scoped_lock lock{Handle::globalMutex()};
+
     const auto data = inport_.getData();
 
     if (inport_.isChanged()) {
@@ -186,9 +188,19 @@ void HDF5ToTemporalVolume::process() try {
     const auto* format = util::conversionFormat(datatype_.getSelectedIndex());
     const auto basis = computeBasis(volumeInfo);
 
+    const auto unused = selection_.maxRank() - selection_.rank();
+    if (timeDimension_.getSelectedIndex() < unused) {
+        throw Exception{
+            SourceContext{}, "Time dimensions {} does not exist use: {}",
+            timeDimension_.getSelectedDisplayName(),
+            fmt::join(timeDimension_.getOptions() |
+                          std::views::transform([](const auto& item) { return item.name_; }),
+                      ", ")};
+    }
+
     auto loader = std::make_unique<HDF5TemporalVolumeLoader>(
         *data + volumeInfo.path, selection_.getSelection(),
-        static_cast<size_t>(timeDimension_.getSelectedValue()), format, basis, dt_.get());
+        timeDimension_.getSelectedValue() - unused, format, basis, dt_.get());
 
     outport_.setData(std::make_shared<TemporalVolume>(std::move(loader), cacheSize_.get()));
 
