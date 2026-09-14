@@ -111,7 +111,7 @@ struct OrdinalPropertyHelper {
                      return p.get(idx);
                  })
             .def("__getitem__",
-                 [](P& p, py::tuple indices) {
+                 [](P& p, const py::tuple& indices) {
                      if (indices.size() != 2) {
                          throw py::index_error();
                      }
@@ -125,11 +125,12 @@ struct OrdinalPropertyHelper {
                  })
             .def("__setitem__",
                  [](P& p, int idx, const P::component_type& t) {
-                     if (idx >= util::extent_v<T> || idx < 0) throw py::index_error();
+                     if (idx >= static_cast<int>(util::extent_v<T>) || idx < 0)
+                         throw py::index_error();
                      p.set(t, idx);
                  })
             .def("__setitem__",
-                 [](P& p, py::tuple indices, const P::component_type& t) {
+                 [](P& p, const py::tuple& indices, const P::component_type& t) {
                      if (indices.size() != 2) {
                          throw py::index_error();
                      }

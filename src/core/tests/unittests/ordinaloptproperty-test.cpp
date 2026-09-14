@@ -57,7 +57,7 @@ TEST(OrdinalOptProperty, SetAndClear) {
     EXPECT_TRUE(prop.hasValue());
     const auto value = prop.get();
     ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(*value, 3.0f);
+    EXPECT_EQ(value.value_or(0.0f), 3.0f);
 
     prop.clear();
     EXPECT_FALSE(prop.hasValue());
@@ -85,7 +85,7 @@ TEST(OrdinalOptProperty, ClampsWhenEngaged) {
     prop.set(20.0f);
     const auto value = prop.get();
     ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(*value, 10.0f);
+    EXPECT_EQ(value.value_or(0.0f), 10.0f);
 }
 
 TEST(OrdinalOptProperty, ComponentSetEngages) {
@@ -100,7 +100,7 @@ TEST(OrdinalOptProperty, ComponentSetEngages) {
     ASSERT_TRUE(prop.hasValue());
     const auto value = prop.get();
     ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(value->x, 5.0f);
+    EXPECT_EQ(value.value_or(vec2{}).x, 5.0f);
 }
 
 TEST(OrdinalOptProperty, Linking) {
@@ -119,7 +119,7 @@ TEST(OrdinalOptProperty, Linking) {
     dst.set(static_cast<const Property*>(&src));
     const auto value = dst.get();
     ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(*value, 4.0f);
+    EXPECT_EQ(value.value_or(0.0f), 4.0f);
 
     src.clear();
     dst.set(static_cast<const Property*>(&src));
@@ -158,7 +158,7 @@ TEST(OrdinalOptProperty, SerializeCopyEngaged) {
 
     const auto value = dst.get();
     ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(*value, 7.0f);
+    EXPECT_EQ(value.value_or(0.0f), 7.0f);
 }
 
 TEST(OrdinalOptProperty, SerializeCopyEmpty) {

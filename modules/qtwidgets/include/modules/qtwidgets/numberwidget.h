@@ -186,6 +186,8 @@ public:
     void initValueOptional(std::optional<T> value);
     std::optional<T> getValueOptional() const;
 
+    virtual bool isEmpty() const override;
+
 protected:
     virtual bool incrementValue() override;
     virtual bool decrementValue() override;
@@ -195,7 +197,6 @@ protected:
     virtual bool updateValueFromText(const QString& str) override;
     virtual QString getTextFromValue(bool precise) const override;
     virtual std::tuple<std::optional<double>, PercentageBar> getPercentageBar() const override;
-    virtual bool isEmpty() const override;
 
     bool updateValue(T value);
     double getUIIncrement() const;
