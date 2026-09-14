@@ -41,7 +41,7 @@
 #include <QVariant>
 #include <QStandardItemModel>
 #include <QMetaType>
-#include <QItemDelegate>
+#include <QStyledItemDelegate>
 #include <warn/pop>
 
 #include <chrono>
@@ -108,9 +108,11 @@ private:
     static const std::pair<int, int>& lineHeightAndMargin();
 };
 
-class IVW_QTEDITOR_API TextSelectionDelegate : public QItemDelegate {
+class IVW_QTEDITOR_API TextSelectionDelegate : public QStyledItemDelegate {
+    Q_OBJECT
+
 public:
-    TextSelectionDelegate(QWidget* parent = nullptr);
+    explicit TextSelectionDelegate(QWidget* parent = nullptr);
     virtual ~TextSelectionDelegate() = default;
 
     virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
@@ -119,6 +121,12 @@ public:
     // dummy function doing nothing to prevent writing stuff from the editor back to the model
     virtual void setModelData(QWidget* editor, QAbstractItemModel* model,
                               const QModelIndex& index) const override;
+
+    virtual void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option,
+                                      const QModelIndex& index) const override;
+
+signals:
+    void adjustHeight(const QModelIndex& index) const;
 };
 
 class IVW_QTEDITOR_API LogTableModel : public QAbstractTableModel {
