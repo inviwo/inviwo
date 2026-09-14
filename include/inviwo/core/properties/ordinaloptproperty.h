@@ -128,7 +128,7 @@ template <typename T>
 class OrdinalOptProperty : public Property {
 public:
     using value_type = std::optional<T>;
-    using component_type = typename util::value_type<T>::type;
+    using component_type = util::value_type<T>::type;
 
     OrdinalOptProperty(
         std::string_view identifier, std::string_view displayName, Document help,
@@ -451,7 +451,7 @@ OrdinalOptPropertyState<T> ordinalOptScale(const T& value, const U& max = U{100}
  * @param minMax used to construct the range of the property like min = util::filled<M>(-minMax),
  * max = util::filled<M>(minMax). The constraint behavior will be Ignore.
  */
-template <typename M, typename U = typename M::value_type>
+template <typename M, typename U = M::value_type>
     requires(util::rank_v<M> > 1)
 OrdinalOptPropertyState<M> ordinalOptMatrix(const std::optional<M>& value = std::nullopt,
                                             const U& minMax = U{100}) {
@@ -486,7 +486,7 @@ OrdinalOptPropertyState<M> ordinalOptMatrix(const std::optional<M>& value = std:
     }
 }
 /// @copydoc util::ordinalOptMatrix
-template <typename M, typename U = typename M::value_type>
+template <typename M, typename U = M::value_type>
     requires(util::rank_v<M> > 1)
 OrdinalOptPropertyState<M> ordinalOptMatrix(const M& value, const U& minMax = U{100}) {
     return ordinalOptMatrix<M>(std::optional<M>{value}, minMax);
@@ -500,7 +500,7 @@ OrdinalOptPropertyState<M> ordinalOptMatrix(const M& value, const U& minMax = U{
  * @param minMax used to construct the range of the property like min = util::filled<M>(-minMax),
  * max = util::filled<M>(minMax). The constraint behavior will be Ignore.
  */
-template <typename M, typename T = typename M::value_type, typename U = T>
+template <typename M, typename T = M::value_type, typename U = T>
     requires(util::rank_v<M> > 1)
 OrdinalOptPropertyState<M> ordinalOptFilledMatrix(const std::optional<T>& value = std::nullopt,
                                                   const U& minMax = U{100}) {

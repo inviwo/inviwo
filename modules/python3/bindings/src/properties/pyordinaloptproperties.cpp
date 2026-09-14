@@ -99,7 +99,7 @@ struct OrdinalOptPropertyHelper {
             .def_property("increment", &P::getIncrement, &P::setIncrement)
             .def("__getitem__",
                  [](P& p, size_t idx) {
-                     if (idx >= static_cast<int>(util::extent_v<T>)) throw py::index_error();
+                     if (idx >= util::extent_v<T>) throw py::index_error();
                      return p.get(idx);
                  })
             .def("__getitem__",

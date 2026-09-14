@@ -342,7 +342,7 @@ std::unique_ptr<QMenu> OrdinalLikePropertyWidgetQt<Prop, Sem>::getContextMenu() 
 template <typename T, OrdinalPropertyWidgetQtSemantics Sem>
 class OrdinalOptPropertyWidgetQt final : public PropertyWidgetQt {
 public:
-    using BT = typename util::value_type<T>::type;
+    using BT = util::value_type<T>::type;
 
     explicit OrdinalOptPropertyWidgetQt(OrdinalOptProperty<T>* property);
     virtual void updateFromProperty() override;

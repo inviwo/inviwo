@@ -86,14 +86,14 @@ namespace detail {
 // that the settings dialog can be reused for OrdinalOptProperty whose value_type is std::optional.
 template <typename Prop>
 struct OrdinalSettingsTraits {
-    using value_type = typename Prop::value_type;
-    using elem_type = typename util::value_type<value_type>::type;
+    using value_type = Prop::value_type;
+    using elem_type = util::value_type<value_type>::type;
     static value_type displayValue(const Prop* p) { return p->get(); }
 };
 template <typename T>
 struct OrdinalSettingsTraits<OrdinalOptProperty<T>> {
     using value_type = T;
-    using elem_type = typename util::value_type<T>::type;
+    using elem_type = util::value_type<T>::type;
     static value_type displayValue(const OrdinalOptProperty<T>* p) { return p->value(); }
 };
 
@@ -114,8 +114,8 @@ public:
 template <typename Prop>
 class OrdinalLikePropertySettingsWidgetQt : public QDialog, public PropertyWidget {
 public:
-    using T = typename detail::OrdinalSettingsTraits<Prop>::value_type;
-    using BT = typename detail::OrdinalSettingsTraits<Prop>::elem_type;
+    using T = detail::OrdinalSettingsTraits<Prop>::value_type;
+    using BT = detail::OrdinalSettingsTraits<Prop>::elem_type;
     OrdinalLikePropertySettingsWidgetQt(Prop* property, QWidget* widget);
     virtual ~OrdinalLikePropertySettingsWidgetQt();
 

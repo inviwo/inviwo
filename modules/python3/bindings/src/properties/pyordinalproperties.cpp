@@ -125,8 +125,9 @@ struct OrdinalPropertyHelper {
                  })
             .def("__setitem__",
                  [](P& p, int idx, const P::component_type& t) {
-                     if (idx >= static_cast<int>(util::extent_v<T>) || idx < 0)
+                     if (idx >= static_cast<int>(util::extent_v<T>) || idx < 0) {
                          throw py::index_error();
+                     }
                      p.set(t, idx);
                  })
             .def("__setitem__",
