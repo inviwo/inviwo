@@ -1134,6 +1134,7 @@ var hierarchy =
             [ "inviwo::VolumeInformationProperty", "classinviwo_1_1VolumeInformationProperty.html", null ],
             [ "inviwo::plot::AxisProperty", "classinviwo_1_1plot_1_1AxisProperty.html", null ],
             [ "inviwo::plot::PCPAxisSettings", "classinviwo_1_1plot_1_1PCPAxisSettings.html", null ],
+            [ "inviwo::plot::PlotGridProperty", "classinviwo_1_1plot_1_1PlotGridProperty.html", null ],
             [ "inviwo::plot::PlotTextProperty", "classinviwo_1_1plot_1_1PlotTextProperty.html", null ]
           ] ],
           [ "inviwo::BufferInformationProperty", "classinviwo_1_1BufferInformationProperty.html", [
@@ -1491,7 +1492,11 @@ var hierarchy =
     [ "inviwo::GlyphClipping", "classinviwo_1_1GlyphClipping.html", null ],
     [ "inviwo::TextRenderer::GlyphEntry", "structinviwo_1_1TextRenderer_1_1GlyphEntry.html", null ],
     [ "inviwo::util::Grid3DPointGeneration", "structinviwo_1_1util_1_1Grid3DPointGeneration.html", null ],
+    [ "inviwo::plot::GridData", "structinviwo_1_1plot_1_1GridData.html", null ],
+    [ "inviwo::plot::detail::GridMesh", "structinviwo_1_1plot_1_1detail_1_1GridMesh.html", null ],
+    [ "inviwo::plot::GridParams", "structinviwo_1_1plot_1_1GridParams.html", null ],
     [ "inviwo::util::GridPos", "structinviwo_1_1util_1_1GridPos.html", null ],
+    [ "inviwo::plot::GridRenderer", "classinviwo_1_1plot_1_1GridRenderer.html", null ],
     [ "inviwo::unitgroups::Group", "structinviwo_1_1unitgroups_1_1Group.html", null ],
     [ "inviwo::util::detail::grow< T >", "structinviwo_1_1util_1_1detail_1_1grow.html", null ],
     [ "inviwo::util::detail::growImpl< T, Signed >", "structinviwo_1_1util_1_1detail_1_1growImpl.html", null ],
@@ -1504,6 +1509,7 @@ var hierarchy =
     [ "inviwo::plot::detail::Guard< dvec2, inviwo::plot::detail::MemPtr >", "structinviwo_1_1plot_1_1detail_1_1Guard.html", null ],
     [ "inviwo::plot::detail::Guard< float, inviwo::plot::detail::MemPtr >", "structinviwo_1_1plot_1_1detail_1_1Guard.html", null ],
     [ "inviwo::plot::detail::Guard< int, inviwo::plot::detail::MemPtr >", "structinviwo_1_1plot_1_1detail_1_1Guard.html", null ],
+    [ "inviwo::plot::detail::Guard< PlotAxis, inviwo::plot::detail::MemPtr >", "structinviwo_1_1plot_1_1detail_1_1Guard.html", null ],
     [ "inviwo::plot::detail::Guard< std::filesystem::path, inviwo::plot::detail::MemPtr >", "structinviwo_1_1plot_1_1detail_1_1Guard.html", null ],
     [ "inviwo::plot::detail::Guard< std::string, inviwo::plot::detail::MemPtr >", "structinviwo_1_1plot_1_1detail_1_1Guard.html", null ],
     [ "inviwo::plot::detail::Guard< std::vector< double >, inviwo::plot::detail::MemPtr >", "structinviwo_1_1plot_1_1detail_1_1Guard.html", null ],
@@ -1940,6 +1946,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< AxisSelection >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< LabelPosition >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< BoxSelectionMode >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< PlotAxis >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ScatterPlotGL::SortingOrder >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< AngleMeasure >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< T >", "classinviwo_1_1OptionProperty.html", null ]
@@ -3211,6 +3218,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< AxisSelection >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< LabelPosition >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< BoxSelectionMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< PlotAxis >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ScatterPlotGL::SortingOrder >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< AngleMeasure >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::BitSet", "classinviwo_1_1BitSet.html", null ],

@@ -118,6 +118,7 @@ var namespaceinviwo =
       [ "clipMeshAgainstPlane", "namespaceinviwo_1_1meshutil.html#ab1b287f94ada0d7b15c0e40f0fea831d", null ],
       [ "computeNearFarPlanes", "namespaceinviwo_1_1meshutil.html#acde946c5fe0dfcd38ec82861ccb1a4d1", null ],
       [ "cubeIndicator", "namespaceinviwo_1_1meshutil.html#ab192283190c2d7297782e7a5981fdf9a", null ],
+      [ "line", "namespaceinviwo_1_1meshutil.html#abc4f532ab4c0be25358c841441b5595f", null ],
       [ "parallelepiped", "namespaceinviwo_1_1meshutil.html#a7b46ed43ca77d6c87bfef81a9a23b3ef", null ],
       [ "toLineMesh", "namespaceinviwo_1_1meshutil.html#a776cc183c44c144cd82c90a36621a7eb", null ],
       [ "toPointMesh", "namespaceinviwo_1_1meshutil.html#aefab0ef45f52d52f4003e6ca5e1da8a7", null ]

@@ -170,6 +170,9 @@ IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="group__typedmesh.htm
 <tr class="memitem:a96bdefe12fb5af73aeff23c297f823a8" id="r_a96bdefe12fb5af73aeff23c297f823a8"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96bdefe12fb5af73aeff23c297f823a8">centerViewOnMeshes</a> (const std::vector&lt; std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt; &gt; &amp;meshes, <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;camera, double minMaxRatio=10.)</td></tr>
 <tr class="memdesc:a96bdefe12fb5af73aeff23c297f823a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set lookAt position of camera to the center point of the meshes and adjust near/far plane distances. Adjusts min/max parameters of lookTo and near/far plane according to the supplied minMaxRatio.  <br /></td></tr>
 <tr class="separator:a96bdefe12fb5af73aeff23c297f823a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39664527f72e027decdba7dc26a4cbc7" id="r_a39664527f72e027decdba7dc26a4cbc7"><td class="memItemLeft" align="right" valign="top"><a id="a39664527f72e027decdba7dc26a4cbc7" name="a39664527f72e027decdba7dc26a4cbc7"></a>
+IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="group__typedmesh.html#ga0d8285980d0ece5eca678282d437230f">BasicMesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>circle</b> (vec3 center, vec3 normal=vec3{0.0f, 0.0f, 1.0f}, vec4 color=vec4(1.0f, 0.0f, 0.0f, 1.0f), float radius=1.0f, size_t segments=16)</td></tr>
+<tr class="separator:a39664527f72e027decdba7dc26a4cbc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1b287f94ada0d7b15c0e40f0fea831d" id="r_ab1b287f94ada0d7b15c0e40f0fea831d"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1b287f94ada0d7b15c0e40f0fea831d">clipMeshAgainstPlane</a> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &amp;mesh, const <a class="el" href="classinviwo_1_1Plane.html">Plane</a> &amp;worldSpacePlane, bool capClippedHoles=true)</td></tr>
 <tr class="separator:ab1b287f94ada0d7b15c0e40f0fea831d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab977bb9150738216afda5bb09ac53b93" id="r_ab977bb9150738216afda5bb09ac53b93"><td class="memItemLeft" align="right" valign="top"><a id="ab977bb9150738216afda5bb09ac53b93" name="ab977bb9150738216afda5bb09ac53b93"></a>
@@ -216,12 +219,17 @@ IVW_CORE_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasPickI
 <tr class="memitem:a7261e2315e321d5acc69ed87288f42be" id="r_a7261e2315e321d5acc69ed87288f42be"><td class="memItemLeft" align="right" valign="top"><a id="a7261e2315e321d5acc69ed87288f42be" name="a7261e2315e321d5acc69ed87288f42be"></a>
 IVW_CORE_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasRadiiBuffer</b> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> *mesh)</td></tr>
 <tr class="separator:a7261e2315e321d5acc69ed87288f42be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc4f532ab4c0be25358c841441b5595f" id="r_abc4f532ab4c0be25358c841441b5595f"><td class="memItemLeft" align="right" valign="top"><a id="abc4f532ab4c0be25358c841441b5595f" name="abc4f532ab4c0be25358c841441b5595f"></a>
-IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="group__typedmesh.html#ga0d8285980d0ece5eca678282d437230f">BasicMesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>line</b> (const vec3 &amp;start, const vec3 &amp;stop, const vec3 &amp;normal, const vec4 &amp;color=vec4(1.0f, 0.0f, 0.0f, 1.0f), const float &amp;width=1.0f, const ivec2 &amp;res=ivec2(1))</td></tr>
+<tr class="memitem:abc4f532ab4c0be25358c841441b5595f" id="r_abc4f532ab4c0be25358c841441b5595f"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="group__typedmesh.html#ga0d8285980d0ece5eca678282d437230f">BasicMesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc4f532ab4c0be25358c841441b5595f">line</a> (const vec3 &amp;start, const vec3 &amp;stop, const vec3 &amp;normal, const vec4 &amp;color=vec4(1.0f, 0.0f, 0.0f, 1.0f), const float &amp;width=1.0f, const ivec2 &amp;res=ivec2(1))</td></tr>
 <tr class="separator:abc4f532ab4c0be25358c841441b5595f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa016ecb620c8fa43afb7d1349f200252" id="r_aa016ecb620c8fa43afb7d1349f200252"><td class="memItemLeft" align="right" valign="top"><a id="aa016ecb620c8fa43afb7d1349f200252" name="aa016ecb620c8fa43afb7d1349f200252"></a>
+IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="group__typedmesh.html#ga0d8285980d0ece5eca678282d437230f">BasicMesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>line</b> (vec3 start, vec3 stop, vec4 color=vec4{1.0f, 0.0f, 0.0f, 1.0f})</td></tr>
+<tr class="separator:aa016ecb620c8fa43afb7d1349f200252"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b46ed43ca77d6c87bfef81a9a23b3ef" id="r_a7b46ed43ca77d6c87bfef81a9a23b3ef"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b46ed43ca77d6c87bfef81a9a23b3ef">parallelepiped</a> (glm::vec3 origin, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec4 color, glm::vec4 c1, glm::vec4 c2, glm::vec4 c3, IncludeNormals includeNormals)</td></tr>
 <tr class="memdesc:a7b46ed43ca77d6c87bfef81a9a23b3ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create parallelepiped mesh.  <br /></td></tr>
 <tr class="separator:a7b46ed43ca77d6c87bfef81a9a23b3ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a926ccc593725b5d275d5abfa71b1c352" id="r_a926ccc593725b5d275d5abfa71b1c352"><td class="memItemLeft" align="right" valign="top"><a id="a926ccc593725b5d275d5abfa71b1c352" name="a926ccc593725b5d275d5abfa71b1c352"></a>
+IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="group__typedmesh.html#ga0d8285980d0ece5eca678282d437230f">BasicMesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>point</b> (vec3 position, vec4 color=vec4{1.0f, 0.0f, 0.0f, 1.0f})</td></tr>
+<tr class="separator:a926ccc593725b5d275d5abfa71b1c352"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5d7ba5b0141464afa5e629fa1978cf0" id="r_ac5d7ba5b0141464afa5e629fa1978cf0"><td class="memItemLeft" align="right" valign="top"><a id="ac5d7ba5b0141464afa5e629fa1978cf0" name="ac5d7ba5b0141464afa5e629fa1978cf0"></a>
 IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>rotatingLine</b> (vec3 start, vec3 stop, float endAngle, vec4 color=vec4{1.0f, 0.0f, 0.0f, 1.0f}, size_t segments=1, float width=1.0f, bool withAdjacency=true)</td></tr>
 <tr class="separator:ac5d7ba5b0141464afa5e629fa1978cf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -517,6 +525,48 @@ IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="group__typedmesh.htm
       </table>
 </div><div class="memdoc">
 <p>Create a triangle mesh for a cube with 3x3 quads on each face. Each face gets a color (red, green, and blue) brighter on the front face and darker on the back, the edges gets a bit brighter and the corners brighter still. Picking will are assigned to each 3x3x3 "sub cube" where the center one is unused. The use case is for a orientation indicator and rotation tool, see <a class="el" href="classinviwo_1_1CameraWidget.html" title="provides a mesh-based interaction widget for the camera rotation">CameraWidget</a>. </p>
+
+</div>
+</div>
+<a id="abc4f532ab4c0be25358c841441b5595f" name="abc4f532ab4c0be25358c841441b5595f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc4f532ab4c0be25358c841441b5595f">&#9670;&#160;</a></span>line()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="group__typedmesh.html#ga0d8285980d0ece5eca678282d437230f">BasicMesh</a> &gt; inviwo::meshutil::line </td>
+          <td>(</td>
+          <td class="paramtype">const vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>start</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>stop</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>normal</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const vec4 &amp;</td>          <td class="paramname"><span class="paramname"><em>color</em><span class="paramdefsep"> = </span><span class="paramdefval">vec4(1.0f,&#160;0.0f,&#160;0.0f,&#160;1.0f)</span>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float &amp;</td>          <td class="paramname"><span class="paramname"><em>width</em><span class="paramdefsep"> = </span><span class="paramdefval">1.0f</span>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ivec2 &amp;</td>          <td class="paramname"><span class="paramname"><em>res</em><span class="paramdefsep"> = </span><span class="paramdefval">ivec2(1)</span></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Creates a line with width <code>width</code> using a triangle strip. </p>
 
 </div>
 </div>
