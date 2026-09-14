@@ -72,8 +72,8 @@ public:
     enum class Gradients : std::uint8_t { None, Single };
     enum class Interpolation : std::uint8_t { Nearest, Linear };
 
-    explicit TemporalVolumeComponent(std::string_view name,
-                                     Gradients gradients = Gradients::Single, Document help = {});
+    explicit TemporalVolumeComponent(std::string_view name, Gradients gradients = Gradients::Single,
+                                     Document help = {});
 
     virtual std::string_view getName() const override;
     virtual void initializeResources(Shader& shader) override;
@@ -86,8 +86,7 @@ public:
 
     std::optional<size_t> channelsForVolume() const;
 
-    /// The IsoTFProperty used for classification, to be passed to a RaycastingComponent.
-    IsoTFProperty& isoTF();
+    TFData tfData();
 
     TemporalVolumeInport volumePort;
     Gradients gradients;
@@ -96,7 +95,6 @@ public:
     OptionProperty<Interpolation> interpolation;
     BoolProperty prefetch;
     IntSizeTProperty prefetchAhead;
-    IsoTFProperty isoTF_;
 };
 
 }  // namespace inviwo

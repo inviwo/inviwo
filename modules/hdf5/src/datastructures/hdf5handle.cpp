@@ -93,4 +93,9 @@ DataSet Handle::open() const { return DataSet{data_.openDataSet(path_, dapl_)}; 
 
 DataSet Handle::open(const Path& path) const { return DataSet{data_.openDataSet(path, dapl_)}; }
 
+std::recursive_mutex& Handle::globalMutex() {
+    static std::recursive_mutex mutex;
+    return mutex;
+}
+
 }  // namespace inviwo::hdf5

@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/datastructures/tfdata.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeconfig.h>
 #include <inviwo/core/ports/datainport.h>
@@ -92,11 +93,10 @@ public:
     virtual size_t size() const = 0;
 
     /**
-     * Physical time value for each frame. The returned span must either be empty (in which case
-     * frame indices 0,1,2,… are used as time values) or have a size equal to @c size(). The values
-     * are expected to be sorted in ascending order.
+     * Physical time value for frame @p index. The values are expected to be sorted in ascending
+     * order.
      */
-    virtual std::span<const Seconds> times() const = 0;
+    virtual Seconds time(size_t index) const = 0;
 
     /**
      * A prototype VolumeConfig describing dimensions, format, basis, dataMap, and axes — but no
@@ -130,7 +130,7 @@ public:
 
     virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse) override;
     virtual size_t size() const override;
-    virtual std::span<const Seconds> times() const override;
+    virtual Seconds time(size_t index) const override;
     virtual VolumeConfig prototype() const override;
 
 private:
@@ -186,11 +186,15 @@ public:
     /// Whether there are no frames.
     bool empty() const;
     /// The physical time value of each frame (size equals @c size()).
-    std::span<const Seconds> times() const;
+    auto times() const {
+        return std::views::iota(0uz, loader_->size()) |
+               std::views::transform([this](size_t i) { return loader_->time(i); });
+    }
     /// The time value of the first and last frame, or {0, 0} if empty.
     std::pair<Seconds, Seconds> timeRange() const;
     /// A prototype VolumeConfig describing dimensions, format, basis, and the DataMapper.
     const VolumeConfig& prototype() const;
+    const DataMapper& dataMap() const;
 
     // ── Time helpers ─────────────────────────────────────────────────────────────────────────
 
@@ -232,6 +236,9 @@ public:
     void clearCache();
 
 private:
+    template <typename T>
+    friend struct TFDataTraits;
+
     /// Insert @p volume for @p index into the cache (mutex must be held). Returns the cached value.
     std::shared_ptr<const Volume> insert(size_t index, std::shared_ptr<Volume> volume) const;
     /// Move @p index to the front of the LRU order (mutex must be held).
@@ -244,7 +251,7 @@ private:
 
     std::unique_ptr<VolumeLoader> loader_;
     VolumeConfig prototype_;
-    std::vector<Seconds> times_;
+    DataMapper dataMap_;
     size_t cacheSize_;
 
     mutable std::mutex mutex_;
@@ -260,6 +267,19 @@ struct DataTraits<TemporalVolume> {
     static constexpr std::string_view dataName() { return "TemporalVolume"; }
     static constexpr uvec3 colorCode() { return uvec3{210, 130, 130}; }
     IVW_CORE_API static Document info(const TemporalVolume& data);
+};
+
+template <>
+struct TFDataTraits<TemporalVolume> {
+    static const DataMapper* getDataMap(const TemporalVolume& data) { return &data.dataMap(); }
+    static HistogramCache::Result calculateHistograms(
+        const TemporalVolume& data,
+        const std::function<void(const std::vector<Histogram1D>&)>& whenDone) {
+        if (data.cache_.empty()) {
+            return {.progress = HistogramCache::Progress::NoData};
+        }
+        return data.cache_.begin()->second->calculateHistograms(whenDone);
+    }
 };
 
 using TemporalVolumeInport = DataInport<TemporalVolume>;

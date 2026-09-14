@@ -35,6 +35,7 @@
 #include <modules/basegl/shadercomponents/backgroundcomponent.h>
 #include <modules/basegl/shadercomponents/cameracomponent.h>
 #include <modules/basegl/shadercomponents/entryexitcomponent.h>
+#include <modules/basegl/shadercomponents/isotfcomponent.h>
 #include <modules/basegl/shadercomponents/lightcomponent.h>
 #include <modules/basegl/shadercomponents/positionindicatorcomponent.h>
 #include <modules/basegl/shadercomponents/raycastingcomponent.h>
@@ -72,6 +73,7 @@ private:
     TemporalVolumeComponent volume_;
     EntryExitComponent entryExit_;
     BackgroundComponent background_;
+    IsoTFComponent<1> isoTF_;
     RaycastingComponent raycasting_;
     CameraComponent camera_;
     LightComponent light_;
