@@ -85,6 +85,8 @@ HDF5ToLayer::HDF5ToLayer()
 HDF5ToLayer::~HDF5ToLayer() = default;
 
 void HDF5ToLayer::process() try {
+    const std::scoped_lock lock{Handle::globalMutex()};
+
     const auto data = inport_.getData();
     if (inport_.isChanged()) {
 

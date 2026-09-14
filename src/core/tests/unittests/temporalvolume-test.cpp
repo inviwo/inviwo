@@ -226,8 +226,8 @@ TEST(TemporalVolumeTest, ProceduralLoaderDirect) {
                                 return std::make_shared<Volume>(size3_t{index + 1});
                             }};
     EXPECT_EQ(loader.size(), 3u);
-    ASSERT_EQ(loader.times().size(), 3u);
-    EXPECT_DOUBLE_EQ(loader.times()[2].count(), 3.0);
+    ASSERT_EQ(loader.size(), 3u);
+    EXPECT_DOUBLE_EQ(loader.time(2).count(), 3.0);
     EXPECT_EQ(loader.load(1, nullptr)->getDimensions(), (size3_t{2}));
     EXPECT_NE(loader.prototype().format, nullptr);
 }

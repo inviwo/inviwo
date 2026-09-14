@@ -76,23 +76,19 @@ public:
 
     virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse) override;
     virtual size_t size() const override;
-    virtual std::span<const Seconds> times() const override;
+    virtual Seconds time(size_t index) const override;
     virtual VolumeConfig prototype() const override;
 
 private:
-    std::shared_ptr<Volume> readFrame(size_t rawIndex, std::shared_ptr<Volume> reuse) const;
-
-    mutable std::mutex mutex_;
     Handle handle_;
     std::vector<Selection> selection_;
     size_t timeDimension_;
     const DataFormatBase* format_;
     dmat4 basis_;
 
-    size_t rawStart_;
-    size_t rawStride_;
-    std::vector<Seconds> times_;
+    Seconds dt_;
     VolumeConfig prototype_;
+    Selection timeSelection_;
 };
 
 }  // namespace hdf5
