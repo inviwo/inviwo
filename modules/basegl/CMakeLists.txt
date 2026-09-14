@@ -99,6 +99,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/volumeprocessing/volumegradientprocessor.h
     include/modules/basegl/processors/volumeprocessing/volumelowpass.h
     include/modules/basegl/processors/volumeprocessing/volumemapping.h
+    include/modules/basegl/processors/volumeprocessing/volumemask.h
     include/modules/basegl/processors/volumeprocessing/volumemerger.h
     include/modules/basegl/processors/volumeprocessing/volumenormalizationprocessor.h
     include/modules/basegl/processors/volumeprocessing/volumeregionshrink.h
@@ -126,9 +127,9 @@ set(HEADER_FILES
     include/modules/basegl/shadercomponents/shadercomponent.h
     include/modules/basegl/shadercomponents/shadercomponentutil.h
     include/modules/basegl/shadercomponents/sphericalcomponent.h
+    include/modules/basegl/shadercomponents/temporalvolumecomponent.h
     include/modules/basegl/shadercomponents/tfcomponent.h
     include/modules/basegl/shadercomponents/timecomponent.h
-    include/modules/basegl/shadercomponents/temporalvolumecomponent.h
     include/modules/basegl/shadercomponents/volumecomponent.h
     include/modules/basegl/util/glyphclipping.h
     include/modules/basegl/util/meshbnlgl.h
@@ -237,6 +238,7 @@ set(SOURCE_FILES
     src/processors/volumeprocessing/volumegradientprocessor.cpp
     src/processors/volumeprocessing/volumelowpass.cpp
     src/processors/volumeprocessing/volumemapping.cpp
+    src/processors/volumeprocessing/volumemask.cpp
     src/processors/volumeprocessing/volumemerger.cpp
     src/processors/volumeprocessing/volumenormalizationprocessor.cpp
     src/processors/volumeprocessing/volumeregionshrink.cpp
@@ -263,9 +265,9 @@ set(SOURCE_FILES
     src/shadercomponents/shadercomponent.cpp
     src/shadercomponents/shadercomponentutil.cpp
     src/shadercomponents/sphericalcomponent.cpp
+    src/shadercomponents/temporalvolumecomponent.cpp
     src/shadercomponents/tfcomponent.cpp
     src/shadercomponents/timecomponent.cpp
-    src/shadercomponents/temporalvolumecomponent.cpp
     src/shadercomponents/volumecomponent.cpp
     src/util/glyphclipping.cpp
     src/util/meshbnlgl.cpp

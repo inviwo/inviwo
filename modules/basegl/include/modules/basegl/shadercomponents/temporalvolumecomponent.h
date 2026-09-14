@@ -83,7 +83,6 @@ public:
     virtual std::vector<Segment> getSegments() override;
 
     std::string getGradientString() const;
-
     std::optional<size_t> channelsForVolume() const;
 
     TFData tfData();
