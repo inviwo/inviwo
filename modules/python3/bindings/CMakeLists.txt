@@ -2,6 +2,7 @@
 set(HEADER_FILES
     include/inviwopy/properties/pyminmaxproperties.h
     include/inviwopy/properties/pyoptionproperties.h
+    include/inviwopy/properties/pyordinaloptproperties.h
     include/inviwopy/properties/pyordinalproperties.h
     include/inviwopy/properties/pyordinalrefproperties.h
     include/inviwopy/pybitset.h
@@ -60,6 +61,7 @@ set(SOURCE_FILES
     src/inviwopy.cpp
     src/properties/pyminmaxproperties.cpp
     src/properties/pyoptionproperties.cpp
+    src/properties/pyordinaloptproperties.cpp
     src/properties/pyordinalproperties.cpp
     src/properties/pyordinalrefproperties.cpp
     src/pybitset.cpp

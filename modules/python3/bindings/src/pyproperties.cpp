@@ -41,6 +41,7 @@
 
 #include <inviwopy/properties/pyordinalproperties.h>
 #include <inviwopy/properties/pyordinalrefproperties.h>
+#include <inviwopy/properties/pyordinaloptproperties.h>
 #include <inviwopy/properties/pyoptionproperties.h>
 #include <inviwopy/properties/pyminmaxproperties.h>
 
@@ -536,6 +537,7 @@ void exposeProperties(pybind11::module& m) {
 
     exposeOrdinalProperties(m);
     exposeOrdinalRefProperties(m);
+    exposeOrdinalOptProperties(m);
     exposeOptionProperties(m);
     exposeMinMaxProperties(m);
 }
