@@ -35,6 +35,7 @@
 
 #include <vector>
 #include <span>
+#include <optional>
 
 #include <QColor>
 #include <QObject>
@@ -55,9 +56,9 @@ public:
     virtual ~TFSelectionWatcher() = default;
 
 signals:
-    void updateWidgetPosition(double pos, bool ambiguous = false);
-    void updateWidgetAlpha(double alpha, bool ambiguous = false);
-    void updateWidgetColor(const QColor& c, bool ambiguous = false);
+    void updateWidgetPosition(std::optional<double> pos, bool ambiguous = false);
+    void updateWidgetAlpha(std::optional<double> alpha, bool ambiguous = false);
+    void updateWidgetColor(std::optional<QColor> c, bool ambiguous = false);
 
 public slots:
     /**
@@ -84,7 +85,7 @@ public slots:
      * In case, multiple primitives are selected, the values are considered ambiguous unless
      * they all have the same value. The position, alpha, and color are considered separately.
      */
-    void updateSelection(std::vector<TFPrimitive*> selection);
+    void updateSelection(const std::vector<TFPrimitive*>& selection);
 
 private:
     virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
@@ -97,11 +98,6 @@ private:
     std::vector<TFPrimitiveSet*> tfSets_;
 
     bool updateInProgress_ = false;
-
-    // cache TF primitive values of last single element selection
-    double cachedPos_ = 0.0;
-    double cachedAlpha_ = 0.0;
-    QColor cachedColor_ = QColor();
 };
 
 }  // namespace inviwo

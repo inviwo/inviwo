@@ -47,20 +47,21 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API TFColorEdit : public ColorLineEdit {
     Q_OBJECT
 public:
-    TFColorEdit(QWidget* parent = nullptr);
+    explicit TFColorEdit(QWidget* parent = nullptr);
     virtual ~TFColorEdit() = default;
 
     virtual QSize sizeHint() const override;
 
     /**
-     * set the color value of the line edit, if the value is ambiguous a "-" will be shown.
+     * set the color value of the line edit, if the value is ambiguous or empty a "-" will be shown.
      * Otherwise the rgb components of the color are shown as hexadecimal color code, e.g.
      * "#f9a033".
      *
-     * @param color   rgb components are converted into a hexadecimal color code
-     * @param ambiguous     whether the color has a name or not
+     * @param color      rgb components are converted into a hexadecimal color code
+     * @param ambiguous  affects whether the widget is enabled or not. The widget will be disabled
+     *                   if @p color has no value and @p ambiguous is false.
      */
-    void setColor(const QColor& color, bool ambiguous);
+    void setColor(std::optional<QColor> color, bool ambiguous);
 
 signals:
     /**

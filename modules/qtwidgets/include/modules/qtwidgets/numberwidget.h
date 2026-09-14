@@ -85,6 +85,14 @@ public:
     void setPostfix(std::string_view postfix);
     const QString& getPostfix() const;
 
+    /**
+     * When clearable, an empty text field is a valid state representing "no value". A placeholder
+     * text is shown instead of a numeric value. Off by default.
+     */
+    void setClearable(bool clearable);
+    bool isClearable() const;
+    void setPlaceholder(std::string_view placeholder);
+
     void setWrapping(bool wrapping);
     bool getWrapping() const;
 
@@ -122,6 +130,8 @@ protected:
     virtual QString getTextFromValue(bool precise) const = 0;
     virtual std::tuple<std::optional<double>, PercentageBar> getPercentageBar() const = 0;
 
+    virtual bool isEmpty() const { return false; }
+
 private:
     enum class FocusAction : std::uint8_t { SetFocus, ClearFocus };
     enum class HoverState : std::uint8_t { Invalid, Center, NegativeInc, PositiveInc };
@@ -147,6 +157,8 @@ private:
     InteractionState state_;
     NumberWidgetConfig::Interaction mode_;
     bool percentageBarVisible_;
+    bool clearable_ = false;
+    QString placeholder_;
     mutable QSize cachedMinimumSizeHint_;
     int minimumWidth_;
 };
@@ -170,6 +182,10 @@ public:
     virtual void setMaxValue(T maxValue, ConstraintBehavior cb) override;
     virtual void setIncrement(T increment) override;
 
+    // Optional-value support (only meaningful when the widget is clearable)
+    void initValueOptional(std::optional<T> value);
+    std::optional<T> getValueOptional() const;
+
 protected:
     virtual bool incrementValue() override;
     virtual bool decrementValue() override;
@@ -179,6 +195,7 @@ protected:
     virtual bool updateValueFromText(const QString& str) override;
     virtual QString getTextFromValue(bool precise) const override;
     virtual std::tuple<std::optional<double>, PercentageBar> getPercentageBar() const override;
+    virtual bool isEmpty() const override;
 
     bool updateValue(T value);
     double getUIIncrement() const;
@@ -189,6 +206,7 @@ private:
     T maxValue_;
     T increment_;
     T initialDragValue_;
+    bool empty_ = false;
     ConstraintBehavior minCB_;
     ConstraintBehavior maxCB_;
 };
@@ -222,7 +240,8 @@ T NumberWidget<T>::getValue() const {
 }
 template <typename T>
 void NumberWidget<T>::setValue(T value) {
-    if (value != value_) {
+    if (empty_ || value != value_) {
+        empty_ = false;
         value_ = value;
         updateText();
         emit valueChanged();
@@ -230,8 +249,31 @@ void NumberWidget<T>::setValue(T value) {
 }
 template <typename T>
 void NumberWidget<T>::initValue(T value) {
+    empty_ = false;
     value_ = value;
     updateText();
+}
+
+template <typename T>
+void NumberWidget<T>::initValueOptional(std::optional<T> value) {
+    if (value) {
+        empty_ = false;
+        value_ = *value;
+    } else {
+        empty_ = true;
+    }
+    updateText();
+}
+
+template <typename T>
+std::optional<T> NumberWidget<T>::getValueOptional() const {
+    if (empty_) return std::nullopt;
+    return value_;
+}
+
+template <typename T>
+bool NumberWidget<T>::isEmpty() const {
+    return empty_;
 }
 template <typename T>
 void NumberWidget<T>::setMinValue(T minValue, ConstraintBehavior cb) {
@@ -390,6 +432,9 @@ void NumberWidget<T>::initDragValue() {
 
 template <typename T>
 bool NumberWidget<T>::valueFromTextValid(const QString& str) {
+    if (isClearable() && str.trimmed().isEmpty()) {
+        return true;
+    }
     if (auto newValue = utilqt::numericValueFromString<T>(str); newValue) {
         return *newValue == detail::clamp(*newValue, minValue_, maxValue_, minCB_, maxCB_);
     }
@@ -398,9 +443,17 @@ bool NumberWidget<T>::valueFromTextValid(const QString& str) {
 
 template <typename T>
 bool NumberWidget<T>::updateValueFromText(const QString& str) {
+    if (isClearable() && str.trimmed().isEmpty()) {
+        if (!empty_) {
+            empty_ = true;
+            return true;
+        }
+        return false;
+    }
     if (auto newValue = utilqt::numericValueFromString<T>(str); newValue) {
         T clamped = detail::clamp(*newValue, minValue_, maxValue_, minCB_, maxCB_);
-        bool updated = (clamped != value_);
+        bool updated = empty_ || (clamped != value_);
+        empty_ = false;
         value_ = clamped;
         return updated;
     }
@@ -447,7 +500,8 @@ NumberWidget<T>::getPercentageBar() const {
 
 template <typename T>
 bool NumberWidget<T>::updateValue(T v) {
-    if (value_ != v) {
+    if (empty_ || value_ != v) {
+        empty_ = false;
         value_ = v;
         return true;
     }

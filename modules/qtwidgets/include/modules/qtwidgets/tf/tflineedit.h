@@ -32,11 +32,13 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
-#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
+#include <modules/qtwidgets/numberwidget.h>
 
 #include <QObject>
 #include <QSize>
 #include <QWidget>
+
+#include <optional>
 
 namespace inviwo {
 
@@ -46,7 +48,7 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API TFLineEdit : public QWidget {
     Q_OBJECT
 public:
-    TFLineEdit(QWidget* parent = nullptr);
+    explicit TFLineEdit(QWidget* parent = nullptr);
     virtual ~TFLineEdit() = default;
 
     virtual QSize sizeHint() const override;
@@ -71,13 +73,14 @@ public:
     void setValueMapping(bool enable, const dvec2& range = dvec2(0.0, 1.0), double inc = 0.01);
 
     /**
-     * set the value of the line edit, if the value is ambiguous nothing will be shown.
+     * set the value of the line edit, if the value is empty nothing will be shown.
      * If value mapping is enabled, the given value will be mapped to the value range
-     * prior display.
+     * prior display. The widget will be disabled if @p value has no value and
+     * @p ambiguous is false.
      */
-    void setValue(double value, bool ambiguous);
+    void setValue(std::optional<double> value, bool ambiguous);
 
-    double value() const;
+    std::optional<double> value() const;
 
 signals:
     /**
@@ -88,12 +91,10 @@ signals:
 
 private:
     bool valueMappingEnabled_ = false;
-    dvec2 valueRange_ = dvec2(0.0, 1.0);  //!< used for mapping relative TF positions to values
+    dvec2 valueRange_{0.0, 1.0};  //!< used for mapping relative TF positions to values
+    dvec2 validRange_{0.0, 1.0};
 
-    double value_;
-    bool ambiguous_;
-
-    DoubleValueDragSpinBox spinbox_;
+    NumberWidget<double> numberWidget_;
 };
 
 }  // namespace inviwo

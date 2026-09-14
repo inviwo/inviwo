@@ -392,6 +392,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/introspection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/invoke.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/isstreaminsertable.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/iterrange.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/licenseinfo.h
@@ -796,6 +797,7 @@ set(SOURCE_FILES
     util/intersection.cpp
     util/introspection.cpp
     util/inviwosetupinfo.cpp
+    util/invoke.cpp
     util/isstreaminsertable.cpp
     util/iterrange.cpp
     util/licenseinfo.cpp
