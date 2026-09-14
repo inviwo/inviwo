@@ -48,66 +48,26 @@ HDF5TemporalVolumeLoader::HDF5TemporalVolumeLoader(Handle handle, std::vector<Se
     , selection_{std::move(selection)}
     , timeDimension_{timeDimension}
     , format_{format}
-    , basis_{basis} {
+    , basis_{basis}
+    , dt_{dt} {
 
-    if (selection_.size() < 4) {
-        throw Exception(SourceContext{},
-                        "HDF5TemporalVolumeLoader requires a selection of rank >= 4, got {}",
-                        selection_.size());
-    }
-    // the trailing three entries are always the X/Y/Z volume axes
-    const size_t numExtraDims = selection_.size() - 3;
-    if (timeDimension_ >= numExtraDims) {
-        throw Exception(SourceContext{},
-                        "Invalid time dimension {}, must designate one of the {} leading "
-                        "(non X/Y/Z) dimensions",
-                        timeDimension_, numExtraDims);
-    }
-
-    const auto dataset = handle_.open();
-    const H5::DataSpace dataSpace = dataset.getSpace();
-    const auto rank = static_cast<size_t>(dataSpace.getSimpleExtentNdims());
-    if (selection_.size() != rank) {
-        throw Exception(SourceContext{}, "Selection rank {} does not match dataset rank {}",
-                        selection_.size(), rank);
-    }
-    std::vector<hsize_t> dims(rank);
-    dataSpace.getSimpleExtentDims(dims.data());
-
-    // column major index i corresponds to HDF5 (row major) storage dim (rank - 1 - i)
-    const auto colMajorDimSize = [&](size_t i) { return static_cast<size_t>(dims[rank - 1 - i]); };
-
-    for (size_t i = 0; i < numExtraDims; ++i) {
-        if (i == timeDimension_) continue;
-        const auto clamped = clamp(selection_[i], colMajorDimSize(i));
-        if (clamped.count != 1) {
-            throw Exception(SourceContext{},
-                            "Extra dimension {} must resolve to a single index (got count {}); "
-                            "did you mean to select it as the time dimension?",
-                            i, clamped.count);
-        }
-    }
-
-    const auto timeSelection = clamp(selection_[timeDimension_], colMajorDimSize(timeDimension_));
-    rawStart_ = timeSelection.start;
-    rawStride_ = timeSelection.stride;
-    if (timeSelection.count == 0) {
-        throw Exception(SourceContext{}, "Time dimension selection resulted in zero frames");
-    }
-
-    times_.reserve(timeSelection.count);
-    for (size_t i = 0; i < timeSelection.count; ++i) {
-        times_.emplace_back(static_cast<double>(i) * dt);
-    }
-
-    prototype_ = getVolumeConfig(handle_, selection_, format_);
+    const std::scoped_lock lock{Handle::globalMutex()};
+    std::tie(prototype_, timeSelection_) =
+        getTemporalVolumeConfig(handle_, selection_, format_, timeDimension_);
     prototype_.model = basis_;
 }
 
-std::shared_ptr<Volume> HDF5TemporalVolumeLoader::readFrame(size_t rawIndex,
-                                                            std::shared_ptr<Volume> reuse) const {
+std::shared_ptr<Volume> HDF5TemporalVolumeLoader::load(size_t index,
+                                                       std::shared_ptr<Volume> reuse) {
+
+    if (index >= size()) {
+        throw Exception(SourceContext{}, "Frame index {} out of range [0, {})", index, size());
+    }
+
+    const std::scoped_lock lock{Handle::globalMutex()};
     auto sel = selection_;
-    sel[timeDimension_] = Selection{.start = rawIndex, .count = 1, .stride = 1};
+    sel[timeDimension_] = Selection{
+        .start = timeSelection_.start + timeSelection_.stride * index, .count = 1, .stride = 1};
 
     auto volume = getVolumeAtPathAsType(handle_, sel, format_, [&](const VolumeConfig& cfg) {
         const auto dims = cfg.dimensions.value_or(VolumeConfig::defaultDimensions);
@@ -122,21 +82,10 @@ std::shared_ptr<Volume> HDF5TemporalVolumeLoader::readFrame(size_t rawIndex,
     return volume;
 }
 
-std::shared_ptr<Volume> HDF5TemporalVolumeLoader::load(size_t index,
-                                                       std::shared_ptr<Volume> reuse) {
-    if (index >= times_.size()) {
-        throw RangeException(SourceContext{}, "Frame index {} out of range [0, {})", index,
-                             times_.size());
-    }
-    const std::scoped_lock lock{mutex_};
-    return readFrame(rawStart_ + index * rawStride_, std::move(reuse));
-}
+size_t HDF5TemporalVolumeLoader::size() const { return timeSelection_.count; }
 
-size_t HDF5TemporalVolumeLoader::size() const { return times_.size(); }
-
-std::span<const Seconds> HDF5TemporalVolumeLoader::times() const { return times_; }
+Seconds HDF5TemporalVolumeLoader::time(size_t index) const { return index * dt_; }
 
 VolumeConfig HDF5TemporalVolumeLoader::prototype() const { return prototype_; }
-
 
 }  // namespace inviwo::hdf5

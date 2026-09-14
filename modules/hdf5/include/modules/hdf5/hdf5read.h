@@ -54,6 +54,10 @@ IVW_MODULE_HDF5_API LayerConfig getLayerConfig(const Handle& handle,
                                                std::vector<Selection> selection,
                                                const DataFormatBase* type);
 
+IVW_MODULE_HDF5_API std::pair<VolumeConfig, Selection> getTemporalVolumeConfig(
+    const Handle& handle, std::vector<Selection> selection, const DataFormatBase* type,
+    size_t timeDimension);
+
 /**
  * Read the dataset at @p handle into a Volume. The @p selection defines a hyperslab per
  * dimension in column major (Inviwo) order. If @p type is null the data format is deduced from

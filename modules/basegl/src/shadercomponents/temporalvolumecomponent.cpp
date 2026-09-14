@@ -61,21 +61,16 @@ TemporalVolumeComponent::TemporalVolumeComponent(std::string_view name, Gradient
     , prefetch{"prefetch", "Prefetch", "Schedule background loading of upcoming frames"_help, true}
     , prefetchAhead{"prefetchAhead", "Prefetch Ahead",
                     util::ordinalCount<size_t>(2u, 16u).set(
-                        "Number of upcoming frames to prefetch"_help)}
-    // No port is passed to the IsoTFProperty: the TF operates in normalized space and the data
-    // map is supplied manually in process() from the temporal volume prototype.
-    , isoTF_{"isotf", "TF & Iso Values"} {}
+                        "Number of upcoming frames to prefetch"_help)} {}
 
 std::string_view TemporalVolumeComponent::getName() const { return volumePort.getIdentifier(); }
 
-IsoTFProperty& TemporalVolumeComponent::isoTF() { return isoTF_; }
+
+TFData TemporalVolumeComponent::tfData() {
+    return TFData{&volumePort};
+}
 
 void TemporalVolumeComponent::initializeResources(Shader& shader) {
-    // need to ensure there is always at least one isovalue due to the use of the macro
-    // as array size in IsovalueParameters
-    const size_t isoCount = std::max<size_t>(1, isoTF_.isovalues_.get().size());
-    shader.getFragmentShaderObject()->addShaderDefine("MAX_ISOVALUE_COUNT",
-                                                      fmt::format("{}", isoCount));
 }
 
 void TemporalVolumeComponent::process(Shader& shader, TextureUnitContainer& cont) {
@@ -104,12 +99,6 @@ void TemporalVolumeComponent::process(Shader& shader, TextureUnitContainer& cont
     utilgl::bindAndSetUniforms(shader, cont, *b, fmt::format("{}B", getName()));
     shader.setUniform(fmt::format("{}Blend", getName()), blend);
 
-    // Transfer function and isovalues
-    utilgl::bindAndSetUniforms(shader, cont, isoTF_.tf_);
-    detail::setUniforms(shader, isoTF_.tf_);
-    const DataMapper dataMap = temporal->prototype().dataMap();
-    detail::setUniforms(shader, isoTF_.isovalues_, &dataMap);
-
     if (prefetch.get()) {
         const size_t current = temporal->nearestIndex(t);
         temporal->prefetch(current + 1, prefetchAhead.get());
@@ -121,7 +110,7 @@ std::vector<std::tuple<Inport*, std::string>> TemporalVolumeComponent::getInport
 }
 
 std::vector<Property*> TemporalVolumeComponent::getProperties() {
-    return {&time, &interpolation, &prefetch, &prefetchAhead, &isoTF_};
+    return {&time, &interpolation, &prefetch, &prefetchAhead};
 }
 
 namespace {
@@ -207,9 +196,6 @@ auto TemporalVolumeComponent::getSegments() -> std::vector<Segment> {
         segments.emplace_back(fmt::format(gradientFirst, getName()), placeholder::first, 440);
         segments.emplace_back(fmt::format(gradient, getName()), placeholder::loop, 440);
     }
-
-    detail::addSegmentsFor(segments, isoTF_.tf_);
-    detail::addSegmentsFor(segments, isoTF_.isovalues_);
 
     return segments;
 }

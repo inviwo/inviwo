@@ -54,6 +54,7 @@
 #include <string>
 #include <vector>
 #include <ostream>
+#include <mutex>
 
 namespace inviwo {
 
@@ -153,6 +154,11 @@ public:
     static constexpr uvec3 colorCode{101, 101, 188};
     static constexpr std::string_view classIdentifier{"org.inviwo.hdf5.handle"};
     static constexpr std::string_view dataName{"HDF"};
+
+    /**
+     * Returns a reference to a global recursive mutex for synchronizing access to HDF5 resources.
+     */
+    static std::recursive_mutex& globalMutex();
 
 private:
     Handle(std::filesystem::path filename, Path path, const H5::Group& data);
