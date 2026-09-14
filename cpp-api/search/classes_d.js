@@ -45,6 +45,7 @@ var searchData=
   ['nullpointerexception_42',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
   ['numberlineedit_43',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]],
   ['numberwidget_44',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
-  ['numberwidget_3c_20int_20_3e_45',['NumberWidget&lt; int &gt;',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
-  ['numberwidgetconfig_46',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]]
+  ['numberwidget_3c_20double_20_3e_45',['NumberWidget&lt; double &gt;',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
+  ['numberwidget_3c_20int_20_3e_46',['NumberWidget&lt; int &gt;',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
+  ['numberwidgetconfig_47',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]]
 ];

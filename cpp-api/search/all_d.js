@@ -61,8 +61,9 @@ var searchData=
   ['nullpointerexception_58',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
   ['numberlineedit_59',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]],
   ['numberwidget_60',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
-  ['numberwidget_3c_20int_20_3e_61',['NumberWidget&lt; int &gt;',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
-  ['numberwidgetconfig_62',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]],
-  ['numerictype_63',['numericType',['../classinviwo_1_1DataFormat.html#a55ba223de5afd6e44eb26dfb70923c78',1,'inviwo::DataFormat']]],
-  ['numericvaluefromstring_64',['numericValueFromString',['../namespaceinviwo_1_1utilqt.html#a4e4f204db5ef145c73f1b6ca2a404e96',1,'inviwo::utilqt']]]
+  ['numberwidget_3c_20double_20_3e_61',['NumberWidget&lt; double &gt;',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
+  ['numberwidget_3c_20int_20_3e_62',['NumberWidget&lt; int &gt;',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
+  ['numberwidgetconfig_63',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]],
+  ['numerictype_64',['numericType',['../classinviwo_1_1DataFormat.html#a55ba223de5afd6e44eb26dfb70923c78',1,'inviwo::DataFormat']]],
+  ['numericvaluefromstring_65',['numericValueFromString',['../namespaceinviwo_1_1utilqt.html#a4e4f204db5ef145c73f1b6ca2a404e96',1,'inviwo::utilqt']]]
 ];

@@ -1371,6 +1371,10 @@ IVW_MODULE_BASE_API std::optional&lt; double &gt;&#160;</td><td class="memItemRi
 template&lt;typename Type1 , typename Type2 &gt; </td></tr>
 <tr class="memitem:a325d0254070f7fb9aec6ff895d4a0bdc"><td class="memTemplItemLeft" align="right" valign="top">Type1&#160;</td><td class="memTemplItemRight" valign="bottom"><b>invertY</b> (Type1 vec, Type2 dim)</td></tr>
 <tr class="separator:a325d0254070f7fb9aec6ff895d4a0bdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76a5e913720536d2896ba77f8c56861d" id="r_a76a5e913720536d2896ba77f8c56861d"><td class="memTemplParams" colspan="2">template&lt;typename F , typename... Args&gt; </td></tr>
+<tr class="memitem:a76a5e913720536d2896ba77f8c56861d"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a76a5e913720536d2896ba77f8c56861d">invoke</a> (F &amp;&amp;f, Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:a76a5e913720536d2896ba77f8c56861d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoke a callable with the longest invocable prefix of the provided arguments.  <br /></td></tr>
+<tr class="separator:a76a5e913720536d2896ba77f8c56861d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9043d4a86a79be19df535ce9731f0153" id="r_a9043d4a86a79be19df535ce9731f0153"><td class="memTemplParams" colspan="2">template&lt;typename... A, typename F &gt; </td></tr>
 <tr class="memitem:a9043d4a86a79be19df535ce9731f0153"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a9043d4a86a79be19df535ce9731f0153">is_callable_with</a> (F &amp;&amp;)</td></tr>
 <tr class="separator:a9043d4a86a79be19df535ce9731f0153"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -6399,6 +6403,48 @@ template&lt;class T , typename Tuple , size_t count = 0&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Interpolate the alpha values of selected primitives in between the first and the last primitive based on their relative position. </p>
+
+</div>
+</div>
+<a id="a76a5e913720536d2896ba77f8c56861d" name="a76a5e913720536d2896ba77f8c56861d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76a5e913720536d2896ba77f8c56861d">&#9670;&#160;</a></span>invoke()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename F , typename... Args&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">decltype(auto) inviwo::util::invoke </td>
+          <td>(</td>
+          <td class="paramtype">F &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>f</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Invoke a callable with the longest invocable prefix of the provided arguments. </p>
+<p>Determines, at compile time, the largest prefix length <code>N</code> (where <code>0 &lt;= N &lt;= sizeof...(Args)</code>) such that <code>f</code> is invocable with the first <code>N</code> arguments. Then calls <code>f</code> using exactly that prefix and ignores any remaining trailing arguments.</p>
+<p>Use case: In connection with QObject::connect since Qt's signaling mechanism supports calling slots/callbacks with fewer arguments than provided by the signal. </p><dl class="section see"><dt>See also</dt><dd>util::exceptionGuarded</dd></dl>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">F</td><td>Callable type (forwarding reference). </td></tr>
+    <tr><td class="paramname">Args</td><td>Variadic argument types (forwarding references).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>Callable object/function to invoke. </td></tr>
+    <tr><td class="paramname">args</td><td>Candidate arguments from which the invocable prefix is selected.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The result of invoking <code>f</code> with the selected prefix. </dd></dl>
 
 </div>
 </div>

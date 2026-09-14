@@ -128,8 +128,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>colorChanged</b> ()</
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4e5c5c29698e31c77a26bb619baed93e" id="r_a4e5c5c29698e31c77a26bb619baed93e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e5c5c29698e31c77a26bb619baed93e">setColor</a> (const QColor &amp;color, bool ambiguous)</td></tr>
-<tr class="separator:a4e5c5c29698e31c77a26bb619baed93e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af41b0a6d692c38f51d827e202ecb9b5b" id="r_af41b0a6d692c38f51d827e202ecb9b5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af41b0a6d692c38f51d827e202ecb9b5b">setColor</a> (std::optional&lt; QColor &gt; color, bool ambiguous)</td></tr>
+<tr class="separator:af41b0a6d692c38f51d827e202ecb9b5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d604e4c185dd2e109de890540ae1031" id="r_a7d604e4c185dd2e109de890540ae1031"><td class="memItemLeft" align="right" valign="top"><a id="a7d604e4c185dd2e109de890540ae1031" name="a7d604e4c185dd2e109de890540ae1031"></a>
 virtual QSize&#160;</td><td class="memItemRight" valign="bottom"><b>sizeHint</b> () const override</td></tr>
 <tr class="separator:a7d604e4c185dd2e109de890540ae1031"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -233,8 +233,8 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>keyPressEvent
 
 </div>
 </div>
-<a id="a4e5c5c29698e31c77a26bb619baed93e" name="a4e5c5c29698e31c77a26bb619baed93e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4e5c5c29698e31c77a26bb619baed93e">&#9670;&#160;</a></span>setColor()</h2>
+<a id="af41b0a6d692c38f51d827e202ecb9b5b" name="af41b0a6d692c38f51d827e202ecb9b5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af41b0a6d692c38f51d827e202ecb9b5b">&#9670;&#160;</a></span>setColor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -242,7 +242,7 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>keyPressEvent
         <tr>
           <td class="memname">void inviwo::TFColorEdit::setColor </td>
           <td>(</td>
-          <td class="paramtype">const QColor &amp;</td>          <td class="paramname"><span class="paramname"><em>color</em>, </span></td>
+          <td class="paramtype">std::optional&lt; QColor &gt;</td>          <td class="paramname"><span class="paramname"><em>color</em>, </span></td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -251,11 +251,11 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>keyPressEvent
         </tr>
       </table>
 </div><div class="memdoc">
-<p>set the color value of the line edit, if the value is ambiguous a "-" will be shown. Otherwise the rgb components of the color are shown as hexadecimal color code, e.g. "#f9a033".</p>
+<p>set the color value of the line edit, if the value is ambiguous or empty a "-" will be shown. Otherwise the rgb components of the color are shown as hexadecimal color code, e.g. "#f9a033".</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">color</td><td>rgb components are converted into a hexadecimal color code </td></tr>
-    <tr><td class="paramname">ambiguous</td><td>whether the color has a name or not </td></tr>
+    <tr><td class="paramname">ambiguous</td><td>affects whether the widget is enabled or not. The widget will be disabled if <code>color</code> has no value and <code>ambiguous</code> is false. </td></tr>
   </table>
   </dd>
 </dl>

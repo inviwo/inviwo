@@ -2561,6 +2561,7 @@ var hierarchy =
     [ "inviwo::ffmpeg::OutputStream::Options", "structinviwo_1_1ffmpeg_1_1OutputStream_1_1Options.html", null ],
     [ "inviwo::OrdinalBaseWidget< T >", "classinviwo_1_1OrdinalBaseWidget.html", [
       [ "inviwo::NumberWidget< int >", "classinviwo_1_1NumberWidget.html", null ],
+      [ "inviwo::NumberWidget< double >", "classinviwo_1_1NumberWidget.html", null ],
       [ "inviwo::OrdinalSpinBoxWidget< float >", "classinviwo_1_1OrdinalSpinBoxWidget.html", null ],
       [ "inviwo::NumberWidget< T >", "classinviwo_1_1NumberWidget.html", null ],
       [ "inviwo::OrdinalEditorWidget< T >", "classinviwo_1_1OrdinalEditorWidget.html", null ],
@@ -2568,6 +2569,7 @@ var hierarchy =
       [ "inviwo::SliderWidgetQt< T >", "classinviwo_1_1SliderWidgetQt.html", null ]
     ] ],
     [ "inviwo::OrdinalBaseWidget< BT >", "classinviwo_1_1OrdinalBaseWidget.html", null ],
+    [ "inviwo::OrdinalBaseWidget< double >", "classinviwo_1_1OrdinalBaseWidget.html", null ],
     [ "inviwo::OrdinalBaseWidget< float >", "classinviwo_1_1OrdinalBaseWidget.html", null ],
     [ "inviwo::OrdinalBaseWidget< int >", "classinviwo_1_1OrdinalBaseWidget.html", null ],
     [ "inviwo::OrdinalPropertyState< T >", "structinviwo_1_1OrdinalPropertyState.html", null ],
@@ -2882,6 +2884,7 @@ var hierarchy =
     [ "QLineEdit", null, [
       [ "inviwo::BaseNumberWidget", "classinviwo_1_1BaseNumberWidget.html", [
         [ "inviwo::NumberWidget< int >", "classinviwo_1_1NumberWidget.html", null ],
+        [ "inviwo::NumberWidget< double >", "classinviwo_1_1NumberWidget.html", null ],
         [ "inviwo::NumberWidget< T >", "classinviwo_1_1NumberWidget.html", null ]
       ] ],
       [ "inviwo::ColorLineEdit", "classinviwo_1_1ColorLineEdit.html", [

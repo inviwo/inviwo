@@ -157,7 +157,7 @@ var namespaceinviwo =
     [ "BaseImageInport", "classinviwo_1_1BaseImageInport.html", "classinviwo_1_1BaseImageInport" ],
     [ "BaseModule", "classinviwo_1_1BaseModule.html", "classinviwo_1_1BaseModule" ],
     [ "BaseModuleCallback", "classinviwo_1_1BaseModuleCallback.html", null ],
-    [ "BaseNumberWidget", "classinviwo_1_1BaseNumberWidget.html", null ],
+    [ "BaseNumberWidget", "classinviwo_1_1BaseNumberWidget.html", "classinviwo_1_1BaseNumberWidget" ],
     [ "BaseOptionProperty", "classinviwo_1_1BaseOptionProperty.html", "classinviwo_1_1BaseOptionProperty" ],
     [ "BaseOrdinalAnimationProperty", "classinviwo_1_1BaseOrdinalAnimationProperty.html", null ],
     [ "BaseOrdinalEditorWidget", "classinviwo_1_1BaseOrdinalEditorWidget.html", null ],

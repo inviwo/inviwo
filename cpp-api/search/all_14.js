@@ -37,7 +37,7 @@ var searchData=
   ['updateposition_34',['updatePosition',['../classinviwo_1_1PositionProperty.html#a06b8ec0b92f96688e882d426a2d1c2e8',1,'inviwo::PositionProperty']]],
   ['updateprocessorid_35',['updateProcessorID',['../structinviwo_1_1NetworkEdge.html#adcfb99bdacf8850c3a82a667ce7c9ecd',1,'inviwo::NetworkEdge']]],
   ['updateproperty_36',['updateProperty',['../classinviwo_1_1util_1_1MetaDataToProperty.html#ab29a1f320ab4ae87807967241c3f2d9e',1,'inviwo::util::MetaDataToProperty']]],
-  ['updateselection_37',['updateSelection',['../classinviwo_1_1TFSelectionWatcher.html#a35a3ce1ad4cb2956c4e090e37f27b650',1,'inviwo::TFSelectionWatcher']]],
+  ['updateselection_37',['updateSelection',['../classinviwo_1_1TFSelectionWatcher.html#aaeffdc05ccef80bc12b0dcf4ea16dc8b',1,'inviwo::TFSelectionWatcher']]],
   ['updatesources_38',['updateSources',['../classinviwo_1_1util_1_1ColumnMapper.html#a0c747f762dc1ba23a61416e2558e8e93',1,'inviwo::util::ColumnMapper']]],
   ['updatespotlightsource_39',['updateSpotLightSource',['../classinviwo_1_1SpotLightSourceProcessor.html#a8d91c4b742c27bbab683e0d2c01cfc6f',1,'inviwo::SpotLightSourceProcessor']]],
   ['updatesrcprocessorid_40',['updateSrcProcessorID',['../structinviwo_1_1NetworkEdge.html#aa1ae88a2ff2643445dcc7a91fa9ea7bb',1,'inviwo::NetworkEdge']]],

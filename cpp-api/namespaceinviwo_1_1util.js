@@ -253,6 +253,7 @@ var namespaceinviwo_1_1util =
     [ "index_of", "namespaceinviwo_1_1util.html#a255656e04e9caab0092cefb2387b522c", null ],
     [ "index_of_derived", "namespaceinviwo_1_1util.html#a144ffacb1ddf668f23cac00ffca4071a", null ],
     [ "interpolateAlpha", "namespaceinviwo_1_1util.html#a7669f35617341a0ec4465acb3a0b4a93", null ],
+    [ "invoke", "namespaceinviwo_1_1util.html#a76a5e913720536d2896ba77f8c56861d", null ],
     [ "is_callable_with", "namespaceinviwo_1_1util.html#a9043d4a86a79be19df535ce9731f0153", null ],
     [ "isConvex", "namespaceinviwo_1_1util.html#a661ff4ac48c8bca8c91ea0dfb0f41124", null ],
     [ "isInside", "namespaceinviwo_1_1util.html#a70e06202b732f15b834faf155f5f67fe", null ],
