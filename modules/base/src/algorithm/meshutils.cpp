@@ -277,6 +277,53 @@ std::shared_ptr<BasicMesh> cylinder(const vec3& start, const vec3& stop, const v
     return mesh;
 }
 
+std::shared_ptr<BasicMesh> point(vec3 position, vec4 color) {
+    auto mesh = std::make_shared<BasicMesh>();
+    mesh->setModelMatrix(mat4(1.f));
+
+    mesh->addVertex(position, vec3{0.0f}, vec3{0.0f}, color);
+
+    auto inds = mesh->addIndexBuffer(DrawType::Points, ConnectivityType::None);
+    inds->add(0);
+
+    return mesh;
+}
+
+std::shared_ptr<BasicMesh> line(vec3 start, vec3 stop, vec4 color) {
+    auto mesh = std::make_shared<BasicMesh>();
+    mesh->setModelMatrix(mat4(1.f));
+    const vec3 normal = detail::orthvec(stop - start);
+
+    mesh->addVertex(start, normal, vec3{0.0f, 0.0f, 0.0f}, color);
+    mesh->addVertex(stop, normal, vec3{1.0f, 0.0f, 0.0f}, color);
+
+    auto inds = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
+    inds->add({0, 1});
+
+    return mesh;
+}
+
+std::shared_ptr<BasicMesh> circle(vec3 center, vec3 normal, vec4 color, float radius,
+                                  size_t segments) {
+    auto mesh = std::make_shared<BasicMesh>();
+    mesh->setModelMatrix(mat4(1.f));
+    auto inds = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::Loop);
+    const vec3 orth = detail::orthvec(normal);
+
+    vec3 t{0.0f};
+    const double angle = 2.0 * std::numbers::pi / static_cast<double>(segments);
+    const auto ns = static_cast<std::uint32_t>(segments);
+    for (std::uint32_t i = 0; i < ns; ++i) {
+        const vec3 p = center + radius * glm::rotate(orth, static_cast<float>(i * angle), normal);
+        t.x = static_cast<float>(i) / static_cast<float>(segments);
+        mesh->addVertex(p, normal, t, color);
+    }
+    inds->append(std::views::iota(static_cast<std::uint32_t>(0), ns) |
+                 std::ranges::to<std::vector>());
+
+    return mesh;
+}
+
 std::shared_ptr<BasicMesh> line(const vec3& start, const vec3& stop, const vec3& normal,
                                 const vec4& color /*= vec4(1.0f, 0.0f, 0.0f, 1.0f)*/,
                                 const float& width /*= 1.0f*/, const ivec2& inres /*= ivec2(1)*/) {
@@ -361,11 +408,11 @@ std::shared_ptr<BasicMesh> arrow(const vec3& start, const vec3& stop, const vec4
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
 
-    vec3 mid = start + (1 - arrowfraction) * (stop - start);
+    const vec3 mid = glm::mix(start, stop, 1.0f - arrowfraction);
     auto cylinderpart = cylinder(start, mid, color, radius, segments);
     mesh->append(cylinderpart.get());
 
-    auto diskpart = disk(mid, start - mid, color, arrowRadius, segments);
+    auto diskpart = disk(mid, glm::normalize(start - stop), color, arrowRadius, segments);
     mesh->append(diskpart.get());
 
     auto conepart = cone(mid, stop, color, arrowRadius, segments);

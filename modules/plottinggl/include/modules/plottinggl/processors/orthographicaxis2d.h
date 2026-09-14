@@ -43,9 +43,11 @@
 
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
+#include <modules/plotting/properties/plotgridproperty.h>
 #include <modules/plotting/properties/boxselectionproperty.h>
 #include <modules/plotting/interaction/boxselection.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
+#include <modules/plottinggl/utils/gridrenderer.h>
 #include <modules/plottinggl/rendering/boxselectionrenderer.h>
 
 namespace inviwo {
@@ -74,11 +76,13 @@ private:
     MarginProperty margins_;
     FloatProperty axisMargin_;
     BoolProperty antialiasing_;
+    plot::PlotGridProperty grid_;
     plot::BoxSelectionProperty boxSelectionProperty_;
     CameraProperty camera_;
     CameraTrackball trackball_;
 
     std::array<plot::AxisRenderer, 2> axisRenderers_;
+    plot::GridRenderer gridRenderer_;
     plot::BoxSelectionRenderer boxSelectionRenderer_;
     plot::BoxSelection boxSelection_;
 

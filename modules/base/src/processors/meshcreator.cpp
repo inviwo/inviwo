@@ -84,7 +84,10 @@ const ProcessorInfo MeshCreator::processorInfo_{
      * __CubeIndicator__
      * __LineCube__
      * __LineCubeAdjacency__
+     * __Point__
+     * __Line__
      * __Plane__
+     * __Circle__
      * __Disk__
      * __Cone__
      * __Cylinder__
@@ -139,7 +142,10 @@ MeshCreator::MeshCreator()
                  {"cubeIndicator", "Cube Indicator", MeshType::CubeIndicator},
                  {"linecube", "Line Cube", MeshType::LineCube},
                  {"linecubeadjacency", "Line Cube Adjacency", MeshType::LineCubeAdjacency},
+                 {"point", "Point", MeshType::Point},
+                 {"line", "Line", MeshType::Line},
                  {"plane", "Plane", MeshType::Plane},
+                 {"circle", "Circle", MeshType::Circle},
                  {"disk", "Disk", MeshType::Disk},
                  {"cone", "Cone", MeshType::Cone},
                  {"cylinder", "Cylinder", MeshType::Cylinder},
@@ -221,7 +227,18 @@ MeshCreator::MeshCreator()
                 util::show(basis_, color_);
                 break;
             }
+            case MeshType::Point: {
+                pickingUpdate_ = updatePosition1;
+                util::show(position1_, color_);
+                break;
+            }
+            case MeshType::Line: {
+                pickingUpdate_ = updatePosition1and2;
+                util::show(position1_, position2_, color_);
+                break;
+            }
             case MeshType::Plane:
+            case MeshType::Circle:
             case MeshType::Disk: {
                 pickingUpdate_ = updatePosition1;
                 util::show(position1_, normal_, meshScale_, meshRes_, color_);
@@ -298,11 +315,15 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
 
         case MeshType::LineCubeAdjacency:
             return meshutil::boundingBoxAdjacency(basis_.getBasisAndOffset(), color_);
-
-        case MeshType::Plane: {
+        case MeshType::Point:
+            return meshutil::point(position1_, color_);
+        case MeshType::Line:
+            return meshutil::line(position1_, position2_, color_);
+        case MeshType::Plane: 
             return meshutil::square(position1_, normal_, vec2(1.0f, 1.0f) * meshScale_.get(),
                                     color_, meshRes_.get());
-        }
+        case MeshType::Circle:
+            return meshutil::circle(position1_, normal_, color_, meshScale_.get(), meshRes_.get().x);
         case MeshType::Disk:
             return meshutil::disk(position1_, normal_, color_, meshScale_.get(), meshRes_.get().x);
         case MeshType::Cone:
@@ -312,8 +333,8 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
             return meshutil::cylinder(position1_, position2_, color_, meshScale_.get(),
                                       meshRes_.get().x);
         case MeshType::Arrow:
-            return meshutil::arrow(position1_, position2_, color_, meshScale_.get(), 0.15f,
-                                   meshScale_.get() * 2, meshRes_.get().x);
+            return meshutil::arrow(position1_, position2_, color_, meshScale_.get(), 0.25f,
+                                   meshScale_.get() * 1.8f, meshRes_.get().x);
         case MeshType::CoordAxes:
             return meshutil::coordindicator(position1_, meshScale_.get());
         case MeshType::Torus:

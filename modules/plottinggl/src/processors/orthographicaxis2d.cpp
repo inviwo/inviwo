@@ -79,10 +79,12 @@ OrthographicAxis2D::OrthographicAxis2D()
     , margins_{"margins", "Margins", 5.0f, 5.0f, 55.0f, 65.0f}
     , axisMargin_{"axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f}
     , antialiasing_{"antialias", "Antialiasing", true}
+    , grid_{"grid", "Grid"}
     , boxSelectionProperty_{"boxSelection", "Box Selection/Filtering"}
     , camera_{"camera", "Camera"}
     , trackball_{&camera_}
     , axisRenderers_{plot::AxisData{}, plot::AxisData{}}
+    , gridRenderer_{plot::GridData{}}
     , boxSelectionRenderer_{}
     , boxSelection_{boxSelectionProperty_,
                     [&](dvec2 p, const size2_t& dims) {
@@ -121,8 +123,8 @@ OrthographicAxis2D::OrthographicAxis2D()
     });
 
     addPorts(inport_, mesh_, layer_, volume_, outport_);
-    addProperties(style_, axis1_, axis2_, margins_, axisMargin_, boxSelectionProperty_, camera_,
-                  trackball_);
+    addProperties(style_, axis1_, axis2_, margins_, axisMargin_, grid_, boxSelectionProperty_,
+                  camera_, trackball_);
     util::for_each_in_tuple([this](auto& e) { boxSelectionProperty_.addProperty(e); },
                             boxSelection_.properties());
 
@@ -183,29 +185,21 @@ void OrthographicAxis2D::process() {
 
     const auto padding = axisMargin_.get();
 
-    const utilgl::ClearColor clearColor{backgroundColor_.get()};
-    utilgl::activateAndClearTarget(outport_);
-    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    if (auto source = inport_.getData()) {
-        // if we clipContent_ we only want to draw the inport image inside of the margins
-        const auto scissors =
-            [&]() -> std::optional<std::pair<utilgl::ScissorState, utilgl::GlBoolState>> {
-            if (clipContent_) {
-                return std::pair{
-                    utilgl::ScissorState{
-                        static_cast<GLint>(margins_.getLeft() + padding),
-                        static_cast<GLint>(margins_.getBottom() + padding),
-                        static_cast<GLsizei>(static_cast<float>(dims.x) - margins_.getLeft() -
-                                             margins_.getRight() - 2 * padding),
-                        static_cast<GLsizei>(static_cast<float>(dims.y) - margins_.getBottom() -
-                                             margins_.getTop() - 2 * padding)},
-                    utilgl::GlBoolState{GL_SCISSOR_TEST, true}};
-            }
-            return std::nullopt;
-        }();
-        source->getRepresentation<ImageGL>()->copyRepresentationsTo(
-            outport_.getEditableData()->getEditableRepresentation<ImageGL>());
-    }
+    auto scissorState =
+        [&]() -> std::optional<std::pair<utilgl::ScissorState, utilgl::GlBoolState>> {
+        if (clipContent_) {
+            return std::pair{
+                utilgl::ScissorState{
+                    static_cast<GLint>(margins_.getLeft() + padding),
+                    static_cast<GLint>(margins_.getBottom() + padding),
+                    static_cast<GLsizei>(static_cast<float>(dims.x) - margins_.getLeft() -
+                                         margins_.getRight() - 2 * padding),
+                    static_cast<GLsizei>(static_cast<float>(dims.y) - margins_.getBottom() -
+                                         margins_.getTop() - 2 * padding)},
+                utilgl::GlBoolState{GL_SCISSOR_TEST, true}};
+        }
+        return std::nullopt;
+    };
 
     const size2_t lowerLeft(margins_.getLeft(), margins_.getBottom());
     const size2_t upperRight(dims.x - 1 - margins_.getRight(), dims.y - 1 - margins_.getTop());
@@ -230,7 +224,35 @@ void OrthographicAxis2D::process() {
     axis1_.captionSettings_.title_.set(fmt::format("{}{: [}", axes[0]->name, axes[0]->unit));
     axis2_.captionSettings_.title_.set(fmt::format("{}{: [}", axes[1]->name, axes[1]->unit));
 
+    grid_.update(gridRenderer_.getGridData(),
+                 plot::GridParams{.range = axis1_.getRange(),
+                                  .labeling = axis1_.labelingAlgorithm_.get(),
+                                  .maxTicks = axis1_.majorTicks_.numberOfTicks},
+                 plot::GridParams{.range = axis2_.getRange(),
+                                  .labeling = axis2_.labelingAlgorithm_.get(),
+                                  .maxTicks = axis2_.majorTicks_.numberOfTicks});
+
+    const utilgl::ClearColor clearColor{backgroundColor_.get()};
+    utilgl::activateAndClearTarget(outport_);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+    // render plot image
+    if (auto source = inport_.getData()) {
+        // if we clipContent_ we only want to draw the inport image inside of the margins
+        const auto scissors = scissorState();
+        source->getRepresentation<ImageGL>()->copyRepresentationsTo(
+            outport_.getEditableData()->getEditableRepresentation<ImageGL>());
+    }
+
     const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+
+    {
+        // draw grid
+        const auto scissors = scissorState();
+        gridRenderer_.render(dims, lowerLeft + static_cast<size_t>(padding),
+                             xEnd + size2_t{0, padding}, yEnd + size2_t{padding, 0},
+                             antialiasing_.get());
+    }
 
     // draw horizontally
     if (axis1_.isModified()) axis1_.update(axisRenderers_[0].getData());

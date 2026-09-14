@@ -47,6 +47,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opactopt/utils/gaussian.h>
+#include <modules/basegl/util/shaderutils.h>
 
 #include <cstddef>
 #include <string>

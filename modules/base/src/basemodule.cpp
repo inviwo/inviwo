@@ -170,6 +170,7 @@
 #include <modules/base/properties/layerinformationproperty.h>
 #include <modules/base/properties/meshinformationproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
+#include <modules/base/properties/stipplingproperty.h>
 #include <modules/base/properties/transformlistproperty.h>
 #include <modules/base/properties/valueaxisproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
@@ -325,6 +326,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProperty<MeshBufferInformationProperty>();
     registerProperty<MeshInformationProperty>();
     registerProperty<SequenceTimerProperty>();
+    registerProperty<StipplingProperty>();
     registerProperty<ValueAxisProperty>();
     registerProperty<VolumeInformationProperty>();
 
