@@ -33,6 +33,7 @@
 #include <filesystem>
 
 #include <QModelIndex>
+#include <QSet>
 #include <QSplitter>
 #include <QString>
 #include <QStringList>
@@ -96,7 +97,13 @@ private:
 
     void selectFirstLeaf();
 
-    void expandTreeView() const;
+    void expandTreeView();
+
+    // breadcrumb of ancestor captions, used as a rebuild-stable key for a tree node
+    static QString nodePath(const QModelIndex& sourceIndex);
+    QModelIndex toSource(const QModelIndex& viewIndex, bool fromGrid) const;
+    void applyExpandedPaths(const QSet<QString>& paths);
+    void ensureSelectionVisible();
 
     InviwoApplication* app_;
 
@@ -118,6 +125,9 @@ private:
     QToolButton* newButton_;
     QToolButton* openButton_;
     QToolButton* restoreButton_;
+
+    QSet<QString> expandedPaths_;
+    bool searchActive_ = false;
 };
 
 }  // namespace inviwo
