@@ -63,24 +63,22 @@ template <size_t N>
     requires(N > 0)
 class IsoTFComponent : public ShaderComponent {
 public:
-    explicit IsoTFComponent(VolumeInport& volumeInport)
-        : ShaderComponent()
-        , isoTFs{util::make_array<N>([&]([[maybe_unused]] size_t i) {
+    explicit IsoTFComponent(TFData volumeInport)
+        : ShaderComponent(), isoTFs{util::make_array<N>([&]([[maybe_unused]] size_t i) {
             if constexpr (N > 1) {
                 auto prop =
                     IsoTFProperty{fmt::format("isotf{}", i), fmt::format("TF & Iso Values #{}", i),
-                                  &volumeInport, InvalidationLevel::InvalidResources};
+                                  volumeInport, InvalidationLevel::InvalidResources};
                 prop.isovalues_.setIdentifier(fmt::format("isovalues{}", i))
                     .setDisplayName(fmt::format("Iso Values #{}", i));
                 prop.tf_.setIdentifier(fmt::format("transferFunction{}", i))
                     .setDisplayName(fmt::format("Transfer Function #{}", i));
                 return prop;
             } else {
-                return IsoTFProperty{"isotf", "TF & Iso Values", &volumeInport,
+                return IsoTFProperty{"isotf", "TF & Iso Values", volumeInport,
                                      InvalidationLevel::InvalidResources};
             }
-        })}
-        , volume_{&volumeInport} {}
+        })} {}
 
     virtual std::string_view getName() const override { return isoTFs[0].getIdentifier(); }
 
@@ -104,8 +102,7 @@ public:
             }
 
             detail::setUniforms(shader, isoTF.tf_);
-            detail::setUniforms(shader, isoTF.isovalues_,
-                                volume_->hasData() ? &volume_->getData()->dataMap : nullptr);
+            detail::setUniforms(shader, isoTF.isovalues_, isoTF.isovalues_.data().getDataMap());
         }
     }
 

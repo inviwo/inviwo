@@ -79,7 +79,7 @@ public:
 
     virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse) override;
     virtual size_t size() const override;
-    virtual std::span<const Seconds> times() const override;
+    virtual Seconds time(size_t index) const override;
     virtual VolumeConfig prototype() const override;
 
 private:

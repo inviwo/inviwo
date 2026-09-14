@@ -111,6 +111,8 @@ HDF5ToVolume::HDF5ToVolume()
 HDF5ToVolume::~HDF5ToVolume() = default;
 
 void HDF5ToVolume::process() try {
+    const std::scoped_lock lock{Handle::globalMutex()};
+
     const auto data = inport_.getData();
 
     if (inport_.isChanged()) {
