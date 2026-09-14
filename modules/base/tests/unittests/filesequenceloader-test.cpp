@@ -130,14 +130,14 @@ TEST(FileSequenceLoaderTest, LoadsFramesByIndex) {
 TEST(FileSequenceLoaderTest, DefaultTimesAreIndices) {
     Fixture fix;
     const FileSequenceLoader loader{fix.paths(3), {}, &fix.factory};
-    EXPECT_TRUE(loader.times().empty());
+    EXPECT_EQ(loader.size(), 0uz);
 }
 
 TEST(FileSequenceLoaderTest, CustomTimes) {
     Fixture fix;
     const FileSequenceLoader loader{fix.paths(3), {0.0s, 5.0s, 10.0s}, &fix.factory};
-    ASSERT_EQ(loader.times().size(), 3u);
-    EXPECT_DOUBLE_EQ(loader.times()[1].count(), 5.0);
+    ASSERT_EQ(loader.size(), 3u);
+    EXPECT_DOUBLE_EQ(loader.time(1).count(), 5.0);
 }
 
 TEST(FileSequenceLoaderTest, RejectsMismatchedTimes) {

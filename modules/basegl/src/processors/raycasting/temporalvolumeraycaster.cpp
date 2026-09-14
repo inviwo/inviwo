@@ -76,13 +76,14 @@ TemporalVolumeRaycaster::TemporalVolumeRaycaster(std::string_view identifier,
               "input temporal volume (Only one channel will be rendered)"_help}
     , entryExit_{}
     , background_{*this}
-    , raycasting_{volume_.getName(), volume_.isoTF()}
+    , isoTF_{volume_.tfData()}
+    , raycasting_{volume_.getName(), isoTF_.isoTFs[0]}
     , camera_{"camera", temporalBoundingBox(volume_.volumePort)}
     , light_{&camera_.camera}
     , positionIndicator_{}
     , sampleTransform_{} {
 
-    registerComponents(volume_, entryExit_, background_, raycasting_, camera_, light_,
+    registerComponents(volume_, entryExit_, background_, isoTF_, raycasting_, camera_, light_,
                        positionIndicator_, sampleTransform_);
 }
 

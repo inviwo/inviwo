@@ -57,7 +57,7 @@ MultiChannelVolumeRaycaster::MultiChannelVolumeRaycaster(std::string_view identi
               "input volume, each channel rendered with its own TF"_help}
     , entryExit_{}
     , background_{*this}
-    , isoTFs_{volume_.volumePort}
+    , isoTFs_{&volume_.volumePort}
     , raycasting_{volume_.getName(),
                   util::make_array<4>([&](auto i) { return std::ref(isoTFs_.isoTFs[i]); })}
     , camera_{"camera", util::boundingBox(volume_.volumePort)}

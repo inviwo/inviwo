@@ -56,30 +56,14 @@ std::shared_ptr<Volume> ProceduralLoader::load(size_t index, std::shared_ptr<Vol
 
 size_t ProceduralLoader::size() const { return count_; }
 
-std::span<const Seconds> ProceduralLoader::times() const { return times_; }
+Seconds ProceduralLoader::time(size_t index) const { return times_[index]; }
 
 VolumeConfig ProceduralLoader::prototype() const { return prototype_; }
-
-namespace {
-
-std::vector<Seconds> resolveTimes(const VolumeLoader& loader) {
-    const auto loaderTimes = loader.times();
-    if (!loaderTimes.empty()) {
-        return {loaderTimes.begin(), loaderTimes.end()};
-    }
-    std::vector<Seconds> result(loader.size());
-    for (size_t i = 0; i < result.size(); ++i) {
-        result[i] = Seconds{static_cast<double>(i)};
-    }
-    return result;
-}
-
-}  // namespace
 
 TemporalVolume::TemporalVolume(std::unique_ptr<VolumeLoader> loader, size_t cacheSize)
     : loader_{std::move(loader)}
     , prototype_{loader_ ? loader_->prototype() : VolumeConfig{}}
-    , times_{loader_ ? resolveTimes(*loader_) : std::vector<Seconds>{}}
+    , dataMap_{prototype_.dataMap()}
     , cacheSize_{std::max<size_t>(2, cacheSize)} {
 
     if (!loader_) {
@@ -103,40 +87,41 @@ TemporalVolume::~TemporalVolume() {
     }
 }
 
-size_t TemporalVolume::size() const { return times_.size(); }
+size_t TemporalVolume::size() const { return loader_->size(); }
 
-bool TemporalVolume::empty() const { return times_.empty(); }
-
-std::span<const Seconds> TemporalVolume::times() const { return times_; }
+bool TemporalVolume::empty() const { return loader_->size() == 0; }
 
 std::pair<Seconds, Seconds> TemporalVolume::timeRange() const {
-    if (times_.empty()) {
+    if (empty()) {
         return {Seconds{0.0}, Seconds{0.0}};
     }
-    return {times_.front(), times_.back()};
+    return {times().front(), times().back()};
 }
 
 const VolumeConfig& TemporalVolume::prototype() const { return prototype_; }
+const DataMapper& TemporalVolume::dataMap() const { return dataMap_; }
 
 size_t TemporalVolume::nearestIndex(Seconds time) const {
-    const size_t n = times_.size();
+    auto ts = times();
+    const size_t n = ts.size();
     if (n == 0) {
         return 0;
     }
-    if (time <= times_.front()) {
+    if (time <= ts.front()) {
         return 0;
     }
-    if (time >= times_.back()) {
+    if (time >= ts.back()) {
         return n - 1;
     }
-    const auto upper = std::ranges::upper_bound(times_, time);
-    const auto ib = static_cast<size_t>(std::distance(times_.begin(), upper));
+
+    const auto upper = std::ranges::upper_bound(ts, time);
+    const auto ib = static_cast<size_t>(std::distance(ts.begin(), upper));
     const size_t ia = ib - 1;
-    return (time - times_[ia] <= times_[ib] - time) ? ia : ib;
+    return (time - ts[ia] <= ts[ib] - time) ? ia : ib;
 }
 
 std::shared_ptr<const Volume> TemporalVolume::get(size_t index) const {
-    if (index >= times_.size()) {
+    if (index >= size()) {
         return nullptr;
     }
 
@@ -170,30 +155,31 @@ std::shared_ptr<const Volume> TemporalVolume::get(Seconds time) const {
 }
 
 TemporalVolume::Frame TemporalVolume::interpolate(Seconds time) const {
-    const size_t n = times_.size();
+    auto ts = times();
+    const size_t n = ts.size();
     if (n == 0) {
         return {.a = nullptr, .b = nullptr, .t = 0.0};
     }
-    if (n == 1 || time <= times_.front()) {
+    if (n == 1 || time <= ts.front()) {
         auto volume = get(size_t{0});
         return {.a = volume, .b = volume, .t = 0.0};
     }
-    if (time >= times_.back()) {
+    if (time >= ts.back()) {
         auto volume = get(n - 1);
         return {.a = volume, .b = volume, .t = 0.0};
     }
 
-    const auto upper = std::ranges::upper_bound(times_, time);
-    const auto ib = static_cast<size_t>(std::distance(times_.begin(), upper));
+    const auto upper = std::ranges::upper_bound(ts, time);
+    const auto ib = static_cast<size_t>(std::distance(ts.begin(), upper));
     const size_t ia = ib - 1;
-    const Seconds ta = times_[ia];
-    const Seconds tb = times_[ib];
+    const Seconds ta = ts[ia];
+    const Seconds tb = ts[ib];
     const double factor = (tb > ta) ? (time - ta) / (tb - ta) : 0.0;
     return {.a = get(ia), .b = get(ib), .t = factor};
 }
 
 void TemporalVolume::prefetch(size_t index) const {
-    if (index >= times_.size()) {
+    if (index >= size()) {
         return;
     }
 
