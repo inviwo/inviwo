@@ -77,7 +77,7 @@ enum Roles { Fulltext = Qt::UserRole + 1 };
 
 }  // namespace detail
 
-TextSelectionDelegate::TextSelectionDelegate(QWidget* parent) : QItemDelegate(parent) {}
+TextSelectionDelegate::TextSelectionDelegate(QWidget* parent) : QStyledItemDelegate(parent) {}
 
 QWidget* TextSelectionDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                                              const QModelIndex& index) const {
@@ -85,9 +85,27 @@ QWidget* TextSelectionDelegate::createEditor(QWidget* parent, const QStyleOption
         auto value = index.model()->data(index, Qt::EditRole).toString();
         auto widget = new QPlainTextEdit(value, parent);
         widget->setReadOnly(true);
+        widget->setFrameShape(QFrame::NoFrame);
+        widget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        widget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        widget->setStyleSheet(QString{"QPlainTextEdit { background: #323235; }"});
+        widget->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
+        widget->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+        widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        widget->setContentsMargins(0, 0, 0, 0);
+        widget->document()->setDocumentMargin(2.0);
+
+        // Match current cell width so wrapping is computed correctly up-front
+        widget->setFixedWidth(option.rect.width());
+        widget->document()->setTextWidth(option.rect.width() - 4);
+
+        // Height from wrapped document layout (+small padding)
+        const int docH = static_cast<int>(std::ceil(widget->document()->size().height()));
+        const int minH = std::max(option.rect.height(), docH + 4);
+        widget->setMinimumHeight(minH);
         return widget;
     } else {
-        return QItemDelegate::createEditor(parent, option, index);
+        return QStyledItemDelegate::createEditor(parent, option, index);
     }
 }
 
@@ -95,6 +113,20 @@ void TextSelectionDelegate::setModelData([[maybe_unused]] QWidget* editor,
                                          [[maybe_unused]] QAbstractItemModel* model,
                                          [[maybe_unused]] const QModelIndex& index) const {
     // dummy function to prevent changing the model
+}
+
+void TextSelectionDelegate::updateEditorGeometry(QWidget* editor,
+                                                 const QStyleOptionViewItem& option,
+                                                 const QModelIndex& index) const {
+    editor->setGeometry(option.rect);
+    if (auto* plain = qobject_cast<QPlainTextEdit*>(editor)) {
+        plain->setFixedWidth(option.rect.width());
+        plain->document()->setTextWidth(std::max(0, option.rect.width() - 4));
+        const int docH = static_cast<int>(std::ceil(plain->document()->size().height()));
+        const int h = std::max(option.rect.height(), docH + 4);
+        plain->setMinimumHeight(h);
+    }
+    emit adjustHeight(index);
 }
 
 struct BackgroundJobs : QLabel, ProcessorNetworkObserver {
@@ -336,6 +368,15 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->setAttribute(Qt::WA_Hover);
     tableView_->setItemDelegateForColumn(static_cast<int>(LogTableModelEntry::ColumnID::Message),
                                          textSelectionDelegate_);
+    connect(textSelectionDelegate_, &TextSelectionDelegate::adjustHeight, this,
+            [this](const QModelIndex& index) {
+                if (!index.isValid()) return;
+                tableView_->resizeRowToContents(index.row());
+            });
+    connect(textSelectionDelegate_, &QAbstractItemDelegate::closeEditor, this,
+            [this](QWidget*, QAbstractItemDelegate::EndEditHint) {
+                applyRowHeights(0, tableView_->verticalHeader()->count());
+            });
 
     connect(this, &ConsoleWidget::hasNewEntries, this, &ConsoleWidget::onNewEntries,
             Qt::QueuedConnection);
