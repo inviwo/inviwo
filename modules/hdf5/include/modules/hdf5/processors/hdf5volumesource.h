@@ -80,12 +80,8 @@ private:
 
     Inport inport_;
     VolumeOutport outport_;
-    std::shared_ptr<Volume> volume_;
 
     OptionPropertyString volumeSelection_;
-
-    BoolProperty automaticEvaluation_;
-    ButtonProperty evaluate_;
 
     CompositeProperty basisGroup_;
     OptionPropertyString basisSelection_;
@@ -102,7 +98,6 @@ private:
 
     VolumeReuseCache cache_;
 
-    bool dirty_;
     bool deserialized_ = false;
 };
 
