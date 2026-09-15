@@ -36,12 +36,12 @@ endif()
 source_group("Resource Files" FILES ${RES_FILES})
 
 # Create application
-add_executable(inviwo MACOSX_BUNDLE WIN32 
+add_library(inviwo-objs OBJECT
     ${SOURCE_FILES} 
     ${HEADER_FILES} 
     ${MOCED_FILES} 
     ${RES_FILES})
-target_link_libraries(inviwo PUBLIC 
+target_link_libraries(inviwo-objs PUBLIC
     inviwo::core
     inviwo::module-system
     inviwo::python-helper
@@ -56,8 +56,11 @@ if(IVW_CFG_TRACY_MENORY_PROFILING)
     target_compile_definitions(inviwo PUBLIC IVW_CFG_TRACY_MENORY_PROFILING)
 endif()
 
-ivw_define_standard_definitions(inviwo inviwo)
-ivw_define_standard_properties(QT inviwo)
+ivw_define_standard_definitions(inviwo-objs inviwo-objs)
+ivw_define_standard_properties(QT inviwo-objs)
+
+add_executable(inviwo MACOSX_BUNDLE WIN32)
+target_link_libraries(inviwo PUBLIC inviwo-objs)
 
 # Add application to pack
 ivw_default_install_targets(inviwo)
@@ -86,32 +89,12 @@ elseif(WIN32)
 
     project(inviwo-cli)
 
-    add_executable(inviwo-cli MACOSX_BUNDLE WIN32 
-        ${SOURCE_FILES} 
-        ${HEADER_FILES} 
-        ${MOCED_FILES} 
-        ${QRC_FILE} 
-        ${RES_FILES}
-    )
-    target_link_libraries(inviwo-cli PUBLIC
-        inviwo::core
-        inviwo::module-system
-        inviwo::python-helper
-        inviwo::qtapplicationbase
-        inviwo::qteditor
-        Qt6::Core 
-        Qt6::Widgets
-    )
-
-    ivw_define_standard_definitions(inviwo-cli inviwo-cli)
-    ivw_define_standard_properties(inviwo-cli)
+    add_executable(inviwo-cli MACOSX_BUNDLE WIN32)
+    target_link_libraries(inviwo-cli PUBLIC inviwo-objs)
 
     if(pymodules)
         add_dependencies(inviwo-cli ${pymodules})
     endif()
-
-    # prevent inviwo-cli from building in parallel with inviwo since that might cause errors with the moc generation
-    add_dependencies(inviwo-cli inviwo)
 
     set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS 
         " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
