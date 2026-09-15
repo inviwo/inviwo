@@ -66,6 +66,8 @@ HDF5ToDataFrame::HDF5ToDataFrame()
 HDF5ToDataFrame::~HDF5ToDataFrame() = default;
 
 void HDF5ToDataFrame::process() try {
+    const std::scoped_lock lock{Handle::globalMutex()};
+
     const auto data = inport_.getData();
 
     if (inport_.isChanged()) {

@@ -49,11 +49,11 @@ namespace inviwo {
 namespace hdf5 {
 
 const ProcessorInfo HDF5ToVolume::processorInfo_{
-    "org.inviwo.hdf5.ToVolume",  // Class identifier
-    "HDF5 To Volume",            // Display name
-    "Data Input",                // Category
-    CodeState::Stable,           // Code state
-    Tags::None,                  // Tags
+    "org.inviwo.hdf5.ToVolume",               // Class identifier
+    "HDF5 To Volume",                         // Display name
+    "Data Input",                             // Category
+    CodeState::Stable,                        // Code state
+    Tags::CPU | Tag{"HDF5"} | Tag{"Volume"},  // Tags
     "Load a volume from a HDF5 file handle."_help,
 };
 const ProcessorInfo& HDF5ToVolume::getProcessorInfo() const { return processorInfo_; }
@@ -111,6 +111,8 @@ HDF5ToVolume::HDF5ToVolume()
 HDF5ToVolume::~HDF5ToVolume() = default;
 
 void HDF5ToVolume::process() try {
+    const std::scoped_lock lock{Handle::globalMutex()};
+
     const auto data = inport_.getData();
 
     if (inport_.isChanged()) {

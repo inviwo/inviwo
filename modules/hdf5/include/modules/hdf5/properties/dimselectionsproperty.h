@@ -75,10 +75,8 @@ public:
      */
     [[nodiscard]] std::vector<Selection> getSelection() const;
 
-    /**
-     * The maximal selection for each active dimension, in column major (Inviwo) order.
-     */
-    [[nodiscard]] std::vector<Selection> getMaxSelection() const;
+    size_t rank() const { return rank_; }
+    size_t maxRank() const { return maxRank_; }
 
 private:
     size_t maxRank_;
