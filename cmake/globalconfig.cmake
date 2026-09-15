@@ -130,6 +130,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/licenses.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/vcpkghelpers.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/benchmark.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/doc.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/sourcelink.cmake)
 
 # Use and generate resources when available
 include(${CMAKE_CURRENT_LIST_DIR}/compileresources.cmake)

@@ -1085,6 +1085,16 @@ set(PCH_HEADERS_EXTERNAL
 
 ivw_compile_optimize_on_target(inviwo-core HEADERS ${PCH_HEADERS_EXTERNAL} ${PCH_HEADERS_CORE})
 
+ivw_git_get(${CMAKE_CURRENT_SOURCE_DIR} repo --no-pager remote get-url origin)
+ivw_git_get(${CMAKE_CURRENT_SOURCE_DIR} root rev-parse --show-toplevel)
+ivw_git_get(${CMAKE_CURRENT_SOURCE_DIR} ref describe --match=NeVeRmAtCh --always --abbrev=40)
+ivw_target_add_sourcelink(
+    TARGET inviwo-core
+    REPO ${repo}
+    ROOT ${root}
+    REF ${ref}
+)
+
 # Installer setup
 install(
     FILES 

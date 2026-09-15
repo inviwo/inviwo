@@ -148,4 +148,14 @@ function(ivw_create_module)
     )
 
     set_target_properties(${${mod}_target} PROPERTIES VERSION ${${mod}_version})
+
+    ivw_git_get(${CMAKE_CURRENT_SOURCE_DIR} repo --no-pager remote get-url origin)
+    ivw_git_get(${CMAKE_CURRENT_SOURCE_DIR} root rev-parse --show-toplevel)
+    ivw_git_get(${CMAKE_CURRENT_SOURCE_DIR} ref describe --match=NeVeRmAtCh --always --abbrev=40)
+    ivw_target_add_sourcelink(
+        TARGET ${${mod}_target}
+        REPO ${repo}
+        ROOT ${root}
+        REF ${ref}
+    )
 endfunction()
