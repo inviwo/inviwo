@@ -322,6 +322,10 @@ public:
     OptionProperty& replaceOptions(const std::vector<T>& values)
         requires(fmt::is_formattable<T>::value || util::is_stream_insertable<T>::value);
 
+    template <std::ranges::range R>
+        requires std::convertible_to<std::ranges::range_value_t<R>, OptionPropertyOption<T>>
+    OptionProperty& replaceOptions(R range);
+
     template <typename Func>
         requires(std::is_invocable_r_v<bool, Func, std::vector<OptionPropertyOption<T>>&>)
     OptionProperty& updateOptions(Func&& updater);
@@ -907,6 +911,48 @@ OptionProperty<T>& OptionProperty<T>::replaceOptions(std::vector<OptionPropertyO
     }
     return *this;
 }
+
+template <typename T>
+template <std::ranges::range R>
+    requires std::convertible_to<std::ranges::range_value_t<R>, OptionPropertyOption<T>>
+OptionProperty<T>& OptionProperty<T>::replaceOptions(R range) {
+
+    std::string selectId{};
+    if (!opts().empty()) selectId = getSelectedIdentifier();
+
+    auto& opts = optsMut();
+    bool modified = false;
+
+    size_t count = 0;
+    for (auto&& elem : range) {
+        if (count < opts.size()) {
+            if (opts[count] != elem) {
+                opts[count] = elem;
+                modified = true;
+            }
+        } else {
+            opts.push_back(elem);
+            modified = true;
+        }
+        ++count;
+    }
+
+    if (count != opts.size()) {
+        opts.resize(count);
+        modified = true;
+    }
+
+    if (auto index = findId(selectId).value_or(size_t{0}); index != selectedIndex_) {
+        selectedIndex_ = index;
+        modified = true;
+    }
+
+    if (modified) {
+        propertyModified();
+    }
+    return *this;
+}
+
 template <typename T>
 template <typename Func>
     requires(std::is_invocable_r_v<bool, Func, std::vector<OptionPropertyOption<T>>&>)
