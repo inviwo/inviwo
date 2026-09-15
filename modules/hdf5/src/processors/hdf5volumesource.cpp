@@ -35,6 +35,7 @@
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/concat.h>
 
 #include <algorithm>
 #include <functional>
@@ -65,47 +66,34 @@ HDF5ToVolume::HDF5ToVolume()
 
     , volumeSelection_("volumeSelection", "Volume")
 
-    , automaticEvaluation_("automaticEvaluation", "Automatic loading", true,
-                           InvalidationLevel::Valid)
-    , evaluate_("evaluate", "Load", [this]() { dirty_ = true; })
-
     , basisGroup_("basisGroup", "Basis")
     , basisSelection_("basisSelection", "Source")
     , basis_("basis", "Matrix", mat4(1.0f), inviwo::util::filled<mat4>(-1000.f),
              inviwo::util::filled<mat4>(1000.f))
     , spacing_("spacing", "Spacing", vec3(0.01f), vec3(0.0f), vec3(1.0f))
     , information_("Information", "Data information")
-    , outputGroup_("outputGroup", "Operations", InvalidationLevel::Valid)
+    , outputGroup_("outputGroup", "Operations")
     , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
     , adjustBasis_("adjustBasis", "Automatically adjust basis", true)
     , adjustOffset_("adjustOffset", "Automatically adjust offset", true)
     , selection_("selection", "Selection", 6)
-    , cache_{}
-    , dirty_(false) {
+    , cache_{} {
 
     addPort(inport_);
     addPort(outport_);
 
-    volumeSelection_.onChange([this]() { onSelectionChange(); });
     volumeSelection_.setSerializationMode(PropertySerializationMode::All);
 
-    automaticEvaluation_.onChange([this]() { evaluate_.setReadOnly(automaticEvaluation_); });
-
     basisGroup_.addProperties(basisSelection_, spacing_, basis_);
-
-    basisSelection_.onChange([this]() { onBasisSelectionChange(); });
+    basis_.readonlyDependsOn(basisSelection_,
+                             [](auto& p) { return p.getSelectedIndex() != 0; });
+    spacing_.visibilityDependsOn(basisSelection_,
+                                 [](auto& p) { return p.getSelectedIndex() == 1; });
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
 
     outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_, selection_);
-    outputGroup_.onChange([this]() {
-        if (automaticEvaluation_) {
-            dirty_ = true;
-            this->invalidate(InvalidationLevel::InvalidOutput);
-        }
-    });
 
-    addProperties(volumeSelection_, automaticEvaluation_, evaluate_, basisGroup_, information_,
-                  outputGroup_);
+    addProperties(volumeSelection_, basisGroup_, information_, outputGroup_);
 }
 
 HDF5ToVolume::~HDF5ToVolume() = default;
@@ -131,102 +119,91 @@ void HDF5ToVolume::process() try {
                                        return std::ranges::equal(dims, basis) ||
                                               std::ranges::equal(dims, basisAndOffset);
                                    }));
-
         // Update Volume Selection
-        std::vector<OptionPropertyStringOption> volumeOptions;
-        for (const auto& info : volumeMatches_) {
-            volumeOptions.emplace_back(info.path.toString(), util::dataSetDescription(info),
-                                       info.path.toString());
-        }
-
-        volumeSelection_.replaceOptions(volumeOptions);
+        volumeSelection_.replaceOptions(volumeMatches_ |
+                                        std::views::transform(util::dataSetInfoToOption));
         volumeSelection_.setCurrentStateAsDefault();
 
         // Update Basis Selection
-        std::vector<OptionPropertyStringOption> basisOptions;
-        basisOptions.emplace_back("default", "User defined basis", "default");
-        basisOptions.emplace_back("default", "User defined spacing", "default");
-        for (const auto& meta : basisMatches_) {
-            const auto path = meta.path.toString();
-            basisOptions.emplace_back(path, util::dataSetDescription(meta), path);
-        }
-        basisSelection_.replaceOptions(basisOptions);
-        basisSelection_.setCurrentStateAsDefault();
+        const std::array<OptionPropertyStringOption, 2> basisOptions{
+            {{"user_basis", "User defined basis", "user_basis"},
+             {"user_spacing", "User defined spacing", "user_spacing"}}};
 
-        onSelectionChange();
-        onBasisSelectionChange();
+        basisSelection_.replaceOptions(views::concat(
+            basisOptions, basisMatches_ | std::views::transform(util::dataSetInfoToOption)));
+        basisSelection_.setCurrentStateAsDefault();
+    }
+
+    if (volumeMatches_.empty()) {
+        outport_.clear();
+        return;
     }
 
     const auto& volumeInfo = volumeMatches_[volumeSelection_.getSelectedIndex()];
+    selection_.update(volumeInfo);
 
-    if (dirty_) {
-        const auto* format = util::conversionFormat(datatype_.getSelectedIndex());
-        volume_ = std::shared_ptr<Volume>(getVolumeAtPathAsType(
-            *data + volumeInfo.path, selection_.getSelection(), format, std::ref(cache_)));
-        information_.updateForNewVolume(*volume_, deserialized_ ? inviwo::util::OverwriteState::Yes
-                                                                : inviwo::util::OverwriteState::No);
+    const auto* format = util::conversionFormat(datatype_.getSelectedIndex());
+    auto volume = std::shared_ptr<Volume>(getVolumeAtPathAsType(
+        *data + volumeInfo.path, selection_.getSelection(), format, std::ref(cache_)));
+    information_.updateForNewVolume(*volume, deserialized_ ? inviwo::util::OverwriteState::Yes
+                                                           : inviwo::util::OverwriteState::No);
+    deserialized_ = false;
 
-        dirty_ = false;
-        deserialized_ = false;
+    information_.updateVolume(*volume);
+
+    switch (basisSelection_.getSelectedIndex()) {
+        case 0: {  // User defined basis
+            break;
+        }
+        case 1: {  // User defined spacing
+            const auto dim = volume->getDimensions();
+            const auto diag = dvec4{dvec3(dim) * spacing_.get(), 1.0};
+            auto basis = glm::diagonal4x4(diag);
+            const auto offset = -0.5 * dvec3(basis[0] + basis[1] + basis[2]);
+            basis[3] = dvec4(offset, 1.0);
+            basis_.set(basis);
+            break;
+        }
+        default: {
+            const auto basis =
+                getBasisFromMeta(basisMatches_[basisSelection_.getSelectedIndex() - 2]);
+            basis_.set(basis);
+            break;
+        }
     }
 
-    if (volume_) {
-        information_.updateVolume(*volume_);
+    if (adjustBasis_) {
+        dmat4 basis = basis_;
 
-        switch (basisSelection_.getSelectedIndex()) {
-            case 0: {  // User defined basis
-                break;
+        auto sels = selection_.getSelection();
+        auto dims = volumeInfo.getColumnMajorDimensions();
+
+        auto selAndDims =
+            std::views::zip(sels, dims) | std::views::transform([](auto&& item) {
+                return std::tuple{std::apply(clamp, item), std::get<1>(item)};
+            }) |
+            std::views::filter([](auto&& item) { return std::get<0>(item).count > 1; });
+
+        for (auto&& [i, item] : std::views::zip(std::views::iota(0uz), selAndDims)) {
+            if (i > 2) throw Exception("Invalid selection, resulting rank > 3");
+
+            auto&& [sel, dim] = item;
+            if (adjustOffset_) {
+                basis[3] += basis[i] * static_cast<double>(sel.start) / static_cast<double>(dim);
             }
-            case 1: {  // User defined spacing
-                const auto dim = volume_->getDimensions();
-                const auto diag = dvec4{dvec3(dim) * spacing_.get(), 1.0};
-                auto basis = glm::diagonal4x4(diag);
-                const auto offset = -0.5 * dvec3(basis[0] + basis[1] + basis[2]);
-                basis[3] = dvec4(offset, 1.0);
-                basis_.set(basis);
-                break;
-            }
-            default: {
-                const auto basis =
-                    getBasisFromMeta(basisMatches_[basisSelection_.getSelectedIndex() - 2]);
-                basis_.set(basis);
-                break;
-            }
+            basis[i] *= static_cast<double>(sel.count * sel.stride) / static_cast<double>(dim);
         }
-
-        if (adjustBasis_) {
-            dmat4 basis = basis_;
-
-            auto sels = selection_.getSelection();
-            auto dims = volumeInfo.getColumnMajorDimensions();
-
-            auto selAndDims =
-                std::views::zip(sels, dims) | std::views::transform([](auto&& item) {
-                    return std::tuple{std::apply(clamp, item), std::get<1>(item)};
-                }) |
-                std::views::filter([](auto&& item) { return std::get<0>(item).count > 1; });
-
-            for (auto&& [i, item] : std::views::zip(std::views::iota(0uz), selAndDims)) {
-                if (i > 2) throw Exception("Invalid selection, resulting rank > 3");
-
-                auto&& [sel, dim] = item;
-                if (adjustOffset_) {
-                    basis[3] +=
-                        basis[i] * static_cast<double>(sel.start) / static_cast<double>(dim);
-                }
-                basis[i] *= static_cast<double>(sel.count * sel.stride) / static_cast<double>(dim);
-            }
-            if (!adjustOffset_) {
-                const vec3 offset = -0.5f * vec3(basis[0] + basis[1] + basis[2]);
-                basis[3] = vec4(offset, 1.0f);
-            }
-            volume_->setModelMatrix(basis);
-        } else {
-            volume_->setModelMatrix(basis_);
+        if (!adjustOffset_) {
+            const vec3 offset = -0.5f * vec3(basis[0] + basis[1] + basis[2]);
+            basis[3] = vec4(offset, 1.0f);
         }
-
-        outport_.setData(volume_);
+        volume->setModelMatrix(basis);
+    } else {
+        volume->setModelMatrix(basis_);
     }
+
+    outport_.setData(volume);
+
 } catch (H5::Exception& e) {
     throw Exception(SourceContext{}, "Error reading HDF5 data: {}", e.getDetailMsg());
 }
@@ -265,34 +242,6 @@ dmat4 HDF5ToVolume::getBasisFromMeta(const DataSetInfo& meta) {
         }
     }
     return basis;
-}
-
-void HDF5ToVolume::onBasisSelectionChange() {
-    switch (basisSelection_.getSelectedIndex()) {
-        case 0: {  // User defined basis
-            basis_.setReadOnly(false);
-            spacing_.setVisible(false);
-            break;
-        }
-        case 1: {  // User defined spacing
-            basis_.setReadOnly(true);
-            spacing_.setVisible(true);
-            break;
-        }
-        default: {
-            basis_.setReadOnly(true);
-            spacing_.setVisible(false);
-            break;
-        }
-    }
-}
-
-void HDF5ToVolume::onSelectionChange() {
-    dirty_ = true;
-    if (!volumeMatches_.empty()) {
-        const DataSetInfo volumeMeta = volumeMatches_[volumeSelection_.getSelectedIndex()];
-        selection_.update(volumeMeta);
-    }
 }
 
 void HDF5ToVolume::deserialize(Deserializer& d) {
