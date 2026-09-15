@@ -34,6 +34,7 @@
 #include <modules/hdf5/hdf5utils.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/concat.h>
 
 #include <algorithm>
 #include <functional>
@@ -105,25 +106,10 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
     volumeSelection_.setSerializationMode(PropertySerializationMode::All);
 
     basisGroup_.addProperties(basisSelection_, spacing_, basis_);
-    basisSelection_.onChange([this]() {
-        switch (basisSelection_.getSelectedIndex()) {
-            case 0: {  // User defined basis
-                basis_.setReadOnly(false);
-                spacing_.setVisible(false);
-                break;
-            }
-            case 1: {  // User defined spacing
-                basis_.setReadOnly(true);
-                spacing_.setVisible(true);
-                break;
-            }
-            default: {
-                basis_.setReadOnly(true);
-                spacing_.setVisible(false);
-                break;
-            }
-        }
-    });
+    basis_.readonlyDependsOn(basisSelection_,
+                             [](auto& p) { return p.getSelectedIndex() != 0; });
+    spacing_.visibilityDependsOn(basisSelection_,
+                                 [](auto& p) { return p.getSelectedIndex() == 1; });
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
     outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_);
     timeGroup_.addProperties(timeDimension_, dt_, cacheSize_);
@@ -155,25 +141,17 @@ void HDF5ToTemporalVolume::process() try {
                                    }));
 
         // Update Volume Selection
-        const auto volumeOptions =
-            volumeMatches_ | std::views::transform([](const auto& info) {
-                return OptionPropertyStringOption{
-                    info.path.toString(), util::dataSetDescription(info), info.path.toString()};
-            }) |
-            std::ranges::to<std::vector>();
-
-        volumeSelection_.replaceOptions(volumeOptions);
+        volumeSelection_.replaceOptions(volumeMatches_ |
+                                        std::views::transform(util::dataSetInfoToOption));
         volumeSelection_.setCurrentStateAsDefault();
 
         // Update Basis Selection
-        std::vector<OptionPropertyStringOption> basisOptions;
-        basisOptions.emplace_back("default", "User defined basis", "default");
-        basisOptions.emplace_back("default", "User defined spacing", "default");
-        for (const auto& meta : basisMatches_) {
-            const auto path = meta.path.toString();
-            basisOptions.emplace_back(path, util::dataSetDescription(meta), path);
-        }
-        basisSelection_.replaceOptions(basisOptions);
+        const std::array<OptionPropertyStringOption, 2> basisOptions{
+            {{"user_basis", "User defined basis", "user_basis"},
+             {"user_spacing", "User defined spacing", "user_spacing"}}};
+
+        basisSelection_.replaceOptions(views::concat(
+            basisOptions, basisMatches_ | std::views::transform(util::dataSetInfoToOption)));
         basisSelection_.setCurrentStateAsDefault();
     }
 
