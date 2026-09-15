@@ -61,7 +61,6 @@
 #include <string>
 #include <string_view>
 #include <vector>
-#include <regex>
 #include <expected>
 
 #include <fmt/format.h>
@@ -179,20 +178,6 @@ const ProcessorInfo& SequenceSource<Conf>::getProcessorInfo() const {
     return info;
 }
 
-namespace util {
-
-IVW_MODULE_BASE_API auto getFilesInFolder(const std::filesystem::path& folder,
-                                          std::optional<std::string_view> include,
-                                          std::optional<std::string_view> exclude)
-    -> std::expected<std::vector<std::filesystem::path>, std::string_view>;
-
-IVW_MODULE_BASE_API auto getFileInFolder(const std::filesystem::path& folder,
-                                         std::optional<std::string_view> include,
-                                         std::optional<std::string_view> exclude)
-    -> std::expected<std::filesystem::path, std::string_view>;
-
-}  // namespace util
-
 template <typename Conf>
 SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
     : PoolProcessor()
@@ -260,7 +245,7 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
             }
         } else {
             if (auto file =
-                    util::getFileInFolder(folder_.get(), toOpt(include_), toOpt(exclude_))) {
+                    filesystem::getFileInFolder(folder_.get(), toOpt(include_), toOpt(exclude_))) {
                 return ProcessorStatus::Ready;
             } else {
                 return {ProcessorStatus::Error, file.error()};
@@ -340,7 +325,7 @@ void SequenceSource<Conf>::loadFolder(bool deserialize) {
     if (folder_.get().empty()) return;
 
     const auto files =
-        util::getFilesInFolder(folder_.get(), toOpt(include_), toOpt(exclude_))
+        filesystem::getFilesInFolder(folder_.get(), toOpt(include_), toOpt(exclude_))
             .or_else([&](std::string_view error)
                          -> std::expected<std::vector<std::filesystem::path>, std::string_view> {
                 throw Exception(error, SourceContext{});
