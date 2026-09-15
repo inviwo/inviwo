@@ -82,6 +82,11 @@ IVW_MODULE_HDF5_API std::vector<OptionPropertyIntOption> conversionOptions();
  */
 IVW_MODULE_HDF5_API const DataFormatBase* conversionFormat(size_t index);
 
+inline constexpr auto dataSetInfoToOption = [](const DataSetInfo& info) {
+    return OptionPropertyStringOption{info.path.toString(), util::dataSetDescription(info),
+                                      info.path.toString()};
+};
+
 }  // namespace util
 
 }  // namespace hdf5
