@@ -81,6 +81,8 @@ IVW_MODULE_HDF5_API std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& ha
 IVW_MODULE_HDF5_API std::shared_ptr<BufferBase> getBufferAtPathAsType(
     const Handle& handle, std::vector<Selection> selection, const DataFormatBase* type);
 
+IVW_MODULE_HDF5_API glm::dmat4 getBasis(const Handle& handle);
+
 }  // namespace hdf5
 
 }  // namespace inviwo

@@ -29,6 +29,7 @@
 
 #include <modules/base/processors/temporalvolumeplayer.h>
 
+#include <inviwo/core/algorithm/rangeutils.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/indexmapper.h>
@@ -136,9 +137,17 @@ void TemporalVolumePlayer::process() {
     }
 
     if (prefetch_.get()) {
-        const size_t current = temporal->nearestIndex(t);
-        temporal->prefetch(current + 1, prefetchAhead_.get());
+        const auto forward = last_.transform([&](Seconds l) { return t >= l; }).value_or(true);
+        const auto current = temporal->nearestIndex(t);
+        const auto count = prefetchAhead_.get();
+        const auto size = temporal->size();
+
+        for (auto i : views::iota_periodic(current, count, size, forward)) {
+            temporal->prefetch(i);
+        }
     }
+
+    last_ = t;
 }
 
 }  // namespace inviwo

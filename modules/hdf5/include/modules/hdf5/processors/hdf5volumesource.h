@@ -68,13 +68,6 @@ protected:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    void onDataChange();
-
-    void onSelectionChange();
-    void onBasisSelectionChange();
-
-    dmat4 getBasisFromMeta(const DataSetInfo& meta);
-
     std::vector<DataSetInfo> volumeMatches_;
     std::vector<DataSetInfo> basisMatches_;
 

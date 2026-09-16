@@ -93,8 +93,12 @@ public:
 
     DoubleProperty time;
     OptionProperty<Interpolation> interpolation;
+
     BoolProperty prefetch;
     IntSizeTProperty prefetchAhead;
+    std::optional<Seconds> last;
+
+    TemporalVolume::Frame frame; // Keep the frame around so we don't reuse it
 };
 
 }  // namespace inviwo

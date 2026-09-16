@@ -77,6 +77,7 @@ private:
     OptionProperty<Interpolation> interpolation_;
     BoolProperty prefetch_;
     IntSizeTProperty prefetchAhead_;
+    std::optional<Seconds> last_;
 };
 
 }  // namespace inviwo

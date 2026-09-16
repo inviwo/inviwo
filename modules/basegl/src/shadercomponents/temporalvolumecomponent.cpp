@@ -29,14 +29,18 @@
 
 #include <modules/basegl/shadercomponents/temporalvolumecomponent.h>
 
+#include <inviwo/core/algorithm/rangeutils.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/rendercontext.h>
+
 #include <modules/basegl/shadercomponents/isocomponent.h>
 #include <modules/basegl/shadercomponents/tfcomponent.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/volume/volumegl.h>
 
 #include <algorithm>
 
@@ -59,19 +63,15 @@ TemporalVolumeComponent::TemporalVolumeComponent(std::string_view name, Gradient
                     1,
                     InvalidationLevel::InvalidResources}
     , prefetch{"prefetch", "Prefetch", "Schedule background loading of upcoming frames"_help, true}
-    , prefetchAhead{"prefetchAhead", "Prefetch Ahead",
-                    util::ordinalCount<size_t>(2u, 16u).set(
-                        "Number of upcoming frames to prefetch"_help)} {}
+    , prefetchAhead{
+          "prefetchAhead", "Prefetch Ahead",
+          util::ordinalCount<size_t>(2u, 16u).set("Number of upcoming frames to prefetch"_help)} {}
 
 std::string_view TemporalVolumeComponent::getName() const { return volumePort.getIdentifier(); }
 
+TFData TemporalVolumeComponent::tfData() { return TFData{&volumePort}; }
 
-TFData TemporalVolumeComponent::tfData() {
-    return TFData{&volumePort};
-}
-
-void TemporalVolumeComponent::initializeResources(Shader& shader) {
-}
+void TemporalVolumeComponent::initializeResources(Shader& shader) {}
 
 void TemporalVolumeComponent::process(Shader& shader, TextureUnitContainer& cont) {
     auto temporal = volumePort.getData();
@@ -79,30 +79,35 @@ void TemporalVolumeComponent::process(Shader& shader, TextureUnitContainer& cont
 
     const Seconds t{time.get()};
 
-    std::shared_ptr<const Volume> a;
-    std::shared_ptr<const Volume> b;
-    float blend = 0.0f;
-
     if (interpolation.get() == Interpolation::Linear) {
-        auto frame = temporal->interpolate(t);
-        a = frame.a;
-        b = frame.b ? frame.b : frame.a;
-        blend = static_cast<float>(frame.t);
+        frame = temporal->interpolate(t);
     } else {
-        a = temporal->get(t);
-        b = a;
+        frame.a = temporal->get(t);
+        frame.b = frame.a;
+        frame.t = 0.0;
     }
-    if (!a) return;
-    if (!b) b = a;
+    if (!frame.a || !frame.b) return;
 
-    utilgl::bindAndSetUniforms(shader, cont, *a, getName());
-    utilgl::bindAndSetUniforms(shader, cont, *b, fmt::format("{}B", getName()));
-    shader.setUniform(fmt::format("{}Blend", getName()), blend);
+    StrBuffer buff;
+    utilgl::bindAndSetUniforms(shader, cont, *frame.a, getName());
+    utilgl::bindAndSetUniforms(shader, cont, *frame.b, buff.replace("{}B", getName()));
+    shader.setUniform(buff.replace("{}Blend", getName()), frame.t);
 
     if (prefetch.get()) {
-        const size_t current = temporal->nearestIndex(t);
-        temporal->prefetch(current + 1, prefetchAhead.get());
+        const auto forward = last.transform([&](Seconds l) { return t >= l; }).value_or(true);
+        const auto current = temporal->nearestIndex(t);
+        const auto count = prefetchAhead.get();
+        const auto size = temporal->size();
+
+        for (auto i : views::iota_periodic(current, count, size, forward)) {
+            temporal->prefetch(i, [](std::shared_ptr<Volume> vol) {
+                rendercontext::activateLocal();
+                vol->getRepresentation<VolumeGL>();
+            });
+        }
     }
+
+    last = t;
 }
 
 std::vector<std::tuple<Inport*, std::string>> TemporalVolumeComponent::getInports() {
