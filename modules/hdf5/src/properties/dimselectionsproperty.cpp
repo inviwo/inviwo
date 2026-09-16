@@ -32,6 +32,7 @@
 
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/algorithm/rangeutils.h>
 
 #include <algorithm>
 
@@ -48,10 +49,9 @@ DimSelectionsProperty::DimSelectionsProperty(std::string_view identifier,
     , maxRank_(maxRank)
     , rank_(maxRank) {
 
-    constexpr char last = 'Z';
     for (size_t i = 0; i < maxRank_; ++i) {
-        const auto ind = fmt::to_string(static_cast<char>(last - maxRank_ + i + 1));
-        selection_.push_back(std::make_unique<DimSelectionProperty>("dim" + ind, ind));
+        selection_.emplace_back(std::make_unique<DimSelectionProperty>(
+            fmt::format("dim{:02}", i), fmt::format("Dimension {}", i + 1)));
         addProperty(selection_[i].get(), false);
     }
 }
@@ -71,24 +71,22 @@ DimSelectionsProperty* DimSelectionsProperty::clone() const {
 
 void DimSelectionsProperty::update(const DataSetInfo& dataSetInfo) {
     const NetworkLock lock{this};
-    const auto cmdims = dataSetInfo.getColumnMajorDimensions();
-    rank_ = std::min(cmdims.size(), maxRank_);
+    const auto cmDims = dataSetInfo.getColumnMajorDimensions();
+    rank_ = std::min(cmDims.size(), maxRank_);
 
     for (auto&& [index, selection] : inviwo::util::enumerate(selection_)) {
-        selection->setVisible(index >= maxRank_ - rank_);
+        selection->setVisible(index < rank_);
     }
 
     for (size_t i = 0; i < rank_; ++i) {
-        selection_[i + maxRank_ - rank_]->update(cmdims[i]);
+        selection_[i]->update(cmDims[i]);
     }
 }
 
 std::vector<Selection> DimSelectionsProperty::getSelection() const {
-    std::vector<Selection> selection;
-    for (size_t i = maxRank_ - rank_; i < maxRank_; ++i) {
-        selection.push_back(selection_[i]->getSelection());
-    }
-    return selection;
+    return selection_ | std::views::take(rank_) | views::deref |
+           std::views::transform(&DimSelectionProperty::getSelection) |
+           std::ranges::to<std::vector>();
 }
 
 }  // namespace inviwo::hdf5
