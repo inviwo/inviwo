@@ -207,6 +207,8 @@ void TemporalVolume::prefetch(size_t index,
         if (callback) callback(volume);
         return volume;
     }));
+    touch(index);
+    evict();
 }
 
 void TemporalVolume::setCacheSize(size_t n) {
