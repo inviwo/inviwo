@@ -38,6 +38,7 @@
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/stdextensions.h>
 
 #include <chrono>
 #include <cstddef>
@@ -172,15 +173,6 @@ public:
     TemporalVolume& operator=(TemporalVolume&&) = delete;
     ~TemporalVolume();
 
-    /// Two frames bracketing a requested time together with a blend factor.
-    struct Frame {
-        std::shared_ptr<const Volume> a;  //!< frame at or before the requested time
-        std::shared_ptr<const Volume> b;  //!< frame at or after the requested time
-        double t;                         //!< blend factor in [0, 1]; 0 == pure a, 1 == pure b
-    };
-
-    // ── Metadata (no I/O) ────────────────────────────────────────────────────────────────────
-
     /// Number of frames.
     size_t size() const;
     /// Whether there are no frames.
@@ -192,23 +184,25 @@ public:
     }
     /// The time value of the first and last frame, or {0, 0} if empty.
     std::pair<Seconds, Seconds> timeRange() const;
+
     /// A prototype VolumeConfig describing dimensions, format, basis, and the DataMapper.
     const VolumeConfig& prototype() const;
     const DataMapper& dataMap() const;
 
-    // ── Time helpers ─────────────────────────────────────────────────────────────────────────
-
     /// Index of the frame whose time is closest to @p time.
     size_t nearestIndex(Seconds time) const;
-
-    // ── Synchronous access ───────────────────────────────────────────────────────────────────
 
     /// Frame by index. Blocks if not cached. Returns nullptr if @p index is out of bounds.
     std::shared_ptr<const Volume> get(size_t index) const;
     /// Frame nearest to the given @p time value. Blocks if not cached.
     std::shared_ptr<const Volume> get(Seconds time) const;
 
-    // ── Interpolated access ──────────────────────────────────────────────────────────────────
+    /// Two frames bracketing a requested time together with a blend factor.
+    struct Frame {
+        std::shared_ptr<const Volume> a;  //!< frame at or before the requested time
+        std::shared_ptr<const Volume> b;  //!< frame at or after the requested time
+        double t;                         //!< blend factor in [0, 1]; 0 == pure a, 1 == pure b
+    };
 
     /**
      * Return the two frames bracketing @p time together with a blend factor in [0, 1]. Both frames
@@ -217,14 +211,10 @@ public:
      */
     Frame interpolate(Seconds time) const;
 
-    // ── Prefetch (non-blocking) ──────────────────────────────────────────────────────────────
-
-    /// Schedule a background load of the frame at @p index. No-op if already cached or pending.
-    void prefetch(size_t index) const;
-    /// Schedule background loads of @p count frames starting at @p first.
-    void prefetch(size_t first, size_t count) const;
-
-    // ── Cache control ────────────────────────────────────────────────────────────────────────
+    /// Schedule a background load (non-blocking) of the frame at @p index. No-op if already cached
+    /// or pending.
+    void prefetch(size_t index,
+                  std::function<void(std::shared_ptr<Volume>)> callback = nullptr) const;
 
     /// Set the maximum number of decoded frames to keep in memory (clamped to >= 2).
     void setCacheSize(size_t n);
@@ -238,6 +228,23 @@ public:
 private:
     template <typename T>
     friend struct TFDataTraits;
+
+    struct Item : std::variant<std::shared_ptr<Volume>, std::future<std::shared_ptr<Volume>>> {
+        using Base = std::variant<std::shared_ptr<Volume>, std::future<std::shared_ptr<Volume>>>;
+        using Base::operator=;
+
+        bool ready() const { return index() == 0; }
+        std::shared_ptr<Volume>& volume() { return std::get<0>(*this); }
+        std::future<std::shared_ptr<Volume>>& future() { return std::get<1>(*this); }
+
+        auto visit(std::invocable<std::shared_ptr<Volume>&> auto&& volumeCallback,
+                   std::invocable<std::future<std::shared_ptr<Volume>>&> auto&& futureCallback) {
+            return std::visit(
+                util::overloaded{std::forward<decltype(volumeCallback)>(volumeCallback),
+                                 std::forward<decltype(futureCallback)>(futureCallback)},
+                *this);
+        }
+    };
 
     /// Insert @p volume for @p index into the cache (mutex must be held). Returns the cached value.
     std::shared_ptr<const Volume> insert(size_t index, std::shared_ptr<Volume> volume) const;
@@ -256,9 +263,7 @@ private:
 
     mutable std::mutex mutex_;
     mutable std::list<size_t> lruOrder_;  //!< front == most recently used
-    mutable std::unordered_map<size_t, std::shared_ptr<const Volume>> cache_;
-    mutable std::unordered_map<size_t, std::future<std::shared_ptr<Volume>>> pending_;
-    mutable std::vector<std::shared_ptr<Volume>> reusePool_;  //!< evicted, uniquely-owned volumes
+    mutable std::unordered_map<size_t, Item> cache_;
 };
 
 template <>
@@ -278,7 +283,8 @@ struct TFDataTraits<TemporalVolume> {
         if (data.cache_.empty()) {
             return {.progress = HistogramCache::Progress::NoData};
         }
-        return data.cache_.begin()->second->calculateHistograms(whenDone);
+        return {.progress = HistogramCache::Progress::NoData};
+        // return data.cache_.begin()->second->calculateHistograms(whenDone);
     }
 };
 

@@ -28,8 +28,6 @@
  *********************************************************************************/
 
 #include <modules/hdf5/hdf5read.h>
-#include <modules/hdf5/hdf5types.h>
-#include <modules/hdf5/hdf5exception.h>
 
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/formatdispatching.h>
@@ -38,7 +36,10 @@
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 
-#include <modules/base/algorithm/dataminmax.h>
+#include <modules/hdf5/hdf5types.h>
+#include <modules/hdf5/hdf5exception.h>
+
+#include <modules/base/algorithm/algorithmoptions.h>
 
 #include <algorithm>
 
@@ -220,33 +221,20 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
     IgnoreValues ignore{};
     readValueAttributes(dataset, *volume, ignore);
 
-    auto minmax = volumeRam->dispatch<std::pair<dvec4, dvec4>, dispatching::filter::Scalars>(
-        [&](auto vrprecision) {
-            using ValueType = ::inviwo::util::PrecisionValueType<decltype(vrprecision)>;
-
-            auto data = vrprecision->getView();
-
-            try {
-                dataset.read(data.data(), TypeMap<ValueType>::getType(), memorySpace, dataSpace);
-            } catch (H5::DataSetIException& e) {
-                throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
-            }
-
-            // return ::inviwo::util::dataMinMax(data.data(), data.size(), ignore);
-            return std::pair<dvec4, dvec4>{dvec4{1.0}, dvec4{0.0}};
-        });
-
-    volume->dataMap.dataRange.x = glm::compMin(minmax.first);
-    volume->dataMap.dataRange.y = glm::compMax(minmax.second);
-    volume->dataMap.valueRange = volume->dataMap.dataRange;
+    volumeRam->dispatch<void, dispatching::filter::Scalars>([&](auto vrprecision) {
+        using ValueType = ::inviwo::util::PrecisionValueType<decltype(vrprecision)>;
+        auto data = vrprecision->getView();
+        try {
+            dataset.read(data.data(), TypeMap<ValueType>::getType(), memorySpace, dataSpace);
+        } catch (H5::DataSetIException& e) {
+            throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
+        }
+    });
     volume->discardHistograms();
 
-    log::info(
-        "Read HDF Volume: source dims {}, selection dims: {} type: {} data "
-        "range: {}, {}\nfile: {}",
-        fmt::join(config.dataDimensions, " x "), fmt::join(config.selectedDimensions, " x "),
-        volume->getDataFormat()->getString(), glm::compMin(minmax.first),
-        glm::compMax(minmax.second), dataset.getFileName());
+    log::info("Read HDF Volume: source dims {}, selection dims: {} type: {} file: {}",
+              fmt::join(config.dataDimensions, " x "), fmt::join(config.selectedDimensions, " x "),
+              volume->getDataFormat()->getString(), dataset.getFileName());
 
     return volume;
 }
@@ -276,32 +264,22 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Se
     IgnoreValues ignore{};
     readValueAttributes(dataset, *layer, ignore);
 
-    auto minmax = layerRam->dispatch<std::pair<dvec4, dvec4>, dispatching::filter::Scalars>(
-        [&](auto lrprecision) {
-            using ValueType = ::inviwo::util::PrecisionValueType<decltype(lrprecision)>;
+    layerRam->dispatch<void, dispatching::filter::Scalars>([&](auto lrprecision) {
+        using ValueType = ::inviwo::util::PrecisionValueType<decltype(lrprecision)>;
 
-            auto data = lrprecision->getView();
+        auto data = lrprecision->getView();
+        try {
+            dataset.read(data.data(), TypeMap<ValueType>::getType(), memorySpace, dataSpace);
+        } catch (H5::DataSetIException& e) {
+            throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
+        }
+    });
 
-            try {
-                dataset.read(data.data(), TypeMap<ValueType>::getType(), memorySpace, dataSpace);
-            } catch (H5::DataSetIException& e) {
-                throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
-            }
-
-            return ::inviwo::util::dataMinMax(data.data(), data.size(), ignore);
-        });
-
-    layer->dataMap.dataRange.x = glm::compMin(minmax.first);
-    layer->dataMap.dataRange.y = glm::compMax(minmax.second);
-    layer->dataMap.valueRange = layer->dataMap.dataRange;
     layer->discardHistograms();
 
-    log::info(
-        "Read HDF Layer: source dims {}, selection dims: {} type: {} data "
-        "range: {}, {}\nfile: {}",
-        fmt::join(config.dataDimensions, " x "), fmt::join(config.selectedDimensions, " x "),
-        layer->getDataFormat()->getString(), glm::compMin(minmax.first),
-        glm::compMax(minmax.second), dataset.getFileName());
+    log::info("Read HDF Layer: source dims {}, selection dims: {} type: {} file: {}",
+              fmt::join(config.dataDimensions, " x "), fmt::join(config.selectedDimensions, " x "),
+              layer->getDataFormat()->getString(), dataset.getFileName());
 
     return layer;
 }
@@ -336,11 +314,41 @@ std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
                 return std::make_shared<Buffer<T>>(repr);
             });
 
-    log::info("Read HDF Buffer: source dims {}, selection dim {} type: {}\nfile: {}",
+    log::info("Read HDF Buffer: source dims {}, selection dim {} type: {} file: {}",
               fmt::join(config.dataDimensions, " x "), fmt::join(config.selectedDimensions, " x "),
               buffer->getDataFormat()->getString(), dataset.getFileName());
 
     return buffer;
+}
+
+glm::dmat4 getBasis(const Handle& handle) {
+    glm::dmat4 basis{1.0};
+    auto dataset = handle.open();
+    const H5::DataSpace space = dataset.getSpace();
+    const int rank = space.getSimpleExtentNdims();
+    if (rank != 2)
+        throw Exception(SourceContext{}, "Could not create Basis from: {} Invalid rank",
+                        handle.getPath().toString());
+    std::vector<hsize_t> dims(rank);
+    space.getSimpleExtentDims(dims.data());
+
+    static constexpr std::array<size_t, 2> basisDim{3, 3};
+    static constexpr std::array<size_t, 2> basisAndOffsetDim{4, 4};
+
+    if (std::ranges::equal(dims, basisDim)) {
+        dmat3 bas;
+        dataset.read(glm::value_ptr(bas), H5::PredType::NATIVE_DOUBLE);
+        basis = dmat4{bas};
+        const auto offset = -0.5 * (bas[0] + bas[1] + bas[2]);
+        basis[3] = dvec4{offset, 1.0};
+
+    } else if (std::ranges::equal(dims, basisAndOffsetDim)) {
+        dataset.read(glm::value_ptr(basis), H5::PredType::NATIVE_DOUBLE);
+    } else {
+        throw Exception(SourceContext{}, "Could not create Basis from: {} Invalid dimensions",
+                        handle.getPath().toString());
+    }
+    return basis;
 }
 
 }  // namespace inviwo::hdf5
