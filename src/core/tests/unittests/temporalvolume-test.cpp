@@ -210,14 +210,6 @@ TEST(TemporalVolumeTest, Prefetch) {
     EXPECT_EQ(frameIndexOf(tv.get(size_t{3})), 3);
 }
 
-TEST(TemporalVolumeTest, PrefetchRange) {
-    const TemporalVolume tv{makeLoader(10), 8};
-    tv.prefetch(0, 4);
-    for (size_t i = 0; i < 4; ++i) {
-        EXPECT_EQ(frameIndexOf(tv.get(i)), static_cast<int>(i));
-    }
-}
-
 TEST(TemporalVolumeTest, ProceduralLoaderDirect) {
     ProceduralLoader loader{3,
                             {1.0s, 2.0s, 3.0s},

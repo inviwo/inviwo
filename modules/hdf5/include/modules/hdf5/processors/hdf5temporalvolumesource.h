@@ -73,11 +73,6 @@ protected:
     virtual void process() override;
 
 private:
-    void onSelectionChange();
-
-    dmat4 getBasisFromMeta(const DataSetInfo& meta);
-    dmat4 computeBasis(const DataSetInfo& volumeInfo);
-
     std::vector<DataSetInfo> volumeMatches_;
     std::vector<DataSetInfo> basisMatches_;
 

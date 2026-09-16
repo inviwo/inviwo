@@ -32,13 +32,39 @@
 
 #include <algorithm>
 #include <ranges>
+#include <concepts>
 
 namespace inviwo {
+
+template <typename T, typename Elem>
+concept range_of =
+    std::ranges::range<T> && std::convertible_to<std::ranges::range_value_t<T>, Elem>;
 
 namespace views {
 
 inline constexpr auto deref =
-    std::views::transform([](auto ptr) -> decltype(auto) { return *ptr; });
+    std::views::transform([](auto& ptr) -> decltype(auto) { return *ptr; });
+
+
+/**
+ * iota_periodic(5uz, 8uz, 10uz, true) -> [6, 7, 8, 9, 0, 1, 2, 3]
+ * iota_periodic(5uz, 8uz, 10uz, false) -> [4, 3, 2, 1, 0, 9, 8, 7]
+ * iota_periodic(5uz, 3uz, 0uz, true) -> []
+ * iota_periodic(5uz, 0uz, 10uz, true) -> []
+*/
+inline constexpr auto iota_periodic(size_t start, size_t steps, size_t size, bool forward) {
+    steps = size == 0uz ? 0uz : steps;
+    start %= std::max(1uz, size);
+
+    return std::views::iota(1uz, steps + 1uz) |
+           std::views::transform([=](size_t offset) {
+               offset %= size;
+               const auto val =
+                   forward ? start + offset : (start + size) - offset;
+               return val >= size ? val - size : val;
+           });
+}
+
 }  // namespace views
 
 namespace util {

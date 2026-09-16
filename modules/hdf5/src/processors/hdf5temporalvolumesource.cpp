@@ -28,13 +28,18 @@
  *********************************************************************************/
 
 #include <modules/hdf5/processors/hdf5temporalvolumesource.h>
+
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/concat.h>
+#include <inviwo/core/util/glm.h>
+
 #include <modules/hdf5/datastructures/hdf5handle.h>
 #include <modules/hdf5/hdf5temporalvolumeloader.h>
 #include <modules/hdf5/datastructures/hdf5path.h>
 #include <modules/hdf5/hdf5utils.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/util/concat.h>
+#include <modules/hdf5/hdf5read.h>
 
 #include <algorithm>
 #include <functional>
@@ -42,9 +47,6 @@
 #include <limits>
 #include <ranges>
 #include <tuple>
-
-#include <inviwo/core/datastructures/unitsystem.h>
-#include <inviwo/core/util/glm.h>
 
 #include <fmt/format.h>
 
@@ -87,10 +89,9 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
           "timeDimension", "Time Dimension",
           []() {
               std::vector<OptionPropertyOption<size_t>> opts;
-              constexpr char last = 'Z';
               for (size_t i = 0; i < maxRank; ++i) {
-                  const auto ind = fmt::to_string(static_cast<char>(last - maxRank + i + 1));
-                  opts.emplace_back(ind, ind, i);
+                  opts.emplace_back(fmt::format("dim{:02}", i), fmt::format("Dimension {}", i + 1),
+                                    i);
               }
               return opts;
           }(),
@@ -106,8 +107,7 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
     volumeSelection_.setSerializationMode(PropertySerializationMode::All);
 
     basisGroup_.addProperties(basisSelection_, spacing_, basis_);
-    basis_.readonlyDependsOn(basisSelection_,
-                             [](auto& p) { return p.getSelectedIndex() != 0; });
+    basis_.readonlyDependsOn(basisSelection_, [](auto& p) { return p.getSelectedIndex() != 0; });
     spacing_.visibilityDependsOn(basisSelection_,
                                  [](auto& p) { return p.getSelectedIndex() == 1; });
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
@@ -164,123 +164,50 @@ void HDF5ToTemporalVolume::process() try {
     selection_.update(volumeInfo);
 
     const auto* format = util::conversionFormat(datatype_.getSelectedIndex());
-    const auto basis = computeBasis(volumeInfo);
 
-    const auto unused = selection_.maxRank() - selection_.rank();
-    if (timeDimension_.getSelectedIndex() < unused) {
-        throw Exception{
-            SourceContext{}, "Time dimensions {} does not exist use: {}",
-            timeDimension_.getSelectedDisplayName(),
-            fmt::join(timeDimension_.getOptions() |
-                          std::views::transform([](const auto& item) { return item.name_; }),
-                      ", ")};
+    auto selection = selection_.getSelection();
+    const size_t timeIdx = timeDimension_.getSelectedValue();
+    if (timeIdx < selection.size()) {
+        selection[timeIdx].count = 1;
+    }
+
+    auto basis = [&]() {
+        switch (basisSelection_.getSelectedIndex()) {
+            case 0: {  // User defined basis
+                return basis_.get();
+            }
+            case 1: {  // User defined spacing
+                const auto dims =
+                    util::validSelectionAndDims(selection, volumeInfo.getColumnMajorDimensions()) |
+                    std::views::values | std::ranges::to<std::vector>();
+                if (dims.size() != 3) {
+                    throw Exception{SourceContext{}, "Invalid selection: expected 3, got {}",
+                                    dims.size()};
+                }
+                return util::createBasis(size3_t{dims[0], dims[1], dims[2]}, spacing_.get());
+            }
+            default: {
+                const auto basisInfo = basisMatches_[basisSelection_.getSelectedIndex() - 2];
+                return getBasis(*data + basisInfo.path);
+            }
+        }
+    }();
+    basis = util::adjustBasis(basis, selection, volumeInfo.getColumnMajorDimensions(),
+                              adjustBasis_.get(), adjustOffset_.get());
+
+    if (timeDimension_.getSelectedIndex() >= selection_.rank()) {
+        throw Exception{SourceContext{}, "Time dimensions {} does not exist",
+                        timeDimension_.getSelectedDisplayName()};
     }
 
     auto loader = std::make_unique<HDF5TemporalVolumeLoader>(
-        *data + volumeInfo.path, selection_.getSelection(),
-        timeDimension_.getSelectedValue() - unused, format, basis, dt_.get());
+        *data + volumeInfo.path, selection_.getSelection(), timeDimension_.getSelectedValue(),
+        format, basis, dt_.get());
 
     outport_.setData(std::make_shared<TemporalVolume>(std::move(loader), cacheSize_.get()));
 
 } catch (H5::Exception& e) {
     throw Exception(SourceContext{}, "Error reading HDF5 data: {}", e.getDetailMsg());
-}
-
-dmat4 HDF5ToTemporalVolume::computeBasis(const DataSetInfo& volumeInfo) {
-    dmat4 basis = basis_;
-    const auto cmdimsView = volumeInfo.getColumnMajorDimensions();
-    const std::vector<size_t> cmdims(cmdimsView.begin(), cmdimsView.end());
-
-    switch (basisSelection_.getSelectedIndex()) {
-        case 0: {  // User defined basis
-            break;
-        }
-        case 1: {  // User defined spacing
-            size3_t outDims(1u);
-            for (size_t k = 0; k < 3; ++k) {
-                const size_t idx = cmdims.size() - 3 + k;
-                outDims[k] = clamp(selection_.getSelection()[idx], cmdims[idx]).count;
-            }
-            const auto diag = dvec4{dvec3(outDims) * spacing_.get(), 1.0};
-            auto b = glm::diagonal4x4(diag);
-            const auto offset = -0.5 * dvec3(b[0] + b[1] + b[2]);
-            b[3] = dvec4(offset, 1.0);
-            basis = b;
-            break;
-        }
-        default: {
-            basis = getBasisFromMeta(basisMatches_[basisSelection_.getSelectedIndex() - 2]);
-            break;
-        }
-    }
-
-    if (adjustBasis_) {
-        auto sels = selection_.getSelection();
-        // the time dimension varies per frame but must not be treated as a spatial axis here
-        const size_t numExtraDims = sels.size() - 3;
-        const size_t timeIdx = static_cast<size_t>(timeDimension_.getSelectedValue());
-        if (timeIdx < numExtraDims) {
-            sels[timeIdx].count = 1;
-        }
-
-        auto selAndDims =
-            std::views::zip(sels, cmdims) | std::views::transform([](auto&& item) {
-                return std::tuple{std::apply(clamp, item), std::get<1>(item)};
-            }) |
-            std::views::filter([](auto&& item) { return std::get<0>(item).count > 1; });
-
-        for (auto&& [i, item] : std::views::zip(std::views::iota(0uz), selAndDims)) {
-            if (i > 2) throw Exception("Invalid selection, resulting rank > 3");
-
-            auto&& [sel, dim] = item;
-            if (adjustOffset_) {
-                basis[3] += basis[i] * static_cast<double>(sel.start) / static_cast<double>(dim);
-            }
-            basis[i] *= static_cast<double>(sel.count * sel.stride) / static_cast<double>(dim);
-        }
-        if (!adjustOffset_) {
-            const vec3 offset = -0.5f * vec3(basis[0] + basis[1] + basis[2]);
-            basis[3] = vec4(offset, 1.0f);
-        }
-    }
-
-    return basis;
-}
-
-dmat4 HDF5ToTemporalVolume::getBasisFromMeta(const DataSetInfo& meta) {
-    dmat4 basis(1.0);
-
-    if (inport_.hasData()) {
-        const auto data = inport_.getData();
-        const H5::DataSet dataset = data->open(meta.path);
-        const H5::DataSpace space = dataset.getSpace();
-        const int rank = space.getSimpleExtentNdims();
-        if (rank != 2)
-            throw DataReaderException(SourceContext{},
-                                      "Could not create Basis from: {} Invalid rank",
-                                      meta.path.toString());
-        std::vector<hsize_t> dims(rank);
-        space.getSimpleExtentDims(dims.data());
-
-        static constexpr std::array<size_t, 2> basisDim{3, 3};
-        static constexpr std::array<size_t, 2> basisAndOffsetDim{4, 4};
-
-        if (std::ranges::equal(dims, basisDim)) {
-            dmat3 bas;
-            dataset.read(glm::value_ptr(bas), H5::PredType::NATIVE_DOUBLE);
-            basis = dmat4{bas};
-            const auto offset = -0.5 * (bas[0] + bas[1] + bas[2]);
-            basis[3] = dvec4{offset, 1.0};
-
-        } else if (std::ranges::equal(dims, basisAndOffsetDim)) {
-            dataset.read(glm::value_ptr(basis), H5::PredType::NATIVE_DOUBLE);
-        } else {
-            throw DataReaderException(SourceContext{},
-                                      "Could not create Basis from: {} Invalid dimensions",
-                                      meta.path.toString());
-        }
-    }
-    return basis;
 }
 
 }  // namespace inviwo::hdf5

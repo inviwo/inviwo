@@ -28,22 +28,26 @@
  *********************************************************************************/
 
 #include <modules/hdf5/processors/hdf5volumesource.h>
-#include <modules/hdf5/datastructures/hdf5handle.h>
-#include <modules/hdf5/hdf5read.h>
-#include <modules/hdf5/datastructures/hdf5path.h>
-#include <modules/hdf5/hdf5utils.h>
+
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/concat.h>
+#include <inviwo/core/util/glm.h>
+
+#include <modules/hdf5/datastructures/hdf5handle.h>
+#include <modules/hdf5/hdf5read.h>
+#include <modules/hdf5/datastructures/hdf5path.h>
+#include <modules/hdf5/hdf5utils.h>
+
+#include <modules/base/algorithm/dataminmax.h>
 
 #include <algorithm>
 #include <functional>
 #include <numeric>
 #include <limits>
-
-#include <inviwo/core/datastructures/unitsystem.h>
-#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 
@@ -85,8 +89,7 @@ HDF5ToVolume::HDF5ToVolume()
     volumeSelection_.setSerializationMode(PropertySerializationMode::All);
 
     basisGroup_.addProperties(basisSelection_, spacing_, basis_);
-    basis_.readonlyDependsOn(basisSelection_,
-                             [](auto& p) { return p.getSelectedIndex() != 0; });
+    basis_.readonlyDependsOn(basisSelection_, [](auto& p) { return p.getSelectedIndex() != 0; });
     spacing_.visibilityDependsOn(basisSelection_,
                                  [](auto& p) { return p.getSelectedIndex() == 1; });
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
@@ -145,6 +148,12 @@ void HDF5ToVolume::process() try {
     const auto* format = util::conversionFormat(datatype_.getSelectedIndex());
     auto volume = std::shared_ptr<Volume>(getVolumeAtPathAsType(
         *data + volumeInfo.path, selection_.getSelection(), format, std::ref(cache_)));
+
+    const auto [rangeMin, rangeMax] =
+        ::inviwo::util::volumeMinMax(volume->getRepresentation<VolumeRAM>());
+    volume->dataMap.dataRange = {glm::compMin(rangeMin), glm::compMax(rangeMax)};
+    volume->dataMap.valueRange = volume->dataMap.dataRange;
+
     information_.updateForNewVolume(*volume, deserialized_ ? inviwo::util::OverwriteState::Yes
                                                            : inviwo::util::OverwriteState::No);
     deserialized_ = false;
@@ -156,92 +165,24 @@ void HDF5ToVolume::process() try {
             break;
         }
         case 1: {  // User defined spacing
-            const auto dim = volume->getDimensions();
-            const auto diag = dvec4{dvec3(dim) * spacing_.get(), 1.0};
-            auto basis = glm::diagonal4x4(diag);
-            const auto offset = -0.5 * dvec3(basis[0] + basis[1] + basis[2]);
-            basis[3] = dvec4(offset, 1.0);
-            basis_.set(basis);
+            basis_.set(util::createBasis(volume->getDimensions(), spacing_.get()));
             break;
         }
         default: {
-            const auto basis =
-                getBasisFromMeta(basisMatches_[basisSelection_.getSelectedIndex() - 2]);
-            basis_.set(basis);
+            const auto basisInfo = basisMatches_[basisSelection_.getSelectedIndex() - 2];
+            basis_.set(getBasis(*data + basisInfo.path));
             break;
         }
     }
 
-    if (adjustBasis_) {
-        dmat4 basis = basis_;
-
-        auto sels = selection_.getSelection();
-        auto dims = volumeInfo.getColumnMajorDimensions();
-
-        auto selAndDims =
-            std::views::zip(sels, dims) | std::views::transform([](auto&& item) {
-                return std::tuple{std::apply(clamp, item), std::get<1>(item)};
-            }) |
-            std::views::filter([](auto&& item) { return std::get<0>(item).count > 1; });
-
-        for (auto&& [i, item] : std::views::zip(std::views::iota(0uz), selAndDims)) {
-            if (i > 2) throw Exception("Invalid selection, resulting rank > 3");
-
-            auto&& [sel, dim] = item;
-            if (adjustOffset_) {
-                basis[3] += basis[i] * static_cast<double>(sel.start) / static_cast<double>(dim);
-            }
-            basis[i] *= static_cast<double>(sel.count * sel.stride) / static_cast<double>(dim);
-        }
-        if (!adjustOffset_) {
-            const vec3 offset = -0.5f * vec3(basis[0] + basis[1] + basis[2]);
-            basis[3] = vec4(offset, 1.0f);
-        }
-        volume->setModelMatrix(basis);
-    } else {
-        volume->setModelMatrix(basis_);
-    }
+    volume->setModelMatrix(util::adjustBasis(basis_, selection_.getSelection(),
+                                             volumeInfo.getColumnMajorDimensions(),
+                                             adjustBasis_.get(), adjustOffset_.get()));
 
     outport_.setData(volume);
 
 } catch (H5::Exception& e) {
     throw Exception(SourceContext{}, "Error reading HDF5 data: {}", e.getDetailMsg());
-}
-
-dmat4 HDF5ToVolume::getBasisFromMeta(const DataSetInfo& meta) {
-    dmat4 basis(1.0);
-
-    if (inport_.hasData()) {
-        const auto data = inport_.getData();
-        const H5::DataSet dataset = data->open(meta.path);
-        const H5::DataSpace space = dataset.getSpace();
-        const int rank = space.getSimpleExtentNdims();
-        if (rank != 2)
-            throw DataReaderException(SourceContext{},
-                                      "Could not create Basis from: {} Invalid rank",
-                                      meta.path.toString());
-        std::vector<hsize_t> dims(rank);
-        space.getSimpleExtentDims(dims.data());
-
-        static constexpr std::array<size_t, 2> basisDim{3, 3};
-        static constexpr std::array<size_t, 2> basisAndOffsetDim{4, 4};
-
-        if (std::ranges::equal(dims, basisDim)) {
-            dmat3 bas;
-            dataset.read(glm::value_ptr(bas), H5::PredType::NATIVE_DOUBLE);
-            basis = dmat4{bas};
-            const auto offset = -0.5 * (bas[0] + bas[1] + bas[2]);
-            basis[3] = dvec4{offset, 1.0};
-
-        } else if (std::ranges::equal(dims, basisAndOffsetDim)) {
-            dataset.read(glm::value_ptr(basis), H5::PredType::NATIVE_DOUBLE);
-        } else {
-            throw DataReaderException(SourceContext{},
-                                      "Could not create Basis from: {} Invalid dimensions",
-                                      meta.path.toString());
-        }
-    }
-    return basis;
 }
 
 void HDF5ToVolume::deserialize(Deserializer& d) {
