@@ -383,16 +383,8 @@ std::shared_ptr<VolumeSequence> readNiftiFile(const std::filesystem::path& local
         // The minimum value will correspond to 0 and the maximum will correspond to 1 in the
         // Transfer Function
         const auto* volRAM = volumes->front()->getRepresentation<VolumeRAM>();
-        auto minmax = util::volumeMinMax(volRAM);
-        // minmax always have four components, unused components are set to zero.
-        // Hence, only consider components used by the data format
-        dvec2 dataRange(minmax.first[0], minmax.second[0]);
-        // min/max of all components
-        for (size_t component = 1; component < format->getComponents(); ++component) {
-            dataRange = dvec2(glm::min(dataRange[0], minmax.first[component]),
-                              glm::max(dataRange[1], minmax.second[component]));
-        }
-        dm.dataRange = dataRange;
+        auto [min, max] = util::volumeMinMax(volRAM);
+        dm.dataRange = dvec2{glm::compMin(min), glm::compMax(max)};
 
         if (niftiImage->scl_slope != 0) {
             // If the scl_slope field is nonzero, then each voxel value in the dataset
