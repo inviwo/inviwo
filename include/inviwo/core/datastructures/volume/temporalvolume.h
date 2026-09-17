@@ -264,6 +264,8 @@ private:
     mutable std::mutex mutex_;
     mutable std::vector<size_t> lruOrder_;  //!< back == most recently used
     mutable std::unordered_map<size_t, Item> cache_;
+
+    HistogramCache histograms_;
 };
 
 template <>
@@ -280,11 +282,30 @@ struct TFDataTraits<TemporalVolume> {
     static HistogramCache::Result calculateHistograms(
         const TemporalVolume& data,
         const std::function<void(const std::vector<Histogram1D>&)>& whenDone) {
-        if (data.cache_.empty()) {
+        if (data.empty()) {
             return {.progress = HistogramCache::Progress::NoData};
         }
-        return {.progress = HistogramCache::Progress::NoData};
-        // return data.cache_.begin()->second->calculateHistograms(whenDone);
+
+        auto first = data.get(0);
+        auto last = data.get(data.size() - 1);
+
+        auto calc = [first, last]() {
+            auto* firstRAM = first->getRepresentation<VolumeRAM>();
+            auto* lastRAM = last->getRepresentation<VolumeRAM>();
+
+            std::vector<Histogram1D> histograms;
+            histograms.append_range(firstRAM->dispatch<std::vector<Histogram1D>>(
+                [&]<typename T>(const VolumeRAMPrecision<T>* rp) {
+                    return util::calculateHistograms(rp->getView(), first->dataMap, 2048);
+                }));
+            histograms.append_range(lastRAM->dispatch<std::vector<Histogram1D>>(
+                [&]<typename T>(const VolumeRAMPrecision<T>* rp) {
+                    return util::calculateHistograms(rp->getView(), last->dataMap, 2048);
+                }));
+            return histograms;
+        };
+
+        return data.histograms_.calculateHistograms(calc, whenDone);
     }
 };
 
