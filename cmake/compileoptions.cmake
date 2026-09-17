@@ -139,6 +139,7 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
             list(APPEND comp_opts "/w35038") # class member reorder
             list(APPEND comp_opts "/wd4250") # inherits via dominance https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-2-c4250?view=msvc-160
+            list(APPEND comp_opts "/wd4702") # unreachable code, this generates hundreds of warnings in fmt that we can't suppress, since MSVC will attribute them to the template instantiation location, not the fmt header
 
             list(APPEND comp_opts "/utf-8")
             # make __cplusplus macro report version matching C++ standard  https://docs.microsoft.com/en-us/cpp/build/reference/zc-cplusplus?view=msvc-170
