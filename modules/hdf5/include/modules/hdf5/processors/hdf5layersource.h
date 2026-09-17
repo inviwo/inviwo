@@ -65,18 +65,12 @@ protected:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    void onSelectionChange();
-
     std::vector<DataSetInfo> layerMatches_;
 
     Inport inport_;
     LayerOutport outport_;
-    std::shared_ptr<Layer> layer_;
 
     OptionPropertyString layerSelection_;
-
-    BoolProperty automaticEvaluation_;
-    ButtonProperty evaluate_;
 
     LayerInformationProperty information_;
 
@@ -84,7 +78,6 @@ private:
     OptionPropertyInt datatype_;
     DimSelectionsProperty selection_;
 
-    bool dirty_;
     bool deserialized_ = false;
 };
 

@@ -92,6 +92,15 @@ struct DimConfig {
     std::vector<hsize_t> stride;
     std::vector<hsize_t> dataDimensions;
     std::vector<hsize_t> selectedDimensions;
+
+    auto asSelection() const {
+        return std::views::zip(config.start, config.count, config.stride) |
+               std::views::transform([](const auto& item) {
+                   return Selection{.start = std::get<0>(item),
+                                    .count = std::get<1>(item),
+                                    .stride = std::get<2>(item)};
+               });
+    }
 };
 
 template <size_t N>
@@ -140,62 +149,64 @@ DimConfig<N> getDimConfig(const H5::DataSpace& dataSpace,
 }
 
 VolumeConfig getVolumeConfig(const DataSet& dataset, const DimConfig<3>& config,
-                             const DataFormatBase* type) {
+                             VolumeConfig volumeConfig) {
     // Reverse back the Column major
-    return {.dimensions = size3_t{config.selectedDimensions[2], config.selectedDimensions[1],
-                                  config.selectedDimensions[0]},
-            .format = type ? type : util::getDataFormatFromDataSet(dataset)};
+    volumeConfig.dimensions = size3_t{config.selectedDimensions[2], config.selectedDimensions[1],
+                                      config.selectedDimensions[0]};
+    volumeConfig.format =
+        volumeConfig.format ? volumeConfig.format : util::getDataFormatFromDataSet(dataset);
+    return volumeConfig;
 }
 
 LayerConfig getLayerConfig(const DataSet& dataset, const DimConfig<2>& config,
-                           const DataFormatBase* type) {
+                           LayerConfig layerConfig) {
 
     // Reverse back the Column major
-    return {.dimensions = size2_t{config.selectedDimensions[1], config.selectedDimensions[0]},
-            .format = type ? type : util::getDataFormatFromDataSet(dataset),
-            .type = LayerType::Color};
+    layerConfig.dimensions = size2_t{config.selectedDimensions[1], config.selectedDimensions[0]};
+    layerConfig.format =
+        layerConfig.format ? layerConfig.format : util::getDataFormatFromDataSet(dataset);
+
+    return layerConfig;
 }
 
 }  // namespace
 
 std::pair<VolumeConfig, Selection> getTemporalVolumeConfig(const Handle& handle,
                                                            std::vector<Selection> selection,
-                                                           const DataFormatBase* type,
-                                                           size_t timeDimension) {
+                                                           size_t timeDimension,
+                                                           VolumeConfig volumeConfig) {
     auto dataset = handle.open();
 
     if (timeDimension > selection.size()) {
         throw Exception{SourceContext{}, "Invalid time index, must be less than {}",
                         selection.size()};
     }
-
     auto timeSelection = selection[timeDimension];
     selection[timeDimension].count = 1;
 
     const auto config = getDimConfig<3>(dataset.getSpace(), selection);
 
     timeSelection = clamp(timeSelection, std::views::reverse(config.dataDimensions)[timeDimension]);
+    volumeConfig = getVolumeConfig(dataset, config, std::move(volumeConfig));
 
-    auto VolumeConfig = getVolumeConfig(dataset, config, type);
-
-    return {VolumeConfig, timeSelection};
+    return {volumeConfig, timeSelection};
 }
 
 VolumeConfig getVolumeConfig(const Handle& handle, std::vector<Selection> selection,
-                             const DataFormatBase* type) {
+                             VolumeConfig volumeConfig) {
     auto dataset = handle.open();
     const auto config = getDimConfig<3>(dataset.getSpace(), selection);
-    return getVolumeConfig(dataset, config, type);
+    return getVolumeConfig(dataset, config, std::move(volumeConfig));
 }
 LayerConfig getLayerConfig(const Handle& handle, std::vector<Selection> selection,
-                           const DataFormatBase* type) {
+                           LayerConfig layerConfig) {
     auto dataset = handle.open();
     const auto config = getDimConfig<2>(dataset.getSpace(), selection);
-    return getLayerConfig(dataset, config, type);
+    return getLayerConfig(dataset, config, std::move(layerConfig));
 }
 
 std::shared_ptr<Volume> getVolumeAtPathAsType(
-    const Handle& handle, std::vector<Selection> selection, const DataFormatBase* type,
+    const Handle& handle, std::vector<Selection> selection, VolumeConfig volumeConfig,
     const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume) {
 
     auto dataset = handle.open();
@@ -215,7 +226,7 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
             memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
     }
 
-    auto volume = getVolume(getVolumeConfig(dataset, config, type));
+    auto volume = getVolume(getVolumeConfig(dataset, config, volumeConfig));
     auto* volumeRam = volume->getEditableRepresentation<VolumeRAM>();
 
     IgnoreValues ignore{};
@@ -232,15 +243,15 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
     });
     volume->discardHistograms();
 
-    log::info("Read HDF Volume: source dims {}, selection dims: {} type: {} file: {}",
-              fmt::join(config.dataDimensions, " x "), fmt::join(config.selectedDimensions, " x "),
+    log::info("Read HDF Volume: Dimensions {}, Selection: {}, Type: {}, File: {}",
+              fmt::join(config.dataDimensions, " x "), fmt::join(config.asSelection(), " x "),
               volume->getDataFormat()->getString(), dataset.getFileName());
 
     return volume;
 }
 
 std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Selection> selection,
-                                            const DataFormatBase* type) {
+                                            LayerConfig layerConfig) {
     auto dataset = handle.open();
     const H5::DataSpace dataSpace = dataset.getSpace();
 
@@ -258,7 +269,7 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Se
             memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
     }
 
-    auto layer = std::make_shared<Layer>(getLayerConfig(dataset, config, type));
+    auto layer = std::make_shared<Layer>(getLayerConfig(dataset, config, layerConfig));
     auto* layerRam = layer->getEditableRepresentation<LayerRAM>();
 
     IgnoreValues ignore{};
@@ -277,9 +288,9 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Se
 
     layer->discardHistograms();
 
-    log::info("Read HDF Layer: source dims {}, selection dims: {} type: {} file: {}",
-              fmt::join(config.dataDimensions, " x "), fmt::join(config.selectedDimensions, " x "),
-              layer->getDataFormat()->getString(), dataset.getFileName());
+    log::info("Read HDF Layer: Dimensions {}, Selection: {}, Type: {}, File: {}",
+              fmt::join(config.dataDimensions, " x "), fmt::join(config.asSelection(), " x "),
+              volume->getDataFormat()->getString(), dataset.getFileName());
 
     return layer;
 }
@@ -314,9 +325,9 @@ std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
                 return std::make_shared<Buffer<T>>(repr);
             });
 
-    log::info("Read HDF Buffer: source dims {}, selection dim {} type: {} file: {}",
-              fmt::join(config.dataDimensions, " x "), fmt::join(config.selectedDimensions, " x "),
-              buffer->getDataFormat()->getString(), dataset.getFileName());
+    log::info("Read HDF Buffer: Dimensions {}, Selection: {}, Type: {}, File: {}",
+              fmt::join(config.dataDimensions, " x "), fmt::join(config.asSelection(), " x "),
+              volume->getDataFormat()->getString(), dataset.getFileName());
 
     return buffer;
 }

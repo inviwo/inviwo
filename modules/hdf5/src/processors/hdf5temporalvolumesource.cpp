@@ -69,37 +69,71 @@ const ProcessorInfo& HDF5ToTemporalVolume::getProcessorInfo() const { return pro
 
 HDF5ToTemporalVolume::HDF5ToTemporalVolume()
     : Processor()
-    , inport_("inport")
-    , outport_("outport", "The loaded temporal volume"_help)
+    , inport_{"inport"}
+    , outport_{"outport", "The loaded temporal volume"_help}
 
-    , volumeSelection_("volumeSelection", "Volume")
+    , volumeSelection_{"volumeSelection", "Volume"}
 
-    , basisGroup_("basisGroup", "Basis")
-    , basisSelection_("basisSelection", "Source")
-    , basis_("basis", "Matrix", mat4(1.0f), inviwo::util::filled<mat4>(-1000.f),
-             inviwo::util::filled<mat4>(1000.f))
-    , spacing_("spacing", "Spacing", vec3(0.01f), vec3(0.0f), vec3(1.0f))
-    , outputGroup_("outputGroup", "Operations")
-    , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
-    , adjustBasis_("adjustBasis", "Automatically adjust basis", true)
-    , adjustOffset_("adjustOffset", "Automatically adjust offset", true)
-    , selection_("selection", "Selection", maxRank)
-    , timeGroup_("timeGroup", "Time")
-    , timeDimension_(
-          "timeDimension", "Time Dimension",
-          []() {
-              std::vector<OptionPropertyOption<size_t>> opts;
-              for (size_t i = 0; i < maxRank; ++i) {
-                  opts.emplace_back(fmt::format("dim{:02}", i), fmt::format("Dimension {}", i + 1),
-                                    i);
-              }
-              return opts;
-          }(),
-          maxRank - 1)
-    , dt_("dt", "Time Step (s)", 1.0, 0.0001, 1000.0)
-    , cacheSize_("cacheSize", "Cache Size",
+    , config_{"config", "Config"}
+    , basisGroup_{"basisGroup", "Basis"}
+    , basisSelection_{"basisSelection", "Source"}
+    , basis_{"basis", "Matrix", mat4(1.0f), inviwo::util::filled<mat4>(-1000.f),
+             inviwo::util::filled<mat4>(1000.f)}
+    , spacing_{"spacing", "Spacing", vec3(0.01f), vec3(0.0f), vec3(1.0f)}
+    , dataRange_{"dataRange",
+                 "Data range",
+                 0.0,
+                 1.0,
+                 -DataFloat64::max(),
+                 DataFloat64::max(),
+                 0.001,
+                 0.0,
+                 InvalidationLevel::InvalidOutput,
+                 PropertySemantics::Text}
+    , valueRange_{"valueRange",
+                  "Value range",
+                  0.0,
+                  1.0,
+                  -DataFloat64::max(),
+                  DataFloat64::max(),
+                  0.001,
+                  0.0,
+                  InvalidationLevel::InvalidOutput,
+                  PropertySemantics::Text}
+    , valueName_{"valueName", "Value name", ""}
+    , valueUnit_{"valueUnit", "Value unit", ""}
+    , interpolation_{"interpolation",
+                     "Interpolation",
+                     {InterpolationType::Linear, InterpolationType::Nearest},
+                     0}
+    , axesNames_{"axesNames", "Axes Names"}
+    , axesUnits_{"axesUnits", "Axes Units"}
+    , wrapping_{{
+          {"xWrappingX", "X Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+          {"yWrappingX", "Y Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+          {"zWrappingX", "Z Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+      }}
+
+    , outputGroup_{"outputGroup", "Operations"}
+    , datatype_{"convertType", "Convert to type", util::conversionOptions(), 0}
+    , adjustBasis_{"adjustBasis", "Automatically adjust basis", true}
+    , adjustOffset_{"adjustOffset", "Automatically adjust offset", true}
+    , selection_{"selection", "Selection", maxRank}
+    , timeGroup_{"timeGroup", "Time"}
+    , timeDimension_{"timeDimension", "Time Dimension",
+                     []() {
+                         std::vector<OptionPropertyOption<size_t>> opts;
+                         for (size_t i = 0; i < maxRank; ++i) {
+                             opts.emplace_back(fmt::format("dim{:02}", i),
+                                               fmt::format("Dimension {}", i + 1), i);
+                         }
+                         return opts;
+                     }(),
+                     0}
+    , dt_{"dt", "Time Step (s)", 1.0, 0.0001, 1000.0}
+    , cacheSize_{"cacheSize", "Cache Size",
                  inviwo::util::ordinalCount<size_t>(8u, 256u).set(
-                     "Maximum number of decoded frames kept in memory"_help)) {
+                     "Maximum number of decoded frames kept in memory"_help)} {
 
     addPort(inport_);
     addPort(outport_);
@@ -114,7 +148,11 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
     outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_);
     timeGroup_.addProperties(timeDimension_, dt_, cacheSize_);
 
-    addProperties(volumeSelection_, basisGroup_, timeGroup_, selection_, outputGroup_);
+    config_.addProperties(basisGroup_, dataRange_, valueRange_, valueName_, valueUnit_,
+                          interpolation_, axesNames_, axesUnits_, wrapping_[0], wrapping_[1],
+                          wrapping_[2]);
+
+    addProperties(volumeSelection_, config_, timeGroup_, selection_, outputGroup_);
 }
 
 HDF5ToTemporalVolume::~HDF5ToTemporalVolume() = default;
@@ -163,8 +201,6 @@ void HDF5ToTemporalVolume::process() try {
     const auto& volumeInfo = volumeMatches_[volumeSelection_.getSelectedIndex()];
     selection_.update(volumeInfo);
 
-    const auto* format = util::conversionFormat(datatype_.getSelectedIndex());
-
     auto selection = selection_.getSelection();
     const size_t timeIdx = timeDimension_.getSelectedValue();
     if (timeIdx < selection.size()) {
@@ -200,9 +236,27 @@ void HDF5ToTemporalVolume::process() try {
                         timeDimension_.getSelectedDisplayName()};
     }
 
+    const VolumeConfig config{
+        .format = util::conversionFormat(datatype_.getSelectedIndex()),
+        .interpolation = interpolation_.getSelectedValue(),
+        .wrapping = Wrapping3D{wrapping_[0].getSelectedValue(), wrapping_[1].getSelectedValue(),
+                               wrapping_[2].getSelectedValue()},
+        .xAxis = Axis{.name = axesNames_.strings[0].get(),
+                      .unit = units::unit_from_string(axesUnits_.strings[0].get())},
+        .yAxis = Axis{.name = axesNames_.strings[1].get(),
+                      .unit = units::unit_from_string(axesUnits_.strings[1].get())},
+        .zAxis = Axis{.name = axesNames_.strings[2].get(),
+                      .unit = units::unit_from_string(axesUnits_.strings[2].get())},
+        .valueAxis =
+            Axis{.name = valueName_.get(), .unit = units::unit_from_string(valueUnit_.get())},
+        .dataRange = dataRange_.get(),
+        .valueRange = valueRange_.get(),
+        .model = basis,
+        .world = dmat4{1.0}};
+
     auto loader = std::make_unique<HDF5TemporalVolumeLoader>(
         *data + volumeInfo.path, selection_.getSelection(), timeDimension_.getSelectedValue(),
-        format, basis, dt_.get());
+        Seconds{dt_.get()}, config);
 
     outport_.setData(std::make_shared<TemporalVolume>(std::move(loader), cacheSize_.get()));
 

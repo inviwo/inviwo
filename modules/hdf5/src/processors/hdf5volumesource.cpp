@@ -145,9 +145,25 @@ void HDF5ToVolume::process() try {
     const auto& volumeInfo = volumeMatches_[volumeSelection_.getSelectedIndex()];
     selection_.update(volumeInfo);
 
-    const auto* format = util::conversionFormat(datatype_.getSelectedIndex());
+    const VolumeConfig config{
+        .format = util::conversionFormat(datatype_.getSelectedIndex()),
+        .interpolation = information_.interpolation.getSelectedValue(),
+        .wrapping = Wrapping3D{information_.wrapping[0].getSelectedValue(),
+                               information_.wrapping[1].getSelectedValue(),
+                               information_.wrapping[2].getSelectedValue()},
+        .xAxis = Axis{.name = information_.axesNames.strings[0].get(),
+                      .unit = units::unit_from_string(information_.axesUnits.strings[0].get())},
+        .yAxis = Axis{.name = information_.axesNames.strings[1].get(),
+                      .unit = units::unit_from_string(information_.axesUnits.strings[1].get())},
+        .zAxis = Axis{.name = information_.axesNames.strings[2].get(),
+                      .unit = units::unit_from_string(information_.axesUnits.strings[2].get())},
+        .valueAxis = Axis{.name = information_.valueName.get(),
+                          .unit = units::unit_from_string(information_.valueUnit.get())},
+        .dataRange = information_.dataRange.get(),
+        .valueRange = information_.valueRange.get()};
+
     auto volume = std::shared_ptr<Volume>(getVolumeAtPathAsType(
-        *data + volumeInfo.path, selection_.getSelection(), format, std::ref(cache_)));
+        *data + volumeInfo.path, selection_.getSelection(), config, std::ref(cache_)));
 
     const auto [rangeMin, rangeMax] =
         ::inviwo::util::volumeMinMax(volume->getRepresentation<VolumeRAM>());
