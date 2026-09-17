@@ -19,59 +19,81 @@ inviwopy.properties
       CompositeProperty
       ConstraintBehavior
       DirectoryProperty
+      DoubleMat2OptProperty
       DoubleMat2Property
       DoubleMat2RefProperty
+      DoubleMat3OptProperty
       DoubleMat3Property
       DoubleMat3RefProperty
+      DoubleMat4OptProperty
       DoubleMat4Property
       DoubleMat4RefProperty
       DoubleMinMaxProperty
+      DoubleOptProperty
       DoubleOption
       DoubleProperty
       DoubleRefProperty
+      DoubleVec2OptProperty
       DoubleVec2Property
       DoubleVec2RefProperty
+      DoubleVec3OptProperty
       DoubleVec3Property
       DoubleVec3RefProperty
+      DoubleVec4OptProperty
       DoubleVec4Property
       DoubleVec4RefProperty
       FileExtension
       FileMode
       FilePatternProperty
       FileProperty
+      FloatMat2OptProperty
       FloatMat2Property
       FloatMat2RefProperty
+      FloatMat3OptProperty
       FloatMat3Property
       FloatMat3RefProperty
+      FloatMat4OptProperty
       FloatMat4Property
       FloatMat4RefProperty
       FloatMinMaxProperty
+      FloatOptProperty
       FloatOption
       FloatProperty
       FloatRefProperty
+      FloatVec2OptProperty
       FloatVec2Property
       FloatVec2RefProperty
+      FloatVec3OptProperty
       FloatVec3Property
       FloatVec3RefProperty
+      FloatVec4OptProperty
       FloatVec4Property
       FloatVec4RefProperty
       Int64MinMaxProperty
+      Int64OptProperty
       Int64Property
       Int64RefProperty
       IntMinMaxProperty
+      IntOptProperty
       IntOption
       IntProperty
       IntRefProperty
+      IntSize2OptProperty
       IntSize2Property
       IntSize2RefProperty
+      IntSize3OptProperty
       IntSize3Property
       IntSize3RefProperty
+      IntSize4OptProperty
       IntSize4Property
       IntSize4RefProperty
+      IntVec2OptProperty
       IntVec2Property
       IntVec2RefProperty
+      IntVec3OptProperty
       IntVec3Property
       IntVec3RefProperty
+      IntVec4OptProperty
       IntVec4Property
       IntVec4RefProperty
       InvalidationLevel
@@ -96,6 +118,7 @@ inviwopy.properties
       PropertyWidget
       ScopedPropertySerializationMode
       Size_tMinMaxProperty
+      Size_tOptProperty
       Size_tProperty
       Size_tRefProperty
       StringOption
