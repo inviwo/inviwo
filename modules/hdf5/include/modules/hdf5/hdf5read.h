@@ -49,14 +49,14 @@ namespace hdf5 {
 
 IVW_MODULE_HDF5_API VolumeConfig getVolumeConfig(const Handle& handle,
                                                  std::vector<Selection> selection,
-                                                 const DataFormatBase* type);
+                                                 VolumeConfig volumeConfig);
 IVW_MODULE_HDF5_API LayerConfig getLayerConfig(const Handle& handle,
                                                std::vector<Selection> selection,
-                                               const DataFormatBase* type);
+                                               LayerConfig layerConfig);
 
 IVW_MODULE_HDF5_API std::pair<VolumeConfig, Selection> getTemporalVolumeConfig(
-    const Handle& handle, std::vector<Selection> selection, const DataFormatBase* type,
-    size_t timeDimension);
+    const Handle& handle, std::vector<Selection> selection, size_t timeDimension,
+    VolumeConfig volumeConfig);
 
 /**
  * Read the dataset at @p handle into a Volume. The @p selection defines a hyperslab per
@@ -65,7 +65,7 @@ IVW_MODULE_HDF5_API std::pair<VolumeConfig, Selection> getTemporalVolumeConfig(
  * @p getVolume is used to allocate the resulting Volume, allowing the caller to reuse storage.
  */
 IVW_MODULE_HDF5_API std::shared_ptr<Volume> getVolumeAtPathAsType(
-    const Handle& handle, std::vector<Selection> selection, const DataFormatBase* type,
+    const Handle& handle, std::vector<Selection> selection, VolumeConfig volumeConfig,
     const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume);
 
 /**
@@ -73,7 +73,7 @@ IVW_MODULE_HDF5_API std::shared_ptr<Volume> getVolumeAtPathAsType(
  */
 IVW_MODULE_HDF5_API std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle,
                                                                 std::vector<Selection> selection,
-                                                                const DataFormatBase* type);
+                                                                LayerConfig layerConfig);
 
 /**
  * Read the dataset at @p handle into a Buffer. @see getVolumeAtPathAsType.

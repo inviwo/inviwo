@@ -41,20 +41,18 @@
 namespace inviwo::hdf5 {
 
 HDF5TemporalVolumeLoader::HDF5TemporalVolumeLoader(Handle handle, std::vector<Selection> selection,
-                                                   size_t timeDimension,
-                                                   const DataFormatBase* format, const dmat4& basis,
-                                                   double dt)
+                                                   size_t timeDimension, Seconds dt,
+                                                   VolumeConfig config)
     : handle_{std::move(handle)}
     , selection_{std::move(selection)}
     , timeDimension_{timeDimension}
-    , format_{format}
-    , basis_{basis}
-    , dt_{dt} {
+    , timeSelection_{}
+    , dt_{dt}
+    , prototype_{config} {
 
     const std::scoped_lock lock{Handle::globalMutex()};
     std::tie(prototype_, timeSelection_) =
-        getTemporalVolumeConfig(handle_, selection_, format_, timeDimension_);
-    prototype_.model = basis_;
+        getTemporalVolumeConfig(handle_, selection_, timeDimension_, prototype_);
 }
 
 std::shared_ptr<Volume> HDF5TemporalVolumeLoader::load(size_t index,
@@ -69,16 +67,27 @@ std::shared_ptr<Volume> HDF5TemporalVolumeLoader::load(size_t index,
     sel[timeDimension_] = Selection{
         .start = timeSelection_.start + timeSelection_.stride * index, .count = 1, .stride = 1};
 
-    auto volume = getVolumeAtPathAsType(handle_, sel, format_, [&](const VolumeConfig& cfg) {
+    auto volume = getVolumeAtPathAsType(handle_, sel, prototype_, [&](const VolumeConfig& cfg) {
         const auto dims = cfg.dimensions.value_or(VolumeConfig::defaultDimensions);
         const auto* format = cfg.format ? cfg.format : VolumeConfig::defaultFormat;
         if (reuse && reuse->getDimensions() == dims && reuse->getDataFormat() == format) {
             reuse->getMetaDataMap()->removeAll();
+
+            reuse->setSwizzleMask(cfg.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask));
+            reuse->setInterpolation(cfg.interpolation.value_or(VolumeConfig::defaultInterpolation));
+            reuse->setWrapping(cfg.wrapping.value_or(VolumeConfig::defaultWrapping));
+
+            reuse->axes[0] = cfg.xAxis.value_or(VolumeConfig::defaultXAxis);
+            reuse->axes[1] = cfg.yAxis.value_or(VolumeConfig::defaultYAxis);
+            reuse->axes[2] = cfg.zAxis.value_or(VolumeConfig::defaultZAxis);
+            reuse->dataMap = cfg.dataMap();
+            reuse->setModelMatrix(cfg.model.value_or(VolumeConfig::defaultModel));
+            reuse->setWorldMatrix(cfg.world.value_or(VolumeConfig::defaultWorld));
+
             return reuse;
         }
         return std::make_shared<Volume>(cfg);
     });
-    volume->setModelMatrix(basis_);
     return volume;
 }
 

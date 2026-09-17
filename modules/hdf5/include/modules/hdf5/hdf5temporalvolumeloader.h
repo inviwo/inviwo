@@ -61,18 +61,17 @@ namespace hdf5 {
  * library is not guaranteed to be safe for concurrent use from the background thread pool that
  * TemporalVolume may invoke load() from.
  */
-class IVW_MODULE_HDF5_API HDF5TemporalVolumeLoader : public VolumeLoader {
+class IVW_MODULE_HDF5_API HDF5TemporalVolumeLoader : public TemporalVolumeLoader {
 public:
     /**
      * @param handle        HDF5 handle already pointing at the dataset to read
      * @param selection     one Selection per dataset dimension, column major order
      * @param timeDimension index into @p selection designating the time axis
-     * @param format        output data format, or nullptr to deduce it from the dataset
-     * @param basis         model matrix applied to every produced frame
-     * @param dt            time between consecutive frames, in seconds
+     * @param dt            time between consecutive frames
+     * @param config        the prototype VolumeConfig to use
      */
     HDF5TemporalVolumeLoader(Handle handle, std::vector<Selection> selection, size_t timeDimension,
-                             const DataFormatBase* format, const dmat4& basis, double dt);
+                             Seconds dt, VolumeConfig config);
 
     virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse) override;
     virtual size_t size() const override;
@@ -83,12 +82,9 @@ private:
     Handle handle_;
     std::vector<Selection> selection_;
     size_t timeDimension_;
-    const DataFormatBase* format_;
-    dmat4 basis_;
-
+    Selection timeSelection_;
     Seconds dt_;
     VolumeConfig prototype_;
-    Selection timeSelection_;
 };
 
 }  // namespace hdf5
