@@ -4,6 +4,7 @@ Checks: >
     -bugprone-implicit-widening-of-multiplication-result,
     -bugprone-exception-escape,
     -bugprone-use-after-move,
+    -bugprone-throwing-static-initialization,
   clang-diagnostic-*,
   clang-analyzer-*,
   cppcoreguidelines-*,

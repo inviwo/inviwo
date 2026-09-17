@@ -40,7 +40,6 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 
-
 namespace inviwo {
 
 class StringShaderResource;

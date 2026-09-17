@@ -138,7 +138,7 @@ void VolumeMask::process() {
 
     const utilgl::Activate aShader{&shader_};
 
-    TextureUnit unit;
+    const TextureUnit unit;
     utilgl::bindTexture(*data, unit);
     shader_.setUniform("volume", unit.getUnitNumber());
     utilgl::setShaderUniforms(shader_, *mask, "volumeParameters");
