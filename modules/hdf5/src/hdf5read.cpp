@@ -94,8 +94,7 @@ struct DimConfig {
     std::vector<hsize_t> selectedDimensions;
 
     auto asSelection() const {
-        return std::views::zip(config.start, config.count, config.stride) |
-               std::views::transform([](const auto& item) {
+        return std::views::zip(start, count, stride) | std::views::transform([](const auto& item) {
                    return Selection{.start = std::get<0>(item),
                                     .count = std::get<1>(item),
                                     .stride = std::get<2>(item)};
@@ -192,13 +191,13 @@ std::pair<VolumeConfig, Selection> getTemporalVolumeConfig(const Handle& handle,
     return {volumeConfig, timeSelection};
 }
 
-VolumeConfig getVolumeConfig(const Handle& handle, std::vector<Selection> selection,
+VolumeConfig getVolumeConfig(const Handle& handle, const std::vector<Selection>& selection,
                              VolumeConfig volumeConfig) {
     auto dataset = handle.open();
     const auto config = getDimConfig<3>(dataset.getSpace(), selection);
     return getVolumeConfig(dataset, config, std::move(volumeConfig));
 }
-LayerConfig getLayerConfig(const Handle& handle, std::vector<Selection> selection,
+LayerConfig getLayerConfig(const Handle& handle, const std::vector<Selection>& selection,
                            LayerConfig layerConfig) {
     auto dataset = handle.open();
     const auto config = getDimConfig<2>(dataset.getSpace(), selection);
@@ -206,7 +205,7 @@ LayerConfig getLayerConfig(const Handle& handle, std::vector<Selection> selectio
 }
 
 std::shared_ptr<Volume> getVolumeAtPathAsType(
-    const Handle& handle, std::vector<Selection> selection, VolumeConfig volumeConfig,
+    const Handle& handle, const std::vector<Selection>& selection, VolumeConfig volumeConfig,
     const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume) {
 
     auto dataset = handle.open();
@@ -226,7 +225,7 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
             memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
     }
 
-    auto volume = getVolume(getVolumeConfig(dataset, config, volumeConfig));
+    auto volume = getVolume(getVolumeConfig(dataset, config, std::move(volumeConfig)));
     auto* volumeRam = volume->getEditableRepresentation<VolumeRAM>();
 
     IgnoreValues ignore{};
@@ -250,7 +249,8 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
     return volume;
 }
 
-std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Selection> selection,
+std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle,
+                                            const std::vector<Selection>& selection,
                                             LayerConfig layerConfig) {
     auto dataset = handle.open();
     const H5::DataSpace dataSpace = dataset.getSpace();
@@ -269,7 +269,7 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Se
             memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
     }
 
-    auto layer = std::make_shared<Layer>(getLayerConfig(dataset, config, layerConfig));
+    auto layer = std::make_shared<Layer>(getLayerConfig(dataset, config, std::move(layerConfig)));
     auto* layerRam = layer->getEditableRepresentation<LayerRAM>();
 
     IgnoreValues ignore{};
@@ -290,13 +290,13 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle, std::vector<Se
 
     log::info("Read HDF Layer: Dimensions {}, Selection: {}, Type: {}, File: {}",
               fmt::join(config.dataDimensions, " x "), fmt::join(config.asSelection(), " x "),
-              volume->getDataFormat()->getString(), dataset.getFileName());
+              layer->getDataFormat()->getString(), dataset.getFileName());
 
     return layer;
 }
 
 std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
-                                                  std::vector<Selection> selection,
+                                                  const std::vector<Selection>& selection,
                                                   const DataFormatBase* type) {
     auto dataset = handle.open();
 
@@ -327,7 +327,7 @@ std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
 
     log::info("Read HDF Buffer: Dimensions {}, Selection: {}, Type: {}, File: {}",
               fmt::join(config.dataDimensions, " x "), fmt::join(config.asSelection(), " x "),
-              volume->getDataFormat()->getString(), dataset.getFileName());
+              buffer->getDataFormat()->getString(), dataset.getFileName());
 
     return buffer;
 }
@@ -337,9 +337,10 @@ glm::dmat4 getBasis(const Handle& handle) {
     auto dataset = handle.open();
     const H5::DataSpace space = dataset.getSpace();
     const int rank = space.getSimpleExtentNdims();
-    if (rank != 2)
+    if (rank != 2) {
         throw Exception(SourceContext{}, "Could not create Basis from: {} Invalid rank",
                         handle.getPath().toString());
+    }
     std::vector<hsize_t> dims(rank);
     space.getSimpleExtentDims(dims.data());
 

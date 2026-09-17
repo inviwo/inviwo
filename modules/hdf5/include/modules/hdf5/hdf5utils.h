@@ -113,10 +113,10 @@ inline constexpr glm::dmat4 adjustBasis(glm::dmat4 basis, range_of<Selection> au
 
     auto selAndDims = validSelectionAndDims(selections, dimensions);
 
-    for (auto&& [i, item] : std::views::zip(std::views::iota(0uz), selAndDims)) {
+    for (auto [i, item] : std::views::zip(std::views::iota(0uz), selAndDims)) {
         if (i > 2) throw Exception("Invalid selection, resulting rank > 3");
 
-        auto&& [sel, dim] = item;
+        auto [sel, dim] = item;
         if (adjustOffset) {
             basis[3] += basis[i] * static_cast<double>(sel.start) / static_cast<double>(dim);
         }

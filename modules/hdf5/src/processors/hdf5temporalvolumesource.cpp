@@ -217,7 +217,7 @@ void HDF5ToTemporalVolume::process() try {
                     util::validSelectionAndDims(selection, volumeInfo.getColumnMajorDimensions()) |
                     std::views::values | std::ranges::to<std::vector>();
                 if (dims.size() != 3) {
-                    throw Exception{SourceContext{}, "Invalid selection: expected 3, got {}",
+                    throw Exception{SourceContext{}, "Invalid selection: expected rank 3, got {}",
                                     dims.size()};
                 }
                 return util::createBasis(size3_t{dims[0], dims[1], dims[2]}, spacing_.get());
