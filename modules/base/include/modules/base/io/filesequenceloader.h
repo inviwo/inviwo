@@ -60,7 +60,7 @@ class DataReaderFactory;
  *
  * @see TemporalVolume, VolumeLoader
  */
-class IVW_MODULE_BASE_API FileSequenceLoader : public VolumeLoader {
+class IVW_MODULE_BASE_API FileSequenceLoader : public TemporalVolumeLoader {
 public:
     /**
      * @param paths     one file per frame, must be non-empty
