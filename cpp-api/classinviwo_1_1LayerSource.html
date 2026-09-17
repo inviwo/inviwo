@@ -126,6 +126,8 @@ $(function(){initNavTree('classinviwo_1_1LayerSource.html',''); initResizable();
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a2b06c1d222ac5f07f90fe7c4c97ac4b8" id="r_a2b06c1d222ac5f07f90fe7c4c97ac4b8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2b06c1d222ac5f07f90fe7c4c97ac4b8">configureReader</a> (<a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &amp;) override</td></tr>
+<tr class="separator:a2b06c1d222ac5f07f90fe7c4c97ac4b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ad319a08014c225ea812e4716cb6ea0" id="r_a7ad319a08014c225ea812e4716cb6ea0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ad319a08014c225ea812e4716cb6ea0">dataDeserialized</a> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; layer) override</td></tr>
 <tr class="separator:a7ad319a08014c225ea812e4716cb6ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8084b988078d582c572b0373f9e0838a" id="r_a8084b988078d582c572b0373f9e0838a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8084b988078d582c572b0373f9e0838a">dataLoaded</a> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; layer) override</td></tr>
@@ -570,9 +572,6 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator</b> = std::
 <a class="el" href="classinviwo_1_1ButtonProperty.html">ButtonProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>reload</b></td></tr>
 <tr class="separator:af01a9f1d53bb1037164dd983fb210fa2 inherit pub_attribs_classinviwo_1_1DataSource"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1DataSource"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1DataSource')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1DataSource.html">inviwo::DataSource&lt; Layer, LayerOutport &gt;</a></td></tr>
-<tr class="memitem:a9aaa1db36bffb7f733236ae577a56193 inherit pro_methods_classinviwo_1_1DataSource" id="r_a9aaa1db36bffb7f733236ae577a56193"><td class="memItemLeft" align="right" valign="top">
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>configureReader</b> (<a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &amp;)</td></tr>
-<tr class="separator:a9aaa1db36bffb7f733236ae577a56193 inherit pro_methods_classinviwo_1_1DataSource"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa735c620156a4719c4b68f2cfeaaf39d inherit pro_methods_classinviwo_1_1DataSource" id="r_aa735c620156a4719c4b68f2cfeaaf39d"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>handleError</b> (std::string_view error)</td></tr>
 <tr class="separator:aa735c620156a4719c4b68f2cfeaaf39d inherit pro_methods_classinviwo_1_1DataSource"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -717,6 +716,33 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 <tr class="separator:a2ee140459222d207768dd50042fa99f7 inherit pro_attribs_classinviwo_1_1ProcessorObservable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a2b06c1d222ac5f07f90fe7c4c97ac4b8" name="a2b06c1d222ac5f07f90fe7c4c97ac4b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b06c1d222ac5f07f90fe7c4c97ac4b8">&#9670;&#160;</a></span>configureReader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::LayerSource::configureReader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &amp;</td>          <td class="paramname"><span class="paramname"></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1DataSource.html">inviwo::DataSource&lt; Layer, LayerOutport &gt;</a>.</p>
+
+</div>
+</div>
 <a id="a7ad319a08014c225ea812e4716cb6ea0" name="a7ad319a08014c225ea812e4716cb6ea0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7ad319a08014c225ea812e4716cb6ea0">&#9670;&#160;</a></span>dataDeserialized()</h2>
 

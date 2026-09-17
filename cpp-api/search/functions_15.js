@@ -1,17 +1,18 @@
 var searchData=
 [
   ['validateidentifier_0',['validateIdentifier',['../namespaceinviwo_1_1util.html#aa2bb2a87355c0aa175f5dc794164c129',1,'inviwo::util']]],
-  ['valuechanged_1',['valueChanged',['../classinviwo_1_1TFLineEdit.html#a155aa5e85f6fcd9da803c18745296b96',1,'inviwo::TFLineEdit']]],
-  ['values_2',['values',['../classinviwo_1_1CategoricalColumn.html#a9c6063d482146eef8664a4e1f58c90f4',1,'inviwo::CategoricalColumn']]],
-  ['version_3',['Version',['../classinviwo_1_1Version.html#a79f2f1a270b5bb963b74cb291deddafc',1,'inviwo::Version']]],
-  ['video_4',['Video',['../classinviwo_1_1ffmpeg_1_1Video.html#a54aa9cc6d1b749648ac990eda72d5f40',1,'inviwo::ffmpeg::Video']]],
-  ['view_5',['view',['../structinviwo_1_1StrBuffer.html#a81d692a5a145b028d01a332e58b2d7c4',1,'inviwo::StrBuffer']]],
-  ['visit_6',['visit',['../structinviwo_1_1LambdaNetworkVisitor.html#ad63f0c02524dab180510186139a4f1dc',1,'inviwo::LambdaNetworkVisitor::visit()'],['../classinviwo_1_1NetworkVisitor.html#a85c1d33ca1a5e79e2b81c00a94b46de8',1,'inviwo::NetworkVisitor::visit()']]],
-  ['visitgroups_7',['visitGroups',['../classinviwo_1_1hdf5_1_1Handle.html#a61c4c8e9c59781adc9a700ed6c4a0a25',1,'inviwo::hdf5::Handle']]],
-  ['visitmatchingnodes_8',['visitMatchingNodes',['../namespaceinviwo_1_1xml.html#a7dc7767440cca4416d9da78677e048f2',1,'inviwo::xml']]],
-  ['visitmatchingnodesrecursive_9',['visitMatchingNodesRecursive',['../namespaceinviwo_1_1xml.html#a1355fad8f8813d8f27b8eaee8b4c38a2',1,'inviwo::xml']]],
-  ['volume_10',['Volume',['../classinviwo_1_1Volume.html#a9b4f6c0253fbef968715478ff006346d',1,'inviwo::Volume']]],
-  ['volumeramdistancetransform_11',['volumeRAMDistanceTransform',['../namespaceinviwo_1_1util.html#a21094bd4eae6e9a668b25cf52d70fa2c',1,'inviwo::util']]],
-  ['voronoisegmentation_12',['voronoiSegmentation',['../namespaceinviwo_1_1util.html#aa9402f8b933d12f71410d3cc938691e9',1,'inviwo::util']]],
-  ['voxelvolume_13',['voxelVolume',['../namespaceinviwo_1_1util.html#a4fde21434664ba9e965614cfdf7890fc',1,'inviwo::util']]]
+  ['value_1',['value',['../classinviwo_1_1OrdinalOptProperty.html#a5f24b7706afe9ec3940ad6a920f7d9c2',1,'inviwo::OrdinalOptProperty']]],
+  ['valuechanged_2',['valueChanged',['../classinviwo_1_1TFLineEdit.html#a155aa5e85f6fcd9da803c18745296b96',1,'inviwo::TFLineEdit']]],
+  ['values_3',['values',['../classinviwo_1_1CategoricalColumn.html#a9c6063d482146eef8664a4e1f58c90f4',1,'inviwo::CategoricalColumn']]],
+  ['version_4',['Version',['../classinviwo_1_1Version.html#a79f2f1a270b5bb963b74cb291deddafc',1,'inviwo::Version']]],
+  ['video_5',['Video',['../classinviwo_1_1ffmpeg_1_1Video.html#a54aa9cc6d1b749648ac990eda72d5f40',1,'inviwo::ffmpeg::Video']]],
+  ['view_6',['view',['../structinviwo_1_1StrBuffer.html#a81d692a5a145b028d01a332e58b2d7c4',1,'inviwo::StrBuffer']]],
+  ['visit_7',['visit',['../structinviwo_1_1LambdaNetworkVisitor.html#ad63f0c02524dab180510186139a4f1dc',1,'inviwo::LambdaNetworkVisitor::visit()'],['../classinviwo_1_1NetworkVisitor.html#a85c1d33ca1a5e79e2b81c00a94b46de8',1,'inviwo::NetworkVisitor::visit()']]],
+  ['visitgroups_8',['visitGroups',['../classinviwo_1_1hdf5_1_1Handle.html#a61c4c8e9c59781adc9a700ed6c4a0a25',1,'inviwo::hdf5::Handle']]],
+  ['visitmatchingnodes_9',['visitMatchingNodes',['../namespaceinviwo_1_1xml.html#a7dc7767440cca4416d9da78677e048f2',1,'inviwo::xml']]],
+  ['visitmatchingnodesrecursive_10',['visitMatchingNodesRecursive',['../namespaceinviwo_1_1xml.html#a1355fad8f8813d8f27b8eaee8b4c38a2',1,'inviwo::xml']]],
+  ['volume_11',['Volume',['../classinviwo_1_1Volume.html#a9b4f6c0253fbef968715478ff006346d',1,'inviwo::Volume']]],
+  ['volumeramdistancetransform_12',['volumeRAMDistanceTransform',['../namespaceinviwo_1_1util.html#a21094bd4eae6e9a668b25cf52d70fa2c',1,'inviwo::util']]],
+  ['voronoisegmentation_13',['voronoiSegmentation',['../namespaceinviwo_1_1util.html#aa9402f8b933d12f71410d3cc938691e9',1,'inviwo::util']]],
+  ['voxelvolume_14',['voxelVolume',['../namespaceinviwo_1_1util.html#a4fde21434664ba9e965614cfdf7890fc',1,'inviwo::util']]]
 ];

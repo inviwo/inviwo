@@ -1032,6 +1032,7 @@ var hierarchy =
         ] ],
         [ "inviwo::VolumeHistogram2D", "classinviwo_1_1VolumeHistogram2D.html", null ],
         [ "inviwo::VolumeInformation", "classinviwo_1_1VolumeInformation.html", null ],
+        [ "inviwo::VolumeMask", "classinviwo_1_1VolumeMask.html", null ],
         [ "inviwo::VolumeNormalizationProcessor", "classinviwo_1_1VolumeNormalizationProcessor.html", null ],
         [ "inviwo::VolumeRegionMapper", "classinviwo_1_1VolumeRegionMapper.html", null ],
         [ "inviwo::VolumeRegionShrink", "classinviwo_1_1VolumeRegionShrink.html", null ],
@@ -1795,6 +1796,7 @@ var hierarchy =
         [ "inviwo::MinMaxProperty< int >", "classinviwo_1_1MinMaxProperty.html", null ],
         [ "inviwo::MinMaxProperty< float >", "classinviwo_1_1MinMaxProperty.html", null ],
         [ "inviwo::MinMaxProperty< size_t >", "classinviwo_1_1MinMaxProperty.html", null ],
+        [ "inviwo::OrdinalOptProperty< size_t >", "classinviwo_1_1OrdinalOptProperty.html", null ],
         [ "inviwo::OrdinalProperty< float >", "classinviwo_1_1OrdinalProperty.html", null ],
         [ "inviwo::OrdinalProperty< vec4 >", "classinviwo_1_1OrdinalProperty.html", null ],
         [ "inviwo::OrdinalProperty< vec3 >", "classinviwo_1_1OrdinalProperty.html", null ],
@@ -1959,6 +1961,7 @@ var hierarchy =
         [ "inviwo::IsoValueProperty", "classinviwo_1_1IsoValueProperty.html", null ],
         [ "inviwo::MinMaxProperty< T >", "classinviwo_1_1MinMaxProperty.html", null ],
         [ "inviwo::MultiFileProperty", "classinviwo_1_1MultiFileProperty.html", null ],
+        [ "inviwo::OrdinalOptProperty< T >", "classinviwo_1_1OrdinalOptProperty.html", null ],
         [ "inviwo::OrdinalProperty< T >", "classinviwo_1_1OrdinalProperty.html", null ],
         [ "inviwo::OrdinalRefProperty< T >", "classinviwo_1_1OrdinalRefProperty.html", null ],
         [ "inviwo::TemplateProperty< T >", "classinviwo_1_1TemplateProperty.html", null ],
@@ -2435,6 +2438,7 @@ var hierarchy =
           [ "inviwo::OrdinalLikePropertyWidgetQt< Prop, Sem >", "classinviwo_1_1OrdinalLikePropertyWidgetQt.html", null ],
           [ "inviwo::OrdinalMinMaxPropertyWidgetQt< T >", "classinviwo_1_1OrdinalMinMaxPropertyWidgetQt.html", null ],
           [ "inviwo::OrdinalMinMaxTextPropertyWidgetQt< BT, T >", "classinviwo_1_1OrdinalMinMaxTextPropertyWidgetQt.html", null ],
+          [ "inviwo::OrdinalOptPropertyWidgetQt< T, Sem >", "classinviwo_1_1OrdinalOptPropertyWidgetQt.html", null ],
           [ "inviwo::StringMultilinePropertyWidgetQt", "classinviwo_1_1StringMultilinePropertyWidgetQt.html", null ],
           [ "inviwo::StringPropertyWidgetQt", "classinviwo_1_1StringPropertyWidgetQt.html", [
             [ "inviwo::GLSLPropertyWidgetQt", "classinviwo_1_1GLSLPropertyWidgetQt.html", null ],
@@ -2568,6 +2572,7 @@ var hierarchy =
     [ "inviwo::ffmpeg::OutputStream::Options", "structinviwo_1_1ffmpeg_1_1OutputStream_1_1Options.html", null ],
     [ "inviwo::OrdinalBaseWidget< T >", "classinviwo_1_1OrdinalBaseWidget.html", [
       [ "inviwo::NumberWidget< int >", "classinviwo_1_1NumberWidget.html", null ],
+      [ "inviwo::NumberWidget< BT >", "classinviwo_1_1NumberWidget.html", null ],
       [ "inviwo::NumberWidget< double >", "classinviwo_1_1NumberWidget.html", null ],
       [ "inviwo::OrdinalSpinBoxWidget< float >", "classinviwo_1_1OrdinalSpinBoxWidget.html", null ],
       [ "inviwo::NumberWidget< T >", "classinviwo_1_1NumberWidget.html", null ],
@@ -2579,8 +2584,11 @@ var hierarchy =
     [ "inviwo::OrdinalBaseWidget< double >", "classinviwo_1_1OrdinalBaseWidget.html", null ],
     [ "inviwo::OrdinalBaseWidget< float >", "classinviwo_1_1OrdinalBaseWidget.html", null ],
     [ "inviwo::OrdinalBaseWidget< int >", "classinviwo_1_1OrdinalBaseWidget.html", null ],
+    [ "inviwo::OrdinalOptPropertyState< T >", "structinviwo_1_1OrdinalOptPropertyState.html", null ],
     [ "inviwo::OrdinalPropertyState< T >", "structinviwo_1_1OrdinalPropertyState.html", null ],
     [ "inviwo::OrdinalRefPropertyState< T >", "structinviwo_1_1OrdinalRefPropertyState.html", null ],
+    [ "inviwo::detail::OrdinalSettingsTraits< Prop >", "structinviwo_1_1detail_1_1OrdinalSettingsTraits.html", null ],
+    [ "inviwo::detail::OrdinalSettingsTraits< OrdinalOptProperty< T > >", "structinviwo_1_1detail_1_1OrdinalSettingsTraits_3_01OrdinalOptProperty_3_01T_01_4_01_4.html", null ],
     [ "inviwo::util::ostream_joiner< DelimT, charT, traits >", "classinviwo_1_1util_1_1ostream__joiner.html", null ],
     [ "inviwo::ShaderObject::OutDeclaration", "structinviwo_1_1ShaderObject_1_1OutDeclaration.html", null ],
     [ "inviwo::OutportFactoryObject", "classinviwo_1_1OutportFactoryObject.html", [
@@ -2701,6 +2709,12 @@ var hierarchy =
       [ "inviwo::TemplatePropertyConverter< OptionProperty, StringProperty >", "classinviwo_1_1TemplatePropertyConverter.html", [
         [ "inviwo::OptionToStringConverter< OptionProperty >", "classinviwo_1_1OptionToStringConverter.html", null ]
       ] ],
+      [ "inviwo::TemplatePropertyConverter< SrcOpt, DstOrdinal >", "classinviwo_1_1TemplatePropertyConverter.html", [
+        [ "inviwo::OrdinalOptToOrdinalConverter< SrcOpt, DstOrdinal >", "classinviwo_1_1OrdinalOptToOrdinalConverter.html", null ]
+      ] ],
+      [ "inviwo::TemplatePropertyConverter< SrcOrdinal, DstOpt >", "classinviwo_1_1TemplatePropertyConverter.html", [
+        [ "inviwo::OrdinalToOrdinalOptConverter< SrcOrdinal, DstOpt >", "classinviwo_1_1OrdinalToOrdinalOptConverter.html", null ]
+      ] ],
       [ "inviwo::TemplatePropertyConverter< SrcProperty, StringProperty >", "classinviwo_1_1TemplatePropertyConverter.html", [
         [ "inviwo::ScalarToStringConverter< SrcProperty >", "classinviwo_1_1ScalarToStringConverter.html", null ],
         [ "inviwo::VectorToStringConverter< SrcProperty >", "classinviwo_1_1VectorToStringConverter.html", null ]
@@ -2736,6 +2750,7 @@ var hierarchy =
     [ "inviwo::PropertyTraits< MinMaxProperty< T > >", "structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html", null ],
     [ "inviwo::PropertyTraits< OptionProperty< T > >", "structinviwo_1_1PropertyTraits_3_01OptionProperty_3_01T_01_4_01_4.html", null ],
     [ "inviwo::PropertyTraits< OrdinalAnimationProperty< T > >", "structinviwo_1_1PropertyTraits_3_01OrdinalAnimationProperty_3_01T_01_4_01_4.html", null ],
+    [ "inviwo::PropertyTraits< OrdinalOptProperty< T > >", "structinviwo_1_1PropertyTraits_3_01OrdinalOptProperty_3_01T_01_4_01_4.html", null ],
     [ "inviwo::PropertyTraits< OrdinalProperty< T > >", "structinviwo_1_1PropertyTraits_3_01OrdinalProperty_3_01T_01_4_01_4.html", null ],
     [ "inviwo::PropertyTraits< OrdinalRefProperty< T > >", "structinviwo_1_1PropertyTraits_3_01OrdinalRefProperty_3_01T_01_4_01_4.html", null ],
     [ "inviwo::PropertyTraits< StringsProperty< N > >", "structinviwo_1_1PropertyTraits_3_01StringsProperty_3_01N_01_4_01_4.html", null ],
@@ -2891,6 +2906,7 @@ var hierarchy =
     [ "QLineEdit", null, [
       [ "inviwo::BaseNumberWidget", "classinviwo_1_1BaseNumberWidget.html", [
         [ "inviwo::NumberWidget< int >", "classinviwo_1_1NumberWidget.html", null ],
+        [ "inviwo::NumberWidget< BT >", "classinviwo_1_1NumberWidget.html", null ],
         [ "inviwo::NumberWidget< double >", "classinviwo_1_1NumberWidget.html", null ],
         [ "inviwo::NumberWidget< T >", "classinviwo_1_1NumberWidget.html", null ]
       ] ],
