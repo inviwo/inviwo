@@ -150,6 +150,7 @@ std::pair<bool, size_t> PickingEvent::getPressedLocalPickingId() const {
     }
 }
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-static-cast-downcast])
 dvec2 PickingEvent::getPosition() const {
     if (event_) {
         switch (event_->hash()) {
@@ -219,6 +220,7 @@ dvec3 PickingEvent::getNDC() const {
     }
     return dvec3(0.0f);
 }
+// NOLINTEND(cppcoreguidelines-pro-type-static-cast-downcast])
 
 dvec3 PickingEvent::getPreviousNDC() const { return previousNDC_; }
 

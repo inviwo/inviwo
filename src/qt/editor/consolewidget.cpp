@@ -688,17 +688,17 @@ Qt::ItemFlags LogTableModel::flags(const QModelIndex& index) const {
 
 QString LogTableModel::getName(LogTableModelEntry::ColumnID ind) const {
     switch (ind) {
-        case LogTableModelEntry::ColumnID::Date:     return QString("Date");
-        case LogTableModelEntry::ColumnID::Time:     return QString("Time");
-        case LogTableModelEntry::ColumnID::Source:   return QString("Source");
-        case LogTableModelEntry::ColumnID::Level:    return QString("Level");
-        case LogTableModelEntry::ColumnID::Audience: return QString("Audience");
-        case LogTableModelEntry::ColumnID::Path:     return QString("Path");
-        case LogTableModelEntry::ColumnID::File:     return QString("File");
-        case LogTableModelEntry::ColumnID::Line:     return QString("Line");
-        case LogTableModelEntry::ColumnID::Function: return QString("Function");
-        case LogTableModelEntry::ColumnID::Message:  return QString("Message");
-        default:                                     return QString();
+        case LogTableModelEntry::ColumnID::Date:     return {"Date"};
+        case LogTableModelEntry::ColumnID::Time:     return {"Time"};
+        case LogTableModelEntry::ColumnID::Source:   return {"Source"};
+        case LogTableModelEntry::ColumnID::Level:    return {"Level"};
+        case LogTableModelEntry::ColumnID::Audience: return {"Audience"};
+        case LogTableModelEntry::ColumnID::Path:     return {"Path"};
+        case LogTableModelEntry::ColumnID::File:     return {"File"};
+        case LogTableModelEntry::ColumnID::Line:     return {"Line"};
+        case LogTableModelEntry::ColumnID::Function: return {"Function"};
+        case LogTableModelEntry::ColumnID::Message:  return {"Message"};
+        default:                                     return {};
     }
 }
 

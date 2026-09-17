@@ -38,7 +38,7 @@ public:
     T v2{};
 
     constexpr Edge() noexcept = default;
-    constexpr Edge(T in1) noexcept : v1(in1), v2(in1) {}
+    constexpr explicit Edge(T in1) noexcept : v1(in1), v2(in1) {}
     constexpr Edge(T in1, T in2) noexcept : v1(in1), v2(in2) {}
 
     constexpr bool operator==(const Edge<T>& e) const noexcept {

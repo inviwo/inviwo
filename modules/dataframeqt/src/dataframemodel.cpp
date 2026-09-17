@@ -209,7 +209,7 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
                 return QBrush();
             }
         }
-        default: return QVariant();
+        default: return {};
     }
 }
 

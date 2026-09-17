@@ -178,10 +178,10 @@ namespace detail {
 
 size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) {
     switch (axis) {
-        default:                         return size2_t(volumeDims.z, volumeDims.y);
-        case CartesianCoordinateAxis::X: return size2_t(volumeDims.z, volumeDims.y);
-        case CartesianCoordinateAxis::Y: return size2_t(volumeDims.x, volumeDims.z);
-        case CartesianCoordinateAxis::Z: return size2_t(volumeDims.x, volumeDims.y);
+        default:                         return {volumeDims.z, volumeDims.y};
+        case CartesianCoordinateAxis::X: return {volumeDims.z, volumeDims.y};
+        case CartesianCoordinateAxis::Y: return {volumeDims.x, volumeDims.z};
+        case CartesianCoordinateAxis::Z: return {volumeDims.x, volumeDims.y};
     }
 }
 
@@ -211,10 +211,10 @@ mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
 vec2 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const dvec3 offset = v->getOwner()->getOffset();
     switch (axis) {
-        default:                         return vec2(offset.z, offset.y);
-        case CartesianCoordinateAxis::X: return vec2(offset.z, offset.y);
-        case CartesianCoordinateAxis::Y: return vec2(offset.x, offset.z);
-        case CartesianCoordinateAxis::Z: return vec2(offset.x, offset.y);
+        default:                         return {offset.z, offset.y};
+        case CartesianCoordinateAxis::X: return {offset.z, offset.y};
+        case CartesianCoordinateAxis::Y: return {offset.x, offset.z};
+        case CartesianCoordinateAxis::Z: return {offset.x, offset.y};
     }
 }
 

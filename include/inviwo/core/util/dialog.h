@@ -35,8 +35,8 @@ namespace inviwo {
 
 class IVW_CORE_API Dialog {
 public:
-    Dialog() {}
-    virtual ~Dialog() {}
+    Dialog() = default;
+    virtual ~Dialog() = default;
 };
 
 }  // namespace inviwo

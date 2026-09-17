@@ -40,7 +40,7 @@ struct IndexMapper {};
 
 template <typename IndexType>
 struct IndexMapper<2, IndexType> {
-    constexpr IndexMapper(const Vector<2, IndexType>& dim) : dimx(dim.x) {}
+    constexpr explicit IndexMapper(const Vector<2, IndexType>& dim) : dimx(dim.x) {}
     constexpr IndexType operator()(const IndexType x, const IndexType y) const noexcept {
         return x + y * dimx;
     }
@@ -57,7 +57,7 @@ private:
 
 template <typename IndexType>
 struct IndexMapper<3, IndexType> {
-    constexpr IndexMapper(const Vector<3, IndexType>& dim) noexcept
+    constexpr explicit IndexMapper(const Vector<3, IndexType>& dim) noexcept
         : dimx(dim.x), dimxy(dim.x * dim.y) {}
     constexpr IndexType operator()(const IndexType x, const IndexType y,
                                    const IndexType z) const noexcept {

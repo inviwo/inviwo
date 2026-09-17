@@ -76,8 +76,9 @@ AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to,
         if (passedKeyframPlayingForward || passedKeyframePlayingBackward) {
             // We passed over this keyframe
             switch (action_) {
-                case ControlAction::Pause: return {getTime(), AnimationState::Paused};
-                case ControlAction::Jump:  return {jumpTime_, state};
+                case ControlAction::Pause:
+                    return {.time = getTime(), .state = AnimationState::Paused};
+                case ControlAction::Jump: return {.time = jumpTime_, .state = state};
             }
         }
     }

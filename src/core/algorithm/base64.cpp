@@ -122,7 +122,7 @@ static std::string insert_linebreaks(std::string str, size_t distance) {
     return str;
 }
 
-std::string base64_encode(const unsigned char* bytes_to_encode, size_t in_len, bool url) {
+static std::string base64_encode(const unsigned char* bytes_to_encode, size_t in_len, bool url) {
 
     size_t len_encoded = (in_len + 2) / 3 * 4;
 

@@ -112,8 +112,8 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
         this,
         [this](MenuItemType t) -> bool {
             switch (t) {
-                case MenuItemType::cut:   return editor_->selectedItems().size() > 0;
-                case MenuItemType::copy:  return editor_->selectedItems().size() > 0;
+                case MenuItemType::cut:   return !editor_->selectedItems().empty();
+                case MenuItemType::copy:  return !editor_->selectedItems().empty();
                 case MenuItemType::paste: {
                     auto clipboard = QApplication::clipboard();
                     auto mimeData = clipboard->mimeData();
@@ -126,7 +126,7 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
                         return false;
                     }
                 }
-                case MenuItemType::del:    return editor_->selectedItems().size() > 0;
+                case MenuItemType::del:    return !editor_->selectedItems().empty();
                 case MenuItemType::select: return true;
                 default:                   return false;
             }

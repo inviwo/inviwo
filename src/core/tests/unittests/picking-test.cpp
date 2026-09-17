@@ -89,7 +89,7 @@ TEST(PickingTests, Unique) {
 
 TEST(PickingMapperTests, Create) {
     PickingManager manager;
-    PickingMapper mapper(nullptr, 100, [](const PickingEvent*) {}, &manager);
+    const PickingMapper mapper(nullptr, 100, [](const PickingEvent*) {}, &manager);
 
     auto po = mapper.getPickingAction();
     EXPECT_NE(po, nullptr);

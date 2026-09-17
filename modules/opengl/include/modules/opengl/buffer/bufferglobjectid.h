@@ -37,7 +37,7 @@ namespace inviwo {
 class BufferGLObjectId {
 public:
     BufferGLObjectId() : object_(0) {}
-    BufferGLObjectId(const GLuint id) : object_(id) {}
+    explicit BufferGLObjectId(const GLuint id) : object_(id) {}
     virtual ~BufferGLObjectId() { glDeleteBuffers(1, &object_); }
 
     GLuint getId() const { return object_; }

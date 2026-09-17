@@ -173,7 +173,7 @@ QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(size_t curPort) const 
                           arrowDim);
         case LinkDialogTreeItem::Side::Right:
             return QRectF(centerEdge + QPointF(0, -arrowDim.height() / 2), arrowDim);
-        default: return QRectF();
+        default: return {};
     }
 }
 
