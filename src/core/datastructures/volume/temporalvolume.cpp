@@ -57,7 +57,9 @@ std::shared_ptr<Volume> ProceduralLoader::load(size_t index, std::shared_ptr<Vol
 
 size_t ProceduralLoader::size() const { return count_; }
 
-Seconds ProceduralLoader::time(size_t index) const { return times_[index]; }
+Seconds ProceduralLoader::time(size_t index) const {
+    return !times_.empty() ? (index < times_.size() ? times_[index] : times_.back()) : Seconds{index};
+}
 
 VolumeConfig ProceduralLoader::prototype() const { return prototype_; }
 
