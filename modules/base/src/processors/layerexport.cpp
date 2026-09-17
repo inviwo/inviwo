@@ -44,8 +44,7 @@ const ProcessorInfo LayerExport::processorInfo_{
 const ProcessorInfo& LayerExport::getProcessorInfo() const { return processorInfo_; }
 
 LayerExport::LayerExport(InviwoApplication* app)
-    : DataExport<Layer, LayerInport>{util::getDataWriterFactory(app), "", "image"} {
-}
+    : DataExport<Layer, LayerInport>{util::getDataWriterFactory(app), "", "image"} {}
 
 const Layer* LayerExport::getData() {
     if (auto layer = port_.getData()) {

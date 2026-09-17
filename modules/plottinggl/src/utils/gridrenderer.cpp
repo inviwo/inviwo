@@ -52,15 +52,11 @@ std::unique_ptr<Mesh> generateGridMesh(const std::vector<double>& horizontalPosi
                                        PlotAxis plotAxis, dvec2 majorRange, dvec2 minorRange) {
     const size_t numLines = [&]() {
         switch (plotAxis) {
-            case PlotAxis::Major:
-                return horizontalPositions.size();
-            case PlotAxis::Minor:
-                return verticalPositions.size();
-            case PlotAxis::Both:
-                return horizontalPositions.size() + verticalPositions.size();
+            case PlotAxis::Major: return horizontalPositions.size();
+            case PlotAxis::Minor: return verticalPositions.size();
+            case PlotAxis::Both:  return horizontalPositions.size() + verticalPositions.size();
             case PlotAxis::None:
-            default:
-                return 0uz;
+            default:              return 0uz;
         }
     }();
 

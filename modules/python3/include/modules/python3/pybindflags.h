@@ -137,12 +137,9 @@ void exposeFlags(pybind11::module& m, pybind11::enum_<E>& e, std::string_view na
 
     exposeFlags<E>(m, name);
 
-    e.def(
-        "__and__", [](E a, E b) { return a & b; }, py::is_operator{});
-    e.def(
-        "__or__", [](E a, E b) { return a | b; }, py::is_operator{});
-    e.def(
-        "__xor__", [](E a, E b) { return a ^ b; }, py::is_operator{});
+    e.def("__and__", [](E a, E b) { return a & b; }, py::is_operator{});
+    e.def("__or__", [](E a, E b) { return a | b; }, py::is_operator{});
+    e.def("__xor__", [](E a, E b) { return a ^ b; }, py::is_operator{});
 }
 
 #include <warn/pop>

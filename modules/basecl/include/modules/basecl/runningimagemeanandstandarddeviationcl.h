@@ -57,7 +57,7 @@ public:
                                            const size2_t& workgroupSize = uvec2(16));
     virtual ~RunningImageMeanAndStandardDeviationCL() = default;
 
-    virtual void onKernelCompiled(const cl::Kernel*){};
+    virtual void onKernelCompiled(const cl::Kernel*) {}
 
     /**
      * \brief Computes mean and standard deviation of given new values and iteration number.

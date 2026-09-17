@@ -62,22 +62,22 @@ PythonWorkspaceScriptMenu::~PythonWorkspaceScriptMenu() = default;
 
 void PythonWorkspaceScriptMenu::onScriptAdded(std::string_view key, std::string_view) {
     addScriptMenuItem(key);
-};
+}
 void PythonWorkspaceScriptMenu::onScriptRemoved(std::string_view key, std::string_view) {
     if (auto it = menuItems_.find(key); it != menuItems_.end()) {
         menuItems_.erase(it);
     }
-};
+}
 void PythonWorkspaceScriptMenu::onScriptSaved(std::string_view key, std::string_view) {
     if (auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
         it->second->setWindowModified(false);
     }
-};
+}
 void PythonWorkspaceScriptMenu::onScriptUpdate(std::string_view key, std::string_view script) {
     if (auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
         it->second->setSource(script);
     }
-};
+}
 
 void PythonWorkspaceScriptMenu::addScriptMenuItem(std::string_view key) {
     const auto qKey = utilqt::toQString(key);

@@ -199,12 +199,12 @@ protected:
      *
      * @see triggerAction, setAction
      */
-    virtual void updateState(){};
+    virtual void updateState() {}
 
     /**
      * @brief  It is called by setPushState after the internal push state has been updated
      */
-    virtual void pushStateChanged(){};
+    virtual void pushStateChanged() {}
 
     virtual void renderWidget(const ivec2& origin, const size2_t& canvasDim) = 0;
 

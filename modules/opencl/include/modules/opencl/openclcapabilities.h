@@ -78,17 +78,11 @@ std::string deviceInfoToString(cl_device_info info, const T& value, bool is_cl_b
     switch (info) {
         case CL_DEVICE_TYPE:
             switch (value) {
-                case CL_DEVICE_TYPE_CPU:
-                    stream << "CPU";
-                    break;
+                case CL_DEVICE_TYPE_CPU:         stream << "CPU"; break;
 
-                case CL_DEVICE_TYPE_GPU:
-                    stream << "GPU";
-                    break;
+                case CL_DEVICE_TYPE_GPU:         stream << "GPU"; break;
 
-                case CL_DEVICE_TYPE_ACCELERATOR:
-                    stream << "accelerator";
-                    break;
+                case CL_DEVICE_TYPE_ACCELERATOR: stream << "accelerator"; break;
             }
 
             break;
@@ -101,17 +95,11 @@ std::string deviceInfoToString(cl_device_info info, const T& value, bool is_cl_b
 
         case CL_DEVICE_LOCAL_MEM_TYPE:
             switch (value) {
-                case CL_LOCAL:
-                    stream << "local";
-                    break;
+                case CL_LOCAL:  stream << "local"; break;
 
-                case CL_GLOBAL:
-                    stream << "global";
-                    break;
+                case CL_GLOBAL: stream << "global"; break;
 
-                case CL_NONE:
-                    stream << "none";
-                    break;
+                case CL_NONE:   stream << "none"; break;
             }
 
             break;
@@ -199,13 +187,9 @@ inline std::string deviceInfoToString(cl_device_info info, const std::vector<T>&
     if (info == CL_DEVICE_PARTITION_PROPERTIES || info == CL_DEVICE_PARTITION_TYPE) {
         for (size_t i = 0; i < value.size(); ++i) {
             switch (value[i]) {
-                case CL_DEVICE_PARTITION_EQUALLY:
-                    stream << "partition equally";
-                    break;
+                case CL_DEVICE_PARTITION_EQUALLY:   stream << "partition equally"; break;
 
-                case CL_DEVICE_PARTITION_BY_COUNTS:
-                    stream << "partition by counts";
-                    break;
+                case CL_DEVICE_PARTITION_BY_COUNTS: stream << "partition by counts"; break;
 
                 case CL_DEVICE_PARTITION_BY_COUNTS_LIST_END:
                     stream << "partition by counts list end";
@@ -227,25 +211,17 @@ inline std::string deviceInfoToString(cl_device_info info, const std::vector<T>&
         Info == CL_DEVICE_PARTITION_STYLE_EXT) {
         for (size_t i = 0; i < value.size(); ++i) {
             switch (value[i]) {
-                case CL_DEVICE_PARTITION_EQUALLY_EXT:
-                    stream << "partition equally";
-                    break;
+                case CL_DEVICE_PARTITION_EQUALLY_EXT:   stream << "partition equally"; break;
 
-                case CL_DEVICE_PARTITION_BY_COUNTS_EXT:
-                    stream << "partition by counts";
-                    break;
+                case CL_DEVICE_PARTITION_BY_COUNTS_EXT: stream << "partition by counts"; break;
 
-                case CL_DEVICE_PARTITION_BY_NAMES_EXT:
-                    stream << "partition by names";
-                    break;
+                case CL_DEVICE_PARTITION_BY_NAMES_EXT:  stream << "partition by names"; break;
 
                 case CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN_EXT:
                     stream << "partition by affinity domain";
                     break;
 
-                case CL_PROPERTIES_LIST_END_EXT:
-                    stream << "list end";
-                    break;
+                case CL_PROPERTIES_LIST_END_EXT: stream << "list end"; break;
 
                 case CL_PARTITION_BY_COUNTS_LIST_END_EXT:
                     stream << "partition by counts list end";

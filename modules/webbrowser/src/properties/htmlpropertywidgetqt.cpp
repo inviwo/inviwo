@@ -31,8 +31,6 @@
 
 namespace inviwo {
 
-HTMLPropertyWidgetQt::HTMLPropertyWidgetQt() {
-
-}
+HTMLPropertyWidgetQt::HTMLPropertyWidgetQt() {}
 
 }  // namespace inviwo

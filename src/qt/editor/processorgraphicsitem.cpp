@@ -123,14 +123,10 @@ const QFont& getFont(FontType type) {
 
     switch (type) {
         using enum FontType;
-        case Name:
-            return name;
-        case Identifier:
-            return identifier;
-        case Tag:
-            return tag;
-        case Count:
-            return identifier;
+        case Name:       return name;
+        case Identifier: return identifier;
+        case Tag:        return tag;
+        case Count:      return identifier;
     }
     return identifier;
 }
@@ -153,14 +149,10 @@ void drawStatus(ProcessorGraphicsItem::State state, QPointF position, QPainter& 
     const auto ledColor = [&]() {
         switch (state) {
             using enum ProcessorGraphicsItem::State;
-            case Ready:
-                return readyColor;
-            case Running:
-                return runningColor;
-            case Invalid:
-                return invalidColor;
-            case Error:
-                return errorColor;
+            case Ready:   return readyColor;
+            case Running: return runningColor;
+            case Invalid: return invalidColor;
+            case Error:   return errorColor;
         }
         return invalidColor;
     }();
@@ -507,8 +499,7 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
             updateWidgets();
             updateStatus();
             break;
-        default:
-            break;
+        default: break;
     }
 #include <warn/pop>
     return QGraphicsItem::itemChange(change, value);
@@ -713,15 +704,9 @@ void ProcessorGraphicsItem::updateStatus(std::optional<std::string> exception) {
         state_ = State::Running;
     } else {
         switch (processor_->status().status()) {
-            case ProcessorStatus::Ready:
-                state_ = State::Ready;
-                break;
-            case ProcessorStatus::NotReady:
-                state_ = State::Invalid;
-                break;
-            case ProcessorStatus::Error:
-                state_ = State::Error;
-                break;
+            case ProcessorStatus::Ready:    state_ = State::Ready; break;
+            case ProcessorStatus::NotReady: state_ = State::Invalid; break;
+            case ProcessorStatus::Error:    state_ = State::Error; break;
         }
     }
     if (exception) {

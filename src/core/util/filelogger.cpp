@@ -53,7 +53,7 @@ constexpr std::string_view header = R"(<style>
 </style>
 )";
 
-}
+}  // namespace
 
 FileLogger::FileLogger(const std::filesystem::path& logPath) : Logger() {
 

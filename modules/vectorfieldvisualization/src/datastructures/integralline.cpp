@@ -171,22 +171,12 @@ double IntegralLine::calcLength(std::vector<dvec3>::const_iterator start,
 
 std::ostream& operator<<(std::ostream& os, IntegralLine::TerminationReason reason) {
     switch (reason) {
-        case IntegralLine::TerminationReason::StartPoint:
-            os << "Seed Point";
-            break;
-        case IntegralLine::TerminationReason::OutOfBounds:
-            os << "Out of Bounds";
-            break;
-        case IntegralLine::TerminationReason::ZeroVelocity:
-            os << "Zero Velocity";
-            break;
-        case IntegralLine::TerminationReason::Steps:
-            os << "Steps";
-            break;
+        case IntegralLine::TerminationReason::StartPoint:   os << "Seed Point"; break;
+        case IntegralLine::TerminationReason::OutOfBounds:  os << "Out of Bounds"; break;
+        case IntegralLine::TerminationReason::ZeroVelocity: os << "Zero Velocity"; break;
+        case IntegralLine::TerminationReason::Steps:        os << "Steps"; break;
         default:
-        case IntegralLine::TerminationReason::Unknown:
-            os << "Unknown";
-            break;
+        case IntegralLine::TerminationReason::Unknown:      os << "Unknown"; break;
     }
 
     return os;

@@ -37,91 +37,51 @@ namespace util {
 
 MouseCursor fromCursorShape(const Qt::CursorShape cursor) {
     switch (cursor) {
-        case Qt::ArrowCursor:
-            return MouseCursor::Arrow;
-        case Qt::UpArrowCursor:
-            return MouseCursor::UpArrow;
-        case Qt::CrossCursor:
-            return MouseCursor::Cross;
-        case Qt::WaitCursor:
-            return MouseCursor::Wait;
-        case Qt::IBeamCursor:
-            return MouseCursor::IBeam;
-        case Qt::SizeVerCursor:
-            return MouseCursor::SizeVer;
-        case Qt::SizeHorCursor:
-            return MouseCursor::SizeHor;
-        case Qt::SizeBDiagCursor:
-            return MouseCursor::SizeBDiag;
-        case Qt::SizeFDiagCursor:
-            return MouseCursor::SizeFDiag;
-        case Qt::SizeAllCursor:
-            return MouseCursor::SizeAll;
-        case Qt::BlankCursor:
-            return MouseCursor::Blank;
-        case Qt::SplitVCursor:
-            return MouseCursor::SplitV;
-        case Qt::SplitHCursor:
-            return MouseCursor::SplitH;
-        case Qt::PointingHandCursor:
-            return MouseCursor::PointingHand;
-        case Qt::ForbiddenCursor:
-            return MouseCursor::Forbidden;
-        case Qt::OpenHandCursor:
-            return MouseCursor::OpenHand;
-        case Qt::ClosedHandCursor:
-            return MouseCursor::ClosedHand;
-        case Qt::WhatsThisCursor:
-            return MouseCursor::WhatsThis;
-        case Qt::BusyCursor:
-            return MouseCursor::Busy;
-        default:
-            return MouseCursor::Arrow;
+        case Qt::ArrowCursor:        return MouseCursor::Arrow;
+        case Qt::UpArrowCursor:      return MouseCursor::UpArrow;
+        case Qt::CrossCursor:        return MouseCursor::Cross;
+        case Qt::WaitCursor:         return MouseCursor::Wait;
+        case Qt::IBeamCursor:        return MouseCursor::IBeam;
+        case Qt::SizeVerCursor:      return MouseCursor::SizeVer;
+        case Qt::SizeHorCursor:      return MouseCursor::SizeHor;
+        case Qt::SizeBDiagCursor:    return MouseCursor::SizeBDiag;
+        case Qt::SizeFDiagCursor:    return MouseCursor::SizeFDiag;
+        case Qt::SizeAllCursor:      return MouseCursor::SizeAll;
+        case Qt::BlankCursor:        return MouseCursor::Blank;
+        case Qt::SplitVCursor:       return MouseCursor::SplitV;
+        case Qt::SplitHCursor:       return MouseCursor::SplitH;
+        case Qt::PointingHandCursor: return MouseCursor::PointingHand;
+        case Qt::ForbiddenCursor:    return MouseCursor::Forbidden;
+        case Qt::OpenHandCursor:     return MouseCursor::OpenHand;
+        case Qt::ClosedHandCursor:   return MouseCursor::ClosedHand;
+        case Qt::WhatsThisCursor:    return MouseCursor::WhatsThis;
+        case Qt::BusyCursor:         return MouseCursor::Busy;
+        default:                     return MouseCursor::Arrow;
     }
 }
 
 Qt::CursorShape toCursorShape(const MouseCursor cursor) {
     switch (cursor) {
-        case MouseCursor::Arrow:
-            return Qt::ArrowCursor;
-        case MouseCursor::UpArrow:
-            return Qt::UpArrowCursor;
-        case MouseCursor::Cross:
-            return Qt::CrossCursor;
-        case MouseCursor::Wait:
-            return Qt::WaitCursor;
-        case MouseCursor::IBeam:
-            return Qt::IBeamCursor;
-        case MouseCursor::SizeVer:
-            return Qt::SizeVerCursor;
-        case MouseCursor::SizeHor:
-            return Qt::SizeHorCursor;
-        case MouseCursor::SizeBDiag:
-            return Qt::SizeBDiagCursor;
-        case MouseCursor::SizeFDiag:
-            return Qt::SizeFDiagCursor;
-        case MouseCursor::SizeAll:
-            return Qt::SizeAllCursor;
-        case MouseCursor::Blank:
-            return Qt::BlankCursor;
-        case MouseCursor::SplitV:
-            return Qt::SplitVCursor;
-        case MouseCursor::SplitH:
-            return Qt::SplitHCursor;
-        case MouseCursor::PointingHand:
-            return Qt::PointingHandCursor;
-        case MouseCursor::Forbidden:
-            return Qt::ForbiddenCursor;
-        case MouseCursor::OpenHand:
-            return Qt::OpenHandCursor;
-        case MouseCursor::ClosedHand:
-            return Qt::ClosedHandCursor;
-        case MouseCursor::WhatsThis:
-            return Qt::WhatsThisCursor;
-        case MouseCursor::Busy:
-            return Qt::BusyCursor;
-        default:
-            return Qt::ArrowCursor;
+        case MouseCursor::Arrow:        return Qt::ArrowCursor;
+        case MouseCursor::UpArrow:      return Qt::UpArrowCursor;
+        case MouseCursor::Cross:        return Qt::CrossCursor;
+        case MouseCursor::Wait:         return Qt::WaitCursor;
+        case MouseCursor::IBeam:        return Qt::IBeamCursor;
+        case MouseCursor::SizeVer:      return Qt::SizeVerCursor;
+        case MouseCursor::SizeHor:      return Qt::SizeHorCursor;
+        case MouseCursor::SizeBDiag:    return Qt::SizeBDiagCursor;
+        case MouseCursor::SizeFDiag:    return Qt::SizeFDiagCursor;
+        case MouseCursor::SizeAll:      return Qt::SizeAllCursor;
+        case MouseCursor::Blank:        return Qt::BlankCursor;
+        case MouseCursor::SplitV:       return Qt::SplitVCursor;
+        case MouseCursor::SplitH:       return Qt::SplitHCursor;
+        case MouseCursor::PointingHand: return Qt::PointingHandCursor;
+        case MouseCursor::Forbidden:    return Qt::ForbiddenCursor;
+        case MouseCursor::OpenHand:     return Qt::OpenHandCursor;
+        case MouseCursor::ClosedHand:   return Qt::ClosedHandCursor;
+        case MouseCursor::WhatsThis:    return Qt::WhatsThisCursor;
+        case MouseCursor::Busy:         return Qt::BusyCursor;
+        default:                        return Qt::ArrowCursor;
     }
 }
 

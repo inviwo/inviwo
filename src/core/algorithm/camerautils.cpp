@@ -47,20 +47,13 @@ namespace {
 dmat3 getView(Side side) {
     const auto [forward, up] = [&] -> std::pair<dvec3, dvec3> {
         switch (side) {
-            case Side::XNegative:
-                return {{1, 0, 0}, {0, 1, 0}};
-            case Side::XPositive:
-                return {{-1, 0, 0}, {0, 1, 0}};
-            case Side::YNegative:
-                return {{0, 1, 0}, {0, 0, 1}};
-            case Side::YPositive:
-                return {{0, -1, 0}, {0, 0, 1}};
-            case Side::ZNegative:
-                return {{0, 0, 1}, {0, 1, 0}};
-            case Side::ZPositive:
-                [[fallthrough]];
-            default:
-                return {{0, 0, -1}, {0, 1, 0}};
+            case Side::XNegative: return {{1, 0, 0}, {0, 1, 0}};
+            case Side::XPositive: return {{-1, 0, 0}, {0, 1, 0}};
+            case Side::YNegative: return {{0, 1, 0}, {0, 0, 1}};
+            case Side::YPositive: return {{0, -1, 0}, {0, 0, 1}};
+            case Side::ZNegative: return {{0, 0, 1}, {0, 1, 0}};
+            case Side::ZPositive: [[fallthrough]];
+            default:              return {{0, 0, -1}, {0, 1, 0}};
         }
     }();
 

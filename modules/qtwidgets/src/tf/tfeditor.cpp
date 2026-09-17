@@ -1103,21 +1103,13 @@ bool TFEditor::handleMoveSelection(QKeyEvent* event) {
     QPointF delta;
     switch (k) {
         case Qt::Key_Left:
-        case 'J':
-            delta = QPointF(-viewDependentOffset().x, 0.0f);
-            break;
+        case 'J':           delta = QPointF(-viewDependentOffset().x, 0.0f); break;
         case Qt::Key_Right:
-        case 'L':
-            delta = QPointF(viewDependentOffset().x, 0.0f);
-            break;
+        case 'L':           delta = QPointF(viewDependentOffset().x, 0.0f); break;
         case Qt::Key_Up:
-        case 'I':
-            delta = QPointF(0.0f, viewDependentOffset().y);
-            break;
+        case 'I':           delta = QPointF(0.0f, viewDependentOffset().y); break;
         case Qt::Key_Down:
-        case 'K':
-            delta = QPointF(0.0f, -viewDependentOffset().y);
-            break;
+        case 'K':           delta = QPointF(0.0f, -viewDependentOffset().y); break;
     }
 
     constexpr double stepUpScalingFactor = 5.0;

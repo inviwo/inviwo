@@ -143,14 +143,10 @@ Language detectLang(std::string_view lang) {
 
 bool isKeyword(std::string_view word, Language lang) {
     switch (lang) {
-        case Language::Cpp:
-            return std::ranges::binary_search(kCppKeywords, word);
-        case Language::Python:
-            return std::ranges::binary_search(kPythonKeywords, word);
-        case Language::Glsl:
-            return std::ranges::binary_search(kGlslKeywords, word);
-        default:
-            return false;
+        case Language::Cpp:    return std::ranges::binary_search(kCppKeywords, word);
+        case Language::Python: return std::ranges::binary_search(kPythonKeywords, word);
+        case Language::Glsl:   return std::ranges::binary_search(kGlslKeywords, word);
+        default:               return false;
     }
 }
 
@@ -384,18 +380,12 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
 
 constexpr std::string_view tokenClass(TokenKind kind) {
     switch (kind) {
-        case TokenKind::Keyword:
-            return "tk-kw";
-        case TokenKind::String:
-            return "tk-str";
-        case TokenKind::Number:
-            return "tk-num";
-        case TokenKind::Comment:
-            return "tk-com";
-        case TokenKind::Function:
-            return "tk-fun";
-        default:
-            return {};
+        case TokenKind::Keyword:  return "tk-kw";
+        case TokenKind::String:   return "tk-str";
+        case TokenKind::Number:   return "tk-num";
+        case TokenKind::Comment:  return "tk-com";
+        case TokenKind::Function: return "tk-fun";
+        default:                  return {};
     }
 }
 

@@ -232,8 +232,7 @@ auto IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector
     switch (integrationScheme_) {
         case inviwo::IntegralLineProperties::IntegrationScheme::Euler:
             return {move(oldPos, k1, stepSize), k1, false};
-        default:
-            [[fallthrough]];
+        default:                                                     [[fallthrough]];
         case inviwo::IntegralLineProperties::IntegrationScheme::RK4: {
             SpatialVector pos = move(oldPos, k1, stepSize / 2);
             if (!sampler_->withinBounds(pos)) {

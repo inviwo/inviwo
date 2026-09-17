@@ -64,7 +64,6 @@ public:
     FloatProperty worldScale;
 
     void update(StipplingData& data) const;
-
 };
 
 }  // namespace inviwo

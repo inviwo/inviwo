@@ -42,7 +42,7 @@
 #include <QHBoxLayout>
 #include <QSignalBlocker>
 #include <Qt>
-#include <QMenu>           // IWYU pragma: keep
+#include <QMenu>  // IWYU pragma: keep
 
 class QHBoxLayout;
 

@@ -45,14 +45,10 @@ namespace inviwo {
 
 std::string_view enumToStr(LightSourceType lt) {
     switch (lt) {
-        case LightSourceType::Area:
-            return "Area";
-        case LightSourceType::SpotLight:
-            return "SpotLight";
-        case LightSourceType::Point:
-            return "Point";
-        case LightSourceType::Directional:
-            return "Directional";
+        case LightSourceType::Area:        return "Area";
+        case LightSourceType::SpotLight:   return "SpotLight";
+        case LightSourceType::Point:       return "Point";
+        case LightSourceType::Directional: return "Directional";
     }
     throw Exception(SourceContext{}, "Found invalid LightSourceType enum value '{}'",
                     static_cast<int>(lt));

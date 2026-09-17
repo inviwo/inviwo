@@ -29,6 +29,4 @@
 
 #include <inviwo/core/processors/sequenceselect.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

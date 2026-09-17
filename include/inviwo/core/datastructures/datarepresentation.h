@@ -62,7 +62,7 @@ public:
     bool isValid() const;
     void setValid(bool valid);
 
-    virtual void updateResource(const ResourceMeta&) const {};
+    virtual void updateResource(const ResourceMeta&) const {}
 
 protected:
     DataRepresentation() = default;

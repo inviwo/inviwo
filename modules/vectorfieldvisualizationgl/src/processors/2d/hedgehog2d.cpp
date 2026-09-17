@@ -144,13 +144,10 @@ struct ArrowConfig {
 vec2 getOffset(HedgeHog2D::Pivot pivot) {
     using enum HedgeHog2D::Pivot;
     switch (pivot) {
-        case Middle:
-            return {-0.5f, 0.0f};
-        case Tip:
-            return {-1.0f, 0.0f};
+        case Middle: return {-0.5f, 0.0f};
+        case Tip:    return {-1.0f, 0.0f};
         case Tail:
-        default:
-            return {0.0f, 0.0f};
+        default:     return {0.0f, 0.0f};
     }
 }
 
@@ -294,9 +291,7 @@ void HedgeHog2D::process() {
                     addQuiver(*mesh, *indexBuffer, config, pos, velocity, length, color);
                     break;
                 case GlyphType::Arrow:
-                default:
-                    addArrow(*mesh, *indexBuffer, config, pos, velocity, length, color);
-                    break;
+                default:               addArrow(*mesh, *indexBuffer, config, pos, velocity, length, color); break;
             }
         }
     }

@@ -144,8 +144,7 @@ void MultiInput::setSorting(Sorting sSortOrder) {
                 util::getMetaData(port->getProcessor())->addObserver(this);
             }
             break;
-        default:
-            break;
+        default: break;
     }
 }
 
@@ -180,8 +179,7 @@ void MultiInput::sort() {
                 return util::getPosition(p->getProcessor()).x;
             });
             break;
-        default:
-            break;
+        default: break;
     }
 }
 
@@ -392,12 +390,8 @@ void Input::setMode(Processor* p, InputMode mode, const std::function<void(bool)
 
     removePorts(p);
     switch (mode) {
-        case InputMode::Multi:
-            input_.emplace<MultiInput>(update, views);
-            break;
-        case InputMode::Sequence:
-            input_.emplace<SequenceInput>(update, views);
-            break;
+        case InputMode::Multi:    input_.emplace<MultiInput>(update, views); break;
+        case InputMode::Sequence: input_.emplace<SequenceInput>(update, views); break;
     }
     addPorts(p);
 }

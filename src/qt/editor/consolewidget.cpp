@@ -392,14 +392,12 @@ std::shared_ptr<MenuItem> ConsoleWidget::setupCopyPaste(InviwoEditMenu* editMenu
         owner,
         [selectionModel](MenuItemType t) -> bool {
             switch (t) {
-                case MenuItemType::copy:
-                    return selectionModel->hasSelection();
+                case MenuItemType::copy:   return selectionModel->hasSelection();
                 case MenuItemType::cut:
                 case MenuItemType::paste:
                 case MenuItemType::del:
                 case MenuItemType::select:
-                default:
-                    return false;
+                default:                   return false;
             }
         },
         [selectionModel](MenuItemType t) -> void {
@@ -414,8 +412,7 @@ std::shared_ptr<MenuItem> ConsoleWidget::setupCopyPaste(InviwoEditMenu* editMenu
                 case MenuItemType::paste:
                 case MenuItemType::del:
                 case MenuItemType::select:
-                default:
-                    break;
+                default:                   break;
             }
         }));
 }
@@ -615,49 +612,31 @@ QVariant LogTableModel::data(const QModelIndex& index, int role) const {
     switch (role) {
         case Qt::DisplayRole: {
             switch (id) {
-                case LogTableModelEntry::ColumnID::Date:
-                    return entry.date;
-                case LogTableModelEntry::ColumnID::Time:
-                    return entry.time;
-                case LogTableModelEntry::ColumnID::Source:
-                    return entry.source;
-                case LogTableModelEntry::ColumnID::Level:
-                    return entry.levelStr;
-                case LogTableModelEntry::ColumnID::Audience:
-                    return entry.audience;
-                case LogTableModelEntry::ColumnID::Path:
-                    return entry.path;
-                case LogTableModelEntry::ColumnID::File:
-                    return entry.file;
-                case LogTableModelEntry::ColumnID::Line:
-                    return entry.line;
-                case LogTableModelEntry::ColumnID::Function:
-                    return entry.function;
-                case LogTableModelEntry::ColumnID::Message:
-                    return entry.message;
-                default:
-                    return {};
+                case LogTableModelEntry::ColumnID::Date:     return entry.date;
+                case LogTableModelEntry::ColumnID::Time:     return entry.time;
+                case LogTableModelEntry::ColumnID::Source:   return entry.source;
+                case LogTableModelEntry::ColumnID::Level:    return entry.levelStr;
+                case LogTableModelEntry::ColumnID::Audience: return entry.audience;
+                case LogTableModelEntry::ColumnID::Path:     return entry.path;
+                case LogTableModelEntry::ColumnID::File:     return entry.file;
+                case LogTableModelEntry::ColumnID::Line:     return entry.line;
+                case LogTableModelEntry::ColumnID::Function: return entry.function;
+                case LogTableModelEntry::ColumnID::Message:  return entry.message;
+                default:                                     return {};
             }
         }
-        case Qt::TextAlignmentRole:
-            return Qt::AlignLeft;
-        case Qt::ForegroundRole: {
+        case Qt::TextAlignmentRole: return Qt::AlignLeft;
+        case Qt::ForegroundRole:    {
             switch (entry.level) {
-                case LogLevel::Info:
-                    return QBrush(infoTextColor);
-                case LogLevel::Warn:
-                    return QBrush(warnTextColor);
-                case LogLevel::Error:
-                    return QBrush(errorTextColor);
-                default:
-                    return QBrush(infoTextColor);
+                case LogLevel::Info:  return QBrush(infoTextColor);
+                case LogLevel::Warn:  return QBrush(warnTextColor);
+                case LogLevel::Error: return QBrush(errorTextColor);
+                default:              return QBrush(infoTextColor);
             }
         }
-        case Qt::FontRole:
-            return LogTableModelEntry::logFont();
+        case Qt::FontRole: return LogTableModelEntry::logFont();
 
-        case Qt::EditRole:
-            [[fallthrough]];
+        case Qt::EditRole: [[fallthrough]];
         case detail::Roles::Fulltext:
             if (id == LogTableModelEntry::ColumnID::Message) {
                 return entry.fullMessage;
@@ -665,11 +644,9 @@ QVariant LogTableModel::data(const QModelIndex& index, int role) const {
                 return {};
             }
 
-        case static_cast<int>(Role::Level):
-            return QVariant::fromValue(entry.level);
+        case static_cast<int>(Role::Level): return QVariant::fromValue(entry.level);
 
-        default:
-            return {};
+        default:                            return {};
     }
 }
 
@@ -681,10 +658,8 @@ QVariant LogTableModel::headerData(int section, Qt::Orientation orientation, int
                     return section < static_cast<int>(LogTableModelEntry::size())
                                ? getName(static_cast<LogTableModelEntry::ColumnID>(section))
                                : QVariant{};
-                case Qt::TextAlignmentRole:
-                    return Qt::AlignLeft;
-                default:
-                    return {};
+                case Qt::TextAlignmentRole: return Qt::AlignLeft;
+                default:                    return {};
             }
         }
         case Qt::Vertical: {
@@ -694,8 +669,7 @@ QVariant LogTableModel::headerData(int section, Qt::Orientation orientation, int
                     const auto& entry = entries_[section];
                     return QSize{1, entry.height};
                 }
-                default:
-                    return {};
+                default: return {};
             }
         }
     }
@@ -714,28 +688,17 @@ Qt::ItemFlags LogTableModel::flags(const QModelIndex& index) const {
 
 QString LogTableModel::getName(LogTableModelEntry::ColumnID ind) const {
     switch (ind) {
-        case LogTableModelEntry::ColumnID::Date:
-            return QString("Date");
-        case LogTableModelEntry::ColumnID::Time:
-            return QString("Time");
-        case LogTableModelEntry::ColumnID::Source:
-            return QString("Source");
-        case LogTableModelEntry::ColumnID::Level:
-            return QString("Level");
-        case LogTableModelEntry::ColumnID::Audience:
-            return QString("Audience");
-        case LogTableModelEntry::ColumnID::Path:
-            return QString("Path");
-        case LogTableModelEntry::ColumnID::File:
-            return QString("File");
-        case LogTableModelEntry::ColumnID::Line:
-            return QString("Line");
-        case LogTableModelEntry::ColumnID::Function:
-            return QString("Function");
-        case LogTableModelEntry::ColumnID::Message:
-            return QString("Message");
-        default:
-            return QString();
+        case LogTableModelEntry::ColumnID::Date:     return QString("Date");
+        case LogTableModelEntry::ColumnID::Time:     return QString("Time");
+        case LogTableModelEntry::ColumnID::Source:   return QString("Source");
+        case LogTableModelEntry::ColumnID::Level:    return QString("Level");
+        case LogTableModelEntry::ColumnID::Audience: return QString("Audience");
+        case LogTableModelEntry::ColumnID::Path:     return QString("Path");
+        case LogTableModelEntry::ColumnID::File:     return QString("File");
+        case LogTableModelEntry::ColumnID::Line:     return QString("Line");
+        case LogTableModelEntry::ColumnID::Function: return QString("Function");
+        case LogTableModelEntry::ColumnID::Message:  return QString("Message");
+        default:                                     return QString();
     }
 }
 

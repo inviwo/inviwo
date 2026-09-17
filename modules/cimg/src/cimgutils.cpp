@@ -127,12 +127,9 @@ namespace detail {
 
 cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType type) {
     switch (type) {
-        case inviwo::InterpolationType::Linear:
-            return cimgutil::InterpolationType::Linear;
-        case inviwo::InterpolationType::Nearest:
-            return cimgutil::InterpolationType::Nearest;
-        default:
-            return cimgutil::InterpolationType::Linear;
+        case inviwo::InterpolationType::Linear:  return cimgutil::InterpolationType::Linear;
+        case inviwo::InterpolationType::Nearest: return cimgutil::InterpolationType::Nearest;
+        default:                                 return cimgutil::InterpolationType::Linear;
     }
 }
 
@@ -539,23 +536,12 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
 
     NumericType numericType;
     switch (sampleFormat) {
-        case SAMPLEFORMAT_UINT:
-            numericType = NumericType::UnsignedInteger;
-            break;
-        case SAMPLEFORMAT_INT:
-            numericType = NumericType::SignedInteger;
-            break;
-        case SAMPLEFORMAT_IEEEFP:
-            numericType = NumericType::Float;
-            break;
-        case SAMPLEFORMAT_COMPLEXIEEEFP:
-            [[fallthrough]];
-        case SAMPLEFORMAT_COMPLEXINT:
-            throw DataReaderException("Unsupported TIFF format");
-            break;
-        default:
-            numericType = NumericType::UnsignedInteger;
-            break;
+        case SAMPLEFORMAT_UINT:          numericType = NumericType::UnsignedInteger; break;
+        case SAMPLEFORMAT_INT:           numericType = NumericType::SignedInteger; break;
+        case SAMPLEFORMAT_IEEEFP:        numericType = NumericType::Float; break;
+        case SAMPLEFORMAT_COMPLEXIEEEFP: [[fallthrough]];
+        case SAMPLEFORMAT_COMPLEXINT:    throw DataReaderException("Unsupported TIFF format"); break;
+        default:                         numericType = NumericType::UnsignedInteger; break;
     }
 
     SwizzleMask swizzleMask;

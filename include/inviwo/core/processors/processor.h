@@ -363,7 +363,7 @@ public:
     virtual Processor* getProcessor() override { return this; }
     virtual const Processor* getProcessor() const override { return this; }
     virtual const PropertyOwner* getOwner() const override { return nullptr; }
-    virtual PropertyOwner* getOwner() override { return nullptr; };
+    virtual PropertyOwner* getOwner() override { return nullptr; }
 
     virtual InviwoApplication* getInviwoApplication() override;
 

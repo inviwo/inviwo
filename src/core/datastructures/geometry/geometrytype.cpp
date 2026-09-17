@@ -34,80 +34,55 @@ namespace inviwo {
 
 std::string_view enumToStr(DrawType dt) {
     switch (dt) {
-        case DrawType::Points:
-            return "Points";
-        case DrawType::Lines:
-            return "Lines";
-        case DrawType::Triangles:
-            return "Triangles";
-        case DrawType::NotSpecified:
-            return "Not specified";
+        case DrawType::Points:       return "Points";
+        case DrawType::Lines:        return "Lines";
+        case DrawType::Triangles:    return "Triangles";
+        case DrawType::NotSpecified: return "Not specified";
     }
     throw Exception(SourceContext{}, "Found invalid DrawType enum value '{}'",
                     static_cast<int>(dt));
 }
 std::string_view enumToStr(ConnectivityType ct) {
     switch (ct) {
-        case ConnectivityType::None:
-            return "None";
-        case ConnectivityType::Strip:
-            return "Strip";
-        case ConnectivityType::Loop:
-            return "Loop";
-        case ConnectivityType::Fan:
-            return "Fan";
-        case ConnectivityType::Adjacency:
-            return "Adjacency";
-        case ConnectivityType::StripAdjacency:
-            return "Strip adjacency";
+        case ConnectivityType::None:           return "None";
+        case ConnectivityType::Strip:          return "Strip";
+        case ConnectivityType::Loop:           return "Loop";
+        case ConnectivityType::Fan:            return "Fan";
+        case ConnectivityType::Adjacency:      return "Adjacency";
+        case ConnectivityType::StripAdjacency: return "Strip adjacency";
     }
     throw Exception(SourceContext{}, "Found invalid ConnectivityType enum value '{}'",
                     static_cast<int>(ct));
 }
 std::string_view enumToStr(BufferType bt) {
     switch (bt) {
-        case BufferType::PositionAttrib:
-            return "Position";
-        case BufferType::NormalAttrib:
-            return "Normal";
-        case BufferType::ColorAttrib:
-            return "Color";
-        case BufferType::TexCoordAttrib:
-            return "TexCoord";
-        case BufferType::CurvatureAttrib:
-            return "Curvature";
-        case BufferType::IndexAttrib:
-            return "Index";
-        case BufferType::RadiiAttrib:
-            return "Radii";
-        case BufferType::PickingAttrib:
-            return "Picking";
-        case BufferType::ScalarMetaAttrib:
-            return "ScalarMeta";
-        case BufferType::IntMetaAttrib:
-            return "IntMeta";
-        case BufferType::Unknown:
-            return "Unknown";
+        case BufferType::PositionAttrib:   return "Position";
+        case BufferType::NormalAttrib:     return "Normal";
+        case BufferType::ColorAttrib:      return "Color";
+        case BufferType::TexCoordAttrib:   return "TexCoord";
+        case BufferType::CurvatureAttrib:  return "Curvature";
+        case BufferType::IndexAttrib:      return "Index";
+        case BufferType::RadiiAttrib:      return "Radii";
+        case BufferType::PickingAttrib:    return "Picking";
+        case BufferType::ScalarMetaAttrib: return "ScalarMeta";
+        case BufferType::IntMetaAttrib:    return "IntMeta";
+        case BufferType::Unknown:          return "Unknown";
     }
     throw Exception(SourceContext{}, "Found invalid BufferType enum value '{}'",
                     static_cast<int>(bt));
 }
 std::string_view enumToStr(BufferUsage bu) {
     switch (bu) {
-        case BufferUsage::Static:
-            return "Static";
-        case BufferUsage::Dynamic:
-            return "Dynamic";
+        case BufferUsage::Static:  return "Static";
+        case BufferUsage::Dynamic: return "Dynamic";
     }
     throw Exception(SourceContext{}, "Found invalid BufferUsage enum value '{}'",
                     static_cast<int>(bu));
 }
 std::string_view enumToStr(BufferTarget bt) {
     switch (bt) {
-        case BufferTarget::Data:
-            return "Data";
-        case BufferTarget::Index:
-            return "Index";
+        case BufferTarget::Data:  return "Data";
+        case BufferTarget::Index: return "Index";
     }
     throw Exception(SourceContext{}, "Found invalid BufferTarget enum value '{}'",
                     static_cast<int>(bt));
@@ -121,52 +96,34 @@ std::ostream& operator<<(std::ostream& ss, BufferTarget bt) { return ss << enumT
 
 size_t util::numberOfVerticesForPrimitive(DrawType dt) {
     switch (dt) {
-        case DrawType::Points:
-            return 1;
-        case DrawType::Lines:
-            return 2;
-        case DrawType::Triangles:
-            return 3;
-        default:
-            return 0;
+        case DrawType::Points:    return 1;
+        case DrawType::Lines:     return 2;
+        case DrawType::Triangles: return 3;
+        default:                  return 0;
     }
 }
 size_t util::numberOfPrimitives(DrawType dt, ConnectivityType ct, size_t indices) {
     switch (dt) {
-        case DrawType::Points:
-            return indices;
+        case DrawType::Points: return indices;
         case DrawType::Lines:
             switch (ct) {
-                case ConnectivityType::None:
-                    return indices / 2;
-                case ConnectivityType::Strip:
-                    return indices - 1;
-                case ConnectivityType::Loop:
-                    return indices;
-                case ConnectivityType::Adjacency:
-                    return indices / 4;
-                case ConnectivityType::StripAdjacency:
-                    return indices - 3;
-                default:
-                    return 0;
+                case ConnectivityType::None:           return indices / 2;
+                case ConnectivityType::Strip:          return indices - 1;
+                case ConnectivityType::Loop:           return indices;
+                case ConnectivityType::Adjacency:      return indices / 4;
+                case ConnectivityType::StripAdjacency: return indices - 3;
+                default:                               return 0;
             }
         case DrawType::Triangles:
             switch (ct) {
-                case ConnectivityType::None:
-                    return indices / 3;
-                case ConnectivityType::Strip:
-                    return indices - 2;
-                case ConnectivityType::Fan:
-                    return indices - 2;
-                case ConnectivityType::Adjacency:
-                    return indices / 6;
-                case ConnectivityType::StripAdjacency:
-                    return (indices - 4) / 2;
-                default:
-                    return 0;
+                case ConnectivityType::None:           return indices / 3;
+                case ConnectivityType::Strip:          return indices - 2;
+                case ConnectivityType::Fan:            return indices - 2;
+                case ConnectivityType::Adjacency:      return indices / 6;
+                case ConnectivityType::StripAdjacency: return (indices - 4) / 2;
+                default:                               return 0;
             }
-        default:
-            return 0;
+        default: return 0;
     }
 }
 

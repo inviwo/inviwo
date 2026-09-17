@@ -50,7 +50,7 @@ class IVW_MODULE_QTWIDGETS_API AngleRadiusWidget : public QWidget {
     Q_OBJECT
 public:
     AngleRadiusWidget(QWidget*);
-    virtual ~AngleRadiusWidget(){};
+    virtual ~AngleRadiusWidget() {}
 
     virtual void paintEvent(QPaintEvent*) override;
 

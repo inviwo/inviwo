@@ -100,8 +100,8 @@ class ValueKeyframeSequence;
 
 class IVW_MODULE_ANIMATION_API ValueKeyframeSequenceObserver : public Observer {
 public:
-    virtual void onValueKeyframeSequenceInterpolationWillChange(ValueKeyframeSequence*){};
-    virtual void onValueKeyframeSequenceInterpolationDidChange(ValueKeyframeSequence*){};
+    virtual void onValueKeyframeSequenceInterpolationWillChange(ValueKeyframeSequence*) {}
+    virtual void onValueKeyframeSequenceInterpolationDidChange(ValueKeyframeSequence*) {}
 };
 
 class IVW_MODULE_ANIMATION_API ValueKeyframeSequenceObserverble

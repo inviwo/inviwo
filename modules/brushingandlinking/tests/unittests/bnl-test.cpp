@@ -68,20 +68,20 @@ auto createSource(std::string_view identifier) {
     auto source = std::make_unique<BnlProcessor>(identifier);
     source->addPort(source->outport);
     return source;
-};
+}
 
 auto createSink(std::string_view identifier) {
     auto sink = std::make_unique<BnlProcessor>(identifier);
     sink->addPort(sink->inport);
     return sink;
-};
+}
 
 auto createProcessor(std::string_view identifier) {
     auto sink = std::make_unique<BnlProcessor>(identifier);
     sink->addPort(sink->inport);
     sink->addPort(sink->outport);
     return sink;
-};
+}
 
 }  // namespace
 

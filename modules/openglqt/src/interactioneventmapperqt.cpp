@@ -89,27 +89,19 @@ dvec2 normalizePosition(QE* e, size2_t dim) {
 
 TouchState mapTouchState(const QEventPoint& point) {
     switch (point.state()) {
-        case QEventPoint::Pressed:
-            return TouchState::Started;
-        case QEventPoint::Updated:
-            return TouchState::Updated;
-        case QEventPoint::Stationary:
-            return TouchState::Stationary;
-        case QEventPoint::Released:
-            return TouchState::Finished;
-        default:
-            return TouchState::None;
+        case QEventPoint::Pressed:    return TouchState::Started;
+        case QEventPoint::Updated:    return TouchState::Updated;
+        case QEventPoint::Stationary: return TouchState::Stationary;
+        case QEventPoint::Released:   return TouchState::Finished;
+        default:                      return TouchState::None;
     }
 }
 
 TouchDevice::DeviceType mapDeviceType(QTouchEvent* touch) {
     switch (touch->device()->type()) {
-        case QPointingDevice::DeviceType::TouchScreen:
-            return TouchDevice::DeviceType::TouchScreen;
-        case QPointingDevice::DeviceType::TouchPad:
-            return TouchDevice::DeviceType::TouchPad;
-        default:
-            return TouchDevice::DeviceType::TouchScreen;
+        case QPointingDevice::DeviceType::TouchScreen: return TouchDevice::DeviceType::TouchScreen;
+        case QPointingDevice::DeviceType::TouchPad:    return TouchDevice::DeviceType::TouchPad;
+        default:                                       return TouchDevice::DeviceType::TouchScreen;
     }
 }
 
@@ -145,32 +137,20 @@ InteractionEventMapperQt::InteractionEventMapperQt(
 
 bool InteractionEventMapperQt::eventFilter(QObject*, QEvent* e) {
     switch (e->type()) {
-        case QEvent::KeyPress:
-            return mapKeyPressEvent(static_cast<QKeyEvent*>(e));
-        case QEvent::KeyRelease:
-            return mapKeyReleaseEvent(static_cast<QKeyEvent*>(e));
-        case QEvent::MouseButtonPress:
-            return mapMousePressEvent(static_cast<QMouseEvent*>(e));
+        case QEvent::KeyPress:         return mapKeyPressEvent(static_cast<QKeyEvent*>(e));
+        case QEvent::KeyRelease:       return mapKeyReleaseEvent(static_cast<QKeyEvent*>(e));
+        case QEvent::MouseButtonPress: return mapMousePressEvent(static_cast<QMouseEvent*>(e));
         case QEvent::MouseButtonDblClick:
             return mapMouseDoubleClickEvent(static_cast<QMouseEvent*>(e));
-        case QEvent::MouseButtonRelease:
-            return mapMouseReleaseEvent(static_cast<QMouseEvent*>(e));
-        case QEvent::MouseMove:
-            return mapMouseMoveEvent(static_cast<QMouseEvent*>(e));
-        case QEvent::Wheel:
-            return mapWheelEvent(static_cast<QWheelEvent*>(e));
-        case QEvent::TouchBegin:
-            return mapTouchEvent(static_cast<QTouchEvent*>(e));
-        case QEvent::TouchEnd:
-            return mapTouchEvent(static_cast<QTouchEvent*>(e));
-        case QEvent::TouchUpdate:
-            return mapTouchEvent(static_cast<QTouchEvent*>(e));
-        case QEvent::Gesture:
-            return mapGestureEvent(static_cast<QGestureEvent*>(e));
-        case QEvent::ToolTip:
-            return showToolTip(static_cast<QHelpEvent*>(e));
-        default:
-            return false;
+        case QEvent::MouseButtonRelease: return mapMouseReleaseEvent(static_cast<QMouseEvent*>(e));
+        case QEvent::MouseMove:          return mapMouseMoveEvent(static_cast<QMouseEvent*>(e));
+        case QEvent::Wheel:              return mapWheelEvent(static_cast<QWheelEvent*>(e));
+        case QEvent::TouchBegin:         return mapTouchEvent(static_cast<QTouchEvent*>(e));
+        case QEvent::TouchEnd:           return mapTouchEvent(static_cast<QTouchEvent*>(e));
+        case QEvent::TouchUpdate:        return mapTouchEvent(static_cast<QTouchEvent*>(e));
+        case QEvent::Gesture:            return mapGestureEvent(static_cast<QGestureEvent*>(e));
+        case QEvent::ToolTip:            return showToolTip(static_cast<QHelpEvent*>(e));
+        default:                         return false;
     }
 }
 

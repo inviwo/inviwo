@@ -163,8 +163,7 @@ struct IVW_CORE_API BufferDispatcher {
             case BufferTarget::Index:
                 return std::make_shared<Buffer<F, BufferTarget::Index>>(size, usage);
             case BufferTarget::Data:
-            default:
-                return std::make_shared<Buffer<F, BufferTarget::Data>>(size, usage);
+            default:                 return std::make_shared<Buffer<F, BufferTarget::Data>>(size, usage);
         }
     }
 };

@@ -119,6 +119,5 @@ std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
                                          const std::function<bool()>&)>>>
 splatJobs(std::span<const SplatInput> inputs, const SplatSettings& settings);
 
-
 }  // namespace util
 }  // namespace inviwo

@@ -36,24 +36,18 @@ namespace inviwo {
 
 std::string_view enumToStr(AcceptMode mode) {
     switch (mode) {
-        case AcceptMode::Open:
-            return "Open";
-        case AcceptMode::Save:
-            return "Save";
+        case AcceptMode::Open: return "Open";
+        case AcceptMode::Save: return "Save";
     }
     throw Exception(SourceContext{}, "Found invalid AcceptMode enum value '{}'",
                     static_cast<int>(mode));
 }
 std::string_view enumToStr(FileMode mode) {
     switch (mode) {
-        case FileMode::AnyFile:
-            return "Any File";
-        case FileMode::ExistingFile:
-            return "Existing File";
-        case FileMode::Directory:
-            return "Directory";
-        case FileMode::ExistingFiles:
-            return "Existing Files";
+        case FileMode::AnyFile:       return "Any File";
+        case FileMode::ExistingFile:  return "Existing File";
+        case FileMode::Directory:     return "Directory";
+        case FileMode::ExistingFiles: return "Existing Files";
     }
     throw Exception(SourceContext{}, "Found invalid FileMode enum value '{}'",
                     static_cast<int>(mode));

@@ -29,7 +29,4 @@
 
 #include <modules/opengl/shader/shaderresource.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -72,7 +72,7 @@ const ProcessorInfo& ImageChannelCombine::getProcessorInfo() const { return proc
 namespace {
 const std::vector<OptionPropertyIntOption> channelsList = {
     {"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}};
-}
+}  // namespace
 ImageChannelCombine::ImageChannelCombine()
     : Processor()
     , inport_{ImageInport{"inport0", "Input for first channel (red)"_help,

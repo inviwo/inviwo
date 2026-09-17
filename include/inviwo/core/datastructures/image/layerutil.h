@@ -43,16 +43,14 @@ glm::vec<4, T> applySwizzleMask(const glm::vec<4, T>& value, const SwizzleMask& 
 
     auto swizzle = [&](ImageChannel channel) {
         switch (channel) {
-            case ImageChannel::Zero:
-                return T{0};
+            case ImageChannel::Zero: return T{0};
             case ImageChannel::One:
                 if constexpr (std::is_floating_point_v<T>) {
                     return T{1};
                 } else {
                     return std::numeric_limits<T>::max();
                 }
-            default:
-                return value[static_cast<int>(channel)];
+            default: return value[static_cast<int>(channel)];
         }
     };
 

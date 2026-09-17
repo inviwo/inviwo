@@ -117,13 +117,11 @@ QSizeF LinkDialogPropertyGraphicsItem::sizeHint(Qt::SizeHint which,
     switch (which) {
         case Qt::MinimumSize:
         case Qt::MaximumSize:
-        case Qt::PreferredSize:
-            return rect().size() + QSize(12, 12);
+        case Qt::PreferredSize:  return rect().size() + QSize(12, 12);
 
         case Qt::MinimumDescent:
         case Qt::NSizeHints:
-        default:
-            break;
+        default:                 break;
     }
 
     return constraint;
@@ -175,8 +173,7 @@ QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(size_t curPort) const 
                           arrowDim);
         case LinkDialogTreeItem::Side::Right:
             return QRectF(centerEdge + QPointF(0, -arrowDim.height() / 2), arrowDim);
-        default:
-            return QRectF();
+        default: return QRectF();
     }
 }
 

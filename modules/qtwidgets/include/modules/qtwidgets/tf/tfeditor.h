@@ -141,7 +141,8 @@ private:
     void addPoint(double pos, double alpha, TFPrimitiveSet& set);
     void addPoint(const QPointF& scenePos, TFPrimitiveSet& set);
     void addPoint(const QPointF& scenePos);
-    std::array<TFPrimitive*, 3> addPeak(const QPointF& scenePos, TFPrimitiveSet& set, double offset);
+    std::array<TFPrimitive*, 3> addPeak(const QPointF& scenePos, TFPrimitiveSet& set,
+                                        double offset);
     std::array<TFPrimitive*, 3> addPeak(const QPointF& scenePos, TFPrimitiveSet& set);
     static double sceneToPos(const QPointF& scenePos, const TFPrimitiveSet& set);
     static double sceneToAlpha(const QPointF& scenePos);

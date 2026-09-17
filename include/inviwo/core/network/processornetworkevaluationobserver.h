@@ -38,8 +38,8 @@ class ProcessorNetworkEvaluationObservable;
 
 class IVW_CORE_API ProcessorNetworkEvaluationObserver : public Observer {
 public:
-    virtual void onProcessorNetworkEvaluationBegin(){};
-    virtual void onProcessorNetworkEvaluationEnd(){};
+    virtual void onProcessorNetworkEvaluationBegin() {}
+    virtual void onProcessorNetworkEvaluationEnd() {}
 };
 
 class IVW_CORE_API ProcessorNetworkEvaluationObservable

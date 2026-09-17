@@ -57,7 +57,7 @@ enum Mode {
     DarkenOnly,    //!< f(a,b) = min(a, b), per component
     BrightenOnly,  //!< f(a,b) = max(a, b), per component
 };
-}
+}  // namespace BlendModes
 
 /**
  * @brief Mixes two input images according to the chosen blend mode.

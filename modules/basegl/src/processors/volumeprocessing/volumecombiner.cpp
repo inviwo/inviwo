@@ -284,7 +284,8 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
 void VolumeCombiner::updateProperties() {
     std::string desc;
     std::vector<OptionPropertyIntOption> options;
-    for (auto&& [i, outport] : std::views::zip(std::views::iota(0uz), inport_.getConnectedOutports())) {
+    for (auto&& [i, outport] :
+         std::views::zip(std::views::iota(0uz), inport_.getConnectedOutports())) {
         const auto str = fmt::format("v{}: {}", i + 1, outport->getProcessor()->getDisplayName());
         fmt::format_to(std::back_inserter(desc), "{}\n", str);
         options.emplace_back("v" + toString(i + 1), str, static_cast<int>(i));

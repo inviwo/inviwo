@@ -59,26 +59,16 @@ enum class BlendMode : std::uint8_t {
 // Convert BlendMode to string for logging/debugging
 constexpr std::string_view format_as(BlendMode mode) {
     switch (mode) {
-        case BlendMode::Source:
-            return "Source Blending";
-        case BlendMode::Destination:
-            return "Destination Blending";
-        case BlendMode::Alpha:
-            return "Alpha Blending";
-        case BlendMode::Additive:
-            return "Additive Blending";
-        case BlendMode::Multiply:
-            return "Multiplicative Blending";
-        case BlendMode::Screen:
-            return "Screen Blending";
-        case BlendMode::Subtractive:
-            return "Subtractive Blending";
-        case BlendMode::Premultiplied:
-            return "Premultiplied Alpha Blending";
-        case BlendMode::Overlay:
-            return "Overlay Blending";
-        default:
-            return "Unknown Blend Mode";
+        case BlendMode::Source:        return "Source Blending";
+        case BlendMode::Destination:   return "Destination Blending";
+        case BlendMode::Alpha:         return "Alpha Blending";
+        case BlendMode::Additive:      return "Additive Blending";
+        case BlendMode::Multiply:      return "Multiplicative Blending";
+        case BlendMode::Screen:        return "Screen Blending";
+        case BlendMode::Subtractive:   return "Subtractive Blending";
+        case BlendMode::Premultiplied: return "Premultiplied Alpha Blending";
+        case BlendMode::Overlay:       return "Overlay Blending";
+        default:                       return "Unknown Blend Mode";
     }
 }
 

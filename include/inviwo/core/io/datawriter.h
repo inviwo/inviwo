@@ -141,6 +141,7 @@ public:
         const T* /*data*/, std::string_view /*fileExtension*/) const {
         return nullptr;
     }
+
 protected:
     virtual bool canWrite(const std::type_index& index) const override {
         return std::type_index(typeid(T)) == index;

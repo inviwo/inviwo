@@ -155,8 +155,7 @@ bool FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
         switch (acceptMode_) {
             case AcceptMode::Open:
                 switch (fileMode_) {
-                    case FileMode::ExistingFile:
-                        [[fallthrough]];
+                    case FileMode::ExistingFile:  [[fallthrough]];
                     case FileMode::ExistingFiles: {
                         if (isUrl) {
                             return false;
@@ -176,26 +175,18 @@ bool FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
                     case FileMode::Directory:
                         update(!isDir, "Could not locate directory!");
                         return false;
-                    case FileMode::AnyFile:
-                        [[fallthrough]];
-                    default:
-                        update(false, "");
-                        return true;
+                    case FileMode::AnyFile: [[fallthrough]];
+                    default:                update(false, ""); return true;
                 }
             case AcceptMode::Save:
                 switch (fileMode_) {
                     case FileMode::Directory:
                         update(!isDir, "Could not locate directory!");
                         return false;
-                    case FileMode::AnyFile:
-                        [[fallthrough]];
-                    case FileMode::ExistingFile:
-                        [[fallthrough]];
-                    case FileMode::ExistingFiles:
-                        [[fallthrough]];
-                    default:
-                        update(false, "");
-                        return true;
+                    case FileMode::AnyFile:       [[fallthrough]];
+                    case FileMode::ExistingFile:  [[fallthrough]];
+                    case FileMode::ExistingFiles: [[fallthrough]];
+                    default:                      update(false, ""); return true;
                 }
         }
     } catch (std::filesystem::filesystem_error&) {

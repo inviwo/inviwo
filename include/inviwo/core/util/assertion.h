@@ -51,7 +51,7 @@ IVW_CORE_API void debugBreak();
 
 namespace inviwo::cfg {
 constexpr bool assertions = true;
-}
+}  // namespace inviwo::cfg
 
 #define IVW_ASSERT(condition, message)                    \
     {                                                     \
@@ -69,7 +69,7 @@ constexpr bool assertions = true;
 
 namespace inviwo::cfg {
 constexpr bool assertions = false;
-}
+}  // namespace inviwo::cfg
 
 #define IVW_ASSERT(condition, message)
 #define ivwAssert(condition, message)

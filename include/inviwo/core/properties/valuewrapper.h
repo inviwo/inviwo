@@ -75,11 +75,8 @@ struct ValueWrapper {
             case PropertySerializationMode::Default:
                 if (!isDefault()) s.serialize(name, value);
                 break;
-            case PropertySerializationMode::All:
-                s.serialize(name, value);
-                break;
-            case PropertySerializationMode::None:
-                break;
+            case PropertySerializationMode::All:  s.serialize(name, value); break;
+            case PropertySerializationMode::None: break;
         }
     }
 
@@ -103,10 +100,8 @@ struct ValueWrapper {
                 d.deserialize(name, value);
                 return old != value;
             }
-            case PropertySerializationMode::None:
-                return false;
-            default:
-                return false;
+            case PropertySerializationMode::None: return false;
+            default:                              return false;
         }
     }
 

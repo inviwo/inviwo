@@ -553,8 +553,7 @@ void CropWidget::rangePositionHandlePicked(size_t axisIndex, PickingEvent* p,
             break;
         }
         case InteractionElement::None:
-        default:
-            break;
+        default:                       break;
     }
     if (modified) {
         property.set(value);

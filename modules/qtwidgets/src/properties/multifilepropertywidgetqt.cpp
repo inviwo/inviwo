@@ -33,7 +33,7 @@
 #include <inviwo/core/util/filedialogstate.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/assertion.h>                     // IWYU pragma: keep
+#include <inviwo/core/util/assertion.h>  // IWYU pragma: keep
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/filepathlineeditqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>

@@ -241,8 +241,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                             if (!brushing_.isFiltered(i + minSegmentId_)) fun(i);
                         }
                     };
-                case ColoringGroup::Zero:
-                    return [&](std::function<void(uint32_t)> fun) { fun(0); };
+                case ColoringGroup::Zero: return [&](std::function<void(uint32_t)> fun) { fun(0); };
             }
         }();
 
@@ -286,8 +285,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                 });
                 break;
             }
-            case ColoringAction::None:
-                break;
+            case ColoringAction::None: break;
         }
 
         coloringAction_ = ColoringAction::None;

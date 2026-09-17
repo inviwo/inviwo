@@ -44,7 +44,7 @@ TransferFunctionXMLWriter::TransferFunctionXMLWriter() {
 
 TransferFunctionXMLWriter* TransferFunctionXMLWriter::clone() const {
     return new TransferFunctionXMLWriter(*this);
-};
+}
 
 std::pmr::string TransferFunctionXMLWriter::toXML(const TransferFunction& tf) {
     try {
@@ -86,7 +86,7 @@ void TransferFunctionXMLWriter::writeData(const TransferFunction* data,
     } catch (const TiXmlError& e) {
         throw DataWriterException(e.what());
     }
-};
+}
 
 std::unique_ptr<std::vector<unsigned char>> TransferFunctionXMLWriter::writeDataToBuffer(
     const TransferFunction* data, std::string_view) const {
@@ -95,6 +95,6 @@ std::unique_ptr<std::vector<unsigned char>> TransferFunctionXMLWriter::writeData
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
     std::copy(xml.begin(), xml.end(), buffer->begin());
     return buffer;
-};
+}
 
 }  // namespace inviwo

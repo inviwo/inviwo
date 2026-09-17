@@ -103,20 +103,11 @@ void DemoController::onChangeSelection(Offset offset) {
     int nextFileIndex = demoFile_.get();
 
     switch (offset) {
-        case Offset::First:
-            nextFileIndex = 0;
-            break;
-        case Offset::Previous:
-            nextFileIndex--;
-            break;
-        case Offset::Next:
-            nextFileIndex++;
-            break;
-        case Offset::Last:
-            nextFileIndex = numFiles - 1;
-            break;
-        default:
-            return;
+        case Offset::First:    nextFileIndex = 0; break;
+        case Offset::Previous: nextFileIndex--; break;
+        case Offset::Next:     nextFileIndex++; break;
+        case Offset::Last:     nextFileIndex = numFiles - 1; break;
+        default:               return;
     }
 
     // No need to load anything

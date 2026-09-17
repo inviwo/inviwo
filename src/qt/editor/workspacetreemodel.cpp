@@ -195,8 +195,7 @@ QVariant TreeItem::data(int column, int role) const {
 
     if (type_ == WorkspaceTreeModel::Type::File) {
         switch (role) {
-            case Qt::DisplayRole:
-                return caption_;
+            case Qt::DisplayRole: return caption_;
             case Qt::ToolTipRole: {
                 // prevent line breaks in the tooltip
                 // see https://doc.qt.io/qt-5/qtooltip.html#details
@@ -204,12 +203,9 @@ QVariant TreeItem::data(int column, int role) const {
                     .arg(file_)
                     .arg(path_);
             }
-            case static_cast<int>(Role::Type):
-                return static_cast<int>(type_);
-            case static_cast<int>(Role::Name):
-                return file_;
-            case static_cast<int>(Role::Path):
-                return path_;
+            case static_cast<int>(Role::Type): return static_cast<int>(type_);
+            case static_cast<int>(Role::Name): return file_;
+            case static_cast<int>(Role::Path): return path_;
             case static_cast<int>(Role::FilePath):
                 if (path_.endsWith("/")) {
                     // path already ends with '/' in case of root directory '/' or disk drive 'C:/'
@@ -217,25 +213,20 @@ QVariant TreeItem::data(int column, int role) const {
                 } else {
                     return path_ + "/" + file_;
                 }
-            case static_cast<int>(Role::isExample):
-                return isExample_;
+            case static_cast<int>(Role::isExample): return isExample_;
             case static_cast<int>(Role::Annotations):
                 infoLoader_->submit();
                 if (!info_.annotations) return {};
                 return QVariant::fromValue(info_);
 
-            default:
-                return {};
+            default: return {};
         }
     } else {
         switch (role) {
             case Qt::DisplayRole:
-            case Qt::ToolTipRole:
-                return caption_;
-            case static_cast<int>(WorkspaceTreeModel::Role::Type):
-                return static_cast<int>(type_);
-            default:
-                return {};
+            case Qt::ToolTipRole:                                  return caption_;
+            case static_cast<int>(WorkspaceTreeModel::Role::Type): return static_cast<int>(type_);
+            default:                                               return {};
         }
     }
 }  // namespace inviwo

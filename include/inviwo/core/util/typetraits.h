@@ -122,7 +122,7 @@ class is_container {
                   std::is_same<decltype(*std::declval<typename A::iterator>()),
                                typename A::value_type&>::value &&
                   std::is_same<decltype(*std::declval<const typename A::iterator>()),
-                               typename A::value_type const&>::value>::type>
+                               const typename A::value_type&>::value>::type>
     static std::true_type test(int);
 
     template <class>

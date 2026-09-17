@@ -97,7 +97,7 @@ struct IVW_MODULE_OPENGL_API ShaderSegment {
 namespace std {
 template <>
 struct hash<typename inviwo::ShaderSegment::Placeholder> {
-    size_t operator()(typename inviwo::ShaderSegment::Placeholder const& type) const {
+    size_t operator()(const typename inviwo::ShaderSegment::Placeholder& type) const {
         return std::hash<std::string_view>{}(type.key);
     }
 };

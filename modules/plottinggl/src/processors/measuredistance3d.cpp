@@ -386,9 +386,7 @@ void MeasureDistance3D::deserialize(Deserializer& d) {
     if (stateIndex) {
         switch (*stateIndex) {
             case 0:  // Invalid
-            default:
-                sm->sm.process_event(Reset{});
-                break;
+            default: sm->sm.process_event(Reset{}); break;
             case 1:  // PlacingFirstLocator
                 sm->sm.process_event(PlaceFirst{});
                 break;
@@ -424,17 +422,13 @@ void MeasureDistance3D::invokeEvent(Event* event) {
             const auto mousePos{camera_.getWorldPosFromNormalizedDeviceCoords(mousePosNdc)};
 
             switch (mouseEvent->state()) {
-                case MouseState::Press:
-                    break;
-                case MouseState::Move:
-                    sm->sm.process_event(MoveLocator{.pos = mousePos});
-                    break;
+                case MouseState::Press: break;
+                case MouseState::Move:  sm->sm.process_event(MoveLocator{.pos = mousePos}); break;
                 case MouseState::Release:
                     mouseEvent->ndc();
                     sm->sm.process_event(PlaceLocator{.pos = mousePos});
                     break;
-                case MouseState::DoubleClick:
-                    break;
+                case MouseState::DoubleClick: break;
             }
             event->markAsUsed();
         }

@@ -55,7 +55,7 @@ struct NetworkShim {
 }  // namespace
 
 WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(InviwoApplication* app)
-    : WorkspaceAnnotations(app) {};
+    : WorkspaceAnnotations(app) {}
 
 WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(
     const QImage& network, const std::vector<std::pair<std::string, QImage>>& canvasImages,

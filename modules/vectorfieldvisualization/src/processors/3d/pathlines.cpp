@@ -247,9 +247,7 @@ void PathLinesDeprecated::process() {
             maxVelocity = std::max(maxVelocity, l);
 
             switch (coloringMethod_.get()) {
-                case ColoringMethod::Timestamp:
-                    c = tf_.get().sample(t);
-                    break;
+                case ColoringMethod::Timestamp: c = tf_.get().sample(t); break;
                 case ColoringMethod::ColorPort:
                     if (hasColors) {
                         break;
@@ -262,11 +260,8 @@ void PathLinesDeprecated::process() {
                         }
                         [[fallthrough]];
                     }
-                default:
-                    [[fallthrough]];
-                case ColoringMethod::Velocity:
-                    c = tf_.get().sample(d);
-                    break;
+                default:                       [[fallthrough]];
+                case ColoringMethod::Velocity: c = tf_.get().sample(d); break;
             }
 
             indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));

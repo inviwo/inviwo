@@ -76,7 +76,7 @@ auto eventIs(QEvent* event) -> T* {
         return e;
     }
     return nullptr;
-};
+}
 
 }  // namespace
 

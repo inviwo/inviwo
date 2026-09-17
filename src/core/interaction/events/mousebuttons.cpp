@@ -37,14 +37,10 @@ namespace inviwo {
 
 std::string_view enumToStr(MouseButton b) {
     switch (b) {
-        case MouseButton::None:
-            return "None";
-        case MouseButton::Left:
-            return "Left";
-        case MouseButton::Middle:
-            return "Middle";
-        case MouseButton::Right:
-            return "Right";
+        case MouseButton::None:   return "None";
+        case MouseButton::Left:   return "Left";
+        case MouseButton::Middle: return "Middle";
+        case MouseButton::Right:  return "Right";
     }
     throw Exception(SourceContext{}, "Found invalid MouseButton enum value '{}'",
                     static_cast<int>(b));
@@ -52,14 +48,10 @@ std::string_view enumToStr(MouseButton b) {
 
 std::string_view enumToStr(MouseState s) {
     switch (s) {
-        case MouseState::Move:
-            return "Move";
-        case MouseState::Press:
-            return "Press";
-        case MouseState::Release:
-            return "Release";
-        case MouseState::DoubleClick:
-            return "DoubleClick";
+        case MouseState::Move:        return "Move";
+        case MouseState::Press:       return "Press";
+        case MouseState::Release:     return "Release";
+        case MouseState::DoubleClick: return "DoubleClick";
     }
     throw Exception(SourceContext{}, "Found invalid MouseState enum value '{}'",
                     static_cast<int>(s));

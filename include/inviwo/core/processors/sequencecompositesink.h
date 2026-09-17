@@ -57,7 +57,7 @@ public:
     SequenceCompositeSinkBase& operator=(SequenceCompositeSinkBase&&) = delete;
     virtual ~SequenceCompositeSinkBase() = default;
 
-    static constexpr std::string_view identifierSuffix() { return ".metasequencesink"; };
+    static constexpr std::string_view identifierSuffix() { return ".metasequencesink"; }
 
     /**
      * Outport to be used by the SequenceProcessor to get data from its sub network.

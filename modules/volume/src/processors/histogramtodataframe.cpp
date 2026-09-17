@@ -52,8 +52,7 @@ std::vector<double> scaleHistogram(const Histogram1D& hist, HistogramMode mode) 
                     return hist.histStats.percentiles[95];
                 case HistogramMode::P90:  // show 90%
                     return hist.histStats.percentiles[90];
-                default:
-                    return hist.histStats.percentiles[100];
+                default: return hist.histStats.percentiles[100];
             }
         }();
         std::ranges::transform(hist.counts, result.begin(), [percentile](auto& count) {

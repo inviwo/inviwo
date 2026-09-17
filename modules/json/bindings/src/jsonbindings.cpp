@@ -145,15 +145,21 @@ void exposeJSON(py::module& m) {
     // Convenience top-level functions, dispatching to the appropriate registry.
     m.def(
         "toJson",
-        [](Property& prop) { return jsonToPyObject(getJSONModule().getJSONPropertyConverter().toJSON(prop)); },
+        [](Property& prop) {
+            return jsonToPyObject(getJSONModule().getJSONPropertyConverter().toJSON(prop));
+        },
         py::arg("property"), "Convert a Property to a JSON-compatible Python object.");
     m.def(
         "toJson",
-        [](Inport& port) { return jsonToPyObject(getJSONModule().getJSONInportConverter().toJSON(port)); },
+        [](Inport& port) {
+            return jsonToPyObject(getJSONModule().getJSONInportConverter().toJSON(port));
+        },
         py::arg("inport"), "Convert an Inport to a JSON-compatible Python object.");
     m.def(
         "toJson",
-        [](Outport& port) { return jsonToPyObject(getJSONModule().getJSONOutportConverter().toJSON(port)); },
+        [](Outport& port) {
+            return jsonToPyObject(getJSONModule().getJSONOutportConverter().toJSON(port));
+        },
         py::arg("outport"), "Convert an Outport to a JSON-compatible Python object.");
 
     m.def(

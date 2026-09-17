@@ -65,7 +65,7 @@
 
 namespace inviwo {
 
-CEFInteractionHandler::CEFInteractionHandler(CefRefPtr<CefBrowserHost> host) : host_(host) {};
+CEFInteractionHandler::CEFInteractionHandler(CefRefPtr<CefBrowserHost> host) : host_(host) {}
 
 void CEFInteractionHandler::invokeEvent(Event* event) {
     switch (event->hash()) {
@@ -182,15 +182,11 @@ CefTouchEvent CEFInteractionHandler::mapTouchEvent(const TouchPoint* p, const To
     // order will be ignored.
     auto toCefEventType = [](auto state) -> cef_touch_event_type_t {
         switch (state) {
-            case TouchState::None:
-                return CEF_TET_CANCELLED;
-            case TouchState::Started:
-                return CEF_TET_PRESSED;
+            case TouchState::None:       return CEF_TET_CANCELLED;
+            case TouchState::Started:    return CEF_TET_PRESSED;
             case TouchState::Updated:
-            case TouchState::Stationary:
-                return CEF_TET_MOVED;
-            case TouchState::Finished:
-                return CEF_TET_RELEASED;
+            case TouchState::Stationary: return CEF_TET_MOVED;
+            case TouchState::Finished:   return CEF_TET_RELEASED;
             default:  // Incorrect usage or new state added (warnings if left out)
                 assert(false);
                 return CEF_TET_CANCELLED;
@@ -200,8 +196,7 @@ CefTouchEvent CEFInteractionHandler::mapTouchEvent(const TouchPoint* p, const To
     cefEvent.type = toCefEventType(p->state());
     auto toCefPointerType = [](auto device) -> cef_pointer_type_t {
         switch (device.getType()) {
-            case TouchDevice::DeviceType::TouchScreen:
-                return CEF_POINTER_TYPE_TOUCH;
+            case TouchDevice::DeviceType::TouchScreen: return CEF_POINTER_TYPE_TOUCH;
             case TouchDevice::DeviceType::TouchPad:
                 return CEF_POINTER_TYPE_MOUSE;
                 // No types for these ones yet

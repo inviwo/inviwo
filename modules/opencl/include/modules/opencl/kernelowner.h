@@ -69,7 +69,7 @@ public:
  */
 class IVW_MODULE_OPENCL_API KernelOwner : public KernelObservable {
 public:
-    KernelOwner(){};
+    KernelOwner() {}
     virtual ~KernelOwner();
 
     /**
@@ -108,7 +108,7 @@ protected:
 class IVW_MODULE_OPENCL_API ProcessorKernelOwner : public KernelOwner {
 public:
     ProcessorKernelOwner(Processor* processor);
-    virtual ~ProcessorKernelOwner(){};
+    virtual ~ProcessorKernelOwner() {}
 
     /**
      * Notifies kernel observers that the kernel was compiled and

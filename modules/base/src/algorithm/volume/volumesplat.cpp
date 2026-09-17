@@ -53,14 +53,10 @@ namespace inviwo::util {
 
 std::string_view enumToStr(SplatKernel k) {
     switch (k) {
-        case SplatKernel::Gaussian:
-            return "Gaussian";
-        case SplatKernel::Epanechnikov:
-            return "Epanechnikov";
-        case SplatKernel::Triangular:
-            return "Triangular";
-        case SplatKernel::Uniform:
-            return "Uniform";
+        case SplatKernel::Gaussian:     return "Gaussian";
+        case SplatKernel::Epanechnikov: return "Epanechnikov";
+        case SplatKernel::Triangular:   return "Triangular";
+        case SplatKernel::Uniform:      return "Uniform";
     }
     return "Unknown";
 }
@@ -158,7 +154,8 @@ void splatImpl(std::span<const SplatInput> inputs, const SplatSettings& settings
                 vec2{std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest()};
 
             const auto allPoints = std::ranges::fold_left(
-                inputs | std::views::transform([](const auto& input) { return input.positions.size(); }),
+                inputs |
+                    std::views::transform([](const auto& input) { return input.positions.size(); }),
                 0uz, std::plus<>{});
             const auto progressStep = std::max(1uz, allPoints / 100);
             auto currentPoint = 0uz;

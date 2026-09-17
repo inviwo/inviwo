@@ -30,7 +30,7 @@
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 
-#include <modules/qtwidgets/properties/stringpropertywidgetqt.h> 
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
 
 namespace inviwo {
 
@@ -42,6 +42,5 @@ public:
 protected:
     virtual void initEditor() override;
 };
-
 
 }  // namespace inviwo

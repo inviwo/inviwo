@@ -163,7 +163,7 @@ TEST(SetUnion, IteratorIncrementPostfixCompiles) {
 }
 
 using V = views::set_union<std::ranges::ref_view<std::vector<int>>,
-                          std::ranges::ref_view<std::vector<int>>>;
+                           std::ranges::ref_view<std::vector<int>>>;
 
 static_assert(std::ranges::forward_range<V>);
 static_assert(std::forward_iterator<std::ranges::iterator_t<V>>);

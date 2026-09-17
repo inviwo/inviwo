@@ -58,7 +58,7 @@ public:
     TrackWidgetQtFactoryObjectTemplate() : TrackWidgetQtFactoryObject(T::classIdentifier()) {}
 
     TrackWidgetQtFactoryObjectTemplate(const std::string& classIdentifier)
-        : TrackWidgetQtFactoryObject(classIdentifier){};
+        : TrackWidgetQtFactoryObject(classIdentifier) {}
     virtual ~TrackWidgetQtFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<TrackWidgetQt> create(Track& track) const override {

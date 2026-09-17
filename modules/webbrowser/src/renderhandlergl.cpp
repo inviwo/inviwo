@@ -52,7 +52,7 @@ void RenderHandlerGL::updateCanvasSize(CefRefPtr<CefBrowser> browser, size2_t ne
     const auto id = browser->GetIdentifier();
     auto it = browserData_.find(id);
     if (it == browserData_.end()) {
-        throw Exception(SourceContext{},  "Unexpected browser id {}", id);
+        throw Exception(SourceContext{}, "Unexpected browser id {}", id);
     }
 
     it->second.viewRect = newSize;

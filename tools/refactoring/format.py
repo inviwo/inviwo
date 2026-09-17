@@ -4,8 +4,10 @@ import refactoring  # Note: refactoring.py need to be in the current working dir
 
 colorama.init()
 
+clangformat = "C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/Llvm/x64/bin/clang-format.exe"
+
 paths = [
-    "C:/Users/petst55.AD/Documents/Inviwo/inviwo"
+    "C:/Users/petst55.AD/Projects/inviwo-stage"
 ]
 
 excludespatterns = ["*/ext/*", "*/templates/*", "*/tools/codegen/*", "*moc_*", "*cmake*"]
@@ -14,7 +16,7 @@ files = refactoring.find_files(paths, ['*.h', '*.hpp', '*.cpp'], excludes=exclud
 
 for file in files:
     print("check " + file)
-    with subprocess.Popen(["clang-format.exe", "-i", file],
+    with subprocess.Popen([clangformat, "-i", file],
                           stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT,
                           universal_newlines=True) as proc:

@@ -70,7 +70,7 @@ struct IVW_CORE_API Histogram2D {
     size2_t dimensions{0};
     size_t totalCounts{0};
     size_t maxCount{0};
-    std::array<DataMapper,2> dataMap{};
+    std::array<DataMapper, 2> dataMap{};
     size_t underflow{0};
     size_t overflow{0};
 };

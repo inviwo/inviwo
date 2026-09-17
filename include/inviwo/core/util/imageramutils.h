@@ -45,7 +45,7 @@ namespace util {
 
 namespace detail {
 IVW_CORE_API size_t getPoolSize();
-}
+}  // namespace detail
 
 template <typename C>
 void forEachPixel(const size2_t dims, C callback) {

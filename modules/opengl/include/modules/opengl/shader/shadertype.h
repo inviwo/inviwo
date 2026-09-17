@@ -82,39 +82,25 @@ constexpr std::string_view ShaderType::extension() const { return extension(*thi
 constexpr std::string_view ShaderType::extension(const ShaderType& type) {
     // Following https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/
     switch (type.type_) {
-        case GL_VERTEX_SHADER:
-            return ".vert";
-        case GL_GEOMETRY_SHADER:
-            return ".geom";
-        case GL_FRAGMENT_SHADER:
-            return ".frag";
-        case GL_TESS_CONTROL_SHADER:
-            return ".tesc";
-        case GL_TESS_EVALUATION_SHADER:
-            return ".tese";
-        case GL_COMPUTE_SHADER:
-            return ".comp";
-        default:
-            return "";
+        case GL_VERTEX_SHADER:          return ".vert";
+        case GL_GEOMETRY_SHADER:        return ".geom";
+        case GL_FRAGMENT_SHADER:        return ".frag";
+        case GL_TESS_CONTROL_SHADER:    return ".tesc";
+        case GL_TESS_EVALUATION_SHADER: return ".tese";
+        case GL_COMPUTE_SHADER:         return ".comp";
+        default:                        return "";
     }
 }
 
 constexpr std::string_view ShaderType::name() const {
     switch (type_) {
-        case GL_VERTEX_SHADER:
-            return "vertex";
-        case GL_GEOMETRY_SHADER:
-            return "geometry";
-        case GL_FRAGMENT_SHADER:
-            return "fragment";
-        case GL_TESS_CONTROL_SHADER:
-            return "tesc_control";
-        case GL_TESS_EVALUATION_SHADER:
-            return "tese_evaluation";
-        case GL_COMPUTE_SHADER:
-            return "compute";
-        default:
-            return "invalid";
+        case GL_VERTEX_SHADER:          return "vertex";
+        case GL_GEOMETRY_SHADER:        return "geometry";
+        case GL_FRAGMENT_SHADER:        return "fragment";
+        case GL_TESS_CONTROL_SHADER:    return "tesc_control";
+        case GL_TESS_EVALUATION_SHADER: return "tese_evaluation";
+        case GL_COMPUTE_SHADER:         return "compute";
+        default:                        return "invalid";
     }
 }
 

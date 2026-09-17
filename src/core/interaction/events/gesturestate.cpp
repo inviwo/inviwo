@@ -34,28 +34,20 @@ namespace inviwo {
 
 std::string_view enumToStr(GestureType t) {
     switch (t) {
-        case GestureType::Pan:
-            return "Pan";
-        case GestureType::Pinch:
-            return "Pinch";
-        case GestureType::Swipe:
-            return "Swipe";
+        case GestureType::Pan:   return "Pan";
+        case GestureType::Pinch: return "Pinch";
+        case GestureType::Swipe: return "Swipe";
     }
     throw Exception(SourceContext{}, "Found invalid GestureType enum value '{}'",
                     static_cast<int>(t));
 }
 std::string_view enumToStr(GestureState s) {
     switch (s) {
-        case GestureState::NoGesture:
-            return "NoGesture";
-        case GestureState::Started:
-            return "Started";
-        case GestureState::Updated:
-            return "Updated";
-        case GestureState::Finished:
-            return "Finished";
-        case GestureState::Canceled:
-            return "Canceled";
+        case GestureState::NoGesture: return "NoGesture";
+        case GestureState::Started:   return "Started";
+        case GestureState::Updated:   return "Updated";
+        case GestureState::Finished:  return "Finished";
+        case GestureState::Canceled:  return "Canceled";
     }
     throw Exception(SourceContext{}, "Found invalid GestureState enum value '{}'",
                     static_cast<int>(s));

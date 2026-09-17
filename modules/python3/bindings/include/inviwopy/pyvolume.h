@@ -35,4 +35,4 @@ namespace inviwo {
 
 void exposeVolume(pybind11::module& m);
 
-}
+}  // namespace inviwo

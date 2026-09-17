@@ -198,8 +198,7 @@ void OrdinalAnimationProperty<T>::update() {
             r = glm::clamp(r, value_.getMinValue(), value_.getMaxValue());
             break;
         }
-        default:
-            break;
+        default: break;
     }
     if (r != p) {
         value_.set(r);

@@ -98,9 +98,7 @@ bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator)
         case TouchEvent::chash():
             propagated = propagateTouchEvent(static_cast<TouchEvent*>(e), prop, true);
             break;
-        default:
-            propagated = false;
-            break;
+        default: propagated = false; break;
     }
 
     return propagated;
@@ -242,8 +240,7 @@ bool ViewManager::propagateEvent(Event* event, Propagator propagator) {
         case TouchEvent::chash(): {
             return propagateTouchEvent(static_cast<TouchEvent*>(event), propagator, false);
         }
-        default:
-            return false;
+        default: return false;
     }
 }
 
@@ -345,7 +342,7 @@ std::unordered_map<int, ViewManager::ViewId> ViewManager::EventState::getView(
             case TouchState::Stationary:
             case TouchState::Updated:
             case TouchState::None:
-            default: {
+            default:                     {
                 auto it = touchpointIdToViewId_.find(tp.id());
                 if (it != touchpointIdToViewId_.end()) {
                     newTouchpointIdToViewID[tp.id()] = it->second;

@@ -62,7 +62,7 @@ public:
 
 private:
     // Default constructor not allowed
-    ScopedClockCL(){};
+    ScopedClockCL() {}
     cl::Event* profilingEvent_;
     std::string logSource_;
     std::string logMessage_;

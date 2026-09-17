@@ -36,7 +36,6 @@
 
 #include <fmt/std.h>
 
-
 namespace inviwo {
 
 KernelManager* KernelManager::instance_ = nullptr;

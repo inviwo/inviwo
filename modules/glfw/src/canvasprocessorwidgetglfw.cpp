@@ -104,7 +104,7 @@ void CanvasProcessorWidgetGLFW::updatePosition(ivec2 pos) {
 }
 void CanvasProcessorWidgetGLFW::updateFullScreen(bool fullScreen) {
     canvas_->setFullScreen(fullScreen);
-};
-void CanvasProcessorWidgetGLFW::updateOnTop(bool onTop) { canvas_->setOnTop(onTop); };
+}
+void CanvasProcessorWidgetGLFW::updateOnTop(bool onTop) { canvas_->setOnTop(onTop); }
 
 }  // namespace inviwo

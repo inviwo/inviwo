@@ -241,7 +241,7 @@ struct InviwoDefaults<glm::vec<L, size_t, Q>> {
 template <typename T>
 struct Defaultvalues {
 public:
-    static constexpr auto data() { return InviwoDefaults<T>::get(); };
+    static constexpr auto data() { return InviwoDefaults<T>::get(); }
     static constexpr auto getName() { return data().name; }
     static constexpr uvec2 getDim() { return data().dim; }
     static constexpr T getVal() { return data().val; }

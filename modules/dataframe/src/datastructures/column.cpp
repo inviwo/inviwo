@@ -259,12 +259,9 @@ std::shared_ptr<const Buffer<std::uint32_t>> CategoricalColumn::getTypedBuffer()
 
 std::string_view enumToStr(ColumnType type) {
     switch (type) {
-        case ColumnType::Index:
-            return "Index";
-        case ColumnType::Ordinal:
-            return "Ordinal";
-        case ColumnType::Categorical:
-            return "Categorical";
+        case ColumnType::Index:       return "Index";
+        case ColumnType::Ordinal:     return "Ordinal";
+        case ColumnType::Categorical: return "Categorical";
     }
     throw Exception(SourceContext{}, "Found invalid ColumnType enum value '{}'",
                     static_cast<int>(type));

@@ -64,12 +64,12 @@ protected:
         const auto a = v0_.sample(pos, CoordinateSpace::Data);
         const auto b = v1_.sample(pos, CoordinateSpace::Data);
         return a + t_ * (b - a);
-    };
+    }
 
     virtual bool withinBoundsDataSpace(const dvec3& pos) const override {
         return v0_.withinBounds(pos, CoordinateSpace::Data) &&
                v1_.withinBounds(pos, CoordinateSpace::Data);
-    };
+    }
 
 private:
     double t_;

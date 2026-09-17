@@ -431,10 +431,8 @@ constexpr bool is_specifier(char c) {
         case 'E':
         case 'g':
         case 'G':
-        case 's':
-            return true;
-        default:
-            return false;
+        case 's': return true;
+        default:  return false;
     }
 }
 
@@ -502,24 +500,18 @@ std::string_view::const_iterator translateSpec(std::string_view::const_iterator 
     switch (spec) {
         case 'd':
         case 'i':
-        case 'u':
-            break;
+        case 'u': break;
         case 'o':
         case 'x':
-        case 'X':
-            out.push_back(spec);
-            break;
+        case 'X': out.push_back(spec); break;
         case 'f':
         case 'F':
         case 'e':
         case 'E':
         case 'g':
-        case 'G':
-            out.push_back(static_cast<char>(std::tolower(spec)));
-            break;
+        case 'G': out.push_back(static_cast<char>(std::tolower(spec))); break;
         case 's':
-        default:
-            break;
+        default:  break;
     }
 
     out.push_back('}');
@@ -618,8 +610,7 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
             res |= updateV6(root);
             return res;
         }
-        default:
-            return false;  // No changes
+        default: return false;  // No changes
     }
 }
 

@@ -422,18 +422,10 @@ bool AssimpReader::setOption(std::string_view key, std::any value) {
         return true;
     } else if (auto* level = std::any_cast<LogVerbosity>(&value); level && key == "LogLevel") {
         switch (*level) {
-            case LogVerbosity::Error:
-                setLogLevel(AssimpLogLevel::Error);
-                return true;
-            case LogVerbosity::Warn:
-                setLogLevel(AssimpLogLevel::Warn);
-                return true;
-            case LogVerbosity::Info:
-                setLogLevel(AssimpLogLevel::Info);
-                return true;
-            case LogVerbosity::None:
-                setLogLevel(AssimpLogLevel::None);
-                return true;
+            case LogVerbosity::Error: setLogLevel(AssimpLogLevel::Error); return true;
+            case LogVerbosity::Warn:  setLogLevel(AssimpLogLevel::Warn); return true;
+            case LogVerbosity::Info:  setLogLevel(AssimpLogLevel::Info); return true;
+            case LogVerbosity::None:  setLogLevel(AssimpLogLevel::None); return true;
         }
         return false;
     }
@@ -446,16 +438,11 @@ std::any AssimpReader::getOption(std::string_view key) {
         return getFixInvalidDataFlag();
     } else if (key == "LogLevel") {
         switch (getLogLevel()) {
-            case AssimpLogLevel::Error:
-                return LogVerbosity::Error;
-            case AssimpLogLevel::Warn:
-                return LogVerbosity::Warn;
-            case AssimpLogLevel::Info:
-                return LogVerbosity::Info;
-            case AssimpLogLevel::Debug:
-                return LogVerbosity::Info;
-            case AssimpLogLevel::None:
-                return LogVerbosity::None;
+            case AssimpLogLevel::Error: return LogVerbosity::Error;
+            case AssimpLogLevel::Warn:  return LogVerbosity::Warn;
+            case AssimpLogLevel::Info:  return LogVerbosity::Info;
+            case AssimpLogLevel::Debug: return LogVerbosity::Info;
+            case AssimpLogLevel::None:  return LogVerbosity::None;
         }
     }
     return std::any{};

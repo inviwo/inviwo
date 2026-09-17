@@ -51,10 +51,11 @@ std::string_view AxisStyleProperty::getClassIdentifier() const { return classIde
 AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : CompositeProperty{identifier, displayName,
-                        "Convenience property for updating/overriding multiple axes properties. "
-                        "A property change will propagate to all the subproperties of the registered axes."_help,
-                        invalidationLevel, std::move(semantics)}
+    : CompositeProperty{
+          identifier, displayName,
+          "Convenience property for updating/overriding multiple axes properties. "
+          "A property change will propagate to all the subproperties of the registered axes."_help,
+          invalidationLevel, std::move(semantics)}
     , buttons_{"buttons",
                "Actions",
                {{.name = "A+",

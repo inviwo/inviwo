@@ -74,7 +74,7 @@ protected:
     BoolProperty enableDepthTest_;
     BoolProperty overrideColorBuffer_;
     FloatVec4Property overrideColor_;
-        
+
     MeshTexturing texture_;
 
     SimpleLightingProperty lightingProperty_;

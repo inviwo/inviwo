@@ -30,7 +30,7 @@
 #include <modules/userinterfacegl/glui/widgets/toolbutton.h>
 
 #include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/datastructures/image/layer.h>                     // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/layer.h>  // IWYU pragma: keep
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/interaction/pickingmapper.h>
@@ -69,8 +69,8 @@ namespace glui {
 
 std::string_view ToolButton::getClassIdentifier() const { return classIdentifier; }
 
-ToolButton::ToolButton(const std::filesystem::path& filename, Processor& processor, Renderer& uiRenderer,
-                       const ivec2& extent)
+ToolButton::ToolButton(const std::filesystem::path& filename, Processor& processor,
+                       Renderer& uiRenderer, const ivec2& extent)
     : AbstractButton("", processor, uiRenderer, extent)
     , labelImage_(loadImage(filename))
     , quadRenderer_(Shader("rendertexturequad.vert", "labelui.frag")) {

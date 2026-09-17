@@ -50,9 +50,7 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
         case 2:
             traverseNodes(root, &ProcessorNetworkConverter::updatePropertyType);
             [[fallthrough]];
-        case 3:
-            traverseNodes(root, &ProcessorNetworkConverter::updateShadingMode);
-            [[fallthrough]];
+        case 3: traverseNodes(root, &ProcessorNetworkConverter::updateShadingMode); [[fallthrough]];
         case 4:
             traverseNodes(root, &ProcessorNetworkConverter::updateCameraToComposite);
             [[fallthrough]];
@@ -68,9 +66,7 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
         case 8:
             traverseNodes(root, &ProcessorNetworkConverter::updatePropertyLinks);
             [[fallthrough]];
-        case 9:
-            updatePortsInProcessors(root);
-            [[fallthrough]];
+        case 9: updatePortsInProcessors(root); [[fallthrough]];
         case 10:
             traverseNodes(root,
                           &ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifiers);
@@ -91,27 +87,16 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
         case 15:
             traverseNodes(root, &ProcessorNetworkConverter::updatePropertyEditorMetadata);
             [[fallthrough]];
-        case 16:
-            updateCameraPropertyToRefs(root);
-            [[fallthrough]];
-        case 17:
-            updateLinkAndConnections(root);
-            [[fallthrough]];
+        case 16: updateCameraPropertyToRefs(root); [[fallthrough]];
+        case 17: updateLinkAndConnections(root); [[fallthrough]];
         case 18:
             traverseNodes(root, &ProcessorNetworkConverter::updateShadingModeEnum);
             [[fallthrough]];
-        case 19:
-            updateFileMode(root);
-            [[fallthrough]];
-        case 20:
-            updatePositionProperties(root);
-            [[fallthrough]];
-        case 21:
-            updateTF(root);
-            return true;  // Changes have been made.
+        case 19: updateFileMode(root); [[fallthrough]];
+        case 20: updatePositionProperties(root); [[fallthrough]];
+        case 21: updateTF(root); return true;  // Changes have been made.
 
-        default:
-            return false;  // No changes
+        default: return false;  // No changes
     }
 }
 
@@ -382,7 +367,7 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
                 std::sort(ids_.begin(), ids_.end());
             }
             return true;
-        };
+        }
         virtual bool VisitEnter(const TiXmlDocument&) override { return true; }
         std::string getNewRef() {
             std::string ref("ref0");
@@ -391,7 +376,7 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
             }
             ids_.push_back(ref);
             return ref;
-        };
+        }
 
         std::vector<std::string> ids_;
     };

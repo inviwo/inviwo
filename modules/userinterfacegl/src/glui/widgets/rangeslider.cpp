@@ -98,8 +98,7 @@ RangeSlider::RangeSlider(std::string_view label, const ivec2& value, int minValu
                 value_ = getPreviousValue() + moveby;
                 break;
             }
-            default:
-                break;
+            default: break;
         }
         return (value_ != currentValue);  // trigger update if changed
     };

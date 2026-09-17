@@ -29,7 +29,7 @@
 
 #include <modules/animationqt/sequenceeditor/sequenceeditorwidget.h>
 
-#include <modules/animation/datastructures/keyframe.h>          // IWYU pragma: keep
+#include <modules/animation/datastructures/keyframe.h>  // IWYU pragma: keep
 #include <modules/animation/datastructures/keyframesequence.h>
 
 #include <algorithm>

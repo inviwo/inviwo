@@ -290,7 +290,7 @@ std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
                 fmt::string_view(buff.data(), buff.size()));
         }
     }
-};
+}
 
 template <typename Self, typename Repr>
 template <typename T>

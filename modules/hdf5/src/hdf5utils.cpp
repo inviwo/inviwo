@@ -89,8 +89,6 @@ const DataFormatBase* getDataFormat(const H5::DataType& type) {
 
 }  // namespace
 
-
-
 namespace util {
 
 std::vector<DataSetInfo> getDataSets(const Handle& handle) {
@@ -123,16 +121,11 @@ std::vector<OptionPropertyIntOption> conversionOptions() {
 
 const DataFormatBase* conversionFormat(size_t index) {
     switch (index) {
-        case 1:
-            return DataFloat32::get();
-        case 2:
-            return DataFloat64::get();
-        case 3:
-            return DataUInt8::get();
-        case 4:
-            return DataUInt16::get();
-        default:
-            return nullptr;
+        case 1:  return DataFloat32::get();
+        case 2:  return DataFloat64::get();
+        case 3:  return DataUInt8::get();
+        case 4:  return DataUInt16::get();
+        default: return nullptr;
     }
 }
 

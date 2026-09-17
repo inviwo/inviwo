@@ -64,7 +64,7 @@ constexpr std::string_view uniforms = util::trim(R"(
 uniform CameraParameters {0};
 )");
 
-}
+}  // namespace
 
 auto CameraComponent::getSegments() -> std::vector<Segment> {
     return {Segment{fmt::format(uniforms, getName()), placeholder::uniform, 500}};

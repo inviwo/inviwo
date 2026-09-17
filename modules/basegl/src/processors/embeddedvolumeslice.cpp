@@ -172,8 +172,8 @@ void EmbeddedVolumeSlice::handlePicking(PickingEvent* p) {
         const auto dataPos2 = vec3{ct.getWorldToDataMatrix() * dvec4{dvec3(worldPos2), 1.0}};
 
         if (const auto dataPoint = plane.getIntersection(dataPos1, dataPos2); dataPoint) {
-            const auto index =
-                static_cast<size3_t>(vec3{ct.getDataToIndexMatrix() * dvec4{dvec3(*dataPoint), 1.0}});
+            const auto index = static_cast<size3_t>(
+                vec3{ct.getDataToIndexMatrix() * dvec4{dvec3(*dataPoint), 1.0}});
 
             const auto cind = glm::clamp(index, size3_t{0}, data->getDimensions() - size3_t{1});
             const auto value = data->getRepresentation<VolumeRAM>()->getAsDVec4(cind);

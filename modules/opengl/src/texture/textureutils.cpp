@@ -526,10 +526,8 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, TransferFunc
         const auto range = tf.get().getRange();
         StrBuffer buff;
         const auto name = tf.getIdentifier();
-        shader.setUniform(buff.replace("{}Params.rangeMin", name),
-                          static_cast<float>(range.x));
-        shader.setUniform(buff.replace("{}Params.rangeMax", name),
-                          static_cast<float>(range.y));
+        shader.setUniform(buff.replace("{}Params.rangeMin", name), static_cast<float>(range.x));
+        shader.setUniform(buff.replace("{}Params.rangeMax", name), static_cast<float>(range.y));
     }
 }
 

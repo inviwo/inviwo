@@ -71,7 +71,6 @@ void javascriptHighlightingRules(SyntaxHighlighter& sh) {
     litteralFormat.setBackground(bgColor);
     litteralFormat.setForeground(utilqt::toQColor(syntax::literal));
 
-
     sh.clear();
 
     sh.setFont(settings.font);

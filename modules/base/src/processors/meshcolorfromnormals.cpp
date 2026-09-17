@@ -101,15 +101,10 @@ void MeshColorFromNormals::process() {
                 auto& vec = ram->getDataContainer();
                 std::transform(vec.begin(), vec.end(), vec.begin(), [transform](T n) -> T {
                     switch (transform) {
-                        case Transform::Abs:
-                            return glm::abs(n);
-                        case Transform::Shift:
-                            return (n + T{1}) / T{2};
-                        case Transform::None:
-                            [[fallthrough]];
-                        default:
-                            return n;
-                            break;
+                        case Transform::Abs:   return glm::abs(n);
+                        case Transform::Shift: return (n + T{1}) / T{2};
+                        case Transform::None:  [[fallthrough]];
+                        default:               return n; break;
                     }
                 });
             });

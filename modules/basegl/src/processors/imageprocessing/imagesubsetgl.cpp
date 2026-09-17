@@ -189,13 +189,11 @@ void ImageSubsetGL::invokeEvent(Event* event) {
             handleTouchEvent(static_cast<TouchEvent*>(event));
             event->markAsUsed();
             break;
-        case WheelEvent::chash():
-            [[fallthrough]];
+        case WheelEvent::chash(): [[fallthrough]];
         case GestureEvent::chash():  // GestureEvents are better handles using TouchEvents
             event->markAsUsed();
             [[fallthrough]];
-        default:
-            Processor::invokeEvent(event);
+        default: Processor::invokeEvent(event);
     }
 }
 

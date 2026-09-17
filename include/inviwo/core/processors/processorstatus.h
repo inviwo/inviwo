@@ -81,12 +81,9 @@ private:
 constexpr std::string_view enumToStr(ProcessorStatus::Status s) {
     using enum ProcessorStatus::Status;
     switch (s) {
-        case Ready:
-            return "Ready";
-        case NotReady:
-            return "Not Ready";
-        case Error:
-            return "Error";
+        case Ready:    return "Ready";
+        case NotReady: return "Not Ready";
+        case Error:    return "Error";
     }
     throw Exception(SourceContext{}, "Found invalid ProcessorStatus::Status enum value '{}'",
                     static_cast<int>(s));

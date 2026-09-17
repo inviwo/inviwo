@@ -37,131 +37,71 @@ std::string imageFormatToString(const cl::ImageFormat& format) {
     std::string order;
 
     switch (format.image_channel_order) {
-        case CL_R:
-            order = "CL_R";
-            break;
+        case CL_R:         order = "CL_R"; break;
 
-        case CL_A:
-            order = "CL_A";
-            break;
+        case CL_A:         order = "CL_A"; break;
 
-        case CL_RG:
-            order = "CL_RG";
-            break;
+        case CL_RG:        order = "CL_RG"; break;
 
-        case CL_RA:
-            order = "CL_RA";
-            break;
+        case CL_RA:        order = "CL_RA"; break;
 
-        case CL_RGB:
-            order = "CL_RGB";
-            break;
+        case CL_RGB:       order = "CL_RGB"; break;
 
-        case CL_RGBA:
-            order = "CL_RGBA";
-            break;
+        case CL_RGBA:      order = "CL_RGBA"; break;
 
-        case CL_BGRA:
-            order = "CL_BGRA";
-            break;
+        case CL_BGRA:      order = "CL_BGRA"; break;
 
-        case CL_ARGB:
-            order = "CL_ARGB";
-            break;
+        case CL_ARGB:      order = "CL_ARGB"; break;
 
-        case CL_INTENSITY:
-            order = "CL_INTENSITY";
-            break;
+        case CL_INTENSITY: order = "CL_INTENSITY"; break;
 
-        case CL_LUMINANCE:
-            order = "CL_LUMINANCE";
-            break;
+        case CL_LUMINANCE: order = "CL_LUMINANCE"; break;
 #ifdef CL_Rx
 
-        case CL_Rx:
-            order = "CL_Rx";
-            break;
+        case CL_Rx:   order = "CL_Rx"; break;
 
-        case CL_RGx:
-            order = "CL_RGx";
-            break;
+        case CL_RGx:  order = "CL_RGx"; break;
 
-        case CL_RGBx:
-            order = "CL_RGBx";
-            break;
+        case CL_RGBx: order = "CL_RGBx"; break;
 #endif
 
-        default:
-            order = "unkown channel order";
-            break;
+        default: order = "unkown channel order"; break;
     }
 
     std::string type;
 
     switch (format.image_channel_data_type) {
-        case CL_SNORM_INT8:
-            type = "CL_SNORM_INT8";
-            break;
+        case CL_SNORM_INT8:       type = "CL_SNORM_INT8"; break;
 
-        case CL_SNORM_INT16:
-            type = "CL_SNORM_INT16";
-            break;
+        case CL_SNORM_INT16:      type = "CL_SNORM_INT16"; break;
 
-        case CL_UNORM_INT8:
-            type = "CL_UNORM_INT8";
-            break;
+        case CL_UNORM_INT8:       type = "CL_UNORM_INT8"; break;
 
-        case CL_UNORM_INT16:
-            type = "CL_UNORM_INT16";
-            break;
+        case CL_UNORM_INT16:      type = "CL_UNORM_INT16"; break;
 
-        case CL_UNORM_SHORT_565:
-            type = "CL_UNORM_SHORT_565";
-            break;
+        case CL_UNORM_SHORT_565:  type = "CL_UNORM_SHORT_565"; break;
 
-        case CL_UNORM_SHORT_555:
-            type = "CL_UNORM_SHORT_555";
-            break;
+        case CL_UNORM_SHORT_555:  type = "CL_UNORM_SHORT_555"; break;
 
-        case CL_UNORM_INT_101010:
-            type = "CL_UNORM_INT_101010";
-            break;
+        case CL_UNORM_INT_101010: type = "CL_UNORM_INT_101010"; break;
 
-        case CL_SIGNED_INT8:
-            type = "CL_SIGNED_INT8";
-            break;
+        case CL_SIGNED_INT8:      type = "CL_SIGNED_INT8"; break;
 
-        case CL_SIGNED_INT16:
-            type = "CL_SIGNED_INT16";
-            break;
+        case CL_SIGNED_INT16:     type = "CL_SIGNED_INT16"; break;
 
-        case CL_SIGNED_INT32:
-            type = "CL_SIGNED_INT32";
-            break;
+        case CL_SIGNED_INT32:     type = "CL_SIGNED_INT32"; break;
 
-        case CL_UNSIGNED_INT8:
-            type = "CL_UNSIGNED_INT8";
-            break;
+        case CL_UNSIGNED_INT8:    type = "CL_UNSIGNED_INT8"; break;
 
-        case CL_UNSIGNED_INT16:
-            type = "CL_UNSIGNED_INT16";
-            break;
+        case CL_UNSIGNED_INT16:   type = "CL_UNSIGNED_INT16"; break;
 
-        case CL_UNSIGNED_INT32:
-            type = "CL_UNSIGNED_INT32";
-            break;
+        case CL_UNSIGNED_INT32:   type = "CL_UNSIGNED_INT32"; break;
 
-        case CL_HALF_FLOAT:
-            type = "CL_HALF_FLOAT";
-            break;
+        case CL_HALF_FLOAT:       type = "CL_HALF_FLOAT"; break;
 
-        case CL_FLOAT:
-            type = "CL_FLOAT";
-            break;
+        case CL_FLOAT:            type = "CL_FLOAT"; break;
 
-        default:
-            type = "unkown data type";
-            break;
+        default:                  type = "unkown data type"; break;
     }
 
     std::ostringstream stream;

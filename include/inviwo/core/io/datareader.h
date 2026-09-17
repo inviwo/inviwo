@@ -162,7 +162,7 @@ public:
      */
     virtual std::shared_ptr<T> readData(const std::filesystem::path& filePath, MetaDataOwner*) {
         return readData(filePath);
-    };
+    }
 
 protected:
     virtual bool canRead(const std::type_index& index) const override {

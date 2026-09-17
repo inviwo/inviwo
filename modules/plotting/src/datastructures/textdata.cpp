@@ -29,7 +29,7 @@
 
 #include <modules/plotting/datastructures/textdata.h>
 
-#include <type_traits> 
+#include <type_traits>
 
 namespace inviwo::plot {
 

@@ -153,10 +153,8 @@ std::pair<bool, size_t> PickingEvent::getPressedLocalPickingId() const {
 dvec2 PickingEvent::getPosition() const {
     if (event_) {
         switch (event_->hash()) {
-            case MouseEvent::chash():
-                return static_cast<MouseEvent*>(event_)->posNormalized();
-            case WheelEvent::chash():
-                return static_cast<WheelEvent*>(event_)->posNormalized();
+            case MouseEvent::chash(): return static_cast<MouseEvent*>(event_)->posNormalized();
+            case WheelEvent::chash(): return static_cast<WheelEvent*>(event_)->posNormalized();
             case GestureEvent::chash():
                 return static_cast<GestureEvent*>(event_)->screenPosNormalized();
             case TouchEvent::chash():
@@ -169,14 +167,10 @@ dvec2 PickingEvent::getPosition() const {
 double PickingEvent::getDepth() const {
     if (event_) {
         switch (event_->hash()) {
-            case MouseEvent::chash():
-                return static_cast<MouseEvent*>(event_)->depth();
-            case WheelEvent::chash():
-                return static_cast<WheelEvent*>(event_)->depth();
-            case GestureEvent::chash():
-                return static_cast<GestureEvent*>(event_)->depth();
-            case TouchEvent::chash():
-                return static_cast<TouchEvent*>(event_)->averageDepth();
+            case MouseEvent::chash():   return static_cast<MouseEvent*>(event_)->depth();
+            case WheelEvent::chash():   return static_cast<WheelEvent*>(event_)->depth();
+            case GestureEvent::chash(): return static_cast<GestureEvent*>(event_)->depth();
+            case TouchEvent::chash():   return static_cast<TouchEvent*>(event_)->averageDepth();
         }
     }
     return 1.0f;
@@ -185,14 +179,10 @@ double PickingEvent::getDepth() const {
 uvec2 PickingEvent::getCanvasSize() const {
     if (event_) {
         switch (event_->hash()) {
-            case MouseEvent::chash():
-                return static_cast<MouseEvent*>(event_)->canvasSize();
-            case WheelEvent::chash():
-                return static_cast<WheelEvent*>(event_)->canvasSize();
-            case GestureEvent::chash():
-                return static_cast<GestureEvent*>(event_)->canvasSize();
-            case TouchEvent::chash():
-                return static_cast<TouchEvent*>(event_)->canvasSize();
+            case MouseEvent::chash():   return static_cast<MouseEvent*>(event_)->canvasSize();
+            case WheelEvent::chash():   return static_cast<WheelEvent*>(event_)->canvasSize();
+            case GestureEvent::chash(): return static_cast<GestureEvent*>(event_)->canvasSize();
+            case TouchEvent::chash():   return static_cast<TouchEvent*>(event_)->canvasSize();
         }
     }
     return uvec2(0);
@@ -221,14 +211,10 @@ double PickingEvent::getDeltaPressedDepth() const { return getDepth() - pressedN
 dvec3 PickingEvent::getNDC() const {
     if (event_) {
         switch (event_->hash()) {
-            case MouseEvent::chash():
-                return static_cast<MouseEvent*>(event_)->ndc();
-            case WheelEvent::chash():
-                return static_cast<WheelEvent*>(event_)->ndc();
-            case GestureEvent::chash():
-                return static_cast<GestureEvent*>(event_)->ndc();
-            case TouchEvent::chash():
-                return static_cast<TouchEvent*>(event_)->centerNDC();
+            case MouseEvent::chash():   return static_cast<MouseEvent*>(event_)->ndc();
+            case WheelEvent::chash():   return static_cast<WheelEvent*>(event_)->ndc();
+            case GestureEvent::chash(): return static_cast<GestureEvent*>(event_)->ndc();
+            case TouchEvent::chash():   return static_cast<TouchEvent*>(event_)->centerNDC();
         }
     }
     return dvec3(0.0f);

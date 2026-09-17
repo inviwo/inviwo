@@ -43,8 +43,7 @@ namespace detail {
 template <Wrapping Wx, Wrapping Wy, typename Callable, typename... Args>
 constexpr void wrapper2(const std::array<Wrapping, 3>& w, const Callable& obj, Args&&... args) {
     switch (w[2]) {
-        default:
-            [[fallthrough]];
+        default: [[fallthrough]];
         case Wrapping::Clamp:
             return obj.template operator()<Wx, Wy, Wrapping::Clamp>(std::forward<Args>(args)...);
         case Wrapping::Repeat:
@@ -57,8 +56,7 @@ constexpr void wrapper2(const std::array<Wrapping, 3>& w, const Callable& obj, A
 template <Wrapping Wx, typename Callable, typename... Args>
 constexpr void wrapper1(const std::array<Wrapping, 3>& w, const Callable& obj, Args&&... args) {
     switch (w[1]) {
-        default:
-            [[fallthrough]];
+        default: [[fallthrough]];
         case Wrapping::Clamp:
             return wrapper2<Wx, Wrapping::Clamp>(w, obj, std::forward<Args>(args)...);
         case Wrapping::Repeat:
@@ -72,8 +70,7 @@ constexpr void wrapper1(const std::array<Wrapping, 3>& w, const Callable& obj, A
 template <typename Callable, typename... Args>
 constexpr void wrapper(const std::array<Wrapping, 3>& w, const Callable& obj, Args&&... args) {
     switch (w[0]) {
-        default:
-            [[fallthrough]];
+        default: [[fallthrough]];
         case Wrapping::Clamp:
             return detail::wrapper1<Wrapping::Clamp>(w, obj, std::forward<Args>(args)...);
         case Wrapping::Repeat:
@@ -185,7 +182,7 @@ template <template <class> class Predicate, size_t I>
 constexpr bool pred(DataFormatId format) {
     return static_cast<size_t>(format) == I + 1 &&
            Predicate<DataFormat<std::tuple_element_t<I, DefaultDataTypes>>>::value;
-};
+}
 
 template <size_t I, template <class> class Predicate, typename Callable, typename... Args>
 void call(const Callable& obj, Args&&... args) {

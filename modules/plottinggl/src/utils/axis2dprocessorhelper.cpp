@@ -88,9 +88,10 @@ namespace plot {
 
 Axis2DProcessorHelper::Axis2DProcessorHelper(
     const std::function<std::optional<dmat4>()>& getBoundingBox, DimsRangeMode useDimsRange)
-    : offsetScaling_{"offsetScaling",
-                     "Offset Scaling",
-                     R"(Offset scaling affects tick lengths and offsets of axis captions and labels.
+    : offsetScaling_{
+          "offsetScaling",
+          "Offset Scaling",
+          R"(Offset scaling affects tick lengths and offsets of axis captions and labels.
                         + **None** No scaling, offsets and lengths are given in world coordinates.
                         + **Min** Relative scaling based on the shortest extent of the bounding box. Useful 
                                 when visualizing growing data.
@@ -99,12 +100,12 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(
                         + **Mean** Relative scaling basd on the mean bounding box extent.
                         + **Diagonal** Relative scaling based on the diagonal of the bounding box.
                       )"_unindentHelp,
-                     {{"none", "None (absolute World coordinates)", OffsetScaling::None},
-                      {"min", "Min Extent", OffsetScaling::MinExtent},
-                      {"max", "Max Extent", OffsetScaling::MaxExtent},
-                      {"mean", "Mean Extent", OffsetScaling::MeanExtent},
-                      {"diagonal", "Bounding Box Diagonal", OffsetScaling::Diagonal}},
-                     1}
+          {{"none", "None (absolute World coordinates)", OffsetScaling::None},
+           {"min", "Min Extent", OffsetScaling::MinExtent},
+           {"max", "Max Extent", OffsetScaling::MaxExtent},
+           {"mean", "Mean Extent", OffsetScaling::MeanExtent},
+           {"diagonal", "Bounding Box Diagonal", OffsetScaling::Diagonal}},
+          1}
     , axisOffset_{"axisOffset", "Axis Offset",
                   util::ordinalLength(10.0f, 50.0f)
                       .set(

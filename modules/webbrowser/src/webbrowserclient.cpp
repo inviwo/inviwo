@@ -334,20 +334,13 @@ bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_s
 
         LogLevel loglevel;
         switch (level) {
-            case LOGSEVERITY_DISABLE:
-                return false;
-            case LOGSEVERITY_ERROR:
-                loglevel = LogLevel::Error;
-                break;
-            case LOGSEVERITY_WARNING:
-                loglevel = LogLevel::Warn;
-                break;
+            case LOGSEVERITY_DISABLE:                     return false;
+            case LOGSEVERITY_ERROR:                       loglevel = LogLevel::Error; break;
+            case LOGSEVERITY_WARNING:                     loglevel = LogLevel::Warn; break;
             case cef_log_severity_t::LOGSEVERITY_DEBUG:
             case cef_log_severity_t::LOGSEVERITY_INFO:
             case cef_log_severity_t::LOGSEVERITY_DEFAULT:
-            default:
-                loglevel = LogLevel::Info;
-                break;
+            default:                                      loglevel = LogLevel::Info; break;
         }
 
         lc->log("WebBrowserClient", loglevel, LogAudience::Developer, src, "", line,

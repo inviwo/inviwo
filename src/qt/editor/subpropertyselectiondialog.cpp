@@ -329,7 +329,7 @@ public:
 
         LambdaNetworkVisitor propVisitor{[&](Property& o) { o.addObserver(this); }};
         property->accept(propVisitor);
-    };
+    }
 
     virtual void onWillRemoveProperty(Property* property, size_t pos) override {
         LambdaNetworkVisitor ownerVisitor{[&](PropertyOwner& o) { o.removeObserver(this); }};
@@ -341,7 +341,7 @@ public:
     }
     virtual void onDidRemoveProperty(PropertyOwner*, Property*, size_t) override {
         endRemoveRows();
-    };
+    }
 
     virtual void onSetDisplayName(Property* property, const std::string&) override {
         QModelIndex pos = index(property);
@@ -391,7 +391,7 @@ protected:
             if (exposed) return true;
         }
         return false;
-    };
+    }
 
     QModelIndex index(Property* property) const {
         auto parent = property->getOwner();

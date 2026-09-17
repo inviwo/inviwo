@@ -53,6 +53,6 @@ std::shared_ptr<TransferFunction> TransferFunctionITFReader::readData(
     data->deserialize(deserializer);
 
     return data;
-};
+}
 
 }  // namespace inviwo

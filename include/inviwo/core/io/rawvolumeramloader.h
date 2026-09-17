@@ -48,8 +48,8 @@ namespace inviwo {
 
 class IVW_CORE_API RawVolumeRAMLoader : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-    RawVolumeRAMLoader(const std::filesystem::path& rawFile, size_t offset,
-                       ByteOrder byteOrder, Compression compression);
+    RawVolumeRAMLoader(const std::filesystem::path& rawFile, size_t offset, ByteOrder byteOrder,
+                       Compression compression);
     virtual RawVolumeRAMLoader* clone() const override;
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
         const VolumeRepresentation& src) const override;

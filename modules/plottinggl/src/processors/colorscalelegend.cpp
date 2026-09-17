@@ -461,41 +461,24 @@ void ColorScaleLegend::setPlacement(Placement placement) {
     };
 
     switch (placement) {
-        case Placement::OutsideLeft:
-            setPositions(Vertical, true, vec2{0.0f, 0.5f}, false);
-            break;
-        case Placement::OutsideTop:
-            setPositions(Horizontal, true, vec2{0.5f, 1.0f}, false);
-            break;
-        case Placement::OutsideRight:
-            setPositions(Vertical, false, vec2{1.0f, 0.5f}, false);
-            break;
+        case Placement::OutsideLeft:  setPositions(Vertical, true, vec2{0.0f, 0.5f}, false); break;
+        case Placement::OutsideTop:   setPositions(Horizontal, true, vec2{0.5f, 1.0f}, false); break;
+        case Placement::OutsideRight: setPositions(Vertical, false, vec2{1.0f, 0.5f}, false); break;
         case Placement::OutsideBottom:
             setPositions(Horizontal, false, vec2{0.5f, 0.0f}, false);
             break;
-        case Placement::InsideLeft:
-            setPositions(Vertical, false, vec2{0.0f, 0.5f}, true);
-            break;
-        case Placement::InsideTop:
-            setPositions(Horizontal, false, vec2{0.5f, 1.0f}, true);
-            break;
-        case Placement::InsideRight:
-            setPositions(Vertical, true, vec2{1.0f, 0.5f}, true);
-            break;
-        case Placement::InsideBottom:
-            setPositions(Horizontal, true, vec2{0.5f, 0.0f}, true);
-            break;
+        case Placement::InsideLeft:   setPositions(Vertical, false, vec2{0.0f, 0.5f}, true); break;
+        case Placement::InsideTop:    setPositions(Horizontal, false, vec2{0.5f, 1.0f}, true); break;
+        case Placement::InsideRight:  setPositions(Vertical, true, vec2{1.0f, 0.5f}, true); break;
+        case Placement::InsideBottom: setPositions(Horizontal, true, vec2{0.5f, 0.0f}, true); break;
 
-        default:
-            break;
+        default:                      break;
     }
 }
 
 void ColorScaleLegend::updateTitle(std::shared_ptr<const Volume> volume) {
     switch (labelType_.get()) {
-        case LabelType::String:
-            axis_.setCaption(title_.get());
-            break;
+        case LabelType::String: axis_.setCaption(title_.get()); break;
         case LabelType::Data:
             if (volume) {
                 axis_.setCaption(fmt::format("{}{: [}", volume->dataMap.valueAxis.name,
@@ -513,9 +496,7 @@ void ColorScaleLegend::updateTitle(std::shared_ptr<const Volume> volume) {
                 axis_.setCaption("?");
             }
             break;
-        default:
-            axis_.setCaption(title_.get());
-            break;
+        default: axis_.setCaption(title_.get()); break;
     }
 }
 

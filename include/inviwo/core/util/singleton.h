@@ -61,7 +61,7 @@ public:
             throw SingletonException(SourceContext{}, "Was not able to initialize {} singleton",
                                      name());
         }
-    };
+    }
 
     static void init(T* instance) {
         if (T::instance_) {
@@ -71,7 +71,7 @@ public:
             throw SingletonException("Null pointer passed");
         }
         T::instance_ = instance;
-    };
+    }
 
     static T* getPtr() {
         if (!T::instance_) {
@@ -82,12 +82,12 @@ public:
                 name());
         }
         return T::instance_;
-    };
+    }
 
     static void deleteInstance() {
         delete T::instance_;
         T::instance_ = nullptr;
-    };
+    }
 
     static bool isInitialized() { return T::instance_ != nullptr; }
 
@@ -95,7 +95,7 @@ public:
         if (this == T::instance_) {
             T::instance_ = nullptr;
         }
-    };
+    }
 
 private:
     static std::string name() { return util::parseTypeIdName(typeid(T).name()); }

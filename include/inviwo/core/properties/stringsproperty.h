@@ -152,6 +152,6 @@ Document StringsProperty<N>::getDescription() const {
     }
 
     return doc;
-};
+}
 
 }  // namespace inviwo

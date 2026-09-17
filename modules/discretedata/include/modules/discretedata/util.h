@@ -57,54 +57,41 @@ inline GridPrimitive cellTypeToGridPrimitive(CellType type) {
             return GridPrimitive::Vertex;
             // Linear cells
         case CellType::Line:
-        case CellType::PolyLine:
-            return GridPrimitive::Edge;
+        case CellType::PolyLine:        return GridPrimitive::Edge;
         case CellType::Triangle:
         case CellType::TriangleStrip:
         case CellType::Polygon:
         case CellType::Pixel:
-        case CellType::Quad:
-            return GridPrimitive::Face;
+        case CellType::Quad:            return GridPrimitive::Face;
         case CellType::Tetra:
         case CellType::Voxel:
         case CellType::Hexahedron:
         case CellType::Wedge:
         case CellType::Pyramid:
         case CellType::PentagonalPrism:
-        case CellType::HexagonalPrism:
-            return GridPrimitive::Volume;
+        case CellType::HexagonalPrism:  return GridPrimitive::Volume;
 
         // Quadratic, isoparametric cells
-        case CellType::QuadraticEdge:
-            return GridPrimitive::Edge;
+        case CellType::QuadraticEdge:                  return GridPrimitive::Edge;
         case CellType::QuadraticTriangle:
         case CellType::QuadraticQuad:
-        case CellType::QuadraticPolygon:
-            return GridPrimitive::Face;
+        case CellType::QuadraticPolygon:               return GridPrimitive::Face;
         case CellType::QuadraticTetra:
         case CellType::QuadraticHexahedron:
         case CellType::QuadraticWedge:
-        case CellType::QuadraticPyramid:
-            return GridPrimitive::Volume;
-        case CellType::BiquadraticQuad:
-            return GridPrimitive::Face;
-        case CellType::TriquadraticHexahedron:
-            return GridPrimitive::Volume;
-        case CellType::QuadraticLinearQuad:
-            return GridPrimitive::Face;
+        case CellType::QuadraticPyramid:               return GridPrimitive::Volume;
+        case CellType::BiquadraticQuad:                return GridPrimitive::Face;
+        case CellType::TriquadraticHexahedron:         return GridPrimitive::Volume;
+        case CellType::QuadraticLinearQuad:            return GridPrimitive::Face;
         case CellType::QuadraticLinearWedge:
         case CellType::BiquadraticQuadraticWedge:
-        case CellType::BiquadraticQuadraticHexahedron:
-            return GridPrimitive::Volume;
-        case CellType::BiquadraticTriangle:
-            return GridPrimitive::Face;
+        case CellType::BiquadraticQuadraticHexahedron: return GridPrimitive::Volume;
+        case CellType::BiquadraticTriangle:            return GridPrimitive::Face;
 
         // Cubic, isoparametric cell
-        case CellType::CubicLine:
-            return GridPrimitive::Face;
+        case CellType::CubicLine: return GridPrimitive::Face;
 
-        default:
-            return GridPrimitive::Undef;
+        default:                  return GridPrimitive::Undef;
     };
 }
 

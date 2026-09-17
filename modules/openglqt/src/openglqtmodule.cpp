@@ -154,17 +154,14 @@ void OpenGLQtModule::onProcessorNetworkEvaluationEnd() {
         res = glClientWaitSync(syncObj, GL_SYNC_FLUSH_COMMANDS_BIT, timeoutInNanoSec);
     }
     switch (res) {
-        case GL_WAIT_FAILED:
-            log::error("Error syncing with opengl 'GL_WAIT_FAILED'");
-            break;
+        case GL_WAIT_FAILED: log::error("Error syncing with opengl 'GL_WAIT_FAILED'"); break;
         case GL_ALREADY_SIGNALED:  // No queue to wait for
             [[fallthrough]];
         case GL_TIMEOUT_EXPIRED:  // Handled above
             [[fallthrough]];
         case GL_CONDITION_SATISFIED:  // Queue done.
             [[fallthrough]];
-        default:
-            break;
+        default: break;
     }
 
     glDeleteSync(syncObj);

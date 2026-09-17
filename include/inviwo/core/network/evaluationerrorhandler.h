@@ -43,14 +43,10 @@ enum class EvaluationType { InitResource, PortOnChange, Process, NotReady };
 
 constexpr std::string_view enumToStr(EvaluationType type) {
     switch (type) {
-        case EvaluationType::InitResource:
-            return "InitializeResources";
-        case EvaluationType::PortOnChange:
-            return "PortOnChange";
-        case EvaluationType::Process:
-            return "Process";
-        case EvaluationType::NotReady:
-            return "DoIfNotReady";
+        case EvaluationType::InitResource: return "InitializeResources";
+        case EvaluationType::PortOnChange: return "PortOnChange";
+        case EvaluationType::Process:      return "Process";
+        case EvaluationType::NotReady:     return "DoIfNotReady";
     }
     throw Exception(SourceContext{}, "Found invalid EvaluationType enum value '{}'",
                     static_cast<int>(type));

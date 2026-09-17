@@ -313,7 +313,7 @@ public:
     bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const override {
         auto index = sourceModel()->index(source_row, 0, source_parent);
         return dsl_.match(index);
-    };
+    }
 
     void setCustomFilter(const QString& filter) {
 #if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
@@ -404,16 +404,10 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 const auto action = util::getModifierAction(QApplication::keyboardModifiers());
                 const auto file = utilqt::toPath(filename);
                 switch (action) {
-                    case ModifierAction::AppendWorkspace:
-                        emit appendWorkspace(file);
-                        break;
-                    case ModifierAction::OpenWithPath:
-                        emit loadWorkspace(file, false);
-                        break;
+                    case ModifierAction::AppendWorkspace: emit appendWorkspace(file); break;
+                    case ModifierAction::OpenWithPath:    emit loadWorkspace(file, false); break;
                     case ModifierAction::None:
-                    default:
-                        emit loadWorkspace(file, isExample);
-                        break;
+                    default:                              emit loadWorkspace(file, isExample); break;
                 }
             };
             auto updateLoadButtons = [this](const QModelIndex& index) {

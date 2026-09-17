@@ -92,11 +92,8 @@ struct ValueWrapper<TransferFunction> {
             case PropertySerializationMode::Default:
                 if (!isDefault()) s.serialize(name, value);
                 break;
-            case PropertySerializationMode::All:
-                s.serialize(name, value);
-                break;
-            case PropertySerializationMode::None:
-                break;
+            case PropertySerializationMode::All:  s.serialize(name, value); break;
+            case PropertySerializationMode::None: break;
         }
     }
 
@@ -119,10 +116,8 @@ struct ValueWrapper<TransferFunction> {
                 d.deserialize(name, value);
                 break;
             }
-            case PropertySerializationMode::None:
-                break;
-            default:
-                break;
+            case PropertySerializationMode::None: break;
+            default:                              break;
         }
     }
 

@@ -174,17 +174,12 @@ template <typename T>
 void WorldTransformDeprecated<T>::updateValues() {
     updatingValues_ = true;
     switch (type_.get()) {
-        case 0:
-            matrix_.set(glm::translate(translate_.get()));
-            break;  // translate
+        case 0: matrix_.set(glm::translate(translate_.get())); break;  // translate
         case 1:
             matrix_.set(glm::rotate(rotationAngle_.get(), rotationAxis_.get()));
-            break;  // rotate
-        case 2:
-            matrix_.set(glm::scale(scale_.get()));
-            break;  // scale
-        default:
-            break;
+            break;                                              // rotate
+        case 2:  matrix_.set(glm::scale(scale_.get())); break;  // scale
+        default: break;
     }
     updatingValues_ = false;
 }

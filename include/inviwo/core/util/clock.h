@@ -213,11 +213,11 @@ using ScopedClockCPU = ScopedClock<Clock, Callback>;
  * @param message  log message
  */
 #if IVW_PROFILING
-#define IVW_CPU_PROFILING(message)                                                  \
+#define IVW_CPU_PROFILING(message)                                                   \
     const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<Clock>([&]() { \
-        std::ostringstream ss;                                                      \
-        ss << message;                                                              \
-        return std::move(ss).str();                                                 \
+        std::ostringstream ss;                                                       \
+        ss << message;                                                               \
+        return std::move(ss).str();                                                  \
     })
 #else
 #define IVW_CPU_PROFILING(message)
@@ -234,7 +234,7 @@ using ScopedClockCPU = ScopedClock<Clock, Callback>;
 #if IVW_PROFILING
 #define IVW_CPU_PROFILING_IF(time, message)                                   \
     const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<Clock>( \
-        [&]() {                                                                \
+        [&]() {                                                               \
             std::ostringstream ss;                                            \
             ss << message;                                                    \
             return std::move(ss).str();                                       \

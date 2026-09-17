@@ -332,14 +332,10 @@ constexpr size_t DataFormat<T>::components() {
 template <typename T>
 constexpr size_t DataFormat<T>::precision() {
     switch (rank()) {
-        case 0:
-            return sizeInBytes() * 8;
-        case 1:
-            return sizeInBytes() / components() * 8;
-        case 2:
-            return sizeInBytes() / components() / components() * 8;
-        default:
-            throw DataFormatException(SourceContext{}, "Invalid format rank {}", rank());
+        case 0:  return sizeInBytes() * 8;
+        case 1:  return sizeInBytes() / components() * 8;
+        case 2:  return sizeInBytes() / components() / components() * 8;
+        default: throw DataFormatException(SourceContext{}, "Invalid format rank {}", rank());
     }
 }
 

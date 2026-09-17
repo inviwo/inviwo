@@ -89,10 +89,8 @@ std::string formatAxisCaption(const Axis& axis, CaptionType captionType, LabelSc
                 return std::string{originalCaption};
             }
 
-        case CaptionType::String:
-            [[fallthrough]];
-        default:
-            return std::string{originalCaption};
+        case CaptionType::String: [[fallthrough]];
+        default:                  return std::string{originalCaption};
     }
 }
 

@@ -42,7 +42,7 @@ class DemoController;
 
 class IVW_MODULE_ANIMATION_API DemoControllerObserver : public Observer {
 public:
-    virtual void onStateChanged(DemoController*){};
+    virtual void onStateChanged(DemoController*) {}
 };
 
 class IVW_MODULE_ANIMATION_API DemoControllerObservable

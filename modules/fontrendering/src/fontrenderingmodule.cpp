@@ -226,26 +226,13 @@ bool updateV5(TxElement* root) {
 bool FontRenderingModule::Converter::convert(TxElement* root) {
     bool res = false;
     switch (version_) {
-        case 0:
-            res |= updateV0(root);
-            [[fallthrough]];
-        case 1:
-            res |= updateV1(root);
-            [[fallthrough]];
-        case 2:
-            res |= updateV2(root);
-            [[fallthrough]];
-        case 3:
-            res |= updateV3(root);
-            [[fallthrough]];
-        case 4:
-            res |= updateV4(root);
-            [[fallthrough]];
-        case 5:
-            res |= updateV5(root);
-            return res;
-        default:
-            return false;  // No changes
+        case 0:  res |= updateV0(root); [[fallthrough]];
+        case 1:  res |= updateV1(root); [[fallthrough]];
+        case 2:  res |= updateV2(root); [[fallthrough]];
+        case 3:  res |= updateV3(root); [[fallthrough]];
+        case 4:  res |= updateV4(root); [[fallthrough]];
+        case 5:  res |= updateV5(root); return res;
+        default: return false;  // No changes
     }
 }
 

@@ -34,7 +34,7 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/image/layer.h>                     // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/layer.h>  // IWYU pragma: keep
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>

@@ -83,7 +83,7 @@ std::unique_ptr<Processor> ProcessorFactory::create(std::string_view) const {
 
 std::shared_ptr<Processor> ProcessorFactory::createShared(std::string_view key) const {
     return createShared(key, app_);
-};
+}
 std::shared_ptr<Processor> ProcessorFactory::createShared(std::string_view key,
                                                           InviwoApplication* app) const {
     auto it = this->map_.find(key);
@@ -92,7 +92,7 @@ std::shared_ptr<Processor> ProcessorFactory::createShared(std::string_view key,
     } else {
         return nullptr;
     }
-};
+}
 
 bool ProcessorFactory::hasKey(std::string_view key) const { return Register::hasKey(key); }
 

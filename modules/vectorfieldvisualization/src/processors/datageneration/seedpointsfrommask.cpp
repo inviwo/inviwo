@@ -34,7 +34,7 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>       // IWYU pragma: keep
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>  // IWYU pragma: keep
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/ports/outportiterable.h>

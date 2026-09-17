@@ -143,15 +143,9 @@ void WebBrowserProcessor::deserialize(Deserializer& d) {
 
 void WebBrowserProcessor::updateSource() {
     switch (sourceType_) {
-        case SourceType::LocalFile:
-            browser_->load(fileName_);
-            break;
-        case SourceType::WebAddress:
-            browser_->load(url_);
-            break;
-        default:
-            browser_->load(std::string_view{"https://www.inviwo.org"});
-            break;
+        case SourceType::LocalFile:  browser_->load(fileName_); break;
+        case SourceType::WebAddress: browser_->load(url_); break;
+        default:                     browser_->load(std::string_view{"https://www.inviwo.org"}); break;
     }
 }
 

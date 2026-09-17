@@ -30,6 +30,4 @@
 #include <inviwo/core/io/serialization/serializationexception.h>
 #include <fmt/format.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

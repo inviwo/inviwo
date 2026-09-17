@@ -41,7 +41,7 @@ namespace inviwo::util {
 /**
  * Write \p bytes bytes of the data \p source to the given filepath \p path. The data is compressed
  * if \p compression is enabled and supported.
-*
+ *
  * @throw DataReaderException if the file cannot be created or written to
  * @see util::isCompressionSupported
  */

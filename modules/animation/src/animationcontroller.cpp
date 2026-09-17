@@ -229,8 +229,7 @@ void AnimationController::setState(AnimationState newState) {
             break;
         }
 
-        default:
-            break;
+        default: break;
     }
     notifyStateChanged(this, oldState, state_);
 }
@@ -338,8 +337,7 @@ void AnimationController::tick() {
                 newTime = lastTime + deltaTime();
                 break;
             }
-            default:
-                break;
+            default: break;
         }
     }
 
@@ -360,8 +358,7 @@ void AnimationController::tick() {
                 newTime = firstTime + deltaTime();
                 break;
             }
-            default:
-                break;
+            default: break;
         }
     }
 

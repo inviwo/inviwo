@@ -47,7 +47,6 @@
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
-
 namespace inviwo {
 class Event;
 class Outport;

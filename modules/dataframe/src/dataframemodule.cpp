@@ -73,9 +73,9 @@
 #include <inviwo/dataframe/properties/columnmetadataproperty.h>
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <inviwo/dataframe/properties/filterlistproperty.h>
-#include <inviwo/dataframe/properties/optionconverter.h>             // IWYU pragma: keep
+#include <inviwo/dataframe/properties/optionconverter.h>  // IWYU pragma: keep
 #include <inviwo/dataframe/util/filters.h>
-#include <inviwo/dataframe/jsondataframeconversion.h>                // IWYU pragma: keep
+#include <inviwo/dataframe/jsondataframeconversion.h>  // IWYU pragma: keep
 #include <modules/json/jsonmodule.h>
 
 #include <cstddef>

@@ -89,8 +89,7 @@ TEST(PickingTests, Unique) {
 
 TEST(PickingMapperTests, Create) {
     PickingManager manager;
-    PickingMapper mapper(
-        nullptr, 100, [](const PickingEvent*) {}, &manager);
+    PickingMapper mapper(nullptr, 100, [](const PickingEvent*) {}, &manager);
 
     auto po = mapper.getPickingAction();
     EXPECT_NE(po, nullptr);
@@ -101,8 +100,7 @@ TEST(PickingMapperTests, Create) {
 TEST(PickingMapperTests, Resize) {
     PickingManager manager;
 
-    PickingMapper mapper(
-        nullptr, 100, [](const PickingEvent*) {}, &manager);
+    PickingMapper mapper(nullptr, 100, [](const PickingEvent*) {}, &manager);
     {
         auto po = mapper.getPickingAction();
         EXPECT_NE(po, nullptr);
@@ -117,8 +115,7 @@ TEST(PickingMapperTests, Resize) {
         EXPECT_EQ(colors.size(), 100);
     }
 
-    mapper = PickingMapper(
-        nullptr, 200, [](const PickingEvent*) {}, &manager);
+    mapper = PickingMapper(nullptr, 200, [](const PickingEvent*) {}, &manager);
 
     {
         auto po = mapper.getPickingAction();

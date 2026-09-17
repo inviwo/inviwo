@@ -73,14 +73,11 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
     HANDLE hConsole = GetStdHandle(h);
     const auto k = [&]() {
         switch (logLevel) {
-            case LogLevel::Info:
-                return WORD{FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE};
+            case LogLevel::Info: return WORD{FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE};
             case LogLevel::Warn:
                 return WORD{FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY};
-            case LogLevel::Error:
-                return WORD{FOREGROUND_RED | FOREGROUND_INTENSITY};
-            default:
-                return WORD{FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE};
+            case LogLevel::Error: return WORD{FOREGROUND_RED | FOREGROUND_INTENSITY};
+            default:              return WORD{FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE};
         }
     }();
 
@@ -100,16 +97,10 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
 
     if (useColor) {
         switch (logLevel) {
-            case LogLevel::Info:
-                break;
-            case LogLevel::Warn:
-                fmt::print(os, yellow);
-                break;
-            case LogLevel::Error:
-                fmt::print(os, red);
-                break;
-            default:
-                break;
+            case LogLevel::Info:  break;
+            case LogLevel::Warn:  fmt::print(os, yellow); break;
+            case LogLevel::Error: fmt::print(os, red); break;
+            default:              break;
         }
     }
 
@@ -157,16 +148,10 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
 #else
     if (useColor) {
         switch (logLevel) {
-            case LogLevel::Info:
-                break;
-            case LogLevel::Warn:
-                fmt::print(os, reset);
-                break;
-            case LogLevel::Error:
-                fmt::print(os, reset);
-                break;
-            default:
-                break;
+            case LogLevel::Info:  break;
+            case LogLevel::Warn:  fmt::print(os, reset); break;
+            case LogLevel::Error: fmt::print(os, reset); break;
+            default:              break;
         }
     }
 #endif

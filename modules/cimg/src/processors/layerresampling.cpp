@@ -97,17 +97,12 @@ void LayerResampling::process() {
     inputDimensions_.set(sourceDimensions);
 
     switch (sizing_) {
-        case Sizing::SameAsInput:
-            outputDimensions_.set(sourceDimensions);
-            break;
-        case Sizing::Custom:
-            break;
+        case Sizing::SameAsInput: outputDimensions_.set(sourceDimensions); break;
+        case Sizing::Custom:      break;
         case Sizing::ScalingFactor:
             outputDimensions_.set(ivec2{vec2{sourceDimensions} * scaling_.get()});
             break;
-        default:
-            outputDimensions_.set(sourceDimensions);
-            break;
+        default: outputDimensions_.set(sourceDimensions); break;
     }
 
     if (outputDimensions_.get() != sourceDimensions) {

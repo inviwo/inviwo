@@ -351,7 +351,7 @@ public:
         }
     }
     ActivateFBO(const ActivateFBO&) = delete;
-    ActivateFBO(ActivateFBO&& rhs) noexcept : prevFbo_{rhs.prevFbo_} { rhs.prevFbo_ = 0; };
+    ActivateFBO(ActivateFBO&& rhs) noexcept : prevFbo_{rhs.prevFbo_} { rhs.prevFbo_ = 0; }
     ActivateFBO& operator=(const ActivateFBO&) = delete;
     ActivateFBO& operator=(ActivateFBO&& that) = delete;
 

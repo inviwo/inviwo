@@ -337,11 +337,8 @@ void Shader::rebuildShader(ShaderObject* obj) {
 void Shader::handleError(OpenGLException& e) {
     auto onError = ShaderManager::getPtr()->getOnShaderError();
     switch (onError) {
-        case Shader::OnError::Warn:
-            log::exception(e);
-            break;
-        case Shader::OnError::Throw:
-            throw;
+        case Shader::OnError::Warn:  log::exception(e); break;
+        case Shader::OnError::Throw: throw;
     }
 }
 

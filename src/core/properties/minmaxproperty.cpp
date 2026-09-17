@@ -38,4 +38,4 @@ template class IVW_CORE_TMPL_INST MinMaxProperty<size_t>;
 template class IVW_CORE_TMPL_INST MinMaxProperty<glm::i64>;
 template class IVW_CORE_TMPL_INST MinMaxProperty<double>;
 
-}
+}  // namespace inviwo

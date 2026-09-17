@@ -732,47 +732,20 @@ bool updateV12(TxElement* root) {
 bool BaseGLModule::Converter::convert(TxElement* root) {
     bool res = false;
     switch (version_) {
-        case 0:
-            res |= updateV0(root);
-            [[fallthrough]];
-        case 1:
-            res |= updateV1(root);
-            [[fallthrough]];
-        case 2:
-            res |= updateV2(root);
-            [[fallthrough]];
-        case 3:
-            res |= updateV3(root);
-            [[fallthrough]];
-        case 4:
-            res |= updateV4(root);
-            [[fallthrough]];
-        case 5:
-            res |= updateV5(root);
-            [[fallthrough]];
-        case 6:
-            res |= updateV6(root);
-            [[fallthrough]];
-        case 7:
-            res |= updateV7(root);
-            [[fallthrough]];
-        case 8:
-            res |= updateV8(root);
-            [[fallthrough]];
-        case 9:
-            res |= updateV9(root);
-            [[fallthrough]];
-        case 10:
-            res |= updateV10(root);
-            [[fallthrough]];
-        case 11:
-            res |= updateV11(root);
-            [[fallthrough]];
-        case 12:
-            res |= updateV12(root);
-            return res;
-        default:
-            return false;  // No changes
+        case 0:  res |= updateV0(root); [[fallthrough]];
+        case 1:  res |= updateV1(root); [[fallthrough]];
+        case 2:  res |= updateV2(root); [[fallthrough]];
+        case 3:  res |= updateV3(root); [[fallthrough]];
+        case 4:  res |= updateV4(root); [[fallthrough]];
+        case 5:  res |= updateV5(root); [[fallthrough]];
+        case 6:  res |= updateV6(root); [[fallthrough]];
+        case 7:  res |= updateV7(root); [[fallthrough]];
+        case 8:  res |= updateV8(root); [[fallthrough]];
+        case 9:  res |= updateV9(root); [[fallthrough]];
+        case 10: res |= updateV10(root); [[fallthrough]];
+        case 11: res |= updateV11(root); [[fallthrough]];
+        case 12: res |= updateV12(root); return res;
+        default: return false;  // No changes
     }
 }
 

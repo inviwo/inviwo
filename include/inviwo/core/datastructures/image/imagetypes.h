@@ -91,31 +91,22 @@ constexpr SwizzleMask depth = luminance;
 
 constexpr SwizzleMask defaultColor(size_t numComponents) noexcept {
     switch (numComponents) {
-        case 1:
-            return swizzlemasks::luminance;
-        case 2:
-            return swizzlemasks::luminanceAlpha;
-        case 3:
-            return swizzlemasks::rgb;
-        case 4:
-            return swizzlemasks::rgba;
-        default:
-            return swizzlemasks::rgba;
+        case 1:  return swizzlemasks::luminance;
+        case 2:  return swizzlemasks::luminanceAlpha;
+        case 3:  return swizzlemasks::rgb;
+        case 4:  return swizzlemasks::rgba;
+        default: return swizzlemasks::rgba;
     }
 }
 constexpr SwizzleMask defaultData(size_t numComponents) noexcept {
     switch (numComponents) {
-        case 1:
-            return swizzlemasks::luminance;
+        case 1: return swizzlemasks::luminance;
         case 2:
             return SwizzleMask{ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero,
                                ImageChannel::One};
-        case 3:
-            return swizzlemasks::rgb;
-        case 4:
-            return swizzlemasks::rgba;
-        default:
-            return swizzlemasks::rgba;
+        case 3:  return swizzlemasks::rgb;
+        case 4:  return swizzlemasks::rgba;
+        default: return swizzlemasks::rgba;
     }
 }
 }  // namespace swizzlemasks

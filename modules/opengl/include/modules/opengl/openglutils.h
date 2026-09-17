@@ -604,7 +604,7 @@ template <typename T>
 struct Enable {
     Enable(const T* item) : item_(item) { item->enable(); }
     Enable(const Enable&) = delete;
-    Enable(Enable&& rhs) : item_{rhs.item_} { rhs.item_ = nullptr; };
+    Enable(Enable&& rhs) : item_{rhs.item_} { rhs.item_ = nullptr; }
     Enable& operator=(const Enable&) = delete;
     Enable& operator=(Enable&& that) {
         if (this != &that) {
@@ -615,7 +615,7 @@ struct Enable {
             }
         }
         return *this;
-    };
+    }
     ~Enable() {
         if (item_) item_->disable();
     }
@@ -629,7 +629,7 @@ template <typename T>
 struct Activate {
     Activate(T* item) : item_(item) { item->activate(); }
     Activate(const Activate&) = delete;
-    Activate(Activate&& rhs) : item_{rhs.item_} { rhs.item_ = nullptr; };
+    Activate(Activate&& rhs) : item_{rhs.item_} { rhs.item_ = nullptr; }
     Activate& operator=(const Activate&) = delete;
     Activate& operator=(Activate&& that) {
         if (this != &that) {
@@ -640,7 +640,7 @@ struct Activate {
             }
         }
         return *this;
-    };
+    }
     ~Activate() {
         if (item_) item_->deactivate();
     }

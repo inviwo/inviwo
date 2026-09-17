@@ -128,12 +128,9 @@ bool CompositeProperty::isDefaultState() const {
 
 bool CompositeProperty::needsSerialization() const {
     switch (serializationMode_) {
-        case PropertySerializationMode::All:
-            return true;
-        case PropertySerializationMode::None:
-            return false;
-        case PropertySerializationMode::Default:
-            [[fallthrough]];
+        case PropertySerializationMode::All:     return true;
+        case PropertySerializationMode::None:    return false;
+        case PropertySerializationMode::Default: [[fallthrough]];
         default:
             return !getMetaDataMap()->empty() || !collapsed_.isDefault() ||
                    std::any_of(properties_.begin(), properties_.end(),
@@ -228,9 +225,7 @@ CompositeProperty& CompositeProperty::setCollapsed(CollapseAction action, Collap
             }
             break;
         case CollapseTarget::Current:
-        default:
-            setCollapsed(action == CollapseAction::Collapse);
-            break;
+        default:                      setCollapsed(action == CollapseAction::Collapse); break;
     }
     return *this;
 }

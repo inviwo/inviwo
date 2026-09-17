@@ -55,7 +55,7 @@ public:
     CompositeSinkBase& operator=(CompositeSinkBase&&) = delete;
     virtual ~CompositeSinkBase() = default;
 
-    static constexpr std::string_view identifierSuffix() { return ".metasink"; };
+    static constexpr std::string_view identifierSuffix() { return ".metasink"; }
 
     /**
      * Outport to be used by the CompositeProcessor to get data from its sub network.

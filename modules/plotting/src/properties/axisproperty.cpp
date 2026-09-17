@@ -313,7 +313,7 @@ void AxisProperty::invokeEvent(Event* event) {
         const bool ctrlShiftPlusPressed =
             keyEvent->key() == IvwKey::Plus &&
             keyEvent->modifiers() == (KeyModifier::Control | KeyModifier::Shift);
-        
+
         const bool ctrlMinusPressed =
             (keyEvent->key() == IvwKey::Minus || keyEvent->key() == IvwKey::KPSubtract) &&
             keyEvent->modifiers() == KeyModifier::Control;

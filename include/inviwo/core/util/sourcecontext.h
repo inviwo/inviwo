@@ -83,11 +83,11 @@ public:
     explicit constexpr SourceContext(const char*) = delete;
     explicit constexpr SourceContext(std::string_view) = delete;
 
-    std::string_view source() const { return source_; };
-    std::string_view file() const { return file_; };
-    std::string_view function() const { return function_; };
-    std::uint32_t line() const { return line_; };
-    std::uint32_t column() const { return column_; };
+    std::string_view source() const { return source_; }
+    std::string_view file() const { return file_; }
+    std::string_view function() const { return function_; }
+    std::uint32_t line() const { return line_; }
+    std::uint32_t column() const { return column_; }
 
 private:
     static constexpr std::string_view extractName(std::string_view name) noexcept {

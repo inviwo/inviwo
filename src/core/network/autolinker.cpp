@@ -123,9 +123,7 @@ void AutoLinker::addLinksToClosestCandidates(ProcessorNetwork& network, bool bid
     }
 }
 
-void AutoLinker::clear() {
-    autoLinkCandidates_.clear();
-}
+void AutoLinker::clear() { autoLinkCandidates_.clear(); }
 
 const std::unordered_map<Property*, std::vector<Property*>>& AutoLinker::getAutoLinkCandidates()
     const {

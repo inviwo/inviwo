@@ -194,9 +194,9 @@ inline void gen_tornado(const size3_t& size, double time, std::span<vec3> tornad
         const double r2 = 0.2 + 0.1 * z;
 
         for (size_t iy = 0; iy < size.y; iy++) {
-            const double y = static_cast<double>(iy) * delta.y; // map y to 0->1
+            const double y = static_cast<double>(iy) * delta.y;  // map y to 0->1
             for (size_t ix = 0; ix < size.x; ix++) {
-                const double x = static_cast<double>(ix) * delta.x; // map x to 0->1
+                const double x = static_cast<double>(ix) * delta.x;  // map x to 0->1
 
                 double rdist = sqrt((y - yc) * (y - yc) + (x - xc) * (x - xc));
                 double scale = fabs(r - rdist);
