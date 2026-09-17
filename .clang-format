@@ -1,17 +1,24 @@
 #Inviwo clang-format configuration
 
 BasedOnStyle: Google
-Standard: Cpp11
+Standard: c++20
+
 IndentWidth: 4
 ColumnLimit: 100
 AccessModifierOffset: -4
 SortIncludes: false
 SortUsingDeclarations: false
 BreakConstructorInitializers : BeforeComma
-BreakConstructorInitializersBeforeComma: true
 KeepEmptyLinesAtTheStartOfBlocks: true
-# AllowShortCaseLabelsOnASingleLine: true
 DerivePointerAlignment: false
 PointerAlignment: Left
 QualifierAlignment: Left
 ShortNamespaceLines: 0
+
+InsertNewlineAtEOF: true
+RemoveSemicolon: true
+
+AllowShortCaseLabelsOnASingleLine: true
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: true
