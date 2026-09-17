@@ -63,7 +63,7 @@ using Seconds = std::chrono::duration<double>;
  * @brief Abstract interface for lazily loading the individual time steps (frames) of a
  * TemporalVolume.
  *
- * A VolumeLoader decouples the storage format from the time axis and cache management of
+ * A TemporalVolumeLoader decouples the storage format from the time axis and cache management of
  * TemporalVolume. Implementations are responsible only for loading a single frame by index and
  * for providing the time axis and a metadata-only @c prototype VolumeConfig.
  *
@@ -72,14 +72,14 @@ using Seconds = std::chrono::duration<double>;
  *
  * @see TemporalVolume
  */
-class IVW_CORE_API VolumeLoader {
+class IVW_CORE_API TemporalVolumeLoader {
 public:
-    VolumeLoader() = default;
-    VolumeLoader(const VolumeLoader&) = default;
-    VolumeLoader(VolumeLoader&&) = default;
-    VolumeLoader& operator=(const VolumeLoader&) = default;
-    VolumeLoader& operator=(VolumeLoader&&) = default;
-    virtual ~VolumeLoader() = default;
+    TemporalVolumeLoader() = default;
+    TemporalVolumeLoader(const TemporalVolumeLoader&) = default;
+    TemporalVolumeLoader(TemporalVolumeLoader&&) = default;
+    TemporalVolumeLoader& operator=(const TemporalVolumeLoader&) = default;
+    TemporalVolumeLoader& operator=(TemporalVolumeLoader&&) = default;
+    virtual ~TemporalVolumeLoader() = default;
 
     /**
      * Load the volume at the given @p index. May be called from a background thread, hence
@@ -113,7 +113,7 @@ public:
  *
  * Useful for procedural data, simulations, or testing.
  */
-class IVW_CORE_API ProceduralLoader : public VolumeLoader {
+class IVW_CORE_API ProceduralLoader : public TemporalVolumeLoader {
 public:
     /// Signature of the generator callable, given a frame @c index, its @c time value, and an
     /// optional @c reuse volume whose storage may be reused (may be null, see VolumeLoader::load).
@@ -166,7 +166,7 @@ public:
      * @param loader     the loader providing frames, times, and prototype, must not be null
      * @param cacheSize  maximum number of decoded frames to keep in memory (clamped to >= 2)
      */
-    explicit TemporalVolume(std::unique_ptr<VolumeLoader> loader, size_t cacheSize = 8);
+    explicit TemporalVolume(std::unique_ptr<TemporalVolumeLoader> loader, size_t cacheSize = 8);
     TemporalVolume(const TemporalVolume&) = delete;
     TemporalVolume(TemporalVolume&&) = delete;
     TemporalVolume& operator=(const TemporalVolume&) = delete;
@@ -256,13 +256,13 @@ private:
     /// held).
     std::shared_ptr<Volume> takeReuse() const;
 
-    std::unique_ptr<VolumeLoader> loader_;
+    std::unique_ptr<TemporalVolumeLoader> loader_;
     VolumeConfig prototype_;
     DataMapper dataMap_;
     size_t cacheSize_;
 
     mutable std::mutex mutex_;
-    mutable std::list<size_t> lruOrder_;  //!< front == most recently used
+    mutable std::vector<size_t> lruOrder_;  //!< back == most recently used
     mutable std::unordered_map<size_t, Item> cache_;
 };
 

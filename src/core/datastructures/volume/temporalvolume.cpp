@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stdfuture.h>
 
 #include <algorithm>
 
@@ -60,7 +61,7 @@ Seconds ProceduralLoader::time(size_t index) const { return times_[index]; }
 
 VolumeConfig ProceduralLoader::prototype() const { return prototype_; }
 
-TemporalVolume::TemporalVolume(std::unique_ptr<VolumeLoader> loader, size_t cacheSize)
+TemporalVolume::TemporalVolume(std::unique_ptr<TemporalVolumeLoader> loader, size_t cacheSize)
     : loader_{std::move(loader)}
     , prototype_{loader_ ? loader_->prototype() : VolumeConfig{}}
     , dataMap_{prototype_.dataMap()}
@@ -247,20 +248,20 @@ std::shared_ptr<const Volume> TemporalVolume::insert(size_t index,
     }
 
     cache_.emplace(index, volume);
-    lruOrder_.push_front(index);
+    lruOrder_.push_back(index);
     evict();
     return volume;
 }
 
 void TemporalVolume::touch(size_t index) const {
-    lruOrder_.remove(index);
-    lruOrder_.push_front(index);
+    std::erase(lruOrder_, index);
+    lruOrder_.push_back(index);
 }
 
 void TemporalVolume::evict() const {
     while (cache_.size() > cacheSize_ && !lruOrder_.empty()) {
-        const size_t lru = lruOrder_.back();
-        lruOrder_.pop_back();
+        const size_t lru = lruOrder_.front();
+        lruOrder_.erase(lruOrder_.begin());
         if (auto it = cache_.find(lru); it != cache_.end()) {
             cache_.erase(it);
         }
@@ -268,18 +269,33 @@ void TemporalVolume::evict() const {
 }
 
 std::shared_ptr<Volume> TemporalVolume::takeReuse() const {
-    std::shared_ptr<Volume> reuse = nullptr;
-    if (cache_.size() > 2 && !lruOrder_.empty()) {
-        const auto lru = lruOrder_.back();
-        if (auto rit = cache_.find(lru); rit != cache_.end()) {
-            if (rit->second.ready() && rit->second.volume().use_count() == 1) {
-                reuse = rit->second.volume();
-                lruOrder_.pop_back();
-                cache_.erase(rit);
+    if (cache_.size() >= cacheSize_) {
+        for (auto index : lruOrder_) {
+            if (auto rit = cache_.find(index); rit != cache_.end()) {
+                if (auto reuse = rit->second.visit(
+                        [](std::shared_ptr<Volume>& volume) -> std::shared_ptr<Volume> {
+                            if (volume.use_count() == 1) {
+                                return volume;
+                            } else {
+                                return nullptr;
+                            }
+                        },
+                        [](std::future<std::shared_ptr<Volume>>& future)
+                            -> std::shared_ptr<Volume> {
+                            if (util::is_future_ready(future)) {
+                                return future.get();
+                            } else {
+                                return nullptr;
+                            }
+                        })) {
+                    std::erase(lruOrder_, index);
+                    cache_.erase(rit);
+                    return reuse;
+                }
             }
         }
     }
-    return reuse;
+    return nullptr;
 }
 
 Document DataTraits<TemporalVolume>::info(const TemporalVolume& data) {

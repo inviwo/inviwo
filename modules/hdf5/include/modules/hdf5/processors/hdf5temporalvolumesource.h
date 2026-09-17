@@ -81,10 +81,21 @@ private:
 
     OptionPropertyString volumeSelection_;
 
+    CompositeProperty config_;
+
     CompositeProperty basisGroup_;
     OptionPropertyString basisSelection_;
     DoubleMat4Property basis_;
     DoubleVec3Property spacing_;
+
+    DoubleMinMaxProperty dataRange_;
+    DoubleMinMaxProperty valueRange_;
+    StringProperty valueName_;
+    StringProperty valueUnit_;
+    OptionProperty<InterpolationType> interpolation_;
+    StringsProperty<3> axesNames_;
+    StringsProperty<3> axesUnits_;
+    std::array<OptionProperty<Wrapping>, 3> wrapping_;
 
     CompositeProperty outputGroup_;
     OptionPropertyInt datatype_;
