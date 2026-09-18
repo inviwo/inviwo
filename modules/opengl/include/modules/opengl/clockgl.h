@@ -167,7 +167,7 @@ protected:
 template <typename Callback>
 using ScopedClockGL = ScopedClock<ClockGL, Callback>;
 
-// NOLINTBEGIN(cppcoreguidelines-macro-usage)
+// NOLINTBEGIN(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
 
 /**
  * \def IVW_OPENGL_PROFILING(message)
@@ -207,6 +207,6 @@ using ScopedClockGL = ScopedClock<ClockGL, Callback>;
 #define IVW_OPENGL_PROFILING_IF(time, message)
 #endif
 
-// NOLINTEND(cppcoreguidelines-macro-usage)
+// NOLINTEND(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
 
 }  // namespace inviwo

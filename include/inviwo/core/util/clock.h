@@ -202,7 +202,7 @@ void ScopedClock<Clock, Callback>::printAndReset() {
 template <typename Callback>
 using ScopedClockCPU = ScopedClock<Clock, Callback>;
 
-// NOLINTBEGIN(cppcoreguidelines-macro-usage)
+// NOLINTBEGIN(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
 
 #define IVW_ADDLINE_PART1(x, y) x##y
 #define IVW_ADDLINE_PART2(x, y) IVW_ADDLINE_PART1(x, y)
@@ -246,6 +246,6 @@ using ScopedClockCPU = ScopedClock<Clock, Callback>;
 #define IVW_CPU_PROFILING_IF(time, message)
 #endif
 
-// NOLINTEND(cppcoreguidelines-macro-usage)
+// NOLINTEND(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
 
 }  // namespace inviwo
