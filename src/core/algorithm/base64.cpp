@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <stdexcept>
+#include <array>
 
 namespace inviwo {
 
@@ -74,7 +75,7 @@ namespace {
 // Depending on the url parameter in base64_chars, one of
 // two sets of base64 characters needs to be chosen.
 // They differ in their last two characters.
-constexpr const char* base64_chars[2] = {
+constexpr std::array<const char*, 2> base64_chars = {
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789"
