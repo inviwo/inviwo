@@ -266,16 +266,11 @@ dvec3 Trackball::getLookRight() const {
 /* @brief Returns the World Up Vector according to `worldUp_` property. */
 dvec3 Trackball::getWorldUp() const {
     switch (worldUp_) {
-        case 0:
-            return {1, 0, 0};
-        case 1:
-            return {0, 1, 0};
-        case 2:
-            return {0, 0, 1};
-        case 3:
-            return glm::normalize(dvec3(customWorldUp_.get()));
-        default:
-            return {0, 1, 0};
+        case 0:  return {1, 0, 0};
+        case 1:  return {0, 1, 0};
+        case 2:  return {0, 0, 1};
+        case 3:  return glm::normalize(dvec3(customWorldUp_.get()));
+        default: return {0, 1, 0};
     }
 }
 
@@ -345,8 +340,7 @@ void Trackball::rotate(MouseEvent* event) {
         case 3:  // Object follows Cursor (Formerly Follow Object During Rotation)
             rotateArc(event, true);
             break;
-        default:
-            rotateTAV(event);
+        default: rotateTAV(event);
     }
 }
 
@@ -618,21 +612,13 @@ void Trackball::stepRotate(Direction dir) {
     dvec2 direction = origin;
 
     switch (dir) {
-        case Direction::Up:
-            direction.y -= stepSize;
-            break;
+        case Direction::Up:    direction.y -= stepSize; break;
 
-        case Direction::Down:
-            direction.y += stepSize;
-            break;
+        case Direction::Down:  direction.y += stepSize; break;
 
-        case Direction::Left:
-            direction.x -= stepSize;
-            break;
+        case Direction::Left:  direction.x -= stepSize; break;
 
-        case Direction::Right:
-            direction.x += stepSize;
-            break;
+        case Direction::Right: direction.x += stepSize; break;
     }
     if (!allowHorizontalRotation_) direction.y = origin.y;
     if (!allowVerticalRotation_) direction.x = origin.x;
@@ -657,21 +643,13 @@ void Trackball::stepPan(Direction dir) {
     dvec2 destination = origin;
 
     switch (dir) {
-        case Direction::Up:
-            destination.y += stepSize;
-            break;
+        case Direction::Up:    destination.y += stepSize; break;
 
-        case Direction::Down:
-            destination.y -= stepSize;
-            break;
+        case Direction::Down:  destination.y -= stepSize; break;
 
-        case Direction::Left:
-            destination.x -= stepSize;
-            break;
+        case Direction::Left:  destination.x -= stepSize; break;
 
-        case Direction::Right:
-            destination.x += stepSize;
-            break;
+        case Direction::Right: destination.x += stepSize; break;
     }
     if (!allowHorizontalPanning_) destination.x = origin.x;
     if (!allowVerticalPanning_) destination.y = origin.y;

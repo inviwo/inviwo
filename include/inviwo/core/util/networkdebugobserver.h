@@ -117,37 +117,37 @@ struct IVW_CORE_API NetworkDebugObserver : ProcessorNetworkObserver,
     // Evaluator
     virtual void onProcessorNetworkEvaluationBegin() override {
         log::warn("ProcessorNetworkEvaluationBegin");
-    };
+    }
     virtual void onProcessorNetworkEvaluationEnd() override {
         log::warn("ProcessorNetworkEvaluationEnd");
-    };
+    }
 
     // Processor
-    virtual void onAboutPropertyChange(Property* p) override { log(p ? p->getPath() : "null"); };
-    virtual void onProcessorInvalidationBegin(Processor* p) override { log(p->getIdentifier()); };
-    virtual void onProcessorInvalidationEnd(Processor* p) override { log(p->getIdentifier()); };
+    virtual void onAboutPropertyChange(Property* p) override { log(p ? p->getPath() : "null"); }
+    virtual void onProcessorInvalidationBegin(Processor* p) override { log(p->getIdentifier()); }
+    virtual void onProcessorInvalidationEnd(Processor* p) override { log(p->getIdentifier()); }
     virtual void onProcessorPortAdded(Processor* p, [[maybe_unused]] Port* port) override {
         log(p->getIdentifier());
-    };
+    }
     virtual void onProcessorPortRemoved(Processor* p, [[maybe_unused]] Port* port) override {
         log(p->getIdentifier());
-    };
-    virtual void onProcessorAboutToProcess(Processor* p) override { log(p->getIdentifier()); };
-    virtual void onProcessorFinishedProcess(Processor* p) override { log(p->getIdentifier()); };
-    virtual void onProcessorSourceChanged(Processor* p) override { log(p->getIdentifier()); };
-    virtual void onProcessorSinkChanged(Processor* p) override { log(p->getIdentifier()); };
-    virtual void onProcessorReadyChanged(Processor* p) override { log(p->getIdentifier()); };
+    }
+    virtual void onProcessorAboutToProcess(Processor* p) override { log(p->getIdentifier()); }
+    virtual void onProcessorFinishedProcess(Processor* p) override { log(p->getIdentifier()); }
+    virtual void onProcessorSourceChanged(Processor* p) override { log(p->getIdentifier()); }
+    virtual void onProcessorSinkChanged(Processor* p) override { log(p->getIdentifier()); }
+    virtual void onProcessorReadyChanged(Processor* p) override { log(p->getIdentifier()); }
     virtual void onProcessorActiveConnectionsChanged(Processor* p) override {
         log(p->getIdentifier());
-    };
+    }
     virtual void onProcessorStartBackgroundWork(Processor* p,
                                                 [[maybe_unused]] size_t jobs) override {
         log(p->getIdentifier());
-    };
+    }
     virtual void onProcessorFinishBackgroundWork(Processor* p,
                                                  [[maybe_unused]] size_t jobs) override {
         log(p->getIdentifier());
-    };
+    }
 };
 
 }  // namespace inviwo

@@ -56,8 +56,8 @@ public:
 
 private:
     LayerCLResizer();
-    LayerCLResizer(LayerCLResizer const&){};
-    void operator=(LayerCLResizer const&){};
+    LayerCLResizer(const LayerCLResizer&) {}
+    void operator=(const LayerCLResizer&) {}
     /**
      * Kernel that takes two layers as input. First layer acts as source and second as destination.
      *

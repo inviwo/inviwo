@@ -40,13 +40,11 @@ namespace inviwo {
 
 bool match(ModifierMatchingBehavior behavior, KeyModifiers a, KeyModifiers b) {
     switch (behavior) {
-        case ModifierMatchingBehavior::ExactMatch:
-            return a == b;
+        case ModifierMatchingBehavior::ExactMatch: return a == b;
         case ModifierMatchingBehavior::PartialMatch:
             return a == KeyModifiers(flags::none) ||
                    std::ranges::any_of(b, [&a](auto modifier) { return a.contains(modifier); });
-        case ModifierMatchingBehavior::Always:
-            return true;
+        case ModifierMatchingBehavior::Always: return true;
     }
     return false;
 }

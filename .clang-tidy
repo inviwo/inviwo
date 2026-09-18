@@ -5,6 +5,7 @@ Checks: >
     -bugprone-exception-escape,
     -bugprone-use-after-move,
     -bugprone-throwing-static-initialization,
+    -bugprone-branch-clone,
   clang-diagnostic-*,
   clang-analyzer-*,
   cppcoreguidelines-*,

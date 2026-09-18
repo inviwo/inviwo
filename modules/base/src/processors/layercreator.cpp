@@ -105,8 +105,7 @@ void LayerCreator::process() {
                     case Uniform:
                         return std::shared_ptr<Layer>(
                             util::makeUniformLayer<T>(dimensions_.get(), value_.get()));
-                    default:
-                        return std::shared_ptr<Layer>{};
+                    default: return std::shared_ptr<Layer>{};
                 }
             });
 

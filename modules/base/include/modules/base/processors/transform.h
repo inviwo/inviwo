@@ -192,12 +192,8 @@ void Transform<T>::process() {
         case Mode::TransformWorldModel:
             data->setWorldMatrix(transforms_.getMatrix() * data->getWorldMatrix());
             break;
-        case Mode::WorldTransform:
-            data->setModelMatrix(transforms_.getMatrix());
-            break;
-        case Mode::TransformModel:
-            data->setWorldMatrix(transforms_.getMatrix());
-            break;
+        case Mode::WorldTransform: data->setModelMatrix(transforms_.getMatrix()); break;
+        case Mode::TransformModel: data->setWorldMatrix(transforms_.getMatrix()); break;
     }
 
     outport_.setData(data);

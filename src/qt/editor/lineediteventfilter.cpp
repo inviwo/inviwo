@@ -64,13 +64,11 @@ bool LineEditEventFilter::eventFilter(QObject* obj, QEvent* e) {
                         w->clear();
                     }
                     break;
-                default:
-                    break;
+                default: break;
             }
             break;
         }
-        default:
-            break;
+        default: break;
     }
     return QObject::eventFilter(obj, e);
 }

@@ -80,12 +80,9 @@ Qt::ItemFlags ProcessorListModel::flags(const QModelIndex& index) const {
     switch (node->type) {
         case Node::Type::Item:
             return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemNeverHasChildren;
-        case Node::Type::Root:
-            [[fallthrough]];
-        case Node::Type::Group:
-            [[fallthrough]];
-        default:
-            return Qt::NoItemFlags;
+        case Node::Type::Root:  [[fallthrough]];
+        case Node::Type::Group: [[fallthrough]];
+        default:                return Qt::NoItemFlags;
     }
     return Qt::NoItemFlags;
 }
@@ -99,31 +96,21 @@ QVariant ProcessorListModel::data(const QModelIndex& index, int role) const {
         }
         case Node::Type::Group:
             switch (role) {
-                case Qt::DisplayRole:
-                    return node->name;
-                case Qt::ToolTipRole:
-                    return {};
-                case static_cast<int>(Role::Type):
-                    return static_cast<int>(Node::Type::Group);
-                case static_cast<int>(Role::Sort):
-                    return node->sort;
-                default:
-                    return {};
+                case Qt::DisplayRole:              return node->name;
+                case Qt::ToolTipRole:              return {};
+                case static_cast<int>(Role::Type): return static_cast<int>(Node::Type::Group);
+                case static_cast<int>(Role::Sort): return node->sort;
+                default:                           return {};
             }
         case Node::Type::Item:
             switch (role) {
-                case Qt::DisplayRole:
-                    return node->name;
-                case Qt::ToolTipRole:
-                    return utilqt::toQString(tooltip(*node->item).str());
-                case static_cast<int>(Role::Type):
-                    return static_cast<int>(Node::Type::Item);
+                case Qt::DisplayRole:              return node->name;
+                case Qt::ToolTipRole:              return utilqt::toQString(tooltip(*node->item).str());
+                case static_cast<int>(Role::Type): return static_cast<int>(Node::Type::Item);
                 case static_cast<int>(Role::ClassIdentifier):
                     return utilqt::toQString(node->item->info.classIdentifier);
-                case static_cast<int>(Role::Item):
-                    return QVariant::fromValue(node->item);
-                default:
-                    return {};
+                case static_cast<int>(Role::Item): return QVariant::fromValue(node->item);
+                default:                           return {};
             }
     }
     return {};
@@ -184,15 +171,11 @@ void ProcessorListModel::categoryAndSort(Grouping grouping, Item& item,
         case Alphabetical:
             add(item.info.displayName.substr(0, 1), item.info.displayName.front());
             return;
-        case Categorical:
-            add(item.info.category, utilqt::toQString(item.info.category));
-            return;
+        case Categorical: add(item.info.category, utilqt::toQString(item.info.category)); return;
         case CodeState:
             add(fmt::to_string(item.info.codeState), static_cast<int>(item.info.codeState));
             return;
-        case Module:
-            add(item.moduleId, utilqt::toQString(item.moduleId));
-            return;
+        case Module:   add(item.moduleId, utilqt::toQString(item.moduleId)); return;
         case LastUsed: {
             if (item.lastUsed == 0) {
                 add("Never", std::numeric_limits<int>::max());
@@ -256,9 +239,7 @@ void ProcessorListModel::categoryAndSort(Grouping grouping, Item& item,
             }
             return;
         }
-        default:
-            add("Unknown", QVariant());
-            return;
+        default: add("Unknown", QVariant()); return;
     }
 }
 

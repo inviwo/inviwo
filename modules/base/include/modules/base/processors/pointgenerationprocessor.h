@@ -42,7 +42,6 @@
 #include <inviwo/core/util/staticstring.h>
 #include <modules/base/algorithm/pointgeneration.h>
 
-
 #include <string>
 #include <vector>
 

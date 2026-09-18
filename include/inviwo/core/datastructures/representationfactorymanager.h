@@ -97,7 +97,7 @@ public:
      */
     RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory() {
         return localRepresentationConverterMetaFactory_.get();
-    };
+    }
 
     /**
      * Register a representation factory object for creating representations with the respective

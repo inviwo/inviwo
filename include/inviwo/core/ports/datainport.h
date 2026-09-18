@@ -218,7 +218,7 @@ void DataInport<T, N, Flat>::disconnectFrom(Outport* outport) {
         outports_.erase(it);
         doDisconnectFrom(outport);
     }
-};
+}
 
 template <typename T, size_t N, bool Flat>
 bool DataInport<T, N, Flat>::isConnected() const {

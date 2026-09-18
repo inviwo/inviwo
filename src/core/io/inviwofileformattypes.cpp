@@ -34,10 +34,8 @@ namespace inviwo {
 
 std::string_view enumToStr(ByteOrder byteOrder) {
     switch (byteOrder) {
-        case ByteOrder::LittleEndian:
-            return "LittleEndian";
-        case ByteOrder::BigEndian:
-            return "BigEndian";
+        case ByteOrder::LittleEndian: return "LittleEndian";
+        case ByteOrder::BigEndian:    return "BigEndian";
     }
     throw Exception{SourceContext{}, "Found invalid ByteOrder enum value '{}'",
                     static_cast<int>(byteOrder)};
@@ -45,10 +43,8 @@ std::string_view enumToStr(ByteOrder byteOrder) {
 
 std::string_view enumToStr(Compression compression) {
     switch (compression) {
-        case Compression::Disabled:
-            return "Disabled";
-        case Compression::Enabled:
-            return "Enabled";
+        case Compression::Disabled: return "Disabled";
+        case Compression::Enabled:  return "Enabled";
     }
     throw Exception{SourceContext{}, "Found invalid Compression enum value '{}'",
                     static_cast<int>(compression)};

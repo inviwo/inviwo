@@ -105,7 +105,7 @@ public:
 
     operator const std::vector<std::filesystem::path>&() const { return files_; }
     const std::vector<std::filesystem::path>& get() const { return files_; }
-    const std::vector<std::filesystem::path>& operator*() const { return files_; };
+    const std::vector<std::filesystem::path>& operator*() const { return files_; }
     const std::vector<std::filesystem::path>* operator->() const { return &files_.value; }
 
     /**

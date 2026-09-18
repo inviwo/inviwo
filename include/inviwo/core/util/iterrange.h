@@ -41,7 +41,8 @@ struct iter_range : std::pair<Iter, Iter> {
     using const_iterator = Iter;
     using iterator = Iter;
     using std::pair<Iter, Iter>::pair;
-    constexpr explicit iter_range(const std::pair<Iter, Iter>& x) noexcept : std::pair<Iter, Iter>(x) {}
+    constexpr explicit iter_range(const std::pair<Iter, Iter>& x) noexcept
+        : std::pair<Iter, Iter>(x) {}
     constexpr Iter begin() const noexcept { return this->first; }
     constexpr Iter end() const noexcept { return this->second; }
 };

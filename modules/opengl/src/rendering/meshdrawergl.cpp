@@ -116,83 +116,58 @@ MeshDrawerGL::DrawMode MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType c
     switch (dt) {
         case DrawType::Triangles:
             switch (ct) {
-                case ConnectivityType::None:
-                    return DrawMode::Triangles;
+                case ConnectivityType::None:           return DrawMode::Triangles;
 
-                case ConnectivityType::Strip:
-                    return DrawMode::TriangleStrip;
+                case ConnectivityType::Strip:          return DrawMode::TriangleStrip;
 
-                case ConnectivityType::Fan:
-                    return DrawMode::TriangleFan;
+                case ConnectivityType::Fan:            return DrawMode::TriangleFan;
 
-                case ConnectivityType::Adjacency:
-                    return DrawMode::TrianglesAdjacency;
+                case ConnectivityType::Adjacency:      return DrawMode::TrianglesAdjacency;
 
-                case ConnectivityType::StripAdjacency:
-                    return DrawMode::TriangleStripAdjacency;
+                case ConnectivityType::StripAdjacency: return DrawMode::TriangleStripAdjacency;
 
                 case ConnectivityType::Loop:
-                default:
-                    return DrawMode::Points;
+                default:                               return DrawMode::Points;
             }
 
         case DrawType::Lines:
             switch (ct) {
-                case ConnectivityType::None:
-                    return DrawMode::Lines;
+                case ConnectivityType::None:           return DrawMode::Lines;
 
-                case ConnectivityType::Strip:
-                    return DrawMode::LineStrip;
+                case ConnectivityType::Strip:          return DrawMode::LineStrip;
 
-                case ConnectivityType::Loop:
-                    return DrawMode::LineLoop;
+                case ConnectivityType::Loop:           return DrawMode::LineLoop;
 
-                case ConnectivityType::Adjacency:
-                    return DrawMode::LinesAdjacency;
+                case ConnectivityType::Adjacency:      return DrawMode::LinesAdjacency;
 
-                case ConnectivityType::StripAdjacency:
-                    return DrawMode::LineStripAdjacency;
+                case ConnectivityType::StripAdjacency: return DrawMode::LineStripAdjacency;
 
                 case ConnectivityType::Fan:
-                default:
-                    return DrawMode::Points;
+                default:                               return DrawMode::Points;
             }
 
         case DrawType::Points:
         case DrawType::NotSpecified:
-        default:
-            return DrawMode::Points;
+        default:                     return DrawMode::Points;
     }
 }
 
 GLenum MeshDrawerGL::getGLDrawMode(DrawMode dm) {
     switch (dm) {
-        case DrawMode::Points:
-            return GL_POINTS;
-        case DrawMode::Lines:
-            return GL_LINES;
-        case DrawMode::LineStrip:
-            return GL_LINE_STRIP;
-        case DrawMode::LineLoop:
-            return GL_LINE_LOOP;
-        case DrawMode::LinesAdjacency:
-            return GL_LINES_ADJACENCY;
-        case DrawMode::LineStripAdjacency:
-            return GL_LINE_STRIP_ADJACENCY;
-        case DrawMode::Triangles:
-            return GL_TRIANGLES;
-        case DrawMode::TriangleStrip:
-            return GL_TRIANGLE_STRIP;
-        case DrawMode::TriangleFan:
-            return GL_TRIANGLE_FAN;
-        case DrawMode::TrianglesAdjacency:
-            return GL_TRIANGLES_ADJACENCY;
-        case DrawMode::TriangleStripAdjacency:
-            return GL_TRIANGLE_STRIP_ADJACENCY;
+        case DrawMode::Points:                 return GL_POINTS;
+        case DrawMode::Lines:                  return GL_LINES;
+        case DrawMode::LineStrip:              return GL_LINE_STRIP;
+        case DrawMode::LineLoop:               return GL_LINE_LOOP;
+        case DrawMode::LinesAdjacency:         return GL_LINES_ADJACENCY;
+        case DrawMode::LineStripAdjacency:     return GL_LINE_STRIP_ADJACENCY;
+        case DrawMode::Triangles:              return GL_TRIANGLES;
+        case DrawMode::TriangleStrip:          return GL_TRIANGLE_STRIP;
+        case DrawMode::TriangleFan:            return GL_TRIANGLE_FAN;
+        case DrawMode::TrianglesAdjacency:     return GL_TRIANGLES_ADJACENCY;
+        case DrawMode::TriangleStripAdjacency: return GL_TRIANGLE_STRIP_ADJACENCY;
         case DrawMode::NumberOfDrawModes:
         case DrawMode::NotSpecified:
-        default:
-            return GL_POINTS;
+        default:                               return GL_POINTS;
     }
 }
 

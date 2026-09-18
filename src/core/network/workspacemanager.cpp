@@ -50,7 +50,7 @@ namespace inviwo {
 
 class NetworkModified final : public ProcessorNetworkObserver {
 public:
-    NetworkModified(WorkspaceManager* manager) : manager_{manager} {};
+    explicit NetworkModified(WorkspaceManager* manager) : manager_{manager} {}
 
 protected:
     // Overrides for ProcessorNetworkObserver
@@ -84,11 +84,9 @@ public:
 
         switch (from_) {
             case 0:
-            case 1:
-                return bundleProcessorNetwork(root);
+            case 1:  return bundleProcessorNetwork(root);
 
-            default:
-                return false;  // No changes
+            default: return false;  // No changes
         }
     }
 

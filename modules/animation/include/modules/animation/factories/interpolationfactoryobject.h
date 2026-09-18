@@ -90,7 +90,7 @@ public:
         : InterpolationFactoryObjectKeyframe<key_type>(InterpTyped::classIdentifier()) {}
 
     explicit InterpolationFactoryObjectTemplate(std::string_view classIdentifier)
-        : InterpolationFactoryObjectKeyframe<key_type>(classIdentifier){};
+        : InterpolationFactoryObjectKeyframe<key_type>(classIdentifier) {}
 
     virtual ~InterpolationFactoryObjectTemplate() = default;
 

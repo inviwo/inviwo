@@ -46,16 +46,11 @@ namespace inviwo {
 namespace {
 constexpr bool shouldBreak(LogLevel level, MessageBreakLevel breakLevel) {
     switch (breakLevel) {
-        case MessageBreakLevel::Off:
-            return false;
-        case MessageBreakLevel::Error:
-            return level >= LogLevel::Error;
-        case MessageBreakLevel::Warn:
-            return level >= LogLevel::Warn;
-        case MessageBreakLevel::Info:
-            return level >= LogLevel::Info;
-        default:
-            return false;
+        case MessageBreakLevel::Off:   return false;
+        case MessageBreakLevel::Error: return level >= LogLevel::Error;
+        case MessageBreakLevel::Warn:  return level >= LogLevel::Warn;
+        case MessageBreakLevel::Info:  return level >= LogLevel::Info;
+        default:                       return false;
     }
 }
 }  // namespace
@@ -171,12 +166,9 @@ void util::log(Logger* logger, SourceContext context, std::string_view message, 
 
 std::string_view enumToStr(LogLevel ll) {
     switch (ll) {
-        case LogLevel::Info:
-            return "Info";
-        case LogLevel::Warn:
-            return "Warn";
-        case LogLevel::Error:
-            return "Error";
+        case LogLevel::Info:  return "Info";
+        case LogLevel::Warn:  return "Warn";
+        case LogLevel::Error: return "Error";
     }
     throw Exception(SourceContext{}, "Found invalid LogLevel enum value '{}'",
                     static_cast<int>(ll));
@@ -184,10 +176,8 @@ std::string_view enumToStr(LogLevel ll) {
 
 std::string_view enumToStr(LogAudience la) {
     switch (la) {
-        case LogAudience::User:
-            return "User";
-        case LogAudience::Developer:
-            return "Developer";
+        case LogAudience::User:      return "User";
+        case LogAudience::Developer: return "Developer";
     }
     throw Exception(SourceContext{}, "Found invalid LogAudience enum value '{}'",
                     static_cast<int>(la));
@@ -195,14 +185,10 @@ std::string_view enumToStr(LogAudience la) {
 
 std::string_view enumToStr(MessageBreakLevel ll) {
     switch (ll) {
-        case MessageBreakLevel::Info:
-            return "Info";
-        case MessageBreakLevel::Warn:
-            return "Warn";
-        case MessageBreakLevel::Error:
-            return "Error";
-        case MessageBreakLevel::Off:
-            return "Off";
+        case MessageBreakLevel::Info:  return "Info";
+        case MessageBreakLevel::Warn:  return "Warn";
+        case MessageBreakLevel::Error: return "Error";
+        case MessageBreakLevel::Off:   return "Off";
     }
     throw Exception(SourceContext{}, "Found invalid MessageBreakLevel enum value '{}'",
                     static_cast<int>(ll));

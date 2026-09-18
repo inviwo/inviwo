@@ -48,8 +48,8 @@
 #pragma warning(disable : 4611)
 #pragma warning(disable : 5040)
 #endif
-struct IUnknown;   // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was
-                   // unexpected here" when using /permissive-
+struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was
+                  // unexpected here" when using /permissive-
 #include <CImg.h>
 
 #include <warn/pop>

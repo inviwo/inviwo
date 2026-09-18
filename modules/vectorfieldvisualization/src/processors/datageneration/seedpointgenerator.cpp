@@ -136,21 +136,11 @@ void SeedPointGenerator::process() {
     }
 
     switch (generator_.get()) {
-        case RND:
-            randomPoints();
-            break;
-        case PLANE:
-            planePoints();
-            break;
-        case LINE:
-            linePoints();
-            break;
-        case SPHERE:
-            spherePoints();
-            break;
-        default:
-            log::warn("No points generated since given type is not yet implemented");
-            break;
+        case RND:    randomPoints(); break;
+        case PLANE:  planePoints(); break;
+        case LINE:   linePoints(); break;
+        case SPHERE: spherePoints(); break;
+        default:     log::warn("No points generated since given type is not yet implemented"); break;
     }
 }
 

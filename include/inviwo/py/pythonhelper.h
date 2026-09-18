@@ -33,4 +33,4 @@
 
 namespace inviwo {
 IVW_PYTHONHELPER_API void initializePythonModules();
-}
+}  // namespace inviwo

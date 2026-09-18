@@ -52,18 +52,12 @@ enum class UpdateLookRanges { Yes, No };
 
 constexpr std::string_view format_as(Side s) {
     switch (s) {
-        case Side::XNegative:
-            return "XNegative";
-        case Side::XPositive:
-            return "XPositive";
-        case Side::YNegative:
-            return "YNegative";
-        case Side::YPositive:
-            return "YPositive";
-        case Side::ZNegative:
-            return "ZNegative";
-        case Side::ZPositive:
-            return "ZPositive";
+        case Side::XNegative: return "XNegative";
+        case Side::XPositive: return "XPositive";
+        case Side::YNegative: return "YNegative";
+        case Side::YPositive: return "YPositive";
+        case Side::ZNegative: return "ZNegative";
+        case Side::ZPositive: return "ZPositive";
     }
     throw Exception(SourceContext{}, "Found invalid Side");
 }

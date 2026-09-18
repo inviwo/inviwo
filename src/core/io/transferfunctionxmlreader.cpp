@@ -161,6 +161,6 @@ std::shared_ptr<TransferFunction> TransferFunctionXMLReader::readData(
     }
 
     return data;
-};
+}
 
 }  // namespace inviwo

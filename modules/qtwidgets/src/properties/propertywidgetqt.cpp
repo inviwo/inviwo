@@ -398,13 +398,9 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                 case PropertyPresetType::Property:
                     presetManager->clearPropertyPresets(property);
                     break;
-                case PropertyPresetType::Workspace:
-                    presetManager->clearWorkspacePresets();
-                    break;
-                case PropertyPresetType::Application:
-                    break;
-                default:
-                    return;
+                case PropertyPresetType::Workspace:   presetManager->clearWorkspacePresets(); break;
+                case PropertyPresetType::Application: break;
+                default:                              return;
             }
         };
         std::array<PropertyPresetType, 3> types = {PropertyPresetType::Property,

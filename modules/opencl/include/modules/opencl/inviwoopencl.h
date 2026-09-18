@@ -114,8 +114,8 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API OpenCL : public Singleton<OpenCL> {
 public:
     OpenCL();
-    OpenCL(OpenCL const&) = delete;
-    void operator=(OpenCL const&) = delete;
+    OpenCL(const OpenCL&) = delete;
+    void operator=(const OpenCL&) = delete;
 
     /**
      * Get queue that can perform tasks in serial (no need to explicitly manage events).

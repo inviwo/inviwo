@@ -241,8 +241,7 @@ void StreamRibbonsDeprecated::process() {
                                 "instead ");
                             [[fallthrough]];
                         }
-                    default:
-                        [[fallthrough]];
+                    default: [[fallthrough]];
                     case ColoringMethod::Velocity:
                         d = glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(),
                                        0.0f, 1.0f);

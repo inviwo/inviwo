@@ -61,7 +61,7 @@ public:
     SequenceEditorFactoryObjectTemplate() : SequenceEditorFactoryObject(T::classIdentifier()) {}
 
     SequenceEditorFactoryObjectTemplate(const std::string& classIdentifier)
-        : SequenceEditorFactoryObject(classIdentifier){};
+        : SequenceEditorFactoryObject(classIdentifier) {}
     virtual ~SequenceEditorFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence& sequence, Track& track,

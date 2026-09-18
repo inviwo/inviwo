@@ -142,7 +142,6 @@ void exposeVolume(pybind11::module& m) {
         .def_property_readonly(
             "data", static_cast<const py::array& (VolumePy::*)() const>(&VolumePy::data));
 
-
     util::exportDataSequenceFor<Volume>(m, "Volume");
     exposeStandardDataPorts<Volume>(m, "Volume");
     exposeStandardDataPorts<VolumeSequence>(m, "VolumeSequence");

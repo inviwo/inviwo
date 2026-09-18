@@ -646,9 +646,7 @@ std::string errorCodeToString(cl_int err) {
             break;  //                                                       -64
 #endif
 
-        default:
-            error = "unknown OpenCL error";
-            break;
+        default: error = "unknown OpenCL error"; break;
     }
 
     return error;
@@ -865,9 +863,7 @@ std::string getCLErrorResolveHint(cl_int err) {
             break;  //                                                             -64
 #endif
 
-        default:
-            hint = "";
-            break;
+        default: hint = ""; break;
     }
 
     return hint;

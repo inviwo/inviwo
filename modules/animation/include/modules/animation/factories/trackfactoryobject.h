@@ -63,7 +63,7 @@ public:
     TrackFactoryObjectTemplate() : TrackFactoryObject(T::classIdentifier()) {}
 
     explicit TrackFactoryObjectTemplate(std::string_view classIdentifier)
-        : TrackFactoryObject(classIdentifier){};
+        : TrackFactoryObject(classIdentifier) {}
     virtual ~TrackFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Track> create(

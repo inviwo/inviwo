@@ -490,47 +490,38 @@ GLuint Texture::channels(GLenum format) {
         case GL_GREEN_INTEGER:
         case GL_BLUE:
         case GL_BLUE_INTEGER:
-        case GL_ALPHA:
-            return 1;
+        case GL_ALPHA:           return 1;
 
         case GL_RG:
-        case GL_RG_INTEGER:
-            return 2;
+        case GL_RG_INTEGER:      return 2;
 
         case GL_RGB:
         case GL_BGR:
         case GL_RGB_INTEGER:
-        case GL_BGR_INTEGER:
-            return 3;
+        case GL_BGR_INTEGER:     return 3;
 
         case GL_RGBA:
         case GL_BGRA:
         case GL_RGBA_INTEGER:
-        case GL_BGRA_INTEGER:
-            return 4;
-        default:
-            throw OpenGLException(SourceContext{}, "Invalid format specified {}", format);
+        case GL_BGRA_INTEGER:    return 4;
+        default:                 throw OpenGLException(SourceContext{}, "Invalid format specified {}", format);
     }
 }
 
 size_t Texture::dataTypeSize(GLenum dataType) {
     switch (dataType) {
         case GL_UNSIGNED_BYTE:
-        case GL_BYTE:
-            return 1;
+        case GL_BYTE:           return 1;
 
         case GL_UNSIGNED_SHORT:
         case GL_SHORT:
-        case GL_HALF_FLOAT:
-            return 2;
+        case GL_HALF_FLOAT:     return 2;
 
         case GL_UNSIGNED_INT:
         case GL_INT:
-        case GL_FLOAT:
-            return 4;
+        case GL_FLOAT:          return 4;
 
-        default:
-            throw OpenGLException(SourceContext{}, "Invalid format specified {}", dataType);
+        default:                throw OpenGLException(SourceContext{}, "Invalid format specified {}", dataType);
     }
 }
 

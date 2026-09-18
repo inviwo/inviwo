@@ -83,26 +83,16 @@ void MeshTexturing::setUniforms(Shader& shader) const {
 void MeshTexturing::addDefines(Shader& shader) const {
     const auto func = [&]() -> std::string_view {
         switch (blendMode.get()) {
-            case BlendMode::Source:
-                return "sourceBlend";
-            case BlendMode::Destination:
-                return "destinationBlend";
-            case BlendMode::Alpha:
-                return "alphaBlend";
-            case BlendMode::Additive:
-                return "additiveBlend";
-            case BlendMode::Multiply:
-                return "multiplyBlend";
-            case BlendMode::Screen:
-                return "screenBlend";
-            case BlendMode::Subtractive:
-                return "subtractiveBlend";
-            case BlendMode::Premultiplied:
-                return "premultipliedAlphaBlend";
-            case BlendMode::Overlay:
-                return "overlayBlend";
-            default:
-                throw Exception{SourceContext{}, "Invalid blend mode"};
+            case BlendMode::Source:        return "sourceBlend";
+            case BlendMode::Destination:   return "destinationBlend";
+            case BlendMode::Alpha:         return "alphaBlend";
+            case BlendMode::Additive:      return "additiveBlend";
+            case BlendMode::Multiply:      return "multiplyBlend";
+            case BlendMode::Screen:        return "screenBlend";
+            case BlendMode::Subtractive:   return "subtractiveBlend";
+            case BlendMode::Premultiplied: return "premultipliedAlphaBlend";
+            case BlendMode::Overlay:       return "overlayBlend";
+            default:                       throw Exception{SourceContext{}, "Invalid blend mode"};
         }
     }();
     shader.getFragmentShaderObject()->addShaderDefine(

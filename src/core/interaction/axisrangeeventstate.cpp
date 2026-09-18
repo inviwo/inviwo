@@ -35,14 +35,10 @@ namespace inviwo {
 std::string_view enumToStr(AxisRangeEventState state) {
     using enum AxisRangeEventState;
     switch (state) {
-        case None:
-            return "None";
-        case Started:
-            return "Started";
-        case Updated:
-            return "Updated";
-        case Finished:
-            return "Finished";
+        case None:     return "None";
+        case Started:  return "Started";
+        case Updated:  return "Updated";
+        case Finished: return "Finished";
     }
     throw Exception(SourceContext{}, "Found invalid AxisRangeEventState enum value '{}'",
                     static_cast<int>(state));
@@ -51,12 +47,9 @@ std::string_view enumToStr(AxisRangeEventState state) {
 std::string_view enumToStr(AxisRangeInteraction interaction) {
     using enum AxisRangeInteraction;
     switch (interaction) {
-        case None:
-            return "None";
-        case Selection:
-            return "Selection";
-        case Filtering:
-            return "Filtering";
+        case None:      return "None";
+        case Selection: return "Selection";
+        case Filtering: return "Filtering";
     }
     throw Exception(SourceContext{}, "Found invalid AxisRangeInteraction enum value '{}'",
                     static_cast<int>(interaction));
@@ -65,14 +58,10 @@ std::string_view enumToStr(AxisRangeInteraction interaction) {
 std::string_view enumToStr(AxisRangeInteractionMode mode) {
     using enum AxisRangeInteractionMode;
     switch (mode) {
-        case None:
-            return "None";
-        case Replace:
-            return "Replace";
-        case Append:
-            return "Append";
-        case Clear:
-            return "Clear";
+        case None:    return "None";
+        case Replace: return "Replace";
+        case Append:  return "Append";
+        case Clear:   return "Clear";
     }
     throw Exception(SourceContext{}, "Found invalid AxisRangeInteractionMode enum value '{}'",
                     static_cast<int>(mode));

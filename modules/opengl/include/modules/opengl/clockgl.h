@@ -167,6 +167,8 @@ protected:
 template <typename Callback>
 using ScopedClockGL = ScopedClock<ClockGL, Callback>;
 
+// NOLINTBEGIN(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
+
 /**
  * \def IVW_OPENGL_PROFILING(message)
  * creates a scoped ClockGL clock with the given message.
@@ -174,11 +176,11 @@ using ScopedClockGL = ScopedClock<ClockGL, Callback>;
  * @param message  log message
  */
 #if IVW_PROFILING
-#define IVW_OPENGL_PROFILING(message)                                                 \
+#define IVW_OPENGL_PROFILING(message)                                                  \
     const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<ClockGL>([&]() { \
-        std::ostringstream ss;                                                        \
-        ss << message;                                                                \
-        return std::move(ss).str();                                                   \
+        std::ostringstream ss;                                                         \
+        ss << message;                                                                 \
+        return std::move(ss).str();                                                    \
     })
 #else
 #define IVW_OPENGL_PROFILING(message)
@@ -195,7 +197,7 @@ using ScopedClockGL = ScopedClock<ClockGL, Callback>;
 #if IVW_PROFILING
 #define IVW_OPENGL_PROFILING_IF(time, message)                                  \
     const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<ClockGL>( \
-        [&]() {                                                                  \
+        [&]() {                                                                 \
             std::ostringstream ss;                                              \
             ss << message;                                                      \
             return std::move(ss).str();                                         \
@@ -204,5 +206,7 @@ using ScopedClockGL = ScopedClock<ClockGL, Callback>;
 #else
 #define IVW_OPENGL_PROFILING_IF(time, message)
 #endif
+
+// NOLINTEND(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
 
 }  // namespace inviwo

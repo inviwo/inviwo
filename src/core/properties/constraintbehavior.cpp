@@ -35,14 +35,10 @@ namespace inviwo {
 
 std::string_view enumToStr(ConstraintBehavior cb) {
     switch (cb) {
-        case ConstraintBehavior::Editable:
-            return "Editable";
-        case ConstraintBehavior::Mutable:
-            return "Mutable";
-        case ConstraintBehavior::Immutable:
-            return "Immutable";
-        case ConstraintBehavior::Ignore:
-            return "Ignore";
+        case ConstraintBehavior::Editable:  return "Editable";
+        case ConstraintBehavior::Mutable:   return "Mutable";
+        case ConstraintBehavior::Immutable: return "Immutable";
+        case ConstraintBehavior::Ignore:    return "Ignore";
     }
     throw Exception(SourceContext{}, "Found invalid ConstraintBehavior enum value '{}'",
                     static_cast<int>(cb));

@@ -50,23 +50,15 @@ BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, Buf
                            BufferTarget target)
     : Observable<BufferObjectObserver>(), glFormat_(GLFormats::get(format->getId())) {
     switch (usage) {
-        case BufferUsage::Dynamic:
-            usageGL_ = GL_DYNAMIC_DRAW;
-            break;
+        case BufferUsage::Dynamic: usageGL_ = GL_DYNAMIC_DRAW; break;
 
         case BufferUsage::Static:
-        default:
-            usageGL_ = GL_STATIC_DRAW;
-            break;
+        default:                   usageGL_ = GL_STATIC_DRAW; break;
     }
     switch (target) {
-        case BufferTarget::Index:
-            target_ = GL_ELEMENT_ARRAY_BUFFER;
-            break;
+        case BufferTarget::Index: target_ = GL_ELEMENT_ARRAY_BUFFER; break;
         case BufferTarget::Data:
-        default:
-            target_ = GL_ARRAY_BUFFER;
-            break;
+        default:                  target_ = GL_ARRAY_BUFFER; break;
     }
 
     glGenBuffers(1, &id_);
@@ -303,36 +295,21 @@ void BufferObject::download(void* data) const {
 std::string_view BufferObject::targetName(GLenum target) {
     using namespace std::literals;
     switch (target) {
-        case GL_ARRAY_BUFFER:
-            return "GL_ARRAY_BUFFER"sv;
-        case GL_ATOMIC_COUNTER_BUFFER:
-            return "GL_ATOMIC_COUNTER_BUFFER"sv;
-        case GL_COPY_READ_BUFFER:
-            return "GL_COPY_READ_BUFFER"sv;
-        case GL_COPY_WRITE_BUFFER:
-            return "GL_COPY_WRITE_BUFFER"sv;
-        case GL_DISPATCH_INDIRECT_BUFFER:
-            return "GL_DISPATCH_INDIRECT_BUFFER"sv;
-        case GL_DRAW_INDIRECT_BUFFER:
-            return "GL_DRAW_INDIRECT_BUFFER"sv;
-        case GL_ELEMENT_ARRAY_BUFFER:
-            return "GL_ELEMENT_ARRAY_BUFFER"sv;
-        case GL_PIXEL_PACK_BUFFER:
-            return "GL_PIXEL_PACK_BUFFER"sv;
-        case GL_PIXEL_UNPACK_BUFFER:
-            return "GL_PIXEL_UNPACK_BUFFER"sv;
-        case GL_QUERY_BUFFER:
-            return "GL_QUERY_BUFFER"sv;
-        case GL_SHADER_STORAGE_BUFFER:
-            return "GL_SHADER_STORAGE_BUFFER"sv;
-        case GL_TEXTURE_BUFFER:
-            return "GL_TEXTURE_BUFFER"sv;
-        case GL_TRANSFORM_FEEDBACK_BUFFER:
-            return "GL_TRANSFORM_FEEDBACK_BUFFER"sv;
-        case GL_UNIFORM_BUFFER:
-            return "GL_UNIFORM_BUFFER"sv;
-        default:
-            return "UNKNOW_TARGET"sv;
+        case GL_ARRAY_BUFFER:              return "GL_ARRAY_BUFFER"sv;
+        case GL_ATOMIC_COUNTER_BUFFER:     return "GL_ATOMIC_COUNTER_BUFFER"sv;
+        case GL_COPY_READ_BUFFER:          return "GL_COPY_READ_BUFFER"sv;
+        case GL_COPY_WRITE_BUFFER:         return "GL_COPY_WRITE_BUFFER"sv;
+        case GL_DISPATCH_INDIRECT_BUFFER:  return "GL_DISPATCH_INDIRECT_BUFFER"sv;
+        case GL_DRAW_INDIRECT_BUFFER:      return "GL_DRAW_INDIRECT_BUFFER"sv;
+        case GL_ELEMENT_ARRAY_BUFFER:      return "GL_ELEMENT_ARRAY_BUFFER"sv;
+        case GL_PIXEL_PACK_BUFFER:         return "GL_PIXEL_PACK_BUFFER"sv;
+        case GL_PIXEL_UNPACK_BUFFER:       return "GL_PIXEL_UNPACK_BUFFER"sv;
+        case GL_QUERY_BUFFER:              return "GL_QUERY_BUFFER"sv;
+        case GL_SHADER_STORAGE_BUFFER:     return "GL_SHADER_STORAGE_BUFFER"sv;
+        case GL_TEXTURE_BUFFER:            return "GL_TEXTURE_BUFFER"sv;
+        case GL_TRANSFORM_FEEDBACK_BUFFER: return "GL_TRANSFORM_FEEDBACK_BUFFER"sv;
+        case GL_UNIFORM_BUFFER:            return "GL_UNIFORM_BUFFER"sv;
+        default:                           return "UNKNOW_TARGET"sv;
     }
 }
 

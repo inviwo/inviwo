@@ -44,7 +44,7 @@ TransferFunctionITFWriter::TransferFunctionITFWriter() {
 
 TransferFunctionITFWriter* TransferFunctionITFWriter::clone() const {
     return new TransferFunctionITFWriter(*this);
-};
+}
 
 void TransferFunctionITFWriter::writeData(const TransferFunction* data,
                                           const std::filesystem::path& filePath) const {
@@ -52,7 +52,7 @@ void TransferFunctionITFWriter::writeData(const TransferFunction* data,
     Serializer serializer(filePath, "InviwoTransferFunction", transferFunctionVersion, &mbr);
     data->serialize(serializer);
     serializer.writeFile();
-};
+}
 
 std::unique_ptr<std::vector<unsigned char>> TransferFunctionITFWriter::writeDataToBuffer(
     const TransferFunction* data, std::string_view) const {
@@ -67,6 +67,6 @@ std::unique_ptr<std::vector<unsigned char>> TransferFunctionITFWriter::writeData
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
     std::copy(xml.begin(), xml.end(), buffer->begin());
     return buffer;
-};
+}
 
 }  // namespace inviwo

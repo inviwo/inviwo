@@ -207,7 +207,7 @@ public:
 
     operator const std::filesystem::path&() const { return file_; }
     const std::filesystem::path& get() const { return file_; }
-    const std::filesystem::path& operator*() const { return file_; };
+    const std::filesystem::path& operator*() const { return file_; }
     const std::filesystem::path* operator->() const { return &file_.value; }
 
     virtual void serialize(Serializer& s) const override;

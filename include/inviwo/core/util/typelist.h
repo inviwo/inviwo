@@ -28,7 +28,6 @@
  *********************************************************************************/
 #pragma once
 
-
 namespace inviwo {
 
 template <typename... Ts>
@@ -40,9 +39,7 @@ struct TypeList {
     }
 };
 template <typename T>
-concept TypeListLike = requires(T t) {
-    []<typename... Ts>(TypeList<Ts...>) {}(t);
-};
+concept TypeListLike = requires(T t) { []<typename... Ts>(TypeList<Ts...>) {}(t); };
 template <TypeListLike... Lists>
 using JoinTypeLists = decltype((TypeList<>{} + ... + Lists{}));
 

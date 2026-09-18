@@ -44,19 +44,19 @@ namespace inviwo {
  */
 class IVW_MODULE_OPENGL_API BufferObjectObserver : public Observer {
 public:
-    BufferObjectObserver() : Observer(){};
+    BufferObjectObserver() : Observer() {}
 
     /**
      * This method will be called before the buffer is initialized.
      * Override it to add behavior.
      */
-    virtual void onBeforeBufferInitialization(){};
+    virtual void onBeforeBufferInitialization() {}
 
     /**
      * This method will be called after the buffer has been initialized.
      * Override it to add behavior.
      */
-    virtual void onAfterBufferInitialization(){};
+    virtual void onAfterBufferInitialization() {}
 };
 
 }  // namespace inviwo

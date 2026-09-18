@@ -172,18 +172,15 @@ void PositionProperty::updatePosition(const vec3& pos, CoordinateSpace sourceSpa
 
 vec3 PositionProperty::getOffset(CoordinateSpace space) const {
     switch (coordinateOffsetMode_) {
-        case CoordinateOffset::None:
-            return convert(vec3{0.0f}, referenceSpace_, space);
+        case CoordinateOffset::None: return convert(vec3{0.0f}, referenceSpace_, space);
         case CoordinateOffset::CameraLookAt:
             if (camera_) {
                 return convertFromWorld(camera_->getLookTo(), space);
             } else {
                 return convert(vec3{0.0f}, referenceSpace_, space);
             }
-        case CoordinateOffset::Custom:
-            return convert(coordinateOffset_, referenceSpace_, space);
-        default:
-            return convert(vec3{0.0f}, referenceSpace_, space);
+        case CoordinateOffset::Custom: return convert(coordinateOffset_, referenceSpace_, space);
+        default:                       return convert(vec3{0.0f}, referenceSpace_, space);
     }
 }
 

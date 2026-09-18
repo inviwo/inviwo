@@ -526,33 +526,19 @@ void InstanceRenderer::onDidAddPort(Property* property) {
         const auto& id = property->getIdentifier();
         if (components1D) {
             switch (components1D->get()) {
-                case 1:
-                    vecPorts_.push_back(createDynPortManager<float>(id, uniform));
-                    break;
-                case 2:
-                    vecPorts_.push_back(createDynPortManager<vec2>(id, uniform));
-                    break;
-                case 3:
-                    vecPorts_.push_back(createDynPortManager<vec3>(id, uniform));
-                    break;
-                case 4:
-                    vecPorts_.push_back(createDynPortManager<vec4>(id, uniform));
-                    break;
+                case 1: vecPorts_.push_back(createDynPortManager<float>(id, uniform)); break;
+                case 2: vecPorts_.push_back(createDynPortManager<vec2>(id, uniform)); break;
+                case 3: vecPorts_.push_back(createDynPortManager<vec3>(id, uniform)); break;
+                case 4: vecPorts_.push_back(createDynPortManager<vec4>(id, uniform)); break;
                 default:
                     throw Exception{SourceContext{}, "Invalid number of components {}",
                                     components1D->get()};
             }
         } else if (components2D) {
             switch (components2D->get().x) {
-                case 2:
-                    vecPorts_.push_back(createDynPortManager<mat2>(id, uniform));
-                    break;
-                case 3:
-                    vecPorts_.push_back(createDynPortManager<mat3>(id, uniform));
-                    break;
-                case 4:
-                    vecPorts_.push_back(createDynPortManager<mat4>(id, uniform));
-                    break;
+                case 2: vecPorts_.push_back(createDynPortManager<mat2>(id, uniform)); break;
+                case 3: vecPorts_.push_back(createDynPortManager<mat3>(id, uniform)); break;
+                case 4: vecPorts_.push_back(createDynPortManager<mat4>(id, uniform)); break;
                 default:
                     throw Exception{SourceContext{}, "Invalid number of components {}",
                                     components2D->get()};
@@ -649,14 +635,10 @@ size_t numberOfVertices(const MeshGL& meshGL) {
 
 auto primitiveMode(DrawType dt) {
     switch (dt) {
-        case DrawType::Points:
-            return GL_POINTS;
-        case DrawType::Lines:
-            return GL_LINES;
-        case DrawType::Triangles:
-            return GL_TRIANGLES;
-        default:
-            return GL_TRIANGLES;
+        case DrawType::Points:    return GL_POINTS;
+        case DrawType::Lines:     return GL_LINES;
+        case DrawType::Triangles: return GL_TRIANGLES;
+        default:                  return GL_TRIANGLES;
     }
 }
 

@@ -50,12 +50,9 @@ namespace inviwo::util {
 std::shared_ptr<VolumeRAM> volumeDownsample(const VolumeRAM* volume, size3_t strides,
                                             DownsamplingMode mode) {
     switch (mode) {
-        case DownsamplingMode::Strided:
-            return volumeStridedDownsample(volume, strides);
-        case DownsamplingMode::Averaged:
-            return volumeAveragedDownsample(volume, strides);
-        default:
-            return volumeStridedDownsample(volume, strides);
+        case DownsamplingMode::Strided:  return volumeStridedDownsample(volume, strides);
+        case DownsamplingMode::Averaged: return volumeAveragedDownsample(volume, strides);
+        default:                         return volumeStridedDownsample(volume, strides);
     }
 }
 

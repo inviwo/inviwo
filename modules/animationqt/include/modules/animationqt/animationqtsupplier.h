@@ -33,7 +33,7 @@
 #include <modules/animationqt/factories/sequenceeditorfactory.h>
 #include <modules/animationqt/factories/sequenceeditorfactoryobject.h>  // IWYU pragma: keep
 #include <modules/animationqt/factories/trackwidgetqtfactory.h>
-#include <modules/animationqt/factories/trackwidgetqtfactoryobject.h>   // IWYU pragma: keep
+#include <modules/animationqt/factories/trackwidgetqtfactoryobject.h>  // IWYU pragma: keep
 
 #include <memory>
 #include <string>

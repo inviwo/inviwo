@@ -56,7 +56,6 @@
 #include <stacktrace>
 #endif
 
-
 namespace inviwo::utilgl {
 
 void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID context) {
@@ -180,8 +179,7 @@ bool setOpenGLDebugMode(debug::Mode mode, debug::Severity severity) {
             glDebugMessageCallback(openGLDebugMessageCallback, nullptr);
             configureOpenGLDebugMessages(severity);
             break;
-        default:
-            break;
+        default: break;
     }
 
     return true;
@@ -222,24 +220,15 @@ bool configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
     };
 
     switch (severity) {
-        case Notification:
-            set(true, true, true, true);
-            break;
-        case Low:
-            set(false, true, true, true);
-            break;
-        case Medium:
-            set(false, false, true, true);
-            break;
-        case High:
-            set(false, false, false, true);
-            break;
-        case DontCare: {
+        case Notification: set(true, true, true, true); break;
+        case Low:          set(false, true, true, true); break;
+        case Medium:       set(false, false, true, true); break;
+        case High:         set(false, false, false, true); break;
+        case DontCare:     {
             glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, true);
             break;
         }
-        default:
-            break;
+        default: break;
     }
 
     return true;
@@ -302,92 +291,57 @@ namespace debug {
 
 std::string_view format_as(Mode m) {
     switch (m) {
-        case Mode::Off:
-            return "Off";
-        case Mode::Debug:
-            return "Debug";
-        case Mode::DebugSynchronous:
-            return "DebugSynchronous";
-        default:
-            return "";
+        case Mode::Off:              return "Off";
+        case Mode::Debug:            return "Debug";
+        case Mode::DebugSynchronous: return "DebugSynchronous";
+        default:                     return "";
     }
 }
 std::string_view format_as(BreakLevel b) {
     switch (b) {
-        case BreakLevel::Off:
-            return "Off";
-        case BreakLevel::High:
-            return "High";
-        case BreakLevel::Medium:
-            return "Medium";
-        case BreakLevel::Low:
-            return "Low";
-        case BreakLevel::Notification:
-            return "Notification";
-        default:
-            return "";
+        case BreakLevel::Off:          return "Off";
+        case BreakLevel::High:         return "High";
+        case BreakLevel::Medium:       return "Medium";
+        case BreakLevel::Low:          return "Low";
+        case BreakLevel::Notification: return "Notification";
+        default:                       return "";
     }
 }
 std::string_view format_as(Source s) {
     switch (s) {
-        case Source::Api:
-            return "Api";
-        case Source::WindowSystem:
-            return "WindowSystem";
-        case Source::ShaderCompiler:
-            return "ShaderCompiler";
-        case Source::ThirdParty:
-            return "ThirdParty";
-        case Source::Application:
-            return "Application";
-        case Source::Other:
-            return "Other";
-        case Source::DontCare:
-            return "DontCare";
-        default:
-            return "";
+        case Source::Api:            return "Api";
+        case Source::WindowSystem:   return "WindowSystem";
+        case Source::ShaderCompiler: return "ShaderCompiler";
+        case Source::ThirdParty:     return "ThirdParty";
+        case Source::Application:    return "Application";
+        case Source::Other:          return "Other";
+        case Source::DontCare:       return "DontCare";
+        default:                     return "";
     }
 }
 std::string_view format_as(Type t) {
     switch (t) {
-        case Type::Error:
-            return "Error";
-        case Type::DeprecatedBehavior:
-            return "DeprecatedBehavior";
-        case Type::UndefinedBehavior:
-            return "UndefinedBehavior";
-        case Type::Portability:
-            return "Portability";
-        case Type::Performance:
-            return "Performance";
-        case Type::Marker:
-            return "Marker";
-        case Type::PushGroup:
-            return "PushGroup";
-        case Type::PopGroup:
-            return "PopGroup";
-        case Type::Other:
-            return "Other";
-        case Type::DontCare:
-            return "DontCare";
-        default:
-            return "";
+        case Type::Error:              return "Error";
+        case Type::DeprecatedBehavior: return "DeprecatedBehavior";
+        case Type::UndefinedBehavior:  return "UndefinedBehavior";
+        case Type::Portability:        return "Portability";
+        case Type::Performance:        return "Performance";
+        case Type::Marker:             return "Marker";
+        case Type::PushGroup:          return "PushGroup";
+        case Type::PopGroup:           return "PopGroup";
+        case Type::Other:              return "Other";
+        case Type::DontCare:           return "DontCare";
+        default:                       return "";
     }
 }
 std::string_view format_as(Severity s) {
     switch (s) {
-        case Severity::Low:
-            return "Low";
-        case Severity::Medium:
-            return "Medium";
-        case Severity::High:
-            return "High";
-        case Severity::Notification:
-            return "Notification";
-        case Severity::DontCare:
-            return "DontCare";
-        default:
-            return "";
+        case Severity::Low:          return "Low";
+        case Severity::Medium:       return "Medium";
+        case Severity::High:         return "High";
+        case Severity::Notification: return "Notification";
+        case Severity::DontCare:     return "DontCare";
+        default:                     return "";
     }
 }
 

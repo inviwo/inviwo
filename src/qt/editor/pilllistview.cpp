@@ -51,12 +51,9 @@ QVariant TagModel::data(const QModelIndex& index, int role) const {
     const Item& tag = tags_[index.row()];
 
     switch (role) {
-        case Qt::DisplayRole:
-            return tag.text;
-        case Qt::CheckStateRole:
-            return tag.checked ? Qt::Checked : Qt::Unchecked;
-        default:
-            return {};
+        case Qt::DisplayRole:    return tag.text;
+        case Qt::CheckStateRole: return tag.checked ? Qt::Checked : Qt::Unchecked;
+        default:                 return {};
     }
 }
 

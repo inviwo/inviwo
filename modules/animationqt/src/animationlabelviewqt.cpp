@@ -76,7 +76,7 @@ namespace animation {
 // Simply stores the pointer to the item's Track
 class TrackItem : public QStandardItem {
 public:
-    TrackItem(Track* track)
+    explicit TrackItem(Track* track)
         : QStandardItem(utilqt::toQString(track->getName())), track_(track) {}
 
     Track* track_;

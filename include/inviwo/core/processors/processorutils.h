@@ -83,7 +83,7 @@ IVW_CORE_API void setSelected(Processor* processor, bool selected);
  * A utility class to place processors on the "grid" in the editor
  */
 struct IVW_CORE_API GridPos {
-    GridPos(int x, int y) : pos_{x, y} {};
+    GridPos(int x, int y) : pos_{x, y} {}
     explicit GridPos(ivec2 pos) : pos_{pos} {}
 
     ivec2 operator+(const ivec2& rhs) const { return operator ivec2() + rhs; }

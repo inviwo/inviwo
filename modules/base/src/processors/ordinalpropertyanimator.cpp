@@ -134,17 +134,10 @@ void OrdinalPropertyAnimator::deserialize(Deserializer& d) {
 
 std::ostream& operator<<(std::ostream& ss, BoundaryType bt) {
     switch (bt) {
-        case BoundaryType::Stop:
-            ss << "Stop";
-            break;
-        case BoundaryType::Periodic:
-            ss << "Periodic";
-            break;
-        case BoundaryType::Mirror:
-            ss << "Mirror";
-            break;
-        default:
-            break;
+        case BoundaryType::Stop:     ss << "Stop"; break;
+        case BoundaryType::Periodic: ss << "Periodic"; break;
+        case BoundaryType::Mirror:   ss << "Mirror"; break;
+        default:                     break;
     }
     return ss;
 }

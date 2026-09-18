@@ -82,7 +82,7 @@ Units:
     "all"   Use all known unit groups.
 )";
 
-}
+}  // namespace
 
 void exposeDataMapper(py::module& m) {
 

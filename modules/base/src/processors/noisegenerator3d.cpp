@@ -139,9 +139,7 @@ void NoiseGenerator3D::process() {
     std::shared_ptr<Volume> vol;
 
     switch (type_.get()) {
-        case NoiseType::Random:
-            vol = util::randomVolume<float>(size_.get(), mt_, r);
-            break;
+        case NoiseType::Random: vol = util::randomVolume<float>(size_.get(), mt_, r); break;
         case NoiseType::HaltonSequence:
             vol =
                 util::haltonSequence<float>(size_.get(), haltonNumPoints_.get(), haltonXBase_.get(),

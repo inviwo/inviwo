@@ -93,8 +93,7 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
             }
             break;
         }
-        default:
-            break;
+        default: break;
     }
     return false;
 }
@@ -141,8 +140,7 @@ void PropertyPresetManager::savePreset(const std::string& name, Property* proper
             saveApplicationPresets();
             break;
         }
-        default:
-            break;
+        default: break;
     }
 }
 
@@ -164,8 +162,7 @@ bool PropertyPresetManager::removePreset(const std::string& name, PropertyPreset
             saveApplicationPresets();
             return removed > 0;
         }
-        default:
-            return false;
+        default: return false;
     }
 }
 
@@ -267,12 +264,9 @@ std::map<std::string, std::string, std::less<>>& PropertyPresetManager::getPrope
 
 std::string_view enumToStr(PropertyPresetType p) {
     switch (p) {
-        case PropertyPresetType::Property:
-            return "Property";
-        case PropertyPresetType::Workspace:
-            return "Workspace";
-        case PropertyPresetType::Application:
-            return "Application";
+        case PropertyPresetType::Property:    return "Property";
+        case PropertyPresetType::Workspace:   return "Workspace";
+        case PropertyPresetType::Application: return "Application";
     }
     throw Exception(SourceContext{}, "Found invalid PropertyPresetType enum value '{}'",
                     static_cast<int>(p));

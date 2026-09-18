@@ -82,14 +82,10 @@ ItemFilter epsilonComparison(int column, filters::NumberComp op, T value, T epsi
                                   return std::abs(value - v) > eps;
                               }),
                               column, false};
-        case filters::NumberComp::Less:
-            return createFilter(std::less<T>());
-        case filters::NumberComp::LessEqual:
-            return createFilter(std::less_equal<T>());
-        case filters::NumberComp::Greater:
-            return createFilter(std::greater<T>());
-        case filters::NumberComp::GreaterEqual:
-            return createFilter(std::greater_equal<T>());
+        case filters::NumberComp::Less:         return createFilter(std::less<T>());
+        case filters::NumberComp::LessEqual:    return createFilter(std::less_equal<T>());
+        case filters::NumberComp::Greater:      return createFilter(std::greater<T>());
+        case filters::NumberComp::GreaterEqual: return createFilter(std::greater_equal<T>());
         default:
             return ItemFilter{std::function<bool(T)>([v = value, eps = epsilon](T value) {
                                   return std::abs(value - v) <= eps;
@@ -115,20 +111,13 @@ ItemFilter intMatch(int column, filters::NumberComp op, std::int64_t value) {
     };
 
     switch (op) {
-        case filters::NumberComp::Equal:
-            return createFilter(std::equal_to<std::int64_t>());
-        case filters::NumberComp::NotEqual:
-            return createFilter(std::not_equal_to<std::int64_t>());
-        case filters::NumberComp::Less:
-            return createFilter(std::less<std::int64_t>());
-        case filters::NumberComp::LessEqual:
-            return createFilter(std::less_equal<std::int64_t>());
-        case filters::NumberComp::Greater:
-            return createFilter(std::greater<std::int64_t>());
-        case filters::NumberComp::GreaterEqual:
-            return createFilter(std::greater_equal<std::int64_t>());
-        default:
-            return createFilter(std::equal_to<std::int64_t>());
+        case filters::NumberComp::Equal:        return createFilter(std::equal_to<>{});
+        case filters::NumberComp::NotEqual:     return createFilter(std::not_equal_to<>{});
+        case filters::NumberComp::Less:         return createFilter(std::less<>{});
+        case filters::NumberComp::LessEqual:    return createFilter(std::less_equal<>{});
+        case filters::NumberComp::Greater:      return createFilter(std::greater<>{});
+        case filters::NumberComp::GreaterEqual: return createFilter(std::greater_equal<>{});
+        default:                                return createFilter(std::equal_to<>{});
     }
 }
 

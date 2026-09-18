@@ -277,10 +277,9 @@ void FileWatcher::startFileObservation(const std::filesystem::path& fileName, Fi
 }
 
 void FileWatcher::stopFileObservation(const std::filesystem::path& fileName, FileObserver* source) {
-    auto observerit = std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
-                                   [&](const auto observer) {
-                                       return observer != source && observer->isObserved(fileName);
-                                   });
+    auto observerit = std::find_if(
+        std::begin(fileObservers_), std::end(fileObservers_),
+        [&](const auto observer) { return observer != source && observer->isObserved(fileName); });
     // Make sure that no observer is observing the file
     if (observerit == std::end(fileObservers_)) {
         const bool isDirectory = std::filesystem::is_directory(fileName);

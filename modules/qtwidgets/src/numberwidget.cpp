@@ -413,17 +413,11 @@ void BaseNumberWidget::updateHoverState(QPoint mousepos) {
         update();
 
         switch (state_.hover) {
-            case HoverState::Invalid:
-                setCursor(Qt::IBeamCursor);
-                break;
-            case HoverState::Center:
-                setCursor(Qt::SizeHorCursor);
-                break;
+            case HoverState::Invalid:     setCursor(Qt::IBeamCursor); break;
+            case HoverState::Center:      setCursor(Qt::SizeHorCursor); break;
             case HoverState::NegativeInc:
             case HoverState::PositiveInc:
-            default:
-                unsetCursor();
-                break;
+            default:                      unsetCursor(); break;
         }
     }
 }

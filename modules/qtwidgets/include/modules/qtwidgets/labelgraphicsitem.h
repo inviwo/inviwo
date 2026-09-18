@@ -52,9 +52,9 @@ public:
      * This method will be called when observed object changes.
      * Override it to add behavior.
      */
-    virtual void onLabelGraphicsItemChanged(LabelGraphicsItem*){};
+    virtual void onLabelGraphicsItemChanged(LabelGraphicsItem*) {}
 
-    virtual void onLabelGraphicsItemEdited(LabelGraphicsItem*){};
+    virtual void onLabelGraphicsItemEdited(LabelGraphicsItem*) {}
 };
 class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObservable
     : public Observable<LabelGraphicsItemObserver> {

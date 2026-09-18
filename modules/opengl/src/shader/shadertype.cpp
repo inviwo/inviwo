@@ -35,9 +35,6 @@ namespace inviwo {
 
 ShaderType::operator GLenum() const { return type_; }
 
-
-
-
 const ShaderType ShaderType::Vertex{GL_VERTEX_SHADER};
 const ShaderType ShaderType::Geometry{GL_GEOMETRY_SHADER};
 const ShaderType ShaderType::Fragment{GL_FRAGMENT_SHADER};
@@ -59,7 +56,7 @@ const std::array<std::pair<std::string_view, ShaderType>, 6> extToShaderType{
      {".tesc", ShaderType::TessellationControl},
      {".tese", ShaderType::TessellationEvaluation},
      {".comp", ShaderType::Compute}}};
-}
+}  // namespace
 
 ShaderType ShaderType::typeFromExtension(std::string_view ext) {
     if (ext == "vert")

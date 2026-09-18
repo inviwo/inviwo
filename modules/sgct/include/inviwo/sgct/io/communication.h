@@ -106,7 +106,7 @@ inline auto encode(const std::vector<SgctCommand>& commands) -> std::vector<std:
             command);
     }
     return bytes;
-};
+}
 
 inline void decode(const std::vector<std::byte>& bytes, std::vector<SgctCommand>& commands) {
     unsigned int pos = 0;
@@ -171,7 +171,7 @@ inline void decode(const std::vector<std::byte>& bytes, std::vector<SgctCommand>
             }
         }
     }
-};
+}
 
 }  // namespace util
 

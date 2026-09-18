@@ -41,11 +41,9 @@ namespace {
 
 std::string_view toShaderString(LIC2D::Kernel kernel) {
     switch (kernel) {
-        case LIC2D::Kernel::Gaussian:
-            return "gaussian";
+        case LIC2D::Kernel::Gaussian: return "gaussian";
         case LIC2D::Kernel::Box:
-        default:
-            return "box";
+        default:                      return "box";
     }
 }
 

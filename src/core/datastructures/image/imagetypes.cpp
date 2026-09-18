@@ -36,44 +36,31 @@ namespace inviwo {
 
 std::string_view enumToStr(ImageType type) {
     switch (type) {
-        case ImageType::ColorOnly:
-            return "Color Only";
-        case ImageType::ColorDepth:
-            return "Color + Depth";
-        case ImageType::ColorPicking:
-            return "Color + Picking";
-        case ImageType::ColorDepthPicking:
-            return "Color + Depth + Picking";
+        case ImageType::ColorOnly:         return "Color Only";
+        case ImageType::ColorDepth:        return "Color + Depth";
+        case ImageType::ColorPicking:      return "Color + Picking";
+        case ImageType::ColorDepthPicking: return "Color + Depth + Picking";
     }
     throw Exception(SourceContext{}, "Found invalid ImageType enum value '{}'",
                     static_cast<int>(type));
 }
 std::string_view enumToStr(LayerType type) {
     switch (type) {
-        case LayerType::Color:
-            return "Color";
-        case LayerType::Depth:
-            return "Depth";
-        case LayerType::Picking:
-            return "Picking";
+        case LayerType::Color:   return "Color";
+        case LayerType::Depth:   return "Depth";
+        case LayerType::Picking: return "Picking";
     }
     throw Exception(SourceContext{}, "Found invalid LayerType enum value '{}'",
                     static_cast<int>(type));
 }
 std::string_view enumToStr(ImageChannel channel) {
     switch (channel) {
-        case ImageChannel::Red:
-            return "r";
-        case ImageChannel::Green:
-            return "g";
-        case ImageChannel::Blue:
-            return "b";
-        case ImageChannel::Alpha:
-            return "a";
-        case ImageChannel::Zero:
-            return "0";
-        case ImageChannel::One:
-            return "1";
+        case ImageChannel::Red:   return "r";
+        case ImageChannel::Green: return "g";
+        case ImageChannel::Blue:  return "b";
+        case ImageChannel::Alpha: return "a";
+        case ImageChannel::Zero:  return "0";
+        case ImageChannel::One:   return "1";
     }
     throw Exception(SourceContext{}, "Found invalid ImageChannel enum value '{}'",
                     static_cast<int>(channel));
@@ -81,22 +68,17 @@ std::string_view enumToStr(ImageChannel channel) {
 
 std::string_view enumToStr(InterpolationType type) {
     switch (type) {
-        case InterpolationType::Nearest:
-            return "Nearest";
-        case InterpolationType::Linear:
-            return "Linear";
+        case InterpolationType::Nearest: return "Nearest";
+        case InterpolationType::Linear:  return "Linear";
     }
     throw Exception(SourceContext{}, "Found invalid InterpolationType enum value '{}'",
                     static_cast<int>(type));
 }
 std::string_view enumToStr(Wrapping type) {
     switch (type) {
-        case Wrapping::Mirror:
-            return "Mirror";
-        case Wrapping::Repeat:
-            return "Repeat";
-        case Wrapping::Clamp:
-            return "Clamp";
+        case Wrapping::Mirror: return "Mirror";
+        case Wrapping::Repeat: return "Repeat";
+        case Wrapping::Clamp:  return "Clamp";
     }
     throw Exception(SourceContext{}, "Found invalid Wrapping enum value '{}'",
                     static_cast<int>(type));
@@ -106,27 +88,13 @@ std::istream& operator>>(std::istream& ss, ImageChannel& channel) {
     char c{0};
     ss >> c;
     switch (c) {
-        case 'r':
-            channel = ImageChannel::Red;
-            break;
-        case 'g':
-            channel = ImageChannel::Green;
-            break;
-        case 'b':
-            channel = ImageChannel::Blue;
-            break;
-        case 'a':
-            channel = ImageChannel::Alpha;
-            break;
-        case '0':
-            channel = ImageChannel::Zero;
-            break;
-        case '1':
-            channel = ImageChannel::One;
-            break;
-        default:
-            ss.setstate(std::ios_base::failbit);
-            break;
+        case 'r': channel = ImageChannel::Red; break;
+        case 'g': channel = ImageChannel::Green; break;
+        case 'b': channel = ImageChannel::Blue; break;
+        case 'a': channel = ImageChannel::Alpha; break;
+        case '0': channel = ImageChannel::Zero; break;
+        case '1': channel = ImageChannel::One; break;
+        default:  ss.setstate(std::ios_base::failbit); break;
     }
     return ss;
 }

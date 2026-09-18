@@ -107,34 +107,23 @@ void InviwoFileDialog::setTitle(std::string_view title) {
 
 void InviwoFileDialog::setAcceptMode(inviwo::AcceptMode mode) {
     switch (mode) {
-        case inviwo::AcceptMode::Save:
-            QFileDialog::setAcceptMode(QFileDialog::AcceptSave);
-            break;
-        case inviwo::AcceptMode::Open:
-            QFileDialog::setAcceptMode(QFileDialog::AcceptOpen);
-            break;
-        default:
-            QFileDialog::setAcceptMode(QFileDialog::AcceptOpen);
-            break;
+        case inviwo::AcceptMode::Save: QFileDialog::setAcceptMode(QFileDialog::AcceptSave); break;
+        case inviwo::AcceptMode::Open: QFileDialog::setAcceptMode(QFileDialog::AcceptOpen); break;
+        default:                       QFileDialog::setAcceptMode(QFileDialog::AcceptOpen); break;
     }
 }
 
 AcceptMode InviwoFileDialog::getAcceptMode() const {
     switch (QFileDialog::acceptMode()) {
-        case QFileDialog::AcceptSave:
-            return inviwo::AcceptMode::Save;
-        case QFileDialog::AcceptOpen:
-            return inviwo::AcceptMode::Open;
-        default:
-            return inviwo::AcceptMode::Open;
+        case QFileDialog::AcceptSave: return inviwo::AcceptMode::Save;
+        case QFileDialog::AcceptOpen: return inviwo::AcceptMode::Open;
+        default:                      return inviwo::AcceptMode::Open;
     }
 }
 
 void InviwoFileDialog::setFileMode(inviwo::FileMode mode) {
     switch (mode) {
-        case inviwo::FileMode::AnyFile:
-            QFileDialog::setFileMode(QFileDialog::AnyFile);
-            break;
+        case inviwo::FileMode::AnyFile: QFileDialog::setFileMode(QFileDialog::AnyFile); break;
         case inviwo::FileMode::ExistingFile:
             QFileDialog::setFileMode(QFileDialog::ExistingFile);
             break;
@@ -145,24 +134,17 @@ void InviwoFileDialog::setFileMode(inviwo::FileMode mode) {
         case inviwo::FileMode::ExistingFiles:
             QFileDialog::setFileMode(QFileDialog::ExistingFiles);
             break;
-        default:
-            QFileDialog::setFileMode(QFileDialog::AnyFile);
-            break;
+        default: QFileDialog::setFileMode(QFileDialog::AnyFile); break;
     }
 }
 
 FileMode InviwoFileDialog::getFileMode() const {
     switch (QFileDialog::fileMode()) {
-        case FileMode::AnyFile:
-            return inviwo::FileMode::AnyFile;
-        case FileMode::ExistingFile:
-            return inviwo::FileMode::ExistingFile;
-        case FileMode::Directory:
-            return inviwo::FileMode::Directory;
-        case FileMode::ExistingFiles:
-            return inviwo::FileMode::ExistingFiles;
-        default:
-            return inviwo::FileMode::AnyFile;
+        case FileMode::AnyFile:       return inviwo::FileMode::AnyFile;
+        case FileMode::ExistingFile:  return inviwo::FileMode::ExistingFile;
+        case FileMode::Directory:     return inviwo::FileMode::Directory;
+        case FileMode::ExistingFiles: return inviwo::FileMode::ExistingFiles;
+        default:                      return inviwo::FileMode::AnyFile;
     }
 }
 void InviwoFileDialog::setContentType(std::string_view contentType) {

@@ -182,16 +182,11 @@ void VolumeGLProcessor::process() {
         const auto [min, max] = dataMinMaxGL_->minMax(*dstVolume);
         auto dataRange = [&]() -> glm::dvec2 {
             switch (dstVolume->getDataFormat()->getComponents()) {
-                case 1:
-                    return {min.x, max.x};
-                case 2:
-                    return {glm::compMin(dvec2{min}), glm::compMax(dvec2{max})};
-                case 3:
-                    return {glm::compMin(dvec3{min}), glm::compMax(dvec3{max})};
-                case 4:
-                    [[fallthrough]];
-                default:
-                    return {glm::compMin(min), glm::compMax(max)};
+                case 1:  return {min.x, max.x};
+                case 2:  return {glm::compMin(dvec2{min}), glm::compMax(dvec2{max})};
+                case 3:  return {glm::compMin(dvec3{min}), glm::compMax(dvec3{max})};
+                case 4:  [[fallthrough]];
+                default: return {glm::compMin(min), glm::compMax(max)};
             }
         }();
 

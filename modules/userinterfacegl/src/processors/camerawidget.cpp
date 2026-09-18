@@ -504,14 +504,10 @@ dvec3 findANiceNewLookUpForAxisAndCurrentUp(ivec3 newDir, dvec3 currentUp) {
     // We assume that newDir is a permutation of -1, 0, 1;
     const auto sum = glm::compAdd(glm::abs(newDir));
     switch (sum) {
-        case 1:
-            [[fallthrough]];
-        case 2:
-            return best(primaryCandidates | std::views::filter(orthogonal));
-        case 3:
-            return best(diagonalCandidates | std::views::filter(orthogonal));
-        default:
-            return currentUp;
+        case 1:  [[fallthrough]];
+        case 2:  return best(primaryCandidates | std::views::filter(orthogonal));
+        case 3:  return best(diagonalCandidates | std::views::filter(orthogonal));
+        default: return currentUp;
     }
 }
 }  // namespace
@@ -689,47 +685,27 @@ void CameraWidget::loadMesh() {
 
 void CameraWidget::dragInteraction(Interaction dir, dvec2 mouseDelta) {
     switch (dir) {
-        case Interaction::Yaw:
-            axisRotation(RotationAxis::Yaw, mouseDelta);
-            break;
-        case Interaction::Pitch:
-            axisRotation(RotationAxis::Pitch, mouseDelta);
-            break;
-        case Interaction::Roll:
-            axisRotation(RotationAxis::Roll, mouseDelta);
-            break;
-        case Interaction::FreeRotation:
-            freeRotation(mouseDelta);
-            break;
-        case Interaction::Zoom:
-            dragZoom(mouseDelta);
-            break;
+        case Interaction::Yaw:          axisRotation(RotationAxis::Yaw, mouseDelta); break;
+        case Interaction::Pitch:        axisRotation(RotationAxis::Pitch, mouseDelta); break;
+        case Interaction::Roll:         axisRotation(RotationAxis::Roll, mouseDelta); break;
+        case Interaction::FreeRotation: freeRotation(mouseDelta); break;
+        case Interaction::Zoom:         dragZoom(mouseDelta); break;
         case Interaction::None:
-        default:
-            break;
+        default:                        break;
     }
 }
 
 void CameraWidget::stepInteraction(Interaction dir, bool clockwise) {
     switch (dir) {
-        case Interaction::Yaw:
-            stepRotation(RotationAxis::Yaw, clockwise);
-            break;
-        case Interaction::Pitch:
-            stepRotation(RotationAxis::Pitch, clockwise);
-            break;
-        case Interaction::Roll:
-            stepRotation(RotationAxis::Roll, clockwise);
-            break;
+        case Interaction::Yaw:          stepRotation(RotationAxis::Yaw, clockwise); break;
+        case Interaction::Pitch:        stepRotation(RotationAxis::Pitch, clockwise); break;
+        case Interaction::Roll:         stepRotation(RotationAxis::Roll, clockwise); break;
 
-        case Interaction::Zoom:
-            stepZoom(clockwise);
-            break;
+        case Interaction::Zoom:         stepZoom(clockwise); break;
 
         case Interaction::FreeRotation:
         case Interaction::None:
-        default:
-            break;
+        default:                        break;
     }
 }
 
@@ -737,12 +713,9 @@ void CameraWidget::axisRotation(RotationAxis dir, dvec2 mouseDelta) {
     const auto rotAxis = rotationAxis(dir, useWorldAxis_, initialState_);
     const auto distance = static_cast<float>([&]() {
         switch (dir) {
-            case RotationAxis::Yaw:
-                return mouseDelta.x;
-            case RotationAxis::Pitch:
-                return -mouseDelta.y;
-            case RotationAxis::Roll:
-                return mouseDelta.x;
+            case RotationAxis::Yaw:   return mouseDelta.x;
+            case RotationAxis::Pitch: return -mouseDelta.y;
+            case RotationAxis::Roll:  return mouseDelta.x;
         }
         return 0.0;
     }());
@@ -827,14 +800,10 @@ std::vector<ButtonGroupProperty::Button> CameraWidget::buttons() {
 dvec3 CameraWidget::rotationAxis(RotationAxis rot, bool alignToObject, const CameraState& cam) {
     const auto camAxis = [&]() {
         switch (rot) {
-            case RotationAxis::Yaw:
-                return cam.up;
-            case RotationAxis::Pitch:
-                return glm::cross(cam.dir, cam.up);
-            case RotationAxis::Roll:
-                return cam.dir;
-            default:
-                return cam.up;
+            case RotationAxis::Yaw:   return cam.up;
+            case RotationAxis::Pitch: return glm::cross(cam.dir, cam.up);
+            case RotationAxis::Roll:  return cam.dir;
+            default:                  return cam.up;
         }
     }();
 

@@ -394,14 +394,10 @@ bool Property::isDefaultState() const { return false; }
 
 bool Property::needsSerialization() const {
     switch (serializationMode_) {
-        case PropertySerializationMode::All:
-            return true;
-        case PropertySerializationMode::None:
-            return false;
-        case PropertySerializationMode::Default:
-            [[fallthrough]];
-        default:
-            return !isDefaultState() || !getMetaDataMap()->empty();
+        case PropertySerializationMode::All:     return true;
+        case PropertySerializationMode::None:    return false;
+        case PropertySerializationMode::Default: [[fallthrough]];
+        default:                                 return !isDefaultState() || !getMetaDataMap()->empty();
     }
 }
 

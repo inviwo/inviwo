@@ -42,7 +42,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <include/cef_base.h>
-#if __APPLE__                  // Mac
+#if __APPLE__  // Mac
 #include "include/wrapper/cef_library_loader.h"
 #endif
 #include <warn/pop>

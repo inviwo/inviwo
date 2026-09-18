@@ -29,6 +29,4 @@
 
 #include <inviwo/core/interaction/interactionhandler.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

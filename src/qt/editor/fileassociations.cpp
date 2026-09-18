@@ -120,18 +120,12 @@ public:
     bool nativeEvent(void* message, qintptr* result) {
         auto m = static_cast<MSG*>(message);
         switch (m->message) {
-            case WM_DDE_INITIATE:
-                return ddeInitiate(m, result);
-                break;
-            case WM_DDE_EXECUTE:
-                return ddeExecute(m, result);
-                break;
-            case WM_DDE_TERMINATE:
-                return ddeTerminate(m, result);
-                break;
+            case WM_DDE_INITIATE:  return ddeInitiate(m, result); break;
+            case WM_DDE_EXECUTE:   return ddeExecute(m, result); break;
+            case WM_DDE_TERMINATE: return ddeTerminate(m, result); break;
         }
         return false;
-    };
+    }
 
     void registerFileType(const std::string& documentId, const std::string& fileTypeName,
                           const std::string& fileExtension, int appIconIndex,

@@ -29,6 +29,4 @@
 
 #include <inviwo/core/util/unicodefloatingpoint.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

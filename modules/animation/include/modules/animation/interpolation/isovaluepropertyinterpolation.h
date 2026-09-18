@@ -52,12 +52,12 @@ namespace animation {
 namespace detail {
 
 IVW_MODULE_ANIMATION_API void interpolateIsoValuesFade(const IsoValueCollection& source,
+                                                       const IsoValueCollection& destination,
+                                                       double t, IsoValueCollection& out);
+
+IVW_MODULE_ANIMATION_API void interpolateIsoValuesBlend(const IsoValueCollection& source,
                                                         const IsoValueCollection& destination,
                                                         double t, IsoValueCollection& out);
-
-IVW_MODULE_ANIMATION_API void interpolateIsoValuesBlend(
-    const IsoValueCollection& source, const IsoValueCollection& destination, double t,
-    IsoValueCollection& out);
 
 }  // namespace detail
 
@@ -71,8 +71,7 @@ IVW_MODULE_ANIMATION_API void interpolateIsoValuesBlend(
  * zero). This preserves the structural identity of iso-values across the transition.
  */
 class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationFade
-    : public InterpolationTyped<ValueKeyframe<IsoValueCollection>,
-                                IsoValueCollection> {
+    : public InterpolationTyped<ValueKeyframe<IsoValueCollection>, IsoValueCollection> {
 public:
     explicit IsoValuePropertyInterpolationFade(InviwoApplication* app = nullptr);
     IsoValuePropertyInterpolationFade(const IsoValuePropertyInterpolationFade&);
@@ -83,9 +82,7 @@ public:
     virtual IsoValuePropertyInterpolationFade* clone() const override;
 
     virtual std::string_view getDisplayName() const override;
-    virtual std::string_view getIdentifier() const override {
-        return "IsoValueInterpolationFade";
-    }
+    virtual std::string_view getIdentifier() const override { return "IsoValueInterpolationFade"; }
 
     static std::string_view classIdentifier();
     virtual std::string_view getClassIdentifier() const override;
@@ -93,8 +90,8 @@ public:
     virtual bool equal(const Interpolation& other) const override;
 
     virtual void operator()(
-        const std::vector<std::unique_ptr<ValueKeyframe<IsoValueCollection>>>& keys,
-        Seconds from, Seconds to, IsoValueCollection& out) const override;
+        const std::vector<std::unique_ptr<ValueKeyframe<IsoValueCollection>>>& keys, Seconds from,
+        Seconds to, IsoValueCollection& out) const override;
 };
 
 /**
@@ -107,12 +104,12 @@ public:
  * structured iso-value collections.
  */
 class IVW_MODULE_ANIMATION_API IsoValuePropertyInterpolationBlend
-    : public InterpolationTyped<ValueKeyframe<IsoValueCollection>,
-                                IsoValueCollection> {
+    : public InterpolationTyped<ValueKeyframe<IsoValueCollection>, IsoValueCollection> {
 public:
     explicit IsoValuePropertyInterpolationBlend(InviwoApplication* app = nullptr);
     IsoValuePropertyInterpolationBlend(const IsoValuePropertyInterpolationBlend& rhs);
-    IsoValuePropertyInterpolationBlend& operator=(const IsoValuePropertyInterpolationBlend&) = delete;
+    IsoValuePropertyInterpolationBlend& operator=(const IsoValuePropertyInterpolationBlend&) =
+        delete;
     IsoValuePropertyInterpolationBlend(IsoValuePropertyInterpolationBlend&&) = delete;
     IsoValuePropertyInterpolationBlend& operator=(IsoValuePropertyInterpolationBlend&&) = delete;
     virtual ~IsoValuePropertyInterpolationBlend() = default;
@@ -129,8 +126,8 @@ public:
     virtual bool equal(const Interpolation& other) const override;
 
     virtual void operator()(
-        const std::vector<std::unique_ptr<ValueKeyframe<IsoValueCollection>>>& keys,
-        Seconds from, Seconds to, IsoValueCollection& out) const override;
+        const std::vector<std::unique_ptr<ValueKeyframe<IsoValueCollection>>>& keys, Seconds from,
+        Seconds to, IsoValueCollection& out) const override;
 
     OrdinalProperty<size_t> segments;
     OrdinalProperty<double> simplify;

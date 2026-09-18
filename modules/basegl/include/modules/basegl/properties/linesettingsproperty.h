@@ -63,7 +63,7 @@ public:
 
     BoolProperty overrideLineWidth;
     FloatProperty lineWidth;
-    
+
     FloatProperty antialiasing;
     FloatProperty miterLimit;
     BoolProperty roundCaps;

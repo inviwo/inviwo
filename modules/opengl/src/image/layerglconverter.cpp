@@ -33,7 +33,7 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/logcentral.h>
 #include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/texture2d.h>           // IWYU pragma: keep
+#include <modules/opengl/texture/texture2d.h>  // IWYU pragma: keep
 
 #include <ostream>
 #include <type_traits>

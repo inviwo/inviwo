@@ -55,7 +55,7 @@ public:
     CompositeSourceBase& operator=(CompositeSourceBase&&) = delete;
     virtual ~CompositeSourceBase() = default;
 
-    static constexpr std::string_view identifierSuffix() { return ".metasource"; };
+    static constexpr std::string_view identifierSuffix() { return ".metasource"; }
 
     /**
      * Inport to be used by the CompositeProcessor to put data into its sub network.

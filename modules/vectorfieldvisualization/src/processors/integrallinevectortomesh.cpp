@@ -184,25 +184,19 @@ const ProcessorInfo IntegralLineVectorToMesh::processorInfo_{
 
 bool IntegralLineVectorToMesh::isFiltered(const IntegralLine& line, uint32_t idx) const {
     switch (brushBy_.get()) {
-        case BrushBy::LineIndex:
-            return brushingList_.isFiltered(line.getIndex());
-        case BrushBy::VectorPosition:
-            return brushingList_.isFiltered(idx);
+        case BrushBy::LineIndex:      return brushingList_.isFiltered(line.getIndex());
+        case BrushBy::VectorPosition: return brushingList_.isFiltered(idx);
         case BrushBy::Nothing:
-        default:
-            return false;
+        default:                      return false;
     }
 }
 
 bool IntegralLineVectorToMesh::isSelected(const IntegralLine& line, uint32_t idx) const {
     switch (brushBy_.get()) {
-        case BrushBy::LineIndex:
-            return brushingList_.isSelected(line.getIndex());
-        case BrushBy::VectorPosition:
-            return brushingList_.isSelected(idx);
+        case BrushBy::LineIndex:      return brushingList_.isSelected(line.getIndex());
+        case BrushBy::VectorPosition: return brushingList_.isSelected(idx);
         case BrushBy::Nothing:
-        default:
-            return false;
+        default:                      return false;
     }
 }
 

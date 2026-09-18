@@ -294,9 +294,7 @@ void ImageLayoutGL::onStatusChange(bool propagate) {
         case Layout::HorizontalSplitMultiple:
         case Layout::VerticalSplitMultiple:
         case Layout::Single:
-        default:
-            boundsVisible = false;
-            break;
+        default:                              boundsVisible = false; break;
     }
 
     horizontalSplitter_.setVisible(hVisible);
@@ -542,8 +540,7 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             }
             break;
         case Layout::Single:
-        default:
-            viewManager_.push_back(ivec4(0, 0, dim.x, dim.y));
+        default:             viewManager_.push_back(ivec4(0, 0, dim.x, dim.y));
     }
 
     currentDim_ = dim;

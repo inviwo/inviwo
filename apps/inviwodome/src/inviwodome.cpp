@@ -174,14 +174,14 @@ struct SGCTCallbacks {
                 wf->unRegisterObject(wf->getFactoryObject(key));
             }
         }
-    };
+    }
 
     void preSync() {
         TRACY_ZONE_SCOPED_NC("Process Front", 0xAA0000);
 
         // We check the front queue before every frame. No need for setPostEnqueueFront
         app.processFront();
-    };
+    }
 
     auto encode() -> std::vector<std::byte> {
         if (syncServer) {
@@ -202,7 +202,7 @@ struct SGCTCallbacks {
             syncClient->applyCommands(commands);
             commands.clear();
         }
-    };
+    }
 
     void draw(const sgct::RenderData& renderData) {
         TRACY_ZONE_SCOPED_NC("Draw", 0xAAAA00);
@@ -245,7 +245,7 @@ struct SGCTCallbacks {
 
         // Copy inviwo output to sgct
         manager.copy();
-    };
+    }
 
     // be consistent with the other callbacks
     // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
@@ -257,7 +257,7 @@ struct SGCTCallbacks {
         glClearDepth(1.0f);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-    };
+    }
 
     void drop(const std::vector<std::string_view>& files) {
         if (sgct::Engine::instance().isMaster() && !files.empty()) {
@@ -266,7 +266,7 @@ struct SGCTCallbacks {
             app.getWorkspaceManager()->load(path);
             setCamerasToSGCT(*app.getProcessorNetwork());
         }
-    };
+    }
 
     // NOLINTBEGIN(cppcoreguidelines-missing-std-forward)
     template <typename Fun>

@@ -61,12 +61,9 @@ std::string_view getSamplerPrefix(const GLFormat& glFormat) {
     const auto* format = DataFormatBase::get(GLFormats::get(glFormat));
     using namespace std::string_view_literals;
     switch (format->getNumericType()) {
-        case NumericType::UnsignedInteger:
-            return "u"sv;
-        case NumericType::SignedInteger:
-            return "i"sv;
-        default:
-            return {};
+        case NumericType::UnsignedInteger: return "u"sv;
+        case NumericType::SignedInteger:   return "i"sv;
+        default:                           return {};
     }
 }
 

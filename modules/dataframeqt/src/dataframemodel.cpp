@@ -132,8 +132,7 @@ void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                 }
                 break;
             }
-            default:
-                return [](int) { return QVariant(); };
+            default: return [](int) { return QVariant(); };
         }
     };
     auto getToolTipFunc = [categoryIndices](const Column* col) -> std::function<QVariant(int)> {
@@ -149,8 +148,7 @@ void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                 break;
             case ColumnType::Ordinal:
             case ColumnType::Index:
-            default:
-                return [](int) { return QVariant(); };
+            default:                  return [](int) { return QVariant(); };
         }
     };
 
@@ -178,13 +176,10 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
             if (index.column() >= std::ssize(valueFuncs_)) return {};
             const QVariant val = valueFuncs_[index.column()](index.row());
             switch (val.typeId()) {
-                case QMetaType::Double:
-                    return QString::number(val.toDouble(), 'g', 6);
-                case QMetaType::Float:
-                    return QString::number(val.toFloat());
+                case QMetaType::Double:  return QString::number(val.toDouble(), 'g', 6);
+                case QMetaType::Float:   return QString::number(val.toFloat());
                 case QMetaType::QString:
-                default:
-                    return val.toString();
+                default:                 return val.toString();
             }
         }
         case Roles::Data:
@@ -214,8 +209,7 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
                 return QBrush();
             }
         }
-        default:
-            return QVariant();
+        default: return {};
     }
 }
 

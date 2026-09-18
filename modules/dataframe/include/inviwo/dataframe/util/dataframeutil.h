@@ -37,7 +37,7 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/util/filters.h>                              // IWYU pragma: keep
+#include <inviwo/dataframe/util/filters.h>  // IWYU pragma: keep
 
 #include <cstddef>
 #include <cstdint>

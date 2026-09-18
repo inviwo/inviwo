@@ -89,8 +89,7 @@ IntMinMaxPropertyWidget::IntMinMaxPropertyWidget(IntMinMaxProperty& property, Pr
                     property_->set(getPreviousValue() + moveby);
                     break;
                 }
-                default:
-                    break;
+                default: break;
             }
             triggerUpdate = (property_->get() != currentValue);
         }

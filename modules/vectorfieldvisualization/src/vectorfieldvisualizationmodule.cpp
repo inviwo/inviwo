@@ -263,8 +263,7 @@ bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
             return res;
         }
 
-        default:
-            return false;  // No changes
+        default: return false;  // No changes
     }
     return true;
 }

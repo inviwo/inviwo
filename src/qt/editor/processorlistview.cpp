@@ -54,14 +54,10 @@ namespace inviwo {
 namespace {
 QColor colorForState(CodeState state) {
     switch (state) {
-        case CodeState::Stable:
-            return {38, 86, 115};
-        case CodeState::Experimental:
-            return {141, 92, 21};
-        case CodeState::Deprecated:
-            return {77, 77, 80};
-        case CodeState::Broken:
-            return {115, 107, 39};
+        case CodeState::Stable:       return {38, 86, 115};
+        case CodeState::Experimental: return {141, 92, 21};
+        case CodeState::Deprecated:   return {77, 77, 80};
+        case CodeState::Broken:       return {115, 107, 39};
     }
     return {0, 0, 0};
 }

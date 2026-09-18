@@ -39,4 +39,4 @@ namespace inviwo {
 
 IVW_SYS_API std::vector<std::unique_ptr<InviwoModuleFactoryObject>> getModuleList();
 
-}
+}  // namespace inviwo

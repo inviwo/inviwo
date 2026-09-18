@@ -50,7 +50,7 @@ using BaseCallBack = std::function<void()>;
 class CallBackList {
 public:
     CallBackList() = default;
-    CallBackList(const CallBackList& rhs) : callBackList_{}, dispatcher_{rhs.dispatcher_} {};
+    CallBackList(const CallBackList& rhs) : callBackList_{}, dispatcher_{rhs.dispatcher_} {}
     CallBackList(CallBackList&&) = default;
     CallBackList& operator=(const CallBackList& that) {
         if (this != &that) {
@@ -58,7 +58,7 @@ public:
             dispatcher_ = that.dispatcher_;
         }
         return *this;
-    };
+    }
     CallBackList& operator=(CallBackList&) = default;
     ~CallBackList() = default;
 

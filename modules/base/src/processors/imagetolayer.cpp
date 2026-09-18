@@ -71,10 +71,8 @@ void ImageToLayer::process() {
     auto data = inport_.getData();
     auto layer = [&]() {
         switch (outputLayer_.get()) {
-            case static_cast<int>(LayerEnum::Depth):
-                return data->getDepthLayer()->clone();
-            case static_cast<int>(LayerEnum::Picking):
-                return data->getPickingLayer()->clone();
+            case static_cast<int>(LayerEnum::Depth):   return data->getDepthLayer()->clone();
+            case static_cast<int>(LayerEnum::Picking): return data->getPickingLayer()->clone();
             default:
                 const auto nColorLayers = inport_.getData()->getNumberOfColorLayers();
                 if (outputLayer_.get() >= static_cast<int>(nColorLayers)) {

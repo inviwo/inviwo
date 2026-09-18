@@ -61,11 +61,9 @@ namespace {
 
 std::string_view toShaderString(LIC3D::Kernel kernel) {
     switch (kernel) {
-        case LIC3D::Kernel::Gaussian:
-            return "gaussian";
+        case LIC3D::Kernel::Gaussian: return "gaussian";
         case LIC3D::Kernel::Box:
-        default:
-            return "box";
+        default:                      return "box";
     }
 }
 
@@ -85,10 +83,11 @@ the 3D LIC.)"_unindentHelp,
 const ProcessorInfo& LIC3D::getProcessorInfo() const { return processorInfo_; }
 
 LIC3D::LIC3D()
-    : VolumeGLProcessor{"lic3d.frag", VolumeConfig{.format = DataFloat32::get(),
-                                                   .swizzleMask = swizzlemasks::defaultData(1),
-                                                   .dataRange = DataMapper::defaultDataRangeFor(
-                                                       DataFloat32::get())}}
+    : VolumeGLProcessor{
+          "lic3d.frag",
+          VolumeConfig{.format = DataFloat32::get(),
+                       .swizzleMask = swizzlemasks::defaultData(1),
+                       .dataRange = DataMapper::defaultDataRangeFor(DataFloat32::get())}}
     , vectorField_{"vectorField", "Input vector field"_help}
     , direction_{"direction",
                  "Integration Direction",
@@ -154,14 +153,10 @@ void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig&
     const size3_t dims = [&]() {
         using enum OutputDimensions;
         switch (outputDimensions_.getSelectedValue()) {
-            case NoiseVolume:
-                return inport_->getData()->getDimensions();
-            case VectorField:
-                return vectorField_.getData()->getDimensions();
-            case Custom:
-                return size3_t{dims_.get()};
-            default:
-                return size3_t{dims_.get()};
+            case NoiseVolume: return inport_->getData()->getDimensions();
+            case VectorField: return vectorField_.getData()->getDimensions();
+            case Custom:      return size3_t{dims_.get()};
+            default:          return size3_t{dims_.get()};
         }
     }();
 

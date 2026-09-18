@@ -57,6 +57,6 @@ public:
 namespace util {
 IVW_MODULE_BASE_API void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
                                         Overwrite overwrite = Overwrite::No);
-}
+}  // namespace util
 
 }  // namespace inviwo

@@ -156,20 +156,20 @@ auto createSource(std::string_view id, OnCallbacks callbacks = {}) {
     auto source = std::make_unique<TestProcessor>(id, std::move(callbacks));
     source->addPort(source->outport);
     return source;
-};
+}
 
 auto createSink(std::string_view id, OnCallbacks callbacks = {}) {
     auto sink = std::make_unique<TestProcessor>(id, std::move(callbacks));
     sink->addPort(sink->inport);
     return sink;
-};
+}
 
 auto createProcessor(std::string_view id, OnCallbacks callbacks = {}) {
     auto sink = std::make_unique<TestProcessor>(id, std::move(callbacks));
     sink->addPort(sink->inport);
     sink->addPort(sink->outport);
     return sink;
-};
+}
 
 }  // namespace
 

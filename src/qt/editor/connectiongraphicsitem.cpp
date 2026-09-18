@@ -341,8 +341,7 @@ QVariant ConnectionGraphicsItem::itemChange(GraphicsItemChange change, const QVa
             inport_->update();
             outport_->update();
             break;
-        default:
-            break;
+        default: break;
     }
 #include <warn/pop>
     return QGraphicsItem::itemChange(change, value);

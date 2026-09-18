@@ -84,11 +84,8 @@ int main(int argc, char* argv[]) {
     // by webbrowsermodule.cpp.
     CefRefPtr<CefApp> app = nullptr;
     switch (GetProcessType(command_line)) {
-        case PROCESS_TYPE_RENDERER:
-            app = new inviwo::CefWebRendererApp();
-            break;
-        case PROCESS_TYPE_OTHER:
-            app = new inviwo::CefWebAppOther();
+        case PROCESS_TYPE_RENDERER: app = new inviwo::CefWebRendererApp(); break;
+        case PROCESS_TYPE_OTHER:    app = new inviwo::CefWebAppOther();
         default:
             // No app, but it is ok to pass nullptr to CefExecuteProcess
             break;

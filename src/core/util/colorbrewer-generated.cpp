@@ -40,7 +40,7 @@ namespace colorbrewer {
 
 const std::vector<dvec4>& getColormap(Colormap colormap) {
     switch (colormap) {
-        // clang-format off
+            // clang-format off
         case Colormap::Accent_1: {
             static const std::vector<dvec4> accent_1(
                 {dvec4(0.4980392156862745, 0.788235294117647, 0.4980392156862745, 1.0)});
@@ -2894,7 +2894,7 @@ glm::uint8 getMaxNumberOfColorsForFamily(const Family& family) {
 std::vector<Family> getFamiliesForCategory(const Category& category) {
     std::vector<Family> v;
     switch (category) {
-        // clang-format off
+            // clang-format off
         case Category::Diverging:
             v.emplace_back(Family::BrBG);
             v.emplace_back(Family::PRGn);
@@ -2945,7 +2945,7 @@ std::vector<Family> getFamiliesForCategory(const Category& category) {
 
 std::ostream& operator<<(std::ostream& os, Colormap colormap) {
     switch (colormap) {
-        // clang-format off
+            // clang-format off
         case Colormap::Accent_1: os << "Accent_1"; break;
         case Colormap::Accent_2: os << "Accent_2"; break;
         case Colormap::Accent_3: os << "Accent_3"; break;
@@ -3225,7 +3225,7 @@ std::ostream& operator<<(std::ostream& os, Colormap colormap) {
 
 std::ostream& operator<<(std::ostream& os, Category category) {
     switch (category) {
-        // clang-format off
+            // clang-format off
         case Category::Diverging: os << "Diverging"; break;
         case Category::Qualitative: os << "Qualitative"; break;
         case Category::Sequential: os << "Sequential"; break;
@@ -3238,7 +3238,7 @@ std::ostream& operator<<(std::ostream& os, Category category) {
 
 std::ostream& operator<<(std::ostream& os, Family family) {
     switch (family) {
-        // clang-format off
+            // clang-format off
         case Family::Accent: os << "Accent"; break;
         case Family::Blues: os << "Blues"; break;
         case Family::BrBG: os << "BrBG"; break;

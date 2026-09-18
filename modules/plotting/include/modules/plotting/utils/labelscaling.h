@@ -47,26 +47,19 @@ enum class LabelScale : std::uint8_t { None, Tens, Thousands };
 
 constexpr std::optional<int> labelScaleStep(LabelScale scale) {
     switch (scale) {
-        case LabelScale::None:
-            return std::nullopt;
-        case LabelScale::Tens:
-            return 1;
-        case LabelScale::Thousands:
-            return 3;
+        case LabelScale::None:      return std::nullopt;
+        case LabelScale::Tens:      return 1;
+        case LabelScale::Thousands: return 3;
     }
     return std::nullopt;
 }
 
 constexpr auto scaleUnit(LabelScale labelScale, Unit unit, int exp) {
     switch (labelScale) {
-        case LabelScale::None:
-            return unit;
-        case LabelScale::Tens:
-            [[fallthrough]];
-        case LabelScale::Thousands:
-            [[fallthrough]];
-        default:
-            return Unit{std::pow(10, exp), unit};
+        case LabelScale::None:      return unit;
+        case LabelScale::Tens:      [[fallthrough]];
+        case LabelScale::Thousands: [[fallthrough]];
+        default:                    return Unit{std::pow(10, exp), unit};
     }
 }
 

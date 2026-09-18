@@ -49,7 +49,7 @@ public:
     virtual std::unique_ptr<ProcessorWidget> create(Processor* p) const override {
         return StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject, std::string_view,
                                Processor*>::create(p->getClassIdentifier(), p);
-    };
+    }
     virtual bool hasKey(Processor* p) const override {
         return StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject, std::string_view,
                                Processor*>::hasKey(p->getClassIdentifier());

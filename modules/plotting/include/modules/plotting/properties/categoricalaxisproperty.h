@@ -63,7 +63,7 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.CategoricalAxisProperty"};
     using Orientation = AxisProperty::Orientation;
-    
+
     CategoricalAxisProperty(std::string_view identifier, std::string_view displayName,
                             std::vector<std::string> categories = {"Category"},
                             Orientation orientation = Orientation::Horizontal,
@@ -98,7 +98,6 @@ public:
     PlotTextProperty captionSettings_;
     PlotTextProperty labelSettings_;
     MajorTickProperty majorTicks_;
-
 
 protected:
     CategoricalAxisProperty(const CategoricalAxisProperty& rhs);

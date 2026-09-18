@@ -46,19 +46,19 @@ namespace inviwo {
  */
 class IVW_MODULE_OPENGL_API TextureObserver : public Observer {
 public:
-    TextureObserver() : Observer(){};
+    TextureObserver() : Observer() {}
 
     /**
      * This method will be called before the texture is initialized.
      * Override it to add behavior.
      */
-    virtual void notifyBeforeTextureInitialization(){};
+    virtual void notifyBeforeTextureInitialization() {}
 
     /**
      * This method will be called after the texture has been initialized.
      * Override it to add behavior.
      */
-    virtual void notifyAfterTextureInitialization(){};
+    virtual void notifyAfterTextureInitialization() {}
 };
 
 }  // namespace inviwo

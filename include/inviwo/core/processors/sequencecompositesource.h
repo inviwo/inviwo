@@ -55,7 +55,7 @@ public:
     SequenceCompositeSourceBase& operator=(SequenceCompositeSourceBase&&) = delete;
     virtual ~SequenceCompositeSourceBase() = default;
 
-    static constexpr std::string_view identifierSuffix() { return ".metasequencesource"; };
+    static constexpr std::string_view identifierSuffix() { return ".metasequencesource"; }
 
     /**
      * Inport to be used by the SequenceProcessor to put data into its sub network.

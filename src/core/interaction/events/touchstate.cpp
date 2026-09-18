@@ -34,16 +34,11 @@ namespace inviwo {
 
 std::string_view enumToStr(TouchState s) {
     switch (s) {
-        case TouchState::None:
-            return "None";
-        case TouchState::Started:
-            return "Started";
-        case TouchState::Updated:
-            return "Updated";
-        case TouchState::Stationary:
-            return "Stationary";
-        case TouchState::Finished:
-            return "Finished";
+        case TouchState::None:       return "None";
+        case TouchState::Started:    return "Started";
+        case TouchState::Updated:    return "Updated";
+        case TouchState::Stationary: return "Stationary";
+        case TouchState::Finished:   return "Finished";
     }
     throw Exception(SourceContext{}, "Found invalid TouchState enum value '{}'",
                     static_cast<int>(s));

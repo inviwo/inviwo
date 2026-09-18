@@ -40,7 +40,7 @@ IsoValueCollectionIIVWriter::IsoValueCollectionIIVWriter() {
 
 IsoValueCollectionIIVWriter* IsoValueCollectionIIVWriter::clone() const {
     return new IsoValueCollectionIIVWriter(*this);
-};
+}
 
 void IsoValueCollectionIIVWriter::writeData(const IsoValueCollection* data,
                                             const std::filesystem::path& filePath) const {
@@ -49,7 +49,7 @@ void IsoValueCollectionIIVWriter::writeData(const IsoValueCollection* data,
     Serializer serializer(filePath, "InviwoIsovalues", &mbr);
     data->serialize(serializer);
     serializer.writeFile();
-};
+}
 
 std::unique_ptr<std::vector<unsigned char>> IsoValueCollectionIIVWriter::writeDataToBuffer(
     const IsoValueCollection* data, std::string_view) const {
@@ -64,6 +64,6 @@ std::unique_ptr<std::vector<unsigned char>> IsoValueCollectionIIVWriter::writeDa
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
     std::copy(xml.begin(), xml.end(), buffer->begin());
     return buffer;
-};
+}
 
 }  // namespace inviwo

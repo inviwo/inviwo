@@ -193,12 +193,9 @@ void Background::initializeResources() {
 
     const std::string_view blendfunc = [&]() {
         switch (blendMode_.get()) {
-            case BlendMode::BackToFront:
-                return "blendBackToFront";
-            case BlendMode::AlphaMixing:
-                [[fallthrough]];
-            default:
-                return "blendAlphaCompositing";
+            case BlendMode::BackToFront: return "blendBackToFront";
+            case BlendMode::AlphaMixing: [[fallthrough]];
+            default:                     return "blendAlphaCompositing";
         }
     }();
     fs->addShaderDefine("BLENDFUNC", blendfunc);

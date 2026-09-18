@@ -241,16 +241,24 @@ public:
     constexpr V2 base2() && { return std::move(base2_); }
 
     constexpr iterator begin() {
-        return iterator{std::ranges::begin(base1_), std::ranges::end(base1_),
-                        std::ranges::begin(base2_), std::ranges::end(base2_), comp_, fn_};
+        return iterator{std::ranges::begin(base1_),
+                        std::ranges::end(base1_),
+                        std::ranges::begin(base2_),
+                        std::ranges::end(base2_),
+                        comp_,
+                        fn_};
     }
 
     // When both bases are forward + common, expose a real end() iterator so the view
     // models common_range. Otherwise fall back to default_sentinel.
     constexpr auto end() {
         if constexpr (both_forward && both_common) {
-            return iterator{std::ranges::end(base1_), std::ranges::end(base1_),
-                            std::ranges::end(base2_), std::ranges::end(base2_), comp_, fn_};
+            return iterator{std::ranges::end(base1_),
+                            std::ranges::end(base1_),
+                            std::ranges::end(base2_),
+                            std::ranges::end(base2_),
+                            comp_,
+                            fn_};
         } else {
             return std::default_sentinel;
         }

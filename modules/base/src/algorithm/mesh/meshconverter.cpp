@@ -157,8 +157,7 @@ std::unique_ptr<Mesh> toLineMesh(const Mesh& mesh) {
                     break;
                 }
                 case ConnectivityType::Loop:
-                default:
-                    break;
+                default:                     break;
             }
         }
     }

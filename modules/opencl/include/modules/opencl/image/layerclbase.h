@@ -42,7 +42,7 @@ class IVW_MODULE_OPENCL_API LayerCLBase {
 public:
     LayerCLBase() = default;
     LayerCLBase(const LayerCLBase& other) = default;
-    virtual ~LayerCLBase(){};
+    virtual ~LayerCLBase() {}
 
     virtual cl::Image& getEditable() = 0;
     virtual const cl::Image& get() const = 0;

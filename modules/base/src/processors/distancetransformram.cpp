@@ -190,8 +190,7 @@ void DistanceTransformRAM::process() {
                 dstVol->dataMap.valueRange = customDataRange;
                 break;
             }
-            default:
-                break;
+            default: break;
         }
         return dstVol;
     };
@@ -205,17 +204,10 @@ void DistanceTransformRAM::process() {
 
 std::ostream& operator<<(std::ostream& ss, DistanceTransformRAM::DataRangeMode m) {
     switch (m) {
-        case DistanceTransformRAM::DataRangeMode::Diagonal:
-            ss << "Diagonal";
-            break;
-        case DistanceTransformRAM::DataRangeMode::MinMax:
-            ss << "MinMax";
-            break;
-        case DistanceTransformRAM::DataRangeMode::Custom:
-            ss << "Custom";
-            break;
-        default:
-            break;
+        case DistanceTransformRAM::DataRangeMode::Diagonal: ss << "Diagonal"; break;
+        case DistanceTransformRAM::DataRangeMode::MinMax:   ss << "MinMax"; break;
+        case DistanceTransformRAM::DataRangeMode::Custom:   ss << "Custom"; break;
+        default:                                            break;
     }
     return ss;
 }

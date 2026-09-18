@@ -43,7 +43,7 @@
 namespace inviwo {
 class TransferFunction;
 class IsoValueCollection;
-}
+}  // namespace inviwo
 
 namespace inviwo::animation {
 

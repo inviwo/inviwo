@@ -206,7 +206,7 @@ MeshCreator::MeshCreator()
 
         switch (meshType_.get()) {
             case MeshType::ColorSphere:
-            case MeshType::CoordAxes: {
+            case MeshType::CoordAxes:   {
                 pickingUpdate_ = updatePosition1;
                 util::show(position1_, meshScale_);
                 break;
@@ -239,14 +239,14 @@ MeshCreator::MeshCreator()
             }
             case MeshType::Plane:
             case MeshType::Circle:
-            case MeshType::Disk: {
+            case MeshType::Disk:   {
                 pickingUpdate_ = updatePosition1;
                 util::show(position1_, normal_, meshScale_, meshRes_, color_);
                 break;
             }
             case MeshType::Cone:
             case MeshType::Cylinder:
-            case MeshType::Arrow: {
+            case MeshType::Arrow:    {
                 pickingUpdate_ = updatePosition1and2;
                 util::show(position1_, position2_, meshScale_, meshRes_, color_);
                 break;
@@ -267,7 +267,7 @@ MeshCreator::MeshCreator()
                            color_);
                 break;
             case MeshType::Sphere:
-            default: {
+            default:               {
                 pickingUpdate_ = updateNone;
                 util::show(meshScale_, meshRes_);
                 break;
@@ -290,8 +290,7 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
             mesh->setModelMatrix(glm::scale(vec3{meshScale_.get()}));
             return mesh;
         }
-        case MeshType::ColorSphere:
-            return meshutil::colorsphere(position1_, meshScale_.get());
+        case MeshType::ColorSphere:   return meshutil::colorsphere(position1_, meshScale_.get());
         case MeshType::CubeBasicMesh: {
             const vec3 posLLF = position1_;
             const vec3 posURB = position2_;
@@ -308,22 +307,19 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
             return SimpleMeshCreator::rectangularPrism(posLLF, posURB, posLLF, posURB,
                                                        vec4(posLLF, 1.f), vec4(posURB, 1.f));
         }
-        case MeshType::CubeIndicator:
-            return meshutil::cubeIndicator(basis_.getBasisAndOffset());
-        case MeshType::LineCube:
-            return meshutil::boundingbox(basis_.getBasisAndOffset(), color_);
+        case MeshType::CubeIndicator: return meshutil::cubeIndicator(basis_.getBasisAndOffset());
+        case MeshType::LineCube:      return meshutil::boundingbox(basis_.getBasisAndOffset(), color_);
 
         case MeshType::LineCubeAdjacency:
             return meshutil::boundingBoxAdjacency(basis_.getBasisAndOffset(), color_);
-        case MeshType::Point:
-            return meshutil::point(position1_, color_);
-        case MeshType::Line:
-            return meshutil::line(position1_, position2_, color_);
-        case MeshType::Plane: 
+        case MeshType::Point: return meshutil::point(position1_, color_);
+        case MeshType::Line:  return meshutil::line(position1_, position2_, color_);
+        case MeshType::Plane:
             return meshutil::square(position1_, normal_, vec2(1.0f, 1.0f) * meshScale_.get(),
                                     color_, meshRes_.get());
         case MeshType::Circle:
-            return meshutil::circle(position1_, normal_, color_, meshScale_.get(), meshRes_.get().x);
+            return meshutil::circle(position1_, normal_, color_, meshScale_.get(),
+                                    meshRes_.get().x);
         case MeshType::Disk:
             return meshutil::disk(position1_, normal_, color_, meshScale_.get(), meshRes_.get().x);
         case MeshType::Cone:
@@ -335,21 +331,18 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
         case MeshType::Arrow:
             return meshutil::arrow(position1_, position2_, color_, meshScale_.get(), 0.25f,
                                    meshScale_.get() * 1.8f, meshRes_.get().x);
-        case MeshType::CoordAxes:
-            return meshutil::coordindicator(position1_, meshScale_.get());
+        case MeshType::CoordAxes: return meshutil::coordindicator(position1_, meshScale_.get());
         case MeshType::Torus:
             return meshutil::torus(position1_, vec3(0, 0, 1), torusRadius1_, torusRadius2_,
                                    meshRes_, color_);
-        case MeshType::SphereOpt:
-            return meshutil::sphere(position1_, meshScale_, color_);
+        case MeshType::SphereOpt: return meshutil::sphere(position1_, meshScale_, color_);
         case MeshType::RotatingLine:
             return meshutil::rotatingLine(position1_, position2_, rotationAngle_, color_,
                                           lineSegments_, meshScale_, false);
         case MeshType::RotatingLineAdjacency:
             return meshutil::rotatingLine(position1_, position2_, rotationAngle_, color_,
                                           lineSegments_, meshScale_, true);
-        default:
-            return SimpleMeshCreator::sphere(0.1f, meshRes_.get().x, meshRes_.get().y);
+        default: return SimpleMeshCreator::sphere(0.1f, meshRes_.get().x, meshRes_.get().y);
     }
 }
 

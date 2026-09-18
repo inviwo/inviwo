@@ -97,11 +97,9 @@ void LayerDistanceTransform::process() {
         switch (upsampling_) {
             case Upsampling::Uniform:
                 return size2_t{static_cast<size_t>(upsampleFactorUniform_.get())};
-            case Upsampling::Custom:
-                return upsampleFactorVec2_.get();
+            case Upsampling::Custom: return upsampleFactorVec2_.get();
             case Upsampling::None:
-            default:
-                return {1, 1};
+            default:                 return {1, 1};
         }
     }();
 

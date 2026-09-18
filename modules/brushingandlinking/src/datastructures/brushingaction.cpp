@@ -71,12 +71,9 @@ void BrushingTarget::deserialize(Deserializer& d) {
 std::string_view enumToStr(BrushingAction action) {
     switch (action) {
         using enum BrushingAction;
-        case Filter:
-            return "Filter";
-        case Select:
-            return "Select";
-        case Highlight:
-            return "Highlight";
+        case Filter:    return "Filter";
+        case Select:    return "Select";
+        case Highlight: return "Highlight";
     }
     throw Exception(SourceContext{}, "Found invalid BrushingAction enum value '{}'",
                     static_cast<int>(action));
@@ -85,12 +82,9 @@ std::string_view enumToStr(BrushingAction action) {
 std::string_view enumToStr(BrushingModification bm) {
     switch (bm) {
         using enum BrushingModification;
-        case Filtered:
-            return "Filtered";
-        case Selected:
-            return "Selected";
-        case Highlighted:
-            return "Highlighted";
+        case Filtered:    return "Filtered";
+        case Selected:    return "Selected";
+        case Highlighted: return "Highlighted";
     }
     throw Exception(SourceContext{}, "Found invalid BrushingModification enum value '{}'",
                     static_cast<int>(bm));

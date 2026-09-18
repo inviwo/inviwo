@@ -127,8 +127,7 @@ bool Converter::convert(TxElement* root) {
             return true;
         }
 
-        default:
-            return false;  // No changes
+        default: return false;  // No changes
     }
 }
 

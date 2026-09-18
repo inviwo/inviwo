@@ -102,16 +102,11 @@ void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direct
                 drawBorder] = [&]() -> std::tuple<float, float, bool, bool> {
         const float width = settings.getWidth();
         switch (style) {
-            case splitter::Style::Handle:
-                return {width / 3.0f, width, true, true};
-            case splitter::Style::Divider:
-                return {width, width * 0.6f, true, false};
-            case splitter::Style::Line:
-                return {width, 0.0f, false, false};
-            case splitter::Style::Invisible:
-                return {0.0f, 0.0f, true, false};
-            default:
-                return {0.0f, 0.0f, true, false};
+            case splitter::Style::Handle:    return {width / 3.0f, width, true, true};
+            case splitter::Style::Divider:   return {width, width * 0.6f, true, false};
+            case splitter::Style::Line:      return {width, 0.0f, false, false};
+            case splitter::Style::Invisible: return {0.0f, 0.0f, true, false};
+            default:                         return {0.0f, 0.0f, true, false};
         }
     }();
 

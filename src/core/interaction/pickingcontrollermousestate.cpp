@@ -90,16 +90,11 @@ struct Wheel : BaseEvent {
 
 PickingPressItem mouseButtonToPressItem(MouseButton mb) {
     switch (mb) {
-        case MouseButton::None:
-            return PickingPressItem::None;
-        case MouseButton::Left:
-            return PickingPressItem::Primary;
-        case MouseButton::Middle:
-            return PickingPressItem::Tertiary;
-        case MouseButton::Right:
-            return PickingPressItem::Secondary;
-        default:
-            return PickingPressItem::None;
+        case MouseButton::None:   return PickingPressItem::None;
+        case MouseButton::Left:   return PickingPressItem::Primary;
+        case MouseButton::Middle: return PickingPressItem::Tertiary;
+        case MouseButton::Right:  return PickingPressItem::Secondary;
+        default:                  return PickingPressItem::None;
     }
 }
 PickingPressItems mouseButtonsToPressItems(MouseButtons mb) {

@@ -38,8 +38,6 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <modules/plottinggl/utils/axis3dprocessorhelper.h>
 
-
-
 namespace inviwo::plot {
 
 /**

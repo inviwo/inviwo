@@ -66,14 +66,10 @@ enum class BrushingModification : int {
 
 constexpr BrushingModification fromAction(BrushingAction action) {
     switch (action) {
-        case BrushingAction::Filter:
-            return BrushingModification::Filtered;
-        case BrushingAction::Select:
-            return BrushingModification::Selected;
-        case BrushingAction::Highlight:
-            return BrushingModification::Highlighted;
-        default:
-            return BrushingModification::Selected;
+        case BrushingAction::Filter:    return BrushingModification::Filtered;
+        case BrushingAction::Select:    return BrushingModification::Selected;
+        case BrushingAction::Highlight: return BrushingModification::Highlighted;
+        default:                        return BrushingModification::Selected;
     }
 }
 

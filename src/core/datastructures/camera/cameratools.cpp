@@ -133,7 +133,7 @@ double widthToViewDist(double width, double fov, double aspect) {
 
 namespace {
 
-constexpr bool overlap(dvec2 r1, dvec2 r2) { return r1.y >= r2.x && r2.y >= r1.x; };
+constexpr bool overlap(dvec2 r1, dvec2 r2) { return r1.y >= r2.x && r2.y >= r1.x; }
 
 constexpr std::array<dvec3, 8> corners{
     {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};

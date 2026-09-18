@@ -90,8 +90,7 @@ bool OITModule::Converter::convert(TxElement* root) {
                                              "rastarizations", "rasterizations");
             return res;
         }
-        default:
-            return false;
+        default: return false;
     }
 }
 

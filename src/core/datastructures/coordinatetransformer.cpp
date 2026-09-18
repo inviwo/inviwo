@@ -41,18 +41,12 @@ template class IVW_CORE_TMPL_INST StructuredCameraCoordinateTransformerImpl<3>;
 
 std::string_view enumToStr(CoordinateSpace s) {
     switch (s) {
-        case CoordinateSpace::Data:
-            return "Data";
-        case CoordinateSpace::Model:
-            return "Model";
-        case CoordinateSpace::World:
-            return "World";
-        case CoordinateSpace::Index:
-            return "Index";
-        case CoordinateSpace::Clip:
-            return "Clip";
-        case CoordinateSpace::View:
-            return "View";
+        case CoordinateSpace::Data:  return "Data";
+        case CoordinateSpace::Model: return "Model";
+        case CoordinateSpace::World: return "World";
+        case CoordinateSpace::Index: return "Index";
+        case CoordinateSpace::Clip:  return "Clip";
+        case CoordinateSpace::View:  return "View";
     }
     throw Exception(SourceContext{}, "Found invalid CoordinateSpace enum value '{}'",
                     static_cast<int>(s));
@@ -101,12 +95,9 @@ glm::dmat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, Coordin
     switch (from) {
         case CoordinateSpace::Data:
             switch (to) {
-                case CoordinateSpace::Data:
-                    return {1.0};
-                case CoordinateSpace::Model:
-                    return getDataToModelMatrix();
-                case CoordinateSpace::World:
-                    return getDataToWorldMatrix();
+                case CoordinateSpace::Data:  return {1.0};
+                case CoordinateSpace::Model: return getDataToModelMatrix();
+                case CoordinateSpace::World: return getDataToWorldMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -114,12 +105,9 @@ glm::dmat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, Coordin
             }
         case CoordinateSpace::Model:
             switch (to) {
-                case CoordinateSpace::Data:
-                    return getModelToDataMatrix();
-                case CoordinateSpace::Model:
-                    return {1.0};
-                case CoordinateSpace::World:
-                    return getModelToWorldMatrix();
+                case CoordinateSpace::Data:  return getModelToDataMatrix();
+                case CoordinateSpace::Model: return {1.0};
+                case CoordinateSpace::World: return getModelToWorldMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -127,12 +115,9 @@ glm::dmat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, Coordin
             }
         case CoordinateSpace::World:
             switch (to) {
-                case CoordinateSpace::Data:
-                    return getWorldToDataMatrix();
-                case CoordinateSpace::Model:
-                    return getWorldToModelMatrix();
-                case CoordinateSpace::World:
-                    return {1.0};
+                case CoordinateSpace::Data:  return getWorldToDataMatrix();
+                case CoordinateSpace::Model: return getWorldToModelMatrix();
+                case CoordinateSpace::World: return {1.0};
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -149,14 +134,10 @@ glm::dmat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
     switch (from) {
         case CoordinateSpace::Index:
             switch (to) {
-                case CoordinateSpace::Index:
-                    return {1.0};
-                case CoordinateSpace::Data:
-                    return getIndexToDataMatrix();
-                case CoordinateSpace::Model:
-                    return getIndexToModelMatrix();
-                case CoordinateSpace::World:
-                    return getIndexToWorldMatrix();
+                case CoordinateSpace::Index: return {1.0};
+                case CoordinateSpace::Data:  return getIndexToDataMatrix();
+                case CoordinateSpace::Model: return getIndexToModelMatrix();
+                case CoordinateSpace::World: return getIndexToWorldMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -164,14 +145,10 @@ glm::dmat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
             }
         case CoordinateSpace::Data:
             switch (to) {
-                case CoordinateSpace::Index:
-                    return getDataToIndexMatrix();
-                case CoordinateSpace::Data:
-                    return {1.0};
-                case CoordinateSpace::Model:
-                    return getDataToModelMatrix();
-                case CoordinateSpace::World:
-                    return getDataToWorldMatrix();
+                case CoordinateSpace::Index: return getDataToIndexMatrix();
+                case CoordinateSpace::Data:  return {1.0};
+                case CoordinateSpace::Model: return getDataToModelMatrix();
+                case CoordinateSpace::World: return getDataToWorldMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -179,14 +156,10 @@ glm::dmat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
             }
         case CoordinateSpace::Model:
             switch (to) {
-                case CoordinateSpace::Index:
-                    return getModelToIndexMatrix();
-                case CoordinateSpace::Data:
-                    return getModelToDataMatrix();
-                case CoordinateSpace::Model:
-                    return {1.0};
-                case CoordinateSpace::World:
-                    return getModelToWorldMatrix();
+                case CoordinateSpace::Index: return getModelToIndexMatrix();
+                case CoordinateSpace::Data:  return getModelToDataMatrix();
+                case CoordinateSpace::Model: return {1.0};
+                case CoordinateSpace::World: return getModelToWorldMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -194,14 +167,10 @@ glm::dmat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
             }
         case CoordinateSpace::World:
             switch (to) {
-                case CoordinateSpace::Index:
-                    return getWorldToIndexMatrix();
-                case CoordinateSpace::Data:
-                    return getWorldToDataMatrix();
-                case CoordinateSpace::Model:
-                    return getWorldToModelMatrix();
-                case CoordinateSpace::World:
-                    return {1.0};
+                case CoordinateSpace::Index: return getWorldToIndexMatrix();
+                case CoordinateSpace::Data:  return getWorldToDataMatrix();
+                case CoordinateSpace::Model: return getWorldToModelMatrix();
+                case CoordinateSpace::World: return {1.0};
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -218,16 +187,11 @@ glm::dmat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
     switch (from) {
         case CoordinateSpace::Data:
             switch (to) {
-                case CoordinateSpace::Data:
-                    return {1.0};
-                case CoordinateSpace::Model:
-                    return getDataToModelMatrix();
-                case CoordinateSpace::World:
-                    return getDataToWorldMatrix();
-                case CoordinateSpace::View:
-                    return getDataToViewMatrix();
-                case CoordinateSpace::Clip:
-                    return getDataToClipMatrix();
+                case CoordinateSpace::Data:  return {1.0};
+                case CoordinateSpace::Model: return getDataToModelMatrix();
+                case CoordinateSpace::World: return getDataToWorldMatrix();
+                case CoordinateSpace::View:  return getDataToViewMatrix();
+                case CoordinateSpace::Clip:  return getDataToClipMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -235,16 +199,11 @@ glm::dmat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
             }
         case CoordinateSpace::Model:
             switch (to) {
-                case CoordinateSpace::Data:
-                    return getModelToDataMatrix();
-                case CoordinateSpace::Model:
-                    return {1.0};
-                case CoordinateSpace::World:
-                    return getModelToWorldMatrix();
-                case CoordinateSpace::View:
-                    return getModelToViewMatrix();
-                case CoordinateSpace::Clip:
-                    return getModelToClipMatrix();
+                case CoordinateSpace::Data:  return getModelToDataMatrix();
+                case CoordinateSpace::Model: return {1.0};
+                case CoordinateSpace::World: return getModelToWorldMatrix();
+                case CoordinateSpace::View:  return getModelToViewMatrix();
+                case CoordinateSpace::Clip:  return getModelToClipMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -252,16 +211,11 @@ glm::dmat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
             }
         case CoordinateSpace::World:
             switch (to) {
-                case CoordinateSpace::Data:
-                    return getWorldToDataMatrix();
-                case CoordinateSpace::Model:
-                    return getWorldToModelMatrix();
-                case CoordinateSpace::World:
-                    return {1.0};
-                case CoordinateSpace::View:
-                    return getWorldToViewMatrix();
-                case CoordinateSpace::Clip:
-                    return getWorldToClipMatrix();
+                case CoordinateSpace::Data:  return getWorldToDataMatrix();
+                case CoordinateSpace::Model: return getWorldToModelMatrix();
+                case CoordinateSpace::World: return {1.0};
+                case CoordinateSpace::View:  return getWorldToViewMatrix();
+                case CoordinateSpace::Clip:  return getWorldToClipMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -269,16 +223,11 @@ glm::dmat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
             }
         case CoordinateSpace::View:
             switch (to) {
-                case CoordinateSpace::Data:
-                    return getViewToDataMatrix();
-                case CoordinateSpace::Model:
-                    return getViewToModelMatrix();
-                case CoordinateSpace::World:
-                    return getViewToWorldMatrix();
-                case CoordinateSpace::View:
-                    return {1.0};
-                case CoordinateSpace::Clip:
-                    return getViewToClipMatrix();
+                case CoordinateSpace::Data:  return getViewToDataMatrix();
+                case CoordinateSpace::Model: return getViewToModelMatrix();
+                case CoordinateSpace::World: return getViewToWorldMatrix();
+                case CoordinateSpace::View:  return {1.0};
+                case CoordinateSpace::Clip:  return getViewToClipMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -286,16 +235,11 @@ glm::dmat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
             }
         case CoordinateSpace::Clip:
             switch (to) {
-                case CoordinateSpace::Data:
-                    return getClipToDataMatrix();
-                case CoordinateSpace::Model:
-                    return getClipToModelMatrix();
-                case CoordinateSpace::World:
-                    return getClipToWorldMatrix();
-                case CoordinateSpace::View:
-                    return getClipToViewMatrix();
-                case CoordinateSpace::Clip:
-                    return {1.0};
+                case CoordinateSpace::Data:  return getClipToDataMatrix();
+                case CoordinateSpace::Model: return getClipToModelMatrix();
+                case CoordinateSpace::World: return getClipToWorldMatrix();
+                case CoordinateSpace::View:  return getClipToViewMatrix();
+                case CoordinateSpace::Clip:  return {1.0};
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -312,18 +256,12 @@ glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from
     switch (from) {
         case CoordinateSpace::Index:
             switch (to) {
-                case CoordinateSpace::Index:
-                    return {1.0};
-                case CoordinateSpace::Data:
-                    return getIndexToDataMatrix();
-                case CoordinateSpace::Model:
-                    return getIndexToModelMatrix();
-                case CoordinateSpace::World:
-                    return getIndexToWorldMatrix();
-                case CoordinateSpace::View:
-                    return getIndexToViewMatrix();
-                case CoordinateSpace::Clip:
-                    return getIndexToClipMatrix();
+                case CoordinateSpace::Index: return {1.0};
+                case CoordinateSpace::Data:  return getIndexToDataMatrix();
+                case CoordinateSpace::Model: return getIndexToModelMatrix();
+                case CoordinateSpace::World: return getIndexToWorldMatrix();
+                case CoordinateSpace::View:  return getIndexToViewMatrix();
+                case CoordinateSpace::Clip:  return getIndexToClipMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -331,18 +269,12 @@ glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from
             }
         case CoordinateSpace::Data:
             switch (to) {
-                case CoordinateSpace::Index:
-                    return getDataToIndexMatrix();
-                case CoordinateSpace::Data:
-                    return {1.0};
-                case CoordinateSpace::Model:
-                    return getDataToModelMatrix();
-                case CoordinateSpace::World:
-                    return getDataToWorldMatrix();
-                case CoordinateSpace::View:
-                    return getDataToViewMatrix();
-                case CoordinateSpace::Clip:
-                    return getDataToClipMatrix();
+                case CoordinateSpace::Index: return getDataToIndexMatrix();
+                case CoordinateSpace::Data:  return {1.0};
+                case CoordinateSpace::Model: return getDataToModelMatrix();
+                case CoordinateSpace::World: return getDataToWorldMatrix();
+                case CoordinateSpace::View:  return getDataToViewMatrix();
+                case CoordinateSpace::Clip:  return getDataToClipMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -350,18 +282,12 @@ glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from
             }
         case CoordinateSpace::Model:
             switch (to) {
-                case CoordinateSpace::Index:
-                    return getModelToIndexMatrix();
-                case CoordinateSpace::Data:
-                    return getModelToDataMatrix();
-                case CoordinateSpace::Model:
-                    return {1.0};
-                case CoordinateSpace::World:
-                    return getModelToWorldMatrix();
-                case CoordinateSpace::View:
-                    return getModelToViewMatrix();
-                case CoordinateSpace::Clip:
-                    return getModelToClipMatrix();
+                case CoordinateSpace::Index: return getModelToIndexMatrix();
+                case CoordinateSpace::Data:  return getModelToDataMatrix();
+                case CoordinateSpace::Model: return {1.0};
+                case CoordinateSpace::World: return getModelToWorldMatrix();
+                case CoordinateSpace::View:  return getModelToViewMatrix();
+                case CoordinateSpace::Clip:  return getModelToClipMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -369,18 +295,12 @@ glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from
             }
         case CoordinateSpace::World:
             switch (to) {
-                case CoordinateSpace::Index:
-                    return getWorldToIndexMatrix();
-                case CoordinateSpace::Data:
-                    return getWorldToDataMatrix();
-                case CoordinateSpace::Model:
-                    return getWorldToModelMatrix();
-                case CoordinateSpace::World:
-                    return {1.0};
-                case CoordinateSpace::View:
-                    return getWorldToViewMatrix();
-                case CoordinateSpace::Clip:
-                    return getWorldToClipMatrix();
+                case CoordinateSpace::Index: return getWorldToIndexMatrix();
+                case CoordinateSpace::Data:  return getWorldToDataMatrix();
+                case CoordinateSpace::Model: return getWorldToModelMatrix();
+                case CoordinateSpace::World: return {1.0};
+                case CoordinateSpace::View:  return getWorldToViewMatrix();
+                case CoordinateSpace::Clip:  return getWorldToClipMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -388,18 +308,12 @@ glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from
             }
         case CoordinateSpace::View:
             switch (to) {
-                case CoordinateSpace::Index:
-                    return getViewToIndexMatrix();
-                case CoordinateSpace::Data:
-                    return getViewToDataMatrix();
-                case CoordinateSpace::Model:
-                    return getViewToModelMatrix();
-                case CoordinateSpace::World:
-                    return getViewToWorldMatrix();
-                case CoordinateSpace::View:
-                    return {1.0};
-                case CoordinateSpace::Clip:
-                    return getViewToClipMatrix();
+                case CoordinateSpace::Index: return getViewToIndexMatrix();
+                case CoordinateSpace::Data:  return getViewToDataMatrix();
+                case CoordinateSpace::Model: return getViewToModelMatrix();
+                case CoordinateSpace::World: return getViewToWorldMatrix();
+                case CoordinateSpace::View:  return {1.0};
+                case CoordinateSpace::Clip:  return getViewToClipMatrix();
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
@@ -407,18 +321,12 @@ glm::dmat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from
             }
         case CoordinateSpace::Clip:
             switch (to) {
-                case CoordinateSpace::Index:
-                    return getClipToIndexMatrix();
-                case CoordinateSpace::Data:
-                    return getClipToDataMatrix();
-                case CoordinateSpace::Model:
-                    return getClipToModelMatrix();
-                case CoordinateSpace::World:
-                    return getClipToWorldMatrix();
-                case CoordinateSpace::View:
-                    return getClipToViewMatrix();
-                case CoordinateSpace::Clip:
-                    return {1.0};
+                case CoordinateSpace::Index: return getClipToIndexMatrix();
+                case CoordinateSpace::Data:  return getClipToDataMatrix();
+                case CoordinateSpace::Model: return getClipToModelMatrix();
+                case CoordinateSpace::World: return getClipToWorldMatrix();
+                case CoordinateSpace::View:  return getClipToViewMatrix();
+                case CoordinateSpace::Clip:  return {1.0};
                 default:
                     throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",

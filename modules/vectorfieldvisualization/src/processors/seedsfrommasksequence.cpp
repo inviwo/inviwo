@@ -32,7 +32,7 @@
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>       // IWYU pragma: keep
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>  // IWYU pragma: keep
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>

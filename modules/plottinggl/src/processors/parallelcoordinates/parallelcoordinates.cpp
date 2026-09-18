@@ -939,14 +939,9 @@ void ParallelCoordinates::boxSelection(AxisRangeEventState state, AxisRangeInter
             BitSet b;
             switch (boxSelectionMode_) {
                 using enum BoxSelectionMode;
-                case DataValues:
-                    b = columnDataValueIntersections(r);
-                    break;
-                case Lines:
-                    b = lineIntersections(r);
-                    break;
-                default:
-                    break;
+                case DataValues: b = columnDataValueIntersections(r); break;
+                case Lines:      b = lineIntersections(r); break;
+                default:         break;
             }
             b -= brushingAndLinking_.getFilteredIndices();
             if (mode == AxisRangeInteractionMode::Append) {

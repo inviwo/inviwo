@@ -77,9 +77,8 @@ AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to,
             // We passed over this keyframe
             switch (action_) {
                 case ControlAction::Pause:
-                    return {getTime(), AnimationState::Paused};
-                case ControlAction::Jump:
-                    return {jumpTime_, state};
+                    return {.time = getTime(), .state = AnimationState::Paused};
+                case ControlAction::Jump: return {.time = jumpTime_, .state = state};
             }
         }
     }
@@ -90,16 +89,14 @@ void ControlKeyframe::deserialize(Deserializer& d) {
     BaseKeyframe::deserialize(d);
     d.deserialize("action", action_);
     switch (action_) {
-        case ControlAction::Pause:
-            break;
-        case ControlAction::Jump: {
+        case ControlAction::Pause: break;
+        case ControlAction::Jump:  {
             double tmp = jumpTime_.count();
             d.deserialize("payload", tmp);
             jumpTime_ = Seconds{tmp};
             break;
         }
-        default:
-            break;
+        default: break;
     }
 }
 
@@ -107,14 +104,10 @@ void ControlKeyframe::serialize(Serializer& s) const {
     BaseKeyframe::serialize(s);
     s.serialize("action", action_);
     switch (action_) {
-        case ControlAction::Pause:
-            break;
-        case ControlAction::Jump:
-            s.serialize("payload", jumpTime_.count());
-            break;
+        case ControlAction::Pause: break;
+        case ControlAction::Jump:  s.serialize("payload", jumpTime_.count()); break;
 
-        default:
-            break;
+        default:                   break;
     }
 }
 

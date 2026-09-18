@@ -35,7 +35,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
-#include <inviwo/core/datastructures/volume/volume.h>                   // IWYU pragma: keep
+#include <inviwo/core/datastructures/volume/volume.h>  // IWYU pragma: keep
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/formatdispatching.h>
@@ -67,14 +67,8 @@
 namespace inviwo {
 
 marching::Config::Config()
-    : vertices{{{0, 0, 0},
-                {1, 0, 0},
-                {1, 1, 0},
-                {0, 1, 0},
-                {0, 0, 1},
-                {1, 0, 1},
-                {1, 1, 1},
-                {0, 1, 1}}}
+    : vertices{
+          {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}}
     , edges{{{0, 1},
              {1, 2},
              {2, 3},
@@ -405,9 +399,8 @@ public:
         }()}
         , offsets1_{[&]() {
             std::array<size_t, 4> tmp;
-            std::transform(oim_.begin(), oim_.end(), tmp.begin(), [&](const auto& item) {
-                return im(item.offset + size3_t{1, 0, 0});
-            });
+            std::transform(oim_.begin(), oim_.end(), tmp.begin(),
+                           [&](const auto& item) { return im(item.offset + size3_t{1, 0, 0}); });
             return tmp;
         }()}
         , src_{src}

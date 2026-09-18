@@ -75,7 +75,6 @@
 #include <string_view>
 #include <algorithm>
 
-
 namespace inviwo {
 
 namespace {

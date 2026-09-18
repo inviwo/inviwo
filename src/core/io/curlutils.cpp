@@ -54,176 +54,91 @@ namespace inviwo::net {
 std::string_view format_as(ResponseCode rs) {
     switch (rs) {
         using enum ResponseCode;
-        case Continue:
-            return "Continue";
-        case Switching_Protocols:
-            return "Switching Protocols";
-        case Processing:
-            return "Processing";
-        case Early_Hints:
-            return "Early Hints";
-        case OK:
-            return "OK";
-        case Created:
-            return "Created";
-        case Accepted:
-            return "Accepted";
-        case Non_Authoritative_Information:
-            return "Non-Authoritative Information";
-        case No_Content:
-            return "No Content";
-        case Reset_Content:
-            return "Reset Content";
-        case Partial_Content:
-            return "Partial Content";
-        case Multi_Status:
-            return "Multi-Status";
-        case Already_Reported:
-            return "Already Reported";
-        case This_is_fine:
-            return "This is fine (Apache Web Server)";
-        case IM_Used:
-            return "IM Used";
-        case Multiple_Choices:
-            return "Multiple Choices";
-        case Moved_Permanently:
-            return "Moved Permanently";
-        case Found:
-            return "Found";
-        case See_Other:
-            return "See Other";
-        case Not_Modified:
-            return "Not Modified";
-        case Switch_Proxy:
-            return "Switch Proxy";
-        case Temporary_Redirect:
-            return "Temporary Redirect";
-        case Resume_Incomplete:
-            return "Resume Incomplete";
-        case Bad_Request:
-            return "Bad Request";
-        case Unauthorized:
-            return "Unauthorized";
-        case Payment_Required:
-            return "Payment Required";
-        case Forbidden:
-            return "Forbidden";
-        case Not_Found:
-            return "Not Found";
-        case Method_Not_Allowed:
-            return "Method Not Allowed";
-        case Not_Acceptable:
-            return "Not Acceptable";
-        case Proxy_Authentication_Required:
-            return "Proxy Authentication Required";
-        case Request_Timeout:
-            return "Request Timeout";
-        case Conflict:
-            return "Conflict";
-        case Gone:
-            return "Gone";
-        case Length_Required:
-            return "Length Required";
-        case Precondition_Failed:
-            return "Precondition Failed";
-        case Request_Entity_Too_Large:
-            return "Request Entity Too Large";
-        case Request_URI_Too_Long:
-            return "Request-URI Too Long";
-        case Unsupported_Media_Type:
-            return "Unsupported Media Type";
-        case Requested_Range_Not_Satisfiable:
-            return "Requested Range Not Satisfiable";
-        case Expectation_Failed:
-            return "Expectation Failed";
-        case Im_a_teapot:
-            return "I'm a teapot";
-        case Page_Expired:
-            return "Page Expired (Laravel Framework)";
-        case Method_Failure:
-            return "Method Failure (Spring Framework)";
-        case Misdirected_Request:
-            return "Misdirected Request";
-        case Unprocessable_Entity:
-            return "Unprocessable Entity";
-        case Locked:
-            return "Locked";
-        case Failed_Dependency:
-            return "Failed Dependency";
-        case Upgrade_Required:
-            return "Upgrade Required";
-        case Precondition_Required:
-            return "Precondition Required";
-        case Too_Many_Requests:
-            return "Too Many Requests";
-        case Request_Header_Fields_Too_Large:
-            return "Request Header Fields Too Large";
-        case Login_Time_out:
-            return "Login Time-out";
-        case Connection_Closed_Without_Response:
-            return "Connection Closed Without Response";
-        case Retry_With:
-            return "Retry With";
-        case Blocked_by_Windows_Parental_Controls:
-            return "Blocked by Windows Parental Controls";
-        case Unavailable_For_Legal_Reasons:
-            return "Unavailable For Legal Reasons";
-        case Request_Header_Too_Large:
-            return "Request Header Too Large";
-        case SSL_Certificate_Error:
-            return "SSL Certificate Error";
-        case SSL_Certificate_Required:
-            return "SSL Certificate Required";
-        case HTTP_Request_Sent_to_HTTPS_Port:
-            return "HTTP Request Sent to HTTPS Port";
-        case Invalid_Token:
-            return "Invalid Token (Esri)";
-        case Client_Closed_Request:
-            return "Client Closed Request";
-        case Internal_Server_Error:
-            return "Internal Server Error";
-        case Not_Implemented:
-            return "Not Implemented";
-        case Bad_Gateway:
-            return "Bad Gateway";
-        case Service_Unavailable:
-            return "Service Unavailable";
-        case Gateway_Timeout:
-            return "Gateway Timeout";
-        case HTTP_Version_Not_Supported:
-            return "HTTP Version Not Supported";
-        case Variant_Also_Negotiates:
-            return "Variant Also Negotiates";
-        case Insufficient_Storage:
-            return "Insufficient Storage";
-        case Loop_Detected:
-            return "Loop Detected";
-        case Bandwidth_Limit_Exceeded:
-            return "Bandwidth Limit Exceeded";
-        case Not_Extended:
-            return "Not Extended";
-        case Network_Authentication_Required:
-            return "Network Authentication Required";
-        case Unknown_Error:
-            return "Unknown Error";
-        case Web_Server_Is_Down:
-            return "Web Server Is Down";
-        case Connection_Timed_Out:
-            return "Connection Timed Out";
-        case Origin_Is_Unreachable:
-            return "Origin Is Unreachable";
-        case A_Timeout_Occurred:
-            return "A Timeout Occurred";
-        case SSL_Handshake_Failed:
-            return "SSL Handshake Failed";
-        case Invalid_SSL_Certificate:
-            return "Invalid SSL Certificate";
-        case Railgun_Listener_to_Origin_Error:
-            return "Railgun Listener to Origin Error";
-        case Origin_DNS_Error:
-            return "Origin DNS Error";
-        case Network_Read_Timeout_Error:
-            return "Network Read Timeout Error";
+        case Continue:                             return "Continue";
+        case Switching_Protocols:                  return "Switching Protocols";
+        case Processing:                           return "Processing";
+        case Early_Hints:                          return "Early Hints";
+        case OK:                                   return "OK";
+        case Created:                              return "Created";
+        case Accepted:                             return "Accepted";
+        case Non_Authoritative_Information:        return "Non-Authoritative Information";
+        case No_Content:                           return "No Content";
+        case Reset_Content:                        return "Reset Content";
+        case Partial_Content:                      return "Partial Content";
+        case Multi_Status:                         return "Multi-Status";
+        case Already_Reported:                     return "Already Reported";
+        case This_is_fine:                         return "This is fine (Apache Web Server)";
+        case IM_Used:                              return "IM Used";
+        case Multiple_Choices:                     return "Multiple Choices";
+        case Moved_Permanently:                    return "Moved Permanently";
+        case Found:                                return "Found";
+        case See_Other:                            return "See Other";
+        case Not_Modified:                         return "Not Modified";
+        case Switch_Proxy:                         return "Switch Proxy";
+        case Temporary_Redirect:                   return "Temporary Redirect";
+        case Resume_Incomplete:                    return "Resume Incomplete";
+        case Bad_Request:                          return "Bad Request";
+        case Unauthorized:                         return "Unauthorized";
+        case Payment_Required:                     return "Payment Required";
+        case Forbidden:                            return "Forbidden";
+        case Not_Found:                            return "Not Found";
+        case Method_Not_Allowed:                   return "Method Not Allowed";
+        case Not_Acceptable:                       return "Not Acceptable";
+        case Proxy_Authentication_Required:        return "Proxy Authentication Required";
+        case Request_Timeout:                      return "Request Timeout";
+        case Conflict:                             return "Conflict";
+        case Gone:                                 return "Gone";
+        case Length_Required:                      return "Length Required";
+        case Precondition_Failed:                  return "Precondition Failed";
+        case Request_Entity_Too_Large:             return "Request Entity Too Large";
+        case Request_URI_Too_Long:                 return "Request-URI Too Long";
+        case Unsupported_Media_Type:               return "Unsupported Media Type";
+        case Requested_Range_Not_Satisfiable:      return "Requested Range Not Satisfiable";
+        case Expectation_Failed:                   return "Expectation Failed";
+        case Im_a_teapot:                          return "I'm a teapot";
+        case Page_Expired:                         return "Page Expired (Laravel Framework)";
+        case Method_Failure:                       return "Method Failure (Spring Framework)";
+        case Misdirected_Request:                  return "Misdirected Request";
+        case Unprocessable_Entity:                 return "Unprocessable Entity";
+        case Locked:                               return "Locked";
+        case Failed_Dependency:                    return "Failed Dependency";
+        case Upgrade_Required:                     return "Upgrade Required";
+        case Precondition_Required:                return "Precondition Required";
+        case Too_Many_Requests:                    return "Too Many Requests";
+        case Request_Header_Fields_Too_Large:      return "Request Header Fields Too Large";
+        case Login_Time_out:                       return "Login Time-out";
+        case Connection_Closed_Without_Response:   return "Connection Closed Without Response";
+        case Retry_With:                           return "Retry With";
+        case Blocked_by_Windows_Parental_Controls: return "Blocked by Windows Parental Controls";
+        case Unavailable_For_Legal_Reasons:        return "Unavailable For Legal Reasons";
+        case Request_Header_Too_Large:             return "Request Header Too Large";
+        case SSL_Certificate_Error:                return "SSL Certificate Error";
+        case SSL_Certificate_Required:             return "SSL Certificate Required";
+        case HTTP_Request_Sent_to_HTTPS_Port:      return "HTTP Request Sent to HTTPS Port";
+        case Invalid_Token:                        return "Invalid Token (Esri)";
+        case Client_Closed_Request:                return "Client Closed Request";
+        case Internal_Server_Error:                return "Internal Server Error";
+        case Not_Implemented:                      return "Not Implemented";
+        case Bad_Gateway:                          return "Bad Gateway";
+        case Service_Unavailable:                  return "Service Unavailable";
+        case Gateway_Timeout:                      return "Gateway Timeout";
+        case HTTP_Version_Not_Supported:           return "HTTP Version Not Supported";
+        case Variant_Also_Negotiates:              return "Variant Also Negotiates";
+        case Insufficient_Storage:                 return "Insufficient Storage";
+        case Loop_Detected:                        return "Loop Detected";
+        case Bandwidth_Limit_Exceeded:             return "Bandwidth Limit Exceeded";
+        case Not_Extended:                         return "Not Extended";
+        case Network_Authentication_Required:      return "Network Authentication Required";
+        case Unknown_Error:                        return "Unknown Error";
+        case Web_Server_Is_Down:                   return "Web Server Is Down";
+        case Connection_Timed_Out:                 return "Connection Timed Out";
+        case Origin_Is_Unreachable:                return "Origin Is Unreachable";
+        case A_Timeout_Occurred:                   return "A Timeout Occurred";
+        case SSL_Handshake_Failed:                 return "SSL Handshake Failed";
+        case Invalid_SSL_Certificate:              return "Invalid SSL Certificate";
+        case Railgun_Listener_to_Origin_Error:     return "Railgun Listener to Origin Error";
+        case Origin_DNS_Error:                     return "Origin DNS Error";
+        case Network_Read_Timeout_Error:           return "Network Read Timeout Error";
     }
     return "Unknown response code";
 }
@@ -234,19 +149,16 @@ std::string_view description(ResponseCode rs) {
         case Continue:
             return "The server has received the request headers, and the client should proceed to "
                    "send the request body.";
-        case Switching_Protocols:
-            return "The requester has asked the server to switch protocols.";
+        case Switching_Protocols: return "The requester has asked the server to switch protocols.";
         case Processing:
             return "This code indicates that the server has received and is processing the "
                    "request, but no response is available yet. This prevents the client from "
                    "timing out and assuming the request was lost.";
-        case Early_Hints:
-            return "Used to return some response headers before final HTTP message.";
+        case Early_Hints: return "Used to return some response headers before final HTTP message.";
         case OK:
             return "The request is OK (this is the standard response for successful HTTP "
                    "requests).";
-        case Created:
-            return "The request has been fulfilled, and a new resource is created.";
+        case Created: return "The request has been fulfilled, and a new resource is created.";
         case Accepted:
             return "The request has been accepted for processing, but the processing has not been "
                    "completed.";
@@ -278,24 +190,19 @@ std::string_view description(ResponseCode rs) {
         case Multiple_Choices:
             return "A link list. The user can select a link and go to that location. Maximum five "
                    "addresses.";
-        case Moved_Permanently:
-            return "The requested page has moved to a new URL.";
-        case Found:
-            return "The requested page has moved temporarily to a new URL.";
-        case See_Other:
-            return "The requested page can be found under a different URL.";
+        case Moved_Permanently: return "The requested page has moved to a new URL.";
+        case Found:             return "The requested page has moved temporarily to a new URL.";
+        case See_Other:         return "The requested page can be found under a different URL.";
         case Not_Modified:
             return "Indicates the requested page has not been modified since last requested.";
         case Switch_Proxy:
             return "No longer used. Originally meant \"Subsequent requests should use the "
                    "specified proxy.\"";
-        case Temporary_Redirect:
-            return "The requested page has moved temporarily to a new URL.";
+        case Temporary_Redirect: return "The requested page has moved temporarily to a new URL.";
         case Resume_Incomplete:
             return "Used in the resumable requests proposal to resume aborted PUT or POST "
                    "requests.";
-        case Bad_Request:
-            return "The request cannot be fulfilled due to bad syntax.";
+        case Bad_Request: return "The request cannot be fulfilled due to bad syntax.";
         case Unauthorized:
             return "The request was a legal request, but the server is refusing to respond to it. "
                    "For use when authentication is possible but has failed or not yet been "
@@ -314,12 +221,10 @@ std::string_view description(ResponseCode rs) {
             return "The server can only generate a response that is not accepted by the client.";
         case Proxy_Authentication_Required:
             return "The client must first authenticate itself with the proxy.";
-        case Request_Timeout:
-            return "The server timed out waiting for the request.";
+        case Request_Timeout: return "The server timed out waiting for the request.";
         case Conflict:
             return "The request could not be completed because of a conflict in the request.";
-        case Gone:
-            return "The requested page is no longer available.";
+        case Gone: return "The requested page is no longer available.";
         case Length_Required:
             return "The \"Content-Length\" is not defined. The server will not accept the request "
                    "without it.";
@@ -353,8 +258,7 @@ std::string_view description(ResponseCode rs) {
         case Unprocessable_Entity:
             return "The request was well-formed but was unable to be followed due to semantic "
                    "errors.";
-        case Locked:
-            return "The resource that is being accessed is locked.";
+        case Locked: return "The resource that is being accessed is locked.";
         case Failed_Dependency:
             return "The request failed due to failure of a previous request (e.g., a PROPPATCH).";
         case Upgrade_Required:
@@ -368,8 +272,7 @@ std::string_view description(ResponseCode rs) {
         case Request_Header_Fields_Too_Large:
             return "The server is unwilling to process the request because either an individual "
                    "header field, or all the header fields collectively, are too large.";
-        case Login_Time_out:
-            return "The client's session has expired and must log in again. (IIS)";
+        case Login_Time_out: return "The client's session has expired and must log in again. (IIS)";
         case Connection_Closed_Without_Response:
             return "A non-standard status code used to instruct nginx to close the connection "
                    "without sending a response to the client, most commonly used to deny malicious "

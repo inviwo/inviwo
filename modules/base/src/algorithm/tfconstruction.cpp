@@ -164,7 +164,7 @@ double errorByRemoving(const std::vector<TFPrimitiveData>& points, int i) {
 
     const double x = (curr.pos - prev.pos) / (next.pos - prev.pos);
     return glm::compMax(glm::abs(glm::mix(prev.color, next.color, x) - curr.color));
-};
+}
 
 /// removes redundant points from the tf
 void cleanTf(std::vector<TFPrimitiveData>& points, double epsilon) {

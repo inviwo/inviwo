@@ -175,7 +175,7 @@ void sync(T& obj, const P& property, void (T::*setter)(Arg)) {
     }
 }
 template <typename P, typename T, typename V>
-void sync(T& obj, const P& property, V T::*member) {
+void sync(T& obj, const P& property, V T::* member) {
     if (property.isModified()) {
         obj.*member = property.get();
     }
@@ -221,7 +221,8 @@ void GLUIProcessor::process() {
 void GLUIProcessor::onWillAddProperty(PropertyOwner*, Property*, size_t) {}
 
 void GLUIProcessor::onDidAddProperty(Property* property, size_t) {
-    const auto& factory = util::getModuleByTypeOrThrow<UserInterfaceGLModule>(app_).getGLUIWidgetFactory();
+    const auto& factory =
+        util::getModuleByTypeOrThrow<UserInterfaceGLModule>(app_).getGLUIWidgetFactory();
 
     auto widget = factory.create(property->getClassIdentifier(), *property, *this, uiRenderer_);
     layout_.addElement(*widget.get());

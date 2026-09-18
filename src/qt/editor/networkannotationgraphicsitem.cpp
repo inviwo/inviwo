@@ -96,18 +96,10 @@ QMarginsF margins(const NetworkAnnotation& annotation) {
         const auto width = annotation.description->width;
         switch (annotation.description->alignment) {
             using enum Description::Alignment;
-            case Left:
-                margins.setLeft(margins.left() + width);
-                break;
-            case Top:
-                margins.setTop(margins.top() + width);
-                break;
-            case Right:
-                margins.setRight(margins.right() + width);
-                break;
-            case Bottom:
-                margins.setBottom(margins.bottom() + width);
-                break;
+            case Left:   margins.setLeft(margins.left() + width); break;
+            case Top:    margins.setTop(margins.top() + width); break;
+            case Right:  margins.setRight(margins.right() + width); break;
+            case Bottom: margins.setBottom(margins.bottom() + width); break;
         }
     }
     return margins;
@@ -218,10 +210,8 @@ QVariant NetworkAnnotationGraphicsItem::itemChange(GraphicsItemChange change,
 #include <warn/push>
 #include <warn/ignore/switch-enum>
     switch (change) {
-        case QGraphicsItem::ItemSelectedHasChanged:
-            selectedHasChanged();
-            break;
-        case QGraphicsItem::ItemVisibleHasChanged: {
+        case QGraphicsItem::ItemSelectedHasChanged: selectedHasChanged(); break;
+        case QGraphicsItem::ItemVisibleHasChanged:  {
             if (auto* editor = getNetworkEditor()) {
                 editor->updateSceneSize();
             }
@@ -233,8 +223,7 @@ QVariant NetworkAnnotationGraphicsItem::itemChange(GraphicsItemChange change,
                 highlightProcessors(getNetworkEditor(), processors_, false);
             }
             break;
-        default:
-            break;
+        default: break;
     }
 #include <warn/pop>
     return QGraphicsItem::itemChange(change, value);
@@ -283,8 +272,7 @@ void NetworkAnnotationGraphicsItem::updateAnnotation(const NetworkAnnotation& an
     descriptionPos_ = [alignment, descriptionWidth](const QRectF& rect) {
         switch (alignment) {
             using enum Description::Alignment;
-            case Left:
-                [[fallthrough]];
+            case Left: [[fallthrough]];
             case Top:
                 return QPointF{rect.left() + labelMargin, rect.top() + borderMargin + labelMargin};
             case Right:

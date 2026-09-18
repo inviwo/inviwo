@@ -69,8 +69,8 @@ template <typename Self, typename T, bool Flat>
 struct DataOutportBase : DataOutportInterface<T> {
     virtual size_t size() const final {
         if constexpr (Flat && requires {
-                                  { getElements()->size() } -> std::convertible_to<size_t>;
-                              }) {
+                          { getElements()->size() } -> std::convertible_to<size_t>;
+                      }) {
             if (auto data = getElements()) {
                 return data->size();
             } else {

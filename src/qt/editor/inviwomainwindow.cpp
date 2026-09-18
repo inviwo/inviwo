@@ -1674,16 +1674,11 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
         int answer = msgBox.exec();
 
         switch (answer) {
-            case QMessageBox::Yes:
-                saveWorkspace();
-                break;
+            case QMessageBox::Yes:    saveWorkspace(); break;
 
-            case QMessageBox::No:
-                break;
+            case QMessageBox::No:     break;
 
-            case QMessageBox::Cancel:
-                continueOperation = false;
-                break;
+            case QMessageBox::Cancel: continueOperation = false; break;
         }
     }
 

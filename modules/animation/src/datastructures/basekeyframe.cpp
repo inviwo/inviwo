@@ -72,7 +72,7 @@ void BaseKeyframe::setSelected(bool selected) {
 }
 
 std::optional<EasingType> BaseKeyframe::getEaseIn() const { return easeIn_; }
-std::optional<EasingType> BaseKeyframe::getEaseOut() const { return easeOut_; };
+std::optional<EasingType> BaseKeyframe::getEaseOut() const { return easeOut_; }
 void BaseKeyframe::setEaseIn(std::optional<EasingType> easeIn) {
     if (easeIn_ != easeIn) {
         easeIn_ = easeIn;

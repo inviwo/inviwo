@@ -102,14 +102,10 @@ size_t DataFormatBase::getComponents() const { return components_; }
 
 size_t DataFormatBase::getPrecision() const {
     switch (getRank()) {
-        case 0:
-            return getSizeInBytes() * 8;
-        case 1:
-            return getSizeInBytes() / getComponents() * 8;
-        case 2:
-            return getSizeInBytes() / getComponents() / getComponents() * 8;
-        default:
-            throw DataFormatException(SourceContext{}, "Invalid format rank {}", getRank());
+        case 0:  return getSizeInBytes() * 8;
+        case 1:  return getSizeInBytes() / getComponents() * 8;
+        case 2:  return getSizeInBytes() / getComponents() / getComponents() * 8;
+        default: throw DataFormatException(SourceContext{}, "Invalid format rank {}", getRank());
     }
 }
 

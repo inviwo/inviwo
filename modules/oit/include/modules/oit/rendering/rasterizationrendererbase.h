@@ -44,10 +44,8 @@ enum class UseFragmentList { Yes, No };
 
 constexpr std::string_view enumToStr(UseFragmentList val) {
     switch (val) {
-        case UseFragmentList::Yes:
-            return "Yes";
-        case UseFragmentList::No:
-            return "No";
+        case UseFragmentList::Yes: return "Yes";
+        case UseFragmentList::No:  return "No";
     }
     throw Exception(SourceContext{}, "Invalid UseFragmentList found: {}", static_cast<int>(val));
 }

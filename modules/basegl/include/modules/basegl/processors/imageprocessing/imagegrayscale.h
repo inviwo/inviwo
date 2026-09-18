@@ -51,20 +51,14 @@ enum class Model {
 constexpr vec3 weights(Model model) {
     using enum Model;
     switch (model) {
-        case PerceivedLum:
-            return vec3(0.299f, 0.587f, 0.114f);
-        case RelativeLum:
-            return vec3(0.2126f, 0.7152f, 0.0722f);
-        case AverageLum:
-            return vec3(1.0f / 3.0f);
-        case RedOnly:
-            return vec3(1.0f, 0.0f, 0.0f);
-        case GreenOnly:
-            return vec3(0.0f, 1.0f, 0.0f);
-        case BlueOnly:
-            return vec3(0.0f, 0.0f, 1.0f);
+        case PerceivedLum: return {0.299f, 0.587f, 0.114f};
+        case RelativeLum:  return {0.2126f, 0.7152f, 0.0722f};
+        case AverageLum:   return vec3{1.0f / 3.0f};
+        case RedOnly:      return {1.0f, 0.0f, 0.0f};
+        case GreenOnly:    return {0.0f, 1.0f, 0.0f};
+        case BlueOnly:     return {0.0f, 0.0f, 1.0f};
     }
-    return vec3(1.0f / 3.0f);
+    return vec3{1.0f / 3.0f};
 }
 
 std::vector<OptionPropertyOption<Model>> options();

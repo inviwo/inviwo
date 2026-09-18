@@ -367,8 +367,7 @@ bool RangeSliderQt::handleCenterWidgetEvent(QEvent* event) {
             }
             break;
         }
-        default:
-            break;
+        default: break;
     }
     return false;
 }

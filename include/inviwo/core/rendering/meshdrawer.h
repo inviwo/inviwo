@@ -36,7 +36,7 @@ namespace inviwo {
 
 class MeshDrawerFactory;
 
-/** 
+/**
  * Base class for drawers capable of drawing Geometry.
  * A derived MeshDrawer should be registered by the module.
  * The MeshDrawerFactory can be used to get a drawer
