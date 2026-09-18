@@ -43,7 +43,6 @@ public:
     virtual ~OpenGLQtCapabilities();
     virtual void printInfo() override;
     virtual void retrieveStaticInfo() override {}
-    virtual void retrieveDynamicInfo() override {}
     std::vector<int> getGLVersion();
 };
 

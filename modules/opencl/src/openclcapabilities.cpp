@@ -115,8 +115,6 @@ OpenCLCapabilities::~OpenCLCapabilities() {}
 
 void OpenCLCapabilities::retrieveStaticInfo() {}
 
-void OpenCLCapabilities::retrieveDynamicInfo() {}
-
 void OpenCLCapabilities::printDetailedInfo() {
     OpenCLCapabilities::printDeviceInfo(OpenCL::getPtr()->getDevice());
     try {

@@ -58,9 +58,7 @@ public:
      */
     static void printDeviceInfo(const cl::Device& device);
 
-protected:
     virtual void retrieveStaticInfo() override;
-    virtual void retrieveDynamicInfo() override;
 };
 
 /** \brief Return string representation of  device info and corresponding value

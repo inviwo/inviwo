@@ -135,7 +135,7 @@ InteractionEventMapperQt::InteractionEventMapperQt(
     , cursorChange_{std::move(cursorChange)}
     , widget_{parent} {}
 
-// NOLINTBEGIN(cppcoreguidelines-pro-type-static-cast-downcast])
+// NOLINTBEGIN(cppcoreguidelines-pro-type-static-cast-downcast)
 bool InteractionEventMapperQt::eventFilter(QObject*, QEvent* e) {
     switch (e->type()) {
         case QEvent::KeyPress:         return mapKeyPressEvent(static_cast<QKeyEvent*>(e));
@@ -154,7 +154,7 @@ bool InteractionEventMapperQt::eventFilter(QObject*, QEvent* e) {
         default:                         return false;
     }
 }
-// NOLINTEND(cppcoreguidelines-pro-type-static-cast-downcast])
+// NOLINTEND(cppcoreguidelines-pro-type-static-cast-downcast)
 
 bool InteractionEventMapperQt::mapMousePressEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;

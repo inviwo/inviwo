@@ -177,44 +177,45 @@ void VolumeSliceExtractor::shiftSlice(int shift) {
 namespace detail {
 
 size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) {
+    using enum CartesianCoordinateAxis;
     switch (axis) {
-        default:                         return {volumeDims.z, volumeDims.y};
-        case CartesianCoordinateAxis::X: return {volumeDims.z, volumeDims.y};
-        case CartesianCoordinateAxis::Y: return {volumeDims.x, volumeDims.z};
-        case CartesianCoordinateAxis::Z: return {volumeDims.x, volumeDims.y};
+        default: return {volumeDims.z, volumeDims.y};
+        case X:  return {volumeDims.z, volumeDims.y};
+        case Y:  return {volumeDims.x, volumeDims.z};
+        case Z:  return {volumeDims.x, volumeDims.y};
     }
 }
 
 Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const auto wrapping = v->getOwner()->getWrapping();
+    using enum CartesianCoordinateAxis;
     switch (axis) {
-        default:                         return {{wrapping[2], wrapping[1]}};
-        case CartesianCoordinateAxis::X: return {{wrapping[2], wrapping[1]}};
-        case CartesianCoordinateAxis::Y: return {{wrapping[0], wrapping[2]}};
-        case CartesianCoordinateAxis::Z: return {{wrapping[0], wrapping[1]}};
+        default: return {{wrapping[2], wrapping[1]}};
+        case X:  return {{wrapping[2], wrapping[1]}};
+        case Y:  return {{wrapping[0], wrapping[2]}};
+        case Z:  return {{wrapping[0], wrapping[1]}};
     }
 }
 
 mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const dmat3 basis = v->getOwner()->getBasis();
+    using enum CartesianCoordinateAxis;
     switch (axis) {
-        default: return mat2(vec2(basis[2][2], basis[2][1]), vec2(basis[1][2], basis[1][1]));
-        case CartesianCoordinateAxis::X:
-            return mat2(vec2(basis[2][2], basis[2][1]), vec2(basis[1][2], basis[1][1]));
-        case CartesianCoordinateAxis::Y:
-            return mat2(vec2(basis[0][0], basis[0][2]), vec2(basis[2][0], basis[2][2]));
-        case CartesianCoordinateAxis::Z:
-            return mat2(vec2(basis[0][0], basis[0][1]), vec2(basis[1][0], basis[1][1]));
+        default: return {vec2(basis[2][2], basis[2][1]), vec2(basis[1][2], basis[1][1])};
+        case X:  return {vec2(basis[2][2], basis[2][1]), vec2(basis[1][2], basis[1][1])};
+        case Y:  return {vec2(basis[0][0], basis[0][2]), vec2(basis[2][0], basis[2][2])};
+        case Z:  return {vec2(basis[0][0], basis[0][1]), vec2(basis[1][0], basis[1][1])};
     }
 }
 
 vec2 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const dvec3 offset = v->getOwner()->getOffset();
+    using enum CartesianCoordinateAxis;
     switch (axis) {
-        default:                         return {offset.z, offset.y};
-        case CartesianCoordinateAxis::X: return {offset.z, offset.y};
-        case CartesianCoordinateAxis::Y: return {offset.x, offset.z};
-        case CartesianCoordinateAxis::Z: return {offset.x, offset.y};
+        default: return {offset.z, offset.y};
+        case X:  return {offset.z, offset.y};
+        case Y:  return {offset.x, offset.z};
+        case Z:  return {offset.x, offset.y};
     }
 }
 

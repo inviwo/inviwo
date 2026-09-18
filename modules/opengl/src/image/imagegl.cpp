@@ -417,12 +417,19 @@ dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
 
     switch (layer) {
         case LayerType::Depth:   break;
-        case LayerType::Picking: glReadBuffer(*pickingAttachmentID_); break;
-        case LayerType::Color:
-        default:
+        case LayerType::Picking: {
+            if (!pickingAttachmentID_) {
+                return dvec4{0.0};
+            }
+            glReadBuffer(*pickingAttachmentID_);
+            break;
+        }
+        case LayerType::Color: [[fallthrough]];
+        default:               {
             glReadBuffer(static_cast<GLenum>(static_cast<GLuint>(GL_COLOR_ATTACHMENT0) +
                                              static_cast<GLuint>(index)));
             break;
+        }
     }
 
     // Make a buffer that can hold the largest possible pixel type

@@ -129,7 +129,6 @@ public:
 
 protected:
     virtual void retrieveStaticInfo() override;
-    virtual void retrieveDynamicInfo() override;
 
     void addShaderVersion(GLSLShaderVersion);
     void addShaderVersionIfEqualOrLower(GLSLShaderVersion, int);

@@ -97,6 +97,7 @@ TEST(PickingMapperTests, Create) {
     EXPECT_EQ(po->getSize(), 100);
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(PickingMapperTests, Resize) {
     PickingManager manager;
 

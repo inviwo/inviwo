@@ -155,7 +155,7 @@ void SeedPointGenerator2D::process() {
                 break;
             }
             case Generator::HaltonSequence: {
-                std::ranges::generate_n(seeds->begin(), numPoints_,
+                std::ranges::generate_n(seeds->begin(), static_cast<ptrdiff_t>(numPoints_.get()),
                                         [i = 1, baseX = haltonXBase_.get(),
                                          baseY = haltonYBase_.get()]() mutable -> vec3 {
                                             return vec3{util::haltonSequence<float>(i++, baseX),

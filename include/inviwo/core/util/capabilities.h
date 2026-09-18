@@ -40,9 +40,6 @@ public:
 
     virtual void printInfo() = 0;
     virtual void retrieveStaticInfo() = 0;
-
-protected:
-    virtual void retrieveDynamicInfo() = 0;
 };
 
 }  // namespace inviwo
