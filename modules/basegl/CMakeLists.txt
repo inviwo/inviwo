@@ -112,6 +112,7 @@ set(HEADER_FILES
     include/modules/basegl/rendering/linerenderer.h
     include/modules/basegl/rendering/splitterrenderer.h
     include/modules/basegl/shadercomponents/acceleratecomponent.h
+    include/modules/basegl/shadercomponents/alternativeshadercomponent.h
     include/modules/basegl/shadercomponents/atlascomponent.h
     include/modules/basegl/shadercomponents/backgroundcomponent.h
     include/modules/basegl/shadercomponents/cameracomponent.h
@@ -127,9 +128,9 @@ set(HEADER_FILES
     include/modules/basegl/shadercomponents/shadercomponent.h
     include/modules/basegl/shadercomponents/shadercomponentutil.h
     include/modules/basegl/shadercomponents/sphericalcomponent.h
+    include/modules/basegl/shadercomponents/temporalvolumecomponent.h
     include/modules/basegl/shadercomponents/tfcomponent.h
     include/modules/basegl/shadercomponents/timecomponent.h
-    include/modules/basegl/shadercomponents/temporalvolumecomponent.h
     include/modules/basegl/shadercomponents/volumecomponent.h
     include/modules/basegl/util/glyphclipping.h
     include/modules/basegl/util/meshbnlgl.h
@@ -250,6 +251,7 @@ set(SOURCE_FILES
     src/rendering/linerenderer.cpp
     src/rendering/splitterrenderer.cpp
     src/shadercomponents/acceleratecomponent.cpp
+    src/shadercomponents/alternativeshadercomponent.cpp
     src/shadercomponents/atlascomponent.cpp
     src/shadercomponents/backgroundcomponent.cpp
     src/shadercomponents/cameracomponent.cpp
@@ -265,9 +267,9 @@ set(SOURCE_FILES
     src/shadercomponents/shadercomponent.cpp
     src/shadercomponents/shadercomponentutil.cpp
     src/shadercomponents/sphericalcomponent.cpp
+    src/shadercomponents/temporalvolumecomponent.cpp
     src/shadercomponents/tfcomponent.cpp
     src/shadercomponents/timecomponent.cpp
-    src/shadercomponents/temporalvolumecomponent.cpp
     src/shadercomponents/volumecomponent.cpp
     src/util/glyphclipping.cpp
     src/util/meshbnlgl.cpp
