@@ -61,16 +61,16 @@ void ExampleProgressBar::process() {
     // be evaluated on a different thread and any references might be dangling at the time of
     // execution. It should be noted that this is also true for the processor itself, which might
     // have been deleted before the calculation starts hence one can never capture `this` in the
-    // lambda. The calculation can take to optional arguments `pool::Stop` which can be queried to
-    // see if the calculation has been canceled and `pool::Progress` which can be called with a
+    // lambda. The calculation can take to optional arguments `std::stop_token` which can be queried
+    // to see if the calculation has been canceled and `pool::Progress` which can be called with a
     // float [0,1] to report the progress of the calculation. If `pool::Progress` is present then
     // the processor will show a ProgressBar in the NetworkEditor representing the progress
     const auto calc = [delay = delay_.get(), image = inport_.getData()](
-                          pool::Stop stop,
+                          std::stop_token stop,
                           pool::Progress progress) -> std::shared_ptr<const Image> {
         const int numSteps = 100;
         for (int i = 0; i < 100; ++i) {
-            if (stop) return nullptr;
+            if (stop.stop_requested()) return nullptr;
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
             progress(i, numSteps);
         }

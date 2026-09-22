@@ -61,7 +61,8 @@ VolumeCurlCPUProcessor::VolumeCurlCPUProcessor()
 }
 
 void VolumeCurlCPUProcessor::process() {
-    const auto calc = [data = inport_.getData(), this](pool::Progress progress, pool::Stop stop) {
+    const auto calc = [data = inport_.getData(), this](pool::Progress progress,
+                                                       std::stop_token stop) {
         return util::curlVolume(*data, std::ref(cache_), progress, stop);
     };
 

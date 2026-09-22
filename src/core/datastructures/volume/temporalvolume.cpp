@@ -49,16 +49,18 @@ ProceduralLoader::ProceduralLoader(size_t count, std::vector<Seconds> times, Vol
     , prototype_{std::move(prototype)}
     , generator_{std::move(generator)} {}
 
-std::shared_ptr<Volume> ProceduralLoader::load(size_t index, std::shared_ptr<Volume> reuse) {
+std::shared_ptr<Volume> ProceduralLoader::load(size_t index, std::shared_ptr<Volume> reuse,
+                                               std::stop_token stop) const {
     const Seconds time =
         (index < times_.size()) ? times_[index] : Seconds{static_cast<double>(index)};
-    return generator_(index, time, std::move(reuse));
+    return generator_(index, time, std::move(reuse), std::move(stop));
 }
 
 size_t ProceduralLoader::size() const { return count_; }
 
 Seconds ProceduralLoader::time(size_t index) const {
-    return !times_.empty() ? (index < times_.size() ? times_[index] : times_.back()) : Seconds{index};
+    return !times_.empty() ? (index < times_.size() ? times_[index] : times_.back())
+                           : Seconds{index};
 }
 
 VolumeConfig ProceduralLoader::prototype() const { return prototype_; }
@@ -75,23 +77,9 @@ TemporalVolume::TemporalVolume(std::unique_ptr<TemporalVolumeLoader> loader, siz
 }
 
 TemporalVolume::~TemporalVolume() {
-    // Wait for all in-flight prefetches before destroying the loader, since the pool tasks
-    // capture a raw pointer to it.
-    std::unordered_map<size_t, Item> cache;
-    {
-        const std::scoped_lock lock{mutex_};
-        cache = std::move(cache_);
-        cache_.clear();
-    }
-    for (auto& [index, item] : cache) {
-        item.visit(
-            [](std::shared_ptr<Volume>& volume) -> void {
-                // Do nothing, volume is already in the cache
-            },
-            [](std::future<std::shared_ptr<Volume>>& future) -> void {
-                // Wait for the future to complete
-                if (future.valid()) future.wait();
-            });
+    const std::scoped_lock lock{mutex_};
+    for (auto& [index, item] : cache_) {
+        if (auto* pending = item.pending()) pending->source.request_stop();
     }
 }
 
@@ -128,52 +116,135 @@ size_t TemporalVolume::nearestIndex(Seconds time) const {
     return (time - ts[ia] <= ts[ib] - time) ? ia : ib;
 }
 
-std::shared_ptr<const Volume> TemporalVolume::get(size_t index) const {
-    if (index >= size()) {
-        return nullptr;
+auto TemporalVolume::find(size_t index) const -> Item* {
+    if (auto it = cache_.find(index); it != cache_.end()) {
+        return &it->second;
     }
+    return nullptr;
+}
+
+void TemporalVolume::prefetch(size_t index,
+                              std::function<void(std::shared_ptr<Volume>)> callback) const {
+    if (index >= size()) return;
+
+    const std::scoped_lock lock{mutex_};
+
+    auto* item = find(index);
+    if (item && !item->reuse()) return;
+
+    auto* app = util::getInviwoApplication();
+    if (!app) return;
+
+    auto reuse = (item && item->reuse()) ? item->reuse()->volume : takeReuse();
+    std::stop_source source;
+    auto future = app->dispatchPool(
+        [loader = loader_, index, reuse = reuse, callback, stop = source.get_token()]() mutable {
+            // Queued pool tasks cannot be discarded, so cancellation is only effective if we bail
+            // out here before doing any work.
+            if (stop.stop_requested()) return reuse;
+            auto volume = loader->load(index, std::move(reuse), std::move(stop));
+            if (volume && callback) callback(volume);
+            return volume;
+        });
+
+    cache_[index] = Pending{future.share(), std::move(source)};
+    touch(index);
+    evict();
+}
+
+std::shared_ptr<Volume> TemporalVolume::load(std::unique_lock<std::mutex>& lock, size_t index,
+                                             std::shared_ptr<Volume> reuse,
+                                             std::stop_token stop) const {
+    std::promise<std::shared_ptr<Volume>> promise;
+    cache_[index] = Pending{.future = promise.get_future().share(), .source = {}};
+
+    lock.unlock();
+    auto volume = loader_->load(index, reuse, stop);
+    lock.lock();
+
+    std::erase(lruOrder_, index);
+
+    if (stop.stop_requested()) {
+        promise.set_value(nullptr);
+        cache_[index] = Reuse{reuse};
+        lruOrder_.insert(lruOrder_.begin(), index);
+        return nullptr;
+    } else {
+        promise.set_value(volume);
+        cache_[index] = Valid{volume};
+        lruOrder_.insert(lruOrder_.end(), index);
+        return volume;
+    }
+};
+
+std::shared_ptr<const Volume> TemporalVolume::get(size_t index, std::stop_token stop) const {
+    if (index >= size() || stop.stop_requested()) return nullptr;
 
     std::unique_lock lock{mutex_};
 
-    if (auto it = cache_.find(index); it != cache_.end()) {
-        touch(index);
+    if (auto* item = find(index)) {
+        return item->visit(
+            [&](Valid& valid) -> std::shared_ptr<Volume> {
+                touch(index);
+                return valid.volume;
+            },
+            [&](Pending& pending) -> std::shared_ptr<Volume> {
+                auto future = pending.future;
 
-        return it->second.visit(
-            [](std::shared_ptr<Volume>& volume) -> std::shared_ptr<Volume> { return volume; },
-            [&, i = it->first](
-                std::future<std::shared_ptr<Volume>>& future) -> std::shared_ptr<Volume> {
                 lock.unlock();
+                // Poll so that our own cancellation can bail out without cancelling the shared
+                // load, which other callers may still be waiting for.
+                while (future.wait_for(std::chrono::milliseconds{10}) !=
+                       std::future_status::ready) {
+                    if (stop.stop_requested()) return nullptr;
+                }
                 auto volume = future.get();
                 lock.lock();
-                cache_[i] = volume;
+
+                if (auto* item2 = find(index)) {
+                    if (auto* pending2 = item2->pending()) {
+                        if (pending2->source.stop_requested()) {
+                            std::erase(lruOrder_, index);
+                            if (volume) {
+                                *item2 = Reuse{volume};
+                                lruOrder_.insert(lruOrder_.begin(), index);
+                            } else {
+                                cache_.erase(index);
+                            }
+                            return nullptr;
+                        } else {
+                            *item2 = Valid{volume};
+                        }
+                    }
+                }
+                touch(index);
                 return volume;
+            },
+            [&](Reuse& reuse) -> std::shared_ptr<Volume> {
+                return load(lock, index, reuse.volume, stop);
             });
 
     } else {
-        auto reuse = takeReuse();
-        lock.unlock();
-        auto volume = loader_->load(index, std::move(reuse));
-        lock.lock();
-        return insert(index, std::move(volume));
+        return load(lock, index, takeReuse(), stop);
     }
 }
 
-std::shared_ptr<const Volume> TemporalVolume::get(Seconds time) const {
-    return get(nearestIndex(time));
+std::shared_ptr<const Volume> TemporalVolume::get(Seconds time, std::stop_token stop) const {
+    return get(nearestIndex(time), std::move(stop));
 }
 
-TemporalVolume::Frame TemporalVolume::interpolate(Seconds time) const {
+TemporalVolume::Frame TemporalVolume::interpolate(Seconds time, std::stop_token stop) const {
     auto ts = times();
     const size_t n = ts.size();
     if (n == 0) {
         return {.a = nullptr, .b = nullptr, .t = 0.0};
     }
     if (n == 1 || time <= ts.front()) {
-        auto volume = get(size_t{0});
+        auto volume = get(size_t{0}, stop);
         return {.a = volume, .b = volume, .t = 0.0};
     }
     if (time >= ts.back()) {
-        auto volume = get(n - 1);
+        auto volume = get(n - 1, stop);
         return {.a = volume, .b = volume, .t = 0.0};
     }
 
@@ -183,35 +254,7 @@ TemporalVolume::Frame TemporalVolume::interpolate(Seconds time) const {
     const Seconds ta = ts[ia];
     const Seconds tb = ts[ib];
     const double factor = (tb > ta) ? (time - ta) / (tb - ta) : 0.0;
-    return {.a = get(ia), .b = get(ib), .t = factor};
-}
-
-void TemporalVolume::prefetch(size_t index,
-                              std::function<void(std::shared_ptr<Volume>)> callback) const {
-    if (index >= size()) {
-        return;
-    }
-
-    const std::scoped_lock lock{mutex_};
-    if (cache_.contains(index)) {
-        return;
-    }
-
-    auto* app = util::getInviwoApplication();
-    if (!app) {
-        // No thread pool available, prefetching is a no-op. Frames will be loaded synchronously
-        // on demand in get().
-        return;
-    }
-
-    cache_.emplace(index, app->dispatchPool([loader = loader_.get(), index, reuse = takeReuse(),
-                                             callback]() mutable {
-        auto volume = loader->load(index, std::move(reuse));
-        if (callback) callback(volume);
-        return volume;
-    }));
-    touch(index);
-    evict();
+    return {.a = get(ia, stop), .b = get(ib, stop), .t = factor};
 }
 
 void TemporalVolume::setCacheSize(size_t n) {
@@ -232,27 +275,11 @@ size_t TemporalVolume::numCached() const {
 
 void TemporalVolume::clearCache() {
     const std::scoped_lock lock{mutex_};
+    for (auto& [index, item] : cache_) {
+        if (auto* pending = item.pending()) pending->source.request_stop();
+    }
     cache_.clear();
     lruOrder_.clear();
-}
-
-std::shared_ptr<const Volume> TemporalVolume::insert(size_t index,
-                                                     std::shared_ptr<Volume> volume) const {
-    if (auto it = cache_.find(index); it != cache_.end()) {
-        // Another thread already inserted this frame while we were loading.
-        touch(index);
-        if (it->second.ready()) {
-            return it->second.volume();
-        } else {
-            it->second = volume;
-            return volume;
-        }
-    }
-
-    cache_.emplace(index, volume);
-    lruOrder_.push_back(index);
-    evict();
-    return volume;
 }
 
 void TemporalVolume::touch(size_t index) const {
@@ -274,25 +301,20 @@ std::shared_ptr<Volume> TemporalVolume::takeReuse() const {
     if (cache_.size() >= cacheSize_) {
         for (auto index : lruOrder_) {
             if (auto rit = cache_.find(index); rit != cache_.end()) {
-                if (auto reuse = rit->second.visit(
-                        [](std::shared_ptr<Volume>& volume) -> std::shared_ptr<Volume> {
-                            if (volume.use_count() == 1) {
-                                return volume;
-                            } else {
-                                return nullptr;
-                            }
+                if (auto found = rit->second.visit(
+                        [](Valid& valid) -> std::shared_ptr<Volume> {
+                            return valid.volume.use_count() == 1 ? valid.volume : nullptr;
                         },
-                        [](std::future<std::shared_ptr<Volume>>& future)
-                            -> std::shared_ptr<Volume> {
-                            if (util::is_future_ready(future)) {
-                                return future.get();
-                            } else {
-                                return nullptr;
-                            }
+                        [](Pending& pending) -> std::shared_ptr<Volume> {
+                            return util::is_future_ready(pending.future) ? pending.future.get()
+                                                                         : nullptr;
+                        },
+                        [](Reuse& reuse) -> std::shared_ptr<Volume> {
+                            return reuse.volume.use_count() == 1 ? reuse.volume : nullptr;
                         })) {
                     std::erase(lruOrder_, index);
                     cache_.erase(rit);
-                    return reuse;
+                    return found;
                 }
             }
         }
