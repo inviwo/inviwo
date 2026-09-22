@@ -43,15 +43,15 @@ class Track;
 
 class IVW_MODULE_ANIMATION_API TrackObserver : public Observer {
 public:
-    virtual void onKeyframeSequenceAdded(Track*, KeyframeSequence*){};
-    virtual void onKeyframeSequenceRemoved(Track*, KeyframeSequence*){};
+    virtual void onKeyframeSequenceAdded(Track*, KeyframeSequence*) {}
+    virtual void onKeyframeSequenceRemoved(Track*, KeyframeSequence*) {}
 
-    virtual void onFirstMoved(Track*){};
-    virtual void onLastMoved(Track*){};
+    virtual void onFirstMoved(Track*) {}
+    virtual void onLastMoved(Track*) {}
 
-    virtual void onEnabledChanged(Track*){};
-    virtual void onNameChanged(Track*){};
-    virtual void onPriorityChanged(Track*){};
+    virtual void onEnabledChanged(Track*) {}
+    virtual void onNameChanged(Track*) {}
+    virtual void onPriorityChanged(Track*) {}
 };
 
 class IVW_MODULE_ANIMATION_API TrackObservable : public Observable<TrackObserver> {

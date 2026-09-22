@@ -73,7 +73,7 @@ namespace {
 
 template <typename Ret = void, typename Functor, typename... Args>
 constexpr auto wrappingDispatch(const Wrapping3D& wrapping, Functor&& func, Args&&... args) {
-    using DispatchFunctor = Ret (*)(Functor && func, Args && ...);
+    using DispatchFunctor = Ret (*)(Functor&& func, Args&&...);
 
     constexpr auto table = util::build_array<2>([](auto x) constexpr {
         using XT = decltype(x);

@@ -45,12 +45,10 @@ class IVW_MODULE_OPENGL_API Texture1D : public Texture {
 public:
     Texture1D(size_t width, GLFormat glFormat, GLenum filtering,
               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-              GLenum wrapping = GL_CLAMP_TO_EDGE,
-              GLint level = 0);
-    Texture1D(size_t width, GLenum format, GLenum internalFormat, GLenum dataType,
-              GLenum filtering, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-              GLenum wrapping = GL_CLAMP_TO_EDGE,
-              GLint level = 0);
+              GLenum wrapping = GL_CLAMP_TO_EDGE, GLint level = 0);
+    Texture1D(size_t width, GLenum format, GLenum internalFormat, GLenum dataType, GLenum filtering,
+              const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+              GLenum wrapping = GL_CLAMP_TO_EDGE, GLint level = 0);
 
     Texture1D(const Texture1D& other);
     Texture1D(Texture1D&& other);

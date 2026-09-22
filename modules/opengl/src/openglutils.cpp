@@ -52,20 +52,13 @@ namespace utilgl {
 std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask) {
     auto convertToGL = [](ImageChannel channel) -> GLint {
         switch (channel) {
-            case ImageChannel::Red:
-                return static_cast<GLint>(GL_RED);
-            case ImageChannel::Green:
-                return static_cast<GLint>(GL_GREEN);
-            case ImageChannel::Blue:
-                return static_cast<GLint>(GL_BLUE);
-            case ImageChannel::Alpha:
-                return static_cast<GLint>(GL_ALPHA);
-            case ImageChannel::Zero:
-                return static_cast<GLint>(GL_ZERO);
-            case ImageChannel::One:
-                return static_cast<GLint>(GL_ONE);
-            default:
-                return static_cast<GLint>(GL_ZERO);
+            case ImageChannel::Red:   return static_cast<GLint>(GL_RED);
+            case ImageChannel::Green: return static_cast<GLint>(GL_GREEN);
+            case ImageChannel::Blue:  return static_cast<GLint>(GL_BLUE);
+            case ImageChannel::Alpha: return static_cast<GLint>(GL_ALPHA);
+            case ImageChannel::Zero:  return static_cast<GLint>(GL_ZERO);
+            case ImageChannel::One:   return static_cast<GLint>(GL_ONE);
+            default:                  return static_cast<GLint>(GL_ZERO);
         }
     };
     std::array<GLint, 4> swizzleMaskGL;
@@ -75,47 +68,34 @@ std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask) {
 
 GLenum convertWrappingToGL(Wrapping wrap) {
     switch (wrap) {
-        case Wrapping::Clamp:
-            return GL_CLAMP_TO_EDGE;
-        case Wrapping::Repeat:
-            return GL_REPEAT;
-        case Wrapping::Mirror:
-            return GL_MIRRORED_REPEAT;
-        default:
-            return GL_CLAMP_TO_EDGE;
+        case Wrapping::Clamp:  return GL_CLAMP_TO_EDGE;
+        case Wrapping::Repeat: return GL_REPEAT;
+        case Wrapping::Mirror: return GL_MIRRORED_REPEAT;
+        default:               return GL_CLAMP_TO_EDGE;
     }
 }
 
 Wrapping convertWrappingFromGL(GLenum wrap) {
     switch (wrap) {
-        case GL_CLAMP_TO_EDGE:
-            return Wrapping::Clamp;
-        case GL_REPEAT:
-            return Wrapping::Repeat;
-        case GL_MIRRORED_REPEAT:
-            return Wrapping::Mirror;
-        default:
-            throw OpenGLException("Unsupported Wrapping mode encountered");
+        case GL_CLAMP_TO_EDGE:   return Wrapping::Clamp;
+        case GL_REPEAT:          return Wrapping::Repeat;
+        case GL_MIRRORED_REPEAT: return Wrapping::Mirror;
+        default:                 throw OpenGLException("Unsupported Wrapping mode encountered");
     }
 }
 
 GLenum convertInterpolationToGL(InterpolationType interpolation) {
     switch (interpolation) {
-        case InterpolationType::Linear:
-            return GL_LINEAR;
-        case InterpolationType::Nearest:
-            return GL_NEAREST;
-        default:
-            return GL_LINEAR;
+        case InterpolationType::Linear:  return GL_LINEAR;
+        case InterpolationType::Nearest: return GL_NEAREST;
+        default:                         return GL_LINEAR;
     }
 }
 
 InterpolationType convertInterpolationFromGL(GLenum interpolation) {
     switch (interpolation) {
-        case GL_LINEAR:
-            return InterpolationType::Linear;
-        case GL_NEAREST:
-            return InterpolationType::Nearest;
+        case GL_LINEAR:  return InterpolationType::Linear;
+        case GL_NEAREST: return InterpolationType::Nearest;
         default:
             throw OpenGLException(SourceContext{}, "Unsupported filtering mode encountered ({:x})",
                                   static_cast<unsigned int>(interpolation));
@@ -125,20 +105,13 @@ InterpolationType convertInterpolationFromGL(GLenum interpolation) {
 SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL) {
     auto convertFromGL = [](GLint channel) {
         switch (static_cast<GLenum>(channel)) {
-            case GL_RED:
-                return ImageChannel::Red;
-            case GL_GREEN:
-                return ImageChannel::Green;
-            case GL_BLUE:
-                return ImageChannel::Blue;
-            case GL_ALPHA:
-                return ImageChannel::Alpha;
-            case GL_ZERO:
-                return ImageChannel::Zero;
-            case GL_ONE:
-                return ImageChannel::One;
-            default:
-                return ImageChannel::Zero;
+            case GL_RED:   return ImageChannel::Red;
+            case GL_GREEN: return ImageChannel::Green;
+            case GL_BLUE:  return ImageChannel::Blue;
+            case GL_ALPHA: return ImageChannel::Alpha;
+            case GL_ZERO:  return ImageChannel::Zero;
+            case GL_ONE:   return ImageChannel::One;
+            default:       return ImageChannel::Zero;
         }
     };
     SwizzleMask mask;
@@ -198,8 +171,7 @@ PolygonModeState::PolygonModeState(GLenum mode, GLfloat lineWidth, GLfloat point
             break;
         }
         case GL_FILL:
-        default:
-            break;
+        default:      break;
     }
 }
 
@@ -219,8 +191,7 @@ PolygonModeState::~PolygonModeState() {
                 break;
             }
             case GL_FILL:
-            default:
-                break;
+            default:      break;
         }
         if (mode_ != oldMode_) glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(oldMode_));
     }

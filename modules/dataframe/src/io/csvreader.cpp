@@ -425,7 +425,7 @@ std::string_view stripQuotes(std::string_view str) {
         str = str.substr(1, str.size() - 2);
     }
     return str;
-};
+}
 
 }  // namespace util
 
@@ -504,12 +504,8 @@ std::function<void(std::string_view, size_t, size_t)> addColumn(DataFrame& df,
                         data.emplace_back();
                     }
                     break;
-                case CSVReader::EmptyField::EmptyOrZero:
-                    data.emplace_back();
-                    break;
-                default:
-                    data.emplace_back();
-                    break;
+                case CSVReader::EmptyField::EmptyOrZero: data.emplace_back(); break;
+                default:                                 data.emplace_back(); break;
             }
         } else if (auto val = util::toNumber<T>(str, cLocale)) {
             data.push_back(*val);

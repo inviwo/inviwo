@@ -54,18 +54,15 @@ DataMapper& DataMapper::operator=(DataMapper&&) noexcept = default;
 dvec2 DataMapper::defaultDataRangeFor(const DataFormatBase* format,
                                       SignedNormalization normalization) {
     switch (format->getNumericType()) {
-        case NumericType::Float:
-            return {0.0, 1.0};
-        case NumericType::UnsignedInteger:
-            return {0.0, format->getMax()};
+        case NumericType::Float:           return {0.0, 1.0};
+        case NumericType::UnsignedInteger: return {0.0, format->getMax()};
         case NumericType::SignedInteger:
             if (normalization == SignedNormalization::Symmetric) {
                 return {-format->getMax(), format->getMax()};
             } else {
                 return {format->getMin(), format->getMax()};
             }
-        case NumericType::NotSpecialized:
-            return {format->getMin(), format->getMax()};
+        case NumericType::NotSpecialized: return {format->getMin(), format->getMax()};
     }
     return {format->getMin(), format->getMax()};
 }

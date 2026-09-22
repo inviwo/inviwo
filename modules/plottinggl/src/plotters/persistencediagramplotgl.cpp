@@ -59,7 +59,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
-#include <inviwo/dataframe/datastructures/column.h>                     // IWYU pragma: keep
+#include <inviwo/dataframe/datastructures/column.h>  // IWYU pragma: keep
 #include <modules/base/algorithm/algorithmoptions.h>
 #include <modules/base/algorithm/cohensutherland.h>
 #include <modules/base/algorithm/dataminmax.h>

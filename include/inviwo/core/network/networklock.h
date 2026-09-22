@@ -45,8 +45,8 @@ struct IVW_CORE_API NetworkLock {
     NetworkLock(Property* network);
     ~NetworkLock();
 
-    NetworkLock(NetworkLock const&) = delete;
-    NetworkLock& operator=(NetworkLock const& that) = delete;
+    NetworkLock(const NetworkLock&) = delete;
+    NetworkLock& operator=(const NetworkLock& that) = delete;
     NetworkLock(NetworkLock&& rhs) noexcept;
     NetworkLock& operator=(NetworkLock&& that);
 

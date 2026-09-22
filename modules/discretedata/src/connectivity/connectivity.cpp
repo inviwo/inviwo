@@ -47,16 +47,11 @@ ElementRange Connectivity::all(GridPrimitive dim) const { return ElementRange(di
 
 CellType Connectivity::getCellType(GridPrimitive dim, ind) const {
     switch (dim) {
-        case GridPrimitive::Vertex:
-            return CellType::Vertex;
-        case GridPrimitive::Edge:
-            return CellType::Line;
-        case GridPrimitive::Face:
-            return CellType::Quad;
-        case GridPrimitive::Volume:
-            return CellType::Hexahedron;
-        default:
-            return CellType::HigherOrderHexahedron;
+        case GridPrimitive::Vertex: return CellType::Vertex;
+        case GridPrimitive::Edge:   return CellType::Line;
+        case GridPrimitive::Face:   return CellType::Quad;
+        case GridPrimitive::Volume: return CellType::Hexahedron;
+        default:                    return CellType::HigherOrderHexahedron;
     }
 }
 

@@ -95,9 +95,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
             // Otherwise, the variable is an operator or parenthesis.
             expr.get(c);
             switch (c) {
-                case '(':
-                    operatorStack.push("(");
-                    break;
+                case '(': operatorStack.emplace("("); break;
                 case ')':
                     while (operatorStack.top().compare("(")) {
                         rpnQueue.push(std::make_unique<Token<std::string>>(operatorStack.top()));

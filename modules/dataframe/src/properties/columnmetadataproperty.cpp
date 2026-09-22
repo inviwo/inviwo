@@ -114,13 +114,10 @@ std::string ColumnMetaDataProperty::getType() const { return type_.get(); }
 void ColumnMetaDataProperty::updateForNewColumn(const Column& col, util::OverwriteState overwrite) {
     auto type = [](const Column& col) -> std::string_view {
         switch (col.getColumnType()) {
-            case ColumnType::Categorical:
-                return "Categorical";
-            case ColumnType::Index:
-                return "Index";
+            case ColumnType::Categorical: return "Categorical";
+            case ColumnType::Index:       return "Index";
             case ColumnType::Ordinal:
-            default:
-                return col.getBuffer()->getDataFormat()->getString();
+            default:                      return col.getBuffer()->getDataFormat()->getString();
         }
     };
 

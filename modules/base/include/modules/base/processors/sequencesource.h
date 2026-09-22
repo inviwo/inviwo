@@ -274,14 +274,9 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
 template <typename Conf>
 void SequenceSource<Conf>::SequenceSource::load(bool deserialize) {
     switch (inputType_.get()) {
-        case InputType::Folder:
-            loadFolder(deserialize);
-            break;
-        case InputType::SingleFile:
-            [[fallthrough]];
-        default:
-            loadFile(deserialize);
-            break;
+        case InputType::Folder:     loadFolder(deserialize); break;
+        case InputType::SingleFile: [[fallthrough]];
+        default:                    loadFile(deserialize); break;
     }
 }
 

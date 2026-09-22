@@ -120,8 +120,7 @@ void addShaderDefines(Shader& shader, const ShadingMode& mode) {
         "materialSpecularColor, position, normal, toCameraDir)";
     const std::string_view shadingValue = [&]() {
         switch (mode) {
-            case ShadingMode::Ambient:
-                return "shadeAmbient(lighting, materialAmbientColor)";
+            case ShadingMode::Ambient: return "shadeAmbient(lighting, materialAmbientColor)";
             case ShadingMode::Diffuse:
                 return "shadeDiffuse(lighting, materialDiffuseColor, position, normal)";
             case ShadingMode::Specular:
@@ -138,8 +137,7 @@ void addShaderDefines(Shader& shader, const ShadingMode& mode) {
                 return "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
                        "materialSpecularColor, position, normal, toCameraDir)";
             case ShadingMode::None:
-            default:
-                return "materialAmbientColor";
+            default:                return "materialAmbientColor";
         }
     }();
 
@@ -149,17 +147,13 @@ void addShaderDefines(Shader& shader, const ShadingMode& mode) {
             case ShadingMode::Diffuse:
             case ShadingMode::Specular:
             case ShadingMode::BlinnPhong:
-            case ShadingMode::Phong:
-                return 2;
+            case ShadingMode::Phong:           return 2;
             case ShadingMode::BlinnPhongFront:
-            case ShadingMode::PhongFront:
-                return 0;
+            case ShadingMode::PhongFront:      return 0;
             case ShadingMode::BlinnPhongBack:
-            case ShadingMode::PhongBack:
-                return 1;
+            case ShadingMode::PhongBack:       return 1;
             case ShadingMode::None:
-            default:
-                return 0;
+            default:                           return 0;
         }
     }();
 
@@ -286,9 +280,7 @@ void addShaderDefines(Shader& shader, const RaycastingProperty& property) {
             case RaycastingProperty::CompositingType::FirstHitDepth:
                 value = "compositeFHD(result, color, t, tDepth)";
                 break;
-            default:
-                value = "result";
-                break;
+            default: value = "result"; break;
         }
         const std::string_view key =
             "APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, isoValue, t, "
@@ -746,12 +738,9 @@ std::string getGLSLTypeName(const DataFormatBase* format) {
         switch (format->getNumericType()) {
             case NumericType::Float: {
                 switch (format->getPrecision()) {
-                    case 32:
-                        return "float";
-                    case 64:
-                        return "double";
-                    default:
-                        return "";
+                    case 32: return "float";
+                    case 64: return "double";
+                    default: return "";
                 }
             }
             case NumericType::UnsignedInteger: {
@@ -768,20 +757,16 @@ std::string getGLSLTypeName(const DataFormatBase* format) {
                     return "";
                 }
             }
-            default:
-                return "";
+            default: return "";
         }
     } else {
         const auto comp = fmt::to_string(format->getComponents());
         switch (format->getNumericType()) {
             case NumericType::Float: {
                 switch (format->getPrecision()) {
-                    case 32:
-                        return "vec" + comp;
-                    case 64:
-                        return "dvec" + comp;
-                    default:
-                        return "";
+                    case 32: return "vec" + comp;
+                    case 64: return "dvec" + comp;
+                    default: return "";
                 }
             }
             case NumericType::UnsignedInteger: {
@@ -798,8 +783,7 @@ std::string getGLSLTypeName(const DataFormatBase* format) {
                     return "";
                 }
             }
-            default:
-                return "";
+            default: return "";
         }
     }
 }

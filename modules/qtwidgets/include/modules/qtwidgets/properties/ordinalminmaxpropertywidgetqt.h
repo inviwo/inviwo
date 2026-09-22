@@ -53,7 +53,7 @@
 #include <QSplitterHandle>
 #include <QWidget>
 #include <Qt>
-#include <QMenu>            // IWYU pragma: keep
+#include <QMenu>  // IWYU pragma: keep
 
 #include <glm/detail/qualifier.hpp>
 #include <glm/gtc/type_precision.hpp>
@@ -65,7 +65,7 @@ namespace inviwo {
 template <typename T, class Enable = void>
 class Transformer {
 public:
-    static T sliderToValue(MinMaxProperty<T>*, int val) { return static_cast<T>(val); };
+    static T sliderToValue(MinMaxProperty<T>*, int val) { return static_cast<T>(val); }
     static int valueToSlider(MinMaxProperty<T>*, T val) { return static_cast<int>(val); }
     static int sepToSlider(MinMaxProperty<T>*, T sep) { return static_cast<int>(sep); }
 };

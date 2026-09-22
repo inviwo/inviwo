@@ -32,9 +32,9 @@
 #include <modules/opengl/openglmoduledefine.h>
 
 #include <inviwo/core/datastructures/image/imagetypes.h>
-#include <inviwo/core/datastructures/image/image.h>       // IWYU pragma: kepp
-#include <inviwo/core/datastructures/image/layer.h>       // IWYU pragma: kepp
-#include <inviwo/core/datastructures/volume/volume.h>     // IWYU pragma: kepp
+#include <inviwo/core/datastructures/image/image.h>    // IWYU pragma: kepp
+#include <inviwo/core/datastructures/image/layer.h>    // IWYU pragma: kepp
+#include <inviwo/core/datastructures/volume/volume.h>  // IWYU pragma: kepp
 
 #include <inviwo/core/ports/datainport.h>  // IWYU pragma: kepp
 #include <inviwo/core/ports/imageport.h>   // IWYU pragma: kepp

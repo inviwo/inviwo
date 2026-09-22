@@ -38,7 +38,6 @@
 #include <memory>
 #include <vector>
 
-
 namespace inviwo {
 class SyntaxHighlighter;
 

@@ -32,7 +32,7 @@
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/properties/constraintbehavior.h>
 #include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/minmaxproperty.h>                  // IWYU pragma: keep
+#include <inviwo/core/properties/minmaxproperty.h>  // IWYU pragma: keep
 #include <inviwo/core/util/glm.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/numberwidget.h>
@@ -48,7 +48,7 @@
 #include <QSignalBlocker>
 #include <QSizePolicy>
 #include <QWidget>
-#include <QMenu>           // IWYU pragma: keep
+#include <QMenu>  // IWYU pragma: keep
 
 #include <glm/detail/qualifier.hpp>
 #include <glm/gtc/type_precision.hpp>

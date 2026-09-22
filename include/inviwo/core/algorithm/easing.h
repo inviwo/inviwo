@@ -84,39 +84,25 @@ struct IVW_CORE_API Easing {
 constexpr std::string_view format_as(EasingType type) {
     using enum EasingType;
     switch (type) {
-        case linear:
-            return "Linear";
-        case quadratic:
-            return "Quadratic";
-        case cubic:
-            return "Cubic";
-        case quartic:
-            return "Quartic";
-        case quintic:
-            return "Quintic";
-        case sine:
-            return "Sine";
-        case circular:
-            return "Circular";
-        case exponential:
-            return "Exponential";
-        case elastic:
-            return "Elastic";
-        case back:
-            return "Back";
-        case bounce:
-            return "Bounce";
+        case linear:      return "Linear";
+        case quadratic:   return "Quadratic";
+        case cubic:       return "Cubic";
+        case quartic:     return "Quartic";
+        case quintic:     return "Quintic";
+        case sine:        return "Sine";
+        case circular:    return "Circular";
+        case exponential: return "Exponential";
+        case elastic:     return "Elastic";
+        case back:        return "Back";
+        case bounce:      return "Bounce";
     }
     throw Exception(SourceContext{}, "Got invalid EasingType {}", static_cast<int>(type));
 }
 constexpr std::string_view format_as(EasingMode mode) {
     switch (mode) {
-        case EasingMode::in:
-            return "In";
-        case EasingMode::out:
-            return "Out";
-        case EasingMode::inOut:
-            return "InOut";
+        case EasingMode::in:    return "In";
+        case EasingMode::out:   return "Out";
+        case EasingMode::inOut: return "InOut";
     }
     throw Exception(SourceContext{}, "Got invalid EasingMode {}", static_cast<int>(mode));
 }
@@ -160,115 +146,84 @@ namespace util {
 template <typename T>
 constexpr T ease(const T& x, Easing easing) {
     switch (easing.type) {
-        case EasingType::linear:
-            return glm::linearInterpolation(x);
+        case EasingType::linear:    return glm::linearInterpolation(x);
         case EasingType::quadratic: {
             switch (easing.mode) {
-                case EasingMode::in:
-                    return glm::quadraticEaseIn(x);
-                case EasingMode::out:
-                    return glm::quadraticEaseOut(x);
-                case EasingMode::inOut:
-                    return glm::quadraticEaseInOut(x);
+                case EasingMode::in:    return glm::quadraticEaseIn(x);
+                case EasingMode::out:   return glm::quadraticEaseOut(x);
+                case EasingMode::inOut: return glm::quadraticEaseInOut(x);
             }
             break;
         }
         case EasingType::cubic: {
             switch (easing.mode) {
-                case EasingMode::in:
-                    return glm::cubicEaseIn(x);
-                case EasingMode::out:
-                    return glm::cubicEaseOut(x);
-                case EasingMode::inOut:
-                    return glm::cubicEaseInOut(x);
+                case EasingMode::in:    return glm::cubicEaseIn(x);
+                case EasingMode::out:   return glm::cubicEaseOut(x);
+                case EasingMode::inOut: return glm::cubicEaseInOut(x);
             }
             break;
         }
         case EasingType::quartic: {
             switch (easing.mode) {
-                case EasingMode::in:
-                    return glm::quarticEaseIn(x);
-                case EasingMode::out:
-                    return glm::quarticEaseOut(x);
-                case EasingMode::inOut:
-                    return glm::quarticEaseInOut(x);
+                case EasingMode::in:    return glm::quarticEaseIn(x);
+                case EasingMode::out:   return glm::quarticEaseOut(x);
+                case EasingMode::inOut: return glm::quarticEaseInOut(x);
             }
             break;
         }
         case EasingType::quintic: {
             switch (easing.mode) {
-                case EasingMode::in:
-                    return glm::quinticEaseIn(x);
-                case EasingMode::out:
-                    return glm::quinticEaseOut(x);
-                case EasingMode::inOut:
-                    return glm::quinticEaseInOut(x);
+                case EasingMode::in:    return glm::quinticEaseIn(x);
+                case EasingMode::out:   return glm::quinticEaseOut(x);
+                case EasingMode::inOut: return glm::quinticEaseInOut(x);
             }
             break;
         }
         case EasingType::sine: {
             switch (easing.mode) {
-                case EasingMode::in:
-                    return glm::sineEaseIn(x);
-                case EasingMode::out:
-                    return glm::sineEaseOut(x);
-                case EasingMode::inOut:
-                    return glm::sineEaseInOut(x);
+                case EasingMode::in:    return glm::sineEaseIn(x);
+                case EasingMode::out:   return glm::sineEaseOut(x);
+                case EasingMode::inOut: return glm::sineEaseInOut(x);
             }
             break;
         }
         case EasingType::circular: {
             switch (easing.mode) {
-                case EasingMode::in:
-                    return glm::circularEaseIn(x);
-                case EasingMode::out:
-                    return glm::circularEaseOut(x);
-                case EasingMode::inOut:
-                    return glm::circularEaseInOut(x);
+                case EasingMode::in:    return glm::circularEaseIn(x);
+                case EasingMode::out:   return glm::circularEaseOut(x);
+                case EasingMode::inOut: return glm::circularEaseInOut(x);
             }
             break;
         }
         case EasingType::exponential: {
             switch (easing.mode) {
-                case EasingMode::in:
-                    return glm::exponentialEaseIn(x);
-                case EasingMode::out:
-                    return glm::exponentialEaseOut(x);
-                case EasingMode::inOut:
-                    return glm::exponentialEaseInOut(x);
+                case EasingMode::in:    return glm::exponentialEaseIn(x);
+                case EasingMode::out:   return glm::exponentialEaseOut(x);
+                case EasingMode::inOut: return glm::exponentialEaseInOut(x);
             }
             break;
         }
         case EasingType::elastic: {
             switch (easing.mode) {
-                case EasingMode::in:
-                    return glm::elasticEaseIn(x);
-                case EasingMode::out:
-                    return glm::elasticEaseOut(x);
-                case EasingMode::inOut:
-                    return glm::elasticEaseInOut(x);
+                case EasingMode::in:    return glm::elasticEaseIn(x);
+                case EasingMode::out:   return glm::elasticEaseOut(x);
+                case EasingMode::inOut: return glm::elasticEaseInOut(x);
             }
             break;
         }
         case EasingType::back: {
             switch (easing.mode) {
-                case EasingMode::in:
-                    return glm::backEaseIn(x);
-                case EasingMode::out:
-                    return glm::backEaseOut(x);
-                case EasingMode::inOut:
-                    return glm::backEaseInOut(x);
+                case EasingMode::in:    return glm::backEaseIn(x);
+                case EasingMode::out:   return glm::backEaseOut(x);
+                case EasingMode::inOut: return glm::backEaseInOut(x);
             }
             break;
         }
         case EasingType::bounce: {
             switch (easing.mode) {
-                case EasingMode::in:
-                    return glm::bounceEaseIn(x);
-                case EasingMode::out:
-                    return glm::bounceEaseOut(x);
-                case EasingMode::inOut:
-                    return glm::bounceEaseInOut(x);
+                case EasingMode::in:    return glm::bounceEaseIn(x);
+                case EasingMode::out:   return glm::bounceEaseOut(x);
+                case EasingMode::inOut: return glm::bounceEaseInOut(x);
             }
             break;
         }

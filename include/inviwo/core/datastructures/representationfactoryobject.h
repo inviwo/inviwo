@@ -58,7 +58,8 @@ class RepresentationFactoryObject : public BaseRepresentationFactoryObject {
 public:
     using ReprId = std::type_index;
 
-    RepresentationFactoryObject(ReprId classIdentifier) : classIdentifier_{classIdentifier} {};
+    explicit RepresentationFactoryObject(ReprId classIdentifier)
+        : classIdentifier_{classIdentifier} {}
     virtual ~RepresentationFactoryObject() = default;
 
     ReprId getClassIdentifier() const { return classIdentifier_; }

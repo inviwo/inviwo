@@ -60,7 +60,7 @@ namespace util {
 
 template <typename Iter>
 struct IterRangeGenerator : iter_range<Iter> {
-    IterRangeGenerator(iter_range<Iter> base) : iter_range<Iter>{base} {};
+    explicit IterRangeGenerator(iter_range<Iter> base) : iter_range<Iter>{base} {}
     using iter_range<Iter>::iter_range;
     typename Iter::value_type next() {
         if (this->first != this->second) {

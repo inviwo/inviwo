@@ -37,10 +37,8 @@ namespace inviwo {
 
 std::string_view enumToStr(OutportDeterminesSize ods) {
     switch (ods) {
-        case OutportDeterminesSize::Yes:
-            return "Yes";
-        case OutportDeterminesSize::No:
-            return "No";
+        case OutportDeterminesSize::Yes: return "Yes";
+        case OutportDeterminesSize::No:  return "No";
     }
     throw Exception(SourceContext{}, "Found invalid HandleResizeEvents enum value '{}'",
                     static_cast<int>(ods));
@@ -48,10 +46,8 @@ std::string_view enumToStr(OutportDeterminesSize ods) {
 
 std::string_view enumToStr(HandleResizeEvents hre) {
     switch (hre) {
-        case HandleResizeEvents::Yes:
-            return "Yes";
-        case HandleResizeEvents::No:
-            return "No";
+        case HandleResizeEvents::Yes: return "Yes";
+        case HandleResizeEvents::No:  return "No";
     }
     throw Exception(SourceContext{}, "Found invalid HandleResizeEvents enum value '{}'",
                     static_cast<int>(hre));

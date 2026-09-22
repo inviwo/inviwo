@@ -62,33 +62,25 @@ OptionPropertyState<AxisRangeMode> rangeModeState(bool hasDims, bool hasBounding
 float calcScaleFactor3D(const glm::dmat4& matrix, OffsetScaling mode) {
     const auto l = dvec3{glm::length(matrix[0]), glm::length(matrix[1]), glm::length(matrix[2])};
     switch (mode) {
-        case OffsetScaling::MinExtent:
-            return static_cast<float>(glm::compMin(l) / 100.0);
-        case OffsetScaling::MaxExtent:
-            return static_cast<float>(glm::compMax(l) / 100.0);
-        case OffsetScaling::MeanExtent:
-            return static_cast<float>(glm::compAdd(l) / (3.0 * 100.0));
+        case OffsetScaling::MinExtent:  return static_cast<float>(glm::compMin(l) / 100.0);
+        case OffsetScaling::MaxExtent:  return static_cast<float>(glm::compMax(l) / 100.0);
+        case OffsetScaling::MeanExtent: return static_cast<float>(glm::compAdd(l) / (3.0 * 100.0));
         case OffsetScaling::Diagonal:
             return static_cast<float>(glm::length(matrix[0] + matrix[1] + matrix[2]) / 100.0);
         case OffsetScaling::None:
-        default:
-            return 1.0f;
+        default:                  return 1.0f;
     }
 }
 float calcScaleFactor2D(const glm::dmat4& matrix, OffsetScaling mode) {
     const auto l = dvec2{glm::length(matrix[0]), glm::length(matrix[1])};
     switch (mode) {
-        case OffsetScaling::MinExtent:
-            return static_cast<float>(glm::compMin(l) / 100.0);
-        case OffsetScaling::MaxExtent:
-            return static_cast<float>(glm::compMax(l) / 100.0);
-        case OffsetScaling::MeanExtent:
-            return static_cast<float>(glm::compAdd(l) / (2.0 * 100.0));
+        case OffsetScaling::MinExtent:  return static_cast<float>(glm::compMin(l) / 100.0);
+        case OffsetScaling::MaxExtent:  return static_cast<float>(glm::compMax(l) / 100.0);
+        case OffsetScaling::MeanExtent: return static_cast<float>(glm::compAdd(l) / (2.0 * 100.0));
         case OffsetScaling::Diagonal:
             return static_cast<float>(glm::length(matrix[0] + matrix[1]) / 100.0);
         case OffsetScaling::None:
-        default:
-            return 1.0f;
+        default:                  return 1.0f;
     }
 }
 
@@ -146,14 +138,10 @@ std::array<dvec2, 3> calcAxisRanges(const SpatialEntity& entity,
                                     std::optional<dmat4> worldBoundingBox, AxisRangeMode mode) {
 
     switch (mode) {
-        case AxisRangeMode::Dims:
-            return getRangeDims(entity);
-        case AxisRangeMode::Basis:
-            return getRangeBasis(entity);
-        case AxisRangeMode::BasisOffset:
-            return getRangeBasisOffset(entity);
-        case AxisRangeMode::World:
-            return getRangeWorld(entity);
+        case AxisRangeMode::Dims:        return getRangeDims(entity);
+        case AxisRangeMode::Basis:       return getRangeBasis(entity);
+        case AxisRangeMode::BasisOffset: return getRangeBasisOffset(entity);
+        case AxisRangeMode::World:       return getRangeWorld(entity);
         case AxisRangeMode::DataBoundingBox:
             return getRangeBoundingBox(CoordinateSpace::Data, entity, worldBoundingBox);
         case AxisRangeMode::ModelBoundingBox:

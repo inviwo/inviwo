@@ -190,8 +190,7 @@ bool PlottingModule::Converter::convert(TxElement* root) {
 
             return res;
         }
-        default:
-            return false;  // No changes
+        default: return false;  // No changes
     }
 }
 

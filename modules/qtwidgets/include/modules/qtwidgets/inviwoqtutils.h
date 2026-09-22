@@ -244,10 +244,7 @@ IVW_MODULE_QTWIDGETS_API QPointF clamp(const QPointF& pos, const QRectF& rect);
  */
 IVW_MODULE_QTWIDGETS_API QMainWindow* getApplicationMainWindow();
 
-
 IVW_MODULE_QTWIDGETS_API InviwoEditMenu* getInviwoEditMenu();
-
-
 
 /**
  * @brief Moves point to become relative to the main window and thereby visible.
@@ -393,7 +390,7 @@ template <typename T>
 struct Save {
     explicit Save(T* item) : item_(item) { item->save(); }
     Save(const Save&) = delete;
-    Save(Save&& rhs) noexcept : item_{rhs.item_} { rhs.item_ = nullptr; };
+    Save(Save&& rhs) noexcept : item_{rhs.item_} { rhs.item_ = nullptr; }
     Save& operator=(const Save&) = delete;
     Save& operator=(Save&& that) noexcept {
         if (this != &that) {
@@ -404,7 +401,7 @@ struct Save {
             }
         }
         return *this;
-    };
+    }
     ~Save() {
         if (item_) item_->restore();
     }

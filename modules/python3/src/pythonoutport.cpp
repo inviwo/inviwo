@@ -74,9 +74,8 @@ void PythonOutport::setData(pybind11::object data) { data_ = data; }
 bool PythonOutport::hasData() const { return !data_.is_none(); }
 
 DataInfo PythonOutport::getDataInfo() const {
-    return {.cid = "org.inviwo.python.object",
-            .name = "Python Object",
-            .color = uvec3{12, 240, 153}};
+    return {
+        .cid = "org.inviwo.python.object", .name = "Python Object", .color = uvec3{12, 240, 153}};
 }
 
 }  // namespace inviwo

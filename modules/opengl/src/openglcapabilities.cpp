@@ -507,8 +507,6 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     if (isFboSupported()) glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments_);
 }
 
-void OpenGLCapabilities::retrieveDynamicInfo() {}
-
 void OpenGLCapabilities::addShaderVersion(GLSLShaderVersion version) {
     supportedShaderVersions_.push_back(version);
 }

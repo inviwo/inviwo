@@ -145,8 +145,7 @@ void VolumeCreator::process() {
                         case Tornado:
                             return std::shared_ptr<Volume>(
                                 util::makeTornadoVolume(dimensions_.get(), index_.get()));
-                        default:
-                            return std::shared_ptr<Volume>{};
+                        default: return std::shared_ptr<Volume>{};
                     }
                 });
 

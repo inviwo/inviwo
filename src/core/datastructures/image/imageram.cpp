@@ -140,13 +140,10 @@ bool ImageRAM::isValid() const {
 
 dvec4 ImageRAM::readPixel(size2_t pos, LayerType layer, size_t index) const {
     switch (layer) {
-        case LayerType::Depth:
-            return depthLayerRAM_->getAsDVec4(pos);
-        case LayerType::Picking:
-            return pickingLayerRAM_->getAsDVec4(pos);
+        case LayerType::Depth:   return depthLayerRAM_->getAsDVec4(pos);
+        case LayerType::Picking: return pickingLayerRAM_->getAsDVec4(pos);
         case LayerType::Color:
-        default:
-            return colorLayersRAM_[index]->getAsDVec4(pos);
+        default:                 return colorLayersRAM_[index]->getAsDVec4(pos);
     }
 }
 

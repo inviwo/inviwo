@@ -134,14 +134,10 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
     const auto df = ram->getDataFormat();
     const auto color_type = [&]() {
         switch (df->getComponents()) {
-            case 1:
-                return PNG_COLOR_TYPE_GRAY;
-            case 2:
-                return PNG_COLOR_TYPE_GRAY_ALPHA;
-            case 3:
-                return PNG_COLOR_TYPE_RGB;
-            case 4:
-                return PNG_COLOR_TYPE_RGBA;
+            case 1: return PNG_COLOR_TYPE_GRAY;
+            case 2: return PNG_COLOR_TYPE_GRAY_ALPHA;
+            case 3: return PNG_COLOR_TYPE_RGB;
+            case 4: return PNG_COLOR_TYPE_RGBA;
             default:
                 // Should not ever reach this
                 throw new DataWriterException(SourceContext{}, "Unsupported number of channels");

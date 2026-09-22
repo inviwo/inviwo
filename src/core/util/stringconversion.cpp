@@ -260,24 +260,12 @@ std::string util::urlEncode(std::string_view text) {
 void util::htmlEncodeTo(std::string_view data, StrBuffer& strBuffer) {
     for (size_t pos = 0; pos != data.size(); ++pos) {
         switch (data[pos]) {
-            case '&':
-                strBuffer.append("&amp;");
-                break;
-            case '\"':
-                strBuffer.append("&quot;");
-                break;
-            case '\'':
-                strBuffer.append("&apos;");
-                break;
-            case '<':
-                strBuffer.append("&lt;");
-                break;
-            case '>':
-                strBuffer.append("&gt;");
-                break;
-            default:
-                strBuffer.buff.push_back(data[pos]);
-                break;
+            case '&':  strBuffer.append("&amp;"); break;
+            case '\"': strBuffer.append("&quot;"); break;
+            case '\'': strBuffer.append("&apos;"); break;
+            case '<':  strBuffer.append("&lt;"); break;
+            case '>':  strBuffer.append("&gt;"); break;
+            default:   strBuffer.buff.push_back(data[pos]); break;
         }
     }
 }

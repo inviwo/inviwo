@@ -196,24 +196,18 @@ std::shared_ptr<Layer> Image::createPickingLayer(size2_t dimensions) {
 
 const Layer* Image::getLayer(LayerType type, size_t idx) const {
     switch (type) {
-        case LayerType::Color:
-            return getColorLayer(idx);
-        case LayerType::Depth:
-            return getDepthLayer();
-        case LayerType::Picking:
-            return getPickingLayer();
+        case LayerType::Color:   return getColorLayer(idx);
+        case LayerType::Depth:   return getDepthLayer();
+        case LayerType::Picking: return getPickingLayer();
     }
     return nullptr;
 }
 
 Layer* Image::getLayer(LayerType type, size_t idx) {
     switch (type) {
-        case LayerType::Color:
-            return getColorLayer(idx);
-        case LayerType::Depth:
-            return getDepthLayer();
-        case LayerType::Picking:
-            return getPickingLayer();
+        case LayerType::Color:   return getColorLayer(idx);
+        case LayerType::Depth:   return getDepthLayer();
+        case LayerType::Picking: return getPickingLayer();
     }
     return nullptr;
 }
@@ -253,7 +247,9 @@ Layer* Image::getColorLayer(size_t idx) {
     }
 }
 
-void Image::addColorLayer(std::shared_ptr<Layer> layer) { colorLayers_.emplace_back(std::move(layer)); }
+void Image::addColorLayer(std::shared_ptr<Layer> layer) {
+    colorLayers_.emplace_back(std::move(layer));
+}
 
 size_t Image::getNumberOfColorLayers() const { return colorLayers_.size(); }
 

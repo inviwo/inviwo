@@ -52,9 +52,8 @@ struct IVW_MODULE_BASEGL_API LineData {
     vec4 defaultColor = vec4{1.0f, 0.7f, 0.2f, 1.0f};
     vec3 overrideColorValue = vec3{0.7f, 0.7f, 0.7f};
     float overrideAlphaValue = 1.0f;
-    TransferFunction metaColor{
-        {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}}, 
-         {.pos = 1.0, .color = vec4{1.0f, 1.0f, 1.0f, 1.0f}}}};
+    TransferFunction metaColor{{{.pos = 0.0, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+                                {.pos = 1.0, .color = vec4{1.0f, 1.0f, 1.0f, 1.0f}}}};
 
     bool operator==(const LineData&) const = default;
 };

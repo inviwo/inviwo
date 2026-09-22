@@ -38,26 +38,16 @@ namespace inviwo {
 
 std::string_view enumToStr(ShadingMode sm) {
     switch (sm) {
-        case ShadingMode::None:
-            return "None";
-        case ShadingMode::Ambient:
-            return "Ambient";
-        case ShadingMode::Diffuse:
-            return "Diffuse";
-        case ShadingMode::Specular:
-            return "Specular";
-        case ShadingMode::BlinnPhong:
-            return "Blinn-Phong";
-        case ShadingMode::Phong:
-            return "Phong";
-        case ShadingMode::BlinnPhongFront:
-            return "Blinn-Phong frontside only";
-        case ShadingMode::BlinnPhongBack:
-            return "Blinn-Phong backside only";
-        case ShadingMode::PhongFront:
-            return "Phong frontside only";
-        case ShadingMode::PhongBack:
-            return "Phong backside only";
+        case ShadingMode::None:            return "None";
+        case ShadingMode::Ambient:         return "Ambient";
+        case ShadingMode::Diffuse:         return "Diffuse";
+        case ShadingMode::Specular:        return "Specular";
+        case ShadingMode::BlinnPhong:      return "Blinn-Phong";
+        case ShadingMode::Phong:           return "Phong";
+        case ShadingMode::BlinnPhongFront: return "Blinn-Phong frontside only";
+        case ShadingMode::BlinnPhongBack:  return "Blinn-Phong backside only";
+        case ShadingMode::PhongFront:      return "Phong frontside only";
+        case ShadingMode::PhongBack:       return "Phong backside only";
     }
     throw Exception(SourceContext{}, "Found invalid ShadingMode enum value '{}'",
                     static_cast<int>(sm));

@@ -48,6 +48,6 @@ IVW_QTEDITOR_API std::vector<Processor*> insertNetworkForData(const std::filesys
                                                               bool alwaysFirst = false,
                                                               bool onlySource = false,
                                                               QWidget* parent = nullptr);
-}
+}  // namespace util
 
 }  // namespace inviwo

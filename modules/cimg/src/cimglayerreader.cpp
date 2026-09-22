@@ -31,7 +31,7 @@
 
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>    // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/layerram.h>  // IWYU pragma: keep
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/glmutils.h>

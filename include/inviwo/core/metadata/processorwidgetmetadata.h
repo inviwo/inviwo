@@ -42,11 +42,11 @@ class IVW_CORE_API ProcessorWidgetMetaDataObserver : public Observer {
     friend ProcessorWidgetMetaData;
 
 protected:
-    virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*){};
-    virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*){};
-    virtual void onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*){};
-    virtual void onProcessorWidgetFullScreenChange(ProcessorWidgetMetaData*){};
-    virtual void onProcessorWidgetOnTopChange(ProcessorWidgetMetaData*){};
+    virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {}
+    virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) {}
+    virtual void onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {}
+    virtual void onProcessorWidgetFullScreenChange(ProcessorWidgetMetaData*) {}
+    virtual void onProcessorWidgetOnTopChange(ProcessorWidgetMetaData*) {}
 };
 
 class IVW_CORE_API ProcessorWidgetMetaData : public MetaData,

@@ -87,24 +87,15 @@ public:
 constexpr std::string_view format_as(CameraAnimation::RotationAxis axis) {
     switch (axis) {
         using enum CameraAnimation::RotationAxis;
-        case CameraYaw:
-            return "Camera Yaw";
-        case CameraPitch:
-            return "Camera Pitch";
-        case CameraRoll:
-            return "Camera Roll";
-        case ObjectYaw:
-            return "Object Yaw";
-        case ObjectPitch:
-            return "Object Pitch";
-        case ObjectRoll:
-            return "Object Roll";
-        case WorldX:
-            return "World X";
-        case WorldY:
-            return "World Y";
-        case WorldZ:
-            return "World Z";
+        case CameraYaw:   return "Camera Yaw";
+        case CameraPitch: return "Camera Pitch";
+        case CameraRoll:  return "Camera Roll";
+        case ObjectYaw:   return "Object Yaw";
+        case ObjectPitch: return "Object Pitch";
+        case ObjectRoll:  return "Object Roll";
+        case WorldX:      return "World X";
+        case WorldY:      return "World Y";
+        case WorldZ:      return "World Z";
     }
     throw Exception(SourceContext{}, "Invalid RotationAxis value");
 }

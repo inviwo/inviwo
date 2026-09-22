@@ -64,14 +64,10 @@ MouseButton getMouseButtonCausingEvent(const QMouseEvent* e) {
 #include <warn/push>
 #include <warn/ignore/switch-enum>
     switch (e->button()) {
-        case Qt::LeftButton:
-            return MouseButton::Left;
-        case Qt::RightButton:
-            return MouseButton::Right;
-        case Qt::MiddleButton:
-            return MouseButton::Middle;
-        default:
-            return MouseButton::None;
+        case Qt::LeftButton:   return MouseButton::Left;
+        case Qt::RightButton:  return MouseButton::Right;
+        case Qt::MiddleButton: return MouseButton::Middle;
+        default:               return MouseButton::None;
     }
 #include <warn/pop>
 }
@@ -88,18 +84,12 @@ MouseButtons getMouseWheelButtons(const QWheelEvent* e) {
 
 GestureState getGestureState(const QGesture* gesture) {
     switch (gesture->state()) {
-        case Qt::NoGesture:
-            return GestureState::NoGesture;
-        case Qt::GestureStarted:
-            return GestureState::Started;
-        case Qt::GestureUpdated:
-            return GestureState::Updated;
-        case Qt::GestureFinished:
-            return GestureState::Finished;
-        case Qt::GestureCanceled:
-            return GestureState::Canceled;
-        default:
-            return GestureState::NoGesture;
+        case Qt::NoGesture:       return GestureState::NoGesture;
+        case Qt::GestureStarted:  return GestureState::Started;
+        case Qt::GestureUpdated:  return GestureState::Updated;
+        case Qt::GestureFinished: return GestureState::Finished;
+        case Qt::GestureCanceled: return GestureState::Canceled;
+        default:                  return GestureState::NoGesture;
     }
 }
 

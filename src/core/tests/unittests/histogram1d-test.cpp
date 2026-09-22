@@ -75,7 +75,7 @@ public:
     }
 
 protected:
-    virtual void SetUp() override { rand_.seed(static_cast<std::mt19937::result_type>(0)); };
+    virtual void SetUp() override { rand_.seed(static_cast<std::mt19937::result_type>(0)); }
 
 private:
     std::mt19937 rand_;

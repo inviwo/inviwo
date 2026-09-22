@@ -202,6 +202,8 @@ void ScopedClock<Clock, Callback>::printAndReset() {
 template <typename Callback>
 using ScopedClockCPU = ScopedClock<Clock, Callback>;
 
+// NOLINTBEGIN(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
+
 #define IVW_ADDLINE_PART1(x, y) x##y
 #define IVW_ADDLINE_PART2(x, y) IVW_ADDLINE_PART1(x, y)
 #define IVW_ADDLINE(x) IVW_ADDLINE_PART2(x, __LINE__)
@@ -213,11 +215,11 @@ using ScopedClockCPU = ScopedClock<Clock, Callback>;
  * @param message  log message
  */
 #if IVW_PROFILING
-#define IVW_CPU_PROFILING(message)                                                  \
+#define IVW_CPU_PROFILING(message)                                                   \
     const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<Clock>([&]() { \
-        std::ostringstream ss;                                                      \
-        ss << message;                                                              \
-        return std::move(ss).str();                                                 \
+        std::ostringstream ss;                                                       \
+        ss << message;                                                               \
+        return std::move(ss).str();                                                  \
     })
 #else
 #define IVW_CPU_PROFILING(message)
@@ -234,7 +236,7 @@ using ScopedClockCPU = ScopedClock<Clock, Callback>;
 #if IVW_PROFILING
 #define IVW_CPU_PROFILING_IF(time, message)                                   \
     const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<Clock>( \
-        [&]() {                                                                \
+        [&]() {                                                               \
             std::ostringstream ss;                                            \
             ss << message;                                                    \
             return std::move(ss).str();                                       \
@@ -243,5 +245,7 @@ using ScopedClockCPU = ScopedClock<Clock, Callback>;
 #else
 #define IVW_CPU_PROFILING_IF(time, message)
 #endif
+
+// NOLINTEND(cppcoreguidelines-macro-usage, bugprone-macro-parentheses)
 
 }  // namespace inviwo

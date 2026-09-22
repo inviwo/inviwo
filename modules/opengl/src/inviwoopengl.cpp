@@ -36,8 +36,7 @@ namespace inviwo {
 
 std::string_view getGLErrorString(GLenum err) {
     switch (err) {
-        case GL_NO_ERROR:
-            return "No error";
+        case GL_NO_ERROR: return "No error";
         case GL_INVALID_ENUM:
             return "GL_INVALID_ENUM: An unacceptable value is specified for an enumerated "
                    "argument. "
@@ -67,10 +66,8 @@ std::string_view getGLErrorString(GLenum err) {
             return "GL_TABLE_TOO_LARGE: The specified table exceeds the implementation's maximum "
                    "supported table size. The offending command is ignored and has no other side "
                    "effect than to set the error flag.";
-        case GL_INVALID_FRAMEBUFFER_OPERATION:
-            return "INVALID_FRAMEBUFFER_OPERATION";
-        default:
-            return "Undefined error";
+        case GL_INVALID_FRAMEBUFFER_OPERATION: return "INVALID_FRAMEBUFFER_OPERATION";
+        default:                               return "Undefined error";
     }
 }
 

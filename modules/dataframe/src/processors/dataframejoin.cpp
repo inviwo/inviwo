@@ -163,8 +163,7 @@ void DataFrameJoin::process() {
         case JoinType::OuterLeft:
             dataframe = dataframe::leftJoin(*inportLeft_.getData(), *inportRight_.getData(), keys);
             break;
-        default:
-            throw Exception("unsupported join operation");
+        default: throw Exception("unsupported join operation");
     }
     outport_.setData(dataframe);
 }

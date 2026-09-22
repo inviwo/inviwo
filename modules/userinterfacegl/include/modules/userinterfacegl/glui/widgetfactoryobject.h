@@ -60,7 +60,7 @@ class WidgetFactoryObjectTemplate : public WidgetFactoryObject {
 public:
     WidgetFactoryObjectTemplate() : WidgetFactoryObject(PropertyTraits<P>::classIdentifier()) {}
     WidgetFactoryObjectTemplate(const std::string& classIdentifier)
-        : WidgetFactoryObject(classIdentifier){};
+        : WidgetFactoryObject(classIdentifier) {}
     virtual ~WidgetFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Element> create(Property& prop, Processor& proc,

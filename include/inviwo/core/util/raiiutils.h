@@ -74,7 +74,7 @@ struct IVW_CORE_API OnScopeExit {
     OnScopeExit(const OnScopeExit&) = delete;
     OnScopeExit& operator=(const OnScopeExit& that) = delete;
 
-    OnScopeExit(OnScopeExit&& rhs) : action_(std::move(rhs.action_)) { rhs.action_ = nullptr; };
+    OnScopeExit(OnScopeExit&& rhs) : action_(std::move(rhs.action_)) { rhs.action_ = nullptr; }
     OnScopeExit& operator=(OnScopeExit&& that) {
         if (this != &that) {
             action_ = nullptr;

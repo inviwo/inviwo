@@ -50,10 +50,8 @@ const QFont& getFont(FontType type) {
 
     switch (type) {
         using enum FontType;
-        case Identifier:
-            return identifier;
-        case Class:
-            return classFont;
+        case Identifier: return identifier;
+        case Class:      return classFont;
     }
     return identifier;
 }

@@ -76,9 +76,9 @@ public:
     using Propagator = std::function<void(Event*, size_t ind)>;
 
     struct View {
-        View(const ivec2& p, const ivec2& s) : pos(p), size(s){};
+        View(const ivec2& p, const ivec2& s) : pos(p), size(s) {}
         View(const ivec4& m)  // NOLINT(google-explicit-constructor)
-            : pos(m.x, m.y), size(m.z, m.w){};
+            : pos(m.x, m.y), size(m.z, m.w) {}
 
         ivec2 pos;
         ivec2 size;

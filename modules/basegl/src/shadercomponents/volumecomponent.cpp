@@ -169,12 +169,9 @@ auto VolumeComponent::getSegments() -> std::vector<Segment> {
 std::string VolumeComponent::getGradientString() const {
     switch (gradients) {
         case Gradients::None:
-        case Gradients::Single:
-            return fmt::format("{0}Gradient", getName());
-        case Gradients::All:
-            return fmt::format("{0}AllGradients", getName());
-        default:
-            return {};
+        case Gradients::Single: return fmt::format("{0}Gradient", getName());
+        case Gradients::All:    return fmt::format("{0}AllGradients", getName());
+        default:                return {};
     }
 }
 

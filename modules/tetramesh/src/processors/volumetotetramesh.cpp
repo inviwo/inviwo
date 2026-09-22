@@ -50,7 +50,7 @@ namespace {
 
 const std::vector<OptionPropertyIntOption> channelsList = util::enumeratedOptions("Channel", 4);
 
-}
+}  // namespace
 
 VolumeToTetraMesh::VolumeToTetraMesh()
     : Processor{}

@@ -47,7 +47,6 @@ struct MockPropertyOwnerObserver : PropertyOwnerObserver {
                 (override));
     MOCK_METHOD(void, onDidAddProperty, (Property * property, size_t index), (override));
 
-
     MOCK_METHOD(void, onWillRemoveProperty, (Property * property, size_t index), (override));
     MOCK_METHOD(void, onDidRemoveProperty,
                 (PropertyOwner * owner, Property* property, size_t index), (override));

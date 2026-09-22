@@ -348,26 +348,16 @@ void FrameBufferObject::setDrawBlit(bool set) {
 std::string_view utilgl::framebufferStatusToString(GLenum status) {
     using namespace std::literals;
     switch (status) {
-        case GL_FRAMEBUFFER_COMPLETE:
-            return "Complete"sv;
-        case GL_FRAMEBUFFER_UNDEFINED:
-            return "Undefined"sv;
-        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-            return "Incomplete Attachment"sv;
-        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-            return "Incomplete Missing Attachment"sv;
-        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-            return "Incomplete Draw Buffer"sv;
-        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-            return "Incomplete Read Buffer"sv;
-        case GL_FRAMEBUFFER_UNSUPPORTED:
-            return "Unsupported"sv;
-        case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-            return "Incomplete Multisample"sv;
-        case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-            return "Incomplete Formats"sv;
-        default:
-            return "Unknown Error"sv;
+        case GL_FRAMEBUFFER_COMPLETE:                      return "Complete"sv;
+        case GL_FRAMEBUFFER_UNDEFINED:                     return "Undefined"sv;
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:         return "Incomplete Attachment"sv;
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: return "Incomplete Missing Attachment"sv;
+        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:        return "Incomplete Draw Buffer"sv;
+        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:        return "Incomplete Read Buffer"sv;
+        case GL_FRAMEBUFFER_UNSUPPORTED:                   return "Unsupported"sv;
+        case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:        return "Incomplete Multisample"sv;
+        case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:      return "Incomplete Formats"sv;
+        default:                                           return "Unknown Error"sv;
     }
 }
 

@@ -70,7 +70,7 @@ public:
      * @param defaultRepresentation Id of the default representation type to use in the factory
      */
     RepresentationFactory(BaseReprId defaultRepresentation)
-        : BaseRepresentationFactory{}, defaultRepresentation_{defaultRepresentation} {};
+        : BaseRepresentationFactory{}, defaultRepresentation_{defaultRepresentation} {}
     virtual ~RepresentationFactory() = default;
 
     virtual BaseReprId getBaseReprId() const override { return BaseReprId{typeid(Representation)}; }

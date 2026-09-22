@@ -77,7 +77,7 @@ struct StateTemplate;
 class IVW_CORE_API Stop {
 public:
     explicit operator bool() const noexcept { return stop_.load(std::memory_order::relaxed); }
-    bool operator()() const noexcept { return stop_.load(std::memory_order::relaxed); };
+    bool operator()() const noexcept { return stop_.load(std::memory_order::relaxed); }
 
 private:
     friend ::inviwo::pool::detail::State;

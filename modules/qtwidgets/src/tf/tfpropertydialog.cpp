@@ -217,39 +217,25 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
                 switch (t) {
                     case MenuItemType::cut:
                     case MenuItemType::copy:
-                    case MenuItemType::del:
-                        return !editor_->selectedItems().isEmpty();
+                    case MenuItemType::del:   return !editor_->selectedItems().isEmpty();
                     case MenuItemType::paste: {
                         auto* clipboard = QApplication::clipboard();
                         const auto* mimeData = clipboard->mimeData();
                         return mimeData &&
                                mimeData->hasFormat(QString::fromUtf8(TFEditor::mimeTFPrimitives));
                     }
-                    case MenuItemType::select:
-                        return true;
-                    default:
-                        return false;
+                    case MenuItemType::select: return true;
+                    default:                   return false;
                 }
             },
             [this](MenuItemType t) -> void {
                 switch (t) {
-                    case MenuItemType::cut:
-                        editor_->cut();
-                        break;
-                    case MenuItemType::copy:
-                        editor_->copy();
-                        break;
-                    case MenuItemType::paste:
-                        editor_->paste();
-                        break;
-                    case MenuItemType::del:
-                        editor_->deleteSelection();
-                        break;
-                    case MenuItemType::select:
-                        editor_->selectAll();
-                        break;
-                    default:
-                        break;
+                    case MenuItemType::cut:    editor_->cut(); break;
+                    case MenuItemType::copy:   editor_->copy(); break;
+                    case MenuItemType::paste:  editor_->paste(); break;
+                    case MenuItemType::del:    editor_->deleteSelection(); break;
+                    case MenuItemType::select: editor_->selectAll(); break;
+                    default:                   break;
                 }
             }));
     }

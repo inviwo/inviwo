@@ -66,6 +66,6 @@ namespace utilqt {
 
 IVW_MODULE_OPENGLQT_API std::vector<std::shared_ptr<std::function<void()>>> setGLSLSyntaxHighlight(
     SyntaxHighlighter& sh, GLSLSyntaxHighlight& settings);
-}
+}  // namespace utilqt
 
 }  // namespace inviwo

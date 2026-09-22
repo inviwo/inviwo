@@ -140,7 +140,7 @@ bool ProcessorListFilter::filterAcceptsRow(int source_row, const QModelIndex& so
     } else {
         return false;
     }
-};
+}
 
 void ProcessorListFilter::setCustomFilter(const QString& filter) {
 #if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
@@ -205,8 +205,7 @@ bool ProcessorListFilter::lessThan(const QModelIndex& left, const QModelIndex& r
 
     switch (grouping_) {
         using enum Grouping;
-        case Alphabetical:
-            return iCaseLess(a->info.displayName, b->info.displayName);
+        case Alphabetical: return iCaseLess(a->info.displayName, b->info.displayName);
         case Categorical:
             if (!iCaseCmp(a->info.category, b->info.category)) {
                 return iCaseLess(a->info.category, b->info.category);
@@ -237,12 +236,9 @@ bool ProcessorListFilter::lessThan(const QModelIndex& left, const QModelIndex& r
             } else {
                 return iCaseLess(a->info.displayName, b->info.displayName);
             }
-        case Inports:
-            [[fallthrough]];
-        case Outports:
-            [[fallthrough]];
-        default:
-            return iCaseLess(a->info.displayName, b->info.displayName);
+        case Inports:  [[fallthrough]];
+        case Outports: [[fallthrough]];
+        default:       return iCaseLess(a->info.displayName, b->info.displayName);
     }
 }
 

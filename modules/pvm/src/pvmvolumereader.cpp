@@ -130,12 +130,9 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
 
     const DataFormatBase* format = [&]() -> const DataFormatBase* {
         switch (bytesPerVoxel) {
-            case 1:
-                return DataUInt8::get();
-            case 2:
-                return DataUInt16::get();
-            case 3:
-                return DataVec3UInt8::get();
+            case 1: return DataUInt8::get();
+            case 2: return DataUInt16::get();
+            case 3: return DataVec3UInt8::get();
             default:
                 throw DataReaderException(
                     SourceContext{},

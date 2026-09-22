@@ -30,7 +30,7 @@
 #include <modules/opengl/canvasgl.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/image/image.h>                     // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/image.h>  // IWYU pragma: keep
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/representationconverter.h>

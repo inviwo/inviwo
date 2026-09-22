@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <stdexcept>
+#include <array>
 
 namespace inviwo {
 
@@ -69,10 +70,12 @@ namespace util {
 
 */
 
+namespace {
+
 // Depending on the url parameter in base64_chars, one of
 // two sets of base64 characters needs to be chosen.
 // They differ in their last two characters.
-static const char* base64_chars[2] = {
+constexpr std::array<const char*, 2> base64_chars = {
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789"
@@ -83,7 +86,7 @@ static const char* base64_chars[2] = {
     "0123456789"
     "-_"};
 
-static unsigned int pos_of_char(const unsigned char chr) {
+unsigned int pos_of_char(const unsigned char chr) {
     // Return the position of chr within base64_encode()
 
     if (chr >= 'A' && chr <= 'Z') {
@@ -104,7 +107,7 @@ static unsigned int pos_of_char(const unsigned char chr) {
     }
 }
 
-static std::string insert_linebreaks(std::string str, size_t distance) {
+std::string insert_linebreaks(std::string str, size_t distance) {
     //
     // Provided by https://github.com/JomaCorpFX, adapted by me.
     //
@@ -122,7 +125,7 @@ static std::string insert_linebreaks(std::string str, size_t distance) {
     return str;
 }
 
-std::string base64_encode(unsigned char const* bytes_to_encode, size_t in_len, bool url) {
+std::string base64_encode(const unsigned char* bytes_to_encode, size_t in_len, bool url) {
 
     size_t len_encoded = (in_len + 2) / 3 * 4;
 
@@ -169,6 +172,8 @@ std::string base64_encode(unsigned char const* bytes_to_encode, size_t in_len, b
 
     return ret;
 }
+
+}  // namespace
 
 std::string encode(std::span<char> s, bool url);
 

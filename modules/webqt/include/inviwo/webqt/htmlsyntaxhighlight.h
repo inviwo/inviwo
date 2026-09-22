@@ -38,7 +38,6 @@
 #include <memory>
 #include <vector>
 
-
 namespace inviwo {
 class SyntaxHighlighter;
 
@@ -59,12 +58,12 @@ public:
     FloatVec4Property attributeNameColor;
     FloatVec4Property attributeValueColor;
     FloatVec4Property commentColor;
-    };
+};
 
 namespace utilqt {
 
-IVW_MODULE_WEBQT_API std::vector<std::shared_ptr<std::function<void()>>>
-setHtmlSyntaxHighlight(SyntaxHighlighter& sh, HtmlSyntaxHighlight& settings);
+IVW_MODULE_WEBQT_API std::vector<std::shared_ptr<std::function<void()>>> setHtmlSyntaxHighlight(
+    SyntaxHighlighter& sh, HtmlSyntaxHighlight& settings);
 
 }  // namespace utilqt
 

@@ -181,9 +181,10 @@ void exposeNetwork(py::module& m) {
                                                             // the exception on to python)
              })
 
-        .def("append", [](ProcessorNetwork* network, const std::filesystem::path& path) {
-            return util::appendProcessorNetwork(network, path, network->getApplication());
-        })
+        .def("append",
+             [](ProcessorNetwork* network, const std::filesystem::path& path) {
+                 return util::appendProcessorNetwork(network, path, network->getApplication());
+             })
         .def("serialize", &ProcessorNetwork::serialize)
         .def("deserialize", &ProcessorNetwork::deserialize);
 }

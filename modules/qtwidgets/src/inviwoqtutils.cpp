@@ -526,9 +526,7 @@ std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* ne
                     case QImage::Format_RGBA8888_Premultiplied:
                         img = img.convertToFormat(QImage::Format_RGBX8888);
                         break;
-                    default:
-                        img = img.convertToFormat(QImage::Format_RGB32);
-                        break;
+                    default: img = img.convertToFormat(QImage::Format_RGB32); break;
                 }
             }
         }

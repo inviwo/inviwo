@@ -37,58 +37,41 @@ namespace inviwo {
 
 std::string_view enumToStr(PickingState s) {
     switch (s) {
-        case PickingState::None:
-            return "None";
-        case PickingState::Started:
-            return "Started";
-        case PickingState::Updated:
-            return "Updated";
-        case PickingState::Finished:
-            return "Finished";
+        case PickingState::None:     return "None";
+        case PickingState::Started:  return "Started";
+        case PickingState::Updated:  return "Updated";
+        case PickingState::Finished: return "Finished";
     }
     throw Exception(SourceContext{}, "Found invalid PickingState enum value '{}'",
                     static_cast<int>(s));
 }
 std::string_view enumToStr(PickingPressItem s) {
     switch (s) {
-        case PickingPressItem::None:
-            return "None";
-        case PickingPressItem::Primary:
-            return "Primary";
-        case PickingPressItem::Secondary:
-            return "Secondary";
-        case PickingPressItem::Tertiary:
-            return "Tertiary";
+        case PickingPressItem::None:      return "None";
+        case PickingPressItem::Primary:   return "Primary";
+        case PickingPressItem::Secondary: return "Secondary";
+        case PickingPressItem::Tertiary:  return "Tertiary";
     }
     throw Exception(SourceContext{}, "Found invalid PickingPressItem enum value '{}'",
                     static_cast<int>(s));
 }
 std::string_view enumToStr(PickingPressState s) {
     switch (s) {
-        case PickingPressState::None:
-            return "None";
-        case PickingPressState::Press:
-            return "Press";
-        case PickingPressState::Move:
-            return "Move";
-        case PickingPressState::Release:
-            return "Release";
-        case PickingPressState::DoubleClick:
-            return "DoubleClick";
+        case PickingPressState::None:        return "None";
+        case PickingPressState::Press:       return "Press";
+        case PickingPressState::Move:        return "Move";
+        case PickingPressState::Release:     return "Release";
+        case PickingPressState::DoubleClick: return "DoubleClick";
     }
     throw Exception(SourceContext{}, "Found invalid PickingPressState enum value '{}'",
                     static_cast<int>(s));
 }
 std::string_view enumToStr(PickingHoverState s) {
     switch (s) {
-        case PickingHoverState::None:
-            return "None";
-        case PickingHoverState::Enter:
-            return "Enter";
-        case PickingHoverState::Move:
-            return "Move";
-        case PickingHoverState::Exit:
-            return "Exit";
+        case PickingHoverState::None:  return "None";
+        case PickingHoverState::Enter: return "Enter";
+        case PickingHoverState::Move:  return "Move";
+        case PickingHoverState::Exit:  return "Exit";
     }
     throw Exception(SourceContext{}, "Found invalid PickingHoverState enum value '{}'",
                     static_cast<int>(s));

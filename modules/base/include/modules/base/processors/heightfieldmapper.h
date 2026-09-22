@@ -46,7 +46,7 @@ enum Mode {
     DataRange,   //!< scale heights given min/max values
     SeaLevel,    //!< scale heights around sea level to fit in maxHeight
 };
-}
+}  // namespace HeightFieldScaling
 
 /**
  * @brief Maps a 2D input texture to a single channel heightfield and scales the data values.

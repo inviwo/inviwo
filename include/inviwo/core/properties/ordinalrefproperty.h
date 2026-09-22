@@ -352,7 +352,8 @@ using IntSize4RefProperty = OrdinalRefProperty<size4_t>;
 template <typename T>
 struct PropertyTraits<OrdinalRefProperty<T>> {
     static std::string_view classIdentifier() {
-        static constexpr auto identifier = "org.inviwo." + Defaultvalues<T>::getName() + "RefProperty";
+        static constexpr auto identifier =
+            "org.inviwo." + Defaultvalues<T>::getName() + "RefProperty";
         return identifier;
     }
 };

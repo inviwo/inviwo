@@ -208,41 +208,42 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
 
     if (coloringAction_ != ColoringAction::None) {
         // The functor should be called with an index in the range [0,nSegments)
-        const auto foreachInGroup = [&]() -> std::function<void(std::function<void(uint32_t)>)> {
+        const auto foreachInGroup =
+            [&]() -> std::function<void(const std::function<void(uint32_t)>&)> {
             switch (coloringGroup_.get()) {
                 default:
                 case ColoringGroup::All:
-                    return [&](std::function<void(uint32_t)> fun) {
+                    return [&](const std::function<void(uint32_t)>& fun) {
                         for (uint32_t i = 0; i < nSegments; ++i) {
                             fun(i);
                         }
                     };
                 case ColoringGroup::Selected:
-                    return [&](std::function<void(uint32_t)> fun) {
+                    return [&](const std::function<void(uint32_t)>& fun) {
                         for (auto i : brushing_.getSelectedIndices()) {
                             fun(i - minSegmentId_);
                         }
                     };
                 case ColoringGroup::Unselected:
-                    return [&](std::function<void(uint32_t)> fun) {
+                    return [&](const std::function<void(uint32_t)>& fun) {
                         for (uint32_t i = 0; i < nSegments; ++i) {
                             if (!brushing_.isSelected(i + minSegmentId_)) fun(i);
                         }
                     };
                 case ColoringGroup::Filtered:
-                    return [&](std::function<void(uint32_t)> fun) {
+                    return [&](const std::function<void(uint32_t)>& fun) {
                         for (auto i : brushing_.getFilteredIndices()) {
                             fun(i - minSegmentId_);
                         }
                     };
                 case ColoringGroup::Unfiltered:
-                    return [&](std::function<void(uint32_t)> fun) {
+                    return [&](const std::function<void(uint32_t)>& fun) {
                         for (uint32_t i = 0; i < nSegments; ++i) {
                             if (!brushing_.isFiltered(i + minSegmentId_)) fun(i);
                         }
                     };
                 case ColoringGroup::Zero:
-                    return [&](std::function<void(uint32_t)> fun) { fun(0); };
+                    return [&](const std::function<void(uint32_t)>& fun) { fun(0); };
             }
         }();
 
@@ -286,8 +287,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                 });
                 break;
             }
-            case ColoringAction::None:
-                break;
+            case ColoringAction::None: break;
         }
 
         coloringAction_ = ColoringAction::None;

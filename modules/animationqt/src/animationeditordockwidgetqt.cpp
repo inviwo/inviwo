@@ -350,13 +350,9 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
                         controller_.setPlaybackDirection(PlaybackDirection::Backward);
                         controller_.play();
                         break;
-                    case AnimationState::Playing:
-                        controller_.pause();
-                        break;
-                    case AnimationState::Rendering:
-                        break;
-                    default:
-                        break;
+                    case AnimationState::Playing:   controller_.pause(); break;
+                    case AnimationState::Rendering: break;
+                    default:                        break;
                 }
             }
         });
@@ -405,13 +401,9 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
                         controller_.setPlaybackDirection(PlaybackDirection::Forward);
                         controller_.play();
                         break;
-                    case AnimationState::Playing:
-                        controller_.pause();
-                        break;
-                    case AnimationState::Rendering:
-                        break;
-                    default:
-                        break;
+                    case AnimationState::Playing:   controller_.pause(); break;
+                    case AnimationState::Rendering: break;
+                    default:                        break;
                 }
             }
         });
@@ -440,8 +432,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
                 switch (t) {
                     case MenuItemType::cut:
                     case MenuItemType::copy:
-                    case MenuItemType::del:
-                        return !animationEditor_->selectedItems().empty();
+                    case MenuItemType::del:   return !animationEditor_->selectedItems().empty();
                     case MenuItemType::paste: {
                         auto* clipboard = QApplication::clipboard();
                         const auto* mimeData = clipboard->mimeData();
@@ -451,27 +442,17 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
                                    QString::fromUtf8(AnimationEditorQt::mimeKeyframeSequences));
                     }
                     case MenuItemType::select:
-                    default:
-                        return false;
+                    default:                   return false;
                 }
             },
             [this](MenuItemType t) -> void {
                 switch (t) {
-                    case MenuItemType::cut:
-                        animationEditor_->cut();
-                        break;
-                    case MenuItemType::copy:
-                        animationEditor_->copy();
-                        break;
-                    case MenuItemType::paste:
-                        animationEditor_->paste();
-                        break;
-                    case MenuItemType::del:
-                        animationEditor_->deleteSelection();
-                        break;
+                    case MenuItemType::cut:    animationEditor_->cut(); break;
+                    case MenuItemType::copy:   animationEditor_->copy(); break;
+                    case MenuItemType::paste:  animationEditor_->paste(); break;
+                    case MenuItemType::del:    animationEditor_->deleteSelection(); break;
                     case MenuItemType::select:
-                    default:
-                        break;
+                    default:                   break;
                 }
             }));
     }

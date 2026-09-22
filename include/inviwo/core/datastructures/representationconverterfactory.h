@@ -107,7 +107,7 @@ auto RepresentationConverterFactory<BaseRepr>::getBaseReprId() -> BaseReprId {
 template <typename BaseRepr>
 auto RepresentationConverterFactory<BaseRepr>::getConverters() const -> const RepMap& {
     return converters_;
-};
+}
 
 template <typename BaseRepr>
 bool RepresentationConverterFactory<BaseRepr>::registerObject(

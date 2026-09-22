@@ -642,7 +642,7 @@ void VolumeSliceGL::shiftSlice(int shift) {
             break;
         }
         default:
-        case 3: {
+        case 3:  {
             vec3 newPos = planePosition_.get() +
                           static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
             newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
@@ -851,9 +851,7 @@ void VolumeSliceGL::rotationModeChange() {
             imageRotation_.set(glm::radians(270.f));
             break;
         case 4:
-        default:
-            imageRotation_.setVisible(true);
-            break;
+        default: imageRotation_.setVisible(true); break;
     }
 }
 

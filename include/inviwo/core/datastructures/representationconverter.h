@@ -94,7 +94,7 @@ public:
                         std::shared_ptr<BaseRepr> destination) const override final {
         update(std::static_pointer_cast<const From>(source),
                std::static_pointer_cast<To>(destination));
-    };
+    }
 
     virtual std::shared_ptr<To> createFrom(std::shared_ptr<const From> source) const = 0;
     virtual void update(std::shared_ptr<const From> source,

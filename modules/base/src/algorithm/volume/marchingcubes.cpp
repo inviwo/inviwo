@@ -34,7 +34,7 @@
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
-#include <inviwo/core/datastructures/volume/volume.h>                   // IWYU pragma: keep
+#include <inviwo/core/datastructures/volume/volume.h>  // IWYU pragma: keep
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/exception.h>

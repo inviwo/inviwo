@@ -34,4 +34,4 @@ namespace inviwo {
 
 void exposeCurlUtils(pybind11::module& m);
 
-}
+}  // namespace inviwo

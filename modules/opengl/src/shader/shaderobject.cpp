@@ -102,7 +102,7 @@ struct Char {
 
     bool peek(std::string_view match) {
         return std::mismatch(curr, end, match.begin(), match.end()).second == match.end();
-    };
+    }
 };
 struct Eof {};
 
@@ -458,18 +458,10 @@ void ShaderObject::addDefines(std::ostringstream& source) {
     for (const auto& se : shaderExtensions_) {
         source << "#extension " << se.first << " : ";
         switch (se.second) {
-            case ExtensionBehavior::Enable:
-                source << "enable";
-                break;
-            case ExtensionBehavior::Require:
-                source << "require";
-                break;
-            case ExtensionBehavior::Warn:
-                source << "warn";
-                break;
-            case ExtensionBehavior::Disable:
-                source << "disable";
-                break;
+            case ExtensionBehavior::Enable:  source << "enable"; break;
+            case ExtensionBehavior::Require: source << "require"; break;
+            case ExtensionBehavior::Warn:    source << "warn"; break;
+            case ExtensionBehavior::Disable: source << "disable"; break;
         }
         source << "\n";
         lnr_.addLine("Extensions", 0);

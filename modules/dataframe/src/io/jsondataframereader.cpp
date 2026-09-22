@@ -33,7 +33,7 @@
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/sourcecontext.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/jsondataframeconversion.h>   // IWYU pragma: keep
+#include <inviwo/dataframe/jsondataframeconversion.h>  // IWYU pragma: keep
 #include <modules/json/json.h>
 
 #include <fstream>

@@ -332,8 +332,7 @@ bool UndoManager::eventFilter(QObject*, QEvent* e) {
             case QEvent::Drop: {
                 return true;
             }
-            default:
-                return false;
+            default: return false;
         }
     }();
 

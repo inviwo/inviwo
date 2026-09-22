@@ -51,6 +51,6 @@ std::shared_ptr<IsoValueCollection> IsoValueCollectionIIVReader::readData(
     data->deserialize(deserializer);
 
     return data;
-};
+}
 
 }  // namespace inviwo

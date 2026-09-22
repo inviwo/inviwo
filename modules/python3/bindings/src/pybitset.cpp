@@ -128,9 +128,7 @@ void exposeBitset(pybind11::module& m) {
 
         .def(
             "__iter__",
-            [](BitSet& b) {
-                return BitSetIteratorWrapper{b.begin(), b.end()};
-            },
+            [](BitSet& b) { return BitSetIteratorWrapper{.begin = b.begin(), .end = b.end()}; },
             py::keep_alive<0, 1>())
         .def("__len__", &BitSet::size)
         .def("__contains__", &BitSet::contains)

@@ -149,9 +149,7 @@ void NoiseGenerator2D::process() {
     std::shared_ptr<Layer> layer;
 
     switch (type_.get()) {
-        case NoiseType::Random:
-            layer = util::randomLayer<float>(size_.get(), mt_, r);
-            break;
+        case NoiseType::Random: layer = util::randomLayer<float>(size_.get(), mt_, r); break;
         case NoiseType::Perlin:
             layer = util::perlinNoise(size_.get(), persistence_.get(), levels_.get().x,
                                       levels_.get().y, mt_);

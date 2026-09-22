@@ -66,14 +66,9 @@ uvec4 hex2urgba(std::string_view str) {
 
         const auto* c = reinterpret_cast<const unsigned char*>(&v);
         switch (str.length()) {
-            case 6:
-                result = uvec4(c[2], c[1], c[0], 255);
-                break;
-            case 8:
-                result = uvec4(c[3], c[2], c[1], c[0]);
-                break;
-            default:
-                throw Exception(SourceContext{}, R"(Invalid hex code "{}".)", str);
+            case 6:  result = uvec4(c[2], c[1], c[0], 255); break;
+            case 8:  result = uvec4(c[3], c[2], c[1], c[0]); break;
+            default: throw Exception(SourceContext{}, R"(Invalid hex code "{}".)", str);
         }
     } else {
         throw Exception(SourceContext{}, R"(Invalid hex code "{}".)", str);

@@ -73,7 +73,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/volume/volumeutils.h>
-#include <modules/opengl/texture/texture3d.h>                           // IWYU pragma: keep
+#include <modules/opengl/texture/texture3d.h>  // IWYU pragma: keep
 
 #include <algorithm>
 #include <cmath>

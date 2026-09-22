@@ -53,13 +53,10 @@ namespace {
 AxisRangeInteraction getInteraction(BoxSelectionData::Mode mode) {
     using enum BoxSelectionData::Mode;
     switch (mode) {
-        case Selection:
-            return AxisRangeInteraction::Selection;
-        case Filtering:
-            return AxisRangeInteraction::Filtering;
+        case Selection: return AxisRangeInteraction::Selection;
+        case Filtering: return AxisRangeInteraction::Filtering;
         case None:
-        default:
-            return AxisRangeInteraction::None;
+        default:        return AxisRangeInteraction::None;
     }
 }
 

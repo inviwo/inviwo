@@ -59,7 +59,7 @@ TransferFunctionLayerReader& TransferFunctionLayerReader::operator=(
 
 TransferFunctionLayerReader* TransferFunctionLayerReader::clone() const {
     return new TransferFunctionLayerReader{*this};
-};
+}
 
 std::shared_ptr<TransferFunction> TransferFunctionLayerReader::readData(
     const std::filesystem::path& filePath) {
@@ -91,7 +91,7 @@ std::shared_ptr<TransferFunction> TransferFunctionLayerReader::readData(
     });
 
     return tf;
-};
+}
 
 TransferFunctionLayerReaderWrapper::TransferFunctionLayerReaderWrapper(DataReaderFactory* factory)
     : factory_{factory} {

@@ -103,13 +103,9 @@ void ImageLayer::process() {
 
     int colorUnit = colorTexUnit.getUnitNumber();
     switch (outputLayer_.get()) {
-        case LayerEnum::Depth:
-            colorUnit = depthTexUnit.getUnitNumber();
-            break;
-        case LayerEnum::Picking:
-            colorUnit = pickingTexUnit.getUnitNumber();
-            break;
-        default: {
+        case LayerEnum::Depth:   colorUnit = depthTexUnit.getUnitNumber(); break;
+        case LayerEnum::Picking: colorUnit = pickingTexUnit.getUnitNumber(); break;
+        default:                 {
             const auto nColorLayers = inport_.getData()->getNumberOfColorLayers();
             if (outputLayer_.get() >= static_cast<int>(nColorLayers)) {
                 throw Exception(SourceContext{}, "Selected color layer '{}' is out of bounds '{}'",

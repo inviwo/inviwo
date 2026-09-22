@@ -56,8 +56,8 @@ constexpr bool alwaysFalse() {
 
 struct IVW_CORE_API nonesuch {
     ~nonesuch() = delete;
-    nonesuch(nonesuch const&) = delete;
-    void operator=(nonesuch const&) = delete;
+    nonesuch(const nonesuch&) = delete;
+    void operator=(const nonesuch&) = delete;
 };
 
 template <template <class...> class Op, class... Args>

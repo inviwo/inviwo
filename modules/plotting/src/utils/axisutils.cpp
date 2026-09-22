@@ -69,16 +69,10 @@ std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickMarks, dv
     vec2 tickOffset;
     switch (style) {
         using enum TickData::Style;
-        case Inside:
-            tickOffset = vec2(0.0f, 1.0f);
-            break;
-        case Outside:
-            tickOffset = vec2(-1.0f, 0.0f);
-            break;
+        case Inside:  tickOffset = vec2(0.0f, 1.0f); break;
+        case Outside: tickOffset = vec2(-1.0f, 0.0f); break;
         case Both:
-        default:
-            tickOffset = vec2(-1.0f, 1.0f);
-            break;
+        default:      tickOffset = vec2(-1.0f, 1.0f); break;
     }
 
     const size_t numTicks = tickMarks.size();
@@ -215,16 +209,10 @@ std::pair<vec2, vec2> tickBoundingRect(const AxisData& data,
         vec2 tickOffset;
         switch (style) {
             using enum TickData::Style;
-            case Inside:
-                tickOffset = vec2(0.0f, 1.0f);
-                break;
-            case Outside:
-                tickOffset = vec2(-1.0f, 0.0f);
-                break;
+            case Inside:  tickOffset = vec2(0.0f, 1.0f); break;
+            case Outside: tickOffset = vec2(-1.0f, 0.0f); break;
             case Both:
-            default:
-                tickOffset = vec2(-1.0f, 1.0f);
-                break;
+            default:      tickOffset = vec2(-1.0f, 1.0f); break;
         }
         if (flip) {
             tickOffset = -tickOffset;

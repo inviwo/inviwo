@@ -28,5 +28,3 @@
  *********************************************************************************/
 
 #include <modules/basegl/shadercomponents/isotfcomponent.h>
-
-

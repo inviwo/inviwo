@@ -78,7 +78,7 @@ public:
     /*
      * Returns Unicode representation of pressed keys
      */
-    std::string_view text() const { return text_; };
+    std::string_view text() const { return text_; }
     void setText(const std::string& text) { text_ = text; }
 
     virtual uint64_t hash() const override;

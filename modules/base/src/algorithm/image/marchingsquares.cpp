@@ -32,8 +32,8 @@
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/image/layerram.h>         // IWYU pragma: keep
-#include <inviwo/core/datastructures/image/layer.h>            // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/layerram.h>  // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/layer.h>     // IWYU pragma: keep
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/isovaluecollection.h>
 #include <inviwo/core/util/formatdispatching.h>
@@ -280,7 +280,7 @@ LineUpdate mergeLines(Intersection& intersection1, Intersection& intersection2, 
         // different start and end, append start to end
         if (intersection1.type == PointType::Start) {
             std::swap(edge1, edge2);
-            line2.insert(line2.end(), std::begin(line1), std::end(line1));            
+            line2.insert(line2.end(), std::begin(line1), std::end(line1));
             std::swap(line1, line2);
         } else {
             line1.insert(line1.end(), std::begin(line2), std::end(line2));

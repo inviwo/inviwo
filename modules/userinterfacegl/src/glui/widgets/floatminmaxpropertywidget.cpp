@@ -90,8 +90,7 @@ FloatMinMaxPropertyWidget::FloatMinMaxPropertyWidget(FloatMinMaxProperty& proper
                     property_->set(sliderToRepr(getPreviousValue() + moveby));
                     break;
                 }
-                default:
-                    break;
+                default: break;
             }
             triggerUpdate = (property_->get() != currentValue);
         }

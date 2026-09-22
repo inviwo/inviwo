@@ -52,8 +52,7 @@ class QHBoxLayout;
 
 namespace inviwo {
 
-EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, std::string_view text,
-                                 bool shortenText)
+EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, std::string_view text, bool shortenText)
     : QWidget(parent)
     , label_{new QLabel(this)}
     , lineEdit_{nullptr}

@@ -42,7 +42,7 @@ namespace inviwo {
 
 class NetworkTest : public ::testing::Test {
 public:
-    NetworkTest() : network(InviwoApplication::getPtr()) {};
+    NetworkTest() : network(InviwoApplication::getPtr()) {}
 
 protected:
     virtual void SetUp() {

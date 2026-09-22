@@ -74,7 +74,8 @@ std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::filesystem::p
     volume->dataMap.dataRange = dvec2{header.format->getLowest(), header.format->getMax()};
     volume->dataMap.valueRange = dvec2{header.format->getLowest(), header.format->getMax()};
 
-    dvec3 extent{dvec3{header.dimensions} / dvec3{header.resolution, glm::compMin(header.resolution)}};
+    dvec3 extent{dvec3{header.dimensions} /
+                 dvec3{header.resolution, glm::compMin(header.resolution)}};
     if (header.resolutionUnit == cimgutil::TIFFResolutionUnit::Centimeter) {
         extent *= 2.54;
     }

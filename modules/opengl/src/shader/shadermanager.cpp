@@ -130,7 +130,7 @@ void ShaderManager::addShaderResource(std::shared_ptr<ShaderResource> resource) 
 
 std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string_view key) {
     const std::scoped_lock lock{mutex_};
-    
+
     auto it1 = shaderResources_.find(key);
     if (it1 != shaderResources_.end()) {
         if (!it1->second.expired()) {

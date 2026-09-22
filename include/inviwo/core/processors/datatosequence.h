@@ -69,7 +69,7 @@ public:
         outport_.setData(data);
     }
 
-    static constexpr std::string_view identifierSuffix() { return ".to.sequence"; };
+    static constexpr std::string_view identifierSuffix() { return ".to.sequence"; }
 
 private:
     DataInport<T, 0, true> inport_;
@@ -98,7 +98,7 @@ public:
         outport_.setData(data);
     }
 
-    static constexpr std::string_view identifierSuffix() { return ".to.sequence"; };
+    static constexpr std::string_view identifierSuffix() { return ".to.sequence"; }
 
 private:
     ImageMultiInport inport_;

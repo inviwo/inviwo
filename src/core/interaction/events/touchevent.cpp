@@ -190,15 +190,12 @@ double TouchEvent::averageDepth() const {
 PickingState TouchEvent::getPickingState(const std::vector<TouchPoint>& points) {
     auto toPickingState = [](TouchState ts) {
         switch (ts) {
-            case TouchState::Started:
-                return PickingState::Started;
-            case TouchState::Finished:
-                return PickingState::Finished;
+            case TouchState::Started:    return PickingState::Started;
+            case TouchState::Finished:   return PickingState::Finished;
             case TouchState::Updated:
             case TouchState::None:
             case TouchState::Stationary:
-            default:
-                return PickingState::Updated;
+            default:                     return PickingState::Updated;
         }
     };
 

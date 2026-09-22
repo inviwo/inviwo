@@ -31,7 +31,7 @@
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>                  // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/layerram.h>  // IWYU pragma: keep
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -54,16 +54,10 @@ namespace pyutil {
 pybind11::dtype toNumPyFormat(const DataFormatBase* df) {
     std::string format;
     switch (df->getNumericType()) {
-        case inviwo::NumericType::Float:
-            format = "float";
-            break;
-        case inviwo::NumericType::SignedInteger:
-            format = "int";
-            break;
+        case inviwo::NumericType::Float:           format = "float"; break;
+        case inviwo::NumericType::SignedInteger:   format = "int"; break;
         case inviwo::NumericType::UnsignedInteger:
-        default:
-            format = "uint";
-            break;
+        default:                                   format = "uint"; break;
     }
 
     format += std::to_string(df->getPrecision());

@@ -83,7 +83,7 @@ void Inport::propagateEvent(Event* event, Outport* target) {
             used |= event->markAsUnused();
         }
         event->setUsed(used);
-    } 
+    }
 }
 
 void Inport::doConnectTo(Outport* outport) {

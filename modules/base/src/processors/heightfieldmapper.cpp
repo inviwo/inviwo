@@ -223,7 +223,7 @@ void HeightFieldMapper::process() {
             }
         } break;
         case HeightFieldScaling::FixedRange:
-        default: {
+        default:                             {
             // scale data to [0:1] range
             float delta = 1.0f / (maxVal - minVal);
             for (std::size_t i = 0; i < numValues; ++i) {

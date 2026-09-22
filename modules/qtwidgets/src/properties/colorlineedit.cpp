@@ -131,11 +131,8 @@ void ColorLineEdit::setInvalid(bool invalid) {
 
 void ColorLineEdit::changeEvent(QEvent* event) {
     switch (event->type()) {
-        case QEvent::LocaleChange:
-            updateRegExp();
-            break;
-        default:
-            break;
+        case QEvent::LocaleChange: updateRegExp(); break;
+        default:                   break;
     }
     QLineEdit::changeEvent(event);
 }

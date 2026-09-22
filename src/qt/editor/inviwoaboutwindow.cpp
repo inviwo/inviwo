@@ -245,7 +245,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
             mdiv.append("code", modulesDirs.front().sha);
             mdiv.appendText(modulesDirs.front().dirty ? " (dirty)" : "");
 
-            auto list = d0.append("dl", "",  {{"style", "margin-bottom:10px;"}} );
+            auto list = d0.append("dl", "", {{"style", "margin-bottom:10px;"}});
             for (auto modulesDir : modulesDirs) {
                 auto modules = app->getModuleManager().getFactoryObjects() |
                                std::views::filter([&](const InviwoModuleFactoryObject& mfo) {

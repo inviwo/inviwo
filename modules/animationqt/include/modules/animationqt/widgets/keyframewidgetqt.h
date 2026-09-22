@@ -90,8 +90,8 @@ struct IVW_MODULE_ANIMATIONQT_API KeyframeWidgetQtLock {
     KeyframeWidgetQtLock(KeyframeWidgetQt* keyframe);
     ~KeyframeWidgetQtLock();
 
-    KeyframeWidgetQtLock(KeyframeWidgetQtLock const&) = delete;
-    KeyframeWidgetQtLock& operator=(KeyframeWidgetQtLock const& that) = delete;
+    KeyframeWidgetQtLock(const KeyframeWidgetQtLock&) = delete;
+    KeyframeWidgetQtLock& operator=(const KeyframeWidgetQtLock& that) = delete;
     KeyframeWidgetQtLock(KeyframeWidgetQtLock&& rhs) = delete;
     KeyframeWidgetQtLock& operator=(KeyframeWidgetQtLock&& that) = delete;
 

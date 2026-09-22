@@ -83,7 +83,6 @@ TEST(SerializerPolymorphicTest, NonNullUniquePtr) {
 
     std::unique_ptr<Property> prop2 = std::make_unique<FloatProperty>("float2", "float2", 0.234f);
 
-
     Deserializer d{ss};
     d.registerFactory(InviwoApplication::getPtr()->getPropertyFactory());
 

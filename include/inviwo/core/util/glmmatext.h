@@ -211,12 +211,12 @@ GLM_FUNC_QUALIFIER mat<C, R, T, Q> clamp(const mat<C, R, T, Q>& a, const mat<C, 
 
 // Quats
 template <typename T, precision P>
-GLM_FUNC_QUALIFIER tquat<T, P> clamp(tquat<T, P> const& q, T a, T b) {
+GLM_FUNC_QUALIFIER tquat<T, P> clamp(const tquat<T, P>& q, T a, T b) {
     return {clamp(q[0], a, b), clamp(q[1], a, b), clamp(q[2], a, b), clamp(q[3], a, b)};
 }
 
 template <typename T, precision P>
-GLM_FUNC_QUALIFIER tquat<T, P> clamp(tquat<T, P> const& q, const tquat<T, P>& a,
+GLM_FUNC_QUALIFIER tquat<T, P> clamp(const tquat<T, P>& q, const tquat<T, P>& a,
                                      const tquat<T, P>& b) {
     return {clamp(q[0], a[0], b[0]), clamp(q[1], a[1], b[1]), clamp(q[2], a[2], b[2]),
             clamp(q[3], a[3], b[3])};

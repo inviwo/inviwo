@@ -38,9 +38,9 @@ namespace inviwo {
 
 class IVW_CORE_API ProcessorMetaDataObserver : public Observer {
 public:
-    virtual void onProcessorMetaDataPositionChange(){};
-    virtual void onProcessorMetaDataVisibilityChange(){};
-    virtual void onProcessorMetaDataSelectionChange(){};
+    virtual void onProcessorMetaDataPositionChange() {}
+    virtual void onProcessorMetaDataVisibilityChange() {}
+    virtual void onProcessorMetaDataSelectionChange() {}
 };
 
 class IVW_CORE_API ProcessorMetaData : public MetaData,

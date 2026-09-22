@@ -109,7 +109,7 @@ protected:
 class IVW_QTEDITOR_API ConnectionOutportDragGraphicsItem : public CurveGraphicsItem {
 public:
     ConnectionOutportDragGraphicsItem(ProcessorOutportGraphicsItem* outport, QPointF endPoint,
-                               QColor color = QColor(38, 38, 38));
+                                      QColor color = QColor(38, 38, 38));
     ConnectionOutportDragGraphicsItem(const ConnectionOutportDragGraphicsItem&) = delete;
     ConnectionOutportDragGraphicsItem(ConnectionOutportDragGraphicsItem&&) = delete;
     ConnectionOutportDragGraphicsItem& operator=(const ConnectionOutportDragGraphicsItem&) = delete;

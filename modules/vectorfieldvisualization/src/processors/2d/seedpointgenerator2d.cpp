@@ -144,8 +144,7 @@ void SeedPointGenerator2D::process() {
                 break;
             }
 
-            default:
-                break;
+            default: break;
         }
     };
     auto createLinearSeeds = [&]() {
@@ -156,15 +155,16 @@ void SeedPointGenerator2D::process() {
                 break;
             }
             case Generator::HaltonSequence: {
-                std::ranges::generate_n(
-                    seeds->begin(), numPoints_,
-                    [i = 1, baseX = haltonXBase_.get(), baseY = haltonYBase_.get()]() mutable
-                    -> vec3 { return vec3{util::haltonSequence<float>(i++, baseX), 0.0f, 0.0f}; });
+                std::ranges::generate_n(seeds->begin(), static_cast<ptrdiff_t>(numPoints_.get()),
+                                        [i = 1, baseX = haltonXBase_.get(),
+                                         baseY = haltonYBase_.get()]() mutable -> vec3 {
+                                            return vec3{util::haltonSequence<float>(i++, baseX),
+                                                        0.0f, 0.0f};
+                                        });
                 break;
             }
 
-            default:
-                break;
+            default: break;
         }
     };
 
@@ -208,11 +208,8 @@ void SeedPointGenerator2D::process() {
             }
             break;
         }
-        case SamplingDomain::FullDomain:
-            createSpatialSeeds();
-            break;
-        default:
-            break;
+        case SamplingDomain::FullDomain: createSpatialSeeds(); break;
+        default:                         break;
     }
 
     seeds_.setData(seeds);

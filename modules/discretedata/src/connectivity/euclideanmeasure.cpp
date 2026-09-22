@@ -51,8 +51,7 @@ double getMeasure(const Connectivity& grid, const Channel& positions, GridPrimit
                 return measure;
             }
             [[fallthrough]];
-        default:
-            return -1.0;
+        default: return -1.0;
     }
 }
 

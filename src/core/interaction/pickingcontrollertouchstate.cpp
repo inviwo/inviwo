@@ -300,8 +300,7 @@ void PickingControllerTouchState::propagateEvent(TouchEvent* e, EventPropagator*
     const auto points = e->touchPoints();
     auto ps = TouchEvent::getPickingState(points);
     switch (ps) {
-        case PickingState::None:
-            break;
+        case PickingState::None: break;
         case PickingState::Started:
             tsm->sm.process_event(fsmt::Started{globalId, e, propagator});
             break;

@@ -207,9 +207,7 @@ void ImageMixer::initializeResources() {
             compositingValue = "brightenOnly(colorA, colorB)";
             break;
         case BlendModes::Mix:  //!< f(a,b) = a * (1 - alpha) + b * alpha
-        default:
-            compositingValue = "colorMix(colorA,colorB)";
-            break;
+        default:              compositingValue = "colorMix(colorA,colorB)"; break;
     }
 
     if (clamp_) {

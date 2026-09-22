@@ -42,7 +42,6 @@
 #include <modules/plottinggl/utils/axisprocessorhelper.h>
 #include <modules/plotting/utils/labelscaling.h>
 
-
 namespace inviwo::plot {
 
 class IVW_MODULE_PLOTTINGGL_API Axis2DProcessorHelper {

@@ -132,7 +132,7 @@ bool ModuleContainer::isLoaded(const std::filesystem::path& path) {
         std::error_code ec;
         return std::filesystem::equivalent(path, lib, ec);
     });
-};
+}
 
 void ModuleContainer::unload() {
     factoryObject_.reset();

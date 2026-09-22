@@ -44,24 +44,15 @@ namespace utilcef {
 
 int mapKey(IvwKey key) {
     switch (key) {
-        case IvwKey::Backspace:
-            return 8;
-        case IvwKey::Tab:
-            return 9;
-        case IvwKey::Enter:
-            return 13;
-        case IvwKey::Left:
-            return 37;
-        case IvwKey::Up:
-            return 38;
-        case IvwKey::Right:
-            return 39;
-        case IvwKey::Down:
-            return 40;
-        case IvwKey::Delete:
-            return 46;
-        default:
-            return static_cast<int>(key) + 32;
+        case IvwKey::Backspace: return 8;
+        case IvwKey::Tab:       return 9;
+        case IvwKey::Enter:     return 13;
+        case IvwKey::Left:      return 37;
+        case IvwKey::Up:        return 38;
+        case IvwKey::Right:     return 39;
+        case IvwKey::Down:      return 40;
+        case IvwKey::Delete:    return 46;
+        default:                return static_cast<int>(key) + 32;
     }
 }
 
@@ -86,8 +77,7 @@ unsigned int keyModifiers(KeyModifiers modifiers, IvwKey key) {
         cefModifiers |= EVENTFLAG_NUM_LOCK_ON;
     }
     switch (key) {
-        case IvwKey::Unknown:
-            break;
+        case IvwKey::Unknown:      break;
         case IvwKey::Insert:
         case IvwKey::Delete:
         case IvwKey::Right:
@@ -98,9 +88,7 @@ unsigned int keyModifiers(KeyModifiers modifiers, IvwKey key) {
         case IvwKey::PageDown:
         case IvwKey::Home:
         case IvwKey::End:
-        case IvwKey::NumLock:
-            cefModifiers |= EVENTFLAG_IS_KEY_PAD;
-            break;
+        case IvwKey::NumLock:      cefModifiers |= EVENTFLAG_IS_KEY_PAD; break;
         case IvwKey::KP0:
         case IvwKey::KP1:
         case IvwKey::KP2:
@@ -117,29 +105,19 @@ unsigned int keyModifiers(KeyModifiers modifiers, IvwKey key) {
         case IvwKey::KPSubtract:
         case IvwKey::KPAdd:
         case IvwKey::KPEnter:
-        case IvwKey::KPEqual:
-            cefModifiers |= EVENTFLAG_IS_KEY_PAD;
-            break;
+        case IvwKey::KPEqual:      cefModifiers |= EVENTFLAG_IS_KEY_PAD; break;
         case IvwKey::LeftShift:
         case IvwKey::LeftControl:
         case IvwKey::LeftAlt:
-        case IvwKey::LeftSuper:
-            cefModifiers |= EVENTFLAG_IS_LEFT;
-            break;
+        case IvwKey::LeftSuper:    cefModifiers |= EVENTFLAG_IS_LEFT; break;
         case IvwKey::RightShift:
         case IvwKey::RightControl:
         case IvwKey::RightAlt:
-        case IvwKey::RightSuper:
-            cefModifiers |= EVENTFLAG_IS_RIGHT;
-            break;
-        case IvwKey::Menu:
-            break;
+        case IvwKey::RightSuper:   cefModifiers |= EVENTFLAG_IS_RIGHT; break;
+        case IvwKey::Menu:         break;
         case IvwKey::LeftMeta:
-        case IvwKey::RightMeta:
-            cefModifiers |= EVENTFLAG_IS_KEY_PAD;
-            break;
-        default:
-            break;
+        case IvwKey::RightMeta:    cefModifiers |= EVENTFLAG_IS_KEY_PAD; break;
+        default:                   break;
     }
     return cefModifiers;
 }

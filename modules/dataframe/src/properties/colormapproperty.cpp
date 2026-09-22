@@ -144,11 +144,8 @@ ColormapProperty* ColormapProperty::clone() const { return new ColormapProperty(
 colorbrewer::Category ColormapProperty::getCategory() const {
     colorbrewer::Category cat;
     switch (type) {
-        case ColormapType::Categorical:
-            cat = colorbrewer::Category::Qualitative;
-            break;
-        case ColormapType::Continuous:
-            [[fallthrough]];
+        case ColormapType::Categorical: cat = colorbrewer::Category::Qualitative; break;
+        case ColormapType::Continuous:  [[fallthrough]];
         default:
             cat = diverging ? colorbrewer::Category::Diverging : colorbrewer::Category::Sequential;
     }
@@ -211,12 +208,8 @@ void ColormapProperty::updateColormaps() {
 
 std::ostream& operator<<(std::ostream& os, ColormapType colormap) {
     switch (colormap) {
-        case ColormapType::Continuous:
-            os << "Continuous";
-            break;
-        case ColormapType::Categorical:
-            os << "Categorical";
-            break;
+        case ColormapType::Continuous:  os << "Continuous"; break;
+        case ColormapType::Categorical: os << "Categorical"; break;
     }
     return os;
 }

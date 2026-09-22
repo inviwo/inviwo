@@ -86,7 +86,7 @@ public:
      */
     virtual void render([[maybe_unused]] std::shared_ptr<const Image>,
                         [[maybe_unused]] LayerType layerType = LayerType::Color,
-                        [[maybe_unused]] size_t idx = 0) override {};
+                        [[maybe_unused]] size_t idx = 0) override {}
 
     virtual void update() override;
     virtual void activate() override;
@@ -101,7 +101,7 @@ public:
 
     virtual void releaseContext() override;
 
-    QOpenGLContext* getContext() { return context_; };
+    QOpenGLContext* getContext() { return context_; }
 
 protected:
     QOpenGLContext* context_;

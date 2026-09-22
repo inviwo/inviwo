@@ -88,7 +88,7 @@ SequenceProcessor::SequenceProcessor(std::string_view identifier, std::string_vi
     loadSubNetwork(file);
 }
 
-SequenceProcessor::~SequenceProcessor() { ProcessorNetworkObserver::removeObservations(); };
+SequenceProcessor::~SequenceProcessor() { ProcessorNetworkObserver::removeObservations(); }
 
 void SequenceProcessor::process() {
     constexpr auto evaluateNetwork = [](SequenceProcessor::NetEval& net) {

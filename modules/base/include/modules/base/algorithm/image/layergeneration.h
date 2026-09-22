@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <inviwo/core/datastructures/image/layer.h>     // IWYU pragma: keep
+#include <inviwo/core/datastructures/image/layer.h>  // IWYU pragma: keep
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/util/glmconvert.h>
 #include <inviwo/core/util/glmmat.h>

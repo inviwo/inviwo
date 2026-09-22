@@ -165,7 +165,7 @@ TEST(PickingControllerTest, TestSystem) {
 }
 
 struct TestPropagator : EventPropagator {
-    virtual void propagateEvent(Event* event, Outport*) { events.emplace_back(event->clone()); };
+    virtual void propagateEvent(Event* event, Outport*) { events.emplace_back(event->clone()); }
     std::vector<std::unique_ptr<Event>> events;
 };
 
@@ -293,10 +293,8 @@ void testPickingEvent(PickingController& controller, uvec2 pos, Event* event, Pi
 
 TEST(PickingControllerTest, IdleMove) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         uvec2 pos{1, 2};  // id = 0
@@ -317,10 +315,8 @@ TEST(PickingControllerTest, IdleMove) {
 
 TEST(PickingControllerTest, IdleMoveTouch) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     {
         uvec2 pos{1, 2};  // id = 0
@@ -341,10 +337,8 @@ TEST(PickingControllerTest, IdleMoveTouch) {
 
 TEST(PickingControllerTest, MoveTouchAround) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     {
         uvec2 pos{1, 1};  // id = 0
@@ -422,10 +416,8 @@ TEST(PickingControllerTest, MoveTouchAround) {
 
 TEST(PickingControllerTest, MoveMouseAround) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         uvec2 pos{1, 1};  // id = 0
@@ -551,10 +543,8 @@ void doTouchScreenPress(PickingControllerTouchState& ms) {
 
 TEST(PickingControllerTest, TouchPressRelease) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     {
         SCOPED_TRACE("Press-Release");
@@ -600,10 +590,8 @@ TEST(PickingControllerTest, TouchPressRelease) {
 
 TEST(PickingControllerTest, TouchScreenPressRelease) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {
@@ -674,10 +662,8 @@ void doMousePress(PickingControllerMouseState& ms) {
 
 TEST(PickingControllerTest, MousePressRelease) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         SCOPED_TRACE("Press-Release");
@@ -723,10 +709,8 @@ TEST(PickingControllerTest, MousePressRelease) {
 
 TEST(PickingControllerTest, TouchDrag1to2) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     {
         SCOPED_TRACE("Drag");
@@ -747,10 +731,8 @@ TEST(PickingControllerTest, TouchDrag1to2) {
 
 TEST(PickingControllerTest, TouchScreenDrag1to2) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {
@@ -772,10 +754,8 @@ TEST(PickingControllerTest, TouchScreenDrag1to2) {
 
 TEST(PickingControllerTest, MouseDrag1to2) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         SCOPED_TRACE("Drag");
@@ -797,10 +777,8 @@ TEST(PickingControllerTest, MouseDrag1to2) {
 
 TEST(PickingControllerTest, MouseDrag1to0) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         SCOPED_TRACE("Drag");
@@ -836,10 +814,8 @@ TEST(PickingControllerTest, MouseDrag1to0) {
 
 TEST(PickingControllerTest, TouchDrag1to0) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     TouchDevice device{TouchDevice::DeviceType::TouchPad};
     {
@@ -876,10 +852,8 @@ TEST(PickingControllerTest, TouchDrag1to0) {
 
 TEST(PickingControllerTest, TouchScreenDrag1to0) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {
@@ -916,10 +890,8 @@ TEST(PickingControllerTest, TouchScreenDrag1to0) {
 
 TEST(PickingControllerTest, MouseDrag0to1) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         uvec2 pos{1, 1};  // id = 0
@@ -967,10 +939,8 @@ TEST(PickingControllerTest, MouseDrag0to1) {
 
 TEST(PickingControllerTest, TouchDrag0to1) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     TouchDevice device{TouchDevice::DeviceType::TouchPad};
     {
@@ -1020,10 +990,8 @@ TEST(PickingControllerTest, TouchDrag0to1) {
 
 TEST(PickingControllerTest, TouchScreenDrag0to1) {
     PickingManager pm;
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(
-        nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {

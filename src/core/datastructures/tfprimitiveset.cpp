@@ -180,8 +180,7 @@ dvec2 TFPrimitiveSet::getRange() const {
             }
         }
         case PrimitiveSetMode::Relative:
-        default:
-            return {0.0, 1.0};
+        default:                         return {0.0, 1.0};
     }
 }
 

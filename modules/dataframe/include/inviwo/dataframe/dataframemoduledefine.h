@@ -1,6 +1,5 @@
 #pragma once
 
-
 #ifdef INVIWO_ALL_DYN_LINK  // DYNAMIC
 // If we are building DLL files we must declare dllexport/dllimport
 #ifdef IVW_MODULE_DATAFRAME_EXPORTS

@@ -35,4 +35,4 @@ namespace inviwo {
 
 void exposeGLMMatTypesDouble(pybind11::module& m);
 
-}
+}  // namespace inviwo

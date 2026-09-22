@@ -69,7 +69,7 @@ public:
     // override PropertyOwnerObserver
     virtual void onDidAddProperty(Property* property, size_t) override;
 
-    static constexpr std::string_view identifierSuffix() { return ".metadata.processor"; };
+    static constexpr std::string_view identifierSuffix() { return ".metadata.processor"; }
 
 private:
     TInport inport_;

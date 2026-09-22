@@ -74,29 +74,19 @@ dvec3 rotationAxis(CameraAnimation::RotationAxis rot, dvec3 dir, dvec3 up) {
     };
 
     switch (rot) {
-        case CameraAnimation::RotationAxis::CameraYaw:
-            return up;
-        case CameraAnimation::RotationAxis::CameraPitch:
-            return glm::cross(dir, up);
-        case CameraAnimation::RotationAxis::CameraRoll:
-            return dir;
+        case CameraAnimation::RotationAxis::CameraYaw:   return up;
+        case CameraAnimation::RotationAxis::CameraPitch: return glm::cross(dir, up);
+        case CameraAnimation::RotationAxis::CameraRoll:  return dir;
 
-        case CameraAnimation::RotationAxis::ObjectYaw:
-            return toObject(up);
-        case CameraAnimation::RotationAxis::ObjectPitch:
-            return toObject(glm::cross(dir, up));
-        case CameraAnimation::RotationAxis::ObjectRoll:
-            return toObject(dir);
+        case CameraAnimation::RotationAxis::ObjectYaw:   return toObject(up);
+        case CameraAnimation::RotationAxis::ObjectPitch: return toObject(glm::cross(dir, up));
+        case CameraAnimation::RotationAxis::ObjectRoll:  return toObject(dir);
 
-        case CameraAnimation::RotationAxis::WorldX:
-            return axes[0];
-        case CameraAnimation::RotationAxis::WorldY:
-            return axes[1];
-        case CameraAnimation::RotationAxis::WorldZ:
-            return axes[2];
+        case CameraAnimation::RotationAxis::WorldX:      return axes[0];
+        case CameraAnimation::RotationAxis::WorldY:      return axes[1];
+        case CameraAnimation::RotationAxis::WorldZ:      return axes[2];
 
-        default:
-            return axes[0];
+        default:                                         return axes[0];
     }
 }
 

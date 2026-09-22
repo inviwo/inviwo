@@ -147,8 +147,7 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     });
 
     // Register constant interpolation (no interpolation) properties
-    util::for_each_type<
-        std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
+    util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
         [&]<typename PropertyType>() {
             propertyHelper<PropertyType>();
             using ValueType = typename PropertyType::value_type;

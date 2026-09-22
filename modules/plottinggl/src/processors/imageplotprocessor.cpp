@@ -318,8 +318,7 @@ void ImagePlotProcessor::adjustRanges() {
             xAxis_.range_.set(rangeXaxis_.get());
             yAxis_.range_.set(rangeYaxis_.get());
             break;
-        default:
-            break;
+        default: break;
     }
 }
 

@@ -48,7 +48,7 @@ class ProcessorNetwork;
 class IVW_MODULE_QTWIDGETS_API PropertySelectionTree : public QTreeWidget {
 
 public:
-    PropertySelectionTree(QWidget* parent) : QTreeWidget(parent){};
+    explicit PropertySelectionTree(QWidget* parent) : QTreeWidget(parent) {}
     ~PropertySelectionTree() = default;
 
 protected:

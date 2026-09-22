@@ -21270,4 +21270,3 @@ std::string_view format_as(Categorical v) {
 
 }  // namespace inviwo::scm
 // clang-format on
-

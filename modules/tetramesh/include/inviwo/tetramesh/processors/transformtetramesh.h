@@ -41,15 +41,13 @@ class TetraMesh;
 template <>
 struct ProcessorTraits<Transform<TetraMesh>> {
     static ProcessorInfo getProcessorInfo() {
-        return {
-            "org.inviwo.TransformTetraMesh",        // Class identifier
-            "Transform TetraMesh",                  // Display name
-            "Coordinate Transforms",                // Category
-            CodeState::Stable,                      // Code state
-            Tag{"Transform"} | Tag{"Unstructured"}, // Tags
-            "Apply a model or world transformation to a TetraMesh."_help
-        };
-    };
+        return {"org.inviwo.TransformTetraMesh",         // Class identifier
+                "Transform TetraMesh",                   // Display name
+                "Coordinate Transforms",                 // Category
+                CodeState::Stable,                       // Code state
+                Tag{"Transform"} | Tag{"Unstructured"},  // Tags
+                "Apply a model or world transformation to a TetraMesh."_help};
+    }
 };
 
 using TransformTetraMesh = Transform<TetraMesh>;

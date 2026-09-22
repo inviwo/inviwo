@@ -35,12 +35,9 @@ namespace inviwo {
 
 std::string_view enumToStr(InvalidationLevel level) {
     switch (level) {
-        case InvalidationLevel::Valid:
-            return "Valid";
-        case InvalidationLevel::InvalidOutput:
-            return "Invalid output";
-        case InvalidationLevel::InvalidResources:
-            return "Invalid resources";
+        case InvalidationLevel::Valid:            return "Valid";
+        case InvalidationLevel::InvalidOutput:    return "Invalid output";
+        case InvalidationLevel::InvalidResources: return "Invalid resources";
     }
     throw Exception(SourceContext{}, "Found invalid InvalidationLevel enum value '{}'",
                     static_cast<int>(level));

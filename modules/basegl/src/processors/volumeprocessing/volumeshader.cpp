@@ -62,7 +62,7 @@ void main() {
 }
 
 )";
-}
+}  // namespace
 
 const ProcessorInfo VolumeShader::processorInfo_{
     "org.inviwo.VolumeShader",  // Class identifier

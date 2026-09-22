@@ -38,14 +38,10 @@ namespace inviwo::util {
 
 inline auto sgctToInviwo(sgct::Log::Level level) -> inviwo::LogLevel {
     switch (level) {
-        case sgct::Log::Level::Error:
-            return inviwo::LogLevel::Error;
-        case sgct::Log::Level::Warning:
-            return inviwo::LogLevel::Warn;
-        case sgct::Log::Level::Info:
-            [[fallthrough]];
-        case sgct::Log::Level::Debug:
-            return inviwo::LogLevel::Info;
+        case sgct::Log::Level::Error:   return inviwo::LogLevel::Error;
+        case sgct::Log::Level::Warning: return inviwo::LogLevel::Warn;
+        case sgct::Log::Level::Info:    [[fallthrough]];
+        case sgct::Log::Level::Debug:   return inviwo::LogLevel::Info;
     }
     return inviwo::LogLevel::Info;
 }

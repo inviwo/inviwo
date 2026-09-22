@@ -86,12 +86,9 @@ namespace {
 size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) {
     switch (axis) {
         default:
-        case CartesianCoordinateAxis::X:
-            return {volumeDims.z, volumeDims.y};
-        case CartesianCoordinateAxis::Y:
-            return {volumeDims.x, volumeDims.z};
-        case CartesianCoordinateAxis::Z:
-            return {volumeDims.x, volumeDims.y};
+        case CartesianCoordinateAxis::X: return {volumeDims.z, volumeDims.y};
+        case CartesianCoordinateAxis::Y: return {volumeDims.x, volumeDims.z};
+        case CartesianCoordinateAxis::Z: return {volumeDims.x, volumeDims.y};
     }
 }
 
@@ -99,12 +96,9 @@ Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis ax
     const auto wrapping = v->getOwner()->getWrapping();
     switch (axis) {
         default:
-        case CartesianCoordinateAxis::X:
-            return {{wrapping[2], wrapping[1]}};
-        case CartesianCoordinateAxis::Y:
-            return {{wrapping[0], wrapping[2]}};
-        case CartesianCoordinateAxis::Z:
-            return {{wrapping[0], wrapping[1]}};
+        case CartesianCoordinateAxis::X: return {{wrapping[2], wrapping[1]}};
+        case CartesianCoordinateAxis::Y: return {{wrapping[0], wrapping[2]}};
+        case CartesianCoordinateAxis::Z: return {{wrapping[0], wrapping[1]}};
     }
 }
 
@@ -112,12 +106,9 @@ std::array<Axis, 2> getAxes(const VolumeRepresentation* v, CartesianCoordinateAx
     const auto axes = v->getOwner()->axes;
     switch (axis) {
         default:
-        case CartesianCoordinateAxis::X:
-            return {axes[2], axes[1]};
-        case CartesianCoordinateAxis::Y:
-            return {axes[0], axes[2]};
-        case CartesianCoordinateAxis::Z:
-            return {axes[0], axes[1]};
+        case CartesianCoordinateAxis::X: return {axes[2], axes[1]};
+        case CartesianCoordinateAxis::Y: return {axes[0], axes[2]};
+        case CartesianCoordinateAxis::Z: return {axes[0], axes[1]};
     }
 }
 
@@ -125,12 +116,10 @@ dmat3 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const dmat3 basis = v->getOwner()->getBasis();
     switch (axis) {
         default:
-        case CartesianCoordinateAxis::X:
-            return dmat3{basis[2], basis[1], glm::normalize(basis[0])};
+        case CartesianCoordinateAxis::X: return dmat3{basis[2], basis[1], glm::normalize(basis[0])};
         case CartesianCoordinateAxis::Y:
             return dmat3{basis[0], basis[2], -glm::normalize(basis[1])};
-        case CartesianCoordinateAxis::Z:
-            return dmat3{basis[0], basis[1], glm::normalize(basis[2])};
+        case CartesianCoordinateAxis::Z: return dmat3{basis[0], basis[1], glm::normalize(basis[2])};
     }
 }
 
@@ -142,26 +131,19 @@ dvec3 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis,
     const auto t = [&]() {
         using enum VolumeSliceToLayer::SlicePosition;
         switch (position) {
-            case Minimum:
-                return dvec3{0.0f};
-            case Centered:
-                return dvec3{0.5f};
-            case Maximum:
-                return dvec3{1.0f};
+            case Minimum:  return dvec3{0.0f};
+            case Centered: return dvec3{0.5f};
+            case Maximum:  return dvec3{1.0f};
             case Index:
-            default:
-                return dvec3{static_cast<double>(slice)} / dvec3{dims - size3_t{1}};
+            default:       return dvec3{static_cast<double>(slice)} / dvec3{dims - size3_t{1}};
         }
     }();
 
     switch (axis) {
         default:
-        case CartesianCoordinateAxis::X:
-            return offset + basis[0] * t[0];
-        case CartesianCoordinateAxis::Y:
-            return offset + basis[1] * t[1];
-        case CartesianCoordinateAxis::Z:
-            return offset + basis[2] * t[2];
+        case CartesianCoordinateAxis::X: return offset + basis[0] * t[0];
+        case CartesianCoordinateAxis::Y: return offset + basis[1] * t[1];
+        case CartesianCoordinateAxis::Z: return offset + basis[2] * t[2];
     }
 }
 

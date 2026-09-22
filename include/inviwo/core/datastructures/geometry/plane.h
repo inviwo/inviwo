@@ -44,7 +44,7 @@ public:
     ~Plane() = default;
 
     const vec3& getPoint() const noexcept { return point_; }
-    const vec3& getNormal() const noexcept { return normal_; };
+    const vec3& getNormal() const noexcept { return normal_; }
 
     /**
      * @brief Get intersection point with plane and line segment.

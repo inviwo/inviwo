@@ -58,7 +58,7 @@ IVW_MODULE_OPENGL_API void parseShaderSource(
     std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
         replacements,
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource);
-}
+}  // namespace utilgl
 
 /**
  * A wrapper for an OpenGL shader object.

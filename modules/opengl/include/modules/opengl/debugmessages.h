@@ -70,98 +70,63 @@ enum class Severity : std::uint8_t { Notification, Low, Medium, High, DontCare }
 
 constexpr Source toSource(GLenum val) {
     switch (val) {
-        case GL_DEBUG_SOURCE_API:
-            return Source::Api;
-        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-            return Source::WindowSystem;
-        case GL_DEBUG_SOURCE_SHADER_COMPILER:
-            return Source::ShaderCompiler;
-        case GL_DEBUG_SOURCE_THIRD_PARTY:
-            return Source::ThirdParty;
-        case GL_DEBUG_SOURCE_APPLICATION:
-            return Source::Application;
-        case GL_DEBUG_SOURCE_OTHER:
-            return Source::Other;
-        case GL_DONT_CARE:
-            [[fallthrough]];
-        default:
-            return Source::DontCare;
+        case GL_DEBUG_SOURCE_API:             return Source::Api;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   return Source::WindowSystem;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER: return Source::ShaderCompiler;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:     return Source::ThirdParty;
+        case GL_DEBUG_SOURCE_APPLICATION:     return Source::Application;
+        case GL_DEBUG_SOURCE_OTHER:           return Source::Other;
+        case GL_DONT_CARE:                    [[fallthrough]];
+        default:                              return Source::DontCare;
     }
 }
 
 constexpr Type toType(GLenum val) {
     switch (val) {
-        case GL_DEBUG_TYPE_ERROR:
-            return Type::Error;
-        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-            return Type::DeprecatedBehavior;
-        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-            return Type::UndefinedBehavior;
-        case GL_DEBUG_TYPE_PORTABILITY:
-            return Type::Portability;
-        case GL_DEBUG_TYPE_PERFORMANCE:
-            return Type::Performance;
-        case GL_DEBUG_TYPE_MARKER:
-            return Type::Marker;
-        case GL_DEBUG_TYPE_PUSH_GROUP:
-            return Type::PushGroup;
-        case GL_DEBUG_TYPE_POP_GROUP:
-            return Type::PopGroup;
-        case GL_DEBUG_TYPE_OTHER:
-            return Type::Other;
-        case GL_DONT_CARE:
-            [[fallthrough]];
-        default:
-            return Type::DontCare;
+        case GL_DEBUG_TYPE_ERROR:               return Type::Error;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return Type::DeprecatedBehavior;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  return Type::UndefinedBehavior;
+        case GL_DEBUG_TYPE_PORTABILITY:         return Type::Portability;
+        case GL_DEBUG_TYPE_PERFORMANCE:         return Type::Performance;
+        case GL_DEBUG_TYPE_MARKER:              return Type::Marker;
+        case GL_DEBUG_TYPE_PUSH_GROUP:          return Type::PushGroup;
+        case GL_DEBUG_TYPE_POP_GROUP:           return Type::PopGroup;
+        case GL_DEBUG_TYPE_OTHER:               return Type::Other;
+        case GL_DONT_CARE:                      [[fallthrough]];
+        default:                                return Type::DontCare;
     }
 }
 
 constexpr Severity toSeverity(GLenum val) {
     switch (val) {
-        case GL_DEBUG_SEVERITY_HIGH:
-            return Severity::High;
-        case GL_DEBUG_SEVERITY_MEDIUM:
-            return Severity::Medium;
-        case GL_DEBUG_SEVERITY_LOW:
-            return Severity::Low;
-        case GL_DEBUG_SEVERITY_NOTIFICATION:
-            return Severity::Notification;
-        case GL_DONT_CARE:
-            [[fallthrough]];
-        default:
-            return Severity::DontCare;
+        case GL_DEBUG_SEVERITY_HIGH:         return Severity::High;
+        case GL_DEBUG_SEVERITY_MEDIUM:       return Severity::Medium;
+        case GL_DEBUG_SEVERITY_LOW:          return Severity::Low;
+        case GL_DEBUG_SEVERITY_NOTIFICATION: return Severity::Notification;
+        case GL_DONT_CARE:                   [[fallthrough]];
+        default:                             return Severity::DontCare;
     }
 }
 
 constexpr GLenum toGL(Severity s) {
     switch (s) {
-        case Severity::High:
-            return GL_DEBUG_SEVERITY_HIGH;
-        case Severity::Medium:
-            return GL_DEBUG_SEVERITY_MEDIUM;
-        case Severity::Low:
-            return GL_DEBUG_SEVERITY_LOW;
-        case Severity::Notification:
-            return GL_DEBUG_SEVERITY_NOTIFICATION;
-        case Severity::DontCare:
-            [[fallthrough]];
-        default:
-            return GL_DONT_CARE;
+        case Severity::High:         return GL_DEBUG_SEVERITY_HIGH;
+        case Severity::Medium:       return GL_DEBUG_SEVERITY_MEDIUM;
+        case Severity::Low:          return GL_DEBUG_SEVERITY_LOW;
+        case Severity::Notification: return GL_DEBUG_SEVERITY_NOTIFICATION;
+        case Severity::DontCare:     [[fallthrough]];
+        default:                     return GL_DONT_CARE;
     }
 }
 
 constexpr LogLevel toLogLevel(Severity s) {
     switch (s) {
-        case Severity::High:
-            return LogLevel::Error;
-        case Severity::Medium:
-            return LogLevel::Warn;
+        case Severity::High:         return LogLevel::Error;
+        case Severity::Medium:       return LogLevel::Warn;
         case Severity::Low:
         case Severity::Notification:
-        case Severity::DontCare:
-            [[fallthrough]];
-        default:
-            return LogLevel::Info;
+        case Severity::DontCare:     [[fallthrough]];
+        default:                     return LogLevel::Info;
     }
 }
 
@@ -169,34 +134,23 @@ namespace detail {
 
 constexpr int toInt(Severity s) {
     switch (s) {
-        case Severity::Notification:
-            return 1;
-        case Severity::Low:
-            return 2;
-        case Severity::Medium:
-            return 3;
-        case Severity::High:
-            return 4;
+        case Severity::Notification: return 1;
+        case Severity::Low:          return 2;
+        case Severity::Medium:       return 3;
+        case Severity::High:         return 4;
         case Severity::DontCare:  // NOLINT(bugprone-branch-clone)
             return 0;
-        default:
-            return 0;
+        default: return 0;
     }
 }
 constexpr int toInt(BreakLevel b) {
     switch (b) {
-        case BreakLevel::Off:
-            return 5;
-        case BreakLevel::High:
-            return 4;
-        case BreakLevel::Medium:
-            return 3;
-        case BreakLevel::Low:
-            return 2;
-        case BreakLevel::Notification:
-            return 1;
-        default:
-            return 0;
+        case BreakLevel::Off:          return 5;
+        case BreakLevel::High:         return 4;
+        case BreakLevel::Medium:       return 3;
+        case BreakLevel::Low:          return 2;
+        case BreakLevel::Notification: return 1;
+        default:                       return 0;
     }
 }
 }  // namespace detail

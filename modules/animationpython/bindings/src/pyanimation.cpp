@@ -474,9 +474,7 @@ void exposeCallbackTrack(py::module& m) {
 
 void exposeAnimationClass(py::module& m) {
     py::classh<Animation>(m, "Animation")
-        .def(py::init([](std::string_view name) {
-                 return Animation{nullptr, name};
-             }),
+        .def(py::init([](std::string_view name) { return Animation{nullptr, name}; }),
              py::arg("name") = "Animation")
         .def_property(
             "name", [](const Animation& a) -> const std::string& { return a.getName(); },
