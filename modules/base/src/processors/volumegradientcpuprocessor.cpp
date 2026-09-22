@@ -64,7 +64,7 @@ VolumeGradientCPUProcessor::VolumeGradientCPUProcessor()
 
 void VolumeGradientCPUProcessor::process() {
     const auto calc = [data = inport_.getData(), channel = channel_.get(),
-                       cache = std::ref(cache_)](pool::Progress progress, pool::Stop stop) {
+                       cache = std::ref(cache_)](pool::Progress progress, std::stop_token stop) {
         return util::gradientVolume(*data, channel, cache, progress, stop);
     };
 

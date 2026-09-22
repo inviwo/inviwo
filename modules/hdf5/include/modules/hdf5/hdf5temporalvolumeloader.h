@@ -40,6 +40,7 @@
 #include <cstddef>
 #include <memory>
 #include <mutex>
+#include <stop_token>
 #include <vector>
 
 namespace inviwo {
@@ -73,7 +74,8 @@ public:
     HDF5TemporalVolumeLoader(Handle handle, std::vector<Selection> selection, size_t timeDimension,
                              Seconds dt, VolumeConfig config);
 
-    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse) override;
+    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse,
+                                         std::stop_token stop) const override;
     virtual size_t size() const override;
     virtual Seconds time(size_t index) const override;
     virtual VolumeConfig prototype() const override;

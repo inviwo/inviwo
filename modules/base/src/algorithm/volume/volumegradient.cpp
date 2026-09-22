@@ -68,7 +68,7 @@ namespace inviwo::util {
 std::shared_ptr<Volume> gradientVolume(
     const Volume& srcVolume, std::size_t channel,
     const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume,
-    const std::function<void(double)>& progress, const std::function<bool()>& stop) {
+    const std::function<void(double)>& progress, std::stop_token stop) {
 
     if (const auto comps = srcVolume.getDataFormat()->getComponents(); channel >= comps) {
         throw Exception{SourceContext{},

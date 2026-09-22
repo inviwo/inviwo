@@ -30,9 +30,11 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/algorithm/histogram1d.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/datastructures/tfdata.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeconfig.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
@@ -48,8 +50,10 @@
 #include <memory>
 #include <mutex>
 #include <span>
+#include <stop_token>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace inviwo {
@@ -87,8 +91,13 @@ public:
      *
      * @param reuse an optional volume whose storage may be reused to avoid reallocation. It may be
      *              null and must be ignored if its format or dimensions do not match the frame.
+     * @param stop  cancellation token. Implementations should poll @c stop.stop_requested() at
+     *              natural checkpoints and return nullptr as soon as a stop is requested. A
+     *              partially written @p reuse volume is discarded by the caller.
+     * @return the loaded volume, or nullptr if the load was cancelled.
      */
-    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse) = 0;
+    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse,
+                                         std::stop_token stop) const = 0;
 
     /// Total number of frames.
     virtual size_t size() const = 0;
@@ -115,10 +124,11 @@ public:
  */
 class IVW_CORE_API ProceduralLoader : public TemporalVolumeLoader {
 public:
-    /// Signature of the generator callable, given a frame @c index, its @c time value, and an
-    /// optional @c reuse volume whose storage may be reused (may be null, see VolumeLoader::load).
-    using Generator = std::function<std::shared_ptr<Volume>(size_t index, Seconds time,
-                                                            std::shared_ptr<Volume> reuse)>;
+    /// Signature of the generator callable, given a frame @c index, its @c time value, an
+    /// optional @c reuse volume whose storage may be reused (may be null), and a @c stop token.
+    /// @see TemporalVolumeLoader::load
+    using Generator = std::function<std::shared_ptr<Volume>(
+        size_t index, Seconds time, std::shared_ptr<Volume> reuse, std::stop_token stop)>;
 
     /**
      * @param count      number of frames
@@ -129,7 +139,8 @@ public:
     ProceduralLoader(size_t count, std::vector<Seconds> times, VolumeConfig prototype,
                      Generator generator);
 
-    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse) override;
+    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse,
+                                         std::stop_token stop) const override;
     virtual size_t size() const override;
     virtual Seconds time(size_t index) const override;
     virtual VolumeConfig prototype() const override;
@@ -192,10 +203,11 @@ public:
     /// Index of the frame whose time is closest to @p time.
     size_t nearestIndex(Seconds time) const;
 
-    /// Frame by index. Blocks if not cached. Returns nullptr if @p index is out of bounds.
-    std::shared_ptr<const Volume> get(size_t index) const;
+    /// Frame by index. Blocks if not cached. Returns nullptr if @p index is out of bounds, or if
+    /// @p stop is requested while waiting for or performing the load.
+    std::shared_ptr<const Volume> get(size_t index, std::stop_token stop = {}) const;
     /// Frame nearest to the given @p time value. Blocks if not cached.
-    std::shared_ptr<const Volume> get(Seconds time) const;
+    std::shared_ptr<const Volume> get(Seconds time, std::stop_token stop = {}) const;
 
     /// Two frames bracketing a requested time together with a blend factor.
     struct Frame {
@@ -209,10 +221,10 @@ public:
      * are synchronously loaded if not cached. If @p time is outside the time range, the nearest
      * frame is returned in both @c a and @c b with a blend factor of 0.
      */
-    Frame interpolate(Seconds time) const;
+    Frame interpolate(Seconds time, std::stop_token stop = {}) const;
 
     /// Schedule a background load (non-blocking) of the frame at @p index. No-op if already cached
-    /// or pending.
+    /// or pending. The @p callback is not invoked if the load is cancelled.
     void prefetch(size_t index,
                   std::function<void(std::shared_ptr<Volume>)> callback = nullptr) const;
 
@@ -222,41 +234,62 @@ public:
     size_t cacheSize() const;
     /// Number of frames currently held in the cache.
     size_t numCached() const;
-    /// Drop all cached frames. Does not cancel in-flight prefetches.
+    /// Drop all cached frames and request cancellation of all in-flight prefetches. Does not block
+    /// waiting for them to finish.
     void clearCache();
 
 private:
     template <typename T>
     friend struct TFDataTraits;
 
-    struct Item : std::variant<std::shared_ptr<Volume>, std::future<std::shared_ptr<Volume>>> {
-        using Base = std::variant<std::shared_ptr<Volume>, std::future<std::shared_ptr<Volume>>>;
+    /// An in-flight background load together with the source used to cancel it. The future is
+    /// shared so that waiters can copy it and drop @c mutex_ while blocking.
+    struct Pending {
+        std::shared_future<std::shared_ptr<Volume>> future;
+        std::stop_source source;
+    };
+    struct Valid {
+        std::shared_ptr<Volume> volume;
+    };
+    struct Reuse {
+        std::shared_ptr<Volume> volume;
+    };
+
+    struct Item : std::variant<Valid, Pending, Reuse> {
+        using Base = std::variant<Valid, Pending, Reuse>;
+        using Base::Base;
         using Base::operator=;
 
-        bool ready() const { return index() == 0; }
-        std::shared_ptr<Volume>& volume() { return std::get<0>(*this); }
-        std::future<std::shared_ptr<Volume>>& future() { return std::get<1>(*this); }
+        Valid* valid() { return index() == 0 ? &std::get<0>(*this) : nullptr; }
+        Pending* pending() { return index() == 1 ? &std::get<1>(*this) : nullptr; }
+        Reuse* reuse() { return index() == 2 ? &std::get<2>(*this) : nullptr; }
 
-        auto visit(std::invocable<std::shared_ptr<Volume>&> auto&& volumeCallback,
-                   std::invocable<std::future<std::shared_ptr<Volume>>&> auto&& futureCallback) {
+        auto visit(std::invocable<Valid&> auto&& volumeCallback,
+                   std::invocable<Pending&> auto&& pendingCallback,
+                   std::invocable<Reuse&> auto&& reuseCallback) {
             return std::visit(
                 util::overloaded{std::forward<decltype(volumeCallback)>(volumeCallback),
-                                 std::forward<decltype(futureCallback)>(futureCallback)},
+                                 std::forward<decltype(pendingCallback)>(pendingCallback),
+                                 std::forward<decltype(reuseCallback)>(reuseCallback)},
                 *this);
         }
     };
 
-    /// Insert @p volume for @p index into the cache (mutex must be held). Returns the cached value.
-    std::shared_ptr<const Volume> insert(size_t index, std::shared_ptr<Volume> volume) const;
+    /// Find the cache @c Item for @p index or @c nullptr (mutex must be held).
+    Item* find(size_t index) const;
+
+    std::shared_ptr<Volume> load(std::unique_lock<std::mutex>& lock, size_t index,
+                                 std::shared_ptr<Volume> reuse, std::stop_token stop) const;
+
     /// Move @p index to the front of the LRU order (mutex must be held).
     void touch(size_t index) const;
     /// Evict least-recently-used entries until the cache fits (mutex must be held).
     void evict() const;
-    /// Take a reusable volume from the reuse pool, or null if the pool is empty (mutex must be
-    /// held).
+    /// Take a reusable volume from the reuse pool, or @c nullptr if the pool is empty (mutex must
+    /// be held).
     std::shared_ptr<Volume> takeReuse() const;
 
-    std::unique_ptr<TemporalVolumeLoader> loader_;
+    std::shared_ptr<const TemporalVolumeLoader> loader_;
     VolumeConfig prototype_;
     DataMapper dataMap_;
     size_t cacheSize_;

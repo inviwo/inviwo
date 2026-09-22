@@ -45,6 +45,12 @@ bool is_future_ready(const std::future<T>& future) {
                                   std::future_status::ready);
 }
 
+template <typename T>
+bool is_future_ready(const std::shared_future<T>& future) {
+    return (future.valid() && future.wait_for(std::chrono::duration<int, std::milli>(0)) ==
+                                  std::future_status::ready);
+}
+
 }  // namespace util
 
 }  // namespace inviwo

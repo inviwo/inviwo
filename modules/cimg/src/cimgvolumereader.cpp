@@ -81,7 +81,7 @@ CImgVolumeRAMLoader::CImgVolumeRAMLoader(const std::filesystem::path& sourceFile
 CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const { return new CImgVolumeRAMLoader(*this); }
 
 std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation(
-    const VolumeRepresentation& src) const {
+    const VolumeRepresentation& src, std::stop_token) const {
 
     const auto fileName = findFile(sourceFile_);
     auto volumeRAM = cimgutil::loadVolume(fileName);
@@ -92,7 +92,8 @@ std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation(
 }
 
 void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                               const VolumeRepresentation& src) const {
+                                               const VolumeRepresentation& src,
+                                               std::stop_token) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     const auto fileName = findFile(sourceFile_);

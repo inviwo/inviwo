@@ -59,9 +59,10 @@ public:
     virtual ~TIFFStackVolumeRAMLoader() = default;
 
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
-        const VolumeRepresentation& src) const override;
+        const VolumeRepresentation& src, std::stop_token stop) const override;
     virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                      const VolumeRepresentation& src) const override;
+                                      const VolumeRepresentation& src,
+                                      std::stop_token stop) const override;
 
 private:
     std::filesystem::path sourceFile_;

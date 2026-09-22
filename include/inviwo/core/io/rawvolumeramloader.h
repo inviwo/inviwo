@@ -38,6 +38,7 @@
 
 #include <string>
 #include <memory>
+#include <stop_token>
 
 namespace inviwo {
 
@@ -51,10 +52,12 @@ public:
     RawVolumeRAMLoader(const std::filesystem::path& rawFile, size_t offset, ByteOrder byteOrder,
                        Compression compression);
     virtual RawVolumeRAMLoader* clone() const override;
+
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
-        const VolumeRepresentation& src) const override;
+        const VolumeRepresentation& src, std::stop_token stop) const override;
     virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                      const VolumeRepresentation& src) const override;
+                                      const VolumeRepresentation& src,
+                                      std::stop_token stop) const override;
 
 private:
     std::filesystem::path rawFile_;

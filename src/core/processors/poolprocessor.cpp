@@ -98,7 +98,7 @@ PoolProcessor::~PoolProcessor() { stopJobs(); }
 
 void PoolProcessor::stopJobs() {
     for (auto& state : states_) {
-        state->stop = true;
+        state->stopSource.request_stop();
     }
 }
 

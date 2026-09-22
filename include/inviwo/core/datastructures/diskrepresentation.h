@@ -39,6 +39,7 @@
 #include <string_view>
 #include <memory>
 #include <filesystem>
+#include <stop_token>
 
 #include <fmt/std.h>
 
@@ -67,8 +68,8 @@ public:
 
     void setLoader(DiskRepresentationLoader<Repr>* loader);
 
-    std::shared_ptr<Repr> createRepresentation() const;
-    void updateRepresentation(std::shared_ptr<Repr> dest) const;
+    std::shared_ptr<Repr> createRepresentation(std::stop_token stop = {}) const;
+    void updateRepresentation(std::shared_ptr<Repr> dest, std::stop_token stop = {}) const;
 
 private:
     std::filesystem::path sourceFile_;
@@ -103,15 +104,17 @@ void DiskRepresentation<Repr, Self>::setLoader(DiskRepresentationLoader<Repr>* l
 }
 
 template <typename Repr, typename Self>
-std::shared_ptr<Repr> DiskRepresentation<Repr, Self>::createRepresentation() const {
+std::shared_ptr<Repr> DiskRepresentation<Repr, Self>::createRepresentation(
+    std::stop_token stop) const {
     if (!loader_) throw Exception("No loader available to create representation");
-    return loader_->createRepresentation(*static_cast<const Self*>(this));
+    return loader_->createRepresentation(*static_cast<const Self*>(this), std::move(stop));
 }
 
 template <typename Repr, typename Self>
-void DiskRepresentation<Repr, Self>::updateRepresentation(std::shared_ptr<Repr> dest) const {
+void DiskRepresentation<Repr, Self>::updateRepresentation(std::shared_ptr<Repr> dest,
+                                                          std::stop_token stop) const {
     if (!loader_) throw Exception("No loader available to update representation");
-    loader_->updateRepresentation(dest, *static_cast<const Self*>(this));
+    loader_->updateRepresentation(dest, *static_cast<const Self*>(this), std::move(stop));
 }
 
 template <typename Repr>
@@ -119,8 +122,9 @@ class DiskRepresentationLoader {
 public:
     virtual ~DiskRepresentationLoader() = default;
     virtual DiskRepresentationLoader* clone() const = 0;
-    virtual std::shared_ptr<Repr> createRepresentation(const Repr&) const = 0;
-    virtual void updateRepresentation(std::shared_ptr<Repr> dest, const Repr&) const = 0;
+    virtual std::shared_ptr<Repr> createRepresentation(const Repr&, std::stop_token stop) const = 0;
+    virtual void updateRepresentation(std::shared_ptr<Repr> dest, const Repr&,
+                                      std::stop_token stop) const = 0;
 
     static std::filesystem::path findFile(const std::filesystem::path& path) {
         if (std::filesystem::is_regular_file(path)) {

@@ -42,17 +42,21 @@ RawVolumeRAMLoader::RawVolumeRAMLoader(const std::filesystem::path& rawFile, siz
 RawVolumeRAMLoader* RawVolumeRAMLoader::clone() const { return new RawVolumeRAMLoader(*this); }
 
 std::shared_ptr<VolumeRepresentation> RawVolumeRAMLoader::createRepresentation(
-    const VolumeRepresentation& src) const {
+    const VolumeRepresentation& src, std::stop_token stop) const {
 
-    const auto size = glm::compMul(src.getDimensions()) * src.getDataFormat()->getSizeInBytes();
+    const auto elementSize = src.getDataFormat()->getSizeInBytes();
+    const auto size = glm::compMul(src.getDimensions()) * elementSize;
     auto data = std::make_unique<char[]>(size);
+
     if (compression_ == Compression::Enabled) {
         util::readCompressedBytesIntoBuffer(rawFile_, offset_, size, byteOrder_,
-                                            src.getDataFormat()->getSizeInBytes(), data.get());
+                                            src.getDataFormat()->getSizeInBytes(), data.get(),
+                                            stop);
     } else {
         util::readBytesIntoBuffer(rawFile_, offset_, size, byteOrder_,
-                                  src.getDataFormat()->getSizeInBytes(), data.get());
+                                  src.getDataFormat()->getSizeInBytes(), data.get(), stop);
     }
+    if (stop.stop_requested()) return nullptr;
 
     auto volumeRAM =
         createVolumeRAM(src.getDimensions(), src.getDataFormat(), data.get(), src.getSwizzleMask(),
@@ -63,7 +67,8 @@ std::shared_ptr<VolumeRepresentation> RawVolumeRAMLoader::createRepresentation(
 }
 
 void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                              const VolumeRepresentation& src) const {
+                                              const VolumeRepresentation& src,
+                                              std::stop_token stop) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     if (src.getDimensions() != volumeDst->getDimensions()) {
@@ -74,11 +79,11 @@ void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentati
     if (compression_ == Compression::Enabled) {
         util::readCompressedBytesIntoBuffer(
             rawFile_, offset_, size * src.getDataFormat()->getSizeInBytes(), byteOrder_,
-            src.getDataFormat()->getSizeInBytes(), volumeDst->getData());
+            src.getDataFormat()->getSizeInBytes(), volumeDst->getData(), stop);
     } else {
         util::readBytesIntoBuffer(rawFile_, offset_, size * src.getDataFormat()->getSizeInBytes(),
                                   byteOrder_, src.getDataFormat()->getSizeInBytes(),
-                                  volumeDst->getData());
+                                  volumeDst->getData(), stop);
     }
 
     volumeDst->setSwizzleMask(src.getSwizzleMask());

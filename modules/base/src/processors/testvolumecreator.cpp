@@ -40,7 +40,7 @@ namespace {
 
 std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> createVolumes(
     TestVolumeCreator::Mode mode, size3_t dims, mat4 basis, VolumeReuseCache& scalars,
-    VolumeReuseCache& gradients, pool::Progress progress, pool::Stop stop) {
+    VolumeReuseCache& gradients, pool::Progress progress, std::stop_token stop) {
 
     const VolumeConfig scalarCfg = {.dimensions = dims,
                                     .format = DataFloat32::get(),
@@ -78,7 +78,7 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> createVolumes(
     switch (mode) {
         case TestVolumeCreator::Mode::Sin1D:
             for (size_t k = 0; k < dims.z; ++k) {
-                if (stop) return {};
+                if (stop.stop_requested()) return {};
                 progress(static_cast<double>(k) / static_cast<double>(dims.z));
                 for (size_t j = 0; j < dims.y; ++j) {
                     for (size_t i = 0; i < dims.x; ++i) {
@@ -92,7 +92,7 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> createVolumes(
             break;
         case TestVolumeCreator::Mode::Sin2D:
             for (size_t k = 0; k < dims.z; ++k) {
-                if (stop) return {};
+                if (stop.stop_requested()) return {};
                 progress(static_cast<double>(k) / static_cast<double>(dims.z));
                 for (size_t j = 0; j < dims.y; ++j) {
                     for (size_t i = 0; i < dims.x; ++i) {
@@ -107,7 +107,7 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> createVolumes(
             break;
         case TestVolumeCreator::Mode::Sin3D:
             for (size_t k = 0; k < dims.z; ++k) {
-                if (stop) return {};
+                if (stop.stop_requested()) return {};
                 progress(static_cast<double>(k) / static_cast<double>(dims.z));
                 for (size_t j = 0; j < dims.y; ++j) {
                     for (size_t i = 0; i < dims.x; ++i) {
@@ -172,7 +172,7 @@ TestVolumeCreator::TestVolumeCreator()
 
 void TestVolumeCreator::process() {
     const auto calc = [this, mode = mode_.get(), dims = dimensions_.get(), basis = basis_.get()](
-                          pool::Progress progress, pool::Stop stop) {
+                          pool::Progress progress, std::stop_token stop) {
         return createVolumes(mode, dims, basis, scalars_, gradients_, progress, stop);
     };
 

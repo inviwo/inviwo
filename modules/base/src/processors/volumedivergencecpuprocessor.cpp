@@ -60,7 +60,8 @@ VolumeDivergenceCPUProcessor::VolumeDivergenceCPUProcessor()
 }
 
 void VolumeDivergenceCPUProcessor::process() {
-    const auto calc = [data = inport_.getData(), this](pool::Progress progress, pool::Stop stop) {
+    const auto calc = [data = inport_.getData(), this](pool::Progress progress,
+                                                       std::stop_token stop) {
         return util::divergenceVolume(*data, std::ref(cache_), progress, stop);
     };
 

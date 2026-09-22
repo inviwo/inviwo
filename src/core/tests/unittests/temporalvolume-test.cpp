@@ -59,7 +59,8 @@ VolumeConfig makePrototype() {
 std::unique_ptr<ProceduralLoader> makeLoader(size_t count, std::vector<Seconds> times = {}) {
     return std::make_unique<ProceduralLoader>(
         count, std::move(times), makePrototype(),
-        [](size_t index, Seconds time, const std::shared_ptr<Volume>&) -> std::shared_ptr<Volume> {
+        [](size_t index, Seconds time, const std::shared_ptr<Volume>&,
+           std::stop_token) -> std::shared_ptr<Volume> {
             auto volume = std::make_shared<Volume>(size3_t{2, 2, 2}, DataUInt8::get());
             volume->setMetaData<DoubleMetaData, double>(frameKey, static_cast<double>(index));
             volume->setMetaData<DoubleMetaData, double>("time", time.count());
@@ -211,16 +212,17 @@ TEST(TemporalVolumeTest, Prefetch) {
 }
 
 TEST(TemporalVolumeTest, ProceduralLoaderDirect) {
-    ProceduralLoader loader{3,
-                            {1.0s, 2.0s, 3.0s},
-                            makePrototype(),
-                            [](size_t index, Seconds, const std::shared_ptr<Volume>&) {
-                                return std::make_shared<Volume>(size3_t{index + 1});
-                            }};
+    ProceduralLoader loader{
+        3,
+        {1.0s, 2.0s, 3.0s},
+        makePrototype(),
+        [](size_t index, Seconds, const std::shared_ptr<Volume>&, std::stop_token) {
+            return std::make_shared<Volume>(size3_t{index + 1});
+        }};
     EXPECT_EQ(loader.size(), 3u);
     ASSERT_EQ(loader.size(), 3u);
     EXPECT_DOUBLE_EQ(loader.time(2).count(), 3.0);
-    EXPECT_EQ(loader.load(1, nullptr)->getDimensions(), (size3_t{2}));
+    EXPECT_EQ(loader.load(1, nullptr, {})->getDimensions(), (size3_t{2}));
     EXPECT_NE(loader.prototype().format, nullptr);
 }
 

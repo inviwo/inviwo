@@ -113,11 +113,11 @@ public:
 
     template <typename T>
     std::shared_ptr<T> readDataForTypeAndExtension(
-        const std::filesystem::path& filePath,
-        std::optional<FileExtension> ext = std::nullopt) const {
+        const std::filesystem::path& filePath, std::optional<FileExtension> ext = std::nullopt,
+        std::stop_token stop = {}) const {
         if (auto reader = ext ? getReaderForTypeAndExtension<T>(*ext, filePath)
                               : getReaderForTypeAndExtension<T>(filePath)) {
-            return reader->readData(filePath);
+            return reader->readData(filePath, nullptr, std::move(stop));
         } else {
             return nullptr;
         }

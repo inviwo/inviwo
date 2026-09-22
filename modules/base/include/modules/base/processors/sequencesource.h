@@ -298,8 +298,8 @@ void SequenceSource<Conf>::loadFile(bool deserialize) {
     auto loader = [rf = rf_, ext = reader_.getSelectedValue(), file = file_.get(),
                    mdo = static_cast<MetaDataOwner*>(this),
                    configReader = Conf::getReaderConfig(information_)](
-                      pool::Stop stop, pool::Progress progress) -> Sequence {
-        if (stop) return {};
+                      std::stop_token stop, pool::Progress progress) -> Sequence {
+        if (stop.stop_requested()) return {};
         progress(0.0);
         util::OnScopeExit done{[&]() { progress(1.0); }};
         return loadSequence(file, ext, *rf, mdo, configReader);
@@ -332,11 +332,11 @@ void SequenceSource<Conf>::loadFolder(bool deserialize) {
     const auto loaders =
         files | std::views::take(max) |
         std::views::transform([&](const std::filesystem::path& path)
-                                  -> std::function<Sequence(pool::Stop, pool::Progress)> {
+                                  -> std::function<Sequence(std::stop_token, pool::Progress)> {
             return [rf = rf_, path, mdo = static_cast<MetaDataOwner*>(this),
                     configReader = Conf::getReaderConfig(information_)](
-                       pool::Stop stop, pool::Progress progress) -> Sequence {
-                if (stop) return {};
+                       std::stop_token stop, pool::Progress progress) -> Sequence {
+                if (stop.stop_requested()) return {};
                 progress(0.0);
                 util::OnScopeExit done{[&]() { progress(1.0); }};
                 return loadSequence(path, FileExtension{}, *rf, mdo, configReader);

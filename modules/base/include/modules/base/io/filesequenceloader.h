@@ -39,6 +39,7 @@
 #include <memory>
 #include <mutex>
 #include <span>
+#include <stop_token>
 #include <vector>
 
 namespace inviwo {
@@ -77,13 +78,14 @@ public:
     FileSequenceLoader(std::vector<std::filesystem::path> paths, std::vector<Seconds> times,
                        DataReaderFactory* factory, FileExtension extension = {});
 
-    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse) override;
+    virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse,
+                                         std::stop_token stop) const override;
     virtual size_t size() const override;
     virtual Seconds time(size_t index) const override;
     virtual VolumeConfig prototype() const override;
 
 private:
-    std::shared_ptr<Volume> readFile(size_t index) const;
+    std::shared_ptr<Volume> readFile(size_t index, std::stop_token stop = {}) const;
 
     std::vector<std::filesystem::path> paths_;
     std::vector<Seconds> times_;

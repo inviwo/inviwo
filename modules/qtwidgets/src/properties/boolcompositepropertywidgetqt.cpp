@@ -47,6 +47,9 @@ BoolCompositePropertyWidgetQt::BoolCompositePropertyWidgetQt(BoolCompositeProper
     , boolCompProperty_(property)
     , boolObserverDelegate_{} {
 
+    setShowIfEmpty(true);
+    setEmptyLabelString("Empty");
+
     boolObserverDelegate_.onDisplayNameChange = [this](Property*, const std::string& name) {
         setCheckBoxText(name);
     };

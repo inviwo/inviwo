@@ -55,14 +55,19 @@ HDF5TemporalVolumeLoader::HDF5TemporalVolumeLoader(Handle handle, std::vector<Se
         getTemporalVolumeConfig(handle_, selection_, timeDimension_, prototype_);
 }
 
-std::shared_ptr<Volume> HDF5TemporalVolumeLoader::load(size_t index,
-                                                       std::shared_ptr<Volume> reuse) {
+std::shared_ptr<Volume> HDF5TemporalVolumeLoader::load(size_t index, std::shared_ptr<Volume> reuse,
+                                                       std::stop_token stop) const {
 
     if (index >= size()) {
         throw Exception(SourceContext{}, "Frame index {} out of range [0, {})", index, size());
     }
 
+    // All HDF5 access is serialized, so prefetches queue up here. Bail out both before and after
+    // acquiring the lock.
+    if (stop.stop_requested()) return nullptr;
     const std::scoped_lock lock{Handle::globalMutex()};
+    if (stop.stop_requested()) return nullptr;
+
     auto sel = selection_;
     sel[timeDimension_] = Selection{
         .start = timeSelection_.start + timeSelection_.stride * index, .count = 1, .stride = 1};

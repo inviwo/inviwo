@@ -136,7 +136,7 @@ template <SplatKernel K>
 void splatImpl(std::span<const SplatInput> inputs, const SplatSettings& settings, mat4 indexToWorld,
                mat4 worldToIndex, std::span<float> data,
                std::vector<std::function<vec2(const std::function<void(double)>&,
-                                              const std::function<bool()>&)>>& jobs) {
+                                              std::stop_token)>>& jobs) {
 
     const auto dims = settings.dimensions;
 
@@ -165,7 +165,7 @@ void splatImpl(std::span<const SplatInput> inputs, const SplatSettings& settings
     auto processSlab = [&](std::size_t zStart, std::size_t zStop) {
         return [zStart, zStop, inputs = inputs | std::ranges::to<std::vector>(), indexToWorld,
                 worldToIndex, data, dims, size, weight, error, voxelSizeWorld](
-                   const std::function<void(double)>& progress, const std::function<bool()>& stop) {
+                   const std::function<void(double)>& progress, std::stop_token stop) {
             const util::IndexMapper3D idx(dims);
             const auto dimsI = ivec3{dims};
 
@@ -185,7 +185,7 @@ void splatImpl(std::span<const SplatInput> inputs, const SplatSettings& settings
                 const bool perPointWeight = !input.weights.empty();
 
                 for (std::size_t p = 0; p < input.positions.size(); ++p) {
-                    if (stop && stop()) return minMax;
+                    if (stop.stop_requested()) return minMax;
                     if (progress) {
                         if (currentPoint % progressStep == 0) {
                             progress(static_cast<double>(currentPoint) /
@@ -274,16 +274,14 @@ void splatImpl(std::span<const SplatInput> inputs, const SplatSettings& settings
 }  // namespace
 
 std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
-          std::vector<std::function<vec2(const std::function<void(double)>&,
-                                         const std::function<bool()>&)>>>
+          std::vector<std::function<vec2(const std::function<void(double)>&, std::stop_token)>>>
 splatJobs(const SplatInput& input, const SplatSettings& settings) {
     std::array<SplatInput, 1> inputs{input};
     return splatJobs(inputs, settings);
 }
 
 std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
-          std::vector<std::function<vec2(const std::function<void(double)>&,
-                                         const std::function<bool()>&)>>>
+          std::vector<std::function<vec2(const std::function<void(double)>&, std::stop_token)>>>
 splatJobs(std::span<const SplatInput> inputs, const SplatSettings& settings) {
     if (settings.dimensions.x == 0 || settings.dimensions.y == 0 || settings.dimensions.z == 0) {
         throw Exception("Volume dimensions must be non-zero");
@@ -330,9 +328,7 @@ splatJobs(std::span<const SplatInput> inputs, const SplatSettings& settings) {
             return volume;
         };
 
-    std::vector<
-        std::function<vec2(const std::function<void(double)>&, const std::function<bool()>&)>>
-        jobs;
+    std::vector<std::function<vec2(const std::function<void(double)>&, std::stop_token)>> jobs;
 
     auto data = rep->getView();
 
@@ -365,14 +361,14 @@ std::shared_ptr<Volume> splat(const SplatInput& input, const SplatSettings& sett
     if (util::getPoolSize() > 0) {
         std::vector<std::future<vec2>> futures;
         for (auto& job : jobs) {
-            futures.emplace_back(util::dispatchPool([job]() { return job(nullptr, nullptr); }));
+            futures.emplace_back(util::dispatchPool([job]() { return job(nullptr, {}); }));
         }
         return collect(futures | std::views::transform([](auto& f) { return f.get(); }) |
                        std::ranges::to<std::vector>());
     } else {
         std::vector<vec2> minMaxes;
         for (auto& job : jobs) {
-            minMaxes.push_back(job(nullptr, nullptr));
+            minMaxes.push_back(job(nullptr, {}));
         }
         return collect(minMaxes);
     }
