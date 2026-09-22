@@ -66,10 +66,14 @@ FileSequenceLoader::FileSequenceLoader(std::vector<std::filesystem::path> paths,
     prototype_ = readFile(0)->config();
 }
 
-std::shared_ptr<Volume> FileSequenceLoader::readFile(size_t index) const {
+std::shared_ptr<Volume> FileSequenceLoader::readFile(size_t index, std::stop_token stop) const {
     const auto& path = paths_[index];
 
+    // Prefetches queue up on this mutex, so bail out both before and after acquiring it.
+    if (stop.stop_requested()) return nullptr;
     const std::scoped_lock lock{readerMutex_};
+    if (stop.stop_requested()) return nullptr;
+
     auto reader = extension_.empty()
                       ? factory_->getReaderForTypeAndExtension<Volume>(path)
                       : factory_->getReaderForTypeAndExtension<Volume>(extension_, path);
@@ -77,20 +81,27 @@ std::shared_ptr<Volume> FileSequenceLoader::readFile(size_t index) const {
         throw DataReaderException(SourceContext{}, "Unable to find a Volume reader for file: {}",
                                   path);
     }
-    auto volume = reader->readData(path);
+    auto volume = reader->readData(path, nullptr, std::move(stop));
+    if (!volume) return nullptr;
+
     if (!volume->hasMetaData<StringMetaData>("filename")) {
         volume->setMetaData<StringMetaData>("filename", path.generic_string());
     }
+    if (volume->config() != prototype_) {
+        throw DataReaderException(SourceContext{}, "Volume config mismatch for file: {}", path);
+    }
+
     return volume;
 }
 
-std::shared_ptr<Volume> FileSequenceLoader::load(size_t index, std::shared_ptr<Volume>) {
+std::shared_ptr<Volume> FileSequenceLoader::load(size_t index, std::shared_ptr<Volume>,
+                                                 std::stop_token stop) const {
     if (index >= paths_.size()) {
         throw RangeException(SourceContext{}, "Frame index {} out of range [0, {})", index,
                              paths_.size());
     }
     // The reader always allocates a fresh volume, so the reuse hint is ignored.
-    return readFile(index);
+    return readFile(index, std::move(stop));
 }
 
 size_t FileSequenceLoader::size() const { return paths_.size(); }

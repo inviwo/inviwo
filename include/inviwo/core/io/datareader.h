@@ -36,6 +36,7 @@
 #include <memory>
 #include <any>
 #include <ios>
+#include <stop_token>
 #include <string_view>
 #include <typeindex>
 
@@ -162,6 +163,22 @@ public:
      */
     virtual std::shared_ptr<T> readData(const std::filesystem::path& filePath, MetaDataOwner*) {
         return readData(filePath);
+    }
+
+    /**
+     * Optional overload supporting cancellation. Readers that can abort a long running read should
+     * override this, poll @c stop.stop_requested() at natural checkpoints, and return nullptr as
+     * soon as a stop is requested. Note that nullptr is thus a valid, non-exceptional result.
+     *
+     * Overriding readers should implement the pure virtual single argument overload by delegating
+     * to this one, and add `using DataReaderType<T>::readData;` to avoid hiding the other
+     * overloads.
+     *
+     * The default implementation ignores @p stop and performs an uninterruptible read.
+     */
+    virtual std::shared_ptr<T> readData(const std::filesystem::path& filePath, MetaDataOwner* owner,
+                                        [[maybe_unused]] std::stop_token stop) {
+        return readData(filePath, owner);
     }
 
 protected:

@@ -42,6 +42,7 @@
 #include <atomic>
 #include <chrono>
 #include <optional>
+#include <stop_token>
 
 namespace inviwo {
 
@@ -61,12 +62,11 @@ struct StateTemplate;
 }  // namespace detail
 
 /**
- * A class to signal if a background calculation should stop or be aborted.
- * Generally used by the background jobs to abort a calculation early:
+ * Background jobs use a `std::stop_token` to abort a calculation early:
  * ```{.cpp}
- * auto calc = [mystate](pool::Stop stop) {
+ * auto calc = [mystate](std::stop_token stop) {
  *     for(...) {
- *         if (stop) return nullptr;
+ *         if (stop.stop_requested()) return nullptr;
  *         // do work
  *     }
  *     return results;
@@ -74,16 +74,7 @@ struct StateTemplate;
  * ```
  * @see PoolProcessor
  */
-class IVW_CORE_API Stop {
-public:
-    explicit operator bool() const noexcept { return stop_.load(std::memory_order::relaxed); }
-    bool operator()() const noexcept { return stop_.load(std::memory_order::relaxed); }
-
-private:
-    friend ::inviwo::pool::detail::State;
-    explicit Stop(const std::atomic<bool>& stop) : stop_{stop} {}
-    const std::atomic<bool>& stop_;  // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
-};
+using Stop [[deprecated("Use std::stop_token instead")]] = std::stop_token;
 
 /**
  * A class to signal the progress of a background calculation:
@@ -174,7 +165,7 @@ public:
      * Dispatch a single background job. The job will be executed in a background thread in
      * the thread pool. It is important that the job captures its state by value, since it might
      * outlive the processor. The job can take two optional parameters
-     *     * pool::Stop a stop token to periodically check if the job has been canceled.
+     *     * std::stop_token a stop token to periodically check if the job has been canceled.
      *     * pool::Progress a callback to report progress of the calculation. The progress is
      *       represented as a float in the interval [0.0, 1.0].
      * If the job takes a progress callback the processor will show a progress bar.
@@ -184,8 +175,8 @@ public:
      *
      * @code{.cpp}
      * const auto calc = [image = inport_.getData()]
-     *     ( pool::Stop stop, pool::Progress progress) -> std::shared_ptr<const Image> {
-     *     if (stop) return nullptr;
+     *     ( std::stop_token stop, pool::Progress progress) -> std::shared_ptr<const Image> {
+     *     if (stop.stop_requested()) return nullptr;
      *     auto newImage = std::shared_ptr<Image>(image->clone());
      *     progress(0.5f);
      *     // Do some work with the image
@@ -206,7 +197,7 @@ public:
      * Dispatch a vector of background jobs. The jobs will be executed in a background thread in
      * the thread pool. It is important that the jobs captures its state by value, since it might
      * outlive the processor. The jobs can take two optional parameters
-     *     * pool::Stop a stop token to periodically check if the job has been canceled.
+     *     * std::stop_token a stop token to periodically check if the job has been canceled.
      *     * pool::Progress a callback to report progress of the calculation. The progress is
      *       represented as a float in the interval [0.0, 1.0]. The progress is automatically
      *       normalized across all the jobs
@@ -218,10 +209,10 @@ public:
      * have not been stopped. Hence it is safe to refer to the processor in this functor.
      *
      * @code{.cpp}
-     * std::vector<std::function<std::shared_ptr<Mesh>(pool::Stop, pool::Progress progress)>> jobs;
+     * std::vector<std::function<std::shared_ptr<Mesh>(std::stop_token, pool::Progress)>> jobs;
      * for (...) {
-     *     jobs.push_back([some state](pool::Stop stop, pool::Progress progress) {
-     *         if (stop) return nullptr;
+     *     jobs.push_back([some state](std::stop_token stop, pool::Progress progress) {
+     *         if (stop.stop_requested()) return nullptr;
      *         // construct some new Mesh
      *         progress(0.5f);
      *         return newMesh;
@@ -313,7 +304,7 @@ private:
     bool removeState(const std::shared_ptr<pool::detail::State>& state);
 
     template <typename Result, typename Job>
-    std::shared_ptr<std::packaged_task<Result()>> makeTask(Job&& job, pool::Stop stop,
+    std::shared_ptr<std::packaged_task<Result()>> makeTask(Job&& job, std::stop_token stop,
                                                            pool::Progress progress);
 
     template <typename Result, typename Done>
@@ -337,20 +328,21 @@ struct IVW_CORE_API State {
     State(std::weak_ptr<PoolProcessor> processor, size_t count)
         : processor(std::move(processor))
         , count{count}
-        , stop{false}
+        , stopSource{}
         , progress(count)
         , progressMutex{}
         , nJobs{count} {}
 
     std::weak_ptr<PoolProcessor> processor;
     std::atomic<size_t> count;
-    std::atomic<bool> stop;
+    std::stop_source stopSource;
     std::vector<std::atomic<double>> progress;
     std::future<void> progressUpdate;
     std::mutex progressMutex;
     size_t nJobs;
 
-    Stop getStop() { return Stop(stop); }
+    bool stopped() const { return stopSource.stop_requested(); }
+    std::stop_token getStop() { return stopSource.get_token(); }
 
     void setProgress(size_t id, double progress);
 
@@ -371,7 +363,9 @@ struct StateTemplate : State {
 
 template <typename Job>
 struct JobTraits {
-    static_assert(std::is_invocable_v<Job> || std::is_invocable_v<Job, pool::Stop> ||
+    using Stop = std::stop_token;
+
+    static_assert(std::is_invocable_v<Job> || std::is_invocable_v<Job, Stop> ||
                   std::is_invocable_v<Job, Progress> || std::is_invocable_v<Job, Stop, Progress> ||
                   std::is_invocable_v<Job, Progress, Stop>);
 
@@ -436,7 +430,7 @@ inline void PoolProcessor::callDone(
                     return;
                 }
 
-                if (state->stop) return;
+                if (state->stopped()) return;
 
                 if (isLast || p->keepOldJobs()) {
                     done(*p, state);
@@ -469,7 +463,7 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
         auto task = makeTask<Result>(std::move(job), state->getStop(), state->getProgress(i++));
         state->futures.push_back(task->get_future());
         sub.tasks.emplace_back([state, task, app]() {
-            if (!state->stop) {
+            if (!state->stopped()) {
                 // This code will run in a background thread, make sure the local context is active
                 rendercontext::activateLocal();
                 (*task)();
@@ -518,7 +512,7 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
 
     Submission sub{state,
                    {[state, task, app]() {
-                       if (!state->stop) {
+                       if (!state->stopped()) {
                            // This code will run in a background thread, make sure the local context
                            // is active
                            rendercontext::activateLocal();
@@ -550,8 +544,8 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
 template <typename Job>
 inline void PoolProcessor::setupProgress() {
     if constexpr (std::is_invocable_v<Job, pool::Progress> ||
-                  std::is_invocable_v<Job, pool::Stop, pool::Progress> ||
-                  std::is_invocable_v<Job, pool::Progress, pool::Stop>) {
+                  std::is_invocable_v<Job, std::stop_token, pool::Progress> ||
+                  std::is_invocable_v<Job, pool::Progress, std::stop_token>) {
         notifyObserversProgressChanged(this, 0.0);
     }
 }
@@ -566,14 +560,14 @@ inline std::shared_ptr<pool::detail::StateTemplate<Result, Done>> PoolProcessor:
 
 template <typename Result, typename Job>
 inline std::shared_ptr<std::packaged_task<Result()>> PoolProcessor::makeTask(
-    Job&& job, [[maybe_unused]] pool::Stop stop, [[maybe_unused]] pool::Progress progress) {
-    if constexpr (std::is_invocable_v<Job, pool::Stop, pool::Progress>) {
+    Job&& job, [[maybe_unused]] std::stop_token stop, [[maybe_unused]] pool::Progress progress) {
+    if constexpr (std::is_invocable_v<Job, std::stop_token, pool::Progress>) {
         return std::make_shared<std::packaged_task<Result()>>(
             [job = std::forward<Job>(job), stop, progress]() { return job(stop, progress); });
-    } else if constexpr (std::is_invocable_v<Job, pool::Progress, pool::Stop>) {
+    } else if constexpr (std::is_invocable_v<Job, pool::Progress, std::stop_token>) {
         return std::make_shared<std::packaged_task<Result()>>(
             [job = std::forward<Job>(job), stop, progress]() { return job(progress, stop); });
-    } else if constexpr (std::is_invocable_v<Job, pool::Stop>) {
+    } else if constexpr (std::is_invocable_v<Job, std::stop_token>) {
         return std::make_shared<std::packaged_task<Result()>>(
             [job = std::forward<Job>(job), stop]() { return job(stop); });
     } else if constexpr (std::is_invocable_v<Job, pool::Progress>) {

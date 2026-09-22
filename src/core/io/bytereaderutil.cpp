@@ -39,9 +39,23 @@
 #include <fmt/format.h>
 #include <fmt/std.h>
 
+#include <algorithm>
 #include <memory>
 
 namespace inviwo {
+
+namespace {
+
+/// Number of bytes read between two cancellation checks.
+constexpr size_t defaultChunkSize = 64 * 1024 * 1024;
+
+size_t chunkSizeFor(size_t elementSize) {
+    if (elementSize == 0 || elementSize > defaultChunkSize) return defaultChunkSize;
+    return (defaultChunkSize / elementSize) * elementSize;
+}
+
+}  // namespace
+
 
 void util::reverseByteOrder(void* dest, size_t bytes, size_t elementSize) {
     auto temp = std::make_unique<char[]>(elementSize);
@@ -57,8 +71,10 @@ void util::reverseByteOrder(void* dest, size_t bytes, size_t elementSize) {
     }
 }
 
+
 void util::readBytesIntoBuffer(const std::filesystem::path& path, size_t offset, size_t bytes,
-                               ByteOrder byteOrder, size_t elementSize, void* dest) {
+                               ByteOrder byteOrder, size_t elementSize, void* dest,
+                               std::stop_token stop) {
     const auto filePath = net::downloadAndCacheIfUrl(path);
 
     FILE* file = filesystem::fopen(filePath, "rb");
@@ -68,8 +84,15 @@ void util::readBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
     const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
 
     std::fseek(file, static_cast<long>(offset), SEEK_SET);
-    if (std::fread(static_cast<char*>(dest), bytes, 1, file) != 1) {
-        throw DataReaderException(SourceContext{}, "Could not read from file: {:?g}", path);
+
+    const size_t chunk = chunkSizeFor(elementSize);
+    auto* out = static_cast<char*>(dest);
+    for (size_t read = 0; read < bytes; read += chunk) {
+        if (stop.stop_requested()) return;
+        const size_t count = std::min(chunk, bytes - read);
+        if (std::fread(out + read, count, 1, file) != 1) {
+            throw DataReaderException(SourceContext{}, "Could not read from file: {:?g}", path);
+        }
     }
     if (byteOrder == ByteOrder::BigEndian && elementSize > 1) {
         util::reverseByteOrder(dest, bytes, elementSize);
@@ -78,20 +101,26 @@ void util::readBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
 
 void util::readCompressedBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
                                          size_t bytes, ByteOrder byteOrder, size_t elementSize,
-                                         void* dest) {
+                                         void* dest, std::stop_token stop) {
     const auto filePath = net::downloadAndCacheIfUrl(path);
 
     auto fin = bxz::ifstream{filePath.generic_string(), std::ios::in | std::ios::binary};
-
-    if (fin.good()) {
-        fin.seekg(static_cast<std::streamoff>(offset));
-        fin.read(static_cast<char*>(dest), static_cast<std::streamsize>(bytes));
-
-        if (byteOrder == ByteOrder::BigEndian && elementSize > 1) {
-            util::reverseByteOrder(dest, bytes, elementSize);
-        }
-    } else {
+    if (!fin.good()) {
         throw DataReaderException(SourceContext{}, "Could not read from file: {:?g}", path);
+    }
+
+    fin.seekg(static_cast<std::streamoff>(offset));
+
+    const size_t chunk = chunkSizeFor(elementSize);
+    auto* out = static_cast<char*>(dest);
+    for (size_t read = 0; read < bytes; read += chunk) {
+        if (stop.stop_requested()) return;
+        const size_t count = std::min(chunk, bytes - read);
+        fin.read(out + read, static_cast<std::streamsize>(count));
+    }
+
+    if (byteOrder == ByteOrder::BigEndian && elementSize > 1) {
+        util::reverseByteOrder(dest, bytes, elementSize);
     }
 }
 
