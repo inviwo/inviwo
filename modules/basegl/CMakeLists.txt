@@ -108,6 +108,7 @@ set(HEADER_FILES
     include/modules/basegl/properties/stipplingproperty.h
     include/modules/basegl/rendering/linerenderer.h
     include/modules/basegl/rendering/splitterrenderer.h
+    include/modules/basegl/shadercomponents/alternativeshadercomponent.h
     include/modules/basegl/shadercomponents/atlascomponent.h
     include/modules/basegl/shadercomponents/backgroundcomponent.h
     include/modules/basegl/shadercomponents/cameracomponent.h
@@ -241,6 +242,7 @@ set(SOURCE_FILES
     src/properties/splitterproperty.cpp
     src/rendering/linerenderer.cpp
     src/rendering/splitterrenderer.cpp
+    src/shadercomponents/alternativeshadercomponent.cpp
     src/shadercomponents/atlascomponent.cpp
     src/shadercomponents/backgroundcomponent.cpp
     src/shadercomponents/cameracomponent.cpp
