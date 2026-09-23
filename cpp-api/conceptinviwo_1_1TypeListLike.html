@@ -98,10 +98,8 @@ $(function(){initNavTree('conceptinviwo_1_1TypeListLike.html',''); initResizable
 <div class="contents">
 <h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptinviwo_1_1TypeListLike.html">inviwo::TypeListLike</a> =  <span class="keyword">requires</span>(T t) {</div>
-<div class="line">    []&lt;<span class="keyword">typename</span>... Ts&gt;(TypeList&lt;Ts...&gt;) {}(t);</div>
-<div class="line">}</div>
-<div class="ttc" id="aconceptinviwo_1_1TypeListLike_html"><div class="ttname"><a href="conceptinviwo_1_1TypeListLike.html">inviwo::TypeListLike</a></div><div class="ttdef"><b>Definition</b> typelist.h:43</div></div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptinviwo_1_1TypeListLike.html">inviwo::TypeListLike</a> =  <span class="keyword">requires</span>(T t) { []&lt;<span class="keyword">typename</span>... Ts&gt;(TypeList&lt;Ts...&gt;) {}(t); }</div>
+<div class="ttc" id="aconceptinviwo_1_1TypeListLike_html"><div class="ttname"><a href="conceptinviwo_1_1TypeListLike.html">inviwo::TypeListLike</a></div><div class="ttdef"><b>Definition</b> typelist.h:42</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

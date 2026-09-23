@@ -73,6 +73,5 @@ var searchData=
   ['histogramcache_70',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
   ['histogramtodataframe_71',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
   ['hsl2rgb_72',['hsl2rgb',['../namespaceinviwo_1_1color.html#a8d0e0863995cedb80bc5799c3f149048',1,'inviwo::color']]],
-  ['hsv2rgb_73',['hsv2rgb',['../namespaceinviwo_1_1color.html#a0da20ba4dfc221f8708ad12ab20ffe06',1,'inviwo::color']]],
-  ['htmlpropertywidgetqt_74',['HTMLPropertyWidgetQt',['../classinviwo_1_1HTMLPropertyWidgetQt.html',1,'inviwo']]]
+  ['hsv2rgb_73',['hsv2rgb',['../namespaceinviwo_1_1color.html#a0da20ba4dfc221f8708ad12ab20ffe06',1,'inviwo::color']]]
 ];

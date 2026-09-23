@@ -41,6 +41,5 @@ var searchData=
   ['histogram1d_38',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
   ['histogram2d_39',['Histogram2D',['../structinviwo_1_1Histogram2D.html',1,'inviwo']]],
   ['histogramcache_40',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
-  ['histogramtodataframe_41',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
-  ['htmlpropertywidgetqt_42',['HTMLPropertyWidgetQt',['../classinviwo_1_1HTMLPropertyWidgetQt.html',1,'inviwo']]]
+  ['histogramtodataframe_41',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]]
 ];

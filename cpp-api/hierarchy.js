@@ -2442,8 +2442,6 @@ var hierarchy =
           [ "inviwo::StringMultilinePropertyWidgetQt", "classinviwo_1_1StringMultilinePropertyWidgetQt.html", null ],
           [ "inviwo::StringPropertyWidgetQt", "classinviwo_1_1StringPropertyWidgetQt.html", [
             [ "inviwo::GLSLPropertyWidgetQt", "classinviwo_1_1GLSLPropertyWidgetQt.html", null ],
-            [ "inviwo::HTMLPropertyWidgetQt", "classinviwo_1_1HTMLPropertyWidgetQt.html", null ],
-            [ "inviwo::JavascriptPropertyWidgetQt", "classinviwo_1_1JavascriptPropertyWidgetQt.html", null ],
             [ "inviwo::PythonPropertyWidgetQt", "classinviwo_1_1PythonPropertyWidgetQt.html", null ]
           ] ],
           [ "inviwo::StringsPropertyWidgetQt< N >", "classinviwo_1_1StringsPropertyWidgetQt.html", null ],
