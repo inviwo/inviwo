@@ -39,8 +39,7 @@ source_group("Resource Files" FILES ${RES_FILES})
 add_library(inviwo-objs OBJECT
     ${SOURCE_FILES} 
     ${HEADER_FILES} 
-    ${MOCED_FILES} 
-    ${RES_FILES})
+    ${MOCED_FILES})
 target_link_libraries(inviwo-objs PUBLIC
     inviwo::core
     inviwo::module-system
@@ -54,7 +53,7 @@ target_link_libraries(inviwo-objs PUBLIC
 ivw_define_standard_definitions(inviwo-objs inviwo-objs)
 ivw_define_standard_properties(QT inviwo-objs)
 
-add_executable(inviwo MACOSX_BUNDLE WIN32)
+add_executable(inviwo MACOSX_BUNDLE WIN32 ${RES_FILES})
 target_link_libraries(inviwo PUBLIC inviwo-objs)
 
 # Add application to pack
@@ -84,7 +83,7 @@ elseif(WIN32)
 
     project(inviwo-cli)
 
-    add_executable(inviwo-cli MACOSX_BUNDLE WIN32)
+    add_executable(inviwo-cli MACOSX_BUNDLE WIN32 ${RES_FILES})
     target_link_libraries(inviwo-cli PUBLIC inviwo-objs)
 
     if(pymodules)
