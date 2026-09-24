@@ -33,6 +33,9 @@
 
 #include <cstddef>
 #include <algorithm>
+#include <iterator>
+
+#include <fmt/format.h>
 
 namespace inviwo::hdf5 {
 
@@ -45,7 +48,7 @@ struct IVW_MODULE_HDF5_API Selection {
     size_t stride{1};
 };
 
-inline constexpr Selection clamp(const Selection& selection, size_t size) {
+constexpr Selection clamp(const Selection& selection, size_t size) {
     if (size == 0) return {.start = 0uz, .count = 0uz, .stride = 1uz};
 
     const auto start = std::min(selection.start, size - 1uz);
@@ -58,3 +61,23 @@ inline constexpr Selection clamp(const Selection& selection, size_t size) {
 }
 
 }  // namespace inviwo::hdf5
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <>
+struct fmt::formatter<inviwo::hdf5::Selection> : fmt::formatter<fmt::string_view> {
+    template <typename FormatContext>
+    auto format(const inviwo::hdf5::Selection& selection, FormatContext& ctx) const {
+        fmt::memory_buffer buff;
+        if (selection.count == 1) {
+            fmt::format_to(std::back_inserter(buff), "{}", selection.start);
+        } else if (selection.stride == 1) {
+            fmt::format_to(std::back_inserter(buff), "{}:{}", selection.start,
+                           selection.start + selection.count);
+        } else {
+            fmt::format_to(std::back_inserter(buff), "{}:{}:{}", selection.start, selection.stride,
+                           selection.start + selection.stride * selection.count);
+        }
+        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
+    }
+};
+#endif

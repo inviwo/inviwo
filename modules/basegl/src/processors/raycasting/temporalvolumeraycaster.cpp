@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,68 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/raycasting/standardvolumeraycaster.h>
+#include <modules/basegl/processors/raycasting/temporalvolumeraycaster.h>
 
 #include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/datastructures/volume/temporalvolume.h>
 #include <modules/basegl/shadercomponents/shadercomponentutil.h>
+
+#include <optional>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo StandardVolumeRaycaster::processorInfo_{
-    "org.inviwo.StandardVolumeRaycaster",         // Class identifier
-    "Standard Volume Raycaster",                  // Display name
-    "Volume Rendering",                           // Category
-    CodeState::Stable,                            // Code state
-    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"},  // Tags
-    R"(Processor for visualizing volumetric data by means of volume raycasting. Only one channel of
-    the volume will be used. Besides the volume data, entry and exit point locations of the
-    bounding box are required. These can be created with the EntryExitPoints processor. The camera 
-    properties between these two processors need to be linked.)"_unindentHelp,
+const ProcessorInfo TemporalVolumeRaycaster::processorInfo_{
+    "org.inviwo.TemporalVolumeRaycaster",  // Class identifier
+    "Temporal Volume Raycaster",           // Display name
+    "Volume Rendering",                    // Category
+    CodeState::Experimental,               // Code state
+    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"} | Tag{"Temporal"},
+    R"(Raycaster for time-dependent volumetric data. Consumes a TemporalVolume and performs the
+    time interpolation on the GPU: the two frames bracketing the current time are uploaded as 3D
+    textures and blended in the shader, giving smooth transitions between time steps. Besides the
+    volume data, entry and exit point locations of the bounding box are required. These can be
+    created with the EntryExitPoints processor.)"_unindentHelp,
 };
 
-const ProcessorInfo& StandardVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TemporalVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
-StandardVolumeRaycaster::StandardVolumeRaycaster(std::string_view identifier,
-                                                 std::string_view displayName)
-    : VolumeRaycasterBase(identifier, displayName)
-    , volume_{"volume", VolumeComponent::Gradients::Single,
-              "input volume (Only one channel will be rendered)"_help}
-    , entryExit_{}
-    , background_{*this}
-    , isoTF_{&volume_.volumePort}
-    , raycasting_{volume_.getName(), isoTF_.isoTFs[0]}
-    , camera_{"camera", util::boundingBox(volume_.volumePort)}
-    , light_{&camera_.camera}
-    , positionIndicator_{}
-    , sampleTransform_{}
-    , mask_{volume_.volumePort} {
+namespace {
 
-    registerComponents(volume_, entryExit_, background_, raycasting_, isoTF_, camera_, light_,
-                       positionIndicator_, sampleTransform_, mask_);
+std::function<std::optional<dmat4>()> temporalBoundingBox(const TemporalVolumeInport& port) {
+    return [&port]() -> std::optional<dmat4> {
+        if (auto data = port.getData(); data && !data->empty()) {
+            const VolumeConfig& config = data->prototype();
+            const dmat4 model = config.model.value_or(VolumeConfig::defaultModel);
+            const dmat4 world = config.world.value_or(VolumeConfig::defaultWorld);
+            return world * model;
+        }
+        return std::nullopt;
+    };
 }
 
-void StandardVolumeRaycaster::process() {
-    util::checkValidChannel(raycasting_.selectedChannel(), volume_.channelsForVolume().value_or(0));
+}  // namespace
 
-    mask_.preprocess();
+TemporalVolumeRaycaster::TemporalVolumeRaycaster(std::string_view identifier,
+                                                 std::string_view displayName)
+    : VolumeRaycasterBase(identifier, displayName)
+    , volume_{"volume", TemporalVolumeComponent::Gradients::Single,
+              "input temporal volume (Only one channel will be rendered)"_help}
+    , entryExit_{}
+    , background_{*this}
+    , isoTF_{volume_.tfData()}
+    , raycasting_{volume_.getName(), isoTF_.isoTFs[0]}
+    , camera_{"camera", temporalBoundingBox(volume_.volumePort)}
+    , light_{&camera_.camera}
+    , positionIndicator_{}
+    , sampleTransform_{} {
+
+    registerComponents(volume_, entryExit_, background_, isoTF_, raycasting_, camera_, light_,
+                       positionIndicator_, sampleTransform_);
+}
+
+void TemporalVolumeRaycaster::process() {
+    util::checkValidChannel(raycasting_.selectedChannel(), volume_.channelsForVolume().value_or(0));
 
     VolumeRaycasterBase::process();
 }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,69 +29,55 @@
 
 #pragma once
 
-#include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/hdf5/ports/hdf5port.h>
-#include <modules/hdf5/hdf5utils.h>
-#include <modules/hdf5/properties/dimselectionsproperty.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <modules/base/basemoduledefine.h>
+
+#include <inviwo/core/datastructures/volume/temporalvolume.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
 
-#include <modules/base/properties/basisproperty.h>
-#include <modules/base/properties/volumeinformationproperty.h>
-#include <modules/base/datastructures/volumereusecache.h>
+namespace inviwo {
 
-#include <memory>
-#include <vector>
-
-namespace inviwo::hdf5 {
-
-class IVW_MODULE_HDF5_API HDF5ToVolume : public Processor {
+/**
+ * @brief Resolves the current time of a TemporalVolume into a single Volume.
+ *
+ * The player picks the frame for the requested time, optionally linearly interpolating (per voxel
+ * on the CPU) between the two bracketing frames. It also schedules a background prefetch of the
+ * upcoming frames so that interactive playback stays smooth.
+ *
+ * For GPU-side interpolation, see the TemporalVolumeRaycaster which consumes the TemporalVolume
+ * directly and blends two frames in the shader.
+ *
+ * @see TemporalVolume
+ */
+class IVW_MODULE_BASE_API TemporalVolumePlayer : public Processor {
 public:
-    HDF5ToVolume();
-    HDF5ToVolume(const HDF5ToVolume&) = delete;
-    HDF5ToVolume& operator=(const HDF5ToVolume&) = delete;
-    HDF5ToVolume(HDF5ToVolume&&) = delete;
-    HDF5ToVolume& operator=(HDF5ToVolume&&) = delete;
-    virtual ~HDF5ToVolume();
+    TemporalVolumePlayer();
+    TemporalVolumePlayer(const TemporalVolumePlayer&) = delete;
+    TemporalVolumePlayer(TemporalVolumePlayer&&) = delete;
+    TemporalVolumePlayer& operator=(const TemporalVolumePlayer&) = delete;
+    TemporalVolumePlayer& operator=(TemporalVolumePlayer&&) = delete;
+    virtual ~TemporalVolumePlayer() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
     virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
 
 private:
-    std::vector<DataSetInfo> volumeMatches_;
-    std::vector<DataSetInfo> basisMatches_;
+    enum class Interpolation : std::uint8_t { Nearest, Linear };
 
-    Inport inport_;
+    TemporalVolumeInport inport_;
     VolumeOutport outport_;
 
-    OptionPropertyString volumeSelection_;
-
-    CompositeProperty basisGroup_;
-    OptionPropertyString basisSelection_;
-    DoubleMat4Property basis_;
-    DoubleVec3Property spacing_;
-
-    VolumeInformationProperty information_;
-
-    CompositeProperty outputGroup_;
-    OptionPropertyInt datatype_;
-    BoolProperty adjustBasis_;
-    BoolProperty adjustOffset_;
-    DimSelectionsProperty selection_;
-
-    VolumeReuseCache cache_;
-
-    bool deserialized_ = false;
+    DoubleProperty time_;
+    OptionProperty<Interpolation> interpolation_;
+    BoolProperty prefetch_;
+    IntSizeTProperty prefetchAhead_;
+    std::optional<Seconds> last_;
 };
 
-}  // namespace inviwo::hdf5
+}  // namespace inviwo

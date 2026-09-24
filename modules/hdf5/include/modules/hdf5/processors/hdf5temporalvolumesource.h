@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,54 +34,68 @@
 #include <modules/hdf5/ports/hdf5port.h>
 #include <modules/hdf5/hdf5utils.h>
 #include <modules/hdf5/properties/dimselectionsproperty.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/volume/temporalvolume.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 
-#include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
-#include <modules/base/datastructures/volumereusecache.h>
 
-#include <memory>
 #include <vector>
 
 namespace inviwo::hdf5 {
 
-class IVW_MODULE_HDF5_API HDF5ToVolume : public Processor {
+/**
+ * @brief Loads a time-varying volume from a HDF5 dataset of rank >= 4 as a lazily-loaded
+ * TemporalVolume.
+ *
+ * Exactly three dimensions of the selected dataset become the volume axes (X/Y/Z); the user picks
+ * one of the remaining leading dimensions to act as the time axis. Any further leading dimensions
+ * must be fixed to a single index, same as HDF5ToVolume does for datasets with rank > 3.
+ *
+ * @see HDF5ToVolume, TemporalVolume
+ */
+class IVW_MODULE_HDF5_API HDF5ToTemporalVolume : public Processor {
 public:
-    HDF5ToVolume();
-    HDF5ToVolume(const HDF5ToVolume&) = delete;
-    HDF5ToVolume& operator=(const HDF5ToVolume&) = delete;
-    HDF5ToVolume(HDF5ToVolume&&) = delete;
-    HDF5ToVolume& operator=(HDF5ToVolume&&) = delete;
-    virtual ~HDF5ToVolume();
+    HDF5ToTemporalVolume();
+    HDF5ToTemporalVolume(const HDF5ToTemporalVolume&) = delete;
+    HDF5ToTemporalVolume& operator=(const HDF5ToTemporalVolume&) = delete;
+    HDF5ToTemporalVolume(HDF5ToTemporalVolume&&) = delete;
+    HDF5ToTemporalVolume& operator=(HDF5ToTemporalVolume&&) = delete;
+    virtual ~HDF5ToTemporalVolume();
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:
     virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
 
 private:
     std::vector<DataSetInfo> volumeMatches_;
     std::vector<DataSetInfo> basisMatches_;
 
     Inport inport_;
-    VolumeOutport outport_;
+    TemporalVolumeOutport outport_;
 
     OptionPropertyString volumeSelection_;
+
+    CompositeProperty config_;
 
     CompositeProperty basisGroup_;
     OptionPropertyString basisSelection_;
     DoubleMat4Property basis_;
     DoubleVec3Property spacing_;
 
-    VolumeInformationProperty information_;
+    DoubleMinMaxProperty dataRange_;
+    DoubleMinMaxProperty valueRange_;
+    StringProperty valueName_;
+    StringProperty valueUnit_;
+    OptionProperty<InterpolationType> interpolation_;
+    StringsProperty<3> axesNames_;
+    StringsProperty<3> axesUnits_;
+    std::array<OptionProperty<Wrapping>, 3> wrapping_;
 
     CompositeProperty outputGroup_;
     OptionPropertyInt datatype_;
@@ -89,9 +103,12 @@ private:
     BoolProperty adjustOffset_;
     DimSelectionsProperty selection_;
 
-    VolumeReuseCache cache_;
+    CompositeProperty timeGroup_;
+    OptionProperty<size_t> timeDimension_;
+    DoubleProperty dt_;
+    IntSizeTProperty cacheSize_;
 
-    bool deserialized_ = false;
+    bool dirty_;
 };
 
 }  // namespace inviwo::hdf5
