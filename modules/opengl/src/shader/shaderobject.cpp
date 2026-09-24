@@ -383,7 +383,7 @@ ShaderObject::~ShaderObject() {
 
 GLuint ShaderObject::getID() const { return id_; }
 
-std::string ShaderObject::getFileName() const { return resource_->key(); }
+const std::string& ShaderObject::getFileName() const { return resource_->key(); }
 
 void ShaderObject::setResource(std::shared_ptr<const ShaderResource> resource) {
     IVW_ASSERT(resource, "Should never be null");

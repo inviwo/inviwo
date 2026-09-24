@@ -117,7 +117,7 @@ public:
     ~ShaderObject();
 
     GLuint getID() const;
-    std::string getFileName() const;
+    const std::string& getFileName() const;
     void setResource(std::shared_ptr<const ShaderResource>);
     std::shared_ptr<const ShaderResource> getResource() const;
 

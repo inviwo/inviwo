@@ -109,13 +109,13 @@ void ShaderComponentProcessorBase::initializeResources() {
     }
 
     shader_.build();
+    shader_.setLabel(getIdentifier());
 }
 
 void ShaderComponentProcessorBase::process() {
     TRACY_GPU_ZONE_C("Raycaster", 0x008800);
     TRACY_ZONE_SCOPED_NC("Raycaster", 0x008800);
     TRACY_ZONE_TEXT(getIdentifier().data(), getIdentifier().size());
-
 
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();

@@ -241,6 +241,9 @@ public:
      */
     void setTransformFeedbackVaryings(std::span<const char*> varyings, GLenum bufferMode);
 
+    const std::string& getLabel() const { return label_; }
+    void setLabel(std::string_view label);
+
 private:
     void bindAttributes();
 
@@ -273,6 +276,8 @@ private:
 
     // Callback on reload.
     CallBackList onReloadCallback_;
+
+    std::string label_;
 };
 
 }  // namespace inviwo
