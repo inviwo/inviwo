@@ -61,6 +61,8 @@
 #include <fmt/ranges.h>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <glbinding/Binding.h>
+
 namespace inviwo {
 class ShaderResource;
 
@@ -98,7 +100,8 @@ Shader::Shader(const std::vector<std::pair<ShaderType, std::string>>& items, Bui
     , ready_{}
     , warningLevel_{UniformWarning::Ignore}
     , uniformLookup_{}
-    , onReloadCallback_{} {
+    , onReloadCallback_{}
+    , label_{} {
 
     for (auto& item : items) {
         addShaderObject(item.first, utilgl::findShaderResource(item.second));
@@ -119,7 +122,8 @@ Shader::Shader(
     , ready_{}
     , warningLevel_{UniformWarning::Ignore}
     , uniformLookup_{}
-    , onReloadCallback_{} {
+    , onReloadCallback_{}
+    , label_{} {
 
     for (auto& item : items) {
         addShaderObject(item.first, item.second);
@@ -137,7 +141,8 @@ Shader::Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects, Build 
     , ready_{}
     , warningLevel_{UniformWarning::Ignore}
     , uniformLookup_{}
-    , onReloadCallback_{} {
+    , onReloadCallback_{}
+    , label_{} {
 
     for (auto& obj : shaderObjects) {
         addShaderObject(std::move(*obj));
@@ -174,7 +179,8 @@ Shader::Shader(Shader&& rhs)
     , shaderObjects_{std::move(rhs.shaderObjects_)}
     , attached_{std::move(rhs.attached_)}
     , ready_(rhs.ready_)
-    , warningLevel_{rhs.warningLevel_} {
+    , warningLevel_{rhs.warningLevel_}
+    , label_{std::move(rhs.label_)} {
 
     rhs.callbacks_.clear();
     rhs.ready_ = false;
@@ -203,6 +209,7 @@ Shader& Shader::operator=(Shader&& that) {
         warningLevel_ = that.warningLevel_;
         shaderObjects_ = std::move(that.shaderObjects_);
         attached_ = std::move(that.attached_);
+        label_ = std::move(that.label_);
 
         that.ready_ = false;
         that.callbacks_.clear();
@@ -834,6 +841,14 @@ void Shader::setTransformFeedbackVaryings(std::span<const GLchar*> varyings, GLe
     glTransformFeedbackVaryings(program_.id, static_cast<GLsizei>(varyings.size()), varyings.data(),
                                 bufferMode);
     ready_ = false;
+}
+
+void Shader::setLabel(std::string_view label) {
+    label_ = label;
+
+    if (glbinding::Binding::ObjectLabel.isResolved()) {
+        glObjectLabel(GL_PROGRAM, program_.id, static_cast<GLsizei>(label.size()), label.data());
+    }
 }
 
 }  // namespace inviwo

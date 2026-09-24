@@ -50,14 +50,17 @@ class ShaderObject;
 class IVW_MODULE_OPENGLQT_API OpenGLQtMenu : public QMenu {
     Q_OBJECT
 public:
-    OpenGLQtMenu(QWidget* parent);
+    explicit OpenGLQtMenu(QWidget* parent);
+    OpenGLQtMenu(const OpenGLQtMenu&) = delete;
+    OpenGLQtMenu(OpenGLQtMenu&&) = delete;
+    OpenGLQtMenu& operator=(const OpenGLQtMenu&) = delete;
+    OpenGLQtMenu& operator=(OpenGLQtMenu&&) = delete;
     virtual ~OpenGLQtMenu();
 
 private:
-    void showShader(ShaderObject* obj);
-    void shadersReload();
+    void showShader(GLuint shaderID, GLuint objectID);
 
-    void addShaderObjects(Shader* shader, QMenu* menuItem);
+    void addShaderObjects(Shader* shader);
 
     // QMenu* menu_;
     std::unordered_map<unsigned int, QMenu*> shadersItems_;
