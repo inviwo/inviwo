@@ -71,7 +71,7 @@ private:
 
     ShaderObject* obj_;
     std::shared_ptr<typename ShaderObject::Callback> shaderObjOnChange_;
-    CodeEdit* shadercode_;
+    CodeEdit* shaderCode_;
     std::vector<std::shared_ptr<std::function<void()>>> codeCallbacks_;
     QAction* preprocess_;
     QAction* save_;

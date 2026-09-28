@@ -57,29 +57,15 @@ class QWidget;
 namespace inviwo {
 
 OpenGLQtMenu::OpenGLQtMenu(QWidget* parent) : QMenu(tr("&Shaders"), parent) {
-    /*
-    onAddShader_ = ShaderManager::getPtr()->onDidAddShader([this](GLuint id) {
-        const auto& shaders = ShaderManager::getPtr()->getShaders();
-        auto it = util::find_if(shaders, [id](Shader* s) { return s->getID() == id; });
-        if (it != shaders.end()) {
-            auto* shader = *it;
-            auto* menuItem = addMenu("");
-            shadersItems_[id] = menuItem;
-
-            addShaderObjects(shader, menuItem);
-
-            shader->onReload([this, shader, menuItem]() {
-                menuItem->clear();
-                addShaderObjects(shader, menuItem);
-            });
-        }
-    });
-    */
+    addAction(QIcon(":/svgicons/revert.svg"), "&Reload All");
 
     onRemoveShader_ = ShaderManager::getPtr()->onWillRemoveShader([this](GLuint id) {
         // Close any open editors.
         const auto& shaders = ShaderManager::getPtr()->getShaders();
-        auto it = util::find_if(shaders, [id](Shader* s) { return s->getID() == id; });
+        auto it = std::ranges::find_if(ShaderManager::getPtr()->getShaders(),
+                                       [id](Shader* s) { return s->getID() == id; });
+        if (it == shaders.end()) return;
+
         for (auto& obj : (*it)->getShaderObjects()) {
             auto eit = editors_.find(obj.getID());
             if (eit != editors_.end()) {

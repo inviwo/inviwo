@@ -102,12 +102,12 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     toolBar->setMovable(false);
     setWidget(mainWindow);
 
-    shadercode_ = new CodeEdit{this};
+    shaderCode_ = new CodeEdit{this};
     auto settings = InviwoApplication::getPtr()->getSettingsByType<GLSLSyntaxHighlight>();
-    codeCallbacks_ = utilqt::setGLSLSyntaxHighlight(shadercode_->syntaxHighlighter(), *settings);
+    codeCallbacks_ = utilqt::setGLSLSyntaxHighlight(shaderCode_->syntaxHighlighter(), *settings);
 
-    shadercode_->setObjectName("shaderwidgetcode");
-    shadercode_->setPlainText(utilqt::toQString(obj->print(false, false)));
+    shaderCode_->setObjectName("shaderwidgetcode");
+    shaderCode_->setPlainText(utilqt::toQString(obj->print(false, false)));
 
     apply_ = toolBar->addAction(QIcon(":/svgicons/run-script.svg"), tr("&Apply Changes"));
     apply_->setToolTip(
@@ -133,7 +133,7 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     revert_->setToolTip("Revert changes");
     revert_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     revert_->setEnabled(false);
-    QObject::connect(shadercode_, &QPlainTextEdit::modificationChanged, revert_,
+    QObject::connect(shaderCode_, &QPlainTextEdit::modificationChanged, revert_,
                      &QAction::setEnabled);
     QObject::connect(revert_, &QAction::triggered, this, &ShaderWidget::revert);
 
@@ -147,42 +147,53 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     preprocess_->setChecked(false);
     preprocess_->setCheckable(true);
 
+    auto* replaceWithPreprocess = toolBar->addAction(QIcon(":/svgicons/precompiled-replace.svg"),
+                                                     "Replace with Preprocessed Shader");
+    replaceWithPreprocess->setChecked(false);
+    replaceWithPreprocess->setCheckable(false);
+
+    QObject::connect(
+        preprocess_, &QAction::toggled, this, [this, replaceWithPreprocess](bool checked) {
+            if (checked && shaderCode_->document()->isModified()) {
+                QMessageBox msgBox(
+                    QMessageBox::Question, "Shader Editor", "Do you want to save unsaved changes?",
+                    QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
+
+                const auto ret = msgBox.exec();
+                if (ret == static_cast<int>(QMessageBox::Save)) {
+                    this->save();
+                } else if (ret == static_cast<int>(QMessageBox::Cancel)) {
+                    QSignalBlocker block(preprocess_);
+                    preprocess_->setChecked(false);
+                    return;
+                }
+            }
+            replaceWithPreprocess->setEnabled(!checked);
+            updateState();
+        });
+
+    QObject::connect(replaceWithPreprocess, &QAction::triggered, this, [this]() {
+        shaderCode_->setPlainText(utilqt::toQString(obj_->getPreprocessed()));
+    });
+
     toolBar->addSeparator();
     auto undo = toolBar->addAction(QIcon(":/svgicons/undo.svg"), "&Undo");
     undo->setShortcut(QKeySequence::Undo);
     undo->setEnabled(false);
-    QObject::connect(undo, &QAction::triggered, this, [this]() { shadercode_->undo(); });
-    QObject::connect(shadercode_, &QPlainTextEdit::undoAvailable, undo, &QAction::setEnabled);
+    QObject::connect(undo, &QAction::triggered, this, [this]() { shaderCode_->undo(); });
+    QObject::connect(shaderCode_, &QPlainTextEdit::undoAvailable, undo, &QAction::setEnabled);
 
     auto redo = toolBar->addAction(QIcon(":/svgicons/redo.svg"), "&Redo");
     redo->setShortcut(QKeySequence::Redo);
     redo->setEnabled(false);
-    QObject::connect(redo, &QAction::triggered, this, [this]() { shadercode_->redo(); });
-    QObject::connect(shadercode_, &QPlainTextEdit::redoAvailable, redo, &QAction::setEnabled);
+    QObject::connect(redo, &QAction::triggered, this, [this]() { shaderCode_->redo(); });
+    QObject::connect(shaderCode_, &QPlainTextEdit::redoAvailable, redo, &QAction::setEnabled);
 
-    QObject::connect(preprocess_, &QAction::toggled, this, [this](bool checked) {
-        if (checked && shadercode_->document()->isModified()) {
-            QMessageBox msgBox(
-                QMessageBox::Question, "Shader Editor", "Do you want to save unsaved changes?",
-                QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
-
-            int retval = msgBox.exec();
-            if (retval == static_cast<int>(QMessageBox::Save)) {
-                this->save();
-            } else if (retval == static_cast<int>(QMessageBox::Cancel)) {
-                QSignalBlocker block(preprocess_);
-                preprocess_->setChecked(false);
-                return;
-            }
-        }
-        updateState();
-    });
-
-    QObject::connect(shadercode_, &QPlainTextEdit::modificationChanged, this,
+    QObject::connect(shaderCode_, &QPlainTextEdit::modificationChanged, this,
                      &QDockWidget::setWindowModified);
 
-    shadercode_->installEventFilter(this);
-    mainWindow->setCentralWidget(shadercode_);
+    shaderCode_->installEventFilter(this);
+    mainWindow->setCentralWidget(shaderCode_);
 
     updateState();
     loadState();
@@ -191,15 +202,15 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
 ShaderWidget::~ShaderWidget() = default;
 
 void ShaderWidget::closeEvent(QCloseEvent* event) {
-    if (shadercode_->document()->isModified()) {
+    if (shaderCode_->document()->isModified()) {
         QMessageBox msgBox(QMessageBox::Question, "Shader Editor",
                            "Do you want to save unsaved changes?",
                            QMessageBox::Save | QMessageBox::Discard, this);
 
-        int retval = msgBox.exec();
-        if (retval == static_cast<int>(QMessageBox::Save)) {
+        const auto ret = msgBox.exec();
+        if (ret == static_cast<int>(QMessageBox::Save)) {
             save();
-        } else if (retval == static_cast<int>(QMessageBox::Cancel)) {
+        } else if (ret == static_cast<int>(QMessageBox::Cancel)) {
             return;
         }
     }
@@ -223,8 +234,8 @@ void ShaderWidget::save() {
 
     // get the non-const version from the manager.
     if (auto resource = ShaderManager::getPtr()->getShaderResource(obj_->getResource()->key())) {
-        resource->setSource(utilqt::fromQString(shadercode_->toPlainText()));
-        shadercode_->document()->setModified(false);
+        resource->setSource(utilqt::fromQString(shaderCode_->toPlainText()));
+        shaderCode_->document()->setModified(false);
     } else {
         log::warn(
             "Could not save. The ShaderResource \"{}\" was not found in the ShaderManager. It "
@@ -241,11 +252,11 @@ void ShaderWidget::apply() {
     }
 
     auto tmp = std::make_shared<StringShaderResource>(
-        "[tmp]", utilqt::fromQString(shadercode_->toPlainText()));
+        "[tmp]", utilqt::fromQString(shaderCode_->toPlainText()));
     obj_->setResource(tmp);
     setWindowTitle("<tmp file>[*]");
     revert_->setEnabled(true);
-    shadercode_->document()->setModified(false);
+    shaderCode_->document()->setModified(false);
 }
 
 void ShaderWidget::revert() {
@@ -262,11 +273,11 @@ void ShaderWidget::updateState() {
     const bool checked = preprocess_->isChecked();
     const auto code = obj_->print(false, checked);
 
-    const auto vPosition = shadercode_->verticalScrollBar()->value();
-    const auto hPosition = shadercode_->horizontalScrollBar()->value();
-    shadercode_->setPlainText(utilqt::toQString(code));
-    shadercode_->verticalScrollBar()->setValue(vPosition);
-    shadercode_->horizontalScrollBar()->setValue(hPosition);
+    const auto vPosition = shaderCode_->verticalScrollBar()->value();
+    const auto hPosition = shaderCode_->horizontalScrollBar()->value();
+    shaderCode_->setPlainText(utilqt::toQString(code));
+    shaderCode_->verticalScrollBar()->setValue(vPosition);
+    shaderCode_->horizontalScrollBar()->setValue(hPosition);
 
     if (checked) {
         const auto lines = std::count(code.begin(), code.end(), '\n') + 1;
@@ -277,17 +288,17 @@ void ShaderWidget::updateState() {
             width = std::max(width, info.first.size() - (pos + 1));  // note string::npos+1==0
         }
         const auto numberSize = std::to_string(lines).size();
-        shadercode_->setLineAnnotation([this, width, numberSize](int line) {
+        shaderCode_->setLineAnnotation([this, width, numberSize](int line) {
             const auto&& [tag, num] = obj_->resolveLine(line - 1);
             const auto pos = tag.find_last_of('/');
             const auto file = std::string_view{tag}.substr(pos + 1);
 
             return fmt::format(FMT_STRING("{0:<{2}}{1:>{3}}"), file, num, width + 1u, numberSize);
         });
-        shadercode_->setAnnotationSpace(
+        shaderCode_->setAnnotationSpace(
             [width, numberSize](int) { return static_cast<int>(width + 1 + numberSize); });
 
-        shadercode_->setLineAnnotationColor([this](int line, vec4 org) {
+        shaderCode_->setLineAnnotationColor([this](int line, vec4 org) {
             const auto&& [tag, num] = obj_->resolveLine(line - 1);
             if (auto pos = tag.find_first_of('['); pos != std::string::npos) {
                 const auto resource = std::string_view{tag}.substr(0, pos);
@@ -307,16 +318,16 @@ void ShaderWidget::updateState() {
         });
 
     } else {
-        shadercode_->setLineAnnotation([](int line) { return std::to_string(line); });
-        shadercode_->setLineAnnotationColor([](int, vec4 org) { return org; });
-        shadercode_->setAnnotationSpace([](int maxDigits) { return maxDigits; });
+        shaderCode_->setLineAnnotation([](int line) { return std::to_string(line); });
+        shaderCode_->setLineAnnotationColor([](int, vec4 org) { return org; });
+        shaderCode_->setAnnotationSpace([](int maxDigits) { return maxDigits; });
     }
 
-    shadercode_->setReadOnly(checked);
+    shaderCode_->setReadOnly(checked);
     save_->setEnabled(!checked);
     apply_->setEnabled(!checked);
     preprocess_->setText(checked ? "Show Plain Shader Only" : "Show Preprocessed Shader");
-    shadercode_->document()->setModified(false);
+    shaderCode_->document()->setModified(false);
 }
 
 inline void ShaderWidget::queryReloadFile() {
@@ -341,7 +352,7 @@ inline void ShaderWidget::queryReloadFile() {
         if (msgBox.exec() == QMessageBox::Yes) {
             updateState();
         } else {
-            shadercode_->document()->setModified(true);
+            shaderCode_->document()->setModified(true);
         }
         fileChangedInBackground_ = false;
     }

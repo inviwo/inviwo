@@ -66,7 +66,6 @@ private:
     std::unordered_map<unsigned int, QMenu*> shadersItems_;
     std::unordered_map<unsigned int, std::unique_ptr<ShaderWidget>> editors_;
 
-    std::shared_ptr<ShaderManager::Callback> onAddShader_;
     std::shared_ptr<ShaderManager::Callback> onRemoveShader_;
 };
 
