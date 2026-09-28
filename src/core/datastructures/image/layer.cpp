@@ -228,14 +228,17 @@ auto histCalc(const Layer& v) {
 
 }  // namespace
 
-void Layer::discardHistograms() { histograms_.discard(histCalc(*this)); }
-
 HistogramCache::Result Layer::calculateHistograms(
-    const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const {
+    const std::function<HistogramCache::Callback>& whenDone) const {
     return histograms_.calculateHistograms(histCalc(*this), whenDone);
 }
+std::shared_ptr<const std::vector<Histogram1D>> Layer::calculateHistograms() const {
+    return histograms_.calculateHistograms(histCalc(*this));
+}
+void Layer::recalculateHistograms() { histograms_.recalculate(histCalc(*this)); }
+void Layer::clearHistograms() { histograms_.clear(); }
 
-Document util::layerInfo(const Layer& layer) {
+Document Layer::getInfo() const {
     using H = utildoc::TableBuilder::Header;
     using P = Document::PathComponent;
     Document doc;
@@ -243,20 +246,30 @@ Document util::layerInfo(const Layer& layer) {
 
     utildoc::TableBuilder tb(doc.handle(), P::end());
 
-    tb(H("Format"), layer.getDataFormat()->getString());
-    tb(H("Dimension"), layer.getDimensions());
-    tb(H("SwizzleMask"), layer.getSwizzleMask());
-    tb(H("Interpolation"), layer.getInterpolation());
-    tb(H("Wrapping"), layer.getWrapping());
-    tb(H("Data Range"), layer.dataMap.dataRange);
-    tb(H("Value Range"), layer.dataMap.valueRange);
-    tb(H("Value"),
-       fmt::format("{}{: [}", layer.dataMap.valueAxis.name, layer.dataMap.valueAxis.unit));
-    tb(H("Axis 1"), fmt::format("{}{: [}", layer.axes[0].name, layer.axes[0].unit));
-    tb(H("Axis 2"), fmt::format("{}{: [}", layer.axes[1].name, layer.axes[1].unit));
+    tb(H("Format"), getDataFormat()->getString());
+    tb(H("Dimension"), getDimensions());
+    tb(H("SwizzleMask"), getSwizzleMask());
+    tb(H("Interpolation"), getInterpolation());
+    tb(H("Wrapping"), getWrapping());
+    tb(H("Data Range"), dataMap.dataRange);
+    tb(H("Value Range"), dataMap.valueRange);
+    tb(H("Value"), fmt::format("{}{: [}", dataMap.valueAxis.name, dataMap.valueAxis.unit));
+    tb(H("Axis 1"), fmt::format("{}{: [}", axes[0].name, axes[0].unit));
+    tb(H("Axis 2"), fmt::format("{}{: [}", axes[1].name, axes[1].unit));
 
-    tb(H("Basis"), layer.getBasis());
-    tb(H("Offset"), layer.getOffset());
+    tb(H("Basis"), getBasis());
+    tb(H("Offset"), getOffset());
+
+    histograms_.forEach([&](const Histogram1D& histogram, size_t channel) {
+        tb(H("Stats"), fmt::format("Channel {} Min: {}, Mean: {}, Max: {}, Std: {}", channel,
+                                   histogram.dataStats.min, histogram.dataStats.mean,
+                                   histogram.dataStats.max, histogram.dataStats.standardDeviation));
+        tb(H("Percentiles"),
+           fmt::format("(1: {}, 25: {}, 50: {}, 75: {}, 99: {})",
+                       histogram.dataStats.percentiles[1], histogram.dataStats.percentiles[25],
+                       histogram.dataStats.percentiles[50], histogram.dataStats.percentiles[75],
+                       histogram.dataStats.percentiles[99]));
+    });
 
     return doc;
 }

@@ -35,6 +35,7 @@ set(HEADER_FILES
     include/modules/base/algorithm/volume/volumeramdownsample.h
     include/modules/base/algorithm/volume/volumeramsubset.h
     include/modules/base/algorithm/volume/volumesignificantvoxels.h
+    include/modules/base/algorithm/volume/volumesplat.h
     include/modules/base/algorithm/volume/volumevoronoi.h
     include/modules/base/basemodule.h
     include/modules/base/basemoduledefine.h
@@ -106,6 +107,7 @@ set(HEADER_FILES
     include/modules/base/processors/meshplaneclipping.h
     include/modules/base/processors/meshsequencesource.h
     include/modules/base/processors/meshsource.h
+    include/modules/base/processors/meshsplatprocessor.h
     include/modules/base/processors/noisegenerator2d.h
     include/modules/base/processors/noisegenerator3d.h
     include/modules/base/processors/ordinalpropertyanimator.h
@@ -122,6 +124,8 @@ set(HEADER_FILES
     include/modules/base/processors/spotlightsourceprocessor.h
     include/modules/base/processors/stereocamerasyncer.h
     include/modules/base/processors/surfaceextractionprocessor.h
+    include/modules/base/processors/temporalvolumeplayer.h
+    include/modules/base/processors/temporalvolumesource.h
     include/modules/base/processors/testvolumecreator.h
     include/modules/base/processors/tfselector.h
     include/modules/base/processors/transform.h
@@ -138,6 +142,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumedownsample.h
     include/modules/base/processors/volumeexport.h
     include/modules/base/processors/volumegradientcpuprocessor.h
+    include/modules/base/processors/volumehistogram1d.h
     include/modules/base/processors/volumehistogram2d.h
     include/modules/base/processors/volumeinformation.h
     include/modules/base/processors/volumelaplacianprocessor.h
@@ -149,12 +154,8 @@ set(HEADER_FILES
     include/modules/base/processors/volumesliceextractor.h
     include/modules/base/processors/volumeslicetolayer.h
     include/modules/base/processors/volumesource.h
-    include/modules/base/processors/temporalvolumesource.h
-    include/modules/base/processors/temporalvolumeplayer.h
     include/modules/base/processors/volumesubset.h
     include/modules/base/processors/volumetospatialsampler.h
-    include/modules/base/processors/meshsplatprocessor.h
-    include/modules/base/algorithm/volume/volumesplat.h
     include/modules/base/processors/worldtransformdeprecated.h
     include/modules/base/properties/basisproperty.h
     include/modules/base/properties/bufferinformationproperty.h
@@ -203,9 +204,9 @@ set(SOURCE_FILES
     src/algorithm/volume/volumelaplacian.cpp
     src/algorithm/volume/volumeramdistancetransform.cpp
     src/algorithm/volume/volumeramdownsample.cpp
-    src/algorithm/volume/volumesplat.cpp
     src/algorithm/volume/volumeramsubset.cpp
     src/algorithm/volume/volumesignificantvoxels.cpp
+    src/algorithm/volume/volumesplat.cpp
     src/algorithm/volume/volumevoronoi.cpp
     src/basemodule.cpp
     src/datastructures/disjointsets.cpp
@@ -274,6 +275,7 @@ set(SOURCE_FILES
     src/processors/meshplaneclipping.cpp
     src/processors/meshsequencesource.cpp
     src/processors/meshsource.cpp
+    src/processors/meshsplatprocessor.cpp
     src/processors/noisegenerator2d.cpp
     src/processors/noisegenerator3d.cpp
     src/processors/ordinalpropertyanimator.cpp
@@ -290,6 +292,8 @@ set(SOURCE_FILES
     src/processors/spotlightsourceprocessor.cpp
     src/processors/stereocamerasyncer.cpp
     src/processors/surfaceextractionprocessor.cpp
+    src/processors/temporalvolumeplayer.cpp
+    src/processors/temporalvolumesource.cpp
     src/processors/testvolumecreator.cpp
     src/processors/tfselector.cpp
     src/processors/transform.cpp
@@ -305,6 +309,7 @@ set(SOURCE_FILES
     src/processors/volumedownsample.cpp
     src/processors/volumeexport.cpp
     src/processors/volumegradientcpuprocessor.cpp
+    src/processors/volumehistogram1d.cpp
     src/processors/volumehistogram2d.cpp
     src/processors/volumeinformation.cpp
     src/processors/volumelaplacianprocessor.cpp
@@ -316,11 +321,8 @@ set(SOURCE_FILES
     src/processors/volumesliceextractor.cpp
     src/processors/volumeslicetolayer.cpp
     src/processors/volumesource.cpp
-    src/processors/temporalvolumesource.cpp
-    src/processors/temporalvolumeplayer.cpp
     src/processors/volumesubset.cpp
     src/processors/volumetospatialsampler.cpp
-    src/processors/meshsplatprocessor.cpp
     src/properties/basisproperty.cpp
     src/properties/bufferinformationproperty.cpp
     src/properties/datarangeproperty.cpp

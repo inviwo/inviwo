@@ -254,6 +254,32 @@ VolumeConfig Volume::config() const {
             .world = getWorldMatrix()};
 }
 
+void Volume::setConfig(const VolumeConfig& config) {
+    if (config.format) setDataFormat(config.format);
+
+    auto setMaybe = [&](const auto& opt, auto&& func) {
+        if constexpr (std::is_invocable_v<decltype(func), decltype(*this), decltype(*opt)>) {
+            if (opt) std::invoke(std::forward<decltype(func)>(func), *this, *opt);
+        } else if constexpr (std::is_invocable_v<decltype(func), decltype(*opt)>) {
+            if (opt) std::invoke(std::forward<decltype(func)>(func), *opt);
+        } else {
+            static_assert(util::alwaysFalse<decltype(func)>());
+        }
+    };
+    setMaybe(config.dimensions, &Volume::setDimensions);
+    setMaybe(config.swizzleMask, &Volume::setSwizzleMask);
+    setMaybe(config.interpolation, &Volume::setInterpolation);
+    setMaybe(config.wrapping, &Volume::setWrapping);
+    setMaybe(config.xAxis, [&](const auto& axis) { axes[0] = axis; });
+    setMaybe(config.yAxis, [&](const auto& axis) { axes[1] = axis; });
+    setMaybe(config.zAxis, [&](const auto& axis) { axes[2] = axis; });
+    setMaybe(config.valueAxis, [&](const auto& axis) { dataMap.valueAxis = axis; });
+    setMaybe(config.dataRange, [&](const auto& range) { dataMap.dataRange = range; });
+    setMaybe(config.valueRange, [&](const auto& range) { dataMap.valueRange = range; });
+    setMaybe(config.model, &Volume::setModelMatrix);
+    setMaybe(config.world, &Volume::setWorldMatrix);
+}
+
 namespace {
 
 auto histCalc(const Volume& v) {
@@ -267,11 +293,16 @@ auto histCalc(const Volume& v) {
 
 }  // namespace
 
-void Volume::discardHistograms() { histograms_.discard(histCalc(*this)); }
+void Volume::recalculateHistograms() { histograms_.recalculate(histCalc(*this)); }
+void Volume::clearHistograms() { histograms_.clear(); }
 
 HistogramCache::Result Volume::calculateHistograms(
-    const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const {
+    const std::function<HistogramCache::Callback>& whenDone) const {
     return histograms_.calculateHistograms(histCalc(*this), whenDone);
+}
+
+std::shared_ptr<const std::vector<Histogram1D>> Volume::calculateHistograms() const {
+    return histograms_.calculateHistograms(histCalc(*this));
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Volume>;

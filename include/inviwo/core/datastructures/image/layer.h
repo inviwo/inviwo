@@ -177,8 +177,12 @@ public:
     std::array<Axis, 2> axes;
 
     [[nodiscard]] HistogramCache::Result calculateHistograms(
-        const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const;
-    void discardHistograms();
+        const std::function<HistogramCache::Callback>& whenDone) const;
+    [[nodiscard]] std::shared_ptr<const std::vector<Histogram1D>> calculateHistograms() const;
+    void recalculateHistograms();
+    void clearHistograms();
+
+    Document getInfo() const;
 
 private:
     friend class LayerRepresentation;
@@ -192,16 +196,12 @@ private:
     HistogramCache histograms_;
 };
 
-namespace util {
-IVW_CORE_API Document layerInfo(const Layer& layer);
-}  // namespace util
-
 template <>
 struct DataTraits<Layer> {
     static constexpr std::string_view classIdentifier() { return "org.inviwo.Layer"; }
     static constexpr std::string_view dataName() { return "Layer"; }
     static constexpr uvec3 colorCode() { return {95, 204, 114}; }
-    static Document info(const Layer& layer) { return util::layerInfo(layer); }
+    static Document info(const Layer& layer) { return layer.getInfo(); }
 };
 
 using LayerSequence = DataSequence<Layer>;

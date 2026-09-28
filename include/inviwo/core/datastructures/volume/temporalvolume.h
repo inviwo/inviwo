@@ -313,8 +313,7 @@ template <>
 struct TFDataTraits<TemporalVolume> {
     static const DataMapper* getDataMap(const TemporalVolume& data) { return &data.dataMap(); }
     static HistogramCache::Result calculateHistograms(
-        const TemporalVolume& data,
-        const std::function<void(const std::vector<Histogram1D>&)>& whenDone) {
+        const TemporalVolume& data, const std::function<HistogramCache::Callback>& whenDone) {
         if (data.empty()) {
             return {.progress = HistogramCache::Progress::NoData};
         }

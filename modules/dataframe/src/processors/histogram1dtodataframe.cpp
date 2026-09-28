@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2025-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,30 @@
  *
  *********************************************************************************/
 
-#include <modules/base/datastructures/volumereusecache.h>
-
-#include <algorithm>
+#include <inviwo/dataframe/processors/histogram1dtodataframe.h>
 
 namespace inviwo {
 
-VolumeReuseCache::VolumeReuseCache() = default;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo Histogram1DToDataFrame::processorInfo_{
+    "org.inviwo.Histogram1DToDataFrame",  // Class identifier
+    "Histogram1D To Data Frame",          // Display name
+    "Data Creation",                      // Category
+    CodeState::Experimental,              // Code state
+    Tags::CPU,                            // Tags
+    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+};
 
-const VolumeConfig& VolumeReuseCache::getConfig() const { return config_; }
+const ProcessorInfo& Histogram1DToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
-auto VolumeReuseCache::get(const VolumeConfig& config)
-    -> std::pair<std::shared_ptr<Volume>, Status> {
+Histogram1DToDataFrame::Histogram1DToDataFrame()
+    : Processor{}, inport_{"inport", ""_help}, outport_{"outport", ""_help} {
 
-    const std::scoped_lock lock{mutex_};
+    addPorts(inport_, outport_);
+}
 
-    // only check for dim/format
-    auto status = Status::NoChange;
-    if (config.dimensions != config_.dimensions || config.format != config_.format) {
-        cache_.clear();
-        status = Status::ClearedCache;
-    }
-    config_ = config.orDefault();
-
-    auto it = std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
-    if (it != cache_.end()) {
-        auto volume = *it;
-        volume->getMetaDataMap()->removeAll();
-        volume->clearHistograms();
-        volume->setConfig(config_);
-
-        return {volume, status};
-    } else {
-        auto volume = std::make_shared<Volume>(config_);
-        cache_.push_back(volume);
-        return {volume, status};
-    }
+void Histogram1DToDataFrame::process() {
+    // outport_.setData(std::make_shared<SomeOtherData>(position_.get()));
 }
 
 }  // namespace inviwo

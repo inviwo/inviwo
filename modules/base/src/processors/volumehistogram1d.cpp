@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2025-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,38 @@
  *
  *********************************************************************************/
 
-#include <modules/base/datastructures/volumereusecache.h>
-
-#include <algorithm>
+#include <modules/base/processors/volumehistogram1d.h>
 
 namespace inviwo {
 
-VolumeReuseCache::VolumeReuseCache() = default;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo VolumeHistogram1D::processorInfo_{
+    "org.inviwo.VolumeHistogram1D",  // Class identifier
+    "Volume Histogram1D",            // Display name
+    "Undefined",                     // Category
+    CodeState::Experimental,         // Code state
+    Tags::CPU,                      // Tags
+    R"(Calculate the 1D histogram of a volume.)"_unindentHelp,
+};
 
-const VolumeConfig& VolumeReuseCache::getConfig() const { return config_; }
+const ProcessorInfo& VolumeHistogram1D::getProcessorInfo() const { return processorInfo_; }
 
-auto VolumeReuseCache::get(const VolumeConfig& config)
-    -> std::pair<std::shared_ptr<Volume>, Status> {
+VolumeHistogram1D::VolumeHistogram1D()
+    : PoolProcessor{}
+    , inport_{"inport", "Volume data to compute the histogram for."_help}
+    , outport_{"outport", "Computed volume histogram"_help} {
 
-    const std::scoped_lock lock{mutex_};
+    addPorts(inport_, outport_);
+}
 
-    // only check for dim/format
-    auto status = Status::NoChange;
-    if (config.dimensions != config_.dimensions || config.format != config_.format) {
-        cache_.clear();
-        status = Status::ClearedCache;
-    }
-    config_ = config.orDefault();
+void VolumeHistogram1D::process() {
 
-    auto it = std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
-    if (it != cache_.end()) {
-        auto volume = *it;
-        volume->getMetaDataMap()->removeAll();
-        volume->clearHistograms();
-        volume->setConfig(config_);
+    const auto calc = [](){};
 
-        return {volume, status};
-    } else {
-        auto volume = std::make_shared<Volume>(config_);
-        cache_.push_back(volume);
-        return {volume, status};
-    }
+
+    
+
+    // outport_.setData(std::make_shared<SomeOtherData>(position_.get()));
 }
 
 }  // namespace inviwo

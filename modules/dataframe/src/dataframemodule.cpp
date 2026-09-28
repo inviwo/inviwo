@@ -61,6 +61,7 @@
 #include <inviwo/dataframe/processors/dataframetobuffer.h>
 #include <inviwo/dataframe/processors/dataframetomesh.h>
 #include <inviwo/dataframe/processors/filelist.h>
+#include <inviwo/dataframe/processors/histogram1dtodataframe.h>
 #include <inviwo/dataframe/processors/imagetodataframe.h>
 #include <inviwo/dataframe/processors/sequencetodataframe.h>
 #include <inviwo/dataframe/processors/syntheticdataframe.h>
@@ -115,6 +116,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
     registerProcessor<DataFrameToMesh>();
     registerProcessor<DataFrameToVector>();
     registerProcessor<FileList>();
+    registerProcessor<Histogram1DToDataFrame>();
     registerProcessor<ImageToDataFrame>();
     registerProcessor<SequenceToDataFrame<Volume>>();
     registerProcessor<SequenceToDataFrame<Layer>>();

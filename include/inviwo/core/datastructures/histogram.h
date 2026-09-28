@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/datatraits.h>
 
 #include <iterator>
 #include <vector>
@@ -73,6 +74,32 @@ struct IVW_CORE_API Histogram2D {
     std::array<DataMapper, 2> dataMap{};
     size_t underflow{0};
     size_t overflow{0};
+};
+
+template <>
+struct DataTraits<Histogram1D> {
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.Histogram1D"; }
+    static constexpr std::string_view dataName() { return "Histogram1D"; }
+    static constexpr uvec3 colorCode() { return {235, 20, 88}; }
+    static Document info(const Histogram1D& histogram) {
+
+        using P = Document::PathComponent;
+        using H = utildoc::TableBuilder::Header;
+        Document doc;
+        doc.append("b", "Histogram1D", {{"style", "color:white;"}});
+        utildoc::TableBuilder tb(doc.handle(), P::end());
+
+        tb(H("Stats"), fmt::format("Min: {}, Mean: {}, Max: {}, Std: {}", histogram.dataStats.min,
+                                   histogram.dataStats.mean, histogram.dataStats.max,
+                                   histogram.dataStats.standardDeviation));
+        tb(H("Percentiles"),
+           fmt::format("(1: {}, 25: {}, 50: {}, 75: {}, 99: {})",
+                       histogram.dataStats.percentiles[1], histogram.dataStats.percentiles[25],
+                       histogram.dataStats.percentiles[50], histogram.dataStats.percentiles[75],
+                       histogram.dataStats.percentiles[99]));
+
+        return doc;
+    }
 };
 
 }  // namespace inviwo

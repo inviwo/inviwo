@@ -82,7 +82,6 @@ public:
      *
      * Returns a shared pointer to a Volume object matching the given configuration.
      * If the cache contains available Volumes, one is reused; otherwise, a new Volume is created.
-     * After the volume is reused, call Volume::discardHistograms() to have them recalculated.
      *
      * @param config The VolumeConfig to use for retrieving or creating the Volume.
      *
