@@ -202,7 +202,6 @@ void VolumeGLProcessor::process() {
     dstVolume->dataMap.valueRange = dataRange_.getValueRange();
 
     postProcess(*dstVolume);
-    dstVolume->discardHistograms();  // remove any old histograms;
     outport_.setData(dstVolume);
 }
 

@@ -44,7 +44,7 @@ struct TFDataTraits {
 
     static const DataMapper* getDataMap(const T& data) { return &data.dataMap; }
     static HistogramCache::Result calculateHistograms(
-        const T& data, const std::function<void(const std::vector<Histogram1D>&)>& whenDone) {
+        const T& data, const std::function<HistogramCache::Callback>& whenDone) {
         return data.calculateHistograms(whenDone);
     }
 };
@@ -66,7 +66,7 @@ public:
         virtual const DataMapper* getDataMap() const = 0;
 
         virtual HistogramCache::Result calculateHistograms(
-            const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const = 0;
+            const std::function<HistogramCache::Callback>& whenDone) const = 0;
 
         virtual OnChangeHandle onChange(const std::function<void()>& callback) const = 0;
     };
@@ -97,7 +97,7 @@ public:
         }
 
         virtual HistogramCache::Result calculateHistograms(
-            const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const override {
+            const std::function<HistogramCache::Callback>& whenDone) const override {
             if (auto data = port->getData()) {
                 return TFDataTraits<D>::calculateHistograms(*data, whenDone);
             } else {
@@ -145,7 +145,7 @@ public:
     }
 
     HistogramCache::Result calculateHistograms(
-        const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const {
+        const std::function<HistogramCache::Callback>& whenDone) const {
         if (base_) {
             return base_->calculateHistograms(whenDone);
         } else {

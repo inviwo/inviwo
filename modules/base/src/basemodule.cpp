@@ -145,6 +145,7 @@
 #include <modules/base/processors/volumedivergencecpuprocessor.h>
 #include <modules/base/processors/volumeexport.h>
 #include <modules/base/processors/volumegradientcpuprocessor.h>
+#include <modules/base/processors/volumehistogram1d.h>
 #include <modules/base/processors/volumehistogram2d.h>
 #include <modules/base/processors/volumeinformation.h>
 #include <modules/base/processors/volumelaplacianprocessor.h>
@@ -320,7 +321,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<FileCache<Mesh>>();
     registerProcessor<FileCache<Layer>>();
     registerProcessor<FileCache<Image, ImageInport, ImageOutport>>();
-
+    registerProcessor<VolumeHistogram1D>();
     registerProperty<BasisProperty>();
     registerProperty<BufferInformationProperty>();
     registerProperty<DataRangeProperty>();

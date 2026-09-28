@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <modules/base/datastructures/volumereusecache.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <modules/opengl/shader/shader.h>
 
@@ -72,8 +73,8 @@ private:
     std::shared_ptr<StringShaderResource> fragShader_;
     Shader shader_;
 
-    std::array<std::shared_ptr<Volume>, 2> out_;
     FrameBufferObject fbo_;
+    VolumeReuseCache cache_;
 };
 
 }  // namespace inviwo

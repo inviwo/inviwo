@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2025-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,31 @@
  *
  *********************************************************************************/
 
-#include <modules/base/datastructures/volumereusecache.h>
+#pragma once
 
-#include <algorithm>
+#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/core/datastructures/histogram.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
 
-VolumeReuseCache::VolumeReuseCache() = default;
+class IVW_MODULE_DATAFRAME_API Histogram1DToDataFrame : public Processor {
+public:
+    Histogram1DToDataFrame();
 
-const VolumeConfig& VolumeReuseCache::getConfig() const { return config_; }
+    virtual void process() override;
 
-auto VolumeReuseCache::get(const VolumeConfig& config)
-    -> std::pair<std::shared_ptr<Volume>, Status> {
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    const std::scoped_lock lock{mutex_};
-
-    // only check for dim/format
-    auto status = Status::NoChange;
-    if (config.dimensions != config_.dimensions || config.format != config_.format) {
-        cache_.clear();
-        status = Status::ClearedCache;
-    }
-    config_ = config.orDefault();
-
-    auto it = std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
-    if (it != cache_.end()) {
-        auto volume = *it;
-        volume->getMetaDataMap()->removeAll();
-        volume->clearHistograms();
-        volume->setConfig(config_);
-
-        return {volume, status};
-    } else {
-        auto volume = std::make_shared<Volume>(config_);
-        cache_.push_back(volume);
-        return {volume, status};
-    }
-}
+private:
+    DataInport<Histogram1D> inport_;
+    DataOutport<DataFrame> outport_;
+};
 
 }  // namespace inviwo

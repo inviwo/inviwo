@@ -158,7 +158,8 @@ VolumeRegionShrink::VolumeRegionShrink()
     , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
                {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
                {ShaderType::Fragment, fragShader_}},
-              Shader::Build::No) {
+              Shader::Build::No)
+    , cache_{} {
 
     addPort(inport_);
     addPort(outport_);
@@ -178,6 +179,9 @@ VolumeRegionShrink::VolumeRegionShrink()
 void VolumeRegionShrink::process() {
     auto volume = inport_.getData();
 
+    dataRange_.set(volume->dataMap.dataRange);
+    valueRange_.set(volume->dataMap.valueRange);
+
     if (iterations_ == 0) {
         outport_.setData(volume);
         return;
@@ -196,32 +200,18 @@ void VolumeRegionShrink::process() {
         initializeResources();
     }
 
-    if (!out_[0] || out_[0]->getDataFormat() != volume->getDataFormat() ||
-        out_[0]->getDimensions() != volume->getDimensions()) {
-        out_[0] = std::shared_ptr<Volume>(volume->clone());
-    }
+    auto config = volume->config();
+    config.dataRange = glm::max(volume->dataMap.dataRange, dvec2{static_cast<double>(fillValue_),
+                                                                 static_cast<double>(fillValue_)});
+    config.valueRange = config.dataRange;
 
-    dataRange_.set(volume->dataMap.dataRange);
-    valueRange_.set(volume->dataMap.valueRange);
-
-    out_[0]->setModelMatrix(volume->getModelMatrix());
-    out_[0]->setWorldMatrix(volume->getWorldMatrix());
-    out_[0]->setSwizzleMask(volume->getSwizzleMask());
-    out_[0]->setWrapping(volume->getWrapping());
-    out_[0]->setInterpolation(volume->getInterpolation());
-    out_[0]->copyMetaDataFrom(*volume);
-    out_[0]->dataMap = volume->dataMap;
-    out_[0]->dataMap.dataRange.x =
-        std::min(out_[0]->dataMap.dataRange.x, static_cast<double>(fillValue_));
-    out_[0]->dataMap.dataRange.y =
-        std::max(out_[0]->dataMap.dataRange.y, static_cast<double>(fillValue_));
-    out_[0]->dataMap.valueRange = out_[0]->dataMap.dataRange;
+    std::array<std::shared_ptr<Volume>, 2> out{cache_(config), nullptr};
 
     const size3_t dim{volume->getDimensions()};
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
     fbo_.activate();
-    auto* outGL0 = out_[0]->getEditableRepresentation<VolumeGL>();
+    auto* outGL0 = out[0]->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outGL0->getTexture().get(), 0);
 
     const utilgl::Activate as{&shader_};
@@ -232,7 +222,7 @@ void VolumeRegionShrink::process() {
         shader_.setUniform("fillValue", uvec4{static_cast<std::uint32_t>(fillValue_.get())});
     } else {
         const auto fill =
-            static_cast<double>(fillValue_) / (1.0 + out_[0]->getDataFormat()->getMax());
+            static_cast<double>(fillValue_) / (1.0 + out[0]->getDataFormat()->getMax());
         shader_.setUniform("fillValue", vec4{static_cast<float>(fill)});
     }
 
@@ -241,35 +231,18 @@ void VolumeRegionShrink::process() {
         glDrawBuffer(GL_COLOR_ATTACHMENT0);
         TextureUnitContainer cont;
         utilgl::bindAndSetUniforms(shader_, cont, *volume, "volume");
-        utilgl::setShaderUniforms(shader_, *out_[0], "dstParameters");
+        utilgl::setShaderUniforms(shader_, *out[0], "dstParameters");
         utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
     }
     if (iterations_ == 1) {
         FrameBufferObject::deactivateFBO();
-        outport_.setData(out_[0]);
-        out_[1].reset();
+        outport_.setData(out[0]);
         return;
     }
 
-    if (!out_[1] || out_[1]->getDataFormat() != volume->getDataFormat() ||
-        out_[1]->getDimensions() != volume->getDimensions()) {
-        out_[1] = std::shared_ptr<Volume>(volume->clone());
-    }
+    out[1] = cache_(config);
 
-    out_[1]->setModelMatrix(volume->getModelMatrix());
-    out_[1]->setWorldMatrix(volume->getWorldMatrix());
-    out_[1]->setSwizzleMask(volume->getSwizzleMask());
-    out_[1]->setWrapping(volume->getWrapping());
-    out_[1]->setInterpolation(volume->getInterpolation());
-    out_[1]->copyMetaDataFrom(*volume);
-    out_[1]->dataMap = volume->dataMap;
-    out_[1]->dataMap.dataRange.x =
-        std::min(out_[1]->dataMap.dataRange.x, static_cast<double>(fillValue_));
-    out_[1]->dataMap.dataRange.y =
-        std::max(out_[1]->dataMap.dataRange.y, static_cast<double>(fillValue_));
-    out_[1]->dataMap.valueRange = out_[1]->dataMap.dataRange;
-
-    auto* outGL1 = out_[1]->getEditableRepresentation<VolumeGL>();
+    auto* outGL1 = out[1]->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outGL1->getTexture().get(), 1);
 
     size_t src = 1;
@@ -279,14 +252,13 @@ void VolumeRegionShrink::process() {
         glDrawBuffer(static_cast<GLenum>(static_cast<GLuint>(GL_COLOR_ATTACHMENT0) +
                                          static_cast<GLuint>(dst)));
         TextureUnitContainer cont;
-        utilgl::bindAndSetUniforms(shader_, cont, *out_[src], "volume");
-        utilgl::setShaderUniforms(shader_, *out_[dst], "dstParameters");
+        utilgl::bindAndSetUniforms(shader_, cont, *out[src], "volume");
+        utilgl::setShaderUniforms(shader_, *out[dst], "dstParameters");
         utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
     }
 
     FrameBufferObject::deactivateFBO();
-    out_[dst]->discardHistograms();
-    outport_.setData(out_[dst]);
+    outport_.setData(out[dst]);
 }
 
 void VolumeRegionShrink::initializeResources() {

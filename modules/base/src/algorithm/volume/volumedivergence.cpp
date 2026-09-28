@@ -125,7 +125,6 @@ std::shared_ptr<Volume> divergenceVolume(
 
     dstVolume->dataMap.dataRange = dvec2(-max, max);
     dstVolume->dataMap.valueRange = dvec2(-max, max);
-    dstVolume->discardHistograms();
 
     if (progress) progress(1.0);
 

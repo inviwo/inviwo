@@ -240,7 +240,6 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
             throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
         }
     });
-    volume->discardHistograms();
 
     log::info("Read HDF Volume: Dimensions {}, Selection: {}, Type: {}, File: {}",
               fmt::join(config.dataDimensions, " x "), fmt::join(config.asSelection(), " x "),
@@ -286,7 +285,6 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle,
         }
     });
 
-    layer->discardHistograms();
 
     log::info("Read HDF Layer: Dimensions {}, Selection: {}, Type: {}, File: {}",
               fmt::join(config.dataDimensions, " x "), fmt::join(config.asSelection(), " x "),

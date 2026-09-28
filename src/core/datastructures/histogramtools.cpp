@@ -28,8 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/histogramtools.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/threadutil.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/stdfuture.h>
 
 #include <utility>
 
@@ -40,7 +41,6 @@ HistogramCache::HistogramCache(const HistogramCache& rhs) : state_{std::make_sha
     const std::scoped_lock lock{rhs.state_->mutex};
     state_->histograms = rhs.state_->histograms;
     state_->callbacks = rhs.state_->callbacks;
-    state_->status = rhs.state_->status;
 }
 HistogramCache::HistogramCache(HistogramCache&& rhs) noexcept : state_{std::move(rhs.state_)} {}
 HistogramCache& HistogramCache::operator=(const HistogramCache& that) {
@@ -49,7 +49,6 @@ HistogramCache& HistogramCache::operator=(const HistogramCache& that) {
         const std::scoped_lock lock{that.state_->mutex};
         state_->histograms = that.state_->histograms;
         state_->callbacks = that.state_->callbacks;
-        state_->status = that.state_->status;
     }
     return *this;
 }
@@ -60,36 +59,40 @@ HistogramCache& HistogramCache::operator=(HistogramCache&& that) noexcept {
     return *this;
 }
 
-auto HistogramCache::calculateHistograms(
-    const std::function<std::vector<Histogram1D>()>& calculate,
-    const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const -> Result {
+auto HistogramCache::calculateHistograms(const std::function<std::vector<Histogram1D>()>& calculate,
+                                         const std::function<Callback>& whenDone) const -> Result {
     const std::scoped_lock lock{state_->mutex};
 
     Result result;
 
-    if (state_->status == Status::Valid && whenDone) {
-        whenDone(state_->histograms);
+    if (util::is_future_ready(state_->histograms)) {
+        if (whenDone) whenDone(state_->histograms.get());
         result.progress = Progress::Done;
-    } else if (state_->status != Status::Valid && whenDone) {
-        result.handle = state_->callbacks.add(whenDone);
+    } else if (state_->histograms.valid()) {
+        if (whenDone) result.handle = state_->callbacks.add(whenDone);
         result.progress = Progress::Calculating;
-    }
+    } else {
+        std::promise<std::shared_ptr<const std::vector<Histogram1D>>> promise{};
+        state_->histograms = promise.get_future();
+        if (whenDone) result.handle = state_->callbacks.add(whenDone);
+        result.progress = Progress::Calculating;
 
-    if (state_->status == Status::NotSet) {
-        result.progress = Progress::Calculating;
-        state_->status = Status::Calculating;
-        dispatchPool([calculate, weakState = std::weak_ptr<State>(state_)]() {
+        util::dispatchPool([calculate, promise = std::move(promise),
+                            weakState = std::weak_ptr<State>(state_)]() mutable {
             if (auto state = weakState.lock()) {
-                auto newHistograms = calculate();
-                dispatchFrontAndForget([weakState = std::weak_ptr<State>(state),
-                                        newHistograms = std::move(newHistograms)]() mutable {
-                    if (auto state = weakState.lock()) {
-                        const std::scoped_lock lock{state->mutex};
-                        state->histograms = std::move(newHistograms);
-                        state->status = Status::Valid;
-                        state->callbacks.invoke(state->histograms);
-                    }
-                });
+                const auto newHistograms =
+                    std::make_shared<const std::vector<Histogram1D>>(calculate());
+                promise.set_value(newHistograms);
+
+                util::dispatchFrontAndForget(
+                    [weakState = std::weak_ptr<State>(state), newHistograms]() mutable {
+                        if (auto state = weakState.lock()) {
+                            const std::scoped_lock lock{state->mutex};
+                            state->callbacks.invoke(newHistograms);
+                        }
+                    });
+            } else {
+                promise.set_value({});
             }
         });
     }
@@ -97,35 +100,65 @@ auto HistogramCache::calculateHistograms(
     return result;
 }
 
+std::shared_ptr<const std::vector<Histogram1D>> HistogramCache::calculateHistograms(
+    const std::function<std::vector<Histogram1D>()>& calculate) const {
+
+    std::promise<std::shared_ptr<const std::vector<Histogram1D>>> promise{};
+
+    {
+        const std::scoped_lock lock{state_->mutex};
+        if (state_->histograms.valid()) {
+            return state_->histograms.get();
+        } else {
+            state_->histograms = promise.get_future();
+        }
+    }
+
+    // Calculate histogram without holding any lock
+    const auto newHistograms = std::make_shared<const std::vector<Histogram1D>>(calculate());
+    promise.set_value(newHistograms);
+
+    util::dispatchFrontAndForget(
+        [weakState = std::weak_ptr<State>(state_), newHistograms]() mutable {
+            if (auto state = weakState.lock()) {
+                const std::scoped_lock lock{state->mutex};
+                state->callbacks.invoke(newHistograms);
+            }
+        });
+
+    return newHistograms;
+}
+
 void HistogramCache::forEach(
     const std::function<void(const Histogram1D&, size_t)>& callback) const {
     const std::scoped_lock lock{state_->mutex};
-    for (auto&& [channel, histogram] : util::enumerate(state_->histograms)) {
-        callback(histogram, channel);
+
+    if (util::is_future_ready(state_->histograms)) {
+        if (auto histograms = state_->histograms.get()) {
+            for (auto&& [channel, histogram] : util::enumerate(*histograms)) {
+                callback(histogram, channel);
+            }
+        }
     }
 }
 
-void HistogramCache::discard(const std::function<std::vector<Histogram1D>()>& calculate) {
-    bool reCalculate = false;
-    std::shared_ptr<State> newState;
-    {
-        const std::scoped_lock lock{state_->mutex};
+void HistogramCache::clear() {
+    const std::scoped_lock lock{state_->mutex};
 
-        if (state_->status == Status::NotSet) {
-            return;
-        } else if (state_->status == Status::Valid) {
-            state_->status = Status::NotSet;
-            reCalculate = true;
-        } else if (state_->status == Status::Calculating) {
-            newState = std::make_shared<State>();
-            newState->callbacks = std::move(state_->callbacks);
-            reCalculate = true;
-        }
+    if (!state_->histograms.valid()) {
+        return;
+    } else {
+        state_->histograms = std::shared_future<std::shared_ptr<const std::vector<Histogram1D>>>{};
     }
-    if (newState) {
-        state_ = std::move(newState);
-    }
-    if (reCalculate) {
+}
+
+void HistogramCache::recalculate(const std::function<std::vector<Histogram1D>()>& calculate) {
+    const std::scoped_lock lock{state_->mutex};
+
+    if (!state_->histograms.valid()) {
+        return;
+    } else {
+        state_->histograms = std::shared_future<std::shared_ptr<const std::vector<Histogram1D>>>{};
         calculateHistograms(calculate, nullptr);
     }
 }
