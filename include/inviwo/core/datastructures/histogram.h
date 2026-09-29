@@ -64,6 +64,7 @@ struct IVW_CORE_API Histogram1D {
 
     Statistics dataStats;
     Statistics histStats;
+    std::string name;
 };
 
 struct IVW_CORE_API Histogram2D {

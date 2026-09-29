@@ -517,12 +517,12 @@ void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPoly
 
 void TFEditorView::HistogramState::paintLabel(QPainter* painter, size_t channel, size_t count,
                                               size_t nChannels, const QRect& rect,
-                                              std::string_view overflow) {
+                                              std::string_view text) {
     const utilqt::Save saved{painter};
     painter->resetTransform();
     setPenAndFont(painter, ColorType::Text, channel, nChannels);
     painter->drawText(textRect(rect, count), Qt::AlignRight | Qt::AlignTop,
-                      utilqt::toQString(fmt::format("Channel: {}{}", channel + 1, overflow)));
+                      utilqt::toQString(text));
 }
 
 void TFEditorView::HistogramState::paintState(QPainter* painter, const QRect& rect) const {
@@ -565,20 +565,21 @@ void TFEditorView::HistogramState::paintHistograms(QPainter* painter, const QRec
             if (overflow || underflow) {
                 const auto outside = histogram.overflow + histogram.underflow;
                 if (outside > histogram.totalCounts / 10000) {
-                    paintLabel(painter, channel, count, total, rect,
-                               fmt::format(", underflow: {:5.2f}%, overflow: {:5.2f}%",
-                                           100.0 * static_cast<double>(histogram.underflow) /
-                                               static_cast<double>(histogram.totalCounts),
-                                           100.0 * static_cast<double>(histogram.overflow) /
-                                               static_cast<double>(histogram.totalCounts)));
+                    paintLabel(
+                        painter, channel, count, total, rect,
+                        fmt::format("{}, underflow: {:5.2f}%, overflow: {:5.2f}%", histogram.name,
+                                    100.0 * static_cast<double>(histogram.underflow) /
+                                        static_cast<double>(histogram.totalCounts),
+                                    100.0 * static_cast<double>(histogram.overflow) /
+                                        static_cast<double>(histogram.totalCounts)));
                 } else {
                     paintLabel(painter, channel, count, total, rect,
-                               fmt::format(", underflow: {}, overflow: {}", histogram.underflow,
-                                           histogram.overflow));
+                               fmt::format("{}, underflow: {}, overflow: {}", histogram.name,
+                                           histogram.underflow, histogram.overflow));
                 }
 
             } else {
-                paintLabel(painter, channel, count, total, rect, "");
+                paintLabel(painter, channel, count, total, rect, histogram.name);
             }
 
             ++count;
