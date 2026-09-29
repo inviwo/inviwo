@@ -106,6 +106,7 @@ void ShaderComponentProcessorBase::initializeResources() {
     }
 
     shader_.build();
+    shader_.setLabel(getIdentifier());
 }
 
 void ShaderComponentProcessorBase::process() {

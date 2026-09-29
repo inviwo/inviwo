@@ -117,7 +117,7 @@ public:
     ~ShaderObject();
 
     GLuint getID() const;
-    std::string getFileName() const;
+    const std::string& getFileName() const;
     void setResource(std::shared_ptr<const ShaderResource>);
     std::shared_ptr<const ShaderResource> getResource() const;
 
@@ -242,6 +242,8 @@ public:
 
     std::pair<std::string, size_t> resolveLine(size_t line) const;
     std::string print(bool showSource = false, bool preprocess = true);
+
+    std::string getPreprocessed() const;
 
     template <typename T>
     std::shared_ptr<Callback> onChange(T&& callback);

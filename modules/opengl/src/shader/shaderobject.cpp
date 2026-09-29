@@ -383,7 +383,7 @@ ShaderObject::~ShaderObject() {
 
 GLuint ShaderObject::getID() const { return id_; }
 
-std::string ShaderObject::getFileName() const { return resource_->key(); }
+const std::string& ShaderObject::getFileName() const { return resource_->key(); }
 
 void ShaderObject::setResource(std::shared_ptr<const ShaderResource> resource) {
     IVW_ASSERT(resource, "Should never be null");
@@ -432,7 +432,43 @@ void ShaderObject::preprocess() {
     std::ostringstream source;
     addDefines(source);
     parseSource(source);
-    sourceProcessed_ = source.str();
+    sourceProcessed_ = std::move(source).str();
+}
+
+std::string ShaderObject::getPreprocessed() const {
+    std::ostringstream output;
+    LineNumberResolver lnr;
+
+    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
+        replacements;
+    for (const auto& segment : shaderSegments_) {
+        replacements[segment.placeholder].push_back(segment);
+    }
+    for (auto& [placeholder, segments] : replacements) {
+        std::ranges::sort(segments, [](const ShaderSegment& a, const ShaderSegment& b) {
+            return std::tie(a.placeholder, a.priority) < std::tie(b.placeholder, b.priority);
+        });
+    }
+
+    auto getSource =
+        [includeResources = std::vector<std::shared_ptr<const ShaderResource>>{}](
+            std::string_view path) mutable -> std::optional<std::pair<std::string, std::string>> {
+        auto inc = ShaderManager::getPtr()->getShaderResource(path);
+        if (!inc) {
+            throw OpenGLException(SourceContext{},
+                                  "Include file '{}' not found in shader search paths.", path);
+        }
+        // Only include files once.
+        if (util::find(includeResources, inc) == includeResources.end()) {
+            includeResources.push_back(inc);
+            return std::pair{inc->key(), inc->source()};
+        } else {
+            return std::nullopt;
+        }
+    };
+    utilgl::parseShaderSource(resource_->key(), resource_->source(), output, lnr, replacements,
+                              getSource);
+    return std::move(output).str();
 }
 
 namespace {
@@ -458,10 +494,18 @@ void ShaderObject::addDefines(std::ostringstream& source) {
     for (const auto& se : shaderExtensions_) {
         source << "#extension " << se.first << " : ";
         switch (se.second) {
-            case ExtensionBehavior::Enable:  source << "enable"; break;
-            case ExtensionBehavior::Require: source << "require"; break;
-            case ExtensionBehavior::Warn:    source << "warn"; break;
-            case ExtensionBehavior::Disable: source << "disable"; break;
+            case ExtensionBehavior::Enable:
+                source << "enable";
+                break;
+            case ExtensionBehavior::Require:
+                source << "require";
+                break;
+            case ExtensionBehavior::Warn:
+                source << "warn";
+                break;
+            case ExtensionBehavior::Disable:
+                source << "disable";
+                break;
         }
         source << "\n";
         lnr_.addLine("Extensions", 0);
