@@ -607,6 +607,7 @@ var annotated_dup =
       ] ],
       [ "AbortException", "classinviwo_1_1AbortException.html", null ],
       [ "AdvancedMaterialProperty", "classinviwo_1_1AdvancedMaterialProperty.html", "classinviwo_1_1AdvancedMaterialProperty" ],
+      [ "AlternativeShaderComponent", "classinviwo_1_1AlternativeShaderComponent.html", "classinviwo_1_1AlternativeShaderComponent" ],
       [ "AmiraMeshReader", "classinviwo_1_1AmiraMeshReader.html", null ],
       [ "AmiraVolumeReader", "classinviwo_1_1AmiraVolumeReader.html", null ],
       [ "AnglePropertyWidgetQt", "classinviwo_1_1AnglePropertyWidgetQt.html", "classinviwo_1_1AnglePropertyWidgetQt" ],

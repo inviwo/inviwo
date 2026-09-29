@@ -3371,6 +3371,7 @@ var hierarchy =
     [ "inviwo::ShaderComponent", "classinviwo_1_1ShaderComponent.html", [
       [ "inviwo::IsoTFComponent< 1 >", "classinviwo_1_1IsoTFComponent.html", null ],
       [ "inviwo::IsoTFComponent< 4 >", "classinviwo_1_1IsoTFComponent.html", null ],
+      [ "inviwo::AlternativeShaderComponent", "classinviwo_1_1AlternativeShaderComponent.html", null ],
       [ "inviwo::AtlasComponent", "classinviwo_1_1AtlasComponent.html", null ],
       [ "inviwo::BackgroundComponent", "classinviwo_1_1BackgroundComponent.html", null ],
       [ "inviwo::CameraComponent", "classinviwo_1_1CameraComponent.html", null ],
