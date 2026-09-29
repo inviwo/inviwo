@@ -91,7 +91,7 @@ private:
                                    size_t nChannels, const QRectF& sceneRect,
                                    const DataMapper& dataDM, const DataMapper& sceneDM);
         static void paintLabel(QPainter* painter, size_t channel, size_t count, size_t nChannels,
-                               const QRect& rect, std::string_view overflow);
+                               const QRect& rect, std::string_view text);
         void paintState(QPainter* painter, const QRect& rect) const;
         void paintHistograms(QPainter* painter, const QRectF& sceneRect, const QRect& rect,
                              const DataMapper& dataMap) const;
