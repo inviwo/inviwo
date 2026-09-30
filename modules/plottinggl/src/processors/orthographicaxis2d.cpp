@@ -51,11 +51,7 @@ const ProcessorInfo OrthographicAxis2D::processorInfo_{
     CodeState::Stable,                // Code state
     Tags::GL | Tag{"Plotting"},       // Tags
     R"(This processor draws a pair of axes that are mapped to world space.
-       The use case is for plotting data using a Orthographic Camera.
-
-       One of the Mesh, Layer, or Volume inports must be connected for obtaining the world space
-       transformation.
-       )"_unindentHelp,
+       The use case is for plotting data using a Orthographic Camera.)"_unindentHelp,
 };
 
 const ProcessorInfo& OrthographicAxis2D::getProcessorInfo() const { return processorInfo_; }
@@ -63,9 +59,8 @@ const ProcessorInfo& OrthographicAxis2D::getProcessorInfo() const { return proce
 OrthographicAxis2D::OrthographicAxis2D()
     : Processor{}
     , inport_{"inport"}
-    , mesh_{"mesh", "Mesh providing the World to Model matrix and axis information"_help}
-    , layer_{"layer", "Layer providing the World to Model matrix and axis information"_help}
-    , volume_{"volume", "Volume providing World to Model matrix and axis information"_help}
+    , spatialEntity_{"spatialEntity",
+                     "SpatialEntity providing the World to Model matrix and axis information"_help}
     , outport_{"outport"}
     , style_{"style", "Global Style"}
     , backgroundColor_{"backgroundColor", "Background Color",
@@ -91,8 +86,8 @@ OrthographicAxis2D::OrthographicAxis2D()
                         const auto pClip = p / dvec2{dims} * 2.0 - 1.0;
                         const dvec2 pWorld{camera_.get().getWorldPosFromNormalizedDeviceCoords(
                             dvec3{pClip, -1.0})};
-                        if (auto mesh = mesh_.getData()) {
-                            const auto& ct = mesh->getCoordinateTransformer();
+                        if (auto spatial = spatialEntity_.getData()) {
+                            const auto& ct = spatial->getCoordinateTransformer();
                             const auto pData = ct.getWorldToDataMatrix() * dvec4{pWorld, 0.0, 1.0};
                             return dvec2{pData / pData.w};
                         }
@@ -106,23 +101,7 @@ OrthographicAxis2D::OrthographicAxis2D()
     style_.addProperties(antialiasing_, clipContent_);
     boxSelectionProperty_.setCollapsed(true);
 
-    mesh_.setOptional(true);
-    layer_.setOptional(true);
-    volume_.setOptional(true);
-
-    isReady_.setUpdate([this]() -> ProcessorStatus {
-        if (auto connectedPorts = std::ranges::fold_left(
-                std::to_array<const Inport*>({&mesh_, &layer_, &volume_}) |
-                    std::views::transform([](auto* p) { return p->isConnected() ? 1 : 0; }),
-                0, std::plus<>{});
-            connectedPorts > 1) {
-            return {ProcessorStatus::Error,
-                    "Excactly one of the Mesh, Layer, or Volume inports must be connected"};
-        }
-        return allInportsAreReady();
-    });
-
-    addPorts(inport_, mesh_, layer_, volume_, outport_);
+    addPorts(inport_, spatialEntity_, outport_);
     addProperties(style_, axis1_, axis2_, margins_, axisMargin_, grid_, boxSelectionProperty_,
                   camera_, trackball_);
     util::for_each_in_tuple([this](auto& e) { boxSelectionProperty_.addProperty(e); },
@@ -163,23 +142,9 @@ OrthographicAxis2D::OrthographicAxis2D()
 }
 
 void OrthographicAxis2D::process() {
-    auto [w2m, axes] = [this]() -> std::pair<dmat4, std::array<const Axis*, 2>> {
-        if (mesh_.hasData()) {
-            const auto data = mesh_.getData();
-            return {data->getCoordinateTransformer().getWorldToModelMatrix(),
-                    {{data->getAxis(0), data->getAxis(1)}}};
-        } else if (layer_.hasData()) {
-            const auto data = layer_.getData();
-            return {data->getCoordinateTransformer().getWorldToModelMatrix(),
-                    {{data->getAxis(0), data->getAxis(1)}}};
-        } else if (volume_.hasData()) {
-            const auto data = volume_.getData();
-            return {data->getCoordinateTransformer().getWorldToModelMatrix(),
-                    {{data->getAxis(0), data->getAxis(1)}}};
-        } else {
-            throw Exception{"None of the connected optional inports is ready."};
-        }
-    }();
+    const auto spatial = spatialEntity_.getData();
+    const auto w2m = spatial->getCoordinateTransformer().getWorldToModelMatrix();
+    const auto axes = std::to_array({spatial->getAxis(0), spatial->getAxis(1)});
 
     const auto dims = outport_.getDimensions();
 
