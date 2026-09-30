@@ -122,9 +122,9 @@ HistogramToDataFrame<T>::HistogramToDataFrame()
 
 template <typename T>
 void HistogramToDataFrame<T>::process() {
-    histogramResult_ =
-        inport_.getData()->calculateHistograms([this](const std::vector<Histogram1D>& histograms) {
-            dataframe_ = detail::createDataFrame(histograms, histogramMode_);
+    histogramResult_ = inport_.getData()->calculateHistograms(
+        [this](std::shared_ptr<const std::vector<Histogram1D>> histograms) {
+            dataframe_ = detail::createDataFrame(*histograms, histogramMode_);
             notifyObserversFinishBackgroundWork(this, 1);
             outport_.setData(dataframe_);
             outport_.invalidate(InvalidationLevel::Valid);
