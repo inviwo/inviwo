@@ -1,5 +1,4 @@
 # Inviwo GLFW Application
-project(inviwo_glfwminimum)
 
 # Add source files
 set(SOURCE_FILES

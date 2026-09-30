@@ -1,6 +1,3 @@
-# Inviwo Qt Application
-project(inviwopyapp)
-
 # Add source files
 set(PYTHON_FILES
     inviwo.py

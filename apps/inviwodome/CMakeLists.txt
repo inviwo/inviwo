@@ -1,6 +1,4 @@
 # Inviwo Dome Application
-project(inviwo-dome)
-
 add_executable(inviwo-dome)
 target_sources(inviwo-dome
     PUBLIC
