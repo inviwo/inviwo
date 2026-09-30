@@ -325,15 +325,25 @@ struct TFDataTraits<TemporalVolume> {
             auto* firstRAM = first->getRepresentation<VolumeRAM>();
             auto* lastRAM = last->getRepresentation<VolumeRAM>();
 
-            std::vector<Histogram1D> histograms;
-            histograms.append_range(firstRAM->dispatch<std::vector<Histogram1D>>(
+            auto firstHist = firstRAM->dispatch<std::vector<Histogram1D>>(
                 [&]<typename T>(const VolumeRAMPrecision<T>* rp) {
                     return util::calculateHistograms(rp->getView(), first->dataMap, 2048);
-                }));
-            histograms.append_range(lastRAM->dispatch<std::vector<Histogram1D>>(
+                });
+            auto lastHist = lastRAM->dispatch<std::vector<Histogram1D>>(
                 [&]<typename T>(const VolumeRAMPrecision<T>* rp) {
                     return util::calculateHistograms(rp->getView(), last->dataMap, 2048);
-                }));
+                });
+            for (auto& item : firstHist) {
+                item.name = fmt::format("First {}", item.name);
+            }
+            for (auto& item : lastHist) {
+                item.name = fmt::format("Last {}", item.name);
+            }
+
+            std::vector<Histogram1D> histograms;
+            histograms.append_range(std::move(firstHist));
+            histograms.append_range(std::move(lastHist));
+
             return histograms;
         };
 
