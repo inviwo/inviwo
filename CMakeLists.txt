@@ -45,7 +45,7 @@ if(NOT IVW_CFG_BUILD_VERSION STREQUAL "")
     string(APPEND IVW_VERSION "+${IVW_CFG_BUILD_VERSION}")
 endif()
 
-set(CMAKE_OSX_DEPLOYMENT_TARGET 15.7)
+set(CMAKE_OSX_DEPLOYMENT_TARGET 27.0)
 
 include(cmake/vcpkg-default-triplets.cmake)
 
