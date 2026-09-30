@@ -1192,6 +1192,44 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
     menu.addSeparator();
 
+    for (auto* item : clickedOnItems) {
+        if (auto* outport = qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(item)) {
+            auto* pathAction = menu.addAction(tr("Copy &Outport Path"));
+            connect(pathAction, &QAction::triggered, this, util::exceptionGuarded([outport]() {
+                        auto mimeData = createMineData(
+                            fmt::format(
+                                "{}.{}.outports.{}",
+                                outport->getPort()->getProcessor()->getNetwork()->getIdentifier(),
+                                outport->getPort()->getProcessor()->getIdentifier(),
+                                outport->getPort()->getIdentifier()),
+                            std::to_array({QString("text/plain")}));
+                        QApplication::clipboard()->setMimeData(mimeData.release());
+                    }));
+        } else if (auto* inport = qgraphicsitem_cast<ProcessorInportGraphicsItem*>(item)) {
+            auto* pathAction = menu.addAction(tr("Copy &Inport Path"));
+            connect(pathAction, &QAction::triggered, this, util::exceptionGuarded([inport]() {
+                        auto mimeData = createMineData(
+                            fmt::format(
+                                "{}.{}.inports.{}",
+                                inport->getPort()->getProcessor()->getNetwork()->getIdentifier(),
+                                inport->getPort()->getProcessor()->getIdentifier(),
+                                inport->getPort()->getIdentifier()),
+                            std::to_array({QString("text/plain")}));
+                        QApplication::clipboard()->setMimeData(mimeData.release());
+                    }));
+        } else if (auto* processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+            auto* pathAction = menu.addAction(tr("Copy &Processor Path"));
+            connect(pathAction, &QAction::triggered, this, util::exceptionGuarded([processor]() {
+                        auto mimeData = createMineData(
+                            fmt::format("{}.{}",
+                                        processor->getProcessor()->getNetwork()->getIdentifier(),
+                                        processor->getProcessor()->getIdentifier()),
+                            std::to_array({QString("text/plain")}));
+                        QApplication::clipboard()->setMimeData(mimeData.release());
+                    }));
+        }
+    }
+
     addCopyPasteMenuItems(menu, activeItems, ivec2{utilqt::toGLM(e->scenePos())});
 
     menu.addSeparator();
