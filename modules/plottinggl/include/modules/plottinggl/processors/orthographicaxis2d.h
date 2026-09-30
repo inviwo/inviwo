@@ -63,9 +63,7 @@ public:
 
 private:
     ImageInport inport_;
-    MeshInport mesh_;
-    LayerInport layer_;
-    VolumeInport volume_;
+    DataInport<SpatialEntity> spatialEntity_;
     ImageOutport outport_;
 
     plot::AxisStyleProperty style_;
