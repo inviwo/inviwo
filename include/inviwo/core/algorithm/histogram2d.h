@@ -45,6 +45,9 @@ namespace detail {
 
 IVW_CORE_API DataMapper histogramDataMap(const DataMapper& datamap, double effectiveRange);
 
+IVW_CORE_API std::array<std::vector<size_t>, 2> histogram2DTo1D(const std::vector<size_t>& hist2D,
+                                                                size2_t numBins);
+
 }  // namespace detail
 
 /**
@@ -76,26 +79,36 @@ Histogram2D calculateHistogram2D(std::span<const T> data1, size_t channel1,
                         data2.size()};
     }
 
-    auto [numbins1, effectiveRange1] = detail::optimalBinCount<T>(dataMap1, bins.x);
-    auto [numbins2, effectiveRange2] = detail::optimalBinCount<U>(dataMap2, bins.y);
+    auto [numBins1, effectiveRange1] = detail::optimalBinCount<T>(dataMap1, bins.x);
+    auto [numBins2, effectiveRange2] = detail::optimalBinCount<U>(dataMap2, bins.y);
     const dvec2 effectiveRange{effectiveRange1, effectiveRange2};
-    const size2_t numbins{numbins1, numbins2};
+    const size2_t numBins{numBins1, numBins2};
+
+    dvec2 min{std::numeric_limits<double>::max()};
+    dvec2 max{std::numeric_limits<double>::lowest()};
+    dvec2 sum{0};
+    dvec2 sum2{0};
 
     size_t underflow{0u};
     size_t overflow{0u};
 
     const dvec2 rangeMin{dataMap1.dataRange.x, dataMap2.dataRange.x};
-    const dvec2 rangeScaleFactor{dvec2{numbins - size2_t{1}} / effectiveRange};
+    const dvec2 rangeScaleFactor{dvec2{numBins - size2_t{1}} / effectiveRange};
 
-    std::vector<size_t> hist(glm::compMul(numbins), 0);
-    const glm::vec<2, ptrdiff_t> maxBins{static_cast<ptrdiff_t>(numbins.x) - 1,
-                                         static_cast<ptrdiff_t>(numbins.y) - 1};
-    const IndexMapper<2, std::ptrdiff_t> indexMapper{numbins};
+    std::vector<size_t> hist(glm::compMul(numBins), 0);
+    const glm::vec<2, ptrdiff_t> maxBins{static_cast<ptrdiff_t>(numBins.x) - 1,
+                                         static_cast<ptrdiff_t>(numBins.y) - 1};
+    const IndexMapper<2, std::ptrdiff_t> indexMapper{numBins};
 
     // Do not use util::zip or std::views::zip here. This will increase compile time drastically.
     for (size_t i = 0; i < data1.size(); ++i) {
         const dvec2 val{static_cast<double>(util::glmcomp(data1[i], channel1)),
                         static_cast<double>(util::glmcomp(data2[i], channel2))};
+
+        min = glm::min(min, val);
+        max = glm::max(max, val);
+        sum += val;
+        sum2 += val * val;
 
         const glm::vec<2, ptrdiff_t> index{
             static_cast<std::ptrdiff_t>((val.x - rangeMin.x) * rangeScaleFactor.x),
@@ -109,17 +122,39 @@ Histogram2D calculateHistogram2D(std::span<const T> data1, size_t channel1,
         }
     }
 
+    const auto count = static_cast<double>(data1.size());
+    const auto mean = sum / count;
+    const auto stdDev = glm::sqrt((count * sum2 - sum * sum) / (count * (count - 1.0)));
+
     const auto maxBinCount = *std::ranges::max_element(hist);
+
+    const auto hist1D = detail::histogram2DTo1D(hist, numBins);
 
     return Histogram2D{
         .counts = hist,
-        .dimensions = numbins,
+        .dimensions = numBins,
         .totalCounts = data1.size(),
         .maxCount = maxBinCount,
         .dataMap = {detail::histogramDataMap(dataMap1, effectiveRange.x),
                     detail::histogramDataMap(dataMap2, effectiveRange.y)},
         .underflow = underflow,
         .overflow = overflow,
+
+        .dataStats =
+            {{{.min = min[0],
+               .max = max[0],
+               .mean = mean[0],
+               .standardDeviation = stdDev[0],
+               .percentiles = calculatePercentiles(hist1D[0], dataMap1.dataRange, data1.size())},
+              {.min = min[1],
+               .max = max[1],
+               .mean = mean[1],
+               .standardDeviation = stdDev[1],
+               .percentiles = calculatePercentiles(hist1D[1], dataMap2.dataRange, data2.size())}}},
+
+        .histStats = {calculateHistogramStats(hist1D[0]), calculateHistogramStats(hist1D[1])},
+
+        .name = fmt::format("Channels: {} vs {}", channel1, channel2),
     };
 }
 

@@ -37,7 +37,7 @@ const ProcessorInfo VolumeHistogram1D::processorInfo_{
     "Volume Histogram1D",            // Display name
     "Undefined",                     // Category
     CodeState::Experimental,         // Code state
-    Tags::CPU,                      // Tags
+    Tags::CPU,                       // Tags
     R"(Calculate the 1D histogram of a volume.)"_unindentHelp,
 };
 
@@ -52,13 +52,12 @@ VolumeHistogram1D::VolumeHistogram1D()
 }
 
 void VolumeHistogram1D::process() {
+    const auto calc = [data = inport_.getData()]() { return data->calculateHistograms(); };
 
-    const auto calc = [](){};
-
-
-    
-
-    // outport_.setData(std::make_shared<SomeOtherData>(position_.get()));
+    dispatchOne(calc, [this](std::shared_ptr<const std::vector<Histogram1D>> histograms) {
+        outport_.setData(histograms);
+        newResults();
+    });
 }
 
 }  // namespace inviwo

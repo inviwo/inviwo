@@ -38,7 +38,7 @@ const ProcessorInfo Histogram1DToDataFrame::processorInfo_{
     "Data Creation",                      // Category
     CodeState::Experimental,              // Code state
     Tags::CPU,                            // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+    R"(Convert a histograms into a DataFrame)"_unindentHelp,
 };
 
 const ProcessorInfo& Histogram1DToDataFrame::getProcessorInfo() const { return processorInfo_; }
@@ -50,7 +50,47 @@ Histogram1DToDataFrame::Histogram1DToDataFrame()
 }
 
 void Histogram1DToDataFrame::process() {
-    // outport_.setData(std::make_shared<SomeOtherData>(position_.get()));
+
+    auto df = std::make_shared<DataFrame>();
+
+    for (auto histogram : inport_) {
+        df->addColumn(
+            fmt::format("{} Data Range", histogram->name),
+            std::views::iota(0uz, histogram->counts.size()) |
+                std::views::transform([&](auto index) {
+                    return static_cast<float>(
+                        histogram->dataMap.dataRange.x +
+                        static_cast<double>(index) / static_cast<double>(histogram->counts.size()) *
+                            (histogram->dataMap.dataRange.y - histogram->dataMap.dataRange.x));
+                }) |
+                std::ranges::to<std::vector>());
+        df->addColumn(
+            fmt::format("{} {}", histogram->name, histogram->dataMap.valueAxis.name),
+            std::views::iota(0uz, histogram->counts.size()) |
+                std::views::transform([&](auto index) {
+                    return static_cast<float>(
+                        histogram->dataMap.valueRange.x +
+                        static_cast<double>(index) / static_cast<double>(histogram->counts.size()) *
+                            (histogram->dataMap.valueRange.y - histogram->dataMap.valueRange.x));
+                }) |
+                std::ranges::to<std::vector>(),
+            histogram->dataMap.valueAxis.unit);
+        df->addColumn(fmt::format("{} Counts", histogram->name),
+                      histogram->counts | std::views::transform([](auto count) {
+                          return static_cast<float>(count);
+                      }) | std::ranges::to<std::vector>(),
+                      Unit{}, dvec2{0.0, static_cast<double>(histogram->maxCount)});
+        df->addColumn(fmt::format("{} Normalized Counts", histogram->name),
+                      histogram->counts | std::views::transform([&](auto count) {
+                          return static_cast<float>(static_cast<double>(count) /
+                                                    static_cast<double>(histogram->maxCount));
+                      }) | std::ranges::to<std::vector>(),
+                      Unit{}, dvec2{0.0, 1.0});
+    }
+
+    df->updateIndexBuffer();
+
+    outport_.setData(df);
 }
 
 }  // namespace inviwo

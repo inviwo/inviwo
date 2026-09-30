@@ -116,6 +116,7 @@ VolumeHistogram2D::VolumeHistogram2D()
     , inport1_{"inport1", "Volume 1"_help}
     , inport2_{"inport2", "Volume 2"_help}
     , outport_{"outport", "Histogram Layer"_help}
+    , histogram_{"histogram", "Histogram"_help}
     , histogramResolution_{"histogramResolution",
                            "Histogram Resolution. The actual resolution might deviate based on the "
                            "underlying data types in order to avoid binning artifacts.",
@@ -140,7 +141,7 @@ where `max` refers to the maximum bin count or the upper limit of the custom dat
     , dataRange_{"dataRange", "Data Range"} {
 
     inport2_.setOptional(true);
-    addPorts(inport1_, inport2_, outport_);
+    addPorts(inport1_, inport2_, outport_, histogram_);
     addProperties(histogramResolution_, channel1_, channel2_, scaling_, dataRange_);
 }
 
@@ -189,20 +190,6 @@ void VolumeHistogram2D::process() {
     const auto* vrep1 = volume1->getRepresentation<VolumeRAM>();
     const auto* vrep2 = volume2->getRepresentation<VolumeRAM>();
 
-    auto [numbins1, effectiveRange1] =
-        dispatching::singleDispatch<std::pair<size_t, double>, dispatching::filter::All>(
-            vrep1->getDataFormatId(), [volume1, histSize]<typename T>() {
-                return util::detail::optimalBinCount<T>(volume1->dataMap, histSize.x);
-            });
-    auto [numbins2, effectiveRange2] =
-        dispatching::singleDispatch<std::pair<size_t, double>, dispatching::filter::All>(
-            vrep2->getDataFormatId(), [volume2, histSize]<typename U>() {
-                return util::detail::optimalBinCount<U>(volume2->dataMap, histSize.y);
-            });
-
-    const dvec2 effectiveRange{effectiveRange1, effectiveRange2};
-    const size2_t numbins{numbins1, numbins2};
-
     const auto hist = dispatching::doubleDispatch<Histogram2D, dispatching::filter::All,
                                                   dispatching::filter::All>(
         vrep1->getDataFormatId(), vrep2->getDataFormatId(), [&]<typename T1, typename T2>() {
@@ -210,7 +197,7 @@ void VolumeHistogram2D::process() {
             auto src2 = static_cast<const VolumeRAMPrecision<T2>*>(vrep2)->getView();
 
             return util::calculateHistogram2D<T1, T2>(src1, c1, volume1->dataMap, src2, c2,
-                                                      volume2->dataMap, numbins);
+                                                      volume2->dataMap, histSize);
         });
 
     const dvec2 range{0.0, hist.maxCount};
@@ -222,6 +209,7 @@ void VolumeHistogram2D::process() {
     layer->axes[1] = volume2->dataMap.valueAxis;
 
     outport_.setData(layer);
+    histogram_.setData(std::make_shared<Histogram2D>(std::move(hist)));
 }
 
 }  // namespace inviwo
