@@ -48,7 +48,7 @@ public:
 
 private:
     VolumeInport inport_;
-    DataOutport<Histogram1D> outport_;
+    DataOutport<std::vector<Histogram1D>> outport_;
 };
 
 }  // namespace inviwo

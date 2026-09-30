@@ -29,8 +29,10 @@
 
 #include <inviwopy/pyhistogram.h>
 #include <inviwopy/pyglmtypes.h>
+#include <inviwopy/util/pydatasequence.h>
 
 #include <pybind11/stl.h>
+#include <pybind11/native_enum.h>
 
 #include <inviwo/core/datastructures/histogram.h>
 #include <inviwo/core/util/glmfmt.h>
@@ -39,31 +41,24 @@
 #include <fmt/ranges.h>
 #include <fmt/std.h>
 
-namespace inviwo {
+#include <modules/python3/pyportutils.h>
 
-namespace {
-std::string formatStatistics(const Statistics& stats) {
-    const std::string percentiles =
-        stats.percentiles.size() >= 100
-            ? fmt::format("(1: {}, 25: {}, 50: {}, 75: {}, 99: {})", stats.percentiles[1],
-                          stats.percentiles[25], stats.percentiles[50], stats.percentiles[75],
-                          stats.percentiles[99])
-            : fmt::format("{}", stats.percentiles);
-    return fmt::format("min: {}, max: {}, mean: {}, stdDev: {}, percentiles: {}", stats.min,
-                       stats.max, stats.mean, stats.standardDeviation, percentiles);
-}
-}  // namespace
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
+namespace inviwo {
 
 void exposeHistogram(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::enum_<HistogramMode>(m, "HistogramMode")
+    py::native_enum<HistogramMode>(m, "HistogramMode", "enum.Enum")
         .value("Off", HistogramMode::Off)
         .value("All", HistogramMode::All)
         .value("P99", HistogramMode::P99)
         .value("P95", HistogramMode::P95)
         .value("P90", HistogramMode::P90)
-        .value("Log", HistogramMode::Log);
+        .value("Log", HistogramMode::Log)
+        .finalize();
 
     py::classh<Statistics>(m, "Statistics")
         .def(py::init<>())
@@ -72,9 +67,8 @@ void exposeHistogram(pybind11::module& m) {
         .def_readwrite("mean", &Statistics::mean)
         .def_readwrite("standardDeviation", &Statistics::standardDeviation)
         .def_readwrite("percentiles", &Statistics::percentiles)
-        .def("__repr__", [](const Statistics& self) {
-            return fmt::format("<Statistics: {}>", formatStatistics(self));
-        });
+        .def("__repr__",
+             [](const Statistics& self) { return fmt::format("<Statistics: {}>", self); });
 
     py::classh<Histogram1D>(m, "Histogram1D")
         .def(py::init<>())
@@ -86,16 +80,10 @@ void exposeHistogram(pybind11::module& m) {
         .def_readwrite("overflow", &Histogram1D::overflow)
         .def_readwrite("dataStats", &Histogram1D::dataStats)
         .def_readwrite("histStats", &Histogram1D::histStats)
-        .def("__repr__", [](const Histogram1D& self) {
-            return fmt::format(
-                "<Histogram1D: binCount: {}, totalCounts: {}, maxCount: {}, "
-                "underflow: {}, overflow: {}, dataRange: {}, valueRange: {}>\n"
-                "dataStats: {}\n"
-                "histStats: {}",
-                self.counts.size(), self.totalCounts, self.maxCount, self.underflow, self.overflow,
-                self.dataMap.dataRange, self.dataMap.valueRange, formatStatistics(self.dataStats),
-                formatStatistics(self.histStats));
-        });
+        .def_readwrite("name", &Histogram1D::name)
+
+        .def("__repr__",
+             [](const Histogram1D& self) { return fmt::format("<Histogram1D {}>", self); });
 
     py::classh<Histogram2D>(m, "Histogram2D")
         .def(py::init<>())
@@ -106,14 +94,20 @@ void exposeHistogram(pybind11::module& m) {
         .def_readwrite("dataMap", &Histogram2D::dataMap)
         .def_readwrite("underflow", &Histogram2D::underflow)
         .def_readwrite("overflow", &Histogram2D::overflow)
-        .def("__repr__", [](const Histogram2D& self) {
-            return fmt::format(
-                "<Histogram2D: counts: {} x {}, totalCounts: {}, maxCount: {}, "
-                "underflow: {}, overflow: {}, dataMap: {}/{}>",
-                self.dimensions.x, self.dimensions.y, self.totalCounts, self.maxCount,
-                self.underflow, self.overflow, self.dataMap[0].valueRange,
-                self.dataMap[1].valueRange);
-        });
+        .def_readwrite("dataStats", &Histogram2D::dataStats)
+        .def_readwrite("histStats", &Histogram2D::histStats)
+        .def_readwrite("name", &Histogram2D::name)
+
+        .def("__repr__",
+             [](const Histogram2D& self) { return fmt::format("<Histogram2D {}>", self); });
+
+    //util::exportDataSequenceFor<Histogram1D>(m, "Histogram1D");
+    exposeStandardDataPorts<Histogram1D>(m, "Histogram1D");
+    //exposeStandardDataPorts<DataSequence<Histogram1D>>(m, "Histogram1DSequence");
+
+    //util::exportDataSequenceFor<Histogram2D>(m, "Histogram2D");
+    exposeStandardDataPorts<Histogram2D>(m, "Histogram2D");
+    //exposeStandardDataPorts<DataSequence<Histogram2D>>(m, "Histogram2DSequence");
 }
 
 }  // namespace inviwo

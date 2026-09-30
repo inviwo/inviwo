@@ -50,7 +50,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<Histogram1D> inport_;
+    FlatMultiDataInport<Histogram1D> inport_;
     DataOutport<DataFrame> outport_;
 };
 
