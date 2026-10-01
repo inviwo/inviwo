@@ -1,6 +1,4 @@
 # Inviwo Qt Application
-project(inviwo)
-
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
 # Add MOC files
@@ -21,43 +19,64 @@ ivw_group("Source Files" ${SOURCE_FILES})
 qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
-set(RES_FILES "")
 if(WIN32)
-    list(APPEND RES_FILES
+    add_library(inviwo-objs OBJECT ${SOURCE_FILES} ${HEADER_FILES} ${MOCED_FILES})
+    target_link_libraries(inviwo-objs PUBLIC
+        inviwo::core
+        inviwo::module-system
+        inviwo::python-helper
+        inviwo::qtapplicationbase
+        inviwo::qteditor
+        Qt6::Core
+        Qt6::Widgets
+    )
+    ivw_define_standard_definitions(inviwo-objs inviwo-objs)
+    ivw_define_standard_properties(QT inviwo-objs)
+
+    set(RES_FILES
         "${IVW_RESOURCES_DIR}/inviwo.rc"
         # manifest file for using UTF-8 codepages on Windows
         # see https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page
         "${IVW_RESOURCES_DIR}/inviwo.manifest"
     )
-elseif(APPLE)
+    source_group("Resource Files" FILES ${RES_FILES})
+
+    # add a windows (inviwo.exe) and a console version (inviwo-cli.exe) of inviwo
+    add_executable(inviwo WIN32 ${RES_FILES})
+    target_link_libraries(inviwo PUBLIC inviwo-objs)
+    set_property(TARGET inviwo APPEND_STRING PROPERTY LINK_FLAGS
+        " /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+    ivw_default_install_targets(inviwo)
+
+    add_executable(inviwo-cli WIN32 ${RES_FILES})
+    target_link_libraries(inviwo-cli PUBLIC inviwo-objs)
+    set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS
+        " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
+    ivw_default_install_targets(inviwo-cli)
+
+    if(pymodules)
+        add_dependencies(inviwo-cli ${pymodules})
+    endif()
+
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set_source_files_properties(${IVW_RESOURCES_DIR}/inviwo/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-    list(APPEND RES_FILES ${IVW_RESOURCES_DIR}/inviwo/inviwo_light.icns)
-endif()
-source_group("Resource Files" FILES ${RES_FILES})
+    set(RES_FILES ${IVW_RESOURCES_DIR}/inviwo/inviwo_light.icns)
+    source_group("Resource Files" FILES ${RES_FILES})
 
-# Create application
-add_executable(inviwo MACOSX_BUNDLE WIN32 
-    ${SOURCE_FILES} 
-    ${HEADER_FILES} 
-    ${MOCED_FILES} 
-    ${RES_FILES})
-target_link_libraries(inviwo PUBLIC 
-    inviwo::core
-    inviwo::module-system
-    inviwo::python-helper
-    inviwo::qtapplicationbase
-    inviwo::qteditor
-    Qt6::Core
-    Qt6::Widgets
-)
+    add_executable(inviwo MACOSX_BUNDLE ${RES_FILES} ${SOURCE_FILES} ${HEADER_FILES} ${MOCED_FILES})
+    target_link_libraries(inviwo PUBLIC
+        inviwo::core
+        inviwo::module-system
+        inviwo::python-helper
+        inviwo::qtapplicationbase
+        inviwo::qteditor
+        Qt6::Core
+        Qt6::Widgets
+    )
+    ivw_define_standard_definitions(inviwo inviwo)
+    ivw_define_standard_properties(QT inviwo)
+    ivw_default_install_targets(inviwo)
 
-ivw_define_standard_definitions(inviwo inviwo)
-ivw_define_standard_properties(QT inviwo)
-
-# Add application to pack
-ivw_default_install_targets(inviwo)
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # Configure Info.plist
     # https://cmake.org/cmake/help/v3.15/prop_tgt/MACOSX_BUNDLE_INFO_PLIST.html
     string(TIMESTAMP YEAR "%Y")
@@ -74,45 +93,22 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.inviwo.Inviwo"
         XCODE_GENERATE_SCHEME YES
     )
-elseif(WIN32)
-    # add a console version of inviwo.exe called inviwo-cli.exe
-    set_property(TARGET inviwo APPEND_STRING PROPERTY LINK_FLAGS
-        " /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 
-    project(inviwo-cli)
-
-    add_executable(inviwo-cli MACOSX_BUNDLE WIN32 
-        ${SOURCE_FILES} 
-        ${HEADER_FILES} 
-        ${MOCED_FILES} 
-        ${QRC_FILE} 
-        ${RES_FILES}
-    )
-    target_link_libraries(inviwo-cli PUBLIC
+else()
+    add_executable(inviwo ${SOURCE_FILES} ${HEADER_FILES} ${MOCED_FILES})
+    target_link_libraries(inviwo PUBLIC
         inviwo::core
         inviwo::module-system
         inviwo::python-helper
         inviwo::qtapplicationbase
         inviwo::qteditor
-        Qt6::Core 
+        Qt6::Core
         Qt6::Widgets
     )
+    ivw_define_standard_definitions(inviwo inviwo)
+    ivw_define_standard_properties(QT inviwo)
+    ivw_default_install_targets(inviwo)
 
-    ivw_define_standard_definitions(inviwo-cli inviwo-cli)
-    ivw_define_standard_properties(inviwo-cli)
-
-    if(pymodules)
-        add_dependencies(inviwo-cli ${pymodules})
-    endif()
-
-    # prevent inviwo-cli from building in parallel with inviwo since that might cause errors with the moc generation
-    add_dependencies(inviwo-cli inviwo)
-
-    set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS 
-        " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
-
-    ivw_default_install_targets(inviwo-cli)
-else()
     if("qt" IN_LIST VCPKG_MANIFEST_FEATURES)
         if(NOT BUILD_SHARED_LIBS)
             qt_import_plugins(
@@ -128,6 +124,11 @@ else()
             )
         endif()
     endif()
+endif()
+
+option(IVW_CFG_TRACY_MENORY_PROFILING "Enable tracy memory profiling settings" OFF)
+if(IVW_CFG_TRACY_MENORY_PROFILING)
+    target_compile_definitions(inviwo PUBLIC IVW_CFG_TRACY_MENORY_PROFILING)
 endif()
 
 ivw_deploy_qt(inviwo)

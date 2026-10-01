@@ -1,6 +1,4 @@
 # Inviwo Qt Application
-project(inviwo_qtminimum)
-
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 # Add source files
