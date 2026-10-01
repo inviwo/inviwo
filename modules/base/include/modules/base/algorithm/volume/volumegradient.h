@@ -34,6 +34,7 @@
 
 #include <memory>
 #include <functional>
+#include <stop_token>
 
 namespace inviwo {
 
@@ -43,8 +44,7 @@ IVW_MODULE_BASE_API std::shared_ptr<Volume> gradientVolume(
     const Volume& volume, size_t channel,
     const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume =
         [](const VolumeConfig& config) { return std::make_shared<Volume>(config); },
-    const std::function<void(double)>& progress = nullptr,
-    const std::function<bool()>& stop = nullptr);
+    const std::function<void(double)>& progress = nullptr, std::stop_token stop = {});
 
 }  // namespace util
 

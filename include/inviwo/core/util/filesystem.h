@@ -37,6 +37,7 @@
 #include <cstdio>
 #include <ctime>
 #include <optional>
+#include <expected>
 #include <filesystem>
 #include <span>
 
@@ -216,6 +217,16 @@ fileModificationTime(const std::filesystem::path& filePath);
  */
 [[deprecated("use std::filesystem::copy")]] IVW_CORE_API bool copyFile(
     const std::filesystem::path& src, const std::filesystem::path& dst);
+
+IVW_CORE_API auto getFilesInFolder(const std::filesystem::path& folder,
+                                   std::optional<std::string_view> include,
+                                   std::optional<std::string_view> exclude)
+    -> std::expected<std::vector<std::filesystem::path>, std::string_view>;
+
+IVW_CORE_API auto getFileInFolder(const std::filesystem::path& folder,
+                                  std::optional<std::string_view> include,
+                                  std::optional<std::string_view> exclude)
+    -> std::expected<std::filesystem::path, std::string_view>;
 
 enum class ListMode {
     Files,

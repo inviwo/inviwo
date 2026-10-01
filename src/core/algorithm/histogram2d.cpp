@@ -38,4 +38,29 @@ DataMapper histogramDataMap(const DataMapper& datamap, double effectiveRange) {
     return DataMapper{effectiveDataRange, effectiveValueRange, datamap.valueAxis};
 }
 
+std::array<std::vector<size_t>, 2> histogram2DTo1D(const std::vector<size_t>& hist2D,
+                                                   size2_t numBins) {
+
+    const IndexMapper2D indexMapper{numBins};
+
+    const auto hist1D_1 =
+        std::views::iota(0uz, numBins[0]) | std::views::transform([&](auto i) {
+            return std::ranges::fold_left(
+                std::views::iota(0uz, numBins[1]) |
+                    std::views::transform([&](auto j) { return hist2D[indexMapper(i, j)]; }),
+                0, std::plus<>{});
+        }) |
+        std::ranges::to<std::vector>();
+    const auto hist1D_2 =
+        std::views::iota(0uz, numBins[1]) | std::views::transform([&](auto j) {
+            return std::ranges::fold_left(
+                std::views::iota(0uz, numBins[0]) |
+                    std::views::transform([&](auto i) { return hist2D[indexMapper(i, j)]; }),
+                0, std::plus<>{});
+        }) |
+        std::ranges::to<std::vector>();
+
+    return {hist1D_1, hist1D_2};
+}
+
 }  // namespace inviwo::util::detail

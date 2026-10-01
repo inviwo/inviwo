@@ -48,28 +48,14 @@ auto VolumeReuseCache::get(const VolumeConfig& config)
         cache_.clear();
         status = Status::ClearedCache;
     }
-    config_ = config;
+    config_ = config.orDefault();
 
     auto it = std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
     if (it != cache_.end()) {
         auto volume = *it;
         volume->getMetaDataMap()->removeAll();
-
-        volume->setSwizzleMask(config_.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask));
-        volume->setInterpolation(
-            config_.interpolation.value_or(VolumeConfig::defaultInterpolation));
-        volume->setWrapping(config_.wrapping.value_or(VolumeConfig::defaultWrapping));
-
-        volume->axes[0] = config_.xAxis.value_or(VolumeConfig::defaultXAxis);
-        volume->axes[1] = config_.yAxis.value_or(VolumeConfig::defaultYAxis);
-        volume->axes[2] = config_.zAxis.value_or(VolumeConfig::defaultZAxis);
-        volume->dataMap = config_.dataMap();
-        volume->setModelMatrix(config_.model.value_or(VolumeConfig::defaultModel));
-        volume->setWorldMatrix(config_.world.value_or(VolumeConfig::defaultWorld));
-
-        if (*volume != config_.reprConfig()) {
-            throw Exception("Unexpected changes found in cache");
-        }
+        volume->clearHistograms();
+        volume->setConfig(config_);
 
         return {volume, status};
     } else {

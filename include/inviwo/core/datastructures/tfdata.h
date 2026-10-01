@@ -39,6 +39,16 @@
 
 namespace inviwo {
 
+template <typename T>
+struct TFDataTraits {
+
+    static const DataMapper* getDataMap(const T& data) { return &data.dataMap; }
+    static HistogramCache::Result calculateHistograms(
+        const T& data, const std::function<HistogramCache::Callback>& whenDone) {
+        return data.calculateHistograms(whenDone);
+    }
+};
+
 class IVW_CORE_API TFData {
 public:
     using OnChangeHandle = std::array<std::shared_ptr<std::function<void()>>, 3>;
@@ -56,13 +66,15 @@ public:
         virtual const DataMapper* getDataMap() const = 0;
 
         virtual HistogramCache::Result calculateHistograms(
-            const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const = 0;
+            const std::function<HistogramCache::Callback>& whenDone) const = 0;
 
         virtual OnChangeHandle onChange(const std::function<void()>& callback) const = 0;
     };
 
     template <typename T>
     struct Implementation : Base {
+        using D = typename T::type;
+
         explicit Implementation(T* toWrap) : Base{}, port{toWrap} {
             IVW_ASSERT(port != nullptr, "port should never be null");
         }
@@ -78,16 +90,16 @@ public:
 
         virtual const DataMapper* getDataMap() const override {
             if (auto data = port->getData()) {
-                return &data->dataMap;
+                return TFDataTraits<D>::getDataMap(*data);
             } else {
                 return nullptr;
             }
         }
 
         virtual HistogramCache::Result calculateHistograms(
-            const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const override {
+            const std::function<HistogramCache::Callback>& whenDone) const override {
             if (auto data = port->getData()) {
-                return data->calculateHistograms(whenDone);
+                return TFDataTraits<D>::calculateHistograms(*data, whenDone);
             } else {
                 return {.progress = HistogramCache::Progress::NoData};
             }
@@ -133,7 +145,7 @@ public:
     }
 
     HistogramCache::Result calculateHistograms(
-        const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const {
+        const std::function<HistogramCache::Callback>& whenDone) const {
         if (base_) {
             return base_->calculateHistograms(whenDone);
         } else {

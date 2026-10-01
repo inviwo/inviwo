@@ -56,7 +56,7 @@ SphericalVolumeRaycaster::SphericalVolumeRaycaster(std::string_view identifier,
               "input volume (Only one channel will be rendered)"_help}
     , entryExit_{}
     , background_{*this}
-    , isoTF_{volume_.volumePort}
+    , isoTF_{&volume_.volumePort}
     , raycasting_{volume_.getName(), isoTF_.isoTFs[0]}
     , camera_{"camera", util::boundingBox(volume_.volumePort)}
     , light_{&camera_.camera}

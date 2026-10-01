@@ -85,7 +85,7 @@ std::string makeFragmentShader(bool maskMissingValue, bool maskZero, bool maskNa
 const ProcessorInfo VolumeMask::processorInfo_{
     "org.inviwo.VolumeMask",  // Class identifier
     "Volume Mask",            // Display name
-    "Undefined",              // Category
+    "Volume Operation",       // Category
     CodeState::Experimental,  // Code state
     Tags::GL,                 // Tags
     R"(Construct a binary mask volume base on a input volume)"_unindentHelp,

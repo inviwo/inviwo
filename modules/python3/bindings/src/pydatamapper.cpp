@@ -98,14 +98,14 @@ void exposeDataMapper(py::module& m) {
             },
             py::arg("format") = "{}", py::doc(formatDoc))
         .def("__str__", [](const Unit& unit) { return fmt::to_string(unit); })
-        .def("__repr__", [](const Unit& unit) { return fmt::to_string(unit); });
+        .def("__repr__", [](const Unit& unit) { return fmt::format("<Unit {}>", unit); });
 
     py::classh<Axis>(m, "Axis")
         .def(py::init<std::string, Unit>())
         .def_readwrite("name", &Axis::name)
         .def_readwrite("unit", &Axis::unit)
         .def("__repr__",
-             [](const Axis& axis) { return fmt::format("{}{: [}", axis.name, axis.unit); });
+             [](const Axis& axis) { return fmt::format("<Axis {}{: [}>", axis.name, axis.unit); });
 
     py::classh<DataMapper>(m, "DataMapper")
         .def(py::init())
@@ -113,9 +113,7 @@ void exposeDataMapper(py::module& m) {
         .def_readwrite("valueRange", &DataMapper::valueRange)
         .def_readwrite("valueAxis", &DataMapper::valueAxis)
         .def("__repr__", [](const DataMapper& dataMapper) {
-            return fmt::format("DataMapper[data: {}, value: {}, axis: {}{: [}]",
-                               dataMapper.dataRange, dataMapper.valueRange,
-                               dataMapper.valueAxis.name, dataMapper.valueAxis.unit);
+            return fmt::format("<DataMapper {}>", dataMapper);
         });
 }
 

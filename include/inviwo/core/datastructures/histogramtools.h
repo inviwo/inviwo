@@ -36,12 +36,14 @@
 #include <memory>
 #include <vector>
 #include <mutex>
+#include <future>
 
 namespace inviwo {
 
 class IVW_CORE_API HistogramCache {
 public:
-    using Callback = void(const std::vector<Histogram1D>&);
+    using Calculation = std::vector<Histogram1D>();
+    using Callback = void(std::shared_ptr<const std::vector<Histogram1D>>);
 
     enum class Progress { Done, Calculating, NoData };
     struct Result {
@@ -56,19 +58,23 @@ public:
     HistogramCache& operator=(HistogramCache&& that) noexcept;
     ~HistogramCache() = default;
 
-    Result calculateHistograms(const std::function<std::vector<Histogram1D>()>& calculate,
+    Result calculateHistograms(const std::function<Calculation>& calculate,
                                const std::function<Callback>& whenDone) const;
 
+    std::shared_ptr<const std::vector<Histogram1D>> calculateHistograms(
+        const std::function<Calculation>& calculate) const;
+
     void forEach(const std::function<void(const Histogram1D&, size_t)>&) const;
-    void discard(const std::function<std::vector<Histogram1D>()>& calculate);
+
+    void clear();
+    void recalculate(const std::function<Calculation>& calculate);
 
 private:
     enum class Status { Valid, Calculating, NotSet };
     struct State {
         std::mutex mutex;
-        std::vector<Histogram1D> histograms;
-        Dispatcher<Callback> callbacks;
-        Status status = Status::NotSet;
+        Dispatcher<Callback> callbacks;  // Should always be invoked on the main thread
+        std::shared_future<std::shared_ptr<const std::vector<Histogram1D>>> histograms;
     };
 
     std::shared_ptr<State> state_;

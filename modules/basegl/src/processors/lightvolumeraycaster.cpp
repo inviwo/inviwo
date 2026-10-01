@@ -58,7 +58,7 @@ LightVolumeRaycaster::LightVolumeRaycaster(std::string_view identifier,
     , entryExit_{}
     , lightVolume_{*this, volume_.getName(), volume_.getGradientString()}
     , background_{*this}
-    , isoTF_{volume_.volumePort}
+    , isoTF_{&volume_.volumePort}
     , raycasting_{volume_.getName(), isoTF_.isoTFs[0]}
     , camera_{"camera", util::boundingBox(volume_.volumePort)}
     , positionIndicator_{}

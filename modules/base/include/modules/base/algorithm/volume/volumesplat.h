@@ -37,6 +37,7 @@
 #include <cstddef>
 #include <memory>
 #include <span>
+#include <stop_token>
 #include <string_view>
 #include <functional>
 
@@ -109,14 +110,12 @@ IVW_MODULE_BASE_API std::shared_ptr<Volume> splat(const SplatInput& input,
 
 IVW_MODULE_BASE_API
 std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
-          std::vector<std::function<vec2(const std::function<void(double)>&,
-                                         const std::function<bool()>&)>>>
+          std::vector<std::function<vec2(const std::function<void(double)>&, std::stop_token)>>>
 splatJobs(const SplatInput& input, const SplatSettings& settings);
 
 IVW_MODULE_BASE_API
 std::pair<std::function<std::shared_ptr<Volume>(std::vector<vec2>)>,
-          std::vector<std::function<vec2(const std::function<void(double)>&,
-                                         const std::function<bool()>&)>>>
+          std::vector<std::function<vec2(const std::function<void(double)>&, std::stop_token)>>>
 splatJobs(std::span<const SplatInput> inputs, const SplatSettings& settings);
 
 }  // namespace util

@@ -53,6 +53,8 @@ Source::Source()
 }
 
 void Source::process() {
+    const std::scoped_lock lock{Handle::globalMutex()};
+
     if (file_.get().empty()) {
         port_.setData(nullptr);
         return;

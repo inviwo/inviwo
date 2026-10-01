@@ -54,40 +54,27 @@ HDF5ToLayer::HDF5ToLayer()
     , inport_("inport")
     , outport_("outport")
     , layerSelection_("layerSelection", "Layer")
-    , automaticEvaluation_("automaticEvaluation", "Automatic loading", true,
-                           InvalidationLevel::Valid)
-    , evaluate_("evaluate", "Load", [this]() { dirty_ = true; })
     , information_("Information", "Data information")
-    , outputGroup_("outputGroup", "Operations", InvalidationLevel::Valid)
+    , outputGroup_("outputGroup", "Operations")
     , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
-    , selection_("selection", "Selection", 4)
-    , dirty_(false) {
+    , selection_("selection", "Selection", 6) {
 
     addPort(inport_);
     addPort(outport_);
 
-    layerSelection_.onChange([this]() { onSelectionChange(); });
     layerSelection_.setSerializationMode(PropertySerializationMode::All);
 
-    automaticEvaluation_.onChange([this]() { evaluate_.setReadOnly(automaticEvaluation_); });
-
     outputGroup_.addProperties(datatype_, selection_);
-    outputGroup_.onChange([this]() {
-        if (automaticEvaluation_) {
-            dirty_ = true;
-            this->invalidate(InvalidationLevel::InvalidOutput);
-        }
-    });
-
-    addProperties(layerSelection_, automaticEvaluation_, evaluate_, information_, outputGroup_);
+    addProperties(layerSelection_, information_, outputGroup_);
 }
 
 HDF5ToLayer::~HDF5ToLayer() = default;
 
 void HDF5ToLayer::process() try {
+    const std::scoped_lock lock{Handle::globalMutex()};
+
     const auto data = inport_.getData();
     if (inport_.isChanged()) {
-
         std::vector<DataSetInfo> metadata = util::getDataSets(*data);
         layerMatches_.assign_range(metadata | std::views::filter([](const DataSetInfo& info) {
                                        return info.dimensions.size() >= 2ull &&
@@ -95,43 +82,32 @@ void HDF5ToLayer::process() try {
                                                                      std::multiplies{}) > 100ull;
                                    }));
 
-        std::vector<OptionPropertyStringOption> layerOptions;
-        for (const auto& info : layerMatches_) {
-            layerOptions.emplace_back(info.path.toString(), util::dataSetDescription(info),
-                                      info.path.toString());
-        }
-        layerSelection_.replaceOptions(layerOptions);
+        layerSelection_.replaceOptions(layerMatches_ |
+                                       std::views::transform(util::dataSetInfoToOption));
         layerSelection_.setCurrentStateAsDefault();
     }
 
-    onSelectionChange();
-
-    if (dirty_) {
-        dirty_ = false;
-        const DataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
-
-        layer_ = getLayerAtPathAsType(*data + layerMeta.path, selection_.getSelection(),
-                                      util::conversionFormat(datatype_.getSelectedIndex()));
-        information_.updateForNewLayer(*layer_, deserialized_ ? inviwo::util::OverwriteState::Yes
-                                                              : inviwo::util::OverwriteState::No);
-        deserialized_ = false;
+    if (layerMatches_.empty()) {
+        outport_.clear();
+        return;
     }
 
-    if (layer_) {
-        information_.updateLayer(*layer_);
-        outport_.setData(layer_);
-    }
+    const DataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
+    selection_.update(layerMeta);
+
+    const LayerConfig layerConfig{.format = util::conversionFormat(datatype_.getSelectedIndex())};
+
+    auto layer =
+        getLayerAtPathAsType(*data + layerMeta.path, selection_.getSelection(), layerConfig);
+    information_.updateForNewLayer(*layer, deserialized_ ? inviwo::util::OverwriteState::Yes
+                                                         : inviwo::util::OverwriteState::No);
+    deserialized_ = false;
+
+    information_.updateLayer(*layer);
+    outport_.setData(layer);
 
 } catch (H5::Exception& e) {
     throw Exception(SourceContext{}, "Error reading HDF5 data: {}", e.getDetailMsg());
-}
-
-void HDF5ToLayer::onSelectionChange() {
-    dirty_ = true;
-    if (!layerMatches_.empty()) {
-        const DataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
-        selection_.update(layerMeta);
-    }
 }
 
 void HDF5ToLayer::deserialize(Deserializer& d) {

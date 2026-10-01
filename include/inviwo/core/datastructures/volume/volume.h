@@ -176,10 +176,15 @@ public:
     const typename representation_traits<Volume, Kind>::type* getRep() const;
 
     [[nodiscard]] HistogramCache::Result calculateHistograms(
-        const std::function<void(const std::vector<Histogram1D>&)>& whenDone) const;
-    void discardHistograms();
+        const std::function<HistogramCache::Callback>& whenDone) const;
 
-    VolumeConfig config() const;
+    [[nodiscard]] std::shared_ptr<const std::vector<Histogram1D>> calculateHistograms() const;
+
+    void recalculateHistograms();
+    void clearHistograms();
+
+    [[nodiscard]] VolumeConfig config() const;
+    void setConfig(const VolumeConfig& config);
 
 protected:
     size3_t defaultDimensions_;

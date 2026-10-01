@@ -109,9 +109,9 @@ TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene,
         if (leftPressed_) return;
         onSceneRectChanged();
     });
-    histogramChangeHandle_ =
-        property_->onHistogramChange([this](TFPropertyConcept::HistogramChange change,
-                                            const std::vector<Histogram1D>& histograms) {
+    histogramChangeHandle_ = property_->onHistogramChange(
+        [this](TFPropertyConcept::HistogramChange change,
+               std::shared_ptr<const std::vector<Histogram1D>> histograms) {
             histogramState_.change = change;
             histogramState_.histograms = histograms;
             histogramState_.polygons = HistogramState::createHistogramPolygons(
@@ -466,7 +466,8 @@ QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D
                     return histogram.histStats.percentiles[95];
                 case HistogramMode::P90:  // show 90%
                     return histogram.histStats.percentiles[90];
-                default: return histogram.histStats.percentiles[100];
+                default:
+                    return histogram.histStats.percentiles[100];
             }
         }();
         const auto scaleSafe = std::max(scale, 1.0);
@@ -482,11 +483,11 @@ QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D
 }
 
 std::vector<QPolygonF> TFEditorView::HistogramState::createHistogramPolygons(
-    const std::vector<Histogram1D>& histograms, HistogramMode mode) {
+    std::shared_ptr<const std::vector<Histogram1D>> histograms, HistogramMode mode) {
     std::vector<QPolygonF> polygons;
 
-    if (mode != HistogramMode::Off) {
-        for (const auto& histogram : histograms) {
+    if (histograms && mode != HistogramMode::Off) {
+        for (const auto& histogram : *histograms) {
             polygons.push_back(createHistogramPolygon(histogram, mode));
         }
     }
@@ -516,12 +517,12 @@ void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPoly
 
 void TFEditorView::HistogramState::paintLabel(QPainter* painter, size_t channel, size_t count,
                                               size_t nChannels, const QRect& rect,
-                                              std::string_view overflow) {
+                                              std::string_view text) {
     const utilqt::Save saved{painter};
     painter->resetTransform();
     setPenAndFont(painter, ColorType::Text, channel, nChannels);
     painter->drawText(textRect(rect, count), Qt::AlignRight | Qt::AlignTop,
-                      utilqt::toQString(fmt::format("Channel: {}{}", channel + 1, overflow)));
+                      utilqt::toQString(text));
 }
 
 void TFEditorView::HistogramState::paintState(QPainter* painter, const QRect& rect) const {
@@ -550,37 +551,39 @@ void TFEditorView::HistogramState::paintHistograms(QPainter* painter, const QRec
         ++total;
     }
 
-    for (auto&& [channel, polygon, histogram] : util::enumerate(polygons, histograms)) {
-        if (!selection[channel]) continue;
-        paintHistogram(painter, polygon, channel, total, sceneRect, histogram.dataMap, dataMap);
-    }
-
-    size_t count = 0;
-    for (auto&& [channel, histogram] : util::enumerate(polygons)) {
-        if (!selection[channel]) continue;
-        const auto overflow = histograms[channel].overflow > 0;
-        const auto underflow = histograms[channel].underflow > 0;
-        if (overflow || underflow) {
-            const auto outside = histograms[channel].overflow + histograms[channel].underflow;
-            if (outside > histograms[channel].totalCounts / 10000) {
-                paintLabel(painter, channel, count, total, rect,
-                           fmt::format(", underflow: {:5.2f}%, overflow: {:5.2f}%",
-                                       100.0 * static_cast<double>(histograms[channel].underflow) /
-                                           static_cast<double>(histograms[channel].totalCounts),
-                                       100.0 * static_cast<double>(histograms[channel].overflow) /
-                                           static_cast<double>(histograms[channel].totalCounts)));
-            } else {
-                paintLabel(
-                    painter, channel, count, total, rect,
-                    fmt::format(", underflow: {}, overflow: {}", histograms[channel].underflow,
-                                histograms[channel].overflow));
-            }
-
-        } else {
-            paintLabel(painter, channel, count, total, rect, "");
+    if (histograms) {
+        for (auto&& [channel, polygon, histogram] : util::enumerate(polygons, *histograms)) {
+            if (!selection[channel]) continue;
+            paintHistogram(painter, polygon, channel, total, sceneRect, histogram.dataMap, dataMap);
         }
 
-        ++count;
+        size_t count = 0;
+        for (auto&& [channel, histogram] : util::enumerate(*histograms)) {
+            if (!selection[channel]) continue;
+            const auto overflow = histogram.overflow > 0;
+            const auto underflow = histogram.underflow > 0;
+            if (overflow || underflow) {
+                const auto outside = histogram.overflow + histogram.underflow;
+                if (outside > histogram.totalCounts / 10000) {
+                    paintLabel(
+                        painter, channel, count, total, rect,
+                        fmt::format("{}, underflow: {:5.2f}%, overflow: {:5.2f}%", histogram.name,
+                                    100.0 * static_cast<double>(histogram.underflow) /
+                                        static_cast<double>(histogram.totalCounts),
+                                    100.0 * static_cast<double>(histogram.overflow) /
+                                        static_cast<double>(histogram.totalCounts)));
+                } else {
+                    paintLabel(painter, channel, count, total, rect,
+                               fmt::format("{}, underflow: {}, overflow: {}", histogram.name,
+                                           histogram.underflow, histogram.overflow));
+                }
+
+            } else {
+                paintLabel(painter, channel, count, total, rect, histogram.name);
+            }
+
+            ++count;
+        }
     }
 }
 

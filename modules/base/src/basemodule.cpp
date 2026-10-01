@@ -145,6 +145,7 @@
 #include <modules/base/processors/volumedivergencecpuprocessor.h>
 #include <modules/base/processors/volumeexport.h>
 #include <modules/base/processors/volumegradientcpuprocessor.h>
+#include <modules/base/processors/volumehistogram1d.h>
 #include <modules/base/processors/volumehistogram2d.h>
 #include <modules/base/processors/volumeinformation.h>
 #include <modules/base/processors/volumelaplacianprocessor.h>
@@ -156,6 +157,8 @@
 #include <modules/base/processors/volumesliceextractor.h>
 #include <modules/base/processors/volumeslicetolayer.h>
 #include <modules/base/processors/volumesource.h>
+#include <modules/base/processors/temporalvolumesource.h>
+#include <modules/base/processors/temporalvolumeplayer.h>
 #include <modules/base/processors/volumedownsample.h>
 #include <modules/base/processors/volumesubset.h>
 #include <modules/base/processors/volumetospatialsampler.h>
@@ -299,6 +302,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSliceExtractor>();
     registerProcessor<VolumeSliceToLayer>();
     registerProcessor<VolumeSource>();
+    registerProcessor<TemporalVolumeSource>();
+    registerProcessor<TemporalVolumePlayer>();
     registerProcessor<VolumeSubset>();
     registerProcessor<VolumeToSpatialSampler>();
     registerProcessor<MeshSplatProcessor>();
@@ -316,7 +321,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<FileCache<Mesh>>();
     registerProcessor<FileCache<Layer>>();
     registerProcessor<FileCache<Image, ImageInport, ImageOutport>>();
-
+    registerProcessor<VolumeHistogram1D>();
     registerProperty<BasisProperty>();
     registerProperty<BufferInformationProperty>();
     registerProperty<DataRangeProperty>();

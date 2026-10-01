@@ -25,6 +25,7 @@ set(HEADER_FILES
     include/inviwo/dataframe/processors/dataframetomesh.h
     include/inviwo/dataframe/processors/dataframetovector.h
     include/inviwo/dataframe/processors/filelist.h
+    include/inviwo/dataframe/processors/histogram1dtodataframe.h
     include/inviwo/dataframe/processors/imagetodataframe.h
     include/inviwo/dataframe/processors/sequencetodataframe.h
     include/inviwo/dataframe/processors/syntheticdataframe.h
@@ -67,6 +68,7 @@ set(SOURCE_FILES
     src/processors/dataframetomesh.cpp
     src/processors/dataframetovector.cpp
     src/processors/filelist.cpp
+    src/processors/histogram1dtodataframe.cpp
     src/processors/imagetodataframe.cpp
     src/processors/sequencetodataframe.cpp
     src/processors/syntheticdataframe.cpp

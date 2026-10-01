@@ -197,7 +197,7 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
     for (size_t channel = 0; channel < extent; ++channel) {
         const auto maxBinCount = *std::ranges::max_element(hists[channel]);
 
-        histograms.push_back(Histogram1D{
+        histograms.emplace_back(Histogram1D{
             .counts = hists[channel],
             .totalCounts = count,
             .maxCount = maxBinCount,
@@ -211,6 +211,7 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
                           .percentiles =
                               calculatePercentiles(hists[channel], dataMap.dataRange, count)},
             .histStats = calculateHistogramStats(hists[channel]),
+            .name = fmt::format("Channel: {}", channel),
         });
     }
 

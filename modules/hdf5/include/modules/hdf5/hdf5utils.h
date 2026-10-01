@@ -30,10 +30,14 @@
 #pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
+
+#include <inviwo/core/algorithm/rangeutils.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/properties/optionproperty.h>
+
 #include <modules/hdf5/datastructures/hdf5path.h>
 #include <modules/hdf5/datastructures/hdf5handle.h>
-
-#include <inviwo/core/properties/optionproperty.h>
+#include <modules/hdf5/datastructures/hdf5selection.h>
 
 #include <string>
 #include <vector>
@@ -81,6 +85,49 @@ IVW_MODULE_HDF5_API std::vector<OptionPropertyIntOption> conversionOptions();
  * conversion) returns nullptr.
  */
 IVW_MODULE_HDF5_API const DataFormatBase* conversionFormat(size_t index);
+
+inline constexpr auto dataSetInfoToOption = [](const DataSetInfo& info) {
+    return OptionPropertyStringOption{info.path.toString(), util::dataSetDescription(info),
+                                      info.path.toString()};
+};
+
+inline constexpr glm::dmat4 createBasis(glm::size3_t dim, glm::dvec3 spacing) {
+    auto basis = glm::diagonal4x4(dvec4{dvec3{dim} * spacing, 1.0});
+    basis[3] = dvec4{-0.5 * dvec3(basis[0] + basis[1] + basis[2]), 1.0};
+    return basis;
+}
+
+inline constexpr auto validSelectionAndDims(range_of<Selection> auto selections,
+                                            range_of<size_t> auto dimensions) {
+
+    return std::views::zip(selections, dimensions) | std::views::transform([](auto&& item) {
+               return std::tuple{std::apply(clamp, item), std::get<1>(item)};
+           }) |
+           std::views::filter([](auto&& item) { return std::get<0>(item).count > 1; });
+}
+
+inline constexpr glm::dmat4 adjustBasis(glm::dmat4 basis, range_of<Selection> auto selections,
+                                        range_of<size_t> auto dimensions, bool adjustBasis,
+                                        bool adjustOffset) {
+    if (!adjustBasis) return basis;
+
+    auto selAndDims = validSelectionAndDims(selections, dimensions);
+
+    for (auto [i, item] : std::views::zip(std::views::iota(0uz), selAndDims)) {
+        if (i > 2) throw Exception("Invalid selection, resulting rank > 3");
+
+        auto [sel, dim] = item;
+        if (adjustOffset) {
+            basis[3] += basis[i] * static_cast<double>(sel.start) / static_cast<double>(dim);
+        }
+        basis[i] *= static_cast<double>(sel.count * sel.stride) / static_cast<double>(dim);
+    }
+    if (!adjustOffset) {
+        const vec3 offset = -0.5f * vec3(basis[0] + basis[1] + basis[2]);
+        basis[3] = vec4(offset, 1.0f);
+    }
+    return basis;
+}
 
 }  // namespace util
 

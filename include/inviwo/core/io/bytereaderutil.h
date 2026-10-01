@@ -34,6 +34,7 @@
 
 #include <string_view>
 #include <filesystem>
+#include <stop_token>
 
 namespace inviwo::util {
 
@@ -41,9 +42,12 @@ IVW_CORE_API void reverseByteOrder(void* dest, size_t bytes, size_t elementSize)
 
 IVW_CORE_API
 void readBytesIntoBuffer(const std::filesystem::path& path, size_t offset, size_t bytes,
-                         ByteOrder byteOrder, size_t elementSize, void* dest);
+                         ByteOrder byteOrder, size_t elementSize, void* dest,
+                         std::stop_token stop = {});
 
 IVW_CORE_API void readCompressedBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
                                                 size_t bytes, ByteOrder byteOrder,
-                                                size_t elementSize, void* dest);
+                                                size_t elementSize, void* dest,
+                                                std::stop_token stop = {});
+
 }  // namespace inviwo::util

@@ -76,6 +76,24 @@ VolumeConfig& VolumeConfig::updateFrom(const VolumeConfig& config) {
     return *this;
 }
 
+VolumeConfig VolumeConfig::orDefault() const {
+    return {.dimensions = dimensions.value_or(VolumeConfig::defaultDimensions),
+            .format = format ? format : VolumeConfig::defaultFormat,
+            .swizzleMask = swizzleMask.value_or(VolumeConfig::defaultSwizzleMask),
+            .interpolation = interpolation.value_or(VolumeConfig::defaultInterpolation),
+            .wrapping = wrapping.value_or(VolumeConfig::defaultWrapping),
+            .xAxis = xAxis.value_or(VolumeConfig::defaultXAxis),
+            .yAxis = yAxis.value_or(VolumeConfig::defaultYAxis),
+            .zAxis = zAxis.value_or(VolumeConfig::defaultZAxis),
+            .valueAxis = valueAxis.value_or(VolumeConfig::defaultValueAxis),
+            .dataRange =
+                dataRange.value_or(VolumeConfig::defaultDataRange(VolumeConfig::defaultFormat)),
+            .valueRange =
+                valueRange.value_or(VolumeConfig::defaultValueRange(VolumeConfig::defaultFormat)),
+            .model = model.value_or(VolumeConfig::defaultModel),
+            .world = world.value_or(VolumeConfig::defaultWorld)};
+}
+
 VolumeReprConfig VolumeConfig::reprConfig() const {
     return {.dimensions = dimensions,
             .format = format,

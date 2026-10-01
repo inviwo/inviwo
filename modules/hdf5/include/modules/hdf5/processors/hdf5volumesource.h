@@ -68,24 +68,13 @@ protected:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    void onDataChange();
-
-    void onSelectionChange();
-    void onBasisSelectionChange();
-
-    dmat4 getBasisFromMeta(const DataSetInfo& meta);
-
     std::vector<DataSetInfo> volumeMatches_;
     std::vector<DataSetInfo> basisMatches_;
 
     Inport inport_;
     VolumeOutport outport_;
-    std::shared_ptr<Volume> volume_;
 
     OptionPropertyString volumeSelection_;
-
-    BoolProperty automaticEvaluation_;
-    ButtonProperty evaluate_;
 
     CompositeProperty basisGroup_;
     OptionPropertyString basisSelection_;
@@ -102,7 +91,6 @@ private:
 
     VolumeReuseCache cache_;
 
-    bool dirty_;
     bool deserialized_ = false;
 };
 
