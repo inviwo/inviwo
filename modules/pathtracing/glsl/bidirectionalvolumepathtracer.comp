@@ -1,0 +1,141 @@
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+#include "utils/sampler3d.glsl"
+
+#include "utils/classification.glsl"
+#include "utils/compositing.glsl"
+#include "utils/depth.glsl"
+#include "utils/gradients.glsl"
+#include "utils/shading.glsl"
+#include "utils/raycastgeometry.glsl"
+#include "utils/raycasting.glsl"
+
+#include "random.glsl"
+#include "transmittance/transmittancemethods.glsl"
+#include "lightestimation.glsl"
+#include "util/rayminmax.glsl"
+
+// volume
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
+
+// entry
+uniform sampler2D entryColor;
+uniform sampler2D entryDepth;
+uniform ImageParameters entryParameters;
+
+// exit
+uniform sampler2D exitColor;
+uniform sampler2D exitDepth;
+uniform ImageParameters exitParameters;
+
+// output
+uniform layout(binding = 0, rgba32f)
+image2D outportColor;
+uniform layout(binding = 1, r32f)
+image2D outportDepth;
+writeonly uniform image2D outportPicking;
+uniform ImageParameters outportParameters;
+
+// Uniform properties
+uniform CameraParameters camera;
+uniform VolumeIndicatorParameters positionindicator;
+uniform RaycastingParameters raycaster;
+uniform LightParameters light;  // lighting
+uniform sampler2D transferFunction;
+
+uniform int channel;
+uniform float time_ms;
+uniform int iteration;
+uniform int transmittanceMethod;
+
+#define PI 3.1415
+
+layout(local_size_x = 16, local_size_y = 16) in;
+
+uint getHashSeed() {
+    uint globalDimX = gl_WorkGroupSize.x * gl_NumWorkGroups.x;
+    uint globalDimY = gl_WorkGroupSize.y * gl_NumWorkGroups.y;
+
+    uint gid = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * globalDimX;
+    uint hashSeed = gid + floatBitsToUint(time_ms);
+    return hashSeed;
+}
+
+vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDepth, float rayDepth,
+               inout float depth, vec4 bgColor) {
+
+    vec3 ray = exitPoint - entryPoint;
+    vec3 rayDir = normalize(ray);
+    float t1 = length(ray);
+    float t0 = 0.f;
+
+    uint hashSeed = getHashSeed();
+
+    vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
+
+    vec3 samplePosition = entryPoint;
+
+    float T = 0.0f;
+    float meanFreePath = woodcockTracking(samplePosition, rayDir, t0, t1, hashSeed, volume,
+                                          volumeParameters, transferFunction, 1.0f);
+
+    vec4 result = vec4(0.0);
+    if (meanFreePath <= t1) {
+        samplePosition = entryPoint + meanFreePath * rayDir;
+
+        rayDepth = meanFreePath;
+        depth = rayDepth;
+
+        result.rgb = estimateDirectLight(volume, volumeParameters, transferFunction,
+                                         samplePosition, cameraDir, light,
+                                         hashSeed, channel, transmittanceMethod);
+        result.a = 1f - T;
+
+    } else {
+        result = bgColor;
+    }
+
+    return result;
+}
+
+void main() {
+
+    vec4 picking = vec4(0.0);  // The picking color of the ray
+                               // The ray depth value [0, ray length], -1 means "no" depth.
+    float rayDepth = 0;        // Uses the same space as rayPosition. Usually used to track
+                               // the depth of the "first" hit in DVR.
+    float depth = 1.0;         // The image depth, from far to near [0, 1].
+                               // Will be overridden by rayDepth if != -1 and then
+                               // written to outportDepth
+
+    ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+    vec2 texCoord = vec2(0.5 + gl_GlobalInvocationID.xy) / outportParameters.dimensions;
+
+    vec3 entryPoint = texture(entryColor, texCoord).xyz;
+    vec3 exitPoint = texture(exitColor, texCoord).xyz;
+
+    float entryPointDepth = texture(entryDepth, texCoord).x;
+    float exitPointDepth = texture(exitDepth, texCoord).x;
+
+    vec4 bgColor = vec4(0.0f);
+
+    if (entryPoint == exitPoint) {
+        imageStore(outportColor, storePos, bgColor);
+        imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255));
+        imageStore(outportPicking, storePos, picking);
+        return;
+    }
+
+    vec4 color =
+        pathtrace(entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth, bgColor);
+
+    vec4 colorPrev = imageLoad(outportColor, storePos);
+
+    float w = 1.0f - 1.0f / float(iteration + 1);
+    vec4 colorFinal = mix(color, colorPrev, w);
+
+    imageStore(outportColor, storePos, colorFinal);
+    imageStore(outportDepth, storePos, vec4(vec3(depth), 255));
+    imageStore(outportPicking, storePos, picking);
+}
