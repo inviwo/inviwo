@@ -145,9 +145,11 @@ Mesh::BufferVector ColumnMapper::getBuffers(const DataFrame& df) {
 
             auto& dst = buffer->getEditableRAMRepresentation()->getDataContainer();
 
+            std::optional<dvec2> customRange;
             for (auto&& [comp, s] : util::enumerate(self.sources)) {
                 if (!s.isNoneSelected()) {
                     const auto col = df.getColumn(s.getSelectedValue());
+                    customRange = col->getCustomRange();
                     col->getRAMRepresentation()
                         ->template dispatch<void, dispatching::filter::Scalars>(
                             [&](auto brprecision) {
@@ -160,7 +162,9 @@ Mesh::BufferVector ColumnMapper::getBuffers(const DataFrame& df) {
                 }
             }
 
-            if (!std::empty(dst)) {
+            if (customRange.has_value()) {
+                info.range.set(*customRange);
+            } else if (!std::empty(dst)) {
                 const auto range = util::dataMinMax(dst.data(), dst.size());
                 info.range.set({range.first[0], range.second[0]});
             } else {
