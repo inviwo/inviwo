@@ -29,25 +29,50 @@
 
 #include <modules/hdf5/datastructures/hdf5handle.h>
 
-namespace inviwo {
+#include <warn/push>
+#include <warn/ignore/all>
+#include <H5Ppublic.h>
+#include <warn/pop>
 
-namespace hdf5 {
+
+namespace inviwo::hdf5 {
 
 namespace {
+
 H5::Group load(const std::filesystem::path& filename, const std::string& path) {
     H5::H5File hdfFile(filename.generic_string(), H5F_ACC_RDONLY);
     return hdfFile.openGroup(path);
 }
+
+H5::DSetAccPropList accessPropertyList(const std::filesystem::path& filename) {
+    H5::DSetAccPropList dapl{H5::DSetAccPropList::DEFAULT};
+    if (filename.has_parent_path()) {
+        if (H5Pset_efile_prefix(dapl.getId(), filename.parent_path().generic_string().c_str()) < 0) {
+            throw Exception{"could not set efile prefix"};
+        }
+    }
+    return dapl;
+}
+
 }  // namespace
 
-Handle::Handle(const std::filesystem::path& filename)
-    : filename_(filename), path_("/"), data_{load(filename_, path_)} {}
+Handle::Handle(std::filesystem::path filename)
+    : filename_{std::move(filename)}
+    , path_{"/"}
+    , data_{load(filename_, path_)}
+    , dapl_{accessPropertyList(filename_)} {}
 
-Handle::Handle(const std::filesystem::path& filename, Path path)
-    : filename_(filename), path_(path), data_{load(filename_, path_)} {}
+Handle::Handle(std::filesystem::path filename, Path path)
+    : filename_{std::move(filename)}
+    , path_{std::move(path)}
+    , data_{load(filename_, path_)}
+    , dapl_{accessPropertyList(filename_)} {}
 
 Handle::Handle(std::filesystem::path filename, Path path, const H5::Group& data)
-    : filename_(std::move(filename)), path_(std::move(path)), data_(data) {}
+    : filename_{std::move(filename)}
+    , path_{std::move(path)}
+    , data_{data}
+    , dapl_{accessPropertyList(filename_)} {}
 
 Handle Handle::getHandleForPath(const std::string& path) const {
     const Path newPath = path_ + path;
@@ -64,10 +89,8 @@ const H5::Group& Handle::getGroup() const { return data_; }
 
 const Path& Handle::getPath() const { return path_; }
 
-DataSet Handle::open() const { return DataSet{data_.openDataSet(path_)}; }
+DataSet Handle::open() const { return DataSet{data_.openDataSet(path_, dapl_)}; }
 
-DataSet Handle::open(const Path& path) const { return DataSet{data_.openDataSet(path)}; }
+DataSet Handle::open(const Path& path) const { return DataSet{data_.openDataSet(path, dapl_)}; }
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

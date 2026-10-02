@@ -74,8 +74,8 @@ public:
 
 class IVW_MODULE_HDF5_API Handle {
 public:
-    Handle(const std::filesystem::path& filename);
-    Handle(const std::filesystem::path& filename, Path path);
+    explicit Handle(std::filesystem::path filename);
+    Handle(std::filesystem::path filename, Path path);
     Handle(const Handle& rhs) = default;
     Handle& operator=(const Handle& that) = default;
     Handle(Handle&& rhs) = default;
@@ -160,6 +160,7 @@ private:
     std::filesystem::path filename_;
     Path path_;
     H5::Group data_;
+    H5::DSetAccPropList dapl_;
 };
 
 }  // namespace hdf5
