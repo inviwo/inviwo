@@ -174,7 +174,7 @@ MeshRasterizer::AlphaSettings::AlphaSettings()
     , enableUniform_("alphaUniform", "Uniform", "uniform alpha value"_help, true,
                      InvalidationLevel::InvalidResources)
     , uniformScaling_("alphaUniformScaling", "Scaling", 0.5f, 0.f, 1.f, 0.01f)
-    , minimumAlpha_("minimumAlpha", "Minimum Alpha", 0.1f, 0.f, 1.f, 0.01f)
+    , minimumAlpha_("minimumAlpha", "Minimum Alpha", 1.0f, 0.f, 1.f, 0.01f)
     , enableAngleBased_(
           "alphaAngleBased", "Angle-based",
           "based on the angle between the pixel normal and the direction to the camera "_help,
@@ -291,7 +291,7 @@ MeshRasterizer::FaceSettings::FaceSettings(bool frontFace)
             "Shows or hides that face (culling)"_help, true)
     , sameAsFrontFace_("same", "Same as Front Face",
                        "use the settings from the front face, disables all"
-                       "other settings for the back face"_help)
+                       "other settings for the back face"_help, true)
     , copyFrontToBack_("copy", "Copy Front to Back",
                        "Copies all settings from the front face to the back face"_help)
     , transferFunction_("tf", "Transfer Function")
@@ -302,7 +302,7 @@ MeshRasterizer::FaceSettings::FaceSettings(bool frontFace)
                    {{"vertexColor", "VertexColor", ColorSource::VertexColor},
                     {"tf", "Transfer Function", ColorSource::TransferFunction},
                     {"external", "Constant Color", ColorSource::ExternalColor}},
-                   2, InvalidationLevel::InvalidResources)
+                   0, InvalidationLevel::InvalidResources)
     , separateUniformAlpha_("separateUniformAlpha", "Separate Uniform Alpha",
                             "Overwrite alpha settings from above with a constant alpha value"_help)
     , uniformAlpha_("uniformAlpha", "Uniform Alpha", 0.5f, 0.f, 1.f, 0.01f)
