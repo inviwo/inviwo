@@ -50,6 +50,7 @@
 #include <inviwopy/pydatawriters.h>
 #include <inviwopy/pydocument.h>
 #include <inviwopy/pyevent.h>
+#include <inviwopy/pyhelp.h>
 #include <inviwopy/pyglmmattypes.h>
 #include <inviwopy/pyglmports.h>
 #include <inviwopy/pyglmtypes.h>
@@ -110,6 +111,7 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     auto propertiesModule = m.def_submodule("properties", "Inviwo Properties");
     auto dataModule = m.def_submodule("data", "Inviwo Data Structures");
     auto formatsModule = dataModule.def_submodule("formats", "Inviwo Data Formats");
+    auto helpModule = m.def_submodule("help", "Inviwo Help");
 
     // Since we have a "global" std::string type here bind_vector will create module local bindings
     // for StringVector. But since we have included it in opaquetypes we need to create a
@@ -151,6 +153,8 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     exposeDataFormat(formatsModule);
     exposeBitset(dataModule);
     exposeSerialization(m);
+    exposeHelp(helpModule);
+
     exposeTFPrimitiveSet(dataModule);  // defines TFPrimitiveData used in exposeProperties
     exposeProperties(propertiesModule);
     exposePropertyOwner(propertiesModule);
