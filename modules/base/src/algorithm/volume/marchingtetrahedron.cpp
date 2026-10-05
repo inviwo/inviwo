@@ -181,6 +181,8 @@ void evaluateTetra(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuff
 }  // namespace marchingtetrahedron
 
 namespace util {
+
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume,
                                           const std::vector<TFPrimitiveData>& isoValues,
                                           PrimitiveSetMode isoValueMode, bool invert, bool enclose,
@@ -195,6 +197,7 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume,
         }
     };
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     return volume->getRepresentation<VolumeRAM>()->dispatch<std::shared_ptr<Mesh>>([&](auto ram) {
         using T = util::PrecisionValueType<decltype(ram)>;
         if (progressCallback) progressCallback(0.0f);
@@ -214,9 +217,9 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume,
         const T* src = ram->getDataTyped();
 
         const size3_t dim{volume->getDimensions()};
-        const double dx = 1.0 / static_cast<double>(std::max(size_t(1), (dim.x - 1)));
-        const double dy = 1.0 / static_cast<double>(std::max(size_t(1), (dim.y - 1)));
-        const double dz = 1.0 / static_cast<double>(std::max(size_t(1), (dim.z - 1)));
+        const double dx = 1.0 / static_cast<double>(std::max(1uz, (dim.x - 1)));
+        const double dy = 1.0 / static_cast<double>(std::max(1uz, (dim.y - 1)));
+        const double dz = 1.0 / static_cast<double>(std::max(1uz, (dim.z - 1)));
 
         for (const auto&& [index, value] : std::views::zip(std::views::iota(0uz), isoValues)) {
             const double isoData = transformIsoValueToData(value.pos);
@@ -224,16 +227,18 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume,
                 for (size_t j = 0; j < dim.y - 1; j++) {
                     for (size_t i = 0; i < dim.x - 1; i++) {
                         if (!maskingCallback({i, j, k})) continue;
-                        const double x = dx * i;
-                        const double y = dy * j;
-                        const double z = dz * k;
+                        const double x = dx * static_cast<double>(i);
+                        const double y = dy * static_cast<double>(j);
+                        const double z = dz * static_cast<double>(k);
 
-                        std::array<vec3, 8> pos;
-                        std::array<double, 8> values;
+                        std::array<vec3, 8> pos{};
+                        std::array<double, 8> values{};
 
                         for (int l = 0; l < 8; l++) {
                             const auto& o = marchingtetrahedron::offs[l];
-                            pos[l] = glm::vec3(x + dx * o.x, y + dy * o.y, z + dz * o.z);
+                            pos[l] = glm::vec3{x + dx * static_cast<double>(o.x),
+                                               y + dy * static_cast<double>(o.y),
+                                               z + dz * static_cast<double>(o.z)};
                             values[l] =
                                 marching::getValue(src, size3_t(i, j, k) + o, dim, isoData, invert);
                         }

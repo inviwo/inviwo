@@ -291,7 +291,8 @@ MeshRasterizer::FaceSettings::FaceSettings(bool frontFace)
             "Shows or hides that face (culling)"_help, true)
     , sameAsFrontFace_("same", "Same as Front Face",
                        "use the settings from the front face, disables all"
-                       "other settings for the back face"_help, true)
+                       "other settings for the back face"_help,
+                       true)
     , copyFrontToBack_("copy", "Copy Front to Back",
                        "Copies all settings from the front face to the back face"_help)
     , transferFunction_("tf", "Transfer Function")

@@ -70,7 +70,7 @@ protected:
     MeshSequenceOutport outport_;
     std::vector<std::shared_ptr<Mesh>> meshes_;
 
-    OptionProperty<Method> method_;    
+    OptionProperty<Method> method_;
 
     OptionProperty<ColoringMode> coloring_;
     FloatProperty blendFactor_;

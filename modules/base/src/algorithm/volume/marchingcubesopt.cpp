@@ -473,6 +473,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume,
 
     if (progressCallback) progressCallback(0.0f);
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     const auto mc = [&](auto ram, double isoValue, size_t isoValueIndex, auto isoTest,
                         auto mapValue) {
         using T = util::PrecisionValueType<decltype(ram)>;
