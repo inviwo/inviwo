@@ -69,6 +69,8 @@
         <file>svgicons/composite-expand-disabled.svg</file>
         <file>svgicons/composite-create-enabled.svg</file>
         <file>svgicons/composite-create-disabled.svg</file>
+
+        <file>svgicons/network.svg</file>
         
         <file>svgicons/timer.svg</file>
 

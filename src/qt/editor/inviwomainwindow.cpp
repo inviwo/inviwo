@@ -1570,6 +1570,11 @@ WelcomeWidget* inviwo::InviwoMainWindow::getWelcomeWidget() {
                     }
                     saveWindowState();
                 }));
+        connect(welcomeWidget_, &WelcomeWidget::hideWelcomeWidget, this,
+                util::exceptionGuarded([this]() {
+                    hideWelcomeScreen();
+                    saveWindowState();
+                }));
     }
 
     return welcomeWidget_;

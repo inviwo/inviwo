@@ -68,12 +68,15 @@ public:
     void updateRecentWorkspaces(const QStringList& list);
     void enableRestoreButton(bool hasRestoreWorkspace);
 
+    void setFilterString(std::string_view str);
+
 signals:
     void loadWorkspace(const std::filesystem::path& filename, bool isExample);
     void appendWorkspace(const std::filesystem::path& filename);
     void newWorkspace();
     void openWorkspace();
     void restoreWorkspace();
+    void hideWelcomeWidget();
 
 protected:
     virtual void showEvent(QShowEvent* event) override;

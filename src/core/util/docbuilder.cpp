@@ -32,12 +32,17 @@
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/ports/portfactory.h>
+#include <inviwo/core/util/buildinfo.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/utfutils.h>
 
 #include <fmt/format.h>
+
+#include <ranges>
 
 namespace inviwo {
 
@@ -115,7 +120,10 @@ void HelpProcessor::serialize(Serializer& s) const {
     s.serialize("category", category, SerializationTarget::Attribute);
     s.serialize("codeState", codeState, SerializationTarget::Attribute);
     s.serialize("help", help);
-    s.serialize("file", file);
+    s.serialize("sourceFile", sourceFile);
+    s.serialize("headerFile", headerFile);
+    s.serialize("sourceLink", sourceLink);
+    s.serialize("headerLink", headerLink);
     s.serialize("inports", inports);
     s.serialize("outports", outports);
     s.serialize("properties", properties);
@@ -129,7 +137,10 @@ void HelpProcessor::deserialize(Deserializer& d) {
     d.deserialize("category", category, SerializationTarget::Attribute);
     d.deserialize("codeState", codeState, SerializationTarget::Attribute);
     d.deserialize("help", help);
-    d.deserialize("file", file);
+    d.deserialize("sourceFile", sourceFile);
+    d.deserialize("headerFile", headerFile);
+    d.deserialize("sourceLink", sourceLink);
+    d.deserialize("headerLink", headerLink);
     d.deserialize("inports", inports);
     d.deserialize("outports", outports);
     d.deserialize("properties", properties);
@@ -161,6 +172,47 @@ std::string getTypeName(const Property& property, const InviwoApplication& app) 
 std::string getTypeName(const Processor& processor, const InviwoApplication& app) {
     return getTypeName(processor.getClassIdentifier(), app.getProcessorFactory());
 }
+
+auto headerCandidates(const std::filesystem::path& relSrc, const std::filesystem::path& base,
+                      std::string_view moduleId) -> std::vector<std::filesystem::path> {
+    if (*relSrc.begin() == "src") {
+        std::filesystem::path header{};
+        for (auto&& part : std::ranges::subrange(++relSrc.begin(), relSrc.end())) {
+            header /= part;
+        }
+        header.replace_extension(".h");
+
+        return {base / "include" / "modules" / toLower(moduleId) / header,
+                base / "include" / "inviwo" / toLower(moduleId) / header};
+    }
+    return {};
+}
+
+std::optional<util::BuildInfo::ModulesDir> getModuleDir(const std::filesystem::path& path) {
+    const auto& bi = util::getBuildInfo();
+    if (!bi) return std::nullopt;
+    for (const auto& modulesDir : bi->modulesDirs) {
+        if (std::ranges::starts_with(path.native() | views::codePoints,
+                                     modulesDir.repoDir.native() | views::codePoints)) {
+            return modulesDir;
+        }
+    }
+    return std::nullopt;
+}
+
+std::optional<std::string> getRepoLink(const std::filesystem::path& path) {
+    return getModuleDir(path).and_then([&](const auto& modulesDir) -> std::optional<std::string> {
+        if (!modulesDir.repo.contains("github.com")) return std::nullopt;
+
+        auto file = path.generic_string();
+        file.erase(0, modulesDir.repoDir.generic_string().size());
+        const auto repoLink = modulesDir.repo.ends_with(".git")
+                                  ? modulesDir.repo.substr(0, modulesDir.repo.size() - 4)
+                                  : modulesDir.repo;
+        return fmt::format("{}/blob/{}{}", repoLink, modulesDir.sha, file);
+    });
+}
+
 }  // namespace
 
 help::HelpProcessor help::buildProcessorHelp(Processor& processor, InviwoApplication& app) {
@@ -221,6 +273,15 @@ help::HelpProcessor help::buildProcessorHelp(Processor& processor, InviwoApplica
     InviwoModule* m = util::getProcessorModule(processor.getClassIdentifier(), app);
     auto pfo = app.getProcessorFactory()->getFactoryObject(processor.getClassIdentifier());
 
+    const auto sourceFile = std::filesystem::path{info.file};
+    const auto candidates = m ? headerCandidates(sourceFile.lexically_relative(m->getPath()),
+                                                 m->getPath(), m->getIdentifier())
+                              : std::vector<std::filesystem::path>{};
+
+    const auto headerFile = candidates.empty() ? std::filesystem::path{} : candidates.front();
+    const auto sourceLink = getRepoLink(sourceFile);
+    const auto headerLink = headerFile.empty() ? "" : getRepoLink(headerFile);
+
     return HelpProcessor{
         .classIdentifier = processor.getClassIdentifier(),
         .displayName = std::string{processor.getDisplayName()},
@@ -228,7 +289,10 @@ help::HelpProcessor help::buildProcessorHelp(Processor& processor, InviwoApplica
         .category = info.category,
         .tags = info.tags,
         .help = info.help,
-        .file = info.file,
+        .sourceFile = info.file,
+        .headerFile = headerFile.generic_string(),
+        .sourceLink = sourceLink.value_or(""),
+        .headerLink = headerLink.value_or(""),
         .inports = std::move(inports),
         .outports = std::move(outports),
         .properties = std::move(properties),
@@ -370,6 +434,42 @@ Document help::toDocument(const HelpProcessor& processor) {
             if (!property.help.empty()) {
                 li += " ";
                 li.append("div", "", {{"class", "help"}}).append(property.help);
+            }
+        }
+    }
+
+    if (auto md = getModuleDir(processor.sourceFile)) {
+        const auto repoDirSize = md->repoDir.generic_string().size();
+        auto sourceName = std::string_view{processor.sourceFile};
+        sourceName.remove_prefix(repoDirSize);
+
+        body.append("h4", "Files");
+        auto repo = body.append("div");
+        repo.appendText(md->name);
+        repo.appendText(" ");
+        repo.append("a", md->repo, {{"href", md->repo}});
+        auto links = body.append("ul");
+        auto li1 = links.append("li", "", {{"class", "item"}});
+        li1.appendText("Source ");
+        li1.appendText(sourceName);
+        li1.appendText(" ");
+        li1.append("a", "file", {{"href", fmt::format("file:///{}", processor.sourceFile)}});
+        if (!processor.sourceLink.empty()) {
+            li1.appendText(" ");
+            li1.append("a", "github", {{"href", processor.sourceLink}});
+        }
+        if (processor.headerFile.size() > repoDirSize) {
+            auto headerName = std::string_view{processor.headerFile};
+            headerName.remove_prefix(repoDirSize);
+
+            auto li2 = links.append("li", "", {{"class", "item"}});
+            li2.appendText("Header ");
+            li2.appendText(headerName);
+            li2.appendText(" ");
+            li2.append("a", "file", {{"href", fmt::format("file:///{}", processor.headerFile)}});
+            if (!processor.headerLink.empty()) {
+                li2.appendText(" ");
+                li2.append("a", "github", {{"href", processor.headerLink}});
             }
         }
     }

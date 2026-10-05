@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/helpwidget.h>
-#include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -44,6 +43,10 @@
 #include <inviwo/core/network/networkutils.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <inviwo/qt/editor/inviwomainwindow.h>
+#include <inviwo/qt/editor/processorpreview.h>
+#include <inviwo/qt/editor/welcomewidget.h>
 
 #include <fmt/format.h>
 #include <fmt/std.h>
@@ -82,11 +85,14 @@ public:
 
     void setCurrent(std::string_view processorCId);
 
+    std::string_view currentProcessorCId() const;
+
 protected:
     virtual QVariant loadResource(int type, const QUrl& name) override;
 
 private:
     InviwoApplication* app_;
+    std::string currentProcessorCId_;
     QUrl current_;
     std::filesystem::path currentModulePath_;
 };
@@ -137,6 +143,18 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
         action->setToolTip("Reload");
         centralWidget->addAction(action);
         connect(action, &QAction::triggered, this, [this]() { helpBrowser_->reload(); });
+    }
+
+    {
+        auto action = toolBar->addAction(QIcon(":/svgicons/network.svg"), tr("&Find networks"));
+        action->setToolTip("Find networks with processor");
+        centralWidget->addAction(action);
+        connect(action, &QAction::triggered, this, [this]() {
+            if (auto* ww = mainWindow_->getWelcomeWidget()) {
+                ww->setFilterString(fmt::format("p: {}", helpBrowser_->currentProcessorCId()));
+                mainWindow_->showWelcomeScreen();
+            }
+        });
     }
 }
 
@@ -255,6 +273,8 @@ HelpBrowser::HelpBrowser(HelpWidget* parent, InviwoApplication* app)
 }
 
 void HelpBrowser::setCurrent(std::string_view processorCId) {
+    currentProcessorCId_ = processorCId;
+
     if (visibleRegion().isEmpty()) return;
 
     QUrl url;
@@ -263,6 +283,8 @@ void HelpBrowser::setCurrent(std::string_view processorCId) {
     url.setQuery(QUrlQuery({{"type", "processor"}}));
     setSource(url);
 }
+
+std::string_view HelpBrowser::currentProcessorCId() const { return currentProcessorCId_; }
 
 QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
     std::string s = utilqt::fromQString(resourceUrl.toString(QUrl::None));

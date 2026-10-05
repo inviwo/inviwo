@@ -88,7 +88,10 @@ struct IVW_CORE_API HelpProcessor {
     CodeState codeState;
     Tags tags;
     Document help;
-    std::string file;
+    std::string sourceFile;
+    std::string headerFile;
+    std::string sourceLink;
+    std::string headerLink;
     std::vector<HelpInport> inports;
     std::vector<HelpOutport> outports;
     std::vector<HelpProperty> properties;
