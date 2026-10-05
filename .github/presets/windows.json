@@ -20,6 +20,7 @@
       "inherits" : ["gha"],
       "cacheVariables": {
         "IVW_CFG_MSVC_FORCE_SHARED_CRT": { "type": "BOOL", "value": "ON"},
+        "IVW_CFG_MSVC_MULTI_PROCESSOR_COUNT" : 1,
         "BUILD_SHARED_LIBS":             { "type": "BOOL", "value": "OFF"}
       }
     },
