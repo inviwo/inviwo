@@ -97,6 +97,7 @@
 #include <QStyle>
 #include <QWidget>
 #include <Qt>
+#include <QDockWidget>
 #include <fmt/base.h>
 
 namespace inviwo::utilqt {
@@ -115,6 +116,21 @@ QMainWindow* getApplicationMainWindow() {
         return dynamic_cast<QMainWindow*>(*it);
     } else {
         return nullptr;
+    }
+}
+
+std::vector<QDockWidget*> getWidgetsInArea(QMainWindow* win, Qt::DockWidgetArea area) {
+    return win->findChildren<QDockWidget*>() |
+           std::views::filter([&](QDockWidget* w) { return win->dockWidgetArea(w) == area; }) |
+           std::ranges::to<std::vector>();
+}
+
+void addDockWidgetTabify(QDockWidget* widget, QMainWindow* win, Qt::DockWidgetArea area) {
+
+    win->addDockWidget(Qt::RightDockWidgetArea, widget);
+    auto other = utilqt::getWidgetsInArea(win, Qt::RightDockWidgetArea);
+    if (!other.empty()) {
+        win->tabifyDockWidget(other.front(), widget);
     }
 }
 
@@ -526,7 +542,9 @@ std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* ne
                     case QImage::Format_RGBA8888_Premultiplied:
                         img = img.convertToFormat(QImage::Format_RGBX8888);
                         break;
-                    default: img = img.convertToFormat(QImage::Format_RGB32); break;
+                    default:
+                        img = img.convertToFormat(QImage::Format_RGB32);
+                        break;
                 }
             }
         }

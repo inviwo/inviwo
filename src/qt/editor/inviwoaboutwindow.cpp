@@ -314,7 +314,6 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
     }
 
     std::string str = doc;
-    log::info("{}", str);
     textDoc->setHtml(utilqt::toQString(str));
 
     auto showLicense = [str, textDoc, app, escape, makeBody](const QUrl& url) {

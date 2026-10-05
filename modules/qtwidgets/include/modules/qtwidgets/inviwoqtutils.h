@@ -76,6 +76,7 @@ class QMenu;
 class QRectF;
 class QWidget;
 class QFontMetrics;
+class QDockWidget;
 
 namespace inviwo {
 
@@ -243,6 +244,12 @@ IVW_MODULE_QTWIDGETS_API QPointF clamp(const QPointF& pos, const QRectF& rect);
  * @return The main window if the application contains the widget, otherwise null.
  */
 IVW_MODULE_QTWIDGETS_API QMainWindow* getApplicationMainWindow();
+
+IVW_MODULE_QTWIDGETS_API std::vector<QDockWidget*> getWidgetsInArea(QMainWindow* win,
+                                                                    Qt::DockWidgetArea area);
+
+IVW_MODULE_QTWIDGETS_API void addDockWidgetTabify(QDockWidget* widget, QMainWindow* win,
+                                                  Qt::DockWidgetArea area);
 
 IVW_MODULE_QTWIDGETS_API InviwoEditMenu* getInviwoEditMenu();
 

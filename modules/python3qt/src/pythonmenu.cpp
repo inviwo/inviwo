@@ -140,11 +140,13 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
 
 PythonEditorWidget* PythonMenu::newEditor() {
     auto editor = util::make_qptr<PythonEditorWidget>(win_, app_);
-    editor->loadState();
-    editor->restore();
-
     editor->setAttribute(Qt::WA_DeleteOnClose);
     editor->setVisible(true);
+    utilqt::addDockWidgetTabify(editor.get(), win_, Qt::RightDockWidgetArea);
+    editor->setFloating(true);
+    editor->loadState();
+    editor->restore();
+    
     editors_.push_back(std::move(editor));
 
     return editors_.back().get();

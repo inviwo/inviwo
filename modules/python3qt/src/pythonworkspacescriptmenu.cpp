@@ -90,9 +90,13 @@ void PythonWorkspaceScriptMenu::addScriptMenuItem(std::string_view key) {
 PythonEditorWidget* PythonWorkspaceScriptMenu::newScriptEditor(const std::string& key) {
     auto editor = util::make_qptr<PythonEditorWidget>(
         win_, app_, [this, key](const std::string& source) { scripts_.updateScript(key, source); });
-    editor->loadState();
+
     editor->setAttribute(Qt::WA_DeleteOnClose);
     editor->setVisible(true);
+    utilqt::addDockWidgetTabify(editor.get(), win_, Qt::RightDockWidgetArea);
+    editor->setFloating(true);
+    editor->loadState();
+
     scriptEditors_[key] = std::move(editor);
     return scriptEditors_[key].get();
 }
