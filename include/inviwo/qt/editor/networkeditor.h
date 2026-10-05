@@ -271,7 +271,7 @@ private:
 
     void paste(const QMimeData& mimeData, util::OffsetCallback offsetCallback);
 
-    static std::unique_ptr<QMimeData> createMineData(const std::string& content,
+    static std::unique_ptr<QMimeData> createMimeData(const std::string& content,
                                                      std::span<const QString> mimetypes);
 
     using ProcessorMap = std::map<Processor*, ProcessorGraphicsItem*>;

@@ -146,7 +146,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
     }
 
     {
-        auto action = toolBar->addAction(QIcon(":/svgicons/network.svg"), tr("&Find networks"));
+        auto* action = toolBar->addAction(QIcon(":/svgicons/network.svg"), tr("&Find networks"));
         action->setToolTip("Find networks with processor");
         centralWidget->addAction(action);
         connect(action, &QAction::triggered, this, [this]() {

@@ -1196,7 +1196,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         if (auto* outport = qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(item)) {
             auto* pathAction = menu.addAction(tr("Copy &Outport Path"));
             connect(pathAction, &QAction::triggered, this, util::exceptionGuarded([outport]() {
-                        auto mimeData = createMineData(
+                        auto mimeData = createMimeData(
                             fmt::format(
                                 "{}.{}.outports.{}",
                                 outport->getPort()->getProcessor()->getNetwork()->getIdentifier(),
@@ -1208,7 +1208,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         } else if (auto* inport = qgraphicsitem_cast<ProcessorInportGraphicsItem*>(item)) {
             auto* pathAction = menu.addAction(tr("Copy &Inport Path"));
             connect(pathAction, &QAction::triggered, this, util::exceptionGuarded([inport]() {
-                        auto mimeData = createMineData(
+                        auto mimeData = createMimeData(
                             fmt::format(
                                 "{}.{}.inports.{}",
                                 inport->getPort()->getProcessor()->getNetwork()->getIdentifier(),
@@ -1220,7 +1220,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         } else if (auto* processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             auto* pathAction = menu.addAction(tr("Copy &Processor Path"));
             connect(pathAction, &QAction::triggered, this, util::exceptionGuarded([processor]() {
-                        auto mimeData = createMineData(
+                        auto mimeData = createMimeData(
                             fmt::format("{}.{}",
                                         processor->getProcessor()->getNetwork()->getIdentifier(),
                                         processor->getProcessor()->getIdentifier()),
@@ -1319,7 +1319,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
     });
 }
 
-std::unique_ptr<QMimeData> NetworkEditor::createMineData(const std::string& content,
+std::unique_ptr<QMimeData> NetworkEditor::createMimeData(const std::string& content,
                                                          std::span<const QString> mimetypes) {
     const QByteArray byteArray(content.c_str(), static_cast<int>(content.length()));
     auto mimeData = std::make_unique<QMimeData>();
@@ -1332,7 +1332,7 @@ std::unique_ptr<QMimeData> NetworkEditor::createMineData(const std::string& cont
 std::unique_ptr<QMimeData> NetworkEditor::copyError(const QList<QGraphicsItem*>& items) {
     if (items.size() == 1) {
         if (auto* error = qgraphicsitem_cast<ProcessorErrorItem*>(items.front())) {
-            return createMineData(utilqt::fromQString(error->text()),
+            return createMimeData(utilqt::fromQString(error->text()),
                                   std::array{QString("text/plain")});
         }
     }
@@ -1353,7 +1353,7 @@ std::unique_ptr<QMimeData> NetworkEditor::copy(const QList<QGraphicsItem*>& item
     std::stringstream ss;
     util::serializePartial(network_, processors, ss, "");
 
-    auto mimeData = createMineData(
+    auto mimeData = createMimeData(
         ss.str(),
         std::array{QString("text/plain"), utilqt::toQString(NetworkEditor::getMimeTag())});
 

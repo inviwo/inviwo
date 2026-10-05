@@ -270,8 +270,8 @@ help::HelpProcessor help::buildProcessorHelp(Processor& processor, InviwoApplica
     processor.accept(visitor);
 
     const auto& info = processor.getProcessorInfo();
-    InviwoModule* m = util::getProcessorModule(processor.getClassIdentifier(), app);
-    auto pfo = app.getProcessorFactory()->getFactoryObject(processor.getClassIdentifier());
+    const InviwoModule* m = util::getProcessorModule(processor.getClassIdentifier(), app);
+    auto* pfo = app.getProcessorFactory()->getFactoryObject(processor.getClassIdentifier());
 
     const auto sourceFile = std::filesystem::path{info.file};
     const auto candidates = m ? headerCandidates(sourceFile.lexically_relative(m->getPath()),
@@ -287,6 +287,7 @@ help::HelpProcessor help::buildProcessorHelp(Processor& processor, InviwoApplica
         .displayName = std::string{processor.getDisplayName()},
         .typeName = getTypeName(processor, app),
         .category = info.category,
+        .codeState = info.codeState,
         .tags = info.tags,
         .help = info.help,
         .sourceFile = info.file,
@@ -305,7 +306,7 @@ namespace {
 void link(std::string_view typeName, Document::DocumentHandle& handle) {
     constexpr std::string_view base = "https://inviwo.org/inviwo/cpp-api/class";
     if (!typeName.empty()) {
-        std::string name{typeName.substr(0, typeName.find_first_of('<'))};
+        const auto name = typeName.substr(0, typeName.find_first_of('<'));
         std::string doxyName{name};
         replaceInString(doxyName, ":", "_1");
         handle.append("a", "", {{"href", fmt::format("{}{}", base, doxyName)}})
