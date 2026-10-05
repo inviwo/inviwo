@@ -167,10 +167,25 @@ jobs:
       shell: bash
       run: cp inviwo/.github/presets/${{ matrix.system }}.json inviwo/CMakeUserPresets.json
 
+    - name: "Determine vcpkg feature override"
+      id: vcpkg-features
+      shell: bash
+      run: |
+        # The "full-vcpkg-features" label (used by the vcpkg baseline-update PR) builds every
+        # optional vcpkg feature so a baseline bump is validated across all ports, without
+        # changing the default feature set built for regular PRs.
+        if [[ "${{ contains(github.event.pull_request.labels.*.name, 'full-vcpkg-features') }}" == "true" ]]; then
+          ALL=$(jq -r '.features | keys | join(";")' inviwo/vcpkg.json)
+          echo "override=-DVCPKG_MANIFEST_FEATURES=${ALL}" >> "$GITHUB_OUTPUT"
+        else
+          echo "override=" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: "Configure CMake"
       shell: bash
       run: >
         cmake -S inviwo -B build --preset gha-${{ matrix.linkage }} -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
+        ${{ steps.vcpkg-features.outputs.override }}
         
     - name: "Build"
       timeout-minutes: 360
