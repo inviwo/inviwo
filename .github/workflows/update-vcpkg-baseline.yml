@@ -184,7 +184,8 @@ jobs:
             # Update the existing PR title and description
             gh pr edit "$EXISTING_PR" \
               --title "chore: update vcpkg baseline to ${LATEST_COMMIT:0:10}" \
-              --body-file /tmp/pr_body.txt
+              --body-file /tmp/pr_body.txt \
+              --add-label "full-vcpkg-features"
             echo "Updated existing PR #${EXISTING_PR}"
           else
             gh pr create \
@@ -192,5 +193,6 @@ jobs:
               --body-file /tmp/pr_body.txt \
               --base "${{ github.event.repository.default_branch }}" \
               --head "$BRANCH" \
-              --label "dependencies"
+              --label "dependencies" \
+              --label "full-vcpkg-features"
           fi
