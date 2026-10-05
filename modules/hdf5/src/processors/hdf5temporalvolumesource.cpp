@@ -109,9 +109,9 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
     , axesNames_{"axesNames", "Axes Names"}
     , axesUnits_{"axesUnits", "Axes Units"}
     , wrapping_{{
-          {"xWrappingX", "X Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
-          {"yWrappingX", "Y Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
-          {"zWrappingX", "Z Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+          {"xWrapping", "X Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+          {"yWrapping", "Y Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+          {"zWrapping", "Z Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
       }}
 
     , outputGroup_{"outputGroup", "Operations"}
@@ -130,7 +130,7 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
                          return opts;
                      }(),
                      0}
-    , dt_{"dt", "Time Step (s)", 1.0, 0.0001, 1000.0}
+    , dt_{"dt", "Time Step (s)", util::ordinalScale(1.0, 1000.0)}
     , cacheSize_{"cacheSize", "Cache Size",
                  inviwo::util::ordinalCount<size_t>(8u, 256u).set(
                      "Maximum number of decoded frames kept in memory"_help)} {

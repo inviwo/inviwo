@@ -190,8 +190,8 @@ void VolumeHistogram2D::process() {
     const auto* vrep1 = volume1->getRepresentation<VolumeRAM>();
     const auto* vrep2 = volume2->getRepresentation<VolumeRAM>();
 
-    const auto hist = dispatching::doubleDispatch<Histogram2D, dispatching::filter::All,
-                                                  dispatching::filter::All>(
+    auto hist = dispatching::doubleDispatch<Histogram2D, dispatching::filter::All,
+                                            dispatching::filter::All>(
         vrep1->getDataFormatId(), vrep2->getDataFormatId(), [&]<typename T1, typename T2>() {
             auto src1 = static_cast<const VolumeRAMPrecision<T1>*>(vrep1)->getView();
             auto src2 = static_cast<const VolumeRAMPrecision<T2>*>(vrep2)->getView();

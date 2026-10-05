@@ -73,7 +73,7 @@ public:
 
     template <typename T>
     struct Implementation : Base {
-        using D = typename T::type;
+        using D = T::type;
 
         explicit Implementation(T* toWrap) : Base{}, port{toWrap} {
             IVW_ASSERT(port != nullptr, "port should never be null");

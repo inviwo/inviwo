@@ -29,15 +29,17 @@
 
 #include <modules/base/processors/volumehistogram1d.h>
 
+#include <utility>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeHistogram1D::processorInfo_{
     "org.inviwo.VolumeHistogram1D",  // Class identifier
     "Volume Histogram1D",            // Display name
-    "Undefined",                     // Category
+    "Volume",                        // Category
     CodeState::Experimental,         // Code state
-    Tags::CPU,                       // Tags
+    Tags::CPU | Tag{Histogram},      // Tags
     R"(Calculate the 1D histogram of a volume.)"_unindentHelp,
 };
 
@@ -55,7 +57,7 @@ void VolumeHistogram1D::process() {
     const auto calc = [data = inport_.getData()]() { return data->calculateHistograms(); };
 
     dispatchOne(calc, [this](std::shared_ptr<const std::vector<Histogram1D>> histograms) {
-        outport_.setData(histograms);
+        outport_.setData(std::move(histograms));
         newResults();
     });
 }

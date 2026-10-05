@@ -322,8 +322,8 @@ struct TFDataTraits<TemporalVolume> {
         auto last = data.get(data.size() - 1);
 
         auto calc = [first, last]() {
-            auto* firstRAM = first->getRepresentation<VolumeRAM>();
-            auto* lastRAM = last->getRepresentation<VolumeRAM>();
+            const auto* firstRAM = first->getRepresentation<VolumeRAM>();
+            const auto* lastRAM = last->getRepresentation<VolumeRAM>();
 
             auto firstHist = firstRAM->dispatch<std::vector<Histogram1D>>(
                 [&]<typename T>(const VolumeRAMPrecision<T>* rp) {

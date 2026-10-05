@@ -48,7 +48,7 @@ HDF5TemporalVolumeLoader::HDF5TemporalVolumeLoader(Handle handle, std::vector<Se
     , timeDimension_{timeDimension}
     , timeSelection_{}
     , dt_{dt}
-    , prototype_{config} {
+    , prototype_{std::move(config)} {
 
     const std::scoped_lock lock{Handle::globalMutex()};
     std::tie(prototype_, timeSelection_) =

@@ -147,7 +147,7 @@ void TemporalVolume::prefetch(size_t index,
             return volume;
         });
 
-    cache_[index] = Pending{future.share(), std::move(source)};
+    cache_[index] = Pending{.future = future.share(), .source = std::move(source)};
     touch(index);
     evict();
 }
@@ -175,7 +175,7 @@ std::shared_ptr<Volume> TemporalVolume::load(std::unique_lock<std::mutex>& lock,
         lruOrder_.insert(lruOrder_.end(), index);
         return volume;
     }
-};
+}
 
 std::shared_ptr<const Volume> TemporalVolume::get(size_t index, std::stop_token stop) const {
     if (index >= size() || stop.stop_requested()) return nullptr;

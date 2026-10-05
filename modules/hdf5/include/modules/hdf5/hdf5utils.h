@@ -91,14 +91,14 @@ inline constexpr auto dataSetInfoToOption = [](const DataSetInfo& info) {
                                       info.path.toString()};
 };
 
-inline constexpr glm::dmat4 createBasis(glm::size3_t dim, glm::dvec3 spacing) {
+constexpr glm::dmat4 createBasis(glm::size3_t dim, glm::dvec3 spacing) {
     auto basis = glm::diagonal4x4(dvec4{dvec3{dim} * spacing, 1.0});
     basis[3] = dvec4{-0.5 * dvec3(basis[0] + basis[1] + basis[2]), 1.0};
     return basis;
 }
 
-inline constexpr auto validSelectionAndDims(range_of<Selection> auto selections,
-                                            range_of<size_t> auto dimensions) {
+constexpr auto validSelectionAndDims(range_of<Selection> auto selections,
+                                     range_of<size_t> auto dimensions) {
 
     return std::views::zip(selections, dimensions) | std::views::transform([](auto&& item) {
                return std::tuple{std::apply(clamp, item), std::get<1>(item)};
@@ -106,9 +106,9 @@ inline constexpr auto validSelectionAndDims(range_of<Selection> auto selections,
            std::views::filter([](auto&& item) { return std::get<0>(item).count > 1; });
 }
 
-inline constexpr glm::dmat4 adjustBasis(glm::dmat4 basis, range_of<Selection> auto selections,
-                                        range_of<size_t> auto dimensions, bool adjustBasis,
-                                        bool adjustOffset) {
+constexpr glm::dmat4 adjustBasis(glm::dmat4 basis, range_of<Selection> auto selections,
+                                 range_of<size_t> auto dimensions, bool adjustBasis,
+                                 bool adjustOffset) {
     if (!adjustBasis) return basis;
 
     auto selAndDims = validSelectionAndDims(selections, dimensions);

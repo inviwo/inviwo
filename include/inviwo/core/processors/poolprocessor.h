@@ -342,7 +342,7 @@ struct IVW_CORE_API State {
     size_t nJobs;
 
     bool stopped() const { return stopSource.stop_requested(); }
-    std::stop_token getStop() { return stopSource.get_token(); }
+    std::stop_token getStop() const { return stopSource.get_token(); }
 
     void setProgress(size_t id, double progress);
 

@@ -106,7 +106,16 @@ std::shared_ptr<Volume> FileSequenceLoader::load(size_t index, std::shared_ptr<V
 
 size_t FileSequenceLoader::size() const { return paths_.size(); }
 
-Seconds FileSequenceLoader::time(size_t index) const { return times_[index]; }
+Seconds FileSequenceLoader::time(size_t index) const {
+    if (times_.empty()) {
+        return static_cast<Seconds>(index);
+    } else if (index < times_.size()) {
+        return times_[index];
+    } else {
+        throw RangeException(SourceContext{}, "Frame index {} out of range [0, {})", index,
+                             times_.size());
+    }
+}
 
 VolumeConfig FileSequenceLoader::prototype() const { return prototype_; }
 
