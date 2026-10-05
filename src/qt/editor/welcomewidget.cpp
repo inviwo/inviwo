@@ -404,10 +404,16 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 const auto action = util::getModifierAction(QApplication::keyboardModifiers());
                 const auto file = utilqt::toPath(filename);
                 switch (action) {
-                    case ModifierAction::AppendWorkspace: emit appendWorkspace(file); break;
-                    case ModifierAction::OpenWithPath:    emit loadWorkspace(file, false); break;
+                    case ModifierAction::AppendWorkspace:
+                        emit appendWorkspace(file);
+                        break;
+                    case ModifierAction::OpenWithPath:
+                        emit loadWorkspace(file, false);
+                        break;
                     case ModifierAction::None:
-                    default:                              emit loadWorkspace(file, isExample); break;
+                    default:
+                        emit loadWorkspace(file, isExample);
+                        break;
                 }
             };
             auto updateLoadButtons = [this](const QModelIndex& index) {
@@ -753,6 +759,10 @@ void WelcomeWidget::enableRestoreButton(bool hasRestoreWorkspace) {
     restoreButton_->setEnabled(hasRestoreWorkspace);
 }
 
+void WelcomeWidget::setFilterString(std::string_view str) {
+    filterLineEdit_->setText(utilqt::toQString(str));
+}
+
 void WelcomeWidget::selectFirstLeaf() {
     // select first leaf node
     QTreeView* view = workspaceGridView_->isVisible() ? static_cast<QTreeView*>(workspaceGridView_)
@@ -913,6 +923,8 @@ void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
             loadWorkspaceBtn_->animateClick();
         }
         event->accept();
+    } else  if (event->key() == Qt::Key_Escape) {
+        emit hideWelcomeWidget();
     }
     QWidget::keyPressEvent(event);
 }

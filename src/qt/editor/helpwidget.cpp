@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/helpwidget.h>
-#include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -40,9 +39,14 @@
 #include <inviwo/core/util/docbuilder.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/network/networkutils.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <inviwo/qt/editor/inviwomainwindow.h>
+#include <inviwo/qt/editor/processorpreview.h>
+#include <inviwo/qt/editor/welcomewidget.h>
 
 #include <fmt/format.h>
 #include <fmt/std.h>
@@ -79,13 +83,16 @@ public:
     HelpBrowser(HelpWidget* parent, InviwoApplication* app);
     virtual ~HelpBrowser() = default;
 
-    void setCurrent(std::string_view processorClassIdentifier);
+    void setCurrent(std::string_view processorCId);
+
+    std::string_view currentProcessorCId() const;
 
 protected:
     virtual QVariant loadResource(int type, const QUrl& name) override;
 
 private:
     InviwoApplication* app_;
+    std::string currentProcessorCId_;
     QUrl current_;
     std::filesystem::path currentModulePath_;
 };
@@ -136,6 +143,18 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
         action->setToolTip("Reload");
         centralWidget->addAction(action);
         connect(action, &QAction::triggered, this, [this]() { helpBrowser_->reload(); });
+    }
+
+    {
+        auto* action = toolBar->addAction(QIcon(":/svgicons/network.svg"), tr("&Find networks"));
+        action->setToolTip("Find networks with processor");
+        centralWidget->addAction(action);
+        connect(action, &QAction::triggered, this, [this]() {
+            if (auto* ww = mainWindow_->getWelcomeWidget()) {
+                ww->setFilterString(fmt::format("p: {}", helpBrowser_->currentProcessorCId()));
+                mainWindow_->showWelcomeScreen();
+            }
+        });
     }
 }
 
@@ -192,188 +211,27 @@ constexpr std::string_view css = R"(
     }
     )";
 
-template <typename T>
-void link(T& factory, std::string_view id, Document::DocumentHandle& handle) {
-    std::string base = "https://inviwo.org/inviwo/cpp-api/class";
-    if (auto* fo = factory->getFactoryObject(id)) {
-        auto& typeName = fo->getTypeName();
-        std::string name{typeName.substr(0, typeName.find_first_of('<'))};
-        std::string doxyName{name};
-        replaceInString(doxyName, ":", "_1");
-        handle.append("a", "", {{"href", base + doxyName}}).append("span", name, {{"class", "id"}});
+InviwoModule& findModule(InviwoApplication& app, std::string_view cid) {
+    if (InviwoModule* m = util::getProcessorModule(cid, app)) {
+        return *m;
+    } else {
+        throw Exception(SourceContext{}, "ProcessorClassIdentifier {} is not registered", cid);
     }
-}
-
-Document makeHtmlHelp(const help::HelpProcessor& processor, const ProcessorInfo& info,
-                      const InviwoModule& module, InviwoApplication& app) {
-
-    auto processorFactory = app.getProcessorFactory();
-    auto propertyFactory = app.getPropertyFactory();
-    auto inportFactory = app.getInportFactory();
-    auto outportFactory = app.getOutportFactory();
-
-    auto spaced = [](auto str) { return fmt::format(" {}", str); };
-
-    Document doc;
-
-    auto html = doc.append("html");
-    auto body = html.append("body");
-    body.append("h3", fmt::format("{}", processor.displayName));
-
-    auto tr = body.append("table").append("tr");
-    tr.append("td").append("img", "",
-                           {{"src", fmt::format("{0}.png?type=preview&classIdentifier={0}",
-                                                processor.classIdentifier)}});
-    auto td = tr.append("td");
-    link(processorFactory, processor.classIdentifier, td);
-    td.append("i", spaced(processor.classIdentifier));
-
-    using P = Document::PathComponent;
-    using H = utildoc::TableBuilder::Header;
-    utildoc::TableBuilder tb(td, P::end());
-    tb(H("Module"), module.getIdentifier());
-    tb(H("Category"), info.category);
-    tb(H("State"), info.codeState);
-    tb(H("Tags"), info.tags);
-
-    body.append("div", "", {{"class", "help"}}).append(processor.help);
-
-    if (!processor.inports.empty()) {
-        body.append("h4", "Inports");
-        auto inports = body.append("ol", "", {{"class", "list"}});
-        for (const auto& inport : processor.inports) {
-            auto li = inports.append("li", "", {{"class", "item"}});
-            li += " ";
-            li.append("span", spaced(inport.displayName), {{"class", "name"}});
-            li += " ";
-            link(inportFactory, inport.classIdentifier, li);
-            li.append("span", spaced(inport.classIdentifier), {{"class", "id"}});
-            if (!inport.help.empty()) {
-                li += " ";
-                li.append("div", "", {{"class", "help"}}).append(inport.help);
-            }
-        }
-    }
-
-    if (!processor.outports.empty()) {
-        body.append("h4", "Outports");
-        auto outports = body.append("ol", "", {{"class", "list"}});
-        for (const auto& outport : processor.outports) {
-            auto li = outports.append("li", "", {{"class", "item"}});
-            li += " ";
-            li.append("span", outport.displayName, {{"class", "name"}});
-            li += " ";
-            link(outportFactory, outport.classIdentifier, li);
-            li.append("span", spaced(outport.classIdentifier), {{"class", "id"}});
-            if (!outport.help.empty()) {
-                li += " ";
-                li.append("div", "", {{"class", "help"}}).append(outport.help);
-            }
-        }
-    }
-
-    if (!processor.properties.empty()) {
-        body.append("h4", "Properties");
-        auto properties = body.append("ul", "", {{"class", "list"}});
-        for (auto&& [idx, property] : util::enumerate(processor.properties)) {
-            auto li = properties.append("li", "", {{"class", "item"}});
-            li += " ";
-            if (!property.properties.empty()) {
-                li.append("a", "",
-                          {{"href", fmt::format("file:///{}/{}?type=processor",
-                                                processor.classIdentifier, idx)}})
-                    .append("span", spaced(property.displayName), {{"class", "name"}});
-            } else {
-                li.append("span", property.displayName, {{"class", "name"}});
-            }
-            li += " ";
-            link(propertyFactory, property.classIdentifier, li);
-            li.append("span", spaced(property.classIdentifier), {{"class", "id"}});
-
-            if (!property.help.empty()) {
-                li += " ";
-                li.append("div", "", {{"class", "help"}}).append(property.help);
-            }
-        }
-    }
-
-    if (auto* fo = processorFactory->getFactoryObject(processor.classIdentifier)) {
-        auto meta = fo->getMetaInformation();
-        if (!meta.empty()) {
-            body.append("h4", "Meta");
-            body.append("div").append(meta);
-        }
-    }
-
-    return doc;
-}
-
-Document makePropertyHelp(const help::HelpProperty& property, std::string_view path,
-                          PropertyFactory* propertyFactory) {
-    Document doc;
-
-    auto spaced = [](auto str) { return fmt::format(" {}", str); };
-
-    auto html = doc.append("html");
-    auto body = html.append("body");
-    body.append("h3", property.displayName);
-    link(propertyFactory, property.classIdentifier, body);
-    body.append("div", property.classIdentifier);
-    body.append("div", "", {{"class", "help"}}).append(property.help);
-
-    if (!property.properties.empty()) {
-        body.append("h4", "Properties");
-        auto properties = body.append("ul", "", {{"class", "list"}});
-        for (auto&& [idx, subProperty] : util::enumerate(property.properties)) {
-            auto li = properties.append("li", "", {{"class", "item"}});
-            if (!subProperty.properties.empty()) {
-                li.append("a", "",
-                          {{"href", fmt::format("file://{}/{}?type=processor", path, idx)}});
-                li += " ";
-                li.append("span", spaced(subProperty.displayName), {{"class", "name"}});
-            } else {
-                li.append("span", spaced(subProperty.displayName), {{"class", "name"}});
-            }
-            li += " ";
-            link(propertyFactory, subProperty.classIdentifier, li);
-            li.append("span", spaced(subProperty.classIdentifier), {{"class", "id"}});
-            if (!subProperty.help.empty()) {
-                li += " ";
-                li.append("div", "", {{"class", "help"}}).append(subProperty.help);
-            }
-        }
-    }
-
-    return doc;
-}
-
-InviwoModule& findModule(InviwoApplication& app, std::string_view processorClassIdentifier) {
-    for (auto& inviwoModule : app.getModuleManager().getInviwoModules()) {
-        for (auto& pfo : inviwoModule.getProcessors()) {
-            if (pfo->getClassIdentifier() == processorClassIdentifier) {
-                return inviwoModule;
-            }
-        }
-    }
-    throw Exception(SourceContext{}, "ProcessorClassIdentifier {} is not registered",
-                    processorClassIdentifier);
 }
 
 std::tuple<std::string, std::filesystem::path> loadIdUrl(const QUrl& url, InviwoApplication* app) {
     auto list = url.path().split('/');
     if (list.front().isEmpty()) list.pop_front();
 
-    const auto processorClassIdentifier = utilqt::fromQString(list.front());
+    const auto processorCId = utilqt::fromQString(list.front());
     try {
-        if (auto processor =
-                app->getProcessorFactory()->createShared(processorClassIdentifier, app)) {
-            auto help = help::buildProcessorHelp(*processor);
-            const auto& module = findModule(*app, processorClassIdentifier);
+        if (auto processor = app->getProcessorFactory()->createShared(processorCId, app)) {
+            auto help = help::buildProcessorHelp(*processor, *app);
+            const auto& inviwoModule = findModule(*app, processorCId);
 
             if (list.length() == 1) {
-                const auto helpText =
-                    makeHtmlHelp(help, processor->getProcessorInfo(), module, *app);
-                return {helpText, module.getPath()};
+                const auto helpText = help::toDocument(help);
+                return {helpText, inviwoModule.getPath()};
             } else {
                 list.pop_front();
                 auto* properties = &help.properties;
@@ -385,21 +243,18 @@ std::tuple<std::string, std::filesystem::path> loadIdUrl(const QUrl& url, Inviwo
                         properties = &property->properties;
                     } else {
                         return {fmt::format("Could not create help for subproperty in: {}",
-                                            processorClassIdentifier),
+                                            processorCId),
                                 ""};
                     }
                 }
-                const auto helpText = makePropertyHelp(*property, utilqt::fromQString(url.path()),
-                                                       app->getPropertyFactory());
-                return {helpText, module.getPath()};
+                const auto helpText = help::toDocument(*property, utilqt::fromQString(url.path()));
+                return {helpText, inviwoModule.getPath()};
             }
         } else {
-            return {fmt::format("Could not create help for: {}", processorClassIdentifier), ""};
+            return {fmt::format("Could not create help for: {}", processorCId), ""};
         }
     } catch (const Exception& e) {
-        return {fmt::format("Could not create help for: {}, {}", processorClassIdentifier,
-                            e.getMessage()),
-                ""};
+        return {fmt::format("Could not create help for: {}, {}", processorCId, e.getMessage()), ""};
     }
 }
 
@@ -417,15 +272,19 @@ HelpBrowser::HelpBrowser(HelpWidget* parent, InviwoApplication* app)
     document()->setDefaultStyleSheet(utilqt::toQString(css));
 }
 
-void HelpBrowser::setCurrent(std::string_view processorClassIdentifier) {
+void HelpBrowser::setCurrent(std::string_view processorCId) {
+    currentProcessorCId_ = processorCId;
+
     if (visibleRegion().isEmpty()) return;
 
     QUrl url;
     url.setScheme("file");
-    url.setPath(utilqt::toQString(fmt::format("/{}", processorClassIdentifier)));
+    url.setPath(utilqt::toQString(fmt::format("/{}", processorCId)));
     url.setQuery(QUrlQuery({{"type", "processor"}}));
     setSource(url);
 }
+
+std::string_view HelpBrowser::currentProcessorCId() const { return currentProcessorCId_; }
 
 QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
     std::string s = utilqt::fromQString(resourceUrl.toString(QUrl::None));

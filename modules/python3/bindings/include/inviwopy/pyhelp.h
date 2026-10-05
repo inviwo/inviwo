@@ -27,47 +27,12 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/processors/processordocs.h>
+#pragma once
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/processors/processorfactory.h>
+#include <pybind11/pybind11.h>
 
-namespace inviwo::help {
+namespace inviwo {
 
-const HelpProcessor* ProcessorDocs::get(std::string_view classId) const {
-    if (auto it = map.find(classId); it != map.end()) {
-        return &it->second;
-    } else {
-        return nullptr;
-    }
-}
+void exposeHelp(pybind11::module& m);
 
-ProcessorDocs generateDocs(InviwoApplication& app) {
-    UnorderedStringMap<HelpProcessor> docs;
-
-    const log::SuppressLoggingLocal suppress{};
-    std::string errorMessage;
-    auto& pf = *app.getProcessorFactory();
-    for (const auto& classId : pf.getKeyView()) {
-        try {
-            if (auto processor = pf.createShared(classId)) {
-                docs.try_emplace(classId, buildProcessorHelp(*processor, app));
-            }
-        } catch (...) {
-            fmt::format_to(std::back_inserter(errorMessage), "{}, ", classId);
-            // we don't care about any failures here, just skip the processor and move on to the
-            // next one.
-        }
-    }
-    if (!errorMessage.empty()) {
-        errorMessage.pop_back();  // remove last space
-        errorMessage.pop_back();  // remove last comma
-        log::warn("Failed to generate documentation for the following processors: {}",
-                  errorMessage);
-    }
-
-    return {docs};
-}
-
-}  // namespace inviwo::help
+}  // namespace inviwo

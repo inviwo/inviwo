@@ -48,6 +48,7 @@ namespace help {
 struct IVW_CORE_API HelpInport {
     std::string classIdentifier;
     std::string displayName;
+    std::string typeName;
     glm::uvec3 colorCode;
     DataInfo data;
     Document help;
@@ -59,6 +60,7 @@ struct IVW_CORE_API HelpInport {
 struct IVW_CORE_API HelpOutport {
     std::string classIdentifier;
     std::string displayName;
+    std::string typeName;
     glm::uvec3 colorCode;
     DataInfo data;
     Document help;
@@ -70,6 +72,7 @@ struct IVW_CORE_API HelpOutport {
 struct IVW_CORE_API HelpProperty {
     std::string classIdentifier;
     std::string displayName;
+    std::string typeName;
     Document help;
     std::vector<HelpProperty> properties;
 
@@ -80,16 +83,29 @@ struct IVW_CORE_API HelpProperty {
 struct IVW_CORE_API HelpProcessor {
     std::string classIdentifier;
     std::string displayName;
+    std::string typeName;
+    std::string category;
+    CodeState codeState;
+    Tags tags;
     Document help;
+    std::string sourceFile;
+    std::string headerFile;
+    std::string sourceLink;
+    std::string headerLink;
     std::vector<HelpInport> inports;
     std::vector<HelpOutport> outports;
     std::vector<HelpProperty> properties;
+    std::string inviwoModule;
+    Document meta;
 
     void serialize(Serializer& s) const;
     void deserialize(Deserializer& d);
 };
 
-IVW_CORE_API HelpProcessor buildProcessorHelp(Processor& processor);
+IVW_CORE_API HelpProcessor buildProcessorHelp(Processor& processor, InviwoApplication& app);
+
+IVW_CORE_API Document toDocument(const HelpProperty& property, std::string_view path);
+IVW_CORE_API Document toDocument(const HelpProcessor& processor);
 
 }  // namespace help
 

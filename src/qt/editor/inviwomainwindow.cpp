@@ -1570,6 +1570,11 @@ WelcomeWidget* inviwo::InviwoMainWindow::getWelcomeWidget() {
                     }
                     saveWindowState();
                 }));
+        connect(welcomeWidget_, &WelcomeWidget::hideWelcomeWidget, this,
+                util::exceptionGuarded([this]() {
+                    hideWelcomeScreen();
+                    saveWindowState();
+                }));
     }
 
     return welcomeWidget_;
@@ -1674,11 +1679,16 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
         int answer = msgBox.exec();
 
         switch (answer) {
-            case QMessageBox::Yes:    saveWorkspace(); break;
+            case QMessageBox::Yes:
+                saveWorkspace();
+                break;
 
-            case QMessageBox::No:     break;
+            case QMessageBox::No:
+                break;
 
-            case QMessageBox::Cancel: continueOperation = false; break;
+            case QMessageBox::Cancel:
+                continueOperation = false;
+                break;
         }
     }
 
@@ -1826,8 +1836,7 @@ void InviwoMainWindow::VisibleWidgets::show() {
 ProcessorDocsLoader::ProcessorDocsLoader(InviwoApplication* app) : app_{app} {}
 
 void ProcessorDocsLoader::operator()() {
-    auto docs =
-        std::make_shared<help::ProcessorDocs>(help::generateDocs(*app_->getProcessorFactory()));
+    auto docs = std::make_shared<help::ProcessorDocs>(help::generateDocs(*app_));
     app_->dispatchFrontAndForget([l = shared_from_this(), docs] { l->done(docs); });
 }
 

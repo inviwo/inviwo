@@ -118,6 +118,12 @@ public:
     InviwoEditMenu* getInviwoEditMenu() const;
     ToolsMenu* getToolsMenu() const;
 
+    /*
+     * Access the WelcomeWidget using this function as it does delayed initialization, i.e., creates
+     * it if non-existing.
+     */
+    WelcomeWidget* getWelcomeWidget();
+
     std::shared_ptr<help::ProcessorDocs> getDocs() const;
 
     /**
@@ -186,12 +192,6 @@ protected:
     virtual void dropEvent(QDropEvent* event) override;
 
 private:
-    /*
-     * Access the WelcomeWidget using this function as it does delayed initialization, i.e., creates
-     * it if non-existing.
-     */
-    WelcomeWidget* getWelcomeWidget();
-
     /**
      * loads the workspace \p workspaceFileName. In case there are unsaved changes, the user will
      * be asked to save or discard them, or cancel the loading.

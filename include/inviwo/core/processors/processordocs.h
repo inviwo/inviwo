@@ -34,18 +34,17 @@
 
 namespace inviwo {
 
-class ProcessorFactory;
+class InviwoApplication;
 
 namespace help {
 
 class IVW_CORE_API ProcessorDocs {
 public:
     const HelpProcessor* get(std::string_view classId) const;
-
     UnorderedStringMap<HelpProcessor> map;
 };
 
-IVW_CORE_API ProcessorDocs generateDocs(ProcessorFactory& pf);
+IVW_CORE_API ProcessorDocs generateDocs(InviwoApplication& app);
 
 }  // namespace help
 
