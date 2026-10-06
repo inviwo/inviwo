@@ -44,13 +44,18 @@ constexpr std::string_view pycode = R"(
 import inviwopy
 #import inviwomcp
 
-import inviwomcp.inviwomcp
+#import inviwomcp.inviwomcp
+import inviwomcp.automated.tests
 
 # Start mcp server...
 #inviwopy.log("test")
 #inviwopy.log(sys.executable)
 
-inviwomcp.inviwomcp.MCP_server()
+
+#For testing
+#inviwomcp.automated.tests.run_test()
+#For conversation
+inviwomcp.inviwomcp.MCP_server(approach="command", launch_extra=True)
 )";
 }
 
@@ -58,7 +63,7 @@ Python3MCPModule::Python3MCPModule(InviwoApplication* app)
     : InviwoModule(app, "Python3MCP"), scripts_{getPath() / "scripts"} {
 
     const pybind11::gil_scoped_acquire gil;
-    pybind11::exec(R"(print("hello world"))", pybind11::globals());
+    //pybind11::exec(R"(print("hello world"))", pybind11::globals());
 
     pybind11::exec(pycode, pybind11::globals());
 };
