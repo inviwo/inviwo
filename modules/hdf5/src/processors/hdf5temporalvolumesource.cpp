@@ -130,7 +130,7 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
                          return opts;
                      }(),
                      0}
-    , dt_{"dt", "Time Step (s)", util::ordinalScale(1.0, 1000.0)}
+    , dt_{"dt", "Time Step (s)", inviwo::util::ordinalScale(1.0, 1000.0)}
     , cacheSize_{"cacheSize", "Cache Size",
                  inviwo::util::ordinalCount<size_t>(8u, 256u).set(
                      "Maximum number of decoded frames kept in memory"_help)} {
