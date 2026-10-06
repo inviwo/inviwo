@@ -58,11 +58,13 @@ class QWidget;
 
 namespace inviwo {
 
+namespace {
+
 // Custom style delegate to prevent the drawing of the default selection, which is drawn on top of
 // the background of the table cells
 class HideSelectionDelegate : public QStyledItemDelegate {
 public:
-    HideSelectionDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
+    explicit HideSelectionDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
 
     virtual void paint(QPainter* painter, const QStyleOptionViewItem& option,
                        const QModelIndex& index) const override {
@@ -72,6 +74,8 @@ public:
         QStyledItemDelegate::paint(painter, style, index);
     }
 };
+
+}  // namespace
 
 DataFrameTableView::DataFrameTableView(QWidget* parent)
     : QTableView(parent)
@@ -91,7 +95,7 @@ DataFrameTableView::DataFrameTableView(QWidget* parent)
     setAlternatingRowColors(true);
 
     // change corner button to disable sorting instead of selecting all
-    if (auto btn = findChild<QAbstractButton*>()) {
+    if (auto* btn = findChild<QAbstractButton*>()) {
         if (QObject::disconnect(btn, &QAbstractButton::clicked, this, &QTableView::selectAll)) {
             QObject::connect(btn, &QAbstractButton::clicked, this, [&]() {
                 horizontalHeader()->setSortIndicator(-1, Qt::AscendingOrder);
@@ -111,15 +115,16 @@ DataFrameTableView::DataFrameTableView(QWidget* parent)
         model_->highlightRow(sortProxy_->mapToSource(index));
     });
 
-    QObject::connect(
-        selectionModel(), &QItemSelectionModel::selectionChanged, this,
-        [this](const QItemSelection&, const QItemSelection&) {
-            if (ignoreEvents_) return;
-            util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
-
-            model_->selectRows(
-                sortProxy_->mapSelectionToSource(selectionModel()->selection()).indexes());
-        });
+    QObject::connect(selectionModel(), &QItemSelectionModel::selectionChanged, this,
+                     [this](const QItemSelection&, const QItemSelection&) {
+                         if (ignoreEvents_) return;
+                         const util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
+                         QModelIndexList mappedRows;
+                         for (auto& index : selectionModel()->selectedRows()) {
+                             mappedRows.append(sortProxy_->mapToSource(index));
+                         }
+                         model_->selectRows(mappedRows);
+                     });
 
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -137,7 +142,7 @@ void DataFrameTableView::setManager(BrushingAndLinkingManager& manager) {
 
 void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                                       bool categoryIndices) {
-    model_->setDataFrame(dataframe, categoryIndices);
+    model_->setDataFrame(std::move(dataframe), categoryIndices);
 
     if (model_->columnCount() > 0) {
         horizontalHeader()->setSectionHidden(0, !indexVisible_);
@@ -150,14 +155,14 @@ void DataFrameTableView::brushingUpdate() {
 
     if (ignoreUpdate_) return;
 
-    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     selectionModel()->clearSelection();
 
     QItemSelection s;
     for (auto row : model_->getSelectedRows()) {
-        QModelIndex start{model()->index(row, 0)};
-        QModelIndex end{model()->index(row, model_->columnCount() - 1)};
-        s.select(start, end);
+        const QModelIndex start{model_->index(row, 0)};
+        const QModelIndex end{model_->index(row, model_->columnCount() - 1)};
+        s.select(sortProxy_->mapFromSource(start), sortProxy_->mapFromSource(end));
     }
     selectionModel()->select(s, QItemSelectionModel::Select);
 }

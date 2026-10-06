@@ -72,12 +72,13 @@ void DataFrameModel::setManager(BrushingAndLinkingManager& manager) { manager_ =
 
 void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                                   bool categoryIndices) {
-    util::OnScopeExit onscopeexit([&]() { endResetModel(); });
+    const util::OnScopeExit onscopeexit([&]() { endResetModel(); });
 
     beginResetModel();
     data_ = dataframe;
     valueFuncs_.clear();
     tooltipFuncs_.clear();
+    indexFunc_ = nullptr;
 
     if (!data_) {
         return;
@@ -103,8 +104,7 @@ void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                 break;
             case ColumnType::Index:
             case ColumnType::Ordinal: {
-                auto df = col->getBuffer()->getDataFormat();
-                if (df->getComponents() == 1) {
+                if (const auto* df = col->getBuffer()->getDataFormat(); df->getComponents() == 1) {
                     return col->getBuffer()
                         ->getRepresentation<BufferRAM>()
                         ->template dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
@@ -152,7 +152,8 @@ void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
         }
     };
 
-    for (auto col : *data_) {
+    indexFunc_ = getValueFunc(data_->getIndexColumn().get());
+    for (const auto& col : *data_) {
         valueFuncs_.push_back(getValueFunc(col.get()));
         tooltipFuncs_.push_back(getToolTipFunc(col.get()));
     }
@@ -185,21 +186,18 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
         case Roles::Data:
             if (index.column() >= std::ssize(valueFuncs_)) return {};
             return valueFuncs_[index.column()](index.row());
+        case Roles::RowIndex: return indexFunc_(index.row());
         case Qt::ToolTipRole:
             if (index.column() >= std::ssize(tooltipFuncs_)) return {};
             return tooltipFuncs_[index.column()](index.row());
         case Qt::BackgroundRole: {
-            const auto& indexCol = data_->getIndexColumn()
-                                       ->getTypedBuffer()
-                                       ->getRAMRepresentation()
-                                       ->getDataContainer();
-
-            if (index.row() >= std::ssize(indexCol)) return {};
+            if (index.row() >= static_cast<int>(data_->getNumberOfRows())) return {};
+            const auto row = static_cast<std::uint32_t>(indexFunc_(index.row()).toUInt());
             const bool highlighted =
-                manager_ ? (manager_->isHighlighted(indexCol[index.row()]) ||
+                manager_ ? (manager_->isHighlighted(row) ||
                             manager_->isHighlighted(index.column(), BrushingTarget::Column))
                          : false;
-            const bool selected = manager_ ? manager_->isSelected(indexCol[index.row()]) : false;
+            const bool selected = manager_ ? manager_->isSelected(row) : false;
 
             if (highlighted) {
                 return QBrush(QColor(102, 87, 50));
@@ -290,7 +288,7 @@ void DataFrameModel::selectRows(const QModelIndexList& indices) {
         data_->getIndexColumn()->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
     BitSet selection;
-    for (auto& index : indices) {
+    for (const auto& index : indices) {
         selection.add(indexCol[index.row()]);
     }
     manager_->brush(BrushingAction::Select, BrushingTarget::Row, selection);

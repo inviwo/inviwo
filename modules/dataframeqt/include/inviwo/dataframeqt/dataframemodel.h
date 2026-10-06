@@ -58,7 +58,7 @@ class IVW_MODULE_DATAFRAMEQT_API DataFrameModel : public QAbstractTableModel {
     Q_OBJECT
 #include <warn/pop>
 public:
-    enum Roles { Data = Qt::UserRole, Filter };
+    enum Roles { Data = Qt::UserRole, Filter, RowIndex };
 
     DataFrameModel(QObject* parent = nullptr);
     virtual ~DataFrameModel();
@@ -87,6 +87,8 @@ private:
     // functions for accessing row data of each column
     std::vector<ValueFunc> valueFuncs_;
     std::vector<ValueFunc> tooltipFuncs_;
+    // accessing the row data of the index column
+    ValueFunc indexFunc_;
 };
 
 }  // namespace inviwo
