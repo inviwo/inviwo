@@ -31,7 +31,7 @@
 
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
-#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/volume/volume.h>  // IWYU pragma: keep
@@ -60,11 +60,12 @@ namespace inviwo {
 class Mesh;
 
 std::shared_ptr<Mesh> MarchingTetrahedron::apply(
-    std::shared_ptr<const Volume> volume, double iso, const vec4& color, bool invert, bool enclose,
+    std::shared_ptr<const Volume> volume, const std::vector<TFPrimitiveData>& isoValues,
+    PrimitiveSetMode isoValueMode, bool invert, bool enclose,
     std::function<void(float)> progressCallback,
     std::function<bool(const size3_t&)> maskingCallback) {
     log::warn("Deprecated: Use util::marchingtetrahedron(...) instead");
-    return util::marchingtetrahedron(std::move(volume), iso, color, invert, enclose,
+    return util::marchingtetrahedron(std::move(volume), isoValues, isoValueMode, invert, enclose,
                                      std::move(progressCallback), maskingCallback);
 }
 
@@ -180,11 +181,23 @@ void evaluateTetra(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuff
 }  // namespace marchingtetrahedron
 
 namespace util {
-std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, double iso,
-                                          const vec4& color, bool invert, bool enclose,
+
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume,
+                                          const std::vector<TFPrimitiveData>& isoValues,
+                                          PrimitiveSetMode isoValueMode, bool invert, bool enclose,
                                           std::function<void(float)> progressCallback,
                                           std::function<bool(const size3_t&)> maskingCallback) {
 
+    auto transformIsoValueToData = [&dm = volume->dataMap, isoValueMode](double v) {
+        if (isoValueMode == PrimitiveSetMode::Relative) {
+            return dm.mapFromNormalizedToData(v);
+        } else {
+            return dm.mapFromValueToData(v);
+        }
+    };
+
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     return volume->getRepresentation<VolumeRAM>()->dispatch<std::shared_ptr<Mesh>>([&](auto ram) {
         using T = util::PrecisionValueType<decltype(ram)>;
         if (progressCallback) progressCallback(0.0f);
@@ -195,73 +208,81 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, 
 
         K3DTree<size_t, float> vertexTree;
 
-        auto mesh = std::make_shared<BasicMesh>();
-        auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
-
         std::vector<vec3> positions;
         std::vector<vec3> normals;
-
-        mesh->setModelMatrix(volume->getModelMatrix());
-        mesh->setWorldMatrix(volume->getWorldMatrix());
+        std::vector<vec4> colors;
+        std::vector<int> surfaceIndices;
+        auto indexBufferRam = std::make_shared<IndexBufferRAM>();
 
         const T* src = ram->getDataTyped();
 
         const size3_t dim{volume->getDimensions()};
-        double dx, dy, dz;
-        dx = 1.0 / static_cast<double>(std::max(size_t(1), (dim.x - 1)));
-        dy = 1.0 / static_cast<double>(std::max(size_t(1), (dim.y - 1)));
-        dz = 1.0 / static_cast<double>(std::max(size_t(1), (dim.z - 1)));
+        const double dx = 1.0 / static_cast<double>(std::max(1uz, (dim.x - 1)));
+        const double dy = 1.0 / static_cast<double>(std::max(1uz, (dim.y - 1)));
+        const double dz = 1.0 / static_cast<double>(std::max(1uz, (dim.z - 1)));
 
-        const auto volSize = dim.x * dim.y * dim.z;
-        indexBuffer->getDataContainer().reserve(volSize * 6);
-        positions.reserve(volSize * 6);
-        normals.reserve(volSize * 6);
+        for (const auto&& [index, value] : std::views::zip(std::views::iota(0uz), isoValues)) {
+            const double isoData = transformIsoValueToData(value.pos);
+            for (size_t k = 0; k < dim.z - 1; k++) {
+                for (size_t j = 0; j < dim.y - 1; j++) {
+                    for (size_t i = 0; i < dim.x - 1; i++) {
+                        if (!maskingCallback({i, j, k})) continue;
+                        const double x = dx * static_cast<double>(i);
+                        const double y = dy * static_cast<double>(j);
+                        const double z = dz * static_cast<double>(k);
 
-        for (size_t k = 0; k < dim.z - 1; k++) {
-            for (size_t j = 0; j < dim.y - 1; j++) {
-                for (size_t i = 0; i < dim.x - 1; i++) {
-                    if (!maskingCallback({i, j, k})) continue;
-                    double x = dx * i;
-                    double y = dy * j;
-                    double z = dz * k;
+                        std::array<vec3, 8> pos{};
+                        std::array<double, 8> values{};
 
-                    std::array<vec3, 8> pos;
-                    std::array<double, 8> values;
+                        for (int l = 0; l < 8; l++) {
+                            const auto& o = marchingtetrahedron::offs[l];
+                            pos[l] = glm::vec3{x + dx * static_cast<double>(o.x),
+                                               y + dy * static_cast<double>(o.y),
+                                               z + dz * static_cast<double>(o.z)};
+                            values[l] =
+                                marching::getValue(src, size3_t(i, j, k) + o, dim, isoData, invert);
+                        }
 
-                    for (int l = 0; l < 8; l++) {
-                        const auto& o = marchingtetrahedron::offs[l];
-                        pos[l] = glm::vec3(x + dx * o.x, y + dy * o.y, z + dz * o.z);
-                        values[l] = marching::getValue(src, size3_t(i, j, k) + o, dim, iso, invert);
-                    }
-
-                    for (auto& t : marchingtetrahedron::tetras) {
-                        marchingtetrahedron::evaluateTetra(vertexTree, indexBuffer.get(), positions,
-                                                           normals, pos[t[0]], values[t[0]],
-                                                           pos[t[1]], values[t[1]], pos[t[2]],
-                                                           values[t[2]], pos[t[3]], values[t[3]]);
+                        for (const auto& t : marchingtetrahedron::tetras) {
+                            marchingtetrahedron::evaluateTetra(
+                                vertexTree, indexBufferRam.get(), positions, normals, pos[t[0]],
+                                values[t[0]], pos[t[1]], values[t[1]], pos[t[2]], values[t[2]],
+                                pos[t[3]], values[t[3]]);
+                        }
                     }
                 }
+                if (progressCallback) {
+                    progressCallback((static_cast<float>(k + 1) / static_cast<float>(dim.z - 1) +
+                                      static_cast<float>(index)) /
+                                     static_cast<float>(isoValues.size()));
+                }
             }
-            if (progressCallback) {
-                progressCallback(static_cast<float>(k + 1) / static_cast<float>(dim.z - 1));
-            }
-        }
 
-        if (enclose) {
-            marching::encloseSurfce(src, dim, indexBuffer.get(), positions, normals, iso, invert,
-                                    dx, dy, dz);
+            if (enclose) {
+                marching::encloseSurfce(src, dim, indexBufferRam.get(), positions, normals, isoData,
+                                        invert, dx, dy, dz);
+            }
+            std::fill_n(std::back_inserter(colors), positions.size() - colors.size(), value.color);
+            std::fill_n(std::back_inserter(surfaceIndices),
+                        positions.size() - surfaceIndices.size(), static_cast<int>(index));
         }
 
         IVW_ASSERT(positions.size() == normals.size(), "positions_ and normals_ must be equal");
-        std::vector<BasicMesh::Vertex> vertices;
-        vertices.reserve(positions.size());
 
-        for (auto pit = positions.begin(), nit = normals.begin(); pit != positions.end();
-             ++pit, ++nit) {
-            vertices.push_back({*pit, glm::normalize(*nit), *pit, color});
-        }
+        auto mesh = std::make_shared<Mesh>();
+        mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
+        mesh->addBuffer(BufferType::NormalAttrib, util::makeBuffer(std::move(normals)));
+        mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
+        mesh->addBuffer(BufferType::IntMetaAttrib, util::makeBuffer(std::move(surfaceIndices)));
+        mesh->addIndices({.dt = DrawType::Triangles, .ct = ConnectivityType::None},
+                         std::make_shared<IndexBuffer>(indexBufferRam));
 
-        mesh->addVertices(vertices);
+        mesh->setModelMatrix(volume->getModelMatrix());
+        mesh->setWorldMatrix(volume->getWorldMatrix());
+        mesh->axes[0] = volume->axes[0];
+        mesh->axes[1] = volume->axes[1];
+        mesh->axes[2] = volume->axes[2];
+        mesh->copyMetaDataFrom(*volume);
 
         if (progressCallback) progressCallback(1.0f);
 

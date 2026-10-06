@@ -67,7 +67,7 @@ Mesh::Mesh(const Mesh& rhs)
 }
 
 Mesh::Mesh(const Mesh& rhs, NoData)
-    : DataGroup<Mesh, MeshRepresentation>(rhs)
+    : DataGroup<Mesh, MeshRepresentation>()
     , SpatialEntity(rhs)
     , MetaDataOwner(rhs)
     , axes{rhs.axes}

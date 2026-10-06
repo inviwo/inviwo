@@ -33,8 +33,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/isovaluecollection.h>
 #include <inviwo/core/datastructures/volume/volume.h>  // IWYU pragma: keep
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/assertion.h>
@@ -451,27 +450,32 @@ const std::array<OffsetIndexMasks, 4> Index<T, IsoTest>::oim_ = {
 }  // namespace
 
 namespace util {
-std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, double iso,
-                                       const vec4& color, bool invert, bool enclose,
+
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume,
+                                       const std::vector<TFPrimitiveData>& isoValues,
+                                       PrimitiveSetMode isoValueMode, bool invert, bool enclose,
                                        std::function<void(float)> progressCallback,
                                        std::function<bool(const size3_t&)> maskingCallback) {
 
     auto indexBuffer = std::make_shared<IndexBuffer>();
     auto vertexBuffer = std::make_shared<Buffer<vec3>>();
-    auto textureBuffer = std::make_shared<Buffer<vec3>>();
     auto colorBuffer = std::make_shared<Buffer<vec4>>();
     auto normalBuffer = std::make_shared<Buffer<vec3>>();
+    auto metaBuffer = std::make_shared<Buffer<int>>();
 
-    auto indexRAM = indexBuffer->getEditableRAMRepresentation();
+    auto* indexRAM = indexBuffer->getEditableRAMRepresentation();
     auto& indices = indexRAM->getDataContainer();
     auto& positions = vertexBuffer->getEditableRAMRepresentation()->getDataContainer();
-    auto& textures = textureBuffer->getEditableRAMRepresentation()->getDataContainer();
     auto& colors = colorBuffer->getEditableRAMRepresentation()->getDataContainer();
     auto& normals = normalBuffer->getEditableRAMRepresentation()->getDataContainer();
+    auto& surfaceIndices = metaBuffer->getEditableRAMRepresentation()->getDataContainer();
 
     if (progressCallback) progressCallback(0.0f);
 
-    const auto mc = [&](auto ram, auto isoTest, auto mapValue) {
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity)
+    const auto mc = [&](auto ram, double isoValue, size_t isoValueIndex, auto isoTest,
+                        auto mapValue) {
         using T = util::PrecisionValueType<decltype(ram)>;
         static const marching::Config cube{};
 
@@ -482,7 +486,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
 
         const auto dr = dvec3(1.0) / dvec3{glm::max(size3_t{1}, (dim - size3_t{1}))};
         const auto doffs = [&]() {
-            std::array<dvec3, 8> tmp;
+            std::array<dvec3, 8> tmp{dvec3{0.0}};
             std::transform(cube.vertices.begin(), cube.vertices.end(), tmp.begin(),
                            [dr](auto& v) { return dr * dvec3{v}; });
             return tmp;
@@ -508,7 +512,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
         size3_t ind;
         dvec3 pos;
 
-        const float err =
+        const auto err =
             static_cast<float>(4.0 * glm::epsilon<double>() * glm::epsilon<double>() * dr.x * dr.y);
 
         for (ind.z = 0, pos.z = 0.0; ind.z < dim1.z; ++ind.z, pos.z += dr.z) {
@@ -550,56 +554,93 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
                 }
             }
             if (progressCallback) {
-                progressCallback(static_cast<float>(ind.z + 1) / static_cast<float>(dim.z - 1));
+                progressCallback((static_cast<float>(ind.z + 1) / static_cast<float>(dim.z) +
+                                  static_cast<float>(isoValueIndex)) /
+                                 static_cast<float>(isoValues.size()));
             }
         }
 
         if (enclose) {
-            marching::encloseSurfce(src, dim, indexRAM, positions, normals, iso, invert, dr.x, dr.y,
-                                    dr.z);
+            marching::encloseSurfce(src, dim, indexRAM, positions, normals, isoValue, invert, dr.x,
+                                    dr.y, dr.z);
         }
     };
+
+    auto transformIsoValueToData = [&dm = volume->dataMap, isoValueMode](double v) {
+        if (isoValueMode == PrimitiveSetMode::Relative) {
+            return dm.mapFromNormalizedToData(v);
+        } else {
+            return dm.mapFromValueToData(v);
+        }
+    };
+
     if (invert) {
         volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto ram) {
                 using ValueType = util::PrecisionValueType<decltype(ram)>;
-                mc(
-                    ram,
-                    [tiso = util::glm_convert<ValueType>(iso)](auto&& val) { return val > tiso; },
-                    [iso](auto&& val) { return util::glm_convert<double>(val) - iso; });
+
+                for (const auto&& [index, value] :
+                     std::views::zip(std::views::iota(0uz), isoValues)) {
+                    const double isoData = transformIsoValueToData(value.pos);
+                    mc(
+                        ram, isoData, index,
+                        [tiso = util::glm_convert<ValueType>(isoData)](auto&& val) {
+                            return val > tiso;
+                        },
+                        [isoData](auto&& val) { return util::glm_convert<double>(val) - isoData; });
+                    std::fill_n(std::back_inserter(colors), positions.size() - colors.size(),
+                                value.color);
+                    std::fill_n(std::back_inserter(surfaceIndices),
+                                positions.size() - surfaceIndices.size(), static_cast<int>(index));
+                }
             });
     } else {
         volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto ram) {
                 using ValueType = util::PrecisionValueType<decltype(ram)>;
-                mc(
-                    ram,
-                    [tiso = util::glm_convert<ValueType>(iso)](auto&& val) { return val < tiso; },
-                    [iso](auto&& val) { return -(util::glm_convert<double>(val) - iso); });
+
+                for (const auto&& [index, value] :
+                     std::views::zip(std::views::iota(0uz), isoValues)) {
+                    const double isoData = transformIsoValueToData(value.pos);
+                    mc(
+                        ram, isoData, index,
+                        [tiso = util::glm_convert<ValueType>(isoData)](auto&& val) {
+                            return val < tiso;
+                        },
+                        [isoData](auto&& val) {
+                            return -(util::glm_convert<double>(val) - isoData);
+                        });
+                    std::fill_n(std::back_inserter(colors), positions.size() - colors.size(),
+                                value.color);
+                    std::fill_n(std::back_inserter(surfaceIndices),
+                                positions.size() - surfaceIndices.size(), static_cast<int>(index));
+                }
             });
     }
 
     IVW_ASSERT(positions.size() == normals.size(), "positions and normals must be equal size");
 
-    std::transform(normals.begin(), normals.end(), normals.begin(),
-                   [](const vec3& n) { return glm::normalize(n); });
-    textures.insert(textures.begin(), positions.begin(), positions.end());
-    colors.reserve(positions.size());
-    std::fill_n(std::back_inserter(colors), positions.size(), color);
+    std::ranges::transform(normals, normals.begin(),
+                           [](const vec3& n) { return glm::normalize(n); });
 
     auto mesh = std::make_shared<Mesh>();
     mesh->setModelMatrix(volume->getModelMatrix());
     mesh->setWorldMatrix(volume->getWorldMatrix());
-    mesh->addIndices({DrawType::Triangles, ConnectivityType::None}, indexBuffer);
+    mesh->addIndices({.dt = DrawType::Triangles, .ct = ConnectivityType::None}, indexBuffer);
     mesh->addBuffer(BufferType::PositionAttrib, vertexBuffer);
-    mesh->addBuffer(BufferType::TexCoordAttrib, textureBuffer);
     mesh->addBuffer(BufferType::ColorAttrib, colorBuffer);
     mesh->addBuffer(BufferType::NormalAttrib, normalBuffer);
+    mesh->addBuffer(BufferType::IntMetaAttrib, metaBuffer);
+    mesh->axes[0] = volume->axes[0];
+    mesh->axes[1] = volume->axes[1];
+    mesh->axes[2] = volume->axes[2];
+    mesh->copyMetaDataFrom(*volume);
 
     if (progressCallback) progressCallback(1.0f);
 
     return mesh;
 }
+
 }  // namespace util
 
 }  // namespace inviwo

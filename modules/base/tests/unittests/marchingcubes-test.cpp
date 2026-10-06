@@ -70,7 +70,10 @@ std::vector<uint32_t>& getBufferIndexData(Mesh& mesh, size_t ind) {
 TEST(Marchingcubes, empty) {
     auto vol = std::shared_ptr<Volume>(
         util::generateVolume(size3_t{2}, mat3(1.0f), [&](const size3_t&) { return 0.0f; }));
-    auto mesh = util::marchingCubesOpt(vol, 0.5, {1.0f, 0.0f, 0.0f, 1.0f}, false, false);
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
+
+    auto mesh = util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
     auto& pos = getBufferData<vec3>(*mesh, 0);
     auto& ind = getBufferIndexData(*mesh, 0);
     EXPECT_EQ(pos.size(), 0);
@@ -80,7 +83,10 @@ TEST(Marchingcubes, empty) {
 TEST(Marchingcubes, full) {
     auto vol = std::shared_ptr<Volume>(
         util::generateVolume(size3_t{2}, mat3(1.0f), [&](const size3_t&) { return 1.0f; }));
-    auto mesh = util::marchingCubesOpt(vol, 0.5, {1.0f, 0.0f, 0.0f, 1.0f}, false, false);
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
+
+    auto mesh = util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
     auto& pos = getBufferData<vec3>(*mesh, 0);
     auto& ind = getBufferIndexData(*mesh, 0);
     EXPECT_EQ(pos.size(), 0);
@@ -90,6 +96,9 @@ TEST(Marchingcubes, full) {
 TEST(Marchingcubes, one) {
     const std::array<size3_t, 8> voxels = {
         {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};
+
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
     auto order = [](auto& a, auto& b) {
         return std::lexicographical_compare(glm::value_ptr(a), glm::value_ptr(a) + 3,
@@ -112,7 +121,8 @@ TEST(Marchingcubes, one) {
                     return 0.0f;
                 }
             }));
-        auto mesh = util::marchingCubesOpt(vol, 0.5, {1.0f, 0.0f, 0.0f, 1.0f}, false, false);
+        auto mesh =
+            util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
         auto& pos = getBufferData<vec3>(*mesh, 0);
         auto& ind = getBufferIndexData(*mesh, 0);
         ASSERT_EQ(pos.size(), 3);
@@ -143,7 +153,8 @@ TEST(Marchingcubes, one) {
                     return 0.0f;
                 }
             }));
-        auto mesh = util::marchingCubesOpt(vol, 0.5, {1.0f, 0.0f, 0.0f, 1.0f}, false, false);
+        auto mesh =
+            util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
         auto& pos = getBufferData<vec3>(*mesh, 0);
         auto& ind = getBufferIndexData(*mesh, 0);
         ASSERT_EQ(pos.size(), 3);
@@ -169,6 +180,9 @@ TEST(Marchingcubes, one) {
 TEST(Marchingcubes, two) {
     const std::array<size3_t, 8> voxels = {
         {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};
+
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
     auto order = [](auto& a, auto& b) {
         return std::lexicographical_compare(glm::value_ptr(a), glm::value_ptr(a) + 3,
@@ -197,7 +211,8 @@ TEST(Marchingcubes, two) {
                         return 0.0f;
                     }
                 }));
-            auto mesh = util::marchingCubesOpt(vol, 0.5, {1.0f, 0.0f, 0.0f, 1.0f}, false, false);
+            auto mesh =
+                util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
 
             auto& pos = getBufferData<vec3>(*mesh, 0);
             auto& ind = getBufferIndexData(*mesh, 0);
@@ -247,8 +262,11 @@ TEST(Marchingcubes, two) {
 TEST(Marchingcubes, minimal) {
     auto v = std::shared_ptr<Volume>(util::makeSingleVoxelVolume(size3_t{3}));
 
-    auto mesh1 = util::marchingcubes(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
-    auto mesh2 = util::marchingCubesOpt(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
+
+    auto mesh1 = util::marchingcubes(v, isoValues, PrimitiveSetMode::Relative, false, false);
+    auto mesh2 = util::marchingCubesOpt(v, isoValues, PrimitiveSetMode::Relative, false, false);
 
     ASSERT_EQ(mesh1->getNumberOfBuffers(), 4);
     ASSERT_EQ(mesh2->getNumberOfBuffers(), 4);
@@ -294,8 +312,11 @@ TEST(Marchingcubes, minimal) {
 TEST(Marchingcubes, sphere) {
     auto v = std::shared_ptr<Volume>(util::makeSphericalVolume(size3_t{5}));
 
-    auto mesh1 = util::marchingcubes(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
-    auto mesh2 = util::marchingCubesOpt(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
+
+    auto mesh1 = util::marchingcubes(v, isoValues, PrimitiveSetMode::Relative, false, false);
+    auto mesh2 = util::marchingCubesOpt(v, isoValues, PrimitiveSetMode::Relative, false, false);
 
     ASSERT_EQ(mesh1->getNumberOfBuffers(), 4);
     ASSERT_EQ(mesh2->getNumberOfBuffers(), 4);

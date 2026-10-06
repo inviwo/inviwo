@@ -33,33 +33,21 @@
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/datasequence.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/staticstring.h>
-
-#include <cstddef>
-#include <functional>
-#include <memory>
-#include <string>
-#include <string_view>
-
-#include <fmt/base.h>
-#include <glm/fwd.hpp>
-#include <glm/vec3.hpp>
 
 namespace inviwo {
 
 class IVW_MODULE_BASE_API SurfaceExtraction : public PoolProcessor {
 public:
-    enum class Method {
+    enum class Method : std::uint8_t {
         MarchingCubes,
         MarchingCubesOpt,
         MarchingTetrahedron,
@@ -76,18 +64,21 @@ public:
     virtual void process() override;
 
 protected:
-    void updateColors();
-    vec4 getColor(size_t i) const;
+    enum class ColoringMode : std::uint8_t { IsoValues, VolumeIndex, Mixed };
 
     DataInport<Volume, 0, true> volume_;
-    DataOutport<DataSequence<Mesh>> outport_;
+    MeshSequenceOutport outport_;
     std::vector<std::shared_ptr<Mesh>> meshes_;
 
     OptionProperty<Method> method_;
-    FloatProperty isoValue_;
+
+    OptionProperty<ColoringMode> coloring_;
+    FloatProperty blendFactor_;
+    IsoValueProperty isoValues_;
+    TransferFunctionProperty volumeTF_;
+
     BoolProperty invertIso_;
     BoolProperty encloseSurface_;
-    CompositeProperty colors_;
 };
 
 }  // namespace inviwo

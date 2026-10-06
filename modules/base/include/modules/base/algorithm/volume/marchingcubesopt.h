@@ -31,6 +31,7 @@
 
 #include <modules/base/basemoduledefine.h>
 
+#include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/util/glmvec.h>
 
 #include <array>
@@ -53,22 +54,23 @@ namespace util {
  * Note: Shares interface with util::marchingcubes and util::marchingtetrahedron
  * This is an optimized version of util::marchingcubes
  *
- * @param volume the scalar volume
- * @param iso iso-value for the extracted surface
- * @param color the color of the resulting surface
- * @param invert flips the normals of the surface normals (useful when values greater than the
- * iso-value is 'outside' of the surface)
+ * @param volume        the scalar volume
+ * @param isoValues     position and color data of iso-values
+ * @param isoValueMode  defines the interpretation of iso-values, that is relative or absolute
+ * @param invert        flips the normals of the surface normals (useful when values greater than
+ *                      the iso-value is 'outside' of the surface)
  * @param enclose whether to create surface where the iso surface intersects the volume boundaries
  * @param progressCallback if set, will be called will executing with the current progress in the
  * interval [0,1], useful for progress bars
  * @param maskingCallback optional callback to test whether current cell should be evaluated or not
  * (return true to include current cell)
  */
-
 IVW_MODULE_BASE_API std::shared_ptr<Mesh> marchingCubesOpt(
-    std::shared_ptr<const Volume> volume, double iso, const vec4& color, bool invert, bool enclose,
+    std::shared_ptr<const Volume> volume, const std::vector<TFPrimitiveData>& isoValues,
+    PrimitiveSetMode isoValueMode, bool invert, bool enclose,
     std::function<void(float)> progressCallback = nullptr,
     std::function<bool(const size3_t&)> maskingCallback = nullptr);
+
 }  // namespace util
 
 namespace marching {

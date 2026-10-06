@@ -49,9 +49,11 @@ using namespace inviwo;
 static void SphereOld(benchmark::State& state) {
     auto v = std::shared_ptr<Volume>(
         util::makeSphericalVolume(size3_t{static_cast<size_t>(state.range(0))}));
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
     for (auto _ : state) {
-        auto mesh = util::marchingcubes(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
+        auto mesh = util::marchingcubes(v, isoValues, PrimitiveSetMode::Relative, false, false);
         state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
         state.counters["Indices"] =
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
@@ -64,9 +66,11 @@ static void SphereOld(benchmark::State& state) {
 static void SphereNew(benchmark::State& state) {
     auto v = std::shared_ptr<Volume>(
         util::makeSphericalVolume(size3_t{static_cast<size_t>(state.range(0))}));
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
     for (auto _ : state) {
-        auto mesh = util::marchingCubesOpt(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
+        auto mesh = util::marchingCubesOpt(v, isoValues, PrimitiveSetMode::Relative, false, false);
         state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
         state.counters["Indices"] =
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
@@ -79,9 +83,11 @@ static void SphereNew(benchmark::State& state) {
 static void RippleOld(benchmark::State& state) {
     auto v = std::shared_ptr<Volume>(
         util::makeRippleVolume(size3_t{static_cast<size_t>(state.range(0))}));
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
     for (auto _ : state) {
-        auto mesh = util::marchingcubes(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
+        auto mesh = util::marchingcubes(v, isoValues, PrimitiveSetMode::Relative, false, false);
         state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
         state.counters["Indices"] =
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
@@ -94,9 +100,11 @@ static void RippleOld(benchmark::State& state) {
 static void RippleNew(benchmark::State& state) {
     auto v = std::shared_ptr<Volume>(
         util::makeRippleVolume(size3_t{static_cast<size_t>(state.range(0))}));
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
     for (auto _ : state) {
-        auto mesh = util::marchingCubesOpt(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
+        auto mesh = util::marchingCubesOpt(v, isoValues, PrimitiveSetMode::Relative, false, false);
         state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
         state.counters["Indices"] =
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
@@ -109,9 +117,11 @@ static void RippleNew(benchmark::State& state) {
 static void MiniOld(benchmark::State& state) {
     auto v = std::shared_ptr<Volume>(
         util::makeSingleVoxelVolume(size3_t{static_cast<size_t>(state.range(0))}));
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
     for (auto _ : state) {
-        auto mesh = util::marchingcubes(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
+        auto mesh = util::marchingcubes(v, isoValues, PrimitiveSetMode::Relative, false, false);
         state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
         state.counters["Indices"] =
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
@@ -124,9 +134,11 @@ static void MiniOld(benchmark::State& state) {
 static void MiniNew(benchmark::State& state) {
     auto v = std::shared_ptr<Volume>(
         util::makeSingleVoxelVolume(size3_t{static_cast<size_t>(state.range(0))}));
+    const std::vector<TFPrimitiveData> isoValues{
+        {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
     for (auto _ : state) {
-        auto mesh = util::marchingCubesOpt(v, 0.5, {0.5f, 0.0f, 0.0f, 1.0f}, false, false);
+        auto mesh = util::marchingCubesOpt(v, isoValues, PrimitiveSetMode::Relative, false, false);
         state.counters["Vertices"] = static_cast<double>(mesh->getBuffer(0)->getSize());
         state.counters["Indices"] =
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
