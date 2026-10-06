@@ -374,8 +374,12 @@ void Processor::serialize(Serializer& s) const {
     s.serialize("OwnedOutportIdentifiers", ownedOutports_, "OutportIdentifier", util::alwaysTrue{},
                 util::identifier{});
 
-    s.serialize("InPorts", ownedInports_, "InPort");
-    s.serialize("OutPorts", ownedOutports_, "OutPort");
+    //s.serialize("InPorts", ownedInports_, "InPort");
+    //s.serialize("OutPorts", ownedOutports_, "OutPort");
+
+    //To display ports in XML
+    s.serialize("InPorts", inports_, "InPort");
+    s.serialize("OutPorts", outports_, "OutPort");
 
     PropertyOwner::serialize(s);
     MetaDataOwner::serialize(s);

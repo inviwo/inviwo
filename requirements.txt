@@ -2,8 +2,9 @@ numpy
 Sphinx
 sphinx-rtd-theme
 recommonmark
-mcp[cli]
-fastmcp
+fastmcp==3.4.4
 pywin32
 pypiwin32
 anyio
+github-copilot-sdk
+pydantic-settings

@@ -138,6 +138,7 @@ if(IVW_ENABLE_PYTHON)
                 execute_process(COMMAND "${Python3_EXECUTABLE}" -m pip install --isolated --no-input --no-warn-script-location --upgrade pip)
                 #execute_process(COMMAND "${Python3_EXECUTABLE}" -m pip install --isolated --no-input --upgrade --no-warn-script-location --exists-action i --quiet --target "${PYTHON_BASE_PATH}/lib/site-packages" -r "${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt")
                 execute_process(COMMAND "${Python3_EXECUTABLE}" -m pip install --isolated --no-input --upgrade --no-warn-script-location --exists-action i --quiet --target "${PYTHON_BASE_PATH}/lib/site-packages" --force-reinstall -r "${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt")
+                
             endif()
         endif()
     endif()
