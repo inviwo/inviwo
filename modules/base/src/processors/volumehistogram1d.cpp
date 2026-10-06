@@ -39,7 +39,7 @@ const ProcessorInfo VolumeHistogram1D::processorInfo_{
     "Volume Histogram1D",            // Display name
     "Volume",                        // Category
     CodeState::Experimental,         // Code state
-    Tags::CPU | Tag{Histogram},      // Tags
+    Tags::CPU | Tag{"Histogram"},    // Tags
     R"(Calculate the 1D histogram of a volume.)"_unindentHelp,
 };
 
