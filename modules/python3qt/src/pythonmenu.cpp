@@ -143,6 +143,7 @@ PythonEditorWidget* PythonMenu::newEditor() {
     editor->setAttribute(Qt::WA_DeleteOnClose);
     editor->setVisible(true);
     utilqt::addDockWidgetTabify(editor.get(), win_, Qt::RightDockWidgetArea);
+    editor->setSticky(false);
     editor->setFloating(true);
     editor->loadState();
     editor->restore();

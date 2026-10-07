@@ -140,11 +140,11 @@ void OpenGLQtMenu::showShader(GLuint shaderID, GLuint objectID) {
         });
         utilqt::addDockWidgetTabify(editor.get(), mainWindow, Qt::RightDockWidgetArea);
         editor->setFloating(true);
+        editor->setSticky(false);
         editor->show();
         editor->raise();
         editor->activateWindow();
         editor->loadState();
-
 
         editors_[objectID] = std::move(editor);
     }

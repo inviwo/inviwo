@@ -126,9 +126,8 @@ std::vector<QDockWidget*> getWidgetsInArea(QMainWindow* win, Qt::DockWidgetArea 
 }
 
 void addDockWidgetTabify(QDockWidget* widget, QMainWindow* win, Qt::DockWidgetArea area) {
-
     win->addDockWidget(Qt::RightDockWidgetArea, widget);
-    auto other = utilqt::getWidgetsInArea(win, Qt::RightDockWidgetArea);
+    auto other = utilqt::getWidgetsInArea(win, area);
     if (!other.empty()) {
         win->tabifyDockWidget(other.front(), widget);
     }

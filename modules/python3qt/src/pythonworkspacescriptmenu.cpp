@@ -95,6 +95,7 @@ PythonEditorWidget* PythonWorkspaceScriptMenu::newScriptEditor(const std::string
     editor->setVisible(true);
     utilqt::addDockWidgetTabify(editor.get(), win_, Qt::RightDockWidgetArea);
     editor->setFloating(true);
+    editor->setSticky(false);
     editor->loadState();
 
     scriptEditors_[key] = std::move(editor);

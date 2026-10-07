@@ -388,31 +388,33 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     app->getCommandLineParser().add(&resetWindowState_);
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
-
     propertyListWidget_ = new PropertyListWidget(this, app_);
-    addDockWidget(Qt::RightDockWidgetArea, propertyListWidget_);
-    propertyListWidget_->setVisible(true);
-    propertyListWidget_->loadState();
-
     helpWidget_ = new HelpWidget(this);
-    addDockWidget(Qt::RightDockWidgetArea, helpWidget_);
-    helpWidget_->setVisible(true);
-    helpWidget_->loadState();
-
     settings_ = new SettingsWidget(this);
-    addDockWidget(Qt::RightDockWidgetArea, settings_);
-    settings_->setVisible(false);
-    settings_->loadState();
-
     annotationsWidget_ = new AnnotationsWidget(app_, networkEditorView_, this);
-    addDockWidget(Qt::RightDockWidgetArea, annotationsWidget_);
-    annotationsWidget_->setVisible(false);
-    annotationsWidget_->loadState();
-
     networkAnnotationWidget_ = new NetworkAnnotationWidget{app_->getProcessorNetwork(), this};
-    addDockWidget(Qt::RightDockWidgetArea, networkAnnotationWidget_);
-    networkAnnotationWidget_->setVisible(false);
-    networkAnnotationWidget_->loadState();
+    resourceManagerDockWidget_ = new ResourceManagerDockWidget(this, *app->getResourceManager());
+
+    const auto rightWidgets = std::to_array<InviwoDockWidget*>({
+        propertyListWidget_,
+        helpWidget_,
+        settings_,
+        annotationsWidget_,
+        networkAnnotationWidget_,
+        resourceManagerDockWidget_,
+    });
+    for (auto* widget : rightWidgets) {
+        addDockWidget(Qt::RightDockWidgetArea, widget);
+        widget->setVisible(false);
+        widget->loadState();
+    }
+    for (auto&& [a, b] : std::views::zip(rightWidgets, rightWidgets | std::views::drop(1))) {
+        tabifyDockWidget(a, b);
+    }
+    helpWidget_->setVisible(true);
+    propertyListWidget_->setVisible(true);
+    propertyListWidget_->raise();
+
     connect(networkAnnotationWidget_, &NetworkAnnotationWidget::modifiedAnnotation, this,
             [this](size_t index, const NetworkAnnotation& annotation) {
                 app_->getNetworkAnnotations().update(index, annotation);
@@ -424,23 +426,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
             });
     connect(networkEditor_.get(), &NetworkEditor::hideNetworkAnnotationDetails,
             networkAnnotationWidget_, &NetworkAnnotationWidget::hideAnnotation);
-
-    resourceManagerDockWidget_ = new ResourceManagerDockWidget(this, *app->getResourceManager());
-    addDockWidget(Qt::RightDockWidgetArea, resourceManagerDockWidget_);
-    resourceManagerDockWidget_->setVisible(false);
-    resourceManagerDockWidget_->loadState();
-
-    for (auto&& [a, b] : std::views::pairwise(std::to_array<InviwoDockWidget*>({
-             propertyListWidget_,
-             helpWidget_,
-             settings_,
-             annotationsWidget_,
-             networkAnnotationWidget_,
-             resourceManagerDockWidget_,
-         }))) {
-        tabifyDockWidget(a, b);
-    }
-    propertyListWidget_->raise();
 
     processorTreeWidget_ = new ProcessorListWidget(this, helpWidget_);
     addDockWidget(Qt::LeftDockWidgetArea, processorTreeWidget_);
@@ -1531,6 +1516,9 @@ void InviwoMainWindow::showAboutBox() {
     if (!inviwoAboutWindow_) {
         inviwoAboutWindow_ = new InviwoAboutWindow(this);
         inviwoAboutWindow_->setVisible(false);
+        inviwoAboutWindow_->setSticky(false);
+        utilqt::addDockWidgetTabify(inviwoAboutWindow_, this, Qt::RightDockWidgetArea);
+        inviwoAboutWindow_->setFloating(true);
         inviwoAboutWindow_->loadState();
     }
     inviwoAboutWindow_->show();
