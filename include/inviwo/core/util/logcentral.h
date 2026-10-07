@@ -93,6 +93,7 @@ public:
      * @param logger Logger to register.
      */
     void registerLogger(std::weak_ptr<Logger> logger);
+    void unregisterLogger(std::shared_ptr<Logger> logger);
 
     virtual void log(std::string_view source, LogLevel level, LogAudience audience,
                      std::string_view file, std::string_view function, int line,
