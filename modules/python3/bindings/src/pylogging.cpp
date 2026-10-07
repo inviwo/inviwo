@@ -103,8 +103,14 @@ void exposeLogging(pybind11::module& m) {
             }
             return lc;
         }))
-        .def("registerLogger",
-             [](LogCentral* lc, std::shared_ptr<Logger> logger) { lc->registerLogger(logger); })
+        .def(
+            "registerLogger",
+            [](LogCentral* lc, std::shared_ptr<Logger> logger) { lc->registerLogger(logger); },
+            py::arg("logger"))
+        .def(
+            "unregisterLogger",
+            [](LogCentral* lc, std::shared_ptr<Logger> logger) { lc->unregisterLogger(logger); },
+            py::arg("logger"))
         .def_property("verbosity", &LogCentral::getVerbosity, &LogCentral::setVerbosity)
         .def_property("logStacktrace", &LogCentral::getLogStacktrace, &LogCentral::setLogStacktrace)
         .def_property("messageBreakLevel", &LogCentral::getMessageBreakLevel,
@@ -143,6 +149,17 @@ void exposeLogging(pybind11::module& m) {
     m.def("logError", [](const std::string& msg) {
         log::report(LogLevel::Error, SourceContext{"inviwopy"_sl}, msg);
     });
+
+    m.def(
+        "logCentral",
+        []() {
+            if (LogCentral::isInitialized()) {
+                return LogCentral::getPtr();
+            } else {
+                throw Exception{SourceContext{}, "LogCentral not initialized"};
+            }
+        },
+        py::return_value_policy::reference);
 }
 
 }  // namespace inviwo
