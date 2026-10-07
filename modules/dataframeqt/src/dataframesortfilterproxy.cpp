@@ -75,10 +75,8 @@ bool DataFrameSortFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex
     if (!filtering_ || !manager_) return true;
 
     if (auto v = sourceModel()->data(sourceModel()->index(sourceRow, 0), DataFrameModel::RowIndex);
-        !v.isNull()) {
-        bool ok = true;
-        const auto rowIndex = v.toInt(&ok);
-        return !manager_->isFiltered(rowIndex, BrushingTarget::Row);
+        v.isValid()) {
+        return !manager_->isFiltered(v.toInt(), BrushingTarget::Row);
     } else {
         return !manager_->isFiltered(sourceRow, BrushingTarget::Row);
     }

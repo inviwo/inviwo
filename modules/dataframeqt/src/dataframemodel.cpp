@@ -70,12 +70,85 @@ DataFrameModel::~DataFrameModel() = default;
 
 void DataFrameModel::setManager(BrushingAndLinkingManager& manager) { manager_ = &manager; }
 
+namespace {
+
+DataFrameModel::ValueFunc getValueFunc(const Column* col, bool categoryIndices) {
+    using ValueFunc = DataFrameModel::ValueFunc;
+    switch (col->getColumnType()) {
+        case ColumnType::Categorical:
+            if (!categoryIndices) {
+                return [cc = static_cast<const CategoricalColumn*>(col)](int row) -> QVariant {
+                    return utilqt::toQString(cc->getAsString(row));
+                };
+            } else {
+                return col->getBuffer()
+                    ->getRepresentation<BufferRAM>()
+                    ->template dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
+                        return [br](int row) -> QVariant {
+                            auto val = br->getDataContainer()[row];
+                            return QVariant{static_cast<qulonglong>(val)};
+                        };
+                    });
+            }
+            break;
+        case ColumnType::Index:
+        case ColumnType::Ordinal: {
+            if (const auto* df = col->getBuffer()->getDataFormat(); df->getComponents() == 1) {
+                return col->getBuffer()
+                    ->getRepresentation<BufferRAM>()
+                    ->template dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
+                        return [br](int row) -> QVariant {
+                            auto val = br->getDataContainer()[row];
+                            if constexpr (std::is_floating_point_v<decltype(val)>) {
+                                return QVariant{val};
+                            } else if constexpr (std::is_signed_v<decltype(val)>) {
+                                return QVariant{static_cast<qlonglong>(val)};
+                            } else {
+                                return QVariant{static_cast<qulonglong>(val)};
+                            }
+                        };
+                    });
+            } else {
+                // more than one component, convert to string
+                return col->getBuffer()
+                    ->getRepresentation<BufferRAM>()
+                    ->template dispatch<ValueFunc, dispatching::filter::Vecs>([](auto br) {
+                        return [br](int row) {
+                            return QVariant{
+                                utilqt::toQString(fmt::to_string(br->getDataContainer()[row]))};
+                        };
+                    });
+            }
+            break;
+        }
+        default: return [](int) { return QVariant(); };
+    }
+}
+std::function<QVariant(int)> getToolTipFunc(const Column* col, bool categoryIndices) {
+    switch (col->getColumnType()) {
+        case ColumnType::Categorical:
+            if (!categoryIndices) {
+                return [cc = static_cast<const CategoricalColumn*>(col)](int row) -> QVariant {
+                    return QString("Key: %1").arg(cc->getId(row));
+                };
+            } else {
+                return [](int) { return QVariant(); };
+            }
+            break;
+        case ColumnType::Ordinal:
+        case ColumnType::Index:
+        default:                  return [](int) { return QVariant(); };
+    }
+}
+
+}  // namespace
+
 void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                                   bool categoryIndices) {
     const util::OnScopeExit onscopeexit([&]() { endResetModel(); });
 
     beginResetModel();
-    data_ = dataframe;
+    data_ = std::move(dataframe);
     valueFuncs_.clear();
     tooltipFuncs_.clear();
     indexFunc_ = nullptr;
@@ -84,78 +157,10 @@ void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
         return;
     }
 
-    auto getValueFunc = [categoryIndices](const Column* col) -> ValueFunc {
-        switch (col->getColumnType()) {
-            case ColumnType::Categorical:
-                if (!categoryIndices) {
-                    return [cc = static_cast<const CategoricalColumn*>(col)](int row) -> QVariant {
-                        return utilqt::toQString(cc->getAsString(row));
-                    };
-                } else {
-                    return col->getBuffer()
-                        ->getRepresentation<BufferRAM>()
-                        ->template dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
-                            return [br](int row) -> QVariant {
-                                auto val = br->getDataContainer()[row];
-                                return QVariant{static_cast<qulonglong>(val)};
-                            };
-                        });
-                }
-                break;
-            case ColumnType::Index:
-            case ColumnType::Ordinal: {
-                if (const auto* df = col->getBuffer()->getDataFormat(); df->getComponents() == 1) {
-                    return col->getBuffer()
-                        ->getRepresentation<BufferRAM>()
-                        ->template dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
-                            return [br](int row) -> QVariant {
-                                auto val = br->getDataContainer()[row];
-                                if constexpr (std::is_floating_point_v<decltype(val)>) {
-                                    return QVariant{val};
-                                } else if constexpr (std::is_signed_v<decltype(val)>) {
-                                    return QVariant{static_cast<qlonglong>(val)};
-                                } else {
-                                    return QVariant{static_cast<qulonglong>(val)};
-                                }
-                            };
-                        });
-                } else {
-                    // more than one component, convert to string
-                    return col->getBuffer()
-                        ->getRepresentation<BufferRAM>()
-                        ->template dispatch<ValueFunc, dispatching::filter::Vecs>([](auto br) {
-                            return [br](int row) {
-                                return QVariant{
-                                    utilqt::toQString(fmt::to_string(br->getDataContainer()[row]))};
-                            };
-                        });
-                }
-                break;
-            }
-            default: return [](int) { return QVariant(); };
-        }
-    };
-    auto getToolTipFunc = [categoryIndices](const Column* col) -> std::function<QVariant(int)> {
-        switch (col->getColumnType()) {
-            case ColumnType::Categorical:
-                if (!categoryIndices) {
-                    return [cc = static_cast<const CategoricalColumn*>(col)](int row) -> QVariant {
-                        return QString("Key: %1").arg(cc->getId(row));
-                    };
-                } else {
-                    return [](int) { return QVariant(); };
-                }
-                break;
-            case ColumnType::Ordinal:
-            case ColumnType::Index:
-            default:                  return [](int) { return QVariant(); };
-        }
-    };
-
-    indexFunc_ = getValueFunc(data_->getIndexColumn().get());
+    indexFunc_ = getValueFunc(data_->getIndexColumn().get(), categoryIndices);
     for (const auto& col : *data_) {
-        valueFuncs_.push_back(getValueFunc(col.get()));
-        tooltipFuncs_.push_back(getToolTipFunc(col.get()));
+        valueFuncs_.push_back(getValueFunc(col.get(), categoryIndices));
+        tooltipFuncs_.push_back(getToolTipFunc(col.get(), categoryIndices));
     }
 }
 
@@ -170,7 +175,7 @@ int DataFrameModel::columnCount(const QModelIndex&) const {
 }
 
 QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
-    if (!index.isValid()) return QVariant();
+    if (!index.isValid()) return {};
 
     switch (role) {
         case Qt::DisplayRole: {
@@ -186,12 +191,14 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
         case Roles::Data:
             if (index.column() >= std::ssize(valueFuncs_)) return {};
             return valueFuncs_[index.column()](index.row());
-        case Roles::RowIndex: return indexFunc_(index.row());
+        case Roles::RowIndex:
+            if (indexFunc_) return indexFunc_(index.row());
+            return {};
         case Qt::ToolTipRole:
             if (index.column() >= std::ssize(tooltipFuncs_)) return {};
             return tooltipFuncs_[index.column()](index.row());
         case Qt::BackgroundRole: {
-            if (index.row() >= static_cast<int>(data_->getNumberOfRows())) return {};
+            if (index.row() >= static_cast<int>(data_->getNumberOfRows()) || !indexFunc_) return {};
             const auto row = static_cast<std::uint32_t>(indexFunc_(index.row()).toUInt());
             const bool highlighted =
                 manager_ ? (manager_->isHighlighted(row) ||
@@ -225,7 +232,7 @@ void DataFrameModel::brushingUpdate() {
 }
 
 QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, int role) const {
-    if (!data_) return QVariant();
+    if (!data_) return {};
 
     if (role == Qt::DisplayRole) {
         if (orientation == Qt::Vertical) {
@@ -261,7 +268,7 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
         }
         return tooltip;
     }
-    return QVariant();
+    return {};
 }
 
 void DataFrameModel::highlightRow(const QModelIndex& index) {
