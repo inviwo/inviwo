@@ -113,13 +113,15 @@ class Inviwo:
         # Create the inviwo application
         self.inviwoApp = inviwopy.InviwoApplication()
         inviwopy.app = self.inviwoApp
-        self.inviwoApp.setProgressCallback(lambda x: inviwopy.log(x))
-        self.inviwoApp.registerRuntimeModules(lambda name: name not in ['glfw', 'webbrowser'])
+        self.inviwoApp.moduleManager.registerRuntimeModules(
+            lambda name: name not in ['glfw', 'webbrowser'], 
+            lambda x: inviwopy.log(x)
+        )
 
         configureQtNames(self.qtApp)
         inviwopy.qt.configureFileSystemObserver(self.inviwoApp)
         inviwopy.qt.configurePostEnqueueFront(self.inviwoApp)
-        inviwopy.qo.onfigureAssertionHandler(self.inviwoApp);
+        inviwopy.qt.configureAssertionHandler(self.inviwoApp);
         inviwopy.qt.setStyleSheetFile(pathlib.Path(":/stylesheets/inviwo.qss"))
 
         self.propertyListWidget = inviwopy.qt.PropertyListWidget(self.inviwoApp)

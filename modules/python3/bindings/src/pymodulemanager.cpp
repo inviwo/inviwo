@@ -125,8 +125,29 @@ void exposeModuleManager(pybind11::module& m) {
             [](ModuleManager& mm, std::function<void()> callback) {
                 return ModuleManagerCallbackHolder{mm.onModulesWillUnregister(std::move(callback))};
             },
-            py::arg("callback"),
-            "Register a callback invoked before modules will be unregistered.");
+            py::arg("callback"), "Register a callback invoked before modules will be unregistered.")
+
+        .def(
+            "registerModules",
+            [](ModuleManager& mm, std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules) {
+                mm.registerModules(std::move(modules), nullptr);
+            })
+        .def("registerModules",
+             [](ModuleManager& mm, std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules,
+                const std::function<void(std::string_view)>& progressCallback) {
+                 mm.registerModules(std::move(modules), progressCallback);
+             })
+        .def("registerRuntimeModules",
+             [](ModuleManager& mm) { mm.registerModules(RuntimeModuleLoading{}); })
+        .def("registerRuntimeModules",
+             [](ModuleManager& mm, std::function<bool(std::string_view)> filter) {
+                 mm.registerModules(RuntimeModuleLoading{}, std::move(filter));
+             })
+        .def("registerRuntimeModules",
+             [](ModuleManager& mm, std::function<bool(std::string_view)> filter,
+                const std::function<void(std::string_view)>& progressCallback) {
+                 mm.registerModules(RuntimeModuleLoading{}, std::move(filter), progressCallback);
+             });
 }
 
 }  // namespace inviwo
