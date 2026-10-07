@@ -80,6 +80,17 @@ void LogCentral::registerLogger(std::weak_ptr<Logger> logger) {
     loggers_.push_back(logger);
 }
 
+void LogCentral::unregisterLogger(std::shared_ptr<Logger> log) {
+    const std::scoped_lock lock{mutex_};
+    std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+        if (auto l = logger.lock()) {
+            return l.get() == log.get();
+        } else {
+            return true;
+        }
+    });
+}
+
 void LogCentral::log(std::string_view source, LogLevel level, LogAudience audience,
                      std::string_view file, std::string_view function, int line,
                      std::string_view msg) {
