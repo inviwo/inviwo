@@ -158,7 +158,8 @@ void exposeInviwoApplication(pybind11::module& m) {
 
     exposeModuleIdentifierWrapper(m, "ModuleIdentifierWrapper");
 
-    py::classh<InviwoApplication>(m, "InviwoApplication", py::multiple_inheritance{})
+    py::classh<InviwoApplication>(m, "InviwoApplication", py::multiple_inheritance{},
+                                  py::dynamic_attr{})
         .def(py::init<>())
         .def(py::init<std::string>())
         .def("getBasePath", [](InviwoApplication*) { return filesystem::findBasePath(); })
