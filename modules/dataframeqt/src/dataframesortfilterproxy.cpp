@@ -31,6 +31,7 @@
 
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <modules/brushingandlinking/datastructures/brushingaction.h>
+#include <inviwo/dataframeqt/dataframemodel.h>
 
 class QModelIndex;
 
@@ -73,7 +74,12 @@ bool DataFrameSortFilterProxy::getFiltering() const { return filtering_; }
 bool DataFrameSortFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex&) const {
     if (!filtering_ || !manager_) return true;
 
-    return !manager_->isFiltered(sourceRow, BrushingTarget::Row);
+    if (auto v = sourceModel()->data(sourceModel()->index(sourceRow, 0), DataFrameModel::RowIndex);
+        v.isValid()) {
+        return !manager_->isFiltered(v.toInt(), BrushingTarget::Row);
+    } else {
+        return !manager_->isFiltered(sourceRow, BrushingTarget::Row);
+    }
 }
 
 bool DataFrameSortFilterProxy::filterAcceptsColumn(int sourceColumn, const QModelIndex&) const {
