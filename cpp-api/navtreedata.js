@@ -86,7 +86,7 @@ var NAVTREEINDEX =
 "classinviwo_1_1glui_1_1BoxLayout.html#a9efb31a0c4cebcb041d780a9f0144f95",
 "classinviwo_1_1plot_1_1ScatterPlotProcessor.html",
 "namespaceinviwo.html#ab7ac236629662fa49eccea8ec0d83b60",
-"namespaceinviwo_1_1util.html#a351bc675bcbde3fa893929b312a1b276",
+"namespaceinviwo_1_1util.html#a35a361515d9e7661be39f493d796dca6",
 "namespaceinviwo_1_1utilqt.html#a73e1a57c35c71d21d9ce81582395f687",
 "structinviwo_1_1InviwoDefaults_3_01unsigned_01int_01_4.html",
 "structinviwo_1_1RaycastingState.html",
