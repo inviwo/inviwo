@@ -130,7 +130,10 @@ TEST(FileSequenceLoaderTest, LoadsFramesByIndex) {
 TEST(FileSequenceLoaderTest, DefaultTimesAreIndices) {
     Fixture fix;
     const FileSequenceLoader loader{fix.paths(3), {}, &fix.factory};
-    EXPECT_EQ(loader.size(), 0uz);
+    EXPECT_EQ(loader.size(), 3uz);
+    EXPECT_DOUBLE_EQ(loader.time(0).count(), 0.0);
+    EXPECT_DOUBLE_EQ(loader.time(1).count(), 1.0);
+    EXPECT_DOUBLE_EQ(loader.time(2).count(), 2.0);
 }
 
 TEST(FileSequenceLoaderTest, CustomTimes) {

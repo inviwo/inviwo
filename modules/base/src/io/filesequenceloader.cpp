@@ -34,6 +34,7 @@
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/foreacharg.h>
 
 #include <utility>
 
@@ -87,12 +88,54 @@ std::shared_ptr<Volume> FileSequenceLoader::readFile(size_t index, std::stop_tok
     if (!volume->hasMetaData<StringMetaData>("filename")) {
         volume->setMetaData<StringMetaData>("filename", path.generic_string());
     }
-    if (volume->config() != prototype_) {
-        throw DataReaderException(SourceContext{}, "Volume config mismatch for file: {}", path);
-    }
 
     return volume;
 }
+
+namespace {
+
+std::vector<std::string> mismatch(const VolumeConfig& a, const VolumeConfig& b) {
+    std::vector<std::string> res;
+
+    constexpr auto format = util::overloaded{
+        [](const std::optional<Axis>& a, std::string& out) {
+            if (a.has_value()) {
+                fmt::format_to(std::back_inserter(out), "{}{: [}", a->name, a->unit);
+            } else {
+                out += "<none>";
+            }
+        },
+        [](const DataFormatBase* f, std::string& out) {
+            if (f) {
+                out += f->getString();
+            } else {
+                out += "<none>";
+            }
+        },
+        [](const auto& a, std::string& out) {
+            if (a.has_value()) {
+                fmt::format_to(std::back_inserter(out), "{}", *a);
+            } else {
+                out += "<none>";
+            }
+        }
+    };
+
+    util::for_each_in_tuple(
+        [&](const auto& a, const auto& b) {
+            if (a != b) {
+                auto& str = res.emplace_back();
+                format(a, str);
+                str += " != ";
+                format(b, str);
+            }
+        },
+        a.tie(), b.tie());
+
+    return res;
+}
+
+}  // namespace
 
 std::shared_ptr<Volume> FileSequenceLoader::load(size_t index, std::shared_ptr<Volume>,
                                                  std::stop_token stop) const {
@@ -101,7 +144,13 @@ std::shared_ptr<Volume> FileSequenceLoader::load(size_t index, std::shared_ptr<V
                              paths_.size());
     }
     // The reader always allocates a fresh volume, so the reuse hint is ignored.
-    return readFile(index, std::move(stop));
+    auto volume = readFile(index, std::move(stop));
+    if (volume->config() != prototype_) {
+        const auto mismatches = mismatch(volume->config(), prototype_);
+        throw DataReaderException(SourceContext{}, "Volume config mismatch {} for file: {}",
+                                  fmt::join(mismatches, ", "), paths_[index]);
+    }
+    return volume;
 }
 
 size_t FileSequenceLoader::size() const { return paths_.size(); }

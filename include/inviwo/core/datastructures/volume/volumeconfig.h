@@ -93,6 +93,15 @@ struct IVW_CORE_API VolumeConfig {
     [[nodiscard]] VolumeConfig orDefault() const;
 
     constexpr bool operator==(const VolumeConfig&) const = default;
+
+    auto tie() {
+        return std::tie(dimensions, format, swizzleMask, interpolation, wrapping, xAxis, yAxis,
+                        zAxis, valueAxis, dataRange, valueRange, model, world);
+    }
+    auto tie() const {
+        return std::tie(dimensions, format, swizzleMask, interpolation, wrapping, xAxis, yAxis,
+                        zAxis, valueAxis, dataRange, valueRange, model, world);
+    }
 };
 
 }  // namespace inviwo
