@@ -2896,9 +2896,6 @@ var hierarchy =
       [ "inviwo::TFEditorView", "classinviwo_1_1TFEditorView.html", null ],
       [ "inviwo::animation::AnimationViewQt", "classinviwo_1_1animation_1_1AnimationViewQt.html", null ]
     ] ],
-    [ "QItemDelegate", null, [
-      [ "inviwo::TextSelectionDelegate", "classinviwo_1_1TextSelectionDelegate.html", null ]
-    ] ],
     [ "QLabel", null, [
       [ "inviwo::LightPositionWidgetQt", "classinviwo_1_1LightPositionWidgetQt.html", null ],
       [ "inviwo::TextLabelOverlay", "classinviwo_1_1TextLabelOverlay.html", null ],
@@ -2983,6 +2980,9 @@ var hierarchy =
     [ "inviwo::QStringHelper< T >", "classinviwo_1_1QStringHelper.html", null ],
     [ "inviwo::QStringHelper< long int >", "classinviwo_1_1QStringHelper_3_01long_01int_01_4.html", null ],
     [ "inviwo::QStringHelper< unsigned long int >", "classinviwo_1_1QStringHelper_3_01unsigned_01long_01int_01_4.html", null ],
+    [ "QStyledItemDelegate", null, [
+      [ "inviwo::TextSelectionDelegate", "classinviwo_1_1TextSelectionDelegate.html", null ]
+    ] ],
     [ "QSyntaxHighlighter", null, [
       [ "inviwo::SyntaxHighlighter", "classinviwo_1_1SyntaxHighlighter.html", null ]
     ] ],
@@ -3294,13 +3294,13 @@ var hierarchy =
           [ "inviwo::DataInport< std::vector< vec4 > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< Layer, 0, true >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::LightSource >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< inviwo::SpatialEntity >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::Spatial4DSampler< dvec3 > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< 3 >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< VolumeSequence >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< SeedPoint3DVector, 0 >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::Volume, 0 >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::DataSequence< T > >", "classinviwo_1_1DataInport.html", null ],
-          [ "inviwo::DataInport< inviwo::SpatialEntity >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::SpatialSampler< dvec3 > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::Volume, 0, true >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< std::vector< std::shared_ptr< inviwo::Volume > > >", "classinviwo_1_1DataInport.html", null ],
