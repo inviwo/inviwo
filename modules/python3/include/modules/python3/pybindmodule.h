@@ -39,10 +39,10 @@
 // we need this to control the initialization order
 
 #ifdef INVIWO_ALL_DYN_LINK
-#define INVIWO_PYBIND_MODULE(name, variable) PYBIND11_MODULE(name, variable)
+#define INVIWO_PYBIND_MODULE(name, variable, ...) PYBIND11_MODULE(name, variable, ##__VA_ARGS__)
 #else
-#define INVIWO_PYBIND_MODULE(name, variable)                                                 \
-    PYBIND11_MODULE_PYINIT(name, {})                                                         \
+#define INVIWO_PYBIND_MODULE(name, variable, ...)                                            \
+    PYBIND11_MODULE_PYINIT(name, ##__VA_ARGS__)                                              \
     void PYBIND11_CONCAT(inviwo_static_pybind_init_, name)() {                               \
         if (Py_IsInitialized() != 0) {                                                       \
             pybind11::pybind11_fail("Can't add new module '" PYBIND11_TOSTRING(              \
