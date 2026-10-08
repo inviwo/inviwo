@@ -201,8 +201,9 @@ void VolumeRegionShrink::process() {
     }
 
     auto config = volume->config();
-    config.dataRange = glm::max(volume->dataMap.dataRange, dvec2{static_cast<double>(fillValue_),
-                                                                 static_cast<double>(fillValue_)});
+    config.dataRange =
+        dvec2{glm::min(volume->dataMap.dataRange.x, static_cast<double>(fillValue_)),
+              glm::max(volume->dataMap.dataRange.y, static_cast<double>(fillValue_))};
     config.valueRange = config.dataRange;
 
     std::array<std::shared_ptr<Volume>, 2> out{cache_(config), nullptr};
