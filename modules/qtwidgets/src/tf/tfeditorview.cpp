@@ -466,8 +466,7 @@ QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D
                     return histogram.histStats.percentiles[95];
                 case HistogramMode::P90:  // show 90%
                     return histogram.histStats.percentiles[90];
-                default:
-                    return histogram.histStats.percentiles[100];
+                default: return histogram.histStats.percentiles[100];
             }
         }();
         const auto scaleSafe = std::max(scale, 1.0);
@@ -483,7 +482,7 @@ QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D
 }
 
 std::vector<QPolygonF> TFEditorView::HistogramState::createHistogramPolygons(
-    std::shared_ptr<const std::vector<Histogram1D>> histograms, HistogramMode mode) {
+    const std::shared_ptr<const std::vector<Histogram1D>>& histograms, HistogramMode mode) {
     std::vector<QPolygonF> polygons;
 
     if (histograms && mode != HistogramMode::Off) {

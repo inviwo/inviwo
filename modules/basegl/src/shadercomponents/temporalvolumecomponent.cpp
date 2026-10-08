@@ -100,7 +100,7 @@ void TemporalVolumeComponent::process(Shader& shader, TextureUnitContainer& cont
         const auto size = temporal->size();
 
         for (auto i : views::iota_periodic(current, count, size, forward)) {
-            temporal->prefetch(i, [](std::shared_ptr<Volume> vol) {
+            temporal->prefetch(i, [](const std::shared_ptr<Volume>& vol) {
                 rendercontext::activateLocal();
                 vol->getRepresentation<VolumeGL>();
             });

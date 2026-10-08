@@ -101,13 +101,15 @@ void exposeHistogram(pybind11::module& m) {
         .def("__repr__",
              [](const Histogram2D& self) { return fmt::format("<Histogram2D {}>", self); });
 
-    //util::exportDataSequenceFor<Histogram1D>(m, "Histogram1D");
     exposeStandardDataPorts<Histogram1D>(m, "Histogram1D");
-    //exposeStandardDataPorts<DataSequence<Histogram1D>>(m, "Histogram1DSequence");
-
-    //util::exportDataSequenceFor<Histogram2D>(m, "Histogram2D");
     exposeStandardDataPorts<Histogram2D>(m, "Histogram2D");
-    //exposeStandardDataPorts<DataSequence<Histogram2D>>(m, "Histogram2DSequence");
+
+    // At some point may want to expose the DataSequence<Histogram1D> and DataSequence<Histogram2D>
+    // as well util::exportDataSequenceFor<Histogram1D>(m, "Histogram1D");
+    // exposeStandardDataPorts<DataSequence<Histogram1D>>(m, "Histogram1DSequence");
+
+    // util::exportDataSequenceFor<Histogram2D>(m, "Histogram2D");
+    // exposeStandardDataPorts<DataSequence<Histogram2D>>(m, "Histogram2DSequence");
 }
 
 }  // namespace inviwo

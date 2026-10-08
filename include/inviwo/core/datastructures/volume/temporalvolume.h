@@ -226,7 +226,7 @@ public:
     /// Schedule a background load (non-blocking) of the frame at @p index. No-op if already cached
     /// or pending. The @p callback is not invoked if the load is cancelled.
     void prefetch(size_t index,
-                  std::function<void(std::shared_ptr<Volume>)> callback = nullptr) const;
+                  const std::function<void(std::shared_ptr<Volume>)>& callback = nullptr) const;
 
     /// Set the maximum number of decoded frames to keep in memory (clamped to >= 2).
     void setCacheSize(size_t n);
@@ -279,7 +279,7 @@ private:
     Item* find(size_t index) const;
 
     std::shared_ptr<Volume> load(std::unique_lock<std::mutex>& lock, size_t index,
-                                 std::shared_ptr<Volume> reuse, std::stop_token stop) const;
+                                 const std::shared_ptr<Volume>& reuse, std::stop_token stop) const;
 
     /// Move @p index to the front of the LRU order (mutex must be held).
     void touch(size_t index) const;

@@ -112,7 +112,7 @@ int numberOf(const std::shared_ptr<const Volume>& volume) {
 TEST(FileSequenceLoaderTest, LoadsPrototypeOnce) {
     Fixture fix;
     // Constructing the loader reads exactly one file (for the prototype).
-    const FileSequenceLoader loader{fix.paths(5), {}, &fix.factory};
+    const FileSequenceLoader loader{inviwo::Fixture::paths(5), {}, &fix.factory};
     EXPECT_EQ(loader.size(), 5u);
     EXPECT_EQ(*fix.readCount, 1);
     EXPECT_NE(loader.prototype().format, nullptr);
@@ -121,7 +121,7 @@ TEST(FileSequenceLoaderTest, LoadsPrototypeOnce) {
 
 TEST(FileSequenceLoaderTest, LoadsFramesByIndex) {
     Fixture fix;
-    FileSequenceLoader loader{fix.paths(4), {}, &fix.factory};
+    const FileSequenceLoader loader{inviwo::Fixture::paths(4), {}, &fix.factory};
 
     EXPECT_EQ(loader.load(0, nullptr, {})->getMetaData<IntMetaData>("number", -1), 0);
     EXPECT_EQ(loader.load(3, nullptr, {})->getMetaData<IntMetaData>("number", -1), 3);
@@ -129,7 +129,7 @@ TEST(FileSequenceLoaderTest, LoadsFramesByIndex) {
 
 TEST(FileSequenceLoaderTest, DefaultTimesAreIndices) {
     Fixture fix;
-    const FileSequenceLoader loader{fix.paths(3), {}, &fix.factory};
+    const FileSequenceLoader loader{inviwo::Fixture::paths(3), {}, &fix.factory};
     EXPECT_EQ(loader.size(), 3uz);
     EXPECT_DOUBLE_EQ(loader.time(0).count(), 0.0);
     EXPECT_DOUBLE_EQ(loader.time(1).count(), 1.0);
@@ -138,7 +138,7 @@ TEST(FileSequenceLoaderTest, DefaultTimesAreIndices) {
 
 TEST(FileSequenceLoaderTest, CustomTimes) {
     Fixture fix;
-    const FileSequenceLoader loader{fix.paths(3), {0.0s, 5.0s, 10.0s}, &fix.factory};
+    const FileSequenceLoader loader{inviwo::Fixture::paths(3), {0.0s, 5.0s, 10.0s}, &fix.factory};
     ASSERT_EQ(loader.size(), 3u);
     EXPECT_DOUBLE_EQ(loader.time(1).count(), 5.0);
 }
@@ -161,8 +161,8 @@ TEST(FileSequenceLoaderTest, ThrowsWithoutReader) {
 
 TEST(FileSequenceLoaderTest, IntegratesWithTemporalVolumeLazily) {
     Fixture fix;
-    auto loader =
-        std::make_unique<FileSequenceLoader>(fix.paths(10), std::vector<Seconds>{}, &fix.factory);
+    auto loader = std::make_unique<FileSequenceLoader>(inviwo::Fixture::paths(10),
+                                                       std::vector<Seconds>{}, &fix.factory);
     const TemporalVolume tv{std::move(loader), 4};
 
     // Only the prototype has been read so far.

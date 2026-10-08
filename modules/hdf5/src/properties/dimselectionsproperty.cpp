@@ -79,7 +79,7 @@ void DimSelectionsProperty::update(const DataSetInfo& dataSetInfo) {
     }
 
     for (size_t i = 0; i < rank_; ++i) {
-        selection_[i]->update(cmDims[i]);
+        selection_[i]->update(cmDims[static_cast<std::ptrdiff_t>(i)]);
     }
 }
 

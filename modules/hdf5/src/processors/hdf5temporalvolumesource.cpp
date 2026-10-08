@@ -123,6 +123,7 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
     , timeDimension_{"timeDimension", "Time Dimension",
                      []() {
                          std::vector<OptionPropertyOption<size_t>> opts;
+                         opts.reserve(maxRank);
                          for (size_t i = 0; i < maxRank; ++i) {
                              opts.emplace_back(fmt::format("dim{:02}", i),
                                                fmt::format("Dimension {}", i + 1), i);

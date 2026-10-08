@@ -63,7 +63,7 @@ template <size_t N>
     requires(N > 0)
 class IsoTFComponent : public ShaderComponent {
 public:
-    explicit IsoTFComponent(TFData volumeInport)
+    explicit IsoTFComponent(const TFData& volumeInport)
         : ShaderComponent(), isoTFs{util::make_array<N>([&]([[maybe_unused]] size_t i) {
             if constexpr (N > 1) {
                 auto prop =

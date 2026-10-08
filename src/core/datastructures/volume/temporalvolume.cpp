@@ -124,7 +124,7 @@ auto TemporalVolume::find(size_t index) const -> Item* {
 }
 
 void TemporalVolume::prefetch(size_t index,
-                              std::function<void(std::shared_ptr<Volume>)> callback) const {
+                              const std::function<void(std::shared_ptr<Volume>)>& callback) const {
     if (index >= size()) return;
 
     const std::scoped_lock lock{mutex_};
@@ -153,7 +153,7 @@ void TemporalVolume::prefetch(size_t index,
 }
 
 std::shared_ptr<Volume> TemporalVolume::load(std::unique_lock<std::mutex>& lock, size_t index,
-                                             std::shared_ptr<Volume> reuse,
+                                             const std::shared_ptr<Volume>& reuse,
                                              std::stop_token stop) const {
     std::promise<std::shared_ptr<Volume>> promise;
     cache_[index] = Pending{.future = promise.get_future().share(), .source = {}};

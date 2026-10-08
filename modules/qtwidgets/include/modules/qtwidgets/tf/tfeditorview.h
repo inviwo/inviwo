@@ -97,7 +97,7 @@ private:
                              const DataMapper& dataMap) const;
         static QPolygonF createHistogramPolygon(const Histogram1D& histogram, HistogramMode mode);
         static std::vector<QPolygonF> createHistogramPolygons(
-            std::shared_ptr<const std::vector<Histogram1D>> histograms, HistogramMode mode);
+            const std::shared_ptr<const std::vector<Histogram1D>>& histograms, HistogramMode mode);
     };
     HistogramState histogramState_;
     DispatcherHandle<TFPropertyConcept::HistogramCallback> histogramChangeHandle_;
