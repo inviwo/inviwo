@@ -84,7 +84,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerDataVisualizer(std::make_unique<ScatterPlotDataFrameVisualizer>(app));
 }
 
-int PlottingGLModule::getVersion() const { return 7; }
+int PlottingGLModule::getVersion() const { return 8; }
 
 std::unique_ptr<VersionConverter> PlottingGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -432,7 +432,7 @@ constexpr bool is_specifier(char c) {
         case 'g':
         case 'G':
         case 's': return true;
-        default:  return false;
+        default: return false;
     }
 }
 
@@ -511,7 +511,7 @@ std::string_view::const_iterator translateSpec(std::string_view::const_iterator 
         case 'g':
         case 'G': out.push_back(static_cast<char>(std::tolower(spec))); break;
         case 's':
-        default:  break;
+        default: break;
     }
 
     out.push_back('}');
@@ -577,6 +577,50 @@ bool updateV6(TxElement* root) {
     return res;
 }
 
+bool updateV7(TxElement* root) {
+    bool res = false;
+
+    std::vector<std::string_view> ids;
+
+    TraversingVersionConverter conv1{[&](TxElement* node) -> bool {
+        if (const auto& key = node->Value(); key != "Processor") return true;
+        if (const auto& type = node->GetAttribute("type");
+            type == "org.inviwo.OrthographicAxis2D") {
+            if (auto id = node->Attribute("identifier")) {
+                ids.push_back(*id);
+            }
+        }
+        return true;
+    }};
+    conv1.convert(root);
+
+    TraversingVersionConverter conv2{[&](TxElement* node) -> bool {
+        if (const auto& key = node->Value(); key != "Connections") return true;
+
+        for (TiXmlElement* child = node->FirstChildElement("Connection"); child;
+             child = child->NextSiblingElement("Connection")) {
+
+            auto dst = child->Attribute("dst");
+            if (!dst) continue;
+
+            for (auto id : ids) {
+                if (dst->starts_with(id)) {
+                    if (*dst == fmt::format("{}.mesh", id) || *dst == fmt::format("{}.layer", id) ||
+                        *dst == fmt::format("{}.volume", id)) {
+
+                        child->SetAttribute("dst", fmt::format("{}.spatialEntity", id));
+                        return true;
+                    }
+                }
+            }
+        }
+        return true;
+    }};
+    conv2.convert(root);
+
+    return res;
+}
+
 }  // namespace
 
 bool PlottingGLModule::Converter::convert(TxElement* root) {
@@ -608,6 +652,10 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
         }
         case 6: {
             res |= updateV6(root);
+            [[fallthrough]];
+        }
+        case 7: {
+            res |= updateV7(root);
             return res;
         }
         default: return false;  // No changes
