@@ -93,7 +93,8 @@ public:
     [[nodiscard]] virtual DispatcherHandle<void()> onDataChange(std::function<void()>) = 0;
 
     enum class HistogramChange { NoData, Requested, NewData };
-    using HistogramCallback = void(HistogramChange, const std::vector<Histogram1D>&);
+    using HistogramCallback = void(HistogramChange,
+                                   std::shared_ptr<const std::vector<Histogram1D>>);
     [[nodiscard]] virtual DispatcherHandle<HistogramCallback> onHistogramChange(
         std::function<HistogramCallback>) = 0;
 
@@ -246,17 +247,16 @@ public:
 
 private:
     void setUpHistogramCallback() {
-        histogramChangeCallbacks_.invoke(HistogramChange::Requested, std::vector<Histogram1D>{});
+        histogramChangeCallbacks_.invoke(HistogramChange::Requested, nullptr);
         histogramResult_ = tfLike_->data().calculateHistograms(
-            [this](const std::vector<Histogram1D>& histograms) -> void {
+            [this](std::shared_ptr<const std::vector<Histogram1D>> histograms) -> void {
                 histogramChangeCallbacks_.invoke(HistogramChange::NewData, histograms);
             });
 
         if (histogramResult_.progress == HistogramCache::Progress::NoData) {
-            histogramChangeCallbacks_.invoke(HistogramChange::NoData, std::vector<Histogram1D>{});
+            histogramChangeCallbacks_.invoke(HistogramChange::NoData, nullptr);
         } else if (histogramResult_.progress == HistogramCache::Progress::Calculating) {
-            histogramChangeCallbacks_.invoke(HistogramChange::Requested,
-                                             std::vector<Histogram1D>{});
+            histogramChangeCallbacks_.invoke(HistogramChange::Requested, nullptr);
         }
     }
 

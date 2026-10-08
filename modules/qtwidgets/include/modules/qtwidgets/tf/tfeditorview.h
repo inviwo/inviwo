@@ -85,19 +85,19 @@ private:
         TFPropertyConcept::HistogramChange change = TFPropertyConcept::HistogramChange::NoData;
         HistogramMode mode = HistogramMode::Off;
         HistogramSelection selection = histogramSelectionAll;
-        std::vector<Histogram1D> histograms = {};
+        std::shared_ptr<const std::vector<Histogram1D>> histograms = {};
         std::vector<QPolygonF> polygons = {};
         static void paintHistogram(QPainter* painter, const QPolygonF& polygon, size_t channel,
                                    size_t nChannels, const QRectF& sceneRect,
                                    const DataMapper& dataDM, const DataMapper& sceneDM);
         static void paintLabel(QPainter* painter, size_t channel, size_t count, size_t nChannels,
-                               const QRect& rect, std::string_view overflow);
+                               const QRect& rect, std::string_view text);
         void paintState(QPainter* painter, const QRect& rect) const;
         void paintHistograms(QPainter* painter, const QRectF& sceneRect, const QRect& rect,
                              const DataMapper& dataMap) const;
         static QPolygonF createHistogramPolygon(const Histogram1D& histogram, HistogramMode mode);
         static std::vector<QPolygonF> createHistogramPolygons(
-            const std::vector<Histogram1D>& histograms, HistogramMode mode);
+            const std::shared_ptr<const std::vector<Histogram1D>>& histograms, HistogramMode mode);
     };
     HistogramState histogramState_;
     DispatcherHandle<TFPropertyConcept::HistogramCallback> histogramChangeHandle_;

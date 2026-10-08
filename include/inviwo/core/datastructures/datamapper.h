@@ -208,4 +208,6 @@ public:
     bool operator==(const DataMapper&) const = default;
 };
 
+IVW_CORE_API std::string format_as(const DataMapper& dataMapper);
+
 }  // namespace inviwo

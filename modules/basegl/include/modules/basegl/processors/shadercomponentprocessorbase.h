@@ -51,11 +51,7 @@ class ShaderType;
  * Derived classes should register a set of ShaderComponents to customize behavior
  */
 class IVW_MODULE_BASEGL_API ShaderComponentProcessorBase : public Processor {
-protected:
-    ShaderComponentProcessorBase(
-        const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>&
-            shaderResources,
-        std::string_view identifier, std::string_view displayName);
+public:
     ShaderComponentProcessorBase(const ShaderComponentProcessorBase&) = delete;
     ShaderComponentProcessorBase& operator=(const ShaderComponentProcessorBase&) = delete;
     virtual ~ShaderComponentProcessorBase();
@@ -80,6 +76,11 @@ protected:
     virtual void initializeResources() override;
     virtual void process() override;
 
+protected:
+    ShaderComponentProcessorBase(
+        const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>&
+            shaderResources,
+        std::string_view identifier, std::string_view displayName);
     /**
      * Handle any error while using the raycasting components.
      * Override to customize error handling.

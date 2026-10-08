@@ -105,6 +105,7 @@ void exposeVolume(pybind11::module& m) {
                 volume->addRepresentation(rep);
                 volume->invalidateAllOther(rep.get());
             })
+        .def("calculateHistograms", [](const Volume& self) { return *self.calculateHistograms(); })
         .def("__repr__", [](const Volume& volume) {
             return fmt::format(
                 "<Volume: {} {} dataRange: {} valueRange: {} value: {}{: [}\n"

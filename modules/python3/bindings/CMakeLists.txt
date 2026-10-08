@@ -30,6 +30,7 @@ set(HEADER_FILES
     include/inviwopy/pyglmportsuint.h
     include/inviwopy/pyglmtypes.h
     include/inviwopy/pyhelp.h
+    include/inviwopy/pyhistogram.h
     include/inviwopy/pyimage.h
     include/inviwopy/pyimagetypes.h
     include/inviwopy/pyinviwoapplication.h
@@ -90,6 +91,7 @@ set(SOURCE_FILES
     src/pyglmportsuint.cpp
     src/pyglmtypes.cpp
     src/pyhelp.cpp
+    src/pyhistogram.cpp
     src/pyimage.cpp
     src/pyimagetypes.cpp
     src/pyinviwoapplication.cpp

@@ -85,12 +85,23 @@ struct IVW_CORE_API VolumeConfig {
     static constexpr auto defaultModel = glm::mat4{1.0f};
     static constexpr auto defaultWorld = glm::mat4{1.0f};
 
-    DataMapper dataMap() const;
-    DataMapper dataMap(const DataMapper& defaultMapper) const;
+    [[nodiscard]] DataMapper dataMap() const;
+    [[nodiscard]] DataMapper dataMap(const DataMapper& defaultMapper) const;
     VolumeConfig& updateFrom(const VolumeConfig& config);
-    VolumeReprConfig reprConfig() const;
+    [[nodiscard]] VolumeReprConfig reprConfig() const;
+
+    [[nodiscard]] VolumeConfig orDefault() const;
 
     constexpr bool operator==(const VolumeConfig&) const = default;
+
+    auto tie() {
+        return std::tie(dimensions, format, swizzleMask, interpolation, wrapping, xAxis, yAxis,
+                        zAxis, valueAxis, dataRange, valueRange, model, world);
+    }
+    auto tie() const {
+        return std::tie(dimensions, format, swizzleMask, interpolation, wrapping, xAxis, yAxis,
+                        zAxis, valueAxis, dataRange, valueRange, model, world);
+    }
 };
 
 }  // namespace inviwo

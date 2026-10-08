@@ -51,6 +51,7 @@
 #include <inviwopy/pydocument.h>
 #include <inviwopy/pyevent.h>
 #include <inviwopy/pyhelp.h>
+#include <inviwopy/pyhistogram.h>
 #include <inviwopy/pyglmmattypes.h>
 #include <inviwopy/pyglmports.h>
 #include <inviwopy/pyglmtypes.h>
@@ -173,6 +174,7 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     exposeImageTypes(dataModule);
     exposeLayer(dataModule);
     exposeImage(dataModule);
+    exposeHistogram(dataModule);
     exposeVolume(dataModule);
     exposeBuffer(dataModule);
     exposeMesh(dataModule);

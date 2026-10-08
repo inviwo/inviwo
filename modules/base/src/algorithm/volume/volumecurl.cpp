@@ -65,7 +65,7 @@ namespace inviwo::util {
 std::shared_ptr<Volume> curlVolume(
     const Volume& srcVolume,
     const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume,
-    const std::function<void(double)>& progress, const std::function<bool()>& stop) {
+    const std::function<void(double)>& progress, std::stop_token stop) {
 
     if (progress) progress(0.0);
 
@@ -125,7 +125,6 @@ std::shared_ptr<Volume> curlVolume(
 
     dstVolume->dataMap.dataRange = dvec2(-max, max);
     dstVolume->dataMap.valueRange = dvec2(-max, max);
-    dstVolume->discardHistograms();
 
     if (progress) progress(1.0);
 

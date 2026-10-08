@@ -88,9 +88,10 @@ public:
     virtual ~NiftiVolumeRAMLoader() = default;
 
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
-        const VolumeRepresentation& src) const override;
+        const VolumeRepresentation& src, std::stop_token stop) const override;
     virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                      const VolumeRepresentation& src) const override;
+                                      const VolumeRepresentation& src,
+                                      std::stop_token stop) const override;
 
 private:
     std::array<int, 7> start_index;
@@ -440,7 +441,7 @@ void flip(char* data, size_t elemSize, size3_t dim, std::array<bool, 3> flipAxis
 }
 
 std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation(
-    const VolumeRepresentation& src) const {
+    const VolumeRepresentation& src, std::stop_token) const {
 
     const auto format = niftiDataTypeToInviwoDataFormat(nim.get());
     const auto voxelSize = format->getSizeInBytes();
@@ -472,7 +473,8 @@ std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation
 }
 
 void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                                const VolumeRepresentation& src) const {
+                                                const VolumeRepresentation& src,
+                                                std::stop_token) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     if (size3_t{region_size[0], region_size[1], region_size[2]} != volumeDst->getDimensions()) {

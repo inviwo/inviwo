@@ -54,6 +54,7 @@ private:
     VolumeInport inport1_;
     VolumeInport inport2_;
     LayerOutport outport_;
+    DataOutport<Histogram2D> histogram_;
 
     IntProperty histogramResolution_;
     OptionPropertyInt channel1_;

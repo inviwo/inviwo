@@ -71,6 +71,8 @@ HDF5ToBuffer::HDF5ToBuffer()
 HDF5ToBuffer::~HDF5ToBuffer() = default;
 
 void HDF5ToBuffer::process() try {
+    const std::scoped_lock lock{Handle::globalMutex()};
+
     const auto data = inport_.getData();
 
     if (inport_.isChanged()) {

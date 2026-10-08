@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/datatraits.h>
 
 #include <iterator>
 #include <vector>
@@ -63,6 +64,7 @@ struct IVW_CORE_API Histogram1D {
 
     Statistics dataStats;
     Statistics histStats;
+    std::string name;
 };
 
 struct IVW_CORE_API Histogram2D {
@@ -73,6 +75,30 @@ struct IVW_CORE_API Histogram2D {
     std::array<DataMapper, 2> dataMap{};
     size_t underflow{0};
     size_t overflow{0};
+    std::array<Statistics, 2> dataStats;
+    std::array<Statistics, 2> histStats;
+    std::string name;
 };
+
+template <>
+struct DataTraits<Histogram1D> {
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.Histogram1D"; }
+    static constexpr std::string_view dataName() { return "Histogram1D"; }
+    static constexpr uvec3 colorCode() { return {235, 20, 88}; }
+    IVW_CORE_API static Document info(const Histogram1D& histogram);
+};
+
+template <>
+struct DataTraits<Histogram2D> {
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.Histogram2D"; }
+    static constexpr std::string_view dataName() { return "Histogram2D"; }
+    static constexpr uvec3 colorCode() { return {235, 88, 20}; }
+    IVW_CORE_API static Document info(const Histogram2D& histogram);
+};
+
+IVW_CORE_API std::string format_as(const Statistics& stats);
+IVW_CORE_API std::string format_as(const Histogram1D& stats);
+IVW_CORE_API std::string format_as(const Histogram2D& stats);
+
 
 }  // namespace inviwo

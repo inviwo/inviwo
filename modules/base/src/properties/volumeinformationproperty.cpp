@@ -218,7 +218,7 @@ void VolumeInformationProperty::updateVolume(Volume& volume) {
                         wrapping[2].getSelectedValue()});
 
     if (discardHistograms) {
-        volume.discardHistograms();
+        volume.recalculateHistograms();
     }
 }
 

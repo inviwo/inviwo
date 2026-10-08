@@ -35,6 +35,7 @@
 #include <inviwo/core/util/glmvec.h>
 
 #include <functional>
+#include <stop_token>
 
 namespace inviwo::grid {
 
@@ -93,10 +94,10 @@ void loop(size_t N, Func func) {
 
 template <typename Func>
 void loop(size3_t dims, Func func, const std::function<void(double)>& progress = nullptr,
-          const std::function<bool()>& stop = nullptr) {
+          std::stop_token stop = {}) {
 
     loop(dims.z, [&]<Part Pz>(size_t z) {
-        if (stop && stop()) return;
+        if (stop.stop_requested()) return;
         if (progress) progress(static_cast<double>(z) / static_cast<double>(dims.z));
         loop(dims.y, [&]<Part Py>(size_t y) {
             loop(dims.x, [&]<Part Px>(size_t x) { func.template operator()<Px, Py, Pz>(x, y, z); });
@@ -149,13 +150,13 @@ double invStep() {
 template <typename Func>
 void centralDifferences(size3_t dims, const std::array<Wrapping, 3>& w, Func func,
                         const std::function<void(double)>& progress = nullptr,
-                        const std::function<bool()>& stop = nullptr) {
+                        std::stop_token stop = {}) {
 
     std::array<size3_t, 6> positions{};
     dvec3 reciprocalSampleDist{};
 
     loop(dims.z, [&]<Part Pz>(size_t z) {
-        if (stop && stop()) return;
+        if (stop.stop_requested()) return;
         if (progress) progress(static_cast<double>(z) / static_cast<double>(dims.z));
         loop(dims.y, [&]<Part Py>(size_t y) {
             loop(dims.x, [&]<Part Px>(size_t x) {

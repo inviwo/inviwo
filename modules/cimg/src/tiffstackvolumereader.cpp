@@ -96,7 +96,7 @@ TIFFStackVolumeRAMLoader* TIFFStackVolumeRAMLoader::clone() const {
 }
 
 std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresentation(
-    const VolumeRepresentation& src) const {
+    const VolumeRepresentation& src, std::stop_token) const {
     const auto fileName = findFile(sourceFile_);
 
     auto volumeRAM = cimgutil::loadVolume(fileName, src.getDataFormat(), src.getDimensions());
@@ -107,7 +107,8 @@ std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresenta
 }
 
 void TIFFStackVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                                    const VolumeRepresentation& src) const {
+                                                    const VolumeRepresentation& src,
+                                                    std::stop_token) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     const auto fileName = findFile(sourceFile_);
