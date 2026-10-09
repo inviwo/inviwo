@@ -88,7 +88,7 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
 
     menu_->setObjectName("PythonMenu");
 
-    auto pythonEditorOpen = menu_->addAction(QIcon(":/svgicons/python.svg"), "&Python Editor");
+    auto pythonEditorOpen = menu_->addAction(QIcon(":/svgicons/python.svg"), "&Open Python Editor");
     QObject::connect(pythonEditorOpen, &QAction::triggered, [this]() { newEditor(); });
 
     auto newPythonProcessor =
@@ -127,14 +127,6 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
         } catch (const std::exception& e) {
             log::exception(e);
         }
-    });
-
-    auto pyProperties = menu_->addAction("&List unexposed properties");
-    QObject::connect(pyProperties, &QAction::triggered, [app]() {
-        auto& mod = util::getModuleByTypeOrThrow<Python3Module>(app);
-        auto script =
-            PythonScript::fromFile(mod.getPath() / "scripts" / "list_not_exposed_properties.py");
-        script.run();
     });
 }
 

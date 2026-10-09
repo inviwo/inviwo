@@ -117,35 +117,26 @@ void InviwoDockWidget::setContents(QLayout* layout) {
     setWidget(centralWidget);
 }
 
-void InviwoDockWidget::saveState() {
-    QSettings settings;
-    settings.beginGroup(objectName());
-    settings.setValue("sticky", isSticky());
-    settings.setValue("floating", isFloating());
-    settings.setValue("pos", pos());
-    settings.setValue("size", size());
-    settings.setValue("visible", isVisible());
-    settings.endGroup();
+void InviwoDockWidget::getState(UnorderedStringMap<QVariant>& state) const {
+    state.insert_range(std::to_array<typename UnorderedStringMap<QVariant>::value_type>({
+        {"sticky", isSticky()},
+        {"floating", isFloating()},
+        {"pos", pos()},
+        {"size", size()},
+        {"visible", isVisible()},
+    }));
 }
+void InviwoDockWidget::setState(const UnorderedStringMap<QVariant>& state) {
+    if (state.contains("sticky")) setSticky(state.at("sticky").toBool());
 
-void InviwoDockWidget::loadState() {
-    QSettings settings;
-    settings.beginGroup(objectName());
-
-    if (settings.contains("sticky")) {
-        setSticky(settings.value("sticky").toBool());
-    }
-
-    if (settings.contains("floating")) {
-        setFloating(settings.value("floating").toBool());
-    }
+    if (state.contains("floating")) setFloating(state.at("floating").toBool());
 
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
         mainWindow->restoreDockWidget(this);
     }
 
-    if (settings.contains("pos")) {
-        auto pos = settings.value("pos").toPoint();
+    if (state.contains("pos")) {
+        auto pos = state.at("pos").toPoint();
         auto newPos = utilqt::movePointOntoDesktop(pos, InviwoDockWidget::size(), false);
         move(newPos);
     } else if (auto ivwMW = utilqt::getApplicationMainWindow()) {
@@ -155,9 +146,7 @@ void InviwoDockWidget::loadState() {
         move(newPos);
     }
 
-    if (settings.contains("size")) {
-        resize(settings.value("size").toSize());
-    }
+    if (state.contains("size")) resize(state.at("size").toSize());
 
     if (auto* screen = QGuiApplication::screenAt(pos())) {
         const auto w = std::clamp(width(), 0, screen->availableSize().width());
@@ -167,8 +156,34 @@ void InviwoDockWidget::loadState() {
         }
     }
 
-    if (settings.contains("visible")) {
-        setVisible(settings.value("visible").toBool());
+    if (state.contains("visible")) setVisible(state.at("visible").toBool());
+}
+
+void InviwoDockWidget::saveState() {
+    UnorderedStringMap<QVariant> state;
+    getState(state);
+    saveStateDefault(state);
+}
+
+void InviwoDockWidget::loadState() {
+    UnorderedStringMap<QVariant> state;
+    loadStateDefault(state);
+    setState(state);
+}
+
+void InviwoDockWidget::loadStateDefault(UnorderedStringMap<QVariant>& state) const {
+    QSettings settings;
+    settings.beginGroup(objectName());
+    for (const auto& key : settings.childKeys()) {
+        state.emplace(utilqt::fromQString(key), settings.value(key));
+    }
+    settings.endGroup();
+}
+void InviwoDockWidget::saveStateDefault(const UnorderedStringMap<QVariant>& state) {
+    QSettings settings;
+    settings.beginGroup(objectName());
+    for (const auto& [key, value] : state) {
+        settings.setValue(utilqt::toQString(key), value);
     }
     settings.endGroup();
 }

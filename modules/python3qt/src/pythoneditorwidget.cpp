@@ -461,16 +461,19 @@ void PythonEditorWidget::updateWindowTitle() {
     setWindowTitle(QString("Python Editor - %1[*]").arg(str));
 }
 
-void PythonEditorWidget::saveState() {
-    InviwoDockWidget::saveState();
+void PythonEditorWidget::getState(UnorderedStringMap<QVariant>& state) const {
+    InviwoDockWidget::getState(state);
+    state.insert_range(std::to_array<typename UnorderedStringMap<QVariant>::value_type>({
+        {"appendLog", appendLog_->isChecked()},
+        {"lastScript", utilqt::toQString(scriptFileName_)},
+        {"source", pythonCode_->toPlainText()},
+        {"scriptName", utilqt::toQString(script_.getName())},
+    }));
+}
 
-    QSettings settings;
-    settings.beginGroup(objectName());
-    settings.setValue("appendLog", appendLog_->isChecked());
-    settings.setValue("lastScript", utilqt::toQString(scriptFileName_));
-    settings.setValue("source", pythonCode_->toPlainText());
-    settings.setValue("scriptName", utilqt::toQString(script_.getName()));
-    settings.endGroup();
+void PythonEditorWidget::setState(const UnorderedStringMap<QVariant>& state) {
+    InviwoDockWidget::setState(state);
+    if (state.contains("appendLog")) appendLog_->setChecked(state.at("appendLog").toBool());
 }
 
 void PythonEditorWidget::setName(std::string_view name) {
@@ -489,35 +492,26 @@ void PythonEditorWidget::setSource(std::string_view source) {
 
 const std::string& PythonEditorWidget::getSource() const { return script_.getSource(); }
 
-void PythonEditorWidget::loadState() {
-    InviwoDockWidget::loadState();
-
-    QSettings settings;
-    settings.beginGroup(objectName());
-    auto append = settings.value("appendLog", appendLog_->isCheckable()).toBool();
-    appendLog_->setChecked(append);
-    settings.endGroup();
-}
-
 void PythonEditorWidget::restore() {
-    // Restore state
-    QSettings settings;
-    settings.beginGroup(objectName());
-    QString lastFile = settings.value("lastScript", "").toString();
+    UnorderedStringMap<QVariant> state;
+    loadStateDefault(state);
+
     // If the script was saved to disk, the load it, else we use the script that was in the
     // editor at last script execution or when inviwo closed (CloseEvent)
-    if (!lastFile.isEmpty()) {
-        loadFile(utilqt::fromQString(lastFile), false);
+    const auto lastScript =
+        state.contains("lastScript") ? state.at("lastScript").toString() : QString{};
+    if (!lastScript.isEmpty()) {
+        loadFile(utilqt::fromQString(lastScript), false);
     } else {
-        QString src = settings.value("source", "").toString();
-        QString name = settings.value("scriptName", "").toString();
-        if (src.length() != 0) {
+        const auto src = state.contains("source") ? state.at("source").toString() : QString{};
+        const auto name =
+            state.contains("scriptName") ? state.at("scriptName").toString() : QString{};
+        if (!src.isEmpty()) {
             pythonCode_->setPlainText(src);
             script_.setSource(utilqt::fromQString(src));
             script_.setName(utilqt::fromQString(name));
         }
     }
-    settings.endGroup();
 }
 
 bool PythonEditorWidget::askSaveChanges() {

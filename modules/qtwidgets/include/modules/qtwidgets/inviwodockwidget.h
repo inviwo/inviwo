@@ -31,6 +31,8 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
+#include <inviwo/core/util/transparentmaps.h>
+
 #include <QDockWidget>
 #include <QObject>
 #include <QString>
@@ -85,6 +87,12 @@ signals:
     void stickyFlagChanged(bool sticky);
 
 protected:
+    virtual void getState(UnorderedStringMap<QVariant>& state) const;
+    virtual void setState(const UnorderedStringMap<QVariant>& state);
+
+    void loadStateDefault(UnorderedStringMap<QVariant>& state) const;
+    void saveStateDefault(const UnorderedStringMap<QVariant>& state);
+
     virtual void closeEvent(QCloseEvent* event) override;
 
 private:

@@ -81,8 +81,6 @@ public:
 
     void onTextChange();
 
-    virtual void loadState() override;
-
     void restore();
 
     void setName(std::string_view name);
@@ -91,6 +89,9 @@ public:
     const std::string& getSource() const;
 
 protected:
+    virtual void getState(UnorderedStringMap<QVariant>& state) const override;
+    virtual void setState(const UnorderedStringMap<QVariant>& state) override;
+
     virtual void closeEvent(QCloseEvent* event) override;
 
 private:
@@ -98,8 +99,6 @@ private:
     void updateWindowTitle();
     void readFile();
     bool askSaveChanges();
-
-    virtual void saveState() override;
 
     QMainWindow* mainWindow_;
     CodeEdit* pythonCode_;

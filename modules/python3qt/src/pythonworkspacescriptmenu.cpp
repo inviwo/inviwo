@@ -46,7 +46,8 @@ PythonWorkspaceScriptMenu::PythonWorkspaceScriptMenu(PythonWorkspaceScripts& scr
                                                      InviwoApplication* app, QMainWindow* win)
     : scripts_{scripts}, app_{app}, win_{win}, menu_{parent->addMenu("Workspace Scripts")} {
 
-    const auto* newScript = menu_->addAction(QIcon(":/svgicons/newfile.svg"), "&New Python Script");
+    const auto* newScript =
+        menu_->addAction(QIcon(":/svgicons/newfile.svg"), "New &Workspace Script ...");
     QObject::connect(newScript, &QAction::triggered, [this]() {
         const auto keySuggestion = fmt::format("Script {}", scripts_.getKeys().size() + 1);
         if (auto key = getScriptName(keySuggestion)) {
@@ -66,6 +67,9 @@ void PythonWorkspaceScriptMenu::onScriptAdded(std::string_view key, std::string_
 void PythonWorkspaceScriptMenu::onScriptRemoved(std::string_view key, std::string_view) {
     if (auto it = menuItems_.find(key); it != menuItems_.end()) {
         menuItems_.erase(it);
+    }
+    if (auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
+        scriptEditors_.erase(it);
     }
 }
 void PythonWorkspaceScriptMenu::onScriptSaved(std::string_view key, std::string_view) {
