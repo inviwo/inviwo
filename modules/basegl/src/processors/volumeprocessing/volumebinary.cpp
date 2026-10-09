@@ -69,25 +69,52 @@ VolumeBinary::VolumeBinary()
                                      .valueAxis = Axis{.name = "mask", .unit = Unit{}},
                                      .dataRange = vec2(0, 255),
                                      .valueRange = vec2(0, 255)})
-    , threshold_("threshold", "Threshold",
-                 "Threshold used for the binarization of the input volume"_help, 0.5)
-    , op_("operator", "Operator",
+    , dataRange_{"dataRange", "Input Range", *inport_, false, InvalidationLevel::Valid}
+    , dataSpace_{"dataSpace",
+                 "Data Space",
+                 "Defines the data space of the threshold value."_help,
+                 {{"data", "Data Range", DataMapper::Space::Data},
+                  {"normalized", "Normalized Range", DataMapper::Space::Normalized},
+                  {"value", "Value Range", DataMapper::Space::Value}},
+                 1}
+    , threshold_{"threshold", "Threshold",
+                 util::ordinalSymmetricVector(0.5f, 1.0f)
+                     .setInc(0.0001f)
+                     .set("Threshold used for the binarization of the input volume"_help)}
+    , op_{"operator",
+          "Operator",
           {{"greaterthen", ">", Operator::GreaterThen},
            {"greaterthenorequal", ">=", Operator::GreaterThenOrEqual},
            {"lessthen", "<", Operator::LessThen},
            {"lessthenorequal", "<=", Operator::LessThenOrEqual},
            {"equal", "==", Operator::Equal},
            {"notequal", "!=", Operator::NotEqual}},
-          0, InvalidationLevel::InvalidResources) {
+          0,
+          InvalidationLevel::InvalidResources} {
 
     outport_.setHelp("Binary mask volume"_help);
 
-    addProperties(threshold_, op_);
+    addProperties(dataRange_, dataSpace_, threshold_, op_);
 }
 
 void VolumeBinary::preProcess([[maybe_unused]] TextureUnitContainer& cont, Shader& shader,
                               [[maybe_unused]] VolumeConfig& config) {
-    utilgl::setUniforms(shader, threshold_);
+    auto threshold = [&]() {
+        if (inport_.has_value() && inport_->hasData()) {
+            const DataMapper& dm = inport_->getData()->dataMap;
+            switch (dataSpace_.get()) {
+                using enum DataMapper::Space;
+                case Data: return static_cast<float>(dm.mapFromDataToNormalized(threshold_.get()));
+                case Value:
+                    return static_cast<float>(dm.mapFromValueToNormalized(threshold_.get()));
+                case Normalized:
+                default:         return threshold_.get();
+            }
+        }
+        return threshold_.get();
+    }();
+
+    shader.setUniform(threshold_.getIdentifier(), threshold);
 }
 
 void VolumeBinary::initializeShader(Shader& shader) {
