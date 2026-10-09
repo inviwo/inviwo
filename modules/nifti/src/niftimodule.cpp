@@ -40,6 +40,7 @@ class InviwoApplication;
 
 NiftiModule::NiftiModule(InviwoApplication* app) : InviwoModule(app, "Nifti") {
     // Readers and writes
+    registerDataReader(std::make_unique<NiftiVolumeReader>());
     registerDataReader(std::make_unique<NiftiReader>());
 }
 

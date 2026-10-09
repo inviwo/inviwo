@@ -44,6 +44,18 @@ namespace inviwo {
  * @brief Volume data reader for Nifti-1 files.
  *
  */
+class IVW_MODULE_NIFTI_API NiftiVolumeReader : public DataReaderType<Volume> {
+public:
+    NiftiVolumeReader();
+    NiftiVolumeReader(const NiftiVolumeReader& rhs) = default;
+    NiftiVolumeReader& operator=(const NiftiVolumeReader& that) = default;
+    virtual NiftiVolumeReader* clone() const override;
+
+    virtual ~NiftiVolumeReader() = default;
+
+    virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath) override;
+};
+
 class IVW_MODULE_NIFTI_API NiftiReader : public DataReaderType<VolumeSequence> {
 public:
     NiftiReader();

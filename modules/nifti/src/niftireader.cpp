@@ -492,13 +492,13 @@ void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresenta
 }  // namespace
 
 NiftiReader::NiftiReader() : DataReaderType<VolumeSequence>() {
-    addExtension(FileExtension("nii", "NIfTI-1 file format"));
-    addExtension(FileExtension("hdr", "ANALYZE file format"));
-    addExtension(FileExtension("img", "ANALYZE file format"));
+    addExtension(FileExtension("nii", "NIfTI-1 file format (sequence)"));
+    addExtension(FileExtension("hdr", "ANALYZE file format (sequence)"));
+    addExtension(FileExtension("img", "ANALYZE file format (sequence)"));
     // Compressed files
-    addExtension(FileExtension("nii.gz", "NIfTI-1 file format"));
-    addExtension(FileExtension("hdr.gz", "ANALYZE file format"));
-    addExtension(FileExtension("img.gz", "ANALYZE file format"));
+    addExtension(FileExtension("nii.gz", "NIfTI-1 file format (sequence)"));
+    addExtension(FileExtension("hdr.gz", "ANALYZE file format (sequence)"));
+    addExtension(FileExtension("img.gz", "ANALYZE file format (sequence)"));
 }
 
 NiftiReader* NiftiReader::clone() const { return new NiftiReader(*this); }
@@ -508,6 +508,31 @@ std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::pat
     checkExists(localPath);
 
     return readNiftiFile(localPath, filePath);
+}
+
+NiftiVolumeReader::NiftiVolumeReader() : DataReaderType<Volume>() {
+    addExtension(FileExtension("nii", "NIfTI-1 file format"));
+    addExtension(FileExtension("hdr", "ANALYZE file format"));
+    addExtension(FileExtension("img", "ANALYZE file format"));
+    // Compressed files
+    addExtension(FileExtension("nii.gz", "NIfTI-1 file format"));
+    addExtension(FileExtension("hdr.gz", "ANALYZE file format"));
+    addExtension(FileExtension("img.gz", "ANALYZE file format"));
+}
+
+NiftiVolumeReader* NiftiVolumeReader::clone() const { return new NiftiVolumeReader(*this); }
+
+std::shared_ptr<Volume> NiftiVolumeReader::readData(const std::filesystem::path& filePath) {
+    const auto localPath = downloadAndCacheIfUrl(filePath);
+    checkExists(localPath);
+
+    auto sequence = readNiftiFile(localPath, filePath);
+    if (sequence->size() != 1) {
+        throw DataReaderException{
+            SourceContext{},
+            "Volume sequences are not handled by the NiftiVolumeReader, use the NiftiReader"};
+    }
+    return sequence->front();
 }
 
 }  // namespace inviwo
