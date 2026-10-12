@@ -120,13 +120,13 @@ $(function(){initNavTree('classinviwo_1_1RawVolumeRAMLoader.html',''); initResiz
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae78e232c2ab7e5784980648a0760ba5d" id="r_ae78e232c2ab7e5784980648a0760ba5d"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1RawVolumeRAMLoader.html">RawVolumeRAMLoader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae78e232c2ab7e5784980648a0760ba5d">clone</a> () const override</td></tr>
 <tr class="separator:ae78e232c2ab7e5784980648a0760ba5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1982738b03d653689a0216d9326100d0" id="r_a1982738b03d653689a0216d9326100d0"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1982738b03d653689a0216d9326100d0">createRepresentation</a> (const <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &amp;src) const override</td></tr>
-<tr class="separator:a1982738b03d653689a0216d9326100d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04d8ba3d1307fce479d2539eac0a1f04" id="r_a04d8ba3d1307fce479d2539eac0a1f04"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a04d8ba3d1307fce479d2539eac0a1f04">createRepresentation</a> (const <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &amp;src, std::stop_token stop) const override</td></tr>
+<tr class="separator:a04d8ba3d1307fce479d2539eac0a1f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d6f60431b9c523403dd5463ebfd6f3b" id="r_a6d6f60431b9c523403dd5463ebfd6f3b"><td class="memItemLeft" align="right" valign="top"><a id="a6d6f60431b9c523403dd5463ebfd6f3b" name="a6d6f60431b9c523403dd5463ebfd6f3b"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>RawVolumeRAMLoader</b> (const std::filesystem::path &amp;rawFile, size_t offset, ByteOrder byteOrder, Compression compression)</td></tr>
 <tr class="separator:a6d6f60431b9c523403dd5463ebfd6f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68caaf09307371ff1eca3002b9979754" id="r_a68caaf09307371ff1eca3002b9979754"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a68caaf09307371ff1eca3002b9979754">updateRepresentation</a> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt; dest, const <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &amp;src) const override</td></tr>
-<tr class="separator:a68caaf09307371ff1eca3002b9979754"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1dd659d55bc2b9fb6501a71ebc38afc" id="r_ad1dd659d55bc2b9fb6501a71ebc38afc"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad1dd659d55bc2b9fb6501a71ebc38afc">updateRepresentation</a> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt; dest, const <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &amp;src, std::stop_token stop) const override</td></tr>
+<tr class="separator:ad1dd659d55bc2b9fb6501a71ebc38afc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -165,8 +165,8 @@ static std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom">
 
 </div>
 </div>
-<a id="a1982738b03d653689a0216d9326100d0" name="a1982738b03d653689a0216d9326100d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1982738b03d653689a0216d9326100d0">&#9670;&#160;</a></span>createRepresentation()</h2>
+<a id="a04d8ba3d1307fce479d2539eac0a1f04" name="a04d8ba3d1307fce479d2539eac0a1f04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04d8ba3d1307fce479d2539eac0a1f04">&#9670;&#160;</a></span>createRepresentation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -177,8 +177,12 @@ static std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom">
         <tr>
           <td class="memname">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &gt; inviwo::RawVolumeRAMLoader::createRepresentation </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>src</em></span></td><td>)</td>
-          <td> const</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>src</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::stop_token</td>          <td class="paramname"><span class="paramname"><em>stop</em></span>&#160;) const</td>
         </tr>
       </table>
   </td>
@@ -192,8 +196,8 @@ static std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom">
 
 </div>
 </div>
-<a id="a68caaf09307371ff1eca3002b9979754" name="a68caaf09307371ff1eca3002b9979754"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68caaf09307371ff1eca3002b9979754">&#9670;&#160;</a></span>updateRepresentation()</h2>
+<a id="ad1dd659d55bc2b9fb6501a71ebc38afc" name="ad1dd659d55bc2b9fb6501a71ebc38afc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1dd659d55bc2b9fb6501a71ebc38afc">&#9670;&#160;</a></span>updateRepresentation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -209,7 +213,12 @@ static std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom">
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>src</em></span>&#160;) const</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1VolumeRepresentation.html">VolumeRepresentation</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>src</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::stop_token</td>          <td class="paramname"><span class="paramname"><em>stop</em></span>&#160;) const</td>
         </tr>
       </table>
   </td>

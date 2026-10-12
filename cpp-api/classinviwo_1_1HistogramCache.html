@@ -109,9 +109,12 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ac5617d54026b9226f57373333d39177b" id="r_ac5617d54026b9226f57373333d39177b"><td class="memItemLeft" align="right" valign="top"><a id="ac5617d54026b9226f57373333d39177b" name="ac5617d54026b9226f57373333d39177b"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Callback</b> = void(const std::vector&lt;<a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a>&gt;&amp;)</td></tr>
-<tr class="separator:ac5617d54026b9226f57373333d39177b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56ab9dc361641d869b64bba6a26ef15a" id="r_a56ab9dc361641d869b64bba6a26ef15a"><td class="memItemLeft" align="right" valign="top"><a id="a56ab9dc361641d869b64bba6a26ef15a" name="a56ab9dc361641d869b64bba6a26ef15a"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Calculation</b> = std::vector&lt;<a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a>&gt;()</td></tr>
+<tr class="separator:a56ab9dc361641d869b64bba6a26ef15a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abee63d93f63ed69666e26e2dcc5afa34" id="r_abee63d93f63ed69666e26e2dcc5afa34"><td class="memItemLeft" align="right" valign="top"><a id="abee63d93f63ed69666e26e2dcc5afa34" name="abee63d93f63ed69666e26e2dcc5afa34"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Callback</b> = void(std::shared_ptr&lt;const std::vector&lt;<a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a>&gt;&gt;)</td></tr>
+<tr class="separator:abee63d93f63ed69666e26e2dcc5afa34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ce1466d354633eda91ac8183a5bb898" id="r_a1ce1466d354633eda91ac8183a5bb898"><td class="memItemLeft" align="right" valign="top"><a id="a1ce1466d354633eda91ac8183a5bb898" name="a1ce1466d354633eda91ac8183a5bb898"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Progress</b> { <b>Done</b>
 , <b>Calculating</b>
 , <b>NoData</b>
@@ -120,12 +123,15 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>Callback</b> = void(
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a28dd2dc96d85121078d34f7ba8e53a1e" id="r_a28dd2dc96d85121078d34f7ba8e53a1e"><td class="memItemLeft" align="right" valign="top"><a id="a28dd2dc96d85121078d34f7ba8e53a1e" name="a28dd2dc96d85121078d34f7ba8e53a1e"></a>
-<a class="el" href="structinviwo_1_1HistogramCache_1_1Result.html">Result</a>&#160;</td><td class="memItemRight" valign="bottom"><b>calculateHistograms</b> (const std::function&lt; std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt;()&gt; &amp;calculate, const std::function&lt; Callback &gt; &amp;whenDone) const</td></tr>
-<tr class="separator:a28dd2dc96d85121078d34f7ba8e53a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae646834b377125216458772edfed3d94" id="r_ae646834b377125216458772edfed3d94"><td class="memItemLeft" align="right" valign="top"><a id="ae646834b377125216458772edfed3d94" name="ae646834b377125216458772edfed3d94"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>discard</b> (const std::function&lt; std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt;()&gt; &amp;calculate)</td></tr>
-<tr class="separator:ae646834b377125216458772edfed3d94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20365ef9329b4dd733099c9e42d2fb8e" id="r_a20365ef9329b4dd733099c9e42d2fb8e"><td class="memItemLeft" align="right" valign="top"><a id="a20365ef9329b4dd733099c9e42d2fb8e" name="a20365ef9329b4dd733099c9e42d2fb8e"></a>
+std::shared_ptr&lt; const std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>calculateHistograms</b> (const std::function&lt; Calculation &gt; &amp;calculate) const</td></tr>
+<tr class="separator:a20365ef9329b4dd733099c9e42d2fb8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ea53e614cd007785ffc44ba945ca2bc" id="r_a9ea53e614cd007785ffc44ba945ca2bc"><td class="memItemLeft" align="right" valign="top"><a id="a9ea53e614cd007785ffc44ba945ca2bc" name="a9ea53e614cd007785ffc44ba945ca2bc"></a>
+<a class="el" href="structinviwo_1_1HistogramCache_1_1Result.html">Result</a>&#160;</td><td class="memItemRight" valign="bottom"><b>calculateHistograms</b> (const std::function&lt; Calculation &gt; &amp;calculate, const std::function&lt; Callback &gt; &amp;whenDone) const</td></tr>
+<tr class="separator:a9ea53e614cd007785ffc44ba945ca2bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f79d9c36b0d657822248621a816b7d0" id="r_a0f79d9c36b0d657822248621a816b7d0"><td class="memItemLeft" align="right" valign="top"><a id="a0f79d9c36b0d657822248621a816b7d0" name="a0f79d9c36b0d657822248621a816b7d0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="separator:a0f79d9c36b0d657822248621a816b7d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9512daaee9ef00db1c120cfa799c566f" id="r_a9512daaee9ef00db1c120cfa799c566f"><td class="memItemLeft" align="right" valign="top"><a id="a9512daaee9ef00db1c120cfa799c566f" name="a9512daaee9ef00db1c120cfa799c566f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>forEach</b> (const std::function&lt; void(const <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &amp;, size_t)&gt; &amp;) const</td></tr>
 <tr class="separator:a9512daaee9ef00db1c120cfa799c566f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,6 +147,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>forEach</b> (const st
 <tr class="memitem:aecf1f91b672919f51eccbec562283c75" id="r_aecf1f91b672919f51eccbec562283c75"><td class="memItemLeft" align="right" valign="top"><a id="aecf1f91b672919f51eccbec562283c75" name="aecf1f91b672919f51eccbec562283c75"></a>
 <a class="el" href="classinviwo_1_1HistogramCache.html">HistogramCache</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1HistogramCache.html">HistogramCache</a> &amp;&amp;that) noexcept</td></tr>
 <tr class="separator:aecf1f91b672919f51eccbec562283c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a339207185810af1f4a77707a8d294cd6" id="r_a339207185810af1f4a77707a8d294cd6"><td class="memItemLeft" align="right" valign="top"><a id="a339207185810af1f4a77707a8d294cd6" name="a339207185810af1f4a77707a8d294cd6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>recalculate</b> (const std::function&lt; Calculation &gt; &amp;calculate)</td></tr>
+<tr class="separator:a339207185810af1f4a77707a8d294cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>include/inviwo/core/datastructures/<b>histogramtools.h</b></li>

@@ -107,9 +107,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acb970215f9139f7b084469568a252d53" id="r_acb970215f9139f7b084469568a252d53"><td class="memItemLeft" align="right" valign="top"><a id="acb970215f9139f7b084469568a252d53" name="acb970215f9139f7b084469568a252d53"></a>
 virtual <a class="el" href="classinviwo_1_1DiskRepresentation.html">DiskRepresentation</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const</td></tr>
 <tr class="separator:acb970215f9139f7b084469568a252d53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a737af4b7d96b8a64faf73aab85fb1ec3" id="r_a737af4b7d96b8a64faf73aab85fb1ec3"><td class="memItemLeft" align="right" valign="top"><a id="a737af4b7d96b8a64faf73aab85fb1ec3" name="a737af4b7d96b8a64faf73aab85fb1ec3"></a>
-std::shared_ptr&lt; Repr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createRepresentation</b> () const</td></tr>
-<tr class="separator:a737af4b7d96b8a64faf73aab85fb1ec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af68ced6446ce758af84963e6dad50b38" id="r_af68ced6446ce758af84963e6dad50b38"><td class="memItemLeft" align="right" valign="top"><a id="af68ced6446ce758af84963e6dad50b38" name="af68ced6446ce758af84963e6dad50b38"></a>
+std::shared_ptr&lt; Repr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createRepresentation</b> (std::stop_token stop={}) const</td></tr>
+<tr class="separator:af68ced6446ce758af84963e6dad50b38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c8d26e9cfcffa3b7399b9502877ff70" id="r_a5c8d26e9cfcffa3b7399b9502877ff70"><td class="memItemLeft" align="right" valign="top"><a id="a5c8d26e9cfcffa3b7399b9502877ff70" name="a5c8d26e9cfcffa3b7399b9502877ff70"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DiskRepresentation</b> (const <a class="el" href="classinviwo_1_1DiskRepresentation.html">DiskRepresentation</a> &amp;rhs)=default</td></tr>
 <tr class="separator:a5c8d26e9cfcffa3b7399b9502877ff70"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,9 +128,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSourceFile</b> () 
 <tr class="memitem:a860fb8aee386c314764a052230e79fd8" id="r_a860fb8aee386c314764a052230e79fd8"><td class="memItemLeft" align="right" valign="top"><a id="a860fb8aee386c314764a052230e79fd8" name="a860fb8aee386c314764a052230e79fd8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setLoader</b> (<a class="el" href="classinviwo_1_1DiskRepresentationLoader.html">DiskRepresentationLoader</a>&lt; Repr &gt; *loader)</td></tr>
 <tr class="separator:a860fb8aee386c314764a052230e79fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a823f29a6936ea4535384531dbcbb4d35" id="r_a823f29a6936ea4535384531dbcbb4d35"><td class="memItemLeft" align="right" valign="top"><a id="a823f29a6936ea4535384531dbcbb4d35" name="a823f29a6936ea4535384531dbcbb4d35"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateRepresentation</b> (std::shared_ptr&lt; Repr &gt; dest) const</td></tr>
-<tr class="separator:a823f29a6936ea4535384531dbcbb4d35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff3603335784e1d816e130b327ba2747" id="r_aff3603335784e1d816e130b327ba2747"><td class="memItemLeft" align="right" valign="top"><a id="aff3603335784e1d816e130b327ba2747" name="aff3603335784e1d816e130b327ba2747"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>updateRepresentation</b> (std::shared_ptr&lt; Repr &gt; dest, std::stop_token stop={}) const</td></tr>
+<tr class="separator:aff3603335784e1d816e130b327ba2747"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename Repr, typename Self&gt;<br />

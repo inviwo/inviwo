@@ -204,6 +204,14 @@ var group__datastructures =
     [ "inviwo::MeshGL", "classinviwo_1_1MeshGL.html", null ],
     [ "inviwo::MeshRAM", "classinviwo_1_1MeshRAM.html", null ],
     [ "inviwo::MeshRepresentation", "classinviwo_1_1MeshRepresentation.html", null ],
+    [ "inviwo::ProceduralLoader", "classinviwo_1_1ProceduralLoader.html", [
+      [ "Generator", "classinviwo_1_1ProceduralLoader.html#a148bae6bb0544480c292b5de160a8490", null ],
+      [ "ProceduralLoader", "classinviwo_1_1ProceduralLoader.html#ab4f396ab68c066e09bd2cbb8f4d79322", null ],
+      [ "load", "classinviwo_1_1ProceduralLoader.html#a5f993289ad48f2cd92556ef932a5731e", null ],
+      [ "prototype", "classinviwo_1_1ProceduralLoader.html#a7db7e8d5596596e7a1eedb78965b5558", null ],
+      [ "size", "classinviwo_1_1ProceduralLoader.html#a052e11a9d074ab7268caf40cec1109e0", null ],
+      [ "time", "classinviwo_1_1ProceduralLoader.html#ad0452fc1d33512d46c1efddfff1380bc", null ]
+    ] ],
     [ "inviwo::TemplateColumn< T >", "classinviwo_1_1TemplateColumn.html", [
       [ "add", "classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2", null ],
       [ "append", "classinviwo_1_1TemplateColumn.html#ae1f1eb4cd62c486e82295c74d2187245", null ],
@@ -211,6 +219,34 @@ var group__datastructures =
       [ "getDataRange", "classinviwo_1_1TemplateColumn.html#ac964effc12c71abc4b4cc418beaf4410", null ],
       [ "getRange", "classinviwo_1_1TemplateColumn.html#a0bb0739dc40a2718ee53ff2eb4b195e5", null ],
       [ "setCustomRange", "classinviwo_1_1TemplateColumn.html#a40e1bec2db11cd8c28e7044216a6058b", null ]
+    ] ],
+    [ "inviwo::TemporalVolume", "classinviwo_1_1TemporalVolume.html", [
+      [ "Frame", "structinviwo_1_1TemporalVolume_1_1Frame.html", [
+        [ "a", "structinviwo_1_1TemporalVolume_1_1Frame.html#a0b68e20c274e20a04fe9d772c4204e3c", null ],
+        [ "b", "structinviwo_1_1TemporalVolume_1_1Frame.html#ac88207051bbd9845392323f90840579b", null ],
+        [ "t", "structinviwo_1_1TemporalVolume_1_1Frame.html#a1a7fe9ab3a39e91ef963fa2e071b8141", null ]
+      ] ],
+      [ "TemporalVolume", "classinviwo_1_1TemporalVolume.html#a2c14f1932ff0979ef2b5c0c86f6c459b", null ],
+      [ "cacheSize", "classinviwo_1_1TemporalVolume.html#a883de8c9981233fdd57dfaaebf67066e", null ],
+      [ "clearCache", "classinviwo_1_1TemporalVolume.html#a574145988d9e07346afcd8c8dcbeb687", null ],
+      [ "empty", "classinviwo_1_1TemporalVolume.html#aebd92d3942759c9225b70775927e0ece", null ],
+      [ "get", "classinviwo_1_1TemporalVolume.html#aa98f3db7c144d247682ddf4e85bce8d6", null ],
+      [ "get", "classinviwo_1_1TemporalVolume.html#a16ce74a0e6e74200454d8d7b6b657fc4", null ],
+      [ "interpolate", "classinviwo_1_1TemporalVolume.html#ad062c18b3c2477c954ae94ab327087e3", null ],
+      [ "nearestIndex", "classinviwo_1_1TemporalVolume.html#a6c3f4e34018d3952495c81b6d266e413", null ],
+      [ "numCached", "classinviwo_1_1TemporalVolume.html#adf1ea48bb100aca5799dc557e05f7148", null ],
+      [ "prefetch", "classinviwo_1_1TemporalVolume.html#aefd5bf1032b50be40734b177d1e82c17", null ],
+      [ "prototype", "classinviwo_1_1TemporalVolume.html#aa8be6046535a4253cf221f48694a2106", null ],
+      [ "setCacheSize", "classinviwo_1_1TemporalVolume.html#ab1e9e43f1cbbe485fe679f4ba2f0ac59", null ],
+      [ "size", "classinviwo_1_1TemporalVolume.html#af99acfa4d8970020f2139ae261ec1a78", null ],
+      [ "timeRange", "classinviwo_1_1TemporalVolume.html#ad5fbfe2e4105c9556ce6e392cbbad89a", null ],
+      [ "times", "classinviwo_1_1TemporalVolume.html#a2cac63f5a764a5cbbdde340b6e1974bb", null ]
+    ] ],
+    [ "inviwo::TemporalVolumeLoader", "classinviwo_1_1TemporalVolumeLoader.html", [
+      [ "load", "classinviwo_1_1TemporalVolumeLoader.html#a1754716c3404c6a69a1a719e288b82d6", null ],
+      [ "prototype", "classinviwo_1_1TemporalVolumeLoader.html#a6775890e463142b48aae490dff6318a2", null ],
+      [ "size", "classinviwo_1_1TemporalVolumeLoader.html#adbcaf3308b1af5bfb82ae766d7fb71a0", null ],
+      [ "time", "classinviwo_1_1TemporalVolumeLoader.html#a0e68147c8b4fe0864efc667cd1063331", null ]
     ] ],
     [ "inviwo::TetraMesh", "classinviwo_1_1TetraMesh.html", [
       [ "get", "classinviwo_1_1TetraMesh.html#a30eee0cb8da04c164b144336da062020", null ],

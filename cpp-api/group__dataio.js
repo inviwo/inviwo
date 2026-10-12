@@ -39,7 +39,8 @@ var group__dataio =
       [ "setOption", "classinviwo_1_1DataReader.html#a0ac5d98ed2647ec10447661f4f371148", null ]
     ] ],
     [ "inviwo::DataReaderType< T >", "classinviwo_1_1DataReaderType.html", [
-      [ "readData", "classinviwo_1_1DataReaderType.html#ae0105fa2debe3f46d4d90358e7d0f92b", null ]
+      [ "readData", "classinviwo_1_1DataReaderType.html#ae0105fa2debe3f46d4d90358e7d0f92b", null ],
+      [ "readData", "classinviwo_1_1DataReaderType.html#ae5f5a864ed022b0e689d4eaed26a6e67", null ]
     ] ],
     [ "inviwo::DataWriter", "classinviwo_1_1DataWriter.html", [
       [ "checkOverwrite", "classinviwo_1_1DataWriter.html#a9a9d1c0ab15b48fdd639b5f504b4c1fd", null ],
@@ -61,6 +62,13 @@ var group__dataio =
     [ "inviwo::FFmpegLayerSequenceReader", "classinviwo_1_1FFmpegLayerSequenceReader.html", [
       [ "getOption", "classinviwo_1_1FFmpegLayerSequenceReader.html#ab4f2ae9f9a95159ef897f0f269e89594", null ],
       [ "setOption", "classinviwo_1_1FFmpegLayerSequenceReader.html#a5003a3315f8caabcf9f465e095dedde7", null ]
+    ] ],
+    [ "inviwo::FileSequenceLoader", "classinviwo_1_1FileSequenceLoader.html", [
+      [ "FileSequenceLoader", "classinviwo_1_1FileSequenceLoader.html#ab63ae5cfcd5b163921b3d4dc247a4c6a", null ],
+      [ "load", "classinviwo_1_1FileSequenceLoader.html#ad79347e5615466bec0679b2091c6f6e9", null ],
+      [ "prototype", "classinviwo_1_1FileSequenceLoader.html#a79cc70aaf49e957a33f4fef0518fc534", null ],
+      [ "size", "classinviwo_1_1FileSequenceLoader.html#a33bbb2890d87e80955aa7e2d885a1a13", null ],
+      [ "time", "classinviwo_1_1FileSequenceLoader.html#a2933797ed065bf4e2e6152c05f1642ff", null ]
     ] ],
     [ "inviwo::IvfVolumeReader", "classinviwo_1_1IvfVolumeReader.html", null ],
     [ "inviwo::IvfVolumeSequenceReader", "classinviwo_1_1IvfVolumeSequenceReader.html", null ],

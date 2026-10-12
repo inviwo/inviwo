@@ -95,6 +95,7 @@ $(function(){initNavTree('classinviwo_1_1hdf5_1_1Handle.html',''); initResizable
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="classinviwo_1_1hdf5_1_1Handle-members.html">List of all members</a>  </div>
@@ -149,6 +150,11 @@ const <a class="el" href="classinviwo_1_1hdf5_1_1Path.html">Path</a> &amp;&#160;
 <tr class="memitem:a61c4c8e9c59781adc9a700ed6c4a0a25" id="r_a61c4c8e9c59781adc9a700ed6c4a0a25"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &gt; </td></tr>
 <tr class="memitem:a61c4c8e9c59781adc9a700ed6c4a0a25"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a61c4c8e9c59781adc9a700ed6c4a0a25">visitGroups</a> (const <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &amp;callback) const</td></tr>
 <tr class="separator:a61c4c8e9c59781adc9a700ed6c4a0a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a9aa1d82753cbd74dfa81a682962f8f2a" id="r_a9aa1d82753cbd74dfa81a682962f8f2a"><td class="memItemLeft" align="right" valign="top">static std::recursive_mutex &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9aa1d82753cbd74dfa81a682962f8f2a">globalMutex</a> ()</td></tr>
+<tr class="separator:a9aa1d82753cbd74dfa81a682962f8f2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -221,6 +227,32 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>A lazy range yielding the immediate child datasets. </p>
+
+</div>
+</div>
+<a id="a9aa1d82753cbd74dfa81a682962f8f2a" name="a9aa1d82753cbd74dfa81a682962f8f2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9aa1d82753cbd74dfa81a682962f8f2a">&#9670;&#160;</a></span>globalMutex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::recursive_mutex &amp; inviwo::hdf5::Handle::globalMutex </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns a reference to a global recursive mutex for synchronizing access to HDF5 resources. </p>
 
 </div>
 </div>

@@ -1,5 +1,20 @@
 var searchData=
 [
-  ['error_0',['error',['../structinviwo_1_1util_1_1SplatSettings.html#a7872e0fc7bb61a62cc056e7b91ad8deb',1,'inviwo::util::SplatSettings']]],
-  ['extension_1',['extension',['../structinviwo_1_1FileExtension.html#a24c1637d6565f6695b93926f1a50932f',1,'inviwo::FileExtension']]]
+  ['d65whitepoint_0',['D65WhitePoint',['../namespaceinviwo_1_1color.html#a66c524fc6204911bdfd138273eef0a51',1,'inviwo::color']]],
+  ['datarange_1',['dataRange',['../classinviwo_1_1DataMapper.html#ace2bd755e9c66a1075c0215966cc4bd0',1,'inviwo::DataMapper']]],
+  ['dataspecs_2',['dataSpecs',['../structinviwo_1_1amira_1_1AmiraMeshHeader.html#a4b9dd1fe054cbe986fd82b4d7354bfaf',1,'inviwo::amira::AmiraMeshHeader']]],
+  ['defaultcount_3',['defaultCount',['../classinviwo_1_1FFmpegLayerSequenceReader.html#af39acdf8b3d4941be8d7de48549c6902',1,'inviwo::FFmpegLayerSequenceReader']]],
+  ['defaultdelimiters_4',['defaultDelimiters',['../classinviwo_1_1CSVReader.html#a2d77937437b675c5c70349958d543ab7',1,'inviwo::CSVReader']]],
+  ['defaultdoubleprecision_5',['defaultDoublePrecision',['../classinviwo_1_1CSVReader.html#a6e40ea4b98a2b6b7428a4ebf011c40e9',1,'inviwo::CSVReader']]],
+  ['defaultemptyfield_6',['defaultEmptyField',['../classinviwo_1_1CSVReader.html#ae9b881ce4a0f938fdc91d12191aba619',1,'inviwo::CSVReader']]],
+  ['defaultfirstcolindices_7',['defaultFirstColIndices',['../classinviwo_1_1CSVReader.html#a855d3dfce392af45d4ac8b72a778fa43',1,'inviwo::CSVReader']]],
+  ['defaultfirstrowheader_8',['defaultFirstRowHeader',['../classinviwo_1_1CSVReader.html#a162f25bb341b7cfbd2b63a6682598394',1,'inviwo::CSVReader']]],
+  ['defaultlocale_9',['defaultLocale',['../classinviwo_1_1CSVReader.html#a3ab80f4d28ab479af94f53dfc14d2af1',1,'inviwo::CSVReader']]],
+  ['defaultnumberofexamplerows_10',['defaultNumberOfExampleRows',['../classinviwo_1_1CSVReader.html#a32798da889ce1d3373f3dec1b245f6de',1,'inviwo::CSVReader']]],
+  ['defaultstripquotes_11',['defaultStripQuotes',['../classinviwo_1_1CSVReader.html#a9d0ec6e402aa21d9af72c9cafa42077a',1,'inviwo::CSVReader']]],
+  ['defaultunitinheaders_12',['defaultUnitInHeaders',['../classinviwo_1_1CSVReader.html#aa2e932d23bee25cdf409e3d69e553d48',1,'inviwo::CSVReader']]],
+  ['defaultunitregexp_13',['defaultUnitRegexp',['../classinviwo_1_1CSVReader.html#acc49dbb5884503614430830dd5fab7e3',1,'inviwo::CSVReader']]],
+  ['dimensions_14',['dimensions',['../structinviwo_1_1util_1_1SplatSettings.html#a595e2d22a9911e4669718f719694bff9',1,'inviwo::util::SplatSettings']]],
+  ['displayname_15',['displayName',['../structinviwo_1_1ProcessorInfo.html#aa3c739ee0ed28ed7c3660b733b05c055',1,'inviwo::ProcessorInfo']]],
+  ['dropindicatorline_16',['dropIndicatorLine',['../classinviwo_1_1animation_1_1AnimationEditorQt.html#aa819cfd5d0602043cdb933a34450ef07',1,'inviwo::animation::AnimationEditorQt']]]
 ];

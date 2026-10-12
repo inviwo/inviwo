@@ -94,6 +94,7 @@ $(function(){initNavTree('structinviwo_1_1TFData_1_1Implementation.html',''); in
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structinviwo_1_1TFData_1_1Implementation-members.html">List of all members</a>  </div>
@@ -112,10 +113,16 @@ $(function(){initNavTree('structinviwo_1_1TFData_1_1Implementation.html',''); in
   </map>
 </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a1b72adad99753ab8cc9b65e3cf8b0a2b" id="r_a1b72adad99753ab8cc9b65e3cf8b0a2b"><td class="memItemLeft" align="right" valign="top"><a id="a1b72adad99753ab8cc9b65e3cf8b0a2b" name="a1b72adad99753ab8cc9b65e3cf8b0a2b"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>D</b> = T::type</td></tr>
+<tr class="separator:a1b72adad99753ab8cc9b65e3cf8b0a2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a23f5c09a251b3f4be7a3bb181cf1f94a" id="r_a23f5c09a251b3f4be7a3bb181cf1f94a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structinviwo_1_1HistogramCache_1_1Result.html">HistogramCache::Result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23f5c09a251b3f4be7a3bb181cf1f94a">calculateHistograms</a> (const std::function&lt; void(const std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt; &amp;)&gt; &amp;whenDone) const override</td></tr>
-<tr class="separator:a23f5c09a251b3f4be7a3bb181cf1f94a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69d18fc5665053eeb8bf7f19f0451fa8" id="r_a69d18fc5665053eeb8bf7f19f0451fa8"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structinviwo_1_1HistogramCache_1_1Result.html">HistogramCache::Result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69d18fc5665053eeb8bf7f19f0451fa8">calculateHistograms</a> (const std::function&lt; HistogramCache::Callback &gt; &amp;whenDone) const override</td></tr>
+<tr class="separator:a69d18fc5665053eeb8bf7f19f0451fa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03f6a0fd273b90560a8c754489d5a559" id="r_a03f6a0fd273b90560a8c754489d5a559"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="structinviwo_1_1TFData_1_1Base.html">Base</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03f6a0fd273b90560a8c754489d5a559">clone</a> () const override</td></tr>
 <tr class="separator:a03f6a0fd273b90560a8c754489d5a559"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae445ff04a13fff95b96518e71adc9172" id="r_ae445ff04a13fff95b96518e71adc9172"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae445ff04a13fff95b96518e71adc9172">getDataMap</a> () const override</td></tr>
@@ -158,8 +165,8 @@ T *&#160;</td><td class="memItemRight" valign="bottom"><b>port</b></td></tr>
 <tr class="separator:ab831d924d4008f7c9c7628457ad7cb3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a23f5c09a251b3f4be7a3bb181cf1f94a" name="a23f5c09a251b3f4be7a3bb181cf1f94a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a23f5c09a251b3f4be7a3bb181cf1f94a">&#9670;&#160;</a></span>calculateHistograms()</h2>
+<a id="a69d18fc5665053eeb8bf7f19f0451fa8" name="a69d18fc5665053eeb8bf7f19f0451fa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69d18fc5665053eeb8bf7f19f0451fa8">&#9670;&#160;</a></span>calculateHistograms()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -172,7 +179,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">virtual <a class="el" href="structinviwo_1_1HistogramCache_1_1Result.html">HistogramCache::Result</a> <a class="el" href="structinviwo_1_1TFData_1_1Implementation.html">inviwo::TFData::Implementation</a>&lt; T &gt;::calculateHistograms </td>
           <td>(</td>
-          <td class="paramtype">const std::function&lt; void(const std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt; &amp;)&gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>whenDone</em></span></td><td>)</td>
+          <td class="paramtype">const std::function&lt; HistogramCache::Callback &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>whenDone</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>

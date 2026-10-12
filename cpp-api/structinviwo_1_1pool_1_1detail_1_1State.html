@@ -117,15 +117,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8ad19c522cb930ce3e54e95770c257cd" id="r_a8ad19c522cb930ce3e54e95770c257cd"><td class="memItemLeft" align="right" valign="top"><a id="a8ad19c522cb930ce3e54e95770c257cd" name="a8ad19c522cb930ce3e54e95770c257cd"></a>
 <a class="el" href="classinviwo_1_1pool_1_1Progress.html">Progress</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getProgress</b> (size_t id)</td></tr>
 <tr class="separator:a8ad19c522cb930ce3e54e95770c257cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae91300f77a11940854d64403278d7969" id="r_ae91300f77a11940854d64403278d7969"><td class="memItemLeft" align="right" valign="top"><a id="ae91300f77a11940854d64403278d7969" name="ae91300f77a11940854d64403278d7969"></a>
-<a class="el" href="classinviwo_1_1pool_1_1Stop.html">Stop</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getStop</b> ()</td></tr>
-<tr class="separator:ae91300f77a11940854d64403278d7969"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75180710b604123d8e83e61c3e73f87e" id="r_a75180710b604123d8e83e61c3e73f87e"><td class="memItemLeft" align="right" valign="top"><a id="a75180710b604123d8e83e61c3e73f87e" name="a75180710b604123d8e83e61c3e73f87e"></a>
+std::stop_token&#160;</td><td class="memItemRight" valign="bottom"><b>getStop</b> () const</td></tr>
+<tr class="separator:a75180710b604123d8e83e61c3e73f87e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c3884ed03a7ec359ffab7aa2f70ccdb" id="r_a4c3884ed03a7ec359ffab7aa2f70ccdb"><td class="memItemLeft" align="right" valign="top"><a id="a4c3884ed03a7ec359ffab7aa2f70ccdb" name="a4c3884ed03a7ec359ffab7aa2f70ccdb"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setProgress</b> (size_t id, double progress)</td></tr>
 <tr class="separator:a4c3884ed03a7ec359ffab7aa2f70ccdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a313133215a31260ffb43b841c12ebe66" id="r_a313133215a31260ffb43b841c12ebe66"><td class="memItemLeft" align="right" valign="top"><a id="a313133215a31260ffb43b841c12ebe66" name="a313133215a31260ffb43b841c12ebe66"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>State</b> (std::weak_ptr&lt; <a class="el" href="classinviwo_1_1PoolProcessor.html">PoolProcessor</a> &gt; processor, size_t count)</td></tr>
 <tr class="separator:a313133215a31260ffb43b841c12ebe66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30a9b77b82925b372c285f437f4e9b7f" id="r_a30a9b77b82925b372c285f437f4e9b7f"><td class="memItemLeft" align="right" valign="top"><a id="a30a9b77b82925b372c285f437f4e9b7f" name="a30a9b77b82925b372c285f437f4e9b7f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>stopped</b> () const</td></tr>
+<tr class="separator:a30a9b77b82925b372c285f437f4e9b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -147,9 +150,9 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>progressMutex</
 <tr class="memitem:a4a24cfeec2b3a9484e0a7ebeb2b046b7" id="r_a4a24cfeec2b3a9484e0a7ebeb2b046b7"><td class="memItemLeft" align="right" valign="top"><a id="a4a24cfeec2b3a9484e0a7ebeb2b046b7" name="a4a24cfeec2b3a9484e0a7ebeb2b046b7"></a>
 std::future&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>progressUpdate</b></td></tr>
 <tr class="separator:a4a24cfeec2b3a9484e0a7ebeb2b046b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a440ba1de25330d259bc6199571e741f1" id="r_a440ba1de25330d259bc6199571e741f1"><td class="memItemLeft" align="right" valign="top"><a id="a440ba1de25330d259bc6199571e741f1" name="a440ba1de25330d259bc6199571e741f1"></a>
-std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>stop</b></td></tr>
-<tr class="separator:a440ba1de25330d259bc6199571e741f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab6a0f7d2d61d3fd68f46a1f8d1528b6" id="r_aab6a0f7d2d61d3fd68f46a1f8d1528b6"><td class="memItemLeft" align="right" valign="top"><a id="aab6a0f7d2d61d3fd68f46a1f8d1528b6" name="aab6a0f7d2d61d3fd68f46a1f8d1528b6"></a>
+std::stop_source&#160;</td><td class="memItemRight" valign="bottom"><b>stopSource</b></td></tr>
+<tr class="separator:aab6a0f7d2d61d3fd68f46a1f8d1528b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>include/inviwo/core/processors/<b>poolprocessor.h</b></li>

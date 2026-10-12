@@ -139,17 +139,20 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>Bases</b></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1f3cf2c69f60cc41d07733d155e38090" id="r_a1f3cf2c69f60cc41d07733d155e38090"><td class="memItemLeft" align="right" valign="top"><a id="a1f3cf2c69f60cc41d07733d155e38090" name="a1f3cf2c69f60cc41d07733d155e38090"></a>
-<a class="el" href="structinviwo_1_1HistogramCache_1_1Result.html">HistogramCache::Result</a>&#160;</td><td class="memItemRight" valign="bottom"><b>calculateHistograms</b> (const std::function&lt; void(const std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt; &amp;)&gt; &amp;whenDone) const</td></tr>
-<tr class="separator:a1f3cf2c69f60cc41d07733d155e38090"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9902a2cc650e501b3bb9689c70f2a96a" id="r_a9902a2cc650e501b3bb9689c70f2a96a"><td class="memItemLeft" align="right" valign="top"><a id="a9902a2cc650e501b3bb9689c70f2a96a" name="a9902a2cc650e501b3bb9689c70f2a96a"></a>
+std::shared_ptr&lt; const std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>calculateHistograms</b> () const</td></tr>
+<tr class="separator:a9902a2cc650e501b3bb9689c70f2a96a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14f3d9e9d60be6c221916fd0540fcacf" id="r_a14f3d9e9d60be6c221916fd0540fcacf"><td class="memItemLeft" align="right" valign="top"><a id="a14f3d9e9d60be6c221916fd0540fcacf" name="a14f3d9e9d60be6c221916fd0540fcacf"></a>
+<a class="el" href="structinviwo_1_1HistogramCache_1_1Result.html">HistogramCache::Result</a>&#160;</td><td class="memItemRight" valign="bottom"><b>calculateHistograms</b> (const std::function&lt; HistogramCache::Callback &gt; &amp;whenDone) const</td></tr>
+<tr class="separator:a14f3d9e9d60be6c221916fd0540fcacf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1364243488c4fef518482422ea58036d" id="r_a1364243488c4fef518482422ea58036d"><td class="memItemLeft" align="right" valign="top"><a id="a1364243488c4fef518482422ea58036d" name="a1364243488c4fef518482422ea58036d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clearHistograms</b> ()</td></tr>
+<tr class="separator:a1364243488c4fef518482422ea58036d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b34b060b1460e602286850a53b72da2" id="r_a5b34b060b1460e602286850a53b72da2"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b34b060b1460e602286850a53b72da2">clone</a> () const override</td></tr>
 <tr class="separator:a5b34b060b1460e602286850a53b72da2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae89d24eaa2fe90a652cace6e35a948e7" id="r_ae89d24eaa2fe90a652cace6e35a948e7"><td class="memItemLeft" align="right" valign="top"><a id="ae89d24eaa2fe90a652cace6e35a948e7" name="ae89d24eaa2fe90a652cace6e35a948e7"></a>
 <a class="el" href="structinviwo_1_1LayerConfig.html">LayerConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><b>config</b> () const</td></tr>
 <tr class="separator:ae89d24eaa2fe90a652cace6e35a948e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd276a28bddf9fbf2588af1dfb7be02d" id="r_afd276a28bddf9fbf2588af1dfb7be02d"><td class="memItemLeft" align="right" valign="top"><a id="afd276a28bddf9fbf2588af1dfb7be02d" name="afd276a28bddf9fbf2588af1dfb7be02d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>discardHistograms</b> ()</td></tr>
-<tr class="separator:afd276a28bddf9fbf2588af1dfb7be02d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64ab7ab95627b197b0f0acbc69992c65" id="r_a64ab7ab95627b197b0f0acbc69992c65"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; std::vector&lt; unsigned char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a64ab7ab95627b197b0f0acbc69992c65">getAsCodedBuffer</a> (const std::string &amp;fileExtension) const</td></tr>
 <tr class="memdesc:a64ab7ab95627b197b0f0acbc69992c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">encode the layer contents to a buffer considering the requested image format  <br /></td></tr>
 <tr class="separator:a64ab7ab95627b197b0f0acbc69992c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -160,6 +163,9 @@ const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a>
 <tr class="separator:ab75e2fa6890cdc04566f21682c9d7713"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a1adabe8cff49f9a6c44e87d1b1dff6" id="r_a7a1adabe8cff49f9a6c44e87d1b1dff6"><td class="memItemLeft" align="right" valign="top">virtual size2_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a1adabe8cff49f9a6c44e87d1b1dff6">getDimensions</a> () const override</td></tr>
 <tr class="separator:a7a1adabe8cff49f9a6c44e87d1b1dff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72b4f6e33cab933b96afc37528dc67e4" id="r_a72b4f6e33cab933b96afc37528dc67e4"><td class="memItemLeft" align="right" valign="top"><a id="a72b4f6e33cab933b96afc37528dc67e4" name="a72b4f6e33cab933b96afc37528dc67e4"></a>
+<a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getInfo</b> () const</td></tr>
+<tr class="separator:a72b4f6e33cab933b96afc37528dc67e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94fd28a9283bd30abdda418048fd2613" id="r_a94fd28a9283bd30abdda418048fd2613"><td class="memItemLeft" align="right" valign="top"><a id="a94fd28a9283bd30abdda418048fd2613" name="a94fd28a9283bd30abdda418048fd2613"></a>
 InterpolationType&#160;</td><td class="memItemRight" valign="bottom"><b>getInterpolation</b> () const</td></tr>
 <tr class="separator:a94fd28a9283bd30abdda418048fd2613"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -198,6 +204,9 @@ Wrapping2D&#160;</td><td class="memItemRight" valign="bottom"><b>getWrapping</b>
 <tr class="memitem:a78744336ed760ed0bc9d9b480f477a69" id="r_a78744336ed760ed0bc9d9b480f477a69"><td class="memItemLeft" align="right" valign="top"><a id="a78744336ed760ed0bc9d9b480f477a69" name="a78744336ed760ed0bc9d9b480f477a69"></a>
 <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;&amp;that)=default</td></tr>
 <tr class="separator:a78744336ed760ed0bc9d9b480f477a69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9a19b97642819081511e94f31a3cfda" id="r_ac9a19b97642819081511e94f31a3cfda"><td class="memItemLeft" align="right" valign="top"><a id="ac9a19b97642819081511e94f31a3cfda" name="ac9a19b97642819081511e94f31a3cfda"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>recalculateHistograms</b> ()</td></tr>
+<tr class="separator:ac9a19b97642819081511e94f31a3cfda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22cec9c5eda608715ab9f3247e33ecdc" id="r_a22cec9c5eda608715ab9f3247e33ecdc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a22cec9c5eda608715ab9f3247e33ecdc">setDataFormat</a> (const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format)</td></tr>
 <tr class="separator:a22cec9c5eda608715ab9f3247e33ecdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a391bf0198feabcfc3303d7a6ec6ce9" id="r_a5a391bf0198feabcfc3303d7a6ec6ce9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a391bf0198feabcfc3303d7a6ec6ce9">setDimensions</a> (const size2_t &amp;dim)</td></tr>
