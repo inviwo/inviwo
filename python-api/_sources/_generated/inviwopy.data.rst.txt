@@ -72,6 +72,21 @@ inviwopy.data
       ConnectivityType
       DataMapper
       DrawType
+      Histogram1D
+      Histogram1DFlatInportIteratorGenerator
+      Histogram1DFlatMultiInport
+      Histogram1DInport
+      Histogram1DMultiInport
+      Histogram1DOutport
+      Histogram1DRegularInportIteratorGenerator
+      Histogram2D
+      Histogram2DFlatInportIteratorGenerator
+      Histogram2DFlatMultiInport
+      Histogram2DInport
+      Histogram2DMultiInport
+      Histogram2DOutport
+      Histogram2DRegularInportIteratorGenerator
+      HistogramMode
       Image
       ImageChannel
       ImageInport
@@ -163,6 +178,7 @@ inviwopy.data
       SpatialEntity
       SpatialIdentity
       SphereMesh
+      Statistics
       StructuredGridEntity2D
       StructuredGridEntity3D
       SwizzleMask
