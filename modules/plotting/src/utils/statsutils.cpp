@@ -87,7 +87,7 @@ RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
         sumX += static_cast<double>(x);
         sumY += static_cast<double>(y);
         A[1][1] += static_cast<double>(x * x);
-        b.y += static_cast<double>(y * x);
+        b.y += static_cast<double>(y) * static_cast<double>(x);
     }
 
     b.x = sumY;
@@ -114,7 +114,7 @@ RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
         stdX += xm * xm;
         stdY += ym * ym;
 
-        res.r2 += x * y;
+        res.r2 += xm * ym;
     }
 
     stdX /= A[0][0];
