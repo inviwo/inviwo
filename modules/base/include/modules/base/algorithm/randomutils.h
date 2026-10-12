@@ -307,13 +307,13 @@ std::shared_ptr<Layer> perlinNoise(size2_t dims, float persistence, size_t start
     });
 
     auto data = layerRam->getView();
-    float repri = 1.0f / size;
+    float repri = 1.0f / static_cast<float>(size);
     util::IndexMapper2D index(dims);
     for (size_t y = 0; y < dims.y; y++) {
         for (size_t x = 0; x < dims.x; x++) {
             float v = 0;
-            float X = x * repri;
-            float Y = y * repri;
+            float X = static_cast<float>(x) * repri;
+            float Y = static_cast<float>(y) * repri;
             for (auto& sampler : samplers) {
                 v += sampler.sample(X, Y);
             }
@@ -342,7 +342,7 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     std::uniform_real_distribution<float> rand(0, 1);
 
     float minDist = static_cast<float>(dims.x);
-    minDist /= poissonDotsAlongX;  // min pixel distance between samples
+    minDist /= static_cast<float>(poissonDotsAlongX);  // min pixel distance between samples
     auto minDist2 = minDist * minDist;
     size2_t gridSize = size2_t(1) + size2_t(vec2(dims) * (1.0f / minDist));
 

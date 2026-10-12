@@ -211,13 +211,13 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
 
 std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
                                                       unsigned int segmentsPerLoop, vec4 color) {
-    auto spheremesh = std::make_shared<SimpleMesh>();
+    auto sphereMesh = std::make_shared<SimpleMesh>();
 
     numLoops = std::max(4u, numLoops);
     segmentsPerLoop = std::max(8u, segmentsPerLoop);
 
     // Set identity matrix
-    spheremesh->setModelMatrix(mat4(1.f));
+    sphereMesh->setModelMatrix(mat4(1.f));
 
     // Create Vertices
     auto normals = std::make_shared<Vec3BufferRAM>((numLoops + 1) * (segmentsPerLoop + 1));
@@ -227,29 +227,28 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
     for (unsigned int i = 0; i <= numLoops; ++i) {
         for (unsigned int j = 0; j <= segmentsPerLoop; ++j) {
             float theta =
-                (i * std::numbers::pi_v<float> /
-                 numLoops);  // + ((static_cast<float>(M_PI) * j) / (segmentsPerLoop * numLoops));
-
+                static_cast<float>(i) * std::numbers::pi_v<float> / static_cast<float>(numLoops);
             if (i == numLoops) theta = std::numbers::pi_v<float>;
 
-            float phi = j * 2 * std::numbers::pi_v<float> / segmentsPerLoop;
-            float sinTheta = std::sin(theta);
-            float sinPhi = std::sin(phi);
-            float cosTheta = std::cos(theta);
-            float cosPhi = std::cos(phi);
-            vec3 normal(cosPhi * sinTheta, sinPhi * sinTheta, cosTheta);
-            vec3 vert(normal * radius);
-            vec3 texCoord(static_cast<float>(j) / segmentsPerLoop, static_cast<float>(i) / numLoops,
-                          0.0f);
-            spheremesh->addVertex(vert, texCoord, color);
+            const float phi = static_cast<float>(j) * 2.0f * std::numbers::pi_v<float> /
+                              static_cast<float>(segmentsPerLoop);
+            const float sinTheta = std::sin(theta);
+            const float sinPhi = std::sin(phi);
+            const float cosTheta = std::cos(theta);
+            const float cosPhi = std::cos(phi);
+            const vec3 normal(cosPhi * sinTheta, sinPhi * sinTheta, cosTheta);
+            const vec3 vert(normal * radius);
+            const vec3 texCoord(static_cast<float>(j) / static_cast<float>(segmentsPerLoop),
+                                static_cast<float>(i) / static_cast<float>(numLoops), 0.0f);
+            sphereMesh->addVertex(vert, texCoord, color);
             normals->set(i * pointsPerLine + j, normal);
         }
     }
-    spheremesh->addBuffer(BufferType::NormalAttrib, normalBuffer);
+    sphereMesh->addBuffer(BufferType::NormalAttrib, normalBuffer);
 
     // Create Indices
     // compute indices
-    spheremesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
+    sphereMesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
     for (unsigned int y = 0; y < numLoops; ++y) {
         auto indices = std::make_shared<IndexBufferRAM>(pointsPerLine * 2);
         auto indexBuf = std::make_shared<IndexBuffer>(indices);
@@ -261,11 +260,11 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
             indices->set(count++, offset + x + pointsPerLine);
         }
 
-        spheremesh->Mesh::addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
+        sphereMesh->Mesh::addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
                                      indexBuf);
     }
 
-    return spheremesh;
+    return sphereMesh;
 }
 
 std::shared_ptr<SimpleMesh> SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 extent,

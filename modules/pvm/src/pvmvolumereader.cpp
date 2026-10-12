@@ -143,14 +143,14 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
     auto volRAM = createVolumeRAM(size3_t(udim), format, data.release());
     auto volume = std::make_shared<Volume>(volRAM);
 
-    mat3 basis(2.0f);
+    dmat3 basis(2.0);
     if (spacing != vec3(0.0f)) {
-        basis[0][0] = udim.x * spacing.x;
-        basis[1][1] = udim.y * spacing.y;
-        basis[2][2] = udim.z * spacing.z;
+        basis[0][0] = static_cast<double>(udim.x) * static_cast<double>(spacing.x);
+        basis[1][1] = static_cast<double>(udim.y) * static_cast<double>(spacing.y);
+        basis[2][2] = static_cast<double>(udim.z) * static_cast<double>(spacing.z);
     }
     volume->setBasis(basis);
-    volume->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
+    volume->setOffset(-0.5 * (basis[0] + basis[1] + basis[2]));
 
     // Additional information
     if (description) {

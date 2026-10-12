@@ -94,42 +94,37 @@ std::shared_ptr<BasicMesh> ellipse(const vec3& center, const vec3& majorAxis, co
                                    const vec4& color, const float& radius,
                                    const size_t& nsegments) {
     auto mesh = std::make_shared<BasicMesh>();
-    vec3 p, p1;
-    float angle = static_cast<float>(std::numbers::pi * 2.0 / nsegments);
-    float a = glm::length(majorAxis);
-    float b = glm::length(minorAxis);
-    float eradius, eradius1;
-    float x, y;
-    vec3 rot, rot1;
+    const float angle = static_cast<float>(std::numbers::pi * 2.0 / static_cast<double>(nsegments));
+    const float a = glm::length(majorAxis);
+    const float b = glm::length(minorAxis);
+
+    const auto pos = [&](std::uint32_t i) {
+        const auto x = glm::cos(static_cast<float>(i) * angle) * a;
+        const auto y = glm::sin(static_cast<float>(i) * angle) * b;
+        const auto eRadius =
+            glm::length(glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y);
+        const auto rot = glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y;
+        const auto p = center + eRadius * glm::normalize(rot);
+        return p;
+    };
 
     auto segments = static_cast<std::uint32_t>(nsegments);
     for (std::uint32_t i = 0; i < segments; ++i) {
-        x = glm::cos(i * angle) * a;
-        y = glm::sin(i * angle) * b;
-        eradius = glm::length(glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y);
-        rot = glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y;
+        const vec3 p = pos(i);
+        const vec3 p1 = pos((i + 1) % segments);
 
-        x = glm::cos(((i + 1) % segments) * angle) * a;
-        y = glm::sin(((i + 1) % segments) * angle) * b;
+        const vec3 dir = glm::normalize(p1 - p);
+        const vec3 odir = detail::orthvec(dir);
 
-        eradius1 = glm::length(glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y);
-        rot1 = glm::normalize(majorAxis) * x + glm::normalize(minorAxis) * y;
-
-        p = center + eradius * glm::normalize(rot);
-        p1 = center + eradius1 * glm::normalize(rot1);
-
-        vec3 dir = glm::normalize(p1 - p);
-        vec3 odir = detail::orthvec(dir);
-
-        float k;
-        vec3 o;
-        auto tube = std::make_unique<BasicMesh>();
-        auto inds = tube->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+        BasicMesh tube{};
+        auto inds = tube.addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
         for (std::uint32_t j = 0; j < segments; ++j) {
-            k = static_cast<float>(j);
-            o = glm::rotate(odir, static_cast<float>(j * angle), dir);
-            tube->addVertex(p + radius * o, o, vec3(k / segments, 0.0f, 0.0f), color);
-            tube->addVertex(p1 + radius * o, o, vec3(k / segments, 1.0f, 0.0f), color);
+            const float k = static_cast<float>(j);
+            const vec3 o = glm::rotate(odir, static_cast<float>(j) * angle, dir);
+            tube.addVertex(p + radius * o, o, vec3(k / static_cast<float>(segments), 0.0f, 0.0f),
+                           color);
+            tube.addVertex(p1 + radius * o, o, vec3(k / static_cast<float>(segments), 1.0f, 0.0f),
+                           color);
 
             inds->add(j * 2 + 1);
             inds->add(j * 2 + 0);
@@ -139,8 +134,7 @@ std::shared_ptr<BasicMesh> ellipse(const vec3& center, const vec3& majorAxis, co
             inds->add(((j + 1) * 2) % (2 * segments) + 0);
             inds->add(((j + 1) * 2) % (2 * segments) + 1);
         }
-
-        mesh->append(tube.get());
+        mesh->append(&tube);
     }
     return mesh;
 }

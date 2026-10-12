@@ -44,6 +44,7 @@
 #include <memory>
 #include <ostream>
 #include <unordered_set>
+#include <ranges>
 
 #include <glm/mat2x2.hpp>
 #include <glm/matrix.hpp>
@@ -70,17 +71,23 @@ RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
     double sumY = 0;
 
     // Iterate over containers in sync
-    for (auto&& i : util::zip(xvec, yvec)) {
-        auto x = get<0>(i);
-        auto y = get<1>(i);
-        if (std::isnan(static_cast<double>(x)) || std::isnan(static_cast<double>(y))) {
-            --A[0][0];
-            continue;
+    for (auto&& [x, y] : std::views::zip(xvec, yvec)) {
+        if constexpr (std::is_floating_point_v<decltype(x)>) {
+            if (std::isnan(x)) {
+                --A[0][0];
+                continue;
+            }
         }
-        sumX += x;
-        sumY += y;
-        A[1][1] += x * x;
-        b.y += y * x;
+        if constexpr (std::is_floating_point_v<decltype(y)>) {
+            if (std::isnan(y)) {
+                --A[0][0];
+                continue;
+            }
+        }
+        sumX += static_cast<double>(x);
+        sumY += static_cast<double>(y);
+        A[1][1] += static_cast<double>(x * x);
+        b.y += static_cast<double>(y * x);
     }
 
     b.x = sumY;
@@ -94,16 +101,18 @@ RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
     double stdX = 0;
     double stdY = 0;
 
-    for (auto&& i : util::zip(xvec, yvec)) {
-        if (std::isnan(static_cast<double>(get<0>(i))) ||
-            std::isnan(static_cast<double>(get<1>(i)))) {
-            continue;
+    for (auto&& [x, y] : std::views::zip(xvec, yvec)) {
+        if constexpr (std::is_floating_point_v<decltype(x)>) {
+            if (std::isnan(x)) continue;
         }
-        auto x = get<0>(i) - meanX;
-        auto y = get<1>(i) - meanY;
+        if constexpr (std::is_floating_point_v<decltype(y)>) {
+            if (std::isnan(y)) continue;
+        }
+        const auto xm = static_cast<double>(x) - meanX;
+        const auto ym = static_cast<double>(y) - meanY;
 
-        stdX += x * x;
-        stdY += y * y;
+        stdX += xm * xm;
+        stdY += ym * ym;
 
         res.r2 += x * y;
     }

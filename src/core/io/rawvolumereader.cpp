@@ -164,9 +164,9 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& p
         glm::mat3 basis(1.0f);
         glm::mat4 wtm(1.0f);
 
-        basis[0][0] = dimensions_.x * spacing_.x;
-        basis[1][1] = dimensions_.y * spacing_.y;
-        basis[2][2] = dimensions_.z * spacing_.z;
+        basis[0][0] = static_cast<float>(dimensions_.x) * spacing_.x;
+        basis[1][1] = static_cast<float>(dimensions_.y) * spacing_.y;
+        basis[2][2] = static_cast<float>(dimensions_.z) * spacing_.z;
 
         // Center the data around origo.
         glm::vec3 offset(-0.5f * (basis[0] + basis[1] + basis[2]));
