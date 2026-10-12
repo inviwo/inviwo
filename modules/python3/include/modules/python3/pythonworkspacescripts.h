@@ -33,7 +33,7 @@
 
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/io/serialization/deserializer.h>
-
+#include <inviwo/core/metadata/metadata.h>
 #include <map>
 #include <optional>
 
@@ -65,6 +65,12 @@ public:
     std::optional<std::string_view> getScript(std::string_view key);
     std::vector<std::string_view> getKeys() const;
 
+    template <typename T>
+    std::optional<T> getMetaData(std::string_view scriptKey, std::string_view metaDataKey) const;
+    template <typename T>
+    void setMetaData(std::string_view scriptKey, std::string_view metaDataKey, T val);
+    void removeMetaData(std::string_view scriptKey, std::string_view metaDataKey);
+
 private:
     void notifyObserversOnScriptAdded(std::string_view key, std::string_view script);
     void notifyObserversOnScriptRemoved(std::string_view key, std::string_view script);
@@ -73,10 +79,39 @@ private:
 
     WorkspaceManager& manager_;
     std::map<std::string, std::string, std::less<>> pythonScripts_;
+    std::map<std::pair<std::string, std::string>, std::unique_ptr<MetaData>, std::less<>>
+        scriptMetaData_;
 
     WorkspaceManager::SerializationHandle sHandle_;
     WorkspaceManager::DeserializationHandle dHandle_;
     WorkspaceManager::ClearHandle cHandle_;
 };
 
+template <typename T>
+std::optional<T> PythonWorkspaceScripts::getMetaData(std::string_view scriptKey,
+                                                     std::string_view metaDataKey) const {
+    if (auto it = scriptMetaData_.find(std::pair{scriptKey, metaDataKey});
+        it != scriptMetaData_.end()) {
+        if (auto* m = dynamic_cast<MetaDataType<T>*>(it->second.get())) {
+            return m->get();
+        }
+    }
+    return std::nullopt;
+}
+template <typename T>
+void PythonWorkspaceScripts::setMetaData(std::string_view scriptKey, std::string_view metaDataKey,
+                                         T val) {
+
+    if (auto it = scriptMetaData_.find(std::pair{scriptKey, metaDataKey});
+        it != scriptMetaData_.end()) {
+        if (auto* m = dynamic_cast<MetaDataType<T>*>(it->second.get())) {
+            m->set(val);
+        } else {
+            it->second = std::make_unique<MetaDataType<T>>(val);
+        }
+    } else {
+        scriptMetaData_.emplace(std::pair{scriptKey, metaDataKey},
+                                std::make_unique<MetaDataType<T>>(val));
+    }
+}
 }  // namespace inviwo

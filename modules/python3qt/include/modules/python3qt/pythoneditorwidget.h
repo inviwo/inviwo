@@ -59,8 +59,11 @@ class CodeEdit;
 class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
                                                     public PythonExecutionOutputObserver {
 public:
-    PythonEditorWidget(QWidget* parent, InviwoApplication* app,
-                       std::function<void(const std::string&)> onTextChange = nullptr);
+    PythonEditorWidget(
+        QWidget* parent, InviwoApplication* app,
+        std::function<void(PythonEditorWidget&, const std::string&)> onTextChange = nullptr,
+        std::function<void(UnorderedStringMap<QVariant>&)> stateLoader = nullptr,
+        std::function<void(const UnorderedStringMap<QVariant>&)> stateSaver = nullptr);
     virtual ~PythonEditorWidget();
 
     void appendToOutput(const std::string& msg, bool error = false);
@@ -87,6 +90,9 @@ public:
     const std::string& getName() const;
     void setSource(std::string_view source);
     const std::string& getSource() const;
+
+    virtual void saveState() override;
+    virtual void loadState() override;
 
 protected:
     virtual void getState(UnorderedStringMap<QVariant>& state) const override;
@@ -120,7 +126,10 @@ private:
     QAction* appendLog_;
     utilqt::EditorFileObserver fileObserver_;
 
-    std::function<void(const std::string&)> onTextChange_;
+    std::function<void(PythonEditorWidget&, const std::string&)> onTextChange_;
+
+    std::function<void(UnorderedStringMap<QVariant>&)> stateLoader_;
+    std::function<void(const UnorderedStringMap<QVariant>&)> stateSaver_;
 };
 
 }  // namespace inviwo

@@ -133,13 +133,21 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
 PythonEditorWidget* PythonMenu::newEditor() {
     auto editor = util::make_qptr<PythonEditorWidget>(win_, app_);
     editor->setAttribute(Qt::WA_DeleteOnClose);
-    editor->setVisible(true);
     utilqt::addDockWidgetTabify(editor.get(), win_, Qt::RightDockWidgetArea);
     editor->setSticky(false);
     editor->setFloating(true);
+    editor->setVisible(true);
     editor->loadState();
     editor->restore();
-    
+
+    for (const auto& e : editors_) {
+        if (e->pos() == editor->pos()) {
+            const auto newPos =
+                utilqt::movePointOntoDesktop(editor->pos() + QPoint{50, 50}, editor->size());
+            editor->move(newPos);
+        }
+    }
+
     editors_.push_back(std::move(editor));
 
     return editors_.back().get();

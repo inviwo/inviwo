@@ -90,8 +90,11 @@ namespace inviwo {
 const static std::string defaultSource =
     "#Inviwo Python script \nimport inviwopy\n\n\napp = inviwopy.app\nnetwork = app.network\n";
 
-PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app,
-                                       std::function<void(const std::string&)> onTextChange)
+PythonEditorWidget::PythonEditorWidget(
+    QWidget* parent, InviwoApplication* app,
+    std::function<void(PythonEditorWidget&, const std::string&)> onTextChange,
+    std::function<void(UnorderedStringMap<QVariant>&)> stateLoader,
+    std::function<void(const UnorderedStringMap<QVariant>&)> stateSaver)
     : InviwoDockWidget(tr("Python Editor[*]"), parent, "PythonEditorWidget")
     , infoTextColor_(153, 153, 153)
     , errorTextColor_(255, 107, 107)
@@ -100,7 +103,9 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app,
     , app_(app)
     , appendLog_(nullptr)
     , fileObserver_(this, "Python Editor")
-    , onTextChange_{onTextChange} {
+    , onTextChange_{onTextChange}
+    , stateLoader_{stateLoader}
+    , stateSaver_{stateSaver} {
     setWindowIcon(QIcon(":/svgicons/python.svg"));
 
     mainWindow_ = new QMainWindow();
@@ -440,7 +445,7 @@ void PythonEditorWidget::onTextChange() {
 
     setWindowModified(pythonCode_->document()->isModified());
 
-    if (onTextChange_) onTextChange_(source);
+    if (onTextChange_) onTextChange_(*this, source);
 }
 
 void PythonEditorWidget::setFileName(const std::filesystem::path& filename) {
@@ -474,6 +479,25 @@ void PythonEditorWidget::getState(UnorderedStringMap<QVariant>& state) const {
 void PythonEditorWidget::setState(const UnorderedStringMap<QVariant>& state) {
     InviwoDockWidget::setState(state);
     if (state.contains("appendLog")) appendLog_->setChecked(state.at("appendLog").toBool());
+}
+
+void PythonEditorWidget::saveState() {
+    UnorderedStringMap<QVariant> state;
+    getState(state);
+    if (stateSaver_) {
+        stateSaver_(state);
+    } else {
+        saveStateDefault(state);
+    }
+}
+void PythonEditorWidget::loadState() {
+    UnorderedStringMap<QVariant> state;
+    if (stateLoader_) {
+        stateLoader_(state);
+    } else {
+        loadStateDefault(state);
+    }
+    setState(state);
 }
 
 void PythonEditorWidget::setName(std::string_view name) {

@@ -65,6 +65,11 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent) : QDockWidget
                      &InviwoDockWidget::stickyFlagChanged);
     QObject::connect(this, &QDockWidget::allowedAreasChanged, dockWidgetTitleBar_,
                      &InviwoDockWidgetTitleBar::allowedAreasChanged);
+
+    QObject::connect(this, &InviwoDockWidget::topLevelChanged, this,
+                     &InviwoDockWidget::stateChanged);
+    QObject::connect(dockWidgetTitleBar_, &InviwoDockWidgetTitleBar::stickyFlagChanged, this,
+                     &InviwoDockWidget::stateChanged);
 }
 
 InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent, QString objName)
@@ -73,24 +78,6 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent, QString objNa
 }
 
 InviwoDockWidget::~InviwoDockWidget() = default;
-
-void InviwoDockWidget::showEvent(QShowEvent* showEvent) {
-    raise();
-    QDockWidget::showEvent(showEvent);
-    // Workaround: set focus for floating dock widget
-    if (isFloating()) {
-        activateWindow();
-    }
-}
-
-void InviwoDockWidget::keyPressEvent(QKeyEvent* keyEvent) {
-    if (keyEvent->key() == Qt::Key_Escape && isFloating()) {
-        hide();
-    } else {
-        keyEvent->ignore();
-    }
-    QDockWidget::keyPressEvent(keyEvent);
-}
 
 void InviwoDockWidget::setSticky(bool sticky) { dockWidgetTitleBar_->setSticky(sticky); }
 
@@ -188,6 +175,37 @@ void InviwoDockWidget::saveStateDefault(const UnorderedStringMap<QVariant>& stat
     settings.endGroup();
 }
 
+void InviwoDockWidget::keyPressEvent(QKeyEvent* keyEvent) {
+    if (keyEvent->key() == Qt::Key_Escape && isFloating()) {
+        hide();
+    } else {
+        keyEvent->ignore();
+    }
+    QDockWidget::keyPressEvent(keyEvent);
+}
+
+void InviwoDockWidget::showEvent(QShowEvent* event) {
+    raise();
+    QDockWidget::showEvent(event);
+    // Workaround: set focus for floating dock widget
+    if (isFloating()) {
+        activateWindow();
+    }
+    stateChanged();
+}
+
+void InviwoDockWidget::hideEvent(QHideEvent* event) {
+    QDockWidget::hideEvent(event);
+    stateChanged();
+}
+void InviwoDockWidget::resizeEvent(QResizeEvent* event) {
+    QDockWidget::resizeEvent(event);
+    stateChanged();
+}
+void InviwoDockWidget::moveEvent(QMoveEvent* event) {
+    QDockWidget::moveEvent(event);
+    stateChanged();
+}
 void InviwoDockWidget::closeEvent(QCloseEvent* event) {
     saveState();
     QDockWidget::closeEvent(event);
