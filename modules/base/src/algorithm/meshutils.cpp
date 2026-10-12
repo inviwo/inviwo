@@ -94,7 +94,7 @@ std::shared_ptr<BasicMesh> ellipse(const vec3& center, const vec3& majorAxis, co
                                    const vec4& color, const float& radius,
                                    const size_t& nsegments) {
     auto mesh = std::make_shared<BasicMesh>();
-    const float angle = static_cast<float>(std::numbers::pi * 2.0 / static_cast<double>(nsegments));
+    const auto angle = static_cast<float>(std::numbers::pi * 2.0 / static_cast<double>(nsegments));
     const float a = glm::length(majorAxis);
     const float b = glm::length(minorAxis);
 
@@ -119,7 +119,7 @@ std::shared_ptr<BasicMesh> ellipse(const vec3& center, const vec3& majorAxis, co
         BasicMesh tube{};
         auto inds = tube.addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
         for (std::uint32_t j = 0; j < segments; ++j) {
-            const float k = static_cast<float>(j);
+            const auto k = static_cast<float>(j);
             const vec3 o = glm::rotate(odir, static_cast<float>(j) * angle, dir);
             tube.addVertex(p + radius * o, o, vec3(k / static_cast<float>(segments), 0.0f, 0.0f),
                            color);

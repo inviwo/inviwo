@@ -307,13 +307,13 @@ std::shared_ptr<Layer> perlinNoise(size2_t dims, float persistence, size_t start
     });
 
     auto data = layerRam->getView();
-    float repri = 1.0f / static_cast<float>(size);
+    const auto repri = 1.0f / static_cast<float>(size);
     util::IndexMapper2D index(dims);
     for (size_t y = 0; y < dims.y; y++) {
         for (size_t x = 0; x < dims.x; x++) {
-            float v = 0;
-            float X = static_cast<float>(x) * repri;
-            float Y = static_cast<float>(y) * repri;
+            float v = 0.0f;
+            const auto X = static_cast<float>(x) * repri;
+            const auto Y = static_cast<float>(y) * repri;
             for (auto& sampler : samplers) {
                 v += sampler.sample(X, Y);
             }

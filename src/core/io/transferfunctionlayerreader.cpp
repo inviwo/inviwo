@@ -73,6 +73,7 @@ std::shared_ptr<TransferFunction> TransferFunctionLayerReader::readData(
 
         const auto points = [&]() {
             std::vector<TFPrimitiveData> tmp;
+            tmp.reserve(size);
             for (size_t i = 0; i < size; ++i) {
                 tmp.push_back({static_cast<double>(i) / static_cast<double>(size - 1),
                                util::glm_convert_normalized<vec4>(data[i])});
