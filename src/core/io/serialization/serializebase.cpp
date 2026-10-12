@@ -31,6 +31,7 @@
 #include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
 #include <inviwo/core/io/serialization/serializeconstants.h>
+#include <inviwo/core/io/serialization/nodedebugger.h>
 #include <inviwo/core/util/charconv.h>
 
 #include <fmt/format.h>
@@ -115,23 +116,23 @@ NodeSwitch::~NodeSwitch() {
 
 NodeSwitch::operator bool() const { return serializer_->rootElement_ != nullptr; }
 
+namespace serialization {
+
 // NOLINTBEGIN(google-runtime-int)
-void detail::fromStr(std::string_view value, double& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, float& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, char& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, signed char& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, unsigned char& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, short& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, unsigned short& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, int& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, unsigned int& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, long& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, unsigned long& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, long long& dest) { util::fromStr(value, dest); }
-void detail::fromStr(std::string_view value, unsigned long long& dest) {
-    util::fromStr(value, dest);
-}
-void detail::fromStr(std::string_view value, bool& dest) {
+void fromStr(std::string_view value, double& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, float& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, char& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, signed char& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, unsigned char& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, short& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, unsigned short& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, int& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, unsigned int& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, long& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, unsigned long& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, long long& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, unsigned long long& dest) { util::fromStr(value, dest); }
+void fromStr(std::string_view value, bool& dest) {
     static constexpr std::string_view trueVal = "1";
     static constexpr std::string_view falseVal = "0";
     if (value == trueVal) {
@@ -143,53 +144,89 @@ void detail::fromStr(std::string_view value, bool& dest) {
     }
 }
 
-void detail::formatTo(double value, std::pmr::string& out) {
+void formatTo(double value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(float value, std::pmr::string& out) {
+void formatTo(float value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(char value, std::pmr::string& out) {
+void formatTo(char value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(signed char value, std::pmr::string& out) {
+void formatTo(signed char value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(unsigned char value, std::pmr::string& out) {
+void formatTo(unsigned char value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(short value, std::pmr::string& out) {
+void formatTo(short value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(unsigned short value, std::pmr::string& out) {
+void formatTo(unsigned short value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(int value, std::pmr::string& out) {
+void formatTo(int value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(unsigned int value, std::pmr::string& out) {
+void formatTo(unsigned int value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(long value, std::pmr::string& out) {
+void formatTo(long value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(unsigned long value, std::pmr::string& out) {
+void formatTo(unsigned long value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(long long value, std::pmr::string& out) {
+void formatTo(long long value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
-void detail::formatTo(unsigned long long value, std::pmr::string& out) {
-    fmt::format_to(std::back_inserter(out), "{}", value);
-}
-
-void detail::formatTo(const std::filesystem::path& value, std::pmr::string& out) {
+void formatTo(unsigned long long value, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{}", value);
 }
 
-void detail::formatToBinary(unsigned long long value, size_t bits, std::pmr::string& out) {
+void formatTo(const std::filesystem::path& value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+
+void formatToBinary(unsigned long long value, size_t bits, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{:0{}b}", value, bits);
 }
 // NOLINTEND(google-runtime-int)
+
+std::pmr::string& addAttribute(TiXmlElement* node, std::string_view key) {
+    return node->AddAttribute(key);
+}
+
+std::optional<std::string_view> attribute(const TiXmlElement* node, std::string_view key) {
+    return node->Attribute(key);
+}
+
+std::string_view attributeOrThrow(const TiXmlElement* node, std::string_view key) {
+    const auto attr = serialization::attribute(node, key);
+    if (!attr) {
+        throw SerializationException{SourceContext{}, serialization::getStack(node), "Missing '{}'",
+                                     key};
+    }
+    return *attr;
+}
+
+std::string_view getAttribute(const TiXmlElement& node, std::string_view key) {
+    static const std::string empty;
+
+    if (auto str = node.Attribute(key)) {
+        return *str;
+    } else {
+        return empty;
+    }
+}
+
+TiXmlElement* firstChild(TiXmlElement* parent, std::string_view key) {
+    return parent->FirstChildElement(key);
+}
+TiXmlElement* nextChild(TiXmlElement* child, std::string_view key) {
+    return child->NextSiblingElement(key);
+}
+
+}  // namespace serialization
 
 }  // namespace inviwo

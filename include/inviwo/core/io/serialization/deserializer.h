@@ -65,25 +65,29 @@ class InviwoApplication;
 
 namespace detail {
 template <typename T>
-concept is_transparent = requires { typename T::key_compare::is_transparent; } || requires {
-    typename T::hasher::is_transparent;
-    typename T::key_equal::is_transparent;
-};
+concept is_transparent = requires { typename T::key_compare::is_transparent; } ||
+                         requires {
+                             typename T::hasher::is_transparent;
+                             typename T::key_equal::is_transparent;
+                         };
 
 template <typename T>
 concept derefClassIdentifiable = requires(const T& t) {
-    { t->getClassIdentifier() } -> std::equality_comparable_with<std::string_view>;
-};
+                                     {
+                                         t->getClassIdentifier()
+                                         } -> std::equality_comparable_with<std::string_view>;
+                                 };
 
 template <typename T>
 concept is_shared_ptr = requires { typename T::element_type; } &&
                         std::same_as<T, std::shared_ptr<typename T::element_type>>;
 
 template <typename T>
-concept is_unique_ptr = requires {
-    typename T::element_type;
-    typename T::deleter_type;
-} && std::same_as<T, std::unique_ptr<typename T::element_type, typename T::deleter_type>>;
+concept is_unique_ptr =
+    requires {
+        typename T::element_type;
+        typename T::deleter_type;
+    } && std::same_as<T, std::unique_ptr<typename T::element_type, typename T::deleter_type>>;
 
 }  // namespace detail
 
@@ -141,31 +145,31 @@ struct MapFunctions {
 
 template <typename T, typename Functions>
 concept IdentifiableFunctions = requires(T& t, Functions f, size_t i, std::string_view s) {
-    { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
-    { std::invoke(f.makeNew) } -> std::same_as<T>;
-    { std::invoke(f.shouldMakeNew, s, i) } -> std::same_as<bool>;
-    { std::invoke(f.canRecreate, s, i) } -> std::same_as<bool>;
-    { std::invoke(f.onNew, t, i) };
-    { std::invoke(f.onRemove, s) };
-    { std::invoke(f.onMove, t, i) };
-};
+                                    { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
+                                    { std::invoke(f.makeNew) } -> std::same_as<T>;
+                                    { std::invoke(f.shouldMakeNew, s, i) } -> std::same_as<bool>;
+                                    { std::invoke(f.canRecreate, s, i) } -> std::same_as<bool>;
+                                    { std::invoke(f.onNew, t, i) };
+                                    { std::invoke(f.onRemove, s) };
+                                    { std::invoke(f.onMove, t, i) };
+                                };
 
 template <typename T, typename Functions>
 concept IndexableFunctions = requires(T& t, Functions f, size_t i, std::string_view s) {
-    { std::invoke(f.makeNew) } -> std::same_as<T>;
-    { std::invoke(f.onNew, t, i) };
-    { std::invoke(f.onRemove, t, i) };
-};
+                                 { std::invoke(f.makeNew) } -> std::same_as<T>;
+                                 { std::invoke(f.onNew, t, i) };
+                                 { std::invoke(f.onRemove, t, i) };
+                             };
 
 template <typename K, typename T, typename Functions>
 concept MappableFunctions = requires(const K& k, T& t, Functions f, size_t i, std::string_view s) {
-    { std::invoke(f.idTransform, s) } -> std::same_as<K>;
-    { std::invoke(f.makeNew) } -> std::same_as<T>;
-    { std::invoke(f.shouldMakeNew, k) } -> std::same_as<bool>;
-    { std::invoke(f.canRecreate, k) } -> std::same_as<bool>;
-    { std::invoke(f.onNew, k, t) };
-    { std::invoke(f.onRemove, k) };
-};
+                                { std::invoke(f.idTransform, s) } -> std::same_as<K>;
+                                { std::invoke(f.makeNew) } -> std::same_as<T>;
+                                { std::invoke(f.shouldMakeNew, k) } -> std::same_as<bool>;
+                                { std::invoke(f.canRecreate, k) } -> std::same_as<bool>;
+                                { std::invoke(f.onNew, k, t) };
+                                { std::invoke(f.onRemove, k) };
+                            };
 
 }  // namespace deserializer
 
@@ -303,13 +307,11 @@ public:
      */
     template <typename K, typename V, typename C, typename A>
     void deserialize(std::string_view key, std::map<K, V, C, A>& sMap,
-                     std::string_view itemKey = "item",
-                     std::string_view comparisonAttribute = SerializeConstants::KeyAttribute);
+                     std::string_view itemKey = "item");
 
     template <typename K, typename V, typename H, typename C, typename A>
     void deserialize(std::string_view key, std::unordered_map<K, V, H, C, A>& map,
-                     std::string_view itemKey = "item",
-                     std::string_view comparisonAttribute = SerializeConstants::KeyAttribute);
+                     std::string_view itemKey = "item");
 
     /**
      * For more advanced deserialization. Useful when one has to call observer notifications.
@@ -405,8 +407,8 @@ public:
     template <class T>
     void deserialize(std::string_view key, T& sObj)
         requires requires(T& t, Deserializer& d) {
-            { t.deserialize(d) };
-        };
+                     { t.deserialize(d) };
+                 };
 
     std::optional<std::string_view> attribute(std::string_view key) const;
     std::optional<std::string_view> attribute(std::string_view child, std::string_view key) const;
@@ -468,7 +470,7 @@ private:
     int version_ = 0;
 };
 
-namespace detail {
+namespace serialization {
 
 template <typename T>
 using isDeserializable = decltype(std::declval<Deserializer>().deserialize(
@@ -483,36 +485,16 @@ constexpr bool canDeserialize() {
            util::is_detected_v<isDeserializable, T> || std::is_enum_v<T>;
 }
 
-IVW_CORE_API std::string_view getAttribute(const TiXmlElement& node, std::string_view key);
-IVW_CORE_API std::optional<std::string_view> attribute(const TiXmlElement* node,
-                                                       std::string_view key);
-
 template <typename T>
 void getNodeAttribute(const TiXmlElement* node, std::string_view key, T& dest) {
     if (const auto str = attribute(node, key)) {
-        detail::fromStr(*str, dest);
+        serialization::fromStr(*str, dest);
     }
 }
 template <typename T>
 void getNodeAttribute(const TiXmlElement& node, std::string_view key, T& dest) {
     if (const auto str = attribute(&node, key)) {
-        detail::fromStr(*str, dest);
-    }
-}
-
-template <typename K, bool Transparent>
-auto getChildKey(const TiXmlElement& child, std::string_view comparisonAttribute) {
-    const auto childKeyStr = detail::attribute(&child, comparisonAttribute);
-    if (!childKeyStr) {
-        throw SerializationException(SourceContext{}, deserializer::getStack(&child),
-                                     "Missing childKeyStr");
-    }
-    if constexpr (std::is_same_v<K, std::string> && Transparent) {
-        return *childKeyStr;
-    } else {
-        K childKey;
-        detail::fromStr(*childKeyStr, childKey);
-        return childKey;
+        serialization::fromStr(*str, dest);
     }
 }
 
@@ -530,10 +512,7 @@ auto try_emplace(Map& map, K&& key, Args&&... args) {
     return std::make_pair(it, inserted);
 }
 
-IVW_CORE_API TiXmlElement* firstChild(TiXmlElement* parent, std::string_view key);
-IVW_CORE_API TiXmlElement* nextChild(TiXmlElement* child, std::string_view key);
-
-}  // namespace detail
+}  // namespace serialization
 
 template <typename T>
 class DeserializationErrorHandle {
@@ -568,8 +547,8 @@ T& DeserializationErrorHandle<T>::getHandler() {
 template <typename F>
 size_t Deserializer::forEachChild(std::string_view key, const F& fun, bool retrieveChild) {
     size_t index = 0;
-    for (TiXmlElement* child = detail::firstChild(rootElement_, key); child;
-         child = detail::nextChild(child, key)) {
+    for (TiXmlElement* child = serialization::firstChild(rootElement_, key); child;
+         child = serialization::nextChild(child, key)) {
 
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
@@ -590,13 +569,14 @@ template <typename T,
                                       util::is_string<T>::value,
                                   int>::type>
 void Deserializer::deserialize(std::string_view key, T& data, const SerializationTarget& target) {
-    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
+    static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
 
     try {
         if (target == SerializationTarget::Attribute) {
-            detail::getNodeAttribute(rootElement_, key, data);
+            serialization::getNodeAttribute(rootElement_, key, data);
         } else if (const NodeSwitch ns{*this, key}) {
-            detail::getNodeAttribute(rootElement_, SerializeConstants::ContentAttribute, data);
+            serialization::getNodeAttribute(rootElement_, SerializeConstants::ContentAttribute,
+                                            data);
         }
     } catch (...) {
         handleError();
@@ -633,8 +613,8 @@ void Deserializer::deserialize(std::string_view key, Vec& data) {
     if (const NodeSwitch ns{*this, key}) {
         for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
             try {
-                detail::getNodeAttribute(rootElement_, SerializeConstants::VectorAttributes[i],
-                                         data[i]);
+                serialization::getNodeAttribute(rootElement_,
+                                                SerializeConstants::VectorAttributes[i], data[i]);
             } catch (...) {
                 handleError();
             }
@@ -668,7 +648,7 @@ void Deserializer::deserialize(std::string_view key, std::bitset<N>& bits) {
 template <typename T, typename A>
 void Deserializer::deserialize(std::string_view key, std::vector<T, A>& vector,
                                std::string_view itemKey) {
-    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
+    static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
 
     const NodeSwitch vectorNodeSwitch{*this, key};
     if (!vectorNodeSwitch) return;
@@ -693,7 +673,7 @@ template <std::regular T, typename A>
 Deserializer::Result Deserializer::deserializeTrackChanges(std::string_view key,
                                                            std::vector<T, A>& vector,
                                                            std::string_view itemKey) {
-    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
+    static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
 
     using enum Result;
 
@@ -784,7 +764,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
     foundIdentifiers.reserve(container.size());
 
     forEachChild(itemKey, [&](TiXmlElement& child, size_t index) {
-        const std::string_view identifier = detail::getAttribute(child, "identifier");
+        const std::string_view identifier = serialization::getAttribute(child, "identifier");
         std::erase(toRemove, identifier);
         foundIdentifiers.emplace_back(identifier);
 
@@ -872,7 +852,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
     };
 
     forEachChild(itemKey, [&](TiXmlElement& child, size_t) {
-        const std::string_view identifier = detail::getAttribute(child, f.attributeKey);
+        const std::string_view identifier = serialization::getAttribute(child, f.attributeKey);
         const K key = f.idTransform(identifier);
         std::erase(toRemove, key);
 
@@ -895,7 +875,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
 template <typename T, size_t N>
 void Deserializer::deserialize(std::string_view key, std::array<T, N>& cont,
                                std::string_view itemKey) {
-    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
+    static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
 
     const NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
@@ -904,7 +884,7 @@ void Deserializer::deserialize(std::string_view key, std::array<T, N>& cont,
         if (index < cont.size()) {
             deserialize(itemKey, cont[index]);
         } else {
-            throw SerializationException{SourceContext{}, deserializer::getStack(&child),
+            throw SerializationException{SourceContext{}, serialization::getStack(&child),
                                          "To many elements found for std::array"};
         }
     });
@@ -912,20 +892,18 @@ void Deserializer::deserialize(std::string_view key, std::array<T, N>& cont,
 
 template <typename K, typename V, typename C, typename A>
 void Deserializer::deserialize(std::string_view key, std::map<K, V, C, A>& map,
-                               std::string_view itemKey, std::string_view comparisonAttribute) {
-    static_assert(isPrimitiveType<K>(), "Error: map key has to be a primitive type");
-    static_assert(detail::canDeserialize<V>(), "Type is not serializable");
-
-    static_assert(!std::is_same_v<K, std::string> || detail::is_transparent<std::map<K, V, C, A>>);
+                               std::string_view itemKey) {
+    static_assert(SerializationMapTraits<K>::validKeyType);
+    static_assert(serialization::canDeserialize<V>(), "Type is not serializable");
+    static constexpr auto Transparent = detail::is_transparent<std::map<K, V, C, A>>;
+    static_assert(!std::is_same_v<K, std::string> || Transparent);
 
     const NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
 
     forEachChild(itemKey, [&](TiXmlElement& child, size_t) {
-        const auto childKey = detail::getChildKey<K, detail::is_transparent<std::map<K, V, C, A>>>(
-            child, comparisonAttribute);
-
-        auto [it, inserted] = detail::try_emplace(map, childKey);
+        const auto childKey = SerializationMapTraits<K>::attrsToKey(child);
+        auto [it, inserted] = serialization::try_emplace(map, childKey);
         try {
             deserialize(itemKey, it->second);
         } catch (...) {
@@ -937,22 +915,18 @@ void Deserializer::deserialize(std::string_view key, std::map<K, V, C, A>& map,
 
 template <typename K, typename V, typename H, typename C, typename A>
 void Deserializer::deserialize(std::string_view key, std::unordered_map<K, V, H, C, A>& map,
-                               std::string_view itemKey, std::string_view comparisonAttribute) {
-    static_assert(isPrimitiveType<K>(), "Error: map key has to be a primitive type");
-    static_assert(detail::canDeserialize<V>(), "Type is not serializable");
-
-    static_assert(!std::is_same_v<K, std::string> ||
-                  detail::is_transparent<std::unordered_map<K, V, H, C, A>>);
+                               std::string_view itemKey) {
+    static_assert(SerializationMapTraits<K>::validKeyType);
+    static_assert(serialization::canDeserialize<V>(), "Type is not serializable");
+    static constexpr auto Transparent = detail::is_transparent<std::unordered_map<K, V, H, C, A>>;
+    static_assert(!std::is_same_v<K, std::string> || Transparent);
 
     const NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
 
     forEachChild(itemKey, [&](TiXmlElement& child, size_t) {
-        const auto childKey =
-            detail::getChildKey<K, detail::is_transparent<std::unordered_map<K, V, H, C, A>>>(
-                child, comparisonAttribute);
-
-        auto [it, inserted] = detail::try_emplace(map, childKey);
+        const auto childKey = SerializationMapTraits<K>::attrsToKey(child);
+        auto [it, inserted] = serialization::try_emplace(map, childKey);
         try {
             deserialize(itemKey, it->second);
         } catch (...) {
@@ -1023,7 +997,7 @@ void Deserializer::deserializeSmartPtr(std::string_view key, Ptr& data) {
 
     using T = std::remove_cvref_t<decltype(*data)>;
 
-    const auto typeAttr = detail::attribute(keyNode, SerializeConstants::TypeAttribute);
+    const auto typeAttr = serialization::attribute(keyNode, SerializeConstants::TypeAttribute);
 
     if constexpr (detail::derefClassIdentifiable<Ptr>) {
         if (data && typeAttr && *typeAttr != data->getClassIdentifier()) {
@@ -1042,29 +1016,29 @@ void Deserializer::deserializeSmartPtr(std::string_view key, Ptr& data) {
         try {
             data = getRegisteredType<T, Shared>(*typeAttr);
         } catch (const Exception& e) {
-            throw SerializationException{e.getContext(), deserializer::getStack(keyNode),
+            throw SerializationException{e.getContext(), serialization::getStack(keyNode),
                                          "Error trying to create {}. Reason:\n{}",
-                                         deserializer::getNode(keyNode), e.getFullMessage()};
+                                         serialization::getNode(keyNode), e.getFullMessage()};
         }
         if (!data) {
             throw SerializationException{
-                SourceContext{}, deserializer::getStack(keyNode),
+                SourceContext{}, serialization::getStack(keyNode),
                 "Could not create {}. Reason: \"{}\" Not found in factory.",
-                deserializer::getNode(keyNode), *typeAttr};
+                serialization::getNode(keyNode), *typeAttr};
         }
     } else if (!data) {
         try {
             data = getNonRegisteredType<T, Shared>();
         } catch (const Exception& e) {
-            throw SerializationException{e.getContext(), deserializer::getStack(keyNode),
+            throw SerializationException{e.getContext(), serialization::getStack(keyNode),
                                          "Error trying to create {}. Reason:\n{}",
-                                         deserializer::getNode(keyNode), e.getFullMessage()};
+                                         serialization::getNode(keyNode), e.getFullMessage()};
         }
         if (!data) {
             throw SerializationException{
-                SourceContext{}, deserializer::getStack(keyNode),
+                SourceContext{}, serialization::getStack(keyNode),
                 "Could not create {}. Reason: No default constructor found.",
-                deserializer::getNode(keyNode)};
+                serialization::getNode(keyNode)};
         }
     }
 
@@ -1086,19 +1060,19 @@ void Deserializer::deserializeNoRecreate(std::string_view key, T& data) {
 
 template <class T>
 void Deserializer::deserialize(std::string_view key, std::unique_ptr<T>& data) {
-    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
+    static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
     deserializeSmartPtr<false, true>(key, data);
 }
 
 template <class T>
 void Deserializer::deserialize(std::string_view key, std::shared_ptr<T>& data) {
-    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
+    static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
     deserializeSmartPtr<true, true>(key, data);
 }
 
 template <class T>
 void Deserializer::deserialize(std::string_view key, T*& data) {
-    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
+    static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
     if (data) {
         deserialize(key, *data);
     } else {
@@ -1110,7 +1084,7 @@ void Deserializer::deserialize(std::string_view key, T*& data) {
 
 template <class Base, class T>
 void Deserializer::deserializeAs(std::string_view key, T*& data) {
-    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
+    static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
 
     static_assert(std::is_base_of<Base, T>::value, "T should be derived from Base");
 
@@ -1122,7 +1096,7 @@ void Deserializer::deserializeAs(std::string_view key, T*& data) {
             data = typeptr;
         } else {
             delete ptr;
-            throw SerializationException(SourceContext{}, deserializer::getStack(rootElement_),
+            throw SerializationException(SourceContext{}, serialization::getStack(rootElement_),
                                          "Could not deserialize \"{}\" types does not match", key);
         }
     }
@@ -1131,7 +1105,7 @@ void Deserializer::deserializeAs(std::string_view key, T*& data) {
 template <class Base, class T>
 void Deserializer::deserializeAs(std::string_view key, std::unique_ptr<T>& data) {
     static_assert(std::is_base_of<Base, T>::value, "T should be derived from Base");
-    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
+    static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
 
     if (Base* ptr = data.get()) {
         deserialize(key, ptr);
@@ -1141,7 +1115,7 @@ void Deserializer::deserializeAs(std::string_view key, std::unique_ptr<T>& data)
             data.reset(typeptr);
         } else {
             delete ptr;
-            throw SerializationException(SourceContext{}, deserializer::getStack(rootElement_),
+            throw SerializationException(SourceContext{}, serialization::getStack(rootElement_),
                                          "Could not deserialize \"{}\" types does not match", key);
         }
     }
@@ -1150,8 +1124,8 @@ void Deserializer::deserializeAs(std::string_view key, std::unique_ptr<T>& data)
 template <typename T>
 void Deserializer::deserialize(std::string_view key, T& sObj)
     requires requires(T& t, Deserializer& d) {
-        { t.deserialize(d) };
-    }
+                 { t.deserialize(d) };
+             }
 {
     if (const NodeSwitch nodeSwitch{*this, key}) {
         sObj.deserialize(*this);

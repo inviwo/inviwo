@@ -50,7 +50,7 @@ Serializer::Serializer(const std::filesystem::path& fileName, std::string_view r
         doc_->LinkEndChild(decl);
         rootElement_ = alloc.new_object<TiXmlElement>(rootElement);
         auto& attr = rootElement_->AddAttribute(SerializeConstants::VersionAttribute);
-        detail::formatTo(version, attr);
+        serialization::formatTo(version, attr);
         doc_->LinkEndChild(rootElement_);
 
     } catch (const TiXmlError& e) {
@@ -92,10 +92,6 @@ NodeSwitch Serializer::switchToNewNode(std::string_view key) {
 }
 
 TiXmlElement* Serializer::getLastChild() const { return rootElement_->LastChild()->ToElement(); }
-
-std::pmr::string& Serializer::addAttribute(TiXmlElement* node, std::string_view key) {
-    return node->AddAttribute(key);
-}
 
 std::pmr::string& Serializer::addAttribute(std::string_view key) {
     return rootElement_->AddAttribute(key);

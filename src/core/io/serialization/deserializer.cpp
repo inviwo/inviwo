@@ -45,7 +45,7 @@ namespace {
 int getVersionAttribute(TiXmlElement* elem) {
     int version{};
     if (const auto ver = elem->Attribute(SerializeConstants::VersionAttribute)) {
-        detail::fromStr(*ver, version);
+        serialization::fromStr(*ver, version);
         return version;
     } else {
         throw AbortException("Missing version tag");
@@ -204,28 +204,14 @@ bool Deserializer::hasRegisteredType(std::string_view className) const {
     });
 }
 
-std::optional<std::string_view> detail::attribute(const TiXmlElement* node, std::string_view key) {
-    return node->Attribute(key);
-}
-
-std::string_view detail::getAttribute(const TiXmlElement& node, std::string_view key) {
-    static const std::string empty;
-
-    if (auto str = node.Attribute(key)) {
-        return *str;
-    } else {
-        return empty;
-    }
-}
-
 std::optional<std::string_view> Deserializer::attribute(std::string_view key) const {
-    return detail::attribute(rootElement_, key);
+    return serialization::attribute(rootElement_, key);
 }
 
 std::optional<std::string_view> Deserializer::attribute(std::string_view child,
                                                         std::string_view key) const {
     if (auto childNode = retrieveChild(child)) {
-        return detail::attribute(childNode, key);
+        return serialization::attribute(childNode, key);
     } else {
         return std::nullopt;
     }
@@ -233,13 +219,6 @@ std::optional<std::string_view> Deserializer::attribute(std::string_view child,
 
 bool Deserializer::hasElement(std::string_view key) const {
     return rootElement_->FirstChildElement(key) != nullptr;
-}
-
-TiXmlElement* detail::firstChild(TiXmlElement* parent, std::string_view key) {
-    return parent->FirstChildElement(key);
-}
-TiXmlElement* detail::nextChild(TiXmlElement* child, std::string_view key) {
-    return child->NextSiblingElement(key);
 }
 
 }  // namespace inviwo

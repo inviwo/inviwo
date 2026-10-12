@@ -68,7 +68,7 @@ void parseColorMapNode(TransferFunction& tf, TxElement* node) {
     const auto toDouble = [](std::optional<std::string_view> str) {
         double dest{};
         if (str) {
-            detail::fromStr(*str, dest);
+            serialization::fromStr(*str, dest);
         }
         return dest;
     };

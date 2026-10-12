@@ -210,8 +210,6 @@ protected:
     friend class NodeSwitch;
     TiXmlElement* getLastChild() const;
 
-    static std::pmr::string& addAttribute(TiXmlElement* node, std::string_view key);
-
     WorkspaceSaveMode workspaceSaveMode_ = WorkspaceSaveMode::Disk;
 };
 
@@ -242,15 +240,14 @@ void Serializer::serialize(std::string_view key, const std::array<T, N>& contain
 template <typename K, typename V, typename C, typename A>
 void Serializer::serialize(std::string_view key, const std::map<K, V, C, A>& map,
                            std::string_view itemKey) {
-    static_assert(isPrimitiveType<K>());
+    static_assert(SerializationMapTraits<K>::validKeyType);
 
     if (map.empty()) return;
 
     const auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : map) {
         serialize(itemKey, item.second);
-        auto& attr = addAttribute(getLastChild(), SerializeConstants::KeyAttribute);
-        detail::formatTo(item.first, attr);
+        SerializationMapTraits<K>::keyToAttrs(item.first, *getLastChild());
     }
 }
 
@@ -258,7 +255,8 @@ template <typename K, typename V, typename H, typename C, typename A, typename P
           typename VProj>
 void Serializer::serialize(std::string_view key, const std::unordered_map<K, V, H, C, A>& map,
                            std::string_view itemKey, Pred pred, KProj kproj, VProj vproj) {
-    static_assert(isPrimitiveType<decltype(std::invoke(kproj, std::declval<const K&>()))>());
+    using KeyType = decltype(std::invoke(kproj, std::declval<const K&>()));
+    static_assert(SerializationMapTraits<KeyType>::validKeyType);
 
     if (map.empty()) return;
 
@@ -266,8 +264,8 @@ void Serializer::serialize(std::string_view key, const std::unordered_map<K, V, 
     for (const auto& item : map) {
         if (std::invoke(pred, item)) {
             serialize(itemKey, std::invoke(vproj, item.second));
-            auto& attr = addAttribute(getLastChild(), SerializeConstants::KeyAttribute);
-            detail::formatTo(std::invoke(kproj, item.first), attr);
+            SerializationMapTraits<KeyType>::keyToAttrs(std::invoke(kproj, item.first),
+                                                        *getLastChild());
         }
     }
 }
@@ -288,11 +286,11 @@ template <typename T>
 void Serializer::serialize(std::string_view key, const T& data, SerializationTarget target) {
     if (target == SerializationTarget::Attribute) {
         auto& attr = addAttribute(key);
-        detail::formatTo(data, attr);
+        serialization::formatTo(data, attr);
     } else {
         const auto nodeSwitch = switchToNewNode(key);
         auto& attr = addAttribute(SerializeConstants::ContentAttribute);
-        detail::formatTo(data, attr);
+        serialization::formatTo(data, attr);
     }
 }
 
@@ -317,7 +315,7 @@ void Serializer::serialize(std::string_view key, const Vec& data) {
     const auto nodeSwitch = switchToNewNode(key);
     for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
         auto& attr = addAttribute(SerializeConstants::VectorAttributes[i]);
-        detail::formatTo(data[i], attr);
+        serialization::formatTo(data[i], attr);
     }
 }
 
@@ -334,7 +332,7 @@ template <size_t N>
 void Serializer::serialize(std::string_view key, const std::bitset<N>& bits) {
     const auto nodeSwitch = switchToNewNode(key);
     auto& attr = addAttribute(SerializeConstants::ContentAttribute);
-    detail::formatTo(bits, attr);
+    serialization::formatTo(bits, attr);
 }
 
 // serializable classes
