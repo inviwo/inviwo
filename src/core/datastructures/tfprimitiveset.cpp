@@ -81,8 +81,11 @@ TFPrimitiveSet::TFPrimitiveSet(const std::vector<TFPrimitiveData>& values, Primi
     add(values);
 }
 
+// NOLINTNEXTLINE(bugprone-copy-constructor-init)
 TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs)
-    : Serializable(rhs), TFPrimitiveSetObservable(rhs), TFPrimitiveObserver(rhs), mode_(rhs.mode_) {
+    : Serializable{rhs}, TFPrimitiveSetObservable{rhs}, TFPrimitiveObserver{}, mode_{rhs.mode_} {
+    // do not copy the TFPrimitiveObserver from rhs here!
+
     for (const auto& v : rhs.values_) {
         add(*v);
     }
@@ -91,8 +94,7 @@ TFPrimitiveSet::TFPrimitiveSet(const TFPrimitiveSet& rhs)
 TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     if (this != &rhs) {
         Serializable::operator=(rhs);
-        TFPrimitiveSetObservable::operator=(rhs);
-        TFPrimitiveObserver::operator=(rhs);
+        // do not change TFPrimitiveObserver here
         setMode(rhs.mode_);
         set(rhs.values_ | std::views::transform([](const auto& v) { return v->getData(); }));
     }
@@ -102,7 +104,7 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
 TFPrimitiveSet& TFPrimitiveSet::operator=(TFPrimitiveSet&& rhs) noexcept {
     if (this != &rhs) {
         TFPrimitiveSetObservable::operator=(std::move(rhs));
-        TFPrimitiveObserver::operator=(std::move(rhs));
+        // do not change TFPrimitiveObserver here
         setMode(rhs.mode_);
         set(rhs.values_ | std::views::transform([](const auto& v) { return v->getData(); }));
     }
