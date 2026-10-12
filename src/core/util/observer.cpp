@@ -51,7 +51,7 @@ Observer& Observer::operator=(const Observer& that) {
 Observer& Observer::operator=(Observer&& that) {
     if (this != &that) {
         removeObservations();
-        for (auto observable : that.observables_) addObservation(observable);
+        for (auto* observable : that.observables_) addObservation(observable);
         that.removeObservations();
     }
     return *this;
