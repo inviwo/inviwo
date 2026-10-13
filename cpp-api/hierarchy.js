@@ -2025,8 +2025,8 @@ var hierarchy =
     [ "inviwo::NetworkVisitorExit", "classinviwo_1_1NetworkVisitorExit.html", null ],
     [ "inviwo::ffmpeg::Frame::NoBuffers", "structinviwo_1_1ffmpeg_1_1Frame_1_1NoBuffers.html", null ],
     [ "inviwo::NoData", "structinviwo_1_1NoData.html", null ],
-    [ "inviwo::deserializer::Node", "structinviwo_1_1deserializer_1_1Node.html", null ],
     [ "inviwo::ProcessorListModel::Node", "structinviwo_1_1ProcessorListModel_1_1Node.html", null ],
+    [ "inviwo::serialization::Node", "structinviwo_1_1serialization_1_1Node.html", null ],
     [ "inviwo::NodeSwitch", "classinviwo_1_1NodeSwitch.html", null ],
     [ "inviwo::ffmpeg::NoMoveCopy", "structinviwo_1_1ffmpeg_1_1NoMoveCopy.html", [
       [ "inviwo::ffmpeg::Decoder", "classinviwo_1_1ffmpeg_1_1Decoder.html", null ],
@@ -3393,6 +3393,8 @@ var hierarchy =
       [ "inviwo::animation::Track", "classinviwo_1_1animation_1_1Track.html", null ],
       [ "inviwo::util::detail::PartialProcessorNetwork", "structinviwo_1_1util_1_1detail_1_1PartialProcessorNetwork.html", null ]
     ] ],
+    [ "inviwo::SerializationMapTraits< K >", "structinviwo_1_1SerializationMapTraits.html", null ],
+    [ "inviwo::SerializationMapTraits< std::pair< F, S > >", "structinviwo_1_1SerializationMapTraits_3_01std_1_1pair_3_01F_00_01S_01_4_01_4.html", null ],
     [ "inviwo::SerializeBase", "classinviwo_1_1SerializeBase.html", [
       [ "inviwo::Deserializer", "classinviwo_1_1Deserializer.html", null ],
       [ "inviwo::Serializer", "classinviwo_1_1Serializer.html", null ]

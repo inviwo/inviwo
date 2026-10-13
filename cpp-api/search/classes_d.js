@@ -28,7 +28,7 @@ var searchData=
   ['nobuffers_25',['NoBuffers',['../structinviwo_1_1ffmpeg_1_1Frame_1_1NoBuffers.html',1,'inviwo::ffmpeg::Frame']]],
   ['nocolumns_26',['NoColumns',['../classinviwo_1_1NoColumns.html',1,'inviwo']]],
   ['nodata_27',['NoData',['../structinviwo_1_1NoData.html',1,'inviwo']]],
-  ['node_28',['Node',['../structinviwo_1_1deserializer_1_1Node.html',1,'inviwo::deserializer::Node'],['../structinviwo_1_1ProcessorListModel_1_1Node.html',1,'inviwo::ProcessorListModel::Node']]],
+  ['node_28',['Node',['../structinviwo_1_1ProcessorListModel_1_1Node.html',1,'inviwo::ProcessorListModel::Node'],['../structinviwo_1_1serialization_1_1Node.html',1,'inviwo::serialization::Node']]],
   ['nodeswitch_29',['NodeSwitch',['../classinviwo_1_1NodeSwitch.html',1,'inviwo']]],
   ['nodeversionconverter_30',['NodeVersionConverter',['../classinviwo_1_1NodeVersionConverter.html',1,'inviwo']]],
   ['noisegenerator2d_31',['NoiseGenerator2D',['../classinviwo_1_1NoiseGenerator2D.html',1,'inviwo']]],

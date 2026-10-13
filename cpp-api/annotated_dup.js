@@ -171,8 +171,7 @@ var annotated_dup =
       [ "deserializer", null, [
         [ "IdentifierFunctions", "structinviwo_1_1deserializer_1_1IdentifierFunctions.html", null ],
         [ "IndexFunctions", "structinviwo_1_1deserializer_1_1IndexFunctions.html", null ],
-        [ "MapFunctions", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ],
-        [ "Node", "structinviwo_1_1deserializer_1_1Node.html", null ]
+        [ "MapFunctions", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ]
       ] ],
       [ "detail", null, [
         [ "Bases", "structinviwo_1_1detail_1_1Bases.html", null ],
@@ -407,6 +406,9 @@ var annotated_dup =
         [ "GL", "structinviwo_1_1resource_1_1GL.html", null ],
         [ "PY", "structinviwo_1_1resource_1_1PY.html", null ],
         [ "RAM", "structinviwo_1_1resource_1_1RAM.html", null ]
+      ] ],
+      [ "serialization", null, [
+        [ "Node", "structinviwo_1_1serialization_1_1Node.html", null ]
       ] ],
       [ "shuntingyard", null, [
         [ "Calculator", "classinviwo_1_1shuntingyard_1_1Calculator.html", null ],
@@ -1673,6 +1675,8 @@ var annotated_dup =
       [ "SequenceToDataFrameTraits< Volume >", "structinviwo_1_1SequenceToDataFrameTraits_3_01Volume_01_4.html", null ],
       [ "Serializable", "classinviwo_1_1Serializable.html", null ],
       [ "SerializationException", "classinviwo_1_1SerializationException.html", null ],
+      [ "SerializationMapTraits", "structinviwo_1_1SerializationMapTraits.html", null ],
+      [ "SerializationMapTraits< std::pair< F, S > >", "structinviwo_1_1SerializationMapTraits_3_01std_1_1pair_3_01F_00_01S_01_4_01_4.html", null ],
       [ "SerializeBase", "classinviwo_1_1SerializeBase.html", "classinviwo_1_1SerializeBase" ],
       [ "SerializeConstants", "classinviwo_1_1SerializeConstants.html", null ],
       [ "Serializer", "classinviwo_1_1Serializer.html", "classinviwo_1_1Serializer" ],

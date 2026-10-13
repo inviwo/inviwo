@@ -145,6 +145,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>hasNewEntries</b> ()<
 void&#160;</td><td class="memItemRight" valign="bottom"><b>scrollToBottom</b> ()</td></tr>
 <tr class="separator:aec68a8676fb2f418a4e31fc5657acc4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header signals_classinviwo_1_1InviwoDockWidget"><td colspan="2" onclick="javascript:dynsection.toggleInherit('signals_classinviwo_1_1InviwoDockWidget')"><img src="closed.png" alt="-"/>&#160;Signals inherited from <a class="el" href="classinviwo_1_1InviwoDockWidget.html">inviwo::InviwoDockWidget</a></td></tr>
+<tr class="memitem:ad9751b5ff25b62a8fa3d8eb2b2d01278 inherit signals_classinviwo_1_1InviwoDockWidget" id="r_ad9751b5ff25b62a8fa3d8eb2b2d01278"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>stateChanged</b> ()</td></tr>
+<tr class="separator:ad9751b5ff25b62a8fa3d8eb2b2d01278 inherit signals_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad6a34dc8ca3a76872c8e7a536c58b19 inherit signals_classinviwo_1_1InviwoDockWidget" id="r_aad6a34dc8ca3a76872c8e7a536c58b19"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>stickyFlagChanged</b> (bool sticky)</td></tr>
 <tr class="separator:aad6a34dc8ca3a76872c8e7a536c58b19 inherit signals_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -185,9 +188,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setContents</b> (QWid
 <tr class="memitem:a1516c20d795e7faab094fc74ab77bcbf inherit pub_methods_classinviwo_1_1InviwoDockWidget" id="r_a1516c20d795e7faab094fc74ab77bcbf"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setSticky</b> (bool sticky)</td></tr>
 <tr class="separator:a1516c20d795e7faab094fc74ab77bcbf inherit pub_methods_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a06d42bb5b392db4fae5d1100099442 inherit pub_methods_classinviwo_1_1InviwoDockWidget" id="r_a9a06d42bb5b392db4fae5d1100099442"><td class="memItemLeft" align="right" valign="top">
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>showEvent</b> (QShowEvent *showEvent) override</td></tr>
-<tr class="separator:a9a06d42bb5b392db4fae5d1100099442 inherit pub_methods_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -195,6 +195,31 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a052a12a0d89b393ce9404e8e999b86a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a437430d307f720175744049579172cba" id="r_a437430d307f720175744049579172cba"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a437430d307f720175744049579172cba">keyPressEvent</a> (QKeyEvent *keyEvent) override</td></tr>
 <tr class="separator:a437430d307f720175744049579172cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classinviwo_1_1InviwoDockWidget"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1InviwoDockWidget')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1InviwoDockWidget.html">inviwo::InviwoDockWidget</a></td></tr>
+<tr class="memitem:a913b33cfa97099583e4cc61c23f7c0c9 inherit pro_methods_classinviwo_1_1InviwoDockWidget" id="r_a913b33cfa97099583e4cc61c23f7c0c9"><td class="memItemLeft" align="right" valign="top">
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>getState</b> (UnorderedStringMap&lt; QVariant &gt; &amp;state) const</td></tr>
+<tr class="separator:a913b33cfa97099583e4cc61c23f7c0c9 inherit pro_methods_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff595b6784dca09a55e1dcd60f8bb176 inherit pro_methods_classinviwo_1_1InviwoDockWidget" id="r_aff595b6784dca09a55e1dcd60f8bb176"><td class="memItemLeft" align="right" valign="top">
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>hideEvent</b> (QHideEvent *event) override</td></tr>
+<tr class="separator:aff595b6784dca09a55e1dcd60f8bb176 inherit pro_methods_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e6ecf20e0a04f9b688409328cfec266 inherit pro_methods_classinviwo_1_1InviwoDockWidget" id="r_a2e6ecf20e0a04f9b688409328cfec266"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>loadStateDefault</b> (UnorderedStringMap&lt; QVariant &gt; &amp;state) const</td></tr>
+<tr class="separator:a2e6ecf20e0a04f9b688409328cfec266 inherit pro_methods_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f968008ca0978e81459db26c5b28aa7 inherit pro_methods_classinviwo_1_1InviwoDockWidget" id="r_a7f968008ca0978e81459db26c5b28aa7"><td class="memItemLeft" align="right" valign="top">
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>moveEvent</b> (QMoveEvent *event) override</td></tr>
+<tr class="separator:a7f968008ca0978e81459db26c5b28aa7 inherit pro_methods_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f95da481b2b9515877164e280606db0 inherit pro_methods_classinviwo_1_1InviwoDockWidget" id="r_a5f95da481b2b9515877164e280606db0"><td class="memItemLeft" align="right" valign="top">
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>resizeEvent</b> (QResizeEvent *event) override</td></tr>
+<tr class="separator:a5f95da481b2b9515877164e280606db0 inherit pro_methods_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab754c70cc5a1203e173e4223f5072fb7 inherit pro_methods_classinviwo_1_1InviwoDockWidget" id="r_ab754c70cc5a1203e173e4223f5072fb7"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>saveStateDefault</b> (const UnorderedStringMap&lt; QVariant &gt; &amp;state)</td></tr>
+<tr class="separator:ab754c70cc5a1203e173e4223f5072fb7 inherit pro_methods_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a414c8d0533b513069b9b53e9dcf96872 inherit pro_methods_classinviwo_1_1InviwoDockWidget" id="r_a414c8d0533b513069b9b53e9dcf96872"><td class="memItemLeft" align="right" valign="top">
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setState</b> (const UnorderedStringMap&lt; QVariant &gt; &amp;state)</td></tr>
+<tr class="separator:a414c8d0533b513069b9b53e9dcf96872 inherit pro_methods_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a06d42bb5b392db4fae5d1100099442 inherit pro_methods_classinviwo_1_1InviwoDockWidget" id="r_a9a06d42bb5b392db4fae5d1100099442"><td class="memItemLeft" align="right" valign="top">
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>showEvent</b> (QShowEvent *showEvent) override</td></tr>
+<tr class="separator:a9a06d42bb5b392db4fae5d1100099442 inherit pro_methods_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a052a12a0d89b393ce9404e8e999b86a1" name="a052a12a0d89b393ce9404e8e999b86a1"></a>
