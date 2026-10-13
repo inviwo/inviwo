@@ -59,4 +59,5 @@ INVIWO_PYBIND_MODULE(ivwdataframe, m) {
 #endif
 
     inviwo::exposeDataFrame(m);
+    inviwo::exposeDataFrameProperties(m);
 }

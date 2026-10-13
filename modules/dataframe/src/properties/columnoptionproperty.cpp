@@ -145,8 +145,10 @@ const std::string& ColumnOptionProperty::getSelectedColumnHeader() const {
 
 bool ColumnOptionProperty::isNoneSelected() const { return size() && (getSelectedValue() == -1); }
 
+bool ColumnOptionProperty::hasNoneOption() const { return noneOption_ == AddNoneOption::Yes; }
+
 void ColumnOptionProperty::set(const Property* srcProperty) {
-    if (auto src = dynamic_cast<const ColumnOptionProperty*>(srcProperty)) {
+    if (const auto* src = dynamic_cast<const ColumnOptionProperty*>(srcProperty)) {
         if ((src->opts().empty()) || (opts().empty())) {
             return;
         }

@@ -143,6 +143,8 @@ public:
      */
     bool isNoneSelected() const;
 
+    bool hasNoneOption() const;
+
     virtual void set(const Property* p) override;
 
 private:
