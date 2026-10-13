@@ -151,50 +151,50 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
         if (discrete) {
             double midPointOffset = 0.0;
             if (midPoint > start) {
-                const auto dt = (midPoint - start) / (0.5 * nColors);
+                const auto dt = (midPoint - start) / (0.5 * static_cast<double>(nColors));
                 midPointOffset = 0.5 * dt * (nColors % 2);
                 for (size_t i = 0; i < nColors / 2; i++) {
-                    addPoint(start + i * dt, i);
-                    addPointAlmost(start + (i + 1) * dt, i);
+                    addPoint(start + static_cast<double>(i) * dt, i);
+                    addPointAlmost(start + static_cast<double>(i + 1) * dt, i);
                 }
             }
             addPoint(midPoint - midPointOffset, nColors / 2);
             if (midPoint < stop) {
-                const auto dt = (stop - midPoint) / (0.5 * nColors);
+                const auto dt = (stop - midPoint) / (0.5 * static_cast<double>(nColors));
                 midPointOffset = 0.5 * dt * (nColors % 2);
                 addPointAlmost(midPoint + dt - midPointOffset, nColors / 2);
                 for (auto i = nColors - 1; i > nColors / 2; i--) {
-                    addPointAlmost(stop - (nColors - 1 - i) * dt, i);
-                    addPoint(stop - (nColors - i) * dt, i);
+                    addPointAlmost(stop - static_cast<double>(nColors - 1 - i) * dt, i);
+                    addPoint(stop - static_cast<double>(nColors - i) * dt, i);
                 }
             }
         } else {
             if (midPoint > start) {
-                const auto dt = (midPoint - start) / (0.5 * (nColors - 1.0));
+                const auto dt = (midPoint - start) / (0.5 * static_cast<double>(nColors - 1));
                 for (size_t i = 0; i < nColors / 2; i++) {
-                    addPoint(start + i * dt, i);
+                    addPoint(start + static_cast<double>(i) * dt, i);
                 }
             }
             addPoint(midPoint, nColors / 2);
             if (midPoint < stop) {
-                const auto dt = (stop - midPoint) / (0.5 * (nColors - 1.0));
+                const auto dt = (stop - midPoint) / (0.5 * static_cast<double>(nColors - 1));
                 for (size_t i = nColors / 2 + 1; i < nColors; i++) {
-                    addPoint(midPoint + (i - nColors / 2) * dt, i);
+                    addPoint(midPoint + static_cast<double>(i - nColors / 2) * dt, i);
                 }
             }
         }
 
     } else {
         if (discrete) {
-            const auto dt = (stop - start) / nColors;
+            const auto dt = (stop - start) / static_cast<double>(nColors);
             for (size_t i = 0; i < nColors; i++) {
-                addPoint(start + i * dt, i);
-                addPointAlmost(start + (i + 1) * dt, i);
+                addPoint(start + static_cast<double>(i) * dt, i);
+                addPointAlmost(start + static_cast<double>(i + 1) * dt, i);
             }
         } else {
-            const auto dt = (stop - start) / (nColors - 1.0);
+            const auto dt = (stop - start) / static_cast<double>(nColors - 1);
             for (size_t i = 0; i < nColors; i++) {
-                addPoint(start + i * dt, i);
+                addPoint(start + static_cast<double>(i) * dt, i);
             }
         }
     }

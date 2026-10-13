@@ -225,7 +225,7 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
                     const auto rStart = std::min(rMax, y - 1);
                     const auto rEnd = std::min(rMax, dstDim.y - y);
                     for (int64 n = -rStart; n < rEnd; ++n) {
-                        const auto w = buff[y + n] + squareVoxelSize.y * square(n);
+                        const auto w = buff[y + n] + squareVoxelSize.y * static_cast<U>(square(n));
                         if (w < d) d = w;
                     }
                 }

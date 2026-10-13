@@ -180,9 +180,9 @@ size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) 
     using enum CartesianCoordinateAxis;
     switch (axis) {
         default: return {volumeDims.z, volumeDims.y};
-        case X:  return {volumeDims.z, volumeDims.y};
-        case Y:  return {volumeDims.x, volumeDims.z};
-        case Z:  return {volumeDims.x, volumeDims.y};
+        case X: return {volumeDims.z, volumeDims.y};
+        case Y: return {volumeDims.x, volumeDims.z};
+        case Z: return {volumeDims.x, volumeDims.y};
     }
 }
 
@@ -191,9 +191,9 @@ Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis ax
     using enum CartesianCoordinateAxis;
     switch (axis) {
         default: return {{wrapping[2], wrapping[1]}};
-        case X:  return {{wrapping[2], wrapping[1]}};
-        case Y:  return {{wrapping[0], wrapping[2]}};
-        case Z:  return {{wrapping[0], wrapping[1]}};
+        case X: return {{wrapping[2], wrapping[1]}};
+        case Y: return {{wrapping[0], wrapping[2]}};
+        case Z: return {{wrapping[0], wrapping[1]}};
     }
 }
 
@@ -202,9 +202,9 @@ mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     using enum CartesianCoordinateAxis;
     switch (axis) {
         default: return {vec2(basis[2][2], basis[2][1]), vec2(basis[1][2], basis[1][1])};
-        case X:  return {vec2(basis[2][2], basis[2][1]), vec2(basis[1][2], basis[1][1])};
-        case Y:  return {vec2(basis[0][0], basis[0][2]), vec2(basis[2][0], basis[2][2])};
-        case Z:  return {vec2(basis[0][0], basis[0][1]), vec2(basis[1][0], basis[1][1])};
+        case X: return {vec2(basis[2][2], basis[2][1]), vec2(basis[1][2], basis[1][1])};
+        case Y: return {vec2(basis[0][0], basis[0][2]), vec2(basis[2][0], basis[2][2])};
+        case Z: return {vec2(basis[0][0], basis[0][1]), vec2(basis[1][0], basis[1][1])};
     }
 }
 
@@ -213,9 +213,9 @@ vec2 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     using enum CartesianCoordinateAxis;
     switch (axis) {
         default: return {offset.z, offset.y};
-        case X:  return {offset.z, offset.y};
-        case Y:  return {offset.x, offset.z};
-        case Z:  return {offset.x, offset.y};
+        case X: return {offset.z, offset.y};
+        case Y: return {offset.x, offset.z};
+        case Z: return {offset.x, offset.y};
     }
 }
 
@@ -340,19 +340,19 @@ void VolumeSliceExtractor::process() {
         case CartesianCoordinateAxis::X:
             if (dims.x != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.x);
-                sliceNumber_.set(static_cast<size_t>(pos * dims.x));
+                sliceNumber_.set(static_cast<size_t>(pos * static_cast<double>(dims.x)));
             }
             break;
         case CartesianCoordinateAxis::Y:
             if (dims.y != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.y);
-                sliceNumber_.set(static_cast<size_t>(pos * dims.y));
+                sliceNumber_.set(static_cast<size_t>(pos * static_cast<double>(dims.y)));
             }
             break;
         case CartesianCoordinateAxis::Z:
             if (dims.z != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.z);
-                sliceNumber_.set(static_cast<size_t>(pos * dims.z));
+                sliceNumber_.set(static_cast<size_t>(pos * static_cast<double>(dims.z)));
             }
             break;
     }

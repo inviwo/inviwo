@@ -66,10 +66,10 @@ void TestMatrix::process() {
 
     auto m = std::make_shared<Eigen::MatrixXf>(size_.get(), size_.get());
     for (size_t y = 0; y < size_.get(); y++) {
-        float Y = y / static_cast<float>(size_.get() - 1);
+        float Y = static_cast<float>(y) / static_cast<float>(size_.get() - 1);
         Y *= Y * 0.5f;
         for (size_t x = 0; x < size_.get(); x++) {
-            float X = x / static_cast<float>(size_.get() - 1);
+            float X = static_cast<float>(x) / static_cast<float>(size_.get() - 1);
             X *= X;
             (*m)(y, x) = glm::mix(Y, 1.0f, X);
         }

@@ -233,7 +233,8 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
                         const auto rStart = std::min(rMax, y - 1);
                         const auto rEnd = std::min(rMax, dstDim.y - y);
                         for (int64 n = -rStart; n < rEnd; ++n) {
-                            const auto w = buff[y + n] + squareVoxelSize.y * square(n);
+                            const auto w =
+                                buff[y + n] + squareVoxelSize.y * static_cast<U>(square(n));
                             if (w < d) d = w;
                         }
                     }
@@ -272,7 +273,8 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
                         const auto rStart = std::min(rMax, z - 1);
                         const auto rEnd = std::min(rMax, dstDim.z - z);
                         for (int64 n = -rStart; n < rEnd; ++n) {
-                            const auto w = buff[z + n] + squareVoxelSize.z * square(n);
+                            const auto w =
+                                buff[z + n] + squareVoxelSize.z * static_cast<U>(square(n));
                             if (w < d) d = w;
                         }
                     }

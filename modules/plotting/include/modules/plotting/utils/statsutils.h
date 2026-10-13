@@ -87,12 +87,12 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
     result.reserve(percentiles.size());
     auto nElements = data.size();
     for (auto percentile : percentiles) {
-        if (percentile < 0.f || percentile > 1.f) {
+        if (percentile < 0.0 || percentile > 1.0) {
             throw Exception("Percentile must be between 0 and 1");
         }
         // Take care of percentile == 1 using std::min
-        result.push_back(
-            data[static_cast<size_t>(std::max(std::ceil(nElements * percentile) - 1., 0.))]);
+        result.push_back(data[static_cast<size_t>(
+            std::max(std::ceil(static_cast<double>(nElements) * percentile) - 1.0, 0.0))]);
     }
     return result;
 }
@@ -107,12 +107,12 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
     result.reserve(percentiles.size());
     size_t nElements = std::distance(noNaN, data.end());
     for (auto percentile : percentiles) {
-        if (percentile < 0.f || percentile > 1.f) {
+        if (percentile < 0.0 || percentile > 1.0) {
             throw std::invalid_argument("Percentile must be between 0 and 1");
         }
         // Take care of percentile == 1 using std::min
-        result.push_back(
-            data[static_cast<size_t>(std::max(std::ceil(nElements * percentile) - 1., 0.))]);
+        result.push_back(data[static_cast<size_t>(
+            std::max(std::ceil(static_cast<double>(nElements) * percentile) - 1.0, 0.0))]);
     }
     return result;
 }
