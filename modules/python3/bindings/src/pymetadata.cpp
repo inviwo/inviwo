@@ -96,7 +96,7 @@ std::unique_ptr<MetaData> createFromInteger(py::handle value) {
         return std::make_unique<SizeMetaData>(index.cast<size_t>());
     } else {
         throw py::value_error(fmt::format("Integer {} is out of range for MetaData",
-                                          py::str(index).cast<std::string>()));
+                                          value.cast<std::string>()));
     }
 }
 
