@@ -81,6 +81,7 @@ set(TEST_FILES
     tests/unittests/scripts-test.cpp
     tests/unittests/scripts/glm.py
     tests/unittests/scripts/grabreturnvalue.py
+    tests/unittests/scripts/metadata.py
     tests/unittests/scripts/option_property.py
     tests/unittests/scripts/passvalues.py
     tests/unittests/scripts/simple_buffer_test.py

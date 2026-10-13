@@ -92,7 +92,7 @@ void exposeMesh(pybind11::module& m) {
         return list;
     };
 
-    py::classh<Mesh, SpatialEntity>(m, "Mesh", py::multiple_inheritance{})
+    py::classh<Mesh, SpatialEntity, MetaDataOwner>(m, "Mesh", py::multiple_inheritance{})
         .def(py::init<>())
         .def(py::init<DrawType, ConnectivityType>(), py::arg("dt") = DrawType::Points,
              py::arg("ct") = ConnectivityType::None)

@@ -61,6 +61,7 @@
 #include <inviwopy/pyinviwomodule.h>
 #include <inviwopy/pylayer.h>
 #include <inviwopy/pylogging.h>
+#include <inviwopy/pymetadata.h>
 #include <inviwopy/pymesh.h>
 #include <inviwopy/pymodulemanager.h>
 #include <inviwopy/pynetwork.h>
@@ -155,6 +156,7 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     exposeBitset(dataModule);
     exposeSerialization(m);
     exposeHelp(helpModule);
+    exposeMetaData(m);  // defines MetaDataOwner, used as base in properties, processors, data
 
     exposeTFPrimitiveSet(dataModule);  // defines TFPrimitiveData used in exposeProperties
     exposeProperties(propertiesModule);
