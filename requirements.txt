@@ -1,6 +1,7 @@
 numpy
 Sphinx
 sphinx-rtd-theme
+charset-normalizer
 recommonmark
 fastmcp==3.4.4
 pywin32

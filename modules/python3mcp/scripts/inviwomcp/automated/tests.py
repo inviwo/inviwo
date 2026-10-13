@@ -106,8 +106,10 @@ async def run_scenario(scenario: dict, approach: str, tools: list[str]) -> dict:
         try:
             session = await client.create_session(
                 on_permission_request=PermissionHandler.approve_all,
-                model="claude-sonnet-4.6",
+                model="claude-sonnet-5.5",
+                context_tier="default",
                 reasoning_effort="low",
+                infinite_sessions={"enabled": False},
                 memory={"enabled": False},
                 system_message={
                     "mode": "replace",

@@ -3,6 +3,30 @@ from inviwomcp.inviwomcp import *
 APPROACH = "DEFAULT"
 def register_tool(mcp, app, network, logger):
     if APPROACH == "DEFAULT":
+
+        @mcp.tool()
+        async def test_hist(sourceIdentifier: str) -> dict:
+            """Testing Histogram"""
+            loop = asyncio.get_event_loop()
+            future = loop.create_future()
+
+            def get_hist():
+                try:
+                    p = network.getProcessorByIdentifier(sourceIdentifier)
+                    hist = p.outports.data.getData().calculateHistograms()
+                    return{"success": True, "histogram": dir(hist)}
+
+                except Exception as e:
+                    return{"success": False, "error": str(e)}
+
+            def call_dispatch():
+                data = app.dispatch_front(get_hist)
+                loop.call_soon_threadsafe(future.set_result, data)
+
+            threading.Thread(target=call_dispatch).start()
+            return await future
+
+
         @mcp.tool()
         async def network_state() -> dict:
             """Get the network state, list the processors in the network with identifiers and connections and property links"""
