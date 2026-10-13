@@ -12,6 +12,7 @@
       getApp
       handlePythonOutput
       log
+      logCentral
       logError
       logInfo
       logWarn
