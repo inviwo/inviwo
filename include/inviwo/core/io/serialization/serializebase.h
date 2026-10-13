@@ -31,12 +31,15 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <inviwo/core/io/serialization/serializeconstants.h>
+
 #include <string>
 #include <string_view>
 #include <bitset>
 #include <limits>
 #include <memory>
 #include <filesystem>
+#include <optional>
 
 class TiXmlElement;
 class TiXmlDocument;
@@ -79,28 +82,6 @@ public:
      */
     const std::filesystem::path& getFileDir() const { return fileDir_; }
 
-    /**
-     * @brief Checks whether the given type is a primitive type.
-     *
-     * return true if type is one of following type:
-     * bool, char, signed int, unsigned int, float, double, long double, std::string
-     *
-     * @tparam U the type to test
-     * std::string
-     * @return true or false
-     */
-    template <typename U>
-    static constexpr bool isPrimitiveType() {
-        using T = std::remove_cv_t<std::remove_reference_t<U>>;
-        return std::is_same_v<T, bool> || std::is_same_v<T, char> || std::is_same_v<T, int> ||
-               std::is_same_v<T, signed int> || std::is_same_v<T, unsigned int> ||
-               std::is_same_v<T, size_t> || std::is_same_v<T, long long> ||
-               std::is_same_v<T, unsigned long long> || std::is_same_v<T, float> ||
-               std::is_same_v<T, double> || std::is_same_v<T, long double> ||
-               std::is_same_v<T, std::string> || std::is_same_v<T, std::pmr::string> ||
-               std::is_same_v<T, std::string_view>;
-    }
-
     allocator_type getAllocator() const;
 
     TiXmlDocument& doc();
@@ -116,7 +97,29 @@ protected:
     bool retrieveChild_;
 };
 
-namespace detail {
+namespace serialization {
+
+/**
+ * @brief Checks whether the given type is a primitive type.
+ *
+ * return true if type is one of following type:
+ * bool, char, signed int, unsigned int, float, double, long double, std::string
+ *
+ * @tparam U the type to test
+ * std::string
+ * @return true or false
+ */
+template <typename U>
+static constexpr bool isPrimitiveType() {
+    using T = std::remove_cv_t<std::remove_reference_t<U>>;
+    return std::is_same_v<T, bool> || std::is_same_v<T, char> || std::is_same_v<T, int> ||
+           std::is_same_v<T, signed int> || std::is_same_v<T, unsigned int> ||
+           std::is_same_v<T, size_t> || std::is_same_v<T, long long> ||
+           std::is_same_v<T, unsigned long long> || std::is_same_v<T, float> ||
+           std::is_same_v<T, double> || std::is_same_v<T, long double> ||
+           std::is_same_v<T, std::string> || std::is_same_v<T, std::pmr::string> ||
+           std::is_same_v<T, std::string_view>;
+}
 
 // NOLINTBEGIN(google-runtime-int)
 IVW_CORE_API void fromStr(std::string_view value, double& dest);
@@ -169,10 +172,61 @@ void formatTo(const std::bitset<N>& value, std::pmr::string& out) {
         out.append(value.to_string());
     }
 }
-
 // NOLINTEND(google-runtime-int)
 
-}  // namespace detail
+IVW_CORE_API std::pmr::string& addAttribute(TiXmlElement* node, std::string_view key);
+IVW_CORE_API std::string_view getAttribute(const TiXmlElement& node, std::string_view key);
+IVW_CORE_API std::optional<std::string_view> attribute(const TiXmlElement* node,
+                                                       std::string_view key);
+IVW_CORE_API std::string_view attributeOrThrow(const TiXmlElement* node, std::string_view key);
+
+IVW_CORE_API TiXmlElement* firstChild(TiXmlElement* parent, std::string_view key);
+IVW_CORE_API TiXmlElement* nextChild(TiXmlElement* child, std::string_view key);
+
+}  // namespace serialization
+
+template <typename K>
+struct SerializationMapTraits {
+    static constexpr bool validKeyType = serialization::isPrimitiveType<K>();
+
+    static void keyToAttrs(const K& key, TiXmlElement& node) {
+        auto& attr = serialization::addAttribute(&node, SerializeConstants::KeyAttribute);
+        serialization::formatTo(key, attr);
+    }
+
+    static auto attrsToKey(const TiXmlElement& node) {
+        const auto attr = serialization::attributeOrThrow(&node, SerializeConstants::KeyAttribute);
+        if constexpr (std::is_same_v<K, std::string>) {
+            return attr;
+        } else {
+            K key;
+            serialization::fromStr(attr, key);
+            return key;
+        }
+    }
+};
+
+template <typename F, typename S>
+struct SerializationMapTraits<std::pair<F, S>> {
+    static constexpr bool validKeyType =
+        serialization::isPrimitiveType<F>() && serialization::isPrimitiveType<S>();
+
+    static void keyToAttrs(const std::pair<F, S>& key, TiXmlElement& node) {
+        auto& attr1 = serialization::addAttribute(&node, "key1");
+        serialization::formatTo(key.first, attr1);
+        auto& attr2 = serialization::addAttribute(&node, "key2");
+        serialization::formatTo(key.second, attr2);
+    }
+
+    static auto attrsToKey(const TiXmlElement& node) {
+        const auto attr1 = serialization::attributeOrThrow(&node, "key1");
+        const auto attr2 = serialization::attributeOrThrow(&node, "key2");
+        std::pair<F, S> key{};
+        serialization::fromStr(attr1, key.first);
+        serialization::fromStr(attr2, key.second);
+        return key;
+    }
+};
 
 class IVW_CORE_API NodeSwitch {
 public:

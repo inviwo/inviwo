@@ -31,6 +31,8 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
+#include <inviwo/core/util/transparentmaps.h>
+
 #include <QDockWidget>
 #include <QObject>
 #include <QString>
@@ -59,8 +61,6 @@ public:
     InviwoDockWidget(QString title, QWidget* parent);
     InviwoDockWidget(QString title, QWidget* parent, QString objname);
     virtual ~InviwoDockWidget();
-    virtual void showEvent(QShowEvent* showEvent) override;
-    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
     void setSticky(bool sticky);
     bool isSticky() const;
@@ -83,9 +83,22 @@ public:
 
 signals:
     void stickyFlagChanged(bool sticky);
+    void stateChanged();
 
 protected:
+    virtual void getState(UnorderedStringMap<QVariant>& state) const;
+    virtual void setState(const UnorderedStringMap<QVariant>& state);
+
+    void loadStateDefault(UnorderedStringMap<QVariant>& state) const;
+    void saveStateDefault(const UnorderedStringMap<QVariant>& state);
+
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual void resizeEvent(QResizeEvent* event) override;
+    virtual void showEvent(QShowEvent* showEvent) override;
+    virtual void hideEvent(QHideEvent *event) override;
+    virtual void moveEvent(QMoveEvent* event) override;
     virtual void closeEvent(QCloseEvent* event) override;
+
 
 private:
     InviwoDockWidgetTitleBar* dockWidgetTitleBar_;

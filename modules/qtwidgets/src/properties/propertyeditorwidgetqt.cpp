@@ -119,56 +119,21 @@ void PropertyEditorWidgetQt::moveEvent(QMoveEvent* event) {
     InviwoDockWidget::moveEvent(event);
 }
 
-void PropertyEditorWidgetQt::saveState() {
-    QSettings settings;
-    settings.beginGroup(objectName());
-
-    settings.setValue("sticky", isSticky());
-    getProperty()->setMetaData<BoolMetaData>(stickyKey, isSticky());
-
-    settings.setValue("floating", isFloating());
-    getProperty()->setMetaData<BoolMetaData>(floatingKey, isFloating());
+void PropertyEditorWidgetQt::getState(UnorderedStringMap<QVariant>& state) const {
+    InviwoDockWidget::getState(state);
 
     if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
-        settings.setValue("dockarea", static_cast<int>(mainWindow->dockWidgetArea(this)));
-        getProperty()->setMetaData<IntMetaData>(dockareaKey,
-                                                static_cast<int>(mainWindow->dockWidgetArea(this)));
+        state.emplace("dockarea", static_cast<int>(mainWindow->dockWidgetArea(
+                                      const_cast<PropertyEditorWidgetQt*>(this))));
     }
-
-    settings.setValue("size", size());
-    getProperty()->setMetaData<IntVec2MetaData>(sizeKey, getDimensions());
-
-    getProperty()->setMetaData<IntVec2MetaData>(positionKey, getPosition());
-    getProperty()->setMetaData<BoolMetaData>(visibleKey, isVisible());
-
-    settings.endGroup();
 }
-
-void PropertyEditorWidgetQt::loadState() {
-    // restore editor state from metadata (position, docking state, sticky flag, etc.)
-
-    QSettings settings;
-    settings.beginGroup(objectName());
-
-    if (getProperty()->hasMetaData<BoolMetaData>(stickyKey)) {
-        setSticky(getProperty()->getMetaData<BoolMetaData>(stickyKey, false));
-    } else if (settings.contains("sticky")) {
-        setSticky(settings.value("sticky").toBool());
-    }
-
-    if (getProperty()->hasMetaData<BoolMetaData>(floatingKey)) {
-        setFloating(getProperty()->getMetaData<BoolMetaData>(floatingKey, false));
-    } else if (settings.contains("floating")) {
-        setFloating(settings.value("floating").toBool());
-    }
+void PropertyEditorWidgetQt::setState(const UnorderedStringMap<QVariant>& state) {
+    InviwoDockWidget::setState(state);
 
     if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
         const auto dockArea = [&]() {
-            if (getProperty()->hasMetaData<IntMetaData>(dockareaKey)) {
-                return static_cast<Qt::DockWidgetArea>(getProperty()->getMetaData<IntMetaData>(
-                    dockareaKey, static_cast<int>(Qt::NoDockWidgetArea)));
-            } else if (settings.contains("dockarea")) {
-                return static_cast<Qt::DockWidgetArea>(settings.value("dockarea").toInt());
+            if (state.contains("dockarea")) {
+                return static_cast<Qt::DockWidgetArea>(state.at("dockarea").toInt());
             } else {
                 return Qt::NoDockWidgetArea;
             }
@@ -178,38 +143,60 @@ void PropertyEditorWidgetQt::loadState() {
         }
     }
 
-    if (getProperty()->hasMetaData<IntVec2MetaData>(positionKey)) {
-        auto pos =
-            utilqt::toQPoint(getProperty()->getMetaData<IntVec2MetaData>(positionKey, ivec2{0}));
-        auto newPos = utilqt::movePointOntoDesktop(pos, InviwoDockWidget::size(), false);
-        move(newPos);
-    } else if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
-        // We assume that this is a new widget and give it a new position
-        auto newPos = mainWindow->pos();
-        newPos += utilqt::offsetWidget();
-        move(newPos);
-    }
-
-    if (getProperty()->hasMetaData<IntVec2MetaData>(sizeKey)) {
-        resize(utilqt::toQSize(getProperty()->getMetaData<IntVec2MetaData>(sizeKey, ivec2{0})));
-    } else if (settings.contains("size")) {
-        resize(settings.value("size").toSize());
-    }
-
-    if (auto* screen = QGuiApplication::screenAt(pos())) {
-        const auto w = std::clamp(width(), 0, screen->availableSize().width());
-        const auto h = std::clamp(height(), 0, screen->availableSize().height());
-        if (QSize(w, h) != size()) {
-            resize(w, h);
-        }
-    }
-
-    if (getProperty()->hasMetaData<BoolMetaData>(visibleKey)) {
-        setVisible(getProperty()->getMetaData<BoolMetaData>(visibleKey, false));
-    }
-    settings.endGroup();
-
     setReadOnly(getProperty()->getReadOnly());
+}
+
+void PropertyEditorWidgetQt::saveState() {
+    UnorderedStringMap<QVariant> state;
+    getState(state);
+    saveStateDefault(state);
+
+    if (state.contains("sticky")) {
+        getProperty()->setMetaData<BoolMetaData>(stickyKey, state.at("sticky").toBool());
+    }
+    if (state.contains("floating")) {
+        getProperty()->setMetaData<BoolMetaData>(floatingKey, state.at("floating").toBool());
+    }
+    if (state.contains("size")) {
+        getProperty()->setMetaData<IntVec2MetaData>(sizeKey,
+                                                    utilqt::toGLM(state.at("size").toSize()));
+    }
+    if (state.contains("pos")) {
+        getProperty()->setMetaData<IntVec2MetaData>(positionKey,
+                                                    utilqt::toGLM(state.at("pos").toPoint()));
+    }
+    if (state.contains("visible")) {
+        getProperty()->setMetaData<BoolMetaData>(visibleKey, state.at("visible").toBool());
+    }
+    if (state.contains("dockarea")) {
+        getProperty()->setMetaData<IntMetaData>(dockareaKey, state.at("dockarea").toInt());
+    }
+}
+
+void PropertyEditorWidgetQt::loadState() {
+    UnorderedStringMap<QVariant> state;
+    loadStateDefault(state);
+
+    if (auto* m = getProperty()->getMetaData<BoolMetaData>(stickyKey)) {
+        state["sticky"] = m->get();
+    }
+    if (auto* m = getProperty()->getMetaData<BoolMetaData>(floatingKey)) {
+        state["floating"] = m->get();
+    }
+    if (auto* m = getProperty()->getMetaData<IntVec2MetaData>(sizeKey)) {
+        state["size"] = utilqt::toQSize(m->get());
+    }
+    if (auto* m = getProperty()->getMetaData<IntVec2MetaData>(positionKey)) {
+        state["pos"] = utilqt::toQPoint(m->get());
+    }
+    if (auto* m = getProperty()->getMetaData<BoolMetaData>(visibleKey)) {
+        state["visible"] = m->get();
+    }
+    if (auto* m = getProperty()->getMetaData<IntMetaData>(dockareaKey)) {
+        state["dockarea"] = m->get();
+    }
+
+    setState(state);
 }
 
 void PropertyEditorWidgetQt::onSetReadOnly(Property*, bool readonly) { setReadOnly(readonly); }

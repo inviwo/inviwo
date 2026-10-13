@@ -37,7 +37,7 @@
 
 class TiXmlElement;
 
-namespace inviwo::deserializer {
+namespace inviwo::serialization {
 
 struct IVW_CORE_API Node {
     std::string key;
@@ -54,4 +54,4 @@ IVW_CORE_API std::string getDescription(const std::vector<Node>& stack);
 
 IVW_CORE_API std::string format_as(const Node& node);
 
-}  // namespace inviwo::deserializer
+}  // namespace inviwo::serialization

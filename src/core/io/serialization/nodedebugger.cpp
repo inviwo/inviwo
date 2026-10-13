@@ -35,7 +35,7 @@
 #include <fmt/ranges.h>
 #include <ranges>
 
-namespace inviwo::deserializer {
+namespace inviwo::serialization {
 
 std::string format_as(const Node& node) {
     if (node.identifier && node.type) {
@@ -79,4 +79,4 @@ std::string getDescription(const std::vector<Node>& stack) {
     return fmt::format("{}", fmt::join(stack, " in\n   "));
 }
 
-}  // namespace inviwo::deserializer
+}  // namespace inviwo::serialization

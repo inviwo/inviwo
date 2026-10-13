@@ -42,12 +42,12 @@ public:
     using Exception::Exception;
 
     template <typename... Args>
-    SerializationException(SourceContext context, std::vector<deserializer::Node> stack,
+    SerializationException(SourceContext context, std::vector<serialization::Node> stack,
                            fmt::format_string<Args...> format, Args&&... args)
         : Exception{format.get(), fmt::make_format_args(args...), std::move(context)}
         , stack{std::move(stack)} {}
 
-    std::vector<deserializer::Node> stack;
+    std::vector<serialization::Node> stack;
 };
 
 }  // namespace inviwo

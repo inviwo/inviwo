@@ -46,7 +46,8 @@ PythonWorkspaceScriptMenu::PythonWorkspaceScriptMenu(PythonWorkspaceScripts& scr
                                                      InviwoApplication* app, QMainWindow* win)
     : scripts_{scripts}, app_{app}, win_{win}, menu_{parent->addMenu("Workspace Scripts")} {
 
-    const auto* newScript = menu_->addAction(QIcon(":/svgicons/newfile.svg"), "&New Python Script");
+    const auto* newScript =
+        menu_->addAction(QIcon(":/svgicons/newfile.svg"), "New &Workspace Script ...");
     QObject::connect(newScript, &QAction::triggered, [this]() {
         const auto keySuggestion = fmt::format("Script {}", scripts_.getKeys().size() + 1);
         if (auto key = getScriptName(keySuggestion)) {
@@ -67,6 +68,9 @@ void PythonWorkspaceScriptMenu::onScriptRemoved(std::string_view key, std::strin
     if (auto it = menuItems_.find(key); it != menuItems_.end()) {
         menuItems_.erase(it);
     }
+    if (auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
+        scriptEditors_.erase(it);
+    }
 }
 void PythonWorkspaceScriptMenu::onScriptSaved(std::string_view key, std::string_view) {
     if (auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
@@ -86,17 +90,65 @@ void PythonWorkspaceScriptMenu::addScriptMenuItem(std::string_view key) {
     QObject::connect(openScript, &QAction::triggered,
                      [this, key = std::string{key}]() { openEditor(key); });
 }
-
 PythonEditorWidget* PythonWorkspaceScriptMenu::newScriptEditor(const std::string& key) {
     auto editor = util::make_qptr<PythonEditorWidget>(
-        win_, app_, [this, key](const std::string& source) { scripts_.updateScript(key, source); });
+        win_, app_,
+        [this, key](PythonEditorWidget&, const std::string& source) {
+            scripts_.updateScript(key, source);
+        },
+        [this, key](UnorderedStringMap<QVariant>& state) {
+            if (auto m = scripts_.getMetaData<bool>(key, "sticky")) {
+                state["sticky"] = *m;
+            }
+            if (auto m = scripts_.getMetaData<bool>(key, "floating")) {
+                state["floating"] = *m;
+            }
+            if (auto m = scripts_.getMetaData<bool>(key, "visible")) {
+                state["visible"] = *m;
+            }
+            if (auto m = scripts_.getMetaData<ivec2>(key, "size")) {
+                state["size"] = utilqt::toQSize(*m);
+            }
+            if (auto m = scripts_.getMetaData<ivec2>(key, "pos")) {
+                state["pos"] = utilqt::toQPoint(*m);
+            }
+        },
+        [this, key](const UnorderedStringMap<QVariant>& state) {
+            if (state.contains("sticky")) {
+                scripts_.setMetaData(key, "sticky", state.at("sticky").toBool());
+            }
+            if (state.contains("floating")) {
+                scripts_.setMetaData(key, "floating", state.at("floating").toBool());
+            }
+            if (state.contains("visible")) {
+                scripts_.setMetaData(key, "visible", state.at("visible").toBool());
+            }
+            if (state.contains("size")) {
+                scripts_.setMetaData(key, "size", utilqt::toGLM(state.at("size").toSize()));
+            }
+            if (state.contains("pos")) {
+                scripts_.setMetaData(key, "pos", utilqt::toGLM(state.at("pos").toPoint()));
+            }
+        });
 
     editor->setAttribute(Qt::WA_DeleteOnClose);
-    editor->setVisible(true);
     utilqt::addDockWidgetTabify(editor.get(), win_, Qt::RightDockWidgetArea);
-    editor->setFloating(true);
     editor->setSticky(false);
+    editor->setFloating(true);
+    editor->setVisible(true);
     editor->loadState();
+
+    for (auto&& [k, e] : scriptEditors_) {
+        if (e->pos() == editor->pos()) {
+            const auto newPos =
+                utilqt::movePointOntoDesktop(editor->pos() + QPoint{50, 50}, editor->size());
+            editor->move(newPos);
+        }
+    }
+
+    // Connect this after the state is loaded!
+    PythonEditorWidget::connect(editor.get(), &PythonEditorWidget::stateChanged, editor.get(),
+                                &PythonEditorWidget::saveState);
 
     scriptEditors_[key] = std::move(editor);
     return scriptEditors_[key].get();

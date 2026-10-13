@@ -84,7 +84,7 @@ public:
 
         switch (from_) {
             case 0:
-            case 1:  return bundleProcessorNetwork(root);
+            case 1: return bundleProcessorNetwork(root);
 
             default: return false;  // No changes
         }
@@ -135,7 +135,7 @@ struct ErrorHandle {
                 log::report(LogLevel::Error, message, context);
                 if (!stack.empty()) {
                     log::report(LogLevel::Error, context, "Occurred in:\n   {}",
-                                deserializer::getDescription(stack));
+                                serialization::getDescription(stack));
                 }
             }
         }
@@ -168,11 +168,11 @@ struct ErrorHandle {
         } catch (const Exception& error) {
             messages.emplace_back(error.getContext(),
                                   fmt::format("Deserialization error: {}", error.getMessage()),
-                                  std::vector<deserializer::Node>{});
+                                  std::vector<serialization::Node>{});
         }
     }
 
-    std::vector<std::tuple<SourceContext, std::string, std::vector<deserializer::Node>>> messages;
+    std::vector<std::tuple<SourceContext, std::string, std::vector<serialization::Node>>> messages;
     const InviwoSetupInfo* info_;
     std::filesystem::path filename_;
     SourceContext context_;

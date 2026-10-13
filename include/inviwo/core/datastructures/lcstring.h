@@ -133,9 +133,9 @@ private:
 constexpr std::string_view format_as(const LCString& s) { return s.view(); }
 
 // Enable use of LCString in the serializers.
-namespace detail {
+namespace serialization {
 inline void fromStr(std::string_view value, LCString& dest) { dest = value; }
-}  // namespace detail
+}  // namespace serialization
 namespace util::detail {
 template <>
 struct is_string<LCString, void> : std::true_type {};

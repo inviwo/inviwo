@@ -88,7 +88,7 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
 
     menu_->setObjectName("PythonMenu");
 
-    auto pythonEditorOpen = menu_->addAction(QIcon(":/svgicons/python.svg"), "&Python Editor");
+    auto pythonEditorOpen = menu_->addAction(QIcon(":/svgicons/python.svg"), "&Open Python Editor");
     QObject::connect(pythonEditorOpen, &QAction::triggered, [this]() { newEditor(); });
 
     auto newPythonProcessor =
@@ -128,26 +128,26 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
             log::exception(e);
         }
     });
-
-    auto pyProperties = menu_->addAction("&List unexposed properties");
-    QObject::connect(pyProperties, &QAction::triggered, [app]() {
-        auto& mod = util::getModuleByTypeOrThrow<Python3Module>(app);
-        auto script =
-            PythonScript::fromFile(mod.getPath() / "scripts" / "list_not_exposed_properties.py");
-        script.run();
-    });
 }
 
 PythonEditorWidget* PythonMenu::newEditor() {
     auto editor = util::make_qptr<PythonEditorWidget>(win_, app_);
     editor->setAttribute(Qt::WA_DeleteOnClose);
-    editor->setVisible(true);
     utilqt::addDockWidgetTabify(editor.get(), win_, Qt::RightDockWidgetArea);
     editor->setSticky(false);
     editor->setFloating(true);
+    editor->setVisible(true);
     editor->loadState();
     editor->restore();
-    
+
+    for (const auto& e : editors_) {
+        if (e->pos() == editor->pos()) {
+            const auto newPos =
+                utilqt::movePointOntoDesktop(editor->pos() + QPoint{50, 50}, editor->size());
+            editor->move(newPos);
+        }
+    }
+
     editors_.push_back(std::move(editor));
 
     return editors_.back().get();

@@ -72,6 +72,10 @@ public:
     virtual void loadState() override;
 
 protected:
+
+    virtual void getState(UnorderedStringMap<QVariant>& state) const override;
+    virtual void setState(const UnorderedStringMap<QVariant>& state) override;
+
     virtual void resizeEvent(QResizeEvent* event) override;
     virtual void showEvent(QShowEvent*) override;
     virtual void closeEvent(QCloseEvent*) override;
