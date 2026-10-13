@@ -60,9 +60,12 @@ private:
         InviwoCore& core_;
     };
     void scanDirForComposites(const std::filesystem::path& dir);
+    void scanDirForSequences(const std::filesystem::path& dir);
 
     Observer compositeDirObserver_;
+    Observer sequenceDirObserver_;
     std::unordered_set<std::filesystem::path, PathHash> addedCompositeFiles_;
+    std::unordered_set<std::filesystem::path, PathHash> addedSequenceFiles_;
 
     TransferFunctionLayerWriterWrapper tfLayerWriters_;
     TransferFunctionLayerReaderWrapper tfLayerReaders_;

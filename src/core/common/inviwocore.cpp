@@ -145,6 +145,7 @@ void InviwoCore::Observer::fileChanged(const std::filesystem::path& dir) {
 InviwoCore::InviwoCore(InviwoApplication* app)
     : InviwoModule(app, "Core")
     , compositeDirObserver_{*this, app}
+    , sequenceDirObserver_{*this, app}
     , tfLayerWriters_{app->getDataWriterFactory()}
     , tfLayerReaders_{app->getDataReaderFactory()} {
 
@@ -423,6 +424,15 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     scanDirForComposites(coreCompositeDir);
     compositeDirObserver_.startFileObservation(coreCompositeDir);
 
+    // Observe sequence processors
+    auto userSequenceDir = filesystem::getPath(PathType::Settings, "/sequences");
+    scanDirForSequences(userSequenceDir);
+    sequenceDirObserver_.startFileObservation(userSequenceDir);
+
+    auto coreSequenceDir = filesystem::getPath(PathType::Workspaces, "/sequences");
+    scanDirForSequences(coreSequenceDir);
+    sequenceDirObserver_.startFileObservation(coreSequenceDir);
+
     // Register Settings
     // Do this after the property registration since the settings use properties.
     registerSettings(std::make_unique<LinkSettings>("Link Settings", app_->getPropertyFactory()));
@@ -442,6 +452,21 @@ void InviwoCore::scanDirForComposites(const std::filesystem::path& dir) {
             if (!addedCompositeFiles_.contains(item)) {
                 registerCompositeProcessor(item);
                 addedCompositeFiles_.insert(item);
+            }
+        }
+    }
+}
+
+void InviwoCore::scanDirForSequences(const std::filesystem::path& dir) {
+    if (!std::filesystem::is_directory(dir)) {
+        return;
+    }
+
+    for (auto&& item : std::filesystem::recursive_directory_iterator{dir}) {
+        if (item.is_regular_file() && item.path().extension() == ".inv") {
+            if (!addedSequenceFiles_.contains(item)) {
+                registerSequenceProcessor(item);
+                addedSequenceFiles_.insert(item);
             }
         }
     }
