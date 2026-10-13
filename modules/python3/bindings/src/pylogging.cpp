@@ -90,7 +90,7 @@ void exposeLogging(pybind11::module& m) {
         .value("Info", MessageBreakLevel::Info);
 
     py::classh<Logger, LoggerTrampoline>(m, "Logger")
-        .def(py::init<>())
+        .def(py::init_alias<>())
         .def("log", &Logger::log, py::arg("source") = "", py::arg("level") = LogLevel::Info,
              py::arg("audience") = LogAudience::Developer, py::arg("file") = "",
              py::arg("function") = "", py::arg("line") = 0, py::arg("msg") = "");
@@ -103,8 +103,18 @@ void exposeLogging(pybind11::module& m) {
             }
             return lc;
         }))
-        .def("registerLogger",
-             [](LogCentral* lc, std::shared_ptr<Logger> logger) { lc->registerLogger(logger); })
+        .def(
+            "registerLogger",
+            [](LogCentral* lc, py::handle logger) {
+                // https://pybind11.readthedocs.io/en/stable/advanced/classes.html#avoiding-inheritance-slicing-and-std-weak-ptr-surprises
+                auto weakLogger = py::potentially_slicing_weak_ptr<Logger>(logger);
+                lc->registerLogger(weakLogger);
+            },
+            py::arg("logger"))
+        .def(
+            "unregisterLogger",
+            [](LogCentral* lc, std::shared_ptr<Logger> logger) { lc->unregisterLogger(logger); },
+            py::arg("logger"))
         .def_property("verbosity", &LogCentral::getVerbosity, &LogCentral::setVerbosity)
         .def_property("logStacktrace", &LogCentral::getLogStacktrace, &LogCentral::setLogStacktrace)
         .def_property("messageBreakLevel", &LogCentral::getMessageBreakLevel,
@@ -116,11 +126,15 @@ void exposeLogging(pybind11::module& m) {
 
     py::classh<ConsoleLogger, Logger>(m, "ConsoleLogger")
         .def(py::init<>())
-        .def("log", &ConsoleLogger::log);
+        .def("log", &ConsoleLogger::log, py::arg("source") = "", py::arg("level") = LogLevel::Info,
+             py::arg("audience") = LogAudience::Developer, py::arg("file") = "",
+             py::arg("function") = "", py::arg("line") = 0, py::arg("msg") = "");
 
     py::classh<FileLogger, Logger>(m, "FileLogger")
-        .def(py::init<std::string>())
-        .def("log", &FileLogger::log);
+        .def(py::init<const std::filesystem::path&>(), py::arg("logPath"))
+        .def("log", &FileLogger::log, py::arg("source") = "", py::arg("level") = LogLevel::Info,
+             py::arg("audience") = LogAudience::Developer, py::arg("file") = "",
+             py::arg("function") = "", py::arg("line") = 0, py::arg("msg") = "");
 
     m.def(
         "log",
@@ -143,6 +157,17 @@ void exposeLogging(pybind11::module& m) {
     m.def("logError", [](const std::string& msg) {
         log::report(LogLevel::Error, SourceContext{"inviwopy"_sl}, msg);
     });
+
+    m.def(
+        "logCentral",
+        []() {
+            if (LogCentral::isInitialized()) {
+                return LogCentral::getPtr();
+            } else {
+                throw Exception{SourceContext{}, "LogCentral not initialized"};
+            }
+        },
+        py::return_value_policy::reference);
 }
 
 }  // namespace inviwo
