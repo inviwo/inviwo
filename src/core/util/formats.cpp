@@ -28,13 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/formats.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/foreacharg.h>
 
 #include <unordered_map>
 #include <algorithm>
 #include <utility>
-#include <mutex>
 
 namespace inviwo {
 
@@ -44,7 +41,7 @@ NumericType commonNumericType(std::span<const DataFormatBase*> formats) {
     if (formats.empty()) return NumericType::NotSpecialized;
 
     NumericType type = formats.front()->getNumericType();
-    for (auto f : formats) {
+    for (auto* f : formats) {
         if (type == NumericType::Float || f->getNumericType() == NumericType::Float) {
             type = NumericType::Float;
         } else if (type == NumericType::SignedInteger ||
@@ -68,142 +65,5 @@ size_t commonFormatPrecision(std::span<const DataFormatBase*> formats) {
 }
 
 }  // namespace util
-
-DataFormatBase::DataFormatBase(DataFormatId t, size_t r, size_t c, size_t size, double max,
-                               double min, double lowest, NumericType nt, std::string_view s)
-    : formatId_(t)
-    , rank_(r)
-    , components_(c)
-    , sizeInBytes_(size)
-    , numericType_(nt)
-    , max_(max)
-    , min_(min)
-    , lowest_(lowest)
-    , formatStr_(s) {
-
-    static_assert(DataFormatBase::typeToId<glm::f32>() == DataFormatId::Float32);
-    static_assert(DataFormatBase::typeToId<glm::u64vec4>() == DataFormatId::Vec4UInt64);
-    static_assert(DataFormatBase::typeToId<glm::mat4>() == DataFormatId::Mat4Float32);
-    static_assert(DataFormatBase::typeToId<glm::dmat4>() == DataFormatId::NotSpecialized);
-}
-
-DataFormatBase::DataFormatBase()
-    : DataFormatBase(DataFormatId::NotSpecialized, 0, 0, 0, 0.0, 0.0, 0.0,
-                     NumericType::NotSpecialized, "NotSpecialized") {}
-
-size_t DataFormatBase::getSizeInBytes() const { return sizeInBytes_; }
-size_t DataFormatBase::getSize() const { return sizeInBytes_; }
-
-NumericType DataFormatBase::getNumericType() const { return numericType_; }
-
-size_t DataFormatBase::getRank() const { return rank_; }
-
-size_t DataFormatBase::getComponents() const { return components_; }
-
-size_t DataFormatBase::getPrecision() const {
-    switch (getRank()) {
-        case 0:  return getSizeInBytes() * 8;
-        case 1:  return getSizeInBytes() / getComponents() * 8;
-        case 2:  return getSizeInBytes() / getComponents() / getComponents() * 8;
-        default: throw DataFormatException(SourceContext{}, "Invalid format rank {}", getRank());
-    }
-}
-
-double DataFormatBase::getMax() const { return max_; }
-
-double DataFormatBase::getMin() const { return min_; }
-
-double DataFormatBase::getLowest() const { return lowest_; }
-
-std::string_view DataFormatBase::getString() const { return formatStr_; }
-
-DataFormatId DataFormatBase::getId() const { return formatId_; }
-
-const DataFormatBase* DataFormatBase::get() { return get(DataFormatId::NotSpecialized); }
-
-const DataFormatBase* DataFormatBase::get(DataFormatId id) {
-    if (id < DataFormatId::NotSpecialized || id >= DataFormatId::NumberOfFormats) {
-        throw DataFormatException(SourceContext{}, "Invalid format id {}", static_cast<int>(id));
-    }
-
-    static_assert(static_cast<size_t>(DataFormatId::NumberOfFormats) ==
-                  std::tuple_size_v<DefaultDataFormats> + 1);
-
-    using DataFormatArray =
-        std::array<DataFormatBase, static_cast<int>(DataFormatId::NumberOfFormats)>;
-    static DataFormatArray instances = {};
-
-    static std::once_flag flag;
-    std::call_once(flag, [&]() {
-        util::for_each_type<DefaultDataFormats>{}(
-            [&, i = static_cast<int>(DataFormatId::NotSpecialized)]<typename T>() mutable {
-                static_assert(sizeof(T) == sizeof(DataFormatBase));
-                new (&instances[++i]) T();
-            });
-        return 0;
-    });
-
-    return &instances[static_cast<int>(id)];
-}
-
-const DataFormatBase* DataFormatBase::get(std::string_view name) {
-    static auto nameMap = []() {
-        std::unordered_map<std::string_view, const DataFormatBase*, CaseInsensitiveStringHash,
-                           CaseInsensitiveEqual>
-            res;
-        res["uchar"] = DataFormat<glm::u8>::get();
-        res["char"] = DataFormat<glm::i8>::get();
-        res["ushort"] = DataFormat<glm::u16>::get();
-        res["short"] = DataFormat<glm::i16>::get();
-        res["uint"] = DataFormat<glm::u32>::get();
-        res["int"] = DataFormat<glm::i32>::get();
-        res["float"] = DataFormat<glm::f32>::get();
-        res["double"] = DataFormat<glm::f64>::get();
-        res["notspecialized"] = DataFormatBase::get();
-
-        util::for_each_type<DefaultDataFormats>{}([&]<typename T>() { res[T::str()] = T::get(); });
-
-        return res;
-    }();
-
-    const auto it = nameMap.find(name);
-    if (it != nameMap.end()) {
-        return it->second;
-    } else {
-        throw DataFormatException(SourceContext{}, "Invalid format string: '{}'", name);
-    }
-}
-
-const DataFormatBase* DataFormatBase::get(NumericType type, size_t components, size_t precision) {
-    return get(type, components, precision, 1);
-}
-
-const DataFormatBase* DataFormatBase::get(NumericType type, size_t components, size_t precision,
-                                          size_t rank) {
-    static const auto table = []() {
-        std::array<std::array<std::array<std::array<const DataFormatBase*, 4>, 4>, 4>, 2> res = {
-            nullptr};
-        util::for_each_type<DefaultDataFormats>{}([&]<typename F>() {
-            const auto r = F::rank() == 2 ? 1 : 0;
-            const auto n = static_cast<size_t>(F::numericType());
-            const auto c = F::components() - 1;
-            const auto p = 64 - std::countl_zero(F::precision()) - 4;
-            res[r][n][c][p] = F::get();
-        });
-        return res;
-    }();
-
-    const auto r = rank == 2 ? size_t{1} : size_t{0};
-    const auto n = static_cast<size_t>(type);
-    const auto c = components - 1;
-    const auto p = static_cast<size_t>(64 - std::countl_zero(precision) - 4);
-
-    if (std::has_single_bit(precision) && r < table.size() && n < table[0].size() &&
-        c < table[0][0].size() && p < table[0][0][0].size()) {
-        return table[r][n][c][p];
-    } else {
-        return nullptr;
-    }
-}
 
 }  // namespace inviwo

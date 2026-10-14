@@ -56,7 +56,7 @@ VolumeDisk::VolumeDisk(const std::filesystem::path& srcFile, size3_t dimensions,
 VolumeDisk::VolumeDisk(const VolumeReprConfig& config, const std::filesystem::path& path)
     : VolumeDisk{path,
                  config.dimensions.value_or(VolumeConfig::defaultDimensions),
-                 config.format ? config.format : VolumeConfig::defaultFormat,
+                 DataFormatBase::get(config.formatId.value_or(VolumeConfig::defaultFormatId)),
                  config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask),
                  config.interpolation.value_or(VolumeConfig::defaultInterpolation),
                  config.wrapping.value_or(VolumeConfig::defaultWrapping)} {}

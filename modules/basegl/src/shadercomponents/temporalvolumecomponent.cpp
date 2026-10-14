@@ -211,8 +211,8 @@ std::string TemporalVolumeComponent::getGradientString() const {
 
 std::optional<size_t> TemporalVolumeComponent::channelsForVolume() const {
     if (const auto data = volumePort.getData(); data && !data->empty()) {
-        if (const auto* format = data->prototype().format) {
-            return format->getComponents();
+        if (const auto formatId = data->prototype().formatId) {
+            return DataFormatBase::get(*formatId)->getComponents();
         }
     }
     return std::nullopt;

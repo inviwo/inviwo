@@ -50,7 +50,7 @@ const ProcessorInfo Vector3DCurl::processorInfo_{
 const ProcessorInfo& Vector3DCurl::getProcessorInfo() const { return processorInfo_; }
 
 Vector3DCurl::Vector3DCurl()
-    : VolumeGLProcessor("vector3dcurl.frag", VolumeConfig{.format = DataVec4Float32::get()})
+    : VolumeGLProcessor("vector3dcurl.frag", VolumeConfig{.formatId = DataFormatId::Float32})
     , writeLengthInForthComponent_{"writeLengthInForthComponent", "Write Length In Forth Component",
                                    true, InvalidationLevel::InvalidResources} {
 
@@ -65,10 +65,10 @@ void Vector3DCurl::initializeShader(Shader& shader) {
 }
 void Vector3DCurl::preProcess(TextureUnitContainer&, Shader&, VolumeConfig& config) {
     if (writeLengthInForthComponent_) {
-        config.format = DataVec4Float32::get();
+        config.formatId = DataFormatId::Vec4Float32;
         config.swizzleMask = swizzlemasks::defaultData(4);
     } else {
-        config.format = DataVec3Float32::get();
+        config.formatId = DataFormatId::Vec3Float32;
         config.swizzleMask = swizzlemasks::defaultData(3);
     }
 }

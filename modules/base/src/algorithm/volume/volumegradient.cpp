@@ -79,7 +79,7 @@ std::shared_ptr<Volume> gradientVolume(
     if (progress) progress(0.0);
 
     const auto config = VolumeConfig{srcVolume.config()}.updateFrom(
-        {.format = DataVec3Float32::get(),
+        {.formatId = DataVec3Float32::id(),
          .swizzleMask = swizzlemasks::defaultData(3),
          .interpolation = InterpolationType::Linear,
          .valueAxis =

@@ -64,7 +64,7 @@ void LayerGradient::preProcess(TextureUnitContainer&, Shader& shader, const Laye
 LayerConfig LayerGradient::outputConfig(const Layer& input) const {
     const double gradientEstimate = glm::compMax(glm::abs(input.dataMap.dataRange)) /
                                     glm::compMax(input.getWorldSpaceGradientSpacing());
-    return input.config().updateFrom({.format = DataFormatBase::get(DataFormatId::Vec2Float32),
+    return input.config().updateFrom({.formatId = DataFormatId::Vec2Float32,
                                       .swizzleMask = swizzlemasks::defaultData(2),
                                       .dataRange = dvec2{-gradientEstimate, gradientEstimate},
                                       .valueRange = dvec2{-gradientEstimate, gradientEstimate}});

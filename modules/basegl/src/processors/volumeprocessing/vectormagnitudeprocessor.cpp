@@ -69,7 +69,7 @@ const ProcessorInfo& VectorMagnitudeProcessor::getProcessorInfo() const { return
 
 VectorMagnitudeProcessor::VectorMagnitudeProcessor()
     : VolumeGLProcessor("vectormagnitudeprocessor.frag",
-                        VolumeConfig{.format = DataFloat32::get()}) {
+                        VolumeConfig{.formatId = DataFormatId::Float32}) {
 
     addProperties(calculateDataRange_, dataRange_);
     calculateDataRange_.set(true);

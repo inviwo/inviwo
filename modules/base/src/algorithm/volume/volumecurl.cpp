@@ -75,7 +75,7 @@ std::shared_ptr<Volume> curlVolume(
     }
 
     const auto config = VolumeConfig{srcVolume.config()}.updateFrom(
-        {.format = DataVec3Float32::get(),
+        {.formatId = DataFormatId::Vec3Float32,
          .swizzleMask = swizzlemasks::defaultData(3),
          .interpolation = InterpolationType::Linear,
          .valueAxis = Axis{.name = srcVolume.dataMap.valueAxis.name.empty()

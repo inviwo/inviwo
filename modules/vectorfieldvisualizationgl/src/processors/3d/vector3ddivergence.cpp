@@ -50,7 +50,7 @@ const ProcessorInfo Vector3DDivergence::processorInfo_{
 const ProcessorInfo& Vector3DDivergence::getProcessorInfo() const { return processorInfo_; }
 
 Vector3DDivergence::Vector3DDivergence()
-    : VolumeGLProcessor("vector3ddivergence.frag", VolumeConfig{.format = DataFloat32::get()}) {
+    : VolumeGLProcessor("vector3ddivergence.frag", VolumeConfig{.formatId = DataFormatId::Float32}) {
 
     addProperty(calculateDataRange_);
     calculateDataRange_.set(true);

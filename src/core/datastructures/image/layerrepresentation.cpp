@@ -38,7 +38,7 @@ LayerType LayerRepresentation::getLayerType() const { return layerType_; }
 
 LayerReprConfig LayerRepresentation::config() const {
     return {.dimensions = getDimensions(),
-            .format = getDataFormat(),
+            .formatId = getDataFormatId(),
             .type = getLayerType(),
             .swizzleMask = getSwizzleMask(),
             .interpolation = getInterpolation(),

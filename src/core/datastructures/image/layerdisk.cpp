@@ -56,7 +56,7 @@ LayerDisk::LayerDisk(const std::filesystem::path& url, size2_t dimensions,
 LayerDisk::LayerDisk(const LayerReprConfig& config, const std::filesystem::path& path)
     : LayerDisk{path,
                 config.dimensions.value_or(LayerConfig::defaultDimensions),
-                config.format ? config.format : LayerConfig::defaultFormat,
+                DataFormatBase::get(config.formatId.value_or(LayerConfig::defaultFormatId)),
                 config.type.value_or(LayerConfig::defaultType),
                 config.swizzleMask.value_or(LayerConfig::defaultSwizzleMask),
                 config.interpolation.value_or(LayerConfig::defaultInterpolation),
