@@ -192,11 +192,11 @@ struct SM {
             state<Idle>     + event<Canceled>          / (updateView, sendEvent) = state<Idle>,
 
             state<Active> + event<NoGesture>           / (sendEvent, updateView) = state<Idle>,
-            state<Active> + event<Started>             / (sendEvent)             = state<Active>,
-            state<Active> + event<Updated>             / (sendEvent)             = state<Active>,
-            state<Active> + event<Finished> [sameView] / (sendEvent)             = state<Idle>,
+            state<Active> + event<Started>             / sendEvent               = state<Active>,
+            state<Active> + event<Updated>             / sendEvent               = state<Active>,
+            state<Active> + event<Finished> [sameView] / sendEvent               = state<Idle>,
             state<Active> + event<Finished> [diffView] / (sendEvent, updateView) = state<Idle>,
-            state<Active> + event<Canceled>            / (sendEvent)             = state<Idle>
+            state<Active> + event<Canceled>            / sendEvent               = state<Idle>
         );
         // clang-format on
     }
@@ -207,11 +207,12 @@ struct SM {
 namespace touch {
 
 inline void transformAndSendEvent(
-    const TouchEvent& originalEvent, const EventTransformer::View& view,
-    const std::function<void(Event&, const EventTransformer::View&)>& propagate) {
+    const TouchEvent& /*originalEvent*/, const EventTransformer::View& /*view*/,
+    const std::function<void(Event&, const EventTransformer::View&)>& /*propagate*/) {
 
-    const TouchEvent newEvent{originalEvent};
     /* TODO(Peter)
+    TouchEvent newEvent{originalEvent};
+
     newEvent.setCanvasSize(view.size());
     newEvent.setNdc(view.globalNdcToLocalNdc(originalEvent.ndc()));
 
@@ -405,8 +406,8 @@ void EventTransformer::propagateEvent(GestureEvent& event, GestureSM& state,
     }
 }
 
-void EventTransformer::propagateEvent(TouchEvent& event, TouchSM& state,
-                                      const Propagator& propagate) {}
+void EventTransformer::propagateEvent(TouchEvent& /*event*/, TouchSM& /*state*/,
+                                      const Propagator& /*propagate*/) {}
 
 void EventTransformer::propagateEvent(PickingEvent& pickEvent, const Propagator& propagate) {
 

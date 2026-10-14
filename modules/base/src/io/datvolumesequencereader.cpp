@@ -87,16 +87,16 @@ struct State {
     Compression compression = Compression::Disabled;
 
     std::string formatFlag;
-    mat3 basis{2.0f};
-    std::optional<vec3> offset = std::nullopt;
-    std::optional<vec3> spacing = std::nullopt;
-    std::optional<vec3> a = std::nullopt;
-    std::optional<vec3> b = std::nullopt;
-    std::optional<vec3> c = std::nullopt;
+    dmat3 basis{2.0f};
+    std::optional<dvec3> offset = std::nullopt;
+    std::optional<dvec3> spacing = std::nullopt;
+    std::optional<dvec3> a = std::nullopt;
+    std::optional<dvec3> b = std::nullopt;
+    std::optional<dvec3> c = std::nullopt;
 
     std::array<Axis, 3> axes = util::defaultAxes<3>();
 
-    mat4 wtm{1.0f};
+    dmat4 wtm{1.0f};
 
     std::optional<dvec2> dataRange = std::nullopt;
     std::optional<dvec2> valueRange = std::nullopt;
@@ -342,14 +342,14 @@ void resolve(State& state) {
     }
 
     if (state.a && state.b && state.c) {
-        state.basis[0] = vec4{*state.a, 0.0};
-        state.basis[1] = vec4{*state.b, 0.0};
-        state.basis[2] = vec4{*state.c, 0.0};
+        state.basis[0] = dvec4{*state.a, 0.0};
+        state.basis[1] = dvec4{*state.b, 0.0};
+        state.basis[2] = dvec4{*state.c, 0.0};
     }
 
     // If not specified, center the data around origo.
     if (!state.offset) {
-        state.offset = -0.5f * (state.basis[0] + state.basis[1] + state.basis[2]);
+        state.offset = -0.5 * (state.basis[0] + state.basis[1] + state.basis[2]);
     }
 }
 
@@ -456,13 +456,11 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
     auto volumes = std::make_shared<VolumeSequence>();
 
     if (!state.datFiles.empty()) {
-        for (size_t t = 0; t < state.datFiles.size(); ++t) {
+        for (auto& datFile : state.datFiles) {
             auto datVolReader = std::make_unique<DatVolumeSequenceReader>();
             datVolReader->enableLogOutput_ = false;
-            const auto path = state.datFiles[t].is_absolute() ? state.datFiles[t]
-                                                              : fileDirectory / state.datFiles[t];
+            const auto path = datFile.is_absolute() ? datFile : fileDirectory / datFile;
             const auto v = datVolReader->readData(path);
-
             std::copy(v->begin(), v->end(), std::back_inserter(*volumes));
         }
         if (enableLogOutput_) {
