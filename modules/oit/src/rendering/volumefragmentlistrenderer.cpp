@@ -46,7 +46,7 @@
 namespace inviwo {
 
 VolumeFragmentListRenderer::VolumeFragmentListRenderer()
-    : screenSize_{0, 0}
+    : screenSize_{1u, 1u}
     , fragmentSize_{1024}
     , abufferIdxTex_{screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}
     , textureUnits_{}

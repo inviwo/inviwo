@@ -34,13 +34,9 @@
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/util/staticstring.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <modules/base/properties/datarangeproperty.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-
-#include <functional>
-#include <string>
-#include <string_view>
-#include <vector>
 
 namespace inviwo {
 class TextureUnitContainer;
@@ -50,7 +46,7 @@ class TextureUnitContainer;
  */
 class IVW_MODULE_BASEGL_API VolumeBinary : public VolumeGLProcessor {
 public:
-    enum class Operator {
+    enum class Operator : unsigned char {
         GreaterThen,
         GreaterThenOrEqual,
         LessThen,
@@ -69,6 +65,8 @@ protected:
     virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
                             VolumeConfig& config) override;
 
+    DataRangeProperty dataRange_;
+    OptionProperty<DataMapper::Space> dataSpace_;
     FloatProperty threshold_;
     OptionProperty<Operator> op_;
 };

@@ -157,23 +157,27 @@ void OrthographicAxis2D::process() {
                 utilgl::ScissorState{
                     static_cast<GLint>(margins_.getLeft() + padding),
                     static_cast<GLint>(margins_.getBottom() + padding),
-                    static_cast<GLsizei>(static_cast<float>(dims.x) - margins_.getLeft() -
-                                         margins_.getRight() - 2 * padding),
-                    static_cast<GLsizei>(static_cast<float>(dims.y) - margins_.getBottom() -
-                                         margins_.getTop() - 2 * padding)},
+                    std::max(static_cast<GLsizei>(static_cast<float>(dims.x) - margins_.getLeft() -
+                                                  margins_.getRight() - 2 * padding),
+                             0),
+                    std::max(
+                        static_cast<GLsizei>(static_cast<float>(dims.y) - margins_.getBottom() -
+                                             margins_.getTop() - 2 * padding),
+                        0)},
                 utilgl::GlBoolState{GL_SCISSOR_TEST, true}};
         }
         return std::nullopt;
     };
 
     const size2_t lowerLeft(margins_.getLeft(), margins_.getBottom());
-    const size2_t upperRight(dims.x - 1 - margins_.getRight(), dims.y - 1 - margins_.getTop());
+    const size2_t upperRight(static_cast<float>(dims.x - 1) - margins_.getRight(),
+                             static_cast<float>(dims.y - 1) - margins_.getTop());
 
     const auto xStart = lowerLeft + size2_t(padding, 0);
-    const auto xEnd = size2_t(upperRight.x - padding, lowerLeft.y);
+    const auto xEnd = size2_t(static_cast<float>(upperRight.x) - padding, lowerLeft.y);
 
     const auto yStart = lowerLeft + size2_t(0, padding);
-    const auto yEnd = size2_t(lowerLeft.x, upperRight.y - padding);
+    const auto yEnd = size2_t(lowerLeft.x, static_cast<float>(upperRight.y) - padding);
 
     const auto start =
         2.0 * dvec3{dvec2{xStart.x, yStart.y} / dvec2{dims}, 0.5} - dvec3{1.0, 1.0, 1.0};
