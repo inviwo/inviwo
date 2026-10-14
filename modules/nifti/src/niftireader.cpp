@@ -76,6 +76,8 @@
 
 namespace inviwo {
 
+namespace {
+
 /**
  * @brief A loader of Nifti files. Used to create VolumeRAM representations.
  * This class us used by the NiftiReader.
@@ -100,17 +102,6 @@ private:
     std::shared_ptr<nifti_image> nim;
 };
 
-NiftiReader::NiftiReader() : DataReaderType<VolumeSequence>() {
-    addExtension(FileExtension("nii", "NIfTI-1 file format"));
-    addExtension(FileExtension("hdr", "ANALYZE file format"));
-    addExtension(FileExtension("img", "ANALYZE file format"));
-    // Compressed files
-    addExtension(FileExtension("nii.gz", "NIfTI-1 file format"));
-    addExtension(FileExtension("hdr.gz", "ANALYZE file format"));
-    addExtension(FileExtension("img.gz", "ANALYZE file format"));
-}
-
-NiftiReader* NiftiReader::clone() const { return new NiftiReader(*this); }
 /**
  * @brief Convert from Nifti defined data types to inviwo DataFormat.
  *
@@ -119,7 +110,7 @@ NiftiReader* NiftiReader::clone() const { return new NiftiReader(*this); }
  */
 const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiImage) {
 
-    NumericType type;
+    NumericType type{NumericType::NotSpecialized};
     size_t components = 1;
     size_t precision = 1;
     // clang-format off
@@ -187,10 +178,34 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
 
     return DataFormatBase::get(type, components, precision);
 }
-std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::path& filePath) {
-    const auto localPath = downloadAndCacheIfUrl(filePath);
-    checkExists(localPath);
 
+void flip(char* data, size_t elemSize, size3_t dim, std::array<bool, 3> flipAxis) {
+    // Flip data along axes if necessary
+    if (flipAxis[0] || flipAxis[1] || flipAxis[2]) {
+        const auto size = glm::compMul(dim);
+        auto tmp = std::make_unique<char[]>(elemSize * size);
+        auto copy = tmp.get();
+
+        std::memcpy(copy, data, size * elemSize);
+
+        util::IndexMapper3D mapper(dim);
+        for (size_t z = 0; z < dim[2]; ++z) {
+            const auto idz = flipAxis[2] ? dim[2] - 1 - z : z;
+            for (size_t y = 0; y < dim[1]; ++y) {
+                const auto idy = flipAxis[1] ? dim[1] - 1 - y : y;
+                for (size_t x = 0; x < dim[0]; ++x) {
+                    const auto idx = flipAxis[0] ? dim[0] - 1 - x : x;
+                    const auto from = mapper(x, y, z);
+                    const auto to = mapper(idx, idy, idz);
+                    std::memcpy(data + to * elemSize, copy + from * elemSize, elemSize);
+                }
+            }
+        }
+    }
+}
+
+std::shared_ptr<VolumeSequence> readNiftiFile(const std::filesystem::path& localPath,
+                                              const std::filesystem::path& filePath) {
     /* read input dataset, but not data */
     const std::shared_ptr<nifti_image> niftiImage(nifti_image_read(localPath.string().c_str(), 0),
                                                   nifti_image_free);
@@ -221,7 +236,7 @@ std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::pat
 
     auto volume = std::make_shared<Volume>(dim, format);
 
-    std::string descrip(niftiImage->descrip);
+    const std::string descrip(niftiImage->descrip);
     if (!descrip.empty()) {
         // Additional information
         volume->setMetaData<StringMetaData>("description", descrip);
@@ -298,13 +313,13 @@ std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::pat
     volume->setModelMatrix(basisAndOffset);
 
     std::array<int, 7> start_index = {0, 0, 0, 0, 0, 0, 0};
-    std::array<int, 7> region_size = {niftiImage->dim[1],
-                                      niftiImage->dim[2],
-                                      niftiImage->dim[3],
-                                      1,
-                                      static_cast<int>(format->getComponents()),
-                                      1,
-                                      1};
+    const std::array<int, 7> region_size = {niftiImage->dim[1],
+                                            niftiImage->dim[2],
+                                            niftiImage->dim[3],
+                                            1,
+                                            static_cast<int>(format->getComponents()),
+                                            1,
+                                            1};
 
     auto volumes = std::make_shared<VolumeSequence>();
     // Fixes single-volume where dim[4] has been set to zero
@@ -354,8 +369,8 @@ std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::pat
         // Now v_min and v_max can be used to normalize the stored values.
         // Values below v_min and above v_max will not be displayed since the fall outside the
         // normalized [0 1] range.
-        double offset = niftiImage->scl_slope != 0 ? niftiImage->scl_inter : 0;
-        double slope = niftiImage->scl_slope != 0 ? niftiImage->scl_slope : 1;
+        const double offset = niftiImage->scl_slope != 0 ? niftiImage->scl_inter : 0;
+        const double slope = niftiImage->scl_slope != 0 ? niftiImage->scl_slope : 1;
         dm.dataRange.x = static_cast<double>(niftiImage->cal_min - offset) / slope;
         dm.dataRange.y = static_cast<double>(niftiImage->cal_max - offset) / slope;
 
@@ -367,17 +382,9 @@ std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::pat
         // In other words:
         // The minimum value will correspond to 0 and the maximum will correspond to 1 in the
         // Transfer Function
-        auto volRAM = volumes->front()->getRepresentation<VolumeRAM>();
-        auto minmax = util::volumeMinMax(volRAM);
-        // minmax always have four components, unused components are set to zero.
-        // Hence, only consider components used by the data format
-        dvec2 dataRange(minmax.first[0], minmax.second[0]);
-        // min/max of all components
-        for (size_t component = 1; component < format->getComponents(); ++component) {
-            dataRange = dvec2(glm::min(dataRange[0], minmax.first[component]),
-                              glm::max(dataRange[1], minmax.second[component]));
-        }
-        dm.dataRange = dataRange;
+        const auto* volRAM = volumes->front()->getRepresentation<VolumeRAM>();
+        auto [min, max] = util::volumeMinMax(volRAM);
+        dm.dataRange = dvec2{glm::compMin(min), glm::compMax(max)};
 
         if (niftiImage->scl_slope != 0) {
             // If the scl_slope field is nonzero, then each voxel value in the dataset
@@ -409,41 +416,16 @@ NiftiVolumeRAMLoader::NiftiVolumeRAMLoader(std::shared_ptr<nifti_image> nim_,
     , start_index(start_index_)
     , region_size(region_size_)
     , flipAxis(flipAxis_)
-    , nim{nim_} {}
+    , nim{std::move(nim_)} {}
 
 NiftiVolumeRAMLoader* NiftiVolumeRAMLoader::clone() const {
     return new NiftiVolumeRAMLoader(*this);
 }
 
-void flip(char* data, size_t elemSize, size3_t dim, std::array<bool, 3> flipAxis) {
-    // Flip data along axes if necessary
-    if (flipAxis[0] || flipAxis[1] || flipAxis[2]) {
-        const auto size = glm::compMul(dim);
-        auto tmp = std::make_unique<char[]>(elemSize * size);
-        auto copy = tmp.get();
-
-        std::memcpy(copy, data, size * elemSize);
-
-        util::IndexMapper3D mapper(dim);
-        for (size_t z = 0; z < dim[2]; ++z) {
-            const auto idz = flipAxis[2] ? dim[2] - 1 - z : z;
-            for (size_t y = 0; y < dim[1]; ++y) {
-                const auto idy = flipAxis[1] ? dim[1] - 1 - y : y;
-                for (size_t x = 0; x < dim[0]; ++x) {
-                    const auto idx = flipAxis[0] ? dim[0] - 1 - x : x;
-                    const auto from = mapper(x, y, z);
-                    const auto to = mapper(idx, idy, idz);
-                    std::memcpy(data + to * elemSize, copy + from * elemSize, elemSize);
-                }
-            }
-        }
-    }
-}
-
 std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation(
-    const VolumeRepresentation& src, std::stop_token) const {
+    const VolumeRepresentation& src, std::stop_token stop) const {
 
-    const auto format = niftiDataTypeToInviwoDataFormat(nim.get());
+    const auto* format = niftiDataTypeToInviwoDataFormat(nim.get());
     const auto voxelSize = format->getSizeInBytes();
 
     const std::size_t voxels = region_size[0] * region_size[1] * region_size[2] * region_size[3] *
@@ -455,6 +437,7 @@ std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation
     auto start = start_index;
     auto region = region_size;
     auto readBytes = nifti_read_subregion_image(nim.get(), start.data(), region.data(), &pdata);
+    if (stop.stop_requested()) return nullptr;
 
     const auto dim = size3_t{region_size[0], region_size[1], region_size[2]};
     flip(data.get(), voxelSize, dim, flipAxis);
@@ -463,6 +446,7 @@ std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation
         throw DataReaderException(SourceContext{}, "Error: Could not read data from file: {}",
                                   nim->fname);
     }
+    if (stop.stop_requested()) return nullptr;
 
     auto volumeRAM =
         createVolumeRAM(src.getDimensions(), src.getDataFormat(), data.get(), src.getSwizzleMask(),
@@ -474,13 +458,13 @@ std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation
 
 void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
                                                 const VolumeRepresentation& src,
-                                                std::stop_token) const {
+                                                std::stop_token stop) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     if (size3_t{region_size[0], region_size[1], region_size[2]} != volumeDst->getDimensions()) {
         throw DataReaderException("Mismatching volume dimensions, can't update");
     }
-    auto data = volumeDst->getData();
+    auto* data = volumeDst->getData();
 
     auto start = start_index;
     auto region = region_size;
@@ -493,7 +477,54 @@ void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresenta
     const auto voxelSize = src.getDataFormat()->getSizeInBytes();
     const auto dim = size3_t{region_size[0], region_size[1], region_size[2]};
 
+    if (stop.stop_requested()) return;
     flip(static_cast<char*>(data), voxelSize, dim, flipAxis);
+}
+
+}  // namespace
+
+NiftiReader::NiftiReader() : DataReaderType<VolumeSequence>() {
+    addExtension(FileExtension("nii", "NIfTI-1 file format (sequence)"));
+    addExtension(FileExtension("hdr", "ANALYZE file format (sequence)"));
+    addExtension(FileExtension("img", "ANALYZE file format (sequence)"));
+    // Compressed files
+    addExtension(FileExtension("nii.gz", "NIfTI-1 file format (sequence)"));
+    addExtension(FileExtension("hdr.gz", "ANALYZE file format (sequence)"));
+    addExtension(FileExtension("img.gz", "ANALYZE file format (sequence)"));
+}
+
+NiftiReader* NiftiReader::clone() const { return new NiftiReader(*this); }
+
+std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::path& filePath) {
+    const auto localPath = downloadAndCacheIfUrl(filePath);
+    checkExists(localPath);
+
+    return readNiftiFile(localPath, filePath);
+}
+
+NiftiVolumeReader::NiftiVolumeReader() : DataReaderType<Volume>() {
+    addExtension(FileExtension("nii", "NIfTI-1 file format"));
+    addExtension(FileExtension("hdr", "ANALYZE file format"));
+    addExtension(FileExtension("img", "ANALYZE file format"));
+    // Compressed files
+    addExtension(FileExtension("nii.gz", "NIfTI-1 file format"));
+    addExtension(FileExtension("hdr.gz", "ANALYZE file format"));
+    addExtension(FileExtension("img.gz", "ANALYZE file format"));
+}
+
+NiftiVolumeReader* NiftiVolumeReader::clone() const { return new NiftiVolumeReader(*this); }
+
+std::shared_ptr<Volume> NiftiVolumeReader::readData(const std::filesystem::path& filePath) {
+    const auto localPath = downloadAndCacheIfUrl(filePath);
+    checkExists(localPath);
+
+    auto sequence = readNiftiFile(localPath, filePath);
+    if (sequence->size() != 1) {
+        throw DataReaderException{
+            SourceContext{},
+            "Volume sequences are not handled by the NiftiVolumeReader, use the NiftiReader"};
+    }
+    return sequence->front();
 }
 
 }  // namespace inviwo
