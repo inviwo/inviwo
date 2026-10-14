@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-10-13 Analytic Volume Raycaster
+Added the `AnalyticVolumeRaycaster` (basegl), a volume raycaster like the `StandardVolumeRaycaster` that does not need any entry and exit point images. Instead the entry and exit points are computed analytically in the fragment shader by intersecting each camera ray with a parallelepiped (origin and three edge vectors) or a sphere (center and radius). The geometry can be defined in the Data, Model, or World space of the volume, is optionally clipped against the volume bounding box, and is always clipped against the camera near and far planes. The functionality is provided by the new `AnalyticEntryExitComponent` shader component, which can replace the `EntryExitComponent` in other shader component based raycasters.
+
 ## 2026-10-12 Python bindings for MetaData
 `MetaData`, `MetaDataMap`, and `MetaDataOwner` are now exposed in `inviwopy`, together with all the `MetaDataType<T>` types registered by the core, i.e. `IntMetaData`, `FloatVec3MetaData`, `StringMetaData`, `StringVectorMetaData`, etc. `MetaDataOwner` is a base class of the python `Volume`, `Layer`, `Image`, `Mesh`, `Property`, `Processor`, `DataFrame`, and `Column` types.
 ```python
