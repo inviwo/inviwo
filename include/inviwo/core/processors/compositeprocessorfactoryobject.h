@@ -42,7 +42,7 @@ class InviwoApplication;
 
 class IVW_CORE_API CompositeProcessorFactoryObject : public ProcessorFactoryObject {
 public:
-    CompositeProcessorFactoryObject(const std::filesystem::path& filen);
+    explicit CompositeProcessorFactoryObject(const std::filesystem::path& file);
     virtual ~CompositeProcessorFactoryObject() = default;
 
     virtual std::shared_ptr<Processor> create(InviwoApplication* app) const override;

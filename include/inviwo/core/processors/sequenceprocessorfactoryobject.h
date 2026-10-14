@@ -34,13 +34,11 @@
 
 namespace inviwo {
 
-/**
- * @brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
+class InviwoApplication;
+
 class IVW_CORE_API SequenceProcessorFactoryObject : public ProcessorFactoryObject {
 public:
-    SequenceProcessorFactoryObject(const std::filesystem::path& filen);
+    explicit SequenceProcessorFactoryObject(const std::filesystem::path& file);
     virtual ~SequenceProcessorFactoryObject() = default;
 
     virtual std::shared_ptr<Processor> create(InviwoApplication* app) const override;
