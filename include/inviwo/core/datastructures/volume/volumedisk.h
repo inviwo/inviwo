@@ -45,13 +45,13 @@ class IVW_CORE_API VolumeDisk : public VolumeRepresentation,
                                 public DiskRepresentation<VolumeRepresentation, VolumeDisk> {
 public:
     explicit VolumeDisk(size3_t dimensions = VolumeConfig::defaultDimensions,
-                        const DataFormatBase* format = VolumeConfig::defaultFormat,
+                        const DataFormatBase* format = DataFormatBase::get(VolumeConfig::defaultFormatId),
                         const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
                         InterpolationType interpolation = VolumeConfig::defaultInterpolation,
                         const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
     explicit VolumeDisk(const std::filesystem::path& srcFile,
                         size3_t dimensions = VolumeConfig::defaultDimensions,
-                        const DataFormatBase* format = VolumeConfig::defaultFormat,
+                        const DataFormatBase* format = DataFormatBase::get(VolumeConfig::defaultFormatId),
                         const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
                         InterpolationType interpolation = VolumeConfig::defaultInterpolation,
                         const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);

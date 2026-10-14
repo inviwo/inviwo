@@ -258,7 +258,7 @@ LayerConfig LayerShader::outputConfig(const Layer& input) const {
     };
 
     return input.config().updateFrom(
-        {.format = format,
+        {.formatId = format->getId(),
          .swizzleMask = swizzlemasks::defaultData(format->getComponents()),
          .valueAxis = valueAxis(),
          .dataRange = dataRange(),

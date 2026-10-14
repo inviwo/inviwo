@@ -331,13 +331,31 @@ Document DataTraits<TemporalVolume>::info(const TemporalVolume& data) {
     utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(H("Frames"), data.size());
     if (!data.empty()) {
+
+        auto formatAxis = [](const Axis& a) { return fmt::format("{}{: [}", a.name, a.unit); };
+
         const auto [first, last] = data.timeRange();
         tb(H("Time Range"), fmt::format("[{}, {}]", first, last));
 
         const VolumeConfig& prototype = data.prototype();
-        tb(H("Dimensions"), prototype.dimensions.value_or(VolumeConfig::defaultDimensions));
-        tb(H("Format"),
-           (prototype.format ? prototype.format : VolumeConfig::defaultFormat)->getString());
+
+        tb(H("dimensions"), prototype.dimensions.value_or(VolumeConfig::defaultDimensions));
+        tb(H("formatId"), prototype.formatId.value_or(VolumeConfig::defaultFormatId));
+        tb(H("swizzleMask"), prototype.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask));
+        tb(H("interpolation"),
+           prototype.interpolation.value_or(VolumeConfig::defaultInterpolation));
+        tb(H("wrapping"), prototype.wrapping.value_or(VolumeConfig::defaultWrapping));
+        tb(H("xAxis"), formatAxis(prototype.xAxis.value_or(VolumeConfig::defaultXAxis)));
+        tb(H("yAxis"), formatAxis(prototype.yAxis.value_or(VolumeConfig::defaultYAxis)));
+        tb(H("zAxis"), formatAxis(prototype.zAxis.value_or(VolumeConfig::defaultZAxis)));
+        tb(H("valueAxis"),
+           formatAxis(prototype.valueAxis.value_or(VolumeConfig::defaultValueAxis)));
+        tb(H("dataRange"), prototype.dataRange.value_or(
+                               VolumeConfig::defaultDataRange(VolumeConfig::defaultFormatId)));
+        tb(H("valueRange"), prototype.valueRange.value_or(
+                                VolumeConfig::defaultValueRange(VolumeConfig::defaultFormatId)));
+        tb(H("model"), prototype.model.value_or(VolumeConfig::defaultModel));
+        tb(H("world"), prototype.world.value_or(VolumeConfig::defaultWorld));
     }
     return doc;
 }

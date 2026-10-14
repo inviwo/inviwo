@@ -65,7 +65,7 @@ const ProcessorInfo& VolumeBinary::getProcessorInfo() const { return processorIn
 
 VolumeBinary::VolumeBinary()
     : VolumeGLProcessor("volume_binary.frag",
-                        VolumeConfig{.format = DataUInt8::get(),
+                        VolumeConfig{.formatId = DataFormatId::UInt8,
                                      .valueAxis = Axis{.name = "mask", .unit = Unit{}},
                                      .dataRange = vec2(0, 255),
                                      .valueRange = vec2(0, 255)})

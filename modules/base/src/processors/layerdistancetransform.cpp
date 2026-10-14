@@ -111,7 +111,7 @@ void LayerDistanceTransform::process() {
 
         auto layer = std::make_shared<Layer>(
             srcLayer->config().updateFrom({.dimensions = upsample * dim,
-                                           .format = DataFormatBase::get(DataFormatId::Float32),
+                                           .formatId = DataFormatId::Float32,
                                            .swizzleMask = swizzlemasks::defaultData(1)}));
         auto destRam =
             static_cast<LayerRAMPrecision<float>*>(layer->getEditableRepresentation<LayerRAM>());

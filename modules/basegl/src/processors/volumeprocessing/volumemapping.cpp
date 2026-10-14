@@ -54,7 +54,7 @@ const ProcessorInfo VolumeMapping::processorInfo_{
 const ProcessorInfo& VolumeMapping::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMapping::VolumeMapping()
-    : VolumeGLProcessor{"volume_mapping.frag", VolumeConfig{.format = DataFloat32::get()}}
+    : VolumeGLProcessor{"volume_mapping.frag", VolumeConfig{.formatId = DataFormatId::Float32}}
     , tfProperty_{"transferFunction", "Transfer function",
                   "Defines the transfer function for mapping voxel values to opacity"_help,
                   TransferFunction(

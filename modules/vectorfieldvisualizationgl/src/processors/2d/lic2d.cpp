@@ -157,7 +157,7 @@ LayerConfig LIC2D::outputConfig(const Layer& input) const {
     const DataFormatBase* format = input.getDataFormat();
 
     return input.config().updateFrom(
-        {.format = DataFormatBase::get(format->getNumericType(), 1, format->getPrecision()),
+        {.formatId = DataFormatBase::find(format->getNumericType(), 1, format->getPrecision()),
          .swizzleMask = swizzlemasks::defaultData(1),
          .dataRange = dvec2{0.0, 1.0},
          .valueRange = dvec2{0.0, 1.0}});

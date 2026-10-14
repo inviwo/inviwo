@@ -81,7 +81,7 @@ const ProcessorInfo& VectorFieldGenerator3D::getProcessorInfo() const { return p
 VectorFieldGenerator3D::VectorFieldGenerator3D()
     : VolumeGLProcessor("vectorfieldgenerator3d.frag",
                         {.dimensions = size3_t{16},
-                         .format = DataVec3Float32::get(),
+                         .formatId = DataFormatId::Vec3Float32,
                          .dataRange = dvec2(-1, 1),
                          .valueRange = dvec2(-1, 1)},
                         VolumeGLProcessor::UseInport::No)
@@ -95,7 +95,6 @@ VectorFieldGenerator3D::VectorFieldGenerator3D()
     , zValue_("z", "Z", "(1-sqrt(x*x+y*y))*0.4", InvalidationLevel::InvalidResources) {
 
     addProperties(size_, xValue_, yValue_, zValue_, xRange_, yRange_, zRange_);
-
     outport_.setIdentifier("outport");
 }
 

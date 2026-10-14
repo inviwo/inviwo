@@ -31,15 +31,8 @@
 
 namespace inviwo {
 
-dvec2 LayerConfig::defaultDataRange(const DataFormatBase* format) {
-    return DataMapper::defaultDataRangeFor(format);
-}
-dvec2 LayerConfig::defaultValueRange(const DataFormatBase* format) {
-    return defaultDataRange(format);
-}
-
 DataMapper LayerConfig::dataMap() const {
-    auto dataFormat = format ? format : LayerConfig::defaultFormat;
+    const auto dataFormat = formatId.value_or(LayerConfig::defaultFormatId);
     return DataMapper{dataRange.value_or(defaultDataRange(dataFormat)),
                       valueRange.value_or(defaultValueRange(dataFormat)),
                       valueAxis.value_or(defaultValueAxis)};
@@ -57,7 +50,7 @@ LayerConfig& LayerConfig::updateFrom(const LayerConfig& config) {
         }
     };
     update(dimensions, config.dimensions);
-    if (config.format) format = config.format;
+    update(formatId, config.formatId);
     update(type, config.type);
     update(swizzleMask, config.swizzleMask);
     update(interpolation, config.interpolation);
@@ -71,6 +64,31 @@ LayerConfig& LayerConfig::updateFrom(const LayerConfig& config) {
     update(world, config.world);
 
     return *this;
+}
+
+LayerConfig LayerConfig::orDefault() const {
+    return {.dimensions = dimensions.value_or(LayerConfig::defaultDimensions),
+            .formatId = formatId.value_or(LayerConfig::defaultFormatId),
+            .swizzleMask = swizzleMask.value_or(LayerConfig::defaultSwizzleMask),
+            .interpolation = interpolation.value_or(LayerConfig::defaultInterpolation),
+            .wrapping = wrapping.value_or(LayerConfig::defaultWrapping),
+            .xAxis = xAxis.value_or(LayerConfig::defaultXAxis),
+            .yAxis = yAxis.value_or(LayerConfig::defaultYAxis),
+            .valueAxis = valueAxis.value_or(LayerConfig::defaultValueAxis),
+            .dataRange =
+                dataRange.value_or(LayerConfig::defaultDataRange(LayerConfig::defaultFormatId)),
+            .valueRange =
+                valueRange.value_or(LayerConfig::defaultValueRange(LayerConfig::defaultFormatId)),
+            .model = model.value_or(LayerConfig::defaultModel),
+            .world = world.value_or(LayerConfig::defaultWorld)};
+}
+
+LayerReprConfig LayerConfig::reprConfig() const {
+    return {.dimensions = dimensions,
+            .formatId = formatId,
+            .swizzleMask = swizzleMask,
+            .interpolation = interpolation,
+            .wrapping = wrapping};
 }
 
 glm::mat4 LayerConfig::aspectPreservingModelMatrixFromDimensions(size2_t dimensions) {
