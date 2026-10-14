@@ -44,7 +44,11 @@ std::shared_ptr<Processor> CompositeProcessorFactoryObject::create(InviwoApplica
                                                 pi.displayName, app, file_);
 }
 
-Document CompositeProcessorFactoryObject::getMetaInformation() const { return {file_.string()}; }
+Document CompositeProcessorFactoryObject::getMetaInformation() const {
+    static std::string str;
+    str = file_.string();
+    return {std::string_view{str}};
+}
 
 ProcessorInfo CompositeProcessorFactoryObject::makeProcessorInfo(
     const std::filesystem::path& file) {
