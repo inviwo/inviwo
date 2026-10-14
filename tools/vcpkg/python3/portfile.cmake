@@ -37,6 +37,7 @@ set(PATCHES
     0021-use-system-libmpdec.patch
     0022-use-system-zstd.patch
     0023-regenerate-configure.patch # Generated with Autoconf 2.72 after the configure.ac patches.
+    0100-release-abi-debug.patch # Inviwo: debug build uses the debug CRT but the release ABI and names
 )
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
@@ -227,9 +228,9 @@ if(VCPKG_TARGET_IS_WINDOWS)
 
     if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
         make_python_pkgconfig(FILE python.pc INSTALL_ROOT "${CURRENT_PACKAGES_DIR}/debug"
-            EXEC_PREFIX "\${prefix}/../tools/${PORT}" INCLUDEDIR [[${prefix}/../include]] ABIFLAGS "_d")
+            EXEC_PREFIX "\${prefix}/../tools/${PORT}" INCLUDEDIR [[${prefix}/../include]] ABIFLAGS "")
         make_python_pkgconfig(FILE python-embed.pc INSTALL_ROOT "${CURRENT_PACKAGES_DIR}/debug"
-            EXEC_PREFIX "\${prefix}/../tools/${PORT}" INCLUDEDIR [[${prefix}/../include]] ABIFLAGS "_d")
+            EXEC_PREFIX "\${prefix}/../tools/${PORT}" INCLUDEDIR [[${prefix}/../include]] ABIFLAGS "")
     endif()
 
     vcpkg_fixup_pkgconfig()
@@ -241,18 +242,13 @@ if(VCPKG_TARGET_IS_WINDOWS)
             file(RENAME "${CURRENT_PACKAGES_DIR}/lib/python.lib"
                 "${CURRENT_PACKAGES_DIR}/lib/manual-link/python.lib")
         endif()
-        if (EXISTS "${CURRENT_PACKAGES_DIR}/debug/lib/python_d.lib")
+        if (EXISTS "${CURRENT_PACKAGES_DIR}/debug/lib/python.lib")
             file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/debug/lib/manual-link")
-            file(RENAME "${CURRENT_PACKAGES_DIR}/debug/lib/python_d.lib"
-                "${CURRENT_PACKAGES_DIR}/debug/lib/manual-link/python_d.lib")
+            file(RENAME "${CURRENT_PACKAGES_DIR}/debug/lib/python.lib"
+                "${CURRENT_PACKAGES_DIR}/debug/lib/manual-link/python.lib")
         endif()
     endif()
 else()
-    # The Python Stable ABI, `libpython3.so` is not produced by the upstream build system with --with-pydebug option
-    if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic" AND NOT VCPKG_BUILD_TYPE)
-        set(VCPKG_POLICY_MISMATCHED_NUMBER_OF_BINARIES enabled)
-    endif()
-
     set(OPTIONS
         "--with-openssl=${CURRENT_INSTALLED_DIR}"
         "--with-system-libmpdec"
@@ -302,7 +298,7 @@ else()
             py_cv_module__curses_panel=n/a
             py_cv_module__tkinter=n/a
         OPTIONS_DEBUG
-            "--with-pydebug"
+            # Inviwo: no --with-pydebug, keep the release ABI so that pip wheels (numpy) work
             "vcpkg_rpath=${CURRENT_INSTALLED_DIR}/debug/lib"
         OPTIONS_RELEASE
             "vcpkg_rpath=${CURRENT_INSTALLED_DIR}/lib"
