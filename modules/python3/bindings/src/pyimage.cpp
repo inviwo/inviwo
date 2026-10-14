@@ -64,7 +64,7 @@ auto getLayers = [](Image* img) {
 void exposeImage(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::classh<Image>(m, "Image")
+    py::classh<Image, MetaDataOwner>(m, "Image", py::multiple_inheritance{})
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<std::shared_ptr<Layer>>())
         .def(py::init<std::vector<std::shared_ptr<Layer>>>())

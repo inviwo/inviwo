@@ -37,6 +37,7 @@ set(HEADER_FILES
     include/inviwopy/pyinviwomodule.h
     include/inviwopy/pylayer.h
     include/inviwopy/pylogging.h
+    include/inviwopy/pymetadata.h
     include/inviwopy/pymesh.h
     include/inviwopy/pymodulemanager.h
     include/inviwopy/pynetwork.h
@@ -98,6 +99,7 @@ set(SOURCE_FILES
     src/pyinviwomodule.cpp
     src/pylayer.cpp
     src/pylogging.cpp
+    src/pymetadata.cpp
     src/pymesh.cpp
     src/pymodulemanager.cpp
     src/pynetwork.cpp

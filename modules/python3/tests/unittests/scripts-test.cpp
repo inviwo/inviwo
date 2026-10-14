@@ -38,6 +38,9 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/metadata/metadata.h>
 
 #include <modules/python3/python3module.h>
 #include <modules/python3/pythonscript.h>
@@ -213,6 +216,35 @@ TEST(Python3Scripts, OptionPropertyTest) {
     });
 
     EXPECT_TRUE(status);
+}
+
+TEST(Python3Scripts, MetaDataTest) {
+    const pybind11::gil_scoped_acquire guard{};
+
+    auto script = PythonScript::fromFile(getPath() / "metadata.py");
+
+    auto volume = std::make_shared<Volume>(size3_t{2, 2, 2}, DataInt8::get());
+    IntProperty prop{"prop", "Prop"};
+
+    bool status = false;
+    script.run({{"volume", pybind11::cast(volume)},
+                {"prop", pybind11::cast(&prop, pybind11::return_value_policy::reference)}},
+               [&](pybind11::dict) { status = true; });
+    ASSERT_TRUE(status);
+
+    EXPECT_EQ(6, volume->getMetaData<IntMetaData>("int", 0));
+    EXPECT_DOUBLE_EQ(1.5, volume->getMetaData<DoubleMetaData>("double", 0.0));
+    EXPECT_FLOAT_EQ(3.0f, volume->getMetaData<FloatMetaData>("float", 0.0f));
+    EXPECT_EQ("hello", volume->getMetaData<StringMetaData>("string", std::string{}));
+    EXPECT_EQ(vec3(1, 2, 3), volume->getMetaData<FloatVec3MetaData>("vec3", vec3{0}));
+    EXPECT_EQ((std::vector<std::string>{"a", "b"}),
+              (volume->getMetaData<MetaDataType<std::vector<std::string>>>(
+                  "strings", std::vector<std::string>{})));
+    EXPECT_FALSE(volume->hasMetaData("bool"));
+    EXPECT_FALSE(volume->hasMetaData("ivec2"));
+
+    EXPECT_EQ("hello", prop.getMetaData<StringMetaData>("string", std::string{}));
+    EXPECT_EQ(dvec2(1, 2), prop.getMetaData<DoubleVec2MetaData>("dvec2", dvec2{0}));
 }
 
 }  // namespace inviwo

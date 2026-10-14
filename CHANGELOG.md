@@ -1,5 +1,18 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-10-12 Python bindings for MetaData
+`MetaData`, `MetaDataMap`, and `MetaDataOwner` are now exposed in `inviwopy`, together with all the `MetaDataType<T>` types registered by the core, i.e. `IntMetaData`, `FloatVec3MetaData`, `StringMetaData`, `StringVectorMetaData`, etc. `MetaDataOwner` is a base class of the python `Volume`, `Layer`, `Image`, `Mesh`, `Property`, `Processor`, `DataFrame`, and `Column` types.
+```python
+volume.setMetaData("name", "my volume")       # creates a StringMetaData
+volume.setMetaData("scale", FloatMetaData(2)) # explicit type
+volume.getMetaData("name")                    # "my volume"
+volume.getMetaData("missing", 0)              # 0
+volume.hasMetaData("scale", FloatMetaData)    # True
+volume.metaData["scale"].value = 3.0          # access to the underlying MetaData objects
+volume.unsetMetaData("name")
+```
+`setMetaData` keeps the type of an existing entry if the value can be converted to it, otherwise the type is deduced from the value: `bool` -> `BoolMetaData`, `int` -> `IntMetaData`, `float` -> `DoubleMetaData`, `str` -> `StringMetaData`, `list[str]` -> `StringVectorMetaData`, `dict[str, str]` -> `StringMapMetaData`, and glm types to the corresponding type, e.g. `vec3` -> `FloatVec3MetaData`.
+
 ## 2026-08-28 Video readers in the FFmpeg module
 
 The FFmpeg module can now read video files, not only write them. Two data readers are registered for the common video container formats (`mp4`, `mov`, `mkv`, `webm`, `avi`, ...), which means the standard `LayerSource` and `LayerSequenceSource` processors can load videos.

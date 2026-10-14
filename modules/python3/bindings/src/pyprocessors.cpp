@@ -208,7 +208,7 @@ void exposeProcessors(pybind11::module& m) {
         .def(py::init<const std::string&>())
         .def("getClassIdentifier", &ProcessorWidgetFactoryObject::getClassIdentifier);
 
-    py::classh<ProcessorMetaData>(m, "ProcessorMetaData")
+    py::classh<ProcessorMetaData, MetaData>(m, "ProcessorMetaData")
         .def_property("position", &ProcessorMetaData::getPosition, &ProcessorMetaData::setPosition)
         .def_property("selected", &ProcessorMetaData::isSelected, &ProcessorMetaData::setSelected)
         .def_property("visible", &ProcessorMetaData::isVisible, &ProcessorMetaData::setVisible);
@@ -222,7 +222,7 @@ void exposeProcessors(pybind11::module& m) {
     exposeVectorIdentifierWrapper<typename std::vector<Outport*>::const_iterator>(
         m, "OutportVectorWrapper");
 
-    py::classh<Processor, PropertyOwner, ProcessorTrampoline>(
+    py::classh<Processor, PropertyOwner, MetaDataOwner, ProcessorTrampoline>(
         m, "Processor", py::multiple_inheritance{}, py::dynamic_attr{})
         .def(py::init<const std::string&, const std::string&>())
         .def("__repr__", &Processor::getIdentifier)

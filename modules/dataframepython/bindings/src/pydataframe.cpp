@@ -56,7 +56,7 @@ namespace {
 
 struct DataFrameAddColumnReg {
     template <typename T>
-    auto operator()(py::classh<DataFrame>& d) {
+    auto operator()(py::classh<DataFrame, MetaDataOwner>& d) {
         auto classname = Defaultvalues<T>::getName();
 
         d.def(
@@ -145,7 +145,7 @@ void exposeDataFrame(pybind11::module& m) {
         .value("Ordinal", ColumnType::Ordinal)
         .value("Categorical", ColumnType::Categorical);
 
-    py::classh<Column>(m, "Column")
+    py::classh<Column, MetaDataOwner>(m, "Column", py::multiple_inheritance{})
         .def_property("header", &Column::getHeader, &Column::setHeader)
         .def_property_readonly("buffer", [](Column& self) { return self.getBuffer(); })
         .def_property_readonly("size", &Column::getSize)
@@ -232,7 +232,7 @@ void exposeDataFrame(pybind11::module& m) {
     py::classh<IndexColumn, TemplateColumn<std::uint32_t>>(m, "IndexColumn")
         .def(py::init<std::string_view>());
 
-    py::classh<DataFrame> dataframe(m, "DataFrame");
+    py::classh<DataFrame, MetaDataOwner> dataframe(m, "DataFrame", py::multiple_inheritance{});
     dataframe.def(py::init<std::uint32_t>(), py::arg("size") = 0)
         .def_property_readonly("cols", &DataFrame::getNumberOfColumns)
         .def_property_readonly("rows", &DataFrame::getNumberOfRows)

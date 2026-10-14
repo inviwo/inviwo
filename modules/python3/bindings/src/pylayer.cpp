@@ -61,7 +61,8 @@ namespace inviwo {
 void exposeLayer(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::classh<Layer, StructuredGridEntity<2>>(m, "Layer", py::multiple_inheritance{})
+    py::classh<Layer, StructuredGridEntity<2>, MetaDataOwner>(m, "Layer",
+                                                              py::multiple_inheritance{})
         .def(py::init<std::shared_ptr<LayerRepresentation>>())
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<size2_t, const DataFormatBase*, LayerType, const SwizzleMask&,

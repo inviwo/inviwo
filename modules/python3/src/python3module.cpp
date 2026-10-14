@@ -99,9 +99,14 @@ public:
 void runScript(PythonScript& script, InviwoApplication* app) {
     const pybind11::gil_scoped_acquire guard{};
 
-    auto extra = app->getCommandLineParser().getIgnoredArgs();
-    extra.insert(extra.begin(), app->getCommandLineParser().getArgs().front());
-    pybind11::module::import("sys").attr("argv") = extra;
+    // std::vector<std::string> is an opaque type bound module-locally in inviwopy, and can not
+    // be cast from here, hence we build the list manually.
+    pybind11::list argv;
+    argv.append(app->getCommandLineParser().getArgs().front());
+    for (const auto& arg : app->getCommandLineParser().getIgnoredArgs()) {
+        argv.append(arg);
+    }
+    pybind11::module::import("sys").attr("argv") = argv;
 
     script.run();
 }

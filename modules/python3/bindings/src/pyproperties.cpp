@@ -163,7 +163,7 @@ void exposeProperties(pybind11::module& m) {
             return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
         });
 
-    py::classh<Property>(m, "Property")
+    py::classh<Property, MetaDataOwner>(m, "Property", py::multiple_inheritance{})
         .def_property("identifier", &Property::getIdentifier, &Property::setIdentifier)
         .def_property("displayName", &Property::getDisplayName, &Property::setDisplayName)
         .def_property("readOnly", &Property::getReadOnly, &Property::setReadOnly)
