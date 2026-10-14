@@ -29,8 +29,9 @@
 
 #include <inviwo/core/processors/compositeprocessorfactoryobject.h>
 #include <inviwo/core/util/utilities.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+
+#include <filesystem>
 
 namespace inviwo {
 
@@ -39,7 +40,8 @@ CompositeProcessorFactoryObject::CompositeProcessorFactoryObject(const std::file
 
 std::shared_ptr<Processor> CompositeProcessorFactoryObject::create(InviwoApplication* app) const {
     const auto pi = getProcessorInfo();
-    return std::make_shared<CompositeProcessor>(pi.displayName, pi.displayName, app, file_);
+    return std::make_shared<CompositeProcessor>(util::stripIdentifier(pi.displayName),
+                                                pi.displayName, app, file_);
 }
 
 Document CompositeProcessorFactoryObject::getMetaInformation() const { return {file_.string()}; }

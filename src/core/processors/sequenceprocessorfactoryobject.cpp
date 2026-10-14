@@ -29,8 +29,9 @@
 
 #include <inviwo/core/processors/sequenceprocessorfactoryobject.h>
 #include <inviwo/core/util/utilities.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+
+#include <filesystem>
 
 namespace inviwo {
 
@@ -38,13 +39,12 @@ SequenceProcessorFactoryObject::SequenceProcessorFactoryObject(const std::filesy
     : ProcessorFactoryObject(makeProcessorInfo(file), "inviwo::SequenceProcessor"), file_{file} {}
 
 std::shared_ptr<Processor> SequenceProcessorFactoryObject::create(InviwoApplication* app) const {
-    auto pi = getProcessorInfo();
-    return std::make_shared<SequenceProcessor>(pi.displayName, pi.displayName, app, file_);
+    const auto pi = getProcessorInfo();
+    return std::make_shared<SequenceProcessor>(util::stripIdentifier(pi.displayName),
+                                               pi.displayName, app, file_);
 }
 
-Document SequenceProcessorFactoryObject::getMetaInformation() const {
-    return Document(file_.string());
-}
+Document SequenceProcessorFactoryObject::getMetaInformation() const { return {file_.string()}; }
 
 ProcessorInfo SequenceProcessorFactoryObject::makeProcessorInfo(const std::filesystem::path& file) {
 
