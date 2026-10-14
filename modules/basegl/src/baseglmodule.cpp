@@ -91,6 +91,7 @@
 #include <modules/basegl/processors/meshrenderprocessorgl.h>
 #include <modules/basegl/processors/multichannelraycaster.h>
 #include <modules/basegl/processors/pointrenderer.h>
+#include <modules/basegl/processors/raycasting/analyticvolumeraycaster.h>
 #include <modules/basegl/processors/raycasting/atlasvolumeraycaster.h>
 #include <modules/basegl/processors/raycasting/multichannelvolumeraycaster.h>
 #include <modules/basegl/processors/raycasting/sphericalvolumeraycaster.h>
@@ -140,6 +141,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProperty<LineSettingsProperty>();
     registerProperty<SplitterProperty>();
 
+    registerProcessor<AnalyticVolumeRaycaster>();
     registerProcessor<AtlasVolumeRaycaster>();
     registerProcessor<AxisAlignedCutPlane>();
     registerProcessor<Background>();
