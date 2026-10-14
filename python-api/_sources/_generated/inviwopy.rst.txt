@@ -23,6 +23,7 @@
 
    .. autosummary::
    
+      BoolMetaData
       CanvasProcessor
       CodeState
       ConsoleLogger
@@ -38,8 +39,22 @@
       DataWriter
       DataWriterFactory
       Deserializer
+      DoubleMat2MetaData
+      DoubleMat3MetaData
+      DoubleMat4MetaData
+      DoubleMetaData
+      DoubleVec2MetaData
+      DoubleVec3MetaData
+      DoubleVec4MetaData
       Event
       FileLogger
+      FloatMat2MetaData
+      FloatMat3MetaData
+      FloatMat4MetaData
+      FloatMetaData
+      FloatVec2MetaData
+      FloatVec3MetaData
+      FloatVec4MetaData
       ImageDataReader
       ImageDataWriter
       ImageReaderFactory
@@ -48,6 +63,10 @@
       InportCallbackHolderOutport
       InportCallbackHolderVoid
       InportVectorWrapper
+      IntMetaData
+      IntVec2MetaData
+      IntVec3MetaData
+      IntVec4MetaData
       InteractionEvent
       InviwoApplication
       InviwoModule
@@ -79,6 +98,9 @@
       MeshReaderFactory
       MeshWriterFactory
       MessageBreakLevel
+      MetaData
+      MetaDataMap
+      MetaDataOwner
       ModuleIdentifierWrapper
       ModuleManager
       ModuleManagerCallbackHolder
@@ -110,6 +132,7 @@
       PickingStatesIterator
       Port
       PortConnection
+      PositionMetaData
       Processor
       ProcessorFactory
       ProcessorFactoryObject
@@ -128,8 +151,15 @@
       SerializationTarget
       Serializer
       Settings
+      Size2MetaData
+      Size3MetaData
+      Size4MetaData
+      SizeMetaData
+      StringMapMetaData
+      StringMetaData
       StringVector
       StringVectorInport
+      StringVectorMetaData
       StringVectorOutport
       Tag
       Tags
@@ -144,6 +174,10 @@
       TransferFunctionDataWriter
       TransferFunctionReaderFactory
       TransferFunctionWriterFactory
+      UIntMetaData
+      UIntVec2MetaData
+      UIntVec3MetaData
+      UIntVec4MetaData
       Version
       ViewEvent
       ViewEventFitData
