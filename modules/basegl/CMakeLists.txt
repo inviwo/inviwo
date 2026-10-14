@@ -74,6 +74,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/multichannelraycaster.h
     include/modules/basegl/processors/pointrenderer.h
     include/modules/basegl/processors/raycasting/acceleratedvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/analyticvolumeraycaster.h
     include/modules/basegl/processors/raycasting/atlasvolumeraycaster.h
     include/modules/basegl/processors/raycasting/multichannelvolumeraycaster.h
     include/modules/basegl/processors/raycasting/sphericalvolumeraycaster.h
@@ -113,6 +114,7 @@ set(HEADER_FILES
     include/modules/basegl/rendering/splitterrenderer.h
     include/modules/basegl/shadercomponents/acceleratecomponent.h
     include/modules/basegl/shadercomponents/alternativeshadercomponent.h
+    include/modules/basegl/shadercomponents/analyticentryexitcomponent.h
     include/modules/basegl/shadercomponents/atlascomponent.h
     include/modules/basegl/shadercomponents/backgroundcomponent.h
     include/modules/basegl/shadercomponents/cameracomponent.h
@@ -214,6 +216,7 @@ set(SOURCE_FILES
     src/processors/multichannelraycaster.cpp
     src/processors/pointrenderer.cpp
     src/processors/raycasting/acceleratedvolumeraycaster.cpp
+    src/processors/raycasting/analyticvolumeraycaster.cpp
     src/processors/raycasting/atlasvolumeraycaster.cpp
     src/processors/raycasting/multichannelvolumeraycaster.cpp
     src/processors/raycasting/sphericalvolumeraycaster.cpp
@@ -252,6 +255,7 @@ set(SOURCE_FILES
     src/rendering/splitterrenderer.cpp
     src/shadercomponents/acceleratecomponent.cpp
     src/shadercomponents/alternativeshadercomponent.cpp
+    src/shadercomponents/analyticentryexitcomponent.cpp
     src/shadercomponents/atlascomponent.cpp
     src/shadercomponents/backgroundcomponent.cpp
     src/shadercomponents/cameracomponent.cpp
