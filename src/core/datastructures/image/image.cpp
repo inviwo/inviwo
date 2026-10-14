@@ -183,7 +183,7 @@ std::vector<std::shared_ptr<Layer>> Image::createColorLayers(const Image& image,
 
     for (size_t i = 0; i < image.getNumberOfColorLayers(); ++i) {
         layers.push_back(std::make_shared<Layer>(*image.getColorLayer(i), noData,
-                                                 LayerConfig{.format = format}));
+                                                 LayerConfig{.formatId = format->getId()}));
     }
     return layers;
 }

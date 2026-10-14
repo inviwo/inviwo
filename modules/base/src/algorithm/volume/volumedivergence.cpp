@@ -77,7 +77,7 @@ std::shared_ptr<Volume> divergenceVolume(
     }
 
     const auto config = VolumeConfig{srcVolume.config()}.updateFrom(
-        {.format = DataFloat32::get(),
+        {.formatId = DataFormatId::Float32,
          .swizzleMask = swizzlemasks::defaultData(1),
          .interpolation = InterpolationType::Linear,
          .valueAxis =

@@ -92,7 +92,8 @@ struct TypeMap<unsigned long long> {
 };
 
 namespace util {
-IVW_MODULE_HDF5_API const DataFormatBase* getDataFormatFromDataSet(const H5::DataSet& dataset);
+IVW_MODULE_HDF5_API std::optional<DataFormatId> getDataFormatFromDataSet(
+    const H5::DataSet& dataset);
 }  // namespace util
 
 }  // namespace hdf5

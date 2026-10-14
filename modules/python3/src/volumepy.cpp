@@ -111,7 +111,7 @@ VolumePy::VolumePy(size3_t dimensions, const DataFormatBase* format, const Swizz
 
 VolumePy::VolumePy(const VolumeReprConfig& config)
     : VolumePy{config.dimensions.value_or(VolumeConfig::defaultDimensions),
-               config.format ? config.format : VolumeConfig::defaultFormat,
+               DataFormatBase::get(config.formatId.value_or(VolumeConfig::defaultFormatId)),
                config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask),
                config.interpolation.value_or(VolumeConfig::defaultInterpolation),
                config.wrapping.value_or(VolumeConfig::defaultWrapping)} {}

@@ -102,7 +102,7 @@ const ProcessorInfo& TornadoGenerator::getProcessorInfo() const { return process
 TornadoGenerator::TornadoGenerator()
     : VolumeGLProcessor{std::make_shared<StringShaderResource>("tornado.frag", tornado),
                         {.dimensions = size3_t{16},
-                         .format = DataVec3Float32::get(),
+                         .formatId = DataFormatId::Vec3Float32,
                          .dataRange = dvec2(-1.0, 1.0),
                          .valueRange = dvec2(-1.0, 1.0)},
                         VolumeGLProcessor::UseInport::No}

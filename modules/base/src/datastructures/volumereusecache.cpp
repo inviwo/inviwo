@@ -44,7 +44,7 @@ auto VolumeReuseCache::get(const VolumeConfig& config)
 
     // only check for dim/format
     auto status = Status::NoChange;
-    if (config.dimensions != config_.dimensions || config.format != config_.format) {
+    if (config.dimensions != config_.dimensions || config.formatId != config_.formatId) {
         cache_.clear();
         status = Status::ClearedCache;
     }

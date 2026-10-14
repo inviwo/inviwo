@@ -30,63 +30,34 @@
 #include <modules/hdf5/hdf5types.h>
 #include <inviwo/core/util/logcentral.h>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 #include <warn/push>
 #include <warn/ignore/switch-enum>
-
-IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(
-    const H5::DataSet& dataset) {
-    NumericType numerictype;
-    const int components = 1;
-    size_t precision = 8;
-
+std::optional<DataFormatId> util::getDataFormatFromDataSet(const H5::DataSet& dataset) {
     switch (dataset.getTypeClass()) {
         case H5T_INTEGER: {
-            const H5::IntType type = dataset.getIntType();
-            precision = type.getPrecision();
-
+            const auto type = dataset.getIntType();
             switch (type.getSign()) {
                 case H5T_SGN_NONE: {
-                    numerictype = NumericType::UnsignedInteger;
-                    break;
+                    return DataFormatBase::find(NumericType::UnsignedInteger, 1,
+                                                type.getPrecision());
                 }
                 case H5T_SGN_2: {
-                    numerictype = NumericType::SignedInteger;
-                    break;
-                }
-                default: {
-                    log::warn("HDF type not supported");
-                    return nullptr;
+                    return DataFormatBase::find(NumericType::SignedInteger, 1, type.getPrecision());
                 }
             }
-
-            break;
+            return DataFormatBase::find(NumericType::Float, 1, type.getPrecision());
         }
         case H5T_FLOAT: {
-            const H5::FloatType type = dataset.getFloatType();
-            numerictype = NumericType::Float;
-            precision = type.getPrecision();
-            break;
-        }
-        case H5T_ARRAY: {
-            const H5::ArrayType type = dataset.getArrayType();
-            log::warn("HDF type not supported");
-            return nullptr;
-        }
-        default: {
-            log::warn("HDF type not supported");
-            return nullptr;
+            const auto type = dataset.getFloatType();
+            return DataFormatBase::find(NumericType::Float, 1, type.getPrecision());
         }
     }
 
-    return DataFormatBase::get(numerictype, components, precision);
+    log::warn("HDF type not supported");
+    return std::nullopt;
 }
-
 #include <warn/pop>
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

@@ -146,7 +146,7 @@ void HDF5ToVolume::process() try {
     selection_.update(volumeInfo);
 
     const VolumeConfig config{
-        .format = util::conversionFormat(datatype_.getSelectedIndex()),
+        .formatId = util::conversionFormat(datatype_.getSelectedIndex()),
         .interpolation = information_.interpolation.getSelectedValue(),
         .wrapping = Wrapping3D{information_.wrapping[0].getSelectedValue(),
                                information_.wrapping[1].getSelectedValue(),

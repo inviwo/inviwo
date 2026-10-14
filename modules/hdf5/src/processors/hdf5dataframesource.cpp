@@ -114,7 +114,7 @@ void HDF5ToDataFrame::process() try {
         // Build a full-range selection for this 1-D dataset.
         const std::vector<Selection> selection{{0, rows, 1}};
 
-        const auto buffer = getBufferAtPathAsType(*data + meta.path, selection, nullptr);
+        auto buffer = getBufferAtPathAsType(*data + meta.path, selection, std::nullopt);
 
         // Use the last path component as column header.
         const std::string pathStr = meta.path.toString();

@@ -70,9 +70,9 @@ void LayerColorMapping::preProcess(TextureUnitContainer& container, Shader& shad
 
 LayerConfig LayerColorMapping::outputConfig([[maybe_unused]] const Layer& input) const {
     const auto* inputFormat = input.getDataFormat();
-    const auto* outputFormat =
-        DataFormatBase::get(inputFormat->getNumericType(), 4, inputFormat->getPrecision());
-    return input.config().updateFrom({.format = outputFormat,
+    const auto outputFormat =
+        DataFormatBase::find(inputFormat->getNumericType(), 4, inputFormat->getPrecision());
+    return input.config().updateFrom({.formatId = outputFormat,
                                       .swizzleMask = swizzlemasks::rgba,
                                       .dataRange = DataMapper::defaultDataRangeFor(inputFormat),
                                       .valueRange = dvec2{0.0, 1.0}});

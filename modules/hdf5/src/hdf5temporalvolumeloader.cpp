@@ -74,8 +74,8 @@ std::shared_ptr<Volume> HDF5TemporalVolumeLoader::load(size_t index, std::shared
 
     auto volume = getVolumeAtPathAsType(handle_, sel, prototype_, [&](const VolumeConfig& cfg) {
         const auto dims = cfg.dimensions.value_or(VolumeConfig::defaultDimensions);
-        const auto* format = cfg.format ? cfg.format : VolumeConfig::defaultFormat;
-        if (reuse && reuse->getDimensions() == dims && reuse->getDataFormat() == format) {
+        const auto formatId = cfg.formatId.value_or(VolumeConfig::defaultFormatId);
+        if (reuse && reuse->getDimensions() == dims && reuse->getDataFormatId() == formatId) {
             reuse->getMetaDataMap()->removeAll();
 
             reuse->setSwizzleMask(cfg.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask));

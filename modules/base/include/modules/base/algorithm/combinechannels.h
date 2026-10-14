@@ -114,15 +114,21 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
                               util::commonFormatPrecision(formats));
     }();
 
-    auto commonFormat = DataFormatBase::get(type, activePorts.size(), precision);
+    const auto commonFormat = DataFormatBase::find(type, activePorts.size(), precision);
+    if (!commonFormat) {
+        throw Exception(SourceContext{},
+                        "Could not find common data format for {} channels with type {} and "
+                        "precision {}",
+                        activePorts.size(), static_cast<int>(type), precision);
+    }
 
-    using Config = typename T::Config;
+    using Config = T::Config;
     auto data =
         std::make_shared<T>(*activePorts.front().first->getData(), noData,
-                            Config{.format = commonFormat,
+                            Config{.formatId = commonFormat,
                                    .swizzleMask = swizzlemasks::defaultData(activePorts.size())});
 
-    [[maybe_unused]] const DataMapper destDataMap(commonFormat);
+    [[maybe_unused]] const DataMapper destDataMap(DataFormatBase::get(*commonFormat));
 
     if constexpr (normalization == detail::ChannelNormalization::Yes) {
         data->dataMap = destDataMap;

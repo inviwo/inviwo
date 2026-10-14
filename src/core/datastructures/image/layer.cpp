@@ -63,7 +63,8 @@ Layer::Layer(const LayerConfig& config)
            config.yAxis.value_or(LayerConfig::defaultYAxis)}
     , defaultLayerType_{config.type.value_or(LayerConfig::defaultType)}
     , defaultDimensions_{config.dimensions.value_or(LayerConfig::defaultDimensions)}
-    , defaultDataFormat_{config.format ? config.format : LayerConfig::defaultFormat}
+    , defaultDataFormat_{DataFormatBase::get(
+          config.formatId.value_or(LayerConfig::defaultFormatId))}
     , defaultSwizzleMask_{config.swizzleMask.value_or(LayerConfig::defaultSwizzleMask)}
     , defaultInterpolation_{config.interpolation.value_or(LayerConfig::defaultInterpolation)}
     , defaultWrapping_{config.wrapping.value_or(LayerConfig::defaultWrapping)}
@@ -93,7 +94,7 @@ Layer::Layer(const Layer& rhs, NoData, const LayerConfig& config)
     , axes{config.xAxis.value_or(rhs.axes[0]), config.yAxis.value_or(rhs.axes[1])}
     , defaultLayerType_{config.type.value_or(rhs.getLayerType())}
     , defaultDimensions_{config.dimensions.value_or(rhs.getDimensions())}
-    , defaultDataFormat_{config.format ? config.format : rhs.getDataFormat()}
+    , defaultDataFormat_{DataFormatBase::get(config.formatId.value_or(rhs.getDataFormatId()))}
     , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.getSwizzleMask())}
     , defaultInterpolation_{config.interpolation.value_or(rhs.getInterpolation())}
     , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())}
@@ -119,6 +120,10 @@ void Layer::setDataFormat(const DataFormatBase* format) { defaultDataFormat_ = f
 const DataFormatBase* Layer::getDataFormat() const {
     return getLastOr(&LayerRepresentation::getDataFormat, defaultDataFormat_);
 }
+
+void Layer::setDataFormatId(DataFormatId formatId) { setDataFormat(DataFormatBase::get(formatId)); }
+
+DataFormatId Layer::getDataFormatId() const { return getDataFormat()->getId(); }
 
 void Layer::setSwizzleMask(const SwizzleMask& mask) {
     defaultSwizzleMask_ = mask;
@@ -201,7 +206,7 @@ const Axis* Layer::getAxis(size_t index) const {
 
 LayerConfig Layer::config() const {
     return {.dimensions = getDimensions(),
-            .format = getDataFormat(),
+            .formatId = getDataFormatId(),
             .type = getLayerType(),
             .swizzleMask = getSwizzleMask(),
             .interpolation = getInterpolation(),
@@ -213,6 +218,30 @@ LayerConfig Layer::config() const {
             .valueRange = dataMap.valueRange,
             .model = getModelMatrix(),
             .world = getWorldMatrix()};
+}
+
+void Layer::setConfig(const LayerConfig& config) {
+    auto setMaybe = [&](const auto& opt, auto&& func) {
+        if constexpr (std::is_invocable_v<decltype(func), decltype(*this), decltype(*opt)>) {
+            if (opt) std::invoke(std::forward<decltype(func)>(func), *this, *opt);
+        } else if constexpr (std::is_invocable_v<decltype(func), decltype(*opt)>) {
+            if (opt) std::invoke(std::forward<decltype(func)>(func), *opt);
+        } else {
+            static_assert(util::alwaysFalse<decltype(func)>());
+        }
+    };
+    setMaybe(config.dimensions, &Layer::setDimensions);
+    setMaybe(config.formatId, &Layer::setDataFormatId);
+    setMaybe(config.swizzleMask, &Layer::setSwizzleMask);
+    setMaybe(config.interpolation, &Layer::setInterpolation);
+    setMaybe(config.wrapping, &Layer::setWrapping);
+    setMaybe(config.xAxis, [&](const auto& axis) { axes[0] = axis; });
+    setMaybe(config.yAxis, [&](const auto& axis) { axes[1] = axis; });
+    setMaybe(config.valueAxis, [&](const auto& axis) { dataMap.valueAxis = axis; });
+    setMaybe(config.dataRange, [&](const auto& range) { dataMap.dataRange = range; });
+    setMaybe(config.valueRange, [&](const auto& range) { dataMap.valueRange = range; });
+    setMaybe(config.model, &Layer::setModelMatrix);
+    setMaybe(config.world, &Layer::setWorldMatrix);
 }
 
 namespace {

@@ -181,7 +181,7 @@ void MaskComponent::preprocess() {
     const auto data = port_->getData();
     if (!mask_ || data->getDimensions() != mask_->getDimensions()) {
         mask_ = std::make_shared<Volume>(VolumeConfig{.dimensions = data->getDimensions(),
-                                                      .format = DataUInt8::get(),
+                                                      .formatId = DataFormatId::UInt8,
                                                       .dataRange = vec2(0, 255),
                                                       .valueRange = vec2(0, 255),
                                                       .model = data->getModelMatrix(),

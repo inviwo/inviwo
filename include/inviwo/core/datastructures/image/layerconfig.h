@@ -41,9 +41,18 @@
 
 namespace inviwo {
 
+struct IVW_CORE_API LayerReprConfig {
+    std::optional<size2_t> dimensions = std::nullopt;
+    std::optional<DataFormatId> formatId = std::nullopt;
+    std::optional<LayerType> type = std::nullopt;
+    std::optional<SwizzleMask> swizzleMask = std::nullopt;
+    std::optional<InterpolationType> interpolation = std::nullopt;
+    std::optional<Wrapping2D> wrapping = std::nullopt;
+};
+
 struct IVW_CORE_API LayerConfig {
     std::optional<size2_t> dimensions = std::nullopt;
-    const DataFormatBase* format = nullptr;
+    std::optional<DataFormatId> formatId = std::nullopt;
     std::optional<LayerType> type = std::nullopt;
     std::optional<SwizzleMask> swizzleMask = std::nullopt;
     std::optional<InterpolationType> interpolation = std::nullopt;
@@ -57,7 +66,7 @@ struct IVW_CORE_API LayerConfig {
     std::optional<glm::mat4> world = std::nullopt;
 
     static constexpr auto defaultDimensions = size2_t(8, 8);
-    static inline const DataFormatBase* defaultFormat = DataVec4UInt8::get();
+    static constexpr auto defaultFormatId = DataUInt8::id();
     static constexpr auto defaultType = LayerType::Color;
     static constexpr auto defaultSwizzleMask = swizzlemasks::rgba;
     static constexpr auto defaultInterpolation = InterpolationType::Linear;
@@ -65,27 +74,42 @@ struct IVW_CORE_API LayerConfig {
     static inline const auto defaultXAxis = Axis{"x", Unit{}};
     static inline const auto defaultYAxis = Axis{"y", Unit{}};
     static inline const auto defaultValueAxis = Axis{};
-    static glm::dvec2 defaultDataRange(const DataFormatBase* format = defaultFormat);
-    static glm::dvec2 defaultValueRange(const DataFormatBase* format = defaultFormat);
+    static constexpr glm::dvec2 defaultDataRange(DataFormatId formatId = defaultFormatId);
+    static constexpr glm::dvec2 defaultValueRange(DataFormatId formatId = defaultFormatId);
     static constexpr auto defaultModel = glm::mat4{1.0f};
     static constexpr auto defaultWorld = glm::mat4{1.0f};
 
     DataMapper dataMap() const;
     DataMapper dataMap(const DataMapper& defaultMapper) const;
     LayerConfig& updateFrom(const LayerConfig& config);
+    [[nodiscard]] LayerReprConfig reprConfig() const;
+    [[nodiscard]] LayerConfig orDefault() const;
 
     friend bool operator==(const LayerConfig&, const LayerConfig&) = default;
 
     static glm::mat4 aspectPreservingModelMatrixFromDimensions(size2_t dimensions);
+
+    constexpr auto tie() {
+        return std::tie(dimensions, formatId, swizzleMask, interpolation, wrapping, xAxis, yAxis,
+                        valueAxis, dataRange, valueRange, model, world);
+    }
+    constexpr auto tie() const {
+        return std::tie(dimensions, formatId, swizzleMask, interpolation, wrapping, xAxis, yAxis,
+                        valueAxis, dataRange, valueRange, model, world);
+    }
+    static constexpr auto defaults() {
+        return std::tuple(defaultDimensions, defaultFormatId, defaultSwizzleMask,
+                          defaultInterpolation, defaultWrapping, defaultXAxis, defaultYAxis,
+                          defaultValueAxis, defaultDataRange(), defaultValueRange(), defaultModel,
+                          defaultWorld);
+    }
 };
 
-struct IVW_CORE_API LayerReprConfig {
-    std::optional<size2_t> dimensions = std::nullopt;
-    const DataFormatBase* format = nullptr;
-    std::optional<LayerType> type = std::nullopt;
-    std::optional<SwizzleMask> swizzleMask = std::nullopt;
-    std::optional<InterpolationType> interpolation = std::nullopt;
-    std::optional<Wrapping2D> wrapping = std::nullopt;
-};
+constexpr dvec2 LayerConfig::defaultDataRange(DataFormatId formatId) {
+    return DataMapper::defaultDataRangeFor(DataFormatBase::get(formatId));
+}
+constexpr dvec2 LayerConfig::defaultValueRange(DataFormatId formatId) {
+    return defaultDataRange(formatId);
+}
 
 }  // namespace inviwo
