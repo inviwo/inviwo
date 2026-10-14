@@ -34,4 +34,6 @@ namespace inviwo {
 
 void exposeDataFrame(pybind11::module& m);
 
+void exposeDataFrameProperties(pybind11::module& m);
+
 }  // namespace inviwo

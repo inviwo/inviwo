@@ -32,10 +32,12 @@
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
+#include <pybind11/native_enum.h>
 
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/util/dataframeutil.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
 
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/safecstr.h>
@@ -372,6 +374,42 @@ void exposeDataFrame(pybind11::module& m) {
              )delim");
 
     exposeStandardDataPorts<DataFrame>(m, "DataFrame");
+}
+
+void exposeDataFrameProperties(pybind11::module& m) {
+    py::native_enum<ColumnOptionProperty::AddNoneOption>(m, "AddNoneOption", "enum.Enum")
+        .value("No", ColumnOptionProperty::AddNoneOption::No)
+        .value("Yes", ColumnOptionProperty::AddNoneOption::Yes)
+        .finalize();
+
+    py::classh<ColumnOptionProperty, OptionPropertyInt>(m, "ColumnOptionProperty")
+        .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
+                         ColumnOptionProperty::AddNoneOption noneOption, int defaultIndex) {
+                 return new ColumnOptionProperty{identifier, displayName, std::move(help),
+                                                 noneOption, defaultIndex};
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("help"),
+             py::arg("noneOption") = ColumnOptionProperty::AddNoneOption::No,
+             py::arg("defaultIndex") = 0)
+        .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
+                         DataFrameInport& port, ColumnOptionProperty::AddNoneOption noneOption,
+                         int defaultIndex) {
+                 return new ColumnOptionProperty{identifier, displayName, std::move(help),
+                                                 port,       noneOption,  defaultIndex};
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("port"),
+             py::arg("noneOption") = ColumnOptionProperty::AddNoneOption::No,
+             py::arg("defaultIndex") = 0)
+        .def("setPort", &ColumnOptionProperty::setPort)
+        .def("setOptions", &ColumnOptionProperty::setOptions)
+        .def("setDefaultSelectedIndex", &ColumnOptionProperty::setDefaultSelectedIndex)
+        .def_property_readonly("selectedColumnHeader",
+                               &ColumnOptionProperty::getSelectedColumnHeader)
+        .def("isNoneSelected", &ColumnOptionProperty::isNoneSelected)
+        .def("hasNoneOption", &ColumnOptionProperty::hasNoneOption)
+        .def("__repr__", [](ColumnOptionProperty& p) {
+            return fmt::format("ColumnOptionProperty({})", p.get());
+        });
 }
 
 }  // namespace inviwo
