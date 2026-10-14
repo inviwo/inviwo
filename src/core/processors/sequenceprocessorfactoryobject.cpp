@@ -44,7 +44,10 @@ std::shared_ptr<Processor> SequenceProcessorFactoryObject::create(InviwoApplicat
                                                pi.displayName, app, file_);
 }
 
-Document SequenceProcessorFactoryObject::getMetaInformation() const { return {file_.string()}; }
+Document SequenceProcessorFactoryObject::getMetaInformation() const {
+    const std::string str{file_.string()};
+    return {std::string_view{str}};
+}
 
 ProcessorInfo SequenceProcessorFactoryObject::makeProcessorInfo(const std::filesystem::path& file) {
 
