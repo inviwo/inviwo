@@ -17,8 +17,10 @@
 
    .. autosummary::
    
+      AddNoneOption
       CategoricalColumn
       Column
+      ColumnOptionProperty
       ColumnType
       DataFrame
       DataFrameFlatInportIteratorGenerator
