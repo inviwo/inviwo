@@ -140,7 +140,7 @@ void SeedPointGenerator::process() {
         case PLANE:  planePoints(); break;
         case LINE:   linePoints(); break;
         case SPHERE: spherePoints(); break;
-        default:     log::warn("No points generated since given type is not yet implemented"); break;
+        default: log::warn("No points generated since given type is not yet implemented"); break;
     }
 }
 
@@ -195,7 +195,7 @@ void SeedPointGenerator::spherePoints() {
 
 void SeedPointGenerator::linePoints() {
     auto points = std::make_shared<std::vector<vec3>>();
-    float dt = 1.0f / static_cast<double>(std::max((numberOfPoints_.get() - 1), 1));
+    const float dt = 1.0f / static_cast<float>(std::max((numberOfPoints_.get() - 1), 1));
     for (int i = 0; i < numberOfPoints_.get(); i++) {
         auto p = lineStart_.get() + (lineEnd_.get() - lineStart_.get()) * (i * dt);
         points->push_back(p);
@@ -205,8 +205,8 @@ void SeedPointGenerator::linePoints() {
 
 void SeedPointGenerator::planePoints() {
     auto points = std::make_shared<std::vector<vec3>>();
-    float dx = 1.0f / static_cast<double>(planeResolution_.get().x - 1);
-    float dy = 1.0f / static_cast<double>(planeResolution_.get().y - 1);
+    const float dx = 1.0f / static_cast<float>(planeResolution_.get().x - 1);
+    const float dy = 1.0f / static_cast<float>(planeResolution_.get().y - 1);
 
     vec3 ox = planeE1_.get();
     vec3 oy = planeE2_.get();
@@ -214,8 +214,8 @@ void SeedPointGenerator::planePoints() {
     for (int i = 0; i < planeResolution_.get().x; i++) {
         for (int j = 0; j < planeResolution_.get().y; j++) {
             vec3 p = planeOrigin_.get();
-            p += ox * (static_cast<double>(i) * dx);
-            p += oy * (static_cast<double>(j) * dy);
+            p += ox * (static_cast<float>(i) * dx);
+            p += oy * (static_cast<float>(j) * dy);
             points->push_back(p);
         }
     }

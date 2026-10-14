@@ -53,9 +53,9 @@
 namespace inviwo {
 
 std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer& layer, int kernelSize) {
-    float sigma = static_cast<float>(kernelSize) /
-                  (2.f * 2.576f);  // 99% of samples are within +- 2.576 standard deviations
-                                   // https://de.wikipedia.org/wiki/Normalverteilung
+    const float sigma = static_cast<float>(kernelSize) /
+                        (2.f * 2.576f);  // 99% of samples are within +- 2.576 standard deviations
+                                         // https://de.wikipedia.org/wiki/Normalverteilung
     return gaussianLowpass(layer, kernelSize, sigma);
 }
 

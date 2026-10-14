@@ -153,7 +153,7 @@ std::shared_ptr<BasicMesh> disk(const vec3& center, const vec3& normal, const ve
     vec3 to = vec3(0.5f, 0.0f, 0.0f);
     vec3 p;
     vec3 t;
-    double angle = 2.0 * std::numbers::pi / static_cast<double>(segments);
+    const double angle = 2.0 * std::numbers::pi / static_cast<double>(segments);
     const auto ns = static_cast<std::uint32_t>(segments);
     for (std::uint32_t i = 0; i < ns; ++i) {
         p = center + radius * glm::rotate(orth, static_cast<float>(i * angle), normal);
@@ -180,7 +180,7 @@ std::shared_ptr<BasicMesh> cone(const vec3& start, const vec3& stop, const vec4&
     float height = glm::length(stop - start);
     float ratio = radius / height;
 
-    double angle = 2.0 * std::numbers::pi / static_cast<double>(segments);
+    const double angle = 2.0 * std::numbers::pi / static_cast<double>(segments);
     const auto ns = static_cast<std::uint32_t>(segments);
     for (std::uint32_t i = 0; i < ns; ++i) {
         // first vertex at base
@@ -232,15 +232,15 @@ std::shared_ptr<BasicMesh> cylinder(const vec3& start, const vec3& stop, const v
     vec3 e3 = glm::cross(e1, e2);
     mat3 basis(e1, e2, e3);
 
-    double angle = 2.0 * std::numbers::pi / static_cast<double>(segments);
+    const double angle = 2.0 * std::numbers::pi / static_cast<double>(segments);
     const auto ns = static_cast<std::uint32_t>(segments);
     for (std::uint32_t i = 0; i < ns; ++i) {
         // first vertex at base
-        double x = cos(i * angle);
-        double y = sin(i * angle);
-        vec3 normal = basis * vec3(0.0, x, y);
-        vec3 dir = basis * vec3(0.0, x * radius, y * radius);
-        vec3 texCoord = vec3(static_cast<float>(i) / static_cast<double>(segments), 0.0, 0.0);
+        const double x = cos(i * angle);
+        const double y = sin(i * angle);
+        const vec3 normal = basis * vec3(0.0, x, y);
+        const vec3 dir = basis * vec3(0.0, x * radius, y * radius);
+        const vec3 texCoord = vec3(static_cast<float>(i) / static_cast<double>(segments), 0.0, 0.0);
 
         // vertex at base
         vertices.push_back({start + dir, normal, texCoord, color});
