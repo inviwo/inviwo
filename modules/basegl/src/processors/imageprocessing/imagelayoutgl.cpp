@@ -294,7 +294,7 @@ void ImageLayoutGL::onStatusChange(bool propagate) {
         case Layout::HorizontalSplitMultiple:
         case Layout::VerticalSplitMultiple:
         case Layout::Single:
-        default:                              boundsVisible = false; break;
+        default: boundsVisible = false; break;
     }
 
     horizontalSplitter_.setVisible(hVisible);
@@ -394,28 +394,32 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     const int extra1 = dim.y % 3 >= 1 ? 1 : 0;  // add extra pixels to the small "windows" if the
     const int extra2 = dim.y % 3 >= 2 ? 1 : 0;  // size is not divisible by 3 to avoid black borders
 
-    auto rightMinMax = 1.f - vec2(rightMinMax_.getEnd() / static_cast<float>(dim.x),
-                                  rightMinMax_.getStart() / static_cast<float>(dim.x));
-    auto bottomMinMax = 1.f - vec2(topMinMax_.getEnd() / static_cast<float>(dim.y),
-                                   topMinMax_.getStart() / static_cast<float>(dim.y));
+    auto rightMinMax =
+        1.f - vec2(static_cast<float>(rightMinMax_.getEnd()) / static_cast<float>(dim.x),
+                   static_cast<float>(rightMinMax_.getStart()) / static_cast<float>(dim.x));
+    auto bottomMinMax =
+        1.f - vec2(static_cast<float>(topMinMax_.getEnd()) / static_cast<float>(dim.y),
+                   static_cast<float>(topMinMax_.getStart()) / static_cast<float>(dim.y));
     // Bounds cannot be smaller/larger than output size
     auto leftBounds = glm::min(*leftMinMax_, ivec2(dim.x));
     auto bottomBounds = glm::min(*bottomMinMax_, ivec2(dim.y));
 
-    const int midx = glm::clamp(
-        static_cast<int>(glm::clamp(*verticalSplitter_, rightMinMax.x, rightMinMax.y) * dim.x),
-        leftBounds.x, leftBounds.y);
+    const int midx =
+        glm::clamp(static_cast<int>(glm::clamp(*verticalSplitter_, rightMinMax.x, rightMinMax.y) *
+                                    static_cast<float>(dim.x)),
+                   leftBounds.x, leftBounds.y);
     const int midy = glm::clamp(
-        static_cast<int>(glm::clamp(*horizontalSplitter_, bottomMinMax.x, bottomMinMax.y) * dim.y),
+        static_cast<int>(glm::clamp(*horizontalSplitter_, bottomMinMax.x, bottomMinMax.y) *
+                         static_cast<float>(dim.y)),
         bottomBounds.x, bottomBounds.y);
 
     const int leftWindow3L1RX = glm::clamp(
         static_cast<int>(glm::clamp(*vertical3Left1RightSplitter_, rightMinMax.x, rightMinMax.y) *
-                         dim.x),
+                         static_cast<float>(dim.x)),
         leftBounds.x, leftBounds.y);
     const int leftWindow3R1LX = glm::clamp(
         static_cast<int>(glm::clamp(*vertical3Right1LeftSplitter_, rightMinMax.x, rightMinMax.y) *
-                         dim.x),
+                         static_cast<float>(dim.x)),
         leftBounds.x, leftBounds.y);
 
     const int portCount = static_cast<int>(multiInport_.getNumberOfConnections());
@@ -540,7 +544,7 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             }
             break;
         case Layout::Single:
-        default:             viewManager_.push_back(ivec4(0, 0, dim.x, dim.y));
+        default: viewManager_.push_back(ivec4(0, 0, dim.x, dim.y));
     }
 
     currentDim_ = dim;

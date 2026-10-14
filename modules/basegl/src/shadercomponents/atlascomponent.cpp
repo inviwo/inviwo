@@ -129,11 +129,11 @@ void orderTf(TransferFunction& tf, size_t nSegments) {
     };
 
     for (size_t i = 0; i < nSegments; ++i) {
-        const auto delta = 1.0 / (nSegments - 1);
+        const auto delta = 1.0 / static_cast<float>(nSegments - 1);
         const auto start = -0.5 * delta;
 
-        setPos(start + i * delta, i * 2);
-        setPosAlmost(start + (i + 1) * delta, i * 2 + 1);
+        setPos(start + static_cast<float>(i) * delta, i * 2);
+        setPosAlmost(start + static_cast<float>(i + 1) * delta, i * 2 + 1);
     }
 }
 

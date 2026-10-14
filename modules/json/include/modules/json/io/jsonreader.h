@@ -48,6 +48,9 @@ public:
     virtual std::shared_ptr<json> readData(const std::filesystem::path& fileName) override;
     virtual std::shared_ptr<json> readData(const std::filesystem::path& filePath,
                                            MetaDataOwner*) override;
+    virtual std::shared_ptr<json> readData(const std::filesystem::path& filePath,
+                                           MetaDataOwner* owner,
+                                           [[maybe_unused]] std::stop_token stop) override;
     std::shared_ptr<json> readData(std::istream& stream) const;
 };
 

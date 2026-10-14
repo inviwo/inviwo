@@ -282,8 +282,12 @@ void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* ou
     inputLayerRep->dispatch<void, dispatching::filter::Scalars>([&](const auto lrprecision) {
         using ValueType = util::PrecisionValueType<decltype(lrprecision)>;
 
-        const auto predicateIn = [threshold](const ValueType& val) { return val < threshold; };
-        const auto predicateOut = [threshold](const ValueType& val) { return val > threshold; };
+        const auto predicateIn = [threshold](const ValueType& val) {
+            return static_cast<double>(val) < threshold;
+        };
+        const auto predicateOut = [threshold](const ValueType& val) {
+            return static_cast<double>(val) > threshold;
+        };
 
         const auto normPredicateIn = [threshold](const ValueType& val) {
             return util::glm_convert_normalized<double>(val) < threshold;

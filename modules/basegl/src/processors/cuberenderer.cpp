@@ -164,8 +164,9 @@ void CubeRenderer::process() {
         TextureUnitContainer units;
         utilgl::bindAndSetUniforms(shader, units, metaColor_);
         utilgl::setUniforms(shader, camera_, lighting_, defaultColor_, defaultSize_);
-        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
-                                           2.0f / outport_.getDimensions().y));
+        shader.setUniform("viewport",
+                          vec4(0.0f, 0.0f, 2.0f / static_cast<float>(outport_.getDimensions().x),
+                               2.0f / static_cast<float>(outport_.getDimensions().y)));
 
         MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
                                         mesh->getDefaultMeshInfo());

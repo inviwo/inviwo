@@ -588,8 +588,8 @@ void VolumeSliceGL::updateIndicatorMesh() {
     const vec2 pos = getScreenPosFromVolPos();
 
     const size2_t canvasSize(outport_.getDimensions());
-    const vec2 indicatorSize =
-        vec2(indicatorSize_.get() / canvasSize.x, indicatorSize_.get() / canvasSize.y);
+    const vec2 indicatorSize = vec2(indicatorSize_.get() / static_cast<float>(canvasSize.x),
+                                    indicatorSize_.get() / static_cast<float>(canvasSize.y));
 
     // add two vertical and two horizontal lines with a gap around the selected position
     auto posBuf =
@@ -642,7 +642,7 @@ void VolumeSliceGL::shiftSlice(int shift) {
             break;
         }
         default:
-        case 3:  {
+        case 3: {
             vec3 newPos = planePosition_.get() +
                           static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
             newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));

@@ -123,7 +123,7 @@ void ImageInformationProperty::updateForNewImage(const Image& image) {
     }();
 
     dimensions_.set(dim);
-    aspectRatio_.set(static_cast<double>(dim.x) / dim.y);
+    aspectRatio_.set(static_cast<double>(dim.x) / static_cast<double>(dim.y));
     imageType_.set(fmt::to_string(type));
     numColorLayers_.set(image.getNumberOfColorLayers());
 

@@ -336,9 +336,9 @@ void validateDatFile(const State& state, const std::filesystem::path& filePath) 
 
 void resolve(State& state) {
     if (state.spacing) {
-        state.basis[0][0] = state.dimensions.x * state.spacing->x;
-        state.basis[1][1] = state.dimensions.y * state.spacing->y;
-        state.basis[2][2] = state.dimensions.z * state.spacing->z;
+        state.basis[0][0] = static_cast<double>(state.dimensions.x) * state.spacing->x;
+        state.basis[1][1] = static_cast<double>(state.dimensions.y) * state.spacing->y;
+        state.basis[2][2] = static_cast<double>(state.dimensions.z) * state.spacing->z;
     }
 
     if (state.a && state.b && state.c) {

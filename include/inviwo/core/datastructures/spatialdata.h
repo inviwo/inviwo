@@ -194,7 +194,7 @@ StructuredGridEntity<N>::StructuredGridEntity(const glm::vec<N, size_t>& dimensi
     : SpatialEntity() {
     glm::dmat3 basis(0.0);
     for (unsigned int i = 0; i < N; ++i) {
-        basis[i][i] = dimensions[i] * spacing[i];
+        basis[i][i] = static_cast<double>(dimensions[i]) * spacing[i];
     }
     setBasis(basis);
 

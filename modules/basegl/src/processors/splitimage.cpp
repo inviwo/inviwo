@@ -119,11 +119,11 @@ void SplitImage::process() {
         ivec4 viewport0;
         ivec4 viewport1;
         if (splitDirection_ == splitter::Direction::Vertical) {
-            int width = static_cast<int>(splitPosition_ * dims.x);
+            int width = static_cast<int>(splitPosition_ * static_cast<float>(dims.x));
             viewport0 = ivec4(0, 0, width, dims.y);
             viewport1 = ivec4(width, 0, dims.x - width, dims.y);
         } else {
-            int height = static_cast<int>(splitPosition_ * dims.y);
+            int height = static_cast<int>(splitPosition_ * static_cast<float>(dims.y));
             viewport0 = ivec4(0, dims.y - height, dims.x, height);
             viewport1 = ivec4(0, 0, dims.x, dims.y - height);
         }

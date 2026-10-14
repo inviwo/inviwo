@@ -44,21 +44,21 @@ std::string msToString(double ms, bool includeZeros, bool spacing) {
     if (days > 0 || (follows && includeZeros)) {
         follows = true;
         ss << days << space << "d";
-        ms -= 3600 * 1000 * 24 * days;
+        ms -= static_cast<double>(3600 * 1000 * 24 * days);
     }
     size_t hours = static_cast<size_t>(ms / (1000.0 * 3600.0));
     if (hours > 0 || (follows && includeZeros)) {
         if (follows) ss << " ";
         follows = true;
         ss << hours << space << "h";
-        ms -= 3600 * 1000 * hours;
+        ms -= static_cast<double>(3600 * 1000 * hours);
     }
     size_t minutes = static_cast<size_t>(ms / (1000.0 * 60.0));
     if (minutes > 0 || (follows && includeZeros)) {
         if (follows) ss << " ";
         follows = true;
         ss << minutes << space << "min";
-        ms -= 60 * 1000 * minutes;
+        ms -= static_cast<double>(60 * 1000 * minutes);
     }
     size_t seconds = static_cast<size_t>(ms / 1000.0);
     // combine seconds and milliseconds, iff there already something added to the string stream
