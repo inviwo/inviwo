@@ -22,6 +22,9 @@ fi
 rm -rf "${OVERLAY_PORT}"
 cp -R "${SOURCE_PORT}" "${OVERLAY_PORT}"
 
+# Build the debug python with the debug CRT but the release ABI and file names, so that
+# release wheels (numpy etc.) can be loaded and vcpkg applocal finds python3XX.dll in debug/bin
+cp "${SCRIPT_DIR}/python3-release-abi-debug.patch" "${OVERLAY_PORT}/0100-release-abi-debug.patch"
 patch --ignore-whitespace --directory "${OVERLAY_PORT}" -p1 < "${SCRIPT_DIR}/python3-fix.patch"
 
 
