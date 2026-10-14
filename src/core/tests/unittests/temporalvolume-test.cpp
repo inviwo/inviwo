@@ -51,7 +51,7 @@ namespace {
 constexpr std::string_view frameKey = "frameIndex";
 
 VolumeConfig makePrototype() {
-    return VolumeConfig{.dimensions = size3_t{2, 2, 2}, .format = DataUInt8::get()};
+    return VolumeConfig{.dimensions = size3_t{2, 2, 2}, .formatId = DataFormatId::UInt8};
 }
 
 // Generates volumes tagged with their frame index and time so tests can verify which frame is
@@ -223,7 +223,7 @@ TEST(TemporalVolumeTest, ProceduralLoaderDirect) {
     ASSERT_EQ(loader.size(), 3u);
     EXPECT_DOUBLE_EQ(loader.time(2).count(), 3.0);
     EXPECT_EQ(loader.load(1, nullptr, {})->getDimensions(), (size3_t{2}));
-    EXPECT_NE(loader.prototype().format, nullptr);
+    EXPECT_EQ(loader.prototype().formatId, VolumeConfig::defaultFormatId);
 }
 
 }  // namespace inviwo

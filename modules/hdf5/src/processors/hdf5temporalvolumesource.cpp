@@ -238,7 +238,7 @@ void HDF5ToTemporalVolume::process() try {
     }
 
     const VolumeConfig config{
-        .format = util::conversionFormat(datatype_.getSelectedIndex()),
+        .formatId = util::conversionFormat(datatype_.getSelectedIndex()),
         .interpolation = interpolation_.getSelectedValue(),
         .wrapping = Wrapping3D{wrapping_[0].getSelectedValue(), wrapping_[1].getSelectedValue(),
                                wrapping_[2].getSelectedValue()},

@@ -53,7 +53,7 @@ public:
     explicit LayerGL(std::shared_ptr<Texture2D> tex, LayerType type = LayerConfig::defaultType);
     explicit LayerGL(size2_t dimensions = LayerConfig::defaultDimensions,
                      LayerType type = LayerConfig::defaultType,
-                     const DataFormatBase* format = LayerConfig::defaultFormat,
+                     const DataFormatBase* format = DataFormatBase::get(LayerConfig::defaultFormatId),
                      const SwizzleMask& swizzleMask = LayerConfig::defaultSwizzleMask,
                      InterpolationType interpolation = LayerConfig::defaultInterpolation,
                      const Wrapping2D& wrapping = LayerConfig::defaultWrapping);

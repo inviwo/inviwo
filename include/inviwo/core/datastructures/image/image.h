@@ -61,8 +61,9 @@ public:
      * @param dimensions of the new image
      * @param format of the new image
      */
-    explicit Image(size2_t dimensions = LayerConfig::defaultDimensions,
-                   const DataFormatBase* format = LayerConfig::defaultFormat);
+    explicit Image(
+        size2_t dimensions = LayerConfig::defaultDimensions,
+        const DataFormatBase* format = DataFormatBase::get(LayerConfig::defaultFormatId));
 
     /**
      * @brief Create an Image from the given layers.
@@ -178,7 +179,7 @@ public:
 protected:
     static std::shared_ptr<Layer> createColorLayer(
         size2_t dimensions = LayerConfig::defaultDimensions,
-        const DataFormatBase* format = LayerConfig::defaultFormat);
+        const DataFormatBase* format = DataFormatBase::get(LayerConfig::defaultFormatId));
     static std::vector<std::shared_ptr<Layer>> createColorLayers(
         const Image& srcImage, const DataFormatBase* format = nullptr);
     static std::shared_ptr<Layer> createDepthLayer(

@@ -152,8 +152,8 @@ VolumeConfig getVolumeConfig(const DataSet& dataset, const DimConfig<3>& config,
     // Reverse back the Column major
     volumeConfig.dimensions = size3_t{config.selectedDimensions[2], config.selectedDimensions[1],
                                       config.selectedDimensions[0]};
-    volumeConfig.format =
-        volumeConfig.format ? volumeConfig.format : util::getDataFormatFromDataSet(dataset);
+    volumeConfig.formatId =
+        volumeConfig.formatId.or_else([&]() { return util::getDataFormatFromDataSet(dataset); });
     return volumeConfig;
 }
 
@@ -162,8 +162,8 @@ LayerConfig getLayerConfig(const DataSet& dataset, const DimConfig<2>& config,
 
     // Reverse back the Column major
     layerConfig.dimensions = size2_t{config.selectedDimensions[1], config.selectedDimensions[0]};
-    layerConfig.format =
-        layerConfig.format ? layerConfig.format : util::getDataFormatFromDataSet(dataset);
+    layerConfig.formatId =
+        layerConfig.formatId.or_else([&]() { return util::getDataFormatFromDataSet(dataset); });
 
     return layerConfig;
 }
@@ -285,7 +285,6 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle,
         }
     });
 
-
     log::info("Read HDF Layer: Dimensions {}, Selection: {}, Type: {}, File: {}",
               fmt::join(config.dataDimensions, " x "), fmt::join(config.asSelection(), " x "),
               layer->getDataFormat()->getString(), dataset.getFileName());
@@ -295,7 +294,7 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle,
 
 std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
                                                   const std::vector<Selection>& selection,
-                                                  const DataFormatBase* type) {
+                                                  std::optional<DataFormatId> formatId) {
     auto dataset = handle.open();
 
     const H5::DataSpace dataSpace = dataset.getSpace();
@@ -306,11 +305,14 @@ std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
     H5::DataSpace memorySpace(1, config.selectedDimensions.data());
     memorySpace.selectAll();
 
-    const DataFormatBase* format = type ? type : util::getDataFormatFromDataSet(dataset);
-
+    const auto format = formatId.or_else([&]() { return util::getDataFormatFromDataSet(dataset); });
+    if (!format) {
+        throw Exception{SourceContext{}, "Could not determine data format for dataset: {}",
+                        dataset.getFileName()};
+    }
     auto buffer =
         dispatching::singleDispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars>(
-            format->getId(), [&]<typename T>() -> std::shared_ptr<BufferBase> {
+            *format, [&]<typename T>() -> std::shared_ptr<BufferBase> {
                 const auto repr = std::make_shared<BufferRAMPrecision<T>>(
                     static_cast<size_t>(config.selectedDimensions[0]));
                 try {

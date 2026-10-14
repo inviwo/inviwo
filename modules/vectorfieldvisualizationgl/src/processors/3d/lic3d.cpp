@@ -85,7 +85,7 @@ const ProcessorInfo& LIC3D::getProcessorInfo() const { return processorInfo_; }
 LIC3D::LIC3D()
     : VolumeGLProcessor{
           "lic3d.frag",
-          VolumeConfig{.format = DataFloat32::get(),
+          VolumeConfig{.formatId = DataFormatId::Float32,
                        .swizzleMask = swizzlemasks::defaultData(1),
                        .dataRange = DataMapper::defaultDataRangeFor(DataFloat32::get())}}
     , vectorField_{"vectorField", "Input vector field"_help}

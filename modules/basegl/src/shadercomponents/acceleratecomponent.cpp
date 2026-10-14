@@ -134,7 +134,7 @@ void AccelerateComponent::preprocess() {
     if (!accelerate_ || data->getDimensions() / size3_t{8} != accelerate_->getDimensions()) {
         accelerate_ =
             std::make_shared<Volume>(VolumeConfig{.dimensions = data->getDimensions() / size3_t{8},
-                                                  .format = DataFormat<float>::get(),
+                                                  .formatId = DataFormatId::Float32,
                                                   .dataRange = data->dataMap.dataRange,
                                                   .valueRange = data->dataMap.valueRange,
                                                   .model = data->getModelMatrix(),

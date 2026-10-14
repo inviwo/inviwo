@@ -81,8 +81,8 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
 
     auto outVolume = std::make_shared<Volume>(
         volume, noData,
-        VolumeConfig{.format = DataFormatBase::get(NumericType::Float,
-                                                   volume.getDataFormat()->getComponents(), 32)});
+        VolumeConfig{.formatId = DataFormatBase::find(
+                         NumericType::Float, volume.getDataFormat()->getComponents(), 32)});
 
     shader_.activate();
 

@@ -95,7 +95,7 @@ void HDF5ToLayer::process() try {
     const DataSetInfo layerMeta = layerMatches_[layerSelection_.getSelectedIndex()];
     selection_.update(layerMeta);
 
-    const LayerConfig layerConfig{.format = util::conversionFormat(datatype_.getSelectedIndex())};
+    const LayerConfig layerConfig{.formatId = util::conversionFormat(datatype_.getSelectedIndex())};
 
     const auto layer =
         getLayerAtPathAsType(*data + layerMeta.path, selection_.getSelection(), layerConfig);

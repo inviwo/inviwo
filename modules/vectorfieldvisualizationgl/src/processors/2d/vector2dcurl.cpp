@@ -58,7 +58,7 @@ void Vector2DCurl::preProcess(TextureUnitContainer&, Shader& shader, const Layer
 LayerConfig Vector2DCurl::outputConfig(const Layer& input) const {
     const double gradientEstimate = glm::compMax(glm::abs(input.dataMap.dataRange)) /
                                     glm::compMax(input.getWorldSpaceGradientSpacing());
-    return input.config().updateFrom({.format = DataFloat32::get(),
+    return input.config().updateFrom({.formatId = DataFormatId::Float32,
                                       .swizzleMask = swizzlemasks::defaultData(1),
                                       .dataRange = dvec2{-gradientEstimate, gradientEstimate},
                                       .valueRange = dvec2{-gradientEstimate, gradientEstimate}});
