@@ -147,7 +147,7 @@ Texture::Texture(GLenum target, GLenum format, GLenum internalformat, GLenum dat
 
 Texture::Texture(const Texture& other)
     : TextureBase(other)
-    , Observable<TextureObserver>()
+    , Observable<TextureObserver>(other)
     , format_{other.format_}
     , internalformat_{other.internalformat_}
     , dataType_{other.dataType_}

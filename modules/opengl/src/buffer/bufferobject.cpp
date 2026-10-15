@@ -80,7 +80,7 @@ BufferObject::BufferObject(size_t sizeInBytes, GLFormat format, GLenum usage, GL
 }
 
 BufferObject::BufferObject(const BufferObject& rhs)
-    : Observable<BufferObjectObserver>()
+    : Observable<BufferObjectObserver>(rhs)
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)

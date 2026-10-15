@@ -45,7 +45,7 @@ TFPrimitive::TFPrimitive(const TFPrimitiveData& data)
     : Observable<TFPrimitiveObserver>(), data_(data) {}
 
 TFPrimitive::TFPrimitive(const TFPrimitive& rhs)
-    : Observable<TFPrimitiveObserver>(), data_(rhs.data_) {}
+    : Observable<TFPrimitiveObserver>(rhs), data_(rhs.data_) {}
 
 TFPrimitive::TFPrimitive(TFPrimitive&& rhs) noexcept
     : Observable<TFPrimitiveObserver>(), data_(std::move(rhs.data_)) {}
