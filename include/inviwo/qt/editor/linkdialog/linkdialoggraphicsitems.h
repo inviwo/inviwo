@@ -86,7 +86,7 @@ enum InviwoLinkUserGraphicsItemType {
 
 class IVW_QTEDITOR_API LinkDialogTreeItem {
 public:
-    LinkDialogTreeItem(LinkDialogTreeItem* parent);
+    explicit LinkDialogTreeItem(LinkDialogTreeItem* parent);
     virtual ~LinkDialogTreeItem() = default;
     enum class Side { Left, Right };
     virtual int getLevel() const = 0;

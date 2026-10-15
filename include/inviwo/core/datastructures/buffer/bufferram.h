@@ -132,7 +132,8 @@ public:
     auto dispatch(Callable&& callable, Args&&... args) const -> Result;
 
 protected:
-    BufferRAM(BufferUsage usage = BufferUsage::Static, BufferTarget target = BufferTarget::Data);
+    explicit BufferRAM(BufferUsage usage = BufferUsage::Static,
+                       BufferTarget target = BufferTarget::Data);
     BufferRAM(const BufferRAM& rhs) = default;
     BufferRAM& operator=(const BufferRAM& that) = default;
 };

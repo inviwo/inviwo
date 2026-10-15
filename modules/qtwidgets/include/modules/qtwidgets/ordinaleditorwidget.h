@@ -45,7 +45,7 @@ class NumberLineEdit;
 class IVW_MODULE_QTWIDGETS_API BaseOrdinalEditorWidget : public QWidget {
     Q_OBJECT
 public:
-    BaseOrdinalEditorWidget(bool intMode);
+    explicit BaseOrdinalEditorWidget(bool intMode);
     virtual ~BaseOrdinalEditorWidget();
 
 protected:

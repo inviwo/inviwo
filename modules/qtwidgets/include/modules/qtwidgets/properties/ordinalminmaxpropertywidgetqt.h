@@ -90,7 +90,7 @@ public:
 template <typename T>
 class OrdinalMinMaxPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T>* property);
+    explicit OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T>* property);
     virtual ~OrdinalMinMaxPropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;

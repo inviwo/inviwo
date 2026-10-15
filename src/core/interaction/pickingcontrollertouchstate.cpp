@@ -271,7 +271,7 @@ struct Fsm {
 }  // namespace fsmt
 
 struct PickingControllerTouchStateSM {
-    PickingControllerTouchStateSM(PickingManager* pickingManager)
+    explicit PickingControllerTouchStateSM(PickingManager* pickingManager)
         : pickingManager{pickingManager} {}
 
     PickingManager* pickingManager;

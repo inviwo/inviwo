@@ -44,17 +44,17 @@ namespace inviwo {
 class IVW_CORE_API VolumeDisk : public VolumeRepresentation,
                                 public DiskRepresentation<VolumeRepresentation, VolumeDisk> {
 public:
-    VolumeDisk(size3_t dimensions = VolumeConfig::defaultDimensions,
-               const DataFormatBase* format = VolumeConfig::defaultFormat,
-               const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
-               InterpolationType interpolation = VolumeConfig::defaultInterpolation,
-               const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
-    VolumeDisk(const std::filesystem::path& path,
-               size3_t dimensions = VolumeConfig::defaultDimensions,
-               const DataFormatBase* format = VolumeConfig::defaultFormat,
-               const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
-               InterpolationType interpolation = VolumeConfig::defaultInterpolation,
-               const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
+    explicit VolumeDisk(size3_t dimensions = VolumeConfig::defaultDimensions,
+                        const DataFormatBase* format = VolumeConfig::defaultFormat,
+                        const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
+                        InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+                        const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
+    explicit VolumeDisk(const std::filesystem::path& path,
+                        size3_t dimensions = VolumeConfig::defaultDimensions,
+                        const DataFormatBase* format = VolumeConfig::defaultFormat,
+                        const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
+                        InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+                        const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
     explicit VolumeDisk(const VolumeReprConfig& config, const std::filesystem::path& path = {});
 
     VolumeDisk(const VolumeDisk& rhs) = default;

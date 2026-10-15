@@ -48,7 +48,7 @@ class NumberLineEdit;
 class IVW_MODULE_QTWIDGETS_API BaseSliderWidgetQt : public QWidget {
     Q_OBJECT
 public:
-    BaseSliderWidgetQt(bool intMode = false);
+    explicit BaseSliderWidgetQt(bool intMode = false);
     virtual ~BaseSliderWidgetQt() = default;
 
     void setWrapping(bool wrap);

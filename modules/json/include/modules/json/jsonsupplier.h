@@ -41,7 +41,7 @@ namespace inviwo {
 template <typename Base, template <typename...> typename Traits>
 class JSONSupplier {
 public:
-    JSONSupplier(JSONConverterRegistry<Base>& pjc) : registry_{pjc} {}
+    explicit JSONSupplier(JSONConverterRegistry<Base>& pjc) : registry_{pjc} {}
     JSONSupplier(const JSONSupplier&) = delete;
     JSONSupplier& operator=(const JSONSupplier&) = delete;
     ~JSONSupplier() { unregisterJSONConverters(); }

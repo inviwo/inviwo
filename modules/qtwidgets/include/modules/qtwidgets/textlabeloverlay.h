@@ -48,7 +48,7 @@ namespace inviwo {
  */
 class IVW_MODULE_QTWIDGETS_API TextLabelOverlay : public QLabel {
 public:
-    TextLabelOverlay(QWidget* parent);
+    explicit TextLabelOverlay(QWidget* parent);
     virtual ~TextLabelOverlay();
 
     void setText(std::string_view text,

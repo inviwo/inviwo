@@ -49,7 +49,7 @@ class DataFrameTableView;
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTableProcessorWidget : public ProcessorWidgetQt {
     Q_OBJECT
 public:
-    DataFrameTableProcessorWidget(Processor* p);
+    explicit DataFrameTableProcessorWidget(Processor* p);
     virtual ~DataFrameTableProcessorWidget() = default;
 
     virtual void setVisible(bool visible) override;

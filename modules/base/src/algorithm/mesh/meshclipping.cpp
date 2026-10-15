@@ -492,7 +492,7 @@ std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
 
 template <typename PB, typename T>
 struct BufferAccess {
-    BufferAccess(const PB& buffer) : buffer(buffer) {}
+    explicit BufferAccess(const PB& buffer) : buffer(buffer) {}
     T operator()(uint32_t index, float weight) { return static_cast<T>(buffer[index]) * weight; }
     const PB& buffer;
 };

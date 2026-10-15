@@ -55,7 +55,7 @@ class ProcessorNetwork;
  */
 class IVW_CORE_API PortInspectorManager : public Serializable, public ProcessorNetworkObserver {
 public:
-    PortInspectorManager(InviwoApplication* app);
+    explicit PortInspectorManager(InviwoApplication* app);
     virtual ~PortInspectorManager();
 
     PortInspectorManager(const PortInspectorManager&) = delete;

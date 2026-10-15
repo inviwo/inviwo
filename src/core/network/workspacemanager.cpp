@@ -78,7 +78,7 @@ private:
 
 class WorkspaceConverter : public VersionConverter {
 public:
-    WorkspaceConverter(int from) : VersionConverter(), from_(from) {}
+    explicit WorkspaceConverter(int from) : VersionConverter(), from_(from) {}
 
     virtual bool convert(TxElement* root) override {
 

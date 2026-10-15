@@ -84,7 +84,9 @@ public:
 
 class AnimationLabelModelQt : public QStandardItemModel {
 public:
-    AnimationLabelModelQt(QObject* parent) : QStandardItemModel(parent) { setColumnCount(1); }
+    explicit AnimationLabelModelQt(QObject* parent) : QStandardItemModel(parent) {
+        setColumnCount(1);
+    }
 
     virtual Qt::ItemFlags flags(const QModelIndex&) const override {
         return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled;

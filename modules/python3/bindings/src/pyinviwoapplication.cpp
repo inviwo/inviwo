@@ -60,7 +60,7 @@ class ModuleIdentifierWrapper {
     };
 
 public:
-    ModuleIdentifierWrapper(InviwoApplication* app) : app_{app} {}
+    explicit ModuleIdentifierWrapper(InviwoApplication* app) : app_{app} {}
 
     decltype(auto) getFromIdentifier(std::string_view identifier) const {
         auto range = app_->getModuleManager().getInviwoModules();

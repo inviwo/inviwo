@@ -49,7 +49,7 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API AngleRadiusWidget : public QWidget {
     Q_OBJECT
 public:
-    AngleRadiusWidget(QWidget*);
+    explicit AngleRadiusWidget(QWidget*);
     virtual ~AngleRadiusWidget() = default;
 
     virtual void paintEvent(QPaintEvent*) override;

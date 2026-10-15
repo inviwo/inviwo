@@ -53,7 +53,7 @@ class IVW_MODULE_ANIMATION_API CameraKeyframe : public BaseKeyframe {
 public:
     using value_type = Camera;
     CameraKeyframe() = default;
-    CameraKeyframe(Seconds time);
+    explicit CameraKeyframe(Seconds time);
     CameraKeyframe(Seconds time, const Camera& cam);
     virtual ~CameraKeyframe() = default;
     virtual CameraKeyframe* clone() const override;

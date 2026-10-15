@@ -45,7 +45,7 @@ public:
     struct IVW_CORE_API Base64Image : public Serializable {
         Base64Image() = default;
         Base64Image(std::string name, std::string base64jpeg, int w, int h);
-        Base64Image(std::string name, std::string base64jpeg = "", ivec2 size = ivec2{0});
+        explicit Base64Image(std::string name, std::string base64jpeg = "", ivec2 size = ivec2{0});
         virtual ~Base64Image() = default;
 
         bool isValid() const;
@@ -58,17 +58,17 @@ public:
         ivec2 size = ivec2{0};
     };
 
-    WorkspaceAnnotations(InviwoApplication* app = util::getInviwoApplication());
-    WorkspaceAnnotations(const std::vector<Base64Image>& canvasImages,
-                         InviwoApplication* app = util::getInviwoApplication());
+    explicit WorkspaceAnnotations(InviwoApplication* app = util::getInviwoApplication());
+    explicit WorkspaceAnnotations(const std::vector<Base64Image>& canvasImages,
+                                  InviwoApplication* app = util::getInviwoApplication());
 
     /*
      * Loads workspace annotations from the provided \p path.
      * An error is logged in case loading fails.
      * @return WorkspaceAnnotations if successfully loaded, empty WorkspaceAnnotations otherwise.
      */
-    WorkspaceAnnotations(const std::filesystem::path& path,
-                         InviwoApplication* app = util::getInviwoApplication());
+    explicit WorkspaceAnnotations(const std::filesystem::path& path,
+                                  InviwoApplication* app = util::getInviwoApplication());
 
     virtual ~WorkspaceAnnotations() = default;
 

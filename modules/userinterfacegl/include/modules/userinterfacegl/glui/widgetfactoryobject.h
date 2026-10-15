@@ -59,7 +59,7 @@ template <typename T, typename P>
 class WidgetFactoryObjectTemplate : public WidgetFactoryObject {
 public:
     WidgetFactoryObjectTemplate() : WidgetFactoryObject(PropertyTraits<P>::classIdentifier()) {}
-    WidgetFactoryObjectTemplate(const std::string& classIdentifier)
+    explicit WidgetFactoryObjectTemplate(const std::string& classIdentifier)
         : WidgetFactoryObject(classIdentifier) {}
     virtual ~WidgetFactoryObjectTemplate() = default;
 

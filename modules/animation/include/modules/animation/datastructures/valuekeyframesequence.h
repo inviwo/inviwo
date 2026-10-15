@@ -147,7 +147,7 @@ public:
      * Uses ConstantInterpolation<Key> unless DefaultInterpolationCreator is
      * specialized.
      */
-    KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes);
+    explicit KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes);
     KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes,
                           std::unique_ptr<InterpolationTyped<Key>> interpolation);
 

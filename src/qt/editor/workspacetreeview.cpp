@@ -60,7 +60,7 @@ namespace {
 
 class SectionDelegate : public QStyledItemDelegate {
 public:
-    SectionDelegate(QWidget* parent = nullptr);
+    explicit SectionDelegate(QWidget* parent = nullptr);
     virtual ~SectionDelegate() override = default;
 
     virtual void paint(QPainter* painter, const QStyleOptionViewItem& option,

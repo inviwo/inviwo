@@ -49,7 +49,7 @@ class IVW_MODULE_ANIMATIONQT_API AnimationLabelViewQt : public QListView,
                                                         public AnimationObserver,
                                                         public AnimationControllerObserver {
 public:
-    AnimationLabelViewQt(AnimationController& controller);
+    explicit AnimationLabelViewQt(AnimationController& controller);
     virtual ~AnimationLabelViewQt() = default;
 
     virtual void onTrackAdded(Track* track) override;

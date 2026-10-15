@@ -144,7 +144,7 @@ public:
     auto dispatch(Callable&& callable, Args&&... args) const -> Result;
 
 protected:
-    LayerRAM(LayerType type = LayerType::Color);
+    explicit LayerRAM(LayerType type = LayerType::Color);
     LayerRAM(const LayerRAM& rhs) = default;
     LayerRAM& operator=(const LayerRAM& that) = default;
 };

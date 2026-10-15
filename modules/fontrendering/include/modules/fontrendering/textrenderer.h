@@ -112,8 +112,8 @@ struct TextTextureObject {
  */
 class IVW_MODULE_FONTRENDERING_API TextRenderer {
 public:
-    TextRenderer(const std::filesystem::path& fontPath = font::getFont(font::FontType::Default,
-                                                                       font::FullPath::Yes));
+    explicit TextRenderer(const std::filesystem::path& fontPath =
+                              font::getFont(font::FontType::Default, font::FullPath::Yes));
     TextRenderer(const TextRenderer& rhs) = delete;
     TextRenderer(TextRenderer&& rhs) noexcept;
     TextRenderer& operator=(const TextRenderer& rhs) = delete;

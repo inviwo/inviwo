@@ -47,8 +47,8 @@ class WidgetFactoryObjectTemplate;
 
 class IVW_MODULE_USERINTERFACEGL_API WidgetSupplier {
 public:
-    WidgetSupplier(UserInterfaceGLModule& uiGLModule);
-    WidgetSupplier(InviwoApplication* app);
+    explicit WidgetSupplier(UserInterfaceGLModule& uiGLModule);
+    explicit WidgetSupplier(InviwoApplication* app);
     WidgetSupplier(const WidgetSupplier&) = delete;
     WidgetSupplier& operator=(const WidgetSupplier&) = delete;
     virtual ~WidgetSupplier();

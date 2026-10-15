@@ -42,7 +42,7 @@ namespace inviwo {
  */
 class IVW_CORE_API FileLogger : public Logger {
 public:
-    FileLogger(const std::filesystem::path& logPath);
+    explicit FileLogger(const std::filesystem::path& logPath);
     virtual ~FileLogger();
 
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,

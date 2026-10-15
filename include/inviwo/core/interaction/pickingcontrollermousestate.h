@@ -43,7 +43,7 @@ class PickingManager;
 
 class IVW_CORE_API PickingControllerMouseState {
 public:
-    PickingControllerMouseState(PickingManager* pickingManager);
+    explicit PickingControllerMouseState(PickingManager* pickingManager);
     PickingControllerMouseState(const PickingControllerMouseState&) = delete;
     PickingControllerMouseState& operator=(const PickingControllerMouseState&) = delete;
     ~PickingControllerMouseState();

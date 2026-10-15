@@ -202,8 +202,8 @@ public:
     static_assert(std::is_same<Key, typename Seq::key_type>::value,
                   "The KeyframeSequence must match Keyframe 'Key'");
 
-    PropertyTrack(ProcessorNetwork* network);
-    PropertyTrack(Prop* property);
+    explicit PropertyTrack(ProcessorNetwork* network);
+    explicit PropertyTrack(Prop* property);
     PropertyTrack(Prop* property, ProcessorNetwork* network);
 
     /**

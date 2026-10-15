@@ -59,7 +59,7 @@ class AutoSaver {
 public:
     using clock_t = std::chrono::system_clock;
 
-    AutoSaver(
+    explicit AutoSaver(
         std::function<int()> numRestoreFiles = []() -> int { return 100000; },
         std::function<int()> restoreFrequency = []() -> int { return 1440; })
         : path_{filesystem::getPath(PathType::Settings)}

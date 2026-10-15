@@ -56,8 +56,8 @@ template <typename Repr, typename Self>
 class DiskRepresentation {
 public:
     DiskRepresentation() = default;
-    DiskRepresentation(const std::filesystem::path& srcFile,
-                       DiskRepresentationLoader<Repr>* loader = nullptr);
+    explicit DiskRepresentation(const std::filesystem::path& srcFile,
+                                DiskRepresentationLoader<Repr>* loader = nullptr);
     DiskRepresentation(const DiskRepresentation& rhs) = default;
     DiskRepresentation& operator=(const DiskRepresentation& that) = default;
     virtual ~DiskRepresentation() = default;

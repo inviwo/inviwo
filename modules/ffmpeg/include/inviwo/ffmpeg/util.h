@@ -58,7 +58,7 @@ struct IVW_MODULE_FFMPEG_API Error {
 
     std::array<char, bufferSize> buff{0};
 
-    operator std::string_view() const noexcept { return {buff.data()}; }
+    explicit operator std::string_view() const noexcept { return {buff.data()}; }
 
     std::string_view str() const noexcept { return {buff.data()}; }
 };

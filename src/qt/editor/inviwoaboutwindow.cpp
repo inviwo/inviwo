@@ -58,7 +58,7 @@ namespace inviwo {
 namespace {
 class AboutBrowser : public QTextBrowser {
 public:
-    AboutBrowser(QWidget* parent) : QTextBrowser(parent) {}
+    explicit AboutBrowser(QWidget* parent) : QTextBrowser(parent) {}
     virtual ~AboutBrowser() = default;
 
 protected:

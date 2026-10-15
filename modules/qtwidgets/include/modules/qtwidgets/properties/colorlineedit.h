@@ -52,7 +52,7 @@ class IVW_MODULE_QTWIDGETS_API ColorLineEdit : public QLineEdit {
 public:
     enum class ColorRepresentation { Integer, FloatingPoint, Hexadecimal };
 
-    ColorLineEdit(QWidget* parent = nullptr);
+    explicit ColorLineEdit(QWidget* parent = nullptr);
     virtual ~ColorLineEdit() = default;
 
     void setColor(ivec3 v, ColorRepresentation rep = ColorRepresentation::Integer);

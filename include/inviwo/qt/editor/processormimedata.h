@@ -46,7 +46,7 @@ class IVW_QTEDITOR_API ProcessorMimeData : public QMimeData {
     Q_OBJECT
 #include <warn/pop>
 public:
-    ProcessorMimeData(std::shared_ptr<Processor> processor);
+    explicit ProcessorMimeData(std::shared_ptr<Processor> processor);
     virtual ~ProcessorMimeData() = default;
 
     std::shared_ptr<Processor> get() const;

@@ -61,7 +61,7 @@ class IVW_MODULE_OPENGLQT_API CanvasProcessorWidgetQt : public CanvasProcessorWi
                                                         public QMainWindow,
                                                         public EventPropagator {
 public:
-    CanvasProcessorWidgetQt(Processor* p);
+    explicit CanvasProcessorWidgetQt(Processor* p);
     virtual ~CanvasProcessorWidgetQt();
 
     // Override ProcessorWidget

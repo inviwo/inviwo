@@ -74,7 +74,7 @@ namespace inviwo {
 template <typename T>
 class ColorPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    ColorPropertyWidgetQt(OrdinalProperty<T>* property);
+    explicit ColorPropertyWidgetQt(OrdinalProperty<T>* property);
     virtual ~ColorPropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;

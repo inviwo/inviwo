@@ -44,7 +44,7 @@ class PythonInterpreter;
 
 class IVW_MODULE_PYTHON3_API Python3Module : public InviwoModule {
 public:
-    Python3Module(InviwoApplication* app);
+    explicit Python3Module(InviwoApplication* app);
     virtual ~Python3Module();
 
     PythonInterpreter* getPythonInterpreter();

@@ -82,7 +82,8 @@ public:
      * @param animationManager used for creating PropertyTrack/KeyframeSequence/Keyframe.
      * @param name default Animation
      */
-    Animation(AnimationManager* animationManager = nullptr, std::string_view name = "Animation");
+    explicit Animation(AnimationManager* animationManager = nullptr,
+                       std::string_view name = "Animation");
     Animation(const Animation&);
     Animation(Animation&&) = default;
     Animation& operator=(const Animation& that);

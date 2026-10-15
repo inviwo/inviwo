@@ -102,7 +102,7 @@ const ProcessorInfo VectorOutportTestProcessor::processorInfo_{
 #include <warn/ignore/gnu-zero-variadic-macro-arguments>
 
 struct InportTestProcessor : Processor {
-    InportTestProcessor(std::string_view id) : Processor(id, id), inport{"inport"} {
+    explicit InportTestProcessor(std::string_view id) : Processor(id, id), inport{"inport"} {
         addPort(inport);
     }
     virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }
@@ -121,7 +121,7 @@ const ProcessorInfo InportTestProcessor::processorInfo_{
 };
 
 struct MultiInportTestProcessor : Processor {
-    MultiInportTestProcessor(std::string_view id) : Processor(id, id), inport{"inport"} {
+    explicit MultiInportTestProcessor(std::string_view id) : Processor(id, id), inport{"inport"} {
         addPort(inport);
     }
     virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }
@@ -139,7 +139,8 @@ const ProcessorInfo MultiInportTestProcessor::processorInfo_{
 };
 
 struct FlatMultiInportTestProcessor : Processor {
-    FlatMultiInportTestProcessor(std::string_view id) : Processor(id, id), inport{"inport"} {
+    explicit FlatMultiInportTestProcessor(std::string_view id)
+        : Processor(id, id), inport{"inport"} {
         addPort(inport);
     }
     virtual const ProcessorInfo& getProcessorInfo() const override { return processorInfo_; }

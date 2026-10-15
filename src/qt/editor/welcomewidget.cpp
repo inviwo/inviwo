@@ -167,7 +167,7 @@ std::string markdownToHtml(std::string_view markdown) {
 
 class ChangeLog : public QTextBrowser {
 public:
-    ChangeLog(QWidget* parent) : QTextBrowser(parent), fileWatcher_{this} {
+    explicit ChangeLog(QWidget* parent) : QTextBrowser(parent), fileWatcher_{this} {
         setObjectName("Changelog");
         setFrameShape(QFrame::NoFrame);
         setTextInteractionFlags(Qt::TextBrowserInteraction);
@@ -282,7 +282,7 @@ auto matcher = [](Role role) {
 
 class WorkspaceFilter : public QSortFilterProxyModel {
 public:
-    WorkspaceFilter(QObject* parent = nullptr)
+    explicit WorkspaceFilter(QObject* parent = nullptr)
         : QSortFilterProxyModel(parent)
         , dsl_{{{"file", "f", "file name", true, matcher(Role::Name)},
                 {"path", "/", "file path", true, matcher(Role::Path)},

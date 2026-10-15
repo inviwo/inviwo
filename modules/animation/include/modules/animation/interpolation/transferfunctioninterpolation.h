@@ -51,7 +51,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API TFInterpolationOptimalTransport
     : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
 public:
-    TFInterpolationOptimalTransport(InviwoApplication* app = nullptr);
+    explicit TFInterpolationOptimalTransport(InviwoApplication* app = nullptr);
     TFInterpolationOptimalTransport(const TFInterpolationOptimalTransport&);
     virtual ~TFInterpolationOptimalTransport() = default;
     virtual TFInterpolationOptimalTransport* clone() const override;
@@ -77,7 +77,7 @@ public:
 class IVW_MODULE_ANIMATION_API TFInterpolationBlend
     : public InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction> {
 public:
-    TFInterpolationBlend(InviwoApplication* app = nullptr);
+    explicit TFInterpolationBlend(InviwoApplication* app = nullptr);
     TFInterpolationBlend(const TFInterpolationBlend&);
     virtual ~TFInterpolationBlend() = default;
     virtual TFInterpolationBlend* clone() const override;

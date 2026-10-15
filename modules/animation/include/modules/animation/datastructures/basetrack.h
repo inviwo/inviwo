@@ -83,7 +83,7 @@ public:
     using const_iterator =
         util::IndirectIterator<typename std::vector<std::unique_ptr<Seq>>::const_iterator>;
 
-    BaseTrack(std::string_view name, size_t priority = 0);
+    explicit BaseTrack(std::string_view name, size_t priority = 0);
 
     virtual ~BaseTrack();
 

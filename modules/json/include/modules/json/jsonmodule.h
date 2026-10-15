@@ -56,7 +56,7 @@ class IVW_MODULE_JSON_API JSONModule : public InviwoModule,
     using JSONSupplier<Property, PropertyTraits>::registerJSONConverter;
 
 public:
-    JSONModule(InviwoApplication* app);
+    explicit JSONModule(InviwoApplication* app);
     virtual ~JSONModule();
 
     const JSONPropertyConverter& getJSONPropertyConverter() const { return propertyConverter_; }

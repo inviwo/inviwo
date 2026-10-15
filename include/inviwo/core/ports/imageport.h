@@ -94,7 +94,7 @@ template <size_t N = 1>
 class BaseImageInport : public DataInport<Image, N> {
 public:
     BaseImageInport(std::string_view identifier, Document help = {},
-                    OutportDeterminesSize value = OutportDeterminesSize::No);
+                             OutportDeterminesSize value = OutportDeterminesSize::No);
     BaseImageInport(std::string_view identifier, bool outportDeterminesSize);
     BaseImageInport(const BaseImageInport&) = delete;
     BaseImageInport(BaseImageInport&&) = delete;
@@ -210,8 +210,9 @@ public:
     ImageOutport(std::string_view identifier, Document help,
                  const DataFormatBase* format = DataVec4UInt8::get(),
                  HandleResizeEvents value = HandleResizeEvents::Yes);
-    ImageOutport(std::string_view identifier, const DataFormatBase* format = DataVec4UInt8::get(),
-                 bool handleResizeEvents = true);
+    ImageOutport(std::string_view identifier,
+                          const DataFormatBase* format = DataVec4UInt8::get(),
+                          bool handleResizeEvents = true);
     ImageOutport(std::string_view identifier, bool handleResizeEvents);
 
     virtual ~ImageOutport() = default;

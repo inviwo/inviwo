@@ -49,7 +49,7 @@ struct GLFormat;
 
 class IVW_MODULE_OPENGL_API TextureBase {
 public:
-    TextureBase(GLenum target);
+    explicit TextureBase(GLenum target);
     TextureBase(const TextureBase& other);
     TextureBase(TextureBase&& other);
     TextureBase& operator=(const TextureBase& other);

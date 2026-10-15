@@ -48,7 +48,7 @@ public:
      * @see Trackball
      * @param cameraProp Pointer to the camera that will be controlled.
      */
-    CameraTrackball(CameraProperty* cameraProp);
+    explicit CameraTrackball(CameraProperty* cameraProp);
 
     CameraTrackball(std::string_view identifier, std::string_view displayName,
                     CameraProperty* cameraProp = nullptr);

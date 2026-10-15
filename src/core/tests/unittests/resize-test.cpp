@@ -49,7 +49,8 @@ namespace inviwo {
 namespace {
 
 struct TestProcessor : Processor {
-    TestProcessor(const std::string& id) : Processor(id, id), inport("inport"), outport("outport") {
+    explicit TestProcessor(const std::string& id)
+        : Processor(id, id), inport("inport"), outport("outport") {
         addPort(inport);
         addPort(outport);
     }

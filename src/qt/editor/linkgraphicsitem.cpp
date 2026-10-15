@@ -237,7 +237,7 @@ ProcessorGraphicsItem* LinkConnectionGraphicsItem::getDestProcessorGraphicsItem(
 
 class LinkConnectionGraphicsItemMatchReverse {
 public:
-    LinkConnectionGraphicsItemMatchReverse(PropertyLink link) : link_(link) {}
+    explicit LinkConnectionGraphicsItemMatchReverse(PropertyLink link) : link_(link) {}
     bool operator()(const PropertyLink& link) const {
         return link.getDestination() == link_.getSource() &&
                link.getSource() == link_.getDestination();

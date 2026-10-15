@@ -73,7 +73,7 @@ namespace animation {
 
 class TimeLine : public QWidget {
 public:
-    TimeLine(AnimationViewQt* parent) : QWidget(parent), view_(parent) {
+    explicit TimeLine(AnimationViewQt* parent) : QWidget(parent), view_(parent) {
         setObjectName("AnimationTimeLine");
         setMouseTracking(true);
         setFixedHeight(timelineHeight);

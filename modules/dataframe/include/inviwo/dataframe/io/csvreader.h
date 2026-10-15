@@ -56,9 +56,9 @@ class DataFrame;
  */
 class IVW_MODULE_DATAFRAME_API CSVReader : public DataReaderType<DataFrame> {
 public:
-    CSVReader(std::string_view delimiters = defaultDelimiters,
-              bool hasHeader = defaultFirstRowHeader,
-              bool doublePrecision = defaultDoublePrecision);
+    explicit CSVReader(std::string_view delimiters = defaultDelimiters,
+                       bool hasHeader = defaultFirstRowHeader,
+                       bool doublePrecision = defaultDoublePrecision);
     CSVReader(const CSVReader&) = default;
     CSVReader(CSVReader&&) noexcept = default;
     CSVReader& operator=(const CSVReader&) = default;

@@ -53,7 +53,7 @@ class SuperPropertyMimeData : public QMimeData {
     Q_OBJECT
 #include <warn/pop>
 public:
-    SuperPropertyMimeData(std::vector<Property*> someProperties);
+    explicit SuperPropertyMimeData(std::vector<Property*> someProperties);
     static std::string_view getMimeTag();
     static const SuperPropertyMimeData* toSuperPropertyMimeData(const QMimeData* data);
     std::vector<Property*> properties;

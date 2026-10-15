@@ -57,7 +57,7 @@ class IVW_CORE_API LinkEvaluator {
 public:
     using ProcessorLinkMap = std::unordered_map<ProcessorPair, std::vector<PropertyLink>>;
 
-    LinkEvaluator(ProcessorNetwork* network);
+    explicit LinkEvaluator(ProcessorNetwork* network);
 
     void evaluateLinksFromProperty(Property*);
 

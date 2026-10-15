@@ -53,7 +53,7 @@ struct IVW_MODULE_PYTHON3_API PythonProcessorFactoryObjectData {
 
 class IVW_MODULE_PYTHON3_API PythonProcessorFactoryObjectBase : public ProcessorFactoryObject {
 public:
-    PythonProcessorFactoryObjectBase(PythonProcessorFactoryObjectData data);
+    explicit PythonProcessorFactoryObjectBase(PythonProcessorFactoryObjectData data);
     virtual ~PythonProcessorFactoryObjectBase() = default;
 
 protected:

@@ -46,7 +46,7 @@ namespace animation {
 
 class IVW_MODULE_ANIMATION_API ImageRecorderFactory : public RecorderFactory {
 public:
-    ImageRecorderFactory(InviwoApplication* app);
+    explicit ImageRecorderFactory(InviwoApplication* app);
     virtual ~ImageRecorderFactory() = default;
 
     virtual const std::string& getClassIdentifier() const override;

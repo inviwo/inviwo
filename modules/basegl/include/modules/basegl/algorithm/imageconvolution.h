@@ -46,7 +46,7 @@ class Layer;
 class IVW_MODULE_BASEGL_API ImageConvolution {
 public:
     template <typename Callback>
-    ImageConvolution(Callback C) : ImageConvolution() {
+    explicit ImageConvolution(Callback C) : ImageConvolution() {
         shader_.onReload(C);
     }
     ImageConvolution() : shader_("img_convolution.frag", Shader::Build::No) {}

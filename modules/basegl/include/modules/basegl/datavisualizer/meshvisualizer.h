@@ -47,7 +47,7 @@ class ProcessorNetwork;
 
 class IVW_MODULE_BASEGL_API MeshVisualizer : public DataVisualizer {
 public:
-    MeshVisualizer(InviwoApplication* app);
+    explicit MeshVisualizer(InviwoApplication* app);
     virtual ~MeshVisualizer() = default;
     virtual std::string getName() const override;
     virtual Document getDescription() const override;

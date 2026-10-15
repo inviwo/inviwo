@@ -46,7 +46,7 @@ public:
 
     using Action = std::variant<camerautil::Side, FlipView, FlipUp, FitData>;
 
-    ViewEvent(Action action = camerautil::Side::XNegative);
+    explicit ViewEvent(Action action = camerautil::Side::XNegative);
     ViewEvent(const ViewEvent&) = default;
     ViewEvent& operator=(const ViewEvent&) = default;
 

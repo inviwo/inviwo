@@ -66,9 +66,9 @@ public:
      * 'geometry', etc.
      * @see FileProperty
      */
-    DataSource(DataReaderFactory* rf = util::getDataReaderFactory(),
-               const std::filesystem::path& filePath = {},
-               std::string_view contentType = FileProperty::defaultContentType);
+    explicit DataSource(DataReaderFactory* rf = util::getDataReaderFactory(),
+                        const std::filesystem::path& filePath = {},
+                        std::string_view contentType = FileProperty::defaultContentType);
     virtual ~DataSource() = default;
 
     virtual void process() override;

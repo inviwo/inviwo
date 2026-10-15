@@ -518,7 +518,7 @@ template <typename T>
 class DeserializationErrorHandle {
 public:
     template <typename... Args>
-    DeserializationErrorHandle(Deserializer& d, Args&&... args);
+    explicit DeserializationErrorHandle(Deserializer& d, Args&&... args);
     virtual ~DeserializationErrorHandle();
     T& getHandler();
 

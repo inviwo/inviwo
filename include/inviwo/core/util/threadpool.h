@@ -76,7 +76,7 @@ namespace inviwo {
 
 class IVW_CORE_API ThreadPool {
 public:
-    ThreadPool(
+    explicit ThreadPool(
         size_t threads, std::function<void()> onThreadStart = []() {},
         std::function<void()> onThreadStop = []() {});
     ~ThreadPool();

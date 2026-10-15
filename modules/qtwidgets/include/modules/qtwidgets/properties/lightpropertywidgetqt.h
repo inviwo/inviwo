@@ -51,7 +51,7 @@ class OrdinalSpinBoxWidget;
 
 class IVW_MODULE_QTWIDGETS_API LightPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    LightPropertyWidgetQt(FloatVec3Property* property);
+    explicit LightPropertyWidgetQt(FloatVec3Property* property);
     virtual ~LightPropertyWidgetQt();
 
     virtual void updateFromProperty() override;

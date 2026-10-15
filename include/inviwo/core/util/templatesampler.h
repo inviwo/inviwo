@@ -46,11 +46,11 @@ namespace inviwo {
 template <typename ReturnType, typename DataType>
 class TemplateVolumeSampler : public SpatialSampler<ReturnType> {
 public:
-    TemplateVolumeSampler(std::shared_ptr<const Volume> sharedVolume,
-                          CoordinateSpace space = CoordinateSpace::Data);
+    explicit TemplateVolumeSampler(std::shared_ptr<const Volume> sharedVolume,
+                                   CoordinateSpace space = CoordinateSpace::Data);
 
-    TemplateVolumeSampler(const Volume& sharedVolume,
-                          CoordinateSpace space = CoordinateSpace::Data);
+    explicit TemplateVolumeSampler(const Volume& sharedVolume,
+                                   CoordinateSpace space = CoordinateSpace::Data);
     virtual ~TemplateVolumeSampler() = default;
 
 protected:

@@ -60,7 +60,7 @@ public:
         util::IndirectIterator<typename std::vector<std::unique_ptr<Key>>::const_iterator>;
 
     BaseKeyframeSequence();
-    BaseKeyframeSequence(std::vector<std::unique_ptr<Key>> keyframes);
+    explicit BaseKeyframeSequence(std::vector<std::unique_ptr<Key>> keyframes);
 
     /**
      * Remove all keyframes and call KeyframeObserver::notifyKeyframeRemoved

@@ -61,13 +61,13 @@ public:
      * Use ImageSampler(std::shared_ptr<const Layer>) to ensure that the Layer is available
      * for the lifetime of the ImageSampler
      */
-    ImageSampler(const Layer* layer)
+    explicit ImageSampler(const Layer* layer)
         : SpatialSampler<ReturnType>(*layer)
         , layer_(layer->getRepresentation<LayerRAM>())
         , dims_(layer->getDimensions())
         , sharedImage_(nullptr) {}
 
-    ImageSampler(std::shared_ptr<const Layer> layer) : ImageSampler(layer.get()) {
+    explicit ImageSampler(std::shared_ptr<const Layer> layer) : ImageSampler(layer.get()) {
         sharedLayer_ = layer;
     }
 
@@ -76,14 +76,14 @@ public:
      * Use ImageSampler(std::shared_ptr<const Image>) to ensure that the Image is available
      * for the lifetime of the ImageSampler
      */
-    ImageSampler(const Image* img) : ImageSampler(img->getColorLayer()) {}
+    explicit ImageSampler(const Image* img) : ImageSampler(img->getColorLayer()) {}
 
     /**
      * Creates a ImageSampler for the given Image.
      * The shared_ptr will ensure that the Image is available for the lifetime of the
      * ImageSampler
      */
-    ImageSampler(std::shared_ptr<const Image> sharedImage)
+    explicit ImageSampler(std::shared_ptr<const Image> sharedImage)
         : ImageSampler(sharedImage->getColorLayer()) {
         sharedImage_ = sharedImage;
     }
@@ -161,9 +161,9 @@ using ImageSpatialSampler = ImageSampler<glm::vec<4, double>>;
 template <typename ReturnType, typename DataType>
 class TemplateImageSampler : public SpatialSampler<ReturnType> {
 public:
-    TemplateImageSampler(const Layer* layer);
-    TemplateImageSampler(const Image* img);
-    TemplateImageSampler(std::shared_ptr<const Image> sharedImage);
+    explicit TemplateImageSampler(const Layer* layer);
+    explicit TemplateImageSampler(const Image* img);
+    explicit TemplateImageSampler(std::shared_ptr<const Image> sharedImage);
     virtual ~TemplateImageSampler() = default;
 
     /**

@@ -69,7 +69,7 @@ protected:
 
 class INVIWO_META_API LegacyModuleConf : public ModuleConf {
 public:
-    LegacyModuleConf(const std::string& name) : ModuleConf(name, "modules") {}
+    explicit LegacyModuleConf(const std::string& name) : ModuleConf(name, "modules") {}
     path registrationFile() const { return fmt("{lname}module.cpp"); }
     path listFile() const { return cmlists; }
     path incPath() const { return ""; }

@@ -42,7 +42,7 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API EditorSettings : public Settings {
 public:
-    EditorSettings(InviwoApplication* app);
+    explicit EditorSettings(InviwoApplication* app);
     EditorSettings(const EditorSettings&) = delete;
     EditorSettings& operator=(const EditorSettings&) = delete;
     EditorSettings(EditorSettings&&) = delete;

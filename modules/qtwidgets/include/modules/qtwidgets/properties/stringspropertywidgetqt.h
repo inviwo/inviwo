@@ -74,7 +74,7 @@ public:
 template <size_t N>
 class StringsPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    StringsPropertyWidgetQt(StringsProperty<N>* property);
+    explicit StringsPropertyWidgetQt(StringsProperty<N>* property);
     virtual ~StringsPropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;

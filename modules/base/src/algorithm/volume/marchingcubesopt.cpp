@@ -263,7 +263,7 @@ class VCache {
 public:
     enum CacheName { xCacheCurr, xCacheNext, yCacheCurr, yCacheNext, zCacheCurr, zCacheNext };
     enum CachePosName { xCurr0, xCurr1, xNext0, xNext1, yCurr, yNext, zCurr, zNext };
-    VCache(const size2_t& dim) : cIm{dim} {
+    explicit VCache(const size2_t& dim) : cIm{dim} {
         cache[xCacheCurr].resize(dim.x * dim.y);
         cache[xCacheNext].resize(dim.x * dim.y);
         cache[yCacheCurr].resize(dim.x * dim.y);

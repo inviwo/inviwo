@@ -53,7 +53,7 @@ public:
      * Method to test if both outport and inport is valid, eg not nullptr
      * @return false if the outport and/or the inport is nullptr
      */
-    operator bool() const;
+    explicit operator bool() const;
 
     Inport* getInport() const { return inport_; }
     Outport* getOutport() const { return outport_; }

@@ -195,7 +195,7 @@ Combinations(std::span<T, N>, size_t) -> Combinations<T>;
 template <typename T>
 class IndexProduct {
 public:
-    IndexProduct(std::span<T> sizes) : sizes{sizes}, indices(sizes.size(), 0) {}
+    explicit IndexProduct(std::span<T> sizes) : sizes{sizes}, indices(sizes.size(), 0) {}
 
     bool next() {
         const ptrdiff_t n = indices.size();

@@ -42,7 +42,7 @@ class OpenGLCapabilities;
 
 class IVW_MODULE_OPENGL_API OpenGLModule : public InviwoModule {
 public:
-    OpenGLModule(InviwoApplication* app);
+    explicit OpenGLModule(InviwoApplication* app);
 
     OpenGLModule(const OpenGLModule&) = delete;
     OpenGLModule& operator=(const OpenGLModule&) = delete;

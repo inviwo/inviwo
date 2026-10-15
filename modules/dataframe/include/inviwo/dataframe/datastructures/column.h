@@ -71,7 +71,8 @@ namespace inviwo {
 
 class IVW_MODULE_DATAFRAME_API InvalidConversion : public Exception {
 public:
-    InvalidConversion(const std::string& message = "", SourceContext context = SourceContext())
+    explicit InvalidConversion(const std::string& message = "",
+                               SourceContext context = SourceContext())
         : Exception(message, context) {}
     virtual ~InvalidConversion() throw() {}
 };
@@ -297,8 +298,8 @@ protected:
 
 class IVW_MODULE_DATAFRAME_API IndexColumn : public TemplateColumn<std::uint32_t> {
 public:
-    IndexColumn(std::string_view header, std::shared_ptr<Buffer<std::uint32_t>> buffer =
-                                             std::make_shared<Buffer<std::uint32_t>>());
+    explicit IndexColumn(std::string_view header, std::shared_ptr<Buffer<std::uint32_t>> buffer =
+                                                      std::make_shared<Buffer<std::uint32_t>>());
     IndexColumn(std::string_view header, std::vector<std::uint32_t> data);
     IndexColumn(const IndexColumn& rhs) = default;
     IndexColumn(const IndexColumn& rhs, std::span<const std::uint32_t> rowSelection);
@@ -342,8 +343,8 @@ public:
                                     std::declval<const std::vector<std::string>&>())),
                                 std::vector<std::uint32_t>::const_iterator>;
 
-    CategoricalColumn(std::string_view header, const std::vector<std::string>& values = {},
-                      Unit unit = Unit{}, std::optional<dvec2> range = std::nullopt);
+    explicit CategoricalColumn(std::string_view header, const std::vector<std::string>& values = {},
+                               Unit unit = Unit{}, std::optional<dvec2> range = std::nullopt);
     CategoricalColumn(std::string_view header, std::vector<type> data,
                       std::vector<std::string> lookup, Unit unit = Unit{},
                       std::optional<dvec2> range = std::nullopt);

@@ -51,7 +51,7 @@ public:
     enum class SetIndex { Yes, No };
 
     using value_type = IntegralLine;
-    IntegralLineSet(mat4 modelMatrix, mat4 worldMatrix = mat4(1));
+    explicit IntegralLineSet(mat4 modelMatrix, mat4 worldMatrix = mat4(1));
     virtual ~IntegralLineSet();
 
     mat4 getModelMatrix() const;

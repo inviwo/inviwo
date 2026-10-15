@@ -50,7 +50,7 @@ public:
      * @brief Create a text editor for @p property
      * @pre Property has to be of type FileProperty or StringProperty
      */
-    PythonEditorDockWidget(Property* property);
+    explicit PythonEditorDockWidget(Property* property);
 
 private:
     std::vector<std::shared_ptr<std::function<void()>>> callbacks_;

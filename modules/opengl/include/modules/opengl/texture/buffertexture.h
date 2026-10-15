@@ -46,7 +46,7 @@ namespace inviwo {
 template <typename T = std::uint8_t, GLenum InternalFormat = GL_R8UI>
 class BufferTexture : public TextureBase {
 public:
-    BufferTexture(std::uint32_t size)
+    explicit BufferTexture(std::uint32_t size)
         : TextureBase(GL_TEXTURE_BUFFER)
         , storage{size * sizeof(T), GLFormats::get(DataFormat<T>::id()), GL_DYNAMIC_DRAW,
                   GL_ARRAY_BUFFER} {

@@ -56,7 +56,7 @@ public:
         std::function<std::any(std::string_view)> onToken = nullptr;
     };
 
-    SearchDSL(std::vector<Item> items)
+    explicit SearchDSL(std::vector<Item> items)
         : global_{"global", "*", "", true,
                   [this](std::string_view str, const std::any& data, const Ts&... things) -> bool {
                       for (const auto& item : items_) {

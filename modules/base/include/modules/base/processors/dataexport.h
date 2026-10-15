@@ -52,11 +52,11 @@ namespace inviwo {
 template <typename DataType, typename PortType = DataInport<DataType>>
 class DataExport : public Processor {
 public:
-    DataExport(DataWriterFactory* wf = util::getDataWriterFactory(),
-               const std::filesystem::path& file = {},
-               std::string_view contentType = FileProperty::defaultContentType);
-    DataExport(InviwoApplication* app, const std::filesystem::path& file = {},
-               std::string_view contentType = FileProperty::defaultContentType);
+    explicit DataExport(DataWriterFactory* wf = util::getDataWriterFactory(),
+                        const std::filesystem::path& file = {},
+                        std::string_view contentType = FileProperty::defaultContentType);
+    explicit DataExport(InviwoApplication* app, const std::filesystem::path& file = {},
+                        std::string_view contentType = FileProperty::defaultContentType);
 
     virtual ~DataExport() = default;
 

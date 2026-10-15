@@ -142,8 +142,8 @@ public:
      * Construct the pool processor with given options.
      * @see pool::Option
      */
-    PoolProcessor(pool::Options options = pool::Options{flags::empty},
-                  const std::string& identifier = "", const std::string& displayName = "");
+    explicit PoolProcessor(pool::Options options = pool::Options{flags::empty},
+                           const std::string& identifier = "", const std::string& displayName = "");
     PoolProcessor(const PoolProcessor&) = delete;
     PoolProcessor(PoolProcessor&&) = delete;
     PoolProcessor& operator=(const PoolProcessor&) = delete;

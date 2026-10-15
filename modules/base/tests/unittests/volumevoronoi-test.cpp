@@ -45,7 +45,7 @@ namespace {
 
 class Entity : public StructuredGridEntity<3> {
 public:
-    Entity(size3_t dimensions)
+    explicit Entity(size3_t dimensions)
         : StructuredGridEntity<3>{dimensions, vec3{1.0f, 1.0f, 1.0f}}, dimensions{dimensions} {}
 
     virtual Entity* clone() const override { return new Entity(*this); }

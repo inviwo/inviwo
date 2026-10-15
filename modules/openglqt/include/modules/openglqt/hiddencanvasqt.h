@@ -70,7 +70,8 @@ public:
      *     defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
      *     QSurfaceFormat::setDefaultFormat(defaultFormat);
      */
-    HiddenCanvasQt(std::string_view name, QSurfaceFormat format = QSurfaceFormat::defaultFormat());
+    explicit HiddenCanvasQt(std::string_view name,
+                            QSurfaceFormat format = QSurfaceFormat::defaultFormat());
     HiddenCanvasQt(const HiddenCanvasQt&) = delete;
     HiddenCanvasQt(HiddenCanvasQt&&) = delete;
     HiddenCanvasQt& operator=(const HiddenCanvasQt&) = delete;

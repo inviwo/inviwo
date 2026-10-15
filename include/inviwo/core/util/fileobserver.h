@@ -52,12 +52,12 @@ public:
     /**
      * @note Registers as a file observer in InviwoApplication.
      */
-    FileObserver(InviwoApplication* app);
+    explicit FileObserver(InviwoApplication* app);
 
     /**
      * @note Registers as a file observer in FileSystemObserver.
      */
-    FileObserver(FileSystemObserver* app);
+    explicit FileObserver(FileSystemObserver* app);
 
     FileObserver(const FileObserver&) = delete;
     FileObserver& operator=(const FileObserver&) = delete;

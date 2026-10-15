@@ -48,7 +48,7 @@ public:
     static const unsigned SpatialDimensions = 4;
     using type = ReturnType;
 
-    Spatial4DSampler(std::shared_ptr<const SpatialEntity> spatialEntity);
+    explicit Spatial4DSampler(std::shared_ptr<const SpatialEntity> spatialEntity);
     virtual ~Spatial4DSampler() = default;
 
     virtual ReturnType sample(const dvec4& pos,

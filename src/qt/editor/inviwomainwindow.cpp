@@ -130,7 +130,7 @@ QString addAppendSuffix(const QString& str, bool append) {
 
 class MenuKeyboardEventFilter : public QObject {
 public:
-    MenuKeyboardEventFilter(QObject* parent) : QObject(parent) {}
+    explicit MenuKeyboardEventFilter(QObject* parent) : QObject(parent) {}
 
     // This will not trigger on MacOS, so we also trigger update on hovered and aboutToShow.
     virtual bool eventFilter(QObject*, QEvent* ev) override {

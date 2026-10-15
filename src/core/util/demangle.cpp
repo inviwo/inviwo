@@ -43,7 +43,7 @@ std::string demangle(const char* name) {
 #if defined(__clang__) || defined(__GNUC__)
     struct handle {
         char* p;
-        handle(char* ptr) : p(ptr) {}
+        explicit handle(char* ptr) : p(ptr) {}
         ~handle() { std::free(p); }
     };
     int status = -4;

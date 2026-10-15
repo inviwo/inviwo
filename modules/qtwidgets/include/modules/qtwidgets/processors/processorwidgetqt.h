@@ -39,7 +39,7 @@ namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API ProcessorWidgetQt : public ProcessorWidget, public QMainWindow {
 public:
-    ProcessorWidgetQt(Processor* p);
+    explicit ProcessorWidgetQt(Processor* p);
     ProcessorWidgetQt(const ProcessorWidgetQt&) = delete;
     ProcessorWidgetQt(ProcessorWidgetQt&&) = delete;
     ProcessorWidgetQt& operator=(const ProcessorWidgetQt&) = delete;

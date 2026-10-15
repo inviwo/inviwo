@@ -48,7 +48,7 @@ class LogStream;
  */
 class IVW_CORE_API SystemSettings : public Settings {
 public:
-    SystemSettings(InviwoApplication* app);
+    explicit SystemSettings(InviwoApplication* app);
     virtual ~SystemSettings();
     IntSizeTProperty poolSize_;
     BoolProperty enablePortInspectors_;

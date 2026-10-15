@@ -67,19 +67,21 @@ class BufferBase;
 
 class IVW_MODULE_DATAFRAME_API InvalidColCount : public Exception {
 public:
-    InvalidColCount(const std::string& message = "", SourceContext context = SourceContext())
+    explicit InvalidColCount(const std::string& message = "",
+                             SourceContext context = SourceContext())
         : Exception(message, context) {}
     virtual ~InvalidColCount() noexcept {}
 };
 class IVW_MODULE_DATAFRAME_API NoColumns : public Exception {
 public:
-    NoColumns(const std::string& message = "", SourceContext context = SourceContext())
+    explicit NoColumns(const std::string& message = "", SourceContext context = SourceContext())
         : Exception(message, context) {}
     virtual ~NoColumns() noexcept {}
 };
 class IVW_MODULE_DATAFRAME_API DataTypeMismatch : public Exception {
 public:
-    DataTypeMismatch(const std::string& message = "", SourceContext context = SourceContext())
+    explicit DataTypeMismatch(const std::string& message = "",
+                              SourceContext context = SourceContext())
         : Exception(message, context) {}
     virtual ~DataTypeMismatch() noexcept {}
 };

@@ -47,7 +47,7 @@ class InviwoApplication;
 
 class IVW_MODULE_DATAFRAME_API DataFrameSource : public DataSource<DataFrame, DataFrameOutport> {
 public:
-    DataFrameSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
+    explicit DataFrameSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
     virtual ~DataFrameSource() = default;
 
     virtual void dataLoaded(std::shared_ptr<DataFrame> data) override;

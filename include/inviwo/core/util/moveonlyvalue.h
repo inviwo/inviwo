@@ -41,8 +41,8 @@ template <typename T>
 class MoveOnlyValue {
 public:
     MoveOnlyValue() = default;
-    MoveOnlyValue(const T& v) : value{v} {}
-    MoveOnlyValue(T&& v) : value{std::move(v)} {}
+    explicit MoveOnlyValue(const T& v) : value{v} {}
+    explicit MoveOnlyValue(T&& v) : value{std::move(v)} {}
 
     MoveOnlyValue(const MoveOnlyValue&) = delete;
     MoveOnlyValue(MoveOnlyValue&& rhs) noexcept : value{std::exchange(rhs.value, std::nullopt)} {}

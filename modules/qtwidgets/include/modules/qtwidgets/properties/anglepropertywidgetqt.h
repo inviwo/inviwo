@@ -56,7 +56,7 @@ namespace inviwo {
 template <typename T>
 class AnglePropertyWidgetQt : public PropertyWidgetQt {
 public:
-    AnglePropertyWidgetQt(OrdinalProperty<T>* property);
+    explicit AnglePropertyWidgetQt(OrdinalProperty<T>* property);
     virtual ~AnglePropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;

@@ -48,7 +48,7 @@ std::string_view view =
 template <size_t N>
 class SafeCStr1 {
 public:
-    SafeCStr1(std::string_view sv) {
+    explicit SafeCStr1(std::string_view sv) {
         static_assert(N > 0);
         if (sv.size() < N - 1) {
             auto& arr = storage.template emplace<std::array<char, N>>();
@@ -64,7 +64,7 @@ public:
     const char* c_str() const {
         return std::visit([](const auto& str) { return str.data(); }, storage);
     }
-    operator const char*() const { return c_str(); }
+    explicit operator const char*() const { return c_str(); }
 
 private:
     std::variant<std::array<char, N>, std::vector<char>> storage;
@@ -73,7 +73,7 @@ private:
 template <size_t N>
 class SafeCStr2 {
 public:
-    SafeCStr2(std::string_view sv) {
+    explicit SafeCStr2(std::string_view sv) {
         static_assert(N > 0);
         if (sv.size() < N - 1) {
             std::memcpy(stack.data(), sv.data(), sv.size());
@@ -87,7 +87,7 @@ public:
     }
 
     const char* c_str() const { return heap ? heap.get() : stack.data(); }
-    operator const char*() const { return heap ? heap.get() : stack.data(); }
+    explicit operator const char*() const { return heap ? heap.get() : stack.data(); }
 
 private:
     std::array<char, N> stack;  // Do not initialize!

@@ -115,7 +115,7 @@ class InviwoApplicationCallbacks;
 class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication> {
 public:
     InviwoApplication();
-    InviwoApplication(std::string_view displayName);
+    explicit InviwoApplication(std::string_view displayName);
     InviwoApplication(int argc, char** argv, std::string_view displayName);
     InviwoApplication(const InviwoApplication& rhs) = delete;
     InviwoApplication& operator=(const InviwoApplication& that) = delete;
