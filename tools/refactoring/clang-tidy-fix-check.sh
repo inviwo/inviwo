@@ -46,14 +46,24 @@ fi
 # legitimately share a header that raised the same check, and two parallel
 # -fix invocations writing to that same header file would race.
 EXPORT_DIR="$(mktemp -d /tmp/clang-tidy-fix-"$CHECK".XXXXXX)"
-trap 'rm -rf "$EXPORT_DIR"' EXIT
+HELPER="$(mktemp /tmp/clang-tidy-fix-helper.XXXXXX)"
+trap 'rm -rf "$EXPORT_DIR" "$HELPER"' EXIT
+
+# A tiny on-disk helper script, rather than inlining the export-fixes command
+# into the xargs -I{} template directly: macOS/BSD xargs imposes a small
+# fixed buffer for -I-substituted command lines ("xargs: command line cannot
+# be assembled" if exceeded), which the absolute tool/build/export paths
+# blow past even for a handful of files.
+cat > "$HELPER" <<EOF
+#!/bin/zsh
+"$CLANG_TIDY_BIN" -p "$BUILD" -checks="-*,$CHECK" \\
+  -export-fixes="$EXPORT_DIR/fix-\$\$-\$RANDOM.yaml" "\$1"
+EOF
+chmod +x "$HELPER"
 
 echo "Exporting fixes for $CHECK across ${#FILES[@]} TU(s)..."
 printf '%s\n' "${FILES[@]/#/$REPO_ROOT/}" | \
-  xargs -P8 -I{} zsh -c '
-    "'"$CLANG_TIDY_BIN"'" -p "'"$BUILD"'" -checks="-*,'"$CHECK"'" \
-      -export-fixes="'"$EXPORT_DIR"'/fix-$$-$RANDOM.yaml" {}
-  '
+  xargs -P8 -I{} "$HELPER" {}
 
 echo "Applying merged replacements..."
 "$APPLY_REPL_BIN" --format --style=file "$EXPORT_DIR"
