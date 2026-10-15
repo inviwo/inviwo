@@ -129,9 +129,7 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         pickingIdToTouchPoints[it->second].push_back(point);
     }
 
-    for (const auto& item : pickingIdToTouchPoints) {
-        const auto& startPickingId = item.first;
-        const auto& points = item.second;
+    for (const auto& [startPickingId, points] : pickingIdToTouchPoints) {
         TouchEvent te(points, e->getDevice(), e->modifiers());
         // Heuristic for obtaining picked object among the touch points:
         // Select first non-background object (points are generally sorted in the order they where

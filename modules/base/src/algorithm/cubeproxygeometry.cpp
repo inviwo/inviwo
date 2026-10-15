@@ -55,9 +55,7 @@ std::shared_ptr<Mesh> createCubeProxyGeometry(const std::shared_ptr<const Volume
     if (util::hasMargins(volume)) {
         // volume has margins enabled
         // adjust start and end texture coordinate accordingly
-        vec3 marginsBottomLeft;
-        vec3 marginsTopRight;
-        std::tie(marginsBottomLeft, marginsTopRight) = util::getVolumeMargins(volume);
+        auto [marginsBottomLeft, marginsTopRight] = util::getVolumeMargins(volume);
 
         startDataTexCoord += marginsBottomLeft;
         // extent needs to be adjusted for both margins
@@ -93,9 +91,7 @@ std::shared_ptr<Mesh> createCubeProxyGeometry(const std::shared_ptr<const Volume
     if (util::hasMargins(volume)) {
         // volume has margins enabled
         // adjust start and end texture coordinate accordingly
-        vec3 marginsBottomLeft;
-        vec3 marginsTopRight;
-        std::tie(marginsBottomLeft, marginsTopRight) = util::getVolumeMargins(volume);
+        auto [marginsBottomLeft, marginsTopRight] = util::getVolumeMargins(volume);
 
         startDataTexCoord += marginsBottomLeft;
         // extent needs to be adjusted for both margins

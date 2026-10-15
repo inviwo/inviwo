@@ -76,9 +76,7 @@ size3_t getVolumeDimensions(const std::shared_ptr<const Volume>& volume) {
     if (hasMargins(volume)) {
         // volume has margins enabled
         // adjust start and end texture coordinate accordingly
-        vec3 marginsBottomLeft;
-        vec3 marginsTopRight;
-        std::tie(marginsBottomLeft, marginsTopRight) = getVolumeMargins(volume);
+        auto [marginsBottomLeft, marginsTopRight] = getVolumeMargins(volume);
 
         if (glm::any(greaterThan(marginsBottomLeft, vec3(0.0f))) ||
             glm::any(greaterThan(marginsTopRight, vec3(0.0f)))) {
