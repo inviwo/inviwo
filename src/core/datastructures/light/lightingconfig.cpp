@@ -34,7 +34,7 @@ namespace inviwo {
 LightingConfig& LightingConfig::updateFrom(const LightingConfig& config) {
     static constexpr auto update = [](auto& dest, const auto& src) {
         if (src) {
-            dest = src.value();
+            dest = src;
         }
     };
     update(shadingMode, config.shadingMode);
