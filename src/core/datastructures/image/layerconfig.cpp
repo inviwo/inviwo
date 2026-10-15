@@ -53,7 +53,7 @@ DataMapper LayerConfig::dataMap(const DataMapper& defaultMapper) const {
 LayerConfig& LayerConfig::updateFrom(const LayerConfig& config) {
     static constexpr auto update = [](auto& dest, const auto& src) {
         if (src) {
-            dest = src.value();
+            dest = src;
         }
     };
     update(dimensions, config.dimensions);
