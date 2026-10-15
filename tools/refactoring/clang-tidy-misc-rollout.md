@@ -2,14 +2,15 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 44 checks done so
-far (34 + a batch of 10: `readability-string-compare`,
+below for current progress and the exact resume point). 45 checks done so
+far (34 + a batch of 11: `readability-string-compare`,
 `performance-move-const-arg`, `readability-redundant-smartptr-get`,
 `readability-simplify-boolean-expr`, `modernize-avoid-bind`,
 `readability-use-concise-preprocessor-directives`,
 `modernize-use-string-view`, `modernize-use-emplace`,
-`performance-avoid-endl`, `readability-redundant-access-specifiers`), ~60
-remaining (plus 3 permanently-skipped false positives, see below).
+`performance-avoid-endl`, `readability-redundant-access-specifiers`,
+`readability-redundant-string-init`), ~60 remaining (plus 3
+permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
@@ -144,7 +145,8 @@ plus: `readability-delete-null-pointer`, `modernize-make-unique`,
 `readability-simplify-boolean-expr`, `modernize-avoid-bind`,
 `readability-use-concise-preprocessor-directives`,
 `modernize-use-string-view`, `modernize-use-emplace`,
-`performance-avoid-endl`, `readability-redundant-access-specifiers`.
+`performance-avoid-endl`, `readability-redundant-access-specifiers`,
+`readability-redundant-string-init`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
@@ -268,12 +270,13 @@ rollout.
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
    **68 fixable checks remaining** (out of 98 total fixable checks found by
-   the dry run); after the 10 checks done in this batch (see DONE_CHECKS),
-   next up by size: `readability-redundant-string-init`,
-   `readability-redundant-nested-if`, `modernize-loop-convert`,
-   `modernize-use-noexcept`, `modernize-use-std-numbers`,
-   `cppcoreguidelines-init-variables`, `readability-container-contains`,
-   `google-upgrade-googletest-case`, `performance-use-std-move`, ...
+   the dry run); after the 11 checks done in this batch (see DONE_CHECKS),
+   next up by size: `readability-redundant-nested-if`,
+   `modernize-loop-convert`, `modernize-use-noexcept`,
+   `modernize-use-std-numbers`, `cppcoreguidelines-init-variables`,
+   `readability-container-contains`, `google-upgrade-googletest-case`,
+   `performance-use-std-move`, `readability-isolate-declaration`,
+   `readability-avoid-return-with-void-value`, ...
    (`google-readability-todo` was evaluated and skipped — see "Reverted as
    false positives" above — do not reapply it.)
 3. For each check: `./tools/refactoring/clang-tidy-fix-check.sh <check>`,
