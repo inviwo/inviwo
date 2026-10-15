@@ -211,7 +211,7 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
 
     auto closestMultiplier = std::numeric_limits<double>::max();
 
-    static constexpr std::string_view empty = "";
+    static constexpr std::string_view empty;
     constexpr auto siPrefixHalf = static_cast<int>(unitgroups::prefixes.size() / 2);
     std::vector<std::string_view> prefixes;
 
