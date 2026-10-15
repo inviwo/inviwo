@@ -252,7 +252,7 @@ void SelectRowsDataFrame(benchmark::State& st) {
     filters.exclude.push_back(filters::intMatch(2, filters::NumberComp::Greater, 20));
 
     for (const auto _ : st) {
-        auto result = dataframe::selectRows(*df.get(), filters);
+        auto result = dataframe::selectRows(*df, filters);
         benchmark::DoNotOptimize(result);
     }
 }

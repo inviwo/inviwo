@@ -155,7 +155,7 @@ void VectorFieldGenerator4D::process() {
         volume->setMetaData<DoubleMetaData>("duration", dt);
 
         TextureUnitContainer cont;
-        utilgl::bindAndSetUniforms(shader_, cont, *volume.get(), "volume");
+        utilgl::bindAndSetUniforms(shader_, cont, *volume, "volume");
 
         shader_.setUniform("t", t);
         utilgl::setUniforms(shader_, xRange_, yRange_, zRange_);

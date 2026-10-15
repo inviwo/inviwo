@@ -213,7 +213,7 @@ std::shared_ptr<Volume> TMIP::iteration(Shader& s, std::shared_ptr<Volume> vol,
     for (auto v = start; v != end; ++v) {
         if (i >= maxSamplers_) break;
         const std::string id = (i == 0) ? "" : fmt::to_string(i);
-        utilgl::bindAndSetUniforms(s, cont, *(v->get()), "volume" + id);
+        utilgl::bindAndSetUniforms(s, cont, *(*v), "volume" + id);
         i++;
     }
 
