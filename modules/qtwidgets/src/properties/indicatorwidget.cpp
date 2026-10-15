@@ -29,7 +29,7 @@
 
 #include <modules/qtwidgets/properties/indicatorwidget.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <algorithm>
 #include <cmath>
 
