@@ -88,11 +88,11 @@ void KeyframeWidgetQt::paint(QPainter* painter,
     painter->setPen(pen);
     painter->setBrush(brush);
     const auto penWidth = pen.widthF();
-    int hs = static_cast<int>((keyframeWidth - penWidth) / 2.0f);
-    QPoint p[4] = {{-hs, 0},
-                   {0, -trackHeight / 2 + trackHeightNudge},
-                   {hs, 0},
-                   {0, trackHeight / 2 - trackHeightNudge}};
+    const auto hs = (keyframeWidth - penWidth) / 2.0;
+    QPointF p[4] = {{-hs, 0.0},
+                    {0.0, -trackHeight / 2.0 + trackHeightNudge},
+                    {hs, 0.0},
+                    {0.0, trackHeight / 2.0 - trackHeightNudge}};
     painter->drawPolygon(p, 4);
 }
 
