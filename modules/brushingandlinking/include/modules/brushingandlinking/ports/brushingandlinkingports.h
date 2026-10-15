@@ -95,11 +95,11 @@ public:
      * processor (Processor::process will be called for those). Defaults to InvalidOutput for all
      * targets (Row, Column) and all actions (filtering/selection/highlight).
      */
-    BrushingAndLinkingInport(
-        std::string_view identifier,
-        std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {
-            {BrushingAndLinkingManager::AnyBrushingTarget, BrushingModifications(flags::any),
-             InvalidationLevel::InvalidOutput}});
+    BrushingAndLinkingInport(std::string_view identifier,
+                             std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {
+                                 {BrushingAndLinkingManager::AnyBrushingTarget,
+                                  BrushingModifications(flags::any),
+                                  InvalidationLevel::InvalidOutput}});
     BrushingAndLinkingInport(std::string_view identifier, Document help,
                              std::vector<BrushingTargetsInvalidationLevel> invalidationLevels = {
                                  {BrushingAndLinkingManager::AnyBrushingTarget,
