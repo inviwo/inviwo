@@ -83,7 +83,7 @@ col = ivwdataframe.{0}Column('{0}Col')
         EXPECT_EQ(expectedFormat->getId(), col.getBuffer()->getDataFormat()->getId())
             << "Dataformat mismatch";
 
-        const std::string expectedHeader = fmt::format("{}Col", classname).c_str();
+        const std::string expectedHeader = fmt::format("{}Col", classname);
         EXPECT_STREQ(expectedHeader.c_str(), col.getHeader().c_str())
             << "Column header does not match";
     }
