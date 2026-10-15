@@ -221,7 +221,7 @@ void InviwoFileDialog::addExtension(std::string_view extString) {
 }
 
 void InviwoFileDialog::addExtensions(const std::vector<FileExtension>& extensions) {
-    for (const auto ext : extensions) {
+    for (const auto& ext : extensions) {
         addExtension(ext);
     }
 }

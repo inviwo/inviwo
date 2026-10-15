@@ -427,7 +427,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
 
         presetMenu->addSeparator();
         for (const auto& type : types) {
-            for (const auto preset : presetManager->getAvailablePresets(property_, type)) {
+            for (const auto& preset : presetManager->getAvailablePresets(property_, type)) {
                 addPresetToMenu(presetMenu, preset, property_, type);
             }
         }
