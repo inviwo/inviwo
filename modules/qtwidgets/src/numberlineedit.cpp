@@ -36,6 +36,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iterator>
+#include <memory>
 #include <unordered_map>
 #include <utility>
 
@@ -167,7 +168,8 @@ void NumberLineEditPrivate::updateLocale() {
 
 QLocale NumberLineEditPrivate::getLocale() const { return locale_; }
 
-std::unique_ptr<NumberLineEditPrivate> NumberLineEdit::nlePrivate_(new NumberLineEditPrivate);
+std::unique_ptr<NumberLineEditPrivate> NumberLineEdit::nlePrivate_ =
+    std::make_unique<NumberLineEditPrivate>();
 
 NumberLineEdit::NumberLineEdit(QWidget* parent) : NumberLineEdit(false, parent) {}
 
