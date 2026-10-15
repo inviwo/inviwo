@@ -128,7 +128,7 @@ void validateIdentifier(std::string_view identifier, std::string_view type, Sour
     auto view = identifier | std::views::drop(1) | std::views::drop_while(validChar);
     if (view.begin() != view.end()) {
         throw Exception(
-            fmt::format("{} identifiers are not allowed to contain \"{}\". Found in \"{}\"", type,
+            fmt::format(R"({} identifiers are not allowed to contain "{}". Found in "{}")", type,
                         view.front(), identifier),
             context);
     }
