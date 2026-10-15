@@ -218,7 +218,7 @@ static decltype(std::declval<T&>().get()) getValue(PropertyOwner* parent,
 csvfilters::Filters CSVSource::createFilters() const {
 
     auto startsWith = [](std::string_view str, std::string_view prefix) {
-        return str.substr(0, prefix.size()) == prefix;
+        return str.starts_with(prefix);
     };
 
     const auto parse = [&](const auto& filterProp, auto& rowFilters, auto& itemFilters) {

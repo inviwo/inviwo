@@ -250,7 +250,7 @@ bool OpenGLCapabilities::isExtensionSupported(const char* name) {
     }
     const std::string nameStr(name);
     // glbinding extension names always include the "GL_" prefix
-    const std::string fullName = (nameStr.substr(0, 3) != "GL_") ? "GL_" + nameStr : nameStr;
+    const std::string fullName = (!nameStr.starts_with("GL_")) ? "GL_" + nameStr : nameStr;
 
     return std::ranges::any_of(cachedExtensions, [&fullName](const auto& ext) {
         return glbinding::aux::Meta::getString(ext) == fullName;
