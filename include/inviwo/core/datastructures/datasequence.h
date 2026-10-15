@@ -188,6 +188,9 @@ public:
     void swap(std::vector<std::pair<std::shared_ptr<const Data>, std::shared_ptr<Data>>>&& other) {
         data_.swap(other);
     }
+
+    static constexpr std::string_view indexMetaData = "sequenceIndex";
+    static constexpr std::string_view sizeMetaData = "sequenceSize";
 };
 template <typename Data>
 struct DataTraits<DataSequence<Data>> {

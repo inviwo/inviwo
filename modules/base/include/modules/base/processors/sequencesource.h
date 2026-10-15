@@ -109,8 +109,6 @@ public:
     using Type = Conf::Type;
     using Sequence = Conf::Sequence;
     static constexpr std::string_view fileMetaData = "filename";
-    static constexpr std::string_view sequenceIndexMetaData = "sequenceIndex";
-    static constexpr std::string_view sequenceSizeMetaData = "sequenceSize";
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -160,18 +158,17 @@ private:
 template <typename Conf>
 struct ProcessorTraits<SequenceSource<Conf>> {
     static ProcessorInfo getProcessorInfo() {
-        return {
-            fmt::format("org.inviwo.{}VectorSource", Conf::name),  // Class identifier
-            fmt::format("{} Sequence Source", Conf::name),         // Display name
-            "Data Input",                                          // Category
-            CodeState::Stable,                                     // Code state
-            Tags::CPU,                                             // Tags
-            Document{fmt::format(
-                "Loads a sequence of {}{} either from a {}D dataset or from a"
-                " selection of {}D datasets. The filename of the source data is available"
-                " via StringMetaData as '{}', the sequence index as SizeMetaData '{}'",
-                Conf::name, Conf::plural, Conf::dim + 1, Conf::dim,
-                SequenceSource<Conf>::fileMetaData, SequenceSource<Conf>::sequenceIndexMetaData)}};
+        return {fmt::format("org.inviwo.{}VectorSource", Conf::name),  // Class identifier
+                fmt::format("{} Sequence Source", Conf::name),         // Display name
+                "Data Input",                                          // Category
+                CodeState::Stable,                                     // Code state
+                Tags::CPU,                                             // Tags
+                Document{fmt::format(
+                    "Loads a sequence of {}{} either from a {}D dataset or from a"
+                    " selection of {}D datasets. The filename of the source data is available"
+                    " via StringMetaData as '{}', the sequence index as SizeMetaData '{}'",
+                    Conf::name, Conf::plural, Conf::dim + 1, Conf::dim,
+                    SequenceSource<Conf>::fileMetaData, Conf::Sequence::indexMetaData)}};
     }
 };
 
@@ -262,9 +259,9 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
 template <typename Conf>
 void SequenceSource<Conf>::SequenceSource::load(bool deserialize) {
     switch (inputType_.get()) {
-        case InputType::Folder:     loadFolder(deserialize); break;
+        case InputType::Folder: loadFolder(deserialize); break;
         case InputType::SingleFile: [[fallthrough]];
-        default:                    loadFile(deserialize); break;
+        default: loadFile(deserialize); break;
     }
 }
 
@@ -315,11 +312,12 @@ void SequenceSource<Conf>::loadFile(bool deserialize) {
         }
         if constexpr (std::derived_from<Type, MetaDataOwner>) {
             for (auto&& [index, data] : std::views::zip(std::views::iota(0uz), sequence)) {
-                if (!data->template hasMetaData<SizeMetaData>(sequenceIndexMetaData)) {
-                    data->template setMetaData<SizeMetaData>(sequenceIndexMetaData, index);
+                if (!data->template hasMetaData<SizeMetaData>(Sequence::indexMetaData)) {
+                    data->template setMetaData<SizeMetaData>(Sequence::indexMetaData, index);
                 }
-                if (!data->template hasMetaData<SizeMetaData>(sequenceSizeMetaData)) {
-                    data->template setMetaData<SizeMetaData>(sequenceSizeMetaData, sequence.size());
+                if (!data->template hasMetaData<SizeMetaData>(Sequence::sizeMetaData)) {
+                    data->template setMetaData<SizeMetaData>(Sequence::sizeMetaData,
+                                                             sequence.size());
                 }
             }
         }
@@ -366,11 +364,12 @@ void SequenceSource<Conf>::loadFolder(bool deserialize) {
         }
         if constexpr (std::derived_from<Type, MetaDataOwner>) {
             for (auto&& [index, data] : std::views::zip(std::views::iota(0uz), *result)) {
-                if (!data->template hasMetaData<SizeMetaData>(sequenceIndexMetaData)) {
-                    data->template setMetaData<SizeMetaData>(sequenceIndexMetaData, index);
+                if (!data->template hasMetaData<SizeMetaData>(Sequence::indexMetaData)) {
+                    data->template setMetaData<SizeMetaData>(Sequence::indexMetaData, index);
                 }
-                if (!data->template hasMetaData<SizeMetaData>(sequenceSizeMetaData)) {
-                    data->template setMetaData<SizeMetaData>(sequenceSizeMetaData, result->size());
+                if (!data->template hasMetaData<SizeMetaData>(Sequence::sizeMetaData)) {
+                    data->template setMetaData<SizeMetaData>(Sequence::sizeMetaData,
+                                                             result->size());
                 }
             }
         }

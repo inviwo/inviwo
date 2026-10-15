@@ -103,7 +103,7 @@ ivec2 CheckBox::computeLabelPos(int descent) const {
 
     if (glm::all(glm::greaterThan(labelExtent_, ivec2(0)))) {
         vec2 labelSize(labelExtent_);
-        labelSize.y -= descent;
+        labelSize.y -= static_cast<float>(descent);
         const ivec2 extent(getWidgetExtentScaled());
         const ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
         // compute offset for vertical alignment in the center
