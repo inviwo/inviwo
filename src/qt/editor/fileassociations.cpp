@@ -310,7 +310,7 @@ class FileAssociationData {
 public:
     FileAssociationData(FileAssociations& fa, QMainWindow* win) {}
 
-    bool nativeEvent(void* message, qintptr* result) { return false; }
+    bool nativeEvent(void* /*message*/, qintptr* /*result*/) { return false; }
     void registerFileType(const std::string& documentId, const std::string& fileTypeName,
                           const std::string& fileExtension, int appIconIndex,
                           const std::vector<FileAssociationCommand>& commands) {}

@@ -207,8 +207,8 @@ struct SM {
 namespace touch {
 
 inline void transformAndSendEvent(
-    const TouchEvent& originalEvent, const EventTransformer::View& view,
-    const std::function<void(Event&, const EventTransformer::View&)>& propagate) {
+    const TouchEvent& originalEvent, const EventTransformer::View& /*view*/,
+    const std::function<void(Event&, const EventTransformer::View&)>& /*propagate*/) {
 
     const TouchEvent newEvent{originalEvent};
     /* TODO(Peter)
