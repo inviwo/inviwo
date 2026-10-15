@@ -155,7 +155,7 @@ void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::uniqu
 template <typename Key, typename Result>
 void ConstantInterpolation<Key, Result>::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-    PropertyOwner::serialize(s);
+    Interpolation::serialize(s);
 }
 
 template <typename Key, typename Result>
@@ -169,7 +169,7 @@ void ConstantInterpolation<Key, Result>::deserialize(Deserializer& d) {
                                      "interpolation with a different class identifier: {}",
                                      cid, className);
     }
-    PropertyOwner::deserialize(d);
+    Interpolation::deserialize(d);
 }
 
 }  // namespace inviwo::animation
