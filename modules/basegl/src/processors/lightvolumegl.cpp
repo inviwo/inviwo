@@ -103,7 +103,7 @@ static const vec3 faceNormals_[6] = {vec3(1.f, 0.f, 0.f), vec3(-1.f, 0.f, 0.f),
                                      vec3(0.f, 0.f, 1.f), vec3(0.f, 0.f, -1.f)};
 
 // Defines permutation axis based on face index for chosen propagation axis.
-inline void definePermutationMatrices(mat4& permMat, mat4& permLightMat, int permFaceIndex) {
+static inline void definePermutationMatrices(mat4& permMat, mat4& permLightMat, int permFaceIndex) {
     permMat = mat4(0.f);
     permMat[3][3] = 1.f;
 

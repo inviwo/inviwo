@@ -286,9 +286,9 @@ vec2 polygonCentroid(const std::vector<vec2>& polygon) {
     return center;
 }
 
-void capHoles(std::vector<glm::u32vec2>& edges, const Plane& plane,
-              const std::vector<vec3>& positions, std::vector<std::uint32_t>& indices,
-              const InterpolateFunctor& addInterpolatedVertex) {
+static void capHoles(std::vector<glm::u32vec2>& edges, const Plane& plane,
+                     const std::vector<vec3>& positions, std::vector<std::uint32_t>& indices,
+                     const InterpolateFunctor& addInterpolatedVertex) {
 
     constexpr float relError = 0.000001f;
     const auto eps =
@@ -337,11 +337,11 @@ void capHoles(std::vector<glm::u32vec2>& edges, const Plane& plane,
     }
 }
 
-std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
-                                      const std::shared_ptr<Mesh>& clippedMesh,
-                                      const std::vector<uint32_t>& indices, const Plane& plane,
-                                      const std::vector<vec3>& positions,
-                                      const InterpolateFunctor& addInterpolatedVertex) {
+static std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
+                                             const std::shared_ptr<Mesh>& clippedMesh,
+                                             const std::vector<uint32_t>& indices,
+                                             const Plane& plane, const std::vector<vec3>& positions,
+                                             const InterpolateFunctor& addInterpolatedVertex) {
 
     std::vector<glm::u32vec2> newEdges;
 

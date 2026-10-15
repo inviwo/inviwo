@@ -45,7 +45,7 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 
 // detect if GDB/LLDB is present
 // https://stackoverflow.com/questions/3596781/how-to-detect-if-the-current-process-is-being-run-by-gdb/8135517#8135517
-int debuggerPresent = -1;
+static int debuggerPresent = -1;
 static void _sigtrap_handler(int /*signum*/) {
     debuggerPresent = 0;
     signal(SIGTRAP, SIG_DFL);

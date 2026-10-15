@@ -176,7 +176,7 @@ void VolumeSliceExtractor::shiftSlice(int shift) {
 
 namespace detail {
 
-size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) {
+static size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) {
     using enum CartesianCoordinateAxis;
     switch (axis) {
         default: return {volumeDims.z, volumeDims.y};
@@ -186,7 +186,7 @@ size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) 
     }
 }
 
-Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
+static Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const auto wrapping = v->getOwner()->getWrapping();
     using enum CartesianCoordinateAxis;
     switch (axis) {
@@ -197,7 +197,7 @@ Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis ax
     }
 }
 
-mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
+static mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const dmat3 basis = v->getOwner()->getBasis();
     using enum CartesianCoordinateAxis;
     switch (axis) {
@@ -208,7 +208,7 @@ mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     }
 }
 
-vec2 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
+static vec2 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const dvec3 offset = v->getOwner()->getOffset();
     using enum CartesianCoordinateAxis;
     switch (axis) {
@@ -231,8 +231,8 @@ struct SliceState {
 };
 
 template <typename T, typename D, typename Func>
-std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrprecision,
-                                            const SliceState& state, Func f) {
+static std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrprecision,
+                                                   const SliceState& state, Func f) {
     const T* voldata = vrprecision->getDataTyped();
     const auto& voldim = vrprecision->getDimensions();
 
@@ -298,8 +298,8 @@ std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrpreci
 }
 
 template <typename T, typename V = util::value_type_t<T>>
-std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
-                                    const SliceState& state, bool useTF) {
+static std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
+                                           const SliceState& state, bool useTF) {
 
     if (useTF) {
         using D = glm::vec<4, V>;

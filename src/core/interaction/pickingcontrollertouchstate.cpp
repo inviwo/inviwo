@@ -83,7 +83,7 @@ struct Finished : BaseEvent {
     using BaseEvent::BaseEvent;
 };
 
-bool isPressed(const TouchPoint& point, const TouchDevice::DeviceType& deviceType) {
+static bool isPressed(const TouchPoint& point, const TouchDevice::DeviceType& deviceType) {
     if (deviceType == TouchDevice::DeviceType::TouchPad) {
         return point.state() == TouchState::Stationary;
     } else {
@@ -92,7 +92,8 @@ bool isPressed(const TouchPoint& point, const TouchDevice::DeviceType& deviceTyp
     }
 }
 
-PickingPressItem touchToPressItems(const TouchEvent* e, const std::vector<TouchPoint>& points) {
+static PickingPressItem touchToPressItems(const TouchEvent* e,
+                                          const std::vector<TouchPoint>& points) {
     if (e->getDevice()->getType() == TouchDevice::DeviceType::TouchPad) {
         // Possible to press touchpads
         const auto nPressed = std::accumulate(
@@ -115,8 +116,8 @@ PickingPressItem touchToPressItems(const TouchEvent* e, const std::vector<TouchP
 }
 
 template <typename E>
-auto send(PickingState state, PickingPressState pressState, PickingHoverState hoverState,
-          bool updatePrev = true, bool markAsUsed = true) {
+static auto send(PickingState state, PickingPressState pressState, PickingHoverState hoverState,
+                 bool updatePrev = true, bool markAsUsed = true) {
     return [state, pressState, hoverState, updatePrev, markAsUsed](
                const E& fsmEvent, FsmState& fsmState, PreviousFsmState& prev, PressFsmState& press,
                const PickingManager& pickingManager) {
@@ -168,7 +169,7 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
 }
 
 template <typename E>
-auto uid() {
+static auto uid() {
     return [](const E& e, FsmState& fsmstate) { fsmstate.active_globalId = e.globalId; };
 }
 

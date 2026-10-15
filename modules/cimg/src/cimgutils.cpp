@@ -117,7 +117,7 @@ namespace inviwo {
 
 namespace cimgutil {
 
-std::unordered_map<std::string_view, DataFormatId> extToBaseTypeMap_ = {
+static std::unordered_map<std::string_view, DataFormatId> extToBaseTypeMap_ = {
     {".jpg", DataFormatId::UInt8},
     {".jpeg", DataFormatId::UInt8},
     {".bmp", DataFormatId::UInt8},
@@ -125,7 +125,7 @@ std::unordered_map<std::string_view, DataFormatId> extToBaseTypeMap_ = {
     {".hdr", DataFormatId::Float32}};
 namespace detail {
 
-cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType type) {
+static cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType type) {
     switch (type) {
         case inviwo::InterpolationType::Linear:  return cimgutil::InterpolationType::Linear;
         case inviwo::InterpolationType::Nearest: return cimgutil::InterpolationType::Nearest;
@@ -136,7 +136,8 @@ cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType ty
 }  // namespace detail
 
 template <typename T>
-auto layerToCImg(const LayerRAMPrecision<T>* src, bool permute = true, bool skipAlpha = false) {
+static auto layerToCImg(const LayerRAMPrecision<T>* src, bool permute = true,
+                        bool skipAlpha = false) {
 
     if constexpr (util::rank_v<T> == 0) {
         return cimg_library::CImg<T>(
@@ -314,7 +315,7 @@ void updateVolume(VolumeRAM& volume, const std::filesystem::path& filePath) {
 }
 
 template <typename T>
-auto prepareImgFromLayer(const LayerRAMPrecision<T>* lr, std::string_view fileExtension) {
+static auto prepareImgFromLayer(const LayerRAMPrecision<T>* lr, std::string_view fileExtension) {
     const bool isJpeg = (fileExtension == ".jpg") || (fileExtension == ".jpeg");
     const bool skipAlpha = isJpeg && ((util::extent_v<T> == 2) || (util::extent_v<T> == 4));
     auto img = layerToCImg(lr, true, skipAlpha);

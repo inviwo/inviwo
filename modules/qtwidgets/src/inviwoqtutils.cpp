@@ -639,7 +639,7 @@ bool WidgetCloseEventFilter::eventFilter(QObject* obj, QEvent* ev) {
     }
 }
 
-void setFullScreen(QWidget* widget, bool fullScreen) {
+static void setFullScreen(QWidget* widget, bool fullScreen) {
     if (widget->windowState().testFlag(Qt::WindowFullScreen) == fullScreen) return;
     const auto visible = widget->isVisible();
     if (fullScreen) {

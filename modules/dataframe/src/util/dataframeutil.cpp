@@ -182,9 +182,9 @@ std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bot
 
 namespace detail {
 
-void columnCheck(const DataFrame& left, const DataFrame& right,
-                 const std::vector<std::pair<std::string, std::string>>& keyColumns,
-                 Literal context) {
+static void columnCheck(const DataFrame& left, const DataFrame& right,
+                        const std::vector<std::pair<std::string, std::string>>& keyColumns,
+                        Literal context) {
     for (const auto& [leftCol, rightCol] : keyColumns) {
         const auto indexCol1 = left.getColumn(leftCol);
         const auto indexCol2 = right.getColumn(rightCol);
@@ -218,7 +218,7 @@ void columnCheck(const DataFrame& left, const DataFrame& right,
 }
 
 template <typename T, bool firstMatchOnly, typename Cont>
-std::vector<std::vector<std::uint32_t>> matchingRows(const Cont& left, const Cont& right) {
+static std::vector<std::vector<std::uint32_t>> matchingRows(const Cont& left, const Cont& right) {
     std::unordered_map<T, std::vector<std::uint32_t>> matches;
     for (auto&& [r, value] : util::enumerate<std::uint32_t>(right)) {
         if constexpr (firstMatchOnly) {
@@ -240,8 +240,8 @@ std::vector<std::vector<std::uint32_t>> matchingRows(const Cont& left, const Con
  * @brief for each row in leftCol return a list of matching row indices in rightCol
  */
 template <bool firstMatchOnly = false>
-std::vector<std::vector<std::uint32_t>> getMatchingRows(std::shared_ptr<const Column> leftCol,
-                                                        std::shared_ptr<const Column> rightCol) {
+static std::vector<std::vector<std::uint32_t>> getMatchingRows(
+    std::shared_ptr<const Column> leftCol, std::shared_ptr<const Column> rightCol) {
     if (auto catCol1 = dynamic_cast<const CategoricalColumn*>(leftCol.get())) {
         // need to match values of categorical columns instead of indices stored in buffer
         auto catCol2 = dynamic_cast<const CategoricalColumn*>(rightCol.get());
@@ -265,7 +265,7 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(std::shared_ptr<const Co
     }
 }
 
-std::vector<std::vector<std::uint32_t>> getMatchingRows(
+static std::vector<std::vector<std::uint32_t>> getMatchingRows(
     const DataFrame& left, const DataFrame& right,
     const std::vector<std::pair<std::string, std::string>>& keyColumns) {
 
@@ -310,8 +310,8 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
     return rows;
 }
 
-void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
-                const std::vector<std::string>& keyColumns, bool skipKeyCol) {
+static void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
+                       const std::vector<std::string>& keyColumns, bool skipKeyCol) {
     for (const auto& srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
@@ -320,9 +320,9 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
     }
 }
 
-void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
-                const std::vector<std::uint32_t>& rows, const std::vector<std::string>& keyColumns,
-                bool skipKeyCol) {
+static void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
+                       const std::vector<std::uint32_t>& rows,
+                       const std::vector<std::string>& keyColumns, bool skipKeyCol) {
     for (const auto& srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
@@ -331,9 +331,9 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
     }
 }
 
-void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
-                const std::vector<std::optional<std::uint32_t>>& rows,
-                const std::vector<std::string>& keyColumns, bool skipKeyCol) {
+static void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
+                       const std::vector<std::optional<std::uint32_t>>& rows,
+                       const std::vector<std::string>& keyColumns, bool skipKeyCol) {
     for (const auto& srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;

@@ -130,8 +130,8 @@ private:
 };
 
 template <typename T>
-void exposeFactoryWriterType(pybind11::module& m, pybind11::classh<DataWriterFactory>& r,
-                             std::string_view type) {
+static void exposeFactoryWriterType(pybind11::module& m, pybind11::classh<DataWriterFactory>& r,
+                                    std::string_view type) {
     namespace py = pybind11;
 
     using TWF = TypedDataWriterFactoryWrapper<T>;
@@ -163,7 +163,7 @@ void exposeFactoryWriterType(pybind11::module& m, pybind11::classh<DataWriterFac
 }
 
 template <typename T>
-void exposeWriterType(pybind11::module& m, std::string_view name) {
+static void exposeWriterType(pybind11::module& m, std::string_view name) {
     pybind11::classh<DataWriterType<T>, DataWriter, DataWriterTypeTrampoline<T>>(
         m, fmt::format("{}DataWriter", name).c_str())
         .def("writeData", &DataWriterType<T>::writeData);

@@ -67,7 +67,7 @@ class ShaderResource;
 
 namespace psm {
 
-std::string indent(std::string_view block, size_t indent) {
+static std::string indent(std::string_view block, size_t indent) {
     std::stringstream ss;
     bool first = true;
     const auto indentStr = std::string(indent, ' ');

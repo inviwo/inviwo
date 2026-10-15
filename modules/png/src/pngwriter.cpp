@@ -63,7 +63,7 @@ namespace inviwo {
 
 namespace detail {
 
-void writeToBuffer(png_structp png_ptr, png_bytep data, png_size_t length) {
+static void writeToBuffer(png_structp png_ptr, png_bytep data, png_size_t length) {
     auto buffer = static_cast<std::vector<unsigned char>*>(png_get_io_ptr(png_ptr));
     for (png_size_t i = 0; i < length; i++) {
         buffer->push_back(static_cast<unsigned char>(data[i]));
@@ -71,7 +71,7 @@ void writeToBuffer(png_structp png_ptr, png_bytep data, png_size_t length) {
 }
 
 template <typename Result, typename T>
-std::vector<Result> convert(const T* data, const size_t size, const T min, const T max) {
+static std::vector<Result> convert(const T* data, const size_t size, const T min, const T max) {
     std::vector<Result> newData(size);
     std::transform(data, data + size, newData.begin(), [min, max](const T& value) {
         return util::glm_convert_normalized<Result>(glm::clamp(value, min, max));
@@ -81,7 +81,7 @@ std::vector<Result> convert(const T* data, const size_t size, const T min, const
 
 template <typename T, typename valueType = typename util::value_type<T>::type,
           typename = typename std::enable_if<std::is_same<valueType, bool>::value>::type>
-auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
+static auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
     -> std::vector<typename util::same_extent<T, unsigned char>::type> {
     using T2 = typename util::same_extent<T, unsigned char>::type;
     return convert<T2>(data, size, min, max);
@@ -90,7 +90,7 @@ auto convertToUnsigned(const T* data, const size_t size, const T min, const T ma
 template <typename T, typename valueType = typename util::value_type<T>::type,
           typename = typename std::enable_if<!std::is_same<valueType, bool>::value &&
                                              std::is_integral<valueType>::value>::type>
-auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
+static auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
     -> std::vector<typename util::same_extent<T, std::make_unsigned_t<valueType>>::type> {
     using T2 = typename util::same_extent<T, std::make_unsigned_t<valueType>>::type;
     return convert<T2>(data, size, min, max);
@@ -98,13 +98,13 @@ auto convertToUnsigned(const T* data, const size_t size, const T min, const T ma
 
 template <typename T, typename valueType = typename util::value_type<T>::type,
           typename = typename std::enable_if<!std::is_integral<valueType>::value>::type>
-auto convertToUnsigned(const T*, const size_t, const T, const T) -> std::vector<T> {
+static auto convertToUnsigned(const T*, const size_t, const T, const T) -> std::vector<T> {
     return {};
 }
 
 template <typename T>
-void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFunc = nullptr,
-           png_flush_ptr flushFunc = nullptr) {
+static void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFunc = nullptr,
+                  png_flush_ptr flushFunc = nullptr) {
 
     // TODO better exception messages
     auto png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
