@@ -253,7 +253,7 @@ public:
      *
      * @see ResourceManager
      */
-    ResourceManager* getResourceManager();
+    ResourceManager* getResourceManager() const;
 
     /** @name Factories */
     ///@{
@@ -562,7 +562,9 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     return res;
 }
 
-inline ResourceManager* InviwoApplication::getResourceManager() { return resourceManager_.get(); }
+inline ResourceManager* InviwoApplication::getResourceManager() const {
+    return resourceManager_.get();
+}
 
 inline CameraFactory* InviwoApplication::getCameraFactory() const { return cameraFactory_.get(); }
 

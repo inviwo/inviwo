@@ -375,7 +375,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
             if (ok && !text.isEmpty()) {
                 const auto presetName = text.toStdString();
                 bool actionExists = false;
-                for (const auto p : presetManager->getAvailablePresets(property, type)) {
+                for (const auto& p : presetManager->getAvailablePresets(property, type)) {
                     if (p == presetName) {
                         actionExists = true;
                         break;
@@ -399,9 +399,9 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                 case PropertyPresetType::Property:
                     presetManager->clearPropertyPresets(property);
                     break;
-                case PropertyPresetType::Workspace:   presetManager->clearWorkspacePresets(); break;
+                case PropertyPresetType::Workspace: presetManager->clearWorkspacePresets(); break;
                 case PropertyPresetType::Application: break;
-                default:                              return;
+                default: return;
             }
         };
         std::array<PropertyPresetType, 3> types = {PropertyPresetType::Property,

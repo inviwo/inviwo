@@ -326,8 +326,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     const auto ssize = screen->availableSize();
 
     QSize size = utilqt::emToPx(this, QSizeF(192, 108));
-    size.setWidth(std::min(size.width(), static_cast<int>(ssize.width() * maxRatio)));
-    size.setHeight(std::min(size.height(), static_cast<int>(ssize.height() * maxRatio)));
+    size.setWidth(
+        std::min(size.width(), static_cast<int>(static_cast<float>(ssize.width()) * maxRatio)));
+    size.setHeight(
+        std::min(size.height(), static_cast<int>(static_cast<float>(ssize.height()) * maxRatio)));
 
     // Center Window
     const QPoint pos{ssize.width() / 2 - size.width() / 2, ssize.height() / 2 - size.height() / 2};
@@ -780,7 +782,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
             if (!std::filesystem::is_directory(moduleWorkspacePath)) continue;
             auto menu =
                 std::make_unique<QMenu>(QString::fromStdString(inviwoModule.getIdentifier()));
-            for (const auto file : filesystem::getDirectoryContents(moduleWorkspacePath)) {
+            for (const auto& file : filesystem::getDirectoryContents(moduleWorkspacePath)) {
                 // only accept inviwo workspace files
                 if (file.extension() != ".inv") continue;
                 const auto qFile = utilqt::toQString(file);
@@ -827,11 +829,11 @@ void InviwoMainWindow::addActions() {  // NOLINT
             if (!std::filesystem::is_directory(moduleTestPath)) continue;
             auto menu =
                 std::make_unique<QMenu>(QString::fromStdString(inviwoModule.getIdentifier()));
-            for (const auto test : filesystem::getDirectoryContents(
+            for (const auto& test : filesystem::getDirectoryContents(
                      moduleTestPath, filesystem::ListMode::Directories)) {
                 const auto testDir = moduleTestPath / test;
                 if (!std::filesystem::is_directory(testDir)) continue;
-                for (const auto file : filesystem::getDirectoryContents(testDir)) {
+                for (const auto& file : filesystem::getDirectoryContents(testDir)) {
                     // only accept inviwo workspace files
                     if (file.extension() != ".inv") continue;
                     const auto qFile = utilqt::toQString(file);
@@ -1680,16 +1682,11 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
         const int answer = msgBox.exec();
 
         switch (answer) {
-            case QMessageBox::Yes:
-                saveWorkspace();
-                break;
+            case QMessageBox::Yes: saveWorkspace(); break;
 
-            case QMessageBox::No:
-                break;
+            case QMessageBox::No: break;
 
-            case QMessageBox::Cancel:
-                continueOperation = false;
-                break;
+            case QMessageBox::Cancel: continueOperation = false; break;
         }
     }
 

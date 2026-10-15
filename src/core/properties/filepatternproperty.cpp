@@ -235,7 +235,7 @@ void FilePatternProperty::updateFileList() {
                 const bool matchShorterNumbers = matchShorterNumbers_.get();
                 const bool matchLongerNumbers = true;
                 bool found = false;
-                for (const auto file : fileList) {
+                for (const auto& file : fileList) {
                     int index = -1;
                     if (filesystem::wildcardStringMatchDigits(strPattern, file.generic_string(),
                                                               index, matchShorterNumbers,

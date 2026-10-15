@@ -144,7 +144,8 @@ std::unique_ptr<TrackWidgetQt> AnimationEditorQt::createTrackWidget(Track& track
 void AnimationEditorQt::onTrackAdded(Track* track) {
     if (!track) return;
     if (auto trackWidget = createTrackWidget(*track)) {
-        trackWidget->setPos(0, trackHeight * tracks_.size() + trackHeight * 0.5);
+        trackWidget->setPos(0.0,
+                            trackHeight * static_cast<double>(tracks_.size()) + trackHeight * 0.5);
         this->addItem(trackWidget.get());
         tracks_[track] = std::move(trackWidget);
         updateSceneRect();
@@ -158,7 +159,8 @@ void AnimationEditorQt::onTrackRemoved(Track* track) {
     tracks_.erase(track);
 
     for (auto&& item : util::enumerate(tracks_)) {
-        item.second().second->setY(trackHeight * item.first() + trackHeight * 0.5);
+        item.second().second->setY(trackHeight * static_cast<double>(item.first()) +
+                                   trackHeight * 0.5);
     }
     updateSceneRect();
 }
@@ -541,7 +543,7 @@ void AnimationEditorQt::updateSceneRect() {
         0.0, 0.0,
         static_cast<double>(controller_.getAnimation().getLastTime().count() * widthPerSecond) +
             5 * widthPerSecond,
-        static_cast<double>(controller_.getAnimation().size() * trackHeight));
+        static_cast<double>(controller_.getAnimation().size()) * trackHeight);
 }
 
 void AnimationEditorQt::onFirstMoved() { updateSceneRect(); }

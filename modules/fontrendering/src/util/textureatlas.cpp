@@ -94,8 +94,8 @@ void TextureAtlas::fillAtlas(TextRenderer& textRenderer, const std::vector<std::
 void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& entries,
                              std::vector<TextBoundingBox>& bboxes) {
 
-    const auto minArea = std::accumulate(
-        bboxes.begin(), bboxes.end(), 0.0, [&](double sum, const TextBoundingBox& bbox) {
+    const auto minArea =
+        std::accumulate(bboxes.begin(), bboxes.end(), 0u, [&](size_t sum, const TextBoundingBox& bbox) {
             return sum + (bbox.glyphsExtent.x + 2 * margin_) * (bbox.glyphsExtent.y + 2 * margin_);
         });
 

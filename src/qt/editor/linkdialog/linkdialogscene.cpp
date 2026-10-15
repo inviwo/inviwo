@@ -233,7 +233,8 @@ void LinkDialogGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e)
 }
 
 void LinkDialogGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* e) {
-    offsetItems(e->delta() * 0.25f, e->scenePos().x() < linkdialog::dialogWidth / 2.0);
+    offsetItems(static_cast<float>(e->delta()) * 0.25f,
+                e->scenePos().x() < linkdialog::dialogWidth / 2.0);
     e->accept();
 }
 

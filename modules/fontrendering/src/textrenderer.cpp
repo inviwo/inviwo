@@ -287,8 +287,8 @@ void TextRenderer::render(std::string_view str, const vec2& posf, const vec2& sc
 
         // compute floating point position
         vec3 pos(posf, 0.f);
-        pos.x += (glyphPos.x + glyph.bearing.x) * scaling.x;
-        pos.y -= (verticalOffset - glyphPos.y - glyph.bearing.y) * scaling.y;
+        pos.x += static_cast<float>(glyphPos.x + glyph.bearing.x) * scaling.x;
+        pos.y -= static_cast<float>(verticalOffset - glyphPos.y - glyph.bearing.y) * scaling.y;
 
         // Translate quad to correct position and render
         const mat4 dataToWorld(

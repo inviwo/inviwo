@@ -495,18 +495,10 @@ void ShaderObject::addDefines(std::ostringstream& source) {
     for (const auto& se : shaderExtensions_) {
         source << "#extension " << se.first << " : ";
         switch (se.second) {
-            case ExtensionBehavior::Enable:
-                source << "enable";
-                break;
-            case ExtensionBehavior::Require:
-                source << "require";
-                break;
-            case ExtensionBehavior::Warn:
-                source << "warn";
-                break;
-            case ExtensionBehavior::Disable:
-                source << "disable";
-                break;
+            case ExtensionBehavior::Enable: source << "enable"; break;
+            case ExtensionBehavior::Require: source << "require"; break;
+            case ExtensionBehavior::Warn: source << "warn"; break;
+            case ExtensionBehavior::Disable: source << "disable"; break;
         }
         source << "\n";
         lnr_.addLine("Extensions", 0);
@@ -555,11 +547,11 @@ void ShaderObject::addDefines(std::ostringstream& source) {
         }
     }
 
-    for (const auto decl : outDeclarations_) {
+    for (const auto& decl : outDeclarations_) {
         source << decl.toString() << "\n";
         lnr_.addLine("Out Declaration", 0);
     }
-    for (const auto decl : inDeclarations_) {
+    for (const auto& decl : inDeclarations_) {
         source << decl.toString() << "\n";
         lnr_.addLine("In Declaration", 0);
     }

@@ -117,7 +117,7 @@ void ConvexHull2DProcessor::process() {
     // TODO: check data format of all buffers! And find common denominator instead of dvec2
     std::vector<vec2> points;
     // collect all positions of the input geometry
-    for (const auto item : data->getBuffers()) {
+    for (const auto& item : data->getBuffers()) {
         if (item.first.type == BufferType::PositionAttrib) {
             auto buffer = item.second->getRepresentation<BufferRAM>();
             for (std::size_t i = 0; i < buffer->getSize(); ++i) {
