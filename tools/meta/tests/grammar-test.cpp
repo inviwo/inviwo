@@ -133,15 +133,15 @@ endif()
 static void print_node(const p::parse_tree::node& n, const std::string& s = "") {
     // detect the root node:
     if (n.is_root()) {
-        std::cout << "ROOT" << std::endl;
+        std::cout << "ROOT" << '\n';
     } else {
         if (n.has_content()) {
             auto content = n.string();
             std::transform(content.begin(), content.end(), content.begin(),
                            [](char c) { return c == '\n' ? '~' : c; });
-            std::cout << s << n.type << " \"" << content << "\"" << std::endl;
+            std::cout << s << n.type << " \"" << content << "\"" << '\n';
         } else {
-            std::cout << s << n.type << std::endl;
+            std::cout << s << n.type << '\n';
         }
     }
     // print all child nodes
