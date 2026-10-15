@@ -139,7 +139,10 @@ auto ThreadPool::enqueue(F&& f, Args&&... args) -> std::future<std::invoke_resul
     using return_type = std::invoke_result_t<F, Args...>;
 
     const auto task = std::make_shared<std::packaged_task<return_type()>>(
-        std::bind(std::forward<F>(f), std::forward<Args>(args)...));
+        [f = std::forward<F>(f),
+         ... args = std::forward<Args>(args)]() mutable -> return_type {
+            return std::invoke(f, args...);
+        });
 
     std::future<return_type> res = task->get_future();
 
