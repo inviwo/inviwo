@@ -1,8 +1,9 @@
 # clang-tidy `misc-*` rollout — status & resume notes
 
-**Paused:** 2026-10-15
+**Status:** `misc-*` complete (2026-10-15). Tooling (Workflow v2, below) is
+reusable as-is for the next check group.
 **Branch:** `feature/more-conv-warnings`
-**Last commit at pause:** `cab52b663e` ("Format: reflow lines after clang-format pass on port headers")
+**Last commit:** `839d148e52` ("clang-tidy: apply misc-use-internal-linkage fixes")
 
 ## Workflow v2 (2026-10-15 evening) — batch dry-run + scoped fixes
 
@@ -58,6 +59,14 @@ Committed scripts (in this directory):
 current inventory (counts, affected files) is visible in review/diffs without
 needing to re-run the scan. Re-run and re-commit it whenever it goes stale
 (e.g. after a batch of fixes, or after enough unrelated code churn).
+
+**Known staleness as of 2026-10-15:** checks 8-10 (`misc-unused-parameters`,
+`misc-unused-using-decls`, `misc-use-internal-linkage`) were fixed after the
+JSON was generated, touching 61 files total — those entries (and any other
+check's file list that happens to include those same 61 files) are now
+slightly stale. Not worth a full re-scan for 61/1490 files; just keep this in
+mind, or re-run the scan before starting a fresh group if you want a clean
+baseline.
 
 ### Applying a fix for one check
 
@@ -116,9 +125,11 @@ this rollout, per the user's choice when this task started.
 | 5 | `misc-static-assert` | ✅ Done (no-op) | 0 warnings. No commit. |
 | 6 | `misc-uniqueptr-reset-release` | ✅ Done (no-op) | 0 warnings. No commit. |
 | 7 | `misc-unused-alias-decls` | ✅ Done | Commit `ef0e4b205c`. Only 2 warnings, both genuine, trivial fix, no reverts needed. |
-| 8 | `misc-unused-parameters` | ⏸️ **Not started** (dry-run was in progress when paused, no results yet) | Expect a large volume — this is a very common warning. Virtual overrides are the main risk (clang-tidy generally just removes/comments the parameter name or adds `[[maybe_unused]]`, which is normally safe, but double-check anything touching a virtual function signature or a function pointer/`std::function` whose signature must match exactly). |
-| 9 | `misc-unused-using-decls` | Not started | |
-| 10 | `misc-use-internal-linkage` | Not started | Potentially risky/noisy — can conflict with symbols that need external linkage for plugin/module loading (`IVW_MODULE_*_API` exported symbols) or for symbols referenced from other TUs without a shared header declaration. Review carefully before applying `-fix` broadly; consider checking a sample of fixes against each module's shared-library export macros first. |
+| 8 | `misc-unused-parameters` | ✅ Done | Commit `28cb91d514`. 5 warnings / 3 TUs. 2 auto-fixed by clang-tidy; 1 case (`eventtransformer.cpp`) applied manually because clang-tidy declined with "overlaps with another fix" (confirmed genuinely unused — the function body is entirely commented out behind a `TODO`). |
+| 9 | `misc-unused-using-decls` | ✅ Done | Commit `00570d379b`. 1 warning / 1 TU, trivial. |
+| 10 | `misc-use-internal-linkage` | ✅ Done | Commit `839d148e52`. 251 warnings / 89 TUs, 57 files actually changed. All changes are `static` on free functions/variables in `.cpp` files; no headers touched. Build is fully link-clean across every target, which is strong evidence no cross-TU usage was missed. |
+
+**The `misc-*` rollout (checks 1-10) is complete as of commit `839d148e52`.** Next: pick any other enabled group (`bugprone-*`, `cppcoreguidelines-*`, `google-*`, `llvm-*`, `modernize-*`, `performance-*`, `portability-*`, `readability-*`, `clang-analyzer-*`) using the same Workflow v2 tooling — see "To resume" below.
 
 ## One-time environment setup already done
 
