@@ -85,8 +85,8 @@ GeometryEntryExitPoints::GeometryEntryExitPoints()
 }
 
 void GeometryEntryExitPoints::process() {
-    entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(),
-                     camera_.get(), *volumeInport_.getData().get(), *meshInport_.getData().get(),
+    entryExitHelper_(*entryPort_.getEditableData(), *exitPort_.getEditableData(), camera_.get(),
+                     *volumeInport_.getData(), *meshInport_.getData(),
                      capNearClipping_ ? algorithm::CapNearClip::Yes : algorithm::CapNearClip::No,
                      algorithm::IncludeNormals::Yes);
 }

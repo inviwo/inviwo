@@ -225,7 +225,7 @@ void GLUIProcessor::onDidAddProperty(Property* property, size_t) {
         util::getModuleByTypeOrThrow<UserInterfaceGLModule>(app_).getGLUIWidgetFactory();
 
     auto widget = factory.create(property->getClassIdentifier(), *property, *this, uiRenderer_);
-    layout_.addElement(*widget.get());
+    layout_.addElement(*widget);
     layout_.setScalingFactor(uiScaling_);
     propertyWidgetMap_.insert(std::make_pair(property, std::move(widget)));
 
@@ -236,7 +236,7 @@ void GLUIProcessor::onWillRemoveProperty(Property* property, size_t) {
     // remove matching widget from map and the layout
     const auto it = propertyWidgetMap_.find(property);
     if (it != propertyWidgetMap_.end()) {
-        layout_.removeElement(*(it->second.get()));
+        layout_.removeElement(*(it->second));
         propertyWidgetMap_.erase(it);
 
         invalidate(InvalidationLevel::InvalidOutput);

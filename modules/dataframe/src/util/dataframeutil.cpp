@@ -517,7 +517,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
         }
 
         for (auto df = dataFrames.begin() + 1; df != dataFrames.end(); ++df) {
-            for (const auto& col : *df->get()) {
+            for (const auto& col : **df) {
                 if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
                 const auto it = columnType.find(col->getHeader());
                 if (it == columnType.end()) {
@@ -550,7 +550,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
             });
     }
     for (const auto& data : dataFrames) {
-        for (auto col : *(data.get())) {
+        for (auto col : *(data)) {
             if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
 
             columns[col->getHeader()]
@@ -645,7 +645,7 @@ std::vector<std::uint32_t> selectRows(const DataFrame& dataframe,
     }
 
     if (filterCols.size() == 1) {
-        const auto& col = *dataframe.getColumn(filterCols.begin()->first).get();
+        const auto& col = *dataframe.getColumn(filterCols.begin()->first);
         return (BitSet(selectRows(col, filterCols.begin()->second.include)) -
                 BitSet(selectRows(col, filterCols.begin()->second.exclude)))
             .toVector();
@@ -653,7 +653,7 @@ std::vector<std::uint32_t> selectRows(const DataFrame& dataframe,
     BitSet include;
     BitSet exclude;
     for (auto&& [colIndex, f] : filterCols) {
-        const auto& col = *dataframe.getColumn(colIndex).get();
+        const auto& col = *dataframe.getColumn(colIndex);
         include.add(selectRows(col, f.include));
         exclude.add(selectRows(col, f.exclude));
     }

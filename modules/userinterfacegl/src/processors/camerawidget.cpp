@@ -380,7 +380,7 @@ std::tuple<std::unique_ptr<Image>, ImageGL*> CameraWidget::createWidgetImage(
 }
 
 void CameraWidget::updateWidgetTexture(const ivec2& widgetSize) {
-    if (!widgetImage_.get() || (ivec2(widgetImage_->getDimensions()) != widgetSize)) {
+    if (!widgetImage_ || (ivec2(widgetImage_->getDimensions()) != widgetSize)) {
         std::tie(widgetImage_, widgetImageGL_) = createWidgetImage(widgetSize);
     }
     // enable fbo for rendering only the widget
