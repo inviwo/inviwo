@@ -110,8 +110,8 @@ protected:
 
     void testBuffer(std::string numbers, size_t components) {
         std::stringstream src;
-        src << "import numpy as np" << std::endl;
-        src << "a = np.array(" << numbers << " , dtype = np." << GetParam() << " )" << std::endl;
+        src << "import numpy as np" << '\n';
+        src << "a = np.array(" << numbers << " , dtype = np." << GetParam() << " )" << '\n';
 
         PythonScript s;
         s.setSource(src.str());
@@ -144,9 +144,9 @@ protected:
 
     void testLayer(std::string numbers, std::string shape, size_t components) {
         std::stringstream src;
-        src << "import numpy as np" << std::endl;
-        src << "a = np.array(" << numbers << ", dtype=np." << GetParam() << ")" << std::endl;
-        src << "a.shape = " << shape << std::endl;
+        src << "import numpy as np" << '\n';
+        src << "a = np.array(" << numbers << ", dtype=np." << GetParam() << ")" << '\n';
+        src << "a.shape = " << shape << '\n';
 
         PythonScript s;
         s.setSource(src.str());
@@ -181,9 +181,9 @@ protected:
     void testVolume(std::string numbers, std::string shape, size_t components) {
 
         std::stringstream src;
-        src << "import numpy as np" << std::endl;
-        src << "a = np.array(" << numbers << ", dtype=np." << GetParam() << ")" << std::endl;
-        src << "a.shape = " << shape << std::endl;
+        src << "import numpy as np" << '\n';
+        src << "a = np.array(" << numbers << ", dtype=np." << GetParam() << ")" << '\n';
+        src << "a.shape = " << shape << '\n';
 
         PythonScript s;
         s.setSource(src.str());
