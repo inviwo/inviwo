@@ -2,7 +2,10 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point).
+below for current progress and the exact resume point). 39 checks done so
+far (34 + a batch of 5: `readability-string-compare`,
+`performance-move-const-arg`, `readability-redundant-smartptr-get`,
+`readability-simplify-boolean-expr`, `modernize-avoid-bind`), ~65 remaining.
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
@@ -132,10 +135,19 @@ plus: `readability-delete-null-pointer`, `modernize-make-unique`,
 `readability-enum-initial-value`, `performance-for-range-copy`,
 `performance-unnecessary-copy-initialization`,
 `bugprone-parent-virtual-call`, `readability-use-std-min-max`,
-`cppcoreguidelines-virtual-class-destructor`.
+`cppcoreguidelines-virtual-class-destructor`, `readability-string-compare`,
+`performance-move-const-arg`, `readability-redundant-smartptr-get`,
+`readability-simplify-boolean-expr`, `modernize-avoid-bind`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
+- `google-readability-todo` — the fix stamps the local `$USER` (whatever
+  account happens to be running clang-tidy) onto every pre-existing `// TODO`
+  comment as `// TODO: <user> - ...`, regardless of who actually wrote that
+  TODO originally. Applying it would have misattributed ~14 files' worth of
+  old TODOs (some clearly years old) to whoever runs this rollout. Reverted
+  in full, no commit; the check also has no way to supply a real
+  bug-tracker/author mapping, so there's no safe automated way to apply it.
 - `modernize-use-transparent-functors` — changed a template function
   parameter's type from `std::equal_to<Processor*>` to the transparent
   `std::equal_to<>` in `networkutils.h`'s `traverseNetwork()`, but the
@@ -173,6 +185,20 @@ edit was broken or dangerous and had to be corrected manually)
    paths;`, which would silently reintroduce the exact bug the comment
    warns about. Reverted that one hunk; kept the rest of the check's fixes
    (which were genuine copies with no such lifetime subtlety).
+3. **`modernize-avoid-bind` couldn't auto-apply at all for template
+   functions with multiple instantiations.** `ThreadPool::enqueue` and
+   `InviwoApplication::dispatchFront` both wrap a generic `F&&` in
+   `std::bind(std::forward<F>(f), std::forward<Args>(args)...)`; clang-tidy
+   suggests a *different* lambda body per instantiation depending on
+   whether that particular `F` returns `void` (`{ Func(); }`) or not
+   (`{ return Func(); }`) — but both suggestions target the exact same
+   physical source location, so `clang-apply-replacements` correctly
+   detected the conflict and refused to merge, leaving the script's run a
+   no-op. Fixed by hand instead: replaced the `std::bind(...)` with a lambda
+   using a C++20 init-capture pack (`... args = std::forward<Args>(args)`)
+   that does `return std::invoke(f, args...);` — this deduces to the right
+   return type (including `void`) for every instantiation, so one body
+   covers both cases.
 
 ### `bugprone-parent-virtual-call` — the one check so far that is a real
 behavior change, not just style
@@ -202,12 +228,15 @@ rollout.
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
    **68 fixable checks remaining** (out of 98 total fixable checks found by
-   the dry run); next up by size: `readability-string-compare`,
-   `performance-move-const-arg`, `readability-redundant-smartptr-get`,
-   `google-readability-todo`, `readability-simplify-boolean-expr`,
-   `modernize-avoid-bind`, `readability-use-concise-preprocessor-directives`,
+   the dry run); after the 5 checks done in this batch (see DONE_CHECKS),
+   next up by size: `readability-use-concise-preprocessor-directives`,
    `modernize-use-string-view`, `modernize-use-emplace`,
-   `performance-avoid-endl`, ...
+   `performance-avoid-endl`, `readability-redundant-access-specifiers`,
+   `readability-redundant-string-init`, `readability-redundant-nested-if`,
+   `modernize-loop-convert`, `modernize-use-noexcept`,
+   `modernize-use-std-numbers`, ...
+   (`google-readability-todo` was evaluated and skipped — see "Reverted as
+   false positives" above — do not reapply it.)
 3. For each check: `./tools/refactoring/clang-tidy-fix-check.sh <check>`,
    review the diff (don't skip this — two of the fixes applied so far needed
    hand-correction, see above), build, test, commit. Batch several small
