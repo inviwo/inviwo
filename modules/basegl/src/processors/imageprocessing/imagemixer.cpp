@@ -169,7 +169,7 @@ void ImageMixer::process() {
 void ImageMixer::initializeResources() {
     // compositing defines
     const std::string compositingKey = "COLOR_BLENDING(colorA, colorB)";
-    std::string compositingValue = "";
+    std::string compositingValue;
 
     switch (blendingMode_.get()) {
         case BlendModes::Over:  //<! f(a,b) = b, b over a, regular front-to-back blending
