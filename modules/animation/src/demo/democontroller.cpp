@@ -79,7 +79,7 @@ void DemoController::setFileOptions() {
         const auto& elem = elements[elIdx];
         std::string ext = elem.extension().string();
         ext = toLower(ext);
-        if (ext.compare(".inv") == 0) {  // Found a workspace
+        if (ext == ".inv") {  // Found a workspace
             const auto cleanName = elem.stem();
             const auto cleanNameExt = util::stripIdentifier(elem.string());
             demoFile_.addOption(cleanNameExt, cleanName.string(), invNum++);
