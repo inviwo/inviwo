@@ -40,7 +40,7 @@
 #include <inviwo/core/util/sourcecontext.h>
 #include <inviwo/core/util/zip.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <memory>
 #include <ostream>
 #include <unordered_set>
