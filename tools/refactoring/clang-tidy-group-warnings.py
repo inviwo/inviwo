@@ -18,7 +18,12 @@ For each YAML file (= one TU):
 We record, per check, the set of TUs that raised it at least once (that's
 the file list you actually need to pass to clang-tidy to re-fix that check,
 since fixing a header's warning only requires reanalyzing one TU that
-includes it) plus a raw diagnostic count for reporting.
+includes it) plus a raw diagnostic count for reporting, and whether the
+check ever offered a fix anywhere in the scan (many checks, especially
+clang-analyzer-*/clang-diagnostic-* and purely-detection checks like
+google-readability-function-size, never produce a Replacement at all —
+running -fix for them is a guaranteed no-op, so this lets prioritization
+skip them up front instead of discovering it empirically per check).
 
 Usage:
   clang-tidy-group-warnings.py [export-dir] [output-json] [repo-root]
@@ -39,6 +44,9 @@ REPO_ROOT = Path(sys.argv[3] if len(sys.argv) > 3 else "/Users/peter/Work/Inviwo
 
 MAIN_SOURCE_RE = re.compile(r"^MainSourceFile:\s*'?([^'\n]*)'?\s*$")
 DIAG_NAME_RE = re.compile(r"^ {2}- DiagnosticName:\s*(\S+)\s*$")
+# A bare "Replacements:" (no inline "[]") is followed by a non-empty nested
+# list, at any indentation (DiagnosticMessage's own, or a Notes entry's).
+NONEMPTY_REPLACEMENTS_RE = re.compile(r"^\s*Replacements:\s*$")
 
 
 def to_relative(path: str) -> str:
@@ -57,9 +65,20 @@ def is_in_scope(relative_path: str) -> bool:
 
 
 def parse_yaml_file(path: Path):
-    """Return (main_source_file, list_of_check_names) for one export-fixes YAML."""
+    """Return (main_source_file, list_of_(check_name, has_fix)) for one TU's
+    export-fixes YAML. has_fix is True if any Replacements list anywhere in
+    that diagnostic's entry (its own DiagnosticMessage or a Notes entry) is
+    non-empty.
+    """
     main_source = None
-    checks = []
+    diagnostics = []
+    current_check = None
+    current_has_fix = False
+
+    def flush():
+        if current_check is not None:
+            diagnostics.append((current_check, current_has_fix))
+
     with open(path, "r", encoding="utf-8", errors="replace") as f:
         for line in f:
             if main_source is None:
@@ -69,8 +88,14 @@ def parse_yaml_file(path: Path):
                     continue
             m = DIAG_NAME_RE.match(line)
             if m:
-                checks.append(m.group(1))
-    return main_source, checks
+                flush()
+                current_check = m.group(1)
+                current_has_fix = False
+                continue
+            if current_check is not None and NONEMPTY_REPLACEMENTS_RE.match(line):
+                current_has_fix = True
+    flush()
+    return main_source, diagnostics
 
 
 def main():
@@ -84,24 +109,27 @@ def main():
     # check -> total diagnostic count (includes duplicates across TUs, e.g. a
     # header warning reported once per including TU)
     check_to_count: dict[str, int] = defaultdict(int)
+    check_has_fix: dict[str, bool] = defaultdict(bool)
     tus_with_no_diagnostics = 0
 
     for yf in yaml_files:
-        main_source, checks = parse_yaml_file(yf)
-        if not checks:
+        main_source, diagnostics = parse_yaml_file(yf)
+        if not diagnostics:
             tus_with_no_diagnostics += 1
             continue
         rel_main = to_relative(main_source) if main_source else str(yf)
         if not is_in_scope(rel_main):
             continue
-        for check in checks:
+        for check, has_fix in diagnostics:
             check_to_count[check] += 1
             check_to_files[check].add(rel_main)
+            check_has_fix[check] = check_has_fix[check] or has_fix
 
     result = {
         check: {
             "diagnostic_count": check_to_count[check],
             "tu_count": len(files),
+            "has_fix": check_has_fix[check],
             "files": sorted(files),
         }
         for check, files in check_to_files.items()
@@ -112,14 +140,16 @@ def main():
         json.dump(result, f, indent=2, sort_keys=True)
         f.write("\n")
 
+    fixable = sum(1 for info in result.values() if info["has_fix"])
     print(f"Parsed {len(yaml_files)} TU YAML files ({tus_with_no_diagnostics} clean).")
-    print(f"Found {len(result)} distinct checks with diagnostics.")
+    print(f"Found {len(result)} distinct checks with diagnostics ({fixable} with at least one fix).")
     print(f"Wrote {OUTPUT_JSON}")
     print()
-    print(f"{'check':<55} {'diagnostics':>11} {'TUs':>6}")
+    print(f"{'check':<55} {'diagnostics':>11} {'TUs':>6}  fix?")
     for check in sorted(result):
         info = result[check]
-        print(f"{check:<55} {info['diagnostic_count']:>11} {info['tu_count']:>6}")
+        mark = "yes" if info["has_fix"] else "no"
+        print(f"{check:<55} {info['diagnostic_count']:>11} {info['tu_count']:>6}  {mark}")
 
 
 if __name__ == "__main__":

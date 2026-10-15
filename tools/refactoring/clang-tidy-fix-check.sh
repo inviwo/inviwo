@@ -23,6 +23,12 @@ REPO_ROOT="/Users/peter/Work/Inviwo/inviwo-stage"
 CLANG_TIDY_BIN=/opt/homebrew/opt/llvm/bin/clang-tidy
 APPLY_REPL_BIN=/opt/homebrew/opt/llvm/bin/clang-apply-replacements
 
+# Must match clang-tidy-dry-run-all.sh's filters: without -header-filter, a
+# diagnostic whose location is in an (in-scope) header rather than the TU's
+# own main file gets silently suppressed as "non-user code" instead of fixed.
+HEADER_FILTER='.*inviwo-stage.*\.(h|hpp)$'
+EXCLUDE_HEADER='.*/ext/.*|.*vcpkg_installed.*|.*/builds/.*'
+
 FILES=("${(@f)$(python3 -c "
 import json, sys
 data = json.load(open('$JSON_FILE'))
@@ -56,7 +62,8 @@ trap 'rm -rf "$EXPORT_DIR" "$HELPER"' EXIT
 # blow past even for a handful of files.
 cat > "$HELPER" <<EOF
 #!/bin/zsh
-"$CLANG_TIDY_BIN" -p "$BUILD" -checks="-*,$CHECK" \\
+"$CLANG_TIDY_BIN" -p "$BUILD" -allow-no-checks -checks="-*,$CHECK" \\
+  -header-filter="$HEADER_FILTER" -exclude-header-filter="$EXCLUDE_HEADER" \\
   -export-fixes="$EXPORT_DIR/fix-\$\$-\$RANDOM.yaml" "\$1"
 EOF
 chmod +x "$HELPER"

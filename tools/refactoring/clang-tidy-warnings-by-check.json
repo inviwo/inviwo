@@ -4,6 +4,7 @@
     "files": [
       "src/core/util/filesystem.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "bugprone-casting-through-void": {
@@ -13,6 +14,7 @@
       "modules/python3/bindings/src/pyprocessors.cpp",
       "modules/python3/bindings/src/pyproperties.cpp"
     ],
+    "has_fix": false,
     "tu_count": 3
   },
   "bugprone-copy-constructor-init": {
@@ -24,6 +26,7 @@
       "src/core/datastructures/tfprimitive.cpp",
       "src/core/properties/transferfunctionproperty.cpp"
     ],
+    "has_fix": true,
     "tu_count": 5
   },
   "bugprone-crtp-constructor-accessibility": {
@@ -1194,6 +1197,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1164
   },
   "bugprone-derived-method-shadowing-base-method": {
@@ -1717,6 +1721,7 @@
       "tools/meta/src/inviwomoduleconf.cpp",
       "tools/meta/src/main.cpp"
     ],
+    "has_fix": false,
     "tu_count": 517
   },
   "bugprone-easily-swappable-parameters": {
@@ -3019,6 +3024,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1296
   },
   "bugprone-empty-catch": {
@@ -3030,6 +3036,7 @@
       "src/qt/editor/annotationswidget.cpp",
       "src/qt/editor/workspacetreemodel.cpp"
     ],
+    "has_fix": false,
     "tu_count": 5
   },
   "bugprone-exception-copy-constructor-throws": {
@@ -3037,6 +3044,7 @@
     "files": [
       "modules/dataframe/src/jsondataframeconversion.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "bugprone-float-loop-counter": {
@@ -3044,6 +3052,7 @@
     "files": [
       "src/qt/editor/networkeditor.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "bugprone-incorrect-roundings": {
@@ -3051,6 +3060,7 @@
     "files": [
       "modules/fontrendering/src/textrenderer.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "bugprone-integer-division": {
@@ -3067,6 +3077,7 @@
       "src/qt/editor/linkdialog/linkdialogscene.cpp",
       "src/qt/editor/processorgraphicsitem.cpp"
     ],
+    "has_fix": false,
     "tu_count": 10
   },
   "bugprone-invalid-enum-default-initialization": {
@@ -3076,6 +3087,7 @@
       "modules/python3/bindings/src/pyevent.cpp",
       "modules/vectorfieldvisualization/src/properties/integrallineproperties.cpp"
     ],
+    "has_fix": false,
     "tu_count": 3
   },
   "bugprone-macro-parentheses": {
@@ -3768,6 +3780,7 @@
       "tests/integrationtests/recycle-inviwo-application/recycle-inviwo-application-tests.cpp",
       "tests/integrationtests/shader-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 686
   },
   "bugprone-narrowing-conversions": {
@@ -4949,6 +4962,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1175
   },
   "bugprone-nondeterministic-pointer-iteration-order": {
@@ -4961,6 +4975,7 @@
       "src/core/network/autolinker.cpp",
       "src/qt/editor/inviwomainwindow.cpp"
     ],
+    "has_fix": false,
     "tu_count": 6
   },
   "bugprone-optional-value-conversion": {
@@ -4970,6 +4985,7 @@
       "src/core/datastructures/light/lightingconfig.cpp",
       "src/core/datastructures/volume/volumeconfig.cpp"
     ],
+    "has_fix": true,
     "tu_count": 3
   },
   "bugprone-parent-virtual-call": {
@@ -4982,6 +4998,7 @@
       "src/core/properties/listproperty.cpp",
       "src/qt/editor/welcomewidget.cpp"
     ],
+    "has_fix": true,
     "tu_count": 6
   },
   "bugprone-pointer-arithmetic-on-polymorphic-object": {
@@ -4991,6 +5008,7 @@
       "modules/base/src/processors/meshmapping.cpp",
       "modules/base/src/processors/volumechannelcombiner.cpp"
     ],
+    "has_fix": false,
     "tu_count": 3
   },
   "bugprone-random-generator-seed": {
@@ -5010,6 +5028,7 @@
       "src/core/tests/unittests/bitset-test.cpp",
       "src/core/tests/unittests/histogram1d-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 13
   },
   "bugprone-reserved-identifier": {
@@ -5838,6 +5857,7 @@
       "tests/integrationtests/processorcreation-test.cpp",
       "tests/integrationtests/shader-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 822
   },
   "bugprone-return-const-ref-from-parameter": {
@@ -6914,6 +6934,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1070
   },
   "bugprone-signed-bitwise": {
@@ -8217,6 +8238,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1297
   },
   "bugprone-signed-char-misuse": {
@@ -8227,6 +8249,7 @@
       "src/core/io/serialization/deserializer.cpp",
       "src/core/util/stringconversion.cpp"
     ],
+    "has_fix": false,
     "tu_count": 4
   },
   "bugprone-std-exception-baseclass": {
@@ -8234,6 +8257,7 @@
     "files": [
       "modules/png/src/pngwriter.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "bugprone-std-namespace-modification": {
@@ -9430,6 +9454,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1190
   },
   "bugprone-suspicious-stringview-data-usage": {
@@ -9443,6 +9468,7 @@
       "src/core/io/serialization/serializebase.cpp",
       "src/core/tests/benchmarks/safecstr.cpp"
     ],
+    "has_fix": false,
     "tu_count": 7
   },
   "bugprone-switch-missing-default-case": {
@@ -10182,6 +10208,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 733
   },
   "bugprone-unchecked-optional-access": {
@@ -10244,6 +10271,7 @@
       "src/qt/editor/subpropertyselectiondialog.cpp",
       "tools/meta/src/creator.cpp"
     ],
+    "has_fix": false,
     "tu_count": 56
   },
   "bugprone-unhandled-code-paths": {
@@ -10979,6 +11007,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 729
   },
   "bugprone-unintended-char-ostream-output": {
@@ -10986,6 +11015,7 @@
     "files": [
       "modules/dataframe/src/io/csvwriter.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "bugprone-unused-local-non-trivial-variable": {
@@ -10996,6 +11026,7 @@
       "src/core/io/transferfunctionxmlreader.cpp",
       "src/core/tests/unittests/serialize-container-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 4
   },
   "bugprone-unused-raii": {
@@ -11003,6 +11034,7 @@
     "files": [
       "src/core/tests/unittests/bitset-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1
   },
   "bugprone-unused-return-value": {
@@ -11025,6 +11057,7 @@
       "modules/openglqt/src/openglqtmenu.cpp",
       "modules/qtwidgets/src/tfhelpwindow.cpp"
     ],
+    "has_fix": false,
     "tu_count": 16
   },
   "clang-analyzer-core.CallAndMessage": {
@@ -11034,6 +11067,7 @@
       "modules/qtwidgets/src/tf/tfeditor.cpp",
       "src/core/interaction/trackball.cpp"
     ],
+    "has_fix": false,
     "tu_count": 3
   },
   "clang-analyzer-core.NonNullParamChecker": {
@@ -11041,6 +11075,7 @@
     "files": [
       "src/qt/editor/helpwidget.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "clang-analyzer-core.StackAddressEscape": {
@@ -11049,6 +11084,7 @@
       "modules/basegl/src/processors/raycasting/texturedisosurfacerenderer.cpp",
       "modules/basegl/src/processors/raycasting/texturedvolumeraycaster.cpp"
     ],
+    "has_fix": false,
     "tu_count": 2
   },
   "clang-analyzer-deadcode.DeadStores": {
@@ -11062,6 +11098,7 @@
       "src/core/util/chronoutils.cpp",
       "src/core/util/filesystem.cpp"
     ],
+    "has_fix": false,
     "tu_count": 7
   },
   "clang-analyzer-optin.core.EnumCastOutOfRange": {
@@ -11075,6 +11112,7 @@
       "modules/opengl/src/debugmessages.cpp",
       "src/core/io/serialization/serializebase.cpp"
     ],
+    "has_fix": false,
     "tu_count": 7
   },
   "clang-analyzer-optin.cplusplus.VirtualCall": {
@@ -11117,6 +11155,7 @@
       "src/core/util/logstream.cpp",
       "src/qt/editor/workspaceannotationsqt.cpp"
     ],
+    "has_fix": false,
     "tu_count": 36
   },
   "clang-analyzer-security.ArrayBound": {
@@ -11138,6 +11177,7 @@
       "src/core/network/processornetworkconverter.cpp",
       "src/core/tests/unittests/glm-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 15
   },
   "clang-analyzer-security.cert.env.InvalidPtr": {
@@ -11146,6 +11186,7 @@
       "modules/pvm/src/pvmvolumereader.cpp",
       "src/core/util/stringconversion.cpp"
     ],
+    "has_fix": false,
     "tu_count": 2
   },
   "clang-analyzer-security.insecureAPI.rand": {
@@ -11154,6 +11195,7 @@
       "modules/base/tests/unittests/convexhull-test.cpp",
       "modules/base/tests/unittests/kdtree-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 2
   },
   "clang-diagnostic-range-loop-construct": {
@@ -11163,6 +11205,7 @@
       "modules/qtwidgets/src/inviwofiledialog.cpp",
       "modules/qtwidgets/src/properties/propertywidgetqt.cpp"
     ],
+    "has_fix": true,
     "tu_count": 3
   },
   "clang-diagnostic-switch": {
@@ -11170,6 +11213,7 @@
     "files": [
       "src/core/algorithm/markdown.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "clang-diagnostic-unused-function": {
@@ -11178,6 +11222,7 @@
       "modules/brushingandlinking/tests/unittests/bnl-test.cpp",
       "src/core/interaction/eventtransformer.cpp"
     ],
+    "has_fix": false,
     "tu_count": 2
   },
   "clang-diagnostic-unused-private-field": {
@@ -11185,6 +11230,7 @@
     "files": [
       "modules/openglqt/src/interactioneventmapperqt.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "clang-diagnostic-unused-result": {
@@ -11192,6 +11238,7 @@
     "files": [
       "src/qt/editor/sourcetools.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "clang-diagnostic-unused-variable": {
@@ -11396,6 +11443,7 @@
       "tests/integrationtests/image-test.cpp",
       "tests/integrationtests/network-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 198
   },
   "cppcoreguidelines-avoid-c-arrays": {
@@ -12602,6 +12650,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1200
   },
   "cppcoreguidelines-avoid-const-or-ref-data-members": {
@@ -13657,6 +13706,7 @@
       "tools/meta/tests/filteriterator-test.cpp",
       "tools/meta/tests/transformiterator-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1049
   },
   "cppcoreguidelines-avoid-do-while": {
@@ -13667,6 +13717,7 @@
       "src/core/network/workspaceutils.cpp",
       "src/core/util/filesystem.cpp"
     ],
+    "has_fix": false,
     "tu_count": 4
   },
   "cppcoreguidelines-avoid-non-const-global-variables": {
@@ -13682,6 +13733,7 @@
       "src/qt/editor/welcomewidget.cpp",
       "src/qt/editor/workspacetreemodel.cpp"
     ],
+    "has_fix": false,
     "tu_count": 9
   },
   "cppcoreguidelines-c-copy-assignment-signature": {
@@ -14713,6 +14765,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1025
   },
   "cppcoreguidelines-explicit-constructor": {
@@ -15935,6 +15988,7 @@
       "tools/meta/tests/range-test.cpp",
       "tools/meta/tests/transformiterator-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1216
   },
   "cppcoreguidelines-init-variables": {
@@ -15973,6 +16027,7 @@
       "src/qt/editor/toolsmenu.cpp",
       "src/qt/editor/toolsmetamenu.cpp"
     ],
+    "has_fix": true,
     "tu_count": 32
   },
   "cppcoreguidelines-macro-to-enum": {
@@ -15980,6 +16035,7 @@
     "files": [
       "modules/vectorfieldvisualization/src/processors/datageneration/seedpointgenerator.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1
   },
   "cppcoreguidelines-macro-usage": {
@@ -17002,6 +17058,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1016
   },
   "cppcoreguidelines-missing-std-forward": {
@@ -18301,6 +18358,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1293
   },
   "cppcoreguidelines-no-malloc": {
@@ -18309,6 +18367,7 @@
       "modules/pvm/src/pvmvolumereader.cpp",
       "src/core/util/demangle.cpp"
     ],
+    "has_fix": false,
     "tu_count": 2
   },
   "cppcoreguidelines-noexcept-swap": {
@@ -19366,6 +19425,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1051
   },
   "cppcoreguidelines-prefer-member-initializer": {
@@ -20416,6 +20476,7 @@
       "tests/integrationtests/volume-test.cpp",
       "tests/testutil/src/configurablegtesteventlistener.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1044
   },
   "cppcoreguidelines-pro-type-const-cast": {
@@ -20872,6 +20933,7 @@
       "tests/integrationtests/network-test.cpp",
       "tests/integrationtests/shader-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 450
   },
   "cppcoreguidelines-pro-type-cstyle-cast": {
@@ -20879,6 +20941,7 @@
     "files": [
       "modules/pvm/src/pvmvolumewriter.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "cppcoreguidelines-pro-type-member-init": {
@@ -21891,6 +21954,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1006
   },
   "cppcoreguidelines-pro-type-reinterpret-cast": {
@@ -21926,6 +21990,7 @@
       "src/core/util/sharedlibrary.cpp",
       "src/qt/applicationbase/qtapptools.cpp"
     ],
+    "has_fix": false,
     "tu_count": 29
   },
   "cppcoreguidelines-pro-type-static-cast-downcast": {
@@ -21993,6 +22058,7 @@
       "src/qt/editor/linkdraghelper.cpp",
       "src/qt/editor/networksearch.cpp"
     ],
+    "has_fix": true,
     "tu_count": 61
   },
   "cppcoreguidelines-pro-type-vararg": {
@@ -22001,6 +22067,7 @@
       "modules/cimg/src/cimgutils.cpp",
       "src/core/util/consolelogger.cpp"
     ],
+    "has_fix": false,
     "tu_count": 2
   },
   "cppcoreguidelines-rvalue-reference-param-not-moved": {
@@ -23198,6 +23265,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1191
   },
   "cppcoreguidelines-special-member-functions": {
@@ -24568,6 +24636,7 @@
       "tools/meta/src/inviwomoduleregistration.cpp",
       "tools/meta/src/main.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1364
   },
   "cppcoreguidelines-use-enum-class": {
@@ -24660,6 +24729,7 @@
       "src/qt/editor/processorportgraphicsitem.cpp",
       "src/qt/editor/processorpreview.cpp"
     ],
+    "has_fix": false,
     "tu_count": 86
   },
   "cppcoreguidelines-virtual-class-destructor": {
@@ -24679,6 +24749,7 @@
       "tests/integrationtests/processorcreation-test.cpp",
       "tests/integrationtests/propertycreation-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 13
   },
   "google-build-namespaces": {
@@ -24695,6 +24766,7 @@
       "modules/python3/bindings/src/pyglmportsuint.cpp",
       "modules/python3/bindings/src/util/pyglmhelper.cpp"
     ],
+    "has_fix": false,
     "tu_count": 10
   },
   "google-build-using-namespace": {
@@ -24765,6 +24837,7 @@
       "tools/meta/tests/range-test.cpp",
       "tools/meta/tests/transformiterator-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 64
   },
   "google-default-arguments": {
@@ -25691,6 +25764,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 920
   },
   "google-readability-avoid-underscore-in-googletest-name": {
@@ -25705,6 +25779,7 @@
       "tools/meta/tests/cmakefile-test.cpp",
       "tools/meta/tests/grammar-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 8
   },
   "google-readability-braces-around-statements": {
@@ -26784,6 +26859,7 @@
       "tests/integrationtests/volume-test.cpp",
       "tools/meta/src/inviwomoduleregistration.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1073
   },
   "google-readability-casting": {
@@ -27658,6 +27734,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 868
   },
   "google-readability-function-size": {
@@ -27665,6 +27742,7 @@
     "files": [
       "src/core/util/colorbrewer-generated.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "google-readability-todo": {
@@ -27691,6 +27769,7 @@
       "tools/meta/src/cmake/cmakefile.cpp",
       "tools/meta/tests/grammar-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 20
   },
   "google-runtime-float": {
@@ -28720,6 +28799,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1023
   },
   "google-runtime-int": {
@@ -29866,6 +29946,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1140
   },
   "google-upgrade-googletest-case": {
@@ -29892,6 +29973,7 @@
       "tests/integrationtests/recycle-inviwo-application/recycle-inviwo-application-tests-main.cpp",
       "tests/testutil/src/configurablegtesteventlistener.cpp"
     ],
+    "has_fix": true,
     "tu_count": 20
   },
   "llvm-qualified-auto": {
@@ -31026,6 +31108,7 @@
       "tools/meta/src/creator.cpp",
       "tools/meta/src/inviwomodule.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1128
   },
   "llvm-use-ranges": {
@@ -32173,6 +32256,7 @@
       "tools/meta/src/paths.cpp",
       "tools/meta/tests/grammar-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1141
   },
   "misc-const-correctness": {
@@ -32274,6 +32358,7 @@
       "src/qt/editor/welcomewidget.cpp",
       "tests/integrationtests/network-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 95
   },
   "misc-multiple-inheritance": {
@@ -33364,6 +33449,7 @@
       "tests/integrationtests/volume-test.cpp",
       "tools/meta/src/cmake/cmakefile.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1084
   },
   "misc-override-with-different-visibility": {
@@ -34506,6 +34592,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1136
   },
   "misc-predictable-rand": {
@@ -34514,6 +34601,7 @@
       "modules/base/tests/unittests/convexhull-test.cpp",
       "modules/base/tests/unittests/kdtree-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 2
   },
   "misc-redundant-expression": {
@@ -34544,6 +34632,7 @@
       "modules/python3/src/pybindflags.cpp",
       "src/core/util/filesystem.cpp"
     ],
+    "has_fix": false,
     "tu_count": 24
   },
   "misc-throw-by-value-catch-by-reference": {
@@ -34551,6 +34640,7 @@
     "files": [
       "modules/png/src/pngwriter.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "misc-unused-parameters": {
@@ -34560,6 +34650,7 @@
       "src/core/util/assertion.cpp",
       "src/qt/editor/fileassociations.cpp"
     ],
+    "has_fix": true,
     "tu_count": 3
   },
   "misc-unused-using-decls": {
@@ -34567,6 +34658,7 @@
     "files": [
       "src/core/tests/unittests/port-tests.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1
   },
   "misc-use-anonymous-namespace": {
@@ -34579,6 +34671,7 @@
       "src/core/algorithm/base64.cpp",
       "src/core/util/assertion.cpp"
     ],
+    "has_fix": false,
     "tu_count": 6
   },
   "misc-use-internal-linkage": {
@@ -34674,6 +34767,7 @@
       "tools/meta/tests/grammar-test.cpp",
       "tools/meta/tests/transformiterator-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 89
   },
   "modernize-avoid-bind": {
@@ -34703,6 +34797,7 @@
       "src/qt/editor/inviwomainwindow.cpp",
       "src/qt/editor/workspacetreemodel.cpp"
     ],
+    "has_fix": true,
     "tu_count": 23
   },
   "modernize-concat-nested-namespaces": {
@@ -36053,6 +36148,7 @@
       "tools/meta/tests/grammar-test.cpp",
       "tools/meta/tests/transformiterator-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1344
   },
   "modernize-deprecated-headers": {
@@ -36068,6 +36164,7 @@
       "src/core/util/consolelogger.cpp",
       "src/core/util/shuntingyard.cpp"
     ],
+    "has_fix": true,
     "tu_count": 9
   },
   "modernize-loop-convert": {
@@ -36125,6 +36222,7 @@
       "src/qt/editor/processorlinkgraphicsitem.cpp",
       "src/qt/editor/processorportgraphicsitem.cpp"
     ],
+    "has_fix": true,
     "tu_count": 51
   },
   "modernize-make-unique": {
@@ -36133,6 +36231,7 @@
       "modules/basegl/src/algorithm/entryexitpoints.cpp",
       "modules/qtwidgets/src/numberlineedit.cpp"
     ],
+    "has_fix": true,
     "tu_count": 2
   },
   "modernize-min-max-use-initializer-list": {
@@ -36868,6 +36967,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 729
   },
   "modernize-pass-by-value": {
@@ -37958,6 +38058,7 @@
       "tools/meta/src/inviwomoduleregistration.cpp",
       "tools/meta/src/main.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1084
   },
   "modernize-raw-string-literal": {
@@ -37967,6 +38068,7 @@
       "src/core/io/transferfunctionxmlreader.cpp",
       "src/core/util/utilities.cpp"
     ],
+    "has_fix": true,
     "tu_count": 3
   },
   "modernize-redundant-void-arg": {
@@ -39094,6 +39196,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1121
   },
   "modernize-return-braced-init-list": {
@@ -39475,6 +39578,7 @@
       "tests/integrationtests/processorcreation-test.cpp",
       "tools/meta/src/inviwomodule.cpp"
     ],
+    "has_fix": true,
     "tu_count": 375
   },
   "modernize-type-traits": {
@@ -40770,6 +40874,7 @@
       "tools/meta/tests/filteriterator-test.cpp",
       "tools/meta/tests/transformiterator-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1289
   },
   "modernize-unary-static-assert": {
@@ -41535,6 +41640,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 759
   },
   "modernize-use-auto": {
@@ -42738,6 +42844,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1197
   },
   "modernize-use-bool-literals": {
@@ -42745,6 +42852,7 @@
     "files": [
       "modules/postprocessing/src/processors/ssao.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1
   },
   "modernize-use-constraints": {
@@ -43829,6 +43937,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1078
   },
   "modernize-use-designated-initializers": {
@@ -44606,6 +44715,7 @@
       "tools/meta/src/filetemplates.cpp",
       "tools/meta/src/main.cpp"
     ],
+    "has_fix": true,
     "tu_count": 771
   },
   "modernize-use-emplace": {
@@ -44629,6 +44739,7 @@
       "src/core/util/commandlineparser.cpp",
       "src/qt/editor/workspaceannotationsqt.cpp"
     ],
+    "has_fix": true,
     "tu_count": 17
   },
   "modernize-use-equals-default": {
@@ -44859,6 +44970,7 @@
       "src/qt/editor/workspacetreeview.cpp",
       "tests/integrationtests/inviwo-integrationtests.cpp"
     ],
+    "has_fix": true,
     "tu_count": 224
   },
   "modernize-use-equals-delete": {
@@ -45932,6 +46044,7 @@
       "tests/integrationtests/volume-test.cpp",
       "tests/testutil/src/zipmatcher.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1067
   },
   "modernize-use-integer-sign-comparison": {
@@ -46101,6 +46214,7 @@
       "src/qt/editor/workspacetreemodel.cpp",
       "tests/integrationtests/glformatconversion-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 163
   },
   "modernize-use-noexcept": {
@@ -46174,6 +46288,7 @@
       "modules/plottinggl/src/processors/scatterplotmatrixprocessor.cpp",
       "modules/plottinggl/src/processors/scatterplotprocessor.cpp"
     ],
+    "has_fix": true,
     "tu_count": 67
   },
   "modernize-use-nullptr": {
@@ -46672,6 +46787,7 @@
       "tests/integrationtests/propertycreation-test.cpp",
       "tests/integrationtests/shader-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 492
   },
   "modernize-use-ranges": {
@@ -47921,6 +48037,7 @@
       "tools/meta/src/paths.cpp",
       "tools/meta/tests/grammar-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1243
   },
   "modernize-use-scoped-lock": {
@@ -47930,6 +48047,7 @@
       "modules/vectorfieldvisualization/src/processors/integrallinetracerprocessor.cpp",
       "modules/vectorfieldvisualization/src/vectorfieldvisualizationmodule.cpp"
     ],
+    "has_fix": true,
     "tu_count": 3
   },
   "modernize-use-starts-ends-with": {
@@ -47943,6 +48061,7 @@
       "modules/python3/src/pythonprocessorfactoryobject.cpp",
       "tools/meta/src/util.cpp"
     ],
+    "has_fix": true,
     "tu_count": 7
   },
   "modernize-use-std-numbers": {
@@ -47954,6 +48073,7 @@
       "src/core/util/colorbrewer-generated.cpp",
       "src/core/util/colorconversion.cpp"
     ],
+    "has_fix": true,
     "tu_count": 5
   },
   "modernize-use-string-view": {
@@ -47978,6 +48098,7 @@
       "tools/meta/src/inviwomoduleconf.cpp",
       "tools/meta/src/main.cpp"
     ],
+    "has_fix": true,
     "tu_count": 18
   },
   "modernize-use-structured-binding": {
@@ -47989,6 +48110,7 @@
       "src/core/interaction/pickingcontroller.cpp",
       "src/core/util/volumeutils.cpp"
     ],
+    "has_fix": true,
     "tu_count": 5
   },
   "modernize-use-transparent-functors": {
@@ -47997,6 +48119,7 @@
       "modules/base/src/processors/filecache.cpp",
       "src/core/network/networkutils.cpp"
     ],
+    "has_fix": true,
     "tu_count": 2
   },
   "modernize-use-using": {
@@ -49240,6 +49363,7 @@
       "tests/integrationtests/volume-test.cpp",
       "tests/testutil/src/zipmatcher.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1237
   },
   "performance-avoid-endl": {
@@ -49256,6 +49380,7 @@
       "tools/meta/src/main.cpp",
       "tools/meta/tests/grammar-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 10
   },
   "performance-enum-size": {
@@ -50520,6 +50645,7 @@
       "tools/meta/src/inviwomodule.cpp",
       "tools/meta/src/main.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1258
   },
   "performance-faster-string-find": {
@@ -50652,6 +50778,7 @@
       "tests/integrationtests/inviwo-integrationtests.cpp",
       "tests/integrationtests/recycle-inviwo-application/recycle-inviwo-application-tests.cpp"
     ],
+    "has_fix": true,
     "tu_count": 126
   },
   "performance-for-range-copy": {
@@ -50666,6 +50793,7 @@
       "src/core/properties/propertypresetmanager.cpp",
       "tools/meta/src/creator.cpp"
     ],
+    "has_fix": true,
     "tu_count": 8
   },
   "performance-inefficient-string-concatenation": {
@@ -50675,6 +50803,7 @@
       "src/core/util/shuntingyard.cpp",
       "src/core/util/utilities.cpp"
     ],
+    "has_fix": false,
     "tu_count": 3
   },
   "performance-inefficient-vector-operation": {
@@ -50877,6 +51006,7 @@
       "src/core/util/settings/systemsettings.cpp",
       "tests/integrationtests/network-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 196
   },
   "performance-move-const-arg": {
@@ -50891,6 +51021,7 @@
       "src/core/util/logfilter.cpp",
       "tools/meta/src/creator.cpp"
     ],
+    "has_fix": true,
     "tu_count": 8
   },
   "performance-no-automatic-move": {
@@ -50910,6 +51041,7 @@
       "src/core/processors/canvasprocessor.cpp",
       "tools/meta/src/paths.cpp"
     ],
+    "has_fix": false,
     "tu_count": 13
   },
   "performance-no-int-to-ptr": {
@@ -50917,6 +51049,7 @@
     "files": [
       "modules/plottinggl/src/plotters/scatterplotgl.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1
   },
   "performance-string-view-conversions": {
@@ -50926,6 +51059,7 @@
       "modules/ffmpeg/src/util.cpp",
       "src/core/util/docutils.cpp"
     ],
+    "has_fix": true,
     "tu_count": 3
   },
   "performance-unnecessary-copy-initialization": {
@@ -50940,6 +51074,7 @@
       "src/core/util/settings/linksettings.cpp",
       "src/qt/editor/welcomewidget.cpp"
     ],
+    "has_fix": true,
     "tu_count": 8
   },
   "performance-unnecessary-value-param": {
@@ -52122,6 +52257,7 @@
       "tools/meta/src/inviwomodule.cpp",
       "tools/meta/src/util.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1176
   },
   "performance-use-std-move": {
@@ -52189,6 +52325,7 @@
       "src/qt/editor/workspacetreemodel.cpp",
       "tools/meta/src/inviwomodule.cpp"
     ],
+    "has_fix": true,
     "tu_count": 61
   },
   "readability-ambiguous-smartptr-reset-call": {
@@ -52198,6 +52335,7 @@
       "src/core/common/inviwocore.cpp",
       "src/core/properties/ordinalrefproperty.cpp"
     ],
+    "has_fix": true,
     "tu_count": 3
   },
   "readability-avoid-const-params-in-decls": {
@@ -52578,6 +52716,7 @@
       "tests/integrationtests/network-test.cpp",
       "tests/integrationtests/shader-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 374
   },
   "readability-avoid-nested-conditional-operator": {
@@ -53365,6 +53504,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 781
   },
   "readability-avoid-return-with-void-value": {
@@ -53480,6 +53620,7 @@
       "src/core/util/settings/linksettings.cpp",
       "tests/integrationtests/network-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 109
   },
   "readability-const-return-type": {
@@ -53588,6 +53729,7 @@
       "src/qt/editor/workspacetreeview.cpp",
       "tests/integrationtests/inviwo-integrationtests.cpp"
     ],
+    "has_fix": true,
     "tu_count": 102
   },
   "readability-container-contains": {
@@ -53626,6 +53768,7 @@
       "src/core/util/stringconversion.cpp",
       "src/core/util/utilities.cpp"
     ],
+    "has_fix": true,
     "tu_count": 32
   },
   "readability-container-data-pointer": {
@@ -53633,6 +53776,7 @@
     "files": [
       "src/core/interaction/events/touchevent.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1
   },
   "readability-container-size-empty": {
@@ -54355,6 +54499,7 @@
       "tests/integrationtests/volume-test.cpp",
       "tests/testutil/src/zipmatcher.cpp"
     ],
+    "has_fix": true,
     "tu_count": 716
   },
   "readability-convert-member-functions-to-static": {
@@ -55362,6 +55507,7 @@
       "tools/meta/src/inviwomoduleconf.cpp",
       "tools/meta/src/main.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1001
   },
   "readability-delete-null-pointer": {
@@ -55369,6 +55515,7 @@
     "files": [
       "modules/animationqt/src/sequenceeditor/propertysequenceeditor.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1
   },
   "readability-enum-initial-value": {
@@ -55386,6 +55533,7 @@
       "src/core/util/colorbrewer-generated.cpp",
       "src/core/util/colorbrewer.cpp"
     ],
+    "has_fix": true,
     "tu_count": 11
   },
   "readability-function-cognitive-complexity": {
@@ -56505,6 +56653,7 @@
       "tests/integrationtests/volume-test.cpp",
       "tools/meta/src/inviwomodule.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1113
   },
   "readability-inconsistent-declaration-parameter-name": {
@@ -57636,6 +57785,7 @@
       "tests/integrationtests/volume-test.cpp",
       "tools/meta/src/creator.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1125
   },
   "readability-inconsistent-ifelse-braces": {
@@ -58665,6 +58815,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1023
   },
   "readability-isolate-declaration": {
@@ -58702,6 +58853,7 @@
       "src/core/tests/unittests/union-test.cpp",
       "src/core/util/volumesequenceutils.cpp"
     ],
+    "has_fix": true,
     "tu_count": 31
   },
   "readability-make-member-function-const": {
@@ -59043,6 +59195,7 @@
       "tests/integrationtests/processorcreation-test.cpp",
       "tests/integrationtests/shader-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 335
   },
   "readability-qualified-auto": {
@@ -59249,6 +59402,7 @@
       "tools/meta/src/main.cpp",
       "tools/meta/tests/grammar-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 200
   },
   "readability-redundant-access-specifiers": {
@@ -59299,6 +59453,7 @@
       "src/qt/editor/toolsmenu.cpp",
       "src/qt/editor/toolsmetamenu.cpp"
     ],
+    "has_fix": true,
     "tu_count": 44
   },
   "readability-redundant-casting": {
@@ -60433,6 +60588,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1128
   },
   "readability-redundant-control-flow": {
@@ -60441,6 +60597,7 @@
       "modules/basegl/src/processors/volumeslicegl.cpp",
       "src/core/common/inviwomodulefactoryobject.cpp"
     ],
+    "has_fix": true,
     "tu_count": 2
   },
   "readability-redundant-inline-specifier": {
@@ -61354,6 +61511,7 @@
       "tools/meta/src/paths.cpp",
       "tools/meta/tests/cmakefile-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 907
   },
   "readability-redundant-lambda-parameter-list": {
@@ -62632,6 +62790,7 @@
       "tools/meta/src/inviwomodule.cpp",
       "tools/meta/src/main.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1272
   },
   "readability-redundant-nested-if": {
@@ -62686,6 +62845,7 @@
       "src/qt/editor/workspacetreemodel.cpp",
       "tools/meta/src/util.cpp"
     ],
+    "has_fix": true,
     "tu_count": 48
   },
   "readability-redundant-parentheses": {
@@ -63188,6 +63348,7 @@
       "tools/meta/src/creator.cpp",
       "tools/meta/tests/cmakefile-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 496
   },
   "readability-redundant-qualified-alias": {
@@ -64426,6 +64587,7 @@
       "tests/integrationtests/volume-test.cpp",
       "tools/meta/src/paths.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1232
   },
   "readability-redundant-smartptr-get": {
@@ -64442,6 +64604,7 @@
       "modules/vectorfieldvisualizationgl/src/processors/4d/tmip.cpp",
       "modules/vectorfieldvisualizationgl/src/processors/datageneration/vectorfieldgenerator4d.cpp"
     ],
+    "has_fix": true,
     "tu_count": 10
   },
   "readability-redundant-string-cstr": {
@@ -64452,6 +64615,7 @@
       "modules/dataframepython/tests/unittests/column-test.cpp",
       "modules/dataframepython/tests/unittests/dataframe-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 4
   },
   "readability-redundant-string-init": {
@@ -64515,6 +64679,7 @@
       "src/core/tests/unittests/network-evaluator-test.cpp",
       "tests/integrationtests/network-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 57
   },
   "readability-redundant-typename": {
@@ -65830,6 +65995,7 @@
       "tools/meta/tests/filteriterator-test.cpp",
       "tools/meta/tests/transformiterator-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1309
   },
   "readability-simplify-boolean-expr": {
@@ -65852,6 +66018,7 @@
       "src/core/util/utilities.cpp",
       "src/core/util/volumesequencesampler.cpp"
     ],
+    "has_fix": true,
     "tu_count": 16
   },
   "readability-static-accessed-through-instance": {
@@ -66854,6 +67021,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": true,
     "tu_count": 996
   },
   "readability-static-definition-in-anonymous-namespace": {
@@ -66862,6 +67030,7 @@
       "modules/dataframe/tests/benchmarks/join.cpp",
       "src/core/tests/benchmarks/safecstr.cpp"
     ],
+    "has_fix": true,
     "tu_count": 2
   },
   "readability-string-compare": {
@@ -66871,6 +67040,7 @@
       "modules/opengl/src/openglcapabilities.cpp",
       "src/core/util/shuntingyard.cpp"
     ],
+    "has_fix": true,
     "tu_count": 3
   },
   "readability-suspicious-call-argument": {
@@ -67898,6 +68068,7 @@
       "tests/integrationtests/shader-test.cpp",
       "tests/integrationtests/volume-test.cpp"
     ],
+    "has_fix": false,
     "tu_count": 1021
   },
   "readability-trailing-comma": {
@@ -69198,6 +69369,7 @@
       "tools/meta/src/inviwomodule.cpp",
       "tools/meta/src/paths.cpp"
     ],
+    "has_fix": true,
     "tu_count": 1294
   },
   "readability-trivial-switch": {
@@ -69211,6 +69383,7 @@
       "src/qt/editor/lineediteventfilter.cpp",
       "src/qt/editor/linkdialog/linkdialogscene.cpp"
     ],
+    "has_fix": false,
     "tu_count": 7
   },
   "readability-use-anyofallof": {
@@ -69231,6 +69404,7 @@
       "src/qt/editor/processorlistfilter.cpp",
       "src/qt/editor/welcomewidget.cpp"
     ],
+    "has_fix": false,
     "tu_count": 14
   },
   "readability-use-concise-preprocessor-directives": {
@@ -69251,6 +69425,7 @@
       "src/qt/editor/workspacegridview.cpp",
       "src/qt/editor/workspacetreeview.cpp"
     ],
+    "has_fix": true,
     "tu_count": 14
   },
   "readability-use-std-min-max": {
@@ -69264,6 +69439,7 @@
       "src/core/properties/transferfunctionproperty.cpp",
       "src/qt/editor/connectiongraphicsitem.cpp"
     ],
+    "has_fix": true,
     "tu_count": 7
   }
 }
