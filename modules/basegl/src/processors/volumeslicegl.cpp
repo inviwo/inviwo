@@ -470,7 +470,6 @@ void VolumeSliceGL::planeSettingsChanged() {
     inverseSliceRotation_ = glm::inverse(rotation);
 
     invalidateMesh();
-    return;
 }
 
 void VolumeSliceGL::process() {

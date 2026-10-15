@@ -98,8 +98,6 @@ static void recursiveTopologicalModuleFactoryObjectSort(
     }
     visited.insert(lname);
     sorted.insert(sorted.begin(), lname);
-
-    return;
 }
 
 void topologicalModuleFactoryObjectSort(
