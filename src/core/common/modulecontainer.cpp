@@ -246,25 +246,19 @@ void ModuleContainer::updateGraph(std::vector<ModuleContainer>& moduleContainers
         }
     }
     for (auto& cont : moduleContainers) {
-        if (cont.factoryObject_->protectedModule == ProtectedModule::on ||
+        cont.protectedModule_ =
+            cont.factoryObject_->protectedModule == ProtectedModule::on ||
             std::ranges::any_of(cont.transitiveDependents, [](ModuleContainer* c) {
                 return c->factoryObject_->protectedModule == ProtectedModule::on;
-            })) {
-            cont.protectedModule_ = true;
-        } else {
-            cont.protectedModule_ = false;
-        }
+            });
     }
     for (auto& cont : moduleContainers) {
-        if (cont.libFile_.empty() || cont.factoryObject_->protectedModule == ProtectedModule::on ||
+        cont.protectedLibrary_ =
+            cont.libFile_.empty() || cont.factoryObject_->protectedModule == ProtectedModule::on ||
             std::ranges::any_of(cont.transitiveDependents, [](ModuleContainer* c) {
                 return c->libFile_.empty() ||
                        c->factoryObject_->protectedModule == ProtectedModule::on;
-            })) {
-            cont.protectedLibrary_ = true;
-        } else {
-            cont.protectedLibrary_ = false;
-        }
+            });
     }
 }
 
