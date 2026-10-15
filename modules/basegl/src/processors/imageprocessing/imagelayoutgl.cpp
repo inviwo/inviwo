@@ -391,7 +391,7 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     if (!force && (currentDim_ == dim) && (currentLayout_ == layout_.get())) return;  // no changes
 
     viewManager_.clear();
-    const int smallWindowHeight = static_cast<int>(dim.y / 3.0f);
+    const int smallWindowHeight = static_cast<int>(static_cast<float>(dim.y) / 3.0f);
 
     const int extra1 = dim.y % 3 >= 1 ? 1 : 0;  // add extra pixels to the small "windows" if the
     const int extra2 = dim.y % 3 >= 2 ? 1 : 0;  // size is not divisible by 3 to avoid black borders
