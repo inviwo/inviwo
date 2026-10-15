@@ -44,7 +44,7 @@
 #include <memory>
 #include <cxxabi.h>
 #include <cwchar>
-#elif defined(WIN32)
+#elifdef WIN32
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -57,7 +57,7 @@ namespace inviwo {
 namespace util {
 
 std::wstring toWstring(std::string_view str) {
-#if defined(_WIN32)
+#ifdef _WIN32
     if (str.empty()) return std::wstring();
     int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), NULL, 0);
     std::wstring result(size_needed, 0);
@@ -86,7 +86,7 @@ std::wstring toWstring(std::string_view str) {
 }
 
 std::string fromWstring(std::wstring_view str) {
-#if defined(_WIN32)
+#ifdef _WIN32
     int s_size = static_cast<int>(str.size());
     if (s_size == 0) {  // WideCharToMultiByte does not support zero length, handle separately.
         return {};

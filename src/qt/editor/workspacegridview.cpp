@@ -422,7 +422,7 @@ WorkspaceGridView::WorkspaceGridView(QAbstractItemModel* theModel, QWidget* pare
     // see https://doc.qt.io/qt-6/qabstractitemview.html#SelectionMode-enum
     setSelectionModel(new SelectionModel(proxy_, this));
 
-#if defined(WIN32)
+#ifdef WIN32
     // Scrolling on Windows is set to scroll per item by default. Also need to adjust the step size
     // since the default appears to be based on the number of items in the view.
     setVerticalScrollMode(ScrollPerPixel);

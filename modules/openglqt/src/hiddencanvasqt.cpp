@@ -76,7 +76,7 @@ void HiddenCanvasQt::initializeGL() { OpenGLCapabilities::initializeGL(); }
 void HiddenCanvasQt::update() {}
 void HiddenCanvasQt::activate() {
     context_->makeCurrent(offScreenSurface_);
-#if defined(__APPLE__)
+#ifdef __APPLE__
 #define GL_SILENCE_DEPRECATION
     if (auto err = glGetError(); err != GL_NO_ERROR) {
         // The call the makeCurrent started to generate a GL_INVALID_ENUM error in some cases,

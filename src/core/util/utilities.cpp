@@ -170,7 +170,7 @@ std::string cleanIdentifier(std::string_view identifier, std::string_view extra)
 
 std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath) {
     const auto fileNameWithoutExtension = filePath.stem().string();
-#if defined(WIN32)
+#ifdef WIN32
     auto decoration1 = std::string_view("inviwo-module-");
     auto decoration2 = std::string_view("inviwo-");
 #else

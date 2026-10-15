@@ -227,7 +227,7 @@ WorkspaceTreeView::WorkspaceTreeView(QAbstractItemModel* theModel, QWidget* pare
     setIndentation(utilqt::emToPx(this, 1.0));
     setItemDelegate(new SectionDelegate(this));
 
-#if defined(WIN32)
+#ifdef WIN32
     // Scrolling on Windows is set to scroll per item by default. Also need to adjust the step size
     // since the default appears to be based on the number of items in the view.
     setVerticalScrollMode(ScrollPerPixel);

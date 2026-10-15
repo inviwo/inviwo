@@ -63,7 +63,7 @@ const std::optional<BuildInfo>& getBuildInfo() {
         auto dir = exeDir / xmlFileName;
         if (std::filesystem::is_regular_file(dir)) return dir;
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
         if (dir.parent_path().filename() == "MacOS") {
             dir = exeDir.parent_path().parent_path().parent_path() / xmlFileName;
             if (std::filesystem::is_regular_file(dir)) return dir;
