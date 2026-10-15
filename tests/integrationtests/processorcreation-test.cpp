@@ -70,7 +70,7 @@ protected:
         , factory_{InviwoApplication::getPtr()->getProcessorFactory()}
         , supportedGlVersion_{OpenGLCapabilities::getOpenGLVersion()} {}
 
-    virtual ~ProcessorCreationTests() = default;
+    ~ProcessorCreationTests() = default;
 
     virtual void SetUp() override {}
     virtual void TearDown() override {}
