@@ -199,7 +199,7 @@ private:
 
 namespace detail {
 
-auto getWidgetProcessors(InviwoApplication* app) {
+static auto getWidgetProcessors(InviwoApplication* app) {
     auto widgetProcessors = util::copy_if(app->getProcessorNetwork()->getProcessors(),
                                           [](const auto p) { return p->hasProcessorWidget(); });
     std::sort(widgetProcessors.begin(), widgetProcessors.end(),
@@ -207,7 +207,7 @@ auto getWidgetProcessors(InviwoApplication* app) {
     return widgetProcessors;
 }
 
-auto getFloatingDockWidgets(const InviwoMainWindow* win) {
+static auto getFloatingDockWidgets(const InviwoMainWindow* win) {
     auto dockWidgets = util::copy_if(win->findChildren<InviwoDockWidget*>(),
                                      [](const auto p) { return p->isFloating(); });
     std::sort(dockWidgets.begin(), dockWidgets.end(), [](auto a, auto b) {

@@ -41,7 +41,7 @@ namespace inviwo {
 using res_t = std::tuple<DataFormatId, NumericType, size_t, size_t>;
 
 template <template <class> class Predicate>
-res_t test(DataFormatId id) {
+static res_t test(DataFormatId id) {
     return dispatching::singleDispatch<res_t, Predicate>(id, []<typename T>() -> res_t {
         return res_t{DataFormat<T>::id(), DataFormat<T>::numericType(), DataFormat<T>::components(),
                      DataFormat<T>::precision()};

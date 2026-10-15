@@ -88,7 +88,7 @@ struct Wheel : BaseEvent {
     using BaseEvent::BaseEvent;
 };
 
-PickingPressItem mouseButtonToPressItem(MouseButton mb) {
+static PickingPressItem mouseButtonToPressItem(MouseButton mb) {
     switch (mb) {
         case MouseButton::None:   return PickingPressItem::None;
         case MouseButton::Left:   return PickingPressItem::Primary;
@@ -97,7 +97,7 @@ PickingPressItem mouseButtonToPressItem(MouseButton mb) {
         default:                  return PickingPressItem::None;
     }
 }
-PickingPressItems mouseButtonsToPressItems(MouseButtons mb) {
+static PickingPressItems mouseButtonsToPressItems(MouseButtons mb) {
     PickingPressItems res = PickingPressItem::None;
     if (mb.count(MouseButton::Left)) res |= PickingPressItem::Primary;
     if (mb.count(MouseButton::Middle)) res |= PickingPressItem::Tertiary;
@@ -106,8 +106,8 @@ PickingPressItems mouseButtonsToPressItems(MouseButtons mb) {
 }
 
 template <typename E>
-auto send(PickingState state, PickingPressState pressState, PickingHoverState hoverState,
-          bool updatePrev = true, bool markAsUsed = true) {
+static auto send(PickingState state, PickingPressState pressState, PickingHoverState hoverState,
+                 bool updatePrev = true, bool markAsUsed = true) {
     return [state, pressState, hoverState, updatePrev, markAsUsed](
                const E& fsmEvent, FsmState& fsmState, PreviousFsmState& prev, PressFsmState& press,
                const PickingManager& pickingManager) {
@@ -135,7 +135,7 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
 }
 
 template <typename E>
-auto uid() {
+static auto uid() {
     return [](const E& e, FsmState& fsmstate) { fsmstate.active_globalId = e.globalId; };
 }
 

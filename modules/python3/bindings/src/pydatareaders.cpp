@@ -139,8 +139,8 @@ private:
 };
 
 template <typename T>
-void exposeFactoryReaderType(pybind11::module& m, pybind11::classh<DataReaderFactory>& r,
-                             std::string_view type) {
+static void exposeFactoryReaderType(pybind11::module& m, pybind11::classh<DataReaderFactory>& r,
+                                    std::string_view type) {
     namespace py = pybind11;
 
     using TRF = TypedDataReaderFactoryWrapper<T>;
@@ -170,7 +170,7 @@ void exposeFactoryReaderType(pybind11::module& m, pybind11::classh<DataReaderFac
 }
 
 template <typename T>
-void exposeReaderType(pybind11::module& m, std::string_view name) {
+static void exposeReaderType(pybind11::module& m, std::string_view name) {
     pybind11::classh<DataReaderType<T>, DataReader, DataReaderTypeTrampoline<T>>(
         m, fmt::format("{}DataReader", name).c_str())
         .def("readData",

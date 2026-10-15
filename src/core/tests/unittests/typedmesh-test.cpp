@@ -44,7 +44,7 @@
 namespace inviwo {
 
 template <typename... BufferTraits>
-bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
+static bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
     if (a.getDefaultMeshInfo() != b.getDefaultMeshInfo()) {
         return false;
     }
@@ -79,7 +79,7 @@ bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTrait
 }
 
 template <typename... BufferTraits>
-bool operator!=(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
+static bool operator!=(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
     return !(a == b);
 }
 

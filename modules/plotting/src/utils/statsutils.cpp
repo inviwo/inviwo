@@ -54,7 +54,7 @@ namespace inviwo {
 namespace statsutil {
 namespace detail {
 template <typename Tx, typename Ty>
-RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
+static RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
     RegresionResult res;
     if (X.getSize() != Y.getSize()) {
         throw Exception("Buffers are not of equal length");

@@ -87,10 +87,10 @@ const static std::array<std::array<size_t, 4>, 6> tetras = {
     std::array<size_t, 4>{2, 3, 5, 6}, std::array<size_t, 4>{0, 3, 4, 5},
     std::array<size_t, 4>{7, 4, 3, 5}, std::array<size_t, 4>{7, 6, 5, 3}};
 
-void evaluateTetra(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
-                   std::vector<vec3>& positions, std::vector<vec3>& normals, const glm::vec3& p0,
-                   double v0, const glm::vec3& p1, double v1, const glm::vec3& p2, double v2,
-                   const glm::vec3& p3, double v3) {
+static void evaluateTetra(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
+                          std::vector<vec3>& positions, std::vector<vec3>& normals,
+                          const glm::vec3& p0, double v0, const glm::vec3& p1, double v1,
+                          const glm::vec3& p2, double v2, const glm::vec3& p3, double v3) {
     int index = 0;
     if (v0 > 0) index = index | 1;
     if (v1 > 0) index = index | 2;

@@ -305,7 +305,7 @@ TEST(GLMTest, glmcomp4) {
 }
 
 template <unsigned COLS, unsigned ROWS>
-void test() {
+static void test() {
     using M = typename util::glmtype<int, COLS, ROWS>::type;
     M m;
     auto v = m[0];

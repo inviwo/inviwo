@@ -43,7 +43,7 @@
 
 namespace inviwo {
 
-bool isHistogramUniform(const Histogram1D& histogram) {
+static bool isHistogramUniform(const Histogram1D& histogram) {
     if (histogram.counts.size() <= 1) {
         return true;
     }

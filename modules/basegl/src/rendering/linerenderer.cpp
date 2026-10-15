@@ -63,7 +63,7 @@ namespace algorithm {
 
 namespace detail {
 
-std::vector<MeshShaderCache::Requirement> defaultRequirements(
+static std::vector<MeshShaderCache::Requirement> defaultRequirements(
     const std::vector<MeshShaderCache::Requirement>& additional = {}) {
 
     std::vector<MeshShaderCache::Requirement> requirements = {

@@ -46,7 +46,7 @@
 namespace inviwo {
 
 template <typename T>
-std::vector<T>& getBufferData(Mesh& mesh, size_t ind) {
+static std::vector<T>& getBufferData(Mesh& mesh, size_t ind) {
     if (auto buffer = mesh.getBuffer(ind)) {
         if (buffer->getDataFormat() == DataFormat<T>::get()) {
             auto tbuffer = static_cast<Buffer<vec3>*>(buffer);
@@ -58,7 +58,7 @@ std::vector<T>& getBufferData(Mesh& mesh, size_t ind) {
     throw Exception("Unable to get data container from mesh");
 }
 
-std::vector<uint32_t>& getBufferIndexData(Mesh& mesh, size_t ind) {
+static std::vector<uint32_t>& getBufferIndexData(Mesh& mesh, size_t ind) {
     if (auto buffer = mesh.getIndices(ind)) {
         if (auto ram = buffer->getEditableRAMRepresentation()) {
             return ram->getDataContainer();

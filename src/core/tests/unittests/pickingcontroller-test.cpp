@@ -83,14 +83,14 @@ auto exit = [](std::string state) {
 };
 */
 
-auto moveGuardUp = [](move e) -> bool { return e.dir >= 0; };
-auto moveGuardDown = [](move e) -> bool { return e.dir < 0; };
+static auto moveGuardUp = [](move e) -> bool { return e.dir >= 0; };
+static auto moveGuardDown = [](move e) -> bool { return e.dir < 0; };
 
 struct fsmState {
     int count = 0;
 };
 
-auto moveAction = [](move e, fsmState& s) {
+static auto moveAction = [](move e, fsmState& s) {
     s.count += e.dir;
     // std::cout << "Move   " << e.dir << std::endl;
 };
@@ -191,7 +191,7 @@ struct TestPropagator : EventPropagator {
  * Global index 5 will map to Pick Action 2, id 2;
  */
 
-constexpr auto makeCanvas() {
+static constexpr auto makeCanvas() {
     // clang-format off
     std::array<std::array<size_t, 10>, 10> canvas =
     {{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -208,12 +208,14 @@ constexpr auto makeCanvas() {
     return canvas;
 }
 
-MouseEvent mouseEvent(MouseButton mb, MouseState ms, MouseButtons mbs, uvec2 pos, uvec2 cdim) {
+static MouseEvent mouseEvent(MouseButton mb, MouseState ms, MouseButtons mbs, uvec2 pos,
+                             uvec2 cdim) {
     return MouseEvent{mb, ms, mbs, KeyModifiers(flags::empty), dvec2{pos} / dvec2{cdim}, cdim, 0.5};
 }
 
-TouchEvent touchEvent(TouchState ts, uvec2 pos, uvec2 cdim,
-                      TouchDevice touchDevice = TouchDevice(TouchDevice::DeviceType::TouchPad)) {
+static TouchEvent touchEvent(
+    TouchState ts, uvec2 pos, uvec2 cdim,
+    TouchDevice touchDevice = TouchDevice(TouchDevice::DeviceType::TouchPad)) {
     const auto prevPosNorm = dvec2{pos} / dvec2{cdim};
     const auto pressedPosNormalized = dvec2{pos} / dvec2{cdim};
     const double pressure = 0.5;
@@ -222,12 +224,13 @@ TouchEvent touchEvent(TouchState ts, uvec2 pos, uvec2 cdim,
                       &touchDevice, KeyModifiers(flags::empty));
 }
 
-void testPickingEvent(Event* event, PickingState state, PickingHoverState hoverState,
-                      PickingPressState pressState, PickingPressItem pressItem,
-                      PickingPressItems pressedState, size_t pickedGlobalId, size_t currentGlobalId,
-                      size_t previousGlobalId, size_t pressedGlobalId, size_t pickedLocalId,
-                      size_t currentLocalId, size_t previousLocalId, size_t pressedLocalId,
-                      dvec3 currentNDC, dvec3 previousNDC, dvec3 pressedNDC) {
+static void testPickingEvent(Event* event, PickingState state, PickingHoverState hoverState,
+                             PickingPressState pressState, PickingPressItem pressItem,
+                             PickingPressItems pressedState, size_t pickedGlobalId,
+                             size_t currentGlobalId, size_t previousGlobalId,
+                             size_t pressedGlobalId, size_t pickedLocalId, size_t currentLocalId,
+                             size_t previousLocalId, size_t pressedLocalId, dvec3 currentNDC,
+                             dvec3 previousNDC, dvec3 pressedNDC) {
     ASSERT_TRUE(event);
     auto pe = event->getAs<PickingEvent>();
     ASSERT_TRUE(pe);
@@ -275,13 +278,14 @@ const uvec2 dim{canvas.size(), canvas.size()};
 const auto ndc = [](uvec2 pos) { return dvec3{2.0 * dvec2{pos} / dvec2{10.0} - dvec2{1.0}, 0.5}; };
 
 template <typename PickingController>
-void testPickingEvent(PickingController& controller, uvec2 pos, Event* event, PickingState state,
-                      PickingHoverState hoverState, PickingPressState pressState,
-                      PickingPressItem pressItem, PickingPressItems pressedState,
-                      size_t pickedGlobalId, size_t currentGlobalId, size_t previousGlobalId,
-                      size_t pressedGlobalId, size_t pickedLocalId, size_t currentLocalId,
-                      size_t previousLocalId, size_t pressedLocalId, dvec3 currentNDC,
-                      dvec3 previousNDC, dvec3 pressedNDC) {
+static void testPickingEvent(PickingController& controller, uvec2 pos, Event* event,
+                             PickingState state, PickingHoverState hoverState,
+                             PickingPressState pressState, PickingPressItem pressItem,
+                             PickingPressItems pressedState, size_t pickedGlobalId,
+                             size_t currentGlobalId, size_t previousGlobalId,
+                             size_t pressedGlobalId, size_t pickedLocalId, size_t currentLocalId,
+                             size_t previousLocalId, size_t pressedLocalId, dvec3 currentNDC,
+                             dvec3 previousNDC, dvec3 pressedNDC) {
     TestPropagator tp;
     controller.propagateEvent(event, &tp, canvas[dim.y - pos.y][pos.x]);
     ASSERT_EQ(tp.events.size(), 1);
@@ -493,7 +497,7 @@ TEST(PickingControllerTest, MoveMouseAround) {
     }
 }
 
-void doTouchPress(PickingControllerTouchState& ms) {
+static void doTouchPress(PickingControllerTouchState& ms) {
     {
         const uvec2 pos{1, 1};  // id = 0
         auto event = touchEvent(TouchState::Started, pos, dim);
@@ -526,7 +530,7 @@ void doTouchPress(PickingControllerTouchState& ms) {
     }
 }
 
-void doTouchScreenPress(PickingControllerTouchState& ms) {
+static void doTouchScreenPress(PickingControllerTouchState& ms) {
     const TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {                     // Press
         const uvec2 pos{3, 3};  // id = 1
@@ -627,7 +631,7 @@ TEST(PickingControllerTest, TouchScreenPressRelease) {
     }
 }
 
-void doMousePress(PickingControllerMouseState& ms) {
+static void doMousePress(PickingControllerMouseState& ms) {
     {
         const uvec2 pos{1, 1};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);

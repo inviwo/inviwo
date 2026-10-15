@@ -65,7 +65,7 @@ ItemFilter stringMatch(int column, filters::StringComp op, std::string_view matc
 namespace detail {
 
 template <typename T>
-ItemFilter epsilonComparison(int column, filters::NumberComp op, T value, T epsilon) {
+static ItemFilter epsilonComparison(int column, filters::NumberComp op, T value, T epsilon) {
     const auto createFilter = [v = value, column](auto comp) {
         return ItemFilter{std::function<bool(T)>([v, comp](T value) { return comp(value, v); }),
                           column, false};
@@ -95,7 +95,7 @@ ItemFilter epsilonComparison(int column, filters::NumberComp op, T value, T epsi
 }
 
 template <typename T>
-ItemFilter rangeComparison(int column, T min, T max) {
+static ItemFilter rangeComparison(int column, T min, T max) {
     return ItemFilter{
         std::function<bool(T)>([min, max](T value) { return (value >= min) && (value <= max); }),
         column, false};

@@ -52,8 +52,8 @@ namespace inviwo {
 
 using namespace std::literals;
 
-inline void checkContext(std::string_view error, Canvas::ContextID org,
-                         SourceContext context = std::source_location::current()) {
+static inline void checkContext(std::string_view error, Canvas::ContextID org,
+                                SourceContext context = std::source_location::current()) {
     if constexpr (cfg::assertions) {
         const auto* rc = RenderContext::getPtr();
         const auto* const curr = rc->activeContext();
