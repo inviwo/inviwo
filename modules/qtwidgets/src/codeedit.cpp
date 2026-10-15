@@ -122,7 +122,7 @@ namespace detail {
 
 constexpr int singleIndent = 4;
 
-void addIndent(QTextCursor cursor) {
+static void addIndent(QTextCursor cursor) {
     if (cursor.hasSelection()) {
         const int start = cursor.position();
         const int end = cursor.anchor();
@@ -155,7 +155,7 @@ void addIndent(QTextCursor cursor) {
     }
 }
 
-int spacesToRemove(const QString& str) {
+static int spacesToRemove(const QString& str) {
     if (str.isEmpty()) return 0;
     int spaces = 0;
     while (str[spaces] == ' ' && spaces < singleIndent) {
@@ -164,7 +164,7 @@ int spacesToRemove(const QString& str) {
     return spaces;
 }
 
-void removeIndent(QTextCursor cursor, QPlainTextEdit* parent) {
+static void removeIndent(QTextCursor cursor, QPlainTextEdit* parent) {
     if (cursor.hasSelection()) {
         const int start = cursor.position();
         const int end = cursor.anchor();

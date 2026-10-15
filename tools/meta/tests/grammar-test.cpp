@@ -44,7 +44,7 @@ template <typename... Rules>
 struct exact : p::seq<p::bof, Rules..., p::eof> {};
 
 template <typename Rule>
-bool test(const std::string& input) {
+static bool test(const std::string& input) {
     std::string id;
     return p::parse_tree::parse<exact<Rule>, cmake::selector, cmake::action>(
                p::string_input<>(input, ""), id) != nullptr;
@@ -130,7 +130,7 @@ endif()
 )"));
 }
 
-void print_node(const p::parse_tree::node& n, const std::string& s = "") {
+static void print_node(const p::parse_tree::node& n, const std::string& s = "") {
     // detect the root node:
     if (n.is_root()) {
         std::cout << "ROOT" << std::endl;
@@ -153,7 +153,7 @@ void print_node(const p::parse_tree::node& n, const std::string& s = "") {
     }
 }
 
-std::ostream& print(std::ostream& os, const p::parse_tree::node& n) {
+static std::ostream& print(std::ostream& os, const p::parse_tree::node& n) {
 
     if (n.children.empty() && n.has_content()) os << n.string_view();
     for (auto& up : n.children) {
