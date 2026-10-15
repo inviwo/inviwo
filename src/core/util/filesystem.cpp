@@ -53,7 +53,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <direct.h>
 #include <Shlobj.h>
 #include <psapi.h>
-#elif defined(__APPLE__)
+#elifdef __APPLE__
 #include <CoreServices/CoreServices.h>
 #include <libproc.h>  // proc_pidpath
 #include <unistd.h>
@@ -118,7 +118,7 @@ void FileHandle::reset(FILE* file) noexcept {
 }
 
 FILE* fopen(const fs::path& filename, const char* mode) {
-#if defined(_WIN32)
+#ifdef _WIN32
     return _wfopen(filename.c_str(), util::toWstring(mode).c_str());
 #else
     return ::fopen(filename.c_str(), mode);
@@ -269,7 +269,7 @@ fs::path getInviwoBinDir() {
 #endif
 }
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
 
 static std::string expandTilde(const char* str) {
     if (!str) return {};
@@ -299,11 +299,11 @@ fs::path getInviwoUserSettingsPath() {
         throw Exception("Failed to get settings folder");
     }
 
-#elif defined(__unix__)
+#elifdef __unix__
     ss << std::getenv("HOME");
     ss << "/.inviwo";
 
-#elif defined(__APPLE__)
+#elifdef __APPLE__
     char path[PATH_MAX];
     auto state = sysdir_start_search_path_enumeration(SYSDIR_DIRECTORY_APPLICATION_SUPPORT,
                                                       SYSDIR_DOMAIN_MASK_USER);
@@ -629,7 +629,7 @@ std::optional<fs::path> getParentFolderWithChildren(const fs::path& path,
 const fs::path& findBasePath() {
     static const fs::path basePath = []() {
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
         // We might be in a bundle
         // the executable will be in
         //    Inviwo.app/Contents/MacOS/Inviwo
@@ -861,7 +861,7 @@ std::vector<fs::path> getLoadedLibraries() {
     return res;
 }
 
-#elif defined(__APPLE__)
+#elifdef __APPLE__
 
 std::vector<fs::path> getLoadedLibraries() {
     std::vector<fs::path> res;

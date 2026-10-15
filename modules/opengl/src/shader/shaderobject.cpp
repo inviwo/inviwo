@@ -526,7 +526,7 @@ void ShaderObject::addDefines(std::ostringstream& source) {
 
     // Need to be able to detect platform in the fragment shader since `gl_FrontFacing`
     // is not working on MacOS and requires a custom solution
-#if defined(__APPLE__)
+#ifdef __APPLE__
     source << "#define __APPLE__\n";
     lnr_.addLine("Header", 0);
 #endif

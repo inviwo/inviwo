@@ -219,7 +219,7 @@ void CanvasQOpenGLWidget::update() {
 }
 
 void CanvasQOpenGLWidget::paintGL() {
-#if defined(__APPLE__)
+#ifdef __APPLE__
 #define GL_SILENCE_DEPRECATION
     if (auto err = glGetError(); err != GL_NO_ERROR) {
         // The call the paintGL started to generate a GL_INVALID_ENUM error in some cases,
