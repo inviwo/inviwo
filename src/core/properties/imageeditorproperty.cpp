@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-ImageLabel::ImageLabel() : name_(""), startPoint_(0), rectSize_(0) {}
+ImageLabel::ImageLabel() : startPoint_(0), rectSize_(0) {}
 
 ImageLabel::ImageLabel(vec2 startPoint, vec2 rectSize, std::string name)
     : name_(name), startPoint_(startPoint), rectSize_(rectSize) {}
