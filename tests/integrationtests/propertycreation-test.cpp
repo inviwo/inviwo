@@ -64,7 +64,7 @@ class PropertyCreationTests : public ::testing::TestWithParam<std::string> {
 protected:
     PropertyCreationTests() : factory_{InviwoApplication::getPtr()->getPropertyFactory()} {}
 
-    virtual ~PropertyCreationTests() = default;
+    ~PropertyCreationTests() = default;
 
     virtual void SetUp() override {}
     virtual void TearDown() override {}
