@@ -243,7 +243,7 @@ void util::changePropertyType(Deserializer& d,
                               std::vector<std::pair<const Property*, std::string>> rules) {
     NodeVersionConverter vc([&rules](TxElement* node) {
         bool didChanges = false;
-        for (const auto rule : rules) {
+        for (const auto& rule : rules) {
             TxElement* p = xml::getElement(
                 node, fmt::format("Properties/Property&type={}&identifier={}",
                                   rule.first->getClassIdentifier(), rule.first->getIdentifier()));
