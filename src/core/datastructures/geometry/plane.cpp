@@ -119,6 +119,6 @@ std::optional<float> Plane::getIntersectionWeight(const vec3& start, const vec3&
     return std::nullopt;
 }
 
-std::string Plane::getDataInfo() const { return "Plane"; }
+std::string_view Plane::getDataInfo() const { return "Plane"; }
 
 }  // namespace inviwo
