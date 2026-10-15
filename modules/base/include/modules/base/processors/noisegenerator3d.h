@@ -79,7 +79,6 @@ private:
     BoolProperty useSameSeed_;
     IntProperty seed_;
 
-private:
     std::random_device rd_;
     std::mt19937 mt_;
 };

@@ -46,7 +46,6 @@ class DataFrame;
  */
 class IVW_MODULE_DATAFRAME_API CSVWriter : public DataWriterType<DataFrame> {
 public:
-public:
     CSVWriter();
     CSVWriter(const CSVWriter&) = default;
     CSVWriter& operator=(const CSVWriter&) = default;
