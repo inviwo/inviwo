@@ -513,9 +513,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
     std::vector<detail::InterpolateFunctor> interpolateFunctors;
     std::shared_ptr<BufferRAMPrecision<vec3, BufferTarget::Data>> posBuffer;
 
-    for (const auto& item : mesh.getBuffers()) {
-        const auto& bufferType = item.first;
-        const auto& inBuffer = item.second;
+    for (const auto& [bufferType, inBuffer] : mesh.getBuffers()) {
         const auto functor =
             inBuffer->getRepresentation<BufferRAM>()->dispatch<detail::InterpolateFunctor>(
                 [&clippedMesh, bufferType, &posBuffer](auto inRam) -> detail::InterpolateFunctor {

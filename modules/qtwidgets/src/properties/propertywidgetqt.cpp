@@ -287,9 +287,7 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
         callbackMapPerModule[moduleName].push_back(moduleAction.get());
     }
 
-    for (const auto& elem : callbackMapPerModule) {
-        const auto& moduleName = elem.first;
-        const auto& actions = elem.second;
+    for (const auto& [moduleName, actions] : callbackMapPerModule) {
         if (actions.empty()) continue;
         auto submenu = menu->addMenu(QString::fromStdString(moduleName));
         for (const auto& mAction : actions) {
