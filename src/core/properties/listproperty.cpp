@@ -190,7 +190,7 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
         }
 
         CompositeProperty::addProperty(property, true);
-        invalidate(Property::getInvalidationLevel());
+        invalidate(CompositeProperty::getInvalidationLevel());
         return property;
     } else {
         log::error("Maximum number of list entries reached ({})", this->getDisplayName());
@@ -210,7 +210,7 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
     if ((maxNumElements_ == size_t{0}) || (size() + 1 < maxNumElements_)) {
         property->setSerializationMode(PropertySerializationMode::All);
         CompositeProperty::insertProperty(index, property, owner);
-        invalidate(Property::getInvalidationLevel());
+        invalidate(CompositeProperty::getInvalidationLevel());
     } else {
         log::error("Maximum number of list entries reached ({})", this->getDisplayName());
     }
@@ -218,13 +218,13 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
 
 Property* ListProperty::removeProperty(std::vector<Property*>::iterator it) {
     auto result = CompositeProperty::removeProperty(it);
-    invalidate(Property::getInvalidationLevel());
+    invalidate(CompositeProperty::getInvalidationLevel());
     return result;
 }
 
 bool ListProperty::move(Property* property, size_t newIndex) {
     const auto result = CompositeProperty::move(property, newIndex);
-    invalidate(Property::getInvalidationLevel());
+    invalidate(CompositeProperty::getInvalidationLevel());
     return result;
 }
 
