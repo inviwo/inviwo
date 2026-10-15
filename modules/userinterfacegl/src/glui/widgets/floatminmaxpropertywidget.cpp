@@ -82,7 +82,7 @@ FloatMinMaxPropertyWidget::FloatMinMaxPropertyWidget(FloatMinMaxProperty& proper
                 {
                     int moveby = calcNewValue(getPreviousValue().x) - getPreviousValue().x;
                     // ensure not to move middle part further than min/max values
-                    if (moveby > 0.0f) {
+                    if (moveby > 0) {
                         moveby = std::min(moveby, getMaxValue() - getPreviousValue().y);
                     } else {
                         moveby = -std::min(-moveby, getPreviousValue().x - getMinValue());

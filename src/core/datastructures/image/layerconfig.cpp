@@ -91,12 +91,12 @@ LayerReprConfig LayerConfig::reprConfig() const {
             .wrapping = wrapping};
 }
 
-glm::mat4 LayerConfig::aspectPreservingModelMatrixFromDimensions(size2_t dimensions) {
-    glm::mat4 model{1};
+glm::dmat4 LayerConfig::aspectPreservingModelMatrixFromDimensions(size2_t dimensions) {
+    glm::dmat4 model{1.0};
     if (dimensions.x < dimensions.y) {
-        model[0][0] = static_cast<float>(dimensions.x) / static_cast<float>(dimensions.y);
+        model[0][0] = static_cast<double>(dimensions.x) / static_cast<double>(dimensions.y);
     } else {
-        model[1][1] = static_cast<float>(dimensions.y) / static_cast<float>(dimensions.x);
+        model[1][1] = static_cast<double>(dimensions.y) / static_cast<double>(dimensions.x);
     }
     return model;
 }

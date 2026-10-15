@@ -68,8 +68,8 @@ struct IVW_CORE_API VolumeConfig {
     std::optional<Axis> valueAxis = std::nullopt;
     std::optional<glm::dvec2> dataRange = std::nullopt;
     std::optional<glm::dvec2> valueRange = std::nullopt;
-    std::optional<glm::mat4> model = std::nullopt;
-    std::optional<glm::mat4> world = std::nullopt;
+    std::optional<glm::dmat4> model = std::nullopt;
+    std::optional<glm::dmat4> world = std::nullopt;
 
     static constexpr auto defaultDimensions = size3_t(128, 128, 128);
     static constexpr const DataFormatId defaultFormatId = DataUInt8::id();
@@ -82,8 +82,8 @@ struct IVW_CORE_API VolumeConfig {
     static inline const auto defaultValueAxis = Axis{};
     static constexpr glm::dvec2 defaultDataRange(DataFormatId formatId = defaultFormatId);
     static constexpr glm::dvec2 defaultValueRange(DataFormatId formatId = defaultFormatId);
-    static constexpr auto defaultModel = glm::mat4{1.0f};
-    static constexpr auto defaultWorld = glm::mat4{1.0f};
+    static constexpr auto defaultModel = glm::dmat4{1.0};
+    static constexpr auto defaultWorld = glm::dmat4{1.0};
 
     [[nodiscard]] DataMapper dataMap() const;
     [[nodiscard]] DataMapper dataMap(const DataMapper& defaultMapper) const;
