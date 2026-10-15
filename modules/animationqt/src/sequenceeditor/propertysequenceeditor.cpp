@@ -197,13 +197,11 @@ public:
     }
 
     virtual ~PropertyEditorWidget() {
-        if (propertyWidget_) {
-            // We need to manually remove and delete the propertyWidget_ since the destructor of
-            // propertyWidget_ tries to use the property. If we do not remove it, it will be
-            // destroyed in QWidgets destructor which is called after this destructor, hence, the
-            // property has been destroyed.
-            delete propertyWidget_;
-        }
+        // We need to manually remove and delete the propertyWidget_ since the destructor of
+        // propertyWidget_ tries to use the property. If we do not remove it, it will be
+        // destroyed in QWidgets destructor which is called after this destructor, hence, the
+        // property has been destroyed.
+        delete propertyWidget_;
     }
 
     static void setEasingComboBox(QComboBox* comboBox, std::optional<EasingType> easing) {
