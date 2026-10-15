@@ -56,7 +56,7 @@ DataMapper VolumeConfig::dataMap(const DataMapper& defaultMapper) const {
 VolumeConfig& VolumeConfig::updateFrom(const VolumeConfig& config) {
     static constexpr auto update = [](auto& dest, const auto& src) {
         if (src) {
-            dest = src.value();
+            dest = src;
         }
     };
     update(dimensions, config.dimensions);
