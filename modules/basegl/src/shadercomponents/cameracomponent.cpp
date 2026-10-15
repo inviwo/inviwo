@@ -46,7 +46,7 @@ class TextureUnitContainer;
 
 CameraComponent::CameraComponent(std::string_view name,
                                  std::function<std::optional<dmat4>()> boundingBox)
-    : ShaderComponent(), camera(std::string(name), "Camera", boundingBox) {}
+    : ShaderComponent(), camera(name, "Camera", boundingBox) {}
 
 std::string_view CameraComponent::getName() const { return camera.getIdentifier(); }
 
