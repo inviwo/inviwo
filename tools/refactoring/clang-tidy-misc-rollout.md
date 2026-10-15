@@ -2,10 +2,14 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 39 checks done so
-far (34 + a batch of 5: `readability-string-compare`,
+below for current progress and the exact resume point). 43 checks done so
+far (34 + a batch of 9: `readability-string-compare`,
 `performance-move-const-arg`, `readability-redundant-smartptr-get`,
-`readability-simplify-boolean-expr`, `modernize-avoid-bind`), ~65 remaining.
+`readability-simplify-boolean-expr`, `modernize-avoid-bind`,
+`readability-use-concise-preprocessor-directives`,
+`modernize-use-string-view`, `modernize-use-emplace`,
+`performance-avoid-endl`), ~61 remaining (plus 3 permanently-skipped false
+positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
@@ -137,7 +141,10 @@ plus: `readability-delete-null-pointer`, `modernize-make-unique`,
 `bugprone-parent-virtual-call`, `readability-use-std-min-max`,
 `cppcoreguidelines-virtual-class-destructor`, `readability-string-compare`,
 `performance-move-const-arg`, `readability-redundant-smartptr-get`,
-`readability-simplify-boolean-expr`, `modernize-avoid-bind`.
+`readability-simplify-boolean-expr`, `modernize-avoid-bind`,
+`readability-use-concise-preprocessor-directives`,
+`modernize-use-string-view`, `modernize-use-emplace`,
+`performance-avoid-endl`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
@@ -199,6 +206,28 @@ edit was broken or dangerous and had to be corrected manually)
    that does `return std::invoke(f, args...);` — this deduces to the right
    return type (including `void`) for every instantiation, so one body
    covers both cases.
+4. **`modernize-use-string-view` broke a `std::visit` uniform-return-type
+   requirement and several explicit-constructor call sites.** Changing only
+   some overrides of a virtual-ish/CRTP `classIdentifier()`/`api()` method
+   family to return `std::string_view` while siblings still return a
+   *computed* `std::string` breaks call sites that require every
+   alternative to agree on one type (`std::visit`) or that pass the result
+   to an `explicit SomeType(const std::string&)` constructor (same
+   non-deduced/explicit-constructor root cause documented earlier in this
+   rollout). Reverted 7 of the 12 locations the autofix touched — see the
+   `modernize-use-string-view` commit message for the exact list
+   (`tools/meta`'s `InviwoConf`/`QtEditorConf::api()`, and 5
+   `classIdentifier()` overrides in `modules/animationqt`).
+5. **`performance-avoid-endl` would have silently removed a deliberate
+   flush.** `FileLogger::log()` writes one entry per log message straight
+   to an on-disk `std::ofstream` meant to survive a crash (this project's
+   CI explicitly inspects this kind of log / attaches a debugger when the
+   app fails to launch cleanly — see "CI / GitHub Actions" in
+   `copilot-instructions.md`). Converting its `std::endl` to `'\n'` would
+   mean the last few log lines before an abnormal exit might never reach
+   disk. Reverted that one hunk (kept the check's other, purely
+   stream/stdout-based conversions, including two other one-time,
+   non-crash-relevant `std::endl`s in the same file's constructor).
 
 ### `bugprone-parent-virtual-call` — the one check so far that is a real
 behavior change, not just style
@@ -228,13 +257,13 @@ rollout.
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
    **68 fixable checks remaining** (out of 98 total fixable checks found by
-   the dry run); after the 5 checks done in this batch (see DONE_CHECKS),
-   next up by size: `readability-use-concise-preprocessor-directives`,
-   `modernize-use-string-view`, `modernize-use-emplace`,
-   `performance-avoid-endl`, `readability-redundant-access-specifiers`,
+   the dry run); after the 9 checks done in this batch (see DONE_CHECKS),
+   next up by size: `readability-redundant-access-specifiers`,
    `readability-redundant-string-init`, `readability-redundant-nested-if`,
    `modernize-loop-convert`, `modernize-use-noexcept`,
-   `modernize-use-std-numbers`, ...
+   `modernize-use-std-numbers`, `cppcoreguidelines-init-variables`,
+   `readability-container-contains`, `google-upgrade-googletest-case`,
+   `performance-use-std-move`, ...
    (`google-readability-todo` was evaluated and skipped — see "Reverted as
    false positives" above — do not reapply it.)
 3. For each check: `./tools/refactoring/clang-tidy-fix-check.sh <check>`,
