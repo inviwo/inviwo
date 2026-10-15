@@ -267,7 +267,7 @@ void PathLinesDeprecated::process() {
 
             indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
 
-            vertices.push_back({pos, glm::normalize(v), pos, c});
+            vertices.emplace_back(pos, glm::normalize(v), pos, c);
 
             position++;
             velocity++;

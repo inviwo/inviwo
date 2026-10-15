@@ -67,7 +67,7 @@ ImageEditorProperty::ImageEditorProperty(std::string_view identifier, std::strin
 void ImageEditorProperty::setDimensions(ivec2 imgSize) { dimensions_ = imgSize; }
 
 void ImageEditorProperty::addLabel(vec2 startPoint, vec2 rectSize, std::string name) {
-    labels_.push_back(ImageLabel(startPoint, rectSize, name));
+    labels_.emplace_back(startPoint, rectSize, name);
 }
 
 const std::vector<ImageLabel>& ImageEditorProperty::getLabels() const { return labels_; }
