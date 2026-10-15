@@ -233,7 +233,7 @@ NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
     if (!magic.empty() && magic.back() == '\r') {
         magic.pop_back();
     }
-    if (magic.substr(0, 4) != "NRRD") {
+    if (!magic.starts_with("NRRD")) {
         throw DataReaderException(SourceContext{}, "Not a valid NRRD file (bad magic): {}",
                                   filePath);
     }

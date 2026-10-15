@@ -142,10 +142,9 @@ RowFilter emptyLines(bool filterOnHeader) {
 }
 
 RowFilter rowBegin(std::string_view begin, bool filterOnHeader) {
-    return RowFilter{[str = std::string{begin}](std::string_view row, size_t) {
-                         return row.substr(0, str.size()) == str;
-                     },
-                     filterOnHeader};
+    return RowFilter{
+        [str = std::string{begin}](std::string_view row, size_t) { return row.starts_with(str); },
+        filterOnHeader};
 }
 
 RowFilter lineRange(int min, int max, bool filterOnHeader) {
