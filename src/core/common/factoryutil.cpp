@@ -283,7 +283,7 @@ ResourceManager* getResourceManager() {
     if (!InviwoApplication::isInitialized()) return nullptr;
     return getResourceManager(InviwoApplication::getPtr());
 }
-ResourceManager* getResourceManager(InviwoApplication* app) {
+ResourceManager* getResourceManager(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getResourceManager();
 }

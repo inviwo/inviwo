@@ -61,7 +61,7 @@ FileObserver::~FileObserver() {
     if (fileSystemObserver_) {
         fileSystemObserver_->unRegisterFileObserver(this);
         const std::scoped_lock lock{mutex_};
-        for (const auto file : observedFiles_) {
+        for (const auto& file : observedFiles_) {
             fileSystemObserver_->stopFileObservation(file, this);
         }
     }

@@ -188,10 +188,11 @@ std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath)
     } else {
         inviwoModulePos = decoration1.size();
     }
-    const auto len = fileNameWithoutExtension.size() - inviwoModulePos;
 #ifdef IVW_DEBUG
     // Remove debug ending "d" at end of file name
-    len -= 1;
+    const auto len = fileNameWithoutExtension.size() - inviwoModulePos - 1;
+#else
+    const auto len = fileNameWithoutExtension.size() - inviwoModulePos;
 #endif
     auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
     return moduleName;

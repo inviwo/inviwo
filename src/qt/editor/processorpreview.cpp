@@ -74,7 +74,7 @@ QImage utilqt::generatePreview(Processor& processor) {
         scene->addItem(item);
 
         const double yshift = 20.0;
-        double offset = processor.getInports().size() * yshift;
+        double offset = static_cast<double>(processor.getInports().size()) * yshift;
 
         for (auto inport : processor.getInports()) {
             QFont classFont("Segoe", 8, QFont::Bold, true);
@@ -100,7 +100,7 @@ QImage utilqt::generatePreview(Processor& processor) {
             offset -= yshift;
         }
 
-        offset = processor.getOutports().size() * yshift;
+        offset = static_cast<double>(processor.getOutports().size()) * yshift;
         for (auto outport : processor.getOutports()) {
             QFont classFont("Segoe", 8, QFont::Bold, true);
             classFont.setPixelSize(14);

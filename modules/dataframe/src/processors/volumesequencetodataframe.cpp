@@ -148,7 +148,7 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
     const auto threshold = threshold_.get();
 
     if (omitOutliers) {
-        for (const auto vol : volumeSequence) {
+        for (const auto& vol : volumeSequence) {
             if (vol->getDataFormat()->getNumericType() != NumericType::Float) continue;
             if (vol->getDataFormat()->getComponents() != 1)
                 log::warn("This volume is omitted because it has more than one channel.");

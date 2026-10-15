@@ -117,11 +117,11 @@ QSizeF LinkDialogPropertyGraphicsItem::sizeHint(Qt::SizeHint which,
     switch (which) {
         case Qt::MinimumSize:
         case Qt::MaximumSize:
-        case Qt::PreferredSize:  return rect().size() + QSize(12, 12);
+        case Qt::PreferredSize: return rect().size() + QSize(12, 12);
 
         case Qt::MinimumDescent:
         case Qt::NSizeHints:
-        default:                 break;
+        default: break;
     }
 
     return constraint;
@@ -205,7 +205,8 @@ QPointF LinkDialogPropertyGraphicsItem::calculateArrowCenterLocal(size_t curPort
     size_t arrowCount = getConnectionGraphicsItemCount();
     if (arrowCount == 0) arrowCount++;
 
-    return top + (bottom - top) * (curPort + 1.0) / (arrowCount + 1.0);
+    return top + (bottom - top) * (static_cast<double>(curPort) + 1.0) /
+                     (static_cast<double>(arrowCount) + 1.0);
 }
 
 QPointF LinkDialogPropertyGraphicsItem::calculateArrowCenter(size_t curPort) const {

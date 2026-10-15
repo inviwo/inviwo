@@ -103,7 +103,8 @@ void DataFrameColumnToColorVector::process() {
                     const double range = (maxV - minV);
 
                     for (const auto& v : vec) {
-                        colors->push_back(tf_.get().sample((v - minV) / range));
+                        colors->push_back(
+                            tf_.get().sample((static_cast<double>(v) - minV) / range));
                     }
 
                     return colors;

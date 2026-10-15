@@ -40,7 +40,7 @@ namespace inviwo {
 
 namespace animation {
 
-constexpr int trackHeight = 31;
+constexpr double trackHeight = 31.0;
 constexpr int trackHeightNudge = 2;
 constexpr int timelineHeight = 25;
 constexpr int keyframeWidth = 15;

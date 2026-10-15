@@ -280,11 +280,12 @@ std::shared_ptr<VolumeSequence> readNiftiFile(const std::filesystem::path& local
     // Compute the extent of the entire data set
     // Nifti supplies a matrix to compute the center position of the voxel.
     // Here we compute the start basis vectors spanning the data set
-    basisAndOffset[0] = niftiIndexToModel * vec4(dim[0] - 0.5f, 0.f, 0.f, 1.f) -
+    const auto fDim = vec3{dim};
+    basisAndOffset[0] = niftiIndexToModel * vec4(fDim[0] - 0.5f, 0.f, 0.f, 1.f) -
                         niftiIndexToModel * vec4(-0.5f, 0.f, 0.f, 1.f);
-    basisAndOffset[1] = niftiIndexToModel * vec4(0.f, dim[1] - 0.5f, 0.f, 1.f) -
+    basisAndOffset[1] = niftiIndexToModel * vec4(0.f, fDim[1] - 0.5f, 0.f, 1.f) -
                         niftiIndexToModel * vec4(0.f, -0.5f, 0.f, 1.f);
-    basisAndOffset[2] = niftiIndexToModel * vec4(0.f, 0.f, dim[2] - 0.5f, 1.f) -
+    basisAndOffset[2] = niftiIndexToModel * vec4(0.f, 0.f, fDim[2] - 0.5f, 1.f) -
                         niftiIndexToModel * vec4(0.f, 0.f, -0.5f, 1.f);
     basisAndOffset[3] = niftiIndexToModel * vec4(-0.5f, -0.5f, -0.5f, 1.f);
 

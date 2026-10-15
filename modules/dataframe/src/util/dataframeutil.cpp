@@ -119,7 +119,7 @@ std::shared_ptr<DataFrame> appendColumns(const DataFrame& left, const DataFrame&
 
     auto dataframe = std::make_shared<DataFrame>(left);
 
-    for (const auto srcCol : right) {
+    for (const auto& srcCol : right) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (const auto col = left.getColumn(srcCol->getHeader()); col && ignoreDuplicates) {
             continue;
@@ -130,7 +130,7 @@ std::shared_ptr<DataFrame> appendColumns(const DataFrame& left, const DataFrame&
 
     if (fillMissingRows) {
         const size_t numRows = dataframe->getNumberOfRows();
-        for (const auto col : *dataframe) {
+        for (const auto& col : *dataframe) {
             if (col->getSize() != numRows) {
                 col->getBuffer()->getEditableRepresentation<BufferRAM>()->dispatch<void>(
                     [numRows, col](auto typedBuf) {
@@ -162,7 +162,7 @@ std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bot
 
     auto dataframe = std::make_shared<DataFrame>(top);
     if (matchByName) {
-        for (const auto srcCol : bottom) {
+        for (const auto& srcCol : bottom) {
             if (const auto col = dataframe->getColumn(srcCol->getHeader())) {
                 col->append(*srcCol);
             } else {
@@ -312,7 +312,7 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
 
 void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 const std::vector<std::string>& keyColumns, bool skipKeyCol) {
-    for (const auto srcCol : srcDataFrame) {
+    for (const auto& srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
@@ -323,7 +323,7 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
 void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 const std::vector<std::uint32_t>& rows, const std::vector<std::string>& keyColumns,
                 bool skipKeyCol) {
-    for (const auto srcCol : srcDataFrame) {
+    for (const auto& srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
@@ -334,7 +334,7 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
 void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 const std::vector<std::optional<std::uint32_t>>& rows,
                 const std::vector<std::string>& keyColumns, bool skipKeyCol) {
-    for (const auto srcCol : srcDataFrame) {
+    for (const auto& srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
@@ -511,13 +511,13 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
     {
         std::map<std::string, const DataFormatBase*> columnType;
 
-        for (const auto col : first) {
+        for (const auto& col : first) {
             if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
             columnType[col->getHeader()] = col->getBuffer()->getDataFormat();
         }
 
         for (auto df = dataFrames.begin() + 1; df != dataFrames.end(); ++df) {
-            for (const auto col : *df->get()) {
+            for (const auto& col : *df->get()) {
                 if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
                 const auto it = columnType.find(col->getHeader());
                 if (it == columnType.end()) {

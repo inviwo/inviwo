@@ -246,7 +246,7 @@ IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaF
  * Resource Manager
  */
 IVW_CORE_API ResourceManager* getResourceManager();
-IVW_CORE_API ResourceManager* getResourceManager(InviwoApplication* app);
+IVW_CORE_API ResourceManager* getResourceManager(const InviwoApplication* app);
 IVW_CORE_API ResourceManager* getResourceManager(Processor* processor);
 IVW_CORE_API ResourceManager* getResourceManager(Property* property);
 ///@}

@@ -224,9 +224,9 @@ QVariant TreeItem::data(int column, int role) const {
     } else {
         switch (role) {
             case Qt::DisplayRole:
-            case Qt::ToolTipRole:                                  return caption_;
+            case Qt::ToolTipRole: return caption_;
             case static_cast<int>(WorkspaceTreeModel::Role::Type): return static_cast<int>(type_);
-            default:                                               return {};
+            default: return {};
         }
     }
 }  // namespace inviwo
@@ -492,11 +492,11 @@ void WorkspaceTreeModel::updateModules(std::string_view category, ModulePath pat
 
         auto section = std::make_unique<TreeItem>(inviwoModule.getIdentifier(), Type::SubSection);
         if (recursive) {
-            for (const auto filePath : filesystem::getDirectoryContentsRecursively(path)) {
+            for (const auto& filePath : filesystem::getDirectoryContentsRecursively(path)) {
                 addFile(path / filePath, *section);
             }
         } else {
-            for (const auto filePath : filesystem::getDirectoryContents(path)) {
+            for (const auto& filePath : filesystem::getDirectoryContents(path)) {
                 addFile(path / filePath, *section);
             }
         }

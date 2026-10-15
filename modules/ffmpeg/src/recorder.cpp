@@ -245,7 +245,7 @@ void Recorder::run() {
         const auto end = clock::now();
         const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         log::info("Exported frames: {} time: {}ms, fps: {}", frameCount, ms.count(),
-                  static_cast<double>(frameCount) / ms.count() * 1000);
+                  static_cast<double>(frameCount) / static_cast<double>(ms.count() * 1000));
 
     } catch (...) {
         const std::unique_lock<std::mutex> lock(mutex_);
