@@ -57,7 +57,7 @@ struct CreateColumn {
         EXPECT_EQ(expectedFormat->getId(), col.getBuffer()->getDataFormat()->getId())
             << "Dataformat mismatch";
 
-        const std::string expectedHeader = fmt::format("{}Col", classname).c_str();
+        const std::string expectedHeader = fmt::format("{}Col", classname);
         EXPECT_EQ(expectedHeader, col.getHeader()) << "Column header does not match";
     }
 };
