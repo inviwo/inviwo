@@ -2,14 +2,14 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 43 checks done so
-far (34 + a batch of 9: `readability-string-compare`,
+below for current progress and the exact resume point). 44 checks done so
+far (34 + a batch of 10: `readability-string-compare`,
 `performance-move-const-arg`, `readability-redundant-smartptr-get`,
 `readability-simplify-boolean-expr`, `modernize-avoid-bind`,
 `readability-use-concise-preprocessor-directives`,
 `modernize-use-string-view`, `modernize-use-emplace`,
-`performance-avoid-endl`), ~61 remaining (plus 3 permanently-skipped false
-positives, see below).
+`performance-avoid-endl`, `readability-redundant-access-specifiers`), ~60
+remaining (plus 3 permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
@@ -144,7 +144,7 @@ plus: `readability-delete-null-pointer`, `modernize-make-unique`,
 `readability-simplify-boolean-expr`, `modernize-avoid-bind`,
 `readability-use-concise-preprocessor-directives`,
 `modernize-use-string-view`, `modernize-use-emplace`,
-`performance-avoid-endl`.
+`performance-avoid-endl`, `readability-redundant-access-specifiers`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
@@ -170,6 +170,17 @@ checks again without manual review)**:
   (duplicate declaration in the same scope) and defeats the test's actual
   intent. Reverted; left un-silenced (no `NOLINT` added) in case a future,
   smarter instance of this check offers a better per-occurrence fix.
+- `readability-redundant-access-specifiers` has a Qt `slots`-specific
+  false-positive category, hit on 4 files (not full-check revert, just
+  those hunks — see the commit message for the exact list): it treats
+  `"public slots:"`/`"protected slots:"` as the same accessibility as a
+  plain `"public:"`/`"protected:"` (true for pure C++ access control), but
+  Qt's moc specifically looks for the `slots:` keyword to decide which
+  methods get registered as invocable slots in the generated meta-object —
+  dropping or merging a `slots:` section changes that registration even
+  though the check reports zero accessibility change. Watch for this
+  pattern in any future check that manipulates access specifiers in
+  `Q_OBJECT` classes.
 
 ### Two notable `-fix` bugs hit while applying this batch (not false
 positives — the underlying warning was correct, but clang-tidy's suggested
@@ -257,13 +268,12 @@ rollout.
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
    **68 fixable checks remaining** (out of 98 total fixable checks found by
-   the dry run); after the 9 checks done in this batch (see DONE_CHECKS),
-   next up by size: `readability-redundant-access-specifiers`,
-   `readability-redundant-string-init`, `readability-redundant-nested-if`,
-   `modernize-loop-convert`, `modernize-use-noexcept`,
-   `modernize-use-std-numbers`, `cppcoreguidelines-init-variables`,
-   `readability-container-contains`, `google-upgrade-googletest-case`,
-   `performance-use-std-move`, ...
+   the dry run); after the 10 checks done in this batch (see DONE_CHECKS),
+   next up by size: `readability-redundant-string-init`,
+   `readability-redundant-nested-if`, `modernize-loop-convert`,
+   `modernize-use-noexcept`, `modernize-use-std-numbers`,
+   `cppcoreguidelines-init-variables`, `readability-container-contains`,
+   `google-upgrade-googletest-case`, `performance-use-std-move`, ...
    (`google-readability-todo` was evaluated and skipped — see "Reverted as
    false positives" above — do not reapply it.)
 3. For each check: `./tools/refactoring/clang-tidy-fix-check.sh <check>`,
