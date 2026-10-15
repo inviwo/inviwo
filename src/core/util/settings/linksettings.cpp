@@ -59,7 +59,7 @@ LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
 }
 
 void LinkSettings::onRegister(PropertyFactoryObject* p) {
-    const auto property = p->getClassIdentifier();
+    const auto& property = p->getClassIdentifier();
     registerProperty(property);
 }
 
