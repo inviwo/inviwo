@@ -118,8 +118,7 @@ void exposeWorkspaceManager(const pybind11::module& m) {
         .def(
             "onModified",
             [](WorkspaceManager* wm, std::function<void(bool)> callback) {
-                return WorkspaceManagerOnModifiedCallbackHolder{
-                    wm->onModified(std::move(callback))};
+                return WorkspaceManagerOnModifiedCallbackHolder{wm->onModified(callback)};
             },
             py::arg("callback"),
             "Register a callback invoked whenever the modified state changes (called every "
@@ -127,16 +126,14 @@ void exposeWorkspaceManager(const pybind11::module& m) {
         .def(
             "onModifiedChanged",
             [](WorkspaceManager* wm, std::function<void(bool)> callback) {
-                return WorkspaceManagerOnModifiedCallbackHolder{
-                    wm->onModifiedChanged(std::move(callback))};
+                return WorkspaceManagerOnModifiedCallbackHolder{wm->onModifiedChanged(callback)};
             },
             py::arg("callback"),
             "Register a callback invoked only when the modified state transitions.")
         .def(
             "onClear",
             [](WorkspaceManager* wm, std::function<void()> callback) {
-                return WorkspaceManagerOnClearChangedCallbackHolder{
-                    wm->onClear(std::move(callback))};
+                return WorkspaceManagerOnClearChangedCallbackHolder{wm->onClear(callback)};
             },
             py::arg("callback"), "Register a callback invoked when the workspace is cleared.")
         .def(

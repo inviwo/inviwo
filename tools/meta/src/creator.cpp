@@ -63,7 +63,7 @@ using namespace fmt::literals;
 
 Creator::Creator(const fs::path& inviwoRepo, std::optional<fs::path> templateDir,
                  std::optional<fs::path> configFile, Options aOpts)
-    : opts{std::move(aOpts)}
+    : opts{aOpts}
     , inviwoRepo_{inviwoRepo}
     , templateDir_{templateDir ? *templateDir : inviwoRepo / "tools" / "meta" / "templates"}
     , configFile_{configFile ? *configFile : templateDir_ / "config.json"} {

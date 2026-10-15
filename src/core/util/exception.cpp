@@ -66,12 +66,12 @@ bool breakOnException() {
 }  // namespace
 
 Exception::Exception(std::string_view message, SourceContext context)
-    : std::runtime_error(SafeCStr{message}), context_(std::move(context)), stack_{stackTrace()} {
+    : std::runtime_error(SafeCStr{message}), context_(context), stack_{stackTrace()} {
     if (breakOnException()) util::debugBreak();
 }
 
 Exception::Exception(fmt::string_view format, fmt::format_args&& args, SourceContext context)
-    : std::runtime_error{fmt::vformat(format, std::move(args))}, context_{std::move(context)} {
+    : std::runtime_error{fmt::vformat(format, args)}, context_{context} {
     if (breakOnException()) util::debugBreak();
 }
 
@@ -103,8 +103,7 @@ const std::vector<std::string>& Exception::getStack() const { return stack_; }
 
 ModuleInitException::ModuleInitException(std::string_view message, SourceContext context,
                                          std::vector<std::string> modulesToDeregister)
-    : Exception(message, std::move(context))
-    , modulesToDeregister_(std::move(modulesToDeregister)) {}
+    : Exception(message, context), modulesToDeregister_(std::move(modulesToDeregister)) {}
 
 const std::vector<std::string>& ModuleInitException::getModulesToDeregister() const {
     return modulesToDeregister_;
