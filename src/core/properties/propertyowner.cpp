@@ -39,6 +39,7 @@
 #include <inviwo/core/network/networkvisitor.h>
 #include <inviwo/core/network/lambdanetworkvisitor.h>
 
+#include <algorithm>
 #include <iterator>
 
 namespace inviwo {
@@ -134,9 +135,7 @@ Property* PropertyOwner::insertProperty(size_t index, std::unique_ptr<Property> 
 }
 
 void PropertyOwner::insertProperty(size_t index, Property* property, bool owner) {
-    if (index > properties_.size()) {
-        index = properties_.size();
-    }
+    index = std::min(index, properties_.size());
 
     if (const auto* existing = getPropertyByIdentifier(property->getIdentifier());
         existing != nullptr) {
