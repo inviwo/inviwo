@@ -63,7 +63,7 @@ THE SOFTWARE.
 
 #include <cstdlib>
 #include <stdexcept>
-#include <math.h>
+#include <cmath>
 
 namespace inviwo {
 namespace shuntingyard {

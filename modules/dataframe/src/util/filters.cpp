@@ -29,7 +29,7 @@
 
 #include <inviwo/dataframe/util/filters.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <algorithm>
 #include <functional>
 #include <regex>

@@ -47,7 +47,7 @@
 #include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/assertion.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <algorithm>
 #include <array>
 #include <cmath>

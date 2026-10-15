@@ -34,7 +34,7 @@
 #include <fmt/format.h>
 
 #ifndef WIN32
-#include <signal.h>
+#include <csignal>
 #endif
 
 #if defined(WIN32) && defined(_MSC_VER)
