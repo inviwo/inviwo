@@ -58,7 +58,7 @@ struct IVW_MODULE_ANIMATION_API RecorderOptions {
     size2_t dimensions = size2_t{512, 512};
     int frameRate = 25;
     int expectedNumberOfFrames = 1000;
-    std::string sourceName = "";
+    std::string sourceName;
 };
 
 class IVW_MODULE_ANIMATION_API RecorderFactory {

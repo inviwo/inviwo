@@ -62,9 +62,9 @@ bool OpenGLCapabilities::glInitialized_ = false;
 int OpenGLCapabilities::glVersion_ = 0;
 std::string OpenGLCapabilities::glVersionStr_ = "0";
 
-OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion() : number_(0), profile_("") {}
+OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion() : number_(0) {}
 
-OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion(int num) : number_(num), profile_("") {}
+OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion(int num) : number_(num) {}
 
 OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion(int num, std::string_view pro)
     : number_(num), profile_(pro) {}
