@@ -48,7 +48,7 @@ std::optional<std::filesystem::path> findShortestRelativePath(
 
 std::string removePrefix(std::string_view prefix, std::string_view str) {
     if (str.size() >= prefix.size()) {
-        if (str.substr(0, prefix.size()) == prefix) {
+        if (str.starts_with(prefix)) {
             return std::string{str.begin() + prefix.size(), str.end()};
         }
     }
