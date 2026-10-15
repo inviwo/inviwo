@@ -85,7 +85,6 @@ public:
     enum class AxisSelection : std::uint8_t { Single, Multiple, None };
     enum class BoxSelectionMode : std::uint8_t { Lines, DataValues };
 
-public:
     ParallelCoordinates();
     virtual ~ParallelCoordinates();
 

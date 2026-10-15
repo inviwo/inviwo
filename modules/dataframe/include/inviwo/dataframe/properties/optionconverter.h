@@ -40,7 +40,6 @@ template <typename OptionProperty>
 class ColumnOptionToOptionConverter
     : public TemplatePropertyConverter<ColumnOptionProperty, OptionProperty> {
 protected:
-protected:
     virtual void convertimpl(const ColumnOptionProperty* src, OptionProperty* dst) const override {
         dst->setSelectedIndex(glm::clamp<size_t>(0, dst->size() - 1, src->getSelectedIndex()));
     }
@@ -49,7 +48,6 @@ protected:
 template <typename OptionProperty>
 class OptionToColumnOptionConverter
     : public TemplatePropertyConverter<OptionProperty, ColumnOptionProperty> {
-protected:
 protected:
     virtual void convertimpl(const OptionProperty* src, ColumnOptionProperty* dst) const override {
         dst->setSelectedIndex(glm::clamp<size_t>(0, dst->size() - 1, src->getSelectedIndex()));
