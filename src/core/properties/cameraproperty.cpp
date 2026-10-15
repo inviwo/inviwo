@@ -374,7 +374,7 @@ void CameraProperty::addCamerapProperty(std::unique_ptr<Property> camprop) {
 
 CameraProperty& CameraProperty::setCurrentStateAsDefault() {
     defaultCamera_.reset(camera_->clone());
-    Property::setCurrentStateAsDefault();
+    inviwo::CompositeProperty::setCurrentStateAsDefault();
     for (auto& elem : properties_) {
         elem->setCurrentStateAsDefault();
     }

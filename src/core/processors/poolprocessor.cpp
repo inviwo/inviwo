@@ -120,7 +120,7 @@ void PoolProcessor::invalidate(InvalidationLevel invalidationLevel, Property* so
 
     if (delayInvalidation()) {
         notifyObserversInvalidationBegin(this);
-        PropertyOwner::invalidate(invalidationLevel, source);
+        inviwo::Processor::invalidate(invalidationLevel, source);
         notifyObserversInvalidationEnd(this);
     } else {
         Processor::invalidate(invalidationLevel, source);

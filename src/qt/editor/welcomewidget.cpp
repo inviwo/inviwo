@@ -239,7 +239,7 @@ protected:
                                   Qt::SmoothTransformation);
             }
         }
-        return QTextEdit::loadResource(type, name);
+        return QTextBrowser::loadResource(type, name);
     }
 
     QFileSystemWatcher fileWatcher_;
