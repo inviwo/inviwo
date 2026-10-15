@@ -53,7 +53,7 @@ namespace inviwo {
 namespace {
 const DataFormatBase* format(pybind11::array data) {
     const auto ndim = data.ndim();
-    if (!(ndim == 2 || ndim == 3)) {
+    if (ndim != 2 && ndim != 3) {
         throw Exception("Ndims must be either 2 or 3, with 1 <= size[2] <= 4");
     }
     return pyutil::getDataFormat(ndim == 2 ? 1 : data.shape(2), data);

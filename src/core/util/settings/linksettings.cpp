@@ -64,8 +64,7 @@ void LinkSettings::onRegister(PropertyFactoryObject* p) {
 }
 
 void LinkSettings::registerProperty(std::string_view property) {
-    const bool enabled =
-        (property == PropertyTraits<CameraProperty>::classIdentifier()) != 0 ? true : false;
+    const bool enabled = (property == PropertyTraits<CameraProperty>::classIdentifier()) != 0;
     // Have to check we already have a property from deserialization.
     const auto ids = "link" + dotSeperatedToPascalCase(property);
 

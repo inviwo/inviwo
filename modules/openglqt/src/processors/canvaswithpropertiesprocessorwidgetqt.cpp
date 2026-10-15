@@ -131,7 +131,7 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
         QPoint newPos =
             utilqt::movePointOntoDesktop(utilqt::toQPoint(pos), utilqt::toQSize(dim), true);
 
-        if (!(newPos.x() == 0 && newPos.y() == 0)) {
+        if (newPos.x() != 0 || newPos.y() != 0) {
             // prevent move events, since this will automatically save the "adjusted" position.
             // The processor widget already has its correct pos, i.e. the one de-serialized from
             // file.

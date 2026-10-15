@@ -243,7 +243,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
         color_channels = std::max(size_t{m->GetNumColorChannels()}, color_channels);
         texture_channels = std::max(size_t{m->GetNumUVChannels()}, texture_channels);
 
-        if (false == m->HasNormals()) {
+        if (!m->HasNormals()) {
             use_normals = false;
         }
     }
