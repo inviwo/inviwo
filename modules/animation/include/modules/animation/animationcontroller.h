@@ -141,7 +141,6 @@ public:
     virtual std::string_view getIdentifier() const override { return "AnimationController"; }
     InviwoApplication* getInviwoApplication() override { return app_; }
 
-public:
     CompositeProperty playOptions;
     OptionPropertyInt playWindowMode;
     DoubleMinMaxProperty playWindow;
