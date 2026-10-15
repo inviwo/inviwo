@@ -44,7 +44,7 @@
 namespace inviwo {
 
 template <typename T, typename M>
-void testserialization(T def, T in) {
+static void testserialization(T def, T in) {
     T indata = in;
     T outdata1 = def;
 

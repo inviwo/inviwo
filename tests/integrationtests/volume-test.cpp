@@ -44,7 +44,7 @@
 namespace inviwo {
 
 template <typename T>
-void testVolumeLoad(Volume* volume) {
+static void testVolumeLoad(Volume* volume) {
     const auto volumeRAM =
         dynamic_cast<const VolumeRAMPrecision<T>*>(volume->getRepresentation<VolumeRAM>());
     ASSERT_TRUE(volumeRAM != nullptr);
@@ -67,7 +67,7 @@ void testVolumeLoad(Volume* volume) {
 }
 
 template <typename T>
-void testDatVolumeLoad(std::string_view filename) {
+static void testDatVolumeLoad(std::string_view filename) {
     const auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
 
     auto reader = InviwoApplication::getPtr()
@@ -83,7 +83,7 @@ void testDatVolumeLoad(std::string_view filename) {
 }
 
 template <typename T>
-void testIvfVolumeLoad(std::string_view filename) {
+static void testIvfVolumeLoad(std::string_view filename) {
     const auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(
@@ -95,7 +95,7 @@ void testIvfVolumeLoad(std::string_view filename) {
 }
 
 template <typename T>
-void testVolumeClone(Volume* volume) {
+static void testVolumeClone(Volume* volume) {
     auto volume1 = volume->clone();
 
     const auto volumeRAM =
@@ -164,7 +164,7 @@ void testVolumeClone(Volume* volume) {
 }
 
 template <typename T>
-void testDatVolumeClone(std::string_view filename) {
+static void testDatVolumeClone(std::string_view filename) {
     const auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
     auto reader = InviwoApplication::getPtr()
                       ->getDataReaderFactory()
@@ -179,7 +179,7 @@ void testDatVolumeClone(std::string_view filename) {
 }
 
 template <typename T>
-void testIvfVolumeClone(std::string_view filename) {
+static void testIvfVolumeClone(std::string_view filename) {
     const auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(

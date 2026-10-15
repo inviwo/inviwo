@@ -48,7 +48,7 @@ TEST(SerializationTest, initTest) {
 }
 
 template <typename T>
-T serializationOfType(T inValue) {
+static T serializationOfType(T inValue) {
     const auto refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);

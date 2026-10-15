@@ -48,7 +48,7 @@ struct bar {
     int x;
     void inc() { ++x; }
 };
-bool operator==(const bar& a, const bar& b) { return a.x == b.x; }
+static bool operator==(const bar& a, const bar& b) { return a.x == b.x; }
 
 TEST(Transformiterator, plain) {
     std::vector<int> a = {2, 4, 6, 8};

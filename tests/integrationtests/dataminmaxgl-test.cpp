@@ -109,7 +109,7 @@ void DataMinMaxGLTest::test(const std::shared_ptr<BufferBase>& buffer) {
 }
 
 template <typename T>
-[[nodiscard]] std::shared_ptr<Volume> createVolume(size3_t dims) {
+[[nodiscard]] static std::shared_ptr<Volume> createVolume(size3_t dims) {
     using Type = T::type;
     using ValueType = T::primitive;
     const auto volumeRam = std::make_shared<VolumeRAMPrecision<Type>>(VolumeReprConfig{
@@ -126,7 +126,7 @@ template <typename T>
 }
 
 template <typename T>
-[[nodiscard]] std::shared_ptr<Layer> createLayer(size2_t dims) {
+[[nodiscard]] static std::shared_ptr<Layer> createLayer(size2_t dims) {
     using Type = T::type;
     using ValueType = T::primitive;
     const auto layerRam = std::make_shared<LayerRAMPrecision<Type>>(LayerReprConfig{
@@ -143,7 +143,7 @@ template <typename T>
 }
 
 template <typename T>
-[[nodiscard]] std::shared_ptr<BufferBase> createBuffer(size_t size) {
+[[nodiscard]] static std::shared_ptr<BufferBase> createBuffer(size_t size) {
     using Type = T::type;
     using ValueType = T::primitive;
 

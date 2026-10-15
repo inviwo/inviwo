@@ -73,7 +73,7 @@ namespace inviwo::meshutil {
 
 namespace detail {
 
-vec3 orthvec(const vec3& vec) {
+static vec3 orthvec(const vec3& vec) {
     const vec3 u(1.0f, 0.0f, 0.0f);
     const vec3 n = glm::normalize(vec);
     const float p = glm::dot(u, n);
@@ -84,7 +84,7 @@ vec3 orthvec(const vec3& vec) {
     }
 }
 
-vec3 tospherical(const vec2& v) {
+static vec3 tospherical(const vec2& v) {
     return vec3(std::sin(v.x) * std::cos(v.y), std::sin(v.x) * std::sin(v.y), std::cos(v.x));
 }
 

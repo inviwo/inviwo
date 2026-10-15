@@ -45,7 +45,7 @@ namespace inviwo {
 
 namespace animation {
 
-AnimationManager& getAnimationManager(InviwoApplication* app) {
+static AnimationManager& getAnimationManager(InviwoApplication* app) {
     return util::getModuleByTypeOrThrow<AnimationModule>(app).getAnimationManager();
 }
 

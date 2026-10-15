@@ -203,7 +203,8 @@ void CSVSource::deserialize(Deserializer& d) {
 namespace detail {
 
 template <typename T>
-decltype(std::declval<T&>().get()) getValue(PropertyOwner* parent, std::string_view identifier) {
+static decltype(std::declval<T&>().get()) getValue(PropertyOwner* parent,
+                                                   std::string_view identifier) {
     if (auto p = dynamic_cast<T*>(parent->getPropertyByIdentifier(identifier))) {
         return p->get();
     } else {

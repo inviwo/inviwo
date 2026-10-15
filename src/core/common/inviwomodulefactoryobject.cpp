@@ -74,7 +74,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
  * @param tmpVisited Modules being searched
  * @param sorted Module names, sorted after dependencies.
  */
-void recursiveTopologicalModuleFactoryObjectSort(
+static void recursiveTopologicalModuleFactoryObjectSort(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator start,
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end, const std::string& lname,
     std::unordered_set<std::string>& visited, std::unordered_set<std::string>& tmpVisited,

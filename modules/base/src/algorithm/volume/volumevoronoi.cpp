@@ -60,7 +60,7 @@ namespace util {
 
 namespace detail {
 template <Wrapping X, Wrapping Y, Wrapping Z>
-auto distance2(const vec3& a, const vec3& b, const mat3& dataToModelMatrix) {
+static auto distance2(const vec3& a, const vec3& b, const mat3& dataToModelMatrix) {
     auto delta = b - a;
 
     if constexpr (X == Wrapping::Repeat) {
@@ -84,7 +84,7 @@ auto distance2(const vec3& a, const vec3& b, const mat3& dataToModelMatrix) {
 }  // namespace detail
 
 template <Wrapping X, Wrapping Y, Wrapping Z>
-void voronoiSegmentationImpl(
+static void voronoiSegmentationImpl(
     const size3_t volumeDimensions, const mat4& indexToDataMatrix, const mat4& dataToModelMatrix,
     const std::vector<std::pair<unsigned short, vec3>>& seedPointsWithIndices,
     VolumeRAMPrecision<unsigned short>& voronoiVolumeRep) {
@@ -108,7 +108,7 @@ void voronoiSegmentationImpl(
 }
 
 template <Wrapping X, Wrapping Y, Wrapping Z>
-void weightedVoronoiSegmentationImpl(
+static void weightedVoronoiSegmentationImpl(
     const size3_t volumeDimensions, const mat4& indexToDataMatrix, const mat4& dataToModelMatrix,
     const std::vector<std::pair<unsigned short, vec3>>& seedPointsWithIndices,
     const std::vector<float>& weights, VolumeRAMPrecision<unsigned short>& voronoiVolumeRep) {

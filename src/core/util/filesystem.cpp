@@ -245,7 +245,7 @@ fs::path getInviwoBinDir() {
 
 #if defined(__APPLE__)
 
-std::string expandTilde(const char* str) {
+static std::string expandTilde(const char* str) {
     if (!str) return {};
 
     glob_t globbuf;

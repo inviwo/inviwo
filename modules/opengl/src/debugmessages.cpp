@@ -58,7 +58,7 @@
 
 namespace inviwo::utilgl {
 
-void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID context) {
+static void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID context) {
     const auto rc = RenderContext::getPtr();
     switch (mode) {
         case debug::Mode::Off:

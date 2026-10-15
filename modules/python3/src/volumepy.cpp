@@ -53,7 +53,7 @@ namespace inviwo {
 
 namespace resource {
 
-inline PY toPY(const pybind11::array& data) {
+static inline PY toPY(const pybind11::array& data) {
     return resource::PY{pybind11::module_::import("builtins").attr("id")(data).cast<size_t>()};
 }
 
