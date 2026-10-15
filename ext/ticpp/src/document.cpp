@@ -36,7 +36,7 @@ FILE* TiXmlFOpen(std::string_view filename, const char* mode) {
     if (!err && fp) return fp;
     return 0;
 #else
-    std::string tmp{filename};
+    const std::string tmp{filename};
     return fopen(tmp.c_str(), mode);
 #endif
 }
@@ -181,7 +181,7 @@ void TiXmlDocument::LoadFile(FILE* file) {
 bool TiXmlDocument::SaveFile(std::string_view filename) const {
     // The old c stuff lives on...
     if (FILE* fp = TiXmlFOpen(filename, "w")) {
-        bool result = SaveFile(fp);
+        const bool result = SaveFile(fp);
         fclose(fp);
         return result;
     }

@@ -42,7 +42,7 @@ const char* TiXmlText::Parse(const char* p, TiXmlParsingData* data, allocator_ty
         p = ReadText(p, &dummy, false, endTag, false);
         return p;
     } else {
-        bool ignoreWhite = true;
+        const bool ignoreWhite = true;
 
         const char* end = "<";
         p = ReadText(p, &value, ignoreWhite, end, false);

@@ -31,7 +31,7 @@ std::string formatError(TiXmlErrorCode err, const char* errorLocation,
                         TiXmlParsingData* parseData) {
     if (errorLocation && parseData) {
         parseData->Stamp(errorLocation);
-        TiXmlCursor location = parseData->Cursor();
+        const TiXmlCursor location = parseData->Cursor();
         return fmt::format("{} Line: {} Column: {}", TiXmlErrorStrings[static_cast<int>(err)],
                            location.row + 1, location.col + 1);
     } else {
