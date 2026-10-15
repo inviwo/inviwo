@@ -104,7 +104,7 @@ size_t addVertex(K3DTree<size_t, float>& vertexTree, std::vector<vec3>& position
     if (!nearest || (glm::distance2(nearestPos(), pos) > glm::epsilon<float>())) {
         nearest = vertexTree.insert(pos, positions.size());
         positions.push_back(pos);
-        normals.push_back(vec3(0, 0, 0));
+        normals.emplace_back(0, 0, 0);
     }
     return nearest->get();
 }

@@ -109,7 +109,7 @@ void MeshGL::update(bool editable) {
     for (const auto& buf : owner->getIndexBuffers()) {
         const BufferGL* bufGL = editable ? buf.second->getEditableRepresentation<BufferGL>()
                                          : buf.second->getRepresentation<BufferGL>();
-        indexBuffers_.push_back({buf.first, bufGL});
+        indexBuffers_.emplace_back(buf.first, bufGL);
     }
     defaultMeshInfo_ = owner->getDefaultMeshInfo();
 }

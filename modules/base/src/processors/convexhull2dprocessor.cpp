@@ -124,7 +124,7 @@ void ConvexHull2DProcessor::process() {
                 const auto p = buffer->getAsDVec3(i);
                 // project point p onto plane given by normal
                 const auto q = proj * p;
-                points.push_back(q);
+                points.emplace_back(q);
             }
         }
     }

@@ -243,9 +243,9 @@ std::shared_ptr<BasicMesh> cylinder(const vec3& start, const vec3& stop, const v
         const vec3 texCoord = vec3(static_cast<float>(i) / static_cast<double>(segments), 0.0, 0.0);
 
         // vertex at base
-        vertices.push_back({start + dir, normal, texCoord, color});
+        vertices.emplace_back(start + dir, normal, texCoord, color);
         // vertex at top
-        vertices.push_back({stop + dir, normal, texCoord + vec3(0.0, 1.0, 0.0), color});
+        vertices.emplace_back(stop + dir, normal, texCoord + vec3(0.0, 1.0, 0.0), color);
 
         // indices for two triangles filling the strip
         inds->add(i * 2 + 1 + globalIndexOffset);
@@ -495,7 +495,7 @@ std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius,
                     normal = quad * detail::tospherical(elem);
                     vertex = center + radius * normal;
                     tcoord = vec3(quad.x * (elem).x, quad.y * (elem).y, 0.0f);
-                    vertices.push_back({vertex, normal, tcoord, color});
+                    vertices.emplace_back(vertex, normal, tcoord, color);
                 }
 
                 if (quad.x * quad.y * quad.z > 0) {
@@ -592,7 +592,7 @@ std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const
                     normal = quad * detail::tospherical(elem);
                     vertex = center + radius * normal;
                     tcoord = vec3(quad.x * (elem).x, quad.y * (elem).y, 0.0f);
-                    vertices.push_back({vertex, normal, tcoord, color});
+                    vertices.emplace_back(vertex, normal, tcoord, color);
                 }
 
                 if (quad.x * quad.y * quad.z > 0) {
