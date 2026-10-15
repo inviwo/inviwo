@@ -242,7 +242,7 @@ std::shared_ptr<DataFrame> createDataFrame(int size, int max) {
     return df;
 }
 
-static void SelectRowsDataFrame(benchmark::State& st) {
+void SelectRowsDataFrame(benchmark::State& st) {
     const auto df = createDataFrame(static_cast<int>(st.range(0)), 100);
 
     dataframefilters::Filters filters;
