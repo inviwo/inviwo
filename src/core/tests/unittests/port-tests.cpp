@@ -165,7 +165,6 @@ using ::testing::ElementsAre;
 using ::testing::Pointee;
 using ::testing::Pair;
 using ::testing::Eq;
-using ::testing::Matches;
 
 TEST(PortTests, SingleInportOutport) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
