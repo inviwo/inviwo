@@ -526,8 +526,8 @@ void OpenGLCapabilities::parseAndAddShaderVersion(std::string versionStr, int co
             versionStr.end());
 
         const auto versionSplit = util::splitStringView(versionStr);
-        if (versionSplit.size() > 1 && (versionSplit[1].compare("core") == 0 ||
-                                        versionSplit[1].compare("compatibility") == 0)) {
+        if (versionSplit.size() > 1 &&
+            (versionSplit[1] == "core" || versionSplit[1] == "compatibility")) {
             addShaderVersionIfEqualOrLower(
                 GLSLShaderVersion(stringTo<int>(versionSplit[0]), versionSplit[1]), compVersion);
         } else {
