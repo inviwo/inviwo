@@ -164,7 +164,7 @@ public:
     void ensureVisible(const std::vector<Processor*>& processors) const;
     void ensureVisible(const QGraphicsItem* item) const;
 
-    static std::string getMimeTag();
+    static std::string_view getMimeTag();
     void resetAllTimeMeasurements();
 
     void showLinkDialog(Processor* processor1, Processor* processor2);
