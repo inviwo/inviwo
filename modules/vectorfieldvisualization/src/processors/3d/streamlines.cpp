@@ -183,7 +183,7 @@ void StreamLinesDeprecated::process() {
                 IntegralLine line = tracer.traceFrom(vec3(P));
                 const auto size = line.getPositions().size();
                 if (size > 1) {
-                    const std::lock_guard<std::mutex> lock(mutex);
+                    const std::scoped_lock lock(mutex);
                     lines->push_back(line, startID + i);
                 };
             });
