@@ -281,7 +281,7 @@ void exposeDataFrame(pybind11::module& m) {
             std::string str = fmt::format("<DataFrame: {} column(s), {} rows",
                                           d.getNumberOfColumns(), d.getNumberOfRows());
             size_t i = 0;
-            for (const auto c : d) {
+            for (const auto& c : d) {
                 ++i;
                 str += fmt::format("\n   {:>3}: '{}', {}, {}", i, c->getHeader(), c->getSize(),
                                    c->getBuffer()->getDataFormat()->getString());
