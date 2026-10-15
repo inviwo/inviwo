@@ -147,7 +147,7 @@ OpenGLModule::OpenGLModule(InviwoApplication* app)
     registerProcessor<CanvasProcessorGL>();
 
     auto openGLCap = std::make_unique<OpenGLCapabilities>(settings.get());
-    shaderManager_.get()->setOpenGLSettings(settings.get());
+    shaderManager_->setOpenGLSettings(settings.get());
 
     registerSettings(std::move(settings));
     registerCapabilities(std::move(openGLCap));
