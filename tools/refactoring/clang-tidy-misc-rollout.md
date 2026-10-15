@@ -1,9 +1,10 @@
-# clang-tidy `misc-*` rollout — status & resume notes
+# clang-tidy rollout — status & resume notes
 
-**Status:** `misc-*` complete (2026-10-15). Tooling (Workflow v2, below) is
-reusable as-is for the next check group.
+**Status:** `misc-*` complete. Now working through **all** enabled checks,
+ordered smallest-diagnostic-count-first (see "All-checks rollout" section
+below for current progress and the exact resume point).
 **Branch:** `feature/more-conv-warnings`
-**Last commit:** `839d148e52` ("clang-tidy: apply misc-use-internal-linkage fixes")
+**Last commit:** see `git log --oneline -1` on that branch.
 
 ## Workflow v2 (2026-10-15 evening) — batch dry-run + scoped fixes
 
@@ -86,6 +87,136 @@ Since the dry-run data collected above already covers every enabled check (not
 just `misc-*`), `clang-tidy-warnings-by-check.json` can be used as-is to start
 any other group later — no need to re-scan. We're still doing `misc-*` first,
 in the same order as before, before moving to the other groups.
+
+## All-checks rollout (2026-10-15 night) — status
+
+After `misc-*` finished, the workflow switched to **all** enabled checks that
+have `has_fix: true` in `clang-tidy-warnings-by-check.json`, taken in order of
+**ascending diagnostic count** (smallest/cheapest checks first, to clear as
+many checks as possible quickly). Checks with `has_fix: false` (no autofix
+ever offered anywhere in the scan — mostly `clang-analyzer-*`,
+`clang-diagnostic-*`, and pure-detection checks like
+`google-readability-function-size`) are skipped entirely; see
+"Workflow v2" above for how `has_fix` is computed.
+
+```sh
+# Get the next N smallest not-yet-done, fixable checks:
+python3 -c "
+import json
+d = json.load(open('tools/refactoring/clang-tidy-warnings-by-check.json'))
+done = { ... }  # see DONE_CHECKS below, keep in sync
+items = [(k, v['diagnostic_count'], v['tu_count']) for k, v in d.items()
+         if k not in done and v.get('has_fix')]
+items.sort(key=lambda x: x[1])
+for k, c, t in items[:15]: print(f'{k:<55} {c:>8} {t:>6}')
+"
+```
+
+### DONE_CHECKS so far (34 checks, all committed on this branch)
+
+`misc-const-correctness`, `misc-explicit-constructor`,
+`misc-unused-alias-decls`, `misc-unused-parameters`, `misc-unused-using-decls`,
+`misc-use-internal-linkage`, `misc-redundant-expression` (no-op),
+`misc-definitions-in-headers` (no-op), `misc-static-assert` (no-op),
+`misc-uniqueptr-reset-release` (no-op) — the original 10 `misc-*` checks —
+plus: `readability-delete-null-pointer`, `modernize-make-unique`,
+`modernize-use-bool-literals`, `readability-container-data-pointer`,
+`readability-redundant-control-flow`,
+`readability-ambiguous-smartptr-reset-call`, `modernize-use-scoped-lock`,
+`modernize-raw-string-literal`, `performance-string-view-conversions`,
+`readability-redundant-string-cstr`, `clang-diagnostic-range-loop-construct`,
+`bugprone-copy-constructor-init`, `cppcoreguidelines-macro-to-enum`,
+`bugprone-optional-value-conversion`, `modernize-use-structured-binding`,
+`readability-static-definition-in-anonymous-namespace`,
+`modernize-use-starts-ends-with`, `modernize-deprecated-headers`,
+`readability-enum-initial-value`, `performance-for-range-copy`,
+`performance-unnecessary-copy-initialization`,
+`bugprone-parent-virtual-call`, `readability-use-std-min-max`,
+`cppcoreguidelines-virtual-class-destructor`.
+
+**Reverted as false positives for this codebase (do NOT blanket-apply these
+checks again without manual review)**:
+- `modernize-use-transparent-functors` — changed a template function
+  parameter's type from `std::equal_to<Processor*>` to the transparent
+  `std::equal_to<>` in `networkutils.h`'s `traverseNetwork()`, but the
+  parameter type is a *fixed, non-deduced* concrete type (not inferred from
+  the caller), so existing call sites that locally declare
+  `std::unordered_set<..., std::equal_to<Processor*>, ...>` no longer match
+  and fail to link/compile. Same root cause class as the `misc-*`
+  "non-deduced context" false positives documented below.
+- `bugprone-unused-raii` — in `src/core/tests/unittests/bitset-test.cpp`, a
+  `TEST` deliberately constructs several `BitSet` temporaries with no name,
+  purely to check they compile. The check's fix names every instance with
+  the exact same placeholder (`give_me_a_name`), which doesn't even compile
+  (duplicate declaration in the same scope) and defeats the test's actual
+  intent. Reverted; left un-silenced (no `NOLINT` added) in case a future,
+  smarter instance of this check offers a better per-occurrence fix.
+
+### Two notable `-fix` bugs hit while applying this batch (not false
+positives — the underlying warning was correct, but clang-tidy's suggested
+edit was broken or dangerous and had to be corrected manually)
+
+1. **`cppcoreguidelines-virtual-class-destructor` dropped a class qualifier.**
+   In `volumeraycasterbase.cpp`, clang-tidy turned
+   `VolumeRaycasterBase::~VolumeRaycasterBase() = default;` into
+   `~VolumeRaycasterBase() = default;` — not valid outside a class body.
+   Manually restored the qualifier (net diff for that file is now zero; the
+   real fix, removing the redundant `virtual` keyword, landed in the header).
+2. **`performance-unnecessary-copy-initialization` broke a documented
+   defensive copy.** In `welcomewidget.cpp::applyExpandedPaths`, a local
+   `const QSet<QString> target = paths;` has an inline comment: `// defensive
+   copy: collapseAll() below mutates expandedPaths_`. The parameter aliases
+   the `expandedPaths_` member; the function then calls `collapseAll()`,
+   which (via a connected signal/slot) mutates `expandedPaths_` while the
+   code below still needs to read the *original* snapshot. Clang-tidy can't
+   see that side effect and "fixed" it to `const QSet<QString>& target =
+   paths;`, which would silently reintroduce the exact bug the comment
+   warns about. Reverted that one hunk; kept the rest of the check's fixes
+   (which were genuine copies with no such lifetime subtlety).
+
+### `bugprone-parent-virtual-call` — the one check so far that is a real
+behavior change, not just style
+
+Unlike every other check applied in this rollout (misc or otherwise), this
+one is NOT behavior-preserving by construction — it catches code that
+explicitly qualifies a virtual call with a base class *further up* the
+hierarchy than the immediate parent, silently skipping whatever override the
+immediate parent provides. Every instance found in this codebase turned out
+to be a genuine skipped override (verified individually against the
+intermediate class's header before applying — see the commit message for
+the full list: `ConstantInterpolation`/`Interpolation::serialize`,
+`PoolProcessor`/`Processor::invalidate`,
+`CameraProperty`+`ListProperty`/`CompositeProperty`, and a Qt
+`ChangeLog`/`QTextBrowser::loadResource` case). Build and unit tests are
+clean, but **unit tests may not fully exercise these particular runtime
+dispatch paths** — flagging this for extra scrutiny/manual testing rather
+than assuming "tests passed" is sufficient here, unlike the rest of this
+rollout.
+
+### To resume the all-checks rollout
+
+1. Confirm the branch builds/tests clean (see commands at the bottom of this
+   doc).
+2. Re-run the Python snippet above with the full `DONE_CHECKS` set (copy from
+   this doc, or just grep `git log --oneline` for `"clang-tidy: apply"` commit
+   subjects — one per check, named exactly) to get the next batch of
+   smallest remaining fixable checks. As of the last commit there were
+   **68 fixable checks remaining** (out of 98 total fixable checks found by
+   the dry run); next up by size: `readability-string-compare`,
+   `performance-move-const-arg`, `readability-redundant-smartptr-get`,
+   `google-readability-todo`, `readability-simplify-boolean-expr`,
+   `modernize-avoid-bind`, `readability-use-concise-preprocessor-directives`,
+   `modernize-use-string-view`, `modernize-use-emplace`,
+   `performance-avoid-endl`, ...
+3. For each check: `./tools/refactoring/clang-tidy-fix-check.sh <check>`,
+   review the diff (don't skip this — two of the fixes applied so far needed
+   hand-correction, see above), build, test, commit. Batch several small
+   checks' fixes before doing one build+test pass if they touch disjoint
+   files, to save iteration time, but still commit one check per commit.
+4. Watch for the same false-positive categories documented in "Lessons
+   learned" below (non-deduced template parameter types, defensive copies
+   masked by comments, "transparent wrapper" implicit-conversion types,
+   brace-init-list element construction, mutation inside `if constexpr`).
 
 ## Goal
 
