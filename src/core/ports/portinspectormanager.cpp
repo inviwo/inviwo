@@ -114,7 +114,7 @@ void PortInspectorManager::insertNetwork(PortInspector* portInspector, Processor
 }
 
 void PortInspectorManager::removeNetwork(PortInspector* portInspector, ProcessorNetwork* network) {
-    const auto processors = portInspector->getProcessors();
+    const auto& processors = portInspector->getProcessors();
     for (const auto& processor : processors) {
         network->removeProcessor(processor.get());
     }

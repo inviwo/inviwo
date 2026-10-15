@@ -291,7 +291,7 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
         if (actions.empty()) continue;
         auto submenu = menu->addMenu(QString::fromStdString(moduleName));
         for (const auto& mAction : actions) {
-            auto actionName = mAction->getActionName();
+            const auto& actionName = mAction->getActionName();
             auto action = submenu->addAction(QString::fromStdString(actionName));
             connect(action, &QAction::triggered, this,
                     [app, actionName, property = property_](bool /*checked*/) {

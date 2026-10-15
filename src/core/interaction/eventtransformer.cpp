@@ -210,18 +210,17 @@ inline void transformAndSendEvent(
     const TouchEvent& originalEvent, const EventTransformer::View& /*view*/,
     const std::function<void(Event&, const EventTransformer::View&)>& /*propagate*/) {
 
-    const TouchEvent newEvent{originalEvent};
     /* TODO(Peter)
-    newEvent.setCanvasSize(view.size());
-    newEvent.setNdc(view.globalNdcToLocalNdc(originalEvent.ndc()));
+ newEvent.setCanvasSize(view.size());
+ newEvent.setNdc(view.globalNdcToLocalNdc(originalEvent.ndc()));
 
-    newEvent.markAsVisited(originalEvent);
+ newEvent.markAsVisited(originalEvent);
 
-    propagate(newEvent, view);
+ propagate(newEvent, view);
 
-    originalEvent.markAsVisited(newEvent);
-    if (newEvent.hasBeenUsed()) originalEvent.markAsUsed();
-    */
+ originalEvent.markAsVisited(newEvent);
+ if (newEvent.hasBeenUsed()) originalEvent.markAsUsed();
+ */
 }
 
 struct Base {
