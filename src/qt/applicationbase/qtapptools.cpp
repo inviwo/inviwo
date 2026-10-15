@@ -180,7 +180,7 @@ void showFatalMessage(const QString& msg) {
 void utilqt::logQtMessages([[maybe_unused]] QtMsgType type,
                            [[maybe_unused]] const QMessageLogContext& context,
                            [[maybe_unused]] const QString& msg) {
-#if defined(__APPLE__)
+#ifdef __APPLE__
     // There is some weird bug on mac that sets complains about
     // QWidgetWindow(...) Attempt to set a screen on a child window
     // Does not seem to be a real problem lets, ignore it.
