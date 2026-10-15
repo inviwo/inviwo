@@ -47,7 +47,6 @@ namespace util {
 
 void forEachWorkspaceInDirRecursive(const std::filesystem::path& path,
                                     std::function<void(const std::filesystem::path&)> callback) {
-    namespace fs = std::filesystem;
 
     if (!std::filesystem::is_directory(path)) return;
 

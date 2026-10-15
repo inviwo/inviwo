@@ -127,7 +127,6 @@ bool PythonScript::run(std::unordered_map<std::string, pybind11::object> locals,
 }
 
 bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)> callback) {
-    namespace py = pybind11;
     if (isCompileNeeded_ && !compile()) {
         return false;
     }
