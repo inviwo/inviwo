@@ -53,7 +53,7 @@ auto VolumeReuseCache::get(const VolumeConfig& config)
     const auto it =
         std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
     if (it != cache_.end()) {
-        const auto volume = *it;
+        const auto& volume = *it;
         volume->getMetaDataMap()->removeAll();
         volume->clearHistograms();
         volume->setConfig(config_);
