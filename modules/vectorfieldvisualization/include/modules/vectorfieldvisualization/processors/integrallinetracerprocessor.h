@@ -120,7 +120,7 @@ void IntegralLineTracerProcessor<Tracer>::process() {
             IntegralLine line = tracer.traceFrom(p);
             const auto size = line.getPositions().size();
             if (size > 1) {
-                const std::lock_guard<std::mutex> lock(mutex);
+                const std::scoped_lock lock(mutex);
                 lines->push_back(std::move(line), startID + i);
             }
         });
