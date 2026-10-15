@@ -55,10 +55,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-#define RND 1
-#define PLANE 2
-#define LINE 3
-#define SPHERE 4
+enum { RND = 1, PLANE = 2, LINE = 3, SPHERE = 4 };
 
 namespace inviwo {
 
