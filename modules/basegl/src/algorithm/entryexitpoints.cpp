@@ -55,6 +55,7 @@
 #include <array>
 #include <chrono>
 #include <cstddef>
+#include <memory>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -213,8 +214,8 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
         const utilgl::DepthFuncState depthfunc(GL_LESS);
         if (!tmpEntry_ ||
             tmpEntry_->getDataFormat() != entryPoints.getColorLayerGL()->getDataFormat()) {
-            tmpEntry_.reset(new Image(entryPoints.getDimensions(),
-                                      entryPoints.getColorLayerGL()->getDataFormat()));
+            tmpEntry_ = std::make_unique<Image>(entryPoints.getDimensions(),
+                                                entryPoints.getColorLayerGL()->getDataFormat());
             tmpEntry_->addColorLayer(std::make_shared<Layer>(
                 entryPoints.getDimensions(), DataVec3Float32::get(), LayerType::Color));
 
