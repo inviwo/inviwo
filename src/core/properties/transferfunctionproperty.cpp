@@ -32,6 +32,8 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/properties/isotfproperty.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 std::string_view TransferFunctionProperty::getClassIdentifier() const { return classIdentifier; }
@@ -195,9 +197,7 @@ void TransferFunctionProperty::deserialize(Deserializer& d) {
 const dvec2& TransferFunctionProperty::getZoomH() const { return zoomH_; }
 
 TransferFunctionProperty& TransferFunctionProperty::setZoomH(double zoomHMin, double zoomHMax) {
-    if (zoomHMax < zoomHMin) {
-        zoomHMax = zoomHMin;
-    }
+    zoomHMax = std::max(zoomHMax, zoomHMin);
 
     const auto newZoomH = dvec2(zoomHMin, zoomHMax);
     if (zoomH_ != newZoomH) {
@@ -210,9 +210,7 @@ TransferFunctionProperty& TransferFunctionProperty::setZoomH(double zoomHMin, do
 const dvec2& TransferFunctionProperty::getZoomV() const { return zoomV_; }
 
 TransferFunctionProperty& TransferFunctionProperty::setZoomV(double zoomVMin, double zoomVMax) {
-    if (zoomVMax < zoomVMin) {
-        zoomVMax = zoomVMin;
-    }
+    zoomVMax = std::max(zoomVMax, zoomVMin);
 
     const auto newZoomV = dvec2(zoomVMin, zoomVMax);
     if (zoomV_ != newZoomV) {
