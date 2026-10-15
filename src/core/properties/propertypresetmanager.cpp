@@ -168,7 +168,7 @@ bool PropertyPresetManager::removePreset(const std::string& name, PropertyPreset
 
 void PropertyPresetManager::appendPropertyPresets(Property* target, Property* source) {
     auto& pmap = getPropertyPresets(target);
-    for (const auto item : getPropertyPresets(source)) {
+    for (const auto& item : getPropertyPresets(source)) {
         pmap[item.first] = item.second;
     }
 }
