@@ -136,13 +136,13 @@ void DataFrameJoin::process() {
     }
 
     std::vector<std::pair<std::string, std::string>> keys;
-    keys.push_back({leftKey_.getSelectedColumnHeader(), rightKey_.getSelectedColumnHeader()});
+    keys.emplace_back(leftKey_.getSelectedColumnHeader(), rightKey_.getSelectedColumnHeader());
 
     for (auto&& [left, right] : util::zip(secondaryLeftKeys_, secondaryRightKeys_)) {
         if (auto leftKeyProp = dynamic_cast<ColumnOptionProperty*>(left)) {
             if (auto rightKeyProp = dynamic_cast<ColumnOptionProperty*>(right)) {
-                keys.push_back({leftKeyProp->getSelectedColumnHeader(),
-                                rightKeyProp->getSelectedColumnHeader()});
+                keys.emplace_back(leftKeyProp->getSelectedColumnHeader(),
+                                  rightKeyProp->getSelectedColumnHeader());
             }
         }
     }

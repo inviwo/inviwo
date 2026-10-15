@@ -452,7 +452,7 @@ void IntegralLineVectorToMesh::process() {
                 const vec4 color = coloring(sample, line.getIndex(), lineIdx);
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-                vertices.push_back({pos, glm::normalize(vel), pos, color});
+                vertices.emplace_back(pos, glm::normalize(vel), pos, color);
             }
         };
 
@@ -472,9 +472,9 @@ void IntegralLineVectorToMesh::process() {
                 const auto pos1 = pos - off;
                 const auto pos2 = pos + off;
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-                vertices.push_back({pos1, N, pos1, color});
+                vertices.emplace_back(pos1, N, pos1, color);
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-                vertices.push_back({pos2, N, pos2, color});
+                vertices.emplace_back(pos2, N, pos2, color);
             }
         };
 
