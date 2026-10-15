@@ -4,6 +4,80 @@
 **Branch:** `feature/more-conv-warnings`
 **Last commit at pause:** `cab52b663e` ("Format: reflow lines after clang-format pass on port headers")
 
+## Workflow v2 (2026-10-15 evening) — batch dry-run + scoped fixes
+
+The original per-check workflow (`/tmp/tidy-check.sh`, see "v1" section below)
+re-scanned the **entire** codebase once for the dry run and again for the fix,
+for **every single check**. That's wasteful: clang-tidy's cost is dominated by
+parsing/building the AST per translation unit (TU), not by how many checks are
+enabled while doing so. The new workflow pays that AST cost **once** for *all*
+enabled checks, then only re-touches the handful of files that actually need a
+given fix.
+
+Committed scripts (in this directory):
+
+- [clang-tidy-dry-run-all.sh](tools/refactoring/clang-tidy-dry-run-all.sh) —
+  runs `run-clang-tidy` **once**, with no `-checks` override (so it uses the
+  full enabled set from `.clang-tidy`), across every in-scope TU, writing one
+  `-export-fixes` YAML file per TU into `/tmp/clang-tidy-all-fixes/` (YAML
+  records every diagnostic, fixable or not, with its check name and file —
+  verified this includes diagnostics whose only replacement lives on a nested
+  `Notes` entry, e.g. `readability-inconsistent-declaration-parameter-name`).
+  Takes a while (≈1490 TUs in scope) but is a **one-time** cost per refresh,
+  not per-check.
+- [clang-tidy-group-warnings.py](tools/refactoring/clang-tidy-group-warnings.py)
+  — parses all those YAML files (no PyYAML dependency; the export format's
+  indentation is regular enough for a line-based regex scanner) and writes
+  `clang-tidy-warnings-by-check.json`: for every check that fired, the set of
+  TU (main source) files that raised it at least once, plus raw diagnostic
+  counts. Also prints a summary table to stdout.
+- [clang-tidy-fix-check.sh](tools/refactoring/clang-tidy-fix-check.sh)
+  `<check-name>` — looks up that check's file list in the JSON and applies
+  `-fix` scoped to **only** those TUs. Internally this is still a two-phase
+  export-then-apply (per-TU `-export-fixes` in parallel, then a single serial
+  `clang-apply-replacements --format --style=file` pass) rather than a direct
+  parallel `clang-tidy -fix`, because two TUs in the same check's file list
+  can legitimately share an included header; applying fixes to that header
+  from two parallel `-fix` processes at once would race. `clang-apply-replacements`
+  merges/dedupes across files safely in one pass, matching what `run-clang-tidy
+  -fix` does internally.
+
+### Refreshing the dry-run data
+
+```sh
+# One-time (or whenever a meaningful number of files have changed since the
+# last run): re-scan everything, for every enabled check at once.
+./tools/refactoring/clang-tidy-dry-run-all.sh
+# -> /tmp/clang-tidy-all-fixes/*.yaml, /tmp/clang-tidy-all-dry.log
+
+./tools/refactoring/clang-tidy-group-warnings.py
+# -> tools/refactoring/clang-tidy-warnings-by-check.json (committed; see below)
+```
+
+`clang-tidy-warnings-by-check.json` is committed next to this doc so the
+current inventory (counts, affected files) is visible in review/diffs without
+needing to re-run the scan. Re-run and re-commit it whenever it goes stale
+(e.g. after a batch of fixes, or after enough unrelated code churn).
+
+### Applying a fix for one check
+
+```sh
+./tools/refactoring/clang-tidy-fix-check.sh misc-unused-parameters
+# then the same build/test/commit steps as before (step 3 onward in the
+# "Per-check workflow" section)
+```
+
+### Scope note
+
+The user is ultimately interested in **all** enabled `.clang-tidy` checks, not
+just `misc-*` — the full enabled set (see `.clang-tidy`) spans `bugprone-*`,
+`cppcoreguidelines-*`, `google-*`, `llvm-*`, `misc-*`, `modernize-*`,
+`performance-*`, `portability-*`, `readability-*`, and `clang-analyzer-*`.
+Since the dry-run data collected above already covers every enabled check (not
+just `misc-*`), `clang-tidy-warnings-by-check.json` can be used as-is to start
+any other group later — no need to re-scan. We're still doing `misc-*` first,
+in the same order as before, before moving to the other groups.
+
 ## Goal
 
 Go through every auto-fixable check in the `misc-*` group of `.clang-tidy`
@@ -64,8 +138,12 @@ this rollout, per the user's choice when this task started.
 - A reusable helper script exists at `/tmp/tidy-check.sh` (**not** committed,
   it's outside the repo and only on this machine — recreate it if missing,
   contents below) that wraps `run-clang-tidy` with the right scope filters.
+  **Superseded by Workflow v2 above** (`clang-tidy-fix-check.sh`) — kept here
+  only because the "Lessons learned" section below still refers to it and
+  because it's a handy one-off for ad-hoc dry runs of a single check that
+  isn't in the committed JSON yet.
 
-### `/tmp/tidy-check.sh` (recreate if missing)
+### `/tmp/tidy-check.sh` (recreate if missing) — v1, historical
 
 ```sh
 #!/bin/zsh
@@ -106,15 +184,15 @@ what's normally enabled project-wide.
 
 ## Per-check workflow (exact commands)
 
-```sh
-# 1. Dry run — gauge scope. Warning counts are inflated for header-based
-#    checks (same diagnostic reported once per TU that includes the header);
-#    don't be alarmed by a big number, see what's real after -fix.
-/tmp/tidy-check.sh misc-<check-name> dry > /tmp/tidy-<check-name>-dry.log 2>&1
-grep -cE "warning: .*\[misc-<check-name>\]" /tmp/tidy-<check-name>-dry.log
+**Current (v2):**
 
-# 2. Apply fix + format
-/tmp/tidy-check.sh misc-<check-name> fix > /tmp/tidy-<check-name>-fix.log 2>&1
+```sh
+# 1. Gauge scope from the already-collected inventory (no clang-tidy run
+#    needed — see Workflow v2 above for how/when to refresh it).
+python3 -c "import json; d=json.load(open('tools/refactoring/clang-tidy-warnings-by-check.json')); print(d.get('misc-<check-name>'))"
+
+# 2. Apply fix + format, scoped to only the files that need it.
+./tools/refactoring/clang-tidy-fix-check.sh misc-<check-name>
 
 # 3. See what changed
 cd /Users/peter/Work/Inviwo/inviwo-stage
@@ -248,14 +326,20 @@ ctest --test-dir /Users/peter/Work/Inviwo/builds/copilot -j4 --output-on-failure
 
 ## To resume
 
-1. Re-create `/tmp/tidy-check.sh` if it's gone (contents above).
-2. Confirm `builds/copilot` still configures/builds (it should, nothing
+1. Confirm `builds/copilot` still configures/builds (it should, nothing
    should have changed since the last green build at commit `cab52b663e`).
-3. Continue with check 8, `misc-unused-parameters`, following the workflow
-   above. Then 9 (`misc-unused-using-decls`) and 10
+2. Check whether `tools/refactoring/clang-tidy-warnings-by-check.json` is
+   still fresh (diff against current `git log` churn since it was last
+   generated); if stale, re-run `clang-tidy-dry-run-all.sh` +
+   `clang-tidy-group-warnings.py` (see Workflow v2 above) and recommit the
+   JSON.
+3. Continue with check 8, `misc-unused-parameters`, using
+   `clang-tidy-fix-check.sh misc-unused-parameters` then the usual
+   build/test/commit steps. Then 9 (`misc-unused-using-decls`) and 10
    (`misc-use-internal-linkage`, flagged above as the riskiest remaining one).
-4. Once all `misc-*` checks are done, this same process/workflow can be
-   reused for other check groups (`cppcoreguidelines-*`, `google-*`, `llvm-*`,
-   `modernize-*`, `performance-*`, `portability-*`, `readability-*`) if
-   requested — see the original chat transcript for the full list of
-   auto-fixable checks per group.
+4. Once all `misc-*` checks are done, this same process/workflow applies
+   as-is to the other enabled groups (`bugprone-*`, `cppcoreguidelines-*`,
+   `google-*`, `llvm-*`, `modernize-*`, `performance-*`, `portability-*`,
+   `readability-*`, `clang-analyzer-*`) \u2014 the dry-run data already covers
+   them, so just pick a check from `clang-tidy-warnings-by-check.json` and
+   run `clang-tidy-fix-check.sh <check-name>`.
