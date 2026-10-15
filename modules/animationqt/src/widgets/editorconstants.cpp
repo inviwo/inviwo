@@ -29,7 +29,7 @@
 
 #include <modules/animationqt/widgets/editorconstants.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <algorithm>
 #include <array>
 #include <cmath>

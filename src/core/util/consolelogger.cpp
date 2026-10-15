@@ -46,7 +46,7 @@
 #include <windows.h>
 #else
 #include <sys/ioctl.h>
-#include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
 #endif
 
