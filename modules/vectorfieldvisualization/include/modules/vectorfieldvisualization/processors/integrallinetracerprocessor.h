@@ -107,7 +107,7 @@ void IntegralLineTracerProcessor<Tracer>::process() {
 
     Tracer tracer(sampler, properties_);
 
-    for (const auto meta : annotationSamplers_.getSourceVectorData()) {
+    for (const auto& meta : annotationSamplers_.getSourceVectorData()) {
         std::string key{meta.first->getProcessor()->getIdentifier()};
         key = util::stripIdentifier(key);
         tracer.addMetaDataSampler(key, meta.second);
