@@ -124,8 +124,8 @@ void WorkspaceAnnotationsQt::setCanvasImages(
     images.reserve(canvasImages.size());
 
     for (auto& elem : canvasImages) {
-        images.push_back({elem.first, utilqt::toBase64(elem.second, "JPEG", 90),
-                          elem.second.width(), elem.second.height()});
+        images.emplace_back(elem.first, utilqt::toBase64(elem.second, "JPEG", 90),
+                            elem.second.width(), elem.second.height());
     }
     setCanvasImages(images);
 }

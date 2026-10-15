@@ -250,8 +250,8 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
         if (std::get<0>(clipped)) {
             const uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
 
-            vertices.push_back({std::get<1>(clipped), properties_.pointColor_.get(), 0});
-            vertices.push_back({std::get<2>(clipped), properties_.pointColor_.get(), 0});
+            vertices.emplace_back(std::get<1>(clipped), properties_.pointColor_.get(), 0);
+            vertices.emplace_back(std::get<2>(clipped), properties_.pointColor_.get(), 0);
 
             indicesDiag.push_back(indexOffset);
             indicesDiag.push_back(indexOffset + 1);
@@ -304,10 +304,10 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
             auto clipped = algorithm::clipLineCohenSutherland(vec2(point.x), vec2(point.x, point.y),
                                                               rectMin, rectMax);
             if (std::get<0>(clipped)) {
-                vertices.push_back(
-                    {std::get<1>(clipped), properties_.lineColor_.get(), getGlobalPickId(index)});
-                vertices.push_back(
-                    {std::get<2>(clipped), properties_.lineColor_.get(), getGlobalPickId(index)});
+                vertices.emplace_back(std::get<1>(clipped), properties_.lineColor_.get(),
+                                      getGlobalPickId(index));
+                vertices.emplace_back(std::get<2>(clipped), properties_.lineColor_.get(),
+                                      getGlobalPickId(index));
 
                 indicesLines.push_back(indexOffset++);
                 indicesLines.push_back(indexOffset++);
@@ -343,11 +343,11 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
 
             const vec4 color = getColor(index);
             if (algorithm::insideRect(pLower, rectMin, rectMax)) {
-                vertices.push_back({pLower, color, getGlobalPickId(index)});
+                vertices.emplace_back(pLower, color, getGlobalPickId(index));
                 indicesPoints.push_back(indexOffset++);
             }
             if (algorithm::insideRect(pUpper, rectMin, rectMax)) {
-                vertices.push_back({pUpper, color, getGlobalPickId(index)});
+                vertices.emplace_back(pUpper, color, getGlobalPickId(index));
                 indicesPoints.push_back(indexOffset++);
             }
         }

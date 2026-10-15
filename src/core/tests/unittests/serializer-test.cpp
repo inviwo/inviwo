@@ -195,9 +195,9 @@ TEST(SerializationTest, floatVectorTest) {
 TEST(SerializationTest, vectorOfNonPointersTest) {
     std::vector<MinimumSerializableClass> inVector;
     std::vector<MinimumSerializableClass> outVector;
-    inVector.push_back(MinimumSerializableClass(0.1f));
-    inVector.push_back(MinimumSerializableClass(0.2f));
-    inVector.push_back(MinimumSerializableClass(0.3f));
+    inVector.emplace_back(0.1f);
+    inVector.emplace_back(0.2f);
+    inVector.emplace_back(0.3f);
     const auto& refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);

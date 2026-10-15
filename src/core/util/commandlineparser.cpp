@@ -204,7 +204,7 @@ void CommandLineParser::processCallbacks() {
 }
 
 void CommandLineParser::add(TCLAP::Arg* arg, std::function<void()> callback, int priority) {
-    callbacks_.push_back(std::make_tuple(priority, arg, callback));
+    callbacks_.emplace_back(priority, arg, callback);
 }
 
 void CommandLineParser::remove(TCLAP::Arg* arg) {
