@@ -276,10 +276,10 @@ void SSAO::process() {
 
     auto persp_camera = dynamic_cast<PerspectiveCamera*>(&camera_.get());
     if (persp_camera) {
-        projParam_.ortho = 0;
+        projParam_.ortho = false;
         projParam_.fov = static_cast<float>(glm::radians(persp_camera->getFovy()));
     } else {
-        projParam_.ortho = 1;
+        projParam_.ortho = true;
         projParam_.orthoheight = static_cast<float>(height);
     }
 
