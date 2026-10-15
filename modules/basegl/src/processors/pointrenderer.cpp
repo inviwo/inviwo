@@ -186,8 +186,9 @@ void PointRenderer::process() {
 
         utilgl::setUniforms(shader, camera_, config_, bnl_, periodic_, labels_, texture_,
                             borderWidth_, borderColor_, antialising_, marker_);
-        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
-                                           2.0f / outport_.getDimensions().y));
+        shader.setUniform("viewport",
+                          vec4(0.0f, 0.0f, 2.0f / static_cast<float>(outport_.getDimensions().x),
+                               2.0f / static_cast<float>(outport_.getDimensions().y)));
         utilgl::setShaderUniforms(shader, *mesh, "geometry");
 
         MeshDrawerGL::DrawObject drawer(*mesh);

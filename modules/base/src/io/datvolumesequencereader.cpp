@@ -112,8 +112,6 @@ struct State {
     std::vector<std::filesystem::path> datFiles;
 };
 
-namespace {
-
 using parser = void (*)(State&, std::stringstream&);
 
 std::unordered_map<std::string_view, parser> getParsers() {
@@ -269,8 +267,6 @@ std::unordered_map<std::string_view, parser> getParsers() {
           }}}};
 }
 
-}  // namespace
-
 State parseDatFile(std::ifstream& f, const std::filesystem::path& filePath) {
     State state{};
     auto parsers = getParsers();
@@ -353,31 +349,33 @@ void resolve(State& state) {
     }
 }
 
-std::shared_ptr<Volume> createVolume(const State& state) {
-    auto volume = std::make_shared<Volume>(state.dimensions, state.format, state.swizzleMask,
-                                           state.interpolation, state.wrapping);
-    volume->setBasis(state.basis);
-    volume->setOffset(*state.offset);
-    volume->setWorldMatrix(state.wtm);
+VolumeConfig createConfig(const State& state) {
+    auto combine = [](dmat3 basis, dvec3 offset) {
+        dmat4 m{basis};
+        m[3] = dvec4(offset, 1.0);
+        return m;
+    };
 
-    if (state.dataRange) {
-        volume->dataMap.dataRange = *state.dataRange;
-    }
-    if (state.valueRange) {
-        volume->dataMap.valueRange = *state.valueRange;
-    } else {
-        volume->dataMap.valueRange = volume->dataMap.dataRange;
-    }
-
-    volume->dataMap.valueAxis.unit = state.valueUnit;
-    volume->dataMap.valueAxis.name = state.valueName;
-    volume->axes = state.axes;
-
+    return {
+        .dimensions = state.dimensions,
+        .formatId = state.format->getId(),
+        .swizzleMask = state.swizzleMask,
+        .interpolation = state.interpolation,
+        .wrapping = state.wrapping,
+        .xAxis = state.axes[0],
+        .yAxis = state.axes[1],
+        .zAxis = state.axes[2],
+        .valueAxis = Axis{.name = state.valueName, .unit = state.valueUnit},
+        .dataRange = state.dataRange,
+        .valueRange = state.valueRange,
+        .model = combine(state.basis, state.offset.value_or(dvec3{})),
+        .world = state.wtm,
+    };
+}
+void setMetaData(Volume& v, const State& state) {
     for (const auto& elem : state.metadata) {
-        volume->setMetaData<StringMetaData>(elem.first, elem.second);
+        v.setMetaData<StringMetaData>(elem.first, elem.second);
     }
-
-    return volume;
 }
 
 std::shared_ptr<VolumeDisk> createDiskRepWithLoader(const State& state,
@@ -388,9 +386,7 @@ std::shared_ptr<VolumeDisk> createDiskRepWithLoader(const State& state,
     auto diskRepr =
         std::make_shared<VolumeDisk>(datPath, state.dimensions, state.format, state.swizzleMask,
                                      state.interpolation, state.wrapping);
-
     const auto filePos = offset + state.byteOffset;
-
     auto loader =
         std::make_unique<RawVolumeRAMLoader>(rawPath, filePos, state.byteOrder, state.compression);
     diskRepr->setLoader(loader.release());
@@ -398,21 +394,16 @@ std::shared_ptr<VolumeDisk> createDiskRepWithLoader(const State& state,
     return diskRepr;
 }
 
-void updateDataRange(Volume& volume, const State& state) {
+dvec2 updateDataRange(const Volume& volume, const VolumeConfig& config) {
     auto minmax = util::volumeMinMax(&volume, IgnoreSpecialValues::No);
     // minmax always have four components, unused components are set to zero.
     // Hence, only consider components used by the data format
     dvec2 computedRange(minmax.first[0], minmax.second[0]);
-    for (size_t component = 1; component < state.format->getComponents(); ++component) {
+    for (size_t component = 1; component < volume.getDataFormat()->getComponents(); ++component) {
         computedRange = dvec2(glm::min(computedRange[0], minmax.first[component]),
                               glm::max(computedRange[1], minmax.second[component]));
     }
-    // Set value range
-    volume.dataMap.dataRange = computedRange;
-    // Also set value range if not specified
-    if (!state.valueRange) {
-        volume.dataMap.valueRange = computedRange;
-    }
+    return computedRange;
 }
 
 void perfWarning(const Volume& volume, const std::filesystem::path& filePath) {
@@ -470,28 +461,35 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
     } else {
         validateDatFile(state, filePath);
         resolve(state);
-        auto volume = createVolume(state);
+        auto config = createConfig(state);
 
-        const auto bytes = glm::compMul(state.dimensions) * (state.format->getSizeInBytes());
+        const auto bytes = glm::compMul(state.dimensions) * state.format->getSizeInBytes();
 
         for (size_t t = 0; t < state.sequences; ++t) {
-            if (t == 0) {
-                volumes->push_back(std::move(volume));
-            } else {
-                volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
-            }
-            const auto diskRepr =
-                createDiskRepWithLoader(state, filePath, fileDirectory / state.rawFile, t * bytes);
-            volumes->back()->addRepresentation(diskRepr);
+            auto volume = std::make_shared<Volume>(config);
+            setMetaData(*volume, state);
+            volume->setMetaData<SizeMetaData>(VolumeSequence::sizeMetaData, state.sequences);
+            volume->setMetaData<SizeMetaData>(VolumeSequence::indexMetaData, t);
 
-            if (t == 0 && !state.dataRange) {
+            auto diskRepr =
+                createDiskRepWithLoader(state, filePath, fileDirectory / state.rawFile, t * bytes);
+            volume->addRepresentation(diskRepr);
+
+            if (!config.dataRange) {
                 // Use min/max value in data as data range if none is given
                 // Only consider first time step since it can be time consuming
-                // to compute for all time steps
-                updateDataRange(*volumes->front(), state);
+                // to compute for all time steps,
+                const auto computedRange = updateDataRange(*volume, config);
+                volume->dataMap.dataRange = computedRange;
+                config.dataRange = computedRange;
+                // Also set value range if not specified
+                if (!config.valueRange) {
+                    volume->dataMap.valueRange = computedRange;
+                    config.valueRange = computedRange;
+                }
                 if (bytes > 128 * 128 * 128 || state.sequences > 1) {
                     // Performance warning for larger volumes (roughly > 2MB)
-                    perfWarning(*volumes->front(), filePath);
+                    perfWarning(*volume, filePath);
                 }
                 if (state.sequences > 1) {
                     log::warn(
@@ -500,6 +498,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
                         "setting the DataRange, for example to min(Volume sequence), max(Volume "
                         "sequence).");
                 }
+                volumes->push_back(std::move(volume));
             }
         }
 
@@ -538,14 +537,22 @@ std::shared_ptr<Volume> DatVolumeReader::readData(const std::filesystem::path& f
 
     validateDatFile(state, filePath);
     resolve(state);
-    auto volume = createVolume(state);
-    const auto diskRepr =
+
+    const auto config = createConfig(state);
+    auto volume = std::make_shared<Volume>(config);
+    setMetaData(*volume, state);
+    auto diskRepr =
         createDiskRepWithLoader(state, filePath, filePath.parent_path() / state.rawFile, 0);
     volume->addRepresentation(diskRepr);
 
-    const auto bytes = glm::compMul(state.dimensions) * (state.format->getSizeInBytes());
+    const auto bytes = glm::compMul(state.dimensions) * state.format->getSizeInBytes();
     if (!state.dataRange) {  // Use min/max value in data as data range if none is given
-        updateDataRange(*volume, state);
+        const auto computedRange = updateDataRange(*volume, config);
+        volume->dataMap.dataRange = computedRange;
+        // Also set value range if not specified
+        if (!config.valueRange) {
+            volume->dataMap.valueRange = computedRange;
+        }
         if (bytes > 128 * 128 * 128) {
             // Performance warning for larger volumes (rougly > 2MB)
             perfWarning(*volume, filePath);

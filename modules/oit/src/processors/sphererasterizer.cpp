@@ -178,7 +178,8 @@ void SphereRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatri
         const utilgl::Activate activate{&shader};
 
         setUniforms(shader);
-        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / imageSize.x, 2.0f / imageSize.y));
+        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / static_cast<float>(imageSize.x),
+                                           2.0f / static_cast<float>(imageSize.y)));
 
         const auto transform = CompositeTransform(mesh->getModelMatrix(),
                                                   mesh->getWorldMatrix() * worldMatrixTransform);

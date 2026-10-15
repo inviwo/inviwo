@@ -66,8 +66,8 @@ ivec2 AbstractButton::computeLabelPos(int descent) const {
     // align label to be vertically and horizontally centered within the button
     if (glm::all(glm::greaterThan(labelExtent_, ivec2(0)))) {
         vec2 labelSize(labelExtent_);
-        labelSize.y -= descent;
-        const ivec2 labelOrigin(ivec2(glm::floor(vec2(getWidgetExtentScaled()) * 0.5f + 0.5f)));
+        labelSize.y -= static_cast<float>(descent);
+        ivec2 labelOrigin(ivec2(glm::floor(vec2(getWidgetExtentScaled()) * 0.5f + 0.5f)));
         // compute offset for vertical alignment in the center
         const vec2 labelOffset(-labelSize.x * 0.5f, -labelSize.y * 0.5f);
 

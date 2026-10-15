@@ -62,8 +62,8 @@ struct IVW_CORE_API LayerConfig {
     std::optional<Axis> valueAxis = std::nullopt;
     std::optional<glm::dvec2> dataRange = std::nullopt;
     std::optional<glm::dvec2> valueRange = std::nullopt;
-    std::optional<glm::mat4> model = std::nullopt;
-    std::optional<glm::mat4> world = std::nullopt;
+    std::optional<glm::dmat4> model = std::nullopt;
+    std::optional<glm::dmat4> world = std::nullopt;
 
     static constexpr auto defaultDimensions = size2_t(8, 8);
     static constexpr auto defaultFormatId = DataUInt8::id();
@@ -76,8 +76,8 @@ struct IVW_CORE_API LayerConfig {
     static inline const auto defaultValueAxis = Axis{};
     static constexpr glm::dvec2 defaultDataRange(DataFormatId formatId = defaultFormatId);
     static constexpr glm::dvec2 defaultValueRange(DataFormatId formatId = defaultFormatId);
-    static constexpr auto defaultModel = glm::mat4{1.0f};
-    static constexpr auto defaultWorld = glm::mat4{1.0f};
+    static constexpr auto defaultModel = glm::dmat4{1.0f};
+    static constexpr auto defaultWorld = glm::dmat4{1.0f};
 
     DataMapper dataMap() const;
     DataMapper dataMap(const DataMapper& defaultMapper) const;
@@ -87,7 +87,7 @@ struct IVW_CORE_API LayerConfig {
 
     friend bool operator==(const LayerConfig&, const LayerConfig&) = default;
 
-    static glm::mat4 aspectPreservingModelMatrixFromDimensions(size2_t dimensions);
+    static glm::dmat4 aspectPreservingModelMatrixFromDimensions(size2_t dimensions);
 
     constexpr auto tie() {
         return std::tie(dimensions, formatId, swizzleMask, interpolation, wrapping, xAxis, yAxis,

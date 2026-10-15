@@ -116,9 +116,9 @@ std::shared_ptr<Image> ImageConvolution::convolution_separable(
     const float& kernelScale) {
 
     std::vector<float> kernel(kernelSize);
-    const float kernelCenter = (kernelSize - 1) / 2.0f;
+    const auto kernelCenter = static_cast<float>(kernelSize - 1) / 2.0f;
     for (int i = 0; i < kernelSize; i++) {
-        const float p = i - kernelCenter;
+        const auto p = static_cast<float>(i) - kernelCenter;
         kernel[i] = kernelWeight(p);
     }
 
