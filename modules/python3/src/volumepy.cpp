@@ -62,7 +62,7 @@ static inline PY toPY(const pybind11::array& data) {
 namespace {
 const DataFormatBase* format(pybind11::array data) {
     const auto ndim = data.ndim();
-    if (!(ndim == 3 || ndim == 4)) {
+    if (ndim != 3 && ndim != 4) {
         throw Exception("Ndims must be either 3 or 4, with 1 <= size[3] <= 4");
     }
     if ((data.flags() & pybind11::array::c_style) == 0) {
