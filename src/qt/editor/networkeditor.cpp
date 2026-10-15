@@ -398,7 +398,7 @@ QRectF NetworkEditor::getProcessorsBoundingRect() const {
     return rect;
 }
 
-std::string NetworkEditor::getMimeTag() { return "application/x.vnd.inviwo.network+xml"; }
+std::string_view NetworkEditor::getMimeTag() { return "application/x.vnd.inviwo.network+xml"; }
 
 ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItemAt(QPointF pos) const {
     return getGraphicsItemAt<ProcessorGraphicsItem>(pos);
