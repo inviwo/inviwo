@@ -116,7 +116,7 @@ ImageToDataFrame::ImageToDataFrame()
     addProperty(layerIndex_);
     addProperty(range_);
 
-    auto updateRange = [this]() {
+    const auto updateRange = [this]() {
         if (inport_.hasData()) {
             if (mode_ == Mode::Rows) {
                 range_.setRangeMax(inport_.getData()->getDimensions().y);
@@ -153,13 +153,14 @@ void ImageToDataFrame::process() {
     switch (mode_.get()) {
         case Mode::Analytics: {
 
-            auto size = dims.x * dims.y;
-            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
+            const auto size = dims.x * dims.y;
+            const auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
 
             std::vector<std::vector<float>*> channelBuffer_;
-            auto numCh = layer->getDataFormat()->getComponents();
+            const auto numCh = layer->getDataFormat()->getComponents();
             for (size_t c = 0; c < numCh; c++) {
-                auto col = dataFrame->addColumn<float>(fmt::format("Channel {}", c + 1), size);
+                const auto col =
+                    dataFrame->addColumn<float>(fmt::format("Channel {}", c + 1), size);
                 channelBuffer_.push_back(
                     &col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer());
             }
@@ -279,7 +280,7 @@ void ImageToDataFrame::process() {
                                     ->getEditableRAMRepresentation()
                                     ->getDataContainer();
 
-                    for (size_t j = 0; j < dims.y; ++i) {
+                    for (const size_t j = 0; j < dims.y; ++i) {
                         col[j] = data[im(i, j)];
                     }
                 }

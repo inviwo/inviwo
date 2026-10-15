@@ -195,7 +195,7 @@ void LightVolumeGL::process() {
         reattach = volumeChanged(lightColorChanged);
     }
 
-    auto* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
+    const auto* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
     const TextureUnit volUnit;
     const auto* inVolumeGL = inport_.getData()->getRepresentation<VolumeGL>();
     inVolumeGL->bindTexture(volUnit.getEnum());
@@ -359,7 +359,7 @@ bool LightVolumeGL::lightSourceChanged() {
 }
 
 bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
-    auto input = inport_.getData();
+    const auto input = inport_.getData();
     const size3_t inDim = input->getDimensions();
     const size3_t outDim{inDim.x / volumeSizeOption_.get(), inDim.y / volumeSizeOption_.get(),
                          inDim.z / volumeSizeOption_.get()};
@@ -388,7 +388,8 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
         }
 
         outport_.setData(nullptr);
-        auto volumeGL = std::make_shared<VolumeGL>(volumeDimOut_, DataFormatBase::get(format));
+        const auto volumeGL =
+            std::make_shared<VolumeGL>(volumeDimOut_, DataFormatBase::get(format));
         volumeGL->getTexture()->initialize(nullptr);
         volume_ = std::make_shared<Volume>(volumeGL);
         outport_.setData(volume_);
@@ -396,7 +397,7 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
         internalVolumesInvalid_ = false;
         return true;
     } else if (lightColorChanged) {
-        for (auto& elem : propParams_) {
+        for (const auto& elem : propParams_) {
             elem.tex.bind();
             glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR,
                              glm::value_ptr(supportColoredLight_ ? lightColor_ : borderColor_));

@@ -63,7 +63,7 @@ PythonWorkspaceScripts::PythonWorkspaceScripts(WorkspaceManager& manager)
     })}
     , cHandle_{manager.onClear([this]() {
         while (!pythonScripts_.empty()) {
-            auto it = pythonScripts_.begin();
+            const auto it = pythonScripts_.begin();
             notifyObserversOnScriptRemoved(it->first, it->second);
             pythonScripts_.erase(it);
         }
@@ -77,7 +77,7 @@ void PythonWorkspaceScripts::addScript(std::string_view key, std::string_view sc
 }
 
 void PythonWorkspaceScripts::updateScript(std::string_view key, std::string_view script) {
-    if (auto it = pythonScripts_.find(key); it != pythonScripts_.end()) {
+    if (const auto it = pythonScripts_.find(key); it != pythonScripts_.end()) {
         if (it->second != script) {
             it->second = script;
             notifyObserversOnScriptUpdate(it->first, it->second);
@@ -87,7 +87,7 @@ void PythonWorkspaceScripts::updateScript(std::string_view key, std::string_view
 }
 
 void PythonWorkspaceScripts::removeScript(std::string_view key) {
-    if (auto it = pythonScripts_.find(key); it != pythonScripts_.end()) {
+    if (const auto it = pythonScripts_.find(key); it != pythonScripts_.end()) {
         notifyObserversOnScriptRemoved(it->first, it->second);
         pythonScripts_.erase(it);
         manager_.setModified();
@@ -95,7 +95,7 @@ void PythonWorkspaceScripts::removeScript(std::string_view key) {
 }
 
 std::optional<std::string_view> PythonWorkspaceScripts::getScript(std::string_view key) {
-    if (auto it = pythonScripts_.find(key); it != pythonScripts_.end()) {
+    if (const auto it = pythonScripts_.find(key); it != pythonScripts_.end()) {
         return it->second;
     } else {
         return std::nullopt;

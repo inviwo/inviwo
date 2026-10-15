@@ -97,7 +97,7 @@ void OutputStream::openVideo(AVDictionary* opt_arg) {
     encoder.open(opt_arg);
 
     /* copy the stream parameters to the muxer */
-    if (auto ret = avcodec_parameters_from_context(stream->codecpar, encoder.ctx); ret < 0) {
+    if (const auto ret = avcodec_parameters_from_context(stream->codecpar, encoder.ctx); ret < 0) {
         throw Exception(SourceContext{}, "Could not copy the stream parameters: {}", Error{ret});
     }
 }

@@ -374,7 +374,7 @@ std::filesystem::path downloadAndCacheIfUrl(const std::filesystem::path& url) {
         return url;
     }
 
-    auto cacheDir = filesystem::getPath(PathType::Cache);
+    const auto cacheDir = filesystem::getPath(PathType::Cache);
     std::filesystem::create_directories(cacheDir);
 
     const auto file = cacheDir / fmt::format("{:x}-{}", std::hash<std::filesystem::path>{}(url),

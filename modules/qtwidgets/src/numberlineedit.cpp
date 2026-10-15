@@ -200,7 +200,7 @@ QSize NumberLineEdit::minimumSizeHint() const {
 
 QSize NumberLineEdit::calcMinimumSize() const {
     ensurePolished();
-    QSize hint(minimumWidth_, lineEdit()->minimumSizeHint().height());
+    const QSize hint(minimumWidth_, lineEdit()->minimumSizeHint().height());
     QStyleOptionSpinBox opt;
     initStyleOption(&opt);
 
@@ -224,7 +224,7 @@ QString NumberLineEdit::textFromValue(double value) const {
         return "-";
     }
 
-    auto formatNumber = [&](double v) {
+    const auto formatNumber = [&](double v) {
         if (integerMode_) {
             return nlePrivate_->formatAsInt(v);
         } else {
@@ -235,7 +235,7 @@ QString NumberLineEdit::textFromValue(double value) const {
     if (abbreviated_) {
         ensurePolished();
         const int availableWidth = lineEdit()->geometry().width() - 4;
-        QFontMetrics fm = lineEdit()->fontMetrics();
+        const QFontMetrics fm = lineEdit()->fontMetrics();
 
         auto str = formatNumber(value);
         if (fm.boundingRect(str).width() < availableWidth) {
@@ -253,7 +253,7 @@ QString NumberLineEdit::textFromValue(double value) const {
 
 double NumberLineEdit::valueFromText(const QString& str) const {
     bool ok = false;
-    double value = nlePrivate_->getLocale().toDouble(str, &ok);
+    const double value = nlePrivate_->getLocale().toDouble(str, &ok);
     return ok ? value : QDoubleSpinBox::value();
 }
 
@@ -283,7 +283,7 @@ void NumberLineEdit::timerEvent(QTimerEvent* event) { event->accept(); }
 void NumberLineEdit::focusInEvent(QFocusEvent* e) {
     abbreviated_ = false;
     {
-        QSignalBlocker block(lineEdit());
+        const QSignalBlocker block(lineEdit());
         lineEdit()->setText(textFromValue(value()));
     }
     QDoubleSpinBox::focusInEvent(e);

@@ -214,9 +214,9 @@ MouseEvent mouseEvent(MouseButton mb, MouseState ms, MouseButtons mbs, uvec2 pos
 
 TouchEvent touchEvent(TouchState ts, uvec2 pos, uvec2 cdim,
                       TouchDevice touchDevice = TouchDevice(TouchDevice::DeviceType::TouchPad)) {
-    auto prevPosNorm = dvec2{pos} / dvec2{cdim};
-    auto pressedPosNormalized = dvec2{pos} / dvec2{cdim};
-    double pressure = 0.5;
+    const auto prevPosNorm = dvec2{pos} / dvec2{cdim};
+    const auto pressedPosNormalized = dvec2{pos} / dvec2{cdim};
+    const double pressure = 0.5;
     return TouchEvent({TouchPoint(0, ts, dvec2{pos} / dvec2{cdim}, prevPosNorm,
                                   pressedPosNormalized, cdim, pressure, 0.5)},
                       &touchDevice, KeyModifiers(flags::empty));
@@ -297,7 +297,7 @@ TEST(PickingControllerTest, IdleMove) {
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
-        uvec2 pos{1, 2};  // id = 0
+        const uvec2 pos{1, 2};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -305,7 +305,7 @@ TEST(PickingControllerTest, IdleMove) {
     }
     {
         SCOPED_TRACE("Move 1,1 -> 1,2");
-        uvec2 pos{1, 2};  // id = 0
+        const uvec2 pos{1, 2};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -319,7 +319,7 @@ TEST(PickingControllerTest, IdleMoveTouch) {
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     {
-        uvec2 pos{1, 2};  // id = 0
+        const uvec2 pos{1, 2};  // id = 0
         auto event = touchEvent(TouchState::Updated, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -327,7 +327,7 @@ TEST(PickingControllerTest, IdleMoveTouch) {
     }
     {
         SCOPED_TRACE("Move 1,1 -> 1,2");
-        uvec2 pos{1, 2};  // id = 0
+        const uvec2 pos{1, 2};  // id = 0
         auto event = touchEvent(TouchState::Updated, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -341,7 +341,7 @@ TEST(PickingControllerTest, MoveTouchAround) {
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
     {
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
         auto event = touchEvent(TouchState::Started, pos, dim);
 
         TestPropagator tp;
@@ -351,7 +351,7 @@ TEST(PickingControllerTest, MoveTouchAround) {
     {
         SCOPED_TRACE("Move 1,1 -> 3,3");
         // uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
         auto event = touchEvent(TouchState::Updated, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -361,8 +361,8 @@ TEST(PickingControllerTest, MoveTouchAround) {
     }
     {
         SCOPED_TRACE("Move 3,3 -> 3,4");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{3, 4};  // id = 1
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{3, 4};  // id = 1
         auto event = touchEvent(TouchState::Updated, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -372,8 +372,8 @@ TEST(PickingControllerTest, MoveTouchAround) {
     }
     {
         SCOPED_TRACE("Move 3,4 -> 1,4");
-        uvec2 pre{3, 4};  // id = 1
-        uvec2 pos{1, 4};  // id = 0
+        const uvec2 pre{3, 4};  // id = 1
+        const uvec2 pos{1, 4};  // id = 0
         auto event = touchEvent(TouchState::Updated, pos, dim);
 
         TestPropagator tp;
@@ -384,8 +384,8 @@ TEST(PickingControllerTest, MoveTouchAround) {
     }
     {
         SCOPED_TRACE("Move 1,4 -> 3,3 again");
-        uvec2 pre{1, 4};  // id = 0
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pre{1, 4};  // id = 0
+        const uvec2 pos{3, 3};  // id = 1
         auto event = touchEvent(TouchState::Updated, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -395,8 +395,8 @@ TEST(PickingControllerTest, MoveTouchAround) {
     }
     {
         SCOPED_TRACE("Move 3,3 -> 6,6");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{6, 6};  // id = 2
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{6, 6};  // id = 2
         auto event = touchEvent(TouchState::Updated, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -420,7 +420,7 @@ TEST(PickingControllerTest, MoveMouseAround) {
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
 
         TestPropagator tp;
@@ -430,7 +430,7 @@ TEST(PickingControllerTest, MoveMouseAround) {
     {
         SCOPED_TRACE("Move 1,1 -> 3,3");
         // uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -440,8 +440,8 @@ TEST(PickingControllerTest, MoveMouseAround) {
     }
     {
         SCOPED_TRACE("Move 3,3 -> 3,4");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{3, 4};  // id = 1
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{3, 4};  // id = 1
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -451,8 +451,8 @@ TEST(PickingControllerTest, MoveMouseAround) {
     }
     {
         SCOPED_TRACE("Move 3,4 -> 1,4");
-        uvec2 pre{3, 4};  // id = 1
-        uvec2 pos{1, 4};  // id = 0
+        const uvec2 pre{3, 4};  // id = 1
+        const uvec2 pos{1, 4};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
 
         TestPropagator tp;
@@ -463,8 +463,8 @@ TEST(PickingControllerTest, MoveMouseAround) {
     }
     {
         SCOPED_TRACE("Move 1,4 -> 3,3 again");
-        uvec2 pre{1, 4};  // id = 0
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pre{1, 4};  // id = 0
+        const uvec2 pos{3, 3};  // id = 1
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -474,8 +474,8 @@ TEST(PickingControllerTest, MoveMouseAround) {
     }
     {
         SCOPED_TRACE("Move 3,3 -> 6,6");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{6, 6};  // id = 2
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{6, 6};  // id = 2
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -495,7 +495,7 @@ TEST(PickingControllerTest, MoveMouseAround) {
 
 void doTouchPress(PickingControllerTouchState& ms) {
     {
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
         auto event = touchEvent(TouchState::Started, pos, dim);
 
         TestPropagator tp;
@@ -504,7 +504,7 @@ void doTouchPress(PickingControllerTouchState& ms) {
     }
     {  // Move
         // uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
         auto event = touchEvent(TouchState::Updated, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -514,8 +514,8 @@ void doTouchPress(PickingControllerTouchState& ms) {
                          PPI::None, 2, 2, 0, 0, 1, 1, 0, 0, ndc(pos), dvec3{0.0}, dvec3{0.0});
     }
     {                     // Press
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
         auto event = touchEvent(TouchState::Stationary, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -527,9 +527,9 @@ void doTouchPress(PickingControllerTouchState& ms) {
 }
 
 void doTouchScreenPress(PickingControllerTouchState& ms) {
-    TouchDevice device{TouchDevice::DeviceType::TouchScreen};
+    const TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {                     // Press
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
         auto event = touchEvent(TouchState::Started, pos, dim, device);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -552,8 +552,8 @@ TEST(PickingControllerTest, TouchPressRelease) {
     }
     {
         SCOPED_TRACE("Drag 3,3 -> 3,4");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{3, 4};  // id = 1
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{3, 4};  // id = 1
 
         auto event = touchEvent(TouchState::Stationary, pos, dim);
         TestPropagator tp;
@@ -565,8 +565,8 @@ TEST(PickingControllerTest, TouchPressRelease) {
     }
     {
         SCOPED_TRACE("Release 3,4");
-        uvec2 pre{3, 4};  // id = 1
-        uvec2 pos{3, 4};  // id = 1
+        const uvec2 pre{3, 4};  // id = 1
+        const uvec2 pos{3, 4};  // id = 1
         auto event = touchEvent(TouchState::Updated, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -577,8 +577,8 @@ TEST(PickingControllerTest, TouchPressRelease) {
     }
     {
         SCOPED_TRACE("Move 3,4 -> 3,3");
-        uvec2 pre{3, 4};  // id = 1
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pre{3, 4};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
         auto event = touchEvent(TouchState::Updated, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -593,15 +593,15 @@ TEST(PickingControllerTest, TouchScreenPressRelease) {
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
-    TouchDevice device{TouchDevice::DeviceType::TouchScreen};
+    const TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {
         SCOPED_TRACE("Press-Release");
         doTouchScreenPress(ms);
     }
     {
         SCOPED_TRACE("Drag 3,3 -> 3,4");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{3, 4};  // id = 1
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{3, 4};  // id = 1
 
         auto event = touchEvent(TouchState::Updated, pos, dim, device);
         TestPropagator tp;
@@ -613,8 +613,8 @@ TEST(PickingControllerTest, TouchScreenPressRelease) {
     }
     {
         SCOPED_TRACE("Release 3,4");
-        uvec2 pre{3, 4};  // id = 1
-        uvec2 pos{3, 4};  // id = 1
+        const uvec2 pre{3, 4};  // id = 1
+        const uvec2 pos{3, 4};  // id = 1
         auto event = touchEvent(TouchState::Finished, pos, dim, device);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -629,7 +629,7 @@ TEST(PickingControllerTest, TouchScreenPressRelease) {
 
 void doMousePress(PickingControllerMouseState& ms) {
     {
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
 
         TestPropagator tp;
@@ -638,7 +638,7 @@ void doMousePress(PickingControllerMouseState& ms) {
     }
     {  // Move
         // uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -648,8 +648,8 @@ void doMousePress(PickingControllerMouseState& ms) {
                          PPI::None, 2, 2, 0, 0, 1, 1, 0, 0, ndc(pos), dvec3{0.0}, dvec3{0.0});
     }
     {                     // Press
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
         auto event = mouseEvent(B::Left, S::Press, Bs{B::Left}, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -671,8 +671,8 @@ TEST(PickingControllerTest, MousePressRelease) {
     }
     {
         SCOPED_TRACE("Drag 3,3 -> 3,4");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{3, 4};  // id = 1
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{3, 4};  // id = 1
 
         auto event = mouseEvent(B::None, S::Move, Bs{B::Left}, pos, dim);
         TestPropagator tp;
@@ -684,8 +684,8 @@ TEST(PickingControllerTest, MousePressRelease) {
     }
     {
         SCOPED_TRACE("Release 3,4");
-        uvec2 pre{3, 4};  // id = 1
-        uvec2 pos{3, 4};  // id = 1
+        const uvec2 pre{3, 4};  // id = 1
+        const uvec2 pos{3, 4};  // id = 1
         auto event = mouseEvent(B::Left, S::Release, Bs{flags::empty}, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -696,8 +696,8 @@ TEST(PickingControllerTest, MousePressRelease) {
     }
     {
         SCOPED_TRACE("Move 3,4 -> 3,3");
-        uvec2 pre{3, 4};  // id = 1
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pre{3, 4};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -718,8 +718,8 @@ TEST(PickingControllerTest, TouchDrag1to2) {
     }
     {
         SCOPED_TRACE("Drag 3,3 -> 6,6");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{6, 6};  // id = 2
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{6, 6};  // id = 2
         auto event = touchEvent(TouchState::Stationary, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -734,15 +734,15 @@ TEST(PickingControllerTest, TouchScreenDrag1to2) {
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
-    TouchDevice device{TouchDevice::DeviceType::TouchScreen};
+    const TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {
         SCOPED_TRACE("Drag");
         doTouchScreenPress(ms);
     }
     {
         SCOPED_TRACE("Drag 3,3 -> 6,6");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{6, 6};  // id = 2
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{6, 6};  // id = 2
         auto event = touchEvent(TouchState::Updated, pos, dim, device);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
@@ -763,8 +763,8 @@ TEST(PickingControllerTest, MouseDrag1to2) {
     }
     {
         SCOPED_TRACE("Drag 3,3 -> 6,6");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{6, 6};  // id = 2
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{6, 6};  // id = 2
 
         auto event = mouseEvent(B::None, S::Move, Bs{B::Left}, pos, dim);
         TestPropagator tp;
@@ -786,8 +786,8 @@ TEST(PickingControllerTest, MouseDrag1to0) {
     }
     {
         SCOPED_TRACE("Drag 3,3 -> 1,1");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{1, 1};  // id = 0
 
         auto event = mouseEvent(B::None, S::Move, Bs{B::Left}, pos, dim);
         TestPropagator tp;
@@ -799,8 +799,8 @@ TEST(PickingControllerTest, MouseDrag1to0) {
     }
     {
         SCOPED_TRACE("Release 1,1");
-        uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pre{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
 
         auto event = mouseEvent(B::Left, S::Release, Bs{flags::empty}, pos, dim);
         TestPropagator tp;
@@ -817,15 +817,15 @@ TEST(PickingControllerTest, TouchDrag1to0) {
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
-    TouchDevice device{TouchDevice::DeviceType::TouchPad};
+    const TouchDevice device{TouchDevice::DeviceType::TouchPad};
     {
         SCOPED_TRACE("Drag");
         doTouchPress(ms);
     }
     {
         SCOPED_TRACE("Drag 3,3 -> 1,1");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{1, 1};  // id = 0
 
         auto event = touchEvent(TouchState::Stationary, pos, dim, device);
         TestPropagator tp;
@@ -837,8 +837,8 @@ TEST(PickingControllerTest, TouchDrag1to0) {
     }
     {
         SCOPED_TRACE("Release 1,1");
-        uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pre{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
 
         auto event = touchEvent(TouchState::Updated, pos, dim, device);
         TestPropagator tp;
@@ -855,15 +855,15 @@ TEST(PickingControllerTest, TouchScreenDrag1to0) {
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
-    TouchDevice device{TouchDevice::DeviceType::TouchScreen};
+    const TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {
         SCOPED_TRACE("Drag");
         doTouchScreenPress(ms);
     }
     {
         SCOPED_TRACE("Drag 3,3 -> 1,1");
-        uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pre{3, 3};  // id = 1
+        const uvec2 pos{1, 1};  // id = 0
 
         auto event = touchEvent(TouchState::Updated, pos, dim, device);
         TestPropagator tp;
@@ -875,8 +875,8 @@ TEST(PickingControllerTest, TouchScreenDrag1to0) {
     }
     {
         SCOPED_TRACE("Release 1,1");
-        uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pre{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
 
         auto event = touchEvent(TouchState::Finished, pos, dim, device);
         TestPropagator tp;
@@ -894,7 +894,7 @@ TEST(PickingControllerTest, MouseDrag0to1) {
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
 
         TestPropagator tp;
@@ -904,7 +904,7 @@ TEST(PickingControllerTest, MouseDrag0to1) {
     {
         SCOPED_TRACE("Press 1,1");
         // uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
 
         auto event = mouseEvent(B::Left, S::Press, Bs{B::Left}, pos, dim);
         TestPropagator tp;
@@ -915,7 +915,7 @@ TEST(PickingControllerTest, MouseDrag0to1) {
     {
         SCOPED_TRACE("Drag 1,1 -> 3,3");
         // uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
 
         auto event = mouseEvent(B::None, S::Move, Bs{B::Left}, pos, dim);
         TestPropagator tp;
@@ -925,7 +925,7 @@ TEST(PickingControllerTest, MouseDrag0to1) {
     {
         SCOPED_TRACE("Release 3,3");
         // uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
 
         auto event = mouseEvent(B::Left, S::Release, Bs{flags::empty}, pos, dim);
         TestPropagator tp;
@@ -942,9 +942,9 @@ TEST(PickingControllerTest, TouchDrag0to1) {
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
-    TouchDevice device{TouchDevice::DeviceType::TouchPad};
+    const TouchDevice device{TouchDevice::DeviceType::TouchPad};
     {
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
         auto event = touchEvent(TouchState::Started, pos, dim, device);
 
         TestPropagator tp;
@@ -954,7 +954,7 @@ TEST(PickingControllerTest, TouchDrag0to1) {
     {
         SCOPED_TRACE("Press 1,1");
         // uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
 
         auto event = touchEvent(TouchState::Stationary, pos, dim, device);
         TestPropagator tp;
@@ -965,7 +965,7 @@ TEST(PickingControllerTest, TouchDrag0to1) {
     {
         SCOPED_TRACE("Drag 1,1 -> 3,3");
         // uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
 
         auto event = touchEvent(TouchState::Stationary, pos, dim, device);
         TestPropagator tp;
@@ -975,7 +975,7 @@ TEST(PickingControllerTest, TouchDrag0to1) {
     {
         SCOPED_TRACE("Release 3,3");
         // uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
 
         auto event = touchEvent(TouchState::Updated, pos, dim, device);
         TestPropagator tp;
@@ -993,9 +993,9 @@ TEST(PickingControllerTest, TouchScreenDrag0to1) {
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
     PickingControllerTouchState ms(&pm);
-    TouchDevice device{TouchDevice::DeviceType::TouchScreen};
+    const TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {
-        uvec2 pos{1, 1};  // id = 0
+        const uvec2 pos{1, 1};  // id = 0
         auto event = touchEvent(TouchState::Started, pos, dim, device);
 
         TestPropagator tp;
@@ -1006,7 +1006,7 @@ TEST(PickingControllerTest, TouchScreenDrag0to1) {
     {
         SCOPED_TRACE("Drag 1,1 -> 3,3");
         // uvec2 pre{1, 1};  // id = 0
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
 
         auto event = touchEvent(TouchState::Updated, pos, dim, device);
         TestPropagator tp;
@@ -1016,7 +1016,7 @@ TEST(PickingControllerTest, TouchScreenDrag0to1) {
     {
         SCOPED_TRACE("Release 3,3");
         // uvec2 pre{3, 3};  // id = 1
-        uvec2 pos{3, 3};  // id = 1
+        const uvec2 pos{3, 3};  // id = 1
 
         auto event = touchEvent(TouchState::Finished, pos, dim, device);
         TestPropagator tp;

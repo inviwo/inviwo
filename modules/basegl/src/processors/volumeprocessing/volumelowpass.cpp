@@ -108,8 +108,8 @@ void VolumeLowPass::preProcess([[maybe_unused]] TextureUnitContainer& cont, Shad
                                [[maybe_unused]] VolumeConfig& config) {
     utilgl::setUniforms(shader, kernelSize_);
 
-    float sigmaSq2 = 2.0f * sigma_.get() * sigma_.get();
-    float a = 1.0f / (sigmaSq2 * std::numbers::pi_v<float>);
+    const float sigmaSq2 = 2.0f * sigma_.get() * sigma_.get();
+    const float a = 1.0f / (sigmaSq2 * std::numbers::pi_v<float>);
 
     shader.setUniform("sigmaSq2", sigmaSq2);
     shader.setUniform("a", a);

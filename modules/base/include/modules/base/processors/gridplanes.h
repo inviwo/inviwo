@@ -65,12 +65,12 @@ public:
 
         getBoolProperty()->setDisplayName("Sync");
 
-        auto sync = [&](Prop* current) {
+        const auto sync = [&](Prop* current) {
             return [this, current]() {
                 if (!getBoolProperty()->get()) return;
                 for (auto& prop : props) {
                     if (&prop != current) {
-                        OnChangeBlocker block(prop);
+                        const OnChangeBlocker block(prop);
                         prop.set(current->get());
                     }
                 }

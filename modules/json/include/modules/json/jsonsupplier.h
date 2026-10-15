@@ -58,7 +58,7 @@ public:
     }
 
     void unregisterJSONConverters() {
-        for (auto& elem : converters_) {
+        for (const auto& elem : converters_) {
             registry_.unRegisterObject(elem.get());
         }
         converters_.clear();

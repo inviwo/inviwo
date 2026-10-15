@@ -58,8 +58,8 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> createVolumes(
                                       .valueRange = dvec2{-1.0, 1.0},
                                       .model = basis};
 
-    auto scalar = scalars(scalarCfg);
-    auto gradient = gradients(gradientCfg);
+    const auto scalar = scalars(scalarCfg);
+    const auto gradient = gradients(gradientCfg);
 
     const auto im = util::IndexMapper3D(dims);
     const auto i2w = scalar->getCoordinateTransformer().getIndexToWorldMatrix();
@@ -72,8 +72,8 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> createVolumes(
         dynamic_cast<VolumeRAMPrecision<vec3>*>(gradient->getEditableRepresentation<VolumeRAM>());
     IVW_ASSERT(gradientRep, "should exist");
 
-    auto scalarView = scalarRep->getView();
-    auto gradientView = gradientRep->getView();
+    const auto scalarView = scalarRep->getView();
+    const auto gradientView = gradientRep->getView();
 
     switch (mode) {
         case TestVolumeCreator::Mode::Sin1D:

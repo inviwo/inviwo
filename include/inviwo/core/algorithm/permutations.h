@@ -45,7 +45,7 @@ template <typename T>
 std::vector<T> makeVectorRange(ptrdiff_t start, ptrdiff_t end, ptrdiff_t step = 1) {
     std::vector<T> res(static_cast<size_t>((end - start) / step));
     std::generate(res.begin(), res.end(), [i = start, step]() mutable {
-        auto tmp = i;
+        const auto tmp = i;
         i += step;
         return static_cast<T>(tmp);
     });

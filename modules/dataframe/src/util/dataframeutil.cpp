@@ -119,9 +119,9 @@ std::shared_ptr<DataFrame> appendColumns(const DataFrame& left, const DataFrame&
 
     auto dataframe = std::make_shared<DataFrame>(left);
 
-    for (auto srcCol : right) {
+    for (const auto srcCol : right) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
-        if (auto col = left.getColumn(srcCol->getHeader()); col && ignoreDuplicates) {
+        if (const auto col = left.getColumn(srcCol->getHeader()); col && ignoreDuplicates) {
             continue;
         }
         dataframe->addColumn(std::shared_ptr<Column>(srcCol->clone()));
@@ -130,7 +130,7 @@ std::shared_ptr<DataFrame> appendColumns(const DataFrame& left, const DataFrame&
 
     if (fillMissingRows) {
         const size_t numRows = dataframe->getNumberOfRows();
-        for (auto col : *dataframe) {
+        for (const auto col : *dataframe) {
             if (col->getSize() != numRows) {
                 col->getBuffer()->getEditableRepresentation<BufferRAM>()->dispatch<void>(
                     [numRows, col](auto typedBuf) {
@@ -162,8 +162,8 @@ std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bot
 
     auto dataframe = std::make_shared<DataFrame>(top);
     if (matchByName) {
-        for (auto srcCol : bottom) {
-            if (auto col = dataframe->getColumn(srcCol->getHeader())) {
+        for (const auto srcCol : bottom) {
+            if (const auto col = dataframe->getColumn(srcCol->getHeader())) {
                 col->append(*srcCol);
             } else {
                 throw Exception(SourceContext{}, "column '{}' not found in top DataFrame",
@@ -186,8 +186,8 @@ void columnCheck(const DataFrame& left, const DataFrame& right,
                  const std::vector<std::pair<std::string, std::string>>& keyColumns,
                  Literal context) {
     for (const auto& [leftCol, rightCol] : keyColumns) {
-        auto indexCol1 = left.getColumn(leftCol);
-        auto indexCol2 = right.getColumn(rightCol);
+        const auto indexCol1 = left.getColumn(leftCol);
+        const auto indexCol2 = right.getColumn(rightCol);
         if (!indexCol1) {
             throw Exception(SourceContext(context),
                             "key column '{}' missing in the left data frame", leftCol);
@@ -269,20 +269,20 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
     const DataFrame& left, const DataFrame& right,
     const std::vector<std::pair<std::string, std::string>>& keyColumns) {
 
-    auto indexCol1 = left.getColumn(keyColumns.front().first);
-    auto indexCol2 = right.getColumn(keyColumns.front().second);
+    const auto indexCol1 = left.getColumn(keyColumns.front().first);
+    const auto indexCol2 = right.getColumn(keyColumns.front().second);
 
     auto rows = detail::getMatchingRows(indexCol1, indexCol2);
     // narrow down row selection by filtering with remaining keys
     for (auto&& [leftName, rightName] : util::as_range(keyColumns.begin() + 1, keyColumns.end())) {
-        auto leftCol = left.getColumn(leftName);
-        auto rightCol = right.getColumn(rightName);
+        const auto leftCol = left.getColumn(leftName);
+        const auto rightCol = right.getColumn(rightName);
 
         if (auto catCol1 = dynamic_cast<const CategoricalColumn*>(leftCol.get())) {
             auto catCol2 = dynamic_cast<const CategoricalColumn*>(rightCol.get());
             IVW_ASSERT(catCol2, "right column is not categorical");
 
-            auto valuesLeftIt = catCol1->begin();
+            const auto valuesLeftIt = catCol1->begin();
             auto valuesRightIt = catCol2->begin();
             for (auto&& [i, rowMatches] : util::enumerate<std::uint32_t>(rows)) {
                 std::erase_if(rowMatches, [key = *(valuesLeftIt + i), valuesRightIt](auto row) {
@@ -312,7 +312,7 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
 
 void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 const std::vector<std::string>& keyColumns, bool skipKeyCol) {
-    for (auto srcCol : srcDataFrame) {
+    for (const auto srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
@@ -323,7 +323,7 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
 void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 const std::vector<std::uint32_t>& rows, const std::vector<std::string>& keyColumns,
                 bool skipKeyCol) {
-    for (auto srcCol : srcDataFrame) {
+    for (const auto srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
@@ -334,12 +334,12 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
 void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 const std::vector<std::optional<std::uint32_t>>& rows,
                 const std::vector<std::string>& keyColumns, bool skipKeyCol) {
-    for (auto srcCol : srcDataFrame) {
+    for (const auto srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
 
         if (auto c = dynamic_cast<CategoricalColumn*>(srcCol.get())) {
-            auto data = util::transform(rows, [range = c->values()](auto v) {
+            const auto data = util::transform(rows, [range = c->values()](auto v) {
                 return v.has_value() ? *(range.begin() + v.value()) : "undefined";
             });
             dst->addCategoricalColumn(c->getHeader(), data);
@@ -363,8 +363,8 @@ std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& rig
                                      const std::pair<std::string, std::string>& keyColumn) {
     detail::columnCheck(left, right, {keyColumn}, "dataframe::innerJoin"_sl);
 
-    auto indexCol1 = left.getColumn(keyColumn.first);
-    auto indexCol2 = right.getColumn(keyColumn.second);
+    const auto indexCol1 = left.getColumn(keyColumn.first);
+    const auto indexCol2 = right.getColumn(keyColumn.second);
 
     std::vector<std::uint32_t> rowsLeft;
     std::vector<std::uint32_t> rowsRight;
@@ -429,10 +429,10 @@ std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& righ
                                     const std::pair<std::string, std::string>& keyColumn) {
     detail::columnCheck(left, right, {keyColumn}, "dataframe::leftJoin"_sl);
 
-    auto indexCol1 = left.getColumn(keyColumn.first);
-    auto indexCol2 = right.getColumn(keyColumn.second);
+    const auto indexCol1 = left.getColumn(keyColumn.first);
+    const auto indexCol2 = right.getColumn(keyColumn.second);
 
-    auto rows = util::transform(
+    const auto rows = util::transform(
         detail::getMatchingRows<true>(indexCol1, indexCol2),
         [](const std::vector<std::uint32_t>& rowIndices) -> std::optional<std::uint32_t> {
             if (rowIndices.empty()) {
@@ -463,7 +463,7 @@ std::shared_ptr<DataFrame> leftJoin(
 
     detail::columnCheck(left, right, keyColumns, "dataframe::leftJoin"_sl);
 
-    auto rows = util::transform(
+    const auto rows = util::transform(
         detail::getMatchingRows(left, right, keyColumns),
         [](const std::vector<std::uint32_t>& rowIndices) -> std::optional<std::uint32_t> {
             if (rowIndices.empty()) {
@@ -499,7 +499,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
     }
 
     size_t newSize = 0;
-    for (auto& hf : dataFrames) {
+    for (const auto& hf : dataFrames) {
         newSize += hf->getNumberOfRows();
     }
 
@@ -507,19 +507,19 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
         throw Exception("All input DataFrames are empty");
     }
 
-    auto first = *dataFrames.front();
+    const auto first = *dataFrames.front();
     {
         std::map<std::string, const DataFormatBase*> columnType;
 
-        for (auto col : first) {
+        for (const auto col : first) {
             if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
             columnType[col->getHeader()] = col->getBuffer()->getDataFormat();
         }
 
         for (auto df = dataFrames.begin() + 1; df != dataFrames.end(); ++df) {
-            for (auto col : *df->get()) {
+            for (const auto col : *df->get()) {
                 if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
-                auto it = columnType.find(col->getHeader());
+                const auto it = columnType.find(col->getHeader());
                 if (it == columnType.end()) {
                     throw Exception(SourceContext{},
                                     "Column {} did not exist in first DataFrame but in at least "
@@ -549,7 +549,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                 columns[col->getHeader()] = newDataFrame->addColumn<ValueType>(col->getHeader());
             });
     }
-    for (auto& data : dataFrames) {
+    for (const auto& data : dataFrames) {
         for (auto col : *(data.get())) {
             if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
 
@@ -583,7 +583,7 @@ std::vector<std::uint32_t> selectRows(const Column& col,
                 [v = value](const std::function<bool(std::string_view)>& func) { return func(v); },
                 [](const std::function<bool(int64_t)>&) { return false; },
                 [](const std::function<bool(double)>&) { return false; }};
-            auto op = [&](const auto& f) { return std::visit(test, f.filter); };
+            const auto op = [&](const auto& f) { return std::visit(test, f.filter); };
             if (std::any_of(filters.begin(), filters.end(), op)) {
                 rows.push_back(row);
             }
@@ -617,7 +617,7 @@ std::vector<std::uint32_t> selectRows(const Column& col,
                                 }
                             },
                             [](const std::function<bool(std::string_view)>&) { return false; }};
-                        auto op = [&](const auto& f) { return std::visit(test, f.filter); };
+                        const auto op = [&](const auto& f) { return std::visit(test, f.filter); };
                         if (std::any_of(filters.begin(), filters.end(), op)) {
                             rows.push_back(row);
                         }
@@ -632,14 +632,14 @@ std::vector<std::uint32_t> selectRows(const DataFrame& dataframe,
                                       dataframefilters::Filters filters) {
     const int colCount = static_cast<int>(dataframe.getNumberOfColumns());
     std::unordered_map<int, dataframefilters::Filters> filterCols;
-    for (auto& f : filters.include) {
+    for (const auto& f : filters.include) {
         if (f.column >= 0 && f.column < colCount) filterCols[f.column].include.push_back(f);
     }
-    for (auto& f : filters.exclude) {
+    for (const auto& f : filters.exclude) {
         if (f.column >= 0 && f.column < colCount) filterCols[f.column].exclude.push_back(f);
     }
     if (filterCols.empty()) {
-        auto seq = util::sequence<std::uint32_t>(
+        const auto seq = util::sequence<std::uint32_t>(
             0, static_cast<std::uint32_t>(dataframe.getNumberOfRows()), 1);
         return {seq.begin(), seq.end()};
     }
@@ -667,7 +667,7 @@ std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId) {
     doc.append("b", fmt::format("Data Point {}", rowId), {{"style", "color:white;"}});
     utildoc::TableBuilder tb(doc.handle(), P::end());
     for (size_t i = 0; i < dataframe.getNumberOfColumns(); i++) {
-        auto col = dataframe.getColumn(i);
+        const auto col = dataframe.getColumn(i);
         tb(H(col->getHeader()), col->getAsString(rowId));
     }
 

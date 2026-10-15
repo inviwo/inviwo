@@ -215,8 +215,8 @@ ivec2 Element::getWidgetExtentScaled() const {
 }
 
 void Element::render(const ivec2& origin, const size2_t& canvasDim) {
-    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
-    utilgl::BlendModeState blendMode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    const utilgl::BlendModeState blendMode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     auto& uiShader = uiRenderer_->getShader();
     uiShader.activate();
@@ -321,7 +321,7 @@ void Element::updateLabelPos() {
     if (!labelStr_.empty()) {
         // compute label position
         // keep track of the font descent to account for proper centering
-        int fontDescent = getCurrentTextRenderer().getBaseLineDescender();
+        const int fontDescent = getCurrentTextRenderer().getBaseLineDescender();
         labelPos_ = computeLabelPos(fontDescent);
     } else {
         labelPos_ = ivec2(0, 0);
@@ -334,10 +334,10 @@ void Element::updateLabel() {
     updateLabelPos();
 
     if (!labelStr_.empty()) {
-        size2_t labelSize(labelExtent_);
+        const size2_t labelSize(labelExtent_);
         if (!labelTexture_ || (labelTexture_->getDimensions() != labelSize)) {
-            auto texture = std::make_shared<Texture2D>(labelSize, GL_RGBA, GL_RGBA,
-                                                       GL_UNSIGNED_BYTE, GL_LINEAR);
+            const auto texture = std::make_shared<Texture2D>(labelSize, GL_RGBA, GL_RGBA,
+                                                             GL_UNSIGNED_BYTE, GL_LINEAR);
             texture->initialize(nullptr);
             labelTexture_ = texture;
         }
@@ -367,7 +367,7 @@ void Element::handlePickingEvent(PickingEvent* e) {
     if (e->getPressState() != PickingPressState::None) {
         if (e->getPressState() == PickingPressState::Move &&
             e->getPressItems() & PickingPressItem::Primary) {
-            auto delta = e->getDeltaPressedPosition();
+            const auto delta = e->getDeltaPressedPosition();
             triggerUpdate = moveAction(delta * dvec2(e->getCanvasSize()));
         } else if (e->getPressState() == PickingPressState::Press &&
                    e->getPressItem() & PickingPressItem::Primary) {
@@ -413,8 +413,8 @@ void Element::renderLabel(const ivec2& origin, const size2_t& canvasDim) {
         updateLabel();
     }
     if (labelTexture_) {
-        utilgl::DepthFuncState depthFunc(GL_ALWAYS);
-        utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+        const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         uiRenderer_->getTextureQuadRenderer().renderToRect(labelTexture_, origin + labelPos_,
                                                            labelExtent_, canvasDim);
     }

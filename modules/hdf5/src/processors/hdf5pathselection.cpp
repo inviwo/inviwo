@@ -60,7 +60,7 @@ PathSelection::PathSelection()
 void PathSelection::process() {
     const std::scoped_lock lock{Handle::globalMutex()};
 
-    auto data = inport_.getData();
+    const auto data = inport_.getData();
     if (inport_.isChanged()) {
         std::vector<OptionPropertyStringOption> options;
         const auto addGroup = [&](const Handle& group) {

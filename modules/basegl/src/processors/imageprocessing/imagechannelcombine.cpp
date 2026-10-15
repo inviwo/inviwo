@@ -118,7 +118,7 @@ void ImageChannelCombine::process() {
 
     auto&& [type, precision] = [&]() {
         std::vector<const DataFormatBase*> formats;
-        for (auto& port : inport_) {
+        for (const auto& port : inport_) {
             if (port.hasData()) {
                 formats.push_back(port.getData()->getDataFormat());
             }
@@ -128,19 +128,19 @@ void ImageChannelCombine::process() {
                               util::commonFormatPrecision(formats));
     }();
 
-    auto image = std::make_shared<Image>(*inport_.front().getData(), noData,
-                                         DataFormatBase::get(type, 4, precision));
+    const auto image = std::make_shared<Image>(*inport_.front().getData(), noData,
+                                               DataFormatBase::get(type, 4, precision));
     outport_.setData(image);
 
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     shader_.activate();
     TextureUnitContainer units;
-    for (auto& port : inport_) {
+    for (const auto& port : inport_) {
         if (port.hasData()) {
             utilgl::bindAndSetUniforms(shader_, units, port, ImageType::ColorOnly);
         }
     }
-    for (auto& prop : channel_) {
+    for (const auto& prop : channel_) {
         utilgl::setUniforms(shader_, prop);
     }
     utilgl::setUniforms(shader_, outport_, alpha_);

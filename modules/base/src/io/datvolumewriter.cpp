@@ -94,7 +94,7 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
     const glm::dvec3 offset = data.getOffset();
     const glm::dmat4 wtm = glm::transpose(data.getWorldMatrix());
 
-    auto print = util::overloaded{
+    const auto print = util::overloaded{
         [&ss](std::string_view key, const std::string& val) {
             fmt::print(ss, "{}: {}\n", key, val);
         },

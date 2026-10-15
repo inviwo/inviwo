@@ -159,7 +159,7 @@ void CubeRenderer::process() {
         auto& shader = shaders_.getShader(*mesh);
 
         shader.activate();
-        utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         TextureUnitContainer units;
         utilgl::bindAndSetUniforms(shader, units, metaColor_);

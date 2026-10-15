@@ -89,7 +89,7 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
                 &StringPropertyWidgetQt::setPropertyValue);
         connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
             // undo textual changes by resetting the contents of the line edit
-            QSignalBlocker blocker(lineEdit_);
+            const QSignalBlocker blocker(lineEdit_);
             updateFromProperty();
             lineEdit_->clearFocus();
         });

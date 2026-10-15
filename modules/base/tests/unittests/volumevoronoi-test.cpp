@@ -72,7 +72,7 @@ TEST(VolumeVoronoi, WeightedVoronoi_WeightsAndSeedPointsDimensionMissmatch_Throw
                                                                {2, vec3{0.1, 0.2, 0.3}}};
     const std::vector<float> weights = {3.0, 4.0, 5.0, 6.0, 7.0};
 
-    Entity entity{size3_t{3, 3, 3}};
+    const Entity entity{size3_t{3, 3, 3}};
 
     EXPECT_THROW(util::voronoiSegmentation(entity.getDimensions(),
                                            entity.getCoordinateTransformer().getIndexToDataMatrix(),
@@ -83,9 +83,9 @@ TEST(VolumeVoronoi, WeightedVoronoi_WeightsAndSeedPointsDimensionMissmatch_Throw
 
 TEST(VolumeVoronoi, Voronoi_OneSeedPoint_WholeVolumeHasSameIndex) {
     const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{1, 1, 1}}};
-    Entity entity{size3_t{3, 3, 3}};
+    const Entity entity{size3_t{3, 3, 3}};
 
-    auto volumeVoronoi = util::voronoiSegmentation(
+    const auto volumeVoronoi = util::voronoiSegmentation(
         entity.getDimensions(), entity.getCoordinateTransformer().getIndexToDataMatrix(),
         entity.getCoordinateTransformer().getDataToModelMatrix(),
 
@@ -133,9 +133,9 @@ TEST(VolumeVoronoi, Voronoi_OneSeedPoint_WholeVolumeHasSameIndex) {
 TEST(VolumeVoronoi, Voronoi_TwoSeedPoints_PartitionsVolumeInTwo) {
     const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{-1, 0, 0}},
                                                                {2, vec3{1, 0, 0}}};
-    Entity entity{size3_t{4, 4, 4}};
+    const Entity entity{size3_t{4, 4, 4}};
 
-    auto volumeVoronoi = util::voronoiSegmentation(
+    const auto volumeVoronoi = util::voronoiSegmentation(
         entity.getDimensions(), entity.getCoordinateTransformer().getIndexToDataMatrix(),
         entity.getCoordinateTransformer().getDataToModelMatrix(),
 
@@ -170,9 +170,9 @@ TEST(VolumeVoronoi, Voronoi_TwoSeedPoints_PartitionsVolumeInTwo) {
 TEST(VolumeVoronoi, WeightedVoronoi_TwoSeedPointsWithWeights_PartitionsVolumeInTwoWeightedParts) {
     const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{-1, 0, 0}},
                                                                {2, vec3{1, 0, 0}}};
-    Entity entity{size3_t{4, 4, 4}};
+    const Entity entity{size3_t{4, 4, 4}};
 
-    auto volumeVoronoi = util::voronoiSegmentation(
+    const auto volumeVoronoi = util::voronoiSegmentation(
         entity.getDimensions(), entity.getCoordinateTransformer().getIndexToDataMatrix(),
         entity.getCoordinateTransformer().getDataToModelMatrix(),
 
@@ -207,9 +207,9 @@ TEST(VolumeVoronoi, WeightedVoronoi_TwoSeedPointsWithWeights_PartitionsVolumeInT
 TEST(VolumeVoronoi, Voronoi_ThreeSeedPoints_PartitionsVolumeInThree) {
     const std::vector<std::pair<uint32_t, vec3>> seedPoints = {
         {1, vec3{-1.5, 0, 0}}, {2, vec3{0, 0, 0}}, {3, vec3{1.5, 0, 0}}};
-    Entity entity{size3_t{3, 3, 3}};
+    const Entity entity{size3_t{3, 3, 3}};
 
-    auto volumeVoronoi = util::voronoiSegmentation(
+    const auto volumeVoronoi = util::voronoiSegmentation(
         entity.getDimensions(), entity.getCoordinateTransformer().getIndexToDataMatrix(),
         entity.getCoordinateTransformer().getDataToModelMatrix(),
 

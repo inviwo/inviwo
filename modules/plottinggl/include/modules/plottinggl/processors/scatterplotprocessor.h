@@ -70,7 +70,7 @@ private:
     template <typename F>
     void setColumn(const ColumnOptionProperty& property, F memberfunc) {
         if (!dataFramePort_.hasData()) return;
-        if (auto idx = property.get(); idx == -1) {
+        if (const auto idx = property.get(); idx == -1) {
             std::invoke(memberfunc, scatterPlot_, nullptr);
         } else {
             std::invoke(memberfunc, scatterPlot_, dataFramePort_.getData()->getColumn(idx).get());

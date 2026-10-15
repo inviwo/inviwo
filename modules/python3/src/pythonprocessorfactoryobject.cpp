@@ -78,8 +78,8 @@ std::shared_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplicatio
 
     try {
         const pybind11::gil_scoped_acquire gil;
-        auto main = py::module::import("__main__");
-        py::object proc =
+        const auto main = py::module::import("__main__");
+        const py::object proc =
             main.attr(name_.c_str())(util::stripIdentifier(pi.displayName), pi.displayName);
         proc.attr("__inviwo_file__") = file_;
         return proc.cast<std::shared_ptr<Processor>>();
@@ -92,7 +92,7 @@ std::shared_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplicatio
 
 void PythonProcessorFactoryObject::fileChanged(const std::filesystem::path&) {
     try {
-        auto data = load(file_);
+        const auto data = load(file_);
         name_ = data.name;
         log::info("Reloaded python processor: '{}' file: {}", name_, file_);
         if (getProcessorInfo() != data.info) {
@@ -107,12 +107,13 @@ void PythonProcessorFactoryObject::fileChanged(const std::filesystem::path&) {
 
 void PythonProcessorFactoryObject::reloadProcessors() {
     auto net = app_->getProcessorNetwork();
-    auto processors = net->getProcessors();  // Save a list of the processors here since we will be
-                                             // modifying the list below by replacing them
+    const auto processors =
+        net->getProcessors();  // Save a list of the processors here since we will be
+                               // modifying the list below by replacing them
     for (auto p : processors) {
         if (p->getClassIdentifier() == getProcessorInfo().classIdentifier) {
             log::info(R"(Updating python processor: "{}" id: "{}")", name_, p->getIdentifier());
-            if (auto replacement = static_cast<std::shared_ptr<Processor>>(create(app_))) {
+            if (const auto replacement = static_cast<std::shared_ptr<Processor>>(create(app_))) {
                 util::replaceProcessor(net, replacement, p);
             }
         }
@@ -149,7 +150,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
     namespace py = pybind11;
     const pybind11::gil_scoped_acquire gil;
 
-    auto ifs = std::ifstream(file);
+    const auto ifs = std::ifstream(file);
     std::stringstream ss;
     ss << ifs.rdbuf();
     const auto script = std::move(ss).str();
@@ -216,8 +217,8 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
     }
 
     try {
-        py::object proc = py::eval<py::eval_expr>(name + ".processorInfo()");
-        auto p = proc.cast<ProcessorInfo>();
+        const py::object proc = py::eval<py::eval_expr>(name + ".processorInfo()");
+        const auto p = proc.cast<ProcessorInfo>();
         return {p, name, file};
     } catch (const std::exception& e) {
         throw Exception(SourceContext{},

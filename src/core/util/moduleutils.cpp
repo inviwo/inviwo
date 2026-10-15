@@ -59,9 +59,9 @@ InviwoModule* getModuleByIdentifier(std::string_view identifier) {
     return getModuleByIdentifier(InviwoApplication::getPtr(), identifier);
 }
 
-std::filesystem::path getModulePath(InviwoModule* module) { return module->getPath(); }
+std::filesystem::path getModulePath(const InviwoModule* module) { return module->getPath(); }
 
-std::filesystem::path getModulePath(InviwoModule* module, ModulePath pathType) {
+std::filesystem::path getModulePath(const InviwoModule* module, ModulePath pathType) {
     return module->getPath(pathType);
 }
 

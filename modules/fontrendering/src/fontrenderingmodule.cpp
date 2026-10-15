@@ -180,7 +180,7 @@ bool updateV3(TxElement* root) {
 bool updateV4(TxElement* root) {
     bool res = false;
     TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-        if (auto key = node->Value(); key != "Property") return true;
+        if (const auto key = node->Value(); key != "Property") return true;
         if (const auto& type = node->GetAttribute("type"); type != "org.inviwo.FontProperty") {
             return true;
         }

@@ -75,7 +75,7 @@ std::shared_ptr<Image> readImageFromDisk(std::string filename) {
     auto app = InviwoApplication::getPtr();
     auto factory = app->getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>(filename)) {
-        auto outLayer = reader->readData(filename);
+        const auto outLayer = reader->readData(filename);
         return std::make_shared<Image>(outLayer);
     } else {
         log::error("Failed to read image '{}'", filename);

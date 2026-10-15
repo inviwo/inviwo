@@ -82,9 +82,9 @@ std::optional<vec3> Plane::getIntersection(const vec3& start, const vec3& stop) 
 
     const vec3 segment = stop - start;
     // Distance of segment projected onto plane normal
-    float denom = glm::dot(normal_, segment);  // if zero, segment is parallel to plane
+    const float denom = glm::dot(normal_, segment);  // if zero, segment is parallel to plane
     if (std::abs(denom) > glm::epsilon<float>()) {
-        float tHit = d / denom;
+        const float tHit = d / denom;
 
         if (tHit >= 0.0f && tHit <= 1.0f) {
             return start + tHit * segment;
@@ -106,7 +106,7 @@ std::optional<float> Plane::getIntersectionWeight(const vec3& start, const vec3&
 
     const vec3 segment = stop - start;
     // Distance of segment projected onto plane normal
-    float denom = glm::dot(normal_, segment);  // if zero, segment is parallel to plane
+    const float denom = glm::dot(normal_, segment);  // if zero, segment is parallel to plane
     if (std::abs(denom) > glm::epsilon<float>()) {
         const float tHit = d / denom;
 

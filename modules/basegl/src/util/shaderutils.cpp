@@ -55,7 +55,8 @@ void addShaderDefines(Shader& shader, StipplingData::Mode mode) {
     fragShader->addShaderDefine("STIPPLE_MODE", value);
 }
 
-void setShaderUniforms(Shader& shader, const StipplingProperty& property, std::string_view name) {
+void setShaderUniforms(const Shader& shader, const StipplingProperty& property,
+                       std::string_view name) {
     StrBuffer buff;
     shader.setUniform(buff.replace("{}.length", name), property.length.get());
     shader.setUniform(buff.replace("{}.spacing", name), property.spacing.get());

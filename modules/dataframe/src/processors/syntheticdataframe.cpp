@@ -100,7 +100,7 @@ SyntheticDataFrame::SyntheticDataFrame()
 void SyntheticDataFrame::process() {
     using rdist = std::uniform_real_distribution<float>;
 
-    auto dataframe = std::make_shared<DataFrame>();
+    const auto dataframe = std::make_shared<DataFrame>();
     std::random_device rd;
     std::mt19937 gen(rd());
     std::vector<rdist> rdists = {rdist{-1.0f, 1.0f}, rdist{-0.1f, 0.1f}, rdist{-0.2f, 0.2f},
@@ -117,7 +117,7 @@ void SyntheticDataFrame::process() {
     for (auto& dist : rdists) {
         std::ostringstream oss;
         oss << "Column " << (dataframe->getNumberOfColumns());
-        auto col = dataframe->addColumn<float>(oss.str());
+        const auto col = dataframe->addColumn<float>(oss.str());
         auto& data = col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer();
         data.reserve(numRow_);
         for (size_t i = 0; i < numRow_.get(); i++) {
@@ -126,7 +126,7 @@ void SyntheticDataFrame::process() {
     }
 
     if (includeSingleValueColumnsFloat_.get()) {
-        auto col = dataframe->addColumn<float>("Single value float");
+        const auto col = dataframe->addColumn<float>("Single value float");
         auto& vec = col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer();
         for (size_t i = 0; i < numRow_.get(); i++) {
             vec.push_back(3.14f);
@@ -134,7 +134,7 @@ void SyntheticDataFrame::process() {
     }
 
     if (includeSingleValueColumnsInt_.get()) {
-        auto col = dataframe->addColumn<glm::uint8>("Single value int");
+        const auto col = dataframe->addColumn<glm::uint8>("Single value int");
         auto& vec = col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer();
         for (size_t i = 0; i < numRow_.get(); i++) {
             vec.push_back(3);

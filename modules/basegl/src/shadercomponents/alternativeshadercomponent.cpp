@@ -44,11 +44,11 @@ AlternativeShaderComponent::AlternativeShaderComponent(std::string_view aName,
         throw Exception(SourceContext{}, "Has to have at least 1 component");
     }
 
-    auto makeAltCallback = [&, updating = std::make_shared<bool>(false)](BoolCompositeProperty* cp,
-                                                                         size_t index) {
+    const auto makeAltCallback = [&, updating = std::make_shared<bool>(false)](
+                                     BoolCompositeProperty* cp, size_t index) {
         return [updating, cp, index, this]() {
             if (*updating) return;
-            util::KeepTrueWhileInScope guard{updating.get()};
+            const util::KeepTrueWhileInScope guard{updating.get()};
 
             if (cp->isChecked()) {
                 active = index;

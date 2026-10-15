@@ -275,7 +275,7 @@ ParallelCoordinates::ParallelCoordinates()
     }
 
     resetHandlePositions_.onChange([&]() {
-        for (auto& axis : axes_) {
+        for (const auto& axis : axes_) {
             axis.pcp->moveHandle(true, std::numeric_limits<double>::max());
             axis.pcp->moveHandle(false, std::numeric_limits<double>::lowest());
         }
@@ -406,7 +406,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
                                                      axisProperties_.getProperties().end());
 
     if (!dataFrame_.hasData()) return;
-    auto data = dataFrame_.getData();
+    const auto data = dataFrame_.getData();
     if (!data->getNumberOfRows()) return;
     if (!data->getNumberOfColumns()) return;
 
@@ -465,7 +465,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
         axes_.emplace_back(prop, std::move(renderer), std::move(slider));
     }
 
-    for (auto& axis : axes_) {
+    for (const auto& axis : axes_) {
         axis.pcp->update(data);
         axis.pcp->setParallelCoordinates(this);
     }
@@ -520,7 +520,7 @@ void ParallelCoordinates::buildLineIndices() {
     indices.clear();
     indices.reserve(numberOfEnabledAxis * numberOfLines);
     for (size_t i = 0; i < numberOfLines; i++) {
-        for (auto id : enabledAxes_) {
+        for (const auto id : enabledAxes_) {
             indices.push_back(static_cast<uint32_t>(i * numberOfAxis + id));
         }
     }
@@ -575,7 +575,7 @@ void ParallelCoordinates::partitionLines() {
 void ParallelCoordinates::drawAxis(size2_t size) {
     for (auto& axis : axes_) {
         if (!axis.pcp->isChecked()) continue;
-        auto ap = axisPos(axis.pcp->columnId());
+        const auto ap = axisPos(axis.pcp->columnId());
         if (axis.pcp->dataModified()) axis.pcp->update(axis.axisRender->getData());
         axis.axisRender->render(size, ap.first, ap.second);
     }
@@ -614,7 +614,7 @@ void ParallelCoordinates::drawHandles(size2_t size) {
 void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.activate();
 
-    auto state = [&]() {
+    const auto state = [&]() {
         switch (blendMode_.get()) {
             case BlendMode::Additive:
                 return std::make_tuple(utilgl::GlBoolState(GL_DEPTH_TEST, false),
@@ -689,8 +689,8 @@ void ParallelCoordinates::drawLines(size2_t size) {
                                                falloffPower_.get(), 0.5f * falloffPower_.get()};
 
         for (size_t i = showFiltered_ ? 0 : 1; i < lines_.offsets.size() - 1; ++i) {
-            auto begin = lines_.offsets[i];
-            auto end = lines_.offsets[i + 1];
+            const auto begin = lines_.offsets[i];
+            const auto end = lines_.offsets[i + 1];
             if (end == begin) continue;
 
             lineShader_.setUniform("lineWidth", width[i]);
@@ -711,7 +711,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
 void ParallelCoordinates::linePicked(PickingEvent* p) {
     const KeyModifier appendModifier = KeyModifier::Control;
 
-    if (auto df = dataFrame_.getData()) {
+    if (const auto df = dataFrame_.getData()) {
         // Show tooltip about current line
         if (p->getHoverState() == PickingHoverState::Move ||
             p->getHoverState() == PickingHoverState::Enter) {
@@ -728,10 +728,10 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
     if (p->getState() == PickingState::Updated && p->getPressState() == PickingPressState::Press &&
         p->getPressItem() == PickingPressItem::Primary) {
 
-        auto iCol = dataFrame_.getData()->getIndexColumn();
+        const auto iCol = dataFrame_.getData()->getIndexColumn();
         const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
-        auto id = p->getPickedId();
+        const auto id = p->getPickedId();
 
         if (p->modifiers().contains(appendModifier)) {
             auto selection = brushingAndLinking_.getSelectedIndices();
@@ -748,7 +748,7 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
 
 void ParallelCoordinates::axisPicked(PickingEvent* p, uint32_t columnId, PickType pt) {
 
-    auto showValuesAsToolTip = [this, p](size_t id, PickType pt) {
+    const auto showValuesAsToolTip = [this, p](size_t id, PickType pt) {
         if (axes_[id].pcp->catCol_) return;
 
         if (pt == PickType::Upper) {
@@ -815,7 +815,7 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, uint32_t columnId, PickTyp
         pt != PickType::Upper) {
         isDragging_ = true;
 
-        auto delta = glm::abs(p->getDeltaPressedPosition());
+        const auto delta = glm::abs(p->getDeltaPressedPosition());
 
         if (delta.x > delta.y) {
             const auto it = util::find(enabledAxes_, columnId);
@@ -859,10 +859,10 @@ void ParallelCoordinates::updateBrushing() {
 
     brushingDirty_ = false;
 
-    auto iCol = dataFrame_.getData()->getIndexColumn();
+    const auto iCol = dataFrame_.getData()->getIndexColumn();
     const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
-    auto brushAxis = [&](const std::vector<bool>& filtered, std::string_view axisName) {
+    const auto brushAxis = [&](const std::vector<bool>& filtered, std::string_view axisName) {
         BitSet b;
         for (size_t i = 0; i < filtered.size(); ++i) {
             if (filtered[i]) {
@@ -982,13 +982,13 @@ double rangeConversion(double v, dvec2 sourceRange, dvec2 destRange) {
 }  // namespace
 
 BitSet ParallelCoordinates::lineIntersections(const std::array<dvec2, 2>& screenRect) const {
-    auto axisPosd = [this](auto columnId) {
+    const auto axisPosd = [this](auto columnId) {
         auto [lower, upper] = axisPos(columnId);
         return std::pair<dvec2, dvec2>{lower, upper};
     };
 
     const auto data = dataFrame_.getData();
-    auto iCol = dataFrame_.getData()->getIndexColumn();
+    const auto iCol = dataFrame_.getData()->getIndexColumn();
     const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
     BitSet b;
@@ -1002,8 +1002,8 @@ BitSet ParallelCoordinates::lineIntersections(const std::array<dvec2, 2>& screen
 
         if (std::min(leftLower.x, rightLower.x) <= screenRect[1].x &&
             std::max(leftLower.x, rightLower.x) >= screenRect[0].x) {
-            auto leftColumn = data->getColumn(leftColumnId);
-            auto rightColumn = data->getColumn(rightColumnId);
+            const auto leftColumn = data->getColumn(leftColumnId);
+            const auto rightColumn = data->getColumn(rightColumnId);
             // adjust selection rectangle to fit in between the two columns
             const std::array rect{
                 dvec2{std::max(std::min(leftLower.x, rightLower.x), screenRect[0].x),

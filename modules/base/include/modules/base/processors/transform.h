@@ -174,7 +174,7 @@ void Transform<T>::process() {
         return;
     }
 
-    std::shared_ptr<T> data(inport_.getData()->clone());
+    const std::shared_ptr<T> data(inport_.getData()->clone());
 
     switch (*space_) {
         case Mode::WorldModelTransform:

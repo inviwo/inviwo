@@ -88,9 +88,9 @@ TEST(Marchingsquares, empty) {
     const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}},
                                        PrimitiveSetMode::Relative};
 
-    auto layer = std::shared_ptr<Layer>(
+    const auto layer = std::shared_ptr<Layer>(
         util::generateLayer(size2_t{2}, mat3(1.0f), [](const size2_t&) { return 0.0f; }));
-    auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
+    const auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
     EXPECT_FALSE(mesh->hasBuffer(BufferType::PositionAttrib));
     EXPECT_EQ(mesh->getNumberOfIndices(), 0);
 }
@@ -99,9 +99,9 @@ TEST(Marchingsquares, full) {
     const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}},
                                        PrimitiveSetMode::Relative};
 
-    auto layer = std::shared_ptr<Layer>(
+    const auto layer = std::shared_ptr<Layer>(
         util::generateLayer(size2_t{2}, mat3(1.0f), [](const size2_t&) { return 1.0f; }));
-    auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
+    const auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
     EXPECT_FALSE(mesh->hasBuffer(BufferType::PositionAttrib));
     EXPECT_EQ(mesh->getNumberOfIndices(), 0);
 }
@@ -110,8 +110,8 @@ TEST(Marchingsquares, case1) {
     const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}},
                                        PrimitiveSetMode::Relative};
 
-    auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{2, 2}));
-    auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
+    const auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{2, 2}));
+    const auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
     ASSERT_TRUE(mesh->hasBuffer(BufferType::PositionAttrib));
     ASSERT_EQ(mesh->getNumberOfIndices(), 1);
 
@@ -139,8 +139,8 @@ TEST(Marchingsquares, openloop) {
     const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}},
                                        PrimitiveSetMode::Relative};
 
-    auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{2, 3}));
-    auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
+    const auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{2, 3}));
+    const auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
     ASSERT_TRUE(mesh->hasBuffer(BufferType::PositionAttrib));
     ASSERT_EQ(mesh->getNumberOfIndices(), 1);
 
@@ -168,8 +168,8 @@ TEST(Marchingsquares, circle) {
     const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}},
                                        PrimitiveSetMode::Relative};
 
-    auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{3, 3}));
-    auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
+    const auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{3, 3}));
+    const auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
     ASSERT_TRUE(mesh->hasBuffer(BufferType::PositionAttrib));
     ASSERT_EQ(mesh->getNumberOfIndices(), 1);
 

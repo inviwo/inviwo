@@ -108,14 +108,14 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
 void VolumeSequenceSingleTimestepSamplerProcessor::process() {
     if (volumeSequence_.isChanged()) {
         if (!sampler_.hasData()) return;
-        auto seq = volumeSequence_.getData();
+        const auto seq = volumeSequence_.getData();
         if (!util::hasTimestamps(*seq, false)) {
             log::warn("Input volume Sequence does not have timestamps, behavior is undefined");
         }
 
-        auto newRange = util::getTimestampRange(*seq);
-        float t = static_cast<float>((timestamp_.get() - timestamp_.getMinValue()) /
-                                     (timestamp_.getMaxValue() - timestamp_.getMinValue()));
+        const auto newRange = util::getTimestampRange(*seq);
+        const float t = static_cast<float>((timestamp_.get() - timestamp_.getMinValue()) /
+                                           (timestamp_.getMaxValue() - timestamp_.getMinValue()));
 
         timestamp_.setMinValue(newRange.first);
         timestamp_.setMaxValue(newRange.second);
@@ -125,17 +125,17 @@ void VolumeSequenceSingleTimestepSamplerProcessor::process() {
     }
 
     float t = 0;
-    auto vols = util::getVolumesForTimestep(*volumeSequence_.getData(), timestamp_.get());
+    const auto vols = util::getVolumesForTimestep(*volumeSequence_.getData(), timestamp_.get());
 
     if (util::hasTimestamp(vols.first) && util::hasTimestamp(vols.second)) {
-        auto t0 = util::getTimestamp(vols.first);
-        auto t1 = util::getTimestamp(vols.second);
+        const auto t0 = util::getTimestamp(vols.first);
+        const auto t1 = util::getTimestamp(vols.second);
         if (t0 != t1) {
             t = static_cast<float>((timestamp_.get() - t0) / (t1 - t0));
         }
     }
 
-    auto sampler =
+    const auto sampler =
         std::make_shared<VolumeSequenceSingleTimestepSampler>(t, vols.first, vols.second);
     sampler_.setData(sampler);
 }

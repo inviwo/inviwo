@@ -62,9 +62,9 @@ QPoint EditorGraphicsItem::mapPosToSceen(QPointF inPos) const {
         && scene()->views().first() != nullptr              // ... which is not null...
         && scene()->views().first()->viewport() != nullptr  // ... and has a viewport
     ) {
-        QPointF sceneP = mapToScene(inPos);
-        QGraphicsView* v = scene()->views().first();
-        QPoint viewP = v->mapFromScene(sceneP);
+        const QPointF sceneP = mapToScene(inPos);
+        const QGraphicsView* v = scene()->views().first();
+        const QPoint viewP = v->mapFromScene(sceneP);
         return v->viewport()->mapToGlobal(viewP);
     } else {
         return QPoint(0, 0);
@@ -77,8 +77,8 @@ void EditorGraphicsItem::showToolTipHelper(QGraphicsSceneHelpEvent* e, QString s
     if (!scene() || scene()->views().empty()) return;
 
     QGraphicsView* v = scene()->views().first();
-    QRectF rect = this->mapRectToScene(this->rect());
-    QRect viewRect = v->mapFromScene(rect).boundingRect();
+    const QRectF rect = this->mapRectToScene(this->rect());
+    const QRect viewRect = v->mapFromScene(rect).boundingRect();
     e->accept();
     QToolTip::showText(e->screenPos(), string, v, viewRect);
 }
@@ -161,7 +161,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     const QRect viewRect = view->mapFromScene(rect).boundingRect();
     e->accept();
 
-    auto* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    const auto* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     const bool inspector = settings->enablePortInspectors_.get();
     const auto portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
 
@@ -194,10 +194,10 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     }
 
     if (inspector && outport) {
-        if (auto image = getNetworkEditor()->renderPortInspectorImage(outport)) {
+        if (const auto image = getNetworkEditor()->renderPortInspectorImage(outport)) {
             std::vector<std::pair<std::string, const Layer*>> layers;
-            if (auto* imageOutport = dynamic_cast<ImageOutport*>(outport)) {
-                if (auto imageData = imageOutport->getData()) {
+            if (const auto* imageOutport = dynamic_cast<ImageOutport*>(outport)) {
+                if (const auto imageData = imageOutport->getData()) {
                     // register all color layers
                     layers = getLayersForImagePort(image, imageData);
                 }

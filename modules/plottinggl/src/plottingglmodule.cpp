@@ -141,16 +141,16 @@ bool updateV0(TxElement* root) {
         }
 
         auto* props = xml::getElement(node, "Properties");
-        if (auto* tf = xml::getElement(node,
-                                       "Properties/Property&identifier=colors/Properties/"
-                                       "Property&identifier=tf")) {
+        if (const auto* tf = xml::getElement(node,
+                                             "Properties/Property&identifier=colors/Properties/"
+                                             "Property&identifier=tf")) {
             props->InsertEndChild(*tf);
             res = true;
         }
 
-        if (auto* color = xml::getElement(node,
-                                          "Properties/Property&identifier=colors/Properties/"
-                                          "Property&identifier=selectedColorAxis")) {
+        if (const auto* color = xml::getElement(node,
+                                                "Properties/Property&identifier=colors/Properties/"
+                                                "Property&identifier=selectedColorAxis")) {
             props->InsertEndChild(*color);
             res = true;
         }
@@ -177,11 +177,11 @@ bool updateV1(TxElement* root) {
 
         TxElement propNode{"Properties"};
         // Move old TF and selected color into new DataFrameColormapProperty
-        if (auto* tf = xml::getElement(props, "Property&identifier=tf")) {
+        if (const auto* tf = xml::getElement(props, "Property&identifier=tf")) {
             propNode.InsertEndChild(*tf);
         }
 
-        if (auto* color = xml::getElement(props, "Property&identifier=selectedColorAxis")) {
+        if (const auto* color = xml::getElement(props, "Property&identifier=selectedColorAxis")) {
             propNode.InsertEndChild(*color);
         }
 
@@ -578,7 +578,7 @@ bool updateV6(TxElement* root) {
 }
 
 bool updateV7(TxElement* root) {
-    bool res = false;
+    const bool res = false;
 
     std::vector<std::string_view> ids;
 

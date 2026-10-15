@@ -59,7 +59,7 @@ public:
     template <typename Keyframe>
     std::vector<InterpolationFactoryObject*> getSupportedInterpolations() const {
         std::vector<InterpolationFactoryObject*> interps;
-        for (auto interp : map_) {
+        for (const auto interp : map_) {
             if (dynamic_cast<InterpolationFactoryObjectKeyframe<Keyframe>*>(interp.second)) {
                 interps.push_back(interp.second);
             }

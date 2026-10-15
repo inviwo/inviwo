@@ -37,7 +37,7 @@
 
 namespace inviwo::utilqt {
 
-IVW_QTAPPLICATIONBASE_API void simulateMouseDrag(QWidget& widget, size_t count,
+IVW_QTAPPLICATIONBASE_API void simulateMouseDrag(const QWidget& widget, size_t count,
                                                  QPoint length = QPoint{5, 0});
 
 IVW_QTAPPLICATIONBASE_API std::chrono::high_resolution_clock::duration measureSimulateMouseDrag(

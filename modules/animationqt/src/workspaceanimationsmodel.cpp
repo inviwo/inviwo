@@ -53,13 +53,13 @@ AnimationsModel::AnimationsModel(WorkspaceAnimations& animations, QObject* paren
     : QAbstractListModel(parent), animations_{animations} {
 
     onChangedHandle_ = animations_.onChanged_.add([this](size_t index, Animation& anim) {
-        auto it = animations_.find(&anim);
+        const auto it = animations_.find(&anim);
         if (it != animations_.end()) {
             anim.addObserver(this);
         } else {
             anim.removeObserver(this);
         }
-        auto idx = createIndex(static_cast<int>(index), 0);
+        const auto idx = createIndex(static_cast<int>(index), 0);
         emit dataChanged(idx, idx);
     });
 }
@@ -96,7 +96,7 @@ QVariant AnimationsModel::data(const QModelIndex& index, int role) const {
 bool AnimationsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
     if (index.row() >= 0 && index.row() < static_cast<int>(animations_.size()) &&
         (role == Qt::EditRole || role == Qt::DisplayRole)) {
-        auto valueString = utilqt::fromQString(value.toString());
+        const auto valueString = utilqt::fromQString(value.toString());
         if (animations_[index.row()].getName() == valueString) {
             return true;
         } else {
@@ -135,10 +135,10 @@ bool AnimationsModel::removeRows(int row, int count, const QModelIndex& parent) 
 
 void AnimationsModel::onNameChanged(Animation* anim) {
 
-    if (auto it = animations_.find(anim); it != animations_.end()) {
-        auto index = static_cast<int>(std::distance(animations_.begin(), it));
-        auto fromI = createIndex(static_cast<int>(index), 0);
-        auto toI = createIndex(static_cast<int>(index), 0);
+    if (const auto it = animations_.find(anim); it != animations_.end()) {
+        const auto index = static_cast<int>(std::distance(animations_.begin(), it));
+        const auto fromI = createIndex(static_cast<int>(index), 0);
+        const auto toI = createIndex(static_cast<int>(index), 0);
         emit dataChanged(fromI, toI);
     }
 }

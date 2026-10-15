@@ -72,9 +72,10 @@ Seconds getTimeHelper(const T& elem, PlaybackDirection direction) {
 template <typename Iterator>
 AnimationTimeState animateRange(Iterator begin, Iterator end, Seconds from, Seconds to,
                                 AnimationState state) {
-    auto animate = [](auto begin, auto end, Seconds from, Seconds to,
-                      AnimationState state) -> AnimationTimeState {
-        auto direction = from <= to ? PlaybackDirection::Forward : PlaybackDirection::Backward;
+    const auto animate = [](auto begin, auto end, Seconds from, Seconds to,
+                            AnimationState state) -> AnimationTimeState {
+        const auto direction =
+            from <= to ? PlaybackDirection::Forward : PlaybackDirection::Backward;
         AnimationTimeState res{to, state};
         while (begin != end && res.state != AnimationState::Paused) {
             res = (*begin)(from, to, state);
@@ -90,15 +91,15 @@ AnimationTimeState animateRange(Iterator begin, Iterator end, Seconds from, Seco
         }
         return res;
     };
-    auto first = std::min(from, to);
-    auto last = std::max(from, to);
+    const auto first = std::min(from, to);
+    const auto last = std::max(from, to);
 
     // 'fromIt' will be the first item with a time larger than or equal to 'first'
-    auto fromIt = std::lower_bound(begin, end, first,
-                                   [](const auto& it, const auto& val) { return it < val; });
+    const auto fromIt = std::lower_bound(begin, end, first,
+                                         [](const auto& it, const auto& val) { return it < val; });
     // 'toIt' will be the first key with a time larger than 'last'
-    auto toIt = std::upper_bound(fromIt, end, last,
-                                 [](const auto& val, const auto& it) { return val < it; });
+    const auto toIt = std::upper_bound(fromIt, end, last,
+                                       [](const auto& val, const auto& it) { return val < it; });
     if (from <= to) {
         return animate(fromIt, toIt, from, to, state);
     } else {

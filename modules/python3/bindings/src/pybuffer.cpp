@@ -67,7 +67,7 @@ struct BufferRAMHelper {
                  py::arg("usage") = BufferUsage::Static)
             .def(py::init([](py::array data, BufferUsage usage) {
                      pyutil::checkDataFormat<1>(DataFormat::get(), data.shape(0), data);
-                     auto ram = std::make_shared<BufferRAMPrecision<T, BufferTarget::Data>>(
+                     const auto ram = std::make_shared<BufferRAMPrecision<T, BufferTarget::Data>>(
                          data.shape(0), usage);
                      memcpy(ram->getData(), data.data(0), data.nbytes());
                      return new Buffer<T, BufferTarget::Data>(ram);
@@ -80,7 +80,7 @@ struct BufferRAMHelper {
             .def(py::init<size_t, BufferUsage>())
             .def(py::init([](py::array data, BufferUsage usage) {
                      pyutil::checkDataFormat<1>(DataFormat::get(), data.shape(0), data);
-                     auto ram = std::make_shared<BufferRAMPrecision<T, BufferTarget::Index>>(
+                     const auto ram = std::make_shared<BufferRAMPrecision<T, BufferTarget::Index>>(
                          data.shape(0), usage);
                      memcpy(ram->getData(), data.data(0), data.nbytes());
                      return new Buffer<T, BufferTarget::Index>(ram);

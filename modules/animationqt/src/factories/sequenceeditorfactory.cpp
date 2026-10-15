@@ -41,7 +41,7 @@ void SequenceEditorFactory::registerTrackToSequenceEditorMap(std::string_view tr
 }
 
 std::string SequenceEditorFactory::getSequenceEditorId(std::string_view trackId) const {
-    auto it = trackToEditor_.find(trackId);
+    const auto it = trackToEditor_.find(trackId);
     if (it != trackToEditor_.end()) {
         return it->second;
     } else {

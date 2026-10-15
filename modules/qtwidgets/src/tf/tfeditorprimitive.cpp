@@ -139,7 +139,7 @@ QPointF TFEditorPrimitive::constrainPosToXorY(QPointF pos) const {
     // restrict movement to either horizontal or vertical direction while shift is pressed
     if (shiftPressed && QGuiApplication::mouseButtons() == Qt::LeftButton) {
         // adjust position of mouse event
-        auto delta = pos - cachedPosition_;
+        const auto delta = pos - cachedPosition_;
         if (std::abs(delta.x()) > std::abs(delta.y())) {
             // horizontal movement is dominating
             pos.setY(cachedPosition_.y());
@@ -194,7 +194,7 @@ void TFEditorPrimitive::updateLabel() {
     }
 
     QString label;
-    if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
+    if (const auto* tfe = qobject_cast<TFEditor*>(scene())) {
         if (mode_ == PrimitiveSetMode::Absolute) {
             // In absolute mode, position is already in data space
             label =
@@ -216,7 +216,7 @@ void TFEditorPrimitive::updateLabel() {
     QPointF pos(distFromCenter, distFromCenter);
 
     // adjust position based on quadrant the primitive is located in
-    auto rect = label_->boundingRect();
+    const auto rect = label_->boundingRect();
     if (scenePos().x() > scene()->sceneRect().width() * 0.5) {
         pos.rx() = -rect.width() - distFromCenter;
     }

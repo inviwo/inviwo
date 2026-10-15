@@ -725,13 +725,13 @@ void TemplateColumn<T>::set(size_t idx, const T& value) {
 
 template <typename T>
 T TemplateColumn<T>::get(size_t idx) const {
-    auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
+    const auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
     return val;
 }
 
 template <typename T>
 double TemplateColumn<T>::getAsDouble(size_t idx) const {
-    auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
+    const auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
     return util::glm_convert<double>(val);
 }
 

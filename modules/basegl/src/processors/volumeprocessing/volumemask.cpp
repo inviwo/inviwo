@@ -118,13 +118,13 @@ VolumeMask::VolumeMask()
 }
 
 void VolumeMask::process() {
-    auto data = inport_.getData();
-    auto mask = std::make_shared<Volume>(VolumeConfig{.dimensions = data->getDimensions(),
-                                                      .format = DataUInt8::get(),
-                                                      .dataRange = vec2(0, 255),
-                                                      .valueRange = vec2(0, 255),
-                                                      .model = data->getModelMatrix(),
-                                                      .world = data->getWorldMatrix()});
+    const auto data = inport_.getData();
+    const auto mask = std::make_shared<Volume>(VolumeConfig{.dimensions = data->getDimensions(),
+                                                            .format = DataUInt8::get(),
+                                                            .dataRange = vec2(0, 255),
+                                                            .valueRange = vec2(0, 255),
+                                                            .model = data->getModelMatrix(),
+                                                            .world = data->getWorldMatrix()});
 
     if (maskZero_.isModified() || maskMissingValue_.isModified() || maskNaN_.isModified() ||
         maskInf_.isModified()) {
@@ -159,7 +159,7 @@ void VolumeMask::process() {
 
     const utilgl::Activate aFbo{&fbo_};
     const utilgl::ViewportState vp{0, 0, dim.x, dim.y};
-    auto* maskGL = mask->getEditableRepresentation<VolumeGL>();
+    const auto* maskGL = mask->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(maskGL->getTexture().get(), 0);
     utilgl::multiDrawImagePlaneRect(dim.z);
 

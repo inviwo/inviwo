@@ -86,7 +86,7 @@ OrthographicAxis2D::OrthographicAxis2D()
                         const auto pClip = p / dvec2{dims} * 2.0 - 1.0;
                         const dvec2 pWorld{camera_.get().getWorldPosFromNormalizedDeviceCoords(
                             dvec3{pClip, -1.0})};
-                        if (auto spatial = spatialEntity_.getData()) {
+                        if (const auto spatial = spatialEntity_.getData()) {
                             const auto& ct = spatial->getCoordinateTransformer();
                             const auto pData = ct.getWorldToDataMatrix() * dvec4{pWorld, 0.0, 1.0};
                             return dvec2{pData / pData.w};
@@ -150,7 +150,7 @@ void OrthographicAxis2D::process() {
 
     const auto padding = axisMargin_.get();
 
-    auto scissorState =
+    const auto scissorState =
         [&]() -> std::optional<std::pair<utilgl::ScissorState, utilgl::GlBoolState>> {
         if (clipContent_) {
             return std::pair{
@@ -206,7 +206,7 @@ void OrthographicAxis2D::process() {
     const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     // render plot image
-    if (auto source = inport_.getData()) {
+    if (const auto source = inport_.getData()) {
         // if we clipContent_ we only want to draw the inport image inside of the margins
         const auto scissors = scissorState();
         source->getRepresentation<ImageGL>()->copyRepresentationsTo(

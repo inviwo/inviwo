@@ -162,20 +162,20 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& p
 
     if (format_) {
         glm::mat3 basis(1.0f);
-        glm::mat4 wtm(1.0f);
+        const glm::mat4 wtm(1.0f);
 
         basis[0][0] = static_cast<float>(dimensions_.x) * spacing_.x;
         basis[1][1] = static_cast<float>(dimensions_.y) * spacing_.y;
         basis[2][2] = static_cast<float>(dimensions_.z) * spacing_.z;
 
         // Center the data around origo.
-        glm::vec3 offset(-0.5f * (basis[0] + basis[1] + basis[2]));
+        const glm::vec3 offset(-0.5f * (basis[0] + basis[1] + basis[2]));
 
         auto volume = std::make_shared<Volume>(dimensions_, format_);
         volume->setBasis(basis);
         volume->setOffset(offset);
         volume->setWorldMatrix(wtm);
-        auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
+        const auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
         auto loader =
             std::make_unique<RawVolumeRAMLoader>(rawFile_, byteOffset_, byteOrder_, compression_);
         vd->setLoader(loader.release());

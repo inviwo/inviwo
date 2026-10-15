@@ -131,7 +131,7 @@ void SequenceProcessor::createNetworkCopies(size_t count) {
     std::stringstream ss;
     s.writeFile(ss, false);
 
-    auto* wm = app_->getWorkspaceManager();
+    const auto* wm = app_->getWorkspaceManager();
     auto d = wm->createWorkspaceDeserializer(ss, "");
 
     while (copies_.size() + 1 < count) {
@@ -151,9 +151,9 @@ void SequenceProcessor::createNetworkCopies(size_t count) {
         }
 
         if (lastResize_) {
-            for (auto* sinkProcessor : copy.sinks) {
+            for (const auto* sinkProcessor : copy.sinks) {
                 for (auto* inport : sinkProcessor->getInports()) {
-                    auto e = std::unique_ptr<Event>{lastResize_->clone()};
+                    const auto e = std::unique_ptr<Event>{lastResize_->clone()};
                     inport->propagateEvent(e.get(), nullptr);
                 }
             }
@@ -185,7 +185,7 @@ void SequenceProcessor::propagateEvent(Event* event, Outport* source) {
 
     auto last = std::unique_ptr<Event>{event->clone()};
 
-    if (auto* re = event->getAs<ResizeEvent>()) {
+    if (const auto* re = event->getAs<ResizeEvent>()) {
         lastResize_ = std::unique_ptr<ResizeEvent>(re->clone());
     }
 
@@ -194,7 +194,7 @@ void SequenceProcessor::propagateEvent(Event* event, Outport* source) {
             sinkProcessor->propagateEvent(event, source);
         }
     }
-    for (auto& copy : copies_) {
+    for (const auto& copy : copies_) {
         for (auto* sinkProcessor : copy.sinks) {
             if (&sinkProcessor->getSuperOutport() == source) {
                 auto e = std::unique_ptr<Event>{last->clone()};
@@ -242,7 +242,7 @@ ProcessorNetwork& SequenceProcessor::getSubNetwork() { return *sub_.net; }
 void SequenceProcessor::loadSubNetwork(const std::filesystem::path& file) {
     if (std::filesystem::is_regular_file(file)) {
         sub_.net->clear();
-        auto* wm = app_->getWorkspaceManager();
+        const auto* wm = app_->getWorkspaceManager();
         auto ifs = std::ifstream(file);
         auto d = wm->createWorkspaceDeserializer(
             ifs, filesystem::getPath(PathType::Workspaces) / "dummy.inv");
@@ -266,7 +266,7 @@ void SequenceProcessor::unregisterProperty(Property* subProperty) {
 }
 
 Property* SequenceProcessor::addSuperProperty(Property* subProperty) {
-    auto it = handlers_.find(subProperty);
+    const auto it = handlers_.find(subProperty);
     if (it != handlers_.end()) {
         return it->second->superProperty;
     } else {
@@ -298,7 +298,7 @@ void SequenceProcessor::removeSuperProperty(Property* subProperty) {
 }
 
 Property* SequenceProcessor::getSuperProperty(Property* subProperty) {
-    auto it = handlers_.find(subProperty);
+    const auto it = handlers_.find(subProperty);
     if (it != handlers_.end()) {
         return it->second->superProperty;
     } else {
@@ -307,7 +307,7 @@ Property* SequenceProcessor::getSuperProperty(Property* subProperty) {
 }
 
 Property* SequenceProcessor::getSubProperty(Property* superProperty) {
-    auto it = util::find_if(
+    const auto it = util::find_if(
         handlers_, [&](auto& handler) { return handler.second->superProperty == superProperty; });
     if (it != handlers_.end()) {
         return it->second->subProperty;
@@ -361,7 +361,7 @@ void SequenceProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
             source->setSequenceIndex(0);
             sub_.sources.push_back(source);
         }
-    } else if (auto it = std::ranges::find_if(
+    } else if (const auto it = std::ranges::find_if(
                    copies_, [&](auto& copy) { return copy.net.get() == p->getNetwork(); });
                it != copies_.end()) {
         auto& copy = *it;
@@ -410,7 +410,7 @@ void SequenceProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
             removePort(&source->getSuperInport());
             std::erase(sub_.sources, source);
         }
-    } else if (auto it = std::ranges::find_if(
+    } else if (const auto it = std::ranges::find_if(
                    copies_, [&](auto& copy) { return copy.net.get() == p->getNetwork(); });
                it != copies_.end()) {
         auto& copy = *it;
@@ -463,20 +463,20 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
     superProperty->setSerializationMode(PropertySerializationMode::All);
     superProperty->setMetaData<IntMetaData>(meta::index, index);
 
-    auto it = std::ranges::lower_bound(comp, index, std::ranges::less{}, [&](Property* prop) {
+    const auto it = std::ranges::lower_bound(comp, index, std::ranges::less{}, [&](Property* prop) {
         return prop->getMetaData<IntMetaData>(meta::index, 0);
     });
 
     comp.insertProperty(std::distance(comp.begin(), it), superProperty, false);
 
     auto findSub = [this](Property* superProp) {
-        auto imp = [&](auto self, Property* superProp) -> Property* {
+        const auto imp = [&](auto self, Property* superProp) -> Property* {
             if (superProp == superProperty) {
                 return subProperty;
             } else {
                 auto* superOwner = dynamic_cast<CompositeProperty*>(superProp->getOwner());
                 auto* subOwner = dynamic_cast<CompositeProperty*>(self(self, superOwner));
-                auto pos = std::distance(superOwner->cbegin(), superOwner->find(superProp));
+                const auto pos = std::distance(superOwner->cbegin(), superOwner->find(superProp));
                 return (*subOwner)[pos];
             }
         };

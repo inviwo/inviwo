@@ -115,7 +115,7 @@ void LayerCreator::process() {
         deserialized_ = false;
     }
 
-    auto layer = std::make_shared<Layer>(*loadedData_);
+    const auto layer = std::make_shared<Layer>(*loadedData_);
     basis_.updateEntity(*layer);
     information_.updateLayer(*layer);
     outport_.setData(layer);

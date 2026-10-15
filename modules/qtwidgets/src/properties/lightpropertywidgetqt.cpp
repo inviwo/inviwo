@@ -87,9 +87,9 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
         property_->set(pos);
         property_->clearInitiatingWidget();
 
-        QSignalBlocker s0{cartesian_[0]};
-        QSignalBlocker s1{cartesian_[1]};
-        QSignalBlocker s2{cartesian_[2]};
+        const QSignalBlocker s0{cartesian_[0]};
+        const QSignalBlocker s1{cartesian_[1]};
+        const QSignalBlocker s2{cartesian_[2]};
 
         cartesian_[0]->setValue(pos.x);
         cartesian_[1]->setValue(pos.y);
@@ -110,9 +110,9 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
             auto newPos = halfSphere_->getPosition();
             newPos[iLocal] = cartesian_[iLocal]->getValue();
 
-            QSignalBlocker lblocker(halfSphere_);
-            QSignalBlocker rblocker(radius_);
-            QSignalBlocker fblocker(inFront_);
+            const QSignalBlocker lblocker(halfSphere_);
+            const QSignalBlocker rblocker(radius_);
+            const QSignalBlocker fblocker(inFront_);
 
             inFront_->setChecked(newPos.z > 0);
 
@@ -175,14 +175,14 @@ LightPropertyWidgetQt::~LightPropertyWidgetQt() = default;
 
 void LightPropertyWidgetQt::updateFromProperty() {
     // Prevent widgets from signaling changes just after setting them
-    QSignalBlocker lblocker(halfSphere_);
-    QSignalBlocker rblocker(radius_);
-    QSignalBlocker fblocker(inFront_);
+    const QSignalBlocker lblocker(halfSphere_);
+    const QSignalBlocker rblocker(radius_);
+    const QSignalBlocker fblocker(inFront_);
 
     const auto newPos = dvec3{property_->get()};
 
     for (auto&& [i, coordinate] : util::enumerate(cartesian_)) {
-        QSignalBlocker block(coordinate);
+        const QSignalBlocker block(coordinate);
         coordinate->setMinValue(property_->getMinValue()[i],
                                 property_->getMinConstraintBehaviour());
         coordinate->setMaxValue(property_->getMaxValue()[i],

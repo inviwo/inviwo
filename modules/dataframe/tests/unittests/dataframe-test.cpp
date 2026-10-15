@@ -55,7 +55,7 @@ struct AddColumnScript {
 
         ASSERT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
 
-        auto col = dataframe.getColumn(1);
+        const auto col = dataframe.getColumn(1);
         auto expectedFormat = DataFormat<T>::get();
         EXPECT_EQ(expectedFormat->getId(), col->getBuffer()->getDataFormat()->getId())
             << "Dataformat mismatch";
@@ -67,7 +67,7 @@ struct AddColumnScript {
 }  // namespace
 
 TEST(DataFrameTests, Create) {
-    DataFrame dataframe;
+    const DataFrame dataframe;
     DataFrame dataframe2(10);
 
     EXPECT_EQ(1, dataframe.getNumberOfColumns()) << "DataFrame contains more than index column";
@@ -93,7 +93,7 @@ TEST(DataFrameTests, AddCategoricalColumn) {
 
     ASSERT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
 
-    auto col = dataframe.getColumn(1);
+    const auto col = dataframe.getColumn(1);
     auto expectedFormat = DataFormat<uint32_t>::get();
     EXPECT_EQ(expectedFormat->getId(), col->getBuffer()->getDataFormat()->getId())
         << "Dataformat mismatch";
@@ -110,7 +110,7 @@ TEST(DataFrameTests, AddCategoricalColumnData) {
     ASSERT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
     ASSERT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
 
-    auto col = dataframe.getColumn(1);
+    const auto col = dataframe.getColumn(1);
     auto expectedFormat = DataFormat<uint32_t>::get();
     EXPECT_EQ(expectedFormat->getId(), col->getBuffer()->getDataFormat()->getId())
         << "Dataformat mismatch";
@@ -128,7 +128,7 @@ TEST(DataFrameTests, AddCategoricalColumnData) {
 TEST(DataFrameTests, AddColumnFromBuffer) {
     const std::string colname = "FloatCol";
 
-    auto buffer = util::makeBuffer(std::vector<float>{1.0f, 2.0f, 3.0f});
+    const auto buffer = util::makeBuffer(std::vector<float>{1.0f, 2.0f, 3.0f});
 
     DataFrame dataframe;
     dataframe.addColumnFromBuffer(colname, buffer);
@@ -137,7 +137,7 @@ TEST(DataFrameTests, AddColumnFromBuffer) {
     EXPECT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
     EXPECT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
 
-    auto col = dataframe.getColumn(1);
+    const auto col = dataframe.getColumn(1);
     EXPECT_EQ(colname, col->getHeader());
     EXPECT_EQ(3, col->getSize()) << "Column row count incorrect";
 }
@@ -145,7 +145,7 @@ TEST(DataFrameTests, AddColumnFromBuffer) {
 TEST(DataFrameTests, RowAccess) {
     const size_t rowIndex = 1;
 
-    auto buffer = util::makeBuffer(std::vector<float>{1.0f, 2.0f, 3.0f});
+    const auto buffer = util::makeBuffer(std::vector<float>{1.0f, 2.0f, 3.0f});
 
     DataFrame dataframe;
     dataframe.addColumnFromBuffer("FloatCol", buffer);
@@ -155,9 +155,10 @@ TEST(DataFrameTests, RowAccess) {
     EXPECT_EQ(3, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
     ASSERT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
 
-    auto indexcol = dataframe.getIndexColumn();
-    auto floatcol = std::dynamic_pointer_cast<TemplateColumn<float>>(dataframe.getColumn(1));
-    auto intcol = std::dynamic_pointer_cast<const TemplateColumn<int>>(dataframe.getColumn(2));
+    const auto indexcol = dataframe.getIndexColumn();
+    const auto floatcol = std::dynamic_pointer_cast<TemplateColumn<float>>(dataframe.getColumn(1));
+    const auto intcol =
+        std::dynamic_pointer_cast<const TemplateColumn<int>>(dataframe.getColumn(2));
 
     ASSERT_TRUE(floatcol) << "Column not found";
     ASSERT_TRUE(intcol) << "Column not found";

@@ -107,7 +107,7 @@ void exposeLogging(pybind11::module& m) {
             "registerLogger",
             [](LogCentral* lc, py::handle logger) {
                 // https://pybind11.readthedocs.io/en/stable/advanced/classes.html#avoiding-inheritance-slicing-and-std-weak-ptr-surprises
-                auto weakLogger = py::potentially_slicing_weak_ptr<Logger>(logger);
+                const auto weakLogger = py::potentially_slicing_weak_ptr<Logger>(logger);
                 lc->registerLogger(weakLogger);
             },
             py::arg("logger"))

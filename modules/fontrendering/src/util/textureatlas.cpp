@@ -152,7 +152,7 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices,
     int conservativeHeight = 0;
     // Fill each line by putting each element after the previous one.
     // If an element does not fit, start new line.
-    for (auto i : indices) {
+    for (const auto i : indices) {
         const auto& extent = entries[i].texExtent + 2 * margin_;
         size_t line = 0;
         while (line < lineLengths.size()) {
@@ -201,7 +201,7 @@ void TextureAtlas::initAtlas(TextRenderer& textRenderer, const std::vector<TexAt
                              std::vector<TextBoundingBox>&& bboxes) {
     // render labels into texture
     {
-        utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         textRenderer.renderToTexture(atlasTex_, entries);
     }
 

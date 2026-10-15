@@ -73,12 +73,12 @@ private:
 };
 
 void DataMinMaxGLTest::testVolume(std::string_view filename) {
-    auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
+    const auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
     auto reader = InviwoApplication::getPtr()
                       ->getDataReaderFactory()
                       ->getReaderForTypeAndExtension<VolumeSequence>(file);
     ASSERT_TRUE(reader.get() != nullptr);
-    auto volumeSeq = reader->readData(file);
+    const auto volumeSeq = reader->readData(file);
     ASSERT_EQ(1, volumeSeq->size());
 
     test(volumeSeq->front());
@@ -112,13 +112,13 @@ template <typename T>
 [[nodiscard]] std::shared_ptr<Volume> createVolume(size3_t dims) {
     using Type = T::type;
     using ValueType = T::primitive;
-    auto volumeRam = std::make_shared<VolumeRAMPrecision<Type>>(VolumeReprConfig{
+    const auto volumeRam = std::make_shared<VolumeRAMPrecision<Type>>(VolumeReprConfig{
         .dimensions = dims,
         .format = T::get(),
     });
-    auto data = volumeRam->getView();
+    const auto data = volumeRam->getView();
     const util::IndexMapper3D im{dims};
-    for (auto i : std::views::iota(0u, data.size())) {
+    for (const auto i : std::views::iota(0u, data.size())) {
         data[i] = Type{static_cast<ValueType>(1 + glm::compAdd(im(i)))};
     }
 
@@ -129,13 +129,13 @@ template <typename T>
 [[nodiscard]] std::shared_ptr<Layer> createLayer(size2_t dims) {
     using Type = T::type;
     using ValueType = T::primitive;
-    auto layerRam = std::make_shared<LayerRAMPrecision<Type>>(LayerReprConfig{
+    const auto layerRam = std::make_shared<LayerRAMPrecision<Type>>(LayerReprConfig{
         .dimensions = dims,
         .format = T::get(),
     });
-    auto data = layerRam->getView();
+    const auto data = layerRam->getView();
     const util::IndexMapper2D im{dims};
-    for (auto i : std::views::iota(0u, data.size())) {
+    for (const auto i : std::views::iota(0u, data.size())) {
         data[i] = Type{static_cast<ValueType>(1 + glm::compAdd(im(i)))};
     }
 
@@ -148,10 +148,10 @@ template <typename T>
     using ValueType = T::primitive;
 
     std::vector<Type> data(size);
-    for (auto i : std::views::iota(0u, data.size())) {
+    for (const auto i : std::views::iota(0u, data.size())) {
         data[i] = Type{static_cast<ValueType>(1 + i)};
     }
-    auto bufferRam = createBufferRAM(data);
+    const auto bufferRam = createBufferRAM(data);
     return std::make_shared<Buffer<Type>>(bufferRam);
 }
 

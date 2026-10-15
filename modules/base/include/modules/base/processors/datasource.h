@@ -187,7 +187,7 @@ void DataSource<DataType, PortType, ReaderType>::load() {
             rf_->template getReaderForTypeAndExtension<ReaderType>(sext, filePath.get())) {
         configureReader(*reader);
         try {
-            auto data = transform(reader->readData(filePath.get()));
+            const auto data = transform(reader->readData(filePath.get()));
             port_.setData(data);
             if (deserialized_) {
                 dataDeserialized(data);

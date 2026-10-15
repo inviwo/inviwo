@@ -72,16 +72,18 @@ void AngleRadiusWidget::paintEvent(QPaintEvent*) {
     const double pixelSpaceRadius = referenceRadius * (getRadius() / getMaxRadius());
     const qreal angleIndicatorCircleDiameter = 6.;
 
-    QPen angleIndicatorPen(palette().midlight(), 2, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
-    QPen coordinateSystemPen(palette().alternateBase(), 1, Qt::SolidLine, Qt::SquareCap,
-                             Qt::MiterJoin);
-    QPen circleBoundsPen(palette().alternateBase(), 1, Qt::DashLine, Qt::SquareCap, Qt::MiterJoin);
+    const QPen angleIndicatorPen(palette().midlight(), 2, Qt::SolidLine, Qt::SquareCap,
+                                 Qt::MiterJoin);
+    const QPen coordinateSystemPen(palette().alternateBase(), 1, Qt::SolidLine, Qt::SquareCap,
+                                   Qt::MiterJoin);
+    const QPen circleBoundsPen(palette().alternateBase(), 1, Qt::DashLine, Qt::SquareCap,
+                               Qt::MiterJoin);
 
     // x and y in pixel coordinates
-    auto x = pixelSpaceRadius * std::cos(getAngle());
-    auto y = -pixelSpaceRadius * std::sin(getAngle());
+    const auto x = pixelSpaceRadius * std::cos(getAngle());
+    const auto y = -pixelSpaceRadius * std::sin(getAngle());
 
-    int side = qMin(width(), height());
+    const int side = qMin(width(), height());
 
     QStylePainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -96,12 +98,12 @@ void AngleRadiusWidget::paintEvent(QPaintEvent*) {
     }
     painter.setPen(circleBoundsPen);
     // Display angle bounds by drawing a pie (pacman) if min/max is not 0/2pi
-    int innerBoundsCircleRadius =
+    const int innerBoundsCircleRadius =
         static_cast<int>(static_cast<double>(referenceRadius) * (getMinRadius() / getMaxRadius()));
     if (getMinAngle() > 0. || getMaxAngle() < 2. * std::numbers::pi) {
         // drawPie wants 16*degrees
-        int pieStart = static_cast<int>(16 * glm::degrees(getMinAngle()));
-        int pieEnd =
+        const int pieStart = static_cast<int>(16 * glm::degrees(getMinAngle()));
+        const int pieEnd =
             static_cast<int>(16 * (glm::degrees(getMaxAngle()) - glm::degrees(getMinAngle())));
         painter.drawPie(-referenceRadius, -referenceRadius, 2 * referenceRadius,
                         2 * referenceRadius, pieStart, pieEnd);
@@ -123,7 +125,7 @@ void AngleRadiusWidget::paintEvent(QPaintEvent*) {
     painter.setPen(QPen(palette().text().color()));
     QPainterPath anglePath;
     // Make sure that angle goes from 0 to 2*pi
-    double sweepAngle = getAngle() < 0. ? 2. * std::numbers::pi + getAngle() : getAngle();
+    const double sweepAngle = getAngle() < 0. ? 2. * std::numbers::pi + getAngle() : getAngle();
     // Draw angle arc and text
     anglePath.arcTo(-10., -10., 20., 20., 0., glm::degrees(sweepAngle));
     painter.drawPath(anglePath);
@@ -132,10 +134,10 @@ void AngleRadiusWidget::paintEvent(QPaintEvent*) {
     angleStream << std::fixed << glm::degrees(sweepAngle);
     int anglePosX = 5;
     int anglePosY = -10;
-    QFontMetrics fm(painter.font());
-    QString angleText = QString::fromStdString(angleStream.str()) + QChar(0260);
+    const QFontMetrics fm(painter.font());
+    const QString angleText = QString::fromStdString(angleStream.str()) + QChar(0260);
 
-    int angleTextWidth = fm.horizontalAdvance(angleText);
+    const int angleTextWidth = fm.horizontalAdvance(angleText);
     if (anglePosX + angleTextWidth > referenceRadius) {
         anglePosX = referenceRadius + 2;
         anglePosY = -2;
@@ -245,14 +247,14 @@ void AngleRadiusWidget::setMaxAngle(double angle) {
 }
 
 void AngleRadiusWidget::setAngleRadiusAtPosition(const QPoint& pos) {
-    QPoint center(width() / 2, height() / 2);
-    QPoint pixelSpacePos = pos - center;
+    const QPoint center(width() / 2, height() / 2);
+    const QPoint pixelSpacePos = pos - center;
     // Scale point from pixel coordinates to lie in [-maxRadius maxRadius]
     // Flip y-coordinate to get it facing upward instead of downward
-    double x = getMaxRadius() * pixelSpacePos.x() / ((double)getMaxPixelSpaceRadius());
-    double y = -getMaxRadius() * pixelSpacePos.y() / ((double)getMaxPixelSpaceRadius());
+    const double x = getMaxRadius() * pixelSpacePos.x() / ((double)getMaxPixelSpaceRadius());
+    const double y = -getMaxRadius() * pixelSpacePos.y() / ((double)getMaxPixelSpaceRadius());
 
-    double radius = std::sqrt(x * x + y * y);
+    const double radius = std::sqrt(x * x + y * y);
     double theta = std::atan2(y, x);
     // Convert angle to lie within [0 2pi), http://en.wikipedia.org/wiki/Atan2
     if (theta < 0.) theta += 2. * std::numbers::pi;

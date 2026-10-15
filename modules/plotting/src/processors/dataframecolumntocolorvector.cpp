@@ -88,18 +88,18 @@ DataFrameColumnToColorVector::DataFrameColumnToColorVector()
 }
 
 void DataFrameColumnToColorVector::process() {
-    auto buffer =
+    const auto buffer =
         dataFrame_.getData()->getColumn(selectedColorAxis_.getSelectedValue())->getBuffer();
 
     colors_.setData(
         buffer->getRepresentation<BufferRAM>()
             ->dispatch<std::shared_ptr<std::vector<vec4>>, dispatching::filter::Scalars>(
                 [&](auto buf) {
-                    auto colors = std::make_shared<std::vector<vec4>>();
+                    const auto colors = std::make_shared<std::vector<vec4>>();
                     auto& vec = buf->getDataContainer();
-                    auto minMax = std::minmax_element(vec.begin(), vec.end());
-                    double minV = static_cast<double>(*minMax.first);
-                    double maxV = static_cast<double>(*minMax.second);
+                    const auto minMax = std::minmax_element(vec.begin(), vec.end());
+                    const double minV = static_cast<double>(*minMax.first);
+                    const double maxV = static_cast<double>(*minMax.second);
                     const double range = (maxV - minV);
 
                     for (const auto& v : vec) {

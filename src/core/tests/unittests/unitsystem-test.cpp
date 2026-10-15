@@ -67,7 +67,7 @@ TEST(Unitsystem, unitsystem) {
     EXPECT_EQ(fmt::format("{:ext}", N), "N");
 
     Unit chargeDensity = units::unit_from_string("e/Å^3");
-    Unit length = units::unit_from_string("Å");
+    const Unit length = units::unit_from_string("Å");
 
     EXPECT_EQ(fmt::format("{:all}", chargeDensity), "e/Å³");
     EXPECT_EQ(fmt::format("{:all}", chargeDensity * length.pow(3)), "e");

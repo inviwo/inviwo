@@ -91,8 +91,8 @@ void HDF5ToBuffer::process() try {
 
     const DataSetInfo bufferMeta = bufferMatches_[bufferSelection_.getSelectedIndex()];
 
-    auto buffer = getBufferAtPathAsType(*data + bufferMeta.path, selection_.getSelection(),
-                                        util::conversionFormat(datatype_.getSelectedIndex()));
+    const auto buffer = getBufferAtPathAsType(*data + bufferMeta.path, selection_.getSelection(),
+                                              util::conversionFormat(datatype_.getSelectedIndex()));
 
     outport_.setData(buffer);
 

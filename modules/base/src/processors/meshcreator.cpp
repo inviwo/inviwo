@@ -172,32 +172,32 @@ MeshCreator::MeshCreator()
     util::show(meshScale_, meshRes_);
 
     meshType_.onChange([this]() {
-        auto updateNone = [](PickingEvent*) {};
+        const auto updateNone = [](PickingEvent*) {};
 
-        auto getDelta = [this](const PickingEvent* p) {
+        const auto getDelta = [this](const PickingEvent* p) {
             auto currNDC = p->getNDC();
             auto prevNDC = p->getPreviousNDC();
 
             // Use depth of initial press as reference to move in the image plane.
-            auto refDepth = p->getPressedDepth();
+            const auto refDepth = p->getPressedDepth();
             currNDC.z = refDepth;
             prevNDC.z = refDepth;
 
-            auto corrWorld = camera_.getWorldPosFromNormalizedDeviceCoords(currNDC);
-            auto prevWorld = camera_.getWorldPosFromNormalizedDeviceCoords(prevNDC);
+            const auto corrWorld = camera_.getWorldPosFromNormalizedDeviceCoords(currNDC);
+            const auto prevWorld = camera_.getWorldPosFromNormalizedDeviceCoords(prevNDC);
             return (corrWorld - prevWorld);
         };
 
-        auto updatePosition1 = [this, getDelta](const PickingEvent* p) {
+        const auto updatePosition1 = [this, getDelta](const PickingEvent* p) {
             position1_.set(position1_.get() + vec3{getDelta(p)});
         };
 
-        auto updatePosition1and2 = [this, getDelta](const PickingEvent* p) {
-            auto delta = vec3{getDelta(p)};
+        const auto updatePosition1and2 = [this, getDelta](const PickingEvent* p) {
+            const auto delta = vec3{getDelta(p)};
             position1_.set(position1_.get() + delta);
             position2_.set(position2_.get() + delta);
         };
-        auto updateBasis = [this, getDelta](const PickingEvent* p) {
+        const auto updateBasis = [this, getDelta](const PickingEvent* p) {
             basis_.offset_.set(basis_.offset_.get() + getDelta(p));
         };
 
@@ -365,13 +365,13 @@ void MeshCreator::handlePicking(PickingEvent* p) {
 }
 
 void MeshCreator::process() {
-    auto mesh = createMesh();
+    const auto mesh = createMesh();
 
     if (enablePicking_) {
         // Add picking ids
-        auto bufferRAM =
+        const auto bufferRAM =
             std::make_shared<BufferRAMPrecision<uint32_t>>(mesh->getBuffer(0)->getSize());
-        auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
+        const auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
         auto& data = bufferRAM->getDataContainer();
         std::ranges::fill(data, static_cast<uint32_t>(picking_.getPickingId(0)));
         mesh->addBuffer(Mesh::BufferInfo(BufferType::PickingAttrib), pickBuffer);

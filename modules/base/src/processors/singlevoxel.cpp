@@ -123,33 +123,33 @@ SingleVoxel::SingleVoxel()
 }
 
 void SingleVoxel::process() {
-    auto vol = volume_.getData();
+    const auto vol = volume_.getData();
     auto df = vol->getDataFormat();
 
-    auto comps = df->getComponents();
+    const auto comps = df->getComponents();
     doubleProperty_.setVisible(comps == 1);
     dvec2Property_.setVisible(comps == 2);
     dvec3Property_.setVisible(comps == 3);
     dvec4Property_.setVisible(comps == 4);
 
     if (comps == 1) {
-        VolumeDoubleSampler<1> sampler(vol);
-        auto sample = sampler.sample(position_, space_.get());
+        const VolumeDoubleSampler<1> sampler(vol);
+        const auto sample = sampler.sample(position_, space_.get());
         doubleProperty_.set(sample);
     }
     if (comps == 2) {
-        VolumeDoubleSampler<2> sampler(vol);
-        auto sample = sampler.sample(position_, space_.get());
+        const VolumeDoubleSampler<2> sampler(vol);
+        const auto sample = sampler.sample(position_, space_.get());
         dvec2Property_.set(sample);
     }
     if (comps == 3) {
-        VolumeDoubleSampler<3> sampler(vol);
-        auto sample = sampler.sample(position_, space_.get());
+        const VolumeDoubleSampler<3> sampler(vol);
+        const auto sample = sampler.sample(position_, space_.get());
         dvec3Property_.set(sample);
     }
     if (comps == 4) {
-        VolumeDoubleSampler<4> sampler(vol);
-        auto sample = sampler.sample(position_, space_.get());
+        const VolumeDoubleSampler<4> sampler(vol);
+        const auto sample = sampler.sample(position_, space_.get());
         dvec4Property_.set(sample);
     }
 }

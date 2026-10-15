@@ -90,7 +90,7 @@ AnnotationsWidget::AnnotationsWidget(InviwoApplication* app, NetworkEditorView* 
     // Need to delay this until the qtwidgets module is loaded to get access to the qt widgets
     onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister([&]() { updateWidget(); });
     onModulesWillUnregister_ = app->getModuleManager().onModulesWillUnregister([&]() {
-        while (auto* item = layout_->takeAt(0)) {
+        while (const auto* item = layout_->takeAt(0)) {
             delete item;
         }
     });

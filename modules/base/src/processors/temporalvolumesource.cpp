@@ -66,13 +66,13 @@ namespace {
 // Extract the last contiguous run of digits from a file stem, e.g. "frame_0042" -> 42.
 std::optional<double> numberFromName(const std::filesystem::path& path) {
     const auto stem = path.stem().string();
-    auto end = stem.rend();
-    auto digitsEnd =
+    const auto end = stem.rend();
+    const auto digitsEnd =
         std::find_if(stem.rbegin(), end, [](unsigned char c) { return std::isdigit(c) != 0; });
     if (digitsEnd == end) {
         return std::nullopt;
     }
-    auto digitsBegin =
+    const auto digitsBegin =
         std::find_if(digitsEnd, end, [](unsigned char c) { return std::isdigit(c) == 0; });
     const std::string number{digitsBegin.base(), digitsEnd.base()};
     if (number.empty()) {

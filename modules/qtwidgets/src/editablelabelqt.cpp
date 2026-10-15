@@ -139,7 +139,7 @@ void EditableLabelQt::setText(std::string_view txt) {
 }
 
 QString EditableLabelQt::shortenText(const std::string& text) {
-    QFontMetrics fm = label_->fontMetrics();
+    const QFontMetrics fm = label_->fontMetrics();
     return fm.elidedText(QString::fromStdString(text), Qt::ElideRight, width());
 }
 

@@ -106,7 +106,7 @@ ImageNormalizationProcessor::ImageNormalizationProcessor()
 
 void ImageNormalizationProcessor::preProcess(TextureUnitContainer&, Shader& shader) {
     if (inport_.isChanged()) {
-        auto minMax =
+        const auto minMax =
             util::layerMinMax(inport_.getData()->getColorLayer(), IgnoreSpecialValues::Yes);
         dataMin_.set(minMax.first);
         dataMax_.set(minMax.second);

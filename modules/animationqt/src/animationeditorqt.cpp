@@ -137,7 +137,7 @@ void AnimationEditorQt::onAnimationChanged(AnimationController*, Animation* oldA
 }
 
 std::unique_ptr<TrackWidgetQt> AnimationEditorQt::createTrackWidget(Track& track) const {
-    auto widgetId = widgetFactory_.getWidgetId(track.getClassIdentifier());
+    const auto widgetId = widgetFactory_.getWidgetId(track.getClassIdentifier());
     return widgetFactory_.create(widgetId, track);
 }
 
@@ -164,7 +164,7 @@ void AnimationEditorQt::onTrackRemoved(Track* track) {
 }
 
 void AnimationEditorQt::keyPressEvent(QKeyEvent* keyEvent) {
-    int k = keyEvent->key();
+    const int k = keyEvent->key();
     if (k == Qt::Key_Delete) {  // Delete selected
         deleteSelection();
         keyEvent->accept();
@@ -241,7 +241,7 @@ void AnimationEditorQt::copy() {
         serializer.serializeRange(
             "sequences", "item", sequences, [&](Serializer& nested, const auto& item) {
                 const auto [track, sequence] = item;
-                auto it =
+                const auto it =
                     std::ranges::find_if(animation, [&](const auto& t) { return &t == track; });
                 const auto idx = std::distance(animation.begin(), it);
                 nested.serialize("trackCId", item.first->getClassIdentifier(),
@@ -263,7 +263,7 @@ void AnimationEditorQt::copy() {
         serializer.serializeRange(
             "keyframes", "item", keyframes, [&](Serializer& nested, const auto& item) {
                 const auto [track, keyframe] = item;
-                auto it =
+                const auto it =
                     std::ranges::find_if(animation, [&](const auto& t) { return &t == track; });
                 const auto idx = std::distance(animation.begin(), it);
                 nested.serialize("trackCId", item.first->getClassIdentifier(),
@@ -295,7 +295,7 @@ void AnimationEditorQt::paste(std::optional<QPointF> scenePos, QGraphicsView* vi
         }
     }();
 
-    auto* clipboard = QApplication::clipboard();
+    const auto* clipboard = QApplication::clipboard();
     const auto* mimeData = clipboard->mimeData();
     if (!mimeData) return;
 
@@ -420,14 +420,14 @@ void AnimationEditorQt::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         connect(copyAction, &QAction::triggered, this, [this]() { copy(); });
 
         auto* pasteAction = menu.addAction(QIcon(":/svgicons/edit-paste.svg"), "&Paste");
-        auto* clipboard = QApplication::clipboard();
+        const auto* clipboard = QApplication::clipboard();
         pasteAction->setEnabled(
             clipboard->mimeData() &&
             (clipboard->mimeData()->hasFormat(QString::fromUtf8(mimeKeyframes)) ||
              clipboard->mimeData()->hasFormat(QString::fromUtf8(mimeKeyframeSequences))));
         connect(pasteAction, &QAction::triggered, this, [this, pos, view]() { paste(pos, view); });
 
-        auto* selectAllAction =
+        const auto* selectAllAction =
             menu.addAction(QIcon(":/svgicons/edit-selectall.svg"), tr("&Select All"));
         connect(selectAllAction, &QAction::triggered, this, [this]() { selectAll(); });
     }
@@ -435,7 +435,7 @@ void AnimationEditorQt::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     {
 
         auto* deleteAction = menu.addAction("&Delete");
-        auto* clearAction = menu.addAction("&Clear");
+        const auto* clearAction = menu.addAction("&Clear");
 
         deleteAction->setEnabled(!selection.empty());
         connect(deleteAction, &QAction::triggered, this,
@@ -495,7 +495,7 @@ void AnimationEditorQt::dragMoveEvent(QGraphicsSceneDragDropEvent* event) {
 
     // Indicate position
     if (dropIndicatorLine) {
-        QGraphicsView* pView = views().empty() ? nullptr : views().first();
+        const QGraphicsView* pView = views().empty() ? nullptr : views().first();
         const qreal snapX =
             getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
         dropIndicatorLine->setLine(snapX, 0, snapX, pView ? pView->height() : height());
@@ -522,7 +522,7 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
         auto property = source->getProperty();
 
         // Get time
-        QGraphicsView* pView = views().empty() ? nullptr : views().first();
+        const QGraphicsView* pView = views().empty() ? nullptr : views().first();
         const qreal snapX =
             getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
         const auto time = scenePosToTime(snapX);

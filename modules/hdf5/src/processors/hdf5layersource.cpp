@@ -97,7 +97,7 @@ void HDF5ToLayer::process() try {
 
     const LayerConfig layerConfig{.format = util::conversionFormat(datatype_.getSelectedIndex())};
 
-    auto layer =
+    const auto layer =
         getLayerAtPathAsType(*data + layerMeta.path, selection_.getSelection(), layerConfig);
     information_.updateForNewLayer(*layer, deserialized_ ? inviwo::util::OverwriteState::Yes
                                                          : inviwo::util::OverwriteState::No);

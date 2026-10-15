@@ -105,7 +105,7 @@ void HDF5ToDataFrame::process() try {
         }
     }
 
-    auto df = std::make_shared<DataFrame>();
+    const auto df = std::make_shared<DataFrame>();
 
     for (const size_t idx : enabledIndices) {
         const DataSetInfo& meta = dataMatches_[idx];
@@ -114,7 +114,7 @@ void HDF5ToDataFrame::process() try {
         // Build a full-range selection for this 1-D dataset.
         const std::vector<Selection> selection{{0, rows, 1}};
 
-        auto buffer = getBufferAtPathAsType(*data + meta.path, selection, nullptr);
+        const auto buffer = getBufferAtPathAsType(*data + meta.path, selection, nullptr);
 
         // Use the last path component as column header.
         const std::string pathStr = meta.path.toString();
@@ -125,7 +125,7 @@ void HDF5ToDataFrame::process() try {
         // Read unit from HDF5 attribute if present.
         Unit unit{};
         try {
-            auto dataset = data->getGroup().openDataSet(meta.path);
+            const auto dataset = data->getGroup().openDataSet(meta.path);
             if (dataset.attrExists("units")) {
                 const auto attr = dataset.openAttribute("units");
                 if (attr.getDataType().getClass() == H5T_STRING) {
@@ -153,7 +153,7 @@ void HDF5ToDataFrame::rebuildColumnProperties() {
     const NetworkLock lock{this};
 
     // Remove all previously added dynamic properties.
-    for (auto& prop : columnProps_) {
+    for (const auto& prop : columnProps_) {
         columns_.removeProperty(prop.get());
     }
     columnProps_.clear();

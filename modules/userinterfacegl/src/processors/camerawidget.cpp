@@ -431,20 +431,20 @@ void CameraWidget::updateWidgetTexture(const ivec2& widgetSize) {
 }
 
 void CameraWidget::drawWidgetTexture() {
-    ivec2 widgetSize(widgetImageGL_->getDimensions());
+    const ivec2 widgetSize(widgetImageGL_->getDimensions());
 
-    vec2 dstSize(outport_.getDimensions());
+    const vec2 dstSize(outport_.getDimensions());
     vec2 centerPos(position_.get() * dstSize);
     // draw widget image on top of the input image
     // consider anchor position
-    vec2 shift = 0.5f * vec2(widgetSize) * (anchorPos_.get() + vec2(1.0f, 1.0f));
+    const vec2 shift = 0.5f * vec2(widgetSize) * (anchorPos_.get() + vec2(1.0f, 1.0f));
     centerPos.x -= shift.x;
     // negate y axis
     centerPos.y = dstSize.y - (centerPos.y + shift.y);
 
-    ivec4 viewport(centerPos.x, centerPos.y, widgetSize.x, widgetSize.y);
-    utilgl::ViewportState viewportState(viewport);
-    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    const ivec4 viewport(centerPos.x, centerPos.y, widgetSize.x, widgetSize.y);
+    const utilgl::ViewportState viewportState(viewport);
+    const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
 
     TextureUnit colorTexUnit, depthTexUnit, pickingTexUnit;
     const utilgl::Activate as{&overlayShader_};
@@ -453,13 +453,13 @@ void CameraWidget::drawWidgetTexture() {
     overlayShader_.setUniform("depth_", depthTexUnit);
     overlayShader_.setUniform("picking_", pickingTexUnit);
 
-    if (auto* layer = widgetImageGL_->getColorLayerGL()) {
+    if (const auto* layer = widgetImageGL_->getColorLayerGL()) {
         layer->bindTexture(colorTexUnit);
     }
-    if (auto* layer = widgetImageGL_->getDepthLayerGL()) {
+    if (const auto* layer = widgetImageGL_->getDepthLayerGL()) {
         layer->bindTexture(depthTexUnit);
     }
-    if (auto* layer = widgetImageGL_->getPickingLayerGL()) {
+    if (const auto* layer = widgetImageGL_->getPickingLayerGL()) {
         layer->bindTexture(pickingTexUnit);
     }
     utilgl::singleDrawImagePlaneRect();
@@ -543,7 +543,7 @@ void CameraWidget::cubePicked(PickingEvent* p) {
     } else if (p->getPressState() == PickingPressState::Release) {
         if (glm::length2(p->getDeltaPressedPosition() * dvec2{p->getCanvasSize()}) < 1.0) {
 
-            auto& cam = camera_.get();
+            const auto& cam = camera_.get();
             const util::IndexMapper<3, int> im{{3, 3, 3}};
             const auto newDir = im(static_cast<int>(p->getPickedId())) - ivec3{1};
             const auto newUp = findANiceNewLookUpForAxisAndCurrentUp(newDir, cam.getLookUp());
@@ -632,8 +632,8 @@ CameraWidget::CameraState CameraWidget::cameraState(const Camera& cam) {
 
 void CameraWidget::loadMesh() {
     const auto load = [this](std::string_view file) -> std::shared_ptr<const Mesh> {
-        auto* app = getInviwoApplication();
-        auto* uiModule = app->getModuleByIdentifier("UserInterfaceGL");
+        const auto* app = getInviwoApplication();
+        const auto* uiModule = app->getModuleByIdentifier("UserInterfaceGL");
         if (!uiModule) {
             throw Exception("Could not locate module 'UserInterfaceGL'");
         }
@@ -763,7 +763,7 @@ void CameraWidget::stepZoom(bool zoomIn) {
 void CameraWidget::updateOutput(const dmat4& rotation) {
     // update camera
     const dmat3 m = rotation;
-    auto& cam = camera_.get();
+    const auto& cam = camera_.get();
     camera_.setLook(cam.getLookTo() - m * cam.getDirection(), cam.getLookTo(), m * cam.getLookUp());
 
     // update rotation matrix
@@ -954,11 +954,11 @@ void CameraWidget::Animate::startStopAnimation(bool start) {
 }
 
 void CameraWidget::Animate::willInvokeEvent(Event* e) {
-    if (auto* me = e->getAs<MouseEvent>()) {
+    if (const auto* me = e->getAs<MouseEvent>()) {
         if (me->state() == MouseState::Press) {
             interactionStart();
         }
-    } else if (auto* ke = e->getAs<KeyboardEvent>()) {
+    } else if (const auto* ke = e->getAs<KeyboardEvent>()) {
         if (!ke->hasBeenUsed()) {
             if (ke->state() == KeyState::Press) {
                 interactionStart();
@@ -968,11 +968,11 @@ void CameraWidget::Animate::willInvokeEvent(Event* e) {
 }
 
 void CameraWidget::Animate::didInvokeEvent(Event* e) {
-    if (auto* me = e->getAs<MouseEvent>()) {
+    if (const auto* me = e->getAs<MouseEvent>()) {
         if (me->state() == MouseState::Release && me->buttonState() == MouseButton::None) {
             interactionStop();
         }
-    } else if (auto* ke = e->getAs<KeyboardEvent>()) {
+    } else if (const auto* ke = e->getAs<KeyboardEvent>()) {
         if (!ke->hasBeenUsed()) {
             if (ke->state() == KeyState::Release) {
                 interactionStop();

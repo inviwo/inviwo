@@ -54,7 +54,7 @@ struct MinMaxHelper {
         using P = MinMaxProperty<T>;
         using range_type = glm::tvec2<T, glm::defaultp>;
 
-        auto classname = Defaultvalues<T>::getName() + "MinMaxProperty";
+        const auto classname = Defaultvalues<T>::getName() + "MinMaxProperty";
 
         py::classh<P, Property> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name, Document help,

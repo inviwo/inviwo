@@ -100,7 +100,7 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
     fileTemplate.insert(fileTemplate.end(), suffix.begin(), suffix.end());
     fileTemplate.push_back('\0');
 
-    int fd = mkstemps(fileTemplate.data(), suffixlen);
+    const int fd = mkstemps(fileTemplate.data(), suffixlen);
     if (fd == -1) {
         throw Exception("could not create temporary file");
     }

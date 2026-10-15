@@ -79,7 +79,7 @@ const ProcessorInfo TestProcessor::processorInfo_{
 
 TEST(ResizeEvent, basic) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     /*
      *     ┌───────────┐
@@ -117,7 +117,7 @@ TEST(ResizeEvent, basic) {
 
 TEST(ResizeEvent, twoSinks) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     /*
      *             ┌───────────┐
@@ -171,7 +171,7 @@ TEST(ResizeEvent, twoSinks) {
 
 TEST(ResizeEvent, dontHandleResizeEvents) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     /*
      *             ┌───────────┐
@@ -227,7 +227,7 @@ TEST(ResizeEvent, dontHandleResizeEvents) {
 
 TEST(ResizeEvent, twoSinksDisconnect) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     /*
      *             ┌───────────┐

@@ -144,8 +144,8 @@ struct OptionPropertyState {
         return *this;
     }
     auto setSelectedValue(const T& newSelectedValue) -> OptionPropertyState {
-        auto it = std::ranges::find(options, newSelectedValue,
-                                    [](auto& option) { return option.value_; });
+        const auto it = std::ranges::find(options, newSelectedValue,
+                                          [](auto& option) { return option.value_; });
         if (it != std::end(options)) {
             selectedIndex = std::distance(std::begin(options), it);
         }
@@ -399,7 +399,7 @@ protected:
     }
     std::optional<size_t> findId(std::string_view id) {
         auto& options = opts();
-        auto it = util::find_if(options, [&](auto& opt) { return opt.id_ == id; });
+        const auto it = util::find_if(options, [&](auto& opt) { return opt.id_ == id; });
         if (it != options.end()) {
             return std::distance(options.begin(), it);
         } else {
@@ -702,7 +702,7 @@ OptionProperty<T>& OptionProperty<T>::removeOption(size_t index) {
     if (opts().empty()) return *this;
 
     auto& options = optsMut();
-    std::string id = getSelectedIdentifier();
+    const std::string id = getSelectedIdentifier();
     options.erase(options.begin() + index);
     if (!setSelectedIdentifier(id)) {
         selectedIndex_ = 0;
@@ -716,7 +716,7 @@ OptionProperty<T>& OptionProperty<T>::removeOption(std::string_view identifier) 
     if (opts().empty()) return *this;
 
     auto& options = optsMut();
-    std::string id = getSelectedIdentifier();
+    const std::string id = getSelectedIdentifier();
     std::erase_if(options,
                   [&](const OptionPropertyOption<T>& opt) { return opt.id_ == identifier; });
     if (!setSelectedIdentifier(id)) {
@@ -838,9 +838,9 @@ bool OptionProperty<T>::setSelectedIndex(size_t option) {
 
 template <typename T>
 bool OptionProperty<T>::setSelectedIdentifier(std::string_view identifier) {
-    auto it = util::find_if(opts(), [&](auto& opt) { return opt.id_ == identifier; });
+    const auto it = util::find_if(opts(), [&](auto& opt) { return opt.id_ == identifier; });
     if (it != opts().end()) {
-        size_t dist = std::distance(opts().begin(), it);
+        const size_t dist = std::distance(opts().begin(), it);
         if (selectedIndex_ != dist) {
             selectedIndex_ = dist;
             propertyModified();
@@ -853,9 +853,9 @@ bool OptionProperty<T>::setSelectedIdentifier(std::string_view identifier) {
 
 template <typename T>
 bool OptionProperty<T>::setSelectedDisplayName(std::string_view name) {
-    auto it = util::find_if(opts(), [&](auto& opt) { return opt.name_ == name; });
+    const auto it = util::find_if(opts(), [&](auto& opt) { return opt.name_ == name; });
     if (it != opts().end()) {
-        size_t dist = std::distance(opts().begin(), it);
+        const size_t dist = std::distance(opts().begin(), it);
         if (selectedIndex_ != dist) {
             selectedIndex_ = dist;
             propertyModified();
@@ -868,9 +868,9 @@ bool OptionProperty<T>::setSelectedDisplayName(std::string_view name) {
 
 template <typename T>
 bool OptionProperty<T>::setSelectedValue(const T& val) {
-    auto it = util::find_if(opts(), [&](auto& opt) { return opt.value_ == val; });
+    const auto it = util::find_if(opts(), [&](auto& opt) { return opt.value_ == val; });
     if (it != opts().end()) {
-        size_t dist = std::distance(opts().begin(), it);
+        const size_t dist = std::distance(opts().begin(), it);
         if (selectedIndex_ != dist) {
             selectedIndex_ = dist;
             propertyModified();
@@ -885,9 +885,9 @@ template <typename T>
 bool OptionProperty<T>::setSelectedValue(std::string_view val)
     requires std::is_same_v<T, std::string>
 {
-    auto it = util::find_if(opts(), [&](auto& opt) { return opt.value_ == val; });
+    const auto it = util::find_if(opts(), [&](auto& opt) { return opt.value_ == val; });
     if (it != opts().end()) {
-        size_t dist = std::distance(opts().begin(), it);
+        const size_t dist = std::distance(opts().begin(), it);
         if (selectedIndex_ != dist) {
             selectedIndex_ = dist;
             propertyModified();
@@ -942,7 +942,7 @@ OptionProperty<T>& OptionProperty<T>::replaceOptions(R range) {
         modified = true;
     }
 
-    if (auto index = findId(selectId).value_or(size_t{0}); index != selectedIndex_) {
+    if (const auto index = findId(selectId).value_or(size_t{0}); index != selectedIndex_) {
         selectedIndex_ = index;
         modified = true;
     }
@@ -1096,7 +1096,7 @@ OptionProperty<T>& OptionProperty<T>::setCurrentStateAsDefault() {
 
 template <typename T>
 OptionProperty<T>& OptionProperty<T>::setDefault(const T& value) {
-    auto it = util::find_if(opts(), [&](auto& opt) { return opt.value_ == value; });
+    const auto it = util::find_if(opts(), [&](auto& opt) { return opt.value_ == value; });
     if (it != opts().end()) {
         defaultSelectedIndex_ = std::distance(opts().begin(), it);
     }
@@ -1181,7 +1181,7 @@ Document OptionProperty<T>::getDescription() const {
 
     Document doc = BaseOptionProperty::getDescription();
     if (opts().size() > 0) {
-        auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
+        const auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
         utildoc::TableBuilder tb(table);
         tb(H("Number of Options"), opts().size());
         tb(H("Selected Index"), selectedIndex_);

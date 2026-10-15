@@ -33,6 +33,6 @@
 
 namespace inviwo {
 
-void exposeCamera(pybind11::module& m);
+void exposeCamera(const pybind11::module& m);
 
 }  // namespace inviwo

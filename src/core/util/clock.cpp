@@ -41,7 +41,7 @@ void Clock::start() {
 }
 
 void Clock::stop() {
-    auto currentTime = clock::now();
+    const auto currentTime = clock::now();
 
     if (isRunning_) {
         accumulatedTime_ += currentTime - startTime_;
@@ -52,7 +52,7 @@ void Clock::stop() {
 void Clock::reset() { accumulatedTime_ = static_cast<duration>(0); }
 
 auto Clock::getElapsedTime() const -> duration {
-    auto currentTime = clock::now();
+    const auto currentTime = clock::now();
 
     if (isRunning_) {
         return accumulatedTime_ + currentTime - startTime_;

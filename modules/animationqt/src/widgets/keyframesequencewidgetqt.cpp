@@ -96,19 +96,19 @@ void KeyframeSequenceWidgetQt::paint(QPainter* painter,
                              trackHeight / 2 - trackHeightNudge);
     Gradient.setColorAt(0, isSelected() ? QColor(63, 184, 255) : QColor(192, 192, 192));
     Gradient.setColorAt(1, isSelected() ? QColor(66, 66, 132) : QColor(66, 66, 66));
-    QBrush brush = QBrush(Gradient);
+    const QBrush brush = QBrush(Gradient);
     painter->setPen(pen);
     painter->setBrush(brush);
     auto rect = boundingRect();
-    auto penWidth = pen.widthF();
+    const auto penWidth = pen.widthF();
     rect.adjust(0.5 * (keyframeWidth + penWidth), 0.5 * penWidth + trackHeightNudge,
                 -0.5 * (keyframeWidth - penWidth), -0.5 * penWidth - trackHeightNudge);
 
     const auto start = mapFromScene(timeToScenePos(keyframeSequence_.getFirstTime()), 0).x();
     const auto stop = mapFromScene(timeToScenePos(keyframeSequence_.getLastTime()), 0).x();
 
-    QRectF draw{start, -0.5 * trackHeight + trackHeightNudge, stop - start,
-                trackHeight - 2 * trackHeightNudge};
+    const QRectF draw{start, -0.5 * trackHeight + trackHeightNudge, stop - start,
+                      trackHeight - 2 * trackHeightNudge};
 
     painter->drawRect(draw);
 }
@@ -136,7 +136,7 @@ void KeyframeSequenceWidgetQt::onKeyframeSequenceMoved(KeyframeSequence*) {
 QRectF KeyframeSequenceWidgetQt::boundingRect() const { return childrenBoundingRect(); }
 
 KeyframeWidgetQt* KeyframeSequenceWidgetQt::getKeyframeQt(const Keyframe* keyframe) const {
-    auto it = keyframes_.find(keyframe);
+    const auto it = keyframes_.find(keyframe);
 
     if (it != keyframes_.end()) {
         return it->second.get();

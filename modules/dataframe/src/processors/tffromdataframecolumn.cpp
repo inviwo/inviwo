@@ -80,7 +80,7 @@ TFFromDataFrameColumn::TFFromDataFrameColumn()
 
 void TFFromDataFrameColumn::process() {
     if (!lock_.get()) {
-        auto df = dataFrame_.getData();
+        const auto df = dataFrame_.getData();
         column_.setOptions(*df);
 
         auto col = df->getColumn(column_.getSelectedValue());
@@ -95,7 +95,7 @@ void TFFromDataFrameColumn::process() {
         pos_.assign(std::begin(newPos), std::end(newPos));
     }
 
-    auto data = util::tfSawTooth({
+    const auto data = util::tfSawTooth({
         .points = pos_,
         .range = range_.get(),
         .delta = delta_.get(),

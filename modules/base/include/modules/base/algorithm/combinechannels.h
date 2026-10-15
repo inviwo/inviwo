@@ -95,7 +95,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
         return res;
     }();
 
-    if (auto it =
+    if (const auto it =
             std::ranges::adjacent_find(activePorts, std::not_equal_to<>{},
                                        [](auto& p) { return p.first->getData()->getDimensions(); });
         it != activePorts.end()) {
@@ -107,7 +107,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
 
     auto&& [type, precision] = [&]() {
         std::vector<const DataFormatBase*> formats;
-        for (auto p : activePorts) {
+        for (const auto p : activePorts) {
             formats.push_back(p.first->getData()->getDataFormat());
         }
         return std::make_pair(util::commonNumericType(formats),
@@ -122,7 +122,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
                             Config{.format = commonFormat,
                                    .swizzleMask = swizzlemasks::defaultData(activePorts.size())});
 
-    [[maybe_unused]] DataMapper destDataMap(commonFormat);
+    [[maybe_unused]] const DataMapper destDataMap(commonFormat);
 
     if constexpr (normalization == detail::ChannelNormalization::Yes) {
         data->dataMap = destDataMap;
@@ -150,7 +150,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
                             const auto srcData = srcramrep->getDataTyped();
 
                             for (size_t i = 0; i < glm::compMul(dims); ++i) {
-                                auto normalizedValue = srcDataMap.mapFromDataToNormalized(
+                                const auto normalizedValue = srcDataMap.mapFromDataToNormalized(
                                     util::glmcomp(srcData[i], srcChannelArg));
                                 util::glmcomp(destData[i], inputChannel) = static_cast<ValueType>(
                                     destDataMap.mapFromNormalizedToData(normalizedValue));

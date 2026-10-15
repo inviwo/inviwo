@@ -83,9 +83,9 @@ namespace {
 pybind11::object prompt(std::string title, std::string message, std::string defaultResponse = "") {
 
     bool ok;
-    QString text = QInputDialog::getText(nullptr, title.c_str(), message.c_str(), QLineEdit::Normal,
-                                         defaultResponse.c_str(), &ok,
-                                         Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
+    const QString text = QInputDialog::getText(
+        nullptr, title.c_str(), message.c_str(), QLineEdit::Normal, defaultResponse.c_str(), &ok,
+        Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
     if (ok && !text.isEmpty()) {
         return pybind11::str(text.toLocal8Bit().constData());
     } else if (ok) {
@@ -227,7 +227,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
 
     try {
         const pybind11::gil_scoped_acquire gil;
-        auto inviwopy = py::module::import("inviwopy");
+        const auto inviwopy = py::module::import("inviwopy");
         auto m = createPythonQtModule(inviwopy);
 
         m.def("update", [this]() {

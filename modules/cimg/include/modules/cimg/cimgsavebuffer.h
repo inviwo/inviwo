@@ -71,7 +71,7 @@ const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_libra
         throw cimg_library::CImgIOException("specified extension is empty");
     }
 
-    auto safeExt = SafeCStr(extension);
+    const auto safeExt = SafeCStr(extension);
     const char* ext = safeExt.c_str();
     if (!cimg_library::cimg::strcasecmp(ext, ".cpp") ||
         !cimg_library::cimg::strcasecmp(ext, ".hpp") ||
@@ -133,7 +133,7 @@ void saveCImgToBuffer(const cimg_library::CImg<T>& img, std::string_view ext,
         }
     }
 
-    auto it = memfile.getBuffer().begin();
+    const auto it = memfile.getBuffer().begin();
     buff.assign(it, it + memfile.getNumberOfBytesInBuffer());
 }
 

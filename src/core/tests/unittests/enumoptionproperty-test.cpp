@@ -67,21 +67,21 @@ struct EnumTraits<MyEnumUShort> {
 };
 
 TEST(EnumOptionProperty, ClassIdentifier) {
-    OptionProperty<MyEnumA> pA("test", "test");
-    OptionProperty<MyEnumB> pB("test", "test");
+    const OptionProperty<MyEnumA> pA("test", "test");
+    const OptionProperty<MyEnumB> pB("test", "test");
 
-    auto idA = pA.getClassIdentifier();
-    auto idB = pB.getClassIdentifier();
+    const auto idA = pA.getClassIdentifier();
+    const auto idB = pB.getClassIdentifier();
 
     EXPECT_NE(idA, idB);
 }
 
 TEST(EnumOptionProperty, ClassIdentifierShort) {
-    OptionProperty<MyEnumShort> pShort("test", "test");
-    OptionProperty<MyEnumUShort> pUShort("test", "test");
+    const OptionProperty<MyEnumShort> pShort("test", "test");
+    const OptionProperty<MyEnumUShort> pUShort("test", "test");
 
-    auto idShort = pShort.getClassIdentifier();
-    auto idUShort = pUShort.getClassIdentifier();
+    const auto idShort = pShort.getClassIdentifier();
+    const auto idUShort = pUShort.getClassIdentifier();
 
     EXPECT_NE(idShort, idUShort);
 }

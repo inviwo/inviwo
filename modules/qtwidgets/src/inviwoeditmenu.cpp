@@ -72,7 +72,7 @@ InviwoEditMenu::InviwoEditMenu(QWidget* parent) : QMenu(tr("&Edit"), parent) {
         action.second->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action.second->setEnabled(true);
         connect(action.second, &QAction::triggered, this, [this, type = action.first]() {
-            if (auto item = getFocusItem()) {
+            if (const auto item = getFocusItem()) {
                 item->invoke(type);
             }
         });
@@ -80,7 +80,7 @@ InviwoEditMenu::InviwoEditMenu(QWidget* parent) : QMenu(tr("&Edit"), parent) {
 
     // enable the actions currently supported by the item in focus
     connect(this, &QMenu::aboutToShow, this, [this]() {
-        if (auto item = getFocusItem()) {
+        if (const auto item = getFocusItem()) {
             for (auto& action : actions_) {
                 action.second->setEnabled(item->enabled(action.first));
             }
@@ -102,7 +102,7 @@ InviwoEditMenu::InviwoEditMenu(QWidget* parent) : QMenu(tr("&Edit"), parent) {
 std::shared_ptr<MenuItem> InviwoEditMenu::getFocusItem() {
     QObject* focus = QApplication::focusWidget();
     while (focus) {
-        auto it = items_.find(focus);
+        const auto it = items_.find(focus);
         if (it != items_.end()) {
             if (auto item = it->second.lock()) {
                 lastItem_ = item;
@@ -125,7 +125,7 @@ std::shared_ptr<MenuItem> InviwoEditMenu::getFocusItem() {
 std::shared_ptr<MenuItem> InviwoEditMenu::registerItem(std::shared_ptr<MenuItem> item) {
     items_[item->owner] = item;
     if (auto w = qobject_cast<QWidget*>(item->owner)) {
-        for (auto& action : actions_) {
+        for (const auto& action : actions_) {
             w->addAction(action.second);
         }
     }

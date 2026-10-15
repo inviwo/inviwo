@@ -73,7 +73,7 @@ RangeSlider::RangeSlider(std::string_view label, const ivec2& value, int minValu
         if (!enabled_) {
             return false;
         }
-        auto calcNewValue = [this, delta](int prev) {
+        const auto calcNewValue = [this, delta](int prev) {
             return static_cast<int>(
                 round(prev + convertDeltaToSlider(delta) * static_cast<double>(max_ - min_)));
         };
@@ -183,7 +183,7 @@ void RangeSlider::setEnd(int stop) {
 }
 
 void RangeSlider::renderWidget(const ivec2& origin, const size2_t&) {
-    TextureUnit texUnit;
+    const TextureUnit texUnit;
     texUnit.activate();
 
     // bind textures
@@ -247,7 +247,7 @@ void RangeSlider::renderWidget(const ivec2& origin, const size2_t&) {
     {
         uiTextures_->bind();
 
-        vec2 dims(uiTextures_->getDimensions());
+        const vec2 dims(uiTextures_->getDimensions());
         const float aspectRatio = dims.x / dims.y;
         const float roundness = 0.8f;  // make them appear slightly square
 
@@ -262,7 +262,7 @@ void RangeSlider::renderWidget(const ivec2& origin, const size2_t&) {
             uiShader.setUniform("marginScale", vec2(roundness));
         }
 
-        auto drawHandle = [&uiShader, origin, positionMask, this](float pos, size_t id) {
+        const auto drawHandle = [&uiShader, origin, positionMask, this](float pos, size_t id) {
             uiShader.setUniform("origin", vec2(origin + widgetPos_) + vec2(pos) * positionMask);
             // set up picking color
             uiShader.setUniform("pickingColor", pickingMapper_.getColor(id));
@@ -288,9 +288,9 @@ ivec2 RangeSlider::computeLabelPos(int descent) const {
         const ivec2 extent(getWidgetExtentScaled());
         vec2 labelSize(labelExtent_);
         labelSize.y -= descent;
-        ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
+        const ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
         // compute offset for vertical alignment in the center
-        vec2 labelOffset(0.0f, -labelSize.y * 0.5f);
+        const vec2 labelOffset(0.0f, -labelSize.y * 0.5f);
 
         return ivec2(labelOrigin + ivec2(labelOffset + 0.5f));
     }
@@ -335,14 +335,14 @@ vec2 RangeSlider::getSliderPos() const {
         (orientation_ == UIOrientation::Vertical ? ext.y - handleWidth : ext.x - handleWidth);
 
     if (flipped_) {
-        auto calcPos = [this, sliderLength](int pos) {
+        const auto calcPos = [this, sliderLength](int pos) {
             return (max_ - glm::clamp(pos, min_, max_)) / static_cast<double>(max_ - min_) *
                    sliderLength;
         };
 
         return vec2(calcPos(value_.y), calcPos(value_.x));
     } else {
-        auto calcPos = [this, sliderLength](int pos) {
+        const auto calcPos = [this, sliderLength](int pos) {
             return (glm::clamp(pos, min_, max_) - min_) / static_cast<double>(max_ - min_) *
                    sliderLength;
         };

@@ -85,7 +85,7 @@ void activateTarget(ImageOutport& targetOutport, ImageType type) {
         targetOutport.setData(
             std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
     }
-    auto outImage = targetOutport.getEditableData();
+    const auto outImage = targetOutport.getEditableData();
     activateTarget(*outImage, type);
 }
 
@@ -111,7 +111,7 @@ void activateTargetAndCopySource(ImageOutport& targetOutport, const Image& sourc
         targetOutport.setData(
             std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
     }
-    auto outImage = targetOutport.getEditableData();
+    const auto outImage = targetOutport.getEditableData();
     activateTargetAndCopySource(*outImage, sourceImage, type);
 }
 
@@ -119,7 +119,7 @@ void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceIn
                                  ImageType type) {
     auto* outImageGL = targetImage.getEditableRepresentation<ImageGL>();
 
-    if (auto inImage = sourceInport.getData()) {
+    if (const auto inImage = sourceInport.getData()) {
         inImage->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     } else {
         log::warn(R"(Trying to copy empty image inport: "{}" in processor: "{}")",
@@ -134,7 +134,7 @@ void activateTargetAndCopySource(ImageOutport& targetOutport, const ImageInport&
         targetOutport.setData(
             std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
     }
-    auto outImage = targetOutport.getEditableData();
+    const auto outImage = targetOutport.getEditableData();
     activateTargetAndCopySource(*outImage, sourceInport, type);
 }
 
@@ -161,12 +161,12 @@ void clearCurrentTarget() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
 void deactivateCurrentTarget() { FrameBufferObject::deactivateFBO(); }
 
-void updateAndActivateTarget(ImageOutport& targetOutport, ImageInport& sourceInport) {
+void updateAndActivateTarget(ImageOutport& targetOutport, const ImageInport& sourceInport) {
     if (!targetOutport.hasEditableData()) {
         targetOutport.setData(
             std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
     }
-    auto outImage = targetOutport.getEditableData();
+    const auto outImage = targetOutport.getEditableData();
     auto* outImageGL = outImage->getEditableRepresentation<ImageGL>();
     outImageGL->updateFrom(sourceInport.getData()->getRepresentation<ImageGL>());
     outImageGL->activateBuffer();
@@ -461,11 +461,11 @@ void setShaderUniforms(Shader& shader, const ImageOutport& outport, std::string_
 }
 
 std::unique_ptr<Mesh> planeRect() {
-    auto verticesBuffer =
+    const auto verticesBuffer =
         util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
-    auto texCoordsBuffer =
+    const auto texCoordsBuffer =
         util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
-    auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
+    const auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
 
     auto m = std::make_unique<Mesh>();
     m->addBuffer(BufferType::PositionAttrib, verticesBuffer);
@@ -501,8 +501,8 @@ void bindTexture(const TextureBase& texture, const TextureUnit& texUnit) {
     glActiveTexture(GL_TEXTURE0);
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const TextureBase& texture,
-                        std::string_view samplerID) {
+void bindAndSetUniforms(const Shader& shader, TextureUnitContainer& cont,
+                        const TextureBase& texture, std::string_view samplerID) {
     TextureUnit unit;
     bindTexture(texture, unit);
     shader.setUniform(samplerID, unit);
@@ -515,7 +515,8 @@ void bindTexture(TransferFunctionProperty& tfp, const TextureUnit& texUnit) {
     }
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, TransferFunctionProperty& tf) {
+void bindAndSetUniforms(const Shader& shader, TextureUnitContainer& cont,
+                        TransferFunctionProperty& tf) {
     TextureUnit unit;
     bindTexture(tf, unit);
     shader.setUniform(tf.getIdentifier(), unit);
@@ -537,7 +538,7 @@ void bindTexture(IsoTFProperty& property, const TextureUnit& texUnit) {
     }
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, IsoTFProperty& property) {
+void bindAndSetUniforms(const Shader& shader, TextureUnitContainer& cont, IsoTFProperty& property) {
     TextureUnit unit;
     bindTexture(property, unit);
     shader.setUniform(property.tf_.getIdentifier(), unit);

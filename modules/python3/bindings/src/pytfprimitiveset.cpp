@@ -87,7 +87,7 @@ void addPoints(TFPrimitiveSet* ps, const pybind11::list& values) {
 
 }  // namespace
 
-void exposeTFPrimitiveSet(pybind11::module& m) {
+void exposeTFPrimitiveSet(const pybind11::module& m) {
     namespace py = pybind11;
 
     py::enum_<PrimitiveSetMode>(m, "TFPrimitiveSetType")
@@ -109,12 +109,12 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
             TFPrimitiveData data{};
 
             if (list.size() == 2) {
-                auto first = list[0];
-                auto second = list[1];
+                const auto first = list[0];
+                const auto second = list[1];
 
                 if (py::isinstance<py::float_>(first) && py::isinstance<py::list>(second) &&
                     second.cast<py::list>().size() == 4) {
-                    auto color = second.cast<py::list>();
+                    const auto color = second.cast<py::list>();
 
                     data.pos = list[0].cast<double>();
                     data.color.x = color[0].cast<float>();
@@ -126,8 +126,8 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
                            py::isinstance<py::list>(second) &&
                            second.cast<py::list>().size() == 3) {
 
-                    auto pos = first.cast<py::list>();
-                    auto color = second.cast<py::list>();
+                    const auto pos = first.cast<py::list>();
+                    const auto color = second.cast<py::list>();
 
                     data.pos = pos[0].cast<double>();
                     data.color.x = color[0].cast<float>();
@@ -137,12 +137,12 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
                     return data;
                 }
             } else if (list.size() == 3) {
-                auto first = list[0];
-                auto second = list[1];
-                auto third = list[2];
+                const auto first = list[0];
+                const auto second = list[1];
+                const auto third = list[2];
                 if (py::isinstance<py::float_>(first) && py::isinstance<py::float_>(second) &&
                     py::isinstance<py::list>(third) && third.cast<py::list>().size() == 3) {
-                    auto color = third.cast<py::list>();
+                    const auto color = third.cast<py::list>();
                     data.pos = first.cast<double>();
                     data.color.x = color[0].cast<float>();
                     data.color.y = color[1].cast<float>();
@@ -233,7 +233,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def("set",
              [](TFPrimitiveSet& ps, const py::typing::Iterable<TFPrimitiveData>& items) {
                  std::vector<TFPrimitiveData> points;
-                 for (auto item : items) {
+                 for (const auto item : items) {
                      points.emplace_back(item.cast<TFPrimitiveData>());
                  }
                  ps.set(points);

@@ -289,7 +289,7 @@ void Shader::linkShader(bool notifyRebuild) {
                               processLog(utilgl::getProgramInfoLog(program_.id)));
     }
 
-    if (auto log = utilgl::getProgramInfoLog(program_.id); !log.empty()) {
+    if (const auto log = utilgl::getProgramInfoLog(program_.id); !log.empty()) {
         log::info("Id: {} {} {}", program_.id, shaderNames(), processLog(log));
     }
 
@@ -331,7 +331,7 @@ void Shader::rebuildShader(ShaderObject* obj) {
 
         log::info("Id: {}, resource: {} successfully reloaded", program_.id, obj->getFileName());
 
-        auto log = utilgl::getProgramInfoLog(program_.id);
+        const auto log = utilgl::getProgramInfoLog(program_.id);
         if (!log.empty()) {
             log::info("Id: {} {}", program_.id, processLog(log));
         }
@@ -342,7 +342,7 @@ void Shader::rebuildShader(ShaderObject* obj) {
 }
 
 void Shader::handleError(OpenGLException& e) {
-    auto onError = ShaderManager::getPtr()->getOnShaderError();
+    const auto onError = ShaderManager::getPtr()->getOnShaderError();
     switch (onError) {
         case Shader::OnError::Warn:  log::exception(e); break;
         case Shader::OnError::Throw: throw;
@@ -357,7 +357,7 @@ std::string Shader::processLog(std::string log) const {
 
     while (std::getline(stream, line)) {
         // This log matching needs more testing. Mostly guessing here.
-        auto lline = toLower(line);
+        const auto lline = toLower(line);
         if (lline.find("vertex") != std::string::npos)
             type = ShaderType::Vertex;
         else if (lline.find("geometry") != std::string::npos)
@@ -371,13 +371,13 @@ std::string Shader::processLog(std::string log) const {
         else if (lline.find("compute") != std::string::npos)
             type = ShaderType::Compute;
 
-        int origLineNumber = utilgl::getLogLineNumber(line);
+        const int origLineNumber = utilgl::getLogLineNumber(line);
 
         auto obj = getShaderObject(type);
         if (obj && origLineNumber > 0) {
-            auto res = obj->resolveLine(origLineNumber - 1);
-            auto lineNumber = res.second;
-            auto fileName = res.first;
+            const auto res = obj->resolveLine(origLineNumber - 1);
+            const auto lineNumber = res.second;
+            const auto fileName = res.first;
             result << "\n"
                    << fileName << " (" << lineNumber << "): " << line.substr(line.find(":") + 1);
         } else {
@@ -425,7 +425,7 @@ std::string Shader::shaderNames() const {
 }
 
 GLint Shader::findUniformLocation(std::string_view name) const {
-    auto it = uniformLookup_.find(name);
+    const auto it = uniformLookup_.find(name);
     if (it != uniformLookup_.end()) {
         return it->second;
     } else {
@@ -448,8 +448,9 @@ const ShaderObject* Shader::operator[](ShaderType type) const { return getShader
 ShaderObject* Shader::operator[](ShaderType type) { return getShaderObject(type); }
 
 const ShaderObject* Shader::getShaderObject(ShaderType type) const {
-    auto it = std::find_if(shaderObjects_.begin(), shaderObjects_.end(),
-                           [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
+    const auto it =
+        std::find_if(shaderObjects_.begin(), shaderObjects_.end(),
+                     [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
     if (it != shaderObjects_.end()) {
         return &(*it);
     } else {
@@ -458,8 +459,9 @@ const ShaderObject* Shader::getShaderObject(ShaderType type) const {
 }
 
 ShaderObject* Shader::getShaderObject(ShaderType type) {
-    auto it = std::find_if(shaderObjects_.begin(), shaderObjects_.end(),
-                           [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
+    const auto it =
+        std::find_if(shaderObjects_.begin(), shaderObjects_.end(),
+                     [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
     if (it != shaderObjects_.end()) {
         return &(*it);
     } else {

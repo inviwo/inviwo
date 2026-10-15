@@ -384,9 +384,9 @@ void TextureQuadRenderer::renderToRect(const Texture2D& texture, const std::vect
                                        const std::vector<ivec2>& extent,
                                        const std::vector<mat4>& texTransform,
                                        const size2_t& canvasSize, const mat4& transformation) {
-    utilgl::DepthFuncState depth(GL_ALWAYS);
+    const utilgl::DepthFuncState depth(GL_ALWAYS);
 
-    TextureUnit texUnit;
+    const TextureUnit texUnit;
     texUnit.activate();
     texture.bind();
 
@@ -394,7 +394,7 @@ void TextureQuadRenderer::renderToRect(const Texture2D& texture, const std::vect
     shader_->setUniform("tex", texUnit);
 
     auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-    utilgl::Enable<MeshGL> enable(rect);
+    const utilgl::Enable<MeshGL> enable(rect);
 
     // scaling factor from screen coords to normalized dev coords
     const vec2 scaling(vec2(2.0f) / vec2(canvasSize));
@@ -421,9 +421,9 @@ void TextureQuadRenderer::renderToRect(const Texture2D& texture,
                                        const std::vector<mat4>& texTransform,
                                        const size2_t& canvasSize,
                                        const std::vector<mat4>& transformations) {
-    utilgl::DepthFuncState depth(GL_ALWAYS);
+    const utilgl::DepthFuncState depth(GL_ALWAYS);
 
-    TextureUnit texUnit;
+    const TextureUnit texUnit;
     texUnit.activate();
     texture.bind();
 
@@ -431,7 +431,7 @@ void TextureQuadRenderer::renderToRect(const Texture2D& texture,
     shader_->setUniform("tex", texUnit);
 
     auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-    utilgl::Enable<MeshGL> enable(rect);
+    const utilgl::Enable<MeshGL> enable(rect);
 
     // scaling factor from screen coords to normalized dev coords
     const vec2 scaling(vec2(2.0f) / vec2(canvasSize));
@@ -487,7 +487,7 @@ void TextureQuadRenderer::renderToRect3D(const Camera& camera, const Texture2D& 
                                          const std::vector<mat4>& texTransform,
                                          const size2_t& canvasSize, const vec2& anchor,
                                          const mat4& transformation) {
-    TextureUnit texUnit;
+    const TextureUnit texUnit;
     texUnit.activate();
     texture.bind();
 
@@ -495,7 +495,7 @@ void TextureQuadRenderer::renderToRect3D(const Camera& camera, const Texture2D& 
     shader_->setUniform("tex", texUnit);
 
     auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-    utilgl::Enable<MeshGL> enable(rect);
+    const utilgl::Enable<MeshGL> enable(rect);
 
     const vec2 dims{canvasSize};
     // scaling factor from screen coords to normalized dev coords

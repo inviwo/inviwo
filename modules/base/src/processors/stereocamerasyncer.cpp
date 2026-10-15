@@ -75,7 +75,7 @@ StereoCameraSyncer::StereoCameraSyncer()
 
     separation_.onChange([&]() {
         if (isChanging) return;
-        util::KeepTrueWhileInScope guard(&isChanging);
+        const util::KeepTrueWhileInScope guard(&isChanging);
         left_.setLookFrom(master_.getLookFrom() - 0.5 * master_.getLookRight() * separation_.get());
         right_.setLookFrom(master_.getLookFrom() +
                            0.5 * master_.getLookRight() * separation_.get());
@@ -83,7 +83,7 @@ StereoCameraSyncer::StereoCameraSyncer()
 
     master_.onChange([&]() {
         if (isChanging) return;
-        util::KeepTrueWhileInScope guard(&isChanging);
+        const util::KeepTrueWhileInScope guard(&isChanging);
         left_.set(&master_);
         left_.setLookFrom(master_.getLookFrom() - 0.5 * master_.getLookRight() * separation_.get());
         right_.set(&master_);
@@ -93,7 +93,7 @@ StereoCameraSyncer::StereoCameraSyncer()
 
     left_.onChange([&]() {
         if (isChanging) return;
-        util::KeepTrueWhileInScope guard(&isChanging);
+        const util::KeepTrueWhileInScope guard(&isChanging);
         master_.set(&left_);
         master_.setLookFrom(left_.getLookFrom() + 0.5 * left_.getLookRight() * separation_.get());
         right_.set(&left_);
@@ -102,7 +102,7 @@ StereoCameraSyncer::StereoCameraSyncer()
 
     right_.onChange([&]() {
         if (isChanging) return;
-        util::KeepTrueWhileInScope guard(&isChanging);
+        const util::KeepTrueWhileInScope guard(&isChanging);
         master_.set(&right_);
         master_.setLookFrom(right_.getLookFrom() - 0.5 * right_.getLookRight() * separation_.get());
         left_.set(&right_);

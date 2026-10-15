@@ -175,7 +175,7 @@ auto createProcessor(std::string_view id, OnCallbacks callbacks = {}) {
 
 TEST(NetworkEvaluator, Eval) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     auto source = createSource("source", {.onProcess = [](TestProcessor& p) {
                                    p.outport.setData(std::make_shared<int>(0));
@@ -226,7 +226,7 @@ TEST(NetworkEvaluator, Eval) {
     }
     {
         SCOPED_TRACE("Locked network");
-        NetworkLock lock(&network);
+        const NetworkLock lock(&network);
         src.invalidate(InvalidationLevel::InvalidOutput);
         srcInst.checkAndReset({});
         snkInst.checkAndReset({});
@@ -303,7 +303,7 @@ TEST(NetworkEvaluator, Error) {
 
 TEST(NetworkEvaluator, PropertyChange) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     auto source = createSource("source", {.onProcess = [](TestProcessor& p) {
                                    p.outport.setData(std::make_shared<int>(p.prop.get()));
@@ -336,7 +336,7 @@ TEST(NetworkEvaluator, PropertyChange) {
 
 TEST(NetworkEvaluator, OutProperty) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     auto source = createSource("source", {.onProcess = [](TestProcessor& p) {
                                    p.outport.setData(std::make_shared<int>(p.prop.get()));
@@ -371,7 +371,7 @@ TEST(NetworkEvaluator, OutProperty) {
 
 TEST(NetworkEvaluator, PropertyLink) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     auto source1 = createSource("source1", {.onProcess = [](TestProcessor& p) {
                                     p.outport.setData(std::make_shared<int>(p.prop.get()));
@@ -425,7 +425,7 @@ TEST(NetworkEvaluator, PropertyLink) {
 
 TEST(NetworkEvaluator, UpwardsPropertyLink) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     auto source = createSource("source", {.onProcess = [](TestProcessor& p) {
                                    p.outport.setData(std::make_shared<int>(p.prop.get()));

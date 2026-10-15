@@ -159,20 +159,20 @@ private:
         } else if (str.size() >= 1 && str.front() == '"') {
             str = str.substr(1);
         }
-        if (auto it = map_.find(key); it != map_.end()) {
+        if (const auto it = map_.find(key); it != map_.end()) {
             current_.emplace_back(it->second, str,
                                   it->second->onToken ? it->second->onToken(str) : std::any{});
         }
     }
 
     void tokenize() {
-        auto str = std::string_view(searchStr_);
+        const auto str = std::string_view(searchStr_);
         bool quote = false;
         size_t tokenStart = 0;
         std::string_view key = global_.shortcut;
 
         for (size_t i = 0; i < str.size(); ++i) {
-            auto c = str[i];
+            const auto c = str[i];
 
             if (quote && c == '\"') {
                 quote = false;

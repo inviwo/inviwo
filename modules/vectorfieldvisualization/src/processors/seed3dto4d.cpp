@@ -67,8 +67,8 @@ Seed3Dto4D::Seed3Dto4D()
 
 void Seed3Dto4D::process() {
 
-    auto outvec = std::make_shared<SeedPoint4DVector>();
-    for (auto& inData : seed3d_.getVectorData()) {
+    const auto outvec = std::make_shared<SeedPoint4DVector>();
+    for (const auto& inData : seed3d_.getVectorData()) {
         const auto& inVec = *inData;
         outvec->reserve(inVec.size());
         for (const auto& p : inVec) {

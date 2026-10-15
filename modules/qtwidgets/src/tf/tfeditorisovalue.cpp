@@ -64,8 +64,8 @@ QRectF TFEditorIsovalue::boundingRect() const {
     }
 
     // add box of vertical line
-    auto* view = scene()->views().front();
-    auto trans = deviceTransform(view->viewportTransform()).inverted();
+    const auto* view = scene()->views().front();
+    const auto trans = deviceTransform(view->viewportTransform()).inverted();
 
     const auto top = trans.map(view->rect().topLeft()).y();
     const auto bottom = trans.map(view->rect().bottomLeft()).y();
@@ -94,8 +94,8 @@ void TFEditorIsovalue::paint(QPainter* painter,
             utilqt::cosmeticPen(QColor(64, 64, 64, 255), 2.0, Qt::DashLine, Qt::RoundCap));
         painter->setBrush(Qt::NoBrush);
 
-        auto* view = scene()->views().front();
-        auto trans = deviceTransform(view->viewportTransform()).inverted();
+        const auto* view = scene()->views().front();
+        const auto trans = deviceTransform(view->viewportTransform()).inverted();
         const auto top = trans.map(view->rect().topLeft()).y();
         const auto bottom = trans.map(view->rect().bottomLeft()).y();
 

@@ -47,8 +47,8 @@ std::shared_ptr<VolumeGL> VolumePy2GLConverter::createFrom(
         volumeSrc->getInterpolation(), volumeSrc->getWrapping(), false);
 
     const auto tex = volumeDst->getTexture();
-    auto srcSize = static_cast<size_t>(volumeSrc->data().nbytes());
-    auto dstSize = tex->getNumberOfValues() * tex->getSizeInBytes();
+    const auto srcSize = static_cast<size_t>(volumeSrc->data().nbytes());
+    const auto dstSize = tex->getNumberOfValues() * tex->getSizeInBytes();
 
     if (srcSize == dstSize &&
         pybind11::array::c_style == (volumeSrc->data().flags() & pybind11::array::c_style)) {
@@ -71,8 +71,8 @@ void VolumePy2GLConverter::update(std::shared_ptr<const VolumePy> volumeSrc,
     volumeDst->setWrapping(volumeSrc->getWrapping());
 
     const auto tex = volumeDst->getTexture();
-    auto srcSize = static_cast<size_t>(volumeSrc->data().nbytes());
-    auto dstSize = tex->getNumberOfValues() * tex->getSizeInBytes();
+    const auto srcSize = static_cast<size_t>(volumeSrc->data().nbytes());
+    const auto dstSize = tex->getNumberOfValues() * tex->getSizeInBytes();
 
     if (srcSize == dstSize &&
         pybind11::array::c_style == (volumeSrc->data().flags() & pybind11::array::c_style)) {
@@ -91,8 +91,8 @@ std::shared_ptr<VolumePy> VolumeGL2PyConverter::createFrom(
         volumeSrc->getInterpolation(), volumeSrc->getWrapping());
 
     const auto tex = volumeSrc->getTexture();
-    auto dstSize = static_cast<size_t>(volumeDst->data().nbytes());
-    auto srcSize = tex->getNumberOfValues() * tex->getSizeInBytes();
+    const auto dstSize = static_cast<size_t>(volumeDst->data().nbytes());
+    const auto srcSize = tex->getNumberOfValues() * tex->getSizeInBytes();
 
     if (srcSize == dstSize &&
         pybind11::array::c_style == (volumeDst->data().flags() & pybind11::array::c_style)) {
@@ -115,8 +115,8 @@ void VolumeGL2PyConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
     volumeDst->setWrapping(volumeSrc->getWrapping());
 
     const auto tex = volumeSrc->getTexture();
-    auto dstSize = static_cast<size_t>(volumeDst->data().nbytes());
-    auto srcSize = tex->getNumberOfValues() * tex->getSizeInBytes();
+    const auto dstSize = static_cast<size_t>(volumeDst->data().nbytes());
+    const auto srcSize = tex->getNumberOfValues() * tex->getSizeInBytes();
 
     if (srcSize == dstSize &&
         pybind11::array::c_style == (volumeDst->data().flags() & pybind11::array::c_style)) {

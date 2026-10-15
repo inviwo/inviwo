@@ -95,9 +95,9 @@ void TFInterpolationOptimalTransport::operator()(
     const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds /*from*/,
     Seconds to, TransferFunction& out) const {
 
-    auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
-        return time < key->getTime();
-    });
+    const auto it =
+        std::upper_bound(keys.begin(), keys.end(), to,
+                         [](const auto& time, const auto& key) { return time < key->getTime(); });
     const auto& prev = *(*std::prev(it));
     const auto& next = *(*it);
 
@@ -148,9 +148,9 @@ void TFInterpolationBlend::operator()(
     const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds /*from*/,
     Seconds to, TransferFunction& out) const {
 
-    auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
-        return time < key->getTime();
-    });
+    const auto it =
+        std::upper_bound(keys.begin(), keys.end(), to,
+                         [](const auto& time, const auto& key) { return time < key->getTime(); });
     const auto& prev = *(*std::prev(it));
     const auto& next = *(*it);
 

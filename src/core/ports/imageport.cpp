@@ -254,7 +254,7 @@ Document ImageOutport::getInfo() const {
 
     auto doc = DataOutport<Image>::getInfo();
     {
-        auto t = doc.get({P{"table"}});
+        const auto t = doc.get({P{"table"}});
         utildoc::TableBuilder tb(t);
         tb(H("Has Editable Data"), hasEditableData());
         tb(H("Handle Resize Events"), handleResizeEvents_);

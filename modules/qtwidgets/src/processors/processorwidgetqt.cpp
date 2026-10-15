@@ -74,7 +74,7 @@ ProcessorWidgetQt::ProcessorWidgetQt(Processor* p)
             utilqt::movePointOntoDesktop(utilqt::toQPoint(pos), utilqt::toQSize(dim), true);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
-            util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+            const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
             // prevent move events, since this will automatically save the "adjusted" position.
             // The processor widget already has its correct pos, i.e. the one de-serialized from
             // file.
@@ -152,16 +152,16 @@ void ProcessorWidgetQt::closeEvent(QCloseEvent* event) {
 }
 
 void ProcessorWidgetQt::updateVisible(bool visible) {
-    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     Super::setVisible(visible);
 }
 void ProcessorWidgetQt::updateDimensions(ivec2 dim) {
     if (resizeOngoing_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     Super::move(dim.x, dim.y);
 }
 void ProcessorWidgetQt::updatePosition(ivec2 pos) {
-    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     Super::move(pos.x, pos.y);
 }
 

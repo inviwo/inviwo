@@ -184,7 +184,7 @@ class StandardFactory : public Factory<T, Key, Args...>,
                         public FactoryRegister<FactoryObject, factoryKeyType<Key>, Key> {
 public:
     virtual std::unique_ptr<T> create(Key key, Args... args) const override {
-        auto it = this->map_.find(key);
+        const auto it = this->map_.find(key);
         if (it != end(this->map_)) {
             return it->second->create(args...);
         } else {
@@ -248,7 +248,8 @@ bool FactoryRegister<M, Key, K>::registerObject(M* obj) {
 
 template <typename M, typename Key, typename K>
 bool FactoryRegister<M, Key, K>::unRegisterObject(M* obj) {
-    size_t removed = std::erase_if(map_, [obj](const auto& elem) { return elem.second == obj; });
+    const size_t removed =
+        std::erase_if(map_, [obj](const auto& elem) { return elem.second == obj; });
     if (removed > 0) {
         this->notifyObserversOnUnRegister(obj);
         return true;
@@ -264,7 +265,7 @@ bool FactoryRegister<M, Key, K>::hasKey(K key) const {
 
 template <typename M, typename Key, typename K>
 M* FactoryRegister<M, Key, K>::getFactoryObject(K key) const {
-    if (auto it = map_.find(key); it != map_.end()) {
+    if (const auto it = map_.find(key); it != map_.end()) {
         return it->second;
     } else {
         return nullptr;

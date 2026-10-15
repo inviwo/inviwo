@@ -111,7 +111,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
         if (commandLineParser_->getLogToFile()) {
             auto filename = commandLineParser_->getLogToFileFileName();
             if (!filename.is_absolute()) {
-                auto outputDir = commandLineParser_->getOutputPath();
+                const auto outputDir = commandLineParser_->getOutputPath();
                 if (!outputDir.empty()) {
                     filename = outputDir / filename;
                 } else {
@@ -333,7 +333,7 @@ SystemSettings& InviwoApplication::getSystemSettings() { return *systemSettings_
 
 std::vector<Capabilities*> InviwoApplication::getModuleCapabilities() {
     std::vector<Capabilities*> allModuleCapabilities;
-    for (auto& inviwoModule : moduleManager_->getInviwoModules()) {
+    for (const auto& inviwoModule : moduleManager_->getInviwoModules()) {
         auto modCapabilities = inviwoModule.getCapabilities();
         allModuleCapabilities.insert(allModuleCapabilities.end(), modCapabilities.begin(),
                                      modCapabilities.end());
@@ -358,7 +358,7 @@ void InviwoApplication::resizePool(size_t newSize) {
 
     auto start = std::chrono::system_clock::now();
     std::chrono::milliseconds timeLimit(250);
-    auto timeout = [&timeLimit, &start]() {
+    const auto timeout = [&timeLimit, &start]() {
         return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() -
                                                                 start) > timeLimit;
     };
@@ -368,7 +368,7 @@ void InviwoApplication::resizePool(size_t newSize) {
         processFront();
         size = pool_.trySetSize(newSize);
     }
-    util::OnScopeExit cleanup{[this]() {
+    const util::OnScopeExit cleanup{[this]() {
         if (poolResizeCallback_) {
             poolResizeCallback_(LongWait::End);
         }
@@ -411,7 +411,7 @@ void InviwoApplication::setUILocale(const std::locale& locale) { uiLocale_ = loc
 
 void InviwoApplication::dispatchFrontAndForget(std::function<void()> fun) {
     {
-        std::unique_lock<std::mutex> lock(queue_.mutex);
+        const std::unique_lock<std::mutex> lock(queue_.mutex);
         queue_.tasks.emplace([f = std::move(fun)]() {
             try {
                 f();
@@ -447,7 +447,7 @@ size_t InviwoApplication::processFront() {
 ThreadPool& InviwoApplication::getThreadPool() { return pool_; }
 
 void InviwoApplication::waitForPool() {
-    size_t old_size = pool_.getSize();
+    const size_t old_size = pool_.getSize();
     resizePool(0);  // This will wait until all tasks are done;
     while (processFront()) {
     }

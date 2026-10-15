@@ -64,7 +64,7 @@ void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, 
 
         dragRectMesh_.setModelMatrix(m);
         const vec2 origin{vec2{screenDim} * 0.5f};
-        OrthographicCamera camera_{
+        const OrthographicCamera camera_{
             vec3{origin, 2.0f},
             vec3{origin, 0.0f},
             vec3{0.0f, 1.0f, 0.0f},

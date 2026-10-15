@@ -209,8 +209,8 @@ auto TexturedVolumeComponent::getSegments() -> std::vector<Segment> {
     const auto& tf = primaryTF_.getIdentifier();
     const auto gradient = fmt::format("{}Gradient", volume_);
 
-    auto format = makeFormatter("lookup"_a = getName(), "volume"_a = volume_,
-                                "gradient"_a = gradient, "tf"_a = tf);
+    const auto format = makeFormatter("lookup"_a = getName(), "volume"_a = volume_,
+                                      "gradient"_a = gradient, "tf"_a = tf);
 
     const auto stepInit =
         raycasting_.dvrReferenceMode_.get() == RaycastingProperty::DVRReferenceMode::Automatic

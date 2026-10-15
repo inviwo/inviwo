@@ -102,9 +102,9 @@ void ValueDragger::paintEvent(QPaintEvent*) {
     painter.drawEllipse(QPointF(0, 0), height() / 8.0, height() / 8.0);
 
     // draw arrow tips
-    auto arrowTop = (height() / 2.0) * 0.8 - 2.0;
-    auto arrowBase = 1.5 + (height() / 6.0) * 0.8;
-    auto arrowHalfWidth = height() / 4.0 - 2.0;
+    const auto arrowTop = (height() / 2.0) * 0.8 - 2.0;
+    const auto arrowBase = 1.5 + (height() / 6.0) * 0.8;
+    const auto arrowHalfWidth = height() / 4.0 - 2.0;
 
     QPainterPath path;
     path.moveTo(-arrowHalfWidth, arrowBase);
@@ -149,8 +149,8 @@ void ValueDragger::mouseReleaseEvent(QMouseEvent* e) {
 
 void ValueDragger::mouseMoveEvent(QMouseEvent* e) {
     if (dragging_) {
-        int mousePosDelta = clickPos_.y() - e->pos().y();
-        int sign = (mousePosDelta > 0) ? 1 : (mousePosDelta < 0) ? -1 : 0;
+        const int mousePosDelta = clickPos_.y() - e->pos().y();
+        const int sign = (mousePosDelta > 0) ? 1 : (mousePosDelta < 0) ? -1 : 0;
 
         delta_ = (std::pow(std::abs(mousePosDelta + 1), exponent_) - 1.0) * sign * increment_;
 

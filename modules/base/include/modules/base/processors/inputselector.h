@@ -94,7 +94,7 @@ InputSelector<Inport, Outport>::InputSelector()
 
     constexpr size_t emptyInportIndex = std::numeric_limits<size_t>::max();
 
-    auto updateOptions = [this, emptyInportIndex]() {
+    const auto updateOptions = [this, emptyInportIndex]() {
         if (const auto* network = getNetwork(); network && network->isDeserializing()) {
             return;
         }

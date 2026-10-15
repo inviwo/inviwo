@@ -130,10 +130,10 @@ void ImageMixer::process() {
 
         // combine format0 and format1, preferring the larger type with respect to
         // precision (size in bit), number of components, and float over unsigned over signed
-        auto precision0 = format0->getPrecision();
-        auto precision1 = format1->getPrecision();
-        auto nf0 = format0->getNumericType();
-        auto nf1 = format1->getNumericType();
+        const auto precision0 = format0->getPrecision();
+        const auto precision1 = format1->getPrecision();
+        const auto nf0 = format0->getNumericType();
+        const auto nf1 = format1->getNumericType();
 
         NumericType numericType;
         if ((nf0 == NumericType::Float) || (nf1 == NumericType::Float)) {
@@ -148,8 +148,8 @@ void ImageMixer::process() {
             numericType, std::max(format0->getComponents(), format1->getComponents()),
             std::max(precision0, precision1));
         if (format != outport_.getData()->getDataFormat()) {
-            auto dimensions = outport_.getData()->getDimensions();
-            auto img = std::make_shared<Image>(dimensions, format);
+            const auto dimensions = outport_.getData()->getDimensions();
+            const auto img = std::make_shared<Image>(dimensions, format);
             img->copyMetaDataFrom(*inport0_.getData());
             outport_.setData(img);
         }
@@ -168,7 +168,7 @@ void ImageMixer::process() {
 
 void ImageMixer::initializeResources() {
     // compositing defines
-    std::string compositingKey = "COLOR_BLENDING(colorA, colorB)";
+    const std::string compositingKey = "COLOR_BLENDING(colorA, colorB)";
     std::string compositingValue = "";
 
     switch (blendingMode_.get()) {

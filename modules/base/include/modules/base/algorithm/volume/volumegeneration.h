@@ -69,13 +69,13 @@ std::unique_ptr<Volume> generateVolume(const size3_t& dimensions, const mat3& ba
                                        const Functor& function) {
     using T = decltype(function(dimensions));
 
-    auto ram = std::make_shared<VolumeRAMPrecision<T>>(dimensions);
+    const auto ram = std::make_shared<VolumeRAMPrecision<T>>(dimensions);
     auto data = ram->getDataTyped();
-    IndexMapper3D im(dimensions);
+    const IndexMapper3D im(dimensions);
 
     forEachVoxelParallel(*ram, [&](const size3_t& ind) { data[im(ind)] = function(ind); });
 
-    auto minmax = util::dataMinMax(data, glm::compMul(dimensions), IgnoreSpecialValues::Yes);
+    const auto minmax = util::dataMinMax(data, glm::compMul(dimensions), IgnoreSpecialValues::Yes);
 
     auto volume = std::make_unique<Volume>(ram);
     volume->setBasis(basis);
@@ -223,12 +223,12 @@ inline void gen_tornado(const size3_t& size, double time, std::span<vec3> tornad
 
 inline std::unique_ptr<Volume> makeTornadoVolume(const size3_t& dimensions, const size_t& index) {
 
-    auto ram = std::make_shared<VolumeRAMPrecision<vec3>>(dimensions);
-    auto data = ram->getView();
+    const auto ram = std::make_shared<VolumeRAMPrecision<vec3>>(dimensions);
+    const auto data = ram->getView();
 
     gen_tornado(dimensions, static_cast<double>(index), data);
 
-    auto minmax = util::volumeMinMax(ram.get(), IgnoreSpecialValues::Yes);
+    const auto minmax = util::volumeMinMax(ram.get(), IgnoreSpecialValues::Yes);
 
     auto volume = std::make_unique<Volume>(ram);
     const auto basis = mat3(1.0);

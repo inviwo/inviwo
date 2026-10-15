@@ -93,7 +93,7 @@ ProcessorErrorItem::ProcessorErrorItem(QGraphicsItem* parent)
     setZValue(depth::processorError);
     line_->setPen(QPen(Qt::black, 0.5, Qt::SolidLine, Qt::RoundCap));
 
-    if (auto* p = qgraphicsitem_cast<ProcessorGraphicsItem*>(parentItem())) {
+    if (const auto* p = qgraphicsitem_cast<ProcessorGraphicsItem*>(parentItem())) {
         setPos(p->rect().topRight() + ProcessorErrorItem::offset);
         const auto dest = mapFromParent(p->rect().topRight());
         line_->setLine(QLineF{QPointF{0.0, 0.0}, dest});
@@ -104,7 +104,7 @@ void ProcessorErrorItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWi
     const double roundedCorners = 4.5;
     p->save();
     p->setRenderHint(QPainter::Antialiasing, true);
-    QColor borderColor("#282828");
+    const QColor borderColor("#282828");
     p->setBrush(QColor("#7a191b"));
     p->setPen(QPen(QBrush(borderColor), 2.0));
     p->drawRoundedRect(rect(), roundedCorners, roundedCorners);
@@ -112,7 +112,7 @@ void ProcessorErrorItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWi
 }
 
 void ProcessorErrorItem::setText(std::string_view error) {
-    QFontMetricsF fm{text_->font()};
+    const QFontMetricsF fm{text_->font()};
     const auto rect = fm.boundingRect(QRect{}, 0, utilqt::toQString(error));
     setRect(0.0, -rect.height() - 10.0, rect.width() + 10.0, rect.height() + 10.0);
     text_->setPos(5.0, -rect.height() - 5.0);
@@ -146,7 +146,7 @@ QVariant ProcessorErrorItem::itemChange(GraphicsItemChange change, const QVarian
             hide();
         }
     } else if (change == QGraphicsItem::ItemPositionHasChanged) {
-        if (auto* p = qgraphicsitem_cast<ProcessorGraphicsItem*>(parentItem())) {
+        if (const auto* p = qgraphicsitem_cast<ProcessorGraphicsItem*>(parentItem())) {
             const auto dest = mapFromParent(p->rect().topRight());
             line_->setLine(QLineF{QPointF{0.0, 0.0}, dest});
         }

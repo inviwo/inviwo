@@ -48,7 +48,7 @@ void forceBufferRepresentationCreation() {
     modules.emplace_back(createInviwoCore());
     inviwoApp.registerModules(std::move(modules));
     inviwoApp.resizePool(0);
-    Buffer<float> buffer(1);
+    const Buffer<float> buffer(1);
     // Make RepresentationFactoryManager request BufferRepresentation
     buffer.getRepresentation<BufferRAM>();
 }

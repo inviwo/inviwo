@@ -33,6 +33,6 @@
 
 namespace inviwo {
 
-void exposeSerialization(pybind11::module& m);
+void exposeSerialization(const pybind11::module& m);
 
 }  // namespace inviwo

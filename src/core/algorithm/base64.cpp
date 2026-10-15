@@ -127,9 +127,9 @@ std::string insert_linebreaks(std::string str, size_t distance) {
 
 std::string base64_encode(const unsigned char* bytes_to_encode, size_t in_len, bool url) {
 
-    size_t len_encoded = (in_len + 2) / 3 * 4;
+    const size_t len_encoded = (in_len + 2) / 3 * 4;
 
-    unsigned char trailing_char = url ? '.' : '=';
+    const unsigned char trailing_char = url ? '.' : '=';
 
     // Choose set of base64 characters. They differ
     // for the last two positions, depending on the url
@@ -212,14 +212,14 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
         return decode<std::string>(copy, false);
     }
 
-    size_t length_of_string = encoded_string.length();
+    const size_t length_of_string = encoded_string.length();
     size_t pos = 0;
 
     // The approximate length (bytes) of the decoded string might be one or
     // two bytes smaller, depending on the amount of trailing equal signs
     // in the encoded string. This approximation is needed to reserve
     // enough space in the string to be returned.
-    size_t approx_length_of_decoded_string = length_of_string / 4 * 3;
+    const size_t approx_length_of_decoded_string = length_of_string / 4 * 3;
     std::string ret;
     ret.reserve(approx_length_of_decoded_string);
 
@@ -235,7 +235,7 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
         //
         // The last chunk produces at least one and up to three bytes.
 
-        size_t pos_of_char_1 = pos_of_char(encoded_string[pos + 1]);
+        const size_t pos_of_char_1 = pos_of_char(encoded_string[pos + 1]);
 
         //
         // Emit the first output byte that is produced in each chunk:
@@ -250,7 +250,7 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
             encoded_string[pos + 2] != '.') {
 
             // Emit a chunk's second byte (which might not be produced in the last chunk).
-            unsigned int pos_of_char_2 = pos_of_char(encoded_string[pos + 2]);
+            const unsigned int pos_of_char_2 = pos_of_char(encoded_string[pos + 2]);
             ret.push_back(static_cast<std::string::value_type>(((pos_of_char_1 & 0x0f) << 4) +
                                                                ((pos_of_char_2 & 0x3c) >> 2)));
 

@@ -86,7 +86,7 @@ std::vector<CodecID> OutputFormat::supportedCodecs(AVMediaType type) const {
     for (int i = 0; tags && tags[i]; i++) {
         for (const AVCodecTag* codec_tags = tags[i]; codec_tags->id != AV_CODEC_ID_NONE;
              codec_tags++) {
-            auto codec = CodecID(codec_tags->id);
+            const auto codec = CodecID(codec_tags->id);
             if (codec.type() == type) {
                 codecs.insert(codec);
             }

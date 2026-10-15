@@ -107,7 +107,7 @@ std::vector<std::vector<std::uint32_t>> matchingRows(const Cont1& left, const Co
     }
     std::vector<std::vector<std::uint32_t>> rows(std::distance(left.begin(), left.end()));
     for (auto&& [i, key] : util::enumerate<std::uint32_t>(left)) {
-        if (auto it = matches.find(key); it != matches.end()) {
+        if (const auto it = matches.find(key); it != matches.end()) {
             rows[i] = it->second.toVector();
         }
     }
@@ -134,45 +134,45 @@ std::vector<std::vector<std::uint32_t>> matchingRowsVector(const Cont1& left, co
 }
 
 [[maybe_unused]] void MatchingRowsPrev(benchmark::State& st) {
-    auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
+    const auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
-    for (auto _ : st) {
+    for (const auto _ : st) {
         auto result = matchingRowsPrev<int, false>(left_, right);
         benchmark::DoNotOptimize(result);
     }
 }
 
 [[maybe_unused]] void MatchingRows(benchmark::State& st) {
-    auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
+    const auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
-    for (auto _ : st) {
+    for (const auto _ : st) {
         auto result = matchingRows<int, false>(left_, right);
         benchmark::DoNotOptimize(result);
     }
 }
 
 [[maybe_unused]] void MatchingRowsVector(benchmark::State& st) {
-    auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
+    const auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
-    for (auto _ : st) {
+    for (const auto _ : st) {
         auto result = matchingRowsVector<int, false>(left_, right);
         benchmark::DoNotOptimize(result);
     }
 }
 
 [[maybe_unused]] void MatchingRowsFirstPrev(benchmark::State& st) {
-    auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
+    const auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
-    for (auto _ : st) {
+    for (const auto _ : st) {
         auto result = matchingRowsPrev<int, true>(left_, right);
         benchmark::DoNotOptimize(result);
     }
 }
 
 [[maybe_unused]] void MatchingRowsFirstVector(benchmark::State& st) {
-    auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
+    const auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
-    for (auto _ : st) {
+    for (const auto _ : st) {
         auto result = matchingRowsVector<int, true>(left_, right);
         benchmark::DoNotOptimize(result);
     }
@@ -200,7 +200,7 @@ std::vector<std::uint32_t> selectRows(const Cont& cont, dataframefilters::Filter
                 }
             },
             [](const std::function<bool(std::string_view)>&) { return false; }};
-        auto op = [&](const auto& f) { return std::visit(test, f.filter); };
+        const auto op = [&](const auto& f) { return std::visit(test, f.filter); };
         if ((std::any_of(filters.include.begin(), filters.include.end(), op) ||
              filters.include.empty()) &&
             std::none_of(filters.exclude.begin(), filters.exclude.end(), op)) {
@@ -211,13 +211,13 @@ std::vector<std::uint32_t> selectRows(const Cont& cont, dataframefilters::Filter
 }
 
 [[maybe_unused]] void SelectRows(benchmark::State& st) {
-    auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
+    const auto right = util::as_range(right_.begin(), right_.begin() + st.range(0));
 
     dataframefilters::Filters filters;
     filters.include.push_back(filters::intMatch(0, filters::NumberComp::Less, 32));
     // filters.include.push_back(filters::intMatch(0, filters::NumberComp::Greater, 48));
 
-    for (auto _ : st) {
+    for (const auto _ : st) {
         auto result = selectRows<int>(right, filters);
         benchmark::DoNotOptimize(result);
     }
@@ -228,7 +228,7 @@ std::shared_ptr<DataFrame> createDataFrame(int size, int max) {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(1, max);
 
-    auto columnData = [&]() {
+    const auto columnData = [&]() {
         std::vector<int> data(size);
         std::generate(data.begin(), data.end(), [&]() { return distrib(gen); });
         return data;
@@ -243,7 +243,7 @@ std::shared_ptr<DataFrame> createDataFrame(int size, int max) {
 }
 
 static void SelectRowsDataFrame(benchmark::State& st) {
-    auto df = createDataFrame(static_cast<int>(st.range(0)), 100);
+    const auto df = createDataFrame(static_cast<int>(st.range(0)), 100);
 
     dataframefilters::Filters filters;
     filters.include.push_back(filters::intMatch(1, filters::NumberComp::Less, 32));
@@ -251,7 +251,7 @@ static void SelectRowsDataFrame(benchmark::State& st) {
     filters.include.push_back(filters::intMatch(3, filters::NumberComp::Greater, 64));
     filters.exclude.push_back(filters::intMatch(2, filters::NumberComp::Greater, 20));
 
-    for (auto _ : st) {
+    for (const auto _ : st) {
         auto result = dataframe::selectRows(*df.get(), filters);
         benchmark::DoNotOptimize(result);
     }

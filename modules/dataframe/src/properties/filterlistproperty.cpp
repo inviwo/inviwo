@@ -92,12 +92,12 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
     : ListProperty(identifier, displayName, maxNumberOfElements, uiFlags, invalidationLevel,
                    semantics) {
 
-    auto onHeaderProp = [enable = supportsFilterOnHeader]() {
+    const auto onHeaderProp = [enable = supportsFilterOnHeader]() {
         auto p = std::make_unique<BoolProperty>("filterOnHeader", "Filter on Header", enable);
         p->setVisible(enable);
         return p;
     };
-    auto createBoolComposite = [](std::string_view identifier, std::string_view displayName) {
+    const auto createBoolComposite = [](std::string_view identifier, std::string_view displayName) {
         auto p = std::make_unique<BoolCompositeProperty>(identifier, displayName);
         // need to explicitly set the bool property to true since this composite is a dynamically
         // created property and the default value in BoolCompositeProperty is false

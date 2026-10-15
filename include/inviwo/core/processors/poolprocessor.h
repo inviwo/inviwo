@@ -417,7 +417,7 @@ inline void PoolProcessor::callDone(
             // Always activate the context since it might be needed to delete the state.
             rendercontext::activateDefault();
 
-            if (auto p = state->processor.lock()) {
+            if (const auto p = state->processor.lock()) {
 
                 const bool isLast = p->removeState(state);
 
@@ -454,13 +454,14 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
 
     if (!keepOldJobs()) stopJobs();
 
-    auto state = makeState<Result, Done>(jobs.size(), std::forward<Done>(done));
+    const auto state = makeState<Result, Done>(jobs.size(), std::forward<Done>(done));
     Submission sub{state, {}, [this]() { setupProgress<Job>(); }};
 
     auto app = getInviwoApplication();
     size_t i = 0;
     for (auto& job : jobs) {
-        auto task = makeTask<Result>(std::move(job), state->getStop(), state->getProgress(i++));
+        const auto task =
+            makeTask<Result>(std::move(job), state->getStop(), state->getProgress(i++));
         state->futures.push_back(task->get_future());
         sub.tasks.emplace_back([state, task, app]() {
             if (!state->stopped()) {
@@ -505,8 +506,9 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
 
     if (!keepOldJobs()) stopJobs();
 
-    auto state = makeState<Result, Done>(1, std::forward<Done>(done));
-    auto task = makeTask<Result>(std::forward<Job>(job), state->getStop(), state->getProgress(0));
+    const auto state = makeState<Result, Done>(1, std::forward<Done>(done));
+    const auto task =
+        makeTask<Result>(std::forward<Job>(job), state->getStop(), state->getProgress(0));
     state->futures.push_back(task->get_future());
     auto app = getInviwoApplication();
 

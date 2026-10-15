@@ -76,12 +76,12 @@ void DemoController::setFileOptions() {
 
     int invNum = 0;
     for (size_t elIdx = 0; elIdx < elements.size(); ++elIdx) {
-        auto& elem = elements[elIdx];
+        const auto& elem = elements[elIdx];
         std::string ext = elem.extension().string();
         ext = toLower(ext);
         if (ext.compare(".inv") == 0) {  // Found a workspace
-            auto cleanName = elem.stem();
-            auto cleanNameExt = util::stripIdentifier(elem.string());
+            const auto cleanName = elem.stem();
+            const auto cleanNameExt = util::stripIdentifier(elem.string());
             demoFile_.addOption(cleanNameExt, cleanName.string(), invNum++);
         }
     }
@@ -99,7 +99,7 @@ void DemoController::onChangeSelection(Offset offset) {
 
     if (offset == Offset::None) return;
 
-    int numFiles = static_cast<int>(demoFile_.getValues().size());
+    const int numFiles = static_cast<int>(demoFile_.getValues().size());
     int nextFileIndex = demoFile_.get();
 
     switch (offset) {
@@ -126,7 +126,7 @@ void DemoController::setFolder(const std::filesystem::path& path) { demoFolder_.
 
 // Copied from InviwoMainWindow::openWorkspace
 void DemoController::loadWorkspaceApp(const std::filesystem::path& fileName) {
-    NetworkLock lock(app_->getProcessorNetwork());
+    const NetworkLock lock(app_->getProcessorNetwork());
     app_->getWorkspaceManager()->clear();
     try {
         app_->getWorkspaceManager()->load(fileName, [&](SourceContext) {

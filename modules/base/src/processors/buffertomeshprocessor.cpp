@@ -108,7 +108,7 @@ BufferToMeshProcessor::BufferToMeshProcessor()
 }
 
 void BufferToMeshProcessor::process() {
-    auto mesh = std::make_shared<Mesh>(drawType_.get(), connectivity_.get());
+    const auto mesh = std::make_shared<Mesh>(drawType_.get(), connectivity_.get());
 
     // Note on const_cast of input buffers when adding them to mesh:
     // The buffers are not modified and the mesh will be const in all connected ports,
@@ -146,7 +146,7 @@ void BufferToMeshProcessor::process() {
     }
 
     if (indices_.isConnected()) {
-        auto indexBuffer = std::dynamic_pointer_cast<const IndexBuffer>(indices_.getData());
+        const auto indexBuffer = std::dynamic_pointer_cast<const IndexBuffer>(indices_.getData());
         if (!indexBuffer) {
             throw Exception(
                 "Index buffer must be of IndexBuffer type (Buffer<std::uint32_t, "

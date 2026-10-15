@@ -362,7 +362,7 @@ void FileAssociations::registerFileType(const std::string& documentId,
 }
 
 void FileAssociations::executeCommand(const std::string& command, const std::string& param) {
-    auto it = commands_.find(command);
+    const auto it = commands_.find(command);
     if (it != commands_.end()) {
         it->second(param);
     }

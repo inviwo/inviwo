@@ -222,8 +222,8 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
     util::updateFilenameFilters<Sequence>(*rf_, file_, reader_);
     util::updateReaderFromFile(file_, reader_);
 
-    auto singleFileCallback = [](auto& p) { return p.get() == InputType::SingleFile; };
-    auto folderCallback = [](auto& p) { return p.get() == InputType::Folder; };
+    const auto singleFileCallback = [](auto& p) { return p.get() == InputType::SingleFile; };
+    const auto folderCallback = [](auto& p) { return p.get() == InputType::Folder; };
 
     file_.visibilityDependsOn(inputType_, singleFileCallback);
     reader_.visibilityDependsOn(inputType_, singleFileCallback);
@@ -276,14 +276,14 @@ auto SequenceSource<Conf>::loadSequence(const std::filesystem::path& file, const
 
     if (auto reader1 = rf.getReaderForTypeAndExtension<Type>(ext, file)) {
         configReader(*reader1);
-        auto data = reader1->readData(file, mdo);
+        const auto data = reader1->readData(file, mdo);
         addMetaData(*data, file);
         Sequence sequence;
         sequence.push_back(data);
         return sequence;
     } else if (auto reader2 = rf.getReaderForTypeAndExtension<Sequence>(ext, file)) {
         configReader(*reader2);
-        auto sequence = reader2->readData(file, mdo);
+        const auto sequence = reader2->readData(file, mdo);
         for (auto&& [index, data] : std::views::zip(std::views::iota(0uz), *sequence)) {
             addMetaData(*data, file);
         }
@@ -298,13 +298,13 @@ template <typename Conf>
 void SequenceSource<Conf>::loadFile(bool deserialize) {
     if (file_.get().empty()) return;
 
-    auto loader = [rf = rf_, ext = reader_.getSelectedValue(), file = file_.get(),
-                   mdo = static_cast<MetaDataOwner*>(this),
-                   configReader = Conf::getReaderConfig(information_)](
-                      std::stop_token stop, pool::Progress progress) -> Sequence {
+    const auto loader = [rf = rf_, ext = reader_.getSelectedValue(), file = file_.get(),
+                         mdo = static_cast<MetaDataOwner*>(this),
+                         configReader = Conf::getReaderConfig(information_)](
+                            std::stop_token stop, pool::Progress progress) -> Sequence {
         if (stop.stop_requested()) return {};
         progress(0.0);
-        util::OnScopeExit done{[&]() { progress(1.0); }};
+        const util::OnScopeExit done{[&]() { progress(1.0); }};
         return loadSequence(file, ext, *rf, mdo, configReader);
     };
     dispatchOne(loader, [this, deserialize](Sequence sequence) {
@@ -351,14 +351,14 @@ void SequenceSource<Conf>::loadFolder(bool deserialize) {
                        std::stop_token stop, pool::Progress progress) -> Sequence {
                 if (stop.stop_requested()) return {};
                 progress(0.0);
-                util::OnScopeExit done{[&]() { progress(1.0); }};
+                const util::OnScopeExit done{[&]() { progress(1.0); }};
                 return loadSequence(path, FileExtension{}, *rf, mdo, configReader);
             };
         }) |
         std::ranges::to<std::vector>();
 
     dispatchMany(loaders, [this, deserialize](std::vector<Sequence> sequences) {
-        auto result = std::make_shared<Sequence>(sequences | std::views::join);
+        const auto result = std::make_shared<Sequence>(sequences | std::views::join);
         if (!result->empty() && (*result)[0]) {
             const auto overwrite =
                 deserialize ? util::OverwriteState::Yes : util::OverwriteState::No;

@@ -63,7 +63,7 @@ std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
 
     // capitalize the first letter and each one following a space.
     // Also replace '-' with space for improved readability
-    auto makeReadable = [](const std::filesystem::path& stem) {
+    const auto makeReadable = [](const std::filesystem::path& stem) {
         std::string dst(stem.string());
         auto it = dst.begin();
         *it = static_cast<char>(std::toupper(*it));

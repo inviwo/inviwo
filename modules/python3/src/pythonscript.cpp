@@ -109,7 +109,7 @@ bool PythonScript::run(std::function<void(pybind11::dict)> callback) {
 
     const pybind11::gil_scoped_acquire guard{};
     // Copy the dict to get a clean slate every time we run the script
-    py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     return run(global, callback);
 }
 
@@ -119,7 +119,7 @@ bool PythonScript::run(std::unordered_map<std::string, pybind11::object> locals,
 
     const pybind11::gil_scoped_acquire guard{};
     // Copy the dict to get a clean slate every time we run the script
-    py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     for (auto& item : locals) {
         global[py::str(item.first)] = item.second;
     }
@@ -169,7 +169,7 @@ std::string PythonScript::getAndFormatError() {
     }
     err << "\n";
     if (traceback) {
-        auto* tb = reinterpret_cast<PyTracebackObject*>(traceback.ptr());
+        const auto* tb = reinterpret_cast<PyTracebackObject*>(traceback.ptr());
         err << "Stacktrace (most recent call first):\n";
 
         /* Get the deepest trace possible */
@@ -177,11 +177,11 @@ std::string PythonScript::getAndFormatError() {
 
         PyFrameObject* frame = tb->tb_frame;
         while (frame) {
-            int line = PyFrame_GetLineNumber(frame);
-            PyCodeObject* code = PyFrame_GetCode(frame);
+            const int line = PyFrame_GetLineNumber(frame);
+            const PyCodeObject* code = PyFrame_GetCode(frame);
 
             auto file = py::handle(code->co_filename).cast<std::string>();
-            auto name = py::handle(code->co_name).cast<std::string>();
+            const auto name = py::handle(code->co_name).cast<std::string>();
 
             if (file.empty()) {
                 file = "<script>";
@@ -220,7 +220,7 @@ bool PythonScript::checkCompileError() {
 bool PythonScript::checkRuntimeError() {
     if (!PyErr_Occurred()) return true;
 
-    auto error = getAndFormatError();
+    const auto error = getAndFormatError();
 
     getPythonInterpreter().pythonExecutionOutputEvent(error, PythonOutputType::sysstderr);
 

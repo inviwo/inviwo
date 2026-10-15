@@ -86,7 +86,7 @@ struct RangeConversionMap;
  *
  * @see utilgl::createGLOutputConversion
  */
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const RangeConversionMap& map,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader, const RangeConversionMap& map,
                                              std::string_view name);
 
 /**
@@ -97,7 +97,7 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const RangeConversi
  *
  * @see utilgl::createGLFormatRenormalization
  */
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const DataMapper& dataMapper,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader, const DataMapper& dataMapper,
                                              const DataFormatBase* format, std::string_view name);
 
 // TemplateProperty
@@ -116,20 +116,22 @@ IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const LightingState&
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const ShadingMode& mode);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property,
                                              std::string_view name);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const LightingState& state,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader, const LightingState& state,
                                              std::string_view name);
 
 // CameraProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const CameraProperty& property);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const CameraProperty& property,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader, const CameraProperty& property,
                                              std::string_view name);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Camera& camera,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader, const Camera& camera,
                                              std::string_view name);
 
 // RaycastingProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const RaycastingProperty& property);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const RaycastingProperty& property);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const RaycastingProperty& property,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader,
+                                             const RaycastingProperty& property);
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader,
+                                             const RaycastingProperty& property,
                                              std::string_view name);
 
 IVW_MODULE_OPENGL_API void setShaderDefines(
@@ -137,22 +139,23 @@ IVW_MODULE_OPENGL_API void setShaderDefines(
     bool voxelClassification = false);
 
 // SpatialEntity
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SpatialEntity& object,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader, const SpatialEntity& object,
                                              std::string_view name);
 
 // SimpleRaycastingProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader,
                                             const SimpleRaycastingProperty& property);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader,
                                              const SimpleRaycastingProperty& property);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader,
                                              const SimpleRaycastingProperty& property,
                                              std::string_view name);
 
 // IsoValueProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const IsoValueProperty& property);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoValueProperty& property);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoValueProperty& property,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader,
+                                             const IsoValueProperty& property);
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader, const IsoValueProperty& property,
                                              std::string_view name);
 
 // IsoTFProperty
@@ -166,7 +169,7 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
                                              const SelectionColorProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SelectionColorProperty& property,
                                              std::string_view name);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SelectionColorState& state,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader, const SelectionColorState& state,
                                              std::string_view name);
 
 // Background Image
@@ -175,7 +178,7 @@ IVW_MODULE_OPENGL_API void addShaderDefinesBGPort(Shader& shader, const ImageInp
 // VolumeIndicatorProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader,
                                             const VolumeIndicatorProperty& property);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
+IVW_MODULE_OPENGL_API void setShaderUniforms(const Shader& shader,
                                              const VolumeIndicatorProperty& property,
                                              std::string_view name);
 

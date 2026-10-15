@@ -549,12 +549,12 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     -> std::future<std::invoke_result_t<F, Args...>> {
     using return_type = std::invoke_result_t<F, Args...>;
 
-    auto task = std::make_shared<std::packaged_task<return_type()>>(
+    const auto task = std::make_shared<std::packaged_task<return_type()>>(
         std::bind(std::forward<F>(f), std::forward<Args>(args)...));
 
     std::future<return_type> res = task->get_future();
     {
-        std::unique_lock<std::mutex> lock(queue_.mutex);
+        const std::unique_lock<std::mutex> lock(queue_.mutex);
         queue_.tasks.emplace([task]() { (*task)(); });
     }
 

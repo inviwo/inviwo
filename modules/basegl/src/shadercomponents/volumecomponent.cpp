@@ -176,7 +176,7 @@ std::string VolumeComponent::getGradientString() const {
 }
 
 std::optional<size_t> VolumeComponent::channelsForVolume() const {
-    if (auto data = volumePort.getData()) {
+    if (const auto data = volumePort.getData()) {
         return data->getDataFormat()->getComponents();
     }
     return std::nullopt;

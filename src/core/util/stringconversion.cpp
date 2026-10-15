@@ -65,7 +65,7 @@ std::wstring toWstring(std::string_view str) {
     return result;
 #else
     auto state = std::mbstate_t();
-    SafeCStr safestr{str};
+    const SafeCStr safestr{str};
     auto sptr = safestr.c_str();
     const char* loc = nullptr;
     size_t len = std::mbsrtowcs(nullptr, &sptr, 0, &state);
@@ -189,7 +189,7 @@ std::vector<std::string> splitStringWithMultipleDelimiters(std::string_view str,
                                                            std::vector<char> delimiters) {
     std::vector<std::string> output;
     size_t first = 0;
-    auto delim = std::string_view{delimiters.data(), delimiters.size()};
+    const auto delim = std::string_view{delimiters.data(), delimiters.size()};
 
     while (first < str.size()) {
         const auto second = str.find_first_of(delim, first);
@@ -229,7 +229,7 @@ constexpr std::array<bool, 256> urlEscapeMap = []() {
     std::array<bool, 256> map{};
     const std::string_view urlValid = "~-_.+!*(),%#@?=;:/,+$";
     for (int i = 0; i < 256; ++i) {
-        char c = static_cast<char>(i);
+        const char c = static_cast<char>(i);
         map[i] = !isalnum(c) && urlValid.find(c) == std::string_view::npos;
     }
     return map;
@@ -240,7 +240,7 @@ void util::urlEncodeTo(std::string_view text, StrBuffer& strBuffer) {
     constexpr std::array<char, 16> hex = {'0', '1', '2', '3', '4', '5', '6', '7',
                                           '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-    for (auto c : text) {
+    for (const auto c : text) {
         if (urlEscapeMap[static_cast<unsigned>(c)]) {
             strBuffer.buff.push_back('%');
             strBuffer.buff.push_back(hex[(static_cast<unsigned>(c) >> 4) & 0xf]);
@@ -324,7 +324,7 @@ void camelCaseToHeader(std::string_view s, std::string& dest) {
 
     const auto first = dest.size();
     char previous = ' ';
-    for (auto c : s) {
+    for (const auto c : s) {
         if (previous != ' ' && std::isalpha(c) && std::tolower(previous) == previous &&
             std::toupper(c) == c) {
             dest.push_back(' ');

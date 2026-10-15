@@ -175,7 +175,7 @@ void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig&
     shader.setUniform("clampMin", clampMin);
     shader.setUniform("clampMax", clampMax);
 
-    auto source = vectorField_.getData();
+    const auto source = vectorField_.getData();
     config.dataRange = dvec2{0.0, 1.0};
     config.valueRange = dvec2{0.0, 1.0};
     config.xAxis = source->axes[0];

@@ -48,7 +48,7 @@ void testserialization(T def, T in) {
     T indata = in;
     T outdata1 = def;
 
-    auto filename = filesystem::findBasePath();
+    const auto filename = filesystem::findBasePath();
     MetaDataOwner mdo1;
     mdo1.setMetaData<M>("data", indata);
     EXPECT_TRUE(mdo1.hasMetaData<M>("data"));

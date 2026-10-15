@@ -102,9 +102,9 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::filesystem::path&
 
     unsigned char* data2Ptr = nullptr;
     if (components == 2) {
-        size_t size = dim.x * dim.y * dim.z;
+        const size_t size = dim.x * dim.y * dim.z;
         data2Ptr = new unsigned char[size * components];
-        size_t bytes = format->getSizeInBytes();
+        const size_t bytes = format->getSizeInBytes();
         memcpy(data2Ptr, dataPtr, size * bytes);
         swapbytes(data2Ptr, static_cast<unsigned int>(size * bytes));
         dataPtr = (const unsigned char*)data2Ptr;

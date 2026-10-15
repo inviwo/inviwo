@@ -95,8 +95,8 @@ void StringMultilinePropertyWidgetQt::setPropertyValue() {
 }
 
 void StringMultilinePropertyWidgetQt::updateFromProperty() {
-    QString text(textEdit_->toPlainText());
-    QString newContents(utilqt::toQString(property_->get()));
+    const QString text(textEdit_->toPlainText());
+    const QString newContents(utilqt::toQString(property_->get()));
     if (text != newContents) {
         textEdit_->setPlainText(newContents);
         textEdit_->moveCursor(QTextCursor::Start);
@@ -133,7 +133,7 @@ MultiFileStringPropertyWidgetQt::MultiFileStringPropertyWidgetQt(MultiFileProper
 }
 
 void MultiFileStringPropertyWidgetQt::setPropertyValue() {
-    std::string valueStr = utilqt::fromQString(textEdit_->toPlainText());
+    const std::string valueStr = utilqt::fromQString(textEdit_->toPlainText());
     std::vector<std::filesystem::path> paths;
     util::forEachStringPart(valueStr, "\n", [&](std::string_view str) { paths.emplace_back(str); });
 
@@ -143,7 +143,7 @@ void MultiFileStringPropertyWidgetQt::setPropertyValue() {
 }
 
 void MultiFileStringPropertyWidgetQt::updateFromProperty() {
-    QString text(textEdit_->toPlainText());
+    const QString text(textEdit_->toPlainText());
     QString newContents{};
 
     for (const auto& path : property_->get()) {
@@ -160,7 +160,7 @@ void MultiFileStringPropertyWidgetQt::updateFromProperty() {
 
 MultilineTextEdit::MultilineTextEdit(QWidget* parent)
     : QPlainTextEdit(parent), minLineCount_(2), maxLineCount_(10), showContextMenu_(false) {
-    QFontMetrics fontMetric(font());
+    const QFontMetrics fontMetric(font());
     lineHeight_ = static_cast<int>(fontMetric.lineSpacing() * 1.5);
 
     // enable focus switch by tab (leaving the editor and committing the changes)
@@ -216,10 +216,10 @@ void MultilineTextEdit::contextMenuEvent(QContextMenuEvent* e) {
 }
 
 void MultilineTextEdit::adjustHeight() {
-    qreal textHeight =
+    const qreal textHeight =
         glm::clamp(static_cast<int>(document()->size().height()), minLineCount_, maxLineCount_) *
         lineHeight_;
-    QMargins margins(contentsMargins());
+    const QMargins margins(contentsMargins());
     setFixedHeight(static_cast<int>(textHeight + margins.top() + margins.bottom()));
 }
 

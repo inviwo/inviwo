@@ -91,7 +91,7 @@ FilePatternProperty::FilePatternProperty(std::string_view identifier, std::strin
     rangeSelection_.setCollapsed(true);
     rangeSelection_.setCurrentStateAsDefault();
 
-    auto update = [this]() { updateFileList(); };
+    const auto update = [this]() { updateFileList(); };
     pattern_.onChange(update);
     rangeSelection_.onChange(update);
 
@@ -140,7 +140,7 @@ FilePatternProperty::FilePatternProperty(const FilePatternProperty& rhs)
             updateFileList();
         }
     });
-    auto update = [this]() { updateFileList(); };
+    const auto update = [this]() { updateFileList(); };
     pattern_.onChange(update);
     rangeSelection_.onChange(update);
     sort_.onChange([this]() { sort(); });
@@ -217,8 +217,8 @@ void FilePatternProperty::updateFileList() {
             auto fileList = filesystem::getDirectoryContents(filePath);
 
             // apply pattern
-            bool hasDigits = (strPattern.find('#') != std::string::npos);
-            bool hasWildcard =
+            const bool hasDigits = (strPattern.find('#') != std::string::npos);
+            const bool hasWildcard =
                 hasDigits || (strPattern.find_first_of("*?", 0) != std::string::npos);
 
             if (!hasWildcard) {
@@ -235,7 +235,7 @@ void FilePatternProperty::updateFileList() {
                 const bool matchShorterNumbers = matchShorterNumbers_.get();
                 const bool matchLongerNumbers = true;
                 bool found = false;
-                for (auto file : fileList) {
+                for (const auto file : fileList) {
                     int index = -1;
                     if (filesystem::wildcardStringMatchDigits(strPattern, file.generic_string(),
                                                               index, matchShorterNumbers,
@@ -252,7 +252,7 @@ void FilePatternProperty::updateFileList() {
             } else {
                 // apply range selection, assume file names are sorted
                 if (rangeSelection_.isChecked()) {
-                    ivec2 indexRange(minIndex_.get(), maxIndex_.get());
+                    const ivec2 indexRange(minIndex_.get(), maxIndex_.get());
                     if (indexRange.y < static_cast<int>(fileList.size())) {
                         // remove all files after the maximum index
                         fileList.erase(

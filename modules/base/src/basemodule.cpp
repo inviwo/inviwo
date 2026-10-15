@@ -458,12 +458,12 @@ bool updateV0(TxElement* root) {
                            "org.inviwo.DoubleVec3Property", "org.inviwo.DoubleVec4Property",
                            "org.inviwo.IntProperty", "org.inviwo.IntVec2Property",
                            "org.inviwo.IntVec3Property", "org.inviwo.IntVec4Property"}) {
-        xml::IdentifierReplacement ir1 = {
+        const xml::IdentifierReplacement ir1 = {
             {xml::Kind::processor("org.inviwo.OrdinalPropertyAnimator"), xml::Kind::property(id)},
             id,
             dotSeperatedToPascalCase(id)};
         repl.push_back(ir1);
-        xml::IdentifierReplacement ir2 = {
+        const xml::IdentifierReplacement ir2 = {
             {xml::Kind::processor("org.inviwo.OrdinalPropertyAnimator"), xml::Kind::property(id)},
             std::string(id) + "-Delta",
             dotSeperatedToPascalCase(id) + "-Delta"};
@@ -486,7 +486,7 @@ bool updateV2(TxElement* root) {
                                  std::make_tuple(2, "C", 0.0), std::make_tuple(3, "Offset", 1.0)}) {
             const auto path =
                 fmt::format("Properties/Property&identifier=override{}/value", std::get<1>(item));
-            if (auto* elem = xml::getElement(node, path)) {
+            if (const auto* elem = xml::getElement(node, path)) {
                 auto* data = elem->Clone();
                 data->SetValue(fmt::format("col{}", std::get<0>(item)));
                 data->ToElement()->SetAttribute("w", fmt::format("{:f}", std::get<2>(item)));
@@ -506,7 +506,7 @@ bool updateV2(TxElement* root) {
 
 bool updateV3(TxElement* root) {
 
-    std::vector<xml::IdentifierReplacement> replV3 = {
+    const std::vector<xml::IdentifierReplacement> replV3 = {
         // WorldTransform (Deprecated)
         {{xml::Kind::processor("org.inviwo.WorldTransformMeshDeprecated")},
          "World Transform Mesh",
@@ -559,7 +559,8 @@ bool updateV8(TxElement* root) {
         }
 
         bool replaceTrafo = false;
-        if (auto* value = xml::getElement(node, "Properties/Property&identifier=replace/value")) {
+        if (const auto* value =
+                xml::getElement(node, "Properties/Property&identifier=replace/value")) {
             replaceTrafo = (value->GetAttribute("content") == "1");
         }
 
@@ -612,9 +613,10 @@ bool updateV11(TxElement* root) {
         // replace the timeStep.selectedSequenceIndex property with a
         // index property and decrease the index by 1
         if (auto* props = xml::getElement(node, "Properties")) {
-            if (auto* elem = xml::getElement(props,
-                                             "Property&identifier=timeStep/Properties/"
-                                             "Property&identifier=selectedSequenceIndex/value")) {
+            if (const auto* elem =
+                    xml::getElement(props,
+                                    "Property&identifier=timeStep/Properties/"
+                                    "Property&identifier=selectedSequenceIndex/value")) {
                 if (auto maybeIndex = elem->Attribute("content")) {
                     if (auto index = util::fromStr<int>(*maybeIndex)) {
                         TxElement indexNode{"Property"};

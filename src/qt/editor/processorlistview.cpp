@@ -62,7 +62,7 @@ QColor colorForState(CodeState state) {
     return {0, 0, 0};
 }
 
-QColor getColor(QStyleOptionViewItem& opt, QPalette::ColorRole role) {
+QColor getColor(const QStyleOptionViewItem& opt, QPalette::ColorRole role) {
     QPalette::ColorGroup cg =
         (opt.state & QStyle::State_Enabled) ? QPalette::Normal : QPalette::Disabled;
     if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active)) {
@@ -88,7 +88,7 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
         initStyleOption(&opt, index);
 
         const auto* widget = opt.widget;
-        auto* style = widget->style();
+        const auto* style = widget->style();
 
         static constexpr auto portSize = QSize{6, 6};
         static constexpr auto padding = 2;
@@ -212,11 +212,11 @@ void ProcessorListView::mouseMoveEvent(QMouseEvent* e) {
         using Role = ProcessorListModel::Role;
         using Type = ProcessorListModel::Node::Type;
 
-        auto index = indexAt(*dragStartPosition_);
+        const auto index = indexAt(*dragStartPosition_);
         if (index.isValid() &&
             utilqt::getData(index, Role::Type).toInt() == static_cast<int>(Type::Item)) {
             dragStartPosition_.reset();
-            auto id = utilqt::getData(index, Role::ClassIdentifier).toString();
+            const auto id = utilqt::getData(index, Role::ClassIdentifier).toString();
             try {
                 if (auto p = processorTreeWidget_->createProcessor(id)) {
                     auto* drag = new ProcessorDragObject(this, std::move(p));
@@ -245,7 +245,7 @@ void ProcessorListView::focusInEvent(QFocusEvent* e) {
 
     if (e->reason() == Qt::MouseFocusReason) return;
 
-    auto firstLeaf = findFirstLeaf(model());
+    const auto firstLeaf = findFirstLeaf(model());
     if (firstLeaf.isValid()) {
         selectionModel()->setCurrentIndex(firstLeaf, QItemSelectionModel::ClearAndSelect);
     }
@@ -257,7 +257,7 @@ void ProcessorListView::showContextMenu(const QPoint& p) {
     using Role = ProcessorListModel::Role;
 
     auto index = indexAt(p);
-    auto id = utilqt::getData(index, Role::ClassIdentifier).toString();
+    const auto id = utilqt::getData(index, Role::ClassIdentifier).toString();
 
     const bool enableExpandCollapse =
         ((processorTreeWidget_->getGrouping() != ProcessorListModel::Grouping::LastUsed) &&
@@ -295,7 +295,7 @@ void ProcessorListView::showContextMenu(const QPoint& p) {
 
 ProcessorDragObject::ProcessorDragObject(QWidget* source, std::shared_ptr<Processor> processor)
     : QDrag(source) {
-    auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(*processor, 1.0));
+    const auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(*processor, 1.0));
     setPixmap(img);
     auto* mime = new ProcessorMimeData(std::move(processor));
     setMimeData(mime);

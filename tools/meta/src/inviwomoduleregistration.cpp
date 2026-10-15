@@ -111,8 +111,9 @@ void InviwoModuleRegistration::registerProcessor(std::string_view name,
                                   modulecpp.generic_string());
         }
 
-        auto it = std::lower_bound(procMatches.begin(), procMatches.end(), name,
-                                   [](const auto& it, const auto& str) { return it.str(2) < str; });
+        const auto it =
+            std::lower_bound(procMatches.begin(), procMatches.end(), name,
+                             [](const auto& it, const auto& str) { return it.str(2) < str; });
         if (it != procMatches.end()) {
             const size_t pos = it->position();
             res << std::string_view{file.data(), pos};

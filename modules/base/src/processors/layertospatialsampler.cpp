@@ -52,7 +52,7 @@ LayerToSpatialSampler::LayerToSpatialSampler()
 }
 
 void LayerToSpatialSampler::process() {
-    auto sampler = std::make_shared<ImageSampler<dvec2>>(layer_.getData());
+    const auto sampler = std::make_shared<ImageSampler<dvec2>>(layer_.getData());
     sampler_.setData(sampler);
 }
 

@@ -184,7 +184,7 @@ void CSVSource::process() {
             columns_.updateForNewDataFrame(*loadedData_, overwrite);
         }
 
-        auto dataFrame = std::make_shared<DataFrame>(*loadedData_);
+        const auto dataFrame = std::make_shared<DataFrame>(*loadedData_);
         columns_.updateDataFrame(*dataFrame);
         data_.setData(dataFrame);
     } catch (const Exception& e) {
@@ -220,7 +220,7 @@ csvfilters::Filters CSVSource::createFilters() const {
         return str.substr(0, prefix.size()) == prefix;
     };
 
-    auto parse = [&](const auto& filterProp, auto& rowFilters, auto& itemFilters) {
+    const auto parse = [&](const auto& filterProp, auto& rowFilters, auto& itemFilters) {
         for (auto prop : filterProp) {
             if (auto cp = dynamic_cast<BoolCompositeProperty*>(prop)) {
                 if (!cp->isChecked()) continue;

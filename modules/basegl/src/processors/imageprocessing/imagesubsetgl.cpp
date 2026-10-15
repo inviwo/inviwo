@@ -119,7 +119,7 @@ ImageSubsetGL::~ImageSubsetGL() = default;
 void ImageSubsetGL::process() {
     if (inport_.isChanged()) {
         // Update to the new dimensions.
-        auto dims = inport_.getData()->getDimensions();
+        const auto dims = inport_.getData()->getDimensions();
 
         rangeX_.setRangeNormalized(size2_t(0, dims.x));
         rangeY_.setRangeNormalized(size2_t(0, dims.y));
@@ -131,12 +131,12 @@ void ImageSubsetGL::process() {
 
     const ivec2 offset{rangeX_.get().x, rangeY_.get().x};
     const ivec2 dim = ivec2{rangeX_.get().y, rangeY_.get().y} - offset;
-    auto inputDim = inport_.getData()->getDimensions();
+    const auto inputDim = inport_.getData()->getDimensions();
     if (dim == ivec2(inputDim))
         outport_.setData(inport_.getData());
     else {
-        auto image = inport_.getData();
-        auto outImage = std::make_shared<Image>(dim, image->getDataFormat());
+        const auto image = inport_.getData();
+        const auto outImage = std::make_shared<Image>(dim, image->getDataFormat());
         // pass meta data on
         outImage->copyMetaDataFrom(*image);
 
@@ -154,17 +154,17 @@ void ImageSubsetGL::process() {
 
         utilgl::bindTextures(*image, colorUnit, depthUnit, pickingUnit);
         // Texture coordinates of the region we should copy
-        vec2 texOffset = vec2(offset) / vec2(inputDim);
-        vec2 texEnd = vec2(offset + dim) / vec2(inputDim);
-        auto texCoordsBuffer = rect_.getTypedBuffer<buffertraits::TexCoordBuffer<2>>();
+        const vec2 texOffset = vec2(offset) / vec2(inputDim);
+        const vec2 texEnd = vec2(offset + dim) / vec2(inputDim);
+        const auto texCoordsBuffer = rect_.getTypedBuffer<buffertraits::TexCoordBuffer<2>>();
         auto coords = texCoordsBuffer->getEditableRAMRepresentation();
         coords->set(0, texOffset);
         coords->set(1, {texEnd.x, texOffset.y});
         coords->set(2, {texOffset.x, texEnd.y});
         coords->set(3, texEnd);
 
-        utilgl::Enable<MeshGL> enable(rect_.getRepresentation<MeshGL>());
-        utilgl::DepthFuncState depth(GL_ALWAYS);
+        const utilgl::Enable<MeshGL> enable(rect_.getRepresentation<MeshGL>());
+        const utilgl::DepthFuncState depth(GL_ALWAYS);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         shader_.deactivate();
@@ -198,26 +198,30 @@ void ImageSubsetGL::invokeEvent(Event* event) {
 }
 
 void ImageSubsetGL::pan(ivec2 from, ivec2 to) {
-    auto diff = from - to;
-    auto clampDiff = [](auto diff, auto rangePressed, auto minRange, auto maxRange) {
+    const auto diff = from - to;
+    const auto clampDiff = [](auto diff, auto rangePressed, auto minRange, auto maxRange) {
         // Clamp to min/max range boundaries
-        auto clampMovLeft = glm::clamp(diff + static_cast<int>(rangePressed.x),
-                                       static_cast<int>(minRange), static_cast<int>(maxRange));
-        auto clampMovRight = glm::clamp(diff + static_cast<int>(rangePressed.y),
-                                        static_cast<int>(minRange), static_cast<int>(maxRange));
+        const auto clampMovLeft =
+            glm::clamp(diff + static_cast<int>(rangePressed.x), static_cast<int>(minRange),
+                       static_cast<int>(maxRange));
+        const auto clampMovRight =
+            glm::clamp(diff + static_cast<int>(rangePressed.y), static_cast<int>(minRange),
+                       static_cast<int>(maxRange));
         // Prevent movement outside of boundaries
-        auto diffLeft = clampMovLeft - static_cast<int>(rangePressed.x);
-        auto diffRight = clampMovRight - static_cast<int>(rangePressed.y);
+        const auto diffLeft = clampMovLeft - static_cast<int>(rangePressed.x);
+        const auto diffRight = clampMovRight - static_cast<int>(rangePressed.y);
         if (std::abs(diffLeft) < std::abs(diffRight)) {
             return diffLeft;
         } else {
             return diffRight;
         }
     };
-    auto xMov = clampDiff(diff.x, rangePressedX_, rangeX_.getRangeMin(), rangeX_.getRangeMax());
-    auto yMov = clampDiff(diff.y, rangePressedY_, rangeY_.getRangeMin(), rangeY_.getRangeMax());
+    const auto xMov =
+        clampDiff(diff.x, rangePressedX_, rangeX_.getRangeMin(), rangeX_.getRangeMax());
+    const auto yMov =
+        clampDiff(diff.y, rangePressedY_, rangeY_.getRangeMin(), rangeY_.getRangeMax());
     {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         rangeX_.set(size2_t(xMov + ivec2(rangePressedX_)));
         rangeY_.set(size2_t(yMov + ivec2(rangePressedY_)));
     }
@@ -241,8 +245,9 @@ void ImageSubsetGL::handleTouchEvent(TouchEvent* touchEvent) {
     const auto& touchPoints = touchEvent->touchPoints();
     if (touchPoints.empty()) return;
 
-    TouchDevice::DeviceType type = touchEvent->getDevice() ? touchEvent->getDevice()->getType()
-                                                           : TouchDevice::DeviceType::TouchScreen;
+    const TouchDevice::DeviceType type = touchEvent->getDevice()
+                                             ? touchEvent->getDevice()->getType()
+                                             : TouchDevice::DeviceType::TouchScreen;
     bool panOp = false;
     // Use different approaches depending on device
     switch (type) {
@@ -259,7 +264,7 @@ void ImageSubsetGL::handleTouchEvent(TouchEvent* touchEvent) {
     if (panOp) {
         // Assume that We require two touches when using trackpad since the first one will
         // occur when sweeping over the canvas
-        size_t usePointIndex = (type == TouchDevice::DeviceType::TouchScreen) ? 0 : 1;
+        const size_t usePointIndex = (type == TouchDevice::DeviceType::TouchScreen) ? 0 : 1;
         const auto& point = touchPoints[usePointIndex];
         if (point.state() == TouchState::Started) {
             rangePressedX_ = rangeX_.get();

@@ -143,7 +143,7 @@ void CSVWriter::writeData(const DataFrame* dataFrame, std::ostream& file) const 
             file << lineTerminator;
         }
         bool firstCol = true;
-        for (auto& printer : printers) {
+        for (const auto& printer : printers) {
             if (!firstCol) {
                 file << delimiter;
             }

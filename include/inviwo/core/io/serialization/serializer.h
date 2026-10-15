@@ -192,9 +192,9 @@ public:
     template <typename Range, typename SerializeFunction>
     void serializeRange(std::string_view key, std::string_view itemKey, Range&& range,
                         SerializeFunction serializeFunction = {}) {
-        auto nodeSwitch = switchToNewNode(key);
+        const auto nodeSwitch = switchToNewNode(key);
         for (const auto& item : std::forward<Range>(range)) {
-            auto itemNodeSwitch = switchToNewNode(itemKey);
+            const auto itemNodeSwitch = switchToNewNode(itemKey);
             serializeFunction(*this, item);
         }
     }

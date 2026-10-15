@@ -63,7 +63,7 @@ Texture1D::Texture1D(size_t width, GLenum format, GLenum internalFormat, GLenum 
 Texture1D::Texture1D(const Texture1D& rhs) : Texture(rhs), width_(rhs.width_) {
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
-        std::scoped_lock lock{syncMutex};
+        const std::scoped_lock lock{syncMutex};
         if (syncObj != 0) {
             glDeleteSync(syncObj);
             syncObj = 0;
@@ -86,7 +86,7 @@ Texture1D& Texture1D::operator=(const Texture1D& rhs) {
         initialize(nullptr);
 
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
-            std::scoped_lock lock{syncMutex};
+            const std::scoped_lock lock{syncMutex};
             if (syncObj != 0) {
                 glDeleteSync(syncObj);
                 syncObj = 0;

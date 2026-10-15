@@ -34,8 +34,8 @@ namespace inviwo::meta::util {
 std::optional<std::filesystem::path> findShortestRelativePath(
     const std::filesystem::path& path, std::vector<std::filesystem::path> bases) {
     std::optional<std::filesystem::path> res;
-    for (auto base : bases) {
-        auto rel = std::filesystem::relative(path, base).lexically_normal();
+    for (const auto base : bases) {
+        const auto rel = std::filesystem::relative(path, base).lexically_normal();
         if (rel.empty()) continue;
         if (*rel.begin() == "..") continue;
         if (!res ||

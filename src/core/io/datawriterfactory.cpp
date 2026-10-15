@@ -51,7 +51,7 @@ bool DataWriterFactory::registerObject(DataWriter* writer) {
 }
 
 bool DataWriterFactory::unRegisterObject(DataWriter* writer) {
-    size_t removed =
+    const size_t removed =
         std::erase_if(map_, [writer](const auto& elem) { return elem.second == writer; });
 
     if (removed > 0) {

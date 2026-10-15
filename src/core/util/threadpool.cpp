@@ -74,7 +74,7 @@ size_t ThreadPool::trySetSize(size_t size) {
 size_t ThreadPool::getSize() const { return workers.size(); }
 
 size_t ThreadPool::getQueueSize() {
-    std::unique_lock<std::mutex> lock(queue_mutex);
+    const std::unique_lock<std::mutex> lock(queue_mutex);
     return tasks.size();
 }
 
@@ -90,7 +90,7 @@ ThreadPool::Worker::Worker(ThreadPool& pool, size_t index)
     : state{State::Free}, thread{[this, &pool, index]() {
         util::setThreadDescription(fmt::format("Inviwo BG {}", index));
         pool.onThreadStart_();
-        util::OnScopeExit cleanup{[&pool]() { pool.onThreadStop_(); }};
+        const util::OnScopeExit cleanup{[&pool]() { pool.onThreadStop_(); }};
 
         for (;;) {
             std::function<void()> task;
@@ -117,7 +117,7 @@ void ThreadPool::enqueueRaw(std::function<void()> task) {
     if (workers.empty()) {
         task();  // No worker threads, just run the task.
     } else {
-        std::unique_lock<std::mutex> lock(queue_mutex);
+        const std::unique_lock<std::mutex> lock(queue_mutex);
         tasks.emplace(std::move(task));
     }
     condition.notify_one();

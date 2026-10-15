@@ -121,7 +121,7 @@ TEST(ConcatView, RangesAlgorithmEqual) {
 TEST(ConcatView, RangesCountIf) {
     std::vector<int> a{1, 2, 3};
     std::vector<int> b{4, 5, 6};
-    auto evens = std::ranges::count_if(views::concat(a, b), [](int x) { return x % 2 == 0; });
+    const auto evens = std::ranges::count_if(views::concat(a, b), [](int x) { return x % 2 == 0; });
     EXPECT_EQ(evens, 3);
 }
 
@@ -129,7 +129,7 @@ TEST(ConcatView, RangesFind) {
     std::vector<int> a{1, 2, 3};
     std::vector<int> b{4, 5, 6};
     auto c = views::concat(a, b);
-    auto it = std::ranges::find(c, 4);
+    const auto it = std::ranges::find(c, 4);
     EXPECT_NE(it, std::ranges::end(c));
     EXPECT_EQ(*it, 4);
 }
@@ -166,7 +166,7 @@ TEST(ConcatView, StringViews) {
     std::string a = "Hello";
     std::string b = " World";
     std::string result;
-    for (char c : views::concat(a, b)) result.push_back(c);
+    for (const char c : views::concat(a, b)) result.push_back(c);
     EXPECT_EQ(result, "Hello World");
 }
 

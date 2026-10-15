@@ -123,8 +123,8 @@ constexpr bool isSubset(units::detail::unit_data part, units::detail::unit_data 
 constexpr int maxPower(units::detail::unit_data part, units::detail::unit_data whole) {
     int factor = 0;
     for (auto&& [name, abbr, getter] : baseUnits) {
-        auto pPow = std::invoke(getter, part);
-        auto wPow = std::invoke(getter, whole);
+        const auto pPow = std::invoke(getter, part);
+        const auto wPow = std::invoke(getter, whole);
 
         if (pPow != 0) {
             const int ratio = wPow / pPow;

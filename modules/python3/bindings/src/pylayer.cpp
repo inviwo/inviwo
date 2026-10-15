@@ -100,7 +100,7 @@ void exposeLayer(pybind11::module& m) {
             "data",
             [&](Layer* layer) -> py::array {
                 const auto* df = layer->getDataFormat();
-                auto dims = layer->getDimensions();
+                const auto dims = layer->getDimensions();
 
                 std::vector<size_t> shape = {dims.y, dims.x};
                 std::vector<size_t> strides = {df->getSizeInBytes() * dims.x, df->getSizeInBytes()};
@@ -110,7 +110,7 @@ void exposeLayer(pybind11::module& m) {
                     strides.push_back(df->getSizeInBytes() / df->getComponents());
                 }
 
-                auto* data = layer->getEditableRepresentation<LayerRAM>()->getData();
+                const auto* data = layer->getEditableRepresentation<LayerRAM>()->getData();
                 return {pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1)};
             },
             [](Layer* layer, const py::array& data) {

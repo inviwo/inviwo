@@ -214,7 +214,7 @@ void CategoricalColumn::append(const Column& col) {
     if (auto srccol = dynamic_cast<const CategoricalColumn*>(&col)) {
         auto& values = buffer_->getEditableRAMRepresentation()->getDataContainer();
 
-        for (auto idx : srccol->buffer_->getRAMRepresentation()->getDataContainer()) {
+        for (const auto idx : srccol->buffer_->getRAMRepresentation()->getDataContainer()) {
             const auto& value = srccol->lookUpTable_[idx];
             values.push_back(addOrGetID(value));
         }
@@ -237,7 +237,7 @@ void CategoricalColumn::append(const std::vector<std::string>& data) {
 std::uint32_t CategoricalColumn::addCategory(std::string_view cat) { return addOrGetID(cat); }
 
 glm::uint32_t CategoricalColumn::addOrGetID(std::string_view str) {
-    if (auto it = lookupMap_.find(str); it != lookupMap_.end()) {
+    if (const auto it = lookupMap_.find(str); it != lookupMap_.end()) {
         return it->second;
     } else {
         lookUpTable_.emplace_back(str);

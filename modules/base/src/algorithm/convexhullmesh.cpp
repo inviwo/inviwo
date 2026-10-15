@@ -53,7 +53,7 @@ std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2>& hull, bool useI
     if (hull.empty()) {
         return mesh;
     }
-    auto vertices = std::make_shared<Buffer<vec2>>();
+    const auto vertices = std::make_shared<Buffer<vec2>>();
     auto vBuffer = vertices->getEditableRAMRepresentation();
 
     vBuffer->append(&hull);
@@ -61,7 +61,7 @@ std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2>& hull, bool useI
     mesh->addBuffer(BufferType::PositionAttrib, vertices);
 
     if (useIndices) {
-        auto indices = std::make_shared<IndexBuffer>();
+        const auto indices = std::make_shared<IndexBuffer>();
         auto indexBuffer = indices->getEditableRAMRepresentation();
 
         std::vector<uint32_t> seq(hull.size());

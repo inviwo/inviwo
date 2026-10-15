@@ -111,9 +111,9 @@ public:
 
 protected:
     virtual ReturnType sampleDataSpace(const dvec3& pos) const override {
-        dvec2 samplePos = dvec2{pos} * dvec2(dims_ - size2_t(1));
-        size2_t indexPos = size2_t(samplePos);
-        dvec2 interpolants = samplePos - dvec2(indexPos);
+        const dvec2 samplePos = dvec2{pos} * dvec2(dims_ - size2_t(1));
+        const size2_t indexPos = size2_t(samplePos);
+        const dvec2 interpolants = samplePos - dvec2(indexPos);
 
         ReturnType samples[4];
         samples[0] = getPixel(indexPos);
@@ -131,7 +131,7 @@ protected:
 
 private:
     ReturnType getPixel(const size2_t& pos) const {
-        auto p = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
+        const auto p = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
         return static_cast<ReturnType>(layer_->getAsDVec4(p));
     }
     const LayerRAM* layer_;
@@ -246,9 +246,9 @@ auto TemplateImageSampler<ReturnType, DataType>::sampleDataSpace(const dvec3& po
     if (!withinBoundsDataSpace(pos)) {
         return ReturnType{0};
     }
-    dvec2 samplePos = dvec2{pos} * dvec2(dims_ - size2_t(1));
-    size2_t indexPos = size2_t(samplePos);
-    dvec2 interpolants = samplePos - dvec2(indexPos);
+    const dvec2 samplePos = dvec2{pos} * dvec2(dims_ - size2_t(1));
+    const size2_t indexPos = size2_t(samplePos);
+    const dvec2 interpolants = samplePos - dvec2(indexPos);
 
     ReturnType samples[4];
     samples[0] = getPixel(indexPos);
@@ -261,7 +261,7 @@ auto TemplateImageSampler<ReturnType, DataType>::sampleDataSpace(const dvec3& po
 
 template <typename ReturnType, typename DataType>
 ReturnType TemplateImageSampler<ReturnType, DataType>::getPixel(const size2_t& pos) const {
-    auto p = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
+    const auto p = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
     return data_[ic_(p)];
 }
 

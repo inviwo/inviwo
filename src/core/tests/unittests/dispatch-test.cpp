@@ -78,30 +78,30 @@ TEST(DispatchTests, ThrowTest2) {
 }
 
 TEST(DispatchTests, InstantiationTest1) {
-    auto buf = createBufferRAM(10, DataFormatBase::get(DataFormatId::Float32), BufferUsage::Static,
-                               BufferTarget::Data);
+    const auto buf = createBufferRAM(10, DataFormatBase::get(DataFormatId::Float32),
+                                     BufferUsage::Static, BufferTarget::Data);
 
-    auto res = dispatching::singleDispatch<float, dispatching::filter::Scalars>(
+    const auto res = dispatching::singleDispatch<float, dispatching::filter::Scalars>(
         buf->getDataFormat()->getId(), [&]<typename T>() {
             using D = util::value_type_t<T>;
-            D v1{0};
-            D v2{1};
-            auto min = std::min(v1, v2);
+            const D v1{0};
+            const D v2{1};
+            const auto min = std::min(v1, v2);
             return static_cast<float>(min);
         });
     EXPECT_EQ(0.0f, res);
 }
 
 TEST(DispatchTests, InstantiationTest2) {
-    auto buf = createBufferRAM(10, DataFormatBase::get(DataFormatId::Vec3Float32),
-                               BufferUsage::Static, BufferTarget::Data);
+    const auto buf = createBufferRAM(10, DataFormatBase::get(DataFormatId::Vec3Float32),
+                                     BufferUsage::Static, BufferTarget::Data);
 
-    auto res = dispatching::singleDispatch<float, dispatching::filter::Vecs>(
+    const auto res = dispatching::singleDispatch<float, dispatching::filter::Vecs>(
         buf->getDataFormat()->getId(), [&]<typename T>() {
             using D = util::value_type_t<T>;
-            D v1{0};
-            D v2{1};
-            auto min = std::min(v1, v2);
+            const D v1{0};
+            const D v2{1};
+            const auto min = std::min(v1, v2);
             return static_cast<float>(min);
         });
     EXPECT_EQ(0.0f, res);

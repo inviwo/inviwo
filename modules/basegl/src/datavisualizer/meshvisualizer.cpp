@@ -104,7 +104,7 @@ std::vector<Processor*> MeshVisualizer::addVisualizerNetwork(Outport* outport,
 std::vector<Processor*> MeshVisualizer::addSourceAndVisualizerNetwork(
     const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net, origin);
+    const auto sourceAndOutport = addSourceProcessor(filename, net, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     processors.push_back(sourceAndOutport.first);

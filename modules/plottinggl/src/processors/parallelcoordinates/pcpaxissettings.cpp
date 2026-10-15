@@ -152,7 +152,7 @@ void PCPAxisSettings::update(std::shared_ptr<const DataFrame> frame) {
             const double prevMinRatio = (prevVal.x - prevRange.x) / l;
             const double prevMaxRatio = (prevVal.y - prevRange.x) / l;
 
-            Property::OnChangeBlocker block{range};
+            const Property::OnChangeBlocker block{range};
             range.setRange(minmax);
 
             const double minV = minmax.x;

@@ -57,13 +57,13 @@ namespace inviwo {
 TEST(CImgUtils, cimgToBuffer) {
     // load source image
 
-    std::string testExtension = ".bmp";
+    const std::string testExtension = ".bmp";
     const auto filename = filesystem::getPath(PathType::Tests, "/images/swirl" + testExtension);
     CImgLayerReader reader;
-    auto layer = reader.readData(filename);
+    const auto layer = reader.readData(filename);
 
     // write layer to a temporary file
-    util::TempFileHandle tmpFile("cimg", testExtension);
+    const util::TempFileHandle tmpFile("cimg", testExtension);
 
     auto ram = layer->getRepresentation<LayerRAM>();
     ASSERT_TRUE(ram != nullptr);
@@ -74,7 +74,7 @@ TEST(CImgUtils, cimgToBuffer) {
     auto in = std::ifstream(tmpFile.getFileName(), std::ios::binary);
     if (in.is_open()) {
         in.seekg(0, in.end);
-        size_t fileLen = in.tellg();
+        const size_t fileLen = in.tellg();
         in.seekg(0, in.beg);
 
         fileContents.resize(fileLen);

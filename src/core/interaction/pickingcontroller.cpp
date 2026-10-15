@@ -111,7 +111,7 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     std::vector<int> usedPointIds;
     std::unordered_map<size_t, std::vector<TouchPoint>> pickingIdToTouchPoints;
 
-    for (auto& point : touchPoints) {
+    for (const auto& point : touchPoints) {
 
         auto it = touchPointStartPickingId_.find(point.id());
         // Not sure if this check is necessary anymore (I recall that there previously have been
@@ -122,14 +122,14 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
             it = touchPointStartPickingId_.find(point.id());
         }
 
-        auto pickedId = it->second;
+        const auto pickedId = it->second;
         if (touchStates_.find(pickedId) == touchStates_.end()) {
             touchStates_[pickedId] = PickingControllerTouchState{PickingManager::getPtr()};
         }
         pickingIdToTouchPoints[it->second].push_back(point);
     }
 
-    for (auto& item : pickingIdToTouchPoints) {
+    for (const auto& item : pickingIdToTouchPoints) {
         const auto& startPickingId = item.first;
         const auto& points = item.second;
         TouchEvent te(points, e->getDevice(), e->modifiers());
@@ -155,7 +155,7 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         }
     }
     // Cleanup
-    for (auto& point : touchPoints) {
+    for (const auto& point : touchPoints) {
         if (point.state() == TouchState::Finished) {
             touchPointStartPickingId_.erase(point.id());
         }
@@ -173,8 +173,8 @@ void PickingController::propagateEvent(GestureEvent*, EventPropagator*) {
 void PickingController::setPickingSource(const std::shared_ptr<const Image>& src) { src_ = src; }
 
 size_t PickingController::pickId(const dvec2& coord) {
-    if (auto src = src_.lock()) {
-        if (auto dim = src->getDimensions();
+    if (const auto src = src_.lock()) {
+        if (const auto dim = src->getDimensions();
             glm::any(glm::lessThan(coord, dvec2{0}) ||
                      glm::greaterThan(coord, dvec2{dim} - dvec2{1.0}))) {
             return PickingManager::VoidId;

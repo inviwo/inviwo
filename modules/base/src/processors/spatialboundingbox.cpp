@@ -60,10 +60,10 @@ SpatialBoundingBox::SpatialBoundingBox()
 }
 
 void SpatialBoundingBox::process() {
-    auto mesh = meshutil::boundingBoxAdjacency(inport_.getData()->getModelMatrix(), color_);
+    const auto mesh = meshutil::boundingBoxAdjacency(inport_.getData()->getModelMatrix(), color_);
     mesh->setWorldMatrix(inport_.getData()->getWorldMatrix());
 
-    for (auto i : std::views::iota(0uz, 3uz)) {
+    for (const auto i : std::views::iota(0uz, 3uz)) {
         if (const auto* axis = inport_.getData()->getAxis(i)) {
             mesh->axes[i] = *axis;
         }

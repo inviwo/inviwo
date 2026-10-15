@@ -135,8 +135,8 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
                                        [](const auto& ext) {
                                            return OptionPropertyOption<FileExtension>{ext};
                                        });
-                        auto it = std::find_if(exts.begin(), exts.end(),
-                                               [&](auto& e) { return e.extension == "png"; });
+                        const auto it = std::find_if(exts.begin(), exts.end(),
+                                                     [&](auto& e) { return e.extension == "png"; });
                         if (it != exts.end()) {
                             state.selectedIndex = std::distance(exts.begin(), it);
                         }
@@ -211,7 +211,7 @@ void AnimationController::setState(AnimationState newState) {
     if (state_ == newState) return;
 
     // Switch state
-    auto oldState = state_;
+    const auto oldState = state_;
     state_ = newState;
 
     // Act on new state
@@ -238,7 +238,7 @@ void AnimationController::setTime(Seconds time) {
     // No upper boundary check since you might want to set the time after the last keyframe of
     // animation when creating new ones
     if (currentTime_ != time) {
-        auto oldTime = currentTime_;
+        const auto oldTime = currentTime_;
         currentTime_ = std::max(Seconds(0), time);
         notifyTimeChanged(this, oldTime, currentTime_);
     }
@@ -268,7 +268,7 @@ void AnimationController::jumpToNextKeyframe() {
 
 void AnimationController::jumpToPrevControlKeyframe() {
     std::optional<Seconds> prevKeyframeTime = std::nullopt;
-    for (auto& track : animation_->getTracksOfType<ControlTrack>()) {
+    for (const auto& track : animation_->getTracksOfType<ControlTrack>()) {
         if (auto t = track.getPrevTime(getCurrentTime())) {
             if (!prevKeyframeTime) {
                 prevKeyframeTime = t;
@@ -284,7 +284,7 @@ void AnimationController::jumpToPrevControlKeyframe() {
 
 void AnimationController::jumpToNextControlKeyframe() {
     std::optional<Seconds> nextKeyframeTime = std::nullopt;
-    for (auto& track : animation_->getTracksOfType<ControlTrack>()) {
+    for (const auto& track : animation_->getTracksOfType<ControlTrack>()) {
         if (auto t = track.getNextTime(getCurrentTime())) {
             if (!nextKeyframeTime) {
                 nextKeyframeTime = t;
@@ -371,7 +371,7 @@ void AnimationController::tick() {
 }
 
 void AnimationController::render() {
-    auto start = std::chrono::high_resolution_clock::now();
+    const auto start = std::chrono::high_resolution_clock::now();
 
     auto* network = app_->getProcessorNetwork();
     std::optional<NetworkLock> lock{network};
@@ -401,7 +401,7 @@ void AnimationController::render() {
 
         network->forEachProcessor([&](Processor* p) {
             if (p->isSink() && p->isReady()) {
-                if (auto* imageExporter = dynamic_cast<ImageExporter*>(p)) {
+                if (const auto* imageExporter = dynamic_cast<ImageExporter*>(p)) {
                     for (const auto& key : recorderFactories.getKeyView()) {
                         auto* recorderFactory = recorderFactories.getFactoryObject(key);
                         if (recorderFactory->options()->isChecked()) {
@@ -413,7 +413,7 @@ void AnimationController::render() {
 
                             recordingFunctors.emplace_back(
                                 [recorder = std::move(recorder), imageExporter]() {
-                                    if (auto image = imageExporter->getImage()) {
+                                    if (const auto image = imageExporter->getImage()) {
                                         if (const auto* layer = image->getColorLayer()) {
                                             recorder->record(*layer);
                                         }
@@ -422,7 +422,7 @@ void AnimationController::render() {
                         }
                     }
                 }
-                if (auto* exporter = dynamic_cast<Exporter*>(p)) {
+                if (const auto* exporter = dynamic_cast<Exporter*>(p)) {
                     if (exportOptions_.isChecked()) {
                         auto base = exportBaseName_.get();
                         replaceInString(base, "UPN", p->getIdentifier());
@@ -435,7 +435,7 @@ void AnimationController::render() {
                              dir = exportOutputDirectory_.get(), base,
                              overwrite = exportOverwrite_ ? Overwrite::Yes : Overwrite::No,
                              counter = size_t{0}, digits]() mutable {
-                                auto name = fmt::format("{}{:0{}}", base, counter, digits);
+                                const auto name = fmt::format("{}{:0{}}", base, counter, digits);
                                 exporter->exportFile(dir, name, {writer}, overwrite);
                                 ++counter;
                             });
@@ -452,7 +452,8 @@ void AnimationController::render() {
         // render frames
         for (int currentFrame = 0; currentFrame < numFrames; ++currentFrame) {
             // Evaluate animation
-            Seconds newTime = firstTime + (lastTime - firstTime) / (numFrames - 1) * currentFrame;
+            const Seconds newTime =
+                firstTime + (lastTime - firstTime) / (numFrames - 1) * currentFrame;
             eval(currentTime_, newTime);
 
             lock.reset();
@@ -464,7 +465,7 @@ void AnimationController::render() {
             }
             app_->processEvents();
 
-            for (auto& recorder : recordingFunctors) {
+            for (const auto& recorder : recordingFunctors) {
                 recorder();
             }
 
@@ -494,8 +495,8 @@ void AnimationController::render() {
 }
 
 void AnimationController::eval(Seconds oldTime, Seconds newTime) {
-    NetworkLock lock;
-    auto ts = (*animation_)(oldTime, newTime, state_);
+    const NetworkLock lock;
+    const auto ts = (*animation_)(oldTime, newTime, state_);
     setState(ts.state);
     setTime(ts.time);
 }

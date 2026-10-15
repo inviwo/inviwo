@@ -86,13 +86,13 @@ CompositeProcessor::CompositeProcessor(std::string_view identifier, std::string_
 CompositeProcessor::~CompositeProcessor() = default;
 
 void CompositeProcessor::process() {
-    util::KeepTrueWhileInScope processing{&isProcessing_};
+    const util::KeepTrueWhileInScope processing{&isProcessing_};
     for (auto& source : sources_) {
         if (source->getSuperInport().isChanged()) {
             source->invalidate(InvalidationLevel::InvalidOutput);
         }
     }
-    util::OnScopeExit lock{[this]() { subNetwork_->lock(); }};
+    const util::OnScopeExit lock{[this]() { subNetwork_->lock(); }};
     subNetwork_->unlock();  // This will trigger an evaluation of the sub network.
 }
 
@@ -128,7 +128,7 @@ void CompositeProcessor::saveSubNetwork(const std::filesystem::path& file) {
 
     // The CompositeProcessorFactoryObject will deserialize the DisplayName and Tags to use in the
     // ProcessorInfo which will be displayed in the processor list
-    InviwoSetupInfo info(*app_, *subNetwork_);
+    const InviwoSetupInfo info(*app_, *subNetwork_);
     s.serialize("InviwoSetup", info);
     s.serialize("DisplayName", getDisplayName());
     s.serialize("Tags", tags.getString());
@@ -167,7 +167,7 @@ void CompositeProcessor::unregisterProperty(Property* orgProp) {
 }
 
 Property* CompositeProcessor::addSuperProperty(Property* orgProp) {
-    auto it = handlers_.find(orgProp);
+    const auto it = handlers_.find(orgProp);
     if (it != handlers_.end()) {
         return it->second->superProperty.get();
     } else {
@@ -192,7 +192,7 @@ void CompositeProcessor::removeSuperProperty(Property* orgProp) {
 }
 
 Property* CompositeProcessor::getSuperProperty(Property* orgProp) {
-    auto it = handlers_.find(orgProp);
+    const auto it = handlers_.find(orgProp);
     if (it != handlers_.end()) {
         return it->second->superProperty.get();
     } else {
@@ -201,7 +201,7 @@ Property* CompositeProcessor::getSuperProperty(Property* orgProp) {
 }
 
 Property* CompositeProcessor::getSubProperty(Property* superProperty) {
-    auto it = util::find_if(handlers_, [&](auto& handler) {
+    const auto it = util::find_if(handlers_, [&](auto& handler) {
         return handler.second->superProperty.get() == superProperty;
     });
     if (it != handlers_.end()) {
@@ -278,12 +278,12 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
     , superProperty{subProperty->clone()}
     , subCallback{subProperty->onChangeScoped([this]() {
         if (onChangeActive) return;
-        util::KeepTrueWhileInScope active{&onChangeActive};
+        const util::KeepTrueWhileInScope active{&onChangeActive};
         superProperty->set(subProperty);
     })}
     , superCallback{superProperty->onChangeScoped([this]() {
         if (onChangeActive) return;
-        util::KeepTrueWhileInScope active{&onChangeActive};
+        const util::KeepTrueWhileInScope active{&onChangeActive};
         subProperty->set(superProperty.get());
     })} {
 
@@ -306,7 +306,7 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
     superProperty->setSerializationMode(PropertySerializationMode::All);
     superProperty->setMetaData<IntMetaData>(meta::index, index);
 
-    auto it = std::lower_bound(comp.begin(), comp.end(), index, [&](Property* prop, int b) {
+    const auto it = std::lower_bound(comp.begin(), comp.end(), index, [&](Property* prop, int b) {
         const auto a = prop->getMetaData<IntMetaData>(meta::index, 0);
         return a < b;
     });
@@ -347,7 +347,7 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
 }
 
 Property* CompositeProcessor::PropertyHandler::findSubProperty(Property* superProp) const {
-    auto imp = [&](auto self, Property* superProp) -> Property* {
+    const auto imp = [&](auto self, Property* superProp) -> Property* {
         if (superProp == superProperty.get()) {
             return subProperty;
         } else {
@@ -361,7 +361,7 @@ Property* CompositeProcessor::PropertyHandler::findSubProperty(Property* superPr
                 log::error("Could not find sub Owner {}", superOwner->getPath());
                 return nullptr;
             }
-            auto it = superOwner->find(superProp);
+            const auto it = superOwner->find(superProp);
             if (it == superOwner->cend()) {
                 log::error("Could not find superProp {} in  {}", superProp->getPath(),
                            superOwner->getPath());

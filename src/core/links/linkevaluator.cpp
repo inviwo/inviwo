@@ -46,7 +46,7 @@ namespace {
 struct VisitedHelper {
     VisitedHelper(std::vector<Property*>& visited, std::vector<ConvertibleLink>& toVisit)
         : visited_(visited), toVisit_(toVisit) {
-        for (auto& link : toVisit_) {
+        for (const auto& link : toVisit_) {
             util::push_back_unique(visited_, link.src);
             util::push_back_unique(visited_, link.dst);
         }
@@ -57,7 +57,7 @@ struct VisitedHelper {
     VisitedHelper& operator=(VisitedHelper&&) = delete;
 
     ~VisitedHelper() {
-        for (auto& link : toVisit_) {
+        for (const auto& link : toVisit_) {
             std::erase(visited_, link.src);
             std::erase(visited_, link.dst);
         }
@@ -147,9 +147,9 @@ std::vector<ConvertibleLink>& LinkEvaluator::getTriggeredLinksForProperty(Proper
 
 std::vector<Property*> LinkEvaluator::getPropertiesLinkedTo(Property* property) {
     // check if link connectivity has been computed and cached already
-    auto& list = (transientLinkCache_.find(property) != transientLinkCache_.end())
-                     ? transientLinkCache_[property]
-                     : addToTransientCache(property);
+    const auto& list = (transientLinkCache_.find(property) != transientLinkCache_.end())
+                           ? transientLinkCache_[property]
+                           : addToTransientCache(property);
 
     return util::transform(list, [](const ConvertibleLink& link) { return link.dst; });
 }
@@ -192,7 +192,7 @@ void LinkEvaluator::transientCacheHelper(std::vector<ConvertibleLink>& links, Pr
     }
 
     // If we link to a CompositeProperty, make sure to evaluate sub-links.
-    if (auto* cp = dynamic_cast<CompositeProperty*>(dst)) {
+    if (const auto* cp = dynamic_cast<CompositeProperty*>(dst)) {
         for (auto* newSrc : cp->getProperties()) {
             // Recurse over outgoing links.
             const auto it = directLinkCache_.find(newSrc);
@@ -215,7 +215,7 @@ void LinkEvaluator::evaluateLinksFromProperty(Property* modifiedProperty) {
     auto& links = getTriggeredLinksForProperty(modifiedProperty);
     const VisitedHelper helper(visited_, links);
 
-    for (auto& link : links) {
+    for (const auto& link : links) {
         link.converter->convert(link.src, link.dst);
     }
 }

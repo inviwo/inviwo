@@ -50,8 +50,8 @@ void ffmpeg_log_callback(void* ptr, int level, const char* fmt, va_list vl) {
 
     using namespace inviwo;
 
-    if (auto needSize = av_log_format_line2(ptr, level, fmt, vl, line.data(),
-                                            static_cast<int>(line.size()), &print_prefix);
+    if (const auto needSize = av_log_format_line2(ptr, level, fmt, vl, line.data(),
+                                                  static_cast<int>(line.size()), &print_prefix);
         needSize < 0) {
         log::report(LogLevel::Error, SourceContext{"ffmpeg"_sl}, "Error formatting log message");
     } else if (needSize >= static_cast<int>(line.size())) {

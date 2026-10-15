@@ -341,7 +341,7 @@ void TFEditorView::drawGrid(QPainter* painter, const QRectF& updateRect,
         }
     }
 
-    static QFont font = []() {
+    static const QFont font = []() {
         QFont f{QFontDatabase::systemFont(QFontDatabase::GeneralFont)};
         f.setWeight(QFont::Normal);
         f.setPointSize(12);

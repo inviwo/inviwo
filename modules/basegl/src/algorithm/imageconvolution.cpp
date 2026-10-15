@@ -60,7 +60,7 @@ std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer& layer, int
 }
 
 std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer& layer, float sigma) {
-    int kernelSize = static_cast<int>(
+    const int kernelSize = static_cast<int>(
         sigma * 2 * 2.576);  // 99% of samples are within +- 2.576 standard deviations
                              // https://de.wikipedia.org/wiki/Normalverteilung
     return gaussianLowpass(layer, kernelSize, sigma);
@@ -72,8 +72,8 @@ std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer& layer, int
     float a = 1.0f / (sigmaSq2 * glm::pi<float>());
 
     float totWeight = 0;
-    auto kernelFunc = [&](float p) {
-        float w = a * std::exp(-(p * p) / sigmaSq2);
+    const auto kernelFunc = [&](float p) {
+        const float w = a * std::exp(-(p * p) / sigmaSq2);
         totWeight += w;
         return w;
     };
@@ -90,9 +90,9 @@ std::shared_ptr<Image> ImageConvolution::convolution(const Layer& layer,
                                                      std::function<float(vec2)> kernelWeight,
                                                      const float& kernelScale, ivec2 kernelSize) {
 
-    auto kernel1DSize = kernelSize.x * kernelSize.y;
+    const auto kernel1DSize = kernelSize.x * kernelSize.y;
     if (kernel1DSize == 1) {
-        auto newlayer = std::make_shared<Layer>(layer);
+        const auto newlayer = std::make_shared<Layer>(layer);
         return std::make_shared<Image>(newlayer);
     }
 
@@ -103,7 +103,7 @@ std::shared_ptr<Image> ImageConvolution::convolution(const Layer& layer,
 
     for (int j = 0; j < kernelSize.y; j++) {
         for (int i = 0; i < kernelSize.x; i++) {
-            vec2 p = vec2(i, j) - kernelCenter;
+            const vec2 p = vec2(i, j) - kernelCenter;
             kernel[i + j * kernelSize.y] = kernelWeight(p);
         }
     }
@@ -116,13 +116,13 @@ std::shared_ptr<Image> ImageConvolution::convolution_separable(
     const float& kernelScale) {
 
     std::vector<float> kernel(kernelSize);
-    float kernelCenter = (kernelSize - 1) / 2.0f;
+    const float kernelCenter = (kernelSize - 1) / 2.0f;
     for (int i = 0; i < kernelSize; i++) {
-        float p = i - kernelCenter;
+        const float p = i - kernelCenter;
         kernel[i] = kernelWeight(p);
     }
 
-    auto hori = convolution(layer, kernelSize, 1, kernel, kernelScale);
+    const auto hori = convolution(layer, kernelSize, 1, kernel, kernelScale);
     return convolution(*hori->getColorLayer(), 1, kernelSize, kernel, kernelScale);
 }
 

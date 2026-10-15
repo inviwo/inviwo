@@ -108,7 +108,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
             utilqt::movePointOntoDesktop(utilqt::toQPoint(pos), utilqt::toQSize(logicalDim), true);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
-            util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+            const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
             // prevent move events, since this will automatically save the "adjusted" position.
             // The processor widget already has its correct pos, i.e. the one de-serialized from
             // file.
@@ -174,7 +174,7 @@ Canvas* CanvasProcessorWidgetQt::getCanvas() const { return canvas_.get(); }
 void CanvasProcessorWidgetQt::resizeEvent(QResizeEvent* event) { Super::resizeEvent(event); }
 
 void CanvasProcessorWidgetQt::propagateEvent(Event* event, Outport* source) {
-    if (auto* re = event->getAs<ResizeEvent>()) {
+    if (const auto* re = event->getAs<ResizeEvent>()) {
         CanvasProcessorWidget::setDimensions(re->size());
     }
 
@@ -192,7 +192,7 @@ void CanvasProcessorWidgetQt::propagateResizeEvent() {
 }
 
 bool CanvasProcessorWidgetQt::contextMenu(QMenu& menu, ContextMenuCategories actions) {
-    if (auto* canvasProcessor = dynamic_cast<CanvasProcessor*>(getProcessor())) {
+    if (const auto* canvasProcessor = dynamic_cast<CanvasProcessor*>(getProcessor())) {
         if (!canvasProcessor->isContextMenuAllowed()) return false;
     }
 
@@ -246,15 +246,15 @@ void CanvasProcessorWidgetQt::moveEvent(QMoveEvent* event) {
 }
 
 void CanvasProcessorWidgetQt::updateVisible(bool visible) {
-    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     setVisible(visible);
 }
 void CanvasProcessorWidgetQt::updateDimensions(ivec2 dim) {
-    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     setDimensions(dim);
 }
 void CanvasProcessorWidgetQt::updatePosition(ivec2 pos) {
-    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     setPosition(pos);
 }
 

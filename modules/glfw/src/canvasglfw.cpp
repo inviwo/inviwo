@@ -244,7 +244,7 @@ void CanvasGLFW::setFullScreen(bool fullscreen) {
         GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
 
         GLFWmonitor* target = *monitors;  // Start with the primary monitor;
-        for (GLFWmonitor** monitor = monitors; monitor < monitors + monitorCount; ++monitor) {
+        for (GLFWmonitor* const* monitor = monitors; monitor < monitors + monitorCount; ++monitor) {
             ivec2 mpos;
             glfwGetMonitorPos(*monitor, &mpos[0], &mpos[1]);
             const GLFWvidmode* mode = glfwGetVideoMode(*monitor);
@@ -266,7 +266,7 @@ CanvasGLFW* CanvasGLFW::getCanvasGLFW(GLFWwindow* window) {
 }
 
 ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
-    auto check_error = []() {
+    const auto check_error = []() {
         const char* description;
         int code = glfwGetError(&description);
         if (description) {
@@ -276,7 +276,7 @@ ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
 
     try {
         int count;
-        GLFWmonitor** monitors = glfwGetMonitors(&count);
+        GLFWmonitor* const* monitors = glfwGetMonitors(&count);
         check_error();
 
         for (int i = 0; i < count; ++i) {

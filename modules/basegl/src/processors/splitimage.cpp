@@ -128,7 +128,7 @@ void SplitImage::process() {
             viewport1 = ivec4(0, 0, dims.x, dims.y - height);
         }
 
-        auto renderPort = [&](const ImageInport& inport, const auto& viewport) {
+        const auto renderPort = [&](const ImageInport& inport, const auto& viewport) {
             TextureUnit colorUnit, depthUnit, pickingUnit;
             TextureUnitContainer additionalColorUnits;
             Shader* shader = nullptr;
@@ -160,7 +160,7 @@ void SplitImage::process() {
             }
 
             glEnable(GL_SCISSOR_TEST);
-            utilgl::ScissorState scissorviewport(viewport);
+            const utilgl::ScissorState scissorviewport(viewport);
 
             shader->activate();
             utilgl::singleDrawImagePlaneRect();

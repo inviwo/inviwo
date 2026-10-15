@@ -190,8 +190,8 @@ auto makeFormatter(Args&&... args) {  // NOLINT(cppcoreguidelines-missing-std-fo
 auto TexturedIsoSurfaceComponent::getSegments() -> std::vector<Segment> {
     using fmt::literals::operator""_a;
 
-    auto format = makeFormatter("color"_a = colorPort.getIdentifier(), "volume"_a = volume,
-                                "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier());
+    const auto format = makeFormatter("color"_a = colorPort.getIdentifier(), "volume"_a = volume,
+                                      "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier());
 
     std::vector<Segment> segments{
         {.snippet = R"(#include "utils/compositing.glsl")",

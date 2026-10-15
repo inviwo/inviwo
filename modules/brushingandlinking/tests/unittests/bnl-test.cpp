@@ -96,7 +96,7 @@ TEST(BrushingManager, SelectRows) {
     bnlManager.brush(BrushingAction::Select, BrushingTarget::Row, selection);
     const auto brushed = bnlManager.getSelectedIndices(BrushingTarget::Row);
     EXPECT_EQ(brushed.size(), selection.size());
-    for (auto index : selection) {
+    for (const auto index : selection) {
         EXPECT_TRUE(brushed.contains(index));
     }
 
@@ -112,7 +112,7 @@ TEST(BrushingManager, SelectRows) {
     bnlManager.select(selection, BrushingTarget::Row);
     const auto selected = bnlManager.getSelectedIndices(BrushingTarget::Row);
     EXPECT_EQ(selected.size(), selection.size());
-    for (auto index : selection) {
+    for (const auto index : selection) {
         EXPECT_TRUE(selected.contains(index));
     }
 }
@@ -145,7 +145,7 @@ TEST(BrushingManager, SelectColumns) {
     bnlManager.brush(BrushingAction::Select, BrushingTarget::Column, selection);
     const auto brushed = bnlManager.getSelectedIndices(BrushingTarget::Column);
     EXPECT_EQ(brushed.size(), selection.size());
-    for (auto index : selection) {
+    for (const auto index : selection) {
         EXPECT_TRUE(brushed.contains(index));
     }
 

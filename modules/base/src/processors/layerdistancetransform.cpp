@@ -107,7 +107,7 @@ void LayerDistanceTransform::process() {
         [srcLayer = inport_.getData(), upsample = upsample, threshold = threshold_.get(),
          normalize = normalize_.get(), flip = flip_.get(), square = resultSquaredDist_.get(),
          scale = resultDistScale_.get()](pool::Progress progress) -> std::shared_ptr<Layer> {
-        auto dim = glm::max(srcLayer->getDimensions(), size2_t(1u));
+        const auto dim = glm::max(srcLayer->getDimensions(), size2_t(1u));
 
         auto layer = std::make_shared<Layer>(
             srcLayer->config().updateFrom({.dimensions = upsample * dim,
@@ -118,7 +118,8 @@ void LayerDistanceTransform::process() {
 
         util::layerDistanceTransform(srcLayer.get(), destRam, upsample, threshold, normalize, flip,
                                      square, scale, progress);
-        auto max = glm::compMax(util::layerMinMax(layer.get(), IgnoreSpecialValues::Yes).second);
+        const auto max =
+            glm::compMax(util::layerMinMax(layer.get(), IgnoreSpecialValues::Yes).second);
         layer->dataMap.dataRange = dvec2{0.0, max};
         layer->dataMap.valueRange = dvec2{0.0, max};
 

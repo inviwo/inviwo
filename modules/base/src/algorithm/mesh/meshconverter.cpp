@@ -53,7 +53,7 @@ std::unique_ptr<Mesh> toPointMesh(const Mesh& mesh) {
     res->setModelMatrix(mesh.getModelMatrix());
     res->setWorldMatrix(mesh.getWorldMatrix());
 
-    auto posIt = util::find_if(mesh.getBuffers(), [](const auto& buf) {
+    const auto posIt = util::find_if(mesh.getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::PositionAttrib;
     });
 
@@ -63,7 +63,7 @@ std::unique_ptr<Mesh> toPointMesh(const Mesh& mesh) {
 
     res->addBuffer(posIt->first, std::shared_ptr<BufferBase>(posIt->second->clone()));
 
-    auto colorIt = util::find_if(mesh.getBuffers(), [](const auto& buf) {
+    const auto colorIt = util::find_if(mesh.getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::ColorAttrib;
     });
     if (colorIt != mesh.getBuffers().end()) {
@@ -83,7 +83,7 @@ std::unique_ptr<Mesh> toLineMesh(const Mesh& mesh) {
     res->setModelMatrix(mesh.getModelMatrix());
     res->setWorldMatrix(mesh.getWorldMatrix());
 
-    auto posIt = util::find_if(mesh.getBuffers(), [](const auto& buf) {
+    const auto posIt = util::find_if(mesh.getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::PositionAttrib;
     });
 
@@ -93,7 +93,7 @@ std::unique_ptr<Mesh> toLineMesh(const Mesh& mesh) {
 
     res->addBuffer(posIt->first, std::shared_ptr<BufferBase>(posIt->second->clone()));
 
-    auto colorIt = util::find_if(mesh.getBuffers(), [](const auto& buf) {
+    const auto colorIt = util::find_if(mesh.getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::ColorAttrib;
     });
     if (colorIt != mesh.getBuffers().end()) {

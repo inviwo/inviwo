@@ -92,12 +92,12 @@ PixelToBufferProcessor::PixelToBufferProcessor()
 
 void PixelToBufferProcessor::process() {
     if (inport_.isChanged()) {
-        auto data = inport_.getData();
+        const auto data = inport_.getData();
         fromPixel_.setMaxValue(ivec2(data->getDimensions()) - 1);
         channel_.setMaxValue(static_cast<int>(data->getDataFormat()->getComponents()) - 1);
     }
 
-    double value =
+    const double value =
         inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>()->getAsNormalizedDVec4(
             fromPixel_.get())[channel_.get()];
 

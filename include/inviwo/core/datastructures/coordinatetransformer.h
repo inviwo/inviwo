@@ -103,8 +103,8 @@ constexpr auto generateTransforms(std::array<CoordinateSpace, N> spaces) {
     static_assert(N > 0);
     std::array<std::pair<CoordinateSpace, CoordinateSpace>, N * (N-1)> res;
     size_t count = 0;
-    for (auto from : spaces) {
-        for (auto to : spaces) {
+    for (auto const from : spaces) {
+        for (auto const to : spaces) {
             if (from != to) {
                 res[count].first = from;
                 res[count].second = to;

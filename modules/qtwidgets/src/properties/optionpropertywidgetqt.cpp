@@ -113,7 +113,7 @@ void OptionPropertyWidgetQt::optionChanged(int) {
 }
 
 void OptionPropertyWidgetQt::updateFromProperty() {
-    QSignalBlocker block{comboBox_};
+    const QSignalBlocker block{comboBox_};
 
     size_t i = 0;
     for (; i < std::min(property_->size(), static_cast<size_t>(comboBox_->count())); ++i) {

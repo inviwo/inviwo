@@ -140,7 +140,7 @@ using IndexBuffer = Buffer<std::uint32_t, BufferTarget::Index>;
 namespace util {
 
 inline std::shared_ptr<IndexBuffer> makeIndexBuffer(std::vector<std::uint32_t>&& data) {
-    auto indexBufferRAM =
+    const auto indexBufferRAM =
         std::make_shared<IndexBufferRAM>(std::vector<std::uint32_t>(std::move(data)));
     auto indices = std::make_shared<IndexBuffer>(indexBufferRAM);
     return indices;
@@ -149,7 +149,8 @@ inline std::shared_ptr<IndexBuffer> makeIndexBuffer(std::vector<std::uint32_t>&&
 template <typename T = vec3, BufferUsage U = BufferUsage::Static,
           BufferTarget Target = BufferTarget::Data>
 std::shared_ptr<Buffer<T, Target>> makeBuffer(std::vector<T>&& data) {
-    auto repr = std::make_shared<BufferRAMPrecision<T, Target>>(std::vector<T>(std::move(data)), U);
+    const auto repr =
+        std::make_shared<BufferRAMPrecision<T, Target>>(std::vector<T>(std::move(data)), U);
     auto buffer = std::make_shared<Buffer<T, Target>>(repr);
     return buffer;
 }

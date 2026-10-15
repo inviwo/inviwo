@@ -201,7 +201,7 @@ bool IntegralLineVectorToMesh::isSelected(const IntegralLine& line, uint32_t idx
 }
 
 void IntegralLineVectorToMesh::updateOptions() {
-    auto lines = lines_.getData();
+    const auto lines = lines_.getData();
     if (lines->size() == 0) return;
 
     std::vector<OptionPropertyStringOption> options = {{"constant", "constant color"}};
@@ -272,7 +272,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    auto updateVisibility = [&]() {
+    const auto updateVisibility = [&]() {
         for (auto& prop : getPropertiesByType<ColorByProperty>()) {
             prop->setVisible(prop->getKey() == colorBy_.getSelectedIdentifier());
         }
@@ -288,8 +288,8 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
             uint32_t idx = 0;
             const auto data = lines_.getData();
             for (auto& line : *data) {
-                util::OnScopeExit incIdx([&idx]() { idx++; });
-                auto size = line.getPositions().size();
+                const util::OnScopeExit incIdx([&idx]() { idx++; });
+                const auto size = line.getPositions().size();
                 if (size == 0) continue;
 
                 if (this->isFiltered(line, idx)) {
@@ -307,7 +307,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
                     }
                 }
             }
-            NetworkLock lock(getNetwork());
+            const NetworkLock lock(getNetwork());
             minMaxT_.setRangeMin(minT);
             minMaxT_.setRangeMax(maxT);
             minMaxT_.set(vec2(minT, maxT));
@@ -377,7 +377,7 @@ void IntegralLineVectorToMesh::process() {
     uint32_t lineIdx = 0;
     const auto data = lines_.getData();
     for (auto& line : *data) {
-        util::OnScopeExit incIdx([&lineIdx]() { lineIdx++; });
+        const util::OnScopeExit incIdx([&lineIdx]() { lineIdx++; });
         auto size = line.getPositions().size();
 
         if (size == 0 || isFiltered(line, lineIdx)) continue;
@@ -401,7 +401,7 @@ void IntegralLineVectorToMesh::process() {
             }
 
             if (colorByPort) {
-                auto colors = colors_.getData();
+                const auto colors = colors_.getData();
                 size_t index = 0;
                 if (colorByPortNumber) {
                     index = lineNumber;
@@ -418,7 +418,7 @@ void IntegralLineVectorToMesh::process() {
                 }
                 return colors->at(index);
             } else {
-                auto& mdValue = get<2>(sample);
+                const auto& mdValue = get<2>(sample);
                 double md = detail::norm(mdValue);
                 minMetaData = std::min(minMetaData, md);
                 maxMetaData = std::max(maxMetaData, md);
@@ -438,18 +438,18 @@ void IntegralLineVectorToMesh::process() {
             size_t pointIdx = 0;
             for (auto&& sample : util::zip(line.getPositions(), line.getMetaData<dvec3>("velocity"),
                                            mdContainter)) {
-                util::OnScopeExit incPointIdx([&pointIdx]() { pointIdx++; });
-                bool first = pointIdx <= 1;
-                bool last = pointIdx >= line.getPositions().size() - 2;
+                const util::OnScopeExit incPointIdx([&pointIdx]() { pointIdx++; });
+                const bool first = pointIdx <= 1;
+                const bool last = pointIdx >= line.getPositions().size() - 2;
                 // need to keep the two first and two last when using adjendency information
                 if (!first && !last && pointIdx % stride_.get() != 0) {
                     continue;
                 }
 
-                vec3 pos = get<0>(sample);
-                vec3 vel = get<1>(sample);
+                const vec3 pos = get<0>(sample);
+                const vec3 vel = get<1>(sample);
 
-                vec4 color = coloring(sample, line.getIndex(), lineIdx);
+                const vec4 color = coloring(sample, line.getIndex(), lineIdx);
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
                 vertices.push_back({pos, glm::normalize(vel), pos, color});
@@ -460,17 +460,17 @@ void IntegralLineVectorToMesh::process() {
                               const IntegralLine& line, auto mdContainter) {
             for (auto&& sample : util::zip(line.getPositions(), line.getMetaData<dvec3>("velocity"),
                                            mdContainter, line.getMetaData<dvec3>("vorticity"))) {
-                vec3 pos = get<0>(sample);
-                vec3 vel = get<1>(sample);
-                vec3 vor = get<3>(sample);
+                const vec3 pos = get<0>(sample);
+                const vec3 vel = get<1>(sample);
+                const vec3 vor = get<3>(sample);
 
-                vec4 color = coloring(sample, line.getIndex(), lineIdx);
+                const vec4 color = coloring(sample, line.getIndex(), lineIdx);
 
-                auto N = glm::normalize(glm::cross(vor, vel));
+                const auto N = glm::normalize(glm::cross(vor, vel));
 
-                auto off = glm::normalize(vor) * (ribbonWidth_.get() / 2.0f);
-                auto pos1 = pos - off;
-                auto pos2 = pos + off;
+                const auto off = glm::normalize(vor) * (ribbonWidth_.get() / 2.0f);
+                const auto pos1 = pos - off;
+                const auto pos2 = pos + off;
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
                 vertices.push_back({pos1, N, pos1, color});
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));

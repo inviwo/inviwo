@@ -255,7 +255,7 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
 
     const auto w = scene()->views().front();
     const auto size = utilqt::emToPx(w, 1.5);
-    auto img = [&](const auto& file) {
+    const auto img = [&](const auto& file) {
         QSvgRenderer renderer(utilqt::toQString(file));
         QImage image(size, size, QImage::Format_ARGB32);
         image.fill(0);
@@ -269,7 +269,7 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
 
     using A = utildoc::TableBuilder::ArrributeWrapper;
     using P = Document::PathComponent;
-    Document doc;
+    const Document doc;
     utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(A{{{"style", "color:white;"}, {"align", "right"}}, p1->getIdentifier()}, "",
        A{{{"style", "color:white;"}, {"align", "left"}}, p2->getIdentifier()});

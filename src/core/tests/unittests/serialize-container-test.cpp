@@ -115,7 +115,8 @@ TEST(SerialitionContainerTest, IdentifierFunctions) {
                                      },
                                  .onMove =
                                      [&](Item*& i, size_t newIndex) {
-                                         if (auto it = std::find(vector.begin(), vector.end(), i);
+                                         if (const auto it =
+                                                 std::find(vector.begin(), vector.end(), i);
                                              it != vector.end()) {
                                              Item* item = i;
                                              vector.erase(it);
@@ -173,7 +174,7 @@ TEST(SerialitionContainerTest, MapFunctions1) {
     serializer.serialize("Map", map, "Item");
     serializer.writeFile(ss);
 
-    std::string str = ss.str();
+    const std::string str = ss.str();
 
     map["a"] = 10;
     map.erase("b");
@@ -205,7 +206,7 @@ TEST(SerialitionContainerTest, MapFunctions2) {
     serializer.serialize("Map", map, "Item");
     serializer.writeFile(ss);
 
-    std::string str = ss.str();
+    const std::string str = ss.str();
 
     map[1] = "g";
     map.erase(2);

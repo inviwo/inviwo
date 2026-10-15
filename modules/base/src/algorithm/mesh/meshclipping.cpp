@@ -185,7 +185,8 @@ std::vector<std::vector<std::uint32_t>> gatherLoops(std::vector<glm::u32vec2>& e
                                                     const std::vector<vec3>& positions, float eps) {
     std::vector<std::vector<std::uint32_t>> loops;
 
-    auto findMatch = [eps, &positions](std::vector<glm::u32vec2>& edges, std::uint32_t index) {
+    const auto findMatch = [eps, &positions](std::vector<glm::u32vec2>& edges,
+                                             std::uint32_t index) {
         const auto it1 = std::find_if(edges.begin(), edges.end(), [&](glm::u32vec2 edge) {
             return glm::all(glm::equal(positions[edge[0]], positions[index], eps));
         });
@@ -337,7 +338,7 @@ void capHoles(std::vector<glm::u32vec2>& edges, const Plane& plane,
 }
 
 std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
-                                      std::shared_ptr<Mesh>& clippedMesh,
+                                      const std::shared_ptr<Mesh>& clippedMesh,
                                       const std::vector<uint32_t>& indices, const Plane& plane,
                                       const std::vector<vec3>& positions,
                                       const InterpolateFunctor& addInterpolatedVertex) {
@@ -345,8 +346,8 @@ std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
     std::vector<glm::u32vec2> newEdges;
 
     if (meshInfo.dt == DrawType::Points) {
-        auto outIndices = clippedMesh->addIndexBuffer(DrawType::Points, meshInfo.ct);
-        for (auto i : indices) {
+        const auto outIndices = clippedMesh->addIndexBuffer(DrawType::Points, meshInfo.ct);
+        for (const auto i : indices) {
             if (plane.isInside(positions[i])) {
                 outIndices->add(i);
             }
@@ -355,7 +356,8 @@ std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
     } else if (meshInfo.dt == DrawType::Lines) {
         if (meshInfo.ct == ConnectivityType::None) {
             if (indices.size() < 2) return {};
-            auto outIndices = clippedMesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
+            const auto outIndices =
+                clippedMesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
             for (unsigned int l = 0; l < indices.size() - 1; l += 2) {
                 const auto i1 = indices[l];
                 const auto i2 = indices[l + 1];
@@ -380,7 +382,7 @@ std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
             }
         } else if (meshInfo.ct == ConnectivityType::Adjacency) {
             if (indices.size() < 4) return newEdges;
-            auto outIndices =
+            const auto outIndices =
                 clippedMesh->addIndexBuffer(DrawType::Lines, ConnectivityType::Adjacency);
             for (unsigned int l = 0; l < indices.size() - 3; l += 4) {
 
@@ -461,7 +463,8 @@ std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
         }
     } else if (meshInfo.dt == DrawType::Triangles) {
         if (indices.size() < 3) return newEdges;
-        auto outIndices = clippedMesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+        const auto outIndices =
+            clippedMesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
 
         if (meshInfo.ct == ConnectivityType::Strip) {
             for (unsigned int t = 0; t < indices.size() - 2; ++t) {
@@ -513,7 +516,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
     for (const auto& item : mesh.getBuffers()) {
         const auto& bufferType = item.first;
         const auto& inBuffer = item.second;
-        auto functor =
+        const auto functor =
             inBuffer->getRepresentation<BufferRAM>()->dispatch<detail::InterpolateFunctor>(
                 [&clippedMesh, bufferType, &posBuffer](auto inRam) -> detail::InterpolateFunctor {
                     using PB = util::PrecisionType<decltype(inRam)>;
@@ -529,9 +532,9 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                     };
                     (void)mix;
 
-                    auto outRam =
+                    const auto outRam =
                         std::make_shared<BufferRAMPrecision<ValueType, PB::target>>(*inRam);
-                    auto outBuffer = std::make_shared<Buffer<ValueType, PB::target>>(outRam);
+                    const auto outBuffer = std::make_shared<Buffer<ValueType, PB::target>>(outRam);
                     clippedMesh->addBuffer(bufferType, outBuffer);
 
                     if constexpr (std::is_same_v<ValueType, vec3> &&
@@ -573,7 +576,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                                const std::vector<float>& weights,
                                std::optional<vec3> normal) -> uint32_t {
         uint32_t res = 0;
-        for (auto& fun : interpolateFunctors) res = fun(indices, weights, normal);
+        for (const auto& fun : interpolateFunctors) res = fun(indices, weights, normal);
         return res;
     };
 
@@ -603,7 +606,8 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
     }
 
     if (capClippedHoles && !newEdges.empty()) {
-        auto outIndices = clippedMesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+        const auto outIndices =
+            clippedMesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
         detail::capHoles(newEdges, plane, positions, outIndices->getDataContainer(),
                          addInterpolatedVertex);
     }

@@ -50,6 +50,6 @@ IVW_QTEDITOR_API void addProcessorAndConnect(const std::shared_ptr<Processor>& p
                                              ProcessorNetwork* net, Outport* outport);
 
 IVW_QTEDITOR_API void addProcessorAndConnect(const std::shared_ptr<Processor>& processor,
-                                             ProcessorNetwork* net, Processor* source);
+                                             ProcessorNetwork* net, const Processor* source);
 
 }  // namespace inviwo::utilqt

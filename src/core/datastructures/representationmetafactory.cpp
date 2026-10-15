@@ -39,7 +39,7 @@ bool RepresentationMetaFactory::registerObject(BaseRepresentationFactory* factor
 }
 
 bool RepresentationMetaFactory::unRegisterObject(BaseRepresentationFactory* factory) {
-    size_t removed =
+    const size_t removed =
         std::erase_if(map_, [factory](const auto& elem) { return elem.second == factory; });
 
     return removed > 0;

@@ -122,7 +122,7 @@ void PropertyEditorWidgetQt::moveEvent(QMoveEvent* event) {
 void PropertyEditorWidgetQt::getState(UnorderedStringMap<QVariant>& state) const {
     InviwoDockWidget::getState(state);
 
-    if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
+    if (const auto* mainWindow = utilqt::getApplicationMainWindow()) {
         state.emplace("dockarea", static_cast<int>(mainWindow->dockWidgetArea(
                                       const_cast<PropertyEditorWidgetQt*>(this))));
     }

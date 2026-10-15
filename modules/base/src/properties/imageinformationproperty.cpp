@@ -142,7 +142,7 @@ void ImageInformationProperty::updateForNewImage(const Image& image) {
         layers_.removeProperty(layers_.size() - 1);
     }
 
-    auto updateProperty = [](auto* prop, const Layer& layer, const std::string& name) {
+    const auto updateProperty = [](auto* prop, const Layer& layer, const std::string& name) {
         auto p = static_cast<LayerInformationProperty*>(prop);
         p->setDisplayName(name);
         p->updateForNewLayer(layer, util::OverwriteState::Yes);

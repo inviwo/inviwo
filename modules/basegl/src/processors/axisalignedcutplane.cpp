@@ -102,9 +102,9 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
 
     sliceShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
-    auto verticesBuffer =
+    const auto verticesBuffer =
         util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
-    auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
+    const auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
 
     mesh_.addBuffer(BufferType::PositionAttrib, verticesBuffer);
     mesh_.addBuffer(BufferType::TexCoordAttrib, verticesBuffer);
@@ -112,7 +112,7 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
 }
 
 void AxisAlignedCutPlane::process() {
-    auto volume = volume_.getData();
+    const auto volume = volume_.getData();
     const size3_t volDims = volume_.getData()->getDimensions();
 
     if (volume_.isChanged()) {

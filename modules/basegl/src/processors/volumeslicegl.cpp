@@ -355,7 +355,7 @@ void VolumeSliceGL::invokeEvent(Event* event) {
 }
 
 void VolumeSliceGL::modeChange() {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
 
     sliceX_.setReadOnly(true);
     sliceY_.setReadOnly(true);
@@ -488,7 +488,7 @@ void VolumeSliceGL::process() {
         }
     }
 
-    if (auto vol = inport_.getData();
+    if (const auto vol = inport_.getData();
         vol && tfGroup_.isChecked() &&
         channel_ >= static_cast<int>(vol->getDataFormat()->getComponents())) {
         throw Exception(SourceContext{},
@@ -502,9 +502,12 @@ void VolumeSliceGL::process() {
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, inport_);
 
-    utilgl::TexParameter wraps(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, volumeWrapping_.get());
-    utilgl::TexParameter wrapt(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, volumeWrapping_.get());
-    utilgl::TexParameter wrapr(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, volumeWrapping_.get());
+    const utilgl::TexParameter wraps(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_S,
+                                     volumeWrapping_.get());
+    const utilgl::TexParameter wrapt(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_T,
+                                     volumeWrapping_.get());
+    const utilgl::TexParameter wrapr(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_R,
+                                     volumeWrapping_.get());
 
     if (tfGroup_.isChecked()) {
         utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
@@ -543,24 +546,24 @@ void VolumeSliceGL::renderPositionIndicator() {
 
     MeshDrawerGL drawer(&meshCrossHair_);
 
-    utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
-    utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
+    const utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     indicatorShader_.activate();
     indicatorShader_.setUniform("dataToClip", mat4(1.0f));
 
-    utilgl::DepthFuncState depth(GL_ALWAYS);
+    const utilgl::DepthFuncState depth(GL_ALWAYS);
     drawer.draw();
     indicatorShader_.deactivate();
 }
 
 VolumeSliceGL::ColoredMesh2D VolumeSliceGL::createIndicatorMesh() {
     // indices for cross lines
-    auto indexBuf1 =
+    const auto indexBuf1 =
         util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, 8));
 
     // indices for box lines
-    auto indexBuf2 =
+    const auto indexBuf2 =
         util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 8, 12));
 
     ColoredMesh2D meshCrossHair(DrawType::Lines, ConnectivityType::None);
@@ -655,14 +658,14 @@ void VolumeSliceGL::shiftSlice(int shift) {
 void VolumeSliceGL::setVolPosFromScreenPos(vec2 pos) {
     if (!posPicking_.get()) return;  // position mode not enabled
 
-    vec3 planePos = convertScreenPosToVolume(pos);
+    const vec3 planePos = convertScreenPosToVolume(pos);
 
     invalidateMesh();
     planePosition_.set(vec3(planePos));
 }
 
 vec2 VolumeSliceGL::getScreenPosFromVolPos() {
-    vec2 pos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
+    const vec2 pos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
     return pos;
 }
 
@@ -691,7 +694,7 @@ void VolumeSliceGL::updateMaxSliceNumber() {
     if (!inport_.hasData()) {
         return;
     }
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
 
     const size3_t dims{inport_.getData()->getDimensions()};
     if (static_cast<int>(dims.x) != sliceX_.getMaxValue()) {
@@ -718,7 +721,7 @@ void VolumeSliceGL::updateMaxSliceNumber() {
 
 void VolumeSliceGL::eventShiftSlice(Event* event) {
     auto wheelEvent = static_cast<WheelEvent*>(event);
-    int steps = static_cast<int>(wheelEvent->delta().y);
+    const int steps = static_cast<int>(wheelEvent->delta().y);
     shiftSlice(steps);
     event->markAsUsed();
 }
@@ -740,7 +743,7 @@ void VolumeSliceGL::eventStepSliceDown(Event* event) {
 }
 
 void VolumeSliceGL::eventGestureShiftSlice(Event* event) {
-    GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
+    const GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
     if (gestureEvent->deltaPos().y < 0) {
         shiftSlice(1);
         event->markAsUsed();
@@ -758,14 +761,14 @@ void VolumeSliceGL::eventUpdateMousePos(Event* event) {
         return;
     }
 
-    auto volume = inport_.getData();
+    const auto volume = inport_.getData();
 
     // if position indicator is active, update volume sample from indicator position instead of
     // mouse position (this is done in process())
     if (!posPicking_.get()) {
         auto mouseEvent = static_cast<MouseEvent*>(event);
 
-        auto volPos = convertScreenPosToVolume(vec2(mouseEvent->posNormalized()), false);
+        const auto volPos = convertScreenPosToVolume(vec2(mouseEvent->posNormalized()), false);
         // convert normalized volume position to voxel coords
         const dmat4 textureToIndex(volume->getCoordinateTransformer().getTextureToIndexMatrix());
         const dvec4 texturePos(dvec3(volPos), 1.0);
@@ -773,8 +776,8 @@ void VolumeSliceGL::eventUpdateMousePos(Event* event) {
 
         const ivec3 volDim(volume->getDimensions());
 
-        bool outOfBounds = glm::any(glm::greaterThanEqual(indexPos, volDim)) ||
-                           glm::any(glm::lessThan(indexPos, ivec3(0)));
+        const bool outOfBounds = glm::any(glm::greaterThanEqual(indexPos, volDim)) ||
+                                 glm::any(glm::lessThan(indexPos, ivec3(0)));
         if (outOfBounds) {
             normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
             volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
@@ -790,7 +793,7 @@ void VolumeSliceGL::eventUpdateMousePos(Event* event) {
 
 void VolumeSliceGL::sliceChange() {
     if (!inport_.hasData() || updating_) return;
-    util::KeepTrueWhileInScope guard(&updating_);
+    const util::KeepTrueWhileInScope guard(&updating_);
 
     const dmat4 indexToTexture(
         inport_.getData()->getCoordinateTransformer().getIndexToTextureMatrix());
@@ -802,7 +805,7 @@ void VolumeSliceGL::sliceChange() {
         vec3(dvec3(indexToWorld * dvec4(sliceX_.get(), sliceY_.get(), sliceZ_.get(), 1.0)));
 
     {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         planePosition_.set(texturePos);
         worldPosition_.set(worldPos);
     }
@@ -810,7 +813,7 @@ void VolumeSliceGL::sliceChange() {
 
 void VolumeSliceGL::positionChange() {
     if (!inport_.hasData() || updating_) return;
-    util::KeepTrueWhileInScope guard(&updating_);
+    const util::KeepTrueWhileInScope guard(&updating_);
 
     const dmat4 textureToIndex(
         inport_.getData()->getCoordinateTransformer().getTextureToIndexMatrix());
@@ -822,7 +825,7 @@ void VolumeSliceGL::positionChange() {
     const vec3 worldPos = vec3(dvec3(textureToWorld * dvec4(dvec3(planePosition_.get()), 1.0)));
 
     {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         sliceX_.set(indexPos.x);
         sliceY_.set(indexPos.y);
         sliceZ_.set(indexPos.z);
@@ -859,7 +862,7 @@ void VolumeSliceGL::updateFromWorldPosition() {
     if (!inport_.hasData() || updating_) return;
 
     if (inport_.hasData()) {
-        util::KeepTrueWhileInScope guard(&updating_);
+        const util::KeepTrueWhileInScope guard(&updating_);
 
         const dmat4 worldToTexture(
             inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix());
@@ -871,7 +874,7 @@ void VolumeSliceGL::updateFromWorldPosition() {
         const ivec3 indexPos(ivec3(dvec3(worldToIndex * dvec4(dvec3(worldPosition_.get()), 1.0))) +
                              ivec3(1));
 
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         sliceX_.set(indexPos.x);
         sliceY_.set(indexPos.y);
         sliceZ_.set(indexPos.z);

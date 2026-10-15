@@ -82,10 +82,10 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
     for (auto& m : app->getModuleManager().getInviwoModules()) {
         modules.push_back(&m);
     }
-    auto order = util::ordering(modules, [](auto& a, auto& b) {
+    const auto order = util::ordering(modules, [](auto& a, auto& b) {
         return iCaseLess(a->getIdentifier(), b->getIdentifier());
     });
-    for (size_t i : order) {
+    for (const size_t i : order) {
         const auto& m = modules[i];
 
         auto& processors = m->getProcessors();
@@ -148,10 +148,10 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
     for (auto& m : app->getModuleManager().getInviwoModules()) {
         modules.push_back(&m);
     }
-    auto order = util::ordering(modules, [](auto& a, auto& b) {
+    const auto order = util::ordering(modules, [](auto& a, auto& b) {
         return iCaseLess(a->getIdentifier(), b->getIdentifier());
     });
-    for (size_t i : order) {
+    for (const size_t i : order) {
         const auto& module = modules[i];
         auto action = menu->addAction(utilqt::toQString(module->getIdentifier()));
 
@@ -165,7 +165,7 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                     const auto lname = toLower(utilqt::fromQString(name));
 
                     log::info("Creating regression test {}", lname);
-                    if (auto* module = app->getModuleByIdentifier(modulename)) {
+                    if (const auto* module = app->getModuleByIdentifier(modulename)) {
                         const auto regressiondir = module->getPath(ModulePath::RegressionTests);
                         const auto testdir = regressiondir / lname;
                         if (std::filesystem::is_directory(testdir)) {
@@ -283,7 +283,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         dialog.setAcceptMode(AcceptMode::Open);
 
         if (dialog.exec()) {
-            QString qpath = dialog.selectedFiles().at(0);
+            const QString qpath = dialog.selectedFiles().at(0);
             const auto path = utilqt::fromQString(qpath);
             try {
                 util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::Yes, []() {
@@ -306,7 +306,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         dialog.setAcceptMode(AcceptMode::Open);
 
         if (dialog.exec()) {
-            QString qpath = dialog.selectedFiles().at(0);
+            const QString qpath = dialog.selectedFiles().at(0);
             const auto path = utilqt::fromQString(qpath);
             try {
                 util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::No, []() {
@@ -327,7 +327,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
 
         for (auto&& key : factory->getKeyView()) {
             try {
-                auto processor = factory->createShared(key, app);
+                const auto processor = factory->createShared(key, app);
 
                 size_t indent = 0;
                 LambdaNetworkVisitor visitor{

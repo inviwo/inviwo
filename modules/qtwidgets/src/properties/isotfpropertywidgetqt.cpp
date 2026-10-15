@@ -144,13 +144,13 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
     auto importTF = importMenu->addAction("&TF...");
     auto importIso = importMenu->addAction("&Isovalues...");
     connect(importTF, &QAction::triggered, this, [this]() {
-        if (auto tf = util::importTransferFunctionDialog()) {
+        if (const auto tf = util::importTransferFunctionDialog()) {
             const NetworkLock lock{property_};
             isoTfProperty()->tf_.get() = *tf;
         }
     });
     connect(importIso, &QAction::triggered, this, [this]() {
-        if (auto iso = util::importIsoValueCollectionDialog()) {
+        if (const auto iso = util::importIsoValueCollectionDialog()) {
             const NetworkLock lock{property_};
             isoTfProperty()->isovalues_.get() = *iso;
         }

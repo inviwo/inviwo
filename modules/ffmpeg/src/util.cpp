@@ -47,7 +47,7 @@ std::vector<OptionPropertyOption<ffmpeg::CodecID>> codecsOptionsFor(
     opts.emplace_back("automatic", "Automatic", ffmpeg::CodecID{});
 
     if (outputFormat) {
-        for (auto& codecId : outputFormat.supportedCodecs(AVMEDIA_TYPE_VIDEO)) {
+        for (const auto& codecId : outputFormat.supportedCodecs(AVMEDIA_TYPE_VIDEO)) {
             opts.push_back(OptionPropertyOption<ffmpeg::CodecID>{
                 std::string(codecId.name()),
                 fmt::format("{} ({})", codecId.name(), codecId.longName().value_or("-")), codecId});

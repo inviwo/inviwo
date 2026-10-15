@@ -46,13 +46,13 @@ public:
 
 protected:
     virtual void SetUp() {
-        auto p1 = network.emplaceProcessor<VolumeSource>();
+        const auto p1 = network.emplaceProcessor<VolumeSource>();
         p1->setIdentifier("volumeSource");
 
-        auto p2 = network.emplaceProcessor<CubeProxyGeometry>();
+        const auto p2 = network.emplaceProcessor<CubeProxyGeometry>();
         p2->setIdentifier("cubeProxyGeometry");
 
-        auto p3 = network.emplaceProcessor<VolumeSliceExtractor>();
+        const auto p3 = network.emplaceProcessor<VolumeSliceExtractor>();
         p3->setIdentifier("volumeSlice");
 
         network.addConnection(p1->getOutport("data"), p2->getInport("volume"));
@@ -71,13 +71,13 @@ TEST_F(NetworkTest, Inititiate) {
 }
 
 TEST_F(NetworkTest, NetworkGetPropery) {
-    std::string_view path = "volumeSource.filename";
+    const std::string_view path = "volumeSource.filename";
     const Property* prop = network.getProperty(path);
     ASSERT_TRUE(prop != nullptr);
 }
 
 TEST_F(NetworkTest, NetworkGetSubPropery) {
-    std::string_view path = "volumeSource.Information.dimensions";
+    const std::string_view path = "volumeSource.Information.dimensions";
     const Property* prop = network.getProperty(path);
     ASSERT_TRUE(prop != nullptr);
 }
@@ -116,7 +116,7 @@ TEST_F(NetworkTest, ProcessorGetProperty) {
     const Processor* p = network.getProcessorByIdentifier("volumeSource");
     ASSERT_TRUE(p != nullptr);
 
-    std::string_view path = "Information.dimensions";
+    const std::string_view path = "Information.dimensions";
     const Property* prop = p->getPropertyByPath(path);
     ASSERT_TRUE(prop != nullptr);
 }

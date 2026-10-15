@@ -33,6 +33,6 @@
 
 namespace inviwo {
 
-void exposeTFPrimitiveSet(pybind11::module& m);
+void exposeTFPrimitiveSet(const pybind11::module& m);
 
 }  // namespace inviwo

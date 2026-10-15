@@ -64,7 +64,7 @@ public:
 
     decltype(auto) getFromIdentifier(std::string_view identifier) const {
         auto range = app_->getModuleManager().getInviwoModules();
-        auto it =
+        const auto it =
             std::ranges::find_if(range, [&](const auto& elem) { return id(elem) == identifier; });
         if (it != range.end()) {
             return *it;
@@ -112,7 +112,7 @@ public:
     std::string repr() const {
         std::stringstream ss;
         ss << "[";
-        auto joiner = util::make_ostream_joiner(ss, ", ");
+        const auto joiner = util::make_ostream_joiner(ss, ", ");
         auto range = app_->getModuleManager().getInviwoModules();
         std::ranges::transform(range, joiner, id);
         ss << "]";
@@ -123,7 +123,7 @@ private:
     InviwoApplication* app_;
 };
 
-void exposeModuleIdentifierWrapper(pybind11::module& m, const std::string& name) {
+void exposeModuleIdentifierWrapper(const pybind11::module& m, const std::string& name) {
     namespace py = pybind11;
 
     py::classh<ModuleIdentifierWrapper>(m, name.c_str())

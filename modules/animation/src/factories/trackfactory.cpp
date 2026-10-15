@@ -51,7 +51,7 @@ std::unique_ptr<Track> TrackFactory::create(std::string_view key) const {
 }
 
 std::unique_ptr<Track> TrackFactory::create(Property* property) const {
-    auto it = propertyToTrackMap_.find(property->getClassIdentifier());
+    const auto it = propertyToTrackMap_.find(property->getClassIdentifier());
     if (it != propertyToTrackMap_.end()) {
         if (auto track = create(it->second)) {
             if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
@@ -70,7 +70,7 @@ std::unique_ptr<Track> TrackFactory::create(Property* property) const {
 }
 
 std::unique_ptr<KeyframeSequence> TrackFactory::createSequence(std::string_view key) const {
-    auto it = this->map_.find(key);
+    const auto it = this->map_.find(key);
     if (it != end(this->map_)) {
         return it->second->createSequence();
     } else {
@@ -78,7 +78,7 @@ std::unique_ptr<KeyframeSequence> TrackFactory::createSequence(std::string_view 
     }
 }
 std::unique_ptr<Keyframe> TrackFactory::createKeyframe(std::string_view key) const {
-    auto it = this->map_.find(key);
+    const auto it = this->map_.find(key);
     if (it != end(this->map_)) {
         return it->second->createKeyframe();
     } else {

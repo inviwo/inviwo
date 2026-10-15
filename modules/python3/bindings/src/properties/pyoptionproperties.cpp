@@ -56,8 +56,8 @@ struct OptionPropertyHelper {
         using P = OptionProperty<T>;
         using O = OptionPropertyOption<T>;
 
-        auto classname = "OptionProperty" + Defaultvalues<T>::getName();
-        auto optionclassname = Defaultvalues<T>::getName() + "Option";
+        const auto classname = "OptionProperty" + Defaultvalues<T>::getName();
+        const auto optionclassname = Defaultvalues<T>::getName() + "Option";
 
         py::classh<O>(m, optionclassname.c_str())
             .def(py::init<>())

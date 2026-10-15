@@ -82,7 +82,7 @@ public:
 };
 #include <warn/pop>
 
-void exposeInviwoModule(pybind11::module& m) {
+void exposeInviwoModule(const pybind11::module& m) {
     namespace py = pybind11;
 
     py::classh<Version>(m, "Version")

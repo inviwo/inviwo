@@ -129,7 +129,7 @@ void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::uniqu
                                                     Seconds from, Seconds to, Result& out) const {
 
     if (to > from) {
-        auto it = std::upper_bound(
+        const auto it = std::upper_bound(
             keys.begin(), keys.end(), to,
             [](const auto& time, const auto& key) { return time < key->getTime(); });
 
@@ -140,7 +140,7 @@ void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::uniqu
         }
 
     } else {
-        auto it = std::lower_bound(
+        const auto it = std::lower_bound(
             keys.begin(), keys.end(), to,
             [](const auto& key, const auto& time) { return key->getTime() < time; });
 

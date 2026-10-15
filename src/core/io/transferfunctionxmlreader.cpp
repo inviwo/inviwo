@@ -51,7 +51,7 @@ void parseColorMapNode(TransferFunction& tf, TxElement* node) {
     const std::string colorspace = node->GetAttribute("space");
     const std::string colormapName = node->GetAttribute("name");
 
-    auto convert = [&, cs = toLower(colorspace)]() -> std::function<vec3(dvec3)> {
+    const auto convert = [&, cs = toLower(colorspace)]() -> std::function<vec3(dvec3)> {
         if ((cs == "lab") || (cs == "cielab")) {
             return [](dvec3 c) { return color::lab2rgb(vec3(c)); };
         } else if ((cs == "luv") || (cs == "cieluv")) {
@@ -119,10 +119,10 @@ std::shared_ptr<TransferFunction> TransferFunctionXMLReader::readData(
 
     // determine file size
     in.seekg(0, std::ios::end);
-    auto filesize = in.tellg();
+    const auto filesize = in.tellg();
     in.seekg(0, std::ios::beg);
 
-    std::string_view xmlHeader{"<?xml version=\"1.0\" standalone=\"yes\"?>"};
+    const std::string_view xmlHeader{"<?xml version=\"1.0\" standalone=\"yes\"?>"};
 
     std::string str;
     str.reserve(xmlHeader.size() + filesize + 1);

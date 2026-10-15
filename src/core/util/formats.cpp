@@ -166,7 +166,7 @@ const DataFormatBase* DataFormatBase::get(std::string_view name) {
         return res;
     }();
 
-    auto it = nameMap.find(name);
+    const auto it = nameMap.find(name);
     if (it != nameMap.end()) {
         return it->second;
     } else {

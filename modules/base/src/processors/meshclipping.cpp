@@ -131,7 +131,7 @@ MeshClipping::MeshClipping()
 
     addProperty(camera_);
 
-    auto onMovePointAlongNormalToggled = [this]() {
+    const auto onMovePointAlongNormalToggled = [this]() {
         planePoint_.setReadOnly(movePointAlongNormal_.get());
         pointPlaneMove_.set(0.f);
         previousPointPlaneMove_ = 0.f;
@@ -158,7 +158,7 @@ void MeshClipping::process() {
      */
     const auto normal =
         clipSide_.getSelectedValue() == ClipSide::Back ? planeNormal_.get() : -planeNormal_.get();
-    auto plane = std::make_shared<Plane>(planePoint_.get(), normal);
+    const auto plane = std::make_shared<Plane>(planePoint_.get(), normal);
 
     if (clippingEnabled_.get()) {
 
@@ -179,7 +179,7 @@ void MeshClipping::process() {
             }
             previousPointPlaneMove_ = pointPlaneMove_.get();
         }
-        if (auto clippedPlaneGeom =
+        if (const auto clippedPlaneGeom =
                 meshutil::clipMeshAgainstPlane(*inport_.getData(), *plane, capClippedHoles_)) {
             clippedPlaneGeom->setModelMatrix(inport_.getData()->getModelMatrix());
             clippedPlaneGeom->setWorldMatrix(inport_.getData()->getWorldMatrix());
@@ -199,7 +199,7 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
     // Calculate new plane point by finding the closest geometry point to the camera
     auto geom = inport_.getData();
 
-    auto it = util::find_if(geom->getBuffers(), [](const auto& buf) {
+    const auto it = util::find_if(geom->getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::PositionAttrib;
     });
     if (it == geom->getBuffers().end()) {
@@ -207,14 +207,14 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
         return;
     }
 
-    auto& camera = camera_.get();
-    auto direction = glm::normalize(camera.getDirection());
-    auto nearPos = camera.getLookFrom() + camera.getNearPlaneDist() * direction;
+    const auto& camera = camera_.get();
+    const auto direction = glm::normalize(camera.getDirection());
+    const auto nearPos = camera.getLookFrom() + camera.getNearPlaneDist() * direction;
     // Transform coordinates to data space
-    auto worldToData = geom->getCoordinateTransformer().getWorldToDataMatrix();
-    auto worldToDataNormal = glm::transpose(glm::inverse(worldToData));
-    auto dataSpacePos = vec3(worldToData * dvec4(nearPos, 1.0));
-    auto dataSpaceNormal = glm::normalize(vec3(worldToDataNormal * dvec4(direction, 0.0)));
+    const auto worldToData = geom->getCoordinateTransformer().getWorldToDataMatrix();
+    const auto worldToDataNormal = glm::transpose(glm::inverse(worldToData));
+    const auto dataSpacePos = vec3(worldToData * dvec4(nearPos, 1.0));
+    const auto dataSpaceNormal = glm::normalize(vec3(worldToDataNormal * dvec4(direction, 0.0)));
     // Plane start/end position based on distance to camera near plane
     Plane nearPlane(dataSpacePos, dataSpaceNormal);
 
@@ -225,7 +225,7 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
         ram->dispatch<void, dispatching::filter::Float3s>([&](auto pb) -> void {
             const auto& vertexList = pb->getDataContainer();
             // Get closest and furthest vertex with respect to the camera near plane
-            auto minMaxVertices =
+            const auto minMaxVertices =
                 std::minmax_element(std::begin(vertexList), std::end(vertexList),
                                     [&nearPlane](const auto& a, const auto& b) {
                                         // Use max(0, dist) to make sure we do not consider vertices
@@ -233,19 +233,20 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
                                         return std::max(0.f, nearPlane.distance(a)) <
                                                std::max(0.f, nearPlane.distance(b));
                                     });
-            auto minDist = nearPlane.distance(*minMaxVertices.first);
-            auto maxDist = nearPlane.distance(*minMaxVertices.second);
+            const auto minDist = nearPlane.distance(*minMaxVertices.first);
+            const auto maxDist = nearPlane.distance(*minMaxVertices.second);
 
-            auto closestVertex = minDist * nearPlane.getNormal() + nearPlane.getPoint();
-            auto farVertex = maxDist * nearPlane.getNormal() + nearPlane.getPoint();
-            auto closestWorldSpacePos =
+            const auto closestVertex = minDist * nearPlane.getNormal() + nearPlane.getPoint();
+            const auto farVertex = maxDist * nearPlane.getNormal() + nearPlane.getPoint();
+            const auto closestWorldSpacePos =
                 vec3(geom->getCoordinateTransformer().getDataToWorldMatrix() *
                      dvec4(dvec3(closestVertex), 1.0));
-            auto farWorldSpacePos = vec3(geom->getCoordinateTransformer().getDataToWorldMatrix() *
-                                         dvec4(dvec3(farVertex), 1.0));
-            auto range = glm::abs((farWorldSpacePos - closestWorldSpacePos));
-            auto minVal = glm::min(closestWorldSpacePos, farWorldSpacePos);
-            auto maxVal = glm::max(closestWorldSpacePos, farWorldSpacePos);
+            const auto farWorldSpacePos =
+                vec3(geom->getCoordinateTransformer().getDataToWorldMatrix() *
+                     dvec4(dvec3(farVertex), 1.0));
+            const auto range = glm::abs((farWorldSpacePos - closestWorldSpacePos));
+            const auto minVal = glm::min(closestWorldSpacePos, farWorldSpacePos);
+            const auto maxVal = glm::max(closestWorldSpacePos, farWorldSpacePos);
             planePoint_.set(closestWorldSpacePos, minVal, maxVal, range * 0.1f);
             pointPlaneMove_.setMaxValue(glm::distance(farWorldSpacePos, closestWorldSpacePos));
         });

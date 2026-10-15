@@ -76,7 +76,7 @@ void NetworkAnnotation::serialize(Serializer& s) const {
 }
 
 void NetworkAnnotation::deserialize(Deserializer& d) {
-    if (auto value = d.attribute("title"); value.has_value()) {
+    if (const auto value = d.attribute("title"); value.has_value()) {
         title = value;
     } else {
         title.reset();
@@ -93,7 +93,7 @@ void NetworkAnnotation::deserialize(Deserializer& d) {
 
 void NetworkAnnotation::addProcessors(const std::vector<Processor*>& selection) {
     const auto dist = std::distance(processors.begin(), processors.end());
-    for (auto* p : selection) {
+    for (const auto* p : selection) {
         if (!std::ranges::contains(processors.begin(), processors.begin() + dist,
                                    p->getIdentifier())) {
             processors.emplace_back(p->getIdentifier());
@@ -102,8 +102,9 @@ void NetworkAnnotation::addProcessors(const std::vector<Processor*>& selection) 
 }
 
 void NetworkAnnotation::removeProcessors(const std::vector<Processor*>& selection) {
-    for (auto* p : selection) {
-        if (auto it = std::ranges::find(processors, p->getIdentifier()); it != processors.end()) {
+    for (const auto* p : selection) {
+        if (const auto it = std::ranges::find(processors, p->getIdentifier());
+            it != processors.end()) {
             processors.erase(it);
         }
     }

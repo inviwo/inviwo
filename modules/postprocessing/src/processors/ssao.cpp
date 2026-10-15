@@ -197,7 +197,7 @@ SSAO::SSAO()
 
         if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
             swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
-            auto dim = outport_.getData()->getDimensions();
+            const auto dim = outport_.getData()->getDimensions();
             Image* img = new Image(dim, format);
             img->copyMetaDataFrom(*inport_.getData());
             // forward swizzle mask of the input
@@ -263,8 +263,8 @@ void SSAO::process() {
         return;
     }
 
-    int width = static_cast<int>(outport_.getDimensions().x);
-    int height = static_cast<int>(outport_.getDimensions().y);
+    const int width = static_cast<int>(outport_.getDimensions().x);
+    const int height = static_cast<int>(outport_.getDimensions().y);
 
     if (framebuffers_.width != width || framebuffers_.height != height) {
         initFramebuffers(width, height);
@@ -287,16 +287,16 @@ void SSAO::process() {
 
     auto imageGL = inport_.getData()->getRepresentation<ImageGL>();
     auto depthLayer = imageGL->getDepthLayerGL();
-    auto depthTex = depthLayer->getTexture()->getID();
+    const auto depthTex = depthLayer->getTexture()->getID();
 
     auto outImageGL = outport_.getEditableData()->getRepresentation<ImageGL>();
-    auto outFbo = outImageGL->getFBO()->getID();
+    const auto outFbo = outImageGL->getFBO()->getID();
 
     if (technique_.get() == 1) {
         // This geometry is actually never used, but a valid VAO and VBO is required to kick off the
         // drawcalls
         auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-        utilgl::Enable<MeshGL> enable(rect);
+        const utilgl::Enable<MeshGL> enable(rect);
         drawHbaoClassic(outFbo, depthTex, projParam_, width, height);
     }
 }
@@ -307,16 +307,16 @@ void SSAO::initHbao() {
     std::mt19937 gen;
     std::uniform_real_distribution<float> uni_float(0.f, 1.f);
 
-    auto random = [&gen, &uni_float]() -> float { return uni_float(gen); };
+    const auto random = [&gen, &uni_float]() -> float { return uni_float(gen); };
 
     signed short hbaoRandomShort[HBAO_RANDOM_ELEMENTS * MAX_SAMPLES * 4];
 
     for (int i = 0; i < HBAO_RANDOM_ELEMENTS * MAX_SAMPLES; i++) {
-        float rand1 = random();
-        float rand2 = random();
+        const float rand1 = random();
+        const float rand2 = random();
 
         // Use random rotation angles in [0,2PI/NUM_DIRECTIONS)
-        float angle = 2.f * glm::pi<float>() * rand1 / numDir;
+        const float angle = 2.f * glm::pi<float>() * rand1 / numDir;
         hbaoRandom[i].x = glm::cos(angle);
         hbaoRandom[i].y = glm::sin(angle);
         hbaoRandom[i].z = rand2;
@@ -362,7 +362,7 @@ void SSAO::initFramebuffers(int width, int height) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 #if USE_AO_SPECIAL_BLUR
-    GLenum formatAO = GL_RG16F;
+    const GLenum formatAO = GL_RG16F;
     const std::array<GLenum, 4> swizzle{GL_RED, GL_GREEN, GL_ZERO, GL_ZERO};
 #else
     GLenum formatAO = GL_R8;
@@ -396,7 +396,7 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
     // projection
     const float* P = &proj.matrix[0][0];
 
-    vec4 projInfoPerspective{
+    const vec4 projInfoPerspective{
         2.0f / (P[4 * 0 + 0]),                  // (x) * (R - L)/N
         2.0f / (P[4 * 1 + 1]),                  // (y) * (T - B)/N
         -(1.0f - P[4 * 2 + 0]) / P[4 * 0 + 0],  // L/N
@@ -410,7 +410,7 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
         -(1.0f - P[4 * 3 + 1]) / P[4 * 1 + 1],  // B
     };
 
-    int useOrtho = proj.ortho ? 1 : 0;
+    const int useOrtho = proj.ortho ? 1 : 0;
     hbaoUboData_.projOrtho = useOrtho;
     hbaoUboData_.projInfo = useOrtho ? projInfoOrtho : projInfoPerspective;
 
@@ -422,8 +422,8 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
     }
 
     // radius
-    float meters2viewspace = 1.0f;
-    float R = radius_.get() * meters2viewspace;
+    const float meters2viewspace = 1.0f;
+    const float R = radius_.get() * meters2viewspace;
     hbaoUboData_.R2 = R * R;
     hbaoUboData_.NegInvR2 = -1.0f / hbaoUboData_.R2;
     hbaoUboData_.RadiusToScreen = R * 0.5f * projScale;
@@ -434,8 +434,8 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
     hbaoUboData_.AOMultiplier = 1.0f / (1.0f - hbaoUboData_.NDotVBias);
 
     // resolution
-    int quarterWidth = ((width + 3) / 4);
-    int quarterHeight = ((height + 3) / 4);
+    const int quarterWidth = ((width + 3) / 4);
+    const int quarterHeight = ((height + 3) / 4);
 
     hbaoUboData_.InvQuarterResolution =
         vec2(1.0f / float(quarterWidth), 1.0f / float(quarterHeight));
@@ -472,7 +472,7 @@ void SSAO::drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
     glColorMask(1, 1, 1, 0);
 
-    auto blur = enableBlur_.get();
+    const auto blur = enableBlur_.get();
 
     if (blur) {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffers_.hbaoCalc);
@@ -525,8 +525,8 @@ void SSAO::drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam
 }
 
 void SSAO::drawHbaoBlur(GLuint fboOut, const ProjectionParam& /*proj*/, int width, int height) {
-    auto meters2viewspace = 1.0f;
-    auto sharpness = blurSharpness_.get();
+    const auto meters2viewspace = 1.0f;
+    const auto sharpness = blurSharpness_.get();
 
     glDrawBuffer(GL_COLOR_ATTACHMENT1);
 

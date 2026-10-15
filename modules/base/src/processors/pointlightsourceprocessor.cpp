@@ -160,7 +160,7 @@ void PointLightSourceProcessor::updatePointLightSource(PointLight* lightSource) 
     const vec3 lightPos = lightPosition_.get(CoordinateSpace::World);
     const vec3 dir = -lightPosition_.getDirection(CoordinateSpace::World);
 
-    mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
+    const mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
     // Offset by 0.5 to get to texture coordinates
     lightSource->setModelMatrix(glm::translate(vec3(0.5f)));
     lightSource->setWorldMatrix(transformationMatrix);
@@ -300,7 +300,7 @@ void PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& norma
         lightPosition_->updatePosition(
             glm::normalize(rayOrigin + res.second * rayDir) * lightRadius, CoordinateSpace::World);
     } else {
-        auto res2 = rayPlaneIntersection(
+        const auto res2 = rayPlaneIntersection(
             camera_->getLookTo(), glm::normalize(camera_->getLookTo() - camera_->getLookFrom()),
             rayOrigin, rayDir, 0.0, std::numeric_limits<double>::max());
         if (res2.first) {

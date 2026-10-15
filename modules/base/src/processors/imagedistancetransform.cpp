@@ -128,7 +128,7 @@ void ImageDistanceTransform::process() {
         util::layerDistanceTransform(image->getColorLayer(), dstRepr, upsample, threshold,
                                      normalize, flip, square, scale, progress);
 
-        auto max = glm::compMax(util::layerMinMax(dstRepr, IgnoreSpecialValues::Yes).second);
+        const auto max = glm::compMax(util::layerMinMax(dstRepr, IgnoreSpecialValues::Yes).second);
         dstImage->getColorLayer()->dataMap.dataRange = dvec2{0.0, max};
         dstImage->getColorLayer()->dataMap.valueRange = dvec2{0.0, max};
 

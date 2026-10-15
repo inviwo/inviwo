@@ -127,7 +127,7 @@ void WaveFrontWriter::writePrimitives(std::ostream& f, const Mesh::MeshInfo& inf
     } else if (info.dt == DrawType::Points) {
         auto& ram = indices.getRAMRepresentation()->getDataContainer();
         fmt::print(f, "p ");
-        for (auto i : ram) fmt::print(f, "{} ", i + 1);
+        for (const auto i : ram) fmt::print(f, "{} ", i + 1);
         fmt::print(f, "\n");
     }
 }
@@ -209,7 +209,7 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
     if (data->getIndexBuffers().empty()) {
         std::vector<std::uint32_t> indices(data->getBuffer(0)->getSize());
         std::iota(indices.begin(), indices.end(), 0);
-        auto ib = IndexBuffer(std::make_shared<IndexBufferRAM>(std::move(indices)));
+        const auto ib = IndexBuffer(std::make_shared<IndexBufferRAM>(std::move(indices)));
         writePrimitives(f, data->getDefaultMeshInfo(), ib, hasNormals, hasTextures);
     }
 }

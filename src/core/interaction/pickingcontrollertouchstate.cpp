@@ -92,10 +92,10 @@ bool isPressed(const TouchPoint& point, const TouchDevice::DeviceType& deviceTyp
     }
 }
 
-PickingPressItem touchToPressItems(TouchEvent* e, const std::vector<TouchPoint>& points) {
+PickingPressItem touchToPressItems(const TouchEvent* e, const std::vector<TouchPoint>& points) {
     if (e->getDevice()->getType() == TouchDevice::DeviceType::TouchPad) {
         // Possible to press touchpads
-        auto nPressed = std::accumulate(
+        const auto nPressed = std::accumulate(
             points.begin(), points.end(), 0u, [](size_t v, const auto& p) -> size_t {
                 return v + (p.state() == TouchState::Stationary ? 1 : 0);
             });
@@ -298,7 +298,7 @@ PickingControllerTouchState::~PickingControllerTouchState() = default;
 void PickingControllerTouchState::propagateEvent(TouchEvent* e, EventPropagator* propagator,
                                                  size_t globalId) {
     const auto points = e->touchPoints();
-    auto ps = TouchEvent::getPickingState(points);
+    const auto ps = TouchEvent::getPickingState(points);
     switch (ps) {
         case PickingState::None: break;
         case PickingState::Started:

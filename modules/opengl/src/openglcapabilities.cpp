@@ -126,7 +126,7 @@ void OpenGLCapabilities::printInfo() {
     log::info("GPU Vendor: {}", glVendorStr_);
     log::info("GPU Renderer: {}", glRenderStr_);
     if (isTexturesSupported()) {
-        auto totalMem = getTotalAvailableTextureMem();
+        const auto totalMem = getTotalAvailableTextureMem();
         log::info("Dedicated video memory: {}",
                   (totalMem > 0 ? util::formatBytesToString(totalMem) : "UNKNOWN"));
     }
@@ -189,10 +189,10 @@ void OpenGLCapabilities::printDetailedInfo() {
 
     if (isTexturesSupported()) {
         log::info("Max number of texture units: {}", getNumTexUnits());
-        auto totalMem = getTotalAvailableTextureMem();
+        const auto totalMem = getTotalAvailableTextureMem();
         log::info("Total available texture memory: {}",
                   (totalMem > 0 ? fmt::to_string(ByteSize{totalMem}) : "UNKNOWN"));
-        auto curMem = getCurrentAvailableTextureMem();
+        const auto curMem = getCurrentAvailableTextureMem();
         log::info("Current available texture memory: {}",
                   (curMem > 0 ? fmt::to_string(ByteSize{curMem}) : "UNKNOWN"));
     }
@@ -394,7 +394,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         glslVersionStr_ = std::string(
             (glslStrByte != nullptr ? reinterpret_cast<const char*>(glslStrByte) : "000"));
         glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &numberOfSupportedVersions);
-        int glslVersion = parseAndRetrieveVersion(glslVersionStr_);
+        const int glslVersion = parseAndRetrieveVersion(glslVersionStr_);
 
         for (int i = 0; i < numberOfSupportedVersions; i++) {
             parseAndAddShaderVersion(toString(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)),
@@ -413,7 +413,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
 
         glslVersionStr_ = std::string(
             (glslStrByte != nullptr ? reinterpret_cast<const char*>(glslStrByte) : "000"));
-        int glslVersion = parseAndRetrieveVersion(glslVersionStr_);
+        const int glslVersion = parseAndRetrieveVersion(glslVersionStr_);
 
         if (glslVersion != 0) {
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(440, "core"), glslVersion);

@@ -69,7 +69,7 @@ void BaseOrdinalSpinBoxWidget::setWrapping(bool wrap) { editor_->setWrapping(wra
 bool BaseOrdinalSpinBoxWidget::wrapping() const { return editor_->wrapping(); }
 
 void BaseOrdinalSpinBoxWidget::updateEditor() {
-    QSignalBlocker block{editor_};
+    const QSignalBlocker block{editor_};
     editor_->setRange(minimumValue(), maximumValue());
     editor_->setValue(transformValueToEditor());
     editor_->setSingleStep(increment());
@@ -89,12 +89,12 @@ void BaseOrdinalSpinBoxWidget::applyValue() {
 }
 
 void BaseOrdinalSpinBoxWidget::applyRange() {
-    QSignalBlocker block{editor_};
+    const QSignalBlocker block{editor_};
     editor_->setRange(minimumValue(), maximumValue());
 }
 
 void BaseOrdinalSpinBoxWidget::applyIncrement() {
-    QSignalBlocker block{editor_};
+    const QSignalBlocker block{editor_};
     editor_->setSingleStep(increment());
     editor_->setDecimals(spinnerDecimals());
 }

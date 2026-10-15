@@ -152,11 +152,12 @@ void MeshRenderProcessorGL::initializeResources() {
     frag->setShaderDefine("ENABLE_TEXTURING", hadTextureData_ && texture_.texture);
 
     // get a hold of the current output data
-    auto prevData = outport_.getData();
-    auto numLayers = static_cast<std::size_t>(layerID - 1);  // Don't count picking
+    const auto prevData = outport_.getData();
+    const auto numLayers = static_cast<std::size_t>(layerID - 1);  // Don't count picking
     if (prevData->getNumberOfColorLayers() != numLayers) {
         // create new image with matching number of layers
-        auto image = std::make_shared<Image>(prevData->getDimensions(), prevData->getDataFormat());
+        const auto image =
+            std::make_shared<Image>(prevData->getDimensions(), prevData->getDataFormat());
         // update number of layers
         for (auto i = image->getNumberOfColorLayers(); i < numLayers; ++i) {
             image->addColorLayer(std::shared_ptr<Layer>(image->getColorLayer(0)->clone()));

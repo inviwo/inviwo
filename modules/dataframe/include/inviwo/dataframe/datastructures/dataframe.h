@@ -301,7 +301,7 @@ struct DataTraits<DataFrame> {
         // abbreviate list of columns if there are more than 20
         const size_t ncols = (data.getNumberOfColumns() > 20) ? 10 : data.getNumberOfColumns();
 
-        auto range = [](const Column* col) {
+        const auto range = [](const Column* col) {
             if (col->getCustomRange()) {
                 return fmt::to_string(*col->getCustomRange());
             } else {
@@ -312,7 +312,7 @@ struct DataTraits<DataFrame> {
         bool inconsistenRowCount = false;
         for (size_t i = 0; i < ncols; i++) {
             inconsistenRowCount |= (data.getColumn(i)->getSize() != rowCount);
-            if (auto col_c =
+            if (const auto col_c =
                     std::dynamic_pointer_cast<const CategoricalColumn>(data.getColumn(i))) {
                 tb2(std::to_string(i + 1), "categorical", col_c->getBuffer()->getSize(),
                     col_c->getHeader(), range(col_c.get()));

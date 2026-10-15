@@ -42,8 +42,8 @@ namespace inviwo {
 
 namespace detail {
 
-IVW_CORE_API void updateMetaData(ListProperty& metadata, const MetaDataOwner& data);
-IVW_CORE_API void clearMetaData(ListProperty& metadata);
+IVW_CORE_API void updateMetaData(const ListProperty& metadata, const MetaDataOwner& data);
+IVW_CORE_API void clearMetaData(const ListProperty& metadata);
 IVW_CORE_API std::vector<std::unique_ptr<Property>> createPrefabs();
 
 }  // namespace detail
@@ -89,7 +89,7 @@ MetaDataProcessor<T, TInport, TOutport>::MetaDataProcessor()
     addProperties(metadata_);
 
     const auto updateMeta = [this]() {
-        if (auto data = inport_.getData()) {
+        if (const auto data = inport_.getData()) {
             detail::updateMetaData(metadata_, *data);
         } else {
             detail::clearMetaData(metadata_);
@@ -105,7 +105,7 @@ template <typename T, typename TInport, typename TOutport>
     requires std::derived_from<T, MetaDataOwner>
 void MetaDataProcessor<T, TInport, TOutport>::process() {
     if (inport_.isChanged()) {
-        if (auto data = inport_.getData()) {
+        if (const auto data = inport_.getData()) {
             detail::updateMetaData(metadata_, *data);
         } else {
             detail::clearMetaData(metadata_);
@@ -117,7 +117,7 @@ void MetaDataProcessor<T, TInport, TOutport>::process() {
 template <typename T, typename TInport, typename TOutport>
     requires std::derived_from<T, MetaDataOwner>
 void MetaDataProcessor<T, TInport, TOutport>::onSetDisplayName(Property*, const std::string&) {
-    if (auto data = inport_.getData()) {
+    if (const auto data = inport_.getData()) {
         detail::updateMetaData(metadata_, *data);
     } else {
         detail::clearMetaData(metadata_);

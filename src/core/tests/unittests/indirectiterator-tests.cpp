@@ -52,7 +52,7 @@ TEST(IndirectIteratorTest, Pair) {
 
     {
         auto b = util::makeIndirectIterator(vec.begin());
-        auto e = util::makeIndirectIterator(vec.end());
+        const auto e = util::makeIndirectIterator(vec.end());
         auto rb = ref.begin();
         for (; b != e; ++b, ++rb) {
             EXPECT_EQ(*b, *rb);
@@ -61,14 +61,14 @@ TEST(IndirectIteratorTest, Pair) {
 
     {
         auto b = util::makeIndirectIterator(vec.begin());
-        auto e = util::makeIndirectIterator(vec.end());
+        const auto e = util::makeIndirectIterator(vec.end());
         for (; b != e; ++b) {
             *b += 10;
         }
     }
     {
         auto b = util::makeIndirectIterator(vec.begin());
-        auto e = util::makeIndirectIterator(vec.end());
+        const auto e = util::makeIndirectIterator(vec.end());
         auto rb = ref.begin();
         for (; b != e; ++b, ++rb) {
             EXPECT_EQ(*b, *rb + 10);
@@ -77,7 +77,7 @@ TEST(IndirectIteratorTest, Pair) {
 
     {
         auto b = util::makeIndirectIterator(cvec.begin());
-        auto e = util::makeIndirectIterator(cvec.end());
+        const auto e = util::makeIndirectIterator(cvec.end());
         auto rb = ref.begin();
         for (; b != e; ++b, ++rb) {
             EXPECT_EQ(*b, *rb + 10);
@@ -86,7 +86,7 @@ TEST(IndirectIteratorTest, Pair) {
 
     {
         auto b = util::makeIndirectIterator<false>(cvec.begin());
-        auto e = util::makeIndirectIterator<false>(cvec.end());
+        const auto e = util::makeIndirectIterator<false>(cvec.end());
         for (; b != e; ++b) {
             *b += 10;
         }
@@ -94,7 +94,7 @@ TEST(IndirectIteratorTest, Pair) {
 
     {
         auto b = util::makeIndirectIterator(cvec.begin());
-        auto e = util::makeIndirectIterator(cvec.end());
+        const auto e = util::makeIndirectIterator(cvec.end());
         auto rb = ref.begin();
         for (; b != e; ++b, ++rb) {
             EXPECT_EQ(*b, *rb + 20);
@@ -102,35 +102,35 @@ TEST(IndirectIteratorTest, Pair) {
     }
 
     {
-        auto b = util::makeIndirectIterator(vec.begin());
+        const auto b = util::makeIndirectIterator(vec.begin());
         static_assert(std::is_assignable<decltype(*b), int>::value);
     }
     {
-        auto b = util::makeIndirectIterator(cvec.begin());
+        const auto b = util::makeIndirectIterator(cvec.begin());
         static_assert(!std::is_assignable<decltype(*b), int>::value);
     }
     {
-        auto b = util::makeIndirectIterator(vec.cbegin());
+        const auto b = util::makeIndirectIterator(vec.cbegin());
         static_assert(!std::is_assignable<decltype(*b), int>::value);
     }
     {
-        auto b = util::makeIndirectIterator(cvec.cbegin());
+        const auto b = util::makeIndirectIterator(cvec.cbegin());
         static_assert(!std::is_assignable<decltype(*b), int>::value);
     }
     {
-        auto b = util::makeIndirectIterator<false>(vec.begin());
+        const auto b = util::makeIndirectIterator<false>(vec.begin());
         static_assert(std::is_assignable<decltype(*b), int>::value);
     }
     {
-        auto b = util::makeIndirectIterator<false>(cvec.begin());
+        const auto b = util::makeIndirectIterator<false>(cvec.begin());
         static_assert(std::is_assignable<decltype(*b), int>::value);
     }
     {
-        auto b = util::makeIndirectIterator<false>(vec.cbegin());
+        const auto b = util::makeIndirectIterator<false>(vec.cbegin());
         static_assert(std::is_assignable<decltype(*b), int>::value);
     }
     {
-        auto b = util::makeIndirectIterator<false>(cvec.cbegin());
+        const auto b = util::makeIndirectIterator<false>(cvec.cbegin());
         static_assert(std::is_assignable<decltype(*b), int>::value);
     }
 }
@@ -145,7 +145,7 @@ TEST(IndirectIteratorTest, Conversion) {
         vec.push_back(std::make_unique<int>(i));
     }
 
-    iterator it = util::makeIndirectIterator(vec.begin());
+    const iterator it = util::makeIndirectIterator(vec.begin());
 
     EXPECT_EQ(constFun(it), 0);
 }

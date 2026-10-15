@@ -137,7 +137,7 @@ bool xml::findMatchingSubPropertiesForComposites(
     bool res = false;
     for (auto& prop : props) {
         if (!xml::hasProp(pelm[0], *prop)) {
-            bool foundMatchingComposite = xml::copyMatchingCompositeProperty(pelm[0], *prop);
+            const bool foundMatchingComposite = xml::copyMatchingCompositeProperty(pelm[0], *prop);
             bool foundSubProp = false;
             if (!foundMatchingComposite) {
                 foundSubProp = xml::copyMatchingSubPropsIntoComposite(pelm[0], *prop);
@@ -243,7 +243,7 @@ void util::changePropertyType(Deserializer& d,
                               std::vector<std::pair<const Property*, std::string>> rules) {
     NodeVersionConverter vc([&rules](TxElement* node) {
         bool didChanges = false;
-        for (auto rule : rules) {
+        for (const auto rule : rules) {
             TxElement* p = xml::getElement(
                 node, fmt::format("Properties/Property&type={}&identifier={}",
                                   rule.first->getClassIdentifier(), rule.first->getIdentifier()));
@@ -333,8 +333,8 @@ bool xml::changeAttributeRecursive(TxElement* node, const std::vector<Kind>& pat
 xml::Kind::Kind(const std::string& name, const std::string& list, const std::string& type)
     : name_(name), list_(list), type_(type) {
 
-    ElementMatcher m1 = {list_, {}};
-    ElementMatcher m2 = {name_, {{"type", type_}}};
+    const ElementMatcher m1 = {list_, {}};
+    const ElementMatcher m2 = {name_, {{"type", type_}}};
 
     matchers_.push_back(m1);
     matchers_.push_back(m2);
@@ -342,7 +342,7 @@ xml::Kind::Kind(const std::string& name, const std::string& list, const std::str
 
 xml::Kind xml::Kind::processor(const std::string& type) {
     Kind kind("Processor", "Processors", type);
-    ElementMatcher m = {"ProcessorNetwork", {}};
+    const ElementMatcher m = {"ProcessorNetwork", {}};
     kind.matchers_.insert(kind.matchers_.begin(), m);
     return kind;
 }
@@ -362,8 +362,8 @@ xml::Kind xml::Kind::property(const std::string& type) {
 xml::Kind xml::Kind::propertyLinkSource(const std::string& type, const std::string& identifier) {
     Kind kind("SourceProperty", "PropertyLink", type);
     kind.matchers_.back().attributes.push_back({"identifier", identifier});
-    ElementMatcher m = {"ProcessorNetwork", {}};
-    ElementMatcher m2 = {"PropertyLinks", {}};
+    const ElementMatcher m = {"ProcessorNetwork", {}};
+    const ElementMatcher m2 = {"PropertyLinks", {}};
     kind.matchers_.insert(kind.matchers_.begin(), m2);
     kind.matchers_.insert(kind.matchers_.begin(), m);
     return kind;
@@ -373,8 +373,8 @@ xml::Kind xml::Kind::propertyLinkDestination(const std::string& type,
                                              const std::string& identifier) {
     Kind kind("DestinationProperty", "PropertyLink", type);
     kind.matchers_.back().attributes.push_back({"identifier", identifier});
-    ElementMatcher m = {"ProcessorNetwork", {}};
-    ElementMatcher m2 = {"PropertyLinks", {}};
+    const ElementMatcher m = {"ProcessorNetwork", {}};
+    const ElementMatcher m2 = {"PropertyLinks", {}};
     kind.matchers_.insert(kind.matchers_.begin(), m2);
     kind.matchers_.insert(kind.matchers_.begin(), m);
     return kind;
@@ -422,7 +422,7 @@ TxElement* xml::createNode(std::string_view desc, TxElement* parent) {
     return parent;
 }
 
-void xml::logNode(TxElement* node) {
+void xml::logNode(const TxElement* node) {
     std::pmr::string xml;
     xml.reserve(4096);
     TiXmlPrinter printer{xml, TiXmlStreamPrint::No};
@@ -479,8 +479,8 @@ bool xml::renamePortIdentifier(TxElement* root, std::string_view processorClassI
             {"Connection", {}},
         },
         [&](TxElement* elem) {
-            auto src = elem->GetAttribute("src");
-            auto dst = elem->GetAttribute("dst");
+            const auto src = elem->GetAttribute("src");
+            const auto dst = elem->GetAttribute("dst");
             for (const auto& pid : processorIds) {
                 if (src == buf.replace("{}.{}", pid, portIdentifier).view()) {
                     elem->SetAttribute("src", buf.replace("{}.{}", pid, newIdentifier).view());
@@ -511,7 +511,7 @@ bool xml::renamePropertyIdentifier(TxElement* root, std::string_view processorCl
             processorIds.push_back(elem->GetAttribute("identifier"));
 
             std::vector<xml::ElementMatcher> selector;
-            for (auto item : path) {
+            for (const auto item : path) {
                 selector.push_back({"Properties", {}});
                 selector.push_back({"Property", {{"identifier", std::string(item)}}});
             }
@@ -536,8 +536,8 @@ bool xml::renamePropertyIdentifier(TxElement* root, std::string_view processorCl
             {"PropertyLink", {}},
         },
         [&](TxElement* elem) {
-            auto src = elem->GetAttribute("src");
-            auto dst = elem->GetAttribute("dst");
+            const auto src = elem->GetAttribute("src");
+            const auto dst = elem->GetAttribute("dst");
             for (const auto& pid : processorIds) {
                 if (src.starts_with(buf.replace("{}.{}", pid, propertyPath))) {
                     elem->SetAttribute(

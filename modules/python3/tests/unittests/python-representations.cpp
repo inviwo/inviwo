@@ -74,22 +74,22 @@ arr.shape = (3, 4, 2)
     s.run([&](pybind11::dict dict) {
         ASSERT_TRUE(dict.contains("arr"));
 
-        auto ob = dict["arr"];
+        const auto ob = dict["arr"];
         ASSERT_TRUE(pybind11::isinstance<pybind11::array>(ob));
-        auto arr = pybind11::cast<pybind11::array>(ob);
+        const auto arr = pybind11::cast<pybind11::array>(ob);
 
-        auto layerpy = std::make_shared<LayerPy>(arr);
+        const auto layerpy = std::make_shared<LayerPy>(arr);
         EXPECT_EQ(size2_t(4, 3), layerpy->getDimensions());
         EXPECT_EQ(2, layerpy->getDataFormat()->getComponents());
 
-        LayerPy2RAMConverter converter;
-        auto layerram = converter.createFrom(layerpy);
+        const LayerPy2RAMConverter converter;
+        const auto layerram = converter.createFrom(layerpy);
 
         EXPECT_EQ(size2_t(4, 3), layerram->getDimensions());
         EXPECT_EQ(2, layerram->getDataFormat()->getComponents());
 
         layerram->dispatch<void>([&](auto pLayer) {
-            auto dims = pLayer->getDimensions();
+            const auto dims = pLayer->getDimensions();
             auto data = pLayer->getDataTyped();
 
             int expected = 0;
@@ -113,11 +113,11 @@ TEST(Python3Representations, LayerRAM2Py) {
                                 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11};
     const size2_t dims{4, 3};
 
-    auto layerRAM = std::make_shared<LayerRAMPrecision<glm::ivec2>>(dims);
+    const auto layerRAM = std::make_shared<LayerRAMPrecision<glm::ivec2>>(dims);
     memcpy(layerRAM->getDataTyped(), data.data(), data.size() * sizeof(int));
 
-    LayerRAM2PyConverter converter;
-    auto layerpy = converter.createFrom(layerRAM);
+    const LayerRAM2PyConverter converter;
+    const auto layerpy = converter.createFrom(layerRAM);
     EXPECT_EQ(dims, layerpy->getDimensions()) << "LayerPy dimensions";
 
     const auto& arr = layerpy->data();
@@ -129,7 +129,7 @@ TEST(Python3Representations, LayerRAM2Py) {
 
     // check correct, consecutive ordering of the pybind array
     const pybind11::array_t<int> d = layerpy->data();
-    std::span<const int> s{d.data(0), 24};
+    const std::span<const int> s{d.data(0), 24};
     EXPECT_TRUE(std::equal(data.begin(), data.end(), s.begin()))
         << "difference between input and LayerPy data";
 
@@ -165,22 +165,22 @@ arr.shape = (1, 3, 4, 2)
     s.run([&](pybind11::dict dict) {
         ASSERT_TRUE(dict.contains("arr"));
 
-        auto ob = dict["arr"];
+        const auto ob = dict["arr"];
         ASSERT_TRUE(pybind11::isinstance<pybind11::array>(ob));
-        auto arr = pybind11::cast<pybind11::array>(ob);
+        const auto arr = pybind11::cast<pybind11::array>(ob);
 
-        auto volumepy = std::make_shared<VolumePy>(arr);
+        const auto volumepy = std::make_shared<VolumePy>(arr);
         EXPECT_EQ(size3_t(4, 3, 1), volumepy->getDimensions());
         EXPECT_EQ(2, volumepy->getDataFormat()->getComponents());
 
-        VolumePy2RAMConverter converter;
-        auto volumeram = converter.createFrom(volumepy);
+        const VolumePy2RAMConverter converter;
+        const auto volumeram = converter.createFrom(volumepy);
 
         EXPECT_EQ(size3_t(4, 3, 1), volumeram->getDimensions());
         EXPECT_EQ(2, volumeram->getDataFormat()->getComponents());
 
         volumeram->dispatch<void>([&](auto pVolume) {
-            auto dims = pVolume->getDimensions();
+            const auto dims = pVolume->getDimensions();
             auto data = pVolume->getDataTyped();
 
             int expected = 0;
@@ -204,11 +204,11 @@ TEST(Python3Representations, VolumeRAM2Py) {
                                 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11};
     const size3_t dims{4, 3, 1};
 
-    auto volumeRAM = std::make_shared<VolumeRAMPrecision<glm::ivec2>>(dims);
+    const auto volumeRAM = std::make_shared<VolumeRAMPrecision<glm::ivec2>>(dims);
     memcpy(volumeRAM->getDataTyped(), data.data(), data.size() * sizeof(int));
 
-    VolumeRAM2PyConverter converter;
-    auto volumepy = converter.createFrom(volumeRAM);
+    const VolumeRAM2PyConverter converter;
+    const auto volumepy = converter.createFrom(volumeRAM);
     EXPECT_EQ(dims, volumepy->getDimensions()) << "VolumePy dimensions";
 
     const auto& arr = volumepy->data();
@@ -221,7 +221,7 @@ TEST(Python3Representations, VolumeRAM2Py) {
 
     // check correct, consecutive ordering of the pybind array
     const pybind11::array_t<int> d = volumepy->data();
-    std::span<const int> s{d.data(0), 24};
+    const std::span<const int> s{d.data(0), 24};
     EXPECT_TRUE(std::equal(data.begin(), data.end(), s.begin()))
         << "difference between input and VolumePy data";
 

@@ -60,7 +60,7 @@ std::shared_ptr<Layer> CImgLayerReader::readData(const std::filesystem::path& fi
     const auto localPath = downloadAndCacheIfUrl(fileName);
     checkExists(localPath);
 
-    auto ram = cimgutil::loadLayer(localPath);
+    const auto ram = cimgutil::loadLayer(localPath);
 
     auto layer = std::make_shared<Layer>(ram);
     layer->setModelMatrix(

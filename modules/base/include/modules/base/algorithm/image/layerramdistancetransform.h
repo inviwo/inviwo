@@ -118,7 +118,7 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
 
     using int64 = glm::int64;
 
-    auto square = [](auto a) { return a * a; };
+    const auto square = [](auto a) { return a * a; };
 
     callback(0.0);
 
@@ -162,10 +162,10 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
             srcDim, dstDim, sm);
     }
 
-    util::IndexMapper<2, int64> srcInd(srcDim);
-    util::IndexMapper<2, int64> dstInd(dstDim);
+    const util::IndexMapper<2, int64> srcInd(srcDim);
+    const util::IndexMapper<2, int64> dstInd(dstDim);
 
-    auto is_feature = [&](const int64 x, const int64 y) {
+    const auto is_feature = [&](const int64 x, const int64 y) {
         return predicate(src[srcInd(x / sm.x, y / sm.y)]);
     };
 

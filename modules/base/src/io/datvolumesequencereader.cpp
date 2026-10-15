@@ -415,7 +415,7 @@ void updateDataRange(Volume& volume, const State& state) {
     }
 }
 
-void perfWarning(Volume& volume, const std::filesystem::path& filePath) {
+void perfWarning(const Volume& volume, const std::filesystem::path& filePath) {
     const auto computedRange = volume.dataMap.dataRange;
     log::warn(
         "Performance warning: Using min/max of data since DataRange was not "
@@ -459,9 +459,9 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
         for (size_t t = 0; t < state.datFiles.size(); ++t) {
             auto datVolReader = std::make_unique<DatVolumeSequenceReader>();
             datVolReader->enableLogOutput_ = false;
-            auto path = state.datFiles[t].is_absolute() ? state.datFiles[t]
-                                                        : fileDirectory / state.datFiles[t];
-            auto v = datVolReader->readData(path);
+            const auto path = state.datFiles[t].is_absolute() ? state.datFiles[t]
+                                                              : fileDirectory / state.datFiles[t];
+            const auto v = datVolReader->readData(path);
 
             std::copy(v->begin(), v->end(), std::back_inserter(*volumes));
         }
@@ -482,7 +482,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
             } else {
                 volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
             }
-            auto diskRepr =
+            const auto diskRepr =
                 createDiskRepWithLoader(state, filePath, fileDirectory / state.rawFile, t * bytes);
             volumes->back()->addRepresentation(diskRepr);
 
@@ -541,7 +541,7 @@ std::shared_ptr<Volume> DatVolumeReader::readData(const std::filesystem::path& f
     validateDatFile(state, filePath);
     resolve(state);
     auto volume = createVolume(state);
-    auto diskRepr =
+    const auto diskRepr =
         createDiskRepWithLoader(state, filePath, filePath.parent_path() / state.rawFile, 0);
     volume->addRepresentation(diskRepr);
 

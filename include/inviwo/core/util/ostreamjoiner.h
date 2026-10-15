@@ -65,7 +65,7 @@ public:
     template <typename T>
     ostream_joiner<DelimT, charT, traits>& operator=(const T& item) {
         if (need_delimiter) *os << delimiter;
-        auto pos = os->tellp();
+        const auto pos = os->tellp();
         *os << item;
         need_delimiter = (os->tellp() != pos);  // don't add delimiter if there were no output
         return *this;

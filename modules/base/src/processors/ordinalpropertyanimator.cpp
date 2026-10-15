@@ -73,7 +73,7 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     , delay_("delay", "Delay (ms)", 16, 10, 10000, 1)
     , play_("play", "Play", "Activate animation"_help)
     , timer_(std::chrono::milliseconds{delay_}, [this]() {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         for (auto p : props_) {
             p->update();
         }

@@ -136,7 +136,7 @@ std::unique_ptr<MetaData> createMetaData(py::handle value) {
         const auto seq = py::reinterpret_borrow<py::sequence>(value);
         std::vector<std::string> strings;
         strings.reserve(seq.size());
-        for (auto item : seq) {
+        for (const auto item : seq) {
             if (!PyUnicode_Check(item.ptr())) {
                 throw py::type_error(
                     "Only sequences of str can be converted to MetaData (StringVectorMetaData)");
@@ -181,7 +181,7 @@ void setMetaData(MetaDataOwner& owner, std::string_view key, py::handle value) {
     if (!py::isinstance<MetaData>(value)) {
         // Keep the type of any existing entry if the value can be converted to it
         if (auto* existing = map->get(key)) {
-            auto pyExisting = py::cast(existing, py::return_value_policy::reference);
+            const auto pyExisting = py::cast(existing, py::return_value_policy::reference);
             if (py::hasattr(pyExisting, "value")) {
                 try {
                     pyExisting.attr("value") = value;
@@ -255,14 +255,14 @@ void exposeMetaData(pybind11::module& m) {
         .def("keys",
              [](const MetaDataMap& map) {
                  py::list keys;
-                 for (auto& key : map.getKeys()) keys.append(py::str(key));
+                 for (const auto& key : map.getKeys()) keys.append(py::str(key));
                  return keys;
              })
         .def("items",
              [](py::handle self) {
                  auto& map = self.cast<MetaDataMap&>();
                  py::list items;
-                 for (auto& key : map.getKeys()) {
+                 for (const auto& key : map.getKeys()) {
                      items.append(py::make_tuple(
                          key, py::cast(map.get(key), py::return_value_policy::reference_internal,
                                        self)));
@@ -288,7 +288,7 @@ void exposeMetaData(pybind11::module& m) {
         .def("__iter__",
              [](const MetaDataMap& map) {
                  py::list keys;
-                 for (auto& key : map.getKeys()) keys.append(py::str(key));
+                 for (const auto& key : map.getKeys()) keys.append(py::str(key));
                  return py::iter(keys);
              })
         .def(
@@ -314,7 +314,7 @@ void exposeMetaData(pybind11::module& m) {
             py::is_operator())
         .def("__repr__", [](MetaDataMap& map) {
             std::string items;
-            for (auto& key : map.getKeys()) {
+            for (const auto& key : map.getKeys()) {
                 if (!items.empty()) items += ", ";
                 fmt::format_to(
                     std::back_inserter(items), "{}: {}", std::string{py::repr(py::str(key))},

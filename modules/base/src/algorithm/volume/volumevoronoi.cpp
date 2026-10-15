@@ -90,7 +90,7 @@ void voronoiSegmentationImpl(
     VolumeRAMPrecision<unsigned short>& voronoiVolumeRep) {
 
     auto volumeIndices = voronoiVolumeRep.getDataTyped();
-    util::IndexMapper3D index(volumeDimensions);
+    const util::IndexMapper3D index(volumeDimensions);
 
     // We can ignore any translations
     const auto d2m = mat3{dataToModelMatrix};
@@ -114,7 +114,7 @@ void weightedVoronoiSegmentationImpl(
     const std::vector<float>& weights, VolumeRAMPrecision<unsigned short>& voronoiVolumeRep) {
 
     auto volumeIndices = voronoiVolumeRep.getDataTyped();
-    util::IndexMapper3D index(volumeDimensions);
+    const util::IndexMapper3D index(volumeDimensions);
 
     // We can ignore any translations
     const auto d2m = mat3{dataToModelMatrix};
@@ -154,7 +154,8 @@ std::shared_ptr<Volume> voronoiSegmentation(
         throw Exception("Mirror Wrapping is not supported");
     }
 
-    auto voronoiVolumeRep = std::make_shared<VolumeRAMPrecision<unsigned short>>(volumeDimensions);
+    const auto voronoiVolumeRep =
+        std::make_shared<VolumeRAMPrecision<unsigned short>>(volumeDimensions);
     auto voronoiVolume = std::make_shared<Volume>(voronoiVolumeRep);
     voronoiVolume->setInterpolation(InterpolationType::Nearest);
     voronoiVolume->setWrapping(wrapping);

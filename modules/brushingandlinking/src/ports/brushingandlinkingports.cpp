@@ -245,7 +245,7 @@ Document BrushingAndLinkingInport::getInfo() const {
 
     utildoc::TableBuilder tb(doc.handle(), P::end());
     for (auto& [action, targets] : manager_.getTargets()) {
-        for (auto& target : targets) {
+        for (const auto& target : targets) {
             tb(H(action), target, manager_.getIndices(action, target).cardinality());
         }
     }
@@ -326,7 +326,7 @@ Document BrushingAndLinkingOutport::getInfo() const {
 
     utildoc::TableBuilder tb(doc.handle(), P::end());
     for (auto& [action, targets] : manager_.getTargets()) {
-        for (auto& target : targets) {
+        for (const auto& target : targets) {
             tb(H(action), target, manager_.getIndices(action, target).cardinality());
         }
     }

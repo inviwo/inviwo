@@ -70,14 +70,14 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogTreeIte
     classIdentifier->setDefaultTextColor(Qt::black);
     classIdentifier->setFont(getFont(linkdialog::FontType::Class));
     classIdentifier->setCrop(static_cast<int>(rect().width() - 2.0 * linkdialog::offset));
-    auto offset = classIdentifier->boundingRect().height();
+    const auto offset = classIdentifier->boundingRect().height();
     classIdentifier->setPos(rect().bottomLeft() +
                             QPointF(linkdialog::offset, -linkdialog::offset - offset));
     std::string className{item_->getClassIdentifier()};
     className = removeSubString(className, "Property");
     classIdentifier->setText(utilqt::toQString(className));
 
-    if (auto* compProp = dynamic_cast<CompositeProperty*>(prop)) {
+    if (const auto* compProp = dynamic_cast<CompositeProperty*>(prop)) {
         const QPointF newPos(0.0f, rect().height());
         for (const auto& subProperty : compProp->getProperties()) {
             auto* item = new LinkDialogPropertyGraphicsItem(this, subProperty);
@@ -89,7 +89,7 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogTreeIte
 }
 
 void LinkDialogPropertyGraphicsItem::updatePositions() {
-    auto visible = propertyVisible();
+    const auto visible = propertyVisible();
     setVisible(visible);
     auto pos = prev()->treeItemScenePos();
     if (visible) pos += QPointF(0.0f, prev()->treeItemRect().height());
@@ -164,8 +164,8 @@ void LinkDialogPropertyGraphicsItem::removeConnectionGraphicsItem(
 }
 
 QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(size_t curPort) const {
-    auto centerEdge = calculateArrowCenterLocal(curPort);
-    QSizeF arrowDim(linkdialog::arrowWidth, linkdialog::arrowHeight);
+    const auto centerEdge = calculateArrowCenterLocal(curPort);
+    const QSizeF arrowDim(linkdialog::arrowWidth, linkdialog::arrowHeight);
 
     switch (getSide()) {
         case LinkDialogTreeItem::Side::Left:
@@ -193,14 +193,14 @@ QVariant LinkDialogPropertyGraphicsItem::itemChange(GraphicsItemChange change,
 }
 
 QPointF LinkDialogPropertyGraphicsItem::getConnectionPoint() {
-    qreal dir = getSide() == Side::Left ? 1.0f : -1.0;
-    QPointF offset{dir * rect().width() / 2, 0.0f};
+    const qreal dir = getSide() == Side::Left ? 1.0f : -1.0;
+    const QPointF offset{dir * rect().width() / 2, 0.0f};
     return scenePos() + offset;
 }
 
 QPointF LinkDialogPropertyGraphicsItem::calculateArrowCenterLocal(size_t curPort) const {
-    QPointF bottom = getSide() == Side::Left ? rect().bottomRight() : rect().bottomLeft();
-    QPointF top = getSide() == Side::Left ? rect().topRight() : rect().topLeft();
+    const QPointF bottom = getSide() == Side::Left ? rect().bottomRight() : rect().bottomLeft();
+    const QPointF top = getSide() == Side::Left ? rect().topRight() : rect().topLeft();
 
     size_t arrowCount = getConnectionGraphicsItemCount();
     if (arrowCount == 0) arrowCount++;
@@ -225,7 +225,7 @@ std::vector<LinkDialogPropertyGraphicsItem*> LinkDialogPropertyGraphicsItem::get
 
     for (auto& elem : subProperties_) {
         subProps.push_back(elem);
-        auto props = elem->getSubPropertyItemList(recursive);
+        const auto props = elem->getSubPropertyItemList(recursive);
         for (auto& prop : props) subProps.push_back(prop);
     }
 
@@ -268,18 +268,18 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p,
     QLinearGradient grad(rect().topLeft(), rect().bottomLeft());
 
     if (hasSubProperties()) {
-        QColor bgColor = Qt::darkGray;
+        const QColor bgColor = Qt::darkGray;
         grad.setColorAt(0.0f, bgColor);
         grad.setColorAt(1.0f, bgColor);
     } else {
-        QColor bgColor = Qt::lightGray;
+        const QColor bgColor = Qt::lightGray;
         grad.setColorAt(0.0f, bgColor);
         grad.setColorAt(1.0f, bgColor);
     }
 
     p->setBrush(grad);
 
-    QPen blackPen(QColor(0, 0, 0), 1, item_->getVisible() ? Qt::SolidLine : Qt::DashLine);
+    const QPen blackPen(QColor(0, 0, 0), 1, item_->getVisible() ? Qt::SolidLine : Qt::DashLine);
     p->setPen(blackPen);
 
     p->drawRoundedRect(rect(), linkdialog::propertyRoundedCorners,
@@ -288,7 +288,7 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p,
     p->restore();
     p->save();
 
-    auto isBidirectional = [](DialogConnectionGraphicsItem* item) {
+    const auto isBidirectional = [](DialogConnectionGraphicsItem* item) {
         auto net = item->getPropertyLink().getSource()->getOwner()->getProcessor()->getNetwork();
 
         return net->isLinkedBidirectional(item->getPropertyLink().getSource(),
@@ -300,7 +300,7 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p,
 
         // If arrow points right, then get the rectangle aligned to the left-
         // boundary of property item (rectangle) and vice versa
-        QRectF arrowRect = calculateArrowRect(elem);
+        const QRectF arrowRect = calculateArrowRect(elem);
 
         // set color of arrow
         p->setPen(Qt::black);

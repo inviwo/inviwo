@@ -58,7 +58,7 @@ WidgetSupplier::~WidgetSupplier() { unregisterAll(); }
 WidgetFactory& WidgetSupplier::getGLUIWidgetFactory() { return uiGLModule_.getGLUIWidgetFactory(); }
 
 void WidgetSupplier::unregisterAll() {
-    for (auto& elem : widgets_) {
+    for (const auto& elem : widgets_) {
         uiGLModule_.getGLUIWidgetFactory().unRegisterObject(elem.get());
     }
     widgets_.clear();

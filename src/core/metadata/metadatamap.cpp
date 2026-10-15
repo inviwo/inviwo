@@ -46,7 +46,7 @@ MetaData* MetaDataMap::add(std::string_view key, MetaData* metaData) {
 }
 
 bool MetaDataMap::remove(std::string_view key) {
-    if (auto it = metaData_.find(key); it != metaData_.end()) {
+    if (const auto it = metaData_.find(key); it != metaData_.end()) {
         metaData_.erase(it);
         return true;
     } else {
@@ -57,7 +57,7 @@ bool MetaDataMap::remove(std::string_view key) {
 void MetaDataMap::removeAll() { metaData_.clear(); }
 
 void MetaDataMap::rename(std::string_view newKey, const std::string& oldKey) {
-    auto it = metaData_.find(oldKey);
+    const auto it = metaData_.find(oldKey);
     if (it != metaData_.end()) {
         metaData_[std::string{newKey}] = std::move(it->second);
         metaData_.erase(oldKey);
@@ -72,13 +72,13 @@ std::vector<std::string> MetaDataMap::getKeys() const {
 }
 
 MetaData* MetaDataMap::get(std::string_view key) {
-    auto it = metaData_.find(key);
+    const auto it = metaData_.find(key);
     if (it != metaData_.end()) return it->second.get();
     return nullptr;
 }
 
 const MetaData* MetaDataMap::get(std::string_view key) const {
-    auto it = metaData_.find(key);
+    const auto it = metaData_.find(key);
     if (it != metaData_.end()) {
         return it->second.get();
     }
@@ -114,7 +114,7 @@ bool operator==(const MetaDataMap& lhs, const MetaDataMap& rhs) {
         return false;
     }
     for (const auto& _cIt : lhs.metaData_) {
-        auto elem = rhs.metaData_.find(_cIt.first);
+        const auto elem = rhs.metaData_.find(_cIt.first);
         if (elem == rhs.metaData_.end()) return false;
         if (*(elem->second) != *(_cIt.second)) return false;
     }

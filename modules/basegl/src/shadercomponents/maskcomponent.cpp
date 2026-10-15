@@ -178,7 +178,7 @@ void MaskComponent::preprocess() {
     if (!port_) return;
 
     bool dirty = port_->isChanged();
-    auto data = port_->getData();
+    const auto data = port_->getData();
     if (!mask_ || data->getDimensions() != mask_->getDimensions()) {
         mask_ = std::make_shared<Volume>(VolumeConfig{.dimensions = data->getDimensions(),
                                                       .format = DataUInt8::get(),
@@ -205,7 +205,7 @@ void MaskComponent::preprocess() {
 
     const utilgl::Activate aShader{&shader_};
 
-    TextureUnit unit;
+    const TextureUnit unit;
     utilgl::bindTexture(*data, unit);
     shader_.setUniform("volume", unit.getUnitNumber());
     utilgl::setShaderUniforms(shader_, *mask_, "volumeParameters");
@@ -226,7 +226,7 @@ void MaskComponent::preprocess() {
 
     const utilgl::Activate aFbo{&fbo_};
     const utilgl::ViewportState vp{0, 0, dim.x, dim.y};
-    auto* maskGL = mask_->getEditableRepresentation<VolumeGL>();
+    const auto* maskGL = mask_->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(maskGL->getTexture().get(), 0);
     utilgl::multiDrawImagePlaneRect(dim.z);
 }

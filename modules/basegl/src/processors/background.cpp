@@ -136,7 +136,7 @@ Background::Background()
                   blendMode_);
 
     switchColors_.onChange([&]() {
-        vec4 tmp = bgColor1_.get();
+        const vec4 tmp = bgColor1_.get();
         bgColor1_.set(bgColor2_.get());
         bgColor2_.set(tmp);
     });
@@ -216,7 +216,7 @@ void Background::process() {
             inport_.getData()->getNumberOfColorLayers() !=
                 outport_.getData()->getNumberOfColorLayers()) {
 
-            auto dst = std::make_shared<Image>(outport_.getDimensions(), format);
+            const auto dst = std::make_shared<Image>(outport_.getDimensions(), format);
             for (size_t i = 1; i < inport_.getData()->getNumberOfColorLayers(); ++i) {
                 if (i >= dst->getNumberOfColorLayers()) {
                     dst->addColorLayer(
@@ -234,7 +234,7 @@ void Background::process() {
     if (inport_.hasData()) {
         TextureUnitContainer textureUnits;
 
-        auto image = inport_.getData();
+        const auto image = inport_.getData();
         utilgl::bindAndSetUniforms(shader_, textureUnits, inport_, ImageType::AllLayers);
 
         {

@@ -46,7 +46,7 @@ std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1, vec2 p2, const vec
     //    0x0010: right
     //    0x0100: bottom
     //    0x1000: top
-    auto getOutcode = [&](const vec2& pos) {
+    const auto getOutcode = [&](const vec2& pos) {
         int outcode = 0;
         if (pos.x < rectMin.x) {
             outcode |= 0x0001;  // on left outside
@@ -73,7 +73,7 @@ std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1, vec2 p2, const vec
             break;
         } else {
             // pick one outside code
-            int outcode = outcodeP1 ? outcodeP1 : outcodeP2;
+            const int outcode = outcodeP1 ? outcodeP1 : outcodeP2;
 
             // compute intersection
             vec2 p{0};
@@ -104,7 +104,7 @@ std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1, vec2 p2, const vec
 }
 
 bool insideRect(const vec2& p, const vec2& rectMin, const vec2& rectMax) {
-    vec2 s = glm::step(rectMin, p) - (1.0f - glm::step(p, rectMax));
+    const vec2 s = glm::step(rectMin, p) - (1.0f - glm::step(p, rectMax));
     return s.x * s.y > 0.0;
 }
 

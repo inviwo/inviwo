@@ -121,7 +121,7 @@ bool RepresentationConverterFactory<BaseRepr>::registerObject(
 template <typename BaseRepr>
 bool RepresentationConverterFactory<BaseRepr>::unRegisterObject(
     RepresentationConverter<BaseRepr>* converter) {
-    size_t removed = std::erase_if(
+    const size_t removed = std::erase_if(
         converters_, [converter](const auto& elem) { return elem.second == converter; });
 
     std::erase_if(packages_, [converter](const auto& elem) {
@@ -137,11 +137,11 @@ bool RepresentationConverterFactory<BaseRepr>::unRegisterObject(
 template <typename BaseRepr>
 const RepresentationConverterPackage<BaseRepr>*
 RepresentationConverterFactory<BaseRepr>::getRepresentationConverter(ConverterID id) {
-    RepresentationConverterPackage<BaseRepr>* res = nullptr;
+    const RepresentationConverterPackage<BaseRepr>* res = nullptr;
     constexpr size_t steps = std::numeric_limits<size_t>::max();
     {
-        std::unique_lock<std::mutex> lock(mutex_);
-        auto range = packages_.equal_range(id);
+        const std::unique_lock<std::mutex> lock(mutex_);
+        const auto range = packages_.equal_range(id);
         for (auto it = range.first; it != range.second; ++it) {
             if (it->second->steps() < steps) {
                 res = it->second.get();
@@ -168,11 +168,11 @@ RepresentationConverterFactory<BaseRepr>::createConverterPackage(ConverterID id)
     /* Implementation of Dijkstra's algorithm following
      * https://en.wikipedia.org/wiki/Dijkstra's_algorithm#Pseudocode
      */
-    std::type_index source = id.first;
-    std::type_index target = id.second;
+    const std::type_index source = id.first;
+    const std::type_index target = id.second;
 
     std::unordered_set<std::type_index> verts;
-    for (auto& converter : converters_) {
+    for (const auto& converter : converters_) {
         verts.insert(converter.first.first);
         verts.insert(converter.first.second);
     }
@@ -205,8 +205,8 @@ RepresentationConverterFactory<BaseRepr>::createConverterPackage(ConverterID id)
 
         for (const auto& converter : converters_) {
             if (converter.first.first == u) {
-                auto v = converter.first.second;
-                size_t alt = dist[u] + 1;
+                const auto v = converter.first.second;
+                const size_t alt = dist[u] + 1;
                 if (alt < dist[v]) {
                     dist[v] = alt;
                     prev.emplace(std::make_pair(v, u));
@@ -231,7 +231,7 @@ RepresentationConverterFactory<BaseRepr>::createConverterPackage(ConverterID id)
         }
         auto res = package.get();
         {
-            std::unique_lock<std::mutex> lock(mutex_);
+            const std::unique_lock<std::mutex> lock(mutex_);
             packages_.emplace(std::make_pair(package->getConverterID(), std::move(package)));
         }
         return res;

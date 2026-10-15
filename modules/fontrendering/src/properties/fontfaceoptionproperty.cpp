@@ -66,10 +66,10 @@ FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
     : OptionProperty<std::filesystem::path>(identifier, displayName, std::move(help),
                                             invalidationLevel, std::move(semantics)) {
 
-    auto fonts = font::getAvailableFonts();
+    const auto fonts = font::getAvailableFonts();
 
-    for (auto font : fonts) {
-        auto name = font.second.stem().string();
+    for (const auto font : fonts) {
+        const auto name = font.second.stem().string();
         // use the file name w/o extension as identifier
         addOption(name, font.first, font.second);
     }

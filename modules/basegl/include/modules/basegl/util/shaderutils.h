@@ -42,7 +42,8 @@ namespace utilgl {
 
 IVW_MODULE_BASEGL_API void addShaderDefines(Shader& shader, const StipplingProperty& property);
 IVW_MODULE_BASEGL_API void addShaderDefines(Shader& shader, StipplingData::Mode mode);
-IVW_MODULE_BASEGL_API void setShaderUniforms(Shader& shader, const StipplingProperty& property,
+IVW_MODULE_BASEGL_API void setShaderUniforms(const Shader& shader,
+                                             const StipplingProperty& property,
                                              std::string_view name);
 
 }  // namespace utilgl

@@ -43,7 +43,7 @@ TextBoundingBox::TextBoundingBox(const size2_t& textExt, const ivec2& glyphsOrig
 
 void TextBoundingBox::updateGlyphPenOffset(int baselineOffset) {
     // determine vertical offset from top between text bounding box and glyph bounding box
-    int vertOffset =
+    const int vertOffset =
         static_cast<int>(textExtent.y) - glyphsOrigin.y - static_cast<int>(glyphsExtent.y);
     // pen offset is determined by left-most and top-most glyphs
     glyphPenOffset = ivec2(glyphsOrigin.x, baselineOffset - vertOffset);

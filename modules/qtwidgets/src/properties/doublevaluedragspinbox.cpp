@@ -150,7 +150,7 @@ void DoubleValueDragSpinBox::setInvalid(bool invalid) {
 }
 
 void DoubleValueDragSpinBox::updateState() {
-    QSignalBlocker block(this);
+    const QSignalBlocker block(this);
 
     spinBox_->setInvalid(invalid_);
     valueDragger_->setEnabled(!invalid_);

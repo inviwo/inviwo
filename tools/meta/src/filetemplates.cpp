@@ -122,7 +122,7 @@ FileTemplates::FileTemplates() {
 }
 
 const FileTemplate& FileTemplates::operator[](const std::string& key) const {
-    auto it = templates.find(key);
+    const auto it = templates.find(key);
     if (it != templates.end()) {
         return it->second;
     } else {

@@ -122,7 +122,7 @@ DataFrameFilter::DataFrameFilter()
 }
 
 void DataFrameFilter::process() {
-    auto df = inport_.getData();
+    const auto df = inport_.getData();
 
     if (!enabled_) {
         outport_.setData(df);
@@ -175,7 +175,7 @@ dataframefilters::Filters DataFrameFilter::createFilters() const {
         return str.substr(0, prefix.size()) == prefix;
     };
 
-    auto parse = [&](const auto& filterProp, auto& itemFilters) {
+    const auto parse = [&](const auto& filterProp, auto& itemFilters) {
         for (auto prop : filterProp) {
             if (auto cp = dynamic_cast<BoolCompositeProperty*>(prop)) {
                 if (!cp->isChecked()) continue;

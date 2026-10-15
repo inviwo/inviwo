@@ -124,7 +124,7 @@ void orderTf(TransferFunction& tf, size_t nSegments) {
     auto setPos = [&](double pos, size_t i) {
         primitives[i]->setPosition(std::clamp(pos, 0.0, 1.0));
     };
-    auto setPosAlmost = [&](double pos, size_t i) {
+    const auto setPosAlmost = [&](double pos, size_t i) {
         setPos(pos - 100.0 * std::numeric_limits<double>::epsilon(), i);
     };
 
@@ -220,7 +220,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                     };
                 case ColoringGroup::Selected:
                     return [&](const std::function<void(uint32_t)>& fun) {
-                        for (auto i : brushing_.getSelectedIndices()) {
+                        for (const auto i : brushing_.getSelectedIndices()) {
                             fun(i - minSegmentId_);
                         }
                     };
@@ -232,7 +232,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                     };
                 case ColoringGroup::Filtered:
                     return [&](const std::function<void(uint32_t)>& fun) {
-                        for (auto i : brushing_.getFilteredIndices()) {
+                        for (const auto i : brushing_.getFilteredIndices()) {
                             fun(i - minSegmentId_);
                         }
                     };
@@ -302,7 +302,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
         colors_.setDimensions(size2_t{nSegments, 2});
         util::IndexMapper2D im(colors_.getDimensions());
 
-        auto indexCheck = [&](uint32_t i, std::string_view type) {
+        const auto indexCheck = [&](uint32_t i, std::string_view type) {
             const auto ii = static_cast<int32_t>(i);
             if (ii < minSegmentId_ || ii >= minSegmentId_ + static_cast<int32_t>(nSegments)) {
                 throw Exception(SourceContext{},
@@ -316,12 +316,12 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                 ->getDataTyped();
 
         for (uint32_t i = 0; i < nSegments; ++i) {
-            auto color = tf_->sample(static_cast<double>(i) / (nSegments - 1));
+            const auto color = tf_->sample(static_cast<double>(i) / (nSegments - 1));
             lrp[im(i, 0)] = color;
             lrp[im(i, 1)] = color;
         }
 
-        auto mix = util::overloaded{
+        const auto mix = util::overloaded{
             [&](auto i, const FloatVec3Property& color, const FloatProperty& mix,
                 const FloatProperty& alpha) {
                 return vec4{glm::mix(color.get(), vec3{lrp[im(i, 0)]}, mix.get()), alpha.get()};
@@ -362,7 +362,7 @@ void AtlasComponent::onPickingEvent(PickingEvent* e) {
     const auto id = static_cast<uint32_t>(e->getPickedId() + minSegmentId_);
 
     if (e->getHoverState() == PickingHoverState::Enter) {
-        if (auto data = atlas_.getData()) {
+        if (const auto data = atlas_.getData()) {
             e->setToolTip(fmt::format("{}: {}{: [}", data->dataMap.valueAxis.name, id,
                                       data->dataMap.valueAxis.unit));
         } else {

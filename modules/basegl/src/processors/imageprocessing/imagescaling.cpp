@@ -145,7 +145,7 @@ void ImageScaling::propagateEvent(Event* event, Outport* source) {
 }
 
 void ImageScaling::deserialize(Deserializer& d) {
-    util::KeepTrueWhileInScope deserializing(&deserializing_);
+    const util::KeepTrueWhileInScope deserializing(&deserializing_);
     Processor::deserialize(d);
 }
 

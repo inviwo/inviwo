@@ -217,8 +217,8 @@ void NetworkEditorView::onSceneSizeChanged() {
     auto br = editor_->getProcessorsBoundingRect();
     if (sceneRect().contains(growSceneRect(br))) return;
 
-    QSizeF viewsize = viewport()->size();
-    QSizeF brsize = br.size();
+    const QSizeF viewsize = viewport()->size();
+    const QSizeF brsize = br.size();
 
     if (brsize.width() < viewsize.width()) {
         br.setLeft(br.left() - 0.5 * (viewsize.width() - brsize.width()));
@@ -232,7 +232,7 @@ void NetworkEditorView::onSceneSizeChanged() {
 }
 
 QRectF NetworkEditorView::growSceneRect(QRectF r) const {
-    QSizeF viewsize = viewport()->size();
+    const QSizeF viewsize = viewport()->size();
     const auto w = std::max(viewsize.width(), r.width());
     const auto h = std::max(viewsize.height(), r.height());
 
@@ -240,8 +240,8 @@ QRectF NetworkEditorView::growSceneRect(QRectF r) const {
 }
 
 void NetworkEditorView::wheelEvent(QWheelEvent* e) {
-    QPointF numPixels = e->pixelDelta() / 5.0;
-    QPointF numDegrees = e->angleDelta() / 8.0 / 15;
+    const QPointF numPixels = e->pixelDelta() / 5.0;
+    const QPointF numDegrees = e->angleDelta() / 8.0 / 15;
 
     if (e->modifiers() == Qt::ControlModifier) {
         if (!numPixels.isNull()) {
@@ -251,7 +251,7 @@ void NetworkEditorView::wheelEvent(QWheelEvent* e) {
         }
     } else if (e->modifiers() & Qt::ShiftModifier) {
         // horizontal scrolling
-        auto modifiers = e->modifiers();
+        const auto modifiers = e->modifiers();
         // remove the shift key temporarily from the event
         e->setModifiers(e->modifiers() ^ Qt::ShiftModifier);
         horizontalScrollBar()->event(e);
@@ -286,7 +286,7 @@ void NetworkEditorView::mouseReleaseEvent(QMouseEvent* e) {
 
 void NetworkEditorView::mouseMoveEvent(QMouseEvent* e) {
     if ((e->buttons() & Qt::LeftButton) && dragPos_) {
-        auto delta = e->pos() - dragPos_.value();
+        const auto delta = e->pos() - dragPos_.value();
         auto hBar = horizontalScrollBar();
         auto vBar = verticalScrollBar();
         hBar->setValue(hBar->value() - delta.x());
@@ -321,7 +321,7 @@ void NetworkEditorView::exportViewToFile(const std::filesystem::path& filename, 
     const bool bgPreviousState = editor_->isBackgroundVisible();
     editor_->setBackgroundVisible(backgroundVisible);
 
-    auto renderCall = [&, entireScene](QPainter& painter) {
+    const auto renderCall = [&, entireScene](QPainter& painter) {
         if (entireScene) {
             scene()->render(&painter, destRect, rect.toRect());
         } else {
@@ -369,17 +369,17 @@ QImage NetworkEditorView::exportViewToImage(bool entireScene, bool backgroundVis
 
     // padding of source/scene rect if output aspect ratio does not match
     if (srcAspectRatio > destAspectRatio) {
-        auto padding = (rect.width() / destAspectRatio - rect.height()) * 0.5;
+        const auto padding = (rect.width() / destAspectRatio - rect.height()) * 0.5;
         rect += QMarginsF(0.0, padding, 0.0, padding);
     } else if (srcAspectRatio < destAspectRatio) {
-        auto padding = (rect.height() * destAspectRatio - rect.width()) * 0.5;
+        const auto padding = (rect.height() * destAspectRatio - rect.width()) * 0.5;
         rect += QMarginsF(padding, 0.0, padding, 0.0);
     }
 
     const bool bgPreviousState = editor_->isBackgroundVisible();
     editor_->setBackgroundVisible(backgroundVisible);
 
-    auto renderCall = [&, entireScene](QPainter& painter) {
+    const auto renderCall = [&, entireScene](QPainter& painter) {
         if (entireScene) {
             scene()->render(&painter, destRect, rect.toRect());
         } else {

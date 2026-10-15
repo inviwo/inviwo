@@ -53,9 +53,9 @@ bool operator==(const bar& a, const bar& b) { return a.x == b.x; }
 TEST(Transformiterator, plain) {
     std::vector<int> a = {2, 4, 6, 8};
 
-    auto trans = [](const int& k) -> double { return k * 2.0; };
-    auto begin = makeTransformIterator(trans, a.begin());
-    auto end = makeTransformIterator(trans, a.end());
+    const auto trans = [](const int& k) -> double { return k * 2.0; };
+    const auto begin = makeTransformIterator(trans, a.begin());
+    const auto end = makeTransformIterator(trans, a.end());
 
     std::vector<double> res;
     std::copy(begin, end, std::back_inserter(res));
@@ -67,9 +67,9 @@ TEST(Transformiterator, plain) {
 TEST(Transformiterator, pair) {
     std::vector<foo> a = {{2, 2}, {4, 4}, {6, 6}, {8, 8}};
 
-    auto trans = [](foo& k) -> int& { return k.first; };
-    auto begin = makeTransformIterator(trans, a.begin());
-    auto end = makeTransformIterator(trans, a.end());
+    const auto trans = [](foo& k) -> int& { return k.first; };
+    const auto begin = makeTransformIterator(trans, a.begin());
+    const auto end = makeTransformIterator(trans, a.end());
 
     std::for_each(begin, end, [](int& x) { x *= 2; });
     const auto exp = std::vector<foo>{{4, 2}, {8, 4}, {12, 6}, {16, 8}};
@@ -79,9 +79,9 @@ TEST(Transformiterator, pair) {
 TEST(Transformiterator, Class) {
     std::vector<bar> a = {{2}, {4}, {6}, {8}};
 
-    auto trans = [](bar& i) -> bar& { return i; };
-    auto begin = makeTransformIterator(trans, a.begin());
-    auto end = makeTransformIterator(trans, a.end());
+    const auto trans = [](bar& i) -> bar& { return i; };
+    const auto begin = makeTransformIterator(trans, a.begin());
+    const auto end = makeTransformIterator(trans, a.end());
 
     for (auto it = begin; it != end; ++it) {
         it->inc();

@@ -192,7 +192,7 @@ Key* BaseKeyframeSequence<Key>::add(std::unique_ptr<Keyframe> key) {
 
 template <std::derived_from<Keyframe> Key>
 Key* BaseKeyframeSequence<Key>::add(std::unique_ptr<Key> key) {
-    auto it =
+    const auto it =
         keyframes_.insert(std::upper_bound(keyframes_.begin(), keyframes_.end(), key,
                                            [](const auto& a, const auto& b) { return *a < *b; }),
                           std::move(key));
@@ -216,8 +216,8 @@ std::unique_ptr<Keyframe> BaseKeyframeSequence<Key>::remove(size_t i) {
 
 template <std::derived_from<Keyframe> Key>
 std::unique_ptr<Keyframe> BaseKeyframeSequence<Key>::remove(Keyframe* key) {
-    auto it = std::find_if(keyframes_.begin(), keyframes_.end(),
-                           [&](auto& elem) { return elem.get() == key; });
+    const auto it = std::find_if(keyframes_.begin(), keyframes_.end(),
+                                 [&](auto& elem) { return elem.get() == key; });
     if (it != keyframes_.end()) {
         auto res = std::move(*it);
         keyframes_.erase(it);
@@ -249,7 +249,7 @@ const Key& animation::BaseKeyframeSequence<Key>::getFirst() const {
 }
 template <std::derived_from<Keyframe> Key>
 std::optional<Seconds> animation::BaseKeyframeSequence<Key>::getPrevTime(Seconds at) const {
-    auto it = std::lower_bound(
+    const auto it = std::lower_bound(
         begin(), end(), at, [](const auto& key, const auto& time) { return key.getTime() < time; });
 
     if (it != begin()) {
@@ -261,7 +261,7 @@ std::optional<Seconds> animation::BaseKeyframeSequence<Key>::getPrevTime(Seconds
 
 template <std::derived_from<Keyframe> Key>
 std::optional<Seconds> animation::BaseKeyframeSequence<Key>::getNextTime(Seconds at) const {
-    auto it = std::upper_bound(
+    const auto it = std::upper_bound(
         begin(), end(), at, [](const auto& time, const auto& key) { return time < key.getTime(); });
 
     if (it != end()) {

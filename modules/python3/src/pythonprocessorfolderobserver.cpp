@@ -92,7 +92,7 @@ bool PythonProcessorFolderObserver::registerFile(const std::filesystem::path& fi
 void PythonProcessorFolderObserver::fileChanged(const std::filesystem::path& changed) {
     if (changed == directory_) {
         if (std::filesystem::is_directory(directory_)) {
-            auto files = filesystem::getDirectoryContents(directory_);
+            const auto files = filesystem::getDirectoryContents(directory_);
             for (const auto& file : files) {
                 if (isObserved(directory_ / file)) continue;
                 if (file.extension() != ".py") continue;

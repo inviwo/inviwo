@@ -49,30 +49,30 @@ struct TestImgs {
 };
 
 TEST(ImageTests, ImageLoadWhite) {
-    auto imgFile = TestImgs::white();
+    const auto imgFile = TestImgs::white();
     ASSERT_TRUE(std::filesystem::is_regular_file(imgFile));
 
-    auto ext = imgFile.extension();
+    const auto ext = imgFile.extension();
     EXPECT_EQ(ext, ".bmp");
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
             imgFile);
     ASSERT_TRUE(reader != 0);
-    auto layer = reader->readData(imgFile);
+    const auto layer = reader->readData(imgFile);
 
     Image img(layer);
     auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
     ASSERT_TRUE(layerRam != 0);
 
-    auto dim = layerRam->getDimensions();
+    const auto dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x, 2);
     EXPECT_EQ(dim.y, 2);
 
-    auto a = layerRam->getAsNormalizedDVec3(size2_t(0, 0));
-    auto b = layerRam->getAsNormalizedDVec3(size2_t(0, 1));
-    auto c = layerRam->getAsNormalizedDVec3(size2_t(1, 0));
-    auto d = layerRam->getAsNormalizedDVec3(size2_t(1, 1));
+    const auto a = layerRam->getAsNormalizedDVec3(size2_t(0, 0));
+    const auto b = layerRam->getAsNormalizedDVec3(size2_t(0, 1));
+    const auto c = layerRam->getAsNormalizedDVec3(size2_t(1, 0));
+    const auto d = layerRam->getAsNormalizedDVec3(size2_t(1, 1));
     EXPECT_DOUBLE_EQ(a.r, 1.0);
     EXPECT_DOUBLE_EQ(a.g, 1.0);
     EXPECT_DOUBLE_EQ(a.b, 1.0);
@@ -88,30 +88,30 @@ TEST(ImageTests, ImageLoadWhite) {
 }
 
 TEST(ImageTests, ImageLoadRGB) {
-    auto imgFile = TestImgs::rgb();
+    const auto imgFile = TestImgs::rgb();
 
     ASSERT_TRUE(std::filesystem::is_regular_file(imgFile));
 
-    auto ext = imgFile.extension();
+    const auto ext = imgFile.extension();
     EXPECT_EQ(ext, ".bmp");
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
             imgFile);
     ASSERT_TRUE(reader != 0);
-    auto layer = reader->readData(imgFile);
+    const auto layer = reader->readData(imgFile);
 
     Image img(layer);
     auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
     ASSERT_TRUE(layerRam != 0);
 
-    auto dim = layerRam->getDimensions();
+    const auto dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x, 2);
     EXPECT_EQ(dim.y, 2);
-    auto a = layerRam->getAsNormalizedDVec3(size2_t(0, 0));
-    auto b = layerRam->getAsNormalizedDVec3(size2_t(1, 0));
-    auto c = layerRam->getAsNormalizedDVec3(size2_t(0, 1));
-    auto d = layerRam->getAsNormalizedDVec3(size2_t(1, 1));
+    const auto a = layerRam->getAsNormalizedDVec3(size2_t(0, 0));
+    const auto b = layerRam->getAsNormalizedDVec3(size2_t(1, 0));
+    const auto c = layerRam->getAsNormalizedDVec3(size2_t(0, 1));
+    const auto d = layerRam->getAsNormalizedDVec3(size2_t(1, 1));
     EXPECT_DOUBLE_EQ(a.r, 1.0);
     EXPECT_DOUBLE_EQ(a.g, 0.0);
     EXPECT_DOUBLE_EQ(a.b, 0.0);
@@ -127,29 +127,29 @@ TEST(ImageTests, ImageLoadRGB) {
 }
 
 TEST(ImageTests, ImageLoadRange) {
-    auto imgFile = TestImgs::range();
+    const auto imgFile = TestImgs::range();
 
     ASSERT_TRUE(std::filesystem::is_regular_file(imgFile));
 
-    std::string ext = imgFile.extension().string();
+    const std::string ext = imgFile.extension().string();
     EXPECT_EQ(ext, ".bmp");
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
             imgFile);
     ASSERT_TRUE(reader != 0);
-    auto layer = reader->readData(imgFile);
+    const auto layer = reader->readData(imgFile);
 
     Image img(layer);
     auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
     ASSERT_TRUE(layerRam != 0);
 
-    uvec2 dim = layerRam->getDimensions();
+    const uvec2 dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x, 256);
     EXPECT_EQ(dim.y, 1);
 
     for (int i = 0; i < 255; i++) {
-        auto a = layerRam->getAsNormalizedDVec3(size2_t(i, 0));
+        const auto a = layerRam->getAsNormalizedDVec3(size2_t(i, 0));
         EXPECT_DOUBLE_EQ(a.r, i / 255.0);
         EXPECT_DOUBLE_EQ(a.g, i / 255.0);
         EXPECT_DOUBLE_EQ(a.b, i / 255.0);
@@ -157,17 +157,17 @@ TEST(ImageTests, ImageLoadRange) {
 }
 
 TEST(ImageTests, ImageResize) {
-    auto imgFile = TestImgs::rgb();
+    const auto imgFile = TestImgs::rgb();
     ASSERT_TRUE(std::filesystem::is_regular_file(imgFile));
 
-    std::string ext = imgFile.extension().string();
+    const std::string ext = imgFile.extension().string();
     EXPECT_EQ(ext, ".bmp");
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
             imgFile);
     ASSERT_TRUE(reader != 0);
-    auto layer = reader->readData(imgFile);
+    const auto layer = reader->readData(imgFile);
 
     Image img(layer);
     auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();

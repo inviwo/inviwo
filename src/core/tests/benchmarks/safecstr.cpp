@@ -95,17 +95,17 @@ private:
 };
 
 static void StringConv(benchmark::State& state) {
-    std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
-    for (auto _ : state) {
-        auto str = std::string(sv);
+    const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
+    for (const auto _ : state) {
+        const auto str = std::string(sv);
         auto ptr = str.c_str();
         benchmark::DoNotOptimize(ptr);
     }
 }
 
 static void ArrayConvInit(benchmark::State& state) {
-    std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
-    for (auto _ : state) {
+    const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
+    for (const auto _ : state) {
         std::array<char, 256> buff = {0};
         std::memcpy(buff.data(), sv.data(), sv.size());
         auto ptr = buff.data();
@@ -114,8 +114,8 @@ static void ArrayConvInit(benchmark::State& state) {
 }
 
 static void ArrayConvZero(benchmark::State& state) {
-    std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
-    for (auto _ : state) {
+    const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
+    for (const auto _ : state) {
         std::array<char, 256> buff;
         std::memcpy(buff.data(), sv.data(), sv.size());
         buff[sv.size()] = 0;
@@ -125,18 +125,18 @@ static void ArrayConvZero(benchmark::State& state) {
 }
 
 static void SafeCStr1_256(benchmark::State& state) {
-    std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
-    for (auto _ : state) {
-        auto str = SafeCStr1<256>(sv);
+    const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
+    for (const auto _ : state) {
+        const auto str = SafeCStr1<256>(sv);
         auto ptr = str.c_str();
         benchmark::DoNotOptimize(ptr);
     }
 }
 
 static void SafeCStr2_56(benchmark::State& state) {
-    std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
-    for (auto _ : state) {
-        auto str = SafeCStr2<56>(sv);
+    const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
+    for (const auto _ : state) {
+        const auto str = SafeCStr2<56>(sv);
         auto ptr = str.c_str();
         benchmark::DoNotOptimize(ptr);
     }

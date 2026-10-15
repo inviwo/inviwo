@@ -52,7 +52,7 @@ void ImageCompositor::composite(const Image& source0, const Image& source1, Imag
     IVW_ASSERT(&source0 != &destination, "source0 can not be same as destination");
     IVW_ASSERT(&source1 != &destination, "source1 can not be same as destination");
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     utilgl::activateTarget(destination, type);
     shader.activate();
 

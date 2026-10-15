@@ -64,14 +64,14 @@ std::shared_ptr<Mesh> createCubeProxyGeometry(const std::shared_ptr<const Volume
         extent -= marginsBottomLeft + marginsTopRight;
     }
 
-    glm::vec3 origin(0.0f);
-    glm::vec3 e1(1.0f, 0.0f, 0.0f);
-    glm::vec3 e2(0.0f, 1.0f, 0.0f);
-    glm::vec3 e3(0.0f, 0.0f, 1.0f);
-    glm::vec4 colOrigin(startDataTexCoord, 1.0f);
-    glm::vec4 c1(extent.x, 0.0f, 0.0f, 0.0f);
-    glm::vec4 c2(0.0f, extent.y, 0.0f, 0.0f);
-    glm::vec4 c3(0.0f, 0.0f, extent.z, 0.0f);
+    const glm::vec3 origin(0.0f);
+    const glm::vec3 e1(1.0f, 0.0f, 0.0f);
+    const glm::vec3 e2(0.0f, 1.0f, 0.0f);
+    const glm::vec3 e3(0.0f, 0.0f, 1.0f);
+    const glm::vec4 colOrigin(startDataTexCoord, 1.0f);
+    const glm::vec4 c1(extent.x, 0.0f, 0.0f, 0.0f);
+    const glm::vec4 c2(0.0f, extent.y, 0.0f, 0.0f);
+    const glm::vec4 c3(0.0f, 0.0f, extent.z, 0.0f);
 
     // Create parallelepiped and set it to the outport. The outport will own the data.
     auto geom = meshutil::parallelepiped(origin, e1, e2, e3, colOrigin, c1, c2, c3, normals);
@@ -144,7 +144,7 @@ std::shared_ptr<Mesh> createCubeProxyGeometry(const std::shared_ptr<const Volume
 
     ivec3 endPoint{clipMin + ivec3{clipExtent}};
     // clamp positions to volume
-    ivec3 origin{glm::clamp(clipMin, ivec3{0}, volDims)};
+    const ivec3 origin{glm::clamp(clipMin, ivec3{0}, volDims)};
     endPoint = glm::clamp(endPoint, ivec3{0}, volDims);
 
     return createCubeProxyGeometry(volume, vec3{origin} * volumeExtentInverse,

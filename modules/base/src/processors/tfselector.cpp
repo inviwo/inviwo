@@ -99,7 +99,7 @@ TFSelector::TFSelector()
     , previousTF_(
           "previousTF", "Previous TF",
           [this](Event* e) {
-              if (auto index = selectedTF_.getSelectedIndex()) {
+              if (const auto index = selectedTF_.getSelectedIndex()) {
                   selectedTF_.setSelectedIndex(index - 1);
               } else if (cycle_.get()) {
                   selectedTF_.setSelectedIndex(selectedTF_.size() - 1);
@@ -168,7 +168,7 @@ void TFSelector::onDidRemoveProperty(PropertyOwner*, Property*, size_t) { update
 
 void TFSelector::updateOptions() {
     // update option property
-    NetworkLock lock(&selectedTF_);
+    const NetworkLock lock(&selectedTF_);
 
     if (tfPresets_.size()) {
         std::vector<OptionPropertyStringOption> tfOptions;

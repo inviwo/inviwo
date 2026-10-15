@@ -73,7 +73,7 @@ MeshInformation::MeshInformation()
 }
 
 void MeshInformation::process() {
-    auto mesh = mesh_.getData();
+    const auto mesh = mesh_.getData();
 
     meshInfo_.updateForNewMesh(*mesh);
 

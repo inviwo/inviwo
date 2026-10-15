@@ -216,11 +216,11 @@ void PixelValue::process() {
 void PixelValue::mouseMoveEvent(Event* theEvent) {
     if (!inport_.hasData()) return;
 
-    if (auto* mouseEvent = theEvent->getAs<MouseEvent>()) {
+    if (const auto* mouseEvent = theEvent->getAs<MouseEvent>()) {
         auto img = inport_.getData();
         auto dims = img->getDimensions();
-        auto numCh = img->getNumberOfColorLayers();
-        auto p = mouseEvent->posNormalized();
+        const auto numCh = img->getNumberOfColorLayers();
+        const auto p = mouseEvent->posNormalized();
         if (glm::any(glm::lessThan(p, dvec2(0, 0))) || glm::any(glm::greaterThan(p, dvec2(1, 1)))) {
             // This can happen a lot when having a image layout
             return;
@@ -236,7 +236,7 @@ void PixelValue::mouseMoveEvent(Event* theEvent) {
                     const auto data = layer->getDataTyped();
                     const auto im = util::IndexMapper2D(dims);
 
-                    auto value = data[im(pos)];
+                    const auto value = data[im(pos)];
                     auto v = util::glm_convert<glm::vec<4, Comp>>(value);
                     v = util::applySwizzleMask(v, img->getColorLayer(i)->getSwizzleMask());
 
@@ -255,8 +255,8 @@ void PixelValue::mouseMoveEvent(Event* theEvent) {
                 });
         }
 
-        auto pickV = img->getPickingLayer()->getRepresentation<LayerRAM>()->getAsDVec4(pos);
-        auto depthV = img->getDepthLayer()->getRepresentation<LayerRAM>()->getAsDouble(pos);
+        const auto pickV = img->getPickingLayer()->getRepresentation<LayerRAM>()->getAsDVec4(pos);
+        const auto depthV = img->getDepthLayer()->getRepresentation<LayerRAM>()->getAsDouble(pos);
 
         pickingValue_.set(pickV);
         depthValue_.set(depthV);

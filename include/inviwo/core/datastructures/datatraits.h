@@ -236,7 +236,7 @@ static Document vectorInfo(size_t size, const T* first, const T* last) {
     Document doc;
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
-    auto p = doc.append("p");
+    const auto p = doc.append("p");
     utildoc::TableBuilder tb(p, P::end());
     tb(H("Size"), size);
     if (first) {

@@ -44,12 +44,12 @@ namespace inviwo {
 TEST(CSVnoData, stream) {
     std::istringstream ss("");
 
-    CSVReader reader;
+    const CSVReader reader;
     EXPECT_THROW(reader.readData(ss), DataReaderException);
 }
 
 TEST(CSVnoData, file) {
-    util::TempFileHandle tmpFile("", ".csv");
+    const util::TempFileHandle tmpFile("", ".csv");
 
     CSVReader reader;
     EXPECT_THROW(reader.readData(tmpFile.getFileName()), DataReaderException);
@@ -62,7 +62,7 @@ TEST(CSVdata, numRows) {
     CSVReader reader;
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(6, dataframe->getNumberOfRows()) << "row count does not match";
 }
@@ -74,7 +74,7 @@ TEST(CSVdata, numCols) {
     CSVReader reader;
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(3, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
 }
@@ -96,7 +96,7 @@ TEST(CSVdata, emptyRowAtEnd) {
     CSVReader reader;
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 }
@@ -108,7 +108,7 @@ TEST(CSVdata, emptyRowsAtEnd) {
     CSVReader reader;
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 }
@@ -124,7 +124,7 @@ TEST(CSVdata, emptyFields) {
     CSVReader reader;
     reader.setFirstRowHeader(true);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
 
@@ -197,7 +197,7 @@ TEST(CSVdata, allEmptyElementLine) {
     CSVReader reader;
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(5, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(4, dataframe->getNumberOfRows()) << "row count does not match";
 }
@@ -209,11 +209,11 @@ TEST(CSVdata, byteOrderMark) {
 
     CSVReader reader;
     reader.setFirstRowHeader(false);
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
 
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto value = dataframe->getColumn(1)->getAsString(0);
+    const auto value = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("1", value) << "Column 1";
 }
 
@@ -223,7 +223,7 @@ TEST(CSVheader, withHeader) {
 
     CSVReader reader;
     reader.setFirstRowHeader(true);
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
 
     // dataFrame should have 4 columns, three for data + 1 index
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
@@ -238,7 +238,7 @@ TEST(CSVheader, noHeader) {
     // test if default header names are created properly, i.e. "Column i"
     CSVReader reader;
     reader.setFirstRowHeader(false);
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
 
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     EXPECT_EQ("Column 1", dataframe->getColumn(1)->getHeader());
@@ -251,7 +251,7 @@ TEST(CSVheader, missingHeader) {
 
     CSVReader reader;
     reader.setFirstRowHeader(true);
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
 
     // columns will use first data row as header
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
@@ -278,7 +278,7 @@ TEST(CSVdelimiter, comma) {
     dataframe = reader.readData(ssSemicolon);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto value = dataframe->getColumn(1)->getAsString(0);
+    const auto value = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("a;b;c", value);
 }
 
@@ -301,7 +301,7 @@ TEST(CSVdelimiter, semicolon) {
     dataframe = reader.readData(ssComma);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto value = dataframe->getColumn(1)->getAsString(0);
+    const auto value = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("a,b,c", value);
 }
 
@@ -337,14 +337,14 @@ TEST(CSVquotes, singlequotes) {
     reader.setFirstRowHeader(false);
     reader.setStripQuotes(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto col1 = dataframe->getColumn(1)->getAsString(0);
+    const auto col1 = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("\"first quote\"", col1);
-    auto col2 = dataframe->getColumn(2)->getAsString(0);
+    const auto col2 = dataframe->getColumn(2)->getAsString(0);
     EXPECT_EQ("not quoted", col2);
-    auto col3 = dataframe->getColumn(3)->getAsString(0);
+    const auto col3 = dataframe->getColumn(3)->getAsString(0);
     EXPECT_EQ("\"b\"", col3);
 }
 
@@ -354,14 +354,14 @@ TEST(CSVquotes, stripSingleQuotes) {
     CSVReader reader;
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
-    auto col1 = dataframe->getColumn(1)->getAsString(0);
+    const auto col1 = dataframe->getColumn(1)->getAsString(0);
     EXPECT_EQ("first quote", col1);
-    auto col2 = dataframe->getColumn(2)->getAsString(0);
+    const auto col2 = dataframe->getColumn(2)->getAsString(0);
     EXPECT_EQ("not quoted", col2);
-    auto col3 = dataframe->getColumn(3)->getAsString(0);
+    const auto col3 = dataframe->getColumn(3)->getAsString(0);
     EXPECT_EQ("b", col3);
 }
 
@@ -372,7 +372,7 @@ TEST(CSVquotes, headerQuotes) {
     reader.setFirstRowHeader(true);
     reader.setStripQuotes(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     EXPECT_EQ("\"first col\"", dataframe->getColumn(1)->getHeader()) << "Column Header 1";
     EXPECT_EQ("second", dataframe->getColumn(2)->getHeader()) << "Column Header 2";
@@ -385,7 +385,7 @@ TEST(CSVquotes, stripHeaderQuotes) {
     CSVReader reader;
     reader.setFirstRowHeader(true);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     EXPECT_EQ("first col", dataframe->getColumn(1)->getHeader()) << "Column Header 1";
     EXPECT_EQ("second", dataframe->getColumn(2)->getHeader()) << "Column Header 2";
@@ -417,7 +417,7 @@ TEST(CSVquotes, nestedquotes) {
     reader.setFirstRowHeader(true);
     reader.setStripQuotes(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     EXPECT_EQ("\"first \"col\"\"", dataframe->getColumn(1)->getHeader()) << "Column Header 1";
     EXPECT_EQ("second", dataframe->getColumn(2)->getHeader()) << "Column Header 2";
@@ -433,7 +433,7 @@ TEST(CSVquotes, multiline) {
     reader.setFirstRowHeader(true);
     reader.setStripQuotes(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
     auto value = dataframe->getColumn(1)->getAsString(0);
@@ -452,7 +452,7 @@ TEST(CSVquotes, stripMultiline) {
     CSVReader reader;
     reader.setFirstRowHeader(true);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
     auto value = dataframe->getColumn(1)->getAsString(0);
@@ -468,7 +468,7 @@ TEST(CSVlinebreaks, LFonly) {
 
     CSVReader reader;
     reader.setFirstRowHeader(false);
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
 
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
@@ -479,7 +479,7 @@ TEST(CSVlinebreaks, CRLF) {
 
     CSVReader reader;
     reader.setFirstRowHeader(false);
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
 
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
@@ -490,7 +490,7 @@ TEST(CSVlinebreaks, LFCR) {
 
     CSVReader reader;
     reader.setFirstRowHeader(false);
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
 
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
@@ -501,7 +501,7 @@ TEST(CSVlinebreaks, mixed) {
 
     CSVReader reader;
     reader.setFirstRowHeader(false);
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
 
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(4, dataframe->getNumberOfRows()) << "row count does not match";
@@ -517,7 +517,7 @@ TEST(CSVFilters, comments) {
     CSVReader reader;
     reader.setFirstRowHeader(false);
     reader.setFilters(filters);
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
 
     // columns will use first data row as header
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
@@ -536,7 +536,7 @@ TEST(CSVFilters, commentsBeforeHeaders) {
     CSVReader reader;
     reader.setFirstRowHeader(true);
     reader.setFilters(filters);
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
 
     // columns will use first data row as header
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
@@ -555,7 +555,7 @@ TEST(CSVFilters, keepLines) {
     CSVReader reader;
     reader.setFirstRowHeader(false);
     reader.setFilters(filters);
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
 
     // columns will use first data row as header
     ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
@@ -574,7 +574,7 @@ TEST(CSVFilters, emptyRows) {
     reader.setFilters(filters);
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(6, dataframe->getNumberOfRows()) << "row count does not match";
 }
@@ -590,7 +590,7 @@ TEST(CSVFilters, emptyRowsAtEnd) {
     reader.setFilters(filters);
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 }
@@ -605,7 +605,7 @@ TEST(CSVItemFilters, stringMatchEqual) {
     reader.setFilters(filters);
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(3, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 
@@ -629,7 +629,7 @@ TEST(CSVItemFilters, stringMatchRegex) {
     reader.setFilters(filters);
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 
@@ -648,7 +648,7 @@ TEST(CSVItemFilters, stringMatchPartialRegex) {
     reader.setFilters(filters);
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
 
@@ -667,7 +667,7 @@ TEST(CSVItemFilters, intMatch) {
     reader.setFilters(filters);
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
 
@@ -688,7 +688,7 @@ TEST(CSVItemFilters, intRange) {
     reader.setFilters(filters);
     reader.setFirstRowHeader(false);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(3, dataframe->getNumberOfRows()) << "row count does not match";
 
@@ -711,7 +711,7 @@ TEST(CSVItemFilters, doubleMatch) {
     reader.setFirstRowHeader(false);
     reader.setEnableDoublePrecision(true);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 
@@ -733,7 +733,7 @@ TEST(CSVItemFilters, doubleRange) {
     reader.setFirstRowHeader(false);
     reader.setEnableDoublePrecision(true);
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(2, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 

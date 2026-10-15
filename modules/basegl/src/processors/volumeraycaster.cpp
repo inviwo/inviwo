@@ -114,7 +114,7 @@ VolumeRaycaster::VolumeRaycaster()
 
     channel_.setSerializationMode(PropertySerializationMode::All);
 
-    auto updateTFHistSel = [this]() {
+    const auto updateTFHistSel = [this]() {
         HistogramSelection selection{};
         selection[channel_] = true;
         isotfComposite_.setHistogramSelection(selection);

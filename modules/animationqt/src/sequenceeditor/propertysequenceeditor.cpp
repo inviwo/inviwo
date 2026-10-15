@@ -133,7 +133,7 @@ public:
             if (auto cameraProperty = dynamic_cast<CameraProperty*>(property_.get())) {
                 // HACK: Only show relevant properties for the CameraTrack
                 // We should delegate this in case more properties need this
-                std::vector<Property*> properties = cameraProperty->getPropertiesRecursive();
+                const std::vector<Property*> properties = cameraProperty->getPropertiesRecursive();
                 for (auto prop : properties) {
                     const auto keepProperties = {"lookFrom", "lookTo", "lookUp"};
                     if (std::none_of(
@@ -330,8 +330,8 @@ void PropertySequenceEditor::onValueKeyframeSequenceInterpolationDidChange(
     ValueKeyframeSequence* seq) {
 
     const QSignalBlocker block(interpolation_);
-    auto id = utilqt::toQString(seq->getInterpolation().getClassIdentifier());
-    auto ind = interpolation_->findData(id);
+    const auto id = utilqt::toQString(seq->getInterpolation().getClassIdentifier());
+    const auto ind = interpolation_->findData(id);
     interpolation_->setCurrentIndex(ind);
 
     auto widgets = std::make_unique<CollapsibleGroupBoxWidgetQt>(nullptr, &seq->getInterpolation(),

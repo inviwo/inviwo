@@ -733,8 +733,9 @@ void reorder(Functions& f, C& list, const std::pmr::vector<std::string_view>& or
             ++dst;
         }
 
-        if (auto it = std::find_if(list.begin() + dst, list.end(),
-                                   [&](const auto& item) { return f.getID(item) == order[i]; });
+        if (const auto it =
+                std::find_if(list.begin() + dst, list.end(),
+                             [&](const auto& item) { return f.getID(item) == order[i]; });
             it != list.end() && it != list.begin() + dst) {
             f.onMove(*it, dst);
         }
@@ -756,7 +757,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
 
     const NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) {
-        for (auto& id : toRemove) f.onRemove(id);
+        for (const auto& id : toRemove) f.onRemove(id);
         return;
     }
 
@@ -768,7 +769,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
         std::erase(toRemove, identifier);
         foundIdentifiers.emplace_back(identifier);
 
-        auto it = std::ranges::find(container, identifier, f.getID);
+        const auto it = std::ranges::find(container, identifier, f.getID);
         if (it != container.end()) {
             if (objectNeedsRecreation(*it) && f.canRecreate(identifier, index)) {
                 f.onRemove(f.getID(*it));
@@ -856,7 +857,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
         const K key = f.idTransform(identifier);
         std::erase(toRemove, key);
 
-        auto it = container.find(key);
+        const auto it = container.find(key);
         if (it != container.end()) {
             if (objectNeedsRecreation(it->second) && f.canRecreate(key)) {
                 f.onRemove(it->first);
@@ -992,7 +993,7 @@ auto Deserializer::getNonRegisteredType() {
 
 template <bool Shared, bool Resettable, typename Ptr>
 void Deserializer::deserializeSmartPtr(std::string_view key, Ptr& data) {
-    auto* keyNode = retrieveChild(key);
+    const auto* keyNode = retrieveChild(key);
     if (!keyNode) return;
 
     using T = std::remove_cvref_t<decltype(*data)>;

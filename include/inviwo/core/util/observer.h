@@ -354,14 +354,14 @@ template <typename T>
 bool Observable<T>::removeObserverInternal(Observer* aObserver) {
     auto* observer = static_cast<T*>(aObserver);
 
-    if (auto it = std::ranges::find(observers_, observer); it != observers_.end()) {
+    if (const auto it = std::ranges::find(observers_, observer); it != observers_.end()) {
         if (invocationCount_ == 0) {
             observers_.erase(it);
         } else {
             *it = nullptr;
         }
         return true;
-    } else if (auto it2 = std::ranges::find(toAdd_, observer); it2 != toAdd_.end()) {
+    } else if (const auto it2 = std::ranges::find(toAdd_, observer); it2 != toAdd_.end()) {
         toAdd_.erase(it2);
         return true;
     } else {

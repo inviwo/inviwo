@@ -100,11 +100,11 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
 
-    auto escape = [](const std::string& str) -> std::string {
+    const auto escape = [](const std::string& str) -> std::string {
         return utilqt::fromQString(utilqt::toQString(str).toHtmlEscaped());
     };
 
-    auto makeImg = [](QString path, int size) {
+    const auto makeImg = [](QString path, int size) {
         const auto img = QImage(path);
         QByteArray imgData;
         QBuffer buffer(&imgData);
@@ -117,7 +117,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
             {"src", "data:image/png;base64," + std::string(imgData.toBase64().data())}};
     };
 
-    auto makeBody = [](Document& doc) {
+    const auto makeBody = [](Document& doc) {
         auto html = doc.append("html");
         html.append("head").append("style",
                                    "a {"
@@ -227,7 +227,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
     if (auto bi = util::getBuildInfo()) {
         tb1(H("Date"), bi->getDate());
         StringMap<std::vector<util::BuildInfo::ModulesDir>> modulesDirsByRepo;
-        for (auto& modulesDir : bi->modulesDirs) {
+        for (const auto& modulesDir : bi->modulesDirs) {
             modulesDirsByRepo[modulesDir.repo].push_back(modulesDir);
         }
         auto d0 = body.append("div");
@@ -313,13 +313,13 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
         }
     }
 
-    std::string str = doc;
+    const std::string str = doc;
     textDoc->setHtml(utilqt::toQString(str));
 
-    auto showLicense = [str, textDoc, app, escape, makeBody](const QUrl& url) {
+    const auto showLicense = [str, textDoc, app, escape, makeBody](const QUrl& url) {
         if (url.hasQuery()) {
-            QUrlQuery query(url);
-            auto moduleName = utilqt::fromQString(query.queryItemValue("module"));
+            const QUrlQuery query(url);
+            const auto moduleName = utilqt::fromQString(query.queryItemValue("module"));
             auto licenseId = utilqt::fromQString(query.queryItemValue("id"));
 
             auto mfo = app->getModuleManager().getFactoryObject(moduleName);
@@ -327,7 +327,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
 
             auto& licenses = mfo->licenses;
 
-            auto lit = util::find_if(licenses, [&](auto& l) { return l.id == licenseId; });
+            const auto lit = util::find_if(licenses, [&](auto& l) { return l.id == licenseId; });
             if (lit == licenses.end()) return;
 
             auto& license = *lit;
@@ -347,7 +347,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
 
             auto mod = app->getModuleByIdentifier(moduleName);
             if (!mod) return;
-            auto modulePath = mod->getPath();
+            const auto modulePath = mod->getPath();
             for (auto& file : license.files) {
 
                 const auto defaultLicensePath = modulePath / "licenses" / file;
@@ -357,10 +357,10 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
 
                 std::stringstream buffer;
                 if (std::filesystem::is_regular_file(defaultLicensePath)) {
-                    auto f = std::ifstream(defaultLicensePath);
+                    const auto f = std::ifstream(defaultLicensePath);
                     buffer << f.rdbuf();
                 } else if (std::filesystem::is_regular_file(fallbackLicensePath)) {
-                    auto f = std::ifstream(fallbackLicensePath);
+                    const auto f = std::ifstream(fallbackLicensePath);
                     buffer << f.rdbuf();
                 } else {
                     buffer << "License file not found.";

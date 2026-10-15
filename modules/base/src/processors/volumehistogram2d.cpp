@@ -73,9 +73,9 @@ std::vector<OptionPropertyIntOption> enumeratedOptions() {
 
 std::shared_ptr<Layer> createLayer(const Histogram2D& hist, dvec2 normalizationRange,
                                    VolumeHistogram2D::Scaling scaling) {
-    auto layerRep =
+    const auto layerRep =
         std::make_shared<LayerRAMPrecision<float>>(LayerReprConfig{.dimensions = hist.dimensions});
-    auto dst = layerRep->getView();
+    const auto dst = layerRep->getView();
 
     const double delta = normalizationRange.y - normalizationRange.x;
     const double min = normalizationRange.x;
@@ -159,7 +159,7 @@ void VolumeHistogram2D::process() {
                         "connected/has no data.");
     }
 
-    auto accessVolume =
+    const auto accessVolume =
         [&](const OptionPropertyInt& p) -> std::tuple<std::shared_ptr<const Volume>, size_t> {
         if (p.getSelectedIndex() >= 4) {
             return {inport2_.getData(), p.get()};
@@ -193,8 +193,8 @@ void VolumeHistogram2D::process() {
     auto hist = dispatching::doubleDispatch<Histogram2D, dispatching::filter::All,
                                             dispatching::filter::All>(
         vrep1->getDataFormatId(), vrep2->getDataFormatId(), [&]<typename T1, typename T2>() {
-            auto src1 = static_cast<const VolumeRAMPrecision<T1>*>(vrep1)->getView();
-            auto src2 = static_cast<const VolumeRAMPrecision<T2>*>(vrep2)->getView();
+            const auto src1 = static_cast<const VolumeRAMPrecision<T1>*>(vrep1)->getView();
+            const auto src2 = static_cast<const VolumeRAMPrecision<T2>*>(vrep2)->getView();
 
             return util::calculateHistogram2D<T1, T2>(src1, c1, volume1->dataMap, src2, c2,
                                                       volume2->dataMap, histSize);
@@ -204,7 +204,7 @@ void VolumeHistogram2D::process() {
     dataRange_.setDataRange(range);
     dataRange_.setValueRange(dataRange_.getDataRange());
 
-    auto layer = createLayer(hist, dataRange_.getDataRange(), scaling_);
+    const auto layer = createLayer(hist, dataRange_.getDataRange(), scaling_);
     layer->axes[0] = volume1->dataMap.valueAxis;
     layer->axes[1] = volume2->dataMap.valueAxis;
 

@@ -62,7 +62,7 @@ namespace inviwo {
 
 namespace detail {
 
-IVW_MODULE_BASE_API std::string cacheState(Processor* p, ProcessorNetwork& net,
+IVW_MODULE_BASE_API std::string cacheState(Processor* p, const ProcessorNetwork& net,
                                            const std::filesystem::path& refPath,
                                            std::pmr::string& xml);
 
@@ -179,7 +179,7 @@ struct RAMCache {
     bool has(std::string_view key) const { return cache.contains(key); }
 
     std::optional<DataType> get(std::string_view key) {
-        if (auto it = cache.find(key); it != cache.end()) {
+        if (const auto it = cache.find(key); it != cache.end()) {
             it->second.used = std::chrono::system_clock::now();
             return it->second.data;
         } else {
@@ -272,7 +272,7 @@ void FileCache<DataType, InportType, OutportType>::process() {
             loadedKey_ = key_;
         } else if (auto reader = rw_.getReader()) {
             if (auto maybePath = pathForKey(key_)) {
-                auto diskData = reader->readData(*maybePath);
+                const auto diskData = reader->readData(*maybePath);
                 ram_.add(key_, diskData);
                 outport_.setData(diskData);
                 loadedKey_ = key_;
@@ -282,7 +282,7 @@ void FileCache<DataType, InportType, OutportType>::process() {
         } else {
             throw Exception("No reader found");
         }
-    } else if (auto data = inport_.getData()) {
+    } else if (const auto data = inport_.getData()) {
         if (auto maybePath = pathForKey(key_)) {
             if (auto writer = rw_.getWriter()) {
                 writer->writeData(data.get(), *maybePath);

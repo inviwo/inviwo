@@ -44,36 +44,37 @@ using namespace inviwo::meta;
 
 TEST(filteriterator, basic) {
     std::vector<int> a = {1, 2, 3, 4, 5, 6, 7, 8};
-    auto pred = [](const int& i) { return i % 2 == 0; };
-    auto begin = makeFilterIterator(pred, a.begin(), a.end());
-    auto end = makeFilterIterator(pred, a.end(), a.end());
+    const auto pred = [](const int& i) { return i % 2 == 0; };
+    const auto begin = makeFilterIterator(pred, a.begin(), a.end());
+    const auto end = makeFilterIterator(pred, a.end(), a.end());
 
     std::vector<int> res;
     std::copy(begin, end, std::back_inserter(res));
 
-    auto res2 = std::vector<int>{2, 4, 6, 8};
+    const auto res2 = std::vector<int>{2, 4, 6, 8};
     EXPECT_EQ(res, res2);
 }
 
 TEST(filteriterator, end) {
     std::vector<int> a = {1, 2, 3, 4, 5, 6, 7, 8};
-    auto begin = makeFilterIterator([](const int& i) { return i % 2 == 0; }, a.begin(), a.end());
-    auto end = begin.end();
+    const auto begin =
+        makeFilterIterator([](const int& i) { return i % 2 == 0; }, a.begin(), a.end());
+    const auto end = begin.end();
 
     std::vector<int> res;
     std::copy(begin, end, std::back_inserter(res));
 
-    auto res2 = std::vector<int>{2, 4, 6, 8};
+    const auto res2 = std::vector<int>{2, 4, 6, 8};
     EXPECT_EQ(res, res2);
 }
 
 TEST(filteriterator, range) {
     std::vector<int> a = {1, 2, 3, 4, 5, 6, 7, 8};
     std::vector<int> res;
-    for (auto& i :
+    for (const auto& i :
          makeFilterIterator([](const int& k) { return k % 2 == 0; }, a.begin(), a.end())) {
         res.push_back(i);
     }
-    auto res2 = std::vector<int>{2, 4, 6, 8};
+    const auto res2 = std::vector<int>{2, 4, 6, 8};
     EXPECT_EQ(res, res2);
 }

@@ -98,7 +98,7 @@ void exposeVolume(pybind11::module& m) {
                 if (volume->hasRepresentation<VolumePy>()) {
                     volume->removeRepresentation(volume->getRepresentation<VolumePy>());
                 }
-                auto rep =
+                const auto rep =
                     std::make_shared<VolumePy>(data, volume->getSwizzleMask(),
                                                volume->getInterpolation(), volume->getWrapping());
                 volume->addRepresentation(rep);

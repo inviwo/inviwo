@@ -237,7 +237,7 @@ GLUITestProcessor::GLUITestProcessor()
     uiRenderer_.setTextColor(uiTextColor_.get());
     uiRenderer_.setHoverColor(hoverColor_.get());
 
-    auto updateSliderOrientation = [this]() {
+    const auto updateSliderOrientation = [this]() {
         if (intPropertyVertical_.get()) {
             // vertical
             intPropertyUI_.setOrientation(glui::UIOrientation::Vertical);
@@ -303,8 +303,8 @@ void GLUITestProcessor::process() {
     } else {
         utilgl::activateAndClearTarget(outport_);
     }
-    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     if (uiVisible_.get()) {
         // coordinate system defined in screen coords with origin in the top-left corner
@@ -312,7 +312,7 @@ void GLUITestProcessor::process() {
         {
             // put UI elements in lower left corner of the canvas
             const ivec2 extent(layout_.getExtent());
-            ivec2 origin(0, extent.y);
+            const ivec2 origin(0, extent.y);
 
             layout_.render(origin, outport_.getDimensions());
         }
@@ -321,7 +321,7 @@ void GLUITestProcessor::process() {
             // render second layout in upper right corner
             const ivec2 extent(propertyLayout_.getExtent());
             const ivec2 outputDim(outport_.getDimensions());
-            ivec2 origin(outputDim.x - extent.x, outputDim.y);
+            const ivec2 origin(outputDim.x - extent.x, outputDim.y);
 
             propertyLayout_.render(origin, outport_.getDimensions());
         }

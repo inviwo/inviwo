@@ -98,12 +98,12 @@ void ToolButton::setMargins(int top, int left, int bottom, int right) {
 const ivec4& ToolButton::getMargins() const { return margins_; }
 
 void ToolButton::renderWidget(const ivec2& origin, const size2_t& canvasDim) {
-    TextureUnit texUnit;
+    const TextureUnit texUnit;
     texUnit.activate();
     uiTextures_->bind();
 
     // bind textures
-    auto& uiShader = uiRenderer_->getShader();
+    const auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
 
     uiShader.setUniform("origin", vec2(origin + widgetPos_));
@@ -119,7 +119,7 @@ void ToolButton::renderWidget(const ivec2& origin, const size2_t& canvasDim) {
 
     // render button image
     if (labelImage_) {
-        utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         const ivec2 imagePos(origin + ivec2(margins_.y, margins_.z));
         const ivec2 imageExtent =
             getWidgetExtentScaled() - ivec2(margins_.y + margins_.w, margins_.x + margins_.z);
@@ -140,7 +140,7 @@ std::shared_ptr<Texture2D> ToolButton::loadImage(const std::filesystem::path& fi
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>(filename)) {
         try {
             // try to load texture data from current file
-            auto layer = reader->readData(filename);
+            const auto layer = reader->readData(filename);
             return layer->getRepresentation<LayerGL>()->getTexture();
         } catch (const DataReaderException& e) {
             log::exception(e, "Could not load texture data: {}, {}", filename, e.getMessage());

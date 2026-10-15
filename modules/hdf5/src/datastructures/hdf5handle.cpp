@@ -40,12 +40,12 @@ namespace inviwo::hdf5 {
 namespace {
 
 H5::Group load(const std::filesystem::path& filename, const std::string& path) {
-    H5::H5File hdfFile(filename.generic_string(), H5F_ACC_RDONLY);
+    const H5::H5File hdfFile(filename.generic_string(), H5F_ACC_RDONLY);
     return hdfFile.openGroup(path);
 }
 
 H5::DSetAccPropList accessPropertyList(const std::filesystem::path& filename) {
-    H5::DSetAccPropList dapl{H5::DSetAccPropList::DEFAULT};
+    const H5::DSetAccPropList dapl{H5::DSetAccPropList::DEFAULT};
     if (filename.has_parent_path()) {
         if (H5Pset_efile_prefix(dapl.getId(), filename.parent_path().generic_string().c_str()) < 0) {
             throw Exception{"could not set efile prefix"};

@@ -73,7 +73,7 @@ void addSegmentsFor(std::vector<ShaderComponent::Segment>& dest,
     }
 }
 
-void setUniforms(Shader& shader, const TransferFunctionProperty& tf) {
+void setUniforms(const Shader& shader, const TransferFunctionProperty& tf) {
     if (tf.get().getMode() == PrimitiveSetMode::Absolute) {
         const auto range = tf.get().getRange();
         const auto name = tf.getIdentifier();

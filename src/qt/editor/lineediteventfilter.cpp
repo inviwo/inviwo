@@ -46,7 +46,7 @@ bool LineEditEventFilter::eventFilter(QObject* obj, QEvent* e) {
 
     switch (e->type()) {
         case QEvent::KeyPress: {
-            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
+            const QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
             switch (keyEvent->key()) {
                 case Qt::Key_Down: {
                     // set focus to the tree widget

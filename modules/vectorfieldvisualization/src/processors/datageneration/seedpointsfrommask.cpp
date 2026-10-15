@@ -120,7 +120,7 @@ void SeedPointsFromMask::process() {
 
     for (const auto& v : volumes_) {
         v->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto volPrecision) {
-            auto dim = volPrecision->getDimensions();
+            const auto dim = volPrecision->getDimensions();
             auto data = volPrecision->getDataTyped();
             util::IndexMapper3D index(dim);
             vec3 invDim = vec3(1.0f) / vec3(dim);
@@ -128,7 +128,7 @@ void SeedPointsFromMask::process() {
             auto transform = [transformToWorld = transformToWorld_.get(),
                               m = v->getCoordinateTransformer().getDataToWorldMatrix()](auto p) {
                 if (transformToWorld) {
-                    vec4 WP = m * vec4(p, 1.0f);
+                    const vec4 WP = m * vec4(p, 1.0f);
                     return vec3(WP) / WP.w;
                 } else {
                     return p;

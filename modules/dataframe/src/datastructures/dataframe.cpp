@@ -59,8 +59,8 @@ DataFrame::DataFrame(std::vector<std::shared_ptr<Column>> columns) : columns_{st
     if (columns_.empty()) {
         createIndexBuffer(0);
     } else {
-        if (auto it = std::ranges::adjacent_find(columns_, std::ranges::not_equal_to{},
-                                                 [](auto& item) { return item->getSize(); });
+        if (const auto it = std::ranges::adjacent_find(columns_, std::ranges::not_equal_to{},
+                                                       [](auto& item) { return item->getSize(); });
             it != columns_.end()) {
             throw Exception(SourceContext{},
                             "Columns have different lengths {}: {} rows and {} {} rows",
@@ -118,7 +118,7 @@ DataFrame::DataFrame(DataFrame&&) noexcept = default;
 
 void DataFrame::createIndexBuffer(size_t rows) {
     // at the moment, GPUs only support uints up to 32bit
-    auto seq = util::make_sequence<std::uint32_t>(0, static_cast<std::uint32_t>(rows));
+    const auto seq = util::make_sequence<std::uint32_t>(0, static_cast<std::uint32_t>(rows));
     std::vector<std::uint32_t> indices(seq.begin(), seq.end());
     columns_.insert(columns_.begin(), std::make_shared<IndexColumn>("index", std::move(indices)));
 }
@@ -212,7 +212,7 @@ std::shared_ptr<const Column> DataFrame::getColumn(std::string_view name) const 
 }
 
 Column& DataFrame::getColumnRef(std::string_view name) {
-    if (auto col = getColumn(name)) {
+    if (const auto col = getColumn(name)) {
         return *col;
     } else {
         throw Exception(SourceContext{}, "No Column with name '{}' found", name);
@@ -220,7 +220,7 @@ Column& DataFrame::getColumnRef(std::string_view name) {
 }
 
 const Column& DataFrame::getColumnRef(std::string_view name) const {
-    if (auto col = getColumn(name)) {
+    if (const auto col = getColumn(name)) {
         return *col;
     } else {
         throw Exception(SourceContext{}, "No Column with name '{}' found", name);
@@ -236,14 +236,14 @@ std::shared_ptr<const CategoricalColumn> DataFrame::getCategoricalColumn(
 }
 
 CategoricalColumn& DataFrame::getCategoricalColumnRef(std::string_view name) {
-    if (auto col = getCategoricalColumn(name)) {
+    if (const auto col = getCategoricalColumn(name)) {
         return *col;
     } else {
         throw Exception(SourceContext{}, "No CategoricalColumn with name '{}' found", name);
     }
 }
 const CategoricalColumn& DataFrame::getCategoricalColumnRef(std::string_view name) const {
-    if (auto col = getCategoricalColumn(name)) {
+    if (const auto col = getCategoricalColumn(name)) {
         return *col;
     } else {
         throw Exception(SourceContext{}, "No CategoricalColumn with name '{}' found", name);
@@ -269,7 +269,7 @@ std::shared_ptr<IndexColumn> DataFrame::getIndexColumn() {
 }
 
 const IndexColumn& DataFrame::getIndexColumnRef() const {
-    if (auto col = getIndexColumn()) {
+    if (const auto col = getIndexColumn()) {
         return *col;
     } else {
         throw Exception(SourceContext{}, "No IndexColumn found");
@@ -277,7 +277,7 @@ const IndexColumn& DataFrame::getIndexColumnRef() const {
 }
 
 IndexColumn& DataFrame::getIndexColumnRef() {
-    if (auto col = getIndexColumn()) {
+    if (const auto col = getIndexColumn()) {
         return *col;
     } else {
         throw Exception(SourceContext{}, "No IndexColumn found");

@@ -82,7 +82,7 @@ class InviwoApplication;
 
 template <typename T>
 void to_json(json& j, const DataInport<T>& port) {
-    if (auto data = port.getData()) {
+    if (const auto data = port.getData()) {
         j = *data;
     } else {
         j.clear();
@@ -95,7 +95,7 @@ void from_json(const json&, DataInport<T>&) {
 
 template <typename T>
 void to_json(json& j, const DataOutport<T>& port) {
-    if (auto data = port.getData()) {
+    if (const auto data = port.getData()) {
         j = *data;
     } else {
         j.clear();

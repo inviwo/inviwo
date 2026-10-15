@@ -125,10 +125,10 @@ void SequenceBrush<T>::process() {
     }
 
     const auto sequence = inport_.getData();
-    auto brushed = std::make_shared<DataSequence<T>>();
+    const auto brushed = std::make_shared<DataSequence<T>>();
 
     const auto& indices = bnl_.getIndices(action_.get(), target_.get());
-    for (auto i : indices) {
+    for (const auto i : indices) {
         if (maxSize_ != 0 && i >= maxSize_) break;
         if (i >= sequence->size()) break;
         brushed->push_back(sequence->at(i));

@@ -169,7 +169,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
 
     auto* spaceLabel = new QLabel("Spacing");
     spaceX_ = new QLineEdit(this);
-    QLocale locale(spaceX_->locale());
+    const QLocale locale(spaceX_->locale());
     spaceX_->setText(locale.toString(0.01));
     spaceX_->setValidator(new QDoubleValidator(0.0, 1000.0, 16, spaceX_));
     spaceY_ = new QLineEdit(this);
@@ -254,7 +254,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
 RawDataReaderDialogQt::~RawDataReaderDialogQt() = default;
 
 bool RawDataReaderDialogQt::show() {
-    auto res = QDialog::exec();
+    const auto res = QDialog::exec();
     RenderContext::getPtr()->activateDefaultRenderContext();
     return res == QDialog::Accepted;
 }
@@ -264,7 +264,7 @@ void RawDataReaderDialogQt::setFile(const std::filesystem::path& fileName) {
 }
 
 const DataFormatBase* RawDataReaderDialogQt::getFormat() const {
-    auto id = static_cast<DataFormatId>(bitDepth_->currentData().toInt());
+    const auto id = static_cast<DataFormatId>(bitDepth_->currentData().toInt());
     if (id == DataFormatId::NotSpecialized) {
         return DataFormatBase::get(NumericType::UnsignedInteger, channels_->value(), 16);
     } else {
@@ -295,7 +295,7 @@ void RawDataReaderDialogQt::setDimensions(uvec3 dim) {
 }
 
 dvec3 RawDataReaderDialogQt::getSpacing() const {
-    QLocale locale = spaceX_->locale();
+    const QLocale locale = spaceX_->locale();
     glm::dvec3 space(0.01f);
 
     space.x = locale.toDouble(spaceX_->text().remove(QChar(' ')));
@@ -306,7 +306,7 @@ dvec3 RawDataReaderDialogQt::getSpacing() const {
 }
 
 void RawDataReaderDialogQt::setSpacing(dvec3 spacing) {
-    QLocale locale = spaceX_->locale();
+    const QLocale locale = spaceX_->locale();
     spaceX_->setText(locale.toString(spacing.x));
     spaceY_->setText(locale.toString(spacing.y));
     spaceZ_->setText(locale.toString(spacing.z));
@@ -362,7 +362,7 @@ void RawDataReaderDialogQt::setCompression(Compression compression) {
 }
 
 void RawDataReaderDialogQt::selectedDataTypeChanged(int index) {
-    auto id = static_cast<DataFormatId>(bitDepth_->itemData(index).toInt());
+    const auto id = static_cast<DataFormatId>(bitDepth_->itemData(index).toInt());
     if (id == DataFormatId::NotSpecialized) {
         dataRangeMin_->setValue(0);
         dataRangeMax_->setValue(4095);

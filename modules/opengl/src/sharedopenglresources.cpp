@@ -45,7 +45,7 @@ namespace inviwo {
 namespace {
 
 std::unique_ptr<Mesh> createLineMesh() {
-    auto verticesBuffer = util::makeBuffer<vec3>({{0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}});
+    const auto verticesBuffer = util::makeBuffer<vec3>({{0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}});
     auto m = std::make_unique<Mesh>();
     m->addBuffer(BufferType::PositionAttrib, verticesBuffer);
     m->addIndices(Mesh::MeshInfo{.dt = DrawType::Lines, .ct = ConnectivityType::None},

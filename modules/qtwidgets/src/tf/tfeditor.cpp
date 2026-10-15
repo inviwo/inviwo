@@ -108,8 +108,8 @@ void createAndInsertPrimitive(std::vector<std::unique_ptr<TFEditorPrimitive>>& l
     auto newPoint = std::make_unique<T>(p, mode);
     newPoint->setSelected(selected);
     editor->addItem(newPoint.get());
-    auto it = std::upper_bound(list.begin(), list.end(), newPoint,
-                               [](const auto& a, const auto& b) { return *a < *b; });
+    const auto it = std::upper_bound(list.begin(), list.end(), newPoint,
+                                     [](const auto& a, const auto& b) { return *a < *b; });
     list.insert(it, std::move(newPoint));
 }
 
@@ -155,7 +155,7 @@ TFEditor::TFEditor(TFPropertyConcept* tfProperty, QWidget* parent)
 TFEditor::~TFEditor() = default;
 
 void TFEditor::onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) {
-    auto it = primitives_.find(&set);
+    const auto it = primitives_.find(&set);
     if (it == primitives_.end()) return;
 
     auto& items = it->second;
@@ -176,13 +176,13 @@ void TFEditor::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
     }
 
     // remove from mirrors
-    if (auto it = mirrors_.find(p); it != mirrors_.end()) {
+    if (const auto it = mirrors_.find(p); it != mirrors_.end()) {
         auto* dst = it->second;
         mirrors_.erase(it);
         mirrors_.erase(dst);
     }
 
-    auto it = primitives_.find(&set);
+    const auto it = primitives_.find(&set);
     if (it == primitives_.end()) return;
     auto& items = it->second;
     std::erase_if(items.points, [&](auto& e) { return &e->getPrimitive() == &p; });
@@ -195,7 +195,7 @@ void TFEditor::onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) {
     }
 }
 void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& primitive) {
-    if (auto it = mirrors_.find(primitive); it != mirrors_.end()) {
+    if (const auto it = mirrors_.find(primitive); it != mirrors_.end()) {
         if (set.getMode() == PrimitiveSetMode::Relative) {
             if (const auto* dm = concept_->getDataMap()) {
                 const auto mirrorPos = std::clamp(mirror(primitive.getPosition(), *dm), 0.0, 1.0);
@@ -210,7 +210,7 @@ void TFEditor::onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive
     if (!bulkUpdate_) updateSceneRect();
 }
 void TFEditor::onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode mode) {
-    auto it = primitives_.find(&set);
+    const auto it = primitives_.find(&set);
     if (it != primitives_.end()) {
         for (auto& primitive : it->second.points) {
             primitive->setMode(mode);
@@ -224,7 +224,7 @@ void TFEditor::onTFBeginBulkUpdate(const TFPrimitiveSet&) { bulkUpdate_ = true; 
 void TFEditor::onTFEndBulkUpdate(const TFPrimitiveSet& set) {
     bulkUpdate_ = false;
 
-    auto it = primitives_.find(&set);
+    const auto it = primitives_.find(&set);
     if (it != primitives_.end() && it->second.connected) {
         updateConnections();
     }
@@ -395,8 +395,8 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         auto* set = setTmp;  // Can't use structured bindings in lambda capture
         IVW_ASSERT(set, "Should never be nullptr");
         if (item.connected) {
-            auto* addTFPoint = menu.addAction("Add TF &Point");
-            auto* addTFPeak = menu.addAction("Add TF P&eak");
+            const auto* addTFPoint = menu.addAction("Add TF &Point");
+            const auto* addTFPeak = menu.addAction("Add TF P&eak");
             connect(addTFPoint, &QAction::triggered, this,
                     [this, pos, set]() { addPoint(pos, *set); });
             connect(addTFPeak, &QAction::triggered, this,
@@ -404,12 +404,12 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
             auto* addTFCombMenu = menu.addMenu("Add TF C&omb...");
             for (int nPeaks : {3, 5, 10, 15, 30}) {
-                for (int width : {1, 3}) {
-                    auto* addTFComb = addTFCombMenu->addAction(utilqt::toQString(
+                for (const int width : {1, 3}) {
+                    const auto* addTFComb = addTFCombMenu->addAction(utilqt::toQString(
                         fmt::format("{} {} Peaks", nPeaks, width == 1 ? "Wide" : "Narrow")));
 
-                    auto* widget = e->widget();
-                    auto* view = qobject_cast<QGraphicsView*>(widget->parent());
+                    const auto* widget = e->widget();
+                    const auto* view = qobject_cast<QGraphicsView*>(widget->parent());
                     if (!view) view = views().front();
                     const auto visibleRect =
                         view->mapToScene(view->viewport()->rect()).boundingRect();
@@ -433,7 +433,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             }
 
         } else {
-            auto* addIsovalue = menu.addAction("Add &Isovalue");
+            const auto* addIsovalue = menu.addAction("Add &Isovalue");
             connect(addIsovalue, &QAction::triggered, this,
                     [this, pos, set]() { addPoint(pos, *set); });
         }
@@ -451,12 +451,12 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         connect(copyAction, &QAction::triggered, this, [this]() { copy(); });
 
         auto* pasteAction = menu.addAction(QIcon(":/svgicons/edit-paste.svg"), "&Paste");
-        auto* clipboard = QApplication::clipboard();
+        const auto* clipboard = QApplication::clipboard();
         pasteAction->setEnabled(clipboard->mimeData() && clipboard->mimeData()->hasFormat(
                                                              QString::fromUtf8(mimeTFPrimitives)));
         connect(pasteAction, &QAction::triggered, this, [this, pos]() { paste(pos); });
 
-        auto* selectAllAction =
+        const auto* selectAllAction =
             menu.addAction(QIcon(":/svgicons/edit-selectall.svg"), tr("&Select All"));
         connect(selectAllAction, &QAction::triggered, this, [this]() { selectAll(); });
     }
@@ -467,8 +467,8 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         auto* editColor = menu.addAction("Edit &Color");
         auto* duplicatePrimitive = menu.addAction("D&uplicate");
         auto* deletePrimitive = menu.addAction("&Delete");
-        auto* clearTF = menu.addAction("&Clear");
-        auto* resetTF = menu.addAction("&Reset");
+        const auto* clearTF = menu.addAction("&Clear");
+        const auto* resetTF = menu.addAction("&Reset");
 
         editColor->setEnabled(!selection.empty());
         connect(editColor, &QAction::triggered, this, &TFEditor::showColorDialog);
@@ -503,19 +503,20 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     {
         auto* transformMenu = menu.addMenu("Trans&form");
 
-        auto* distributeAlphaEvenly = transformMenu->addAction("&Distribute Alpha Evenly");
-        auto* distributePositionEvenly = transformMenu->addAction("&Distribute Position Evenly");
+        const auto* distributeAlphaEvenly = transformMenu->addAction("&Distribute Alpha Evenly");
+        const auto* distributePositionEvenly =
+            transformMenu->addAction("&Distribute Position Evenly");
         transformMenu->addSeparator();
-        auto* alignAlphaToMean = transformMenu->addAction("&Align Alpha to Mean");
-        auto* alignAlphaToTop = transformMenu->addAction("&Align Alpha to Top");
-        auto* alignAlphaToBottom = transformMenu->addAction("&Align Alpha to Bottom");
+        const auto* alignAlphaToMean = transformMenu->addAction("&Align Alpha to Mean");
+        const auto* alignAlphaToTop = transformMenu->addAction("&Align Alpha to Top");
+        const auto* alignAlphaToBottom = transformMenu->addAction("&Align Alpha to Bottom");
         transformMenu->addSeparator();
-        auto* alignPositionToMean = transformMenu->addAction("&Align Position to Mean");
-        auto* alignPositionToLeft = transformMenu->addAction("&Align Position to Left");
-        auto* alignPositionToRight = transformMenu->addAction("&Align Position to Right");
+        const auto* alignPositionToMean = transformMenu->addAction("&Align Position to Mean");
+        const auto* alignPositionToLeft = transformMenu->addAction("&Align Position to Left");
+        const auto* alignPositionToRight = transformMenu->addAction("&Align Position to Right");
         transformMenu->addSeparator();
-        auto* flipPositions = transformMenu->addAction("&Horizontal Flip");
-        auto* interpolateAlpha = transformMenu->addAction("&Interpolate Alpha");
+        const auto* flipPositions = transformMenu->addAction("&Horizontal Flip");
+        const auto* interpolateAlpha = transformMenu->addAction("&Interpolate Alpha");
 
         connect(distributeAlphaEvenly, &QAction::triggered, this, [this]() {
             const NetworkLock lock(concept_->getProperty());
@@ -575,17 +576,18 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         auto* simplify = menu.addMenu("Simplify");
         menu.addSeparator();
 
-        auto makeSimple = [this](double delta) {
+        const auto makeSimple = [this](double delta) {
             return [this, delta]() {
                 const NetworkLock lock(concept_->getProperty());
                 auto* tf = concept_->getTransferFunction();
-                auto simple = TransferFunction::simplify(tf->get(), delta);
+                const auto simple = TransferFunction::simplify(tf->get(), delta);
                 tf->set(simple);
             };
         };
 
         for (double delta : {0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.10, 0.20}) {
-            auto* action = simplify->addAction(utilqt::toQString(fmt::format("{:05.3f}", delta)));
+            const auto* action =
+                simplify->addAction(utilqt::toQString(fmt::format("{:05.3f}", delta)));
             connect(action, &QAction::triggered, this, makeSimple(delta));
         }
     }
@@ -623,7 +625,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         // assign current selection to a group
         for (auto&& i : util::make_sequence(1, 11, 1)) {
             const QString str = (i < 10 ? QString("Group &%1").arg(i) : "Group 1&0");
-            auto* action = groupAssignMenu->addAction(str);
+            const auto* action = groupAssignMenu->addAction(str);
             const auto group = i % 10;
             connect(action, &QAction::triggered, this,
                     [this, group, selection]() { groups_[group] = selection; });
@@ -645,8 +647,8 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         }
 
         if (concept_->hasTF()) {
-            auto* importTF = menu.addAction("&Import TF...");
-            auto* exportTF = menu.addAction("&Export TF...");
+            const auto* importTF = menu.addAction("&Import TF...");
+            const auto* exportTF = menu.addAction("&Export TF...");
             connect(importTF, &QAction::triggered, this,
                     [this]() { concept_->showImportDialog(); });
             connect(exportTF, &QAction::triggered, this,
@@ -654,8 +656,8 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             menu.addSeparator();
         }
         if (concept_->hasIsovalues()) {
-            auto* importTF = menu.addAction("&Import Isovalues...");
-            auto* exportTF = menu.addAction("&Export Isovalues...");
+            const auto* importTF = menu.addAction("&Import Isovalues...");
+            const auto* exportTF = menu.addAction("&Export Isovalues...");
             connect(importTF, &QAction::triggered, this,
                     [this]() { concept_->showImportDialog(); });
             connect(exportTF, &QAction::triggered, this,
@@ -775,7 +777,7 @@ TFPrimitiveSet* TFEditor::activeSet() {
 }
 
 auto TFEditor::activeItem() -> Items* {
-    if (auto it = primitives_.find(activeSet()); it != primitives_.end()) {
+    if (const auto it = primitives_.find(activeSet()); it != primitives_.end()) {
         return &it->second;
     }
     return nullptr;
@@ -798,7 +800,7 @@ void TFEditor::removeControlPoint(TFEditorPrimitive* item) {
 }
 
 TFEditorPrimitive* TFEditor::getTFPrimitiveItemAt(const QPointF& pos) const {
-    auto* view = views().front();
+    const auto* view = views().front();
     const auto deviceTransform = view->viewportTransform();
 
     for (auto& graphicsItem :
@@ -952,7 +954,7 @@ void TFEditor::move(std::span<TFEditorPrimitive*> primitives, const QTransform& 
 }
 
 void TFEditor::copy() {
-    auto selection = getSelectedPrimitiveItems();
+    const auto selection = getSelectedPrimitiveItems();
     if (selection.empty()) return;
 
     std::vector<TFPrimitive*> primitives;
@@ -979,7 +981,7 @@ void TFEditor::paste() { paste(std::nullopt); }
 void TFEditor::paste(const QPointF& scenePos) { paste(std::optional{scenePos}); }
 
 void TFEditor::paste(std::optional<QPointF> scenePos) {
-    auto* clipboard = QApplication::clipboard();
+    const auto* clipboard = QApplication::clipboard();
     const auto* mimeData = clipboard->mimeData();
     if (!mimeData || !mimeData->hasFormat(utilqt::toQString(mimeTFPrimitives))) return;
 
@@ -1022,7 +1024,7 @@ void TFEditor::paste(std::optional<QPointF> scenePos) {
         const util::KeepTrueWhileInScope k(&selectNewPrimitives_);
         clearSelection();
 
-        for (auto& p : primitives) {
+        for (const auto& p : primitives) {
             set->add(*p);
         }
     });
@@ -1202,7 +1204,7 @@ void TFEditor::handleMirroring(const std::vector<TFEditorPrimitive*>& selection)
 
     std::ranges::for_each(selection, [&](TFEditorPrimitive* item) {
         auto* primitive = &item->getPrimitive();
-        if (auto it = mirrors_.find(primitive); it != mirrors_.end()) {
+        if (const auto it = mirrors_.find(primitive); it != mirrors_.end()) {
             auto* dst = it->second;
             mirrors_.erase(it);
             mirrors_.erase(dst);
@@ -1220,7 +1222,7 @@ void TFEditor::handleMirroring(const std::vector<TFEditorPrimitive*>& selection)
                 mirrorPos = mirror(primitive->getPosition());
             }
 
-            auto pIt = std::ranges::find_if(primitives, [&](TFPrimitive* p) {
+            const auto pIt = std::ranges::find_if(primitives, [&](TFPrimitive* p) {
                 return std::abs(p->getPosition() - mirrorPos) < 0.001 && p != primitive;
             });
 
@@ -1248,10 +1250,10 @@ dvec2 TFEditor::viewDependentOffset() const {
     // to determine the offset in scene coords, map a square where each side has length
     // defaultOffset to the scene. We assume that there is no rotation or non-linear
     // view transformation.
-    auto rect = views()
-                    .front()
-                    ->mapToScene(QRect(QPoint(0, 0), QSize(defaultOffset, defaultOffset)))
-                    .boundingRect();
+    const auto rect = views()
+                          .front()
+                          ->mapToScene(QRect(QPoint(0, 0), QSize(defaultOffset, defaultOffset)))
+                          .boundingRect();
 
     return {rect.width(), rect.height()};
 }

@@ -415,11 +415,11 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type<OptionEnumTypes>{}(intOptionConverter);
 
     // Observe composite processors
-    auto userCompositeDir = filesystem::getPath(PathType::Settings, "/composites");
+    const auto userCompositeDir = filesystem::getPath(PathType::Settings, "/composites");
     scanDirForComposites(userCompositeDir);
     compositeDirObserver_.startFileObservation(userCompositeDir);
 
-    auto coreCompositeDir = filesystem::getPath(PathType::Workspaces, "/composites");
+    const auto coreCompositeDir = filesystem::getPath(PathType::Workspaces, "/composites");
     scanDirForComposites(coreCompositeDir);
     compositeDirObserver_.startFileObservation(coreCompositeDir);
 

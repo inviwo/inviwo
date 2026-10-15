@@ -122,7 +122,7 @@ constexpr size_t length(const char (&str)[N]) {
  */
 template <typename It, typename Out>
 constexpr size_t copy(It begin, It end, Out out) {
-    size_t len = 0;
+    const size_t len = 0;
     withoutIndent<true>(begin, end, [&](char c) { *out++ = c; });
     return len;
 }

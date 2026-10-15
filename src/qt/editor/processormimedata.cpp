@@ -45,7 +45,7 @@ ProcessorMimeData::ProcessorMimeData(std::shared_ptr<Processor> processor)
     , processor_{std::move(processor)}
     , activateContext_{[]() { rendercontext::activateDefault(); }} {
 
-    auto cid = utilqt::toQString(processor_->getClassIdentifier());
+    const auto cid = utilqt::toQString(processor_->getClassIdentifier());
 
     QByteArray byteData;
     {

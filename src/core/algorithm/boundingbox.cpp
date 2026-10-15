@@ -142,7 +142,7 @@ std::optional<dmat4> calcBoundingBox(const std::vector<std::shared_ptr<Layer>>& 
 
 std::optional<dmat4> calcBoundingBox(const Mesh& mesh) {
     const auto& buffers = mesh.getBuffers();
-    auto it = std::ranges::find_if(
+    const auto it = std::ranges::find_if(
         buffers, [](const auto& buff) { return buff.first.type == BufferType::PositionAttrib; });
     if (it != buffers.end() && it->second->getSize() > 0) {
         const auto minmax =

@@ -130,10 +130,10 @@ MetaDataToProperty::MetaDataToProperty() {
 }
 
 void MetaDataToProperty::updateProperty(CompositeProperty& parent, const MetaDataMap* metaDataMap) {
-    auto keys = metaDataMap->getKeys();
-    for (auto key : keys) {
+    const auto keys = metaDataMap->getKeys();
+    for (const auto key : keys) {
         auto meta = metaDataMap->get(key);
-        auto it = factory_.find(meta->getClassIdentifier());
+        const auto it = factory_.find(meta->getClassIdentifier());
         if (it != factory_.end()) {
             it->second(key, meta, parent);
         } else {
@@ -146,7 +146,7 @@ void MetaDataToProperty::updateProperty(CompositeProperty& parent, const MetaDat
     for (auto p : parent.getProperties()) {
         ids.emplace_back(p->getIdentifier());
     }
-    for (auto id : ids) {
+    for (const auto id : ids) {
         if (!metaDataMap->get(id)) {
             delete parent.removeProperty(id);
         }

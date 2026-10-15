@@ -311,8 +311,8 @@ void TFPrimitiveSet::add(const std::vector<TFPrimitiveData>& primitives) {
 }
 
 bool TFPrimitiveSet::remove(const TFPrimitive& primitive) {
-    auto it = std::find_if(values_.begin(), values_.end(),
-                           [&](const auto& v) { return &primitive == v.get(); });
+    const auto it = std::find_if(values_.begin(), values_.end(),
+                                 [&](const auto& v) { return &primitive == v.get(); });
 
     return remove(it);
 }
@@ -337,7 +337,7 @@ TFPrimitive& TFPrimitiveSet::add(std::unique_ptr<TFPrimitive> primitive) {
     verifyPoint(*primitive);
 
     primitive->addObserver(this);
-    auto it = std::upper_bound(sorted_.begin(), sorted_.end(), primitive.get(), comparePtr{});
+    const auto it = std::upper_bound(sorted_.begin(), sorted_.end(), primitive.get(), comparePtr{});
     sorted_.insert(it, primitive.get());
     values_.push_back(std::move(primitive));
 
@@ -379,8 +379,8 @@ void TFPrimitiveSet::setPosition(std::span<TFPrimitive*> primitives, double pos)
                  [&primitiveSet](auto item) { return primitiveSet.count(item) > 0; });
 
     // partition set of primitives at position pos
-    auto partition = std::ranges::lower_bound(sortedSelection, pos, std::ranges::less{},
-                                              [](const auto& p) { return p->getPosition(); });
+    const auto partition = std::ranges::lower_bound(sortedSelection, pos, std::ranges::less{},
+                                                    [](const auto& p) { return p->getPosition(); });
 
     beginBulkUpdate();
     // update upper half, i.e. all elements to the right of pos in ascending order
@@ -419,8 +419,8 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
                       .onNew =
                           [&](std::unique_ptr<TFPrimitive>& p, size_t) {
                               p->addObserver(this);
-                              auto it = std::upper_bound(sorted_.begin(), sorted_.end(), p.get(),
-                                                         comparePtr{});
+                              const auto it = std::upper_bound(sorted_.begin(), sorted_.end(),
+                                                               p.get(), comparePtr{});
                               sorted_.insert(it, p.get());
                               notifyTFPrimitiveAdded(*this, *p);
                           },

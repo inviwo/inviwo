@@ -70,7 +70,7 @@ public:
     VectorIdentifierWrapper(It begin, It end) : begin_{begin}, end_{end} {}
 
     decltype(auto) getFromIdentifier(std::string_view identifier) const {
-        auto it =
+        const auto it =
             std::find_if(begin_, end_, [&](const auto& elem) { return id(elem) == identifier; });
         if (it != end_) {
             return deref(it);
@@ -112,7 +112,7 @@ public:
     std::string repr() const {
         std::stringstream ss;
         ss << "[";
-        auto j = util::make_ostream_joiner(ss, ", ");
+        const auto j = util::make_ostream_joiner(ss, ", ");
         std::transform(begin_, end_, j, id);
         ss << "]";
         return ss.str();

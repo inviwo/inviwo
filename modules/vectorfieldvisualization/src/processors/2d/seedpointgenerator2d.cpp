@@ -126,7 +126,7 @@ void SeedPointGenerator2D::process() {
     auto seeds = std::make_shared<std::vector<vec3>>();
     seeds->resize(numPoints_.get());
 
-    auto createSpatialSeeds = [&]() {
+    const auto createSpatialSeeds = [&]() {
         switch (generator_.get()) {
             case Generator::Random: {
                 std::uniform_real_distribution<float> dis(0, 1);
@@ -147,7 +147,7 @@ void SeedPointGenerator2D::process() {
             default: break;
         }
     };
-    auto createLinearSeeds = [&]() {
+    const auto createLinearSeeds = [&]() {
         switch (generator_.get()) {
             case Generator::Random: {
                 std::uniform_real_distribution<float> dis(0, 1);

@@ -200,7 +200,7 @@ std::optional<std::filesystem::path> DataFrameTable::exportFile(
     const std::filesystem::path& path, std::string_view name,
     const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
 
-    if (auto data = inport_.getData()) {
+    if (const auto data = inport_.getData()) {
         return util::saveData(*data, path, name, candidateExtensions, overwrite);
     }
 

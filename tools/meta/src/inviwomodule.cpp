@@ -131,7 +131,7 @@ std::filesystem::path InviwoModule::findShortestRelativePath(
 }
 
 cmake::Command* InviwoModule::findGroup(std::string_view group) {
-    auto it = std::find_if(cmf_.begin(), cmf_.end(), [&](auto& cmd) {
+    const auto it = std::find_if(cmf_.begin(), cmf_.end(), [&](auto& cmd) {
         return cmd.identifier == "set" && cmd.begin() != cmd.end() && cmd.begin()->value == group;
     });
     if (it != cmf_.end()) {
@@ -154,7 +154,7 @@ void InviwoModule::addFileToGroup(std::string_view group, const std::filesystem:
         auto& cmd = *it;
         const auto pstr = p.generic_string();
 
-        auto pit =
+        const auto pit =
             std::find_if(cmd.begin(), cmd.end(), [&](auto& arg) { return arg.value == pstr; });
         if (pit != cmd.end()) {
             throw util::makeError("Error: File '{}' already in group '{}'", pstr, group);
@@ -190,7 +190,7 @@ void InviwoModule::sortArgs(cmake::Command& cmd) {
     std::vector<cmake::ArgElement> arguments;
     arguments.emplace_back(*cmd.begin());
     arguments.emplace_back(cmake::LineEnding{});
-    for (auto& arg : args) {
+    for (const auto& arg : args) {
         addArg(arguments, arg);
     }
     cmd.arguments = arguments;
@@ -204,7 +204,7 @@ void InviwoModule::addArg(std::vector<cmake::ArgElement>& args, std::string_view
 
 void InviwoModule::cleanArgs(cmake::Command& cmd) {
     const std::string_view toStrip = "${CMAKE_CURRENT_SOURCE_DIR}/";
-    auto args = cmd.args();
+    const auto args = cmd.args();
     for (auto& arg : Range{++args.begin(), args.end()}) {
         arg.value = util::removePrefix(toStrip, arg.value);
     }
@@ -216,8 +216,8 @@ void InviwoModule::registerProcessor(std::string_view name, const std::filesyste
 }
 
 std::optional<std::string> InviwoModule::findModuleName(const cmake::CMakeFile& cmf) {
-    auto it = std::find_if(cmf.begin(), cmf.end(),
-                           [](auto& cmd) { return cmd.identifier == "ivw_module"; });
+    const auto it = std::find_if(cmf.begin(), cmf.end(),
+                                 [](auto& cmd) { return cmd.identifier == "ivw_module"; });
     if (it != cmf.end() && it->begin() != it->end()) {
         return it->begin()->value;
     }
@@ -227,7 +227,7 @@ std::optional<std::string> InviwoModule::findModuleName(const cmake::CMakeFile& 
 InviwoModule InviwoModule::findInviwoModule(const std::filesystem::path& inpath,
                                             const std::filesystem::path& inviwoRepo) {
 
-    auto path = std::filesystem::weakly_canonical(inpath);
+    const auto path = std::filesystem::weakly_canonical(inpath);
 
     const std::filesystem::path inccore = inviwoRepo / "include" / "inviwo" / "core";
     const std::filesystem::path incqt = inviwoRepo / "include" / "inviwo" / "qt" / "editor";
@@ -247,8 +247,8 @@ InviwoModule InviwoModule::findInviwoModule(const std::filesystem::path& inpath,
         return InviwoModule(inviwoRepo, QtEditorConf{});
     }
 
-    auto findOrg = [](const std::filesystem::path& modulePath,
-                      const std::string& name) -> std::string {
+    const auto findOrg = [](const std::filesystem::path& modulePath,
+                            const std::string& name) -> std::string {
         const auto lname = util::toLower(name);
 
         if (std::filesystem::exists(modulePath / "include" / lname)) {

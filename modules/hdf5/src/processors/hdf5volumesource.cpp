@@ -162,7 +162,7 @@ void HDF5ToVolume::process() try {
         .dataRange = information_.dataRange.get(),
         .valueRange = information_.valueRange.get()};
 
-    auto volume = std::shared_ptr<Volume>(getVolumeAtPathAsType(
+    const auto volume = std::shared_ptr<Volume>(getVolumeAtPathAsType(
         *data + volumeInfo.path, selection_.getSelection(), config, std::ref(cache_)));
 
     const auto [rangeMin, rangeMax] =

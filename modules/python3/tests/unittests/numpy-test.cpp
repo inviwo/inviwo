@@ -63,7 +63,7 @@ namespace inviwo {
 
 namespace {
 std::filesystem::path getPath() {
-    auto path = util::getModuleByTypeOrThrow<Python3Module>().getPath(ModulePath::UnitTests);
+    const auto path = util::getModuleByTypeOrThrow<Python3Module>().getPath(ModulePath::UnitTests);
     return path / "scripts";
 }
 }  // namespace
@@ -119,7 +119,7 @@ protected:
         s.run([&](pybind11::dict dict) {
             ASSERT_TRUE(dict.contains("a"));
 
-            auto ob = dict["a"];
+            const auto ob = dict["a"];
             ASSERT_TRUE(pybind11::isinstance<pybind11::array>(ob));
             auto arr = pybind11::cast<pybind11::array>(ob);
             auto buffer = pyutil::createBuffer(arr);
@@ -127,7 +127,7 @@ protected:
             EXPECT_EQ(components, buffer->getDataFormat()->getComponents());
 
             buffer->getEditableRepresentation<BufferRAM>()->dispatch<void>([&](auto pBuffer) {
-                auto& vec = pBuffer->getDataContainer();
+                const auto& vec = pBuffer->getDataContainer();
                 int expected = 1;
                 for (const auto& v : vec) {
                     for (size_t i = 0; i < pBuffer->getDataFormat()->getComponents(); i++) {
@@ -154,14 +154,14 @@ protected:
         s.run([&](pybind11::dict dict) {
             ASSERT_TRUE(dict.contains("a"));
 
-            auto ob = dict["a"];
+            const auto ob = dict["a"];
             ASSERT_TRUE(pybind11::isinstance<pybind11::array>(ob));
 
             auto arr = pybind11::cast<pybind11::array>(ob);
             auto layer = pyutil::createLayer(arr);
             EXPECT_EQ(components, layer->getDataFormat()->getComponents());
             layer->getEditableRepresentation<LayerRAM>()->dispatch<void>([&](auto pLayer) {
-                auto dims = pLayer->getDimensions();
+                const auto dims = pLayer->getDimensions();
                 EXPECT_EQ(size2_t(2, 2), dims);
                 auto data = pLayer->getDataTyped();
                 int expected = 1;
@@ -191,14 +191,14 @@ protected:
         s.run([&](pybind11::dict dict) {
             ASSERT_TRUE(dict.contains("a"));
 
-            auto ob = dict["a"];
+            const auto ob = dict["a"];
             ASSERT_TRUE(pybind11::isinstance<pybind11::array>(ob));
 
             auto arr = pybind11::cast<pybind11::array>(ob);
             auto volume = pyutil::createVolume(arr);
             EXPECT_EQ(components, volume->getDataFormat()->getComponents());
             volume->getEditableRepresentation<VolumeRAM>()->dispatch<void>([&](auto pLayer) {
-                auto dims = pLayer->getDimensions();
+                const auto dims = pLayer->getDimensions();
                 EXPECT_EQ(size3_t(2, 2, 2), dims);
                 auto data = pLayer->getDataTyped();
                 int expected = 1;

@@ -133,7 +133,7 @@ void PropertyWidgetQt::initState() {
 }
 
 void PropertyWidgetQt::setVisible(bool visible) {
-    bool wasVisible = QWidget::isVisible();
+    const bool wasVisible = QWidget::isVisible();
     QWidget::setVisible(visible);
     if (visible != wasVisible && parent_) parent_->onChildVisibilityChange(this);
 }
@@ -193,7 +193,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                     std::vector<std::unique_ptr<Property>> properties;
                     d.deserialize("Properties", properties, "Property");
                     if (!properties.empty() && properties.front()) {
-                        NetworkLock lock(property_);
+                        const NetworkLock lock(property_);
                         property_->set(properties.front().get());
                         PropertyPresetManager::appendPropertyPresets(property_,
                                                                      properties.front().get());
@@ -219,12 +219,12 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 
         {
             auto factory = app->getPropertyWidgetFactory();
-            auto semantics = factory->getSupportedSemanicsForProperty(property_);
+            const auto semantics = factory->getSupportedSemanicsForProperty(property_);
             if (semantics.size() > 1) {
                 auto semanicsMenu = menu->addMenu(tr("&Semantics"));
                 auto semanticsGroup = new QActionGroup(semanicsMenu);
 
-                for (auto& semantic : semantics) {
+                for (const auto& semantic : semantics) {
                     auto action = semanicsMenu->addAction(utilqt::toQString(semantic.getString()));
                     semanticsGroup->addAction(action);
                     action->setCheckable(true);
@@ -232,12 +232,12 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                     action->setData(utilqt::toQString(semantic.getString()));
                 }
 
-                connect(
-                    semanticsGroup, &QActionGroup::triggered, this,
-                    [prop = property_](QAction* action) {
-                        PropertySemantics semantics(utilqt::fromQString(action->data().toString()));
-                        prop->setSemantics(semantics);
-                    });
+                connect(semanticsGroup, &QActionGroup::triggered, this,
+                        [prop = property_](QAction* action) {
+                            const PropertySemantics semantics(
+                                utilqt::fromQString(action->data().toString()));
+                            prop->setSemantics(semantics);
+                        });
             }
         }
 
@@ -266,7 +266,7 @@ std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
         const auto reset =
             ScopedPropertySerializationMode{PropertySerializationMode::All, *property_};
 
-        std::vector<Property*> properties = {property_};
+        const std::vector<Property*> properties = {property_};
         serializer.serialize("Properties", properties, "Property");
     }
     std::pmr::string xml;
@@ -283,11 +283,11 @@ int PropertyWidgetQt::getSpacing() const { return utilqt::emToPx(this, spacingEm
 void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app) {
     std::map<std::string, std::vector<const ModuleCallbackAction*>> callbackMapPerModule;
     for (auto& moduleAction : app->getCallbackActions()) {
-        auto moduleName = moduleAction->getModule()->getIdentifier();
+        const auto moduleName = moduleAction->getModule()->getIdentifier();
         callbackMapPerModule[moduleName].push_back(moduleAction.get());
     }
 
-    for (auto& elem : callbackMapPerModule) {
+    for (const auto& elem : callbackMapPerModule) {
         const auto& moduleName = elem.first;
         const auto& actions = elem.second;
         if (actions.empty()) continue;
@@ -298,9 +298,9 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
             connect(action, &QAction::triggered, this,
                     [app, actionName, property = property_](bool /*checked*/) {
                         const auto& mActions = app->getCallbackActions();
-                        auto it = std::find_if(mActions.begin(), mActions.end(), [&](auto& item) {
-                            return item->getActionName() == actionName;
-                        });
+                        const auto it = std::find_if(
+                            mActions.begin(), mActions.end(),
+                            [&](auto& item) { return item->getActionName() == actionName; });
                         if (it != mActions.end()) {
                             (*it)->getCallBack().invoke(property);
                         }
@@ -352,8 +352,9 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
     auto presetManager = app->getPropertyPresetManager();
 
     {
-        auto addPresetToMenu = [presetManager, this](QMenu* menu, const std::string& name,
-                                                     Property* property, PropertyPresetType type) {
+        const auto addPresetToMenu = [presetManager, this](QMenu* menu, const std::string& name,
+                                                           Property* property,
+                                                           PropertyPresetType type) {
             auto action = menu->addAction(QString::fromStdString(name));
             if (property->getReadOnly()) action->setEnabled(false);
             action->setToolTip(utilqt::toQString(fmt::format("{} Preset", type)));
@@ -362,19 +363,19 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                               presetManager->loadPreset(name, property, type);
                           });
         };
-        auto savePreset = [presetManager, property = property_](QWidget* parent,
-                                                                PropertyPresetType type) {
+        const auto savePreset = [presetManager, property = property_](QWidget* parent,
+                                                                      PropertyPresetType type) {
             // will prompt the user to enter a preset name.
             // returns false if a preset with the same name already exits
             // and the user does not want to overwrite it.
             bool ok;
-            QString text =
+            const QString text =
                 QInputDialog::getText(parent, tr("Save Preset"), tr("Name:"), QLineEdit::Normal, "",
                                       &ok, Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
             if (ok && !text.isEmpty()) {
                 const auto presetName = text.toStdString();
                 bool actionExists = false;
-                for (auto p : presetManager->getAvailablePresets(property, type)) {
+                for (const auto p : presetManager->getAvailablePresets(property, type)) {
                     if (p == presetName) {
                         actionExists = true;
                         break;
@@ -393,7 +394,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
             }
             return true;
         };
-        auto clearPresets = [presetManager, property = property_](PropertyPresetType type) {
+        const auto clearPresets = [presetManager, property = property_](PropertyPresetType type) {
             switch (type) {
                 case PropertyPresetType::Property:
                     presetManager->clearPropertyPresets(property);
@@ -408,7 +409,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                                                    PropertyPresetType::Application};
         auto saveMenu = presetMenu->addMenu("Save");
         for (auto& type : types) {
-            auto* saveAction =
+            const auto* saveAction =
                 saveMenu->addAction(utilqt::toQString(fmt::format("{} Preset...", type)));
             connect(saveAction, &QAction::triggered, [=]() {
                 while (!savePreset(saveMenu, type)) {
@@ -419,14 +420,14 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
 
         auto clearMenu = presetMenu->addMenu("Clear");
         for (auto& type : {PropertyPresetType::Property, PropertyPresetType::Workspace}) {
-            auto* clearAction =
+            const auto* clearAction =
                 clearMenu->addAction(utilqt::toQString(fmt::format("{} Preset...", type)));
             connect(clearAction, &QAction::triggered, [=]() { clearPresets(type); });
         }
 
         presetMenu->addSeparator();
-        for (auto& type : types) {
-            for (auto preset : presetManager->getAvailablePresets(property_, type)) {
+        for (const auto& type : types) {
+            for (const auto preset : presetManager->getAvailablePresets(property_, type)) {
                 addPresetToMenu(presetMenu, preset, property_, type);
             }
         }

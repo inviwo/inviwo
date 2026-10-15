@@ -94,20 +94,20 @@ void VectorFieldGenerator2D::process() {
     const LayerConfig config{.dimensions = size_.get(),
                              .format = DataVec2Float32::get(),
                              .swizzleMask = swizzlemasks::defaultData(2)};
-    auto layer = std::make_shared<Layer>(config);
+    const auto layer = std::make_shared<Layer>(config);
 
     shader_.activate();
     utilgl::setUniforms(shader_, domainU_, domainV_);
 
     const ivec2 dim{size_.get()};
     {
-        utilgl::Activate activateFbo{&fbo_};
-        utilgl::ViewportState viewport{0, 0, static_cast<GLsizei>(dim.x),
-                                       static_cast<GLsizei>(dim.y)};
+        const utilgl::Activate activateFbo{&fbo_};
+        const utilgl::ViewportState viewport{0, 0, static_cast<GLsizei>(dim.x),
+                                             static_cast<GLsizei>(dim.y)};
 
         // We always need to ask for an editable representation, this will invalidate any other
         // representations
-        auto* destLayer = layer->getEditableRepresentation<LayerGL>();
+        const auto* destLayer = layer->getEditableRepresentation<LayerGL>();
         fbo_.attachColorTexture(destLayer->getTexture().get(), 0);
 
         utilgl::singleDrawImagePlaneRect();

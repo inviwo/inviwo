@@ -72,11 +72,11 @@ void curvature(IntegralLine& line, dmat4 toWorld) {
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
 
     std::transform(positions.begin(), positions.end(), positions.begin(), [&](dvec3 pos) {
-        dvec4 P = toWorld * dvec4(pos, 1);
+        const dvec4 P = toWorld * dvec4(pos, 1);
         return dvec3(P) / P.w;
     });
 
-    auto md = line.createMetaData<double>("curvature");
+    const auto md = line.createMetaData<double>("curvature");
     auto& K = md->getEditableRAMRepresentation()->getDataContainer();
     const auto& V = line.getMetaData<dvec3>("velocity");
 
@@ -98,8 +98,8 @@ void curvature(IntegralLine& line, dmat4 toWorld) {
             const auto t1 = pm - p;
             const auto t2 = p - pp;
 
-            auto l1 = glm::length(t1);
-            auto l2 = glm::length(t2);
+            const auto l1 = glm::length(t1);
+            const auto l2 = glm::length(t2);
             if (l1 == 0 || l2 == 0) {
                 K.emplace_back(0);
                 log::warn("Got zero offset");
@@ -140,19 +140,19 @@ void tortuosity(IntegralLine& line, dmat4 toWorld) {
     if (positions.size() <= 1) return;
 
     std::transform(positions.begin(), positions.end(), positions.begin(), [&](dvec3 pos) {
-        dvec4 P = toWorld * dvec4(pos, 1);
+        const dvec4 P = toWorld * dvec4(pos, 1);
         return dvec3(P) / P.w;
     });
 
-    auto md = line.createMetaData<double>("tortuosity");
+    const auto md = line.createMetaData<double>("tortuosity");
     auto& K = md->getEditableRAMRepresentation()->getDataContainer();
     double acuDist = 0;
 
-    dvec3 start = positions.front();
+    const dvec3 start = positions.front();
     dvec3 prev = start;
 
-    for (auto& p : positions) {
-        auto div = [](auto a, auto b) {
+    for (const auto& p : positions) {
+        const auto div = [](auto a, auto b) {
             if (b == 0) return 1.0;
             return a / b;
         };

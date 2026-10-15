@@ -61,7 +61,7 @@ FileObserver::~FileObserver() {
     if (fileSystemObserver_) {
         fileSystemObserver_->unRegisterFileObserver(this);
         const std::scoped_lock lock{mutex_};
-        for (auto file : observedFiles_) {
+        for (const auto file : observedFiles_) {
             fileSystemObserver_->stopFileObservation(file, this);
         }
     }
@@ -71,7 +71,7 @@ bool FileObserver::startFileObservation(const std::filesystem::path& fileName) {
     if (!fileSystemObserver_) return false;
 
     std::unique_lock lock{mutex_};
-    auto it = observedFiles_.find(fileName);
+    const auto it = observedFiles_.find(fileName);
     if (it == observedFiles_.end()) {
         if (std::filesystem::is_regular_file(fileName) || std::filesystem::is_directory(fileName)) {
             observedFiles_.insert(fileName);
@@ -87,7 +87,7 @@ bool FileObserver::stopFileObservation(const std::filesystem::path& fileName) {
     if (!fileSystemObserver_) return false;
 
     std::unique_lock lock{mutex_};
-    auto it = observedFiles_.find(fileName);
+    const auto it = observedFiles_.find(fileName);
     if (it != observedFiles_.end()) {
         observedFiles_.erase(it);
         lock.unlock();

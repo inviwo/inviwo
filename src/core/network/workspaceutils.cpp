@@ -64,13 +64,13 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
         forEachWorkspaceInDirRecursive(path, [&](const std::filesystem::path&) { ++total; });
     }
 
-    auto update = [&](const std::filesystem::path& fileName) mutable {
+    const auto update = [&](const std::filesystem::path& fileName) mutable {
         log::info("Updating workspace {}/{}: {}", ++current, total, fileName);
-        auto errorCounter = std::make_shared<LogErrorCounter>();
+        const auto errorCounter = std::make_shared<LogErrorCounter>();
         LogCentral::getPtr()->registerLogger(errorCounter);
 
         {
-            NetworkLock lock(app->getProcessorNetwork());
+            const NetworkLock lock(app->getProcessorNetwork());
             app->getWorkspaceManager()->clear();
         }
 
@@ -78,7 +78,7 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
 
         try {
             {
-                NetworkLock lock(app->getProcessorNetwork());
+                const NetworkLock lock(app->getProcessorNetwork());
                 app->getWorkspaceManager()->load(fileName, [&](SourceContext) {
                     try {
                         throw;

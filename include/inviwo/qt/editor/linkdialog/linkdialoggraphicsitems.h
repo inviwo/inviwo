@@ -124,8 +124,8 @@ public:
 
     void showToolTipHelper(QGraphicsSceneHelpEvent* e, QString string) const {
         QGraphicsView* v = scene()->views().first();
-        QRectF rect = this->mapRectToScene(this->rect());
-        QRect viewRect = v->mapFromScene(rect).boundingRect();
+        const QRectF rect = this->mapRectToScene(this->rect());
+        const QRect viewRect = v->mapFromScene(rect).boundingRect();
         QToolTip::showText(e->screenPos(), string, v, viewRect);
     }
 

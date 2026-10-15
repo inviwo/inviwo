@@ -65,7 +65,7 @@ template <class Rep, class Period = std::ratio<1>>
 std::string durationToString(std::chrono::duration<Rep, Period> duration, bool includeZeros = true,
                              bool spacing = false) {
     using milliseconds = std::chrono::duration<double, std::milli>;
-    auto ms = std::chrono::duration_cast<milliseconds>(duration);
+    const auto ms = std::chrono::duration_cast<milliseconds>(duration);
     return msToString(ms.count(), includeZeros, spacing);
 }
 

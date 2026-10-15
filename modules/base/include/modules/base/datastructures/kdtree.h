@@ -429,7 +429,7 @@ P* KDNode<N, T, P>::getPosition() {
 
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P>* KDNode<N, T, P>::insert(const P pos[N], const T& data) {
-    bool right = goRight(pos);
+    const bool right = goRight(pos);
     if (right) {
         if (rightChild_ == 0) {
             rightChild_ = new KDNode(pos, data, this);

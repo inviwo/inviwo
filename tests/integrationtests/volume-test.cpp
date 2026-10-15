@@ -68,28 +68,28 @@ void testVolumeLoad(Volume* volume) {
 
 template <typename T>
 void testDatVolumeLoad(std::string_view filename) {
-    auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
+    const auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
 
     auto reader = InviwoApplication::getPtr()
                       ->getDataReaderFactory()
                       ->getReaderForTypeAndExtension<VolumeSequence>(file);
     ASSERT_TRUE(reader.get() != nullptr);
-    auto volumeSeq = reader->readData(file);
+    const auto volumeSeq = reader->readData(file);
     ASSERT_EQ(1, volumeSeq->size());
 
-    auto volume = volumeSeq->front();
+    const auto volume = volumeSeq->front();
 
     testVolumeLoad<T>(volume.get());
 }
 
 template <typename T>
 void testIvfVolumeLoad(std::string_view filename) {
-    auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
+    const auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(
             file);
     ASSERT_TRUE(reader.get() != nullptr);
-    auto volume = reader->readData(file);
+    const auto volume = reader->readData(file);
 
     testVolumeLoad<T>(volume.get());
 }
@@ -126,9 +126,9 @@ void testVolumeClone(Volume* volume) {
     EXPECT_EQ(volume->getWorldMatrix(), volume1->getWorldMatrix());
     EXPECT_EQ(volume->getWorldMatrix(), volume2->getWorldMatrix());
 
-    MetaDataMap* metadata = volume->getMetaDataMap();
-    MetaDataMap* metadata1 = volume1->getMetaDataMap();
-    MetaDataMap* metadata2 = volume2->getMetaDataMap();
+    const MetaDataMap* metadata = volume->getMetaDataMap();
+    const MetaDataMap* metadata1 = volume1->getMetaDataMap();
+    const MetaDataMap* metadata2 = volume2->getMetaDataMap();
 
     EXPECT_EQ(*metadata, *metadata);
     EXPECT_EQ(*metadata, *metadata1);
@@ -165,27 +165,27 @@ void testVolumeClone(Volume* volume) {
 
 template <typename T>
 void testDatVolumeClone(std::string_view filename) {
-    auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
+    const auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
     auto reader = InviwoApplication::getPtr()
                       ->getDataReaderFactory()
                       ->getReaderForTypeAndExtension<VolumeSequence>(file);
     ASSERT_TRUE(reader.get() != nullptr);
-    auto volumeSeq = reader->readData(file);
+    const auto volumeSeq = reader->readData(file);
     ASSERT_EQ(1, volumeSeq->size());
 
-    auto volume = volumeSeq->front();
+    const auto volume = volumeSeq->front();
 
     testVolumeClone<T>(volume.get());
 }
 
 template <typename T>
 void testIvfVolumeClone(std::string_view filename) {
-    auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
+    const auto file = filesystem::getPath(PathType::Tests) / "volumes" / filename;
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(
             file);
     ASSERT_TRUE(reader.get() != nullptr);
-    auto volume = reader->readData(file);
+    const auto volume = reader->readData(file);
 
     testVolumeClone<T>(volume.get());
 }

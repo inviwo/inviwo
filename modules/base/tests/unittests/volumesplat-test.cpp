@@ -29,7 +29,7 @@ TEST(SplatTest, SinglePointCenter) {
 
     std::span<const vec3> positions;
     std::span<const float> radii;
-    std::span<const float> weights;
+    const std::span<const float> weights;
 
     positionBuffer->getRepresentation<BufferRAM>()->dispatch<void>([&](auto posRep) {
         using ValueType = util::PrecisionValueType<decltype(posRep)>;
@@ -45,7 +45,7 @@ TEST(SplatTest, SinglePointCenter) {
         }
     });
 
-    auto volume =
+    const auto volume =
         util::splat({.positions = positions, .sizes = radii, .weights = weights}, settings);
     ASSERT_EQ(volume->getDimensions(), size3_t(5));
     // Check that the center voxel is nonzero

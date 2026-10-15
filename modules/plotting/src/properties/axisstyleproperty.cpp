@@ -179,7 +179,7 @@ void AxisStyleProperty::registerProperty(AxisProperty& p) {
 }
 
 void AxisStyleProperty::unregisterProperty(AxisProperty& p) {
-    auto it = util::find(axes_, &p);
+    const auto it = util::find(axes_, &p);
     if (it == axes_.end()) return;
 
     axes_.erase(it);

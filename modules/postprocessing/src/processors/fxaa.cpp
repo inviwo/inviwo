@@ -116,8 +116,8 @@ FXAA::FXAA()
 
     addProperties(enable_, dither_, quality_);
 
-    auto width = static_cast<int>(outport_.getDimensions().x);
-    auto height = static_cast<int>(outport_.getDimensions().y);
+    const auto width = static_cast<int>(outport_.getDimensions().x);
+    const auto height = static_cast<int>(outport_.getDimensions().y);
     initFramebuffer(width, height);
 
     initializeResources();
@@ -132,7 +132,7 @@ FXAA::~FXAA() {
 }
 
 void FXAA::initializeResources() {
-    auto dither = dither_.get();
+    const auto dither = dither_.get();
     auto quality = quality_.get();
 
     if (dither == 1) {
@@ -143,7 +143,7 @@ void FXAA::initializeResources() {
         quality = 9.f;
     }
 
-    auto quality_str = std::to_string(dither * 10 + static_cast<int>(quality));
+    const auto quality_str = std::to_string(dither * 10 + static_cast<int>(quality));
 
     auto frag = fxaa_.getShaderObject(ShaderType::Fragment);
     frag->addShaderDefine("FXAA_PC", "1");
@@ -161,7 +161,7 @@ void FXAA::process() {
 
         if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
             swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
-            auto dim = outport_.getData()->getDimensions();
+            const auto dim = outport_.getData()->getDimensions();
             Image* img = new Image(dim, format);
             img->copyMetaDataFrom(*inport_.getData());
             // forward swizzle mask of the input
@@ -175,8 +175,8 @@ void FXAA::process() {
         outport_.setData(inport_.getData());
         return;
     }
-    int width = static_cast<int>(outport_.getDimensions().x);
-    int height = static_cast<int>(outport_.getDimensions().y);
+    const int width = static_cast<int>(outport_.getDimensions().x);
+    const int height = static_cast<int>(outport_.getDimensions().y);
 
     if (width != prepassFbo_.width || height != prepassFbo_.height) {
         initFramebuffer(width, height);
@@ -186,15 +186,15 @@ void FXAA::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_);
 
     auto outImageGL = outport_.getEditableData()->getRepresentation<ImageGL>();
-    auto outFbo = outImageGL->getFBO()->getID();
+    const auto outFbo = outImageGL->getFBO()->getID();
 
     auto imageGL = inport_.getData()->getRepresentation<ImageGL>();
     auto colorLayer = imageGL->getColorLayerGL();
-    auto colorTex = colorLayer->getTexture()->getID();
+    const auto colorTex = colorLayer->getTexture()->getID();
 
     // This geometry is actually never used in the shader
     auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-    utilgl::Enable<MeshGL> enable(rect);
+    const utilgl::Enable<MeshGL> enable(rect);
 
     glViewport(0, 0, width, height);
     glDisable(GL_DEPTH_TEST);

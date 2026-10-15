@@ -74,8 +74,8 @@ MeshConverterProcessor::MeshConverterProcessor()
 }
 
 void MeshConverterProcessor::process() {
-    auto meshes = std::make_shared<DataSequence<Mesh>>();
-    for (auto mesh : inport_) {
+    const auto meshes = std::make_shared<DataSequence<Mesh>>();
+    for (const auto mesh : inport_) {
         if (mesh) {
             switch (type_.get()) {
                 case Type::ToLines: {

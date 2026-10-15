@@ -72,12 +72,12 @@ void AnimationQtSupplier::registerTrackToSequenceEditorMap(std::string_view trac
 }
 
 void AnimationQtSupplier::unRegisterAll() {
-    for (auto& elem : trackWidgetQts_) {
+    for (const auto& elem : trackWidgetQts_) {
         animationQtModule_.getTrackWidgetQtFactory().unRegisterObject(elem.get());
     }
     trackWidgetQts_.clear();
 
-    for (auto& elem : sequenceEditors_) {
+    for (const auto& elem : sequenceEditors_) {
         animationQtModule_.getSequenceEditorFactory().unRegisterObject(elem.get());
     }
     sequenceEditors_.clear();

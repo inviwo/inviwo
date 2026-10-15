@@ -67,8 +67,9 @@ std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::filesystem::p
     const auto localPath = downloadAndCacheIfUrl(filePath);
     checkExists(localPath);
 
-    auto header = cimgutil::getTIFFHeader(localPath);
-    auto volumeDisk = std::make_shared<VolumeDisk>(localPath, header.dimensions, header.format);
+    const auto header = cimgutil::getTIFFHeader(localPath);
+    const auto volumeDisk =
+        std::make_shared<VolumeDisk>(localPath, header.dimensions, header.format);
     auto volume = std::make_shared<Volume>(volumeDisk);
 
     volume->dataMap.dataRange = dvec2{header.format->getLowest(), header.format->getMax()};
@@ -109,7 +110,7 @@ std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresenta
 void TIFFStackVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
                                                     const VolumeRepresentation& src,
                                                     std::stop_token) const {
-    auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
+    const auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     const auto fileName = findFile(sourceFile_);
     cimgutil::updateVolume(*volumeDst, fileName);

@@ -249,7 +249,7 @@ PythonEditorWidget::PythonEditorWidget(
         mainWindow_->addAction(appendLog_);
         connect(appendLog_, &QAction::toggled, this, [this](bool toggle) {
             // update tooltip and menu entry
-            QString tglstr = (toggle ? "Append Log" : "Clear Log on Run");
+            const QString tglstr = (toggle ? "Append Log" : "Clear Log on Run");
             appendLog_->setText(tglstr);
             appendLog_->setToolTip(tglstr);
         });
@@ -276,7 +276,7 @@ void PythonEditorWidget::closeEvent(QCloseEvent* event) {
                            "Do you want to save unsaved changes?",
                            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
 
-        int retval = msgBox.exec();
+        const int retval = msgBox.exec();
         if (retval == static_cast<int>(QMessageBox::Save)) {
             save();
         } else if (retval == static_cast<int>(QMessageBox::Cancel)) {
@@ -299,7 +299,7 @@ void PythonEditorWidget::loadFile(const std::filesystem::path& fileName, bool as
                            "Do you want to save unsaved changes?",
                            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
 
-        int retval = msgBox.exec();
+        const int retval = msgBox.exec();
         if (retval == static_cast<int>(QMessageBox::Save)) {
             save();
         } else if (retval == static_cast<int>(QMessageBox::Cancel)) {
@@ -390,7 +390,7 @@ void PythonEditorWidget::runOrStop(bool runScript) {
 void PythonEditorWidget::run() {
     util::getModuleByTypeOrThrow<Python3Module>(app_).getPythonInterpreter()->addObserver(this);
 
-    util::OnScopeExit reenable([&]() {
+    const util::OnScopeExit reenable([&]() {
         runAction_->setChecked(false);
         util::getModuleByTypeOrThrow<Python3Module>(app_).getPythonInterpreter()->removeObserver(
             this);
@@ -407,7 +407,7 @@ void PythonEditorWidget::run() {
     mainWindow_->statusBar()->showMessage("Running ...");
     Clock c;
     c.start();
-    bool ok = script_.run();
+    const bool ok = script_.run();
     c.stop();
 
     std::stringstream ss;
@@ -440,7 +440,7 @@ void PythonEditorWidget::setDefaultText() {
 void PythonEditorWidget::clearOutput() { pythonOutput_->setPlainText(""); }
 
 void PythonEditorWidget::onTextChange() {
-    std::string source = utilqt::fromQString(pythonCode_->toPlainText());
+    const std::string source = utilqt::fromQString(pythonCode_->toPlainText());
     script_.setSource(source);
 
     setWindowModified(pythonCode_->document()->isModified());
@@ -544,7 +544,7 @@ bool PythonEditorWidget::askSaveChanges() {
                            "Do you want to save unsaved changes?",
                            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
 
-        int retval = msgBox.exec();
+        const int retval = msgBox.exec();
         if (retval == static_cast<int>(QMessageBox::Save)) {
             save();
         } else if (retval == static_cast<int>(QMessageBox::Cancel)) {

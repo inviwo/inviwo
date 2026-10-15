@@ -77,7 +77,7 @@ std::shared_ptr<VolumeRAMPrecision<double>> sum(const VolumeRAM& v1, const Volum
 
             const auto data1 = ram1.getView();
             const auto data2 = ram2.getView();
-            auto dest = sum->getView();
+            const auto dest = sum->getView();
 
             for (size_t i = 0; data1.size(); ++i) {
                 dest[i] = static_cast<double>(data1[i]) + static_cast<double>(data2[i]);
@@ -99,7 +99,7 @@ std::shared_ptr<VolumeRAM> sum(const VolumeRAM& v1, const VolumeRAM& v2, DataFor
 
             const auto data1 = ram1.getView();
             const auto data2 = ram2.getView();
-            auto dest = sum->getView();
+            const auto dest = sum->getView();
 
             for (size_t i = 0; data1.size(); ++i) {
                 dest[i] = static_cast<T3>(data1[i]) + static_cast<T3>(data2[i]);

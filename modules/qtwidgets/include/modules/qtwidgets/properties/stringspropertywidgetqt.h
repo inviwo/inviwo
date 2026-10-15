@@ -96,7 +96,7 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
     , delegates_{util::make_array<N>([&](auto i) {
         auto p = &(property_->strings[i]);
         return PropertyWidgetDelegate(p, [p, l = lineEdits_[i]]() {
-            QSignalBlocker blocker(l);
+            const QSignalBlocker blocker(l);
             l->setText(utilqt::toQString(p->get()));
             l->setCursorPosition(0);
             l->clearFocus();
@@ -140,7 +140,7 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
 
         connect(lineEdit, &LineEditQt::editingCanceled, this, [p = &prop, l = lineEdit]() {
             // undo textual changes by resetting the contents of the line edit
-            QSignalBlocker blocker(l);
+            const QSignalBlocker blocker(l);
             l->setText(utilqt::toQString(p->get()));
             l->setCursorPosition(0);
             l->clearFocus();

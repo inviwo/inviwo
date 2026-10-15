@@ -174,8 +174,9 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
     }
 
     // Select the match with the longest extension, for example select tar.gz over gz
-    if (auto it = std::max_element(candidates.begin(), candidates.end(),
-                                   [](const auto& a, const auto& b) { return a.first < b.first; });
+    if (const auto it =
+            std::max_element(candidates.begin(), candidates.end(),
+                             [](const auto& a, const auto& b) { return a.first < b.first; });
         it != candidates.end()) {
         return std::unique_ptr<DataReaderType<T>>{it->second->clone()};
     } else {
@@ -188,7 +189,7 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
     const LCString& extension) const {
     for (const auto& [ext, reader] : map_) {
         if (ext.extension == extension) {
-            if (auto* r = dynamic_cast<DataReaderType<T>*>(reader)) {
+            if (const auto* r = dynamic_cast<DataReaderType<T>*>(reader)) {
                 return std::unique_ptr<DataReaderType<T>>(r->clone());
             }
         }
@@ -200,7 +201,7 @@ template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
     const FileExtension& extension) const {
     return util::map_find_or_null(map_, extension, [](DataReader* o) {
-        if (auto* r = dynamic_cast<DataReaderType<T>*>(o)) {
+        if (const auto* r = dynamic_cast<DataReaderType<T>*>(o)) {
             return std::unique_ptr<DataReaderType<T>>(r->clone());
         } else {
             return std::unique_ptr<DataReaderType<T>>{};

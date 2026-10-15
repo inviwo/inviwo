@@ -62,7 +62,7 @@ PortInspector::PortInspector(std::string_view portClassIdentifier,
         deserializer.deserialize("ProcessorNetwork", network);
         network.forEachProcessor([&](auto* p) { processors_.emplace_back(p->shared_from_this()); });
 
-        for (auto processor : processors_) {
+        for (const auto processor : processors_) {
             // Set Identifiers
             const std::string newIdentifier =
                 fmt::format("{}PortInspector{}", dotSeperatedToPascalCase(getPortClassName()),

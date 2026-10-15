@@ -128,10 +128,10 @@ GLUIProcessor::GLUIProcessor(InviwoApplication* app)
               std::vector<std::unique_ptr<Property>> v;
               const auto& factory =
                   util::getModuleByTypeOrThrow<UserInterfaceGLModule>(app).getGLUIWidgetFactory();
-              auto* propertyFactory = app->getPropertyFactory();
+              const auto* propertyFactory = app->getPropertyFactory();
 
               for (auto&& key : factory.getKeyView()) {
-                  auto displayName = std::string{util::splitByLast(key, '.').second};
+                  const auto displayName = std::string{util::splitByLast(key, '.').second};
                   auto identifier = displayName;
                   identifier[0] = static_cast<char>(std::tolower(identifier[0]));
                   v.emplace_back(propertyFactory->create(key, identifier, displayName));
@@ -199,8 +199,8 @@ void GLUIProcessor::process() {
     sync(layout_, uiScaling_, &BoxLayout::setScalingFactor);
 
     utilgl::activateTargetAndClearOrCopySource(outport_, inport_);
-    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     if (uiVisible_.get()) {
         // coordinate system defined in screen coords with origin in the bottom-left corner
@@ -208,7 +208,7 @@ void GLUIProcessor::process() {
 
         const ivec2 extent(layout_.getExtent());
         // use integer position for best results
-        vec2 shift = 0.5f * vec2(extent) * (anchorPos_.get() + vec2(1.0f));
+        const vec2 shift = 0.5f * vec2(extent) * (anchorPos_.get() + vec2(1.0f));
         ivec2 origin(position_.get() * vec2(outport_.getDimensions()));
         origin += offset_.get() - ivec2(shift) + ivec2(0, extent.y);
 
@@ -234,7 +234,7 @@ void GLUIProcessor::onDidAddProperty(Property* property, size_t) {
 
 void GLUIProcessor::onWillRemoveProperty(Property* property, size_t) {
     // remove matching widget from map and the layout
-    auto it = propertyWidgetMap_.find(property);
+    const auto it = propertyWidgetMap_.find(property);
     if (it != propertyWidgetMap_.end()) {
         layout_.removeElement(*(it->second.get()));
         propertyWidgetMap_.erase(it);

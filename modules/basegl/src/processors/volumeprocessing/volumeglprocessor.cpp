@@ -164,7 +164,7 @@ void VolumeGLProcessor::process() {
 
     // We always need to ask for an editable representation
     // this will invalidate any other representations
-    auto* outVolumeGL = dstVolume->getEditableRepresentation<VolumeGL>();
+    const auto* outVolumeGL = dstVolume->getEditableRepresentation<VolumeGL>();
 
     auto& fbo = getActiveFBO(*outVolumeGL->getTexture(), fbos_);
 

@@ -42,8 +42,8 @@ std::shared_ptr<LayerGL> LayerPy2GLConverter::createFrom(
                                                  source->getInterpolation(), source->getWrapping());
 
     const auto tex = destination->getTexture();
-    auto srcSize = static_cast<size_t>(source->data().nbytes());
-    auto dstSize = tex->getNumberOfValues() * tex->getSizeInBytes();
+    const auto srcSize = static_cast<size_t>(source->data().nbytes());
+    const auto dstSize = tex->getNumberOfValues() * tex->getSizeInBytes();
 
     if (srcSize == dstSize &&
         pybind11::array::c_style == (source->data().flags() & pybind11::array::c_style)) {
@@ -66,8 +66,8 @@ void LayerPy2GLConverter::update(std::shared_ptr<const LayerPy> source,
     destination->setWrapping(source->getWrapping());
 
     const auto tex = destination->getTexture();
-    auto srcSize = static_cast<size_t>(source->data().nbytes());
-    auto dstSize = tex->getNumberOfValues() * tex->getSizeInBytes();
+    const auto srcSize = static_cast<size_t>(source->data().nbytes());
+    const auto dstSize = tex->getNumberOfValues() * tex->getSizeInBytes();
 
     if (srcSize == dstSize &&
         pybind11::array::c_style == (source->data().flags() & pybind11::array::c_style)) {
@@ -86,8 +86,8 @@ std::shared_ptr<LayerPy> LayerGL2PyConverter::createFrom(
                                                  source->getInterpolation(), source->getWrapping());
 
     const auto tex = source->getTexture();
-    auto dstSize = static_cast<size_t>(destination->data().nbytes());
-    auto srcSize = tex->getNumberOfValues() * tex->getSizeInBytes();
+    const auto dstSize = static_cast<size_t>(destination->data().nbytes());
+    const auto srcSize = tex->getNumberOfValues() * tex->getSizeInBytes();
 
     if (srcSize == dstSize &&
         pybind11::array::c_style == (destination->data().flags() & pybind11::array::c_style)) {
@@ -109,8 +109,8 @@ void LayerGL2PyConverter::update(std::shared_ptr<const LayerGL> source,
     destination->setWrapping(source->getWrapping());
 
     const auto tex = source->getTexture();
-    auto dstSize = static_cast<size_t>(destination->data().nbytes());
-    auto srcSize = tex->getNumberOfValues() * tex->getSizeInBytes();
+    const auto dstSize = static_cast<size_t>(destination->data().nbytes());
+    const auto srcSize = tex->getNumberOfValues() * tex->getSizeInBytes();
 
     if (srcSize == dstSize &&
         pybind11::array::c_style == (destination->data().flags() & pybind11::array::c_style)) {

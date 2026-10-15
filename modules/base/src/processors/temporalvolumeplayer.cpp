@@ -104,7 +104,7 @@ TemporalVolumePlayer::TemporalVolumePlayer()
 }
 
 void TemporalVolumePlayer::process() {
-    auto temporal = inport_.getData();
+    const auto temporal = inport_.getData();
     if (!temporal || temporal->empty()) {
         outport_.clear();
         return;
@@ -119,9 +119,9 @@ void TemporalVolumePlayer::process() {
     const Seconds t{time_.get()};
 
     if (interpolation_.get() == Interpolation::Linear) {
-        auto frame = temporal->interpolate(t);
+        const auto frame = temporal->interpolate(t);
         if (frame.a && frame.b && frame.a != frame.b && frame.t > 0.0) {
-            if (auto blended = lerpVolumes(*frame.a, *frame.b, frame.t)) {
+            if (const auto blended = lerpVolumes(*frame.a, *frame.b, frame.t)) {
                 outport_.setData(blended);
             } else {
                 // Incompatible frames, fall back to the nearest one.
@@ -142,7 +142,7 @@ void TemporalVolumePlayer::process() {
         const auto count = prefetchAhead_.get();
         const auto size = temporal->size();
 
-        for (auto i : views::iota_periodic(current, count, size, forward)) {
+        for (const auto i : views::iota_periodic(current, count, size, forward)) {
             temporal->prefetch(i);
         }
     }

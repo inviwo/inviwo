@@ -117,7 +117,7 @@ void LayerSeriesSource::process() {
     IVW_ASSERT(reader != nullptr, "Could not find reader for \"" << fileName << "\"");
 
     try {
-        auto layer = reader->readData(fileName);
+        const auto layer = reader->readData(fileName);
         outport_.setData(layer);
     } catch (const DataReaderException& e) {
         log::exception(e);
@@ -152,7 +152,7 @@ void LayerSeriesSource::updateProperties() {
 }
 
 void LayerSeriesSource::updateFileName() {
-    int index = currentIndex_.get() - 1;
+    const int index = currentIndex_.get() - 1;
     if ((index < 0) || (static_cast<std::size_t>(index) >= fileList_.size())) {
         fileName_.set("<no images found>");
     } else {

@@ -122,7 +122,7 @@ void to_json(json& j, const OptionProperty<T>& p) {
 template <typename T>
 void from_json(const json& j, OptionProperty<T>& p) {
     if (j.count("options") > 0) {
-        auto options = j.at("options").get<std::vector<OptionPropertyOption<T>>>();
+        const auto options = j.at("options").get<std::vector<OptionPropertyOption<T>>>();
         p.replaceOptions(options);
     }
     if (j.count("value") > 0) {
@@ -130,11 +130,11 @@ void from_json(const json& j, OptionProperty<T>& p) {
         p.set(value);
     }
     if (j.count("selectedIndex") > 0) {
-        auto selectedIndex = j.at("selectedIndex").get<size_t>();
+        const auto selectedIndex = j.at("selectedIndex").get<size_t>();
         p.setSelectedIndex(selectedIndex);
     }
     if (j.count("selectedDisplayName") > 0) {
-        auto selectedName = j.at("selectedDisplayName").get<std::string>();
+        const auto selectedName = j.at("selectedDisplayName").get<std::string>();
         p.setSelectedDisplayName(selectedName);
     }
 }

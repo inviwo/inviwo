@@ -163,7 +163,7 @@ const QImage& WorkspaceAnnotationsQt::getPrimaryCanvasQImage() const {
 }
 
 const QImage& WorkspaceAnnotationsQt::getMissingImage() {
-    static QImage img{":/inviwo/inviwo-logo-light.svg"};
+    static const QImage img{":/inviwo/inviwo-logo-light.svg"};
     return img;
 }
 

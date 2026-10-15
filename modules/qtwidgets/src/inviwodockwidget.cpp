@@ -84,7 +84,7 @@ void InviwoDockWidget::setSticky(bool sticky) { dockWidgetTitleBar_->setSticky(s
 bool InviwoDockWidget::isSticky() const { return dockWidgetTitleBar_->isSticky(); }
 
 void InviwoDockWidget::setContents(QWidget* widget) {
-    QWidget* oldWidget = this->widget();
+    const QWidget* oldWidget = this->widget();
     if (oldWidget) {
         setWidget(nullptr);
         delete oldWidget;
@@ -93,7 +93,7 @@ void InviwoDockWidget::setContents(QWidget* widget) {
 }
 
 void InviwoDockWidget::setContents(QLayout* layout) {
-    QWidget* oldWidget = this->widget();
+    const QWidget* oldWidget = this->widget();
     if (oldWidget) {
         setWidget(nullptr);
         delete oldWidget;
@@ -123,8 +123,8 @@ void InviwoDockWidget::setState(const UnorderedStringMap<QVariant>& state) {
     }
 
     if (state.contains("pos")) {
-        auto pos = state.at("pos").toPoint();
-        auto newPos = utilqt::movePointOntoDesktop(pos, InviwoDockWidget::size(), false);
+        const auto pos = state.at("pos").toPoint();
+        const auto newPos = utilqt::movePointOntoDesktop(pos, InviwoDockWidget::size(), false);
         move(newPos);
     } else if (auto ivwMW = utilqt::getApplicationMainWindow()) {
         // We assume that this is a new widget and give it a new position
@@ -135,7 +135,7 @@ void InviwoDockWidget::setState(const UnorderedStringMap<QVariant>& state) {
 
     if (state.contains("size")) resize(state.at("size").toSize());
 
-    if (auto* screen = QGuiApplication::screenAt(pos())) {
+    if (const auto* screen = QGuiApplication::screenAt(pos())) {
         const auto w = std::clamp(width(), 0, screen->availableSize().width());
         const auto h = std::clamp(height(), 0, screen->availableSize().height());
         if (QSize(w, h) != size()) {

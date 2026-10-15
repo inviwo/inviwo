@@ -65,7 +65,7 @@ constexpr std::string_view endcolor = "\33[0m";
 }  // namespace
 
 std::streamsize LogStream::xsputn(const char* s, std::streamsize count) {
-    std::scoped_lock lock{mutex_};
+    const std::scoped_lock lock{mutex_};
     std::copy(s, s + count, std::back_inserter(buffer_));
     const auto found = buffer_.find_last_of('\n');
     if (found != std::string::npos) {
@@ -84,7 +84,7 @@ std::streamsize LogStream::xsputn(const char* s, std::streamsize count) {
 }
 
 int LogStream::sync() {
-    std::scoped_lock lock{mutex_};
+    const std::scoped_lock lock{mutex_};
     if (!buffer_.empty()) {
         for (auto&& elem :
              {bold, grey, italic, underlined, flashing, inverted, strikethrough, darkgrey, red,

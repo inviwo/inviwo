@@ -74,7 +74,8 @@ bool DataFrameSortFilterProxy::getFiltering() const { return filtering_; }
 bool DataFrameSortFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex&) const {
     if (!filtering_ || !manager_) return true;
 
-    if (auto v = sourceModel()->data(sourceModel()->index(sourceRow, 0), DataFrameModel::RowIndex);
+    if (const auto v =
+            sourceModel()->data(sourceModel()->index(sourceRow, 0), DataFrameModel::RowIndex);
         v.isValid()) {
         return !manager_->isFiltered(v.toInt(), BrushingTarget::Row);
     } else {

@@ -43,8 +43,8 @@ namespace inviwo::ffmpeg {
 
 namespace {
 
-bool writeFrame(OutputContext& format, Encoder& encoder, AVStream* st, const Frame& frame,
-                Packet& pkt) {
+bool writeFrame(const OutputContext& format, const Encoder& encoder, const AVStream* st,
+                const Frame& frame, Packet& pkt) {
     // send the frame to the encoder
     encoder.sendFrame(frame);
 
@@ -108,7 +108,7 @@ const OutputContext& Recorder::getOutputContext() { return out; }
 void Recorder::queueFrame(const LayerRAM& layer) {
     std::optional<Frame> frame;
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        const std::unique_lock<std::mutex> lock(mutex_);
 
         if (eptr) {
             std::rethrow_exception(std::exchange(eptr, nullptr));
@@ -137,7 +137,7 @@ void Recorder::queueFrame(const LayerRAM& layer) {
 
             if (layer.getDataFormat()->getId() == DataFormatId::Vec4UInt8) {
                 auto* data = static_cast<const glm::tvec4<uint8_t>*>(layer.getData());
-                util::IndexMapper2D im{layer.getDimensions()};
+                const util::IndexMapper2D im{layer.getDimensions()};
 
                 for (int y = 0; y < height; y++) {
                     auto rowStart = glm::value_ptr(data[im(0, y)]);
@@ -147,7 +147,7 @@ void Recorder::queueFrame(const LayerRAM& layer) {
             } else {
                 layer.dispatch<void>([&](auto* rep) {
                     auto* data = rep->getDataTyped();
-                    util::IndexMapper2D im{rep->getDimensions()};
+                    const util::IndexMapper2D im{rep->getDimensions()};
 
                     for (int y = 0; y < height; y++) {
                         for (int x = 0; x < width; x++) {
@@ -162,7 +162,7 @@ void Recorder::queueFrame(const LayerRAM& layer) {
         });
 
         {
-            std::unique_lock<std::mutex> lock(mutex_);
+            const std::unique_lock<std::mutex> lock(mutex_);
             queue_.push(std::move(*frame));
         }
     }
@@ -248,7 +248,7 @@ void Recorder::run() {
                   static_cast<double>(frameCount) / ms.count() * 1000);
 
     } catch (...) {
-        std::unique_lock<std::mutex> lock(mutex_);
+        const std::unique_lock<std::mutex> lock(mutex_);
         eptr = std::current_exception();
     }
 }

@@ -127,7 +127,7 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
 
     connect(selectionModel(), &QItemSelectionModel::selectionChanged, this,
             [this](const QItemSelection& selected, const QItemSelection& /*deselected*/) {
-                for (auto& index : selected.indexes()) {
+                for (const auto& index : selected.indexes()) {
                     if (auto tcw = static_cast<TrackControlsWidgetQt*>(indexWidget(index))) {
                         if (auto propertytrack = dynamic_cast<BasePropertyTrack*>(&tcw->track())) {
                             // Deselect all processors first
@@ -150,7 +150,7 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     addAction(deleteAction);
     connect(deleteAction, &QAction::triggered, this, [this]() {
         auto& animation = controller_.getAnimation();
-        for (auto& index : selectionModel()->selection().indexes()) {
+        for (const auto& index : selectionModel()->selection().indexes()) {
             animation.remove(static_cast<TrackItem*>(model_->itemFromIndex(index))->track_);
         }
     });
@@ -162,14 +162,14 @@ void AnimationLabelViewQt::onTrackAdded(Track* track) {
     row.append(item);
     QWidget* widget = new TrackControlsWidgetQt(item, *track, controller_);
     model_->appendRow(row);
-    auto index = model_->indexFromItem(item);
+    const auto index = model_->indexFromItem(item);
     setIndexWidget(index, widget);
 }
 
 void AnimationLabelViewQt::onTrackRemoved(Track* track) {
-    QModelIndex parent = QModelIndex();
+    const QModelIndex parent = QModelIndex();
     for (int r = 0; r < model_->rowCount(parent); ++r) {
-        QModelIndex index = model_->index(r, 0, parent);
+        const QModelIndex index = model_->index(r, 0, parent);
         if (static_cast<TrackItem*>(model_->itemFromIndex(index))->track_ == track) {
             model_->removeRow(r, parent);
             break;

@@ -288,32 +288,33 @@ TEST(AnimationTests, ControlTrackTest) {
         animation.add(std::move(controlTrack));
     }
     {
-        auto state1 = animation(Seconds{0.0}, Seconds{2.0}, AnimationState::Playing);
+        const auto state1 = animation(Seconds{0.0}, Seconds{2.0}, AnimationState::Playing);
         EXPECT_EQ(AnimationState::Paused, state1.state);
         EXPECT_EQ(Seconds{1.0}, state1.time);
 
-        auto state2 = animation(Seconds{1.0}, Seconds{2.0}, AnimationState::Playing);
+        const auto state2 = animation(Seconds{1.0}, Seconds{2.0}, AnimationState::Playing);
         // Starting at control keyframe should not trigger it
         EXPECT_EQ(AnimationState::Playing, state2.state);
         EXPECT_EQ(Seconds{5}, state2.time);
 
-        auto state3 = animation(Seconds{1.0}, animation.getLastTime(), AnimationState::Playing);
+        const auto state3 =
+            animation(Seconds{1.0}, animation.getLastTime(), AnimationState::Playing);
         EXPECT_EQ(AnimationState::Paused, state3.state);
         EXPECT_EQ(animation.getLastTime(), state3.time);
     }
     {
         // Reverse
-        auto state1 = animation(Seconds{2.0}, Seconds{0.0}, AnimationState::Playing);
+        const auto state1 = animation(Seconds{2.0}, Seconds{0.0}, AnimationState::Playing);
         EXPECT_EQ(AnimationState::Paused, state1.state);
         EXPECT_EQ(Seconds{1}, state1.time);
 
-        auto state2 = animation(Seconds{2.0}, Seconds{1.0}, AnimationState::Playing);
+        const auto state2 = animation(Seconds{2.0}, Seconds{1.0}, AnimationState::Playing);
         EXPECT_EQ(AnimationState::Paused, state2.state);
         EXPECT_EQ(Seconds{1}, state2.time);
         // Time-jump to 5 seconds, skipping the pause-control keyframe at 1
         // This behaviour might be debatable, but taking time-jumping into consideration makes
         // evaluation complex
-        auto state3 = animation(Seconds(8), Seconds{0.0}, AnimationState::Playing);
+        const auto state3 = animation(Seconds(8), Seconds{0.0}, AnimationState::Playing);
         EXPECT_EQ(AnimationState::Playing, state3.state);
         EXPECT_EQ(Seconds(5), state3.time);
     }
@@ -345,7 +346,7 @@ TEST(AnimationTests, CallbackTrackTest) {
 }
 
 TEST(AnimationTests, KeyframeSerializationTest) {
-    ValueKeyframe<dvec3> keyframe{Seconds{4.0}, dvec3(2.0)};
+    const ValueKeyframe<dvec3> keyframe{Seconds{4.0}, dvec3(2.0)};
 
     const std::filesystem::path refPath = "/tmp";
 
@@ -372,7 +373,7 @@ TEST(AnimationTests, InterpolationSerializationTest) {
 
     LinearInterpolation<ValueKeyframe<dvec3>> linear;
 
-    Interpolation* iptr = &linear;
+    const Interpolation* iptr = &linear;
 
     Serializer s(refPath);
     s.serialize("interpolation", iptr);
@@ -400,7 +401,7 @@ TEST(AnimationTests, KeyframeSequenceSerializationTest) {
     dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{1.0}, dvec3{1.0}));
     dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{2.0}, dvec3{0.0}));
     dseq.push_back(std::make_unique<ValueKeyframe<dvec3>>(Seconds{3.0}, dvec3{0.0}));
-    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence{
+    const KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence{
         std::move(dseq), std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>()};
 
     const std::filesystem::path refPath = "/tmp";
@@ -508,7 +509,7 @@ TEST(AnimationTests, TrackSerializationTest) {
             dynamic_cast<PropertyTrack<FloatProperty, ValueKeyframe<float>>*>(track.get());
         EXPECT_NE(nullptr, floatTrack2);
 
-        auto& floatProperty = net.getProcessorsByType<TestProcessor>().front()->floatProperty;
+        const auto& floatProperty = net.getProcessorsByType<TestProcessor>().front()->floatProperty;
 
         EXPECT_EQ(*floatProperty, 0.0f);
         (*floatTrack2)(Seconds{0.0}, Seconds{2.0}, AnimationState::Playing);
@@ -600,19 +601,19 @@ TEST(AnimationTests, AnimationSerializationTest) {
 
     EXPECT_EQ(ft1[0], ft2[0]);
 
-    Seconds start = animation.getFirstTime();
-    Seconds end = animation.getLastTime();
+    const Seconds start = animation.getFirstTime();
+    const Seconds end = animation.getLastTime();
 
-    auto& floatProperty = net.getProcessorsByType<TestProcessor>().front()->floatProperty;
-    auto& floatProperty2 = net2.getProcessorsByType<TestProcessor>().front()->floatProperty;
+    const auto& floatProperty = net.getProcessorsByType<TestProcessor>().front()->floatProperty;
+    const auto& floatProperty2 = net2.getProcessorsByType<TestProcessor>().front()->floatProperty;
 
     Seconds from = start;
     for (Seconds to = start; to <= end; to += (end - start) / 100) {
         animation(from, to, AnimationState::Playing);
         animation2(from, to, AnimationState::Playing);
 
-        auto oldfloat = floatProperty.get();
-        auto newfloat = floatProperty2.get();
+        const auto oldfloat = floatProperty.get();
+        const auto newfloat = floatProperty2.get();
         EXPECT_EQ(oldfloat, newfloat);
 
         from = to;

@@ -168,7 +168,7 @@ using ::testing::Matches;
 
 TEST(PortTests, SingleInportOutport) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     auto& source1 = *network.emplaceProcessor<OutportTestProcessor>("source1", 1);
     auto& sink = *network.emplaceProcessor<InportTestProcessor>("sink");
@@ -203,7 +203,7 @@ TEST(PortTests, SingleInportOutport) {
 
 TEST(PortTests, MultiInportOutport) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     auto& source1 = *network.emplaceProcessor<OutportTestProcessor>("source1", 1);
     auto& source2 = *network.emplaceProcessor<OutportTestProcessor>("source2", 2);
@@ -266,7 +266,7 @@ TEST(PortTests, MultiInportOutport) {
 
 TEST(PortTests, FlatMultiInportOutport) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     auto& source1 = *network.emplaceProcessor<OutportTestProcessor>("source1", 1);
     auto& source2 =

@@ -106,9 +106,9 @@ SurfaceExtraction::~SurfaceExtraction() = default;
 namespace {
 
 auto updateIsosurfaceColors(const std::vector<TFPrimitiveData>& isoValues,
-                            std::shared_ptr<Mesh>& oldmesh) {
+                            const std::shared_ptr<Mesh>& oldmesh) {
     return [oldmesh, isoValues](pool::Progress) -> std::shared_ptr<Mesh> {
-        auto* surfaceIndexBuffer = oldmesh->getBuffer(BufferType::IntMetaAttrib);
+        const auto* surfaceIndexBuffer = oldmesh->getBuffer(BufferType::IntMetaAttrib);
         if (!surfaceIndexBuffer) {
             // cannot update isosurface colors without surface indices
             return oldmesh;
@@ -184,8 +184,8 @@ void SurfaceExtraction::process() {
         }
     }();
 
-    auto transformIsoValueColors = [this, mix, source = isoValues_.get().get()](size_t index,
-                                                                                size_t maxCount) {
+    const auto transformIsoValueColors = [this, mix, source = isoValues_.get().get()](
+                                             size_t index, size_t maxCount) {
         std::vector<TFPrimitiveData> dest{source};
         if (coloring_.get() != ColoringMode::IsoValues) {
             for (auto& value : dest) {
@@ -212,7 +212,7 @@ void SurfaceExtraction::process() {
     }
     dispatchMany(jobs, [this](std::vector<std::shared_ptr<Mesh>> result) {
         meshes_ = std::move(result);
-        auto sequence = std::make_shared<DataSequence<Mesh>>(meshes_);
+        const auto sequence = std::make_shared<DataSequence<Mesh>>(meshes_);
         outport_.setData(sequence);
         newResults();
     });

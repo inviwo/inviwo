@@ -69,8 +69,8 @@ QString LabelGraphicsItem::text() const {
 }
 
 void LabelGraphicsItem::setText(const QString& str) {
-    QFontMetrics fm = QFontMetrics(font());
-    auto text = fm.elidedText(str, Qt::ElideMiddle, width_);
+    const QFontMetrics fm = QFontMetrics(font());
+    const auto text = fm.elidedText(str, Qt::ElideMiddle, width_);
     setPlainText(text);
     setToolTip(str);
     orgText_ = str;
@@ -85,7 +85,7 @@ void LabelGraphicsItem::setHtml(const QString& str) {
 
 void LabelGraphicsItem::updatePosition() {
     // adjust transformation
-    QRectF b = QGraphicsTextItem::boundingRect();
+    const QRectF b = QGraphicsTextItem::boundingRect();
     double x = b.x();
     double y = b.y();
     // horizontal alignment
@@ -101,7 +101,7 @@ void LabelGraphicsItem::updatePosition() {
         y -= b.height();
     }
 
-    QTransform t(QTransform::fromTranslate(x, y));
+    const QTransform t(QTransform::fromTranslate(x, y));
     setTransform(t);
 }
 
@@ -115,7 +115,7 @@ void LabelGraphicsItem::setCrop(int width) {
 bool LabelGraphicsItem::isCropped() const { return (orgText_ != toPlainText()); }
 
 int LabelGraphicsItem::usedTextWidth() const {
-    QFontMetrics fm = QFontMetrics(font());
+    const QFontMetrics fm = QFontMetrics(font());
     return fm.tightBoundingRect(croppedText()).width();
 }
 

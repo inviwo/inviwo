@@ -58,14 +58,14 @@ TEST(CImgUtils, cimgToBuffer) {
 
     const auto filename = filesystem::getPath(PathType::Tests, "/images/swirl.png");
     PNGLayerReader reader;
-    auto layer = reader.readData(filename);
+    const auto layer = reader.readData(filename);
 
     const std::string testExtension = "png";
 
     // write layer to a temporary bmp file
     util::TempFileHandle tmpFile("cimg", std::string(".") + testExtension, "wb");
 
-    PNGLayerWriter writer;
+    const PNGLayerWriter writer;
     writer.writeData(layer.get(), tmpFile.getHandle());
     std::fflush(tmpFile.getHandle());
 
@@ -74,7 +74,7 @@ TEST(CImgUtils, cimgToBuffer) {
     auto in = std::ifstream(tmpFile.getFileName(), std::ios::binary);
     if (in.is_open()) {
         in.seekg(0, in.end);
-        size_t fileLen = in.tellg();
+        const size_t fileLen = in.tellg();
         in.seekg(0, in.beg);
 
         fileContents.resize(fileLen);

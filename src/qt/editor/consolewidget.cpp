@@ -83,7 +83,7 @@ TextSelectionDelegate::TextSelectionDelegate(QWidget* parent) : QStyledItemDeleg
 QWidget* TextSelectionDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                                              const QModelIndex& index) const {
     if (index.column() == static_cast<int>(LogTableModelEntry::ColumnID::Message)) {
-        auto value = index.model()->data(index, Qt::EditRole).toString();
+        const auto value = index.model()->data(index, Qt::EditRole).toString();
         auto* widget = new QPlainTextEdit(value, parent);
         widget->setReadOnly(true);
         widget->setFont(LogTableModelEntry::logFont());
@@ -245,7 +245,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     QHBoxLayout* statusBar = new QHBoxLayout();
     statusBar->setObjectName("StatusBar");
 
-    auto makeIcon = [](const QString& file, bool checkable = false) {
+    const auto makeIcon = [](const QString& file, bool checkable = false) {
         auto icon = QIcon();
         if (checkable) {
             icon.addPixmap(QPixmap(":/svgicons/" + file + "-enabled.svg"), QIcon::Normal,
@@ -258,8 +258,9 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         return icon;
     };
 
-    auto makeToolButton = [this, statusBar, makeIcon](const QString& label, const QString& file,
-                                                      bool checkable = true) {
+    const auto makeToolButton = [this, statusBar, makeIcon](const QString& label,
+                                                            const QString& file,
+                                                            bool checkable = true) {
         auto button = new QToolButton(this);
         auto action = new QAction(makeIcon(file, checkable), label, this);
         action->setCheckable(checkable);
@@ -270,7 +271,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         return action;
     };
 
-    auto levelCallback = [this](bool /*checked*/) {
+    const auto levelCallback = [this](bool /*checked*/) {
         levelFilter_->setFilter(levels);
         applyRowHeights(0, tableView_->verticalHeader()->count());
     };
@@ -339,7 +340,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     });
 
     // add actions for context menu
-    auto createSeparator = [this]() {
+    const auto createSeparator = [this]() {
         auto separator = new QAction(this);
         separator->setSeparator(true);
         return separator;
@@ -381,7 +382,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
             });
     connect(textSelectionDelegate_, &QAbstractItemDelegate::closeEditor, this,
             [this](QWidget* w, QAbstractItemDelegate::EndEditHint) {
-                if (auto v = w->property("editorRow"); v.isValid()) {
+                if (const auto v = w->property("editorRow"); v.isValid()) {
                     applyRowHeights(v.toInt(), v.toInt() + 1);
                 }
             });
@@ -410,7 +411,7 @@ void ConsoleWidget::restoreState(QMenu* viewColGroup) {
 
     auto colVisible = settings.value("columnsVisible", QVariantList()).toList();
     auto colWidths = settings.value("columnsWidth", QVariantList()).toList();
-    auto count = std::min(colVisible.size(), colWidths.size());
+    const auto count = std::min(colVisible.size(), colWidths.size());
 
     for (int i = 0; i < count; ++i) {
         const bool visible = colVisible[i].toBool();
@@ -419,7 +420,7 @@ void ConsoleWidget::restoreState(QMenu* viewColGroup) {
         if (visible) tableView_->horizontalHeader()->resizeSection(i, colWidths[i].toInt());
     }
 
-    auto levelsActive = settings.value("levelsActive", QVariantList());
+    const auto levelsActive = settings.value("levelsActive", QVariantList());
     size_t i = 0;
     for (const auto& level : levelsActive.toList()) {
         if (i < levels.size()) {
@@ -427,7 +428,7 @@ void ConsoleWidget::restoreState(QMenu* viewColGroup) {
         }
     }
 
-    auto filterText = settings.value("filterText", "");
+    const auto filterText = settings.value("filterText", "");
     filterPattern_->setText(filterText.toString());
 
     settings.endGroup();
@@ -497,7 +498,7 @@ void ConsoleWidget::log(std::string_view source, LogLevel level, LogAudience aud
 
 void ConsoleWidget::logEntry(LogTableModelEntry e) {
     {
-        std::unique_lock lock{entriesMutex_};
+        const std::unique_lock lock{entriesMutex_};
         newEntries_.push_back(std::move(e));
     }
     emit hasNewEntries();
@@ -513,10 +514,10 @@ void ConsoleWidget::applyRowHeights(int start, int stop) {
 
 void ConsoleWidget::onNewEntries() {
     {
-        std::unique_lock lock{entriesMutex_};
+        const std::unique_lock lock{entriesMutex_};
         if (newEntries_.empty()) return;
 
-        for (auto& e : newEntries_) {
+        for (const auto& e : newEntries_) {
             updateIndicators(e.level);
         }
 
@@ -539,14 +540,14 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* keyEvent) {
 }
 
 QModelIndex ConsoleWidget::mapToSource(int row, int col) {
-    auto ind = levelFilter_->index(row, col);
-    auto lind = levelFilter_->mapToSource(ind);
+    const auto ind = levelFilter_->index(row, col);
+    const auto lind = levelFilter_->mapToSource(ind);
     return filter_->mapToSource(lind);
 }
 
 QModelIndex ConsoleWidget::mapFromSource(int row, int col) {
-    auto mind = model_.index(row, col);
-    auto lind = filter_->mapFromSource(mind);
+    const auto mind = model_.index(row, col);
+    const auto lind = filter_->mapFromSource(mind);
     return levelFilter_->mapFromSource(lind);
 }
 
@@ -564,7 +565,7 @@ void ConsoleWidget::copy(QItemSelectionModel* selectionModel) {
         } else if (!first) {
             text.append('\n');
         }
-        if (auto v = ind.data(detail::Roles::Fulltext); !v.isNull()) {
+        if (const auto v = ind.data(detail::Roles::Fulltext); !v.isNull()) {
             text.append(v.toString());
         } else {
             text.append(ind.data(Qt::DisplayRole).toString());
@@ -613,14 +614,14 @@ std::pair<int, int> getLineHeightAndMargin(const QFont& font) {
     opt.features |= QStyleOptionViewItem::HasDisplay;
     opt.styleObject = nullptr;
     opt.text = "One line text";
-    auto* style = qApp->style();
-    auto size1 = style->sizeFromContents(QStyle::CT_ItemViewItem, &opt, QSize(), nullptr);
+    const auto* style = qApp->style();
+    const auto size1 = style->sizeFromContents(QStyle::CT_ItemViewItem, &opt, QSize(), nullptr);
     opt.text = "One line text\nAnother line";
     opt.text.replace(QLatin1Char('\n'), QChar::LineSeparator);
-    auto size2 = style->sizeFromContents(QStyle::CT_ItemViewItem, &opt, QSize(), nullptr);
+    const auto size2 = style->sizeFromContents(QStyle::CT_ItemViewItem, &opt, QSize(), nullptr);
 
-    int lineHeight = size2.height() - size1.height();
-    int margin = size1.height() - lineHeight;
+    const int lineHeight = size2.height() - size1.height();
+    const int margin = size1.height() - lineHeight;
 
     return {lineHeight, margin};
 }
@@ -751,12 +752,12 @@ QString LogTableModel::getName(LogTableModelEntry::ColumnID ind) const {
 }
 
 const QFont& LogTableModelEntry::logFont() {
-    static QFont font{QFontDatabase::systemFont(QFontDatabase::FixedFont)};
+    static const QFont font{QFontDatabase::systemFont(QFontDatabase::FixedFont)};
     return font;
 }
 
 const std::pair<int, int>& LogTableModelEntry::lineHeightAndMargin() {
-    static std::pair<int, int> lineAndMargin{getLineHeightAndMargin(logFont())};
+    static const std::pair<int, int> lineAndMargin{getLineHeightAndMargin(logFont())};
     return lineAndMargin;
 }
 
@@ -791,7 +792,8 @@ std::string LogTableModelEntry::getDate(std::chrono::system_clock::time_point ti
     return std::move(ss).str();
 }
 std::string LogTableModelEntry::getTime(std::chrono::system_clock::time_point time) {
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()) % 1000;
+    const auto ms =
+        std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()) % 1000;
 
     auto in_time_t = std::chrono::system_clock::to_time_t(time);
     std::stringstream ss;

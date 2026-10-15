@@ -65,11 +65,11 @@ void IndicatorWidget::setLength(int len) {
 void IndicatorWidget::set(QPoint base, int len) {
     QRect r(base, QSize(0, -len));
     r = r.normalized();
-    auto l = handleWidth_ / 2 + 1;
+    const auto l = handleWidth_ / 2 + 1;
     r.adjust(-l, -l, l, l);
     handleRect_ = QRect(QPoint(-handleWidth_ / 2, -handleWidth_ / 2 + std::abs(len)),
                         QSize(handleWidth_, handleWidth_));
-    int sign = (len > 0) ? 1 : -1;
+    const int sign = (len > 0) ? 1 : -1;
 
     if (std::abs(len) > grooveWidth_) {
         grooveRect_ =
@@ -90,7 +90,7 @@ void IndicatorWidget::paintEvent(QPaintEvent* e) {
 
     p.setClipRegion(e->region());
 
-    QPen pen(QColor("#1e70a8").darker(150), 1.0);
+    const QPen pen(QColor("#1e70a8").darker(150), 1.0);
     p.setPen(pen);
 
     p.setTransform(painterTransform_);
@@ -98,7 +98,7 @@ void IndicatorWidget::paintEvent(QPaintEvent* e) {
     if (grooveRect_.isValid()) {
         p.setBrush(QColor("#1e70a8"));
 
-        auto radius = grooveWidth_ * 0.5;
+        const auto radius = grooveWidth_ * 0.5;
         p.drawRoundedRect(grooveRect_, radius, radius, Qt::AbsoluteSize);
     }
 
